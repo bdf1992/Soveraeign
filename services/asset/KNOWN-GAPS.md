@@ -18,6 +18,8 @@ the full Phase-I logical contract.
 | Attestation | Byte observation exists, but general claim attestation does not | `REPRODUCED`, `DISSENTED`, and `UNATTESTABLE` must be recorded | C5; PROD-I-8 |
 | Judgement queue | Missing authority refuses synchronously | Judgement-dependent work must remain visible and non-blocking | PROD-I-6 |
 | Model portability | No Model Binding or Model Adapter participant exists | Two materially different models must use one kernel contract with exact identity, data-boundary, usage, cost, and provider-loss receipts | PROD-I-9; BYOM.md |
+| Operational journal | Mutable lifecycle tables and partial receipts do not yet implement the complete append-preserving Event Envelope | Every consequential decision and state transition must remain reconstructable independently of current projections | C15; SPEC `EventEnvelope` |
+| Module boundary | `core.py` combines storage, authority/receipts, execution, observation, projections, and Asset lifecycle in more than 300 lines | Split by owned responsibility before adding behavior; preserve the public participant contract | ENGINEERING `Context and module budget` |
 
 These are participant defects or unimplemented requirements, not reasons to
 relax the logical oracle.

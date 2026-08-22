@@ -1,0 +1,54 @@
+__pycache__/
+*.py[cod]
+.coverage
+.coverage.*
+.hypothesis/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+.venv/
+venv/
+env/
+dist/
+build/
+*.egg-info/
+.DS_Store
+Thumbs.db
+*.log
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+secrets.json
+
+# Local Soveraeign state and payload custody
+.local/
+.soveraeign*/
+*.sqlite
+*.sqlite3
+*.sqlite3-wal
+*.sqlite3-shm
+*.db
+blobs/
+payloads/
+receipts.local/
+
+# Local model and prompt material
+.ollama/
+.models/
+prompt-dumps/
+conversation-exports/
+
+# Editor-local state
+.idea/
+.vscode/
+*.swp
+*.swo

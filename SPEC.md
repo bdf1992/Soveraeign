@@ -156,6 +156,24 @@ effect_class, limits, refusal_behavior, created_at
 
 No consequential run begins without a complete plan.
 
+#### `EventEnvelope`
+
+```text
+event_id, operation_id,
+event_phase: ATTEMPTED | REPORTED | OBSERVED | SETTLED | COUNTERED,
+actor_id, actor_kind: HUMAN | MODEL | WORKER | SYSTEM,
+reason, occurred_at,
+inputs: [{address, digest}], outputs: [{address, digest}],
+authority_grant_ids, effect_class,
+outcome: ATTEMPTED | COMMITTED | FAILED | REFUSED | COUNTERED | UNRESOLVED,
+receipt_id | null
+```
+
+Every consequential human or model decision emits an event envelope. An attempt
+may have a null `receipt_id` until it reaches a terminal outcome; settlement,
+refusal, failure, unresolved work, and counteraction resolve a durable receipt.
+The envelope does not replace the more specific domain record.
+
 #### `Run`
 
 ```text

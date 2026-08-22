@@ -14,6 +14,7 @@ or deployment topology.
 | `receipt.schema.json` | records the terminal outcome of a crossing or transition |
 | `participant-observation.schema.json` | carries implementation observations into the conformance oracle |
 | `model-binding.schema.json` | declares an owner-selected local or remote model without granting provider authority |
+| `event-envelope.schema.json` | records who decided or acted, why, exact inputs and outputs, authority, effects, and outcome |
 
 A schema-valid record can still be semantically unfit. Conformance fixtures and
 independent observation remain necessary.

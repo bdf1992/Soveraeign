@@ -133,6 +133,7 @@ The founding set contains:
 - `CLASSIFICATION.md` — the proposed controlled vocabulary and identity tests;
 - `AI-NATIVE.md` — the falsifiable per-surface standard and verdict derivation;
 - `BYOM.md` — the personal-local ownership and model-portability pattern;
+- `ENGINEERING.md` — the minimal reference stack and composable kernel primitives;
 - `services/asset/` — the Asset Service charter, contract, reference participant, and tests;
 - `services/proofing/` — the proposed sibling review-and-approval service boundary;
 - `CONTRACT.md` — invariants implementations must preserve;
@@ -144,7 +145,9 @@ The founding set contains:
 - `decisions/` — consequential choices and their authority;
 - `conformance/` — executable positive and defeating logical controls;
 - `lineage/`, when present — predecessor standings and immutable source evidence;
-- `AGENTS.md` — the operating contract for human and model contributors.
+- `AGENTS.md` — the normative operating contract for model contributors;
+- `CONTRIBUTING.md` — the contribution workflow for humans and models;
+- `.cursorrules` — a concise editor-facing mirror of the root rules.
 
 ## What this is not
 
@@ -165,12 +168,14 @@ or reviewed implementation adoption.
 
 ## Start here
 
-1. Read `AGENTS.md` and `STATUS.yaml`.
-2. Read `SYSTEM.md`, `CONTRACT.md`, and `PRD.md` as one governing set.
-3. Inspect `OPEN-SEAMS.md` before making architectural decisions.
-4. Run `python scripts/verify.py`.
-5. Work the next declared gate in `ROADMAP.md`; do not skip ahead by selecting a
-   stack or importing an ancestor implementation.
+1. Read `AGENTS.md`, `CONTRIBUTING.md`, and `STATUS.yaml`.
+2. Read `SYSTEM.md`, `CONTRACT.md`, `PRD.md`, and `SPEC.md` as one governing set.
+3. Read `ENGINEERING.md` and inspect `OPEN-SEAMS.md` before implementation.
+4. Run `python scripts/verify.py`; the dependency-free local and CI loop is
+   budgeted to finish in under three seconds after Python starts.
+5. Work the next declared gate in `ROADMAP.md`; use the proposed reference
+   baseline without treating it as owner-ratified or importing an ancestor
+   implementation.
 
 ## Immediate objective
 

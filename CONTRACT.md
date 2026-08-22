@@ -87,3 +87,11 @@ decision, or implementation adoption.
 A persuasive synthesis does not close a seam. Contradictions, failed fixtures,
 dissenting attestations, and unattestable claims remain visible until the
 authorized process resolves them.
+
+## C15 · State outlives execution
+
+Execution does not own authoritative state. Every consequential human or model
+decision leaves an attributable event with its actor, operation, reason, time,
+exact inputs and outputs, authority, effect class, and outcome. Reports and
+projections may be rebuilt or replaced; events, receipts, and counter-records
+remain reconstructable.

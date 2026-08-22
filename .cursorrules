@@ -1,0 +1,35 @@
+# Soveraeign repository rules
+
+Read and obey `/AGENTS.md`; it is normative. The design System of Record is the
+owned set `/SYSTEM.md`, `/CLASSIFICATION.md`, `/CONTRACT.md`, `/PRD.md`,
+`/SPEC.md`, `/STATUS.yaml`, and `/ENGINEERING.md`. Do not duplicate their rules
+into competing authorities.
+
+- Bdo owns product intent, naming, judgement, and phase gates.
+- Model output, tool success, credentials, and green tests confer no authority.
+- Preserve `OPEN -> BUILT -> WITNESSED -> RATIFIED`; never self-witness.
+- Write the contract plus positive and defeating fixture before business logic.
+- Separate state from execution. Every consequential decision emits an
+  attributable event and terminal receipt; projections are rebuildable.
+- Use Python 3.11+, standard-library-first code, SQLite, local CAS, JSON Schema,
+  and dependency-free `unittest` for the proposed Phase-I reference slice.
+- Format Python as UTF-8/LF with four spaces, a 100-character target, and modules
+  below 300 lines. Use future annotations, grouped imports, typed boundaries,
+  `pathlib`, explicit encodings, parameterized SQL, and injectable nondeterminism.
+- Services own lifecycles. Bindings, adapters, workers, projections, and
+  databases never write authoritative state outside kernel transitions.
+- Provider-specific SDK types stop at adapters. Credentials grant no authority.
+  Silent fallback is forbidden.
+- Keep one objective per task. Do not load complete logs, diffs, databases,
+  generated artifacts, or historical archives into model context.
+- Never commit secrets, `.env`, local paths, databases, payload stores, logs, or
+  prompt dumps. Use `.env.example` names only.
+- Tests are local, deterministic, network-free, and inspect durable results.
+  Run `python scripts/verify.py`; the default budget is under three seconds.
+- Treat `lineage/evidence/` as immutable and do not publish `lineage/` without
+  separate explicit owner instruction.
+- Use short-lived typed branches and reviewed PRs into `main`; direct main
+  commits require Bdo's explicit instruction.
+
+Make the smallest complete vertical slice that satisfies a visible contract.
+Do not add speculative frameworks or weaken conformance to make code pass.

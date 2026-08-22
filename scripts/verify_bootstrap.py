@@ -20,11 +20,17 @@ REQUIRED = (
     "SPEC.md",
     "AI-NATIVE.md",
     "BYOM.md",
+    "ENGINEERING.md",
     "services/asset/CHARTER.md",
     "services/proofing/CHARTER.md",
     "ROADMAP.md",
     "STATUS.yaml",
     "AGENTS.md",
+    "CONTRIBUTING.md",
+    ".cursorrules",
+    ".gitignore",
+    ".env.example",
+    ".github/workflows/verify.yml",
     "OPEN-SEAMS.md",
     "NAMING.md",
     "AGENT-BOOTSTRAP-PROMPT.md",
@@ -33,6 +39,7 @@ REQUIRED = (
     "contracts/receipt.schema.json",
     "contracts/participant-observation.schema.json",
     "contracts/model-binding.schema.json",
+    "contracts/event-envelope.schema.json",
     "services/README.md",
     "services/asset/contracts/service.json",
     "services/proofing/contracts/service.json",
@@ -44,6 +51,7 @@ REQUIRED = (
     "decisions/0009-phase-i-logical-spec.md",
     "decisions/0010-proofing-service-boundary.md",
     "decisions/0011-local-personal-byom.md",
+    "decisions/0012-engineering-baseline.md",
 )
 
 
@@ -68,6 +76,40 @@ def verify_selected_name() -> int:
         if line not in status:
             fail(f"owner-selected naming state changed: expected {line!r}")
     return 2
+
+
+def verify_engineering_framework() -> int:
+    required_markers = {
+        "AGENTS.md": (
+            "Design System of Record", "Python 3.11", "100-character",
+            "python scripts/verify.py", "Directory boundaries",
+            "positive and defeating", "Branch and commit strategy",
+        ),
+        "CONTRIBUTING.md": (
+            "Design System of Record", "Before you change code",
+            "Dependency rule", "python scripts/verify.py",
+            "Branch and review strategy",
+        ),
+        ".cursorrules": (
+            "/AGENTS.md", "Python 3.11", "python scripts/verify.py",
+            "Silent fallback is forbidden",
+        ),
+        "ENGINEERING.md": (
+            "Two Systems of Record", "Minimal reference stack",
+            "Kernel primitives", "Composing larger motion", "Growth triggers",
+        ),
+        ".gitignore": (".env", "*.sqlite3", "prompt-dumps/"),
+        ".env.example": ("SOVERAEIGN_STATE_DIR", "SOVERAEIGN_CREDENTIAL_REF"),
+        ".github/workflows/verify.yml": ("python scripts/verify.py", "contents: read"),
+    }
+    count = 0
+    for relative, markers in required_markers.items():
+        text = (ROOT / relative).read_text(encoding="utf-8")
+        for marker in markers:
+            if marker not in text:
+                fail(f"{relative} lacks engineering marker {marker!r}")
+            count += 1
+    return count
 
 
 def verify_sources() -> int:
@@ -140,7 +182,7 @@ def verify_json_documents() -> int:
 
 
 def main() -> int:
-    checks = (verify_required() + verify_selected_name() + verify_sources()
+    checks = (verify_required() + verify_selected_name() + verify_engineering_framework() + verify_sources()
               + verify_scenarios() + verify_conformance_controls()
               + verify_json_documents())
     print(f"PASS: bootstrap structure and evidence integrity ({checks} checks)")

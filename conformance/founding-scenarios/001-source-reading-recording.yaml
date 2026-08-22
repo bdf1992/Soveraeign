@@ -1,0 +1,19 @@
+id: FOUND-001
+title: source_reading_recording_reconstruction
+status: SEED
+given:
+  - an exact addressed source payload
+  - a declared reader with identity, version, and configuration
+when:
+  - the reader interprets the source
+  - a derivation deposits a recording
+then:
+  - the source rereads byte-identical
+  - the recording resolves to its source and reader
+  - exact_or_lossy is declared
+  - omissions are recoverable when lossy
+defeating:
+  - mutate the source during reading
+  - remove the reader version
+  - mark lossy without recoverable omissions
+

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/proofing-session.schema.json",
+  "title": "Proofing Session",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["session_id", "asset_id", "version_id", "version_digest", "opened_by", "opened_at", "lifecycle", "standing"],
+  "properties": {
+    "session_id": {"type": "string", "minLength": 1},
+    "asset_id": {"type": "string", "minLength": 1},
+    "version_id": {"type": "string", "minLength": 1},
+    "version_digest": {"type": "string", "minLength": 1},
+    "opened_by": {"type": "string", "minLength": 1},
+    "opened_at": {"type": "string", "format": "date-time"},
+    "lifecycle": {"enum": ["OPEN", "IN_REVIEW", "DECISION_PENDING", "CLOSED"]},
+    "standing": {"enum": ["RECORDED", "ADMITTED", "RATIFIED", "EFFECTIVE"]},
+    "closed_at": {"type": ["string", "null"], "format": "date-time"},
+    "decision_id": {"type": ["string", "null"]}
+  }
+}

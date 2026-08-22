@@ -1,0 +1,18 @@
+id: FOUND-007
+title: fresh_witness_cold_start
+status: SEED
+given:
+  - a clean local checkout
+  - no access to predecessor repositories
+  - no oral explanation
+when:
+  - a fresh witness follows the repository artifacts
+then:
+  - it identifies authority and open decisions
+  - it runs the Phase-I conformance suite
+  - it reconstructs evidence for each verdict
+  - it records time_to_safe_competence
+defeating:
+  - success requires hidden context
+  - schema validity is reported as semantic competence
+

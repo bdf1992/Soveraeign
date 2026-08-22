@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/operation-plan.schema.json",
+  "title": "Soveraeign Operation Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["operation_id", "operation_type", "requester_id", "interface_id", "input_addresses", "input_digests", "readings", "configuration_digest", "required_capabilities", "preconditions", "expected_observations", "effect_class", "limits", "refusal_behavior", "created_at"],
+  "properties": {
+    "operation_id": {"type": "string", "minLength": 1},
+    "operation_type": {"type": "string", "minLength": 1},
+    "requester_id": {"type": "string", "minLength": 1},
+    "interface_id": {"type": "string", "minLength": 1},
+    "input_addresses": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "input_digests": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "readings": {"type": "array", "items": {"type": "object"}},
+    "configuration_digest": {"type": "string", "minLength": 1},
+    "required_capabilities": {"type": "array", "items": {"type": "string"}},
+    "preconditions": {"type": "array", "minItems": 1, "items": {"type": "object"}},
+    "expected_observations": {"type": "array", "minItems": 1, "items": {"type": "object"}},
+    "effect_class": {"enum": ["RECORD_LOCAL", "RESOURCE_CONSUMPTION", "EXTERNAL_WORLD"]},
+    "limits": {"type": "object"},
+    "refusal_behavior": {"type": "object", "required": ["reason_codes", "receipt_required"], "properties": {"reason_codes": {"type": "array", "minItems": 1, "items": {"type": "string"}}, "receipt_required": {"const": true}}},
+    "created_at": {"type": "string", "format": "date-time"}
+  }
+}

@@ -1,0 +1,16 @@
+id: FOUND-003
+title: typed_authority_refusal
+status: SEED
+given:
+  - a delegated machine right scoped to verification_truth
+  - one verification claim
+  - one judgement claim
+when:
+  - the right attempts to ratify both claims
+then:
+  - the verification claim may be ratified
+  - the judgement claim is refused and receipted
+defeating:
+  - machine authority ratifies the judgement claim
+  - refusal leaves no receipt
+

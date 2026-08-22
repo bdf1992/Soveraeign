@@ -1,0 +1,10 @@
+{
+  "service_id": "proofing",
+  "standing": "PROPOSED",
+  "owns": ["proofing-session", "review-round", "participant-assignment", "version-pinned-annotation", "comparison-recording", "decision-proposal", "authorized-decision", "proofing-receipt"],
+  "references": ["asset:asset", "asset:asset-version", "asset:source-and-derivation-provenance"],
+  "operations": ["open-session", "assign-reviewer", "add-annotation", "request-comparison", "propose-decision", "ratify-decision", "request-revision", "close-session"],
+  "uses_kernel_contracts": ["standing", "typed-authority", "operation", "observation", "receipt", "retraction"],
+  "ports": ["asset-service", "comparison-worker", "human-binding", "model-binding", "notification"],
+  "forbids": ["direct-asset-storage-write", "implicit-latest-version", "model-ratifies-judgement", "executor-report-as-observation", "history-erasure", "projection-as-authority"]
+}

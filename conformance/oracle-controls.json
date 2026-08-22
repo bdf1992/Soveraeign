@@ -1,0 +1,178 @@
+[
+  {
+    "id": "CONF-I1-POS",
+    "requirement": "PROD-I-1",
+    "polarity": "positive",
+    "expected_oracle": "PASS",
+    "observed": {
+      "proposal": {"proposal_id": "p1", "actor_id": "model-1", "actor_kind": "MODEL", "content_address": "sha256:p1", "source_addresses": ["sha256:s1"], "cost_record": {"unit": "token", "amount": 42}, "required_authority_type": "JUDGEMENT", "scope": "asset:a1", "standing": "RECORDED"},
+      "admitted": true
+    }
+  },
+  {
+    "id": "CONF-I1-DEF",
+    "requirement": "PROD-I-1",
+    "polarity": "defeating",
+    "expected_oracle": "FAIL",
+    "observed": {
+      "proposal": {"proposal_id": "p2", "actor_id": "model-1", "actor_kind": "MODEL", "content_address": "sha256:p2", "source_addresses": [], "cost_record": null, "required_authority_type": "JUDGEMENT", "scope": "asset:a1", "standing": "ADMITTED"},
+      "admitted": true
+    }
+  },
+  {
+    "id": "CONF-I2-POS",
+    "requirement": "PROD-I-2",
+    "polarity": "positive",
+    "expected_oracle": "PASS",
+    "observed": {
+      "source_before_digest": "sha256:source", "source_after_digest": "sha256:source",
+      "recording": {"source_id": "s1", "source_digest": "sha256:source", "reader_id": "reader", "reader_version": "1", "configuration_digest": "sha256:config", "payload_digest": "sha256:output", "fidelity": "LOSSY", "omissions": ["color-profile"]}
+    }
+  },
+  {
+    "id": "CONF-I2-DEF",
+    "requirement": "PROD-I-2",
+    "polarity": "defeating",
+    "expected_oracle": "FAIL",
+    "observed": {
+      "source_before_digest": "sha256:source", "source_after_digest": "sha256:mutated",
+      "recording": {"source_id": "s1", "source_digest": "sha256:source", "reader_id": "reader", "reader_version": null, "configuration_digest": "sha256:config", "payload_digest": "sha256:output", "fidelity": "LOSSY", "omissions": []}
+    }
+  },
+  {
+    "id": "CONF-I3-POS",
+    "requirement": "PROD-I-3",
+    "polarity": "positive",
+    "expected_oracle": "PASS",
+    "observed": {
+      "human": {"transition_contract": "kernel-v1", "direct_write": false, "receipt_id": "r-human"},
+      "model": {"transition_contract": "kernel-v1", "direct_write": false, "receipt_id": "r-model"},
+      "crossing": {"source_id": "s1", "source_version": "v1", "projection_id": "view-v1", "omissions": [], "destination_id": "model-context"}
+    }
+  },
+  {
+    "id": "CONF-I3-DEF",
+    "requirement": "PROD-I-3",
+    "polarity": "defeating",
+    "expected_oracle": "FAIL",
+    "observed": {
+      "human": {"transition_contract": "kernel-v1", "direct_write": false, "receipt_id": "r-human"},
+      "model": {"transition_contract": "model-special", "direct_write": true, "receipt_id": null},
+      "crossing": {"source_id": null, "source_version": null, "projection_id": "chat", "omissions": null, "destination_id": "model-context"}
+    }
+  },
+  {
+    "id": "CONF-I4-POS",
+    "requirement": "PROD-I-4",
+    "polarity": "positive",
+    "expected_oracle": "PASS",
+    "observed": {
+      "original_record_present": true, "counter_record_present": true,
+      "effect_class": "RECORD_LOCAL", "claims_world_rollback": false,
+      "receipt": {"outcome": "COUNTERED", "target_receipt_id": "r-original"}
+    }
+  },
+  {
+    "id": "CONF-I4-DEF",
+    "requirement": "PROD-I-4",
+    "polarity": "defeating",
+    "expected_oracle": "FAIL",
+    "observed": {
+      "original_record_present": false, "counter_record_present": false,
+      "effect_class": "EXTERNAL_WORLD", "claims_world_rollback": true,
+      "receipt": null
+    }
+  },
+  {
+    "id": "CONF-I5-POS",
+    "requirement": "PROD-I-5",
+    "polarity": "positive",
+    "expected_oracle": "PASS",
+    "observed": {
+      "attempts": [
+        {"actor_kind": "MODEL", "authority_type": "VERIFICATION", "claim_type": "VERIFICATION", "grant_live": true, "scope_matches": true, "budget_available": true, "outcome": "COMMITTED", "receipt_id": "r1"},
+        {"actor_kind": "MODEL", "authority_type": "VERIFICATION", "claim_type": "JUDGEMENT", "grant_live": true, "scope_matches": true, "budget_available": true, "outcome": "REFUSED", "receipt_id": "r2"}
+      ]
+    }
+  },
+  {
+    "id": "CONF-I5-DEF",
+    "requirement": "PROD-I-5",
+    "polarity": "defeating",
+    "expected_oracle": "FAIL",
+    "observed": {
+      "attempts": [
+        {"actor_kind": "MODEL", "authority_type": "VERIFICATION", "claim_type": "JUDGEMENT", "grant_live": true, "scope_matches": true, "budget_available": true, "outcome": "COMMITTED", "receipt_id": null}
+      ]
+    }
+  },
+  {
+    "id": "CONF-I6-POS",
+    "requirement": "PROD-I-6",
+    "polarity": "positive",
+    "expected_oracle": "PASS",
+    "observed": {
+      "pending_right": {"persistent": true, "visible": true, "outcome": "UNRESOLVED", "receipt_id": "r-pending"},
+      "unrelated_operation_outcome": "COMMITTED", "judgement_spend_derived_from_receipts": true, "invented_quota": false
+    }
+  },
+  {
+    "id": "CONF-I6-DEF",
+    "requirement": "PROD-I-6",
+    "polarity": "defeating",
+    "expected_oracle": "FAIL",
+    "observed": {
+      "pending_right": {"persistent": false, "visible": false, "outcome": null, "receipt_id": null},
+      "unrelated_operation_outcome": "BLOCKED", "judgement_spend_derived_from_receipts": false, "invented_quota": true
+    }
+  },
+  {
+    "id": "CONF-I7-POS",
+    "requirement": "PROD-I-7",
+    "polarity": "positive",
+    "expected_oracle": "PASS",
+    "observed": {
+      "clean_checkout": true, "oral_explanation_used": false, "authority_located": true,
+      "conformance_executed": true, "evidence_reconstructed": true,
+      "semantic_task_observed": true, "time_to_safe_competence_seconds": 540,
+      "interventions": [], "owner_acceptance": "PENDING"
+    }
+  },
+  {
+    "id": "CONF-I7-DEF",
+    "requirement": "PROD-I-7",
+    "polarity": "defeating",
+    "expected_oracle": "FAIL",
+    "observed": {
+      "clean_checkout": true, "oral_explanation_used": true, "authority_located": false,
+      "conformance_executed": false, "evidence_reconstructed": false,
+      "semantic_task_observed": false, "time_to_safe_competence_seconds": null,
+      "interventions": ["owner explained hidden setup"], "owner_acceptance": "ACCEPTED"
+    }
+  },
+  {
+    "id": "CONF-I8-POS",
+    "requirement": "PROD-I-8",
+    "polarity": "positive",
+    "expected_oracle": "PASS",
+    "observed": {
+      "ratification_before": "RATIFIED", "ratification_after": "RATIFIED", "validator_changed_authority": false,
+      "attestations": [
+        {"validator_id": "validator", "validator_version": "1", "input_digest": "sha256:old", "run_id": "run1", "outcome": "REPRODUCED", "evidence_addresses": ["obs:1"]},
+        {"validator_id": "validator", "validator_version": "1", "input_digest": "sha256:new", "run_id": "run2", "outcome": "DISSENTED", "evidence_addresses": ["obs:2"]}
+      ]
+    }
+  },
+  {
+    "id": "CONF-I8-DEF",
+    "requirement": "PROD-I-8",
+    "polarity": "defeating",
+    "expected_oracle": "FAIL",
+    "observed": {
+      "ratification_before": "RATIFIED", "ratification_after": "REVOKED_BY_VALIDATOR", "validator_changed_authority": true,
+      "attestations": [
+        {"validator_id": "validator", "validator_version": null, "input_digest": "sha256:new", "run_id": "run-old", "outcome": "REPRODUCED", "evidence_addresses": []}
+      ]
+    }
+  }
+]

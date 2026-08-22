@@ -1,0 +1,18 @@
+id: FOUND-004
+title: attestation_dissent_preserves_ratification
+status: SEED
+given:
+  - an executable ratified claim
+  - a validator and original inputs
+when:
+  - original inputs reproduce
+  - current inputs later dissent
+then:
+  - both attestations are recorded
+  - historical ratification remains unchanged
+  - current effectiveness reflects dissent
+  - the validator grants no authority
+defeating:
+  - changed inputs report reproduced without evidence
+  - attestation changes either authority sign
+

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/proofing-annotation.schema.json",
+  "title": "Version-Pinned Proofing Annotation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["annotation_id", "session_id", "asset_id", "version_id", "version_digest", "actor_id", "actor_kind", "body", "anchor", "created_at", "standing", "version_relation"],
+  "properties": {
+    "annotation_id": {"type": "string", "minLength": 1},
+    "session_id": {"type": "string", "minLength": 1},
+    "asset_id": {"type": "string", "minLength": 1},
+    "version_id": {"type": "string", "minLength": 1},
+    "version_digest": {"type": "string", "minLength": 1},
+    "actor_id": {"type": "string", "minLength": 1},
+    "actor_kind": {"enum": ["HUMAN", "MODEL"]},
+    "body": {"type": "string", "minLength": 1},
+    "anchor": {"type": "object", "required": ["scheme", "value"], "properties": {"scheme": {"type": "string", "minLength": 1}, "value": {}}},
+    "created_at": {"type": "string", "format": "date-time"},
+    "standing": {"enum": ["RECORDED", "ADMITTED", "RATIFIED", "EFFECTIVE"]},
+    "version_relation": {"enum": ["CURRENT", "STALE", "CARRIED", "RESOLVED"]},
+    "carried_from_annotation_id": {"type": ["string", "null"]}
+  }
+}

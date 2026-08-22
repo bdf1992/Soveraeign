@@ -1,0 +1,35 @@
+surface: asset-service.walking-skeleton
+operation: ingest-derive-relate-ratify-observe-retract-rebuild
+artifact_revision: WORKTREE
+scores:
+  reachability: PARTIAL
+  commitment: PARTIAL
+  provenance: PARTIAL
+  retraction: PARTIAL
+earn_it:
+  value: OPEN
+  reviewer: Bdo
+assessment_state: OPEN
+minimum_verdict: UNSET
+soveraeign_checks:
+  same_world_parity: UNATTESTABLE
+  typed_authority: FAIL
+  independent_observation: FAIL
+  receipt_completeness: FAIL
+  effect_honesty: PASS
+  cold_start_competence: UNATTESTABLE
+  two_binding_proof: UNATTESTABLE
+  local_sovereignty: PASS
+qualification: NOT_QUALIFIED
+evidence:
+  - tests/test_walking_skeleton.py
+  - KNOWN-GAPS.md
+defeating_cases:
+  - stale-worker-cannot-settle
+  - model-cannot-ratify-judgement
+  - executor-report-does-not-commit
+  - retraction-preserves-history
+  - federation-refuses-when-unconfigured
+  - same-worker-observation-not-yet-refused
+  - admission-standing-not-yet-separated
+  - typed-grant-envelope-incomplete

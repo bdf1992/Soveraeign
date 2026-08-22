@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/service-manifest.schema.json",
+  "title": "Soveraeign Service Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["service_id", "standing", "owns", "operations", "uses_kernel_contracts", "forbids"],
+  "properties": {
+    "service_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
+    "standing": {"enum": ["PROPOSED", "BUILT", "WITNESSED", "RATIFIED"]},
+    "owns": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+    "references": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "operations": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+    "uses_kernel_contracts": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["standing", "typed-authority", "operation", "observation", "receipt", "retraction", "attestation"]}},
+    "ports": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "forbids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}}
+  }
+}

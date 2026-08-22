@@ -1,0 +1,10 @@
+{
+  "service_id": "asset",
+  "standing": "BUILT",
+  "owns": ["asset", "asset-version", "payload-custody", "source", "derivation-lineage", "asset-relationship", "asset-use-record"],
+  "references": ["shared-kernel-contracts"],
+  "operations": ["ingest-asset", "read-version", "request-derivative", "propose-description", "ratify-proposal", "retract-record", "rebuild-projection"],
+  "uses_kernel_contracts": ["standing", "typed-authority", "operation", "observation", "receipt", "retraction"],
+  "ports": ["model-analysis", "github-source", "graph-projection", "media-worker", "federation"],
+  "forbids": ["direct-projection-authority", "source-mutation-during-reading", "executor-report-as-observation", "unconfigured-federation-success", "history-erasure"]
+}

@@ -1,0 +1,15 @@
+id: FOUND-002
+title: standing_does_not_collapse
+status: SEED
+given:
+  - a recorded proposal with provenance
+when:
+  - it is admitted
+then:
+  - recorded and admitted are visible
+  - it remains unratified
+  - it does not condition effective operation
+defeating:
+  - treat admission as ratification
+  - treat recording as effective state
+

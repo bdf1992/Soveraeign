@@ -1,0 +1,17 @@
+id: FOUND-006
+title: human_model_binding_parity
+status: SEED
+given:
+  - one human-facing binding
+  - one model-facing binding
+  - one authoritative kernel contract
+when:
+  - each proposes, admits, observes, and retracts an equivalent operation
+then:
+  - both use the same transitions and constraints
+  - both produce reconcilable receipts
+  - neither writes authoritative state directly
+defeating:
+  - either surface bypasses the kernel
+  - surface-specific semantics change standing or authority
+

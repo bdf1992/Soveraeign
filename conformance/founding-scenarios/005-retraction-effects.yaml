@@ -1,0 +1,16 @@
+id: FOUND-005
+title: retraction_preserves_history_and_effect_class
+status: SEED
+given:
+  - a committed record-local operation
+  - its receipt and effect classification
+when:
+  - an authorized retraction counters it
+then:
+  - the act and counter-record both remain
+  - current record state reflects the counter
+  - no claim of resource refund or external-world rollback is made
+defeating:
+  - erase the original act
+  - report an external effect as reversed without observation
+

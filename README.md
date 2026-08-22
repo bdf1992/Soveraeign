@@ -12,6 +12,10 @@ The enterprise keeps custody of its operational memory and authority. A model
 may propose, inspect, verify, and act within a delegated scope; it cannot turn
 its own confidence, output, or successful execution into authority.
 
+This use of **AI-native** is opinionated and testable. `AI-NATIVE.md` defines
+the minimum per-surface verdict and the stricter qualification Soveraeign
+requires of itself.
+
 ## Why this exists
 
 Most software still assumes one kind of operator: a persistent, accountable
@@ -84,21 +88,28 @@ on whether Phase I is operationally accepted.
 
 ## Current repository state
 
-This repository is in **founding**. It establishes the product boundary and the
-evidence needed to derive a logical specification. It intentionally contains no
-production runtime implementation and makes no production stack choice.
+This repository is in **founding**. It now contains a proposed stack-neutral
+logical specification, an executable conformance oracle, and an experimental
+Asset Service reference participant. It contains no production runtime and
+makes no production stack choice. These artifacts are built evidence, not an
+independent witness or owner ratification.
 
 The founding set contains:
 
 - `SYSTEM.md` — the system boundary and operational model;
+- `CLASSIFICATION.md` — the proposed controlled vocabulary and identity tests;
+- `AI-NATIVE.md` — the falsifiable per-surface standard and verdict derivation;
+- `services/asset/` — the Asset Service charter, contract, reference participant, and tests;
+- `services/proofing/` — the proposed sibling review-and-approval service boundary;
 - `CONTRACT.md` — invariants implementations must preserve;
 - `PRD.md` — the normalized Phase-I requirements;
+- `SPEC.md` — the proposed stack-neutral Phase-I logical specification;
 - `ROADMAP.md` — evidence-gated construction phases;
 - `STATUS.yaml` — machine-readable authority, standing, and open decisions;
 - `OPEN-SEAMS.md` — contradictions that must remain visible;
 - `decisions/` — consequential choices and their authority;
-- `conformance/` — positive and defeating scenario seeds;
-- `lineage/` — predecessor standings and immutable source evidence;
+- `conformance/` — executable positive and defeating logical controls;
+- `lineage/`, when present — predecessor standings and immutable source evidence;
 - `AGENTS.md` — the operating contract for human and model contributors.
 
 ## What this is not
@@ -123,22 +134,29 @@ or reviewed implementation adoption.
 1. Read `AGENTS.md` and `STATUS.yaml`.
 2. Read `SYSTEM.md`, `CONTRACT.md`, and `PRD.md` as one governing set.
 3. Inspect `OPEN-SEAMS.md` before making architectural decisions.
-4. Run `python scripts/verify_bootstrap.py`.
+4. Run `python scripts/verify.py`.
 5. Work the next declared gate in `ROADMAP.md`; do not skip ahead by selecting a
    stack or importing an ancestor implementation.
 
 ## Immediate objective
 
-Close the founding layer without inventing implementation policy:
+Close the founding layer without promoting implementation into policy:
 
 - reconcile the canonical documents against the locked evidence;
 - resolve stale revision references;
 - preserve unresolved semantic disagreements;
-- compile each Phase-I requirement into state, transitions, checks, receipts,
-  and defeating fixtures;
-- then derive the smallest logical specification capable of supporting two
-  independent bindings.
+- review and ratify or strike `CLASSIFICATION.md` and `SPEC.md`;
+- bind the executable conformance observations to the reference Asset Service;
+- preserve known participant failures instead of weakening the oracle;
+- then implement the shared kernel required for two independent bindings.
 
-The first code should satisfy an already-visible conformance failure. It should
-not be the act that decides what the product means.
+The next code change must satisfy an already-visible conformance failure. It
+must not decide what the product means.
 
+## Publication boundary
+
+The public repository contains the canonical synthesis, contracts, logical
+testbed, and reference participant. The historical evidence archive and
+ancestor registry are not published by default. When absent, verification
+reports the archive as unavailable rather than claiming its source hashes were
+checked. See `PUBLICATION.md`.

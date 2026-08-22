@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/participant-observation.schema.json",
+  "title": "Conformance Participant Observation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["case_id", "participant_id", "artifact_revision", "observed"],
+  "properties": {
+    "case_id": {"type": "string", "minLength": 1},
+    "participant_id": {"type": "string", "minLength": 1},
+    "artifact_revision": {"type": "string", "minLength": 1},
+    "observed": {"type": "object"},
+    "participant_claim": {"enum": ["COMPLETED", "FAILED", "REFUSED", "UNRESOLVED"]},
+    "telemetry": {"type": "object"}
+  }
+}

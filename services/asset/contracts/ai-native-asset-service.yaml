@@ -20,6 +20,7 @@ soveraeign_checks:
   cold_start_competence: UNATTESTABLE
   two_binding_proof: UNATTESTABLE
   local_sovereignty: PASS
+  model_substitutability: UNATTESTABLE
 qualification: NOT_QUALIFIED
 evidence:
   - tests/test_walking_skeleton.py

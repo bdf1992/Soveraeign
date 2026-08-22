@@ -46,6 +46,17 @@ class OracleTests(unittest.TestCase):
         self.assertIn("authority scenario did not exercise both claim types", defects)
         self.assertIn("delegated verification claim did not commit", defects)
 
+    def test_byom_requires_distinct_models_and_visible_provider_loss(self):
+        observed = {
+            "bindings": [],
+            "unavailable_model": {"outcome": "COMMITTED", "silent_fallback": True},
+            "local_record_operable": False,
+        }
+        defects = runner.check_i9(observed)
+        self.assertIn("fewer than two model bindings were exercised", defects)
+        self.assertIn("unavailable model triggered silent fallback", defects)
+        self.assertIn("provider loss removed local record operation", defects)
+
 
 if __name__ == "__main__":
     unittest.main()

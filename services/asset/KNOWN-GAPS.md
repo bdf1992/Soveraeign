@@ -17,6 +17,7 @@ the full Phase-I logical contract.
 | Two bindings | Only a Python API/CLI participant exists | Human and model bindings must use the same transition contract | C1; PROD-I-3 |
 | Attestation | Byte observation exists, but general claim attestation does not | `REPRODUCED`, `DISSENTED`, and `UNATTESTABLE` must be recorded | C5; PROD-I-8 |
 | Judgement queue | Missing authority refuses synchronously | Judgement-dependent work must remain visible and non-blocking | PROD-I-6 |
+| Model portability | No Model Binding or Model Adapter participant exists | Two materially different models must use one kernel contract with exact identity, data-boundary, usage, cost, and provider-loss receipts | PROD-I-9; BYOM.md |
 
 These are participant defects or unimplemented requirements, not reasons to
 relax the logical oracle.

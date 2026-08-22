@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/model-binding.schema.json",
+  "title": "Soveraeign Model Binding",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["binding_id", "adapter_id", "provider_id", "provider_kind", "model_id", "model_version", "runtime_id", "runtime_version", "host_id", "interface_contract_id", "capabilities", "data_boundary", "input_projection_id", "omissions", "usage_meter", "cost_meter", "fallback_policy", "authority_source", "created_at"],
+  "properties": {
+    "binding_id": {"type": "string", "minLength": 1},
+    "adapter_id": {"type": "string", "minLength": 1},
+    "provider_id": {"type": "string", "minLength": 1},
+    "provider_kind": {"enum": ["LOCAL", "REMOTE"]},
+    "model_id": {"type": "string", "minLength": 1},
+    "model_version": {"type": "string", "minLength": 1},
+    "runtime_id": {"type": "string", "minLength": 1},
+    "runtime_version": {"type": "string", "minLength": 1},
+    "host_id": {"type": "string", "minLength": 1},
+    "interface_contract_id": {"type": "string", "minLength": 1},
+    "capabilities": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "data_boundary": {"enum": ["LOCAL_ONLY", "REDACTED_REMOTE", "REMOTE_ALLOWED"]},
+    "input_projection_id": {"type": "string", "minLength": 1},
+    "omissions": {"type": "array", "items": {"type": "string"}},
+    "usage_meter": {"type": "object"},
+    "cost_meter": {"type": "object"},
+    "fallback_policy": {"enum": ["NONE", "EXPLICIT"]},
+    "authority_source": {"const": "SOVERAEIGN_KERNEL"},
+    "created_at": {"type": "string", "format": "date-time"}
+  }
+}

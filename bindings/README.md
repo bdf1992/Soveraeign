@@ -12,5 +12,9 @@ The first parity proof must show equivalent operations through:
 - a model-facing binding that exposes the same material as typed structure;
 - reconciled receipts proving both invoked the same kernel behavior.
 
+The model side must be demonstrated with two materially different configured
+models. One must be supplied by the node owner through `BYOM.md`; changing the
+binding cannot create a provider-specific state or authority path.
+
 No binding implementation is admitted until the shared transition contract is
 frozen or explicitly authorized as a provisional target.

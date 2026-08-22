@@ -102,5 +102,18 @@
     "fitness_directive": "Re-run the claim against current inputs and preserve the distinction between ratification and attestation.",
     "work_item": "attest before and after an input change",
     "watched_delta": ["two attestations", "current effectiveness", "historical ratification"]
+  },
+  {
+    "id": "RUN-I9-BYOM",
+    "requirement": "PROD-I-9",
+    "polarity": "participant",
+    "given": ["one unchanged personally owned local node", "one owner-supplied model", "one materially different model", "one named domain operation"],
+    "desired": ["both models use the same operator, kernel, authority, provenance, and receipt contracts"],
+    "gap": ["provider-specific state, hidden model identity, silent fallback, or remote dependency may capture the node"],
+    "requirements": ["exact binding and runtime identity", "declared data boundary", "distinct attributed results", "usage and cost", "receipted unavailable-model refusal", "continued local record operation"],
+    "forced_conditions": ["execute through both bindings", "make one model unavailable", "do not change authoritative input state"],
+    "fitness_directive": "Change the model without changing the governed system or surrendering local continuity.",
+    "work_item": "perform one operation across two model bindings and one provider-loss refusal",
+    "watched_delta": ["binding records", "model results", "receipts", "local record operability"]
   }
 ]

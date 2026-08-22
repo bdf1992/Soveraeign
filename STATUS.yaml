@@ -11,6 +11,7 @@ conformance_status: EXECUTABLE_ORACLE_CONTROLS_PARTICIPANT_BINDING_OPEN
 classification_status: PROPOSED_OWNER_RATIFICATION_PENDING
 asset_service_status: BUILT_SELF_TESTED_NOT_WITNESSED
 proofing_service_status: CHARTERED_NOT_IMPLEMENTED
+byom_status: OWNER_DIRECTED_CONTRACT_AND_FIXTURE_PROPOSED
 ai_native_definition_status: FREEZE_CANDIDATE
 
 authority:
@@ -47,6 +48,9 @@ proposed_repository_claims:
   - phase_i_logical_specification
   - asset_and_proofing_sibling_service_boundary
   - executable_conformance_oracle
+  - personal_local_node_profile
+  - bring_your_own_model_practice
+  - model_portability_phase_i_requirement
 
 open_decisions:
   - id: O1
@@ -82,6 +86,9 @@ open_decisions:
   - id: O11
     question: Is Proofing Service the accepted second service boundary after Asset Service?
     blocks: proofing_implementation
+  - id: O12
+    question: Does Bdo ratify the exact BYOM binding fields, data-boundary modes, and two-model Phase-I fixture?
+    blocks: byom_contract_freeze
 
 protected_boundaries:
   - evidence_files_are_immutable

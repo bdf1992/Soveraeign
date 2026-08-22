@@ -13,6 +13,7 @@ or deployment topology.
 | `operation-plan.schema.json` | declares consequential work before execution |
 | `receipt.schema.json` | records the terminal outcome of a crossing or transition |
 | `participant-observation.schema.json` | carries implementation observations into the conformance oracle |
+| `model-binding.schema.json` | declares an owner-selected local or remote model without granting provider authority |
 
 A schema-valid record can still be semantically unfit. Conformance fixtures and
 independent observation remain necessary.

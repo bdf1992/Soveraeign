@@ -1,0 +1,23 @@
+id: FOUND-008
+title: personal_local_byom_portability
+status: OWNER_DIRECTED_SEED
+given:
+  - one unchanged personally owned local node
+  - one owner-supplied model binding
+  - one materially different model binding
+  - one named domain operation
+when:
+  - both models attempt the operation through the same kernel contract
+  - one configured model becomes unavailable
+then:
+  - both invocations identify binding, adapter, provider, model, runtime, host, data boundary, usage, and cost
+  - results remain distinct proposals or recordings
+  - authority and service contracts do not change with the model
+  - unavailable invocation refuses with a receipt and no silent fallback
+  - local record custody and non-model operation continue
+defeating:
+  - provider-specific authoritative state
+  - model selection changes authority
+  - model identity or crossed data is absent from provenance
+  - unavailable model silently falls back
+  - provider loss makes the local record inoperable

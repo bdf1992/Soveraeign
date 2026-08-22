@@ -34,6 +34,19 @@ cold-start competence, two-binding proof, and local sovereignty.
 
 **[Read the complete AI-Native Standard →](AI-NATIVE.md)**
 
+## Local, personal, and BYOM
+
+The first intended deployment is a personally owned local node. The same node
+contract can later support a team or enterprise without turning personal use
+into a separate edition or surrendering the record to a central provider.
+
+Soveraeign practices **Bring Your Own Model**: an owner can bind a compatible
+local or remote model while keeping the same authoritative state, service
+contracts, typed authority, provenance, receipts, and retraction rules. Every
+run declares its exact model, runtime, host, data boundary, usage, and cost.
+
+**[Read the Local, Personal, and BYOM pattern →](BYOM.md)**
+
 ## Why this exists
 
 Most software still assumes one kind of operator: a persistent, accountable
@@ -99,6 +112,8 @@ alone to demonstrate that:
 6. Pending human judgement remains visible without blocking unrelated work.
 7. Ratified executable claims receive reproducible runtime attestations.
 8. Human and model interfaces use the same authoritative kernel semantics.
+9. Two different model bindings can perform the same named operation without a
+   provider-specific authority path or loss of local continuity.
 
 Passing tests is necessary but not sufficient. The evidence must be
 reconstructable by an independent witness, and Bdo retains the judgement call
@@ -117,6 +132,7 @@ The founding set contains:
 - `SYSTEM.md` — the system boundary and operational model;
 - `CLASSIFICATION.md` — the proposed controlled vocabulary and identity tests;
 - `AI-NATIVE.md` — the falsifiable per-surface standard and verdict derivation;
+- `BYOM.md` — the personal-local ownership and model-portability pattern;
 - `services/asset/` — the Asset Service charter, contract, reference participant, and tests;
 - `services/proofing/` — the proposed sibling review-and-approval service boundary;
 - `CONTRACT.md` — invariants implementations must preserve;

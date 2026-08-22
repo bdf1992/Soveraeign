@@ -40,12 +40,14 @@ attestation, receipts, and record retraction.
 
 Exit: the reference binding passes F2 from a clean local environment.
 
-## F4 · Two-binding proof
+## F4 · Binding and model-portability proof
 
-Bind one human surface and one model surface to the same kernel contracts.
+Bind one human surface and two materially different model surfaces—including
+one owner-supplied model—to the same kernel contracts.
 
-Exit: both perform the founding scenario without direct state writes or semantic
-forks, and their receipts reconcile.
+Exit: all perform the founding scenario without direct state writes or semantic
+forks; model swaps preserve authority and provenance; provider loss refuses
+without silent fallback; and their receipts reconcile.
 
 ## F5 · First enterprise service
 

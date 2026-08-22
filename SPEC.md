@@ -26,6 +26,11 @@ Phase I must run from a clean local artifact without Claude, GitHub, an external
 graph database, or another network service. Optional integrations either
 operate through declared adapters or refuse as `UNCONFIGURED` with a receipt.
 
+The first operating profile is a personally owned node. It uses the same
+contracts as later team or enterprise profiles. Model computation may be local
+or remote, but the authoritative record, authority, and continuity remain under
+node ownership.
+
 ### Fault model
 
 | Fault | Phase-I obligation |
@@ -119,6 +124,26 @@ revoked_at | null
 
 An authority check evaluates type, capability, scope, budget, time, and
 revocation at the attempted transition.
+
+#### `ModelBinding`
+
+```text
+binding_id, adapter_id,
+provider_id, provider_kind: LOCAL | REMOTE,
+model_id, model_version,
+runtime_id, runtime_version, host_id,
+interface_contract_id, capabilities,
+data_boundary: LOCAL_ONLY | REDACTED_REMOTE | REMOTE_ALLOWED,
+input_projection_id, omissions,
+usage_meter, cost_meter,
+fallback_policy: NONE | EXPLICIT,
+created_at
+```
+
+Model and provider identity are configuration, not authority. A binding grants
+no capability by existing; every invocation still checks the actor's scoped
+authority and operation plan. `EXPLICIT` fallback requires a new attributed
+invocation and receipt naming the replacement binding.
 
 #### `OperationPlan`
 
@@ -241,6 +266,7 @@ receipt. A stale pre-state cannot settle.
 | `settle_run` | current input state; satisfactory observation | `COMMITTED`, `FAILED`, or `UNRESOLVED` receipt | `STALE_STATE` |
 | `retract` | live matching retraction authority; target and effect known | emit counter-record and `COUNTERED` receipt | `AUTHORITY_REFUSED` |
 | `cross` | declared source, reader/projection, omissions, authority, destination | destination record and receipt | reasoned refusal |
+| `invoke_model` | declared binding, operation plan, authority, input projection, data boundary, usage and cost meters | proposal, recording, report, or observation plus receipt | `MODEL_UNAVAILABLE`, `MODEL_INCOMPATIBLE`, `DATA_BOUNDARY_REFUSED`, or reasoned refusal |
 
 No interface, adapter, worker, projection, or graph store may bypass these
 transitions to change authoritative state.
@@ -298,6 +324,18 @@ transitions to change authoritative state.
 - Changed inputs cannot inherit `REPRODUCED` from a historical run.
 - Attestation never changes ratification authority.
 
+### PROD-I-9 · Bring your own model
+
+- Two materially different model bindings expose the same named operation and
+  use the same kernel transitions, authority checks, and receipt contract.
+- Each run records binding, adapter, provider, model, version, runtime, host,
+  input projection, omissions, data boundary, usage, and cost.
+- Changing models creates distinct attributed results; it does not silently
+  merge outputs or change authoritative state.
+- An unavailable model returns a reasoned receipt. Any fallback is a separately
+  attributed explicit invocation.
+- Provider loss cannot remove local record custody or non-model operation.
+
 ## Interface parity
 
 Human and model bindings may present different projections, but they must:
@@ -336,6 +374,7 @@ is required for `RATIFIED`.
 | Authority | PROD-I-5, I-6 | SUBSTRATE R4; ANCHOR A4, A10 |
 | Observation and receipts | PROD-I-4, I-8 | SUBSTRATE R3, R6; ANCHOR A2 |
 | Cold-start qualification | PROD-I-7 | SUBSTRATE V5, T1; ANCHOR A6 |
+| Personal-local model portability | PROD-I-9 | SUBSTRATE V1-V3, R2-R5; ANCHOR A3, A8 |
 | Node and federation boundary | later phase | ANCHOR A8; PRODUCT §5 |
 
 Exact historical source addresses and digests remain in `lineage/` and are not

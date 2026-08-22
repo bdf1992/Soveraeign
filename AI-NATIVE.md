@@ -129,6 +129,10 @@ effect envelope admitted for the current phase, and also proves:
 8. **Local sovereignty** — loss of Claude, GitHub, a graph database, or another
    integration cannot silently remove custody of authoritative memory,
    authority, or operational continuity.
+9. **Model substitutability** — two materially different models, including one
+   owner-supplied local or remote model, can use the same named operation and
+   kernel contracts; model/provider identity, crossed data, usage, and cost
+   remain visible, and unavailable models refuse without silent fallback.
 
 The Soveraeign bar does not replace the minimum verdict. It is a stricter
 qualification layered above it.
@@ -159,6 +163,7 @@ soveraeign_checks:
   receipt_completeness: PASS | FAIL | UNATTESTABLE
   effect_honesty: PASS | FAIL | UNATTESTABLE
   cold_start_competence: PASS | FAIL | UNATTESTABLE
+  model_substitutability: PASS | FAIL | UNATTESTABLE
 qualification: SOVERAEIGN_QUALIFIED | NOT_QUALIFIED
 evidence: [<addresses>]
 defeating_cases: [<fixture identifiers>]
@@ -186,8 +191,9 @@ that erases history.
 The minimum verdict and `TRUTH_CAPABLE` outcome preserve the ratified source
 threshold and existing Gauge language in
 `lineage/evidence/core/SUBSTRATE.md` T2. Same-world operation, authority,
-observation, receipts, effect honesty, and cold-start competence are the
-stricter Soveraeign qualification derived from the broader founding contract.
+observation, receipts, effect honesty, cold-start competence, personal-local
+operation, and model substitutability are the stricter Soveraeign qualification
+derived from the broader founding contract and owner direction.
 Exact score meanings, explicit assessment states, the all-`FULL` Soveraeign
 bar, two-binding proof, and integration-loss sovereignty are new freeze-candidate
 policy. They must not be misrepresented as part of the earlier minimum

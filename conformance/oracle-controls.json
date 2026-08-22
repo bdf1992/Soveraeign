@@ -174,5 +174,32 @@
         {"validator_id": "validator", "validator_version": null, "input_digest": "sha256:new", "run_id": "run-old", "outcome": "REPRODUCED", "evidence_addresses": []}
       ]
     }
+  },
+  {
+    "id": "CONF-I9-POS",
+    "requirement": "PROD-I-9",
+    "polarity": "positive",
+    "expected_oracle": "PASS",
+    "observed": {
+      "bindings": [
+        {"binding_id": "local-qwen", "adapter_id": "ollama-adapter", "provider_id": "owner-runtime", "provider_kind": "LOCAL", "model_id": "qwen", "model_version": "3", "runtime_id": "ollama", "runtime_version": "1", "host_id": "personal-node", "interface_contract_id": "model-operator-v1", "operation_id": "describe-asset", "authority_contract_id": "kernel-v1", "state_before_digest": "sha256:state", "input_projection_id": "asset-view-v1", "omissions": [], "data_boundary": "LOCAL_ONLY", "usage": {"tokens": 20}, "cost": {"currency": "USD", "amount": 0}, "receipt_id": "r-local", "result_id": "proposal-local", "result_standing": "PROPOSAL", "owner_supplied": true, "direct_write": false},
+        {"binding_id": "remote-model", "adapter_id": "remote-adapter", "provider_id": "remote-provider", "provider_kind": "REMOTE", "model_id": "model-b", "model_version": "2", "runtime_id": "provider-api", "runtime_version": "2026-08", "host_id": "remote-host", "interface_contract_id": "model-operator-v1", "operation_id": "describe-asset", "authority_contract_id": "kernel-v1", "state_before_digest": "sha256:state", "input_projection_id": "asset-view-redacted-v1", "omissions": ["private-notes"], "data_boundary": "REDACTED_REMOTE", "usage": {"tokens": 18}, "cost": {"currency": "USD", "amount": 0.01}, "receipt_id": "r-remote", "result_id": "proposal-remote", "result_standing": "PROPOSAL", "owner_supplied": false, "direct_write": false}
+      ],
+      "unavailable_model": {"binding_id": "remote-model", "outcome": "REFUSED", "reason": "MODEL_UNAVAILABLE", "receipt_id": "r-unavailable", "silent_fallback": false},
+      "local_record_operable": true
+    }
+  },
+  {
+    "id": "CONF-I9-DEF",
+    "requirement": "PROD-I-9",
+    "polarity": "defeating",
+    "expected_oracle": "FAIL",
+    "observed": {
+      "bindings": [
+        {"binding_id": "provider-only", "adapter_id": "provider-special", "provider_id": "remote-provider", "provider_kind": "REMOTE", "model_id": "model-b", "model_version": null, "runtime_id": "provider-api", "runtime_version": "2026-08", "host_id": "remote-host", "interface_contract_id": "provider-private", "operation_id": "describe-asset", "authority_contract_id": "provider-auth", "state_before_digest": "sha256:provider-state", "input_projection_id": "unknown", "omissions": null, "data_boundary": null, "usage": null, "cost": null, "receipt_id": null, "result_id": "authoritative-provider-result", "result_standing": "EFFECTIVE", "owner_supplied": false, "direct_write": true}
+      ],
+      "unavailable_model": {"binding_id": "provider-only", "outcome": "COMMITTED", "reason": null, "receipt_id": null, "silent_fallback": true},
+      "local_record_operable": false
+    }
   }
 ]

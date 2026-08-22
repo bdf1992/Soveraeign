@@ -20,6 +20,24 @@ actions, constraints, authority checks, and history.
 authority, operation, and continuity. External compute may eventually be used,
 but it cannot silently become the owner of those functions.
 
+## Ownership and model portability
+
+Personal, team, and enterprise deployments use the same node contract. A
+personal node is a first-class Soveraeign Node owned and administered by one
+person, not a reduced edition. It may grow to more participants or federate
+without migrating its authority or record into a provider-owned system.
+
+Bring Your Own Model is the intended model practice. The node owner selects a
+compatible local or remote model through a declared model binding and adapter.
+Model identity, version, runtime, host, capabilities, data boundary, usage, and
+cost are recorded configuration. Swapping models cannot change authoritative
+state, standing, authority, receipts, or service contracts.
+
+Local sovereignty concerns custody and continuity, not a ban on remote compute.
+If a remote model is used, the crossing is explicit and governed. If it becomes
+unavailable, local record operation continues and the failed invocation returns
+a receipt.
+
 ## Operational model
 
 1. A payload is captured as an addressed source.
@@ -81,6 +99,7 @@ Phase I is local-only and refuses uncontained external effects. It must prove:
 - fresh-witness reconstruction;
 - runtime attestation after ratification;
 - and parity across two bindings.
+- model portability across two materially different model bindings.
 
 Phase I does not prove distributed consensus, world rollback, autonomous
 external action, enterprise-wide integration, or federation.

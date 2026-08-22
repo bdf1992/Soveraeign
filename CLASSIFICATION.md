@@ -25,6 +25,21 @@ A process, container, function, or microservice is a deployment choice. It does
 not acquire semantic identity, authority, or sovereignty from its deployment
 boundary.
 
+## Ownership profiles and model practice
+
+`Personal`, `team`, and `enterprise` are ownership and operating profiles of a
+node. They do not create new structural levels:
+
+- **Personal node** — one person owns and administers the local sovereign node.
+- **Team node** — several people operate one node through typed authority.
+- **Enterprise node** — an organization governs one or more nodes and their
+  crossings.
+
+**BYOM** is a model-selection practice, not a service or node type. A **Model
+Binding** realizes the operator interface for a configured model. A **Model
+Adapter** translates that binding to a named local runtime or remote provider.
+Neither owns authoritative state or gains authority from provider credentials.
+
 ## Cross-cutting foundations
 
 - **Shared kernel** enforces gates, standing, typed authority, transitions,

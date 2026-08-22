@@ -20,13 +20,14 @@ Oracle and scenarios: `conformance/run.py` + `conformance/scenarios.json`
 | PROD-I-6 · Founder judgement budget | FAIL | missing judgement refuses synchronously instead of leaving a visible unresolved right and spend record |
 | PROD-I-7 · Independent qualification | FAIL | no clean-room witness run or competence measurement exists |
 | PROD-I-8 · Joint sign | FAIL | general runtime attestation is not implemented |
+| PROD-I-9 · Bring your own model | FAIL | no model-binding contract or two-model portability run is implemented |
 
 ## Standing
 
 This baseline binds the reference participant to the logical scenarios. It does
 not mean the implementation is unusable: its narrower asset walk and stale
 lease tests pass. It means no Phase-I requirement is yet demonstrated by the
-complete scenario contract.
+complete scenario contract, including the owner-directed BYOM addition.
 
 The scenarios and oracle remain frozen during participant repair unless an
 independent regression proves a scenario or oracle defect. The typed-authority

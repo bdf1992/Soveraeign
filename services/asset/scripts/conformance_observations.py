@@ -134,8 +134,16 @@ def main() -> int:
                 "ratification_before": "RATIFIED", "ratification_after": "RATIFIED",
                 "validator_changed_authority": False, "attestations": [],
             })
+            i9 = item("RUN-I9-BYOM", {
+                "bindings": [],
+                "unavailable_model": {
+                    "binding_id": None, "outcome": "UNIMPLEMENTED",
+                    "reason": None, "receipt_id": None, "silent_fallback": False,
+                },
+                "local_record_operable": True,
+            })
 
-            print(json.dumps([i1, i2, i3, i4, i5, i6, i7, i8], indent=2, sort_keys=True))
+            print(json.dumps([i1, i2, i3, i4, i5, i6, i7, i8, i9], indent=2, sort_keys=True))
         finally:
             service.close()
     return 0

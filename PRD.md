@@ -4,9 +4,9 @@ Status: `FREEZE CANDIDATE, NOT OWNER-RATIFIED IN THIS REPOSITORY`
 
 ## Product outcome
 
-Create the smallest locally sovereign enterprise environment in which one human
-and one model can use the same governed record to propose, remember, cross,
-ratify, attest, act, inspect, and retract.
+Create the smallest personally operable, locally sovereign environment in which
+one human and owner-selected models can use the same governed record to propose,
+remember, cross, ratify, attest, act, inspect, and retract.
 
 ## Users
 
@@ -98,11 +98,29 @@ historical ratification.
 Defeating cases: changed inputs still reproduce falsely; attestation modifies
 an authority sign; or an unattestable claim crosses to effective silently.
 
+### PROD-I-9 · Bring your own model
+
+From one unchanged local node and authoritative input state, two materially
+different model bindings—including one owner-supplied model—can discover and
+attempt the same named domain operation through the same kernel transitions,
+authority checks, provenance requirements, and receipts. Every invocation
+records its binding, adapter, provider, model, version, runtime, host, input
+projection, data boundary, usage, and cost.
+
+Provider loss leaves authoritative custody and non-model local operation intact.
+An unavailable model refuses visibly; fallback to another model is never silent.
+
+Defeating cases: a model requires a provider-specific authoritative path; model
+selection changes authority; model identity or crossed data disappears from
+provenance; unavailable-provider fallback is silent; or provider loss makes the
+local record inoperable.
+
 ## Two-binding proof
 
-At least one human-facing binding and one model-facing binding must execute the
-same authoritative transitions and yield compatible receipts. A surface that
-bypasses the kernel fails Phase I.
+At least one human-facing binding and two materially different model bindings
+must execute the same authoritative transitions and yield compatible receipts.
+One model must be supplied through the BYOM contract. A surface that bypasses
+the kernel fails Phase I.
 
 ## Non-goals for Phase I
 

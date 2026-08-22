@@ -19,6 +19,7 @@ REQUIRED = (
     "PRD.md",
     "SPEC.md",
     "AI-NATIVE.md",
+    "BYOM.md",
     "services/asset/CHARTER.md",
     "services/proofing/CHARTER.md",
     "ROADMAP.md",
@@ -31,6 +32,7 @@ REQUIRED = (
     "contracts/operation-plan.schema.json",
     "contracts/receipt.schema.json",
     "contracts/participant-observation.schema.json",
+    "contracts/model-binding.schema.json",
     "services/README.md",
     "services/asset/contracts/service.json",
     "services/proofing/contracts/service.json",
@@ -41,6 +43,7 @@ REQUIRED = (
     "decisions/0008-classification-contract.md",
     "decisions/0009-phase-i-logical-spec.md",
     "decisions/0010-proofing-service-boundary.md",
+    "decisions/0011-local-personal-byom.md",
 )
 
 
@@ -112,10 +115,10 @@ def verify_conformance_controls() -> int:
     if not cases.is_file() or not scenarios.is_file() or not runner.is_file():
         fail("executable conformance controls are missing")
     text = cases.read_text(encoding="utf-8")
-    for requirement in (f"PROD-I-{number}" for number in range(1, 9)):
+    for requirement in (f"PROD-I-{number}" for number in range(1, 10)):
         if text.count(f'"requirement": "{requirement}"') < 2:
             fail(f"{requirement} lacks positive and defeating controls")
-    return 16
+    return 18
 
 
 def verify_json_documents() -> int:

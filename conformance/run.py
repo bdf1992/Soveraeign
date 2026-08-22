@@ -10,7 +10,7 @@ from typing import Any, Callable
 
 
 ROOT = Path(__file__).resolve().parent
-REQUIREMENTS = {f"PROD-I-{number}" for number in range(1, 9)}
+REQUIREMENTS = {f"PROD-I-{number}" for number in range(1, 10)}
 
 
 def missing(mapping: dict[str, Any], fields: tuple[str, ...]) -> list[str]:
@@ -158,10 +158,65 @@ def check_i8(observed: dict[str, Any]) -> list[str]:
     return defects
 
 
+def check_i9(observed: dict[str, Any]) -> list[str]:
+    defects: list[str] = []
+    bindings = observed.get("bindings") or []
+    if len(bindings) < 2:
+        defects.append("fewer than two model bindings were exercised")
+    material_models = {
+        (binding.get("provider_kind"), binding.get("model_id"), binding.get("runtime_id"))
+        for binding in bindings
+    }
+    if len(material_models) < 2:
+        defects.append("model bindings are not materially different")
+    if bindings and not any(binding.get("owner_supplied") for binding in bindings):
+        defects.append("no owner-supplied model binding was exercised")
+    shared_fields = ("interface_contract_id", "operation_id", "authority_contract_id", "state_before_digest")
+    for field in shared_fields:
+        values = {binding.get(field) for binding in bindings}
+        if len(values) != 1 or None in values or "" in values:
+            defects.append(f"bindings do not share one {field}")
+    required = (
+        "binding_id", "adapter_id", "provider_id", "provider_kind", "model_id",
+        "model_version", "runtime_id", "runtime_version", "host_id",
+        "interface_contract_id", "operation_id", "authority_contract_id",
+        "state_before_digest", "input_projection_id", "omissions",
+        "data_boundary", "usage", "cost", "receipt_id", "result_id",
+        "result_standing",
+    )
+    result_ids: list[str] = []
+    for index, binding in enumerate(bindings):
+        for field in required:
+            if field not in binding or binding[field] is None or binding[field] == "":
+                defects.append(f"binding {index} missing {field}")
+        if binding.get("provider_kind") not in {"LOCAL", "REMOTE"}:
+            defects.append(f"binding {index} has invalid provider kind")
+        if binding.get("data_boundary") not in {"LOCAL_ONLY", "REDACTED_REMOTE", "REMOTE_ALLOWED"}:
+            defects.append(f"binding {index} has invalid data boundary")
+        if binding.get("direct_write"):
+            defects.append(f"binding {index} writes authoritative state directly")
+        if binding.get("result_standing") not in {"PROPOSAL", "RECORDING", "REPORT", "OBSERVATION"}:
+            defects.append(f"binding {index} returned an authoritative result directly")
+        if binding.get("result_id"):
+            result_ids.append(binding["result_id"])
+    if len(result_ids) != len(set(result_ids)):
+        defects.append("different model results were silently merged")
+    unavailable = observed.get("unavailable_model") or {}
+    if unavailable.get("outcome") != "REFUSED" or unavailable.get("reason") != "MODEL_UNAVAILABLE":
+        defects.append("unavailable model did not refuse explicitly")
+    if not unavailable.get("receipt_id"):
+        defects.append("unavailable model refusal lacks receipt")
+    if unavailable.get("silent_fallback"):
+        defects.append("unavailable model triggered silent fallback")
+    if not observed.get("local_record_operable"):
+        defects.append("provider loss removed local record operation")
+    return defects
+
+
 CHECKS: dict[str, Callable[[dict[str, Any]], list[str]]] = {
     "PROD-I-1": check_i1, "PROD-I-2": check_i2, "PROD-I-3": check_i3,
     "PROD-I-4": check_i4, "PROD-I-5": check_i5, "PROD-I-6": check_i6,
-    "PROD-I-7": check_i7, "PROD-I-8": check_i8,
+    "PROD-I-7": check_i7, "PROD-I-8": check_i8, "PROD-I-9": check_i9,
 }
 
 

@@ -12,9 +12,27 @@ The enterprise keeps custody of its operational memory and authority. A model
 may propose, inspect, verify, and act within a delegated scope; it cannot turn
 its own confidence, output, or successful execution into authority.
 
-This use of **AI-native** is opinionated and testable. `AI-NATIVE.md` defines
-the minimum per-surface verdict and the stricter qualification Soveraeign
-requires of itself.
+## AI-native, precisely
+
+An enterprise surface is **AI-native** when a model can reach and perform a
+substantive domain operation through the system's declared interfaces while
+remaining inside the same authoritative state, constraints, and history as a
+human operator—and the resulting operation is attributable, inspectable, and
+correctable.
+
+The verdict is applied to a **named operation on a surface**, not loosely to an
+entire company or product. At minimum:
+
+- the operation must be reachable through a declared machine-usable path;
+- commitment, provenance, or retraction must be materially present;
+- and removing the AI path must remove substantive domain capability rather
+  than a decorative assistant.
+
+Soveraeign holds itself to a stricter bar: same-world human/model parity, typed
+authority, independent observation, complete receipts, effect honesty,
+cold-start competence, two-binding proof, and local sovereignty.
+
+**[Read the complete AI-Native Standard →](AI-NATIVE.md)**
 
 ## Why this exists
 

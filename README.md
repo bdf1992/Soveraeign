@@ -1,76 +1,144 @@
 # Soveraeign
 
-Soveraeign is the pre-birth repository for a locally sovereign, algorithmic,
-AI-native enterprise operating environment.
+**A local-first operating environment where people and AI systems work through
+the same governed enterprise state.**
 
-The name was selected directly by Bdo for this founding repository. It names
-the intended product without claiming the product is already born, complete, or
-legally cleared for public release.
+Soveraeign is an attempt to make AI a native enterprise operator without making
+the enterprise dependent on an AI provider. Humans and models receive different
+interfaces, but they act through the same records, permissions, transitions,
+evidence, and history.
 
-## Intended system
+The enterprise keeps custody of its operational memory and authority. A model
+may propose, inspect, verify, and act within a delegated scope; it cannot turn
+its own confidence, output, or successful execution into authority.
 
-The product is the working environment itself: one shared operational record
-through which human and model operators can perceive, propose, act, verify,
-ratify, retract, and learn under the same authoritative constraints.
+## Why this exists
 
-Its governing sequence is:
+Most software still assumes one kind of operator: a persistent, accountable
+human using screens designed for human perception. AI is then attached beside
+that system as a chat box, copilot, or automation layer.
+
+That arrangement can be useful, but it is not AI-native. The model sees a
+partial imitation of the enterprise, works through exceptional paths, and
+leaves humans to reconstruct what happened afterward.
+
+Soveraeign changes the operator model instead. It asks what an enterprise system
+must become when both people and models are expected to operate it directly,
+safely, and accountably.
+
+## The governing loop
 
 ```text
 source
 → declared reading
-→ derived recording
+→ derived recording or proposal
 → admission
 → typed ratification
 → runtime attestation
 → effective operation
+→ independent observation
 → receipt
 → correction or retraction
-→ revised shared ground
+→ revised enterprise state
 ```
 
-The system is not a chatbot, agent framework, knowledge base, ERP replacement,
-simulation, universal ontology, or a merger of the predecessor repositories.
-Those may become interfaces, organs, examples, adapters, or ancestors; none is
-the product by itself.
+Each step is distinct:
 
-## Repository state
+- A source can be read without being changed.
+- A recording can exist without being admitted.
+- An admitted proposal can remain unratified.
+- A ratified claim can stop applying to the present state.
+- An operation can report success without independent observation confirming it.
+- A record can be retracted without pretending its external effects were undone.
 
-This repository contains the founding layer only:
+These distinctions are the foundation of the system—not implementation detail.
 
-- a provisional system description;
-- constitutional invariants;
-- a normalized Phase-I product contract;
-- an evidence-preserving lineage boundary;
-- open seams that must not be silently resolved;
-- conformance scenarios that precede runtime code;
-- a phased attack plan;
-- and a bootstrap prompt for an implementation agent.
+## What “algorithmic” means here
 
-It intentionally contains no production runtime implementation and makes no
-stack choice.
+Soveraeign is algorithmic because consequential work is expressed through
+inspectable state, declared inputs, typed authority, executable transitions,
+observable outcomes, and attributable receipts.
+
+It does **not** mean removing human judgement. Human judgement is the scarce
+resource the system protects: machines should perform the work that can be
+verified, while decisions that genuinely require a person remain visible,
+bounded, and assigned.
+
+## What the first operational version must prove
+
+Phase I is qualified when an independent fresh witness can use the repository
+alone to demonstrate that:
+
+1. A model can submit an attributed proposal with its cost recorded.
+2. Sources and derived records are immutable, addressed, and reconstructable.
+3. A human and a model can exchange useful state with provenance intact.
+4. Admission is gated and record retraction preserves history.
+5. Authority is typed, scoped, recorded, revocable, and correctly refused.
+6. Pending human judgement remains visible without blocking unrelated work.
+7. Ratified executable claims receive reproducible runtime attestations.
+8. Human and model interfaces use the same authoritative kernel semantics.
+
+Passing tests is necessary but not sufficient. The evidence must be
+reconstructable by an independent witness, and Bdo retains the judgement call
+on whether Phase I is operationally accepted.
+
+## Current repository state
+
+This repository is in **founding**. It establishes the product boundary and the
+evidence needed to derive a logical specification. It intentionally contains no
+production runtime implementation and makes no production stack choice.
+
+The founding set contains:
+
+- `SYSTEM.md` — the system boundary and operational model;
+- `CONTRACT.md` — invariants implementations must preserve;
+- `PRD.md` — the normalized Phase-I requirements;
+- `ROADMAP.md` — evidence-gated construction phases;
+- `STATUS.yaml` — machine-readable authority, standing, and open decisions;
+- `OPEN-SEAMS.md` — contradictions that must remain visible;
+- `decisions/` — consequential choices and their authority;
+- `conformance/` — positive and defeating scenario seeds;
+- `lineage/` — predecessor standings and immutable source evidence;
+- `AGENTS.md` — the operating contract for human and model contributors.
+
+## What this is not
+
+Soveraeign is not:
+
+- a chatbot or generic agent framework;
+- a model-owned memory layer;
+- a knowledge graph presented as an enterprise;
+- an ERP rewrite undertaken all at once;
+- a universal ontology or frozen encoding;
+- a simulation standing in for real operation;
+- a merger of the predecessor repositories;
+- or a claim that external-world effects can always be rolled back.
+
+Previous work is preserved as evidence and lineage. It enters the current
+system only through an explicit invariant, decision, conformance case, schema,
+or reviewed implementation adoption.
 
 ## Start here
 
-1. Read `AGENTS.md`.
-2. Read `STATUS.yaml` to learn what is settled, proposed, or open.
-3. Read `SYSTEM.md`, `CONTRACT.md`, and `PRD.md` as a set.
-4. Inspect `OPEN-SEAMS.md`; do not smooth those disagreements over.
-5. Use `lineage/SOURCES.lock` when relying on the historical corpus.
-6. Run `python scripts/verify_bootstrap.py`.
-7. Use `AGENT-BOOTSTRAP-PROMPT.md` to initialize the repository in a new work
-   session.
+1. Read `AGENTS.md` and `STATUS.yaml`.
+2. Read `SYSTEM.md`, `CONTRACT.md`, and `PRD.md` as one governing set.
+3. Inspect `OPEN-SEAMS.md` before making architectural decisions.
+4. Run `python scripts/verify_bootstrap.py`.
+5. Work the next declared gate in `ROADMAP.md`; do not skip ahead by selecting a
+   stack or importing an ancestor implementation.
 
-## Evidence boundary
+## Immediate objective
 
-`lineage/evidence/` is preserved input, not canonical truth. Files there must
-remain byte-identical to their entries in `lineage/SOURCES.lock`. New decisions
-belong in `decisions/`; new governing language belongs in the canonical root
-documents and must cite its source or identify itself as a proposal.
+Close the founding layer without inventing implementation policy:
 
-## Birth condition
+- reconcile the canonical documents against the locked evidence;
+- resolve stale revision references;
+- preserve unresolved semantic disagreements;
+- compile each Phase-I requirement into state, transitions, checks, receipts,
+  and defeating fixtures;
+- then derive the smallest logical specification capable of supporting two
+  independent bindings.
 
-The repository is not the product's birth. It is ready to begin construction
-when the founding documents are reconciled, owner decisions are recorded, every
-Phase-I predicate has a positive and defeating fixture, and the logical
-specification can compile against two independent bindings without inventing
-new product policy.
+The first code should satisfy an already-visible conformance failure. It should
+not be the act that decides what the product means.
+

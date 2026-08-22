@@ -68,6 +68,43 @@ Neither owns authoritative state or gains authority from provider credentials.
 | **Adapter** | Translation between Soveraeign and a named external system |
 | **Projection** | A rebuildable derived view that never becomes authoritative by convenience |
 
+## Operating-loop roles and stances
+
+`SDLC.md` owns the loop semantics; this contract owns only the vocabulary.
+
+| Term | Use |
+| --- | --- |
+| **Concern** | A registered unit of monitored work with an owning domain, governing contract, standing, next gate, and effect envelope |
+| **Controller** | The operator holding the Control tier for the loop: plans, dispatches, observes, settles, escalates; never ratifies |
+| **Orchestrator** | The operator supervising one launched operation: leases workers, observes their durable outputs, reports upward |
+
+Stances are typed hands an operator holds under grant, never a named person,
+model, or provider:
+
+| Stance | Dyad | Use |
+| --- | --- | --- |
+| `LEFT` | Authority | Synthesis: inspect, compare, draft, implement, propose |
+| `RIGHT` | Authority | Judgement: intent, naming, ratification, phase gates |
+| `BLUE` | Verification | Construction: build the positive path and its declared positive and defeating cases |
+| `RED` | Verification | Adversarial witnessing: seek undeclared defeats of the built artifact |
+
+Neither hand of a dyad settles anything alone. `RED`/`BLUE` are engagement
+stances that produce fixtures; `positive` and `defeating` remain the
+artifact-level terms and are not synonyms for the stances.
+
+Combination outcomes name what settled combination produces — receipts and
+derived state, never a stance an operator holds and never a new standing:
+
+| Outcome | Combination | Names |
+| --- | --- | --- |
+| `PURPLE` | `RED` + `BLUE` | The settled verification engagement receipt |
+| `JOINED` | `LEFT` + `RIGHT` | The ratification receipt over a synthesis proposal |
+| `GREEN` | `PURPLE` + `JOINED` | The derived go-state of a concern at its current gate |
+
+`JOINED` is a receipt over a combination event; `RATIFIED` remains the
+standing term. `GREEN` is derived from recorded receipts, never selected
+directly.
+
 ## Information roles
 
 | Term | Meaning |
@@ -143,6 +180,7 @@ federation at node two, stack-neutral logical specification, runtime semantics,
 and the distinction between authoritative records and projections are grounded
 in `ANCHOR.md`, `SUBSTRATE.md`, `PRODUCT(1).md`, and `PRD-PRODUCT(1).md`.
 
-The concrete `Service`/`Component` normalization and the initial Asset/Proofing
-split are new proposed policy. Bdo's ratification is required before this file
-becomes authoritative vocabulary.
+The concrete `Service`/`Component` normalization, the initial Asset/Proofing
+split, and the operating-loop role and stance vocabulary are new proposed
+policy. Bdo's ratification is required before this file becomes authoritative
+vocabulary.

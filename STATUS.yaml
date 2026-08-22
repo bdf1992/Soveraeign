@@ -14,6 +14,7 @@ proofing_service_status: CHARTERED_NOT_IMPLEMENTED
 byom_status: OWNER_DIRECTED_CONTRACT_AND_FIXTURE_PROPOSED
 ai_native_definition_status: FREEZE_CANDIDATE
 engineering_framework_status: BUILT_SELF_TESTED_NOT_WITNESSED_BASELINE_PROPOSED
+sdlc_loop_status: OWNER_DIRECTED_LOOP_AND_BINDING_SKELETON_PROPOSED
 
 authority:
   product_intent:
@@ -57,6 +58,9 @@ proposed_repository_claims:
   - minimal_phase_i_reference_stack
   - composable_kernel_primitive_baseline
   - dependency_free_day_zero_verification
+  - domain_mapped_sdlc_operating_loop
+  - authority_and_verification_stance_dyads
+  - red_gated_release_requirement
 
 open_decisions:
   - id: O1
@@ -95,6 +99,9 @@ open_decisions:
   - id: O12
     question: Does Bdo ratify the exact BYOM binding fields, data-boundary modes, and two-model Phase-I fixture?
     blocks: byom_contract_freeze
+  - id: O13
+    question: Does Bdo ratify SDLC.md's tiers, stance dyads, concern-registry derivation, and Red-gated release requirement?
+    blocks: sdlc_loop_activation
 
 protected_boundaries:
   - evidence_files_are_immutable

@@ -6,7 +6,7 @@ explains the same workflow for human contributors; `ENGINEERING.md` defines the
 current technical baseline.
 
 Before a consequential change, read `STATUS.yaml`, `SYSTEM.md`, `CONTRACT.md`,
-`PRD.md`, `SPEC.md`, `ENGINEERING.md`, and `OPEN-SEAMS.md`.
+`PRD.md`, `SPEC.md`, `ENGINEERING.md`, `SDLC.md`, and `OPEN-SEAMS.md`.
 
 ## Design System of Record
 
@@ -18,7 +18,9 @@ The governing documents form one design System of Record with explicit roles:
 - `PRD.md` owns Phase-I requirements;
 - `SPEC.md` owns logical objects, transitions, predicates, and refusals;
 - `STATUS.yaml` owns current authority, standing, and open decisions;
-- `ENGINEERING.md` owns the proposed reference implementation baseline.
+- `ENGINEERING.md` owns the proposed reference implementation baseline;
+- `SDLC.md` owns the operating loop: tiers, dyads, concern registry, skill
+  axes, workflow templates, and the Red-gated release requirement.
 
 Do not duplicate a rule in another file as a competing authority. Link to the
 owning document and record genuine conflicts in `OPEN-SEAMS.md`.

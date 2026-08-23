@@ -1,0 +1,66 @@
+{
+  "packet_schema": "soveraeign-acceptance-packet/v1",
+  "packet_id": "A3",
+  "claim": "The human gate is now acceptance of a finished result rather than permission to begin, and a build fails if anything sits on an owner seat without a declared reason.",
+  "subject": {
+    "artifact": "STATUS.yaml",
+    "from_standing": "PROPOSED",
+    "to_standing": "RATIFIED",
+    "supersedes_open_decision": "O13"
+  },
+  "presented_by_seat": "seat:session-control",
+  "accepted_by_seat": "seat:root",
+  "claim_type": "JUDGEMENT",
+  "built_by": {
+    "actor_id": "urn:soveraeign:actor:claude-interactive-session",
+    "actor_kind": "MODEL"
+  },
+  "witnessed_by": null,
+  "visible_result": {
+    "demo": ["python", "scripts/sov_accept.py", "audit"],
+    "shows": "the owner queue checked against contracts/acceptance-policy.json: seventeen open questions before this change, three presented results and three declared holds after it",
+    "expect": "PASS with 14 rulings, 3 presented for acceptance, 3 admissible holds, 0 open questions. Revert STATUS.yaml and the same command fails with seventeen UNDRAINED_QUESTION lines."
+  },
+  "evidence": [
+    {
+      "address": "contracts/acceptance-policy.json",
+      "digest": null,
+      "says": "the seven reasons a transition may wait on an owner seat, and the refusal codes for every other way of waiting"
+    },
+    {
+      "address": "contracts/seat-registry.json",
+      "digest": null,
+      "says": "the live ownership topology decision 0020 specified and left unapplied; acceptance resolves one edge up through it"
+    },
+    {
+      "address": "conformance/fixtures/acceptance/gate-cases.json",
+      "digest": null,
+      "says": "positive and defeating cases: a legal acceptance edge, a worker reaching past its orchestrator to the root, a hold with no reason, a ruling with no counter, a packet with no defeater"
+    },
+    {
+      "address": "STATUS.yaml",
+      "digest": null,
+      "says": "the drained register: fourteen rulings each naming what would overturn it, three holds each naming an external or irreversible effect, three results presented"
+    },
+    {
+      "address": "decisions/0029-decision-queue-drain.md",
+      "digest": null,
+      "says": "which question became which ruling, and the reasoning for each"
+    }
+  ],
+  "why_it_matters": "Seventeen questions were addressed to the root seat, and roughly two of them needed to be. The rest stopped work that no rule actually stopped. This makes that failure mode a build failure instead of a habit.",
+  "what_could_defeat_it": [
+    "A ruling in the drained set that is materially wrong and that no listed counter would catch, meaning the drain traded noise for a bad default.",
+    "An agent using the absence of pre-approval as cover for an external-world effect, which the seven hold reasons are supposed to make impossible and would prove they do not.",
+    "Acceptance packets becoming polished presentations that omit residuals, which would make the gate weaker than the queue it replaced.",
+    "The audit passing while a real block sits somewhere it does not read, since it checks STATUS.yaml and acceptance/ and nothing else."
+  ],
+  "residuals": [
+    "The audit reads STATUS.yaml and acceptance/ only. A block parked in a ticket body or a report is invisible to it.",
+    "seat:orchestrator-1 and seat:worker-1 have no recorded occupant, so no result can currently be presented at those heights; the topology is declared before it is exercised.",
+    "The seat registry is a checked-in file, not yet a projection rebuilt from the operational record.",
+    "This packet is presented by the seat that built the change. The build is not witnessed, so ACCEPT here accepts a build claim."
+  ],
+  "on_accept": "STATUS.yaml sdlc_loop_status becomes RATIFIED, decisions 0028 and 0029 move from proposed to accepted, and decision 0020's held amendment text is applied to AGENTS.md as written.",
+  "on_reject": "The gate reverts by dropping this branch; the seventeen open decisions return exactly as they were, since nothing outside the repository changed."
+}

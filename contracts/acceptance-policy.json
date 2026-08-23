@@ -1,0 +1,76 @@
+{
+  "policy_id": "soveraeign-acceptance/v1",
+  "governed_by": [
+    "AGENTS.md",
+    "SDLC.md",
+    "STATUS.yaml",
+    "decisions/0028-acceptance-not-approval.md",
+    "decisions/0020-owner-seat-topology.md"
+  ],
+  "note": "The owner gate is acceptance of a finished, evidenced result. It is not permission to begin. Owner is a seat, not a person: owner(X) is the seat one edge up, the seat that issued X's grant and settles X's receipts (decisions/0020). Acceptance therefore happens at whatever height the work actually reached, not at the root by default. This file states machine-checkably which work needs no owner act at all, which transitions may still wait and for exactly which reason, and what a presented result must contain. It grants no authority: an owner action is still taken by the seat that holds it.",
+  "owner_gate": "acceptance",
+  "presumptive_execution": {
+    "effect_classes": [
+      "RECORD_LOCAL",
+      "RESOURCE_CONSUMPTION"
+    ],
+    "conditions": [
+      "the change is reversible by a record-local counter-record or a git revert",
+      "the change stays inside an already declared boundary or declares a new one as a proposal",
+      "the actor records what it chose and what would defeat the choice"
+    ],
+    "note": "Work meeting these conditions needs no prior owner act. An agent that stops to ask for one is refused by PREAPPROVAL_REQUESTED and told to build the result and present it."
+  },
+  "hold_reasons": {
+    "EXTERNAL_WORLD_EFFECT": "The transition commits an effect outside this node that no local counter-record reverses.",
+    "IRREVERSIBLE": "The transition cannot be counteracted, only compensated forward.",
+    "PUBLICATION": "The transition makes repository content public.",
+    "OWNER_IDENTITY_OR_NAMING": "The transition changes the product name, repository name, or an owner identity.",
+    "SECRET_EXPOSURE": "The transition places, moves, or uses a live credential.",
+    "DESTRUCTIVE_ADMIN": "The transition rewrites published history or deletes a shared ref or repository.",
+    "RESOURCE_COMMITMENT": "The transition spends money or a metered external quota."
+  },
+  "hold_reasons_note": "This list is exhaustive. A transition may wait on the owner only for a reason named here. Wanting the owner's opinion is not a reason; it is an acceptance item, and the work is finished first.",
+  "packet_required_sections": [
+    "claim",
+    "subject",
+    "built_by",
+    "visible_result",
+    "evidence",
+    "why_it_matters",
+    "what_could_defeat_it",
+    "on_accept",
+    "on_reject"
+  ],
+  "packet_note": "A presented result must let the owner decide from the output. visible_result names a command the owner can run; evidence names exact addresses and digests; what_could_defeat_it names the strongest known failure. A packet that hides a residual to look finished is a defect against this contract, not a presentation choice.",
+  "owner_actions": {
+    "ACCEPT": "The presented result stands. Its standing advances as on_accept states.",
+    "REJECT": "The presented result does not stand. It returns to its builder with the reason recorded.",
+    "STRIKE": "The result stands but the claim is withdrawn from the record entirely.",
+    "REDIRECT": "The result stands as evidence but the work turns to a named different objective."
+  },
+  "refusal_codes": {
+    "ACCEPTANCE_BY_NON_OWNER": "The accepting seat is not owner_seat of the presenting seat. Ownership is one edge up and does not chain.",
+    "HOLD_WITHOUT_ADMISSIBLE_REASON": "A hold on the owner names no reason from hold_reasons.",
+    "HOLD_WITHOUT_NAMED_TRANSITION": "A hold does not name exactly one transition it stops.",
+    "HOLD_WITHOUT_REACHABLE_ALTERNATIVE": "A hold does not record what stays reachable while it stands.",
+    "PACKET_INCOMPLETE": "A presented result is missing a section required by packet_required_sections.",
+    "PACKET_WITHOUT_DEFEATER": "A presented result names no condition that would defeat it.",
+    "PREAPPROVAL_REQUESTED": "Permission was requested to perform reversible record-local work. Build it and present the result.",
+    "RULING_WITHOUT_COUNTER": "A standing default records no condition that would overturn it, so it is a decree rather than a default.",
+    "SELF_ACCEPTANCE_REFUSED": "The accepting seat is the presenting seat. No seat settles its own output (CONTRACT.md C7, generalised to every tier by decisions/0020).",
+    "UNDRAINED_QUESTION": "A question sits in the owner queue that is neither a recorded ruling, a presented acceptance item, nor an admissible hold.",
+    "ACCEPTANCE_SEAT_CANNOT_SETTLE": "The accepting seat's settles list does not contain the claim's type.",
+    "SELF_DIRECTION_PRESENTED": "A seat presented its own bounded execution choice for acceptance. It decides that itself.",
+    "UNOCCUPIED_SEAT": "The accepting seat has no recorded occupant, so no actor can take the action."
+  },
+  "ledger": ".local/acceptance/ledger.ndjson",
+  "ledger_note": "Owner actions append to a local ledger. The ledger is a record of what the owner did; the standing change it authorises still lands in the owning governing document by an ordinary edit.",
+  "acceptance_resolves_through": "contracts/seat-registry.json",
+  "acceptance_rule": "A result presented by seat X is accepted by owner_seat(X) and by no other seat. Ownership is one edge up and does not chain: the root seat accepts what the control seat presents, and never reaches past it to accept a worker's report. A work seat settles nothing above its own execution and presents nothing to itself.",
+  "settles_required": {
+    "JUDGEMENT": "A claim about product intent, naming, a boundary, or a phase gate. Only a seat whose settles list contains JUDGEMENT may accept it.",
+    "VERIFICATION": "A claim that a declared check held. Any owning seat whose settles list contains VERIFICATION may accept it."
+  },
+  "self_direction": "A seat decides its own work: what to inspect, which legal operation to attempt, how to sequence reversible changes, when to abandon a failed line. That decision needs no packet and no owner act, and a seat that presents one for acceptance is refused by SELF_DIRECTION_PRESENTED. Only a claim that binds a seat other than the presenter travels upward."
+}

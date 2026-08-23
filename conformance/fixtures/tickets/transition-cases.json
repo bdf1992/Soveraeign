@@ -85,7 +85,7 @@
     {
       "case_id": "TC-004-owner-ratifies",
       "expect": "ALLOWED",
-      "proves": "The owner, and only the owner, may ratify a witnessed claim.",
+      "proves": "An owner seat ratifies a witnessed claim by accepting a presented result, and only an owner seat may.",
       "request": {
         "request_schema": "soveraeign-ticket-transition/v1",
         "ticket": "#27",
@@ -96,7 +96,8 @@
         "reason": "owner accepts the witnessed claim",
         "effect_class": "RECORD_LOCAL",
         "evidence": {
-          "owner_ratification": "decisions/0007-asset-service-boundary.md"
+          "owner_ratification": "decisions/0007-asset-service-boundary.md",
+          "acceptance_packet": "acceptance/A1.json"
         }
       }
     },
@@ -436,6 +437,24 @@
         "evidence": {
           "repair_pointer": "pull/40",
           "demotion_pointer": "#demotion-pointer"
+        }
+      }
+    },
+    {
+      "case_id": "TC-017-ratification-without-a-presented-result",
+      "expect": "MISSING_EVIDENCE",
+      "proves": "An owner cannot ratify a bare question. Under the acceptance gate the ask arrives as a packet carrying the claim, the demo, the evidence, and what would defeat it, or it does not arrive.",
+      "request": {
+        "request_schema": "soveraeign-ticket-transition/v1",
+        "ticket": "#27",
+        "from": "WITNESSED",
+        "to": "RATIFIED",
+        "actor_id": "Bdo",
+        "actor_kind": "HUMAN",
+        "reason": "asked in conversation rather than presented",
+        "effect_class": "RECORD_LOCAL",
+        "evidence": {
+          "owner_ratification": "decisions/0007-asset-service-boundary.md"
         }
       }
     }

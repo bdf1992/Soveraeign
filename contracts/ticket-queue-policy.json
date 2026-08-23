@@ -1,6 +1,10 @@
 {
   "policy_id": "soveraeign-ticket-queue/v1",
-  "governed_by": ["CONTRIBUTING.md", "SDLC.md", "STATUS.yaml"],
+  "governed_by": [
+    "CONTRIBUTING.md",
+    "SDLC.md",
+    "STATUS.yaml"
+  ],
   "note": "Declared ordering policy for the takeable-work projection over soveraeign-ticket/v1 instances. The queue is a projection and is rebuildable from the tickets alone; it introduces no standing, priority authority, or private state. Changing the order changes what work is offered first, so the policy is declared data rather than code.",
   "dependency_satisfied_at_or_beyond": "BUILT_SELF_TESTED_NOT_WITNESSED",
   "standing_order": [
@@ -43,7 +47,7 @@
     "DECLARED_NOT_IMPLEMENTED": "write the charter and the machine-checkable contract",
     "PROPOSED": "declare the owned boundary in the repository",
     "OPEN": "draft the obligation, priors, and closure contract",
-    "WITNESSED": "queued for owner judgement",
+    "WITNESSED": "present it for acceptance: python scripts/sov_accept.py present <packet>",
     "RATIFIED": "no further action at this gate"
   },
   "order_by": [
@@ -53,5 +57,6 @@
     "standing_rank",
     "kind_rank",
     "issue_number"
-  ]
+  ],
+  "acceptance_note": "WITNESSED is not a waiting room. A witnessed claim is written up as an acceptance packet and presented to the seat one edge up; nothing sits on an owner without a packet (contracts/acceptance-policy.json)."
 }

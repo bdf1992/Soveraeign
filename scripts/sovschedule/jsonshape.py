@@ -2,9 +2,10 @@
 
 Supported keywords: type, enum, const, required, properties, additionalProperties
 (boolean form), items, minItems, uniqueItems, minLength, minimum, maximum,
-pattern, anyOf, allOf, and local ``$ref`` into ``$defs``. Unsupported keywords
-are ignored, so silence on one of them is not evidence of validity; the subset
-covers the harness schedule declaration and the kernel event envelope.
+pattern, anyOf, oneOf, allOf, if/then/else, and local ``$ref`` into ``$defs``.
+Unsupported keywords are ignored, so silence on one of them is not evidence of
+validity; the subset covers the harness schedule declaration, the kernel event
+envelope, and the issue metadata contract.
 """
 
 from __future__ import annotations
@@ -112,6 +113,14 @@ def check(value: Any, schema: dict, root: dict | None = None, path: str = "$") -
         branches = [check(value, sub, root, path) for sub in schema["anyOf"]]
         if all(branches):
             defects.append(f"{path}: matches no anyOf branch")
+    if "oneOf" in schema:
+        matched = sum(1 for sub in schema["oneOf"] if not check(value, sub, root, path))
+        if matched != 1:
+            defects.append(f"{path}: matches {matched} oneOf branches, expected exactly 1")
+    if "if" in schema:
+        taken = "then" if not check(value, schema["if"], root, path) else "else"
+        if taken in schema:
+            defects.extend(check(value, schema[taken], root, path))
     return defects
 
 

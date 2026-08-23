@@ -31,11 +31,11 @@ other. **Which layer each occupies is an open judgement item for Bdo**; see
 | Prefix | Standing | Shape |
 | --- | --- | --- |
 | `sdlc-` | decision `0013-domain-mapped-sdlc-loop.md`, merged | tier and domain skills; no executable orchestration |
-| `sov-` | decision `0018-federation-harness.md`, proposed | domain skills, four role agents, twelve executable workflows |
+| `sov-` | decision `0018-federation-harness.md`, proposed | domain skills, four role agents, thirteen executable workflows |
 
 One tension the merge does not dissolve: this file states that executable
 orchestration scripts are not admitted before their logical specification and
-defeating fixtures exist, and the `sov-` family ships twelve of them. Either
+defeating fixtures exist, and the `sov-` family ships thirteen of them. Either
 those workflows fall outside the rule because they orchestrate harness agents
 rather than kernel operations, or they are currently inadmissible. That is a
 judgement, not a merge mechanic.
@@ -57,7 +57,7 @@ holds standing or authority under `STATUS.yaml`, and running any of it grants
 no right that `AGENTS.md` does not grant.
 
 ```text
-Controller (interactive session, or agents/sov-controller.md when headless;
+Controller (agents/sov-controller.md, launched by Bdo or Claude interactively, or by a schedule headless;
             reports to Bdo)
   -> Domain workflows (workflows/sov-<domain>.js, one per domain)
        -> Stable roles (agents/): sov-orchestrator plans, sov-worker builds,
@@ -90,6 +90,13 @@ skill + workflow, riding the same roles.
 | `byom` | Model bindings, adapters, portability (PROD-I-9) | O12 |
 | `verification` | `scripts/verify.py`, lint, CI gate, baseline | O2 |
 
+These eight domains do not cover the epic-of-epics issue tree. Twenty-two open
+bits and stubs are claimed by no domain skill, and the whole `trust-and-control`
+village - identity, authority, gates, registry, and the capability broker - has
+no domain at all. `epic/villages.json` leaves them deliberately unrouted rather
+than force-fitting them; `python scripts/sov_epic.py unrouted` lists them, and
+the walk reports each as a judgement item for Bdo.
+
 ### Files
 
 - `agents/sov-worker.md` — stable builder role: executes exactly one bounded
@@ -120,6 +127,14 @@ skill + workflow, riding the same roles.
   critiqued prompt or document (Frame -> Draft -> Critique).
 - `workflows/sov-federation.js` — the only workflow allowed to nest: dispatches
   domain workflows and aggregates reports and the judgement queue.
+- `workflows/sov-epic.js` + `epic/` — the walk of the epic-of-epics issue tree
+  (`#1 — Soveraeign system of villages`). `epic/tree.json` is a checked-in
+  projection of the GitHub issue tree so an unattended run never crosses an
+  external boundary; `epic/villages.json` joins the four villages to the
+  domains above. Reconcile (one `sov-witness` over contract, label-projection,
+  and containment drift) -> Select (one `sov-orchestrator` per village) and,
+  only with `{ advance: true }`, Advance -> Witness. It does not nest; see
+  `epic/README.md`.
 - `schedules/<name>.json` + `schedules/README.md` — scheduled-run
   declarations (target workflow or skill, cron, mode, effect class,
   preconditions, limits) checked against `schedules/schedule.schema.json`.
@@ -143,6 +158,12 @@ skill + workflow, riding the same roles.
   cross-domain conflicts with ordering, dependencies, residuals, and the
   judgement queue. The invoking controller writes the human-facing report to
   the repository-root `reports/`.
+- Epic tree: run workflow `sov-epic` (optionally `{ villages: [...],
+  advance: true, max_operations: 1, objective: "..." }`) — reconciles the
+  projected issue tree and names the next legal operation per village.
+  Refresh the projection first, attended: `python scripts/sov_epic.py sync`.
+  Read it without a run: `python scripts/sov_epic.py status | validate |
+  next | unrouted | report`.
 - Writing: run workflow `sov-scribe` with `{ request: ... }` per the request
   template in `skills/sov-scribe/SKILL.md`.
 - Ad-hoc: spawn `sov-orchestrator` to plan and `sov-worker` to execute one

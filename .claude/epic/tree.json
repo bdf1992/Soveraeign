@@ -1,0 +1,2412 @@
+{
+  "projection_schema": "soveraeign-epic-projection/v1",
+  "note": "Derived view of the issue tree. Non-authoritative; refresh with sov_epic.py sync.",
+  "source": {
+    "repository": "bdf1992/Soveraeign",
+    "root_issue": 1
+  },
+  "synced_at": "2026-08-23T06:28:38Z",
+  "issues": {
+    "1": {
+      "number": 1,
+      "title": "Soveraeign system of villages",
+      "state": "OPEN",
+      "labels": [
+        "horizon: spanning",
+        "scope: system",
+        "type: epic"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/1",
+      "updated_at": "2026-08-23T06:22:27Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:epic",
+          "scope:system",
+          "horizon:now-to-scale-trust",
+          "effect:record-local"
+        ],
+        "kind": "epic-of-epics",
+        "epic_id": "EPIC-SYSTEM-OF-VILLAGES",
+        "standing": "OPEN",
+        "horizon": "NOW_TO_SCALE_TRUST",
+        "authority": "Bdo/product-intent-and-phase-gate",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": "2026-08-23T05:50:49Z",
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion",
+        "child_issues": [
+          "#2",
+          "#3",
+          "#4",
+          "#5"
+        ],
+        "villages": [
+          "ground-and-evidence",
+          "trust-and-control",
+          "reach-and-motion",
+          "domain-and-qualification"
+        ],
+        "dependency_channels": [
+          "record-spine",
+          "observation",
+          "trust-control",
+          "registry-capability",
+          "ingress-delivery",
+          "execution",
+          "bindings-adapters",
+          "composition",
+          "proofing",
+          "qualification",
+          "federation"
+        ]
+      },
+      "parse_error": null
+    },
+    "2": {
+      "number": 2,
+      "title": "Reach and Motion",
+      "state": "OPEN",
+      "labels": [
+        "effect: bounded-execution",
+        "horizon: next",
+        "type: village",
+        "village: motion"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/2",
+      "updated_at": "2026-08-23T00:44:14Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:village",
+          "village:reach-and-motion",
+          "horizon:next",
+          "effect:bounded-execution"
+        ],
+        "kind": "village",
+        "village_id": "VILLAGE-MOTION",
+        "village": "reach-and-motion",
+        "parent": "#1",
+        "standing": "OPEN",
+        "horizon": "NEXT",
+        "authority": "Bdo/phase-gate",
+        "effect_class": "BOUNDED_EXECUTION",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion",
+        "child_issues": [
+          "#16",
+          "#17",
+          "#18",
+          "#19",
+          "#20",
+          "#21",
+          "#29",
+          "#30",
+          "#31"
+        ],
+        "dependency_channels": {
+          "produces": [
+            "admitted-requests",
+            "deliveries",
+            "leases",
+            "reports",
+            "workflow-state",
+            "triggers"
+          ],
+          "consumes": [
+            "trust-decisions",
+            "registry-resolution",
+            "capabilities",
+            "contracts",
+            "observations"
+          ]
+        }
+      },
+      "parse_error": null
+    },
+    "3": {
+      "number": 3,
+      "title": "Trust and Control",
+      "state": "OPEN",
+      "labels": [
+        "effect: control",
+        "horizon: spanning",
+        "type: village",
+        "village: trust"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/3",
+      "updated_at": "2026-08-23T00:44:32Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:village",
+          "village:trust-and-control",
+          "horizon:now-to-next",
+          "effect:control"
+        ],
+        "kind": "village",
+        "village_id": "VILLAGE-TRUST",
+        "village": "trust-and-control",
+        "parent": "#1",
+        "standing": "OPEN",
+        "horizon": "NOW_TO_NEXT",
+        "authority": "Bdo/phase-gate",
+        "effect_class": "CONTROL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion",
+        "child_issues": [
+          "#11",
+          "#12",
+          "#13",
+          "#14",
+          "#15"
+        ],
+        "dependency_channels": {
+          "produces": [
+            "identity",
+            "authority",
+            "gate-decisions",
+            "registry-resolution",
+            "capabilities"
+          ],
+          "consumes": [
+            "operation-intent",
+            "participant-manifests",
+            "revocations",
+            "observations"
+          ]
+        }
+      },
+      "parse_error": null
+    },
+    "4": {
+      "number": 4,
+      "title": "Ground and Evidence",
+      "state": "OPEN",
+      "labels": [
+        "horizon: now",
+        "type: village",
+        "village: ground"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/4",
+      "updated_at": "2026-08-23T06:22:42Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:village",
+          "village:ground-and-evidence",
+          "horizon:now",
+          "effect:record-local"
+        ],
+        "kind": "village",
+        "village_id": "VILLAGE-GROUND",
+        "village": "ground-and-evidence",
+        "parent": "#1",
+        "standing": "OPEN",
+        "horizon": "NOW",
+        "authority": "Bdo/phase-gate",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion",
+        "child_issues": [
+          "#6",
+          "#7",
+          "#8",
+          "#9",
+          "#10",
+          "#25",
+          "#26",
+          "#27",
+          "#32"
+        ],
+        "dependency_channels": {
+          "produces": [
+            "record-spine",
+            "observation",
+            "asset-custody",
+            "graph",
+            "qualification-evidence"
+          ],
+          "consumes": [
+            "trust-decisions",
+            "execution-reports",
+            "domain-records"
+          ]
+        }
+      },
+      "parse_error": null
+    },
+    "5": {
+      "number": 5,
+      "title": "Domain and Qualification",
+      "state": "OPEN",
+      "labels": [
+        "horizon: spanning",
+        "type: village",
+        "village: domain"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/5",
+      "updated_at": "2026-08-23T00:47:03Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:village",
+          "village:domain-and-qualification",
+          "horizon:next-to-scale-trust",
+          "effect:record-local"
+        ],
+        "kind": "village",
+        "village_id": "VILLAGE-DOMAIN",
+        "village": "domain-and-qualification",
+        "parent": "#1",
+        "standing": "OPEN",
+        "horizon": "NEXT_TO_SCALE_TRUST",
+        "authority": "Bdo/product-intent-and-phase-gate",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion",
+        "child_issues": [
+          "#22",
+          "#23",
+          "#24",
+          "#28"
+        ],
+        "dependency_channels": {
+          "produces": [
+            "proofing-records",
+            "decisions",
+            "qualification",
+            "federation-receipts"
+          ],
+          "consumes": [
+            "assets",
+            "graph-projections",
+            "trust-decisions",
+            "workflow-state",
+            "observations"
+          ]
+        }
+      },
+      "parse_error": null
+    },
+    "6": {
+      "number": 6,
+      "title": "Shared Kernel — govern legal transitions",
+      "state": "OPEN",
+      "labels": [
+        "horizon: now",
+        "type: bit",
+        "village: ground"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/6",
+      "updated_at": "2026-08-23T00:47:17Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:bit",
+          "village:ground-and-evidence",
+          "horizon:now",
+          "effect:record-local"
+        ],
+        "kind": "bit",
+        "bit_id": "BIT-GROUND-KERNEL",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#1",
+        "standing": "OPEN",
+        "horizon": "NOW",
+        "authority": "Bdo/phase-gate; delegated-verification",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "authority",
+          "record",
+          "execution",
+          "observation"
+        ],
+        "requires": []
+      },
+      "parse_error": null
+    },
+    "7": {
+      "number": 7,
+      "title": "System of Record — append-preserving operational history",
+      "state": "OPEN",
+      "labels": [
+        "horizon: now",
+        "type: bit",
+        "village: ground"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/7",
+      "updated_at": "2026-08-23T00:47:21Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:bit",
+          "village:ground-and-evidence",
+          "horizon:now",
+          "effect:record-local"
+        ],
+        "kind": "bit",
+        "bit_id": "BIT-GROUND-RECORD",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#1",
+        "standing": "OPEN",
+        "horizon": "NOW",
+        "authority": "Bdo/phase-gate; delegated-verification",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "record",
+          "asset",
+          "topology",
+          "observation"
+        ],
+        "requires": [
+          "#6"
+        ]
+      },
+      "parse_error": null
+    },
+    "8": {
+      "number": 8,
+      "title": "Asset Service — assetization of record",
+      "state": "OPEN",
+      "labels": [
+        "horizon: now",
+        "type: bit",
+        "village: ground"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/8",
+      "updated_at": "2026-08-23T00:47:26Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:bit",
+          "village:ground-and-evidence",
+          "horizon:now",
+          "effect:record-local"
+        ],
+        "kind": "bit",
+        "bit_id": "BIT-GROUND-ASSET",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#1",
+        "standing": "OPEN",
+        "horizon": "NOW",
+        "authority": "Bdo/phase-gate; delegated-verification",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "asset",
+          "record",
+          "topology",
+          "observation"
+        ],
+        "requires": [
+          "#6",
+          "#7"
+        ]
+      },
+      "parse_error": null
+    },
+    "9": {
+      "number": 9,
+      "title": "Observation and Attestation — independent evidence",
+      "state": "OPEN",
+      "labels": [
+        "horizon: now",
+        "type: bit",
+        "village: ground"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/9",
+      "updated_at": "2026-08-23T00:47:29Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:bit",
+          "village:ground-and-evidence",
+          "horizon:now",
+          "effect:record-local"
+        ],
+        "kind": "bit",
+        "bit_id": "BIT-GROUND-OBSERVATION",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#1",
+        "standing": "OPEN",
+        "horizon": "NOW",
+        "authority": "Bdo/phase-gate; delegated-verification",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "observation",
+          "record",
+          "authority",
+          "execution"
+        ],
+        "requires": [
+          "#6",
+          "#7"
+        ]
+      },
+      "parse_error": null
+    },
+    "10": {
+      "number": 10,
+      "title": "Graph Service — typed Entity–Asset–Operation DAG",
+      "state": "OPEN",
+      "labels": [
+        "horizon: next",
+        "type: bit",
+        "village: ground"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/10",
+      "updated_at": "2026-08-23T00:47:33Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:bit",
+          "village:ground-and-evidence",
+          "horizon:next",
+          "effect:record-local"
+        ],
+        "kind": "bit",
+        "bit_id": "BIT-GROUND-GRAPH",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#1",
+        "standing": "OPEN",
+        "horizon": "NEXT",
+        "authority": "Bdo/phase-gate; delegated-verification",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "topology",
+          "asset",
+          "record",
+          "resolution",
+          "observation"
+        ],
+        "requires": [
+          "#6",
+          "#7",
+          "#8",
+          "#14"
+        ]
+      },
+      "parse_error": null
+    },
+    "11": {
+      "number": 11,
+      "title": "Identity Service — participant and entity continuity",
+      "state": "OPEN",
+      "labels": [
+        "horizon: now",
+        "type: bit",
+        "village: trust"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/11",
+      "updated_at": "2026-08-23T00:47:37Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:bit",
+          "village:trust-and-control",
+          "horizon:now",
+          "effect:record-local"
+        ],
+        "kind": "bit",
+        "bit_id": "BIT-TRUST-IDENTITY",
+        "village": "trust-and-control",
+        "village_issue": "#3",
+        "parent": "#1",
+        "standing": "OPEN",
+        "horizon": "NOW",
+        "authority": "Bdo/phase-gate; delegated-verification",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "authority",
+          "record",
+          "asset",
+          "topology"
+        ],
+        "requires": [
+          "#6",
+          "#7",
+          "#8"
+        ]
+      },
+      "parse_error": null
+    },
+    "12": {
+      "number": 12,
+      "title": "Authority Service — typed grants, delegation, and revocation",
+      "state": "OPEN",
+      "labels": [
+        "horizon: now",
+        "type: bit",
+        "village: trust"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/12",
+      "updated_at": "2026-08-23T00:47:41Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:bit",
+          "village:trust-and-control",
+          "horizon:now",
+          "effect:record-local"
+        ],
+        "kind": "bit",
+        "bit_id": "BIT-TRUST-AUTHORITY",
+        "village": "trust-and-control",
+        "village_issue": "#3",
+        "parent": "#1",
+        "standing": "OPEN",
+        "horizon": "NOW",
+        "authority": "Bdo/phase-gate; delegated-verification",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "authority",
+          "capability",
+          "record",
+          "asset"
+        ],
+        "requires": [
+          "#6",
+          "#7",
+          "#11"
+        ]
+      },
+      "parse_error": null
+    },
+    "13": {
+      "number": 13,
+      "title": "Security and Gates — enforce every consequential boundary",
+      "state": "OPEN",
+      "labels": [
+        "horizon: now",
+        "type: bit",
+        "village: trust"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/13",
+      "updated_at": "2026-08-23T00:47:45Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:bit",
+          "village:trust-and-control",
+          "horizon:now",
+          "effect:record-local"
+        ],
+        "kind": "bit",
+        "bit_id": "BIT-TRUST-GATES",
+        "village": "trust-and-control",
+        "village_issue": "#3",
+        "parent": "#1",
+        "standing": "OPEN",
+        "horizon": "NOW",
+        "authority": "Bdo/phase-gate; delegated-verification",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "authority",
+          "capability",
+          "record",
+          "execution",
+          "interface"
+        ],
+        "requires": [
+          "#6",
+          "#7",
+          "#11",
+          "#12"
+        ]
+      },
+      "parse_error": null
+    },
+    "14": {
+      "number": 14,
+      "title": "Registry Service — versioned participants, operations, and definitions",
+      "state": "OPEN",
+      "labels": [
+        "horizon: now",
+        "type: bit",
+        "village: trust"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/14",
+      "updated_at": "2026-08-23T00:47:50Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:bit",
+          "village:trust-and-control",
+          "horizon:now",
+          "effect:record-local"
+        ],
+        "kind": "bit",
+        "bit_id": "BIT-TRUST-REGISTRY",
+        "village": "trust-and-control",
+        "village_issue": "#3",
+        "parent": "#1",
+        "standing": "OPEN",
+        "horizon": "NOW",
+        "authority": "Bdo/phase-gate; delegated-verification",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "resolution",
+          "record",
+          "asset",
+          "topology",
+          "authority"
+        ],
+        "requires": [
+          "#6",
+          "#7",
+          "#8",
+          "#11"
+        ]
+      },
+      "parse_error": null
+    },
+    "15": {
+      "number": 15,
+      "title": "Capability Broker — attenuated machine-to-machine tokens",
+      "state": "OPEN",
+      "labels": [
+        "horizon: next",
+        "type: bit",
+        "village: trust"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/15",
+      "updated_at": "2026-08-23T00:47:53Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:bit",
+          "village:trust-and-control",
+          "horizon:next",
+          "effect:record-local"
+        ],
+        "kind": "bit",
+        "bit_id": "BIT-TRUST-BROKER",
+        "village": "trust-and-control",
+        "village_issue": "#3",
+        "parent": "#1",
+        "standing": "OPEN",
+        "horizon": "NEXT",
+        "authority": "Bdo/phase-gate; delegated-verification",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "capability",
+          "authority",
+          "resolution",
+          "record",
+          "transport"
+        ],
+        "requires": [
+          "#6",
+          "#7",
+          "#11",
+          "#12",
+          "#13",
+          "#14"
+        ]
+      },
+      "parse_error": null
+    },
+    "16": {
+      "number": 16,
+      "title": "Gateway Service — governed ingress and egress",
+      "state": "OPEN",
+      "labels": [
+        "horizon: next",
+        "type: bit",
+        "village: motion"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/16",
+      "updated_at": "2026-08-23T05:28:42Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:bit",
+          "village:reach-and-motion",
+          "horizon:next",
+          "effect:record-local"
+        ],
+        "kind": "bit",
+        "bit_id": "BIT-MOTION-GATEWAY",
+        "village": "reach-and-motion",
+        "village_issue": "#2",
+        "parent": "#1",
+        "standing": "OPEN",
+        "horizon": "NEXT",
+        "authority": "Bdo/phase-gate; delegated-verification",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "interface",
+          "authority",
+          "resolution",
+          "record"
+        ],
+        "requires": [
+          "#6",
+          "#7",
+          "#11",
+          "#12",
+          "#13",
+          "#14"
+        ]
+      },
+      "parse_error": null
+    },
+    "17": {
+      "number": 17,
+      "title": "Relay Service — governed message delivery",
+      "state": "OPEN",
+      "labels": [
+        "horizon: next",
+        "type: bit",
+        "village: motion"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/17",
+      "updated_at": "2026-08-23T00:48:21Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:bit",
+          "village:reach-and-motion",
+          "horizon:next",
+          "effect:record-local"
+        ],
+        "kind": "bit",
+        "bit_id": "BIT-MOTION-RELAY",
+        "village": "reach-and-motion",
+        "village_issue": "#2",
+        "parent": "#1",
+        "standing": "OPEN",
+        "horizon": "NEXT",
+        "authority": "Bdo/phase-gate; delegated-verification",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "transport",
+          "record",
+          "resolution",
+          "authority"
+        ],
+        "requires": [
+          "#6",
+          "#7",
+          "#14",
+          "#13"
+        ]
+      },
+      "parse_error": null
+    },
+    "18": {
+      "number": 18,
+      "title": "Runtime and Workers — leased execution and settlement",
+      "state": "OPEN",
+      "labels": [
+        "horizon: now",
+        "type: bit",
+        "village: motion"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/18",
+      "updated_at": "2026-08-23T00:48:17Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:bit",
+          "village:reach-and-motion",
+          "horizon:now",
+          "effect:record-local"
+        ],
+        "kind": "bit",
+        "bit_id": "BIT-MOTION-RUNTIME",
+        "village": "reach-and-motion",
+        "village_issue": "#2",
+        "parent": "#1",
+        "standing": "OPEN",
+        "horizon": "NOW",
+        "authority": "Bdo/phase-gate; delegated-verification",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "execution",
+          "record",
+          "authority",
+          "observation",
+          "resolution"
+        ],
+        "requires": [
+          "#6",
+          "#7",
+          "#14",
+          "#13",
+          "#9"
+        ]
+      },
+      "parse_error": null
+    },
+    "19": {
+      "number": 19,
+      "title": "Bindings and Adapters — shared-world interfaces and crossings",
+      "state": "OPEN",
+      "labels": [
+        "horizon: next",
+        "type: bit",
+        "village: motion"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/19",
+      "updated_at": "2026-08-23T00:48:34Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:bit",
+          "village:reach-and-motion",
+          "horizon:next",
+          "effect:record-local"
+        ],
+        "kind": "bit",
+        "bit_id": "BIT-MOTION-BINDINGS",
+        "village": "reach-and-motion",
+        "village_issue": "#2",
+        "parent": "#1",
+        "standing": "OPEN",
+        "horizon": "NEXT",
+        "authority": "Bdo/phase-gate; delegated-verification",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "interface",
+          "capability",
+          "resolution",
+          "execution",
+          "record"
+        ],
+        "requires": [
+          "#16",
+          "#15",
+          "#14",
+          "#18",
+          "#13"
+        ]
+      },
+      "parse_error": null
+    },
+    "20": {
+      "number": 20,
+      "title": "Workflow Service — persistent composition of operations",
+      "state": "OPEN",
+      "labels": [
+        "horizon: next",
+        "type: bit",
+        "village: motion"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/20",
+      "updated_at": "2026-08-23T00:48:30Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:bit",
+          "village:reach-and-motion",
+          "horizon:next",
+          "effect:record-local"
+        ],
+        "kind": "bit",
+        "bit_id": "BIT-MOTION-WORKFLOW",
+        "village": "reach-and-motion",
+        "village_issue": "#2",
+        "parent": "#1",
+        "standing": "OPEN",
+        "horizon": "NEXT",
+        "authority": "Bdo/phase-gate; delegated-verification",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "composition",
+          "execution",
+          "transport",
+          "record",
+          "observation"
+        ],
+        "requires": [
+          "#6",
+          "#7",
+          "#14",
+          "#13",
+          "#17",
+          "#18",
+          "#9"
+        ]
+      },
+      "parse_error": null
+    },
+    "21": {
+      "number": 21,
+      "title": "Automation Service — schedules and machine triggers",
+      "state": "OPEN",
+      "labels": [
+        "horizon: next",
+        "type: bit",
+        "village: motion"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/21",
+      "updated_at": "2026-08-23T00:48:25Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:bit",
+          "village:reach-and-motion",
+          "horizon:next",
+          "effect:record-local"
+        ],
+        "kind": "bit",
+        "bit_id": "BIT-MOTION-AUTOMATION",
+        "village": "reach-and-motion",
+        "village_issue": "#2",
+        "parent": "#1",
+        "standing": "OPEN",
+        "horizon": "NEXT",
+        "authority": "Bdo/phase-gate; delegated-verification",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "timing",
+          "composition",
+          "transport",
+          "authority",
+          "record"
+        ],
+        "requires": [
+          "#7",
+          "#11",
+          "#12",
+          "#13",
+          "#14",
+          "#15",
+          "#17",
+          "#20"
+        ]
+      },
+      "parse_error": null
+    },
+    "22": {
+      "number": 22,
+      "title": "Proofing Service — version-pinned review and decision lifecycle",
+      "state": "OPEN",
+      "labels": [
+        "horizon: next",
+        "type: bit",
+        "village: domain"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/22",
+      "updated_at": "2026-08-23T00:48:37Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:bit",
+          "village:domain-and-qualification",
+          "horizon:next",
+          "effect:record-local"
+        ],
+        "kind": "bit",
+        "bit_id": "BIT-DOMAIN-PROOFING",
+        "village": "domain-and-qualification",
+        "village_issue": "#5",
+        "parent": "#1",
+        "standing": "OPEN",
+        "horizon": "NEXT",
+        "authority": "Bdo/phase-gate; delegated-verification",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "domain",
+          "asset",
+          "topology",
+          "composition",
+          "observation",
+          "authority"
+        ],
+        "requires": [
+          "#8",
+          "#10",
+          "#9",
+          "#11",
+          "#12",
+          "#13",
+          "#14",
+          "#18",
+          "#19",
+          "#20"
+        ]
+      },
+      "parse_error": null
+    },
+    "23": {
+      "number": 23,
+      "title": "Phase-I Qualification — full human/model system crossing",
+      "state": "OPEN",
+      "labels": [
+        "horizon: next",
+        "type: bit",
+        "village: domain"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/23",
+      "updated_at": "2026-08-23T06:22:33Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:bit",
+          "village:domain-and-qualification",
+          "horizon:next",
+          "effect:record-local"
+        ],
+        "kind": "bit",
+        "bit_id": "BIT-DOMAIN-QUALIFICATION",
+        "village": "domain-and-qualification",
+        "village_issue": "#5",
+        "parent": "#1",
+        "standing": "OPEN",
+        "horizon": "NEXT",
+        "authority": "Bdo/phase-gate; delegated-verification",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "interface",
+          "authority",
+          "capability",
+          "resolution",
+          "timing",
+          "transport",
+          "composition",
+          "execution",
+          "domain",
+          "asset",
+          "topology",
+          "record",
+          "observation"
+        ],
+        "requires": [
+          "#6",
+          "#7",
+          "#8",
+          "#9",
+          "#10",
+          "#11",
+          "#12",
+          "#13",
+          "#14",
+          "#15",
+          "#16",
+          "#17",
+          "#18",
+          "#19",
+          "#20",
+          "#21",
+          "#22"
+        ]
+      },
+      "parse_error": null
+    },
+    "24": {
+      "number": 24,
+      "title": "Federation Horizon — governed crossing between two sovereign nodes",
+      "state": "OPEN",
+      "labels": [
+        "horizon: scale-trust",
+        "type: bit",
+        "village: domain"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/24",
+      "updated_at": "2026-08-23T00:48:41Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:bit",
+          "village:domain-and-qualification",
+          "horizon:on-scale-trust",
+          "effect:record-local"
+        ],
+        "kind": "bit",
+        "bit_id": "BIT-DOMAIN-FEDERATION",
+        "village": "domain-and-qualification",
+        "village_issue": "#5",
+        "parent": "#1",
+        "standing": "OPEN",
+        "horizon": "ON_SCALE_TRUST",
+        "authority": "Bdo/phase-gate; delegated-verification",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "interface",
+          "authority",
+          "capability",
+          "resolution",
+          "transport",
+          "record",
+          "asset",
+          "topology",
+          "observation"
+        ],
+        "requires": [
+          "#23",
+          "#11",
+          "#12",
+          "#15",
+          "#14",
+          "#17",
+          "#10",
+          "#9"
+        ]
+      },
+      "parse_error": null
+    },
+    "25": {
+      "number": 25,
+      "title": "Shared contracts — validate every boundary record",
+      "state": "OPEN",
+      "labels": [
+        "horizon: now",
+        "standing: proposed",
+        "type: stub",
+        "village: ground"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/25",
+      "updated_at": "2026-08-23T00:48:48Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:stub",
+          "village:ground-and-evidence",
+          "horizon:now",
+          "effect:record-local",
+          "standing:proposed"
+        ],
+        "kind": "implementation-stub",
+        "stub_id": "STUB-CONTRACTS",
+        "path": "contracts/",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#1",
+        "parent_bits": [
+          "#6",
+          "#14"
+        ],
+        "standing": "PROPOSED",
+        "horizon": "NOW",
+        "authority": "Bdo/phase-gate",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "record-spine",
+          "registry-resolution",
+          "conformance"
+        ],
+        "requires": [
+          "#6",
+          "#14"
+        ]
+      },
+      "parse_error": null
+    },
+    "26": {
+      "number": 26,
+      "title": "Conformance harness — bind observations to defeating fixtures",
+      "state": "OPEN",
+      "labels": [
+        "effect: observe-only",
+        "horizon: now",
+        "standing: self-tested",
+        "type: stub",
+        "village: ground"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/26",
+      "updated_at": "2026-08-23T00:45:56Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:stub",
+          "village:ground-and-evidence",
+          "horizon:now",
+          "effect:observe-only",
+          "standing:built-self-tested-not-witnessed"
+        ],
+        "kind": "implementation-stub",
+        "stub_id": "STUB-CONFORMANCE",
+        "path": "conformance/",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#1",
+        "parent_bits": [
+          "#9",
+          "#23"
+        ],
+        "standing": "BUILT_SELF_TESTED_NOT_WITNESSED",
+        "horizon": "NOW",
+        "authority": "Bdo/phase-gate",
+        "effect_class": "OBSERVE_ONLY",
+        "evidence_pointer": "conformance/",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "observation",
+          "qualification",
+          "record-spine"
+        ],
+        "requires": [
+          "#6",
+          "#9",
+          "#23",
+          "#25"
+        ]
+      },
+      "parse_error": null
+    },
+    "27": {
+      "number": 27,
+      "title": "Asset reference participant — qualify assetization of record",
+      "state": "OPEN",
+      "labels": [
+        "horizon: now",
+        "standing: self-tested",
+        "type: stub",
+        "village: ground"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/27",
+      "updated_at": "2026-08-23T00:48:52Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:stub",
+          "village:ground-and-evidence",
+          "horizon:now",
+          "effect:record-local",
+          "standing:built-self-tested-not-witnessed"
+        ],
+        "kind": "implementation-stub",
+        "stub_id": "STUB-ASSET",
+        "path": "services/asset/",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#1",
+        "parent_bits": [
+          "#8"
+        ],
+        "standing": "BUILT_SELF_TESTED_NOT_WITNESSED",
+        "horizon": "NOW",
+        "authority": "Bdo/phase-gate",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "services/asset/",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "asset-custody",
+          "record-spine",
+          "graph",
+          "observation"
+        ],
+        "requires": [
+          "#6",
+          "#7",
+          "#8",
+          "#9",
+          "#25",
+          "#26"
+        ]
+      },
+      "parse_error": null
+    },
+    "28": {
+      "number": 28,
+      "title": "Proofing reference participant — implement governed review",
+      "state": "OPEN",
+      "labels": [
+        "horizon: next",
+        "standing: chartered",
+        "type: stub",
+        "village: domain"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/28",
+      "updated_at": "2026-08-23T00:48:56Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:stub",
+          "village:domain-and-qualification",
+          "horizon:next",
+          "effect:record-local",
+          "standing:chartered-not-implemented"
+        ],
+        "kind": "implementation-stub",
+        "stub_id": "STUB-PROOFING",
+        "path": "services/proofing/",
+        "village": "domain-and-qualification",
+        "village_issue": "#5",
+        "parent": "#1",
+        "parent_bits": [
+          "#22"
+        ],
+        "standing": "CHARTERED_NOT_IMPLEMENTED",
+        "horizon": "NEXT",
+        "authority": "Bdo/phase-gate",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "services/proofing/",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "proofing",
+          "asset-custody",
+          "graph",
+          "authority",
+          "workflow",
+          "observation"
+        ],
+        "requires": [
+          "#8",
+          "#9",
+          "#10",
+          "#11",
+          "#12",
+          "#13",
+          "#18",
+          "#20",
+          "#22",
+          "#25",
+          "#27"
+        ]
+      },
+      "parse_error": null
+    },
+    "29": {
+      "number": 29,
+      "title": "Adapters — govern external-system translations",
+      "state": "OPEN",
+      "labels": [
+        "effect: external-boundary",
+        "horizon: next",
+        "standing: declared",
+        "type: stub",
+        "village: motion"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/29",
+      "updated_at": "2026-08-23T00:46:16Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:stub",
+          "village:reach-and-motion",
+          "horizon:next",
+          "effect:external-boundary",
+          "standing:declared-not-implemented"
+        ],
+        "kind": "implementation-stub",
+        "stub_id": "STUB-ADAPTERS",
+        "path": "adapters/",
+        "village": "reach-and-motion",
+        "village_issue": "#2",
+        "parent": "#1",
+        "parent_bits": [
+          "#19"
+        ],
+        "standing": "DECLARED_NOT_IMPLEMENTED",
+        "horizon": "NEXT",
+        "authority": "Bdo/phase-gate",
+        "effect_class": "EXTERNAL_BOUNDARY",
+        "evidence_pointer": "adapters/",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "bindings-adapters",
+          "gateway",
+          "broker",
+          "registry",
+          "security-gates",
+          "receipts"
+        ],
+        "requires": [
+          "#11",
+          "#12",
+          "#13",
+          "#14",
+          "#15",
+          "#16",
+          "#19",
+          "#25"
+        ]
+      },
+      "parse_error": null
+    },
+    "30": {
+      "number": 30,
+      "title": "Operator bindings — prove human/model same-world parity",
+      "state": "OPEN",
+      "labels": [
+        "effect: request-only",
+        "horizon: next",
+        "standing: declared",
+        "type: stub",
+        "village: motion"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/30",
+      "updated_at": "2026-08-23T00:46:24Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:stub",
+          "village:reach-and-motion",
+          "horizon:next",
+          "effect:request-only",
+          "standing:declared-not-implemented"
+        ],
+        "kind": "implementation-stub",
+        "stub_id": "STUB-BINDINGS",
+        "path": "bindings/",
+        "village": "reach-and-motion",
+        "village_issue": "#2",
+        "parent": "#1",
+        "parent_bits": [
+          "#19",
+          "#23"
+        ],
+        "standing": "DECLARED_NOT_IMPLEMENTED",
+        "horizon": "NEXT",
+        "authority": "Bdo/phase-gate",
+        "effect_class": "REQUEST_ONLY",
+        "evidence_pointer": "bindings/",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "bindings-adapters",
+          "gateway",
+          "authority",
+          "qualification"
+        ],
+        "requires": [
+          "#6",
+          "#11",
+          "#12",
+          "#13",
+          "#16",
+          "#19",
+          "#23",
+          "#25",
+          "#26",
+          "#29"
+        ]
+      },
+      "parse_error": null
+    },
+    "31": {
+      "number": 31,
+      "title": "Workers — execute leases without self-settlement",
+      "state": "OPEN",
+      "labels": [
+        "effect: bounded-execution",
+        "horizon: next",
+        "standing: declared",
+        "type: stub",
+        "village: motion"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/31",
+      "updated_at": "2026-08-23T00:46:20Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:stub",
+          "village:reach-and-motion",
+          "horizon:next",
+          "effect:bounded-execution",
+          "standing:declared-not-implemented"
+        ],
+        "kind": "implementation-stub",
+        "stub_id": "STUB-WORKERS",
+        "path": "workers/",
+        "village": "reach-and-motion",
+        "village_issue": "#2",
+        "parent": "#1",
+        "parent_bits": [
+          "#18"
+        ],
+        "standing": "DECLARED_NOT_IMPLEMENTED",
+        "horizon": "NEXT",
+        "authority": "Bdo/phase-gate",
+        "effect_class": "BOUNDED_EXECUTION",
+        "evidence_pointer": "workers/",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "runtime",
+          "broker",
+          "registry",
+          "security-gates",
+          "observation",
+          "receipts"
+        ],
+        "requires": [
+          "#6",
+          "#7",
+          "#9",
+          "#11",
+          "#12",
+          "#13",
+          "#14",
+          "#15",
+          "#18",
+          "#25",
+          "#26"
+        ]
+      },
+      "parse_error": null
+    },
+    "32": {
+      "number": 32,
+      "title": "Day-0 engineering harness — keep the repository agent-operable",
+      "state": "OPEN",
+      "labels": [
+        "effect: observe-only",
+        "horizon: now",
+        "standing: self-tested",
+        "type: stub",
+        "village: ground"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/32",
+      "updated_at": "2026-08-23T06:22:30Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:stub",
+          "village:ground-and-evidence",
+          "horizon:now",
+          "effect:observe-only",
+          "standing:built-self-tested-not-witnessed"
+        ],
+        "kind": "implementation-stub",
+        "stub_id": "STUB-ENGINEERING-HARNESS",
+        "path": ".github/workflows/, scripts/",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#1",
+        "parent_bits": [
+          "#6",
+          "#23"
+        ],
+        "standing": "BUILT_SELF_TESTED_NOT_WITNESSED",
+        "horizon": "NOW",
+        "authority": "Bdo/engineering-baseline",
+        "effect_class": "OBSERVE_ONLY",
+        "evidence_pointer": ".github/workflows/",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "verification-loop",
+          "qualification",
+          "engineering-record"
+        ],
+        "requires": [
+          "#6",
+          "#23",
+          "#25",
+          "#26"
+        ]
+      },
+      "parse_error": null
+    },
+    "37": {
+      "number": 37,
+      "title": "Local node infrastructure — provision a reproducible custody ground",
+      "state": "OPEN",
+      "labels": [
+        "horizon: now",
+        "standing: self-tested",
+        "type: stub",
+        "village: ground"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/37",
+      "updated_at": "2026-08-23T05:28:53Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:stub",
+          "village:ground-and-evidence",
+          "horizon:now",
+          "standing:built-self-tested-not-witnessed"
+        ],
+        "kind": "implementation-stub",
+        "stub_id": "STUB-LOCAL-INFRASTRUCTURE",
+        "path": "infrastructure/, scripts/infrastructure.py",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#1",
+        "parent_bits": [
+          "#6",
+          "#7",
+          "#13",
+          "#18"
+        ],
+        "standing": "BUILT_SELF_TESTED_NOT_WITNESSED",
+        "horizon": "NOW",
+        "authority": "Bdo/phase-gate",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "infrastructure/",
+        "last_observed_at": "2026-08-23T03:25:13Z",
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "engineering-ground",
+          "local-custody",
+          "verification-loop",
+          "receipts"
+        ],
+        "requires": [
+          "#25"
+        ]
+      },
+      "parse_error": null
+    },
+    "39": {
+      "number": 39,
+      "title": "Customer-owned deployment topology — bridge local node to Kubernetes",
+      "state": "OPEN",
+      "labels": [
+        "horizon: now",
+        "standing: self-tested",
+        "type: stub",
+        "village: ground"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/39",
+      "updated_at": "2026-08-23T06:09:03Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:stub",
+          "village:ground-and-evidence",
+          "horizon:now",
+          "standing:built-self-tested-not-witnessed"
+        ],
+        "kind": "implementation-stub",
+        "stub_id": "STUB-CUSTOMER-OWNED-DEPLOYMENT",
+        "path": "infrastructure/, scripts/deployment.py",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#1",
+        "parent_bits": [
+          "#6",
+          "#7",
+          "#13",
+          "#18"
+        ],
+        "standing": "BUILT_SELF_TESTED_NOT_WITNESSED",
+        "horizon": "NOW",
+        "authority": "Bdo/phase-gate",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "infrastructure/phase-i.topology.json",
+        "last_observed_at": "2026-08-23T05:27:17Z",
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "local-custody",
+          "deployment",
+          "gateway",
+          "broker",
+          "queue",
+          "federation"
+        ],
+        "requires": [
+          "#37"
+        ]
+      },
+      "parse_error": null
+    },
+    "40": {
+      "number": 40,
+      "title": "Charting contract — canonicalize typed points, crossings, coverings, and paradigms",
+      "state": "OPEN",
+      "labels": [],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/40",
+      "updated_at": "2026-08-23T06:03:49Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:bit",
+          "village:ground-and-evidence",
+          "horizon:next",
+          "effect:record-local"
+        ],
+        "kind": "bit",
+        "bit_id": "BIT-GROUND-CHARTING-CONTRACT",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#1",
+        "standing": "OPEN",
+        "horizon": "NEXT",
+        "authority": "Bdo/phase-gate; delegated-verification",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "walker_receipt": "PENDING",
+        "dependency_channels": [
+          "topology",
+          "record-spine",
+          "registry-resolution",
+          "bindings-adapters"
+        ],
+        "requires": [
+          "#6",
+          "#7",
+          "#14",
+          "#25"
+        ]
+      },
+      "parse_error": null
+    },
+    "41": {
+      "number": 41,
+      "title": "Skill and capability graph — derive competence from SDLC and registry contracts",
+      "state": "OPEN",
+      "labels": [],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/41",
+      "updated_at": "2026-08-23T06:03:54Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:bit",
+          "village:trust-and-control",
+          "horizon:next",
+          "effect:record-local"
+        ],
+        "kind": "bit",
+        "bit_id": "BIT-TRUST-SKILL-CAPABILITY-GRAPH",
+        "village": "trust-and-control",
+        "village_issue": "#3",
+        "parent": "#1",
+        "standing": "OPEN",
+        "horizon": "NEXT",
+        "authority": "Bdo/phase-gate; delegated-verification",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "walker_receipt": "PENDING",
+        "dependency_channels": [
+          "registry-capability",
+          "topology",
+          "authority",
+          "bindings-adapters"
+        ],
+        "requires": [
+          "#12",
+          "#14",
+          "#15",
+          "#25",
+          "#40"
+        ]
+      },
+      "parse_error": null
+    },
+    "42": {
+      "number": 42,
+      "title": "Chart compiler bindings — lower governed charts into human/model operator environments",
+      "state": "OPEN",
+      "labels": [],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/42",
+      "updated_at": "2026-08-23T05:24:18Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:bit",
+          "village:reach-and-motion",
+          "horizon:next",
+          "effect:request-only"
+        ],
+        "kind": "bit",
+        "bit_id": "BIT-MOTION-CHART-COMPILER",
+        "village": "reach-and-motion",
+        "village_issue": "#2",
+        "parent": "#1",
+        "standing": "OPEN",
+        "horizon": "NEXT",
+        "authority": "Bdo/phase-gate; delegated-verification",
+        "effect_class": "REQUEST_ONLY",
+        "evidence_pointer": "PENDING",
+        "walker_receipt": "PENDING",
+        "dependency_channels": [
+          "bindings-adapters",
+          "interface",
+          "registry-capability",
+          "topology",
+          "authority"
+        ],
+        "requires": [
+          "#14",
+          "#16",
+          "#19",
+          "#30",
+          "#40",
+          "#41"
+        ]
+      },
+      "parse_error": null
+    },
+    "45": {
+      "number": 45,
+      "title": "Sov operating agent — load portable bounded model agency",
+      "state": "OPEN",
+      "labels": [
+        "horizon: now",
+        "standing: self-tested",
+        "type: stub",
+        "village: motion"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/45",
+      "updated_at": "2026-08-23T06:22:40Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:stub",
+          "village:reach-and-motion",
+          "horizon:now",
+          "effect:record-local",
+          "standing:built-self-tested-not-witnessed"
+        ],
+        "kind": "implementation-stub",
+        "stub_id": "STUB-SOV-OPERATING-AGENT",
+        "path": "SOV.md, bindings/sov/",
+        "village": "reach-and-motion",
+        "village_issue": "#2",
+        "parent": "#1",
+        "parent_bits": [
+          "#14",
+          "#16",
+          "#19"
+        ],
+        "standing": "BUILT_SELF_TESTED_NOT_WITNESSED",
+        "horizon": "NOW",
+        "authority": "Bdo/product-intent-and-naming; delegated-verification",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "main@10d74f5c9abc48dd1e051fd52531a2ecbbc1c0ed",
+        "last_observed_at": "2026-08-23T05:59:41Z",
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "context",
+          "agency",
+          "bindings-adapters",
+          "registry-capability",
+          "gateway",
+          "authority",
+          "receipts"
+        ],
+        "requires": [
+          "#19",
+          "#30"
+        ]
+      },
+      "parse_error": null
+    },
+    "47": {
+      "number": 47,
+      "title": "Skill declaration location — choose canonical ownership for machine-readable competence contracts",
+      "state": "OPEN",
+      "labels": [],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/47",
+      "updated_at": "2026-08-23T05:53:13Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:stub",
+          "village:trust-and-control",
+          "horizon:next",
+          "effect:record-local"
+        ],
+        "kind": "implementation-stub",
+        "stub_id": "STUB-SKILL-DECLARATION-OWNERSHIP",
+        "village": "trust-and-control",
+        "village_issue": "#3",
+        "parent": "#41",
+        "standing": "OPEN",
+        "horizon": "NEXT",
+        "authority": "Bdo/phase-gate",
+        "effect_class": "RECORD_LOCAL",
+        "dependency_channels": [
+          "registry-capability",
+          "topology",
+          "bindings-adapters"
+        ],
+        "requires": [
+          "#25",
+          "#40",
+          "#41"
+        ]
+      },
+      "parse_error": null
+    },
+    "48": {
+      "number": 48,
+      "title": "Skill relation schema — validate Requirement and Capability declaration shape",
+      "state": "OPEN",
+      "labels": [],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/48",
+      "updated_at": "2026-08-23T05:53:24Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:stub",
+          "village:ground-and-evidence",
+          "horizon:next",
+          "effect:record-local"
+        ],
+        "kind": "implementation-stub",
+        "stub_id": "STUB-SKILL-RELATION-SCHEMA",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#41",
+        "standing": "OPEN",
+        "horizon": "NEXT",
+        "authority": "Bdo/phase-gate; delegated-verification",
+        "effect_class": "RECORD_LOCAL",
+        "dependency_channels": [
+          "conformance",
+          "registry-capability",
+          "topology"
+        ],
+        "requires": [
+          "#25",
+          "#40",
+          "#41"
+        ]
+      },
+      "parse_error": null
+    },
+    "49": {
+      "number": 49,
+      "title": "Capability resolution witness — bind declared Skill requirements to live runtime receipts",
+      "state": "OPEN",
+      "labels": [
+        "effect: request-only",
+        "horizon: next",
+        "type: stub",
+        "village: trust"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/49",
+      "updated_at": "2026-08-23T06:10:45Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:stub",
+          "village:trust-and-control",
+          "horizon:next",
+          "effect:request-only"
+        ],
+        "kind": "implementation-stub",
+        "stub_id": "STUB-CAPABILITY-RESOLUTION-WITNESS",
+        "path": "contracts/, conformance/",
+        "village": "trust-and-control",
+        "village_issue": "#3",
+        "parent": "#41",
+        "parent_bits": [
+          "#41"
+        ],
+        "standing": "OPEN",
+        "horizon": "NEXT",
+        "authority": "Bdo/phase-gate; delegated-verification",
+        "effect_class": "REQUEST_ONLY",
+        "evidence_pointer": "https://github.com/bdf1992/Soveraeign/pull/43",
+        "last_observed_at": "2026-08-23T06:11:30Z",
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "registry-capability",
+          "authority",
+          "bindings-adapters",
+          "observation"
+        ],
+        "requires": [
+          "#12",
+          "#14",
+          "#15",
+          "#41",
+          "#48"
+        ]
+      },
+      "parse_error": null
+    },
+    "50": {
+      "number": 50,
+      "title": "Skill graph UI projection — configure and inspect forests without mutating semantic ownership",
+      "state": "OPEN",
+      "labels": [],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/50",
+      "updated_at": "2026-08-23T05:53:47Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:stub",
+          "village:reach-and-motion",
+          "horizon:next",
+          "effect:request-only"
+        ],
+        "kind": "implementation-stub",
+        "stub_id": "STUB-SKILL-GRAPH-UI",
+        "village": "reach-and-motion",
+        "village_issue": "#2",
+        "parent": "#42",
+        "standing": "OPEN",
+        "horizon": "NEXT",
+        "authority": "Bdo/phase-gate",
+        "effect_class": "REQUEST_ONLY",
+        "dependency_channels": [
+          "interface",
+          "topology",
+          "registry-capability",
+          "authority"
+        ],
+        "requires": [
+          "#40",
+          "#41",
+          "#42",
+          "#47",
+          "#49"
+        ]
+      },
+      "parse_error": null
+    },
+    "51": {
+      "number": 51,
+      "title": "Temporary experimental QA Skill sidecar — prove typed competence relations without promotion",
+      "state": "CLOSED",
+      "labels": [],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/51",
+      "updated_at": "2026-08-23T06:06:58Z",
+      "metadata": null,
+      "parse_error": "no fenced yaml metadata block found"
+    },
+    "52": {
+      "number": 52,
+      "title": "Charting experiment cleanup — remove temporary QA sidecar after ownership decision",
+      "state": "OPEN",
+      "labels": [],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/52",
+      "updated_at": "2026-08-23T05:54:02Z",
+      "metadata": null,
+      "parse_error": "no fenced yaml metadata block found"
+    },
+    "53": {
+      "number": 53,
+      "title": "[DO NOT USE]",
+      "state": "CLOSED",
+      "labels": [
+        "horizon: now",
+        "type: stub",
+        "village: ground",
+        "witness: demoted"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/53",
+      "updated_at": "2026-08-23T06:09:41Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:stub",
+          "village:ground-and-evidence",
+          "horizon:now",
+          "effect:record-local",
+          "standing:demoted"
+        ],
+        "kind": "implementation-stub",
+        "stub_id": "STUB-GITHUB-CONNECTOR-PROBE-53",
+        "path": "github/issues/53",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#1",
+        "parent_bits": [
+          "#6",
+          "#23"
+        ],
+        "standing": "DEMOTED",
+        "horizon": "NOW",
+        "authority": "Bdo/phase-gate; delegated-verification",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "https://github.com/bdf1992/Soveraeign/issues/53",
+        "last_observed_at": "2026-08-23T06:07:39Z",
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "coordination",
+          "verification-loop"
+        ],
+        "requires": [
+          "#32"
+        ]
+      },
+      "parse_error": null
+    },
+    "54": {
+      "number": 54,
+      "title": "Temporary note",
+      "state": "CLOSED",
+      "labels": [
+        "horizon: now",
+        "type: stub",
+        "village: ground",
+        "witness: demoted"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/54",
+      "updated_at": "2026-08-23T06:09:33Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:stub",
+          "village:ground-and-evidence",
+          "horizon:now",
+          "effect:record-local",
+          "standing:demoted"
+        ],
+        "kind": "implementation-stub",
+        "stub_id": "STUB-GITHUB-CONNECTOR-PROBE-54",
+        "path": "github/issues/54",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#1",
+        "parent_bits": [
+          "#6",
+          "#23"
+        ],
+        "standing": "DEMOTED",
+        "horizon": "NOW",
+        "authority": "Bdo/phase-gate; delegated-verification",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "https://github.com/bdf1992/Soveraeign/issues/54",
+        "last_observed_at": "2026-08-23T06:07:39Z",
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "coordination",
+          "verification-loop"
+        ],
+        "requires": [
+          "#32"
+        ]
+      },
+      "parse_error": null
+    },
+    "55": {
+      "number": 55,
+      "title": "(ignore)",
+      "state": "CLOSED",
+      "labels": [
+        "horizon: now",
+        "type: stub",
+        "village: ground",
+        "witness: demoted"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/55",
+      "updated_at": "2026-08-23T06:09:37Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:stub",
+          "village:ground-and-evidence",
+          "horizon:now",
+          "effect:record-local",
+          "standing:demoted"
+        ],
+        "kind": "implementation-stub",
+        "stub_id": "STUB-GITHUB-CONNECTOR-PROBE-55",
+        "path": "github/issues/55",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#1",
+        "parent_bits": [
+          "#6",
+          "#23"
+        ],
+        "standing": "DEMOTED",
+        "horizon": "NOW",
+        "authority": "Bdo/phase-gate; delegated-verification",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "https://github.com/bdf1992/Soveraeign/issues/55",
+        "last_observed_at": "2026-08-23T06:07:39Z",
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "coordination",
+          "verification-loop"
+        ],
+        "requires": [
+          "#32"
+        ]
+      },
+      "parse_error": null
+    },
+    "56": {
+      "number": 56,
+      "title": "(ignore2)",
+      "state": "CLOSED",
+      "labels": [
+        "horizon: now",
+        "type: stub",
+        "village: ground",
+        "witness: demoted"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/56",
+      "updated_at": "2026-08-23T06:09:20Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:stub",
+          "village:ground-and-evidence",
+          "horizon:now",
+          "effect:record-local",
+          "standing:demoted"
+        ],
+        "kind": "implementation-stub",
+        "stub_id": "STUB-GITHUB-CONNECTOR-PROBE-56",
+        "path": "github/issues/56",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#1",
+        "parent_bits": [
+          "#6",
+          "#23"
+        ],
+        "standing": "DEMOTED",
+        "horizon": "NOW",
+        "authority": "Bdo/phase-gate; delegated-verification",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "https://github.com/bdf1992/Soveraeign/issues/56",
+        "last_observed_at": "2026-08-23T06:07:39Z",
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "coordination",
+          "verification-loop"
+        ],
+        "requires": [
+          "#32"
+        ]
+      },
+      "parse_error": null
+    },
+    "57": {
+      "number": 57,
+      "title": "RED engagement — defeat the typed-contract charting foundation",
+      "state": "OPEN",
+      "labels": [],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/57",
+      "updated_at": "2026-08-23T06:22:36Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:stub",
+          "village:ground-and-evidence",
+          "horizon:now",
+          "effect:record-local"
+        ],
+        "kind": "verification-engagement",
+        "stub_id": "RED-CHARTING-001",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#40",
+        "standing": "OPEN",
+        "horizon": "NOW",
+        "authority": "delegated-verification-only",
+        "effect_class": "RECORD_LOCAL",
+        "dependency_channels": [
+          "topology",
+          "conformance",
+          "registry-capability",
+          "bindings-adapters"
+        ],
+        "requires": [
+          "#40",
+          "#41"
+        ],
+        "target_pr": "#43",
+        "target_head": "b03a0ea9b832b226150a27d6986e69f1b492b22d"
+      },
+      "parse_error": null
+    }
+  }
+}

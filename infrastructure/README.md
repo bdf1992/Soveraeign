@@ -7,9 +7,11 @@ Soveraeign requirement work a reproducible local custody boundary. It declares
 the node envelope as data and uses a dependency-free planner to materialize and
 verify it.
 
-It does not select a cloud, container runtime, orchestrator, HTTP framework,
-queue, graph database, identity provider, or model provider. Those remain
-unearned until a conformance case requires them.
+It does not select a cloud, container runtime, HTTP framework, queue product,
+graph database, identity provider, or model provider. A provisional
+customer-owned Kubernetes renderer makes the deployment boundary inspectable;
+it does not contact a cluster or select an ingress, operator, Helm chart, or
+managed service.
 
 ## Operations
 
@@ -18,6 +20,12 @@ python scripts/infrastructure.py validate
 python scripts/infrastructure.py plan --root /path/to/node
 python scripts/infrastructure.py apply --root /path/to/node
 python scripts/infrastructure.py verify --root /path/to/node
+python scripts/deployment.py validate
+python scripts/deployment.py plan --target local
+python scripts/deployment.py plan --target customer-kubernetes
+python scripts/deployment.py render --target customer-kubernetes \
+  --image registry.example/soveraeign@sha256:<64-hex-digest> \
+  --custody-claim customer-owned-claim
 ```
 
 `plan` is observation-only. `apply` may create an empty node root and its
@@ -43,3 +51,20 @@ directories.
 
 The manifest is infrastructure configuration, not an authority grant or an
 operational System of Record.
+
+## Portable deployment topology
+
+`phase-i.topology.json` carries one node shape across local and customer-owned
+Kubernetes profiles. Gateway is the only rendered Service and remains
+cluster-internal. Broker and Queue stay in-process and non-authoritative.
+Federation stays disabled. The node stays at one replica until a concurrent
+write case earns fencing or compare-and-set.
+
+The Kubernetes command emits a JSON `List` to standard output. Kubernetes
+accepts JSON directly, but applying it is deliberately an external owner action.
+The repository never invokes `kubectl`. It also does not provision storage: the
+customer supplies an existing claim whose storage class, backup, and reclaim
+policy they control. The bundle contains no Secret, Ingress, public Service,
+cloud resource, or destroy path, and requires an image pinned by digest. An
+image/runtime satisfying the application contracts is not yet part of this
+founding-phase repository.

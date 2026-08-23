@@ -36,16 +36,18 @@ loss of optional providers, and can be replaced behind an existing contract.
 | Operational record | Append-preserving events and receipts in transactional SQLite | SQLite does not define service or kernel semantics |
 | Immutable payload custody | Filesystem content-addressed store using SHA-256 | Payload address differs from asset and source identity |
 | Machine contracts | JSON Schema Draft 2020-12 | Schema validity is not semantic fitness |
-| Human control files | Markdown and small YAML fixtures | YAML is not a parallel runtime contract |\n| Local infrastructure | Versioned manifest plus dependency-free plan/apply/verify tool | Provisional Phase-I custody envelope only; no cloud, container, orchestrator, provider, or destroy operation |
+| Human control files | Markdown and small YAML fixtures | YAML is not a parallel runtime contract |\n| Portable infrastructure | Versioned custody/topology manifests plus dependency-free planners and renderers | Local apply only; Kubernetes is render-only, customer-owned, and provider-neutral |
 | Local surface | Python API and CLI | Human and model bindings use the same kernel operations |
 | Tests and lint | `unittest` and dependency-free repository scripts | Local, deterministic, network-free, under three seconds |
 | Search and graph | Rebuildable local projections | External systems integrate through adapters later |
 | Model execution | Declared Model Binding plus Model Adapter | BYOM; no provider-derived authority or silent fallback |
 
-Not yet selected: HTTP or frontend framework, background queue, container
-runtime, orchestrator, distributed database, event broker, vector store, graph
-database, identity provider, cloud, or model SDK. Their absence is deliberate
-until a conformance case makes a boundary concrete.
+Not yet selected: HTTP or frontend framework, container runtime and image,
+production orchestrator binding, background queue product, distributed database,
+event broker, vector store, graph database, identity provider, cloud, or model
+SDK. A customer-Kubernetes JSON bundle is provisionally renderable, but no
+cluster, distribution, controller, ingress, storage class, or managed service is
+selected. Each remains behind its growth trigger.
 
 ## Kernel primitives
 

@@ -13,7 +13,8 @@ asset_service_status: BUILT_SELF_TESTED_NOT_WITNESSED
 proofing_service_status: CHARTERED_NOT_IMPLEMENTED
 byom_status: OWNER_DIRECTED_CONTRACT_AND_FIXTURE_PROPOSED
 ai_native_definition_status: FREEZE_CANDIDATE
-engineering_framework_status: BUILT_SELF_TESTED_NOT_WITNESSED_BASELINE_PROPOSED\ninfrastructure_status: BUILT_SELF_TESTED_NOT_WITNESSED_PROVISIONAL_LOCAL_ENVELOPE
+engineering_framework_status: BUILT_SELF_TESTED_NOT_WITNESSED_BASELINE_PROPOSED\ninfrastructure_status: BUILT_SELF_TESTED_NOT_WITNESSED_PROVISIONAL_LOCAL_AND_CUSTOMER_KUBERNETES_ENVELOPE
+deployment_topology_status: BUILT_SELF_TESTED_NOT_WITNESSED_PROVISIONAL
 sdlc_loop_status: OWNER_DIRECTED_LOOP_AND_BINDING_SKELETON_PROPOSED
 
 authority:
@@ -58,6 +59,7 @@ proposed_repository_claims:
   - minimal_phase_i_reference_stack
   - composable_kernel_primitive_baseline
   - dependency_free_day_zero_verification\n  - provisional_phase_i_local_infrastructure_as_code
+  - provisional_customer_owned_portable_deployment_topology
   - domain_mapped_sdlc_operating_loop
   - authority_and_verification_stance_dyads
   - red_gated_release_requirement
@@ -102,6 +104,9 @@ open_decisions:
   - id: O13
     question: Does Bdo ratify SDLC.md's tiers, stance dyads, concern-registry derivation, and Red-gated release requirement?
     blocks: sdlc_loop_activation
+  - id: O14
+    question: Does Bdo ratify the customer-owned local/Kubernetes deployment topology and its activation gates?
+    blocks: production_deployment
 
 protected_boundaries:
   - evidence_files_are_immutable

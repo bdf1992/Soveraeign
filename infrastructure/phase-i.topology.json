@@ -1,0 +1,68 @@
+{
+  "schema": "soveraeign-portable-topology/v1",
+  "profile": "CUSTOMER_OWNED_PORTABLE",
+  "node": {
+    "replicas": 1,
+    "custody_manifest": "phase-i.local.json",
+    "roles": {
+      "gateway": {
+        "placement": "IN_NODE",
+        "activation": "REQUIRES_ACCEPTED_SECOND_PROCESS_OPERATION",
+        "exposure": "CLUSTER_INTERNAL",
+        "terminal_pull": true,
+        "guard_policy": "REQUIRED",
+        "capacity": {
+          "max_inflight": 1,
+          "overflow": "REFUSE"
+        },
+        "patrol": {
+          "mode": "OBSERVE_ONLY",
+          "authority": "NONE"
+        },
+        "authority": "NONE"
+      },
+      "broker": {
+        "placement": "IN_NODE",
+        "activation": "REQUIRES_SECOND_PROCESS",
+        "transport": "LOCAL_CALL",
+        "authority": "NONE"
+      },
+      "queue": {
+        "placement": "IN_NODE",
+        "activation": "REQUIRES_DURABLE_WORK_CASE",
+        "durability": "LEASE_BACKED_LOCAL_BEFORE_ACTIVATION",
+        "system_of_record": false,
+        "authority": "NONE"
+      },
+      "federation": {
+        "placement": "IN_NODE",
+        "activation": "REQUIRES_TWO_NODE_CROSSING_CASE",
+        "state": "DISABLED",
+        "exposure": "NONE",
+        "authority": "NONE"
+      }
+    }
+  },
+  "deployment": {
+    "local": {
+      "execution": "LOCAL_PROCESS",
+      "bind": "127.0.0.1",
+      "custody": "LOCAL_MANIFEST"
+    },
+    "customer_kubernetes": {
+      "namespace": "soveraeign-system",
+      "service_type": "ClusterIP",
+      "gateway_port": 8080,
+      "custody_claim": "REQUIRED_AT_RENDER",
+      "network_default": "DENY",
+      "cluster_mutation": "EXTERNAL_OWNER_ACTION"
+    }
+  },
+  "policy": {
+    "provider_required": false,
+    "external_effects": "REFUSE",
+    "public_exposure": "FORBID",
+    "embedded_secrets": "FORBID",
+    "mutable_images": "FORBID"
+  }
+}

@@ -157,8 +157,34 @@ def command_transition(args: argparse.Namespace) -> int:
     return 0 if decision.allowed else 1
 
 
+def _metadata_case_failures() -> tuple[list[str], list[dict[str, Any]]]:
+    """Judge the metadata corpus against contracts/issue-metadata.schema.json.
+
+    A defeating case declares the substring its refusal must contain, so a case cannot
+    pass by raising some unrelated defect, and a weakened schema cannot hide behind a
+    coincidental failure elsewhere in the instance.
+    """
+    schema = json.loads((ROOT / "contracts" / "issue-metadata.schema.json").read_text("utf-8"))
+    corpus = json.loads((FIXTURES / "metadata-cases.json").read_text(encoding="utf-8"))
+    failures: list[str] = []
+    for case in corpus["cases"]:
+        defects = validate(case["metadata"], schema)
+        case_id = case["case_id"]
+        if case["expect"] == "VALID":
+            if defects:
+                failures.append(f"{case_id}: expected a valid instance, observed {defects[0]}")
+            continue
+        if not defects:
+            failures.append(f"{case_id}: expected a refusal, none raised")
+            continue
+        wanted = case.get("refuses")
+        if wanted and not any(wanted in defect for defect in defects):
+            failures.append(f"{case_id}: expected a refusal naming {wanted!r}, observed {defects}")
+    return failures, corpus["cases"]
+
+
 def command_selfcheck(_: argparse.Namespace) -> int:
-    """Run the declared positive and defeating fixture corpus without a network."""
+    """Run the declared positive and defeating fixture corpora without a network."""
     schema = json.loads((ROOT / "contracts" / "ticket-transition.schema.json").read_text("utf-8"))
     table = transmod.load_table(ROOT)
     cases = json.loads((FIXTURES / "transition-cases.json").read_text(encoding="utf-8"))
@@ -177,15 +203,20 @@ def command_selfcheck(_: argparse.Namespace) -> int:
         actual = "ALLOWED" if decision.allowed else decision.reason_code
         if actual != case["expect"]:
             failures.append(f"{case['case_id']}: expected {case['expect']}, observed {actual}")
+    metadata_failures, metadata_cases = _metadata_case_failures()
+    failures.extend(metadata_failures)
+    total = len(cases["cases"]) + len(metadata_cases)
     for failure in failures:
         print(f"FAIL: {failure}")
     if failures:
-        print(f"\nFAIL: {len(failures)} of {len(cases['cases'])} transition cases")
+        print(f"\nFAIL: {len(failures)} of {total} fixture cases")
         return 1
     positive = sum(1 for case in cases["cases"] if case["expect"] == "ALLOWED")
+    positive += sum(1 for case in metadata_cases if case["expect"] == "VALID")
     print(
-        f"PASS: {len(cases['cases'])} transition cases "
-        f"({positive} positive, {len(cases['cases']) - positive} defeating)"
+        f"PASS: {len(cases['cases'])} transition cases and "
+        f"{len(metadata_cases)} metadata cases "
+        f"({positive} positive, {total - positive} defeating)"
     )
     return 0
 

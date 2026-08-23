@@ -6,7 +6,8 @@
     "epic-of-epics": "type: epic",
     "village": "type: village",
     "bit": "type: bit",
-    "implementation-stub": "type: stub"
+    "implementation-stub": "type: stub",
+    "verification-engagement": "type: engagement"
   },
   "village_to_label": {
     "ground-and-evidence": "village: ground",

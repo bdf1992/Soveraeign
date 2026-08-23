@@ -16,6 +16,7 @@ ai_native_definition_status: FREEZE_CANDIDATE
 engineering_framework_status: BUILT_SELF_TESTED_NOT_WITNESSED_BASELINE_PROPOSED
 sdlc_loop_status: OWNER_DIRECTED_LOOP_AND_BINDING_SKELETON_PROPOSED
 coordination_registrar_status: BUILT_SELF_TESTED_NOT_WITNESSED
+sov_operating_agent_status: OWNER_DIRECTED_CONTEXT_PROFILE_BUILT_SELF_TESTED_NOT_WITNESSED
 
 authority:
   product_intent:
@@ -63,6 +64,7 @@ proposed_repository_claims:
   - github_coordination_registrar_and_typed_ticket_workflow
   - authority_and_verification_stance_dyads
   - red_gated_release_requirement
+  - sov_portable_bounded_agency_profile
 
 open_decisions:
   - id: O1
@@ -104,12 +106,15 @@ open_decisions:
   - id: O13
     question: Does Bdo ratify SDLC.md's tiers, stance dyads, concern-registry derivation, and Red-gated release requirement?
     blocks: sdlc_loop_activation
-  # O14 and O15 are held for the Console Service boundary and the scheduled-runs
-  # pattern, which exist as local drafts off this branch. The coordination-registrar
-  # question below is numbered to avoid colliding with them; Bdo renumbers on ruling.
+  # O14 and O15 are held for questions drafted on concurrent branches: the Console
+  # Service boundary and the scheduled-runs pattern. They are not stated here, so the
+  # questions below are numbered to avoid colliding; Bdo renumbers on ruling.
   - id: O16
     question: Does Bdo ratify contracts/ticket-transitions.json as the typed ticket workflow, and authorize the outward-facing coordination steps (branch protection requiring code owner review, label synchronization, project field writes) that make its owner-approval gate binding?
     blocks: coordination_automation_activation
+  - id: O17
+    question: Does Bdo accept Sov's exact agency envelope, context declaration, and activation gates?
+    blocks: sov_live_activation
 
 protected_boundaries:
   - evidence_files_are_immutable

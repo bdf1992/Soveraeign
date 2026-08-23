@@ -47,6 +47,16 @@ run declares its exact model, runtime, host, data boundary, usage, and cost.
 
 **[Read the Local, Personal, and BYOM pattern →](BYOM.md)**
 
+## Sov, the main operating agent
+
+**Sov** is the portable agency profile loaded by the current underlying model.
+It gives the model room to direct its own bounded participation — attention,
+context selection, legal next actions, refusal, and handoff — without turning
+the profile, prompt, provider, or model into authority. The node still owns its
+world; every consequential operation still requires a typed live grant.
+
+**[Load the Sov operating profile →](SOV.md)**
+
 ## Why this exists
 
 Most software still assumes one kind of operator: a persistent, accountable
@@ -146,6 +156,7 @@ The founding set contains:
 - `conformance/` — executable positive and defeating logical controls;
 - `lineage/`, when present — predecessor standings and immutable source evidence;
 - `AGENTS.md` — the normative operating contract for model contributors;
+- `SOV.md` and `bindings/sov/` — the portable main operating-agent profile;
 - `CONTRIBUTING.md` — the contribution workflow for humans and models;
 - `.cursorrules` — a concise editor-facing mirror of the root rules.
 
@@ -168,7 +179,7 @@ or reviewed implementation adoption.
 
 ## Start here
 
-1. Read `AGENTS.md`, `CONTRIBUTING.md`, and `STATUS.yaml`.
+1. Read `AGENTS.md`, `SOV.md`, `CONTRIBUTING.md`, and `STATUS.yaml`.
 2. Read `SYSTEM.md`, `CONTRACT.md`, `PRD.md`, and `SPEC.md` as one governing set.
 3. Read `ENGINEERING.md` and inspect `OPEN-SEAMS.md` before implementation.
 4. Run `python scripts/verify.py`; the dependency-free local and CI loop is

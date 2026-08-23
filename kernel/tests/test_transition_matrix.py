@@ -48,6 +48,14 @@ class StandingMatrix(KernelCase):
         self.expect("KERNEL-ADMIT-DEF-PREDICATE", receipt)
         self.assertEqual(self.kernel.records[record_id].standing, "RECORDED")
 
+    def test_admit_undecided_predicate(self) -> None:
+        record_id = self.recorded()
+        receipt = self.kernel.admit(record_id, actor_id=BDO, actor_kind="HUMAN",
+                                    expected_state=self.kernel.state_digest(record_id),
+                                    predicate_results=[{"predicate": "complete"}])
+        self.expect("KERNEL-ADMIT-DEF-UNDECIDED", receipt)
+        self.assertEqual(len(self.kernel.journal.bodies("RECEIPT")), 2)
+
     def test_admit_unknown_record(self) -> None:
         receipt = self.kernel.admit("urn:soveraeign:record:none", actor_id=BDO, actor_kind="HUMAN",
                                     expected_state=None, predicate_results=[])
@@ -165,6 +173,14 @@ class StandingMatrix(KernelCase):
         self.assertIn(target_receipt, self.kernel.receipts, "original receipt survives")
         self.assertIn(record_id, {b["record_id"] for b in self.kernel.journal.bodies("RECORD")})
         self.assertEqual(len(self.kernel.journal.bodies("COUNTER")), 1)
+
+    def test_retract_naming_consumption(self) -> None:
+        receipt = self.kernel.retract(self.ratified(), actor_id=BDO, actor_kind="HUMAN",
+                                      grant_id="g-retract", reason="model run superseded",
+                                      effect_class="RESOURCE_CONSUMPTION",
+                                      not_reversed="tokens spent on the superseded run")
+        self.expect("KERNEL-RETRACT-POS-CONSUMPTION", receipt)
+        self.assertEqual(self.kernel.audit(), [])
 
     def test_retract_without_authority(self) -> None:
         receipt = self.kernel.retract(self.ratified(), actor_id=MODEL, actor_kind="MODEL",

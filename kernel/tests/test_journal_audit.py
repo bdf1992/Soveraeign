@@ -6,7 +6,7 @@ from pathlib import Path
 import json
 import sys
 
-from support import BDO, REPO_ROOT, KernelCase, grant, plan
+from support import BDO, MODEL, REPO_ROOT, KernelCase, grant, plan
 
 sys.path.insert(0, str(REPO_ROOT / "scripts"))
 
@@ -97,6 +97,75 @@ class JournalAudit(KernelCase):
         self.kernel.records[record_id].standing_history.append("RATIFIED")
         defects = self.kernel.audit()
         self.assertTrue(any("ratify committed without passing" in d for d in defects), defects)
+
+    def test_fully_fabricated_commit_is_exposed(self) -> None:
+        record_id = self.admitted()
+        forged = self.kernel.attempt("ratify", actor_id=BDO, actor_kind="HUMAN",
+                                     inputs=[{"address": record_id, "digest": "sha256:x"}])
+        for predicate in ("record_present", "pre_state_current", "standing_is_admitted",
+                          "grant_present", "actor_matches", "type_matches",
+                          "capability_matches", "scope_matches", "grant_live",
+                          "budget_available"):
+            forged.check(predicate, True)
+        forged.commit(reason="every predicate fabricated, no grant named")
+        self.kernel.records[record_id].standing_history.append("RATIFIED")
+        defects = self.kernel.audit()
+        self.assertTrue(any("of which none are on record" in d for d in defects), defects)
+
+    def test_fabricated_commit_under_wrong_grant_fails_replay(self) -> None:
+        record_id = self.admitted()  # requires JUDGEMENT; g-verify is VERIFICATION
+        forged = self.kernel.attempt("ratify", actor_id=MODEL, actor_kind="MODEL",
+                                     inputs=[{"address": record_id, "digest": "sha256:x"}],
+                                     grant_ids=["g-verify"])
+        for predicate in ("record_present", "pre_state_current", "standing_is_admitted",
+                          "grant_present", "actor_matches", "type_matches",
+                          "capability_matches", "scope_matches", "grant_live",
+                          "budget_available"):
+            forged.check(predicate, True)
+        forged.commit(reason="fabricated over a real but wrong grant")
+        self.kernel.records[record_id].standing_history.append("RATIFIED")
+        defects = self.kernel.audit()
+        self.assertTrue(any("fails replay of ['type_matches']" in d for d in defects), defects)
+
+    def test_forged_commit_under_unrealized_transition_is_exposed(self) -> None:
+        forged = self.kernel.attempt("cross", actor_id=BDO, actor_kind="HUMAN",
+                                     inputs=[{"address": "x", "digest": "sha256:x"}])
+        forged.commit(reason="no such kernel transition")
+        defects = self.kernel.audit()
+        self.assertTrue(any("not realized by this kernel" in d for d in defects), defects)
+
+    def test_injected_projections_are_exposed(self) -> None:
+        from soveraeign_kernel import Attestation, AuthorityGrant, Observation
+        record_id = self.ratified()
+        run_id = self.begun()
+        self.kernel.grants["g-ghost"] = AuthorityGrant(
+            "g-ghost", BDO, BDO, "JUDGEMENT", "ratify", "*", 1, "2026-01-01T00:00:00Z",
+            "2026-12-31T00:00:00Z")
+        self.kernel.attestations["a-ghost"] = Attestation(
+            "a-ghost", record_id, "v", "1", [], ["sha256:in1"], None, "REPRODUCED", [], "t")
+        self.kernel.observations["o-ghost"] = Observation(
+            "o-ghost", run_id, "urn:soveraeign:actor:worker", "EXECUTOR", [], [],
+            [{"predicate": "derivative_present", "result": True}], "t")
+        self.kernel.runs[run_id].observation_ids.append("o-ghost")
+        defects = self.kernel.audit()
+        for expected in ("grant g-ghost: not on record", "attestation a-ghost: not on record",
+                         "observation o-ghost: not on record",
+                         f"run {run_id}: observations diverge from journal"):
+            self.assertIn(expected, defects)
+
+    def test_reset_run_outcome_is_exposed(self) -> None:
+        run_id = self.begun()
+        self.observed(run_id)
+        self.settled(run_id)
+        self.kernel.runs[run_id].outcome = "ATTEMPTED"
+        self.assertIn(f"run {run_id}: outcome diverges from journal", self.kernel.audit())
+        self.settled(run_id)  # a second settlement over the reset projection
+        self.assertIn(f"run {run_id}: 2 settlements, expected at most one", self.kernel.audit())
+
+    def test_cleared_counter_is_exposed(self) -> None:
+        record_id = self.full_walk()
+        self.kernel.records[record_id].countered_by.clear()
+        self.assertIn(f"record {record_id}: counters diverge from journal", self.kernel.audit())
 
     def test_commit_over_failed_precondition_is_impossible(self) -> None:
         attempt = self.kernel.attempt("admit", actor_id=BDO, actor_kind="HUMAN",

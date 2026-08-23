@@ -63,7 +63,9 @@ class StandingTransitions(KernelBase):
             return attempt.refuse(reasons.STALE_STATE, "declared pre-state is not current")
         if not attempt.check("standing_is_recorded", record.standing == "RECORDED"):
             return attempt.refuse(reasons.STANDING_REFUSED, f"record is {record.standing}")
-        attempt.preconditions.extend(predicate_results)
+        # A caller-supplied predicate without a result is recorded as not passed.
+        attempt.preconditions.extend({**item, "result": item.get("result") is True}
+                                     for item in predicate_results)
         if not all(item.get("result") is True for item in predicate_results):
             return attempt.refuse(reasons.ADMISSION_REFUSED, "an admission predicate failed")
         record.standing_history.append("ADMITTED")

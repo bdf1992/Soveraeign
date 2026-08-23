@@ -1,6 +1,6 @@
 # Shared kernel witness, 2026-08-23
 
-Status: `WITNESSED AT BUILT · NOT RATIFIED`
+Status: `WITNESSED TWICE AT BUILT · NOT RATIFIED`
 
 Issue #6, branch `feat/6-shared-kernel-transitions`, draft PR #61. The builder
 was the interactive Claude session; the witness was a separately launched
@@ -43,13 +43,35 @@ Residuals the witness named and this build left as they are: founding scenario
 `kernel/pyproject.toml` carries a `setuptools` build-system line without a
 decision record (as does the Asset Service).
 
-## Checks after the closing commit
+## Second pass, over `d534dbd`
+
+The same witness, context intact, re-ran its probes against the closing
+commit. Items 1 (sloppy forger), 2, 3, 4, 5, 9, and 12 reproduced-closed; the
+`REQUIRED_PASSING` table matched the predicates every honest commit records.
+It then found:
+
+| # | Defeat | Closed in the next commit |
+| --- | --- | --- |
+| P1b/P1c | a forger fabricating every required predicate with no grant, or an unjournaled grant id, passed audit | yes: a committed receipt requiring authority must name journaled grants; `ratify`/`retract` are replayed against the journaled grant and record |
+| P5b | a grant injected into `kernel.grants` without registration ratified cleanly | yes: every projected grant must be on record |
+| N1 | regression: a caller predicate without `result` crashed `admit` instead of refusing with a receipt | yes: recorded as not passed; `KERNEL-ADMIT-DEF-UNDECIDED` |
+| N2 | an attestation injected into the projection made a record effective | yes: every projected attestation must be on record |
+| N3 | an observation injected into the projection settled a run | yes: every projected observation must be on record; run observation ids rebuilt from the journal |
+| N4 | resetting `run.outcome` allowed a second settlement | yes: run outcome rebuilt from settle receipts; more than one settlement per run is named |
+| N5 | a forged commit under an unrealized transition name passed `audit_receipts` | yes: named |
+| N6 | `consumption_named` was conditional and outside the table | yes: required for any non-`RECORD_LOCAL` retraction |
+| N7 | clearing `countered_by` let a countered record become effective | yes: counters rebuilt from `COUNTER` bodies |
+| — | out-of-vocabulary call raises rather than receipts | no: queued as judgement 8 |
+
+Standing supported by the second pass: `OPEN -> BUILT` for the narrowed claim.
+
+## Checks after the second closing commit
 
 ```text
-python scripts/verify.py    PASS, under the 3 s budget; kernel suite 60 tests OK
+python scripts/verify.py    PASS, under the 3 s budget; kernel suite 68 tests OK
 python scripts/lint.py      PASS; every kernel module under 300 lines
 ```
 
-Standing after this file: still `BUILT`. The closing commit was written by the
-builder, and a build cannot witness itself. The next witness step is the same
-command set over the new head, with the ten rows above as the checklist.
+Standing after this file: still `BUILT`. Each closing commit was written by
+the builder, and a build cannot witness itself. The next witness step is the
+same command set over the new head, with both tables above as the checklist.

@@ -59,9 +59,18 @@ build claims over commit `681861e` and supported `OPEN -> BUILT`, not
 `BUILT -> WITNESSED`: it found the public attempt envelope could forge a commit
 the audit did not see, that the audit ignored edited record fields, that budget
 spend read a projection, that vocabulary was unenforced at the gate, and that
-a plan with unpaired inputs lost one silently. The following commit closes
-those five and declares each as a defeating test; the remaining findings are
-queued below.
+a plan with unpaired inputs lost one silently. Commit `d534dbd` closed those
+five and declared each as a defeating test.
+
+A second pass over `d534dbd` reproduced the closures and found the structural
+gap behind the rest: the audit rebuilt only `Record` from the journal while
+grants, attestations, observations, runs, and counters were projections the
+transitions trusted; it also found a regression where a caller predicate
+without a result crashed a refusal path instead of receipting it. The next
+commit rebuilds every projection from the journal, replays the authority gate
+for `ratify` and `retract` from journaled bodies, and restores the refusal.
+Standing after both passes: `BUILT`, because each closing commit is the
+builder's. The remaining findings are queued below.
 
 ## Judgement queued for Bdo
 
@@ -78,3 +87,6 @@ queued below.
    latter.
 7. `kernel/pyproject.toml` carries the same `setuptools` build-system line as
    `services/asset/pyproject.toml`; neither has a decision record.
+8. Is an out-of-vocabulary call a refusal that owes a receipt (`SPEC.md`
+   Receipt: attributable even when refused), or a non-attempt that may raise?
+   The reference raises.

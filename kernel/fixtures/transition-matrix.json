@@ -17,6 +17,9 @@
     {"id": "KERNEL-ADMIT-DEF-PREDICATE", "transition": "admit", "polarity": "defeating",
      "defeats": "failed admission predicate still admits",
      "expected": {"outcome": "REFUSED", "reason_code": "ADMISSION_REFUSED"}},
+    {"id": "KERNEL-ADMIT-DEF-UNDECIDED", "transition": "admit", "polarity": "defeating",
+     "defeats": "an admission predicate with no result admits, or crashes without a receipt",
+     "expected": {"outcome": "REFUSED", "reason_code": "ADMISSION_REFUSED"}},
     {"id": "KERNEL-ADMIT-DEF-UNKNOWN", "transition": "admit", "polarity": "defeating",
      "defeats": "a record that is not on record is admitted",
      "expected": {"outcome": "REFUSED", "reason_code": "TARGET_UNKNOWN"}},
@@ -67,6 +70,8 @@
      "expected": {"outcome": "REFUSED", "reason_code": "UNATTESTABLE"}},
 
     {"id": "KERNEL-RETRACT-POS", "transition": "retract", "polarity": "positive",
+     "expected": {"outcome": "COUNTERED", "reason_code": null}},
+    {"id": "KERNEL-RETRACT-POS-CONSUMPTION", "transition": "retract", "polarity": "positive",
      "expected": {"outcome": "COUNTERED", "reason_code": null}},
     {"id": "KERNEL-RETRACT-DEF-AUTHORITY", "transition": "retract", "polarity": "defeating",
      "defeats": "retraction without a live retraction grant",

@@ -96,7 +96,8 @@ class Attempt:
                evidence: list[str], prior_receipt_id: str | None) -> dict[str, Any]:
         if self.closed:
             raise RuntimeError(f"{self.transition}: attempt already closed")
-        failed = [item["predicate"] for item in self.preconditions if item["result"] is not True]
+        failed = [item.get("predicate") for item in self.preconditions
+                  if item.get("result") is not True]
         if outcome != "REFUSED" and failed:
             raise RuntimeError(f"{self.transition}: cannot commit over failed {failed}")
         self.closed = True
@@ -206,5 +207,5 @@ class KernelBase:
                        interface_id=interface_id or self.interface_id)
 
     def audit(self) -> list[str]:
-        """Every visible defect: chain, receipts, committed-without-passing, projections."""
-        return kernel_audit.audit(self.journal, self.records)
+        """Every visible defect: chain, receipts, authority replay, projections."""
+        return kernel_audit.audit(self)

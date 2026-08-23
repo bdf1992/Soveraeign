@@ -61,17 +61,34 @@ executor's report. `settle_run` reads observations, never the report.
 ## The journal
 
 `Journal` is the reference in-memory realization of the append rule. Each entry
-digests its body with the prior entry's digest. `Kernel.audit()` names every
-visible defect: a broken chain, an event without a receipt, a receipt without
-an event, more than one receipt for one event, a counter-record whose original
-is missing, a committed receipt that does not carry every predicate its
-transition requires as passed, and a record whose projected fields, standing,
-or effectiveness disagree with what the journal supports. Budget spend and the
-prior receipt of a retraction are read from the journal, never from the
-projection dictionaries. That is how "service writes authoritative state around
-the kernel" is exposed rather than prevented: a caller holding a reference to
-the kernel's state can edit it, and an independent reader of the journal will
-see that it did. Durable storage behind the same surface is issue #7.
+digests its body with the prior entry's digest. `Kernel.audit()` reads the
+journal alone and names every visible defect in three readings:
+
+- **receipts** — a broken chain; an event without a receipt; a receipt without
+  an event; more than one receipt per event; more than one settlement per run;
+  a committed receipt under a transition this kernel does not realize; a
+  committed receipt missing any predicate its transition requires as passed
+  (`audit.REQUIRED_PASSING`); a committed receipt that required authority but
+  names no journaled grant;
+- **authority replay** — for `ratify` and `retract`, the grant named on the
+  receipt is re-evaluated from its journaled body against the journaled
+  record's authority type and scope, the receipt's own timestamp, and the
+  count of prior uses on record;
+- **projections** — every projected grant, attestation, observation, counter,
+  record, and run must equal its journaled body on every immutable field, and
+  the fields transitions mutate (standing, effectiveness, counters, run
+  outcome, observation ids) must equal what the receipts on record rebuild.
+
+Budget spend and the prior receipt of a retraction are likewise read from the
+journal, never from the projection dictionaries. That is how "service writes
+authoritative state around the kernel" is exposed rather than prevented: a
+caller holding a reference to the kernel's state can edit any projection, and
+an independent reader of the journal will see that it did. What the audit
+cannot replay is the pre-state digest a transition compared against, because
+the journal does not carry intermediate projections; a forger who fabricates a
+complete, grant-backed, replay-consistent receipt over a record whose journaled
+history admits it is indistinguishable from the kernel. Durable storage behind
+the same surface is issue #7.
 
 ## Running it
 
@@ -80,7 +97,7 @@ python -m unittest discover -s kernel/tests -v   # the transition matrix
 python scripts/verify.py                          # includes it
 ```
 
-`kernel/fixtures/transition-matrix.json` declares 41 cases, 12 positive and 29
+`kernel/fixtures/transition-matrix.json` declares 43 cases, 13 positive and 30
 defeating, at least one of each per realized transition and at least one per
 refusal reason code. `kernel/tests/` executes each case against the declared
 outcome and reason code, validates every emitted receipt and envelope against
@@ -89,9 +106,9 @@ through the independent validator in `scripts/sovticket/jsonschema.py`, probes
 the audit with forged commits and edited projections, and fails if any declared
 case or reason code was not exercised or any transition lacks its pair.
 
-Witnessed once: `reports/2026-08-23-kernel-witness.md` records the independent
-observation over commit `681861e`, the defeats it found, and which of them the
-following commit closed.
+Witnessed twice: `reports/2026-08-23-kernel-witness.md` records the
+independent observations over commits `681861e` and `d534dbd`, the defeats each
+found, and which of them the following commit closed.
 
 ## Known gaps
 
@@ -106,7 +123,8 @@ following commit closed.
 | Judgement queue | `UNRESOLVED` settlement is receipted; no persistent pending-right record is created | Pending judgement visible and non-blocking | PROD-I-6 |
 | Observer relation | Refused only when it names the executor or the executor's report | The relation must state how the observer avoids the report; the kernel cannot verify prose | SPEC `Observation`; C7 |
 | Settlement input state | `current_input_state_digest` is declared by the caller; the kernel fences the run state it holds, not world state it cannot see | Settlement refuses on changed input state | SPEC `settle_run` |
-| Crash inside an attempt | An exception between open and close appends nothing and audit sees nothing | Whether a crash owes a `FAILED` receipt is queued | SPEC Transition contract |
+| Crash inside an attempt | An exception between open and close appends nothing and audit sees nothing; the known caller-input paths now refuse or raise before opening | Whether a crash owes a `FAILED` receipt is queued | SPEC Transition contract |
+| Out-of-vocabulary call | Raises before an attempt opens; no receipt | Whether a non-attempt owes a refusal receipt is queued | SPEC `Receipt` |
 | `UNATTESTABLE` beside `REPRODUCED` | Effectiveness is refused on `DISSENTED` only; an `UNATTESTABLE` outcome over the same inputs does not block | Attestation policy for mixed outcomes | SPEC `make_effective`; O4 |
 
 These are reference gaps, not reasons to relax `SPEC.md`.

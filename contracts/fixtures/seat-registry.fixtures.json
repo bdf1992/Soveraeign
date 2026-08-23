@@ -1,0 +1,265 @@
+[
+  {
+    "id": "CONTRACT-SEATS-POS",
+    "contract": "seat-registry.schema.json",
+    "status": "PROPOSED",
+    "polarity": "positive",
+    "expected_validity": "VALID",
+    "expected_rooted_tree": true,
+    "note": "The first honest registry: the wild west, recorded. Occupancy claims are attributable and unverified; verification is O3's.",
+    "record": {
+      "registry_schema": "soveraeign-seat-registry/v1",
+      "status": "PROPOSED",
+      "root_seat": "seat:root",
+      "seats": [
+        {
+          "seat_id": "seat:root",
+          "seat_type": "root",
+          "owner_seat": null,
+          "settles": [
+            "JUDGEMENT",
+            "VERIFICATION"
+          ],
+          "cares_about": "product intent, naming, judgement, phase gates",
+          "occupant": {
+            "actor_id": "urn:soveraeign:actor:bdo",
+            "actor_kind": "HUMAN",
+            "claimed_at": "2026-08-22T00:00:00Z",
+            "claim_basis": "decisions/0001-founding-boundary.md"
+          },
+          "eligibility": "seated by decisions/0001; succession is a naming and judgement act"
+        },
+        {
+          "seat_id": "seat:session-control",
+          "seat_type": "control",
+          "owner_seat": "seat:root",
+          "settles": [
+            "VERIFICATION"
+          ],
+          "cares_about": "coordination of launched orchestrations and their reports",
+          "occupant": {
+            "actor_id": "urn:soveraeign:actor:claude-interactive-session",
+            "actor_kind": "MODEL",
+            "claimed_at": "2026-08-23T00:00:00Z",
+            "claim_basis": "launched and directed by the root occupant; reports/2026-08-23-seat-adoption.md"
+          },
+          "eligibility": "any operator the root seats for a session"
+        },
+        {
+          "seat_id": "seat:orchestrator-1",
+          "seat_type": "orchestration",
+          "owner_seat": "seat:session-control",
+          "settles": [
+            "VERIFICATION"
+          ],
+          "cares_about": "the work of leased workers",
+          "occupant": null
+        },
+        {
+          "seat_id": "seat:worker-1",
+          "seat_type": "work",
+          "owner_seat": "seat:orchestrator-1",
+          "settles": [],
+          "cares_about": "its own execution",
+          "occupant": null
+        }
+      ]
+    }
+  },
+  {
+    "id": "CONTRACT-SEATS-DEF-ROOT-OWNED",
+    "contract": "seat-registry.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "defeats": "a root seat that has an owner: the circular Owner this decision exists to prevent",
+    "record": {
+      "registry_schema": "soveraeign-seat-registry/v1",
+      "status": "PROPOSED",
+      "root_seat": "seat:root",
+      "seats": [
+        {
+          "seat_id": "seat:root",
+          "seat_type": "root",
+          "owner_seat": "seat:controller-1",
+          "settles": [
+            "JUDGEMENT"
+          ],
+          "cares_about": "itself",
+          "occupant": null
+        }
+      ]
+    }
+  },
+  {
+    "id": "CONTRACT-SEATS-DEF-WORK-SETTLES",
+    "contract": "seat-registry.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "defeats": "a work seat that settles: settlement belongs to the owner one edge up",
+    "record": {
+      "registry_schema": "soveraeign-seat-registry/v1",
+      "status": "PROPOSED",
+      "root_seat": "seat:root",
+      "seats": [
+        {
+          "seat_id": "seat:worker-1",
+          "seat_type": "work",
+          "owner_seat": "seat:orchestrator-1",
+          "settles": [
+            "VERIFICATION"
+          ],
+          "cares_about": "its own execution",
+          "occupant": null
+        }
+      ]
+    }
+  },
+  {
+    "id": "CONTRACT-SEATS-DEF-ANON-CLAIM",
+    "contract": "seat-registry.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "defeats": "an occupancy claim without a basis: the wild west may be unverified, never unattributed",
+    "record": {
+      "registry_schema": "soveraeign-seat-registry/v1",
+      "status": "PROPOSED",
+      "root_seat": "seat:root",
+      "seats": [
+        {
+          "seat_id": "seat:controller-1",
+          "seat_type": "control",
+          "owner_seat": "seat:root",
+          "settles": [
+            "JUDGEMENT"
+          ],
+          "cares_about": "coordination",
+          "occupant": {
+            "actor_id": "urn:soveraeign:actor:claude",
+            "actor_kind": "MODEL",
+            "claimed_at": "2026-08-23T00:00:00Z",
+            "claim_basis": ""
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "CONTRACT-SEATS-DEF-CYCLE",
+    "contract": "seat-registry.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "expected_rooted_tree": false,
+    "defeats": "two seats owning each other: schema-valid, semantically a self-settlement loop",
+    "record": {
+      "registry_schema": "soveraeign-seat-registry/v1",
+      "status": "PROPOSED",
+      "root_seat": "seat:root",
+      "seats": [
+        {
+          "seat_id": "seat:root",
+          "seat_type": "root",
+          "owner_seat": null,
+          "settles": [
+            "JUDGEMENT"
+          ],
+          "cares_about": "product intent",
+          "occupant": null
+        },
+        {
+          "seat_id": "seat:controller-1",
+          "seat_type": "control",
+          "owner_seat": "seat:orchestrator-1",
+          "settles": [
+            "JUDGEMENT"
+          ],
+          "cares_about": "coordination",
+          "occupant": null
+        },
+        {
+          "seat_id": "seat:orchestrator-1",
+          "seat_type": "orchestration",
+          "owner_seat": "seat:controller-1",
+          "settles": [
+            "VERIFICATION"
+          ],
+          "cares_about": "the work",
+          "occupant": null
+        }
+      ]
+    }
+  },
+  {
+    "id": "CONTRACT-SEATS-DEF-ORPHAN",
+    "contract": "seat-registry.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "expected_rooted_tree": false,
+    "defeats": "an owner edge naming a seat that does not exist: a chain that never reaches the root",
+    "record": {
+      "registry_schema": "soveraeign-seat-registry/v1",
+      "status": "PROPOSED",
+      "root_seat": "seat:root",
+      "seats": [
+        {
+          "seat_id": "seat:root",
+          "seat_type": "root",
+          "owner_seat": null,
+          "settles": [
+            "JUDGEMENT"
+          ],
+          "cares_about": "product intent",
+          "occupant": null
+        },
+        {
+          "seat_id": "seat:worker-1",
+          "seat_type": "work",
+          "owner_seat": "seat:orchestrator-ghost",
+          "settles": [],
+          "cares_about": "its own execution",
+          "occupant": null
+        }
+      ]
+    }
+  },
+  {
+    "id": "CONTRACT-SEATS-DEF-TWO-ROOTS",
+    "contract": "seat-registry.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "expected_rooted_tree": false,
+    "defeats": "two root-typed seats: Phase I admits exactly one seat that answers to no one",
+    "record": {
+      "registry_schema": "soveraeign-seat-registry/v1",
+      "status": "PROPOSED",
+      "root_seat": "seat:root",
+      "seats": [
+        {
+          "seat_id": "seat:root",
+          "seat_type": "root",
+          "owner_seat": null,
+          "settles": [
+            "JUDGEMENT"
+          ],
+          "cares_about": "product intent",
+          "occupant": null
+        },
+        {
+          "seat_id": "seat:root-2",
+          "seat_type": "root",
+          "owner_seat": null,
+          "settles": [
+            "JUDGEMENT"
+          ],
+          "cares_about": "a second throne",
+          "occupant": null
+        }
+      ]
+    }
+  }
+]

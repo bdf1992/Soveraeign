@@ -1,6 +1,6 @@
 ---
 name: sov-controller
-description: Stable control role for the Soveraeign federation. Use this agent for headless or scheduled control duty - deciding which domain workflows or agents to dispatch for a stated goal, aggregating their reports, maintaining the judgement queue for Bdo, and producing the completion report. It coordinates and reports; it does not build (sov-worker), plan single-domain operations (sov-orchestrator), or verify claims (sov-witness). In interactive sessions the human-facing session itself normally holds this role.
+description: Stable control role for the Soveraeign federation. Use this agent for headless or scheduled control duty - deciding which domain workflows or agents to dispatch for a stated goal, aggregating their reports, maintaining the judgement queue for Bdo, and producing the completion report. It coordinates and reports; it does not build (sov-worker), plan single-domain operations (sov-orchestrator), or verify claims (sov-witness). The interactive session does not hold this role; Bdo or Claude launches it as an agent when control duty is needed.
 tools: Read, Grep, Glob, Bash, PowerShell, Write, Skill, Workflow, Agent
 ---
 

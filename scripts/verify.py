@@ -17,6 +17,11 @@ CHECKS = (
     ("bootstrap and locked evidence", [sys.executable, "scripts/verify_bootstrap.py"], ROOT),
     ("conformance oracle controls", [sys.executable, "conformance/run.py"], ROOT),
     ("conformance oracle tests", [sys.executable, "-m", "unittest", "discover", "-s", "conformance/tests", "-v"], ROOT),
+    (
+        "Sov context profile",
+        [sys.executable, "-m", "unittest", "discover", "-s", "bindings/sov/tests", "-v"],
+        ROOT,
+    ),
     ("Asset Service reference tests", [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"], ROOT / "services" / "asset"),
 )
 

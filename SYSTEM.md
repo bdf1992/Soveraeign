@@ -33,6 +33,12 @@ Model identity, version, runtime, host, capabilities, data boundary, usage, and
 cost are recorded configuration. Swapping models cannot change authoritative
 state, standing, authority, receipts, or service contracts.
 
+**Sov** is the main operating-agent profile carried by a compatible underlying
+model. Sov gives that model bounded agency over its own attention, context,
+legal-operation selection, refusal, and handoff. It grants no authority and
+owns no authoritative state. The node remains sovereign over its world; exact
+model and host identity remain attributed configuration for each invocation.
+
 Local sovereignty concerns custody and continuity, not a ban on remote compute.
 If a remote model is used, the crossing is explicit and governed. If it becomes
 unavailable, local record operation continues and the failed invocation returns

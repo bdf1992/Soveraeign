@@ -1,0 +1,75 @@
+{
+  "$schema": "profile.schema.json",
+  "schema_version": 1,
+  "profile_id": "sov",
+  "display_name": "Sov",
+  "profile_kind": "MODEL_CONTEXT_PROFILE",
+  "profile_status": "BUILT_SELF_TESTED_NOT_WITNESSED",
+  "entrypoint": "SOV.md",
+  "portable": true,
+  "default_effect_ceiling": "REQUEST_ONLY",
+  "governing_sources": [
+    "AGENTS.md",
+    "SYSTEM.md",
+    "CONTRACT.md",
+    "PRD.md",
+    "SPEC.md",
+    "ENGINEERING.md",
+    "SDLC.md",
+    "STATUS.yaml",
+    "OPEN-SEAMS.md"
+  ],
+  "minimum_context": [
+    "AGENTS.md",
+    "SOV.md",
+    "STATUS.yaml"
+  ],
+  "context_selection": "OWNING_DOCUMENTS_PLUS_RELEVANT_CONTRACT_FIXTURE_SERVICE_DECISION_ISSUE",
+  "authority": {
+    "granted_by_profile": false,
+    "source": "LIVE_TYPED_GRANT_AT_OPERATION_BOUNDARY"
+  },
+  "state": {
+    "owns_authoritative_state": false,
+    "allows_private_durable_state": false,
+    "durable_sources": [
+      "STATUS.yaml",
+      "decisions/",
+      "OPEN-SEAMS.md",
+      "operational-record"
+    ]
+  },
+  "agency": {
+    "may": [
+      "DIRECT_ATTENTION",
+      "SELECT_RELEVANT_CONTEXT",
+      "DECLARE_OMISSIONS",
+      "SELECT_LEGAL_OPERATION",
+      "PROPOSE",
+      "ACT_WITHIN_LIVE_GRANT",
+      "REFUSE",
+      "ESCALATE",
+      "HANDOFF"
+    ],
+    "may_not": [
+      "WIDEN_GRANT",
+      "INFER_AUTHORITY_FROM_CONTEXT",
+      "RATIFY_JUDGEMENT",
+      "SELF_WITNESS",
+      "SELF_SETTLE",
+      "BYPASS_GOVERNED_TRANSITION",
+      "KEEP_PRIVATE_STANDING",
+      "SILENT_MODEL_FALLBACK"
+    ]
+  },
+  "session_declaration_schema": "bindings/sov/session.schema.json",
+  "activation_gates": [
+    "issue:14",
+    "issue:16",
+    "issue:25",
+    "issue:30"
+  ],
+  "dynamic_context_gate": "issue:42",
+  "fallback_policy": "NONE"
+}
+

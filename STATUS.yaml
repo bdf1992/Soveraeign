@@ -4,26 +4,33 @@ product_name: Soveraeign
 repository_name: Soveraeign
 category: locally-sovereign-algorithmic-ai-native-enterprise-environment
 phase: FOUNDING
-naming_status: OWNER_SELECTED_WORKING_NAME_CLEARANCE_HELD_O1
+naming_status: OWNER_SELECTED_WORKING_NAME_PUBLIC_CLEARANCE_HELD_O1
 implementation_status: EXPERIMENTAL_REFERENCE_PARTICIPANT
-specification_status: RATIFIED_BY_OWNER_ACCEPTANCE_A2
 conformance_status: EXECUTABLE_ORACLE_CONTROLS_PARTICIPANT_BINDING_OPEN
-classification_status: RULED_CANONICAL_FOR_PHASE_O9
 asset_service_status: BUILT_SELF_TESTED_NOT_WITNESSED
-proofing_service_status: CHARTERED_NOT_IMPLEMENTED
-byom_status: RULED_CONTRACT_STANDS_O12
-ai_native_definition_status: FREEZE_CANDIDATE
-engineering_framework_status: RATIFIED_BY_OWNER_ACCEPTANCE_A1
-sdlc_loop_status: RATIFIED_BY_OWNER_ACCEPTANCE_A3_ACCEPTANCE_NOT_APPROVAL
 coordination_registrar_status: BUILT_SELF_TESTED_NOT_WITNESSED
+ai_native_definition_status: FREEZE_CANDIDATE
+
+# OWNER_ACCEPTED_A* names the packet the root seat acted on; the record is
+# .local/acceptance/ledger.ndjson and the packet is under acceptance/accepted/.
+specification_status: OWNER_ACCEPTED_A2_PHASE_I_LOGICAL_SPEC
+engineering_framework_status: OWNER_ACCEPTED_A1_PHASE_I_REFERENCE_BASELINE
+sdlc_loop_status: OWNER_ACCEPTED_A3_ACCEPTANCE_NOT_APPROVAL
+external_effect_status: OWNER_ACCEPTED_A4_SCOPED_NOT_REFUSED
+
+# RULED_ values are reversible defaults taken under decisions/0029. They are not
+# owner acceptance and do not claim to be; each names what would overturn it.
+classification_status: RULED_CANONICAL_FOR_PHASE_O9
+proofing_service_status: RULED_SECOND_BOUNDARY_O11_CHARTERED_NOT_IMPLEMENTED
+byom_status: RULED_CONTRACT_STANDS_O12
 sov_operating_agent_status: RULED_ENVELOPE_STANDS_O17_BUILT_SELF_TESTED
 ticket_kind_vocabulary_status: RULED_O19
 kernel_transition_contract_status: RULED_O20
 semantic_cold_start_status: RULED_O8_TASK_EXECUTED
 
-# RULED_ values are reversible defaults taken under decisions/0029, not owner
-# acceptance. RATIFIED_BY_OWNER_ACCEPTANCE_* names the packet the root seat acted
-# on; the record is .local/acceptance/ledger.ndjson.
+# Owner is a seat, not a person: owner(X) is the seat one edge up, the seat that
+# issued X's grant and settles its receipts (decisions/0020, applied). The live
+# view is contracts/seat-registry.json.
 authority:
   product_intent:
     seat: seat:root
@@ -35,7 +42,7 @@ authority:
     occupied_by: Bdo
     type: human_judgement
     gate: acceptance
-  phase_gate:
+  phase_acceptance:
     seat: seat:root
     occupied_by: Bdo
     type: human_judgement
@@ -61,39 +68,35 @@ settled_source_claims:
   - record_retraction_preserves_history
   - local_first_enterprise_sovereignty
   - growth_from_evidence_not_preloaded_wisdom
+  - owner_gate_is_acceptance_not_preapproval
+  - participant_may_decide_for_its_own_bounded_participation
+  - owner_is_the_seat_one_edge_up_and_does_not_chain
 
-proposed_repository_claims:
-  - founding_contract_c1_through_c14
-  - normalized_phase_i_prd
-  - phased_attack_plan_f0_through_f6
-  - ancestry_without_code_inheritance
+accepted_repository_claims:
   - canonical_classification_contract
-  - phase_i_logical_specification
+  - phase_i_logical_specification_with_sovereignty_clarification
   - asset_and_proofing_sibling_service_boundary
-  - executable_conformance_oracle
   - personal_local_node_profile
-  - bring_your_own_model_practice
-  - model_portability_phase_i_requirement
-  - root_engineering_instruction_framework
-  - design_and_operational_systems_of_record
-  - minimal_phase_i_reference_stack
-  - composable_kernel_primitive_baseline
-  - dependency_free_day_zero_verification
+  - bring_your_own_model_phase_i_contract
+  - root_engineering_reference_baseline
   - domain_mapped_sdlc_operating_loop
   - github_coordination_registrar_and_typed_ticket_workflow
-  - authority_and_verification_stance_dyads
+  - authority_and_verification_stance_dyads_with_owner_acceptance
   - red_gated_release_requirement
   - sov_portable_bounded_agency_profile
+  - verification_engagement_ticket_kind
+  - compiled_kernel_transition_contract
+  - semantic_cold_start_observation_shape
+  - seat_relative_owner_topology
+  - external_effects_scoped_not_refused
 
 # The owner gate is acceptance of a finished result, not permission to begin
-# (decisions/0028-acceptance-not-approval.md). Work whose effect class is
-# RECORD_LOCAL or RESOURCE_CONSUMPTION and whose change is reversible proceeds
-# without asking. A transition waits on Bdo only for a reason named in
-# contracts/acceptance-policy.json hold_reasons; every other founding question is
-# drained below into a standing default that the evidence under `counter`
-# overturns, or presented as a finished result with a packet.
+# (decisions/0028, which supersedes the prose in 0023 and 0024). A transition
+# waits on an owner seat only for a reason contracts/acceptance-policy.json
+# names. Everything else is drained below into a standing default the evidence
+# under `counter` overturns, or presented as a finished result with a packet.
 #
-#   python scripts/sov_accept.py queue     what is waiting on Bdo
+#   python scripts/sov_accept.py queue     what is waiting on which seat
 #   python scripts/sov_accept.py audit     fails the build if anything waits without a reason
 #
 # The O-numbers are kept so the documents that cite them still resolve.
@@ -131,8 +134,13 @@ owner_holds:
   - id: O1
     reason: PUBLICATION
     blocks: repository.publish_public
-    question: Does Soveraeign clear legal, domain, package, and product collision screening?
+    question: Does public release have sufficient legal, domain, package, and product collision clearance?
     reachable_alternative: Every Phase-I engineering task proceeds under the working name; no agent claims clearance.
+
+reserved_decision_ids:
+  - O14
+  - O15
+  - O18
 
 rulings:
   - id: O7
@@ -187,20 +195,35 @@ rulings:
 acceptance_policy:
   contract: contracts/acceptance-policy.json
   seats: contracts/seat-registry.json
+  external_effects: contracts/external-effect-authorization.json
   decision: decisions/0028-acceptance-not-approval.md
   drain: decisions/0029-decision-queue-drain.md
+  external_effects_decision: decisions/0030-external-effects-authorized.md
+  superseded_prose: decisions/0023-acceptance-not-approval.md, decisions/0024-open-decision-drain.md
   gate: acceptance
   ordinary_work_requires_preapproval: false
+  owner_acceptance_requires_evidence: true
+  owner_acceptance_requires_presentation: true
+  presentation_goal: engaging_legible_nearly_self_evident_from_output
   audit: python scripts/sov_accept.py audit
+  owner_actions:
+    - ACCEPT
+    - REJECT
+    - STRIKE
+    - REDIRECT
 
 protected_boundaries:
   - evidence_files_are_immutable
-  - product_name_changes_require_owner_authority
+  - product_name_changes_require_owner_acceptance
   - no_runtime_code_before_logical_spec_and_defeating_fixtures
   - no_whole_repository_imports
+  - no_owner_impersonation
+  - no_self_witnessing
+  - no_self_acceptance_of_owner_judgement
+  - no_secret_exposure
   - no_external_effect_outside_a_declared_authorized_scope
   - no_external_effect_without_a_receipt
   - no_refused_verb_reachable_through_any_scope
   - no_claim_that_an_external_effect_was_rolled_back
 
-next_gate: F0_FOUNDING_CLOSURE
+next_gate: EVIDENCE_PRODUCING_EXECUTION

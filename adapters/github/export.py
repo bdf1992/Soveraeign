@@ -19,7 +19,7 @@ import subprocess
 import sys
 
 ISSUE_FIELDS = "number,title,state,body,labels"
-PULL_FIELDS = "number,title,state,headRefName,body"
+PULL_FIELDS = "number,title,state,headRefName,body,isDraft,updatedAt"
 DEFAULT_LIMIT = 500
 
 
@@ -44,8 +44,18 @@ def _run(command: list[str]) -> str:
     return result.stdout
 
 
+def capture_branches(repo: str) -> list[dict[str, Any]]:
+    """Capture the live branch names so a merged ref can be judged offline.
+
+    Only the name is projected. A branch is a ref, and this crossing has no business
+    reading the tree behind it.
+    """
+    names = _run(["gh", "api", "--paginate", f"repos/{repo}/branches", "--jq", ".[].name"])
+    return [{"name": name} for name in sorted(filter(None, names.splitlines()))]
+
+
 def capture(repo: str, limit: int) -> dict[str, Any]:
-    """Capture issues and pull requests with exact provenance."""
+    """Capture issues, pull requests, and branch refs with exact provenance."""
     issues = json.loads(
         _run(["gh", "issue", "list", "--repo", repo, "--state", "all",
               "--limit", str(limit), "--json", ISSUE_FIELDS])
@@ -56,7 +66,7 @@ def capture(repo: str, limit: int) -> dict[str, Any]:
     )
     if not issues:
         raise RegistrarRefusal("REGISTRAR_EMPTY", f"{repo} returned no issues")
-    return {"issues": issues, "pulls": pulls}
+    return {"issues": issues, "pulls": pulls, "branches": capture_branches(repo)}
 
 
 def _digest(payload: Any) -> str:
@@ -76,6 +86,7 @@ def write_export(captured: dict[str, Any], repo: str, out: Path) -> dict[str, An
         "captured_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "issue_count": len(issues),
         "pull_count": len(captured["pulls"]),
+        "branch_count": len(captured.get("branches", [])),
         "export_path": out.name,
         "export_digest": _digest(issues),
         "effect_class": "RECORD_LOCAL",
@@ -87,6 +98,9 @@ def write_export(captured: dict[str, Any], repo: str, out: Path) -> dict[str, An
     pulls_path = out.with_name(out.stem + ".pulls.json")
     pulls = sorted(captured["pulls"], key=lambda item: item["number"])
     pulls_path.write_text(json.dumps(pulls, indent=2) + "\n", encoding="utf-8", newline="\n")
+    branches_path = out.with_name(out.stem + ".branches.json")
+    branches = captured.get("branches", [])
+    branches_path.write_text(json.dumps(branches, indent=2) + "\n", encoding="utf-8", newline="\n")
     return receipt
 
 
@@ -104,8 +118,8 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     receipt = write_export(captured, args.repo, args.out)
     print(
-        f"CAPTURED: {receipt['issue_count']} issues and {receipt['pull_count']} pull requests "
-        f"from {args.repo} at {receipt['captured_at']}"
+        f"CAPTURED: {receipt['issue_count']} issues, {receipt['pull_count']} pull requests, "
+        f"and {receipt['branch_count']} branches from {args.repo} at {receipt['captured_at']}"
     )
     print(f"  export  {args.out}")
     print(f"  digest  {receipt['export_digest']}")

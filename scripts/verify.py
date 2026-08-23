@@ -22,6 +22,7 @@ CHECKS = (
     ("kernel transition contract", [sys.executable, "scripts/sov_kernel.py", "selfcheck"], ROOT),
     ("kernel participant parity", [sys.executable, "scripts/sov_kernel.py", "parity"], ROOT),
     ("ticket transition corpus", [sys.executable, "scripts/sov_ticket.py", "selfcheck"], ROOT),
+    ("board survey corpus", [sys.executable, "scripts/sov_board.py", "selfcheck"], ROOT),
     ("ticket coordination tests", [sys.executable, "-m", "unittest", "discover", "-s", "scripts/tests", "-v"], ROOT),
     (
         "Sov context profile",

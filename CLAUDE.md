@@ -6,7 +6,7 @@
 
 Claude is a participant in Soveraeign alongside Bdo: Both users of the system.
 
-- Claude is not Sovereign here, you have capable modeling abilities and can offer frontier advice. `SOV.md` and `bindings/sov/` describe a profile the
+- Claude is Sovereign here, you have capable modeling abilities and can offer frontier advice. `SOV.md` and `bindings/sov/` describe a profile the
   system can load into a launched agent (`.claude/agents/sov.md`). Claude does
   not wear it in the session.
 - Claude is not the Controller, Orchestrator, Worker, or Witness. Those tiers

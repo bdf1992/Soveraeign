@@ -16,7 +16,10 @@ import unittest
 SCRIPTS = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(SCRIPTS))
 
+import sov_mutate  # noqa: E402
 from sovmutate import harness, operators  # noqa: E402
+
+ROOT = SCRIPTS.parent
 
 
 ASSERTED = '''
@@ -136,6 +139,39 @@ class TreeIsRestored(unittest.TestCase):
         score = harness.Score(target="none", command=("true",))
         self.assertEqual(score.generated, 0)
         self.assertEqual(score.percent, 100.0)
+
+
+class SuiteRouting(unittest.TestCase):
+    """A file scored against the wrong suite reports zero and reads as a finding.
+
+    The first CI run of this gate reported `conformance/run.py` at 0.0% because
+    it was scored against `scripts/tests`. Its own suite kills every mutant. A
+    false alarm of that size would discredit the instrument faster than no
+    instrument at all, so the routing is pinned here.
+    """
+
+    def test_conformance_routes_to_its_own_suite(self):
+        command, _cwd = sov_mutate.suite_for(ROOT / "conformance" / "run.py")
+        self.assertIn("conformance/tests", command)
+        self.assertNotIn("scripts/tests", command)
+
+    def test_scripts_route_to_the_tooling_suite(self):
+        command, _cwd = sov_mutate.suite_for(ROOT / "scripts" / "sov_ticket.py")
+        self.assertIn("scripts/tests", command)
+
+    def test_asset_service_runs_from_its_own_root(self):
+        command, cwd = sov_mutate.suite_for(
+            ROOT / "services" / "asset" / "src" / "soveraeign_asset_service" / "core.py"
+        )
+        self.assertEqual(cwd, ROOT / "services" / "asset")
+        self.assertIn("tests", command)
+
+    def test_an_unclaimed_file_is_refused_rather_than_scored_zero(self):
+        """The defeating case: no suite means no number, not a number of zero."""
+        self.assertIsNone(sov_mutate.suite_for(ROOT / "adapters" / "github" / "export.py"))
+
+    def test_a_path_outside_the_repository_is_refused(self):
+        self.assertIsNone(sov_mutate.suite_for(Path(tempfile.gettempdir()) / "elsewhere.py"))
 
 
 # The shipped `sov_mutate.py selfcheck` command is deliberately NOT wrapped in a

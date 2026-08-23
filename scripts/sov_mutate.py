@@ -30,6 +30,31 @@ from sovmutate import harness, operators  # noqa: E402
 ROOT = Path(__file__).resolve().parent.parent
 SKIP_PARTS = ("tests", "lineage", ".git", "sovmutate")
 
+# Which suite actually exercises a file. Running the wrong suite scores zero and
+# reads as "nothing asserts this", which is a false alarm rather than a finding -
+# the first CI run reported conformance/run.py at 0.0% for exactly that reason,
+# because it was being scored against scripts/tests. A file whose owning suite is
+# not listed here is refused, never scored: a number nobody can trust is worse
+# than an honest gap.
+SUITES = (
+    ("conformance", ("-m", "unittest", "discover", "-s", "conformance/tests", "-q"), ROOT),
+    (str(Path("bindings/sov")), ("-m", "unittest", "discover", "-s", "bindings/sov/tests", "-q"), ROOT),
+    (str(Path("services/asset")), ("-m", "unittest", "discover", "-s", "tests", "-q"), ROOT / "services" / "asset"),
+    ("scripts", ("-m", "unittest", "discover", "-s", "scripts/tests", "-q"), ROOT),
+)
+
+
+def suite_for(path: Path) -> tuple[tuple[str, ...], Path] | None:
+    """The (command, cwd) that exercises ``path``, or None if nothing claims it."""
+    try:
+        relative = str(path.resolve().relative_to(ROOT))
+    except ValueError:
+        return None
+    for prefix, argv, cwd in SUITES:
+        if relative == prefix or relative.startswith(prefix + "\\") or relative.startswith(prefix + "/"):
+            return (sys.executable,) + argv, cwd
+    return None
+
 SELFCHECK_SOURCE = """
 def asserted(value):
     if value > 10:
@@ -93,15 +118,24 @@ def command_run(args: argparse.Namespace) -> int:
 
     total_killed = 0
     total_generated = 0
+    unclaimed = []
     for path in targets:
         if not path.is_file():
             print(f"REFUSED: {path} is not a file", file=sys.stderr)
             return 2
-        score = harness.score_file(path, ROOT, limit=args.limit)
+        suite = suite_for(path)
+        if suite is None:
+            unclaimed.append(path)
+            continue
+        command, cwd = suite
+        score = harness.score_file(path, cwd, command=command, limit=args.limit)
         print(harness.render(score))
         print()
         total_killed += score.killed
         total_generated += score.generated
+
+    for path in unclaimed:
+        print(f"UNSCORED: no suite in SUITES claims {path}; not counted in the channel")
 
     if total_generated == 0:
         print("NOTHING TO SCORE: the selected files admit no mutants")

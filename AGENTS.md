@@ -185,6 +185,18 @@ dependency or a substitute for repository verification.
   current standing, changed files, observed checks, residuals, and next action;
   it does not carry the entire conversation forward.
 
+## Local orchestration harness
+
+A local Claude Code harness under `.claude/` operationalizes this contract for
+model operators: stable role agents (worker, orchestrator, witness,
+controller), one skill and one workflow per domain concern, and cross-cutting
+capability workflows such as qa and scribe. The harness is host plumbing: it
+holds no standing or authority, its runs may propose at most
+`BUILT -> WITNESSED`, and a build claim is always witnessed by a different
+agent than its builder. `.claude/README.md` owns the harness layout; this
+contract remains the authority on agent conduct. Standing of the harness
+itself: `decisions/0018-federation-harness.md` (proposed).
+
 ## Secrets and local boundaries
 
 - Never commit `.env`, credentials, private keys, tokens, local absolute paths,

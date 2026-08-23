@@ -49,15 +49,12 @@ class InfrastructureTests(unittest.TestCase):
                 infrastructure.apply(node, self.manifest())
 
     def test_escape_and_absolute_paths_are_defeating(self):
-        """Judged as POSIX on every host: a manifest is not safe on one and unsafe on another.
-
-        ``.`` and ``./`` name the node root itself rather than a custody path under it, so
-        a path that resolves to no parts is refused alongside the escaping ones.
-        """
-        for unsafe in ("../escape", "/tmp/escape", "C:\\escape"):
-            manifest = self.manifest()
-            manifest["custody"]["paths"]["work"] = unsafe
-            self.assertIn("CUSTODY_PATH_UNSAFE", infrastructure.validate_manifest(manifest))
+        """Judge custody paths as POSIX on every host, including root aliases."""
+        for unsafe in ("../escape", "/tmp/escape", "C:\\escape", ".", "./", "work/.."):
+            with self.subTest(unsafe=unsafe):
+                manifest = self.manifest()
+                manifest["custody"]["paths"]["work"] = unsafe
+                self.assertIn("CUSTODY_PATH_UNSAFE", infrastructure.validate_manifest(manifest))
 
     def test_external_and_provider_dependencies_are_defeating(self):
         manifest = self.manifest()

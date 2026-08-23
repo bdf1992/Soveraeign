@@ -1,57 +1,189 @@
 #!/usr/bin/env python3
-"""Run all repository-owned structural, oracle, and reference checks."""
+"""Run every repository-owned structural, oracle, and reference check.
+
+Each check declares how it avoids relying on the thing it checks, and the run
+emits one `Observation` per check against `contracts/observation.schema.json`.
+Emitting records rather than prose is the point: a claim about what verification
+found can then be checked against a record instead of trusted as a paragraph.
+
+An observation settles nothing. `AGENTS.md`: a test may establish `BUILT`; it
+may never claim `WITNESSED` or `RATIFIED`.
+
+Checks are independent and run concurrently. Output is buffered and printed in
+declared order so a parallel run reads exactly like a serial one.
+"""
 
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime, timezone
+from hashlib import sha256
 from pathlib import Path
+from typing import NamedTuple
+import argparse
+import json
 import subprocess
 import sys
 import time
+import uuid
 
 
 ROOT = Path(__file__).resolve().parents[1]
-
-
-CHECKS = (
-    ("repository hygiene", [sys.executable, "scripts/lint.py"], ROOT),
-    ("bootstrap and locked evidence", [sys.executable, "scripts/verify_bootstrap.py"], ROOT),
-    ("signpost reconciliation", [sys.executable, "scripts/sov_next.py", "--strict"], ROOT),
-    ("conformance oracle controls", [sys.executable, "conformance/run.py"], ROOT),
-    ("conformance oracle tests", [sys.executable, "-m", "unittest", "discover", "-s", "conformance/tests", "-v"], ROOT),
-    ("kernel transition contract", [sys.executable, "scripts/sov_kernel.py", "selfcheck"], ROOT),
-    ("participant against its baseline", [sys.executable, "scripts/sov_baseline.py"], ROOT),
-    ("ticket transition corpus", [sys.executable, "scripts/sov_ticket.py", "selfcheck"], ROOT),
-    (
-        "Sov context profile",
-        [sys.executable, "-m", "unittest", "discover", "-s", "bindings/sov/tests", "-v"],
-        ROOT,
-    ),
-    ("Asset Service reference tests", [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"], ROOT / "services" / "asset"),
-    ("repository tooling tests", [sys.executable, "-m", "unittest", "discover", "-s", "scripts/tests", "-v"], ROOT),
-)
-
+SKIP_PARTS = {".git", ".venv", "__pycache__", ".local"}
 BUDGET_SECONDS = 3.0
 
 
-def main() -> int:
-    failed = []
+class Check(NamedTuple):
+    name: str
+    command: list[str]
+    cwd: Path
+    relation: str
+    observes: tuple[str, ...]
+
+
+CHECKS = (
+    Check("repository hygiene", [sys.executable, "scripts/lint.py"], ROOT,
+          "reads repository bytes directly with read_bytes, never a build report, and never "
+          "Path.read_text whose newline translation would hide the defect it looks for",
+          (".gitattributes", "scripts/lint.py")),
+    Check("bootstrap and locked evidence", [sys.executable, "scripts/verify_bootstrap.py"], ROOT,
+          "re-digests locked evidence from disk rather than trusting a recorded digest",
+          ("scripts/verify_bootstrap.py",)),
+    Check("signpost reconciliation", [sys.executable, "scripts/sov_next.py", "--strict"], ROOT,
+          "re-reads STATUS.yaml, ROADMAP.md and the epic projection at the moment of the "
+          "check; it does not consult any prior reconciliation",
+          ("ROADMAP.md", "STATUS.yaml", ".claude/epic/tree.json")),
+    Check("conformance oracle controls", [sys.executable, "conformance/run.py"], ROOT,
+          "the oracle derives every defect from observation records and never reads a "
+          "participant verdict field, and never imports participant implementation code",
+          ("conformance/oracle-controls.json", "conformance/run.py")),
+    Check("conformance oracle tests",
+          [sys.executable, "-m", "unittest", "discover", "-s", "conformance/tests", "-v"], ROOT,
+          "tests the oracle from outside itself, including cases proving it refuses reports "
+          "it cannot read",
+          ("conformance/tests",)),
+    Check("kernel transition contract", [sys.executable, "scripts/sov_kernel.py", "selfcheck"],
+          ROOT,
+          "re-derives the transition table from SPEC.md bytes rather than trusting the "
+          "stored projection it is comparing against",
+          ("SPEC.md", "contracts/kernel-transitions.json")),
+    Check("participant against its baseline", [sys.executable, "scripts/sov_baseline.py"], ROOT,
+          "runs the participant in a separate process and grades it through the frozen "
+          "oracle, which never imports participant code; the participant does not report its "
+          "own verdict",
+          ("services/asset/conformance/BASELINE.md", "conformance/scenarios.json")),
+    Check("ticket transition corpus", [sys.executable, "scripts/sov_ticket.py", "selfcheck"],
+          ROOT,
+          "reads a checked-in ticket export and never contacts the coordination surface it "
+          "describes",
+          ("contracts/ticket-transitions.json",)),
+    Check("Sov context profile",
+          [sys.executable, "-m", "unittest", "discover", "-s", "bindings/sov/tests", "-v"], ROOT,
+          "invokes the profile checker over declared fixtures, including one defeating "
+          "declaration, rather than asking the profile whether it is valid",
+          ("bindings/sov",)),
+    Check("Asset Service reference tests",
+          [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
+          ROOT / "services" / "asset",
+          "the participant's own tests; these establish BUILT evidence about local mechanics "
+          "and are explicitly NOT independent of the code they exercise",
+          ("services/asset/tests",)),
+    Check("repository tooling tests",
+          [sys.executable, "-m", "unittest", "discover", "-s", "scripts/tests", "-v"], ROOT,
+          "the harness's own tests; independent of the repository content they check, but "
+          "not of the harness itself",
+          ("scripts/tests",)),
+)
+
+
+def digest(address: str) -> str:
+    """sha256 of a file, or of a sorted manifest of the files beneath a directory."""
+    target = ROOT / address
+    if target.is_file():
+        return "sha256:" + sha256(target.read_bytes()).hexdigest()
+    manifest = sha256()
+    for path in sorted(target.rglob("*")) if target.is_dir() else []:
+        if not path.is_file() or SKIP_PARTS & set(path.parts):
+            continue
+        manifest.update(path.relative_to(target).as_posix().encode("utf-8"))
+        manifest.update(b"\0")
+        manifest.update(sha256(path.read_bytes()).hexdigest().encode("ascii"))
+        manifest.update(b"\n")
+    return "sha256:" + manifest.hexdigest()
+
+
+def observe(check: Check, run_id: str, exit_code: int, elapsed: float, when: str) -> dict:
+    """One Observation of one check, per contracts/observation.schema.json."""
+    addresses = [address for address in check.observes if (ROOT / address).exists()]
+    identity = sha256(f"{run_id}\0{check.name}".encode("utf-8")).hexdigest()[:32]
+    return {
+        "observation_id": f"observation_{identity}",
+        "run_id": run_id,
+        "observer_id": f"scripts/verify.py@{digest('scripts/verify.py').split(':', 1)[1][:16]}",
+        "observer_relation": check.relation,
+        "observed_state_addresses": addresses,
+        "observed_state_digests": [digest(address) for address in addresses],
+        "predicate_results": {
+            "exit_code": exit_code,
+            "outcome": "PASS" if exit_code == 0 else "FAIL",
+            "elapsed_seconds": round(elapsed, 3),
+        },
+        "observed_at": when,
+        "subject": check.name,
+    }
+
+
+def run_check(check: Check) -> tuple[Check, int, float, str]:
     started = time.perf_counter()
-    for name, command, cwd in CHECKS:
-        print(f"\n== {name} ==", flush=True)
-        check_started = time.perf_counter()
-        result = subprocess.run(command, cwd=cwd, check=False)
-        elapsed = time.perf_counter() - check_started
-        print(f"TIME: {name}: {elapsed:.3f}s", flush=True)
-        if result.returncode:
-            failed.append(name)
-    total = time.perf_counter() - started
-    if total > BUDGET_SECONDS:
-        failed.append(f"verification budget ({total:.3f}s > {BUDGET_SECONDS:.3f}s)")
+    result = subprocess.run(check.command, cwd=check.cwd, check=False,
+                            capture_output=True, text=True)
+    return check, result.returncode, time.perf_counter() - started, result.stdout + result.stderr
+
+
+def main(argv: list[str] | None = None, run_id: str | None = None,
+         now: str | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--observe", type=Path, metavar="PATH",
+                        help="write the run's Observation records to PATH as JSON")
+    parser.add_argument("--json", action="store_true", dest="as_json",
+                        help="print the Observation records instead of the human report")
+    args = parser.parse_args(argv)
+
+    run_id = run_id or f"run_{uuid.uuid4().hex}"
+    when = now or datetime.now(timezone.utc).isoformat(timespec="seconds")
+
+    started = time.perf_counter()
+    with ThreadPoolExecutor(max_workers=len(CHECKS)) as pool:
+        results = list(pool.map(run_check, CHECKS))
+    wall = time.perf_counter() - started
+
+    observations = [observe(check, run_id, code, elapsed, when)
+                    for check, code, elapsed, _ in results]
+    work = sum(elapsed for _, _, elapsed, _ in results)
+    failed = [check.name for check, code, _, _ in results if code]
+
+    if args.observe:
+        args.observe.parent.mkdir(parents=True, exist_ok=True)
+        args.observe.write_bytes(
+            (json.dumps(observations, indent=2, sort_keys=True) + "\n").encode("utf-8"))
+
+    if args.as_json:
+        print(json.dumps(observations, indent=2, sort_keys=True))
+        return 1 if failed else 0
+
+    for check, _, elapsed, output in results:
+        print(f"\n== {check.name} ==", flush=True)
+        print(output.rstrip("\n"), flush=True)
+        print(f"TIME: {check.name}: {elapsed:.3f}s", flush=True)
+
+    if wall > BUDGET_SECONDS:
+        failed.append(f"verification budget ({wall:.3f}s > {BUDGET_SECONDS:.3f}s)")
     if failed:
         print(f"\nFAIL: {', '.join(failed)}")
         return 1
-    print(f"\nPASS: repository checks completed in {total:.3f}s")
-    print("Standing note: self-tests establish BUILT evidence only; no independent witness or owner ratification is implied.")
+    print(f"\nPASS: {len(CHECKS)} checks in {wall:.3f}s wall, {work:.3f}s of work")
+    print("Standing note: self-tests establish BUILT evidence only; no independent witness "
+          "or owner ratification is implied.")
     return 0
 
 

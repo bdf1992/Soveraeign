@@ -1,0 +1,57 @@
+{
+  "contract_id": "soveraeign-kernel-parity/v1",
+  "status": "PROPOSED",
+  "governed_by": ["SPEC.md", "contracts/kernel-transitions.json"],
+  "note": "Declared correspondence between each participant's own refusal vocabulary and the kernel refusal it realizes. SPEC.md admits reference implementations only as participants tested against the contract, so the fifth acceptance criterion on issue #6 is met by proving the participants already decide the same way on the same fact, not by rewriting them into the kernel. A correspondence declared here is checked by driving both sides and comparing their decisions; a participant that stops agreeing fails the check rather than quietly diverging.",
+  "participants": [
+    {
+      "participant": "asset-service",
+      "surface": "services/asset/src/soveraeign_asset_service/core.py",
+      "kind": "executable",
+      "note": "Enforces lease fencing, expiry, and the separation of report from observation in SQL. Driven for real by the parity check against a temporary store.",
+      "correspondences": [
+        {
+          "fact": "a superseded fence may not report",
+          "participant_refusal": "StaleLease",
+          "kernel_refusal": "STALE_LEASE",
+          "kernel_transition": "report_run"
+        },
+        {
+          "fact": "an executor report is not settlement",
+          "participant_refusal": "RuntimeError:run has no independently observable report",
+          "kernel_refusal": "STALE_LEASE",
+          "kernel_transition": "report_run",
+          "note": "The participant refuses observation of a run that never reported; the kernel refuses a report that asks to settle itself. Both refuse the same move from opposite ends."
+        }
+      ]
+    },
+    {
+      "participant": "ticket-workflow",
+      "surface": "scripts/sovticket/transitions.py",
+      "kind": "declarative",
+      "note": "Carries its own standing transition table for coordination tickets. Driven by evaluating its own requests against its own table.",
+      "correspondences": [
+        {
+          "fact": "the actor that built an artifact may not witness it",
+          "participant_refusal": "SELF_WITNESS_REFUSED",
+          "kernel_refusal": "OBSERVER_NOT_INDEPENDENT",
+          "kernel_transition": "settle_run"
+        },
+        {
+          "fact": "an actor without judgement authority may not ratify",
+          "participant_refusal": "OWNER_RATIFICATION_REQUIRED",
+          "kernel_refusal": "AUTHORITY_REFUSED",
+          "kernel_transition": "ratify",
+          "note": "The participant splits one kernel refusal into two names by target: OWNER_RATIFICATION_REQUIRED when the target is RATIFIED, OWNER_JUDGEMENT_REQUIRED for any other owner-reserved transition. The kernel makes no such distinction. A finer participant vocabulary over the same kernel refusal is permitted; a coarser one that admitted what the kernel refuses would not be."
+        },
+        {
+          "fact": "external-world effects are refused in this phase",
+          "participant_refusal": "EFFECT_CLASS_REFUSED",
+          "kernel_refusal": "EFFECT_CLASS_REFUSED",
+          "kernel_transition": "cross",
+          "note": "The only correspondence where both sides already use the same name."
+        }
+      ]
+    }
+  ]
+}

@@ -23,7 +23,8 @@ python scripts/infrastructure.py verify --root /path/to/node
 `plan` is observation-only. `apply` may create an empty node root and its
 declared directories, then writes an attributable manifest receipt. It refuses
 to adopt a non-empty unmanaged root. Reapplying the same manifest is
-idempotent. `verify` detects missing paths, symlinks, receipt drift, and unsafe
+idempotent. Concurrent applies are fenced by an exclusive local lock. `verify`
+detects missing paths, symlinks, incomplete applies, receipt drift, and unsafe
 permissions.
 
 No destroy operation is supplied: authoritative state and payload custody must

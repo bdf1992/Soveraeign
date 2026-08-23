@@ -24,6 +24,7 @@ Admit a provisional, provider-free Phase-I local infrastructure envelope:
 - plan is observation-only and apply is limited to an empty or already-managed
   local root;
 - every materialization writes a manifest-digest receipt;
+- concurrent materialization attempts are fenced and cannot both commit;
 - external effects, required network access, provider dependency, path escape,
   symlink substitution, unsafe permissions, unmanaged-root adoption, and
   manifest drift refuse or fail visibly;

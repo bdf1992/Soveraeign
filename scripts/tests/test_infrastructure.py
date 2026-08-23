@@ -4,7 +4,9 @@ import importlib.util
 import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
+import threading
 import unittest
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -79,6 +81,38 @@ class InfrastructureTests(unittest.TestCase):
             work.rmdir()
             work.symlink_to(node / "record", target_is_directory=True)
             self.assertIn("CUSTODY_PATH_MISSING_OR_UNSAFE:work", infrastructure.verify(node, self.manifest()))
+
+    def test_concurrent_apply_is_fenced(self):
+        with TemporaryDirectory() as temporary:
+            node = Path(temporary) / "node"
+            entered = threading.Event()
+            release = threading.Event()
+            failures: list[BaseException] = []
+            original = infrastructure._atomic_write
+
+            def delayed_write(*args, **kwargs):
+                entered.set()
+                self.assertTrue(release.wait(timeout=2))
+                return original(*args, **kwargs)
+
+            def first_apply():
+                try:
+                    infrastructure.apply(node, self.manifest())
+                except BaseException as error:
+                    failures.append(error)
+
+            with patch.object(infrastructure, "_atomic_write", side_effect=delayed_write):
+                thread = threading.Thread(target=first_apply)
+                thread.start()
+                self.assertTrue(entered.wait(timeout=2))
+                with self.assertRaisesRegex(infrastructure.InfrastructureRefused, "ALREADY_IN_PROGRESS"):
+                    infrastructure.apply(node, self.manifest())
+                release.set()
+                thread.join(timeout=2)
+
+            self.assertFalse(thread.is_alive())
+            self.assertEqual(failures, [])
+            self.assertEqual(infrastructure.verify(node, self.manifest()), [])
 
 
 if __name__ == "__main__":

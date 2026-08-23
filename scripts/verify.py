@@ -15,8 +15,11 @@ ROOT = Path(__file__).resolve().parents[1]
 CHECKS = (
     ("repository hygiene", [sys.executable, "scripts/lint.py"], ROOT),
     ("bootstrap and locked evidence", [sys.executable, "scripts/verify_bootstrap.py"], ROOT),
+    ("signpost reconciliation", [sys.executable, "scripts/sov_next.py", "--strict"], ROOT),
     ("conformance oracle controls", [sys.executable, "conformance/run.py"], ROOT),
     ("conformance oracle tests", [sys.executable, "-m", "unittest", "discover", "-s", "conformance/tests", "-v"], ROOT),
+    ("kernel transition contract", [sys.executable, "scripts/sov_kernel.py", "selfcheck"], ROOT),
+    ("participant against its baseline", [sys.executable, "scripts/sov_baseline.py"], ROOT),
     ("ticket transition corpus", [sys.executable, "scripts/sov_ticket.py", "selfcheck"], ROOT),
     (
         "Sov context profile",

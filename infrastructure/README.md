@@ -68,3 +68,12 @@ policy they control. The bundle contains no Secret, Ingress, public Service,
 cloud resource, or destroy path, and requires an image pinned by digest. An
 image/runtime satisfying the application contracts is not yet part of this
 founding-phase repository.
+
+## Independent witness
+
+`WITNESS.md` defines the fresh Red protocol. Its runner imports neither
+infrastructure implementation module, verifies a clean exact-commit checkout,
+performs independent state and bundle inspection, exercises defeating cases,
+and emits a candidate receipt outside the repository. A manual read-only GitHub
+Actions workflow exposes the same procedure for an independently identified
+witness. Neither the runner nor CI can promote its own output to `WITNESSED`.

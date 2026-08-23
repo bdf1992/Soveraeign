@@ -1,0 +1,71 @@
+name: ticket contract
+
+# The coordination surface is checked the same way the repository is: capture it
+# through the declared registrar, then judge the capture offline. Nothing here writes
+# to an issue, a label, or a project field. See adapters/github/README.md.
+
+on:
+  issues:
+    types: [opened, edited, reopened, labeled, unlabeled]
+  pull_request:
+    paths:
+      - "contracts/ticket-*.json"
+      - "contracts/issue-metadata.schema.json"
+      - ".github/labels.yml"
+      - ".github/workflows/ticket-contract.yml"
+      - "scripts/sov_ticket.py"
+      - "scripts/sovticket/**"
+      - "scripts/tests/**"
+      - "adapters/github/**"
+      - "conformance/fixtures/tickets/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: read
+
+concurrency:
+  group: ticket-contract-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fixture corpus
+        run: python scripts/sov_ticket.py selfcheck
+
+      - name: Ticket mechanics
+        run: python -m unittest discover -s scripts/tests -v
+
+      - name: Capture the coordination surface
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python adapters/github/export.py \
+            --repo "${{ github.repository }}" \
+            --out .local/registrar/tickets.json
+
+      - name: Every ticket satisfies soveraeign-ticket/v1
+        run: python scripts/sov_ticket.py validate --export .local/registrar/tickets.json
+
+      - name: Labels match the declared projection
+        run: python scripts/sov_ticket.py labels --export .local/registrar/tickets.json --strict
+
+      - name: Publish the takeable queue
+        if: always()
+        run: |
+          {
+            echo '## Takeable work queue'
+            echo
+            echo 'Projection over the captured board. Position grants nothing.'
+            echo
+            echo '```text'
+            python scripts/sov_ticket.py queue --export .local/registrar/tickets.json --limit 25 || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

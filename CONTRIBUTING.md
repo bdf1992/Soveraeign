@@ -67,6 +67,51 @@ Changing the issue schema, label axes, color meanings, containment rule, or
 milestone semantics is a reviewed contract change. Update this section, the JSON
 Schema, and the label catalogue together.
 
+## Checking the coordination surface
+
+The board is checked the same way the repository is: capture it through the declared
+registrar, then judge the capture offline.
+
+```bash
+python adapters/github/export.py --repo bdf1992/Soveraeign --out .local/registrar/tickets.json
+python scripts/sov_ticket.py validate --export .local/registrar/tickets.json
+python scripts/sov_ticket.py labels   --export .local/registrar/tickets.json --strict
+python scripts/sov_ticket.py queue    --export .local/registrar/tickets.json --limit 20
+```
+
+`validate` checks every issue body against `contracts/issue-metadata.schema.json`.
+`labels` reports drift between the live labels and the projection declared in
+`contracts/ticket-label-projection.json`. `queue` orders open tickets by the policy in
+`contracts/ticket-queue-policy.json` and reports what is takeable, what is blocked and
+by what, and what unblocks the most. The queue is a projection; position in it grants
+nothing.
+
+`adapters/github/export.py` is the only module permitted to call the GitHub API. Every
+other check reads its export from disk, so all of them run offline, inside the day-zero
+budget, and in a sealed CI job.
+
+## Proposing a standing change
+
+A pull request that only implements something proposes no standing change and needs no
+transition block; it establishes `BUILT` evidence and nothing further. A pull request
+that advances a ticket's standing carries a `soveraeign-ticket-transition/v1` request in
+its body, and the purple gate evaluates it against
+`contracts/ticket-transitions.json`.
+
+```bash
+python scripts/sov_ticket.py transition <request.json>
+python scripts/sov_ticket.py transition --body <pull-request-body.md>
+```
+
+The table refuses what the contract forbids: skipped standings, a builder witnessing its
+own work, an unconverged Red engagement, a confirmed finding with no permanent defeating
+fixture, a finding the Red operator reproduced itself, and any machine claiming
+`RATIFIED`. Run `python scripts/sov_ticket.py selfcheck` to exercise every declared
+refusal; `python scripts/verify.py` runs it for you.
+
+Ratification is not reachable from a check. It enters the repository through owner
+review on `STATUS.yaml`, `decisions/`, and the governing set, per `.github/CODEOWNERS`.
+
 ## Before you change code
 
 Read the governing set above, then inspect `OPEN-SEAMS.md`, the relevant service

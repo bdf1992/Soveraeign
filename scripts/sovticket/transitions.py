@@ -1,0 +1,152 @@
+"""Evaluate a proposed ticket standing change against the declared transition table.
+
+The evaluator answers one question: may this coordination surface accept this standing
+change from this actor on this evidence. An ``ALLOWED`` answer is not a settlement, a
+witness, or a ratification. Standing changes land in the owning governing documents;
+this module only refuses the ones the contract already forbids.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
+import json
+
+OPEN_FINDING_STATUSES = frozenset({"PROPOSED", "REPRODUCED"})
+DEFAULT_REQUIRED_DRY_ROUNDS = 2
+
+
+@dataclass(frozen=True)
+class Decision:
+    """The outcome of evaluating one transition request."""
+
+    allowed: bool
+    reason_code: str | None
+    detail: str
+
+    def render(self) -> str:
+        """Return a single human-readable line for a log, comment, or report."""
+        if self.allowed:
+            return f"ALLOWED: {self.detail}"
+        return f"REFUSED [{self.reason_code}]: {self.detail}"
+
+
+def load_table(root: Path) -> dict[str, Any]:
+    """Load the declared transition table from the repository contracts directory."""
+    path = root / "contracts" / "ticket-transitions.json"
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _find(table: dict[str, Any], source: str, target: str) -> dict[str, Any] | None:
+    """Return the declared transition for a from/to pair, or None."""
+    for entry in table["transitions"]:
+        if entry["from"] == source and entry["to"] == target:
+            return entry
+    return None
+
+
+def _skipped(table: dict[str, Any], source: str, target: str) -> bool:
+    """Report whether the pair skips a declared intermediate standing."""
+    order = table["order"]
+    if source not in order or target not in order:
+        return False
+    return order.index(target) - order.index(source) > 1
+
+
+def _missing_evidence(entry: dict[str, Any], request: dict[str, Any]) -> list[str]:
+    """Return the required evidence keys that are absent or empty."""
+    evidence = request.get("evidence") or {}
+    return [key for key in entry.get("requires_evidence", []) if not evidence.get(key)]
+
+
+def _check_purple(request: dict[str, Any]) -> Decision | None:
+    """Return a refusal when the verification dyad has not settled, else None."""
+    receipt = request.get("purple_receipt")
+    if not receipt:
+        return Decision(False, "PURPLE_NOT_SETTLED", "no engagement receipt accompanies the request")
+    required = receipt.get("required_dry_rounds", DEFAULT_REQUIRED_DRY_ROUNDS)
+    if receipt.get("dry_rounds", 0) < required:
+        return Decision(
+            False,
+            "PURPLE_NOT_SETTLED",
+            f"{receipt.get('dry_rounds', 0)} dry rounds is below the declared exit criterion {required}",
+        )
+    red_actor = receipt.get("red_operator_actor_id")
+    for finding in receipt.get("findings", []):
+        finding_id = finding.get("finding_id", "<unnamed>")
+        status = finding.get("status")
+        if status in OPEN_FINDING_STATUSES:
+            return Decision(False, "FINDING_UNRESOLVED", f"{finding_id} is still {status}")
+        if status != "CONFIRMED":
+            continue
+        if not finding.get("fixture_pointer"):
+            return Decision(
+                False,
+                "FINDING_WITHOUT_FIXTURE",
+                f"{finding_id} is confirmed with no permanent defeating fixture",
+            )
+        reproducer = finding.get("reproduced_by_actor_id")
+        if not reproducer or reproducer == red_actor:
+            return Decision(
+                False,
+                "FINDING_NOT_REPRODUCED",
+                f"{finding_id} was not reproduced independently of the Red operator",
+            )
+    return None
+
+
+def evaluate(request: dict[str, Any], table: dict[str, Any]) -> Decision:
+    """Evaluate one transition request against the declared table.
+
+    The request is assumed to already validate against
+    ``contracts/ticket-transition.schema.json``; this function checks the rules a
+    schema cannot express.
+    """
+    source, target = request["from"], request["to"]
+    if request.get("effect_class") in table.get("phase_refused_effect_classes", []):
+        return Decision(
+            False,
+            "EFFECT_CLASS_REFUSED",
+            f"{request['effect_class']} is not admitted in the current phase",
+        )
+    entry = _find(table, source, target)
+    if entry is None:
+        if _skipped(table, source, target):
+            return Decision(
+                False, "SKIPPED_STANDING", f"{source} -> {target} skips a declared standing"
+            )
+        return Decision(
+            False, "UNKNOWN_TRANSITION", f"{source} -> {target} is not a declared transition"
+        )
+    if request["actor_kind"] not in entry["actor_kinds"]:
+        return Decision(
+            False,
+            "ACTOR_KIND_REFUSED",
+            f"actor_kind {request['actor_kind']} may not perform {source} -> {target}",
+        )
+    if entry.get("requires_owner") and request["actor_id"] not in table["owner_actor_ids"]:
+        code = "OWNER_RATIFICATION_REQUIRED" if target == "RATIFIED" else "OWNER_JUDGEMENT_REQUIRED"
+        return Decision(
+            False, code, f"{source} -> {target} is owner judgement; {request['actor_id']} is not the owner"
+        )
+    missing = _missing_evidence(entry, request)
+    if missing:
+        return Decision(False, "MISSING_EVIDENCE", f"absent evidence: {', '.join(sorted(missing))}")
+    if entry.get("requires_distinct_actor"):
+        builder = request.get("builder_actor_id")
+        if not builder:
+            return Decision(
+                False, "SELF_WITNESS_REFUSED", "the request names no builder actor to witness against"
+            )
+        if builder == request["actor_id"]:
+            return Decision(
+                False,
+                "SELF_WITNESS_REFUSED",
+                f"{request['actor_id']} built the artifact and may not witness it",
+            )
+    if entry.get("requires_purple"):
+        refusal = _check_purple(request)
+        if refusal is not None:
+            return refusal
+    return Decision(True, None, f"{source} -> {target} satisfies every declared precondition")

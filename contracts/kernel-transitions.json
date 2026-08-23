@@ -1,0 +1,263 @@
+{
+  "table_id": "soveraeign-kernel-transitions/v1",
+  "status": "PROPOSED",
+  "compiles": "SPEC.md Transition contract",
+  "governed_by": [
+    "SPEC.md",
+    "CONTRACT.md",
+    "CLASSIFICATION.md",
+    "PRD.md"
+  ],
+  "note": "The declared kernel transitions, compiled from the SPEC.md Transition contract table. SPEC.md states these transitions in prose; nothing compiled them, so every participant re-stated them privately. This table is the single machine-readable statement all services check against. It is a proposal: SPEC.md is not frozen (O10) and the vocabulary is not ratified (O9), so a mismatch found here queues as a judgement item rather than a rename.",
+  "settles_only_with_observation": [
+    "settle_run"
+  ],
+  "never_settles": [
+    "report_run"
+  ],
+  "phase_refused_effect_classes": [
+    "EXTERNAL_WORLD"
+  ],
+  "refusal_codes": {
+    "UNREADABLE": "The source bytes could not be read.",
+    "DIGEST_MISMATCH": "The declared digest does not match the bytes.",
+    "SOURCE_CHANGED": "The source changed between capture and reading.",
+    "READER_UNDECLARED": "The reader or projection was not fully declared.",
+    "INCOMPLETE_PROPOSAL": "A required proposal field is absent.",
+    "ADMISSION_REFUSED": "Admission predicates did not pass against the exact proposal state.",
+    "AUTHORITY_REFUSED": "No live matching authority grant covers this transition.",
+    "STALE_STATE": "The declared pre-state is not the current state.",
+    "STALE_LEASE": "The lease is expired, superseded by a newer fence, or held by another worker.",
+    "VALIDATOR_UNDECLARED": "The attestation validator or its exact inputs were not declared.",
+    "DISSENTED": "An attestation dissented.",
+    "UNATTESTABLE": "The claim cannot be attested.",
+    "POLICY_REFUSED": "The required attestation policy is not satisfied.",
+    "OBSERVER_NOT_INDEPENDENT": "The observer is the actor that produced the report.",
+    "OBSERVATION_MISSING": "Settlement was requested with no satisfactory observation.",
+    "EFFECT_CLASS_REFUSED": "The declared effect class is not admitted in the current phase.",
+    "MODEL_UNAVAILABLE": "The declared model binding could not be reached.",
+    "MODEL_INCOMPATIBLE": "The declared model binding cannot serve the operation.",
+    "DATA_BOUNDARY_REFUSED": "The operation would cross the declared data boundary.",
+    "UNKNOWN_TRANSITION": "The requested transition is not declared in this table.",
+    "MISSING_PRECONDITION": "A declared precondition key is absent or empty."
+  },
+  "transitions": [
+    {
+      "transition": "capture_source",
+      "preconditions": [
+        "source_address",
+        "source_digest"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "UNREADABLE",
+        "DIGEST_MISMATCH"
+      ],
+      "effect_class": "RECORD_LOCAL"
+    },
+    {
+      "transition": "read_source",
+      "preconditions": [
+        "source_digest",
+        "reader_declaration"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "SOURCE_CHANGED",
+        "READER_UNDECLARED"
+      ],
+      "effect_class": "RECORD_LOCAL"
+    },
+    {
+      "transition": "submit_proposal",
+      "preconditions": [
+        "actor_id",
+        "cost",
+        "source_address",
+        "scope",
+        "required_authority"
+      ],
+      "commit": "RECORDED",
+      "refusals": [
+        "INCOMPLETE_PROPOSAL"
+      ],
+      "effect_class": "RECORD_LOCAL"
+    },
+    {
+      "transition": "admit",
+      "preconditions": [
+        "pre_state_digest",
+        "admission_predicates"
+      ],
+      "commit": "ADMITTED",
+      "refusals": [
+        "ADMISSION_REFUSED",
+        "STALE_STATE"
+      ],
+      "requires_exact_pre_state": true,
+      "effect_class": "RECORD_LOCAL"
+    },
+    {
+      "transition": "ratify",
+      "preconditions": [
+        "pre_state_digest",
+        "authority_grant_id"
+      ],
+      "commit": "RATIFIED",
+      "refusals": [
+        "AUTHORITY_REFUSED",
+        "STALE_STATE"
+      ],
+      "requires_exact_pre_state": true,
+      "requires_authority_type": "JUDGEMENT",
+      "effect_class": "RECORD_LOCAL"
+    },
+    {
+      "transition": "attest",
+      "preconditions": [
+        "ratified_claim_id",
+        "validator_id",
+        "input_digests"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "VALIDATOR_UNDECLARED"
+      ],
+      "effect_class": "RESOURCE_CONSUMPTION"
+    },
+    {
+      "transition": "make_effective",
+      "preconditions": [
+        "ratified_claim_id",
+        "attestation_policy"
+      ],
+      "commit": "EFFECTIVE",
+      "refusals": [
+        "DISSENTED",
+        "UNATTESTABLE",
+        "POLICY_REFUSED"
+      ],
+      "effect_class": "RECORD_LOCAL"
+    },
+    {
+      "transition": "begin_run",
+      "preconditions": [
+        "operation_plan_id",
+        "capability_gate",
+        "budget_gate",
+        "input_state_digest"
+      ],
+      "commit": "ATTEMPTED",
+      "refusals": [
+        "AUTHORITY_REFUSED",
+        "EFFECT_CLASS_REFUSED",
+        "MISSING_PRECONDITION"
+      ],
+      "issues_lease": true,
+      "effect_class": "RESOURCE_CONSUMPTION"
+    },
+    {
+      "transition": "report_run",
+      "preconditions": [
+        "lease_fence",
+        "lease_expires_at",
+        "worker_id",
+        "output_record_addresses"
+      ],
+      "commit": "ATTEMPTED",
+      "refusals": [
+        "STALE_LEASE"
+      ],
+      "requires_current_lease": true,
+      "settles": false,
+      "note": "Executor completion is a report, not settlement.",
+      "effect_class": "RECORD_LOCAL"
+    },
+    {
+      "transition": "observe_run",
+      "preconditions": [
+        "run_id",
+        "observer_id",
+        "observer_relation",
+        "predicate_results"
+      ],
+      "commit": "REPORTED",
+      "refusals": [
+        "OBSERVER_NOT_INDEPENDENT"
+      ],
+      "requires_independent_observer": true,
+      "effect_class": "RECORD_LOCAL"
+    },
+    {
+      "transition": "settle_run",
+      "preconditions": [
+        "run_id",
+        "input_state_digest",
+        "observation_id"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "STALE_STATE",
+        "OBSERVATION_MISSING"
+      ],
+      "requires_exact_pre_state": true,
+      "requires_observation": true,
+      "settles": true,
+      "terminal_outcomes": [
+        "COMMITTED",
+        "FAILED",
+        "UNRESOLVED"
+      ],
+      "effect_class": "RECORD_LOCAL"
+    },
+    {
+      "transition": "retract",
+      "preconditions": [
+        "target_record_address",
+        "authority_grant_id",
+        "known_effect"
+      ],
+      "commit": "COUNTERED",
+      "refusals": [
+        "AUTHORITY_REFUSED"
+      ],
+      "requires_authority_type": "JUDGEMENT",
+      "effect_class": "RECORD_LOCAL"
+    },
+    {
+      "transition": "cross",
+      "preconditions": [
+        "source_address",
+        "reader_declaration",
+        "omissions",
+        "authority_grant_id",
+        "destination_address"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "READER_UNDECLARED",
+        "AUTHORITY_REFUSED"
+      ],
+      "effect_class": "RECORD_LOCAL"
+    },
+    {
+      "transition": "invoke_model",
+      "preconditions": [
+        "model_binding_id",
+        "operation_plan_id",
+        "authority_grant_id",
+        "input_projection",
+        "data_boundary",
+        "usage_meter"
+      ],
+      "commit": "ATTEMPTED",
+      "refusals": [
+        "MODEL_UNAVAILABLE",
+        "MODEL_INCOMPATIBLE",
+        "DATA_BOUNDARY_REFUSED",
+        "AUTHORITY_REFUSED"
+      ],
+      "effect_class": "RESOURCE_CONSUMPTION"
+    }
+  ]
+}

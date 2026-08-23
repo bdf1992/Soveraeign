@@ -20,7 +20,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from sovticket import labels as labelmod  # noqa: E402
 from sovticket import queue as queuemod  # noqa: E402
 from sovticket import transitions as transmod  # noqa: E402
-from sovticket.jsonschema import validate  # noqa: E402
+from sovkernel.jsonschema import validate  # noqa: E402
 from sovticket.yamlblock import TicketBlockError, load_ticket  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]

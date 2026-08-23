@@ -17,6 +17,7 @@ CHECKS = (
     ("bootstrap and locked evidence", [sys.executable, "scripts/verify_bootstrap.py"], ROOT),
     ("conformance oracle controls", [sys.executable, "conformance/run.py"], ROOT),
     ("conformance oracle tests", [sys.executable, "-m", "unittest", "discover", "-s", "conformance/tests", "-v"], ROOT),
+    ("kernel transition contract", [sys.executable, "scripts/sov_kernel.py", "selfcheck"], ROOT),
     ("ticket transition corpus", [sys.executable, "scripts/sov_ticket.py", "selfcheck"], ROOT),
     ("ticket coordination tests", [sys.executable, "-m", "unittest", "discover", "-s", "scripts/tests", "-v"], ROOT),
     (

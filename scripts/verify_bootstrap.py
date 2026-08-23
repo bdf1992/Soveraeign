@@ -40,6 +40,8 @@ REQUIRED = (
     "contracts/participant-observation.schema.json",
     "contracts/model-binding.schema.json",
     "contracts/event-envelope.schema.json",
+    "contracts/transition.schema.json",
+    "contracts/kernel-transitions.json",
     "services/README.md",
     "services/asset/contracts/service.json",
     "services/proofing/contracts/service.json",

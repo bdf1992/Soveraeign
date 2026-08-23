@@ -17,6 +17,7 @@ engineering_framework_status: BUILT_SELF_TESTED_NOT_WITNESSED_BASELINE_PROPOSED
 sdlc_loop_status: OWNER_DIRECTED_LOOP_AND_BINDING_SKELETON_PROPOSED
 coordination_registrar_status: BUILT_SELF_TESTED_NOT_WITNESSED
 sov_operating_agent_status: OWNER_DIRECTED_CONTEXT_PROFILE_BUILT_SELF_TESTED_NOT_WITNESSED
+ticket_kind_vocabulary_status: PROPOSED_OWNER_RATIFICATION_PENDING
 
 authority:
   product_intent:
@@ -106,15 +107,18 @@ open_decisions:
   - id: O13
     question: Does Bdo ratify SDLC.md's tiers, stance dyads, concern-registry derivation, and Red-gated release requirement?
     blocks: sdlc_loop_activation
-  # O14 and O15 are held for questions drafted on concurrent branches: the Console
-  # Service boundary and the scheduled-runs pattern. They are not stated here, so the
-  # questions below are numbered to avoid colliding; Bdo renumbers on ruling.
+  # O14, O15, and O18 are held for questions drafted on concurrent branches: the
+  # scheduled-runs pattern and the Console Service boundary. They are not stated here,
+  # so the questions below are numbered to avoid colliding; Bdo renumbers on ruling.
   - id: O16
     question: Does Bdo ratify contracts/ticket-transitions.json as the typed ticket workflow, and authorize the outward-facing coordination steps (branch protection requiring code owner review, label synchronization, project field writes) that make its owner-approval gate binding?
     blocks: coordination_automation_activation
   - id: O17
     question: Does Bdo accept Sov's exact agency envelope, context declaration, and activation gates?
     blocks: sov_live_activation
+  - id: O19
+    question: Does Bdo ratify verification-engagement as a fifth ticket kind, with engagement_id, a pinned target_pr and full-length target_head, and a refusal of construction identity on it?
+    blocks: engagement_ticket_vocabulary
 
 protected_boundaries:
   - evidence_files_are_immutable

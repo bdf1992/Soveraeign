@@ -1,6 +1,9 @@
-# 0023 · Self-direction and transition-local gates
+# 0031 · Self-direction and transition-local gates
 
-Status: `OWNER-DIRECTED · WORDING PROPOSED`
+Status: `OWNER-DIRECTED · ACCEPTED WORDING`
+
+Subordinate to `decisions/0023-acceptance-not-approval.md`, which owns the
+acceptance gate; this record owns only the transition-local reading of a gate.
 
 ## Decision
 

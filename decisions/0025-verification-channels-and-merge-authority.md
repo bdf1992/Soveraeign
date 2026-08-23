@@ -1,6 +1,8 @@
 # 0025 · Verification channels and delegated merge authority
 
-Status: `PROPOSED · OWNER DIRECTED · OWNER RATIFICATION PENDING`
+Status: `RULED AT CONTROL RESOLUTION · OWNER ACCEPTANCE OVER EVIDENCE`
+
+Ruled by `decisions/0033-close-the-founding-docket.md`.
 
 Renumbered from `0019`: that number went upstream to
 `decisions/0019-kernel-transition-contract.md` (pull request #62), and the

@@ -1,6 +1,8 @@
 # 0014 · Console Service boundary
 
-Status: `PROPOSED · OWNER RATIFICATION PENDING`
+Status: `RULED AT CONTROL RESOLUTION · OWNER ACCEPTANCE OVER EVIDENCE`
+
+Ruled by `decisions/0033-close-the-founding-docket.md`.
 
 ## Decision
 

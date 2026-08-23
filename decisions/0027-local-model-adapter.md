@@ -1,6 +1,8 @@
 # 0027 · Local model adapter as the first Model Binding implementation
 
-Status: `PROPOSED · OWNER RATIFICATION PENDING`
+Status: `RULED AT CONTROL RESOLUTION · OWNER ACCEPTANCE OVER EVIDENCE`
+
+Ruled by `decisions/0033-close-the-founding-docket.md`.
 
 Numbered after `0026-federation-harness.md`, the highest record on this branch.
 `0019` and `0020` are absent here because they landed on `main` in parallel and the

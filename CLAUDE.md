@@ -19,9 +19,10 @@ and improve the system; neither silently occupies one of its operating tiers.
 - A system gate also gates Claude. Claude should identify the wall and use its
   available capabilities to prepare or provision the nearest lawful unblocking
   move; it must not occupy a tier in-session merely to route around the gate.
-  For example, Proofing is `CHARTERED_NOT_IMPLEMENTED` behind O11, so a request
-  to implement it begins with the admissible precursor work rather than an
-  invented end state.
+  A gate is a missing precondition, not a missing permission: Proofing is an
+  accepted boundary with no implementation, so a request to implement it begins
+  with the contract and its defeating fixtures rather than an invented end
+  state.
 - When Claude edits the repository directly, `AGENTS.md` governs that work as
   it governs any agent: authority arrives by grant, a build cannot witness
   itself, and only Bdo ratifies judgement.
@@ -65,31 +66,41 @@ relevant report override it whenever they disagree.
   defeating fixture fails as declared. Participant binding still open.
 - Harness (`.claude/`): four role agents, thirteen workflows, the epic-tree
   walk, and scheduled-run gates with a kernel-envelope ledger. Every shipped
-  schedule is disabled. Whether executable workflows are admissible before
-  their defeating fixtures exist is an open judgement (`.claude/README.md`).
+  schedule is disabled. Executable harness workflows are admissible before their
+  defeating fixtures exist, for host plumbing only
+  (`decisions/0033-close-the-founding-docket.md`).
 - Sov profile (`bindings/sov/`): context declaration validates, positive and
-  defeating fixtures pass. Not live; O17.
+  defeating fixtures pass. Accepted as the operating shape; not live and not
+  independently witnessed.
 
 ### Known gaps in that snapshot
 
 - No kernel-level append-preserving event journal; twelve SQLite tables serve
   the Asset Service only (PROD-I-8, `services/asset/KNOWN-GAPS.md`).
-- No model adapter executes; `invoke_model` has no implementation (PROD-I-9,
-  O12).
-- Proofing and Console are chartered, not implemented (O11, O18).
-- The SDLC loop is a proposed skeleton (O13); Sov has no live activation (O17).
+- `invoke_model` has no kernel implementation (PROD-I-9). The Ollama adapter
+  grades declared bindings against a recorded inventory; it does not execute a
+  model.
+- Proofing, Console, and Asset Projection are accepted boundaries with no
+  implementation.
+- The SDLC loop is a skeleton, and Sov has no live activation.
 - No external-world effects in Phase I. Unattended runs carry no `gh`;
   refreshing the epic projection is an attended action.
 - Four of six diagrams are stale, and the module budget does not reach
   `conformance/run.py` at 332 lines (`reports/2026-08-23-stack-certification.md`).
 
-Every open decision listed in `STATUS.yaml` is Bdo's. Preserve them without
-resolving them. An unresolved judgement gates only the transitions named under
-its `gates`; take reversible defaults for every other choice, record them, and
-continue through the highest-value admissible work. Escalate only when no
-admissible path remains or proceeding would exercise authority Claude does not
-hold (`AGENTS.md`, Self-direction is not delegation; Blocked edge is not
-blocked frontier).
+The founding decision docket is closed; `open_decisions` is empty and the
+`O<n>` identifiers are retired. Settle a decision at the lowest tier that can
+produce evidence defeating the alternatives, and record what would defeat the
+ruling (`decisions/0033-close-the-founding-docket.md`, Ruling 1). Escalating a
+question this session could have settled with available evidence is a defect,
+not caution.
+
+What genuinely waits on Bdo is `external_acceptance_holds` in `STATUS.yaml`
+(today: public release clearance), plus owner-held product intent, public
+naming, external commitment, irreversible external effects, secrets, and
+destructive repository administration. Bdo's gate is acceptance over an
+evidenced result, never permission to begin
+(`decisions/0023-acceptance-not-approval.md`).
 
 ## How we launch things and watch them
 
@@ -142,7 +153,8 @@ the accurate reading, not a shortfall.
 
 | Need | Open |
 | --- | --- |
-| Which transition a decision gates, and whose it is | `STATUS.yaml`, `open_decisions` (`gates`) |
+| Which tier settles a decision | `decisions/0033-close-the-founding-docket.md`, Ruling 1 |
+| What genuinely waits on Bdo | `STATUS.yaml`, `external_acceptance_holds` |
 | A term or enum | `CLASSIFICATION.md`, then `SPEC.md` |
 | Whether a surface is AI-native | `AI-NATIVE.md` |
 | Harness layout and invocation | `.claude/README.md` |

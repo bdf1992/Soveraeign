@@ -1,6 +1,9 @@
-# 0021 · Asset Projection Service boundary and parity target
+# 0030 · Asset Projection Service boundary and parity target
 
-Status: `PROPOSED · OWNER RATIFICATION PENDING`
+Status: `RULED AT CONTROL RESOLUTION · OWNER ACCEPTANCE OVER EVIDENCE`
+
+Ruled by `decisions/0033-close-the-founding-docket.md` under the acceptance
+policy of `decisions/0023-acceptance-not-approval.md`.
 
 ## Decision
 

@@ -1,6 +1,8 @@
 # 0029 · The lessons loop: an inbox that drains into evidence
 
-Status: `PROPOSED · OWNER RATIFICATION PENDING`
+Status: `RULED AT CONTROL RESOLUTION · OWNER ACCEPTANCE OVER EVIDENCE`
+
+Ruled by `decisions/0033-close-the-founding-docket.md`.
 
 Depends on `0028-history-as-lineage.md` for the evidence addresses a lesson
 cites.

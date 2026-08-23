@@ -91,7 +91,7 @@ reachable alternative is refused: that ticket is dependency-mapped, not
 blocked. A request whose provision is already some ticket's work is refused
 for the same reason; link that ticket instead. A judgement is always asked of
 the owner. The queue serves an unblock request at the tier it names and sorts
-it by what it holds (`decisions/0024-unblock-ticket-kind.md`).
+it by what it holds (`decisions/0032-unblock-ticket-kind.md`).
 
 An **unblock request** (`kind: unblock`, `type: unblock`) is a proven block
 filed as work. Blocked is never a ticket status. A ticket that cannot advance
@@ -105,7 +105,7 @@ reachable alternative is refused: that ticket is dependency-mapped, not
 blocked. A request whose provision is already some ticket's work is refused
 for the same reason; link that ticket instead. A judgement is always asked of
 the owner. The queue serves an unblock request at the tier it names and sorts
-it by what it holds (`decisions/0024-unblock-ticket-kind.md`).
+it by what it holds (`decisions/0032-unblock-ticket-kind.md`).
 
 Changing the issue schema, label axes, color meanings, containment rule, or
 milestone semantics is a reviewed contract change. Update this section, the JSON

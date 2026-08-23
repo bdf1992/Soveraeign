@@ -1,6 +1,8 @@
 # 0028 · Repository history as lineage, through a versioned lossy reader
 
-Status: `PROPOSED · OWNER RATIFICATION PENDING`
+Status: `RULED AT CONTROL RESOLUTION · OWNER ACCEPTANCE OVER EVIDENCE`
+
+Ruled by `decisions/0033-close-the-founding-docket.md`.
 
 Numbered after `0027-local-model-adapter.md`, the highest record on this branch.
 

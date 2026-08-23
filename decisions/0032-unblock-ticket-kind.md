@@ -1,6 +1,8 @@
-# 0024 · Unblock request as a ticket kind
+# 0032 · Unblock request as a ticket kind
 
-Status: `OWNER-DIRECTED · WORDING PROPOSED`
+Status: `RULED AT CONTROL RESOLUTION · OWNER ACCEPTANCE OVER EVIDENCE`
+
+Ruled by `decisions/0033-close-the-founding-docket.md`.
 
 ## Decision
 

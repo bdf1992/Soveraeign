@@ -1,6 +1,8 @@
 # 0026 · Local federation harness and role-based agents
 
-Status: `PROPOSED · OWNER RATIFICATION PENDING`
+Status: `RULED AT CONTROL RESOLUTION · OWNER ACCEPTANCE OVER EVIDENCE`
+
+Ruled by `decisions/0033-close-the-founding-docket.md`.
 
 Renumbered three times, for the same reason each time: a locally drafted
 record collides with one merged upstream in parallel, and the unmerged record

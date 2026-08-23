@@ -1,6 +1,9 @@
 # 0022 · Story as a ticket kind
 
-Status: `PROPOSED · OWNER RATIFICATION PENDING` (O22)
+Status: `RULED AT CONTROL RESOLUTION · OWNER ACCEPTANCE OVER EVIDENCE`
+
+Ruled by `decisions/0033-close-the-founding-docket.md`; the identifier O22 is
+retired with the rest of the founding docket.
 
 Revised 2026-08-23: the teller is now `actor_kind` + `role`; the first-cut
 `participant` cast is withdrawn. See "What this decision does not do".
@@ -140,7 +143,7 @@ plumbing, which is a separate call.
   Pre-existing since decision 0018; recorded here because this decision
   touched the table and left it alone.
 - The front-office-counter check (above).
-- `decisions/0024-unblock-ticket-kind.md` grew the same schema and fixture
+- `decisions/0032-unblock-ticket-kind.md` grew the same schema and fixture
   corpus on the same day in a concurrent session. Both kinds validate
   together (28 metadata cases); the two decisions were not reconciled by
   hand and should be read side by side at review.

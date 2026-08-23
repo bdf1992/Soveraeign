@@ -77,7 +77,7 @@ unruled; this record proposes the rule that protection would enforce.
 - Nothing in `SDLC.md` is renamed. `BLUE`, `RED`, `PURPLE`, `JOINED`, and
   `GREEN` keep their meanings as stances and settled outcomes. The channels are
   a lowercase readout over the same receipts.
-- **One collision is not resolved here and is queued as O19.** `SDLC.md` `GREEN`
+- **One collision is not resolved here and is queued as O20.** `SDLC.md` `GREEN`
   is the derived go-state combining `PURPLE` and `JOINED`. The `green` channel
   in section 1 is contact with the world. In Phase I these diverge: the former
   is reachable, the latter is not, because `no_external_effects_in_phase_i`

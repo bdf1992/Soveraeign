@@ -31,7 +31,7 @@ other. **Which layer each occupies is an open judgement item for Bdo**; see
 | Prefix | Standing | Shape |
 | --- | --- | --- |
 | `sdlc-` | decision `0013-domain-mapped-sdlc-loop.md`, merged | tier and domain skills; no executable orchestration |
-| `sov-` | decision `0018-federation-harness.md`, proposed | domain skills, four role agents, thirteen executable workflows |
+| `sov-` | decision `0020-federation-harness.md`, proposed | domain skills, four role agents, thirteen executable workflows |
 
 One tension the merge does not dissolve: this file states that executable
 orchestration scripts are not admitted before their logical specification and

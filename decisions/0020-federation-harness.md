@@ -1,11 +1,12 @@
-# 0018 · Local federation harness and role-based agents
+# 0020 · Local federation harness and role-based agents
 
 Status: `PROPOSED · OWNER RATIFICATION PENDING`
 
-Renumbered from `0013` on 2026-08-23. `0013` was drafted locally while
-`decisions/0013-domain-mapped-sdlc-loop.md` was merged to `origin/main` in
-parallel; `0014` through `0017` are claimed by the console boundary, scheduled
-runs, pull request #44, and the merged Sov operating agent. `0018` is the first
+Renumbered twice, for the same reason both times: a locally drafted record
+collides with one merged upstream in parallel, and the unmerged record moves.
+`0013` went to `decisions/0013-domain-mapped-sdlc-loop.md`; `0018` then went to
+`decisions/0018-verification-engagement-kind.md`, merged via pull request #60.
+`0019` is claimed by the verification-channel projection, so `0020` is the first
 number free of all of them. See `reports/2026-08-23-merge-readiness.md`.
 
 ## Decision

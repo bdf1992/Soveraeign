@@ -198,7 +198,7 @@ holds no standing or authority, its runs may propose at most
 `BUILT -> WITNESSED`, and a build claim is always witnessed by a different
 agent than its builder. `.claude/README.md` owns the harness layout; this
 contract remains the authority on agent conduct. Standing of the harness
-itself: `decisions/0018-federation-harness.md` (proposed).
+itself: `decisions/0020-federation-harness.md` (proposed).
 
 ## Secrets and local boundaries
 

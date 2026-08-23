@@ -1,0 +1,407 @@
+{
+  "corpus_id": "soveraeign-ticket-metadata-cases/v1",
+  "note": "Positive and defeating cases for contracts/issue-metadata.schema.json. Until this corpus existed the metadata schema was exercised only against the live board, so a change to it could only be judged after it had already reached GitHub. Every case here runs offline from the checkout alone. A defeating case names the substring its refusal must contain, so a case cannot pass by raising some unrelated defect.",
+  "cases": [
+    {
+      "case_id": "MC-001-engagement-is-a-declared-kind",
+      "expect": "VALID",
+      "proves": "A verification engagement pinned to a target pull request and head is a first-class ticket kind.",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:engagement",
+          "village:ground-and-evidence",
+          "horizon:now",
+          "effect:record-local"
+        ],
+        "kind": "verification-engagement",
+        "engagement_id": "RED-CHARTING-001",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#40",
+        "standing": "OPEN",
+        "horizon": "NOW",
+        "authority": "delegated-verification-only",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "topology",
+          "conformance",
+          "registry-capability",
+          "bindings-adapters"
+        ],
+        "requires": [
+          "#40",
+          "#41"
+        ],
+        "target_pr": "#43",
+        "target_head": "b03a0ea9b832b226150a27d6986e69f1b492b22d"
+      }
+    },
+    {
+      "case_id": "MC-002-construction-kinds-still-validate",
+      "expect": "VALID",
+      "proves": "Adding a kind did not disturb the construction kinds already in the tree.",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:stub",
+          "village:reach-and-motion",
+          "horizon:now",
+          "effect:record-local"
+        ],
+        "kind": "implementation-stub",
+        "stub_id": "STUB-SOV-OPERATING-AGENT",
+        "path": "SOV.md, bindings/sov/",
+        "village": "reach-and-motion",
+        "village_issue": "#2",
+        "parent": "#1",
+        "parent_bits": [
+          "#14",
+          "#16",
+          "#19"
+        ],
+        "standing": "BUILT_SELF_TESTED_NOT_WITNESSED",
+        "horizon": "NOW",
+        "authority": "Bdo/product-intent-and-naming; delegated-verification",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "main@10d74f5c9abc48dd1e051fd52531a2ecbbc1c0ed",
+        "last_observed_at": "2026-08-23T05:59:41Z",
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "context",
+          "agency",
+          "bindings-adapters"
+        ],
+        "requires": [
+          "#19",
+          "#30"
+        ]
+      }
+    },
+    {
+      "case_id": "MC-003-engagement-without-engagement-id",
+      "expect": "INVALID",
+      "proves": "An engagement must carry its own identity.",
+      "refuses": "engagement_id",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:engagement",
+          "village:ground-and-evidence",
+          "horizon:now",
+          "effect:record-local"
+        ],
+        "kind": "verification-engagement",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#40",
+        "standing": "OPEN",
+        "horizon": "NOW",
+        "authority": "delegated-verification-only",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "topology",
+          "conformance",
+          "registry-capability",
+          "bindings-adapters"
+        ],
+        "requires": [
+          "#40",
+          "#41"
+        ],
+        "target_pr": "#43",
+        "target_head": "b03a0ea9b832b226150a27d6986e69f1b492b22d"
+      }
+    },
+    {
+      "case_id": "MC-004-engagement-without-target-pr",
+      "expect": "INVALID",
+      "proves": "An engagement that names no target is not an engagement.",
+      "refuses": "target_pr",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:engagement",
+          "village:ground-and-evidence",
+          "horizon:now",
+          "effect:record-local"
+        ],
+        "kind": "verification-engagement",
+        "engagement_id": "RED-CHARTING-001",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#40",
+        "standing": "OPEN",
+        "horizon": "NOW",
+        "authority": "delegated-verification-only",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "topology",
+          "conformance",
+          "registry-capability",
+          "bindings-adapters"
+        ],
+        "requires": [
+          "#40",
+          "#41"
+        ],
+        "target_head": "b03a0ea9b832b226150a27d6986e69f1b492b22d"
+      }
+    },
+    {
+      "case_id": "MC-005-engagement-without-target-head",
+      "expect": "INVALID",
+      "proves": "An engagement that does not pin the commit it attacked cannot be reproduced.",
+      "refuses": "target_head",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:engagement",
+          "village:ground-and-evidence",
+          "horizon:now",
+          "effect:record-local"
+        ],
+        "kind": "verification-engagement",
+        "engagement_id": "RED-CHARTING-001",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#40",
+        "standing": "OPEN",
+        "horizon": "NOW",
+        "authority": "delegated-verification-only",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "topology",
+          "conformance",
+          "registry-capability",
+          "bindings-adapters"
+        ],
+        "requires": [
+          "#40",
+          "#41"
+        ],
+        "target_pr": "#43"
+      }
+    },
+    {
+      "case_id": "MC-006-engagement-head-must-be-a-full-sha",
+      "expect": "INVALID",
+      "proves": "An abbreviated head is ambiguous across a growing history.",
+      "refuses": "target_head",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:engagement",
+          "village:ground-and-evidence",
+          "horizon:now",
+          "effect:record-local"
+        ],
+        "kind": "verification-engagement",
+        "engagement_id": "RED-CHARTING-001",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#40",
+        "standing": "OPEN",
+        "horizon": "NOW",
+        "authority": "delegated-verification-only",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "topology",
+          "conformance",
+          "registry-capability",
+          "bindings-adapters"
+        ],
+        "requires": [
+          "#40",
+          "#41"
+        ],
+        "target_pr": "#43",
+        "target_head": "b03a0ea"
+      }
+    },
+    {
+      "case_id": "MC-007-engagement-may-not-carry-construction-identity",
+      "expect": "INVALID",
+      "proves": "A verification engagement builds nothing, so a stub identity on it is refused outright rather than admitted unchecked. This is the exact defect that #57 exposed.",
+      "refuses": "stub_id",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:engagement",
+          "village:ground-and-evidence",
+          "horizon:now",
+          "effect:record-local"
+        ],
+        "kind": "verification-engagement",
+        "engagement_id": "RED-CHARTING-001",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#40",
+        "standing": "OPEN",
+        "horizon": "NOW",
+        "authority": "delegated-verification-only",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "topology",
+          "conformance",
+          "registry-capability",
+          "bindings-adapters"
+        ],
+        "requires": [
+          "#40",
+          "#41"
+        ],
+        "target_pr": "#43",
+        "target_head": "b03a0ea9b832b226150a27d6986e69f1b492b22d",
+        "stub_id": "STUB-RED-CHARTING-001"
+      }
+    },
+    {
+      "case_id": "MC-008-engagement-id-may-not-borrow-the-stub-prefix",
+      "expect": "INVALID",
+      "proves": "Naming an engagement STUB- would reintroduce the construction vocabulary the kind exists to separate.",
+      "refuses": "engagement_id",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:engagement",
+          "village:ground-and-evidence",
+          "horizon:now",
+          "effect:record-local"
+        ],
+        "kind": "verification-engagement",
+        "engagement_id": "STUB-CHARTING-001",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#40",
+        "standing": "OPEN",
+        "horizon": "NOW",
+        "authority": "delegated-verification-only",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "topology",
+          "conformance",
+          "registry-capability",
+          "bindings-adapters"
+        ],
+        "requires": [
+          "#40",
+          "#41"
+        ],
+        "target_pr": "#43",
+        "target_head": "b03a0ea9b832b226150a27d6986e69f1b492b22d"
+      }
+    },
+    {
+      "case_id": "MC-009-construction-stub-still-requires-its-path",
+      "expect": "INVALID",
+      "proves": "The new branch did not weaken the conditional already governing implementation stubs.",
+      "refuses": "path",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:stub",
+          "village:reach-and-motion",
+          "horizon:now",
+          "effect:record-local"
+        ],
+        "kind": "implementation-stub",
+        "stub_id": "STUB-SOV-OPERATING-AGENT",
+        "village": "reach-and-motion",
+        "village_issue": "#2",
+        "parent": "#1",
+        "parent_bits": [
+          "#14",
+          "#16",
+          "#19"
+        ],
+        "standing": "BUILT_SELF_TESTED_NOT_WITNESSED",
+        "horizon": "NOW",
+        "authority": "Bdo/product-intent-and-naming; delegated-verification",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "main@10d74f5c9abc48dd1e051fd52531a2ecbbc1c0ed",
+        "last_observed_at": "2026-08-23T05:59:41Z",
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "context",
+          "agency",
+          "bindings-adapters"
+        ],
+        "requires": [
+          "#19",
+          "#30"
+        ]
+      }
+    },
+    {
+      "case_id": "MC-010-unknown-kind-is-refused",
+      "expect": "INVALID",
+      "proves": "The kind enum stays closed; a fifth kind must be declared, not asserted by a ticket.",
+      "refuses": "kind",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:engagement",
+          "village:ground-and-evidence",
+          "horizon:now",
+          "effect:record-local"
+        ],
+        "kind": "performance-engagement",
+        "engagement_id": "RED-CHARTING-001",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#40",
+        "standing": "OPEN",
+        "horizon": "NOW",
+        "authority": "delegated-verification-only",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "topology",
+          "conformance",
+          "registry-capability",
+          "bindings-adapters"
+        ],
+        "requires": [
+          "#40",
+          "#41"
+        ],
+        "target_pr": "#43",
+        "target_head": "b03a0ea9b832b226150a27d6986e69f1b492b22d"
+      }
+    }
+  ]
+}

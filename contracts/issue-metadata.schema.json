@@ -37,7 +37,8 @@
         "epic-of-epics",
         "village",
         "bit",
-        "implementation-stub"
+        "implementation-stub",
+        "verification-engagement"
       ]
     },
     "epic_id": {
@@ -55,6 +56,11 @@
     "stub_id": {
       "type": "string",
       "pattern": "^STUB-[A-Z0-9-]+$"
+    },
+    "engagement_id": {
+      "description": "Identity of a verification engagement. A Red engagement is named for what it attacks, not for what it builds.",
+      "type": "string",
+      "pattern": "^RED-[A-Z0-9-]+$"
     },
     "path": {
       "type": "string",
@@ -204,6 +210,15 @@
       },
       "uniqueItems": true
     },
+    "target_pr": {
+      "description": "The pull request this engagement attempts to defeat.",
+      "$ref": "#/$defs/issueRef"
+    },
+    "target_head": {
+      "description": "The exact commit the engagement was run against. An engagement that does not pin its target cannot be reproduced.",
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
     "membership": {
       "type": "string"
     },
@@ -305,6 +320,35 @@
           "parent_bits",
           "requires"
         ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "verification-engagement"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "then": {
+        "required": [
+          "engagement_id",
+          "village",
+          "village_issue",
+          "parent",
+          "target_pr",
+          "target_head",
+          "requires"
+        ],
+        "properties": {
+          "stub_id": {
+            "description": "A verification engagement constructs nothing, so it carries no construction identity. An empty enum refuses the key outright rather than admitting it unchecked.",
+            "enum": []
+          }
+        }
       }
     }
   ]

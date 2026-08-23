@@ -22,6 +22,51 @@ The operational System of Record preserves events and receipts with their
 standing. It can record disagreement, failure, and retraction without converting
 them into an undifferentiated claim of truth.
 
+## Issue coordination contract
+
+GitHub is the coordination surface; the issue body remains the compressed
+specification. Each field has one role:
+
+| Surface | Owns |
+| --- | --- |
+| Title | `Subject — bounded outcome`; no bracketed type or village prefixes |
+| Labels | Stable filtering axes: type, village, horizon, non-default effect, and exceptional standing |
+| Issue body metadata | Complete machine-readable contract validated by `contracts/issue-metadata.schema.json` |
+| Relationships | Containment only: epic → village → bit or implementation stub |
+| `requires` and `parent_bits` | The dependency DAG; never forced into GitHub's single-parent tree |
+| Milestone | The next evidence gate, such as F0 through F6 or Federation |
+| Project status | Volatile delivery state: proposed, ready, blocked, active, in witness, done, or demoted |
+| Assignee | The human accountable for the next action; assignment grants no authority |
+| Development | Branches and pull requests for implementation work, normally attached to stubs |
+
+Titles do not repeat information already visible as labels. Use the title form
+`Subject — bounded outcome`, retaining a well-known service or artifact name as
+the subject.
+
+Every issue receives exactly one `type:` label and, except the system epic,
+exactly one `village:` label. It receives exactly one `horizon:` label.
+`effect: record-local` is the default and is omitted from the visible label set;
+non-default effects remain visible. `witness: pending` is carried by body
+metadata or the project and is omitted from the list view until witness state
+changes. Implementation stubs retain a `standing:` label when that standing
+changes how the work may be treated.
+
+The canonical names, descriptions, and accessible colors live in
+`.github/labels.yml`. The YAML block at the top of an issue is an instance of
+`soveraeign-ticket/v1`; after YAML parsing it must validate against
+`contracts/issue-metadata.schema.json`. Display labels are projections of that
+metadata, not a second authority.
+
+Use native relationships only for the containment tree. Cross-village
+dependencies, multiple parent bits, dependency channels, and proof obligations
+remain explicit in issue metadata and prose. A branch or pull request may close
+an implementation stub; it cannot by itself close its bit, promote a village,
+satisfy independent witness, or ratify the epic.
+
+Changing the issue schema, label axes, color meanings, containment rule, or
+milestone semantics is a reviewed contract change. Update this section, the JSON
+Schema, and the label catalogue together.
+
 ## Before you change code
 
 Read the governing set above, then inspect `OPEN-SEAMS.md`, the relevant service

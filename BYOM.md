@@ -62,6 +62,16 @@ than normalized away.
 - An unavailable or incompatible model refuses visibly. It does not fall back
   silently to another model or fabricate success.
 
+The declared Model Binding is compiled as the proposed
+`contracts/model-binding.schema.json` from the `ModelBinding` object in
+`SPEC.md`, and an invocation runs through the `SPEC.md` `invoke_model`
+transition, which owns its refusal codes; both remain proposed pending the
+owner freeze of `SPEC.md` and decision O12. Model Binding, Model Adapter, and
+Operator are used here as defined in `CLASSIFICATION.md` (proposed
+vocabulary), and the pattern itself is recorded in
+`decisions/0011-local-personal-byom.md` (owner-directed, contract wording
+proposed).
+
 ## Data-boundary modes
 
 Every model binding declares one mode:
@@ -95,6 +105,13 @@ The test fails if either model requires a provider-specific authoritative path,
 if a model swap changes authority, if model identity disappears from
 provenance, if fallback is silent, or if provider loss removes local custody or
 operational continuity.
+
+This test is the conformance surface for `PRD.md` PROD-I-9 (a freeze
+candidate, not owner-ratified). It is seeded as
+`conformance/founding-scenarios/008-model-portability.yaml` (FOUND-008, an
+owner-directed seed), and the oracle controls `CONF-I9-POS` and `CONF-I9-DEF`
+in `conformance/oracle-controls.json` prove only that the oracle distinguishes
+the positive and defeating narratives; they witness no participant.
 
 ## Non-goals
 

@@ -6,6 +6,7 @@ from __future__ import annotations
 from pathlib import Path
 import ast
 import re
+import subprocess
 import sys
 
 
@@ -31,14 +32,34 @@ LOCAL_PATH_PATTERNS = (
 )
 
 
+def _git_population() -> list[Path] | None:
+    """Return Git-admittable files, including force-added ignored paths."""
+    result = subprocess.run(
+        ["git", "ls-files", "--cached", "--others", "--exclude-standard", "-z"],
+        cwd=ROOT,
+        check=False,
+        capture_output=True,
+    )
+    if result.returncode:
+        return None
+    return [ROOT / item.decode("utf-8", errors="surrogateescape")
+            for item in result.stdout.split(b"\0") if item]
+
+
 def repository_text_files() -> list[Path]:
+    candidates = _git_population()
+    if candidates is None:
+        candidates = [path for path in ROOT.rglob("*") if path.is_file()]
     paths = []
-    for path in ROOT.rglob("*"):
-        if not path.is_file() or any(part in SKIP_PARTS for part in path.parts):
+    for path in candidates:
+        if not path.is_file() or any(part in SKIP_PARTS for part in path.relative_to(ROOT).parts):
             continue
-        if path.suffix in TEXT_SUFFIXES or path.name in TEXT_NAMES:
-            paths.append(path)
-    return sorted(paths)
+        try:
+            path.read_text(encoding="utf-8")
+        except UnicodeDecodeError:
+            continue
+        paths.append(path)
+    return sorted(set(paths))
 
 
 def check_text(path: Path, text: str) -> list[str]:

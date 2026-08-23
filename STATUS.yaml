@@ -13,7 +13,7 @@ asset_service_status: BUILT_SELF_TESTED_NOT_WITNESSED
 proofing_service_status: CHARTERED_NOT_IMPLEMENTED
 byom_status: OWNER_DIRECTED_CONTRACT_AND_FIXTURE_PROPOSED
 ai_native_definition_status: FREEZE_CANDIDATE
-engineering_framework_status: BUILT_SELF_TESTED_NOT_WITNESSED_BASELINE_PROPOSED
+engineering_framework_status: BUILT_SELF_TESTED_NOT_WITNESSED_BASELINE_PROPOSED\ninfrastructure_status: BUILT_SELF_TESTED_NOT_WITNESSED_PROVISIONAL_LOCAL_ENVELOPE
 sdlc_loop_status: OWNER_DIRECTED_LOOP_AND_BINDING_SKELETON_PROPOSED
 
 authority:
@@ -57,7 +57,7 @@ proposed_repository_claims:
   - design_and_operational_systems_of_record
   - minimal_phase_i_reference_stack
   - composable_kernel_primitive_baseline
-  - dependency_free_day_zero_verification
+  - dependency_free_day_zero_verification\n  - provisional_phase_i_local_infrastructure_as_code
   - domain_mapped_sdlc_operating_loop
   - authority_and_verification_stance_dyads
   - red_gated_release_requirement

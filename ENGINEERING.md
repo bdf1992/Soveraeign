@@ -36,7 +36,7 @@ loss of optional providers, and can be replaced behind an existing contract.
 | Operational record | Append-preserving events and receipts in transactional SQLite | SQLite does not define service or kernel semantics |
 | Immutable payload custody | Filesystem content-addressed store using SHA-256 | Payload address differs from asset and source identity |
 | Machine contracts | JSON Schema Draft 2020-12 | Schema validity is not semantic fitness |
-| Human control files | Markdown and small YAML fixtures | YAML is not a parallel runtime contract |
+| Human control files | Markdown and small YAML fixtures | YAML is not a parallel runtime contract |\n| Local infrastructure | Versioned manifest plus dependency-free plan/apply/verify tool | Provisional Phase-I custody envelope only; no cloud, container, orchestrator, provider, or destroy operation |
 | Local surface | Python API and CLI | Human and model bindings use the same kernel operations |
 | Tests and lint | `unittest` and dependency-free repository scripts | Local, deterministic, network-free, under three seconds |
 | Search and graph | Rebuildable local projections | External systems integrate through adapters later |

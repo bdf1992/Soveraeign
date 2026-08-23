@@ -188,7 +188,7 @@ dependency or a substitute for repository verification.
 | `/bindings` | Human/model realizations of declared interfaces | Authoritative writes or semantic forks |
 | `/adapters` | Translation to a named external system | Standing, ratification, settlement, or hidden fallback |
 | `/workers` | Scoped leased execution and reports | Self-settlement or self-witnessing |
-| `/scripts` | Verification and bounded repository maintenance | Product business logic |
+| `/infrastructure` | Declarative local node custody and provisioning inputs | Product policy, provider authority, or destructive lifecycle operations |\n| `/scripts` | Verification and bounded repository maintenance | Product business logic |
 | `/decisions` | Consequential choices, status, rationale, consequences | Mutable runtime state |
 | `/lineage` | Attributed ancestry and immutable historical evidence | Current policy by implication |
 

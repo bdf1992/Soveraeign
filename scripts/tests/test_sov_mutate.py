@@ -1,0 +1,150 @@
+"""Checks for the mutation scorer.
+
+The scorer is an instrument that makes claims about other suites, so it is held
+to the standard it enforces: every positive case here has a defeating twin that
+proves the check would notice its own absence. A scorer that only ever reported
+high numbers would pass a suite of positive cases and be worthless.
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+import sys
+import tempfile
+import unittest
+
+SCRIPTS = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(SCRIPTS))
+
+from sovmutate import harness, operators  # noqa: E402
+
+
+ASSERTED = '''
+def classify(value):
+    if value > 10:
+        return "high"
+    return "low"
+'''
+
+PINNING_SUITE = '''
+import unittest
+import subject
+
+
+class Pinned(unittest.TestCase):
+    def test_boundary(self):
+        self.assertEqual(subject.classify(11), "high")
+        self.assertEqual(subject.classify(10), "low")
+'''
+
+VACUOUS_SUITE = '''
+import unittest
+import subject
+
+
+class Vacuous(unittest.TestCase):
+    def test_it_runs(self):
+        subject.classify(11)
+'''
+
+
+def _score(source: str, suite: str) -> harness.Score:
+    with tempfile.TemporaryDirectory() as tmp:
+        workspace = Path(tmp)
+        subject = workspace / "subject.py"
+        subject.write_text(source, encoding="utf-8", newline="\n")
+        (workspace / "test_subject.py").write_text(suite, encoding="utf-8", newline="\n")
+        command = (sys.executable, "-m", "unittest", "discover", "-s", ".", "-q")
+        return harness.score_file(subject, workspace, command=command)
+
+
+class OperatorMechanics(unittest.TestCase):
+    def test_one_call_mutates_exactly_one_site(self):
+        source = "a = 1 < 2\nb = 3 < 4\n"
+        found = operators.sites(source)
+        # Six sites, not two: each comparison is one, and each integer literal
+        # in it is another. Constants are mutable because an off-by-one in a
+        # bound is exactly the defect a boundary test is supposed to pin.
+        self.assertEqual(len(found), 6)
+        mutated = operators.mutate(source, 0)
+        self.assertIn("1 <= 2", mutated)
+        self.assertIn("3 < 4", mutated)
+
+    def test_mutation_is_deterministic(self):
+        source = "def f(x):\n    return x > 5\n"
+        self.assertEqual(operators.mutate(source, 0), operators.mutate(source, 0))
+
+    def test_site_order_is_stable_across_calls(self):
+        source = "def f(x):\n    return x > 5 and x < 10\n"
+        first = [(s.line, s.operator, s.description) for s in operators.sites(source)]
+        second = [(s.line, s.operator, s.description) for s in operators.sites(source)]
+        self.assertEqual(first, second)
+
+    def test_an_index_naming_no_site_is_refused_not_silently_ignored(self):
+        """A silently-unapplied mutant would be scored as survived and flatter the suite."""
+        source = "x = 1 < 2\n"
+        with self.assertRaises(IndexError):
+            operators.mutate(source, 99)
+
+    def test_source_with_no_mutable_site_yields_none(self):
+        self.assertEqual(operators.sites("import os\n"), [])
+
+
+class ScorerDiscriminates(unittest.TestCase):
+    """Scoring spawns one subprocess per mutant, so both scores are taken once
+    for the whole class. Recomputing them per test multiplied the repository's
+    three-second verification budget by the number of assertions."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.pinning = _score(ASSERTED, PINNING_SUITE)
+        cls.vacuous = _score(ASSERTED, VACUOUS_SUITE)
+
+    def test_a_pinning_suite_kills_the_boundary_mutants(self):
+        killed = [m for m in self.pinning.mutants if m.killed and m.site.operator == "compare"]
+        self.assertTrue(killed, "a suite pinning both sides of a boundary must kill the compare mutant")
+
+    def test_a_vacuous_suite_scores_lower_than_a_pinning_one(self):
+        """The defeating case: a suite that only calls the function must not score like one that asserts."""
+        self.assertLess(
+            self.vacuous.percent, self.pinning.percent,
+            "a suite that asserts nothing scored at least as well as one that asserts",
+        )
+
+    def test_a_vacuous_suite_never_reports_a_perfect_score(self):
+        self.assertLess(self.vacuous.percent, 100.0)
+
+    def test_survivors_carry_the_line_that_is_unasserted(self):
+        self.assertTrue(self.vacuous.survived)
+        for mutant in self.vacuous.survived:
+            self.assertGreater(mutant.site.line, 0)
+
+
+class TreeIsRestored(unittest.TestCase):
+    def test_the_subject_is_byte_identical_after_scoring(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace = Path(tmp)
+            subject = workspace / "subject.py"
+            subject.write_text(ASSERTED, encoding="utf-8", newline="\n")
+            (workspace / "test_subject.py").write_text(PINNING_SUITE, encoding="utf-8", newline="\n")
+            before = subject.read_bytes()
+            command = (sys.executable, "-m", "unittest", "discover", "-s", ".", "-q")
+            harness.score_file(subject, workspace, command=command)
+            self.assertEqual(subject.read_bytes(), before)
+
+    def test_a_file_admitting_no_mutants_scores_one_hundred_without_running_anything(self):
+        score = harness.Score(target="none", command=("true",))
+        self.assertEqual(score.generated, 0)
+        self.assertEqual(score.percent, 100.0)
+
+
+# The shipped `sov_mutate.py selfcheck` command is deliberately NOT wrapped in a
+# test here. It runs a full scoring pass, which costs a subprocess per mutant,
+# and `ScorerDiscriminates` already proves the same discrimination in-process.
+# Running it twice consumed a third of the repository's three-second budget to
+# re-prove a settled fact. It runs instead as its own step in the mutation gate,
+# which is the gate that depends on it.
+
+
+if __name__ == "__main__":
+    unittest.main()

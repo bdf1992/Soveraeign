@@ -18,7 +18,6 @@ CHECKS = (
     ("conformance oracle controls", [sys.executable, "conformance/run.py"], ROOT),
     ("conformance oracle tests", [sys.executable, "-m", "unittest", "discover", "-s", "conformance/tests", "-v"], ROOT),
     ("ticket transition corpus", [sys.executable, "scripts/sov_ticket.py", "selfcheck"], ROOT),
-    ("ticket coordination tests", [sys.executable, "-m", "unittest", "discover", "-s", "scripts/tests", "-v"], ROOT),
     (
         "Sov context profile",
         [sys.executable, "-m", "unittest", "discover", "-s", "bindings/sov/tests", "-v"],

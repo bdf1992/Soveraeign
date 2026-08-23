@@ -47,6 +47,12 @@ jobs:
     name: red · adversarial screening
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    # Gated at the job so an unconfigured lane renders as SKIPPED, not as a pass.
+    # It previously exited zero after writing a refusal to the step summary, which
+    # made a refusal and a real screening indistinguishable in the check list -
+    # the defect named in decisions/0019. Generative screening stays optional; the
+    # blocking adversarial gate is `mutation`, which needs no key.
+    if: vars.SOV_RED_LANE_ENABLED == 'true'
     permissions:
       contents: read
       pull-requests: write
@@ -55,20 +61,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Resolve the lane state
-        id: lane
+      - name: Refuse an enabled lane with no key
         env:
           RED_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          RED_ENABLED: ${{ vars.SOV_RED_LANE_ENABLED }}
         run: |
-          if [ -n "$RED_KEY" ] && [ "$RED_ENABLED" = "true" ]; then
-            echo "configured=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "configured=false" >> "$GITHUB_OUTPUT"
+          if [ -z "$RED_KEY" ]; then
+            echo 'RED_LANE_MISCONFIGURED - SOV_RED_LANE_ENABLED is true but ANTHROPIC_API_KEY is absent.' >&2
+            echo 'Failing rather than reporting a pass for screening that never ran.' >&2
+            exit 1
           fi
 
       - name: Adversarial screening pass
-        if: steps.lane.outputs.configured == 'true'
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -94,27 +97,57 @@ jobs:
             Do not claim a finding is confirmed. Do not claim the change is witnessed.
             Do not approve the pull request.
 
-      - name: Declare an unconfigured lane
-        if: steps.lane.outputs.configured != 'true'
+  mutation:
+    name: red · mutation score
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch the comparison point
+        run: git fetch --no-tags origin "${{ github.base_ref || 'main' }}"
+
+      - name: Prove the scorer discriminates before trusting its number
+        run: python scripts/sov_mutate.py selfcheck
+
+      - name: Score the mutants this change admits
+        run: |
+          python scripts/sov_mutate.py run             --changed             --base "origin/${{ github.base_ref || 'main' }}"             --limit 40
+
+      - name: Record what the score means
+        if: always()
         run: |
           {
-            echo '## Red lane'
+            echo '## Red lane, mechanical'
             echo
-            echo '`RED_LANE_UNCONFIGURED` — no adversarial screening ran.'
+            echo 'A mutation score is evidence about the *tests*, not about the code.'
+            echo 'A surviving mutant names a behaviour the suite does not assert.'
             echo
-            echo 'The lane is opt-in: it needs the `ANTHROPIC_API_KEY` secret and the'
-            echo '`SOV_RED_LANE_ENABLED` repository variable set to `true`.'
+            echo 'This gate needs no key and cannot fail open: the scorer must first'
+            echo 'demonstrate that it kills an asserted mutant and spares an unasserted'
+            echo 'one, and a run that cannot prove it restored the tree refuses rather'
+            echo 'than reporting a score.'
             echo
-            echo 'This is a visible refusal, not a silent skip. A pull request may still'
-            echo 'establish `BUILT` evidence; nothing may advance past it without a'
-            echo 'settled engagement receipt, which the purple gate enforces.'
+            echo 'Mutants per file are capped at 40 and the cap is reported, never silent.'
+            echo 'No threshold is enforced yet - `decisions/0019` leaves the number to Bdo,'
+            echo 'because a floor invented before a baseline would be asserted, not measured.'
           } >> "$GITHUB_STEP_SUMMARY"
 
   purple:
     name: purple · release gate
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [blue, red]
+    needs: [blue, red, mutation]
+    # `red` is opt-in and renders as skipped when unconfigured, which must not
+    # skip the gate behind it. A red that is enabled and *fails* still stops here.
+    if: ${{ !cancelled() && needs.blue.result == 'success'
+            && needs.mutation.result == 'success' && needs.red.result != 'failure' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

@@ -15,8 +15,11 @@ import re
 KEY_LINE = re.compile(r"^(?P<indent> *)(?P<key>[A-Za-z_][A-Za-z0-9_]*):(?P<rest>.*)$")
 ITEM_LINE = re.compile(r"^(?P<indent> *)- (?P<value>.*)$")
 NULL_LITERALS = frozenset({"", "null", "Null", "NULL", "~"})
+# Bound to a name because Python 3.11 refuses a backslash inside an f-string
+# expression, and the repository targets 3.11 or newer.
+TAB = "\t"
 REFUSED = {
-    "\t": "tab indentation",
+    TAB: "tab indentation",
     "&": "anchor",
     "*": "alias",
     "!!": "explicit tag",
@@ -40,8 +43,8 @@ def _scalar(raw: str) -> str | None:
 def _refuse(line: str, number: int) -> None:
     """Raise when a line uses a construct outside the admitted subset."""
     stripped = line.strip()
-    if "\t" in line:
-        raise StatusBlockError(f"line {number}: {REFUSED['\t']} is not admitted")
+    if TAB in line:
+        raise StatusBlockError(f"line {number}: {REFUSED[TAB]} is not admitted")
     for marker in ("&", "*", "!!"):
         if stripped.startswith(marker):
             raise StatusBlockError(f"line {number}: {REFUSED[marker]} is not admitted")

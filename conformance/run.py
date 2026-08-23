@@ -220,15 +220,58 @@ CHECKS: dict[str, Callable[[dict[str, Any]], list[str]]] = {
 }
 
 
+class ObservationError(Exception):
+    """The case file or participant report cannot be evaluated at all."""
+
+
 def load_json(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
 def observations_by_id(path: Path | None, cases: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    """Index observations by case id, refusing any report that cannot be read as submitted.
+
+    The submitter chooses what to send, so this refuses rather than resolves. A repeated
+    case id used to be silently last-wins: an honest failing observation followed by a
+    fabricated passing one under the same id produced SUITE PASS with no signal that a
+    choice had been made. Refusing is the only reading that keeps the verdict the
+    oracle's rather than the submitter's.
+    """
     if path is None:
-        return {case["id"]: case["observed"] for case in cases}
-    supplied = load_json(path)
-    return {item["case_id"]: item["observed"] for item in supplied}
+        origin = "case file"
+        entries: Any = [{"case_id": case.get("id"), "observed": case.get("observed")}
+                        for case in cases if isinstance(case, dict)]
+    else:
+        origin = "participant report"
+        entries = load_json(path)
+    if not isinstance(entries, list):
+        raise ObservationError(f"{origin} must be a JSON array of observations")
+    by_id: dict[str, dict[str, Any]] = {}
+    for position, item in enumerate(entries):
+        if not isinstance(item, dict):
+            raise ObservationError(f"{origin} entry {position} is not an object")
+        case_id = item.get("case_id")
+        if not isinstance(case_id, str) or not case_id:
+            raise ObservationError(f"{origin} entry {position} has no case_id")
+        if case_id in by_id:
+            raise ObservationError(f"{origin} repeats an observation for {case_id}")
+        observed = item.get("observed")
+        if not isinstance(observed, dict):
+            raise ObservationError(f"{origin} observation {case_id} has no observed object")
+        by_id[case_id] = observed
+    return by_id
+
+
+def refuse(reason: str, as_json: bool) -> int:
+    """Report a whole run as INVALID, the verdict conformance/README.md reserves for this."""
+    report = {"suite": "INVALID", "results": [], "refused": reason,
+              "missing_positive_and_defeating_coverage": []}
+    if as_json:
+        print(json.dumps(report, indent=2, sort_keys=True))
+    else:
+        print(f"INVALID {reason}")
+        print("SUITE   INVALID cases=0 coverage_gaps=0")
+    return 1
 
 
 def main() -> int:
@@ -239,7 +282,10 @@ def main() -> int:
     args = parser.parse_args()
 
     cases = load_json(args.cases)
-    supplied = observations_by_id(args.observations, cases)
+    try:
+        supplied = observations_by_id(args.observations, cases)
+    except ObservationError as error:
+        return refuse(str(error), args.as_json)
     results = []
     seen: dict[str, set[str]] = {requirement: set() for requirement in REQUIREMENTS}
     suite_ok = True

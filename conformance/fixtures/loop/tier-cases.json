@@ -8,7 +8,7 @@
         "chain": [
           {
             "actor_id": "urn:soveraeign:actor:controller",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "capabilities": [
               "select_operation",
               "issue_grant",
@@ -23,7 +23,7 @@
           },
           {
             "actor_id": "urn:soveraeign:actor:orchestrator",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "capabilities": [
               "issue_grant",
               "observe",
@@ -35,7 +35,7 @@
           },
           {
             "actor_id": "urn:soveraeign:actor:worker",
-            "binding_id": "urn:soveraeign:binding:ollama:qwen3-4b",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
             "capabilities": [
               "execute"
             ],
@@ -48,7 +48,7 @@
         "invocations": [
           {
             "adapter_id": "urn:soveraeign:adapter:ollama",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "cost": {
               "amount": 0,
               "basis": "OWNER_OWNED_HARDWARE",
@@ -58,7 +58,7 @@
             "host_id": "urn:soveraeign:host:local-node",
             "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
             "invocation_id": "urn:soveraeign:invocation:control",
-            "model_id": "gpt-oss:20b",
+            "model_id": "lfm2.5:8b",
             "model_version": "sha256:recorded-for-the-fixture",
             "omissions": [
               "lineage/evidence",
@@ -76,7 +76,7 @@
           },
           {
             "adapter_id": "urn:soveraeign:adapter:ollama",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "cost": {
               "amount": 0,
               "basis": "OWNER_OWNED_HARDWARE",
@@ -86,7 +86,7 @@
             "host_id": "urn:soveraeign:host:local-node",
             "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
             "invocation_id": "urn:soveraeign:invocation:orchestration",
-            "model_id": "gpt-oss:20b",
+            "model_id": "lfm2.5:8b",
             "model_version": "sha256:recorded-for-the-fixture",
             "omissions": [
               "lineage/evidence",
@@ -104,7 +104,7 @@
           },
           {
             "adapter_id": "urn:soveraeign:adapter:ollama",
-            "binding_id": "urn:soveraeign:binding:ollama:qwen3-4b",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
             "cost": {
               "amount": 0,
               "basis": "OWNER_OWNED_HARDWARE",
@@ -114,7 +114,7 @@
             "host_id": "urn:soveraeign:host:local-node",
             "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
             "invocation_id": "urn:soveraeign:invocation:work",
-            "model_id": "qwen3:4b",
+            "model_id": "qwen3.5:4b",
             "model_version": "sha256:recorded-for-the-fixture",
             "omissions": [
               "lineage/evidence",
@@ -132,7 +132,7 @@
           },
           {
             "adapter_id": "urn:soveraeign:adapter:ollama",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "cost": {
               "amount": 0,
               "basis": "OWNER_OWNED_HARDWARE",
@@ -142,7 +142,7 @@
             "host_id": "urn:soveraeign:host:local-node",
             "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
             "invocation_id": "urn:soveraeign:invocation:observe",
-            "model_id": "gpt-oss:20b",
+            "model_id": "lfm2.5:8b",
             "model_version": "sha256:recorded-for-the-fixture",
             "omissions": [
               "lineage/evidence",
@@ -161,12 +161,12 @@
         ],
         "objective": "close the founding docket",
         "observation": {
-          "observed_binding_id": "urn:soveraeign:binding:ollama:qwen3-4b",
+          "observed_binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
           "observer": "urn:soveraeign:actor:observer",
-          "observer_binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b"
+          "observer_binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b"
         },
         "report": {
-          "binding_id": "urn:soveraeign:binding:ollama:qwen3-4b",
+          "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
           "produced_by": "urn:soveraeign:actor:worker"
         },
         "run_id": "urn:soveraeign:run:4cd8bf727cb860f1",
@@ -186,7 +186,7 @@
         "chain": [
           {
             "actor_id": "urn:soveraeign:actor:controller",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "capabilities": [
               "select_operation",
               "issue_grant",
@@ -201,7 +201,7 @@
           },
           {
             "actor_id": "urn:soveraeign:actor:orchestrator",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "capabilities": [
               "issue_grant",
               "observe",
@@ -216,7 +216,7 @@
         "invocations": [
           {
             "adapter_id": "urn:soveraeign:adapter:ollama",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "cost": {
               "amount": 0,
               "basis": "OWNER_OWNED_HARDWARE",
@@ -226,7 +226,7 @@
             "host_id": "urn:soveraeign:host:local-node",
             "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
             "invocation_id": "urn:soveraeign:invocation:control",
-            "model_id": "gpt-oss:20b",
+            "model_id": "lfm2.5:8b",
             "model_version": "sha256:recorded-for-the-fixture",
             "omissions": [
               "lineage/evidence",
@@ -244,7 +244,7 @@
           },
           {
             "adapter_id": "urn:soveraeign:adapter:ollama",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "cost": {
               "amount": 0,
               "basis": "OWNER_OWNED_HARDWARE",
@@ -254,7 +254,7 @@
             "host_id": "urn:soveraeign:host:local-node",
             "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
             "invocation_id": "urn:soveraeign:invocation:orchestration",
-            "model_id": "gpt-oss:20b",
+            "model_id": "lfm2.5:8b",
             "model_version": "sha256:recorded-for-the-fixture",
             "omissions": [
               "lineage/evidence",
@@ -272,7 +272,7 @@
           },
           {
             "adapter_id": "urn:soveraeign:adapter:ollama",
-            "binding_id": "urn:soveraeign:binding:ollama:qwen3-4b",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
             "cost": {
               "amount": 0,
               "basis": "OWNER_OWNED_HARDWARE",
@@ -282,7 +282,7 @@
             "host_id": "urn:soveraeign:host:local-node",
             "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
             "invocation_id": "urn:soveraeign:invocation:work",
-            "model_id": "qwen3:4b",
+            "model_id": "qwen3.5:4b",
             "model_version": "sha256:recorded-for-the-fixture",
             "omissions": [
               "lineage/evidence",
@@ -300,7 +300,7 @@
           },
           {
             "adapter_id": "urn:soveraeign:adapter:ollama",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "cost": {
               "amount": 0,
               "basis": "OWNER_OWNED_HARDWARE",
@@ -310,7 +310,7 @@
             "host_id": "urn:soveraeign:host:local-node",
             "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
             "invocation_id": "urn:soveraeign:invocation:observe",
-            "model_id": "gpt-oss:20b",
+            "model_id": "lfm2.5:8b",
             "model_version": "sha256:recorded-for-the-fixture",
             "omissions": [
               "lineage/evidence",
@@ -329,12 +329,12 @@
         ],
         "objective": "close the founding docket",
         "observation": {
-          "observed_binding_id": "urn:soveraeign:binding:ollama:qwen3-4b",
+          "observed_binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
           "observer": "urn:soveraeign:actor:observer",
-          "observer_binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b"
+          "observer_binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b"
         },
         "report": {
-          "binding_id": "urn:soveraeign:binding:ollama:qwen3-4b",
+          "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
           "produced_by": "urn:soveraeign:actor:worker"
         },
         "run_id": "urn:soveraeign:run:4cd8bf727cb860f1",
@@ -354,7 +354,7 @@
         "chain": [
           {
             "actor_id": "urn:soveraeign:actor:controller",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "capabilities": [
               "select_operation",
               "issue_grant",
@@ -369,7 +369,7 @@
           },
           {
             "actor_id": "urn:soveraeign:actor:orchestrator",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "capabilities": [
               "issue_grant",
               "observe",
@@ -381,7 +381,7 @@
           },
           {
             "actor_id": "urn:soveraeign:actor:worker",
-            "binding_id": "urn:soveraeign:binding:ollama:qwen3-4b",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
             "capabilities": [
               "execute",
               "settle"
@@ -395,7 +395,7 @@
         "invocations": [
           {
             "adapter_id": "urn:soveraeign:adapter:ollama",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "cost": {
               "amount": 0,
               "basis": "OWNER_OWNED_HARDWARE",
@@ -405,7 +405,7 @@
             "host_id": "urn:soveraeign:host:local-node",
             "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
             "invocation_id": "urn:soveraeign:invocation:control",
-            "model_id": "gpt-oss:20b",
+            "model_id": "lfm2.5:8b",
             "model_version": "sha256:recorded-for-the-fixture",
             "omissions": [
               "lineage/evidence",
@@ -423,7 +423,7 @@
           },
           {
             "adapter_id": "urn:soveraeign:adapter:ollama",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "cost": {
               "amount": 0,
               "basis": "OWNER_OWNED_HARDWARE",
@@ -433,7 +433,7 @@
             "host_id": "urn:soveraeign:host:local-node",
             "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
             "invocation_id": "urn:soveraeign:invocation:orchestration",
-            "model_id": "gpt-oss:20b",
+            "model_id": "lfm2.5:8b",
             "model_version": "sha256:recorded-for-the-fixture",
             "omissions": [
               "lineage/evidence",
@@ -451,7 +451,7 @@
           },
           {
             "adapter_id": "urn:soveraeign:adapter:ollama",
-            "binding_id": "urn:soveraeign:binding:ollama:qwen3-4b",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
             "cost": {
               "amount": 0,
               "basis": "OWNER_OWNED_HARDWARE",
@@ -461,7 +461,7 @@
             "host_id": "urn:soveraeign:host:local-node",
             "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
             "invocation_id": "urn:soveraeign:invocation:work",
-            "model_id": "qwen3:4b",
+            "model_id": "qwen3.5:4b",
             "model_version": "sha256:recorded-for-the-fixture",
             "omissions": [
               "lineage/evidence",
@@ -479,7 +479,7 @@
           },
           {
             "adapter_id": "urn:soveraeign:adapter:ollama",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "cost": {
               "amount": 0,
               "basis": "OWNER_OWNED_HARDWARE",
@@ -489,7 +489,7 @@
             "host_id": "urn:soveraeign:host:local-node",
             "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
             "invocation_id": "urn:soveraeign:invocation:observe",
-            "model_id": "gpt-oss:20b",
+            "model_id": "lfm2.5:8b",
             "model_version": "sha256:recorded-for-the-fixture",
             "omissions": [
               "lineage/evidence",
@@ -508,12 +508,12 @@
         ],
         "objective": "close the founding docket",
         "observation": {
-          "observed_binding_id": "urn:soveraeign:binding:ollama:qwen3-4b",
+          "observed_binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
           "observer": "urn:soveraeign:actor:observer",
-          "observer_binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b"
+          "observer_binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b"
         },
         "report": {
-          "binding_id": "urn:soveraeign:binding:ollama:qwen3-4b",
+          "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
           "produced_by": "urn:soveraeign:actor:worker"
         },
         "run_id": "urn:soveraeign:run:4cd8bf727cb860f1",
@@ -533,7 +533,7 @@
         "chain": [
           {
             "actor_id": "urn:soveraeign:actor:controller",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "capabilities": [
               "select_operation",
               "issue_grant",
@@ -548,7 +548,7 @@
           },
           {
             "actor_id": "urn:soveraeign:actor:orchestrator",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "capabilities": [
               "issue_grant",
               "observe",
@@ -560,7 +560,7 @@
           },
           {
             "actor_id": "urn:soveraeign:actor:worker",
-            "binding_id": "urn:soveraeign:binding:ollama:qwen3-4b",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
             "capabilities": [
               "execute"
             ],
@@ -573,7 +573,7 @@
         "invocations": [
           {
             "adapter_id": "urn:soveraeign:adapter:ollama",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "cost": {
               "amount": 0,
               "basis": "OWNER_OWNED_HARDWARE",
@@ -583,7 +583,7 @@
             "host_id": "urn:soveraeign:host:local-node",
             "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
             "invocation_id": "urn:soveraeign:invocation:control",
-            "model_id": "gpt-oss:20b",
+            "model_id": "lfm2.5:8b",
             "model_version": "sha256:recorded-for-the-fixture",
             "omissions": [
               "lineage/evidence",
@@ -601,7 +601,7 @@
           },
           {
             "adapter_id": "urn:soveraeign:adapter:ollama",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "cost": {
               "amount": 0,
               "basis": "OWNER_OWNED_HARDWARE",
@@ -611,7 +611,7 @@
             "host_id": "urn:soveraeign:host:local-node",
             "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
             "invocation_id": "urn:soveraeign:invocation:orchestration",
-            "model_id": "gpt-oss:20b",
+            "model_id": "lfm2.5:8b",
             "model_version": "sha256:recorded-for-the-fixture",
             "omissions": [
               "lineage/evidence",
@@ -629,7 +629,7 @@
           },
           {
             "adapter_id": "urn:soveraeign:adapter:ollama",
-            "binding_id": "urn:soveraeign:binding:ollama:qwen3-4b",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
             "cost": {
               "amount": 0,
               "basis": "OWNER_OWNED_HARDWARE",
@@ -639,7 +639,7 @@
             "host_id": "urn:soveraeign:host:local-node",
             "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
             "invocation_id": "urn:soveraeign:invocation:work",
-            "model_id": "qwen3:4b",
+            "model_id": "qwen3.5:4b",
             "model_version": "sha256:recorded-for-the-fixture",
             "omissions": [
               "lineage/evidence",
@@ -657,7 +657,7 @@
           },
           {
             "adapter_id": "urn:soveraeign:adapter:ollama",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "cost": {
               "amount": 0,
               "basis": "OWNER_OWNED_HARDWARE",
@@ -667,7 +667,7 @@
             "host_id": "urn:soveraeign:host:local-node",
             "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
             "invocation_id": "urn:soveraeign:invocation:observe",
-            "model_id": "gpt-oss:20b",
+            "model_id": "lfm2.5:8b",
             "model_version": "sha256:recorded-for-the-fixture",
             "omissions": [
               "lineage/evidence",
@@ -686,12 +686,12 @@
         ],
         "objective": "close the founding docket",
         "observation": {
-          "observed_binding_id": "urn:soveraeign:binding:ollama:qwen3-4b",
+          "observed_binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
           "observer": "urn:soveraeign:actor:observer",
-          "observer_binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b"
+          "observer_binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b"
         },
         "report": {
-          "binding_id": "urn:soveraeign:binding:ollama:qwen3-4b",
+          "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
           "produced_by": "urn:soveraeign:actor:worker"
         },
         "run_id": "urn:soveraeign:run:4cd8bf727cb860f1",
@@ -711,7 +711,7 @@
         "chain": [
           {
             "actor_id": "urn:soveraeign:actor:controller",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "capabilities": [
               "select_operation",
               "issue_grant",
@@ -726,7 +726,7 @@
           },
           {
             "actor_id": "urn:soveraeign:actor:orchestrator",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "capabilities": [
               "issue_grant",
               "observe",
@@ -738,7 +738,7 @@
           },
           {
             "actor_id": "urn:soveraeign:actor:worker",
-            "binding_id": "urn:soveraeign:binding:ollama:qwen3-4b",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
             "capabilities": [
               "execute"
             ],
@@ -751,7 +751,7 @@
         "invocations": [
           {
             "adapter_id": "urn:soveraeign:adapter:ollama",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "cost": {
               "amount": 0,
               "basis": "OWNER_OWNED_HARDWARE",
@@ -761,7 +761,7 @@
             "host_id": "urn:soveraeign:host:local-node",
             "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
             "invocation_id": "urn:soveraeign:invocation:control",
-            "model_id": "gpt-oss:20b",
+            "model_id": "lfm2.5:8b",
             "model_version": "sha256:recorded-for-the-fixture",
             "omissions": [
               "lineage/evidence",
@@ -779,7 +779,7 @@
           },
           {
             "adapter_id": "urn:soveraeign:adapter:ollama",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "cost": {
               "amount": 0,
               "basis": "OWNER_OWNED_HARDWARE",
@@ -789,7 +789,7 @@
             "host_id": "urn:soveraeign:host:local-node",
             "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
             "invocation_id": "urn:soveraeign:invocation:orchestration",
-            "model_id": "gpt-oss:20b",
+            "model_id": "lfm2.5:8b",
             "model_version": "sha256:recorded-for-the-fixture",
             "omissions": [
               "lineage/evidence",
@@ -807,7 +807,7 @@
           },
           {
             "adapter_id": "urn:soveraeign:adapter:ollama",
-            "binding_id": "urn:soveraeign:binding:ollama:qwen3-4b",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
             "cost": {
               "amount": 0,
               "basis": "OWNER_OWNED_HARDWARE",
@@ -817,7 +817,7 @@
             "host_id": "urn:soveraeign:host:local-node",
             "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
             "invocation_id": "urn:soveraeign:invocation:work",
-            "model_id": "qwen3:4b",
+            "model_id": "qwen3.5:4b",
             "model_version": "sha256:recorded-for-the-fixture",
             "omissions": [
               "lineage/evidence",
@@ -835,7 +835,7 @@
           },
           {
             "adapter_id": "urn:soveraeign:adapter:ollama",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "cost": {
               "amount": 0,
               "basis": "OWNER_OWNED_HARDWARE",
@@ -845,7 +845,7 @@
             "host_id": "urn:soveraeign:host:local-node",
             "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
             "invocation_id": "urn:soveraeign:invocation:observe",
-            "model_id": "gpt-oss:20b",
+            "model_id": "lfm2.5:8b",
             "model_version": "sha256:recorded-for-the-fixture",
             "omissions": [
               "lineage/evidence",
@@ -864,12 +864,12 @@
         ],
         "objective": "close the founding docket",
         "observation": {
-          "observed_binding_id": "urn:soveraeign:binding:ollama:qwen3-4b",
+          "observed_binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
           "observer": "urn:soveraeign:actor:observer",
-          "observer_binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b"
+          "observer_binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b"
         },
         "report": {
-          "binding_id": "urn:soveraeign:binding:ollama:qwen3-4b",
+          "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
           "produced_by": "urn:soveraeign:actor:worker"
         },
         "run_id": "urn:soveraeign:run:4cd8bf727cb860f1",
@@ -889,7 +889,7 @@
         "chain": [
           {
             "actor_id": "urn:soveraeign:actor:controller",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "capabilities": [
               "select_operation",
               "issue_grant",
@@ -904,7 +904,7 @@
           },
           {
             "actor_id": "urn:soveraeign:actor:orchestrator",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "capabilities": [
               "issue_grant",
               "observe",
@@ -916,7 +916,7 @@
           },
           {
             "actor_id": "urn:soveraeign:actor:worker",
-            "binding_id": "urn:soveraeign:binding:ollama:qwen3-4b",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
             "capabilities": [
               "execute"
             ],
@@ -929,7 +929,7 @@
         "invocations": [
           {
             "adapter_id": "urn:soveraeign:adapter:ollama",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "cost": {
               "amount": 0,
               "basis": "OWNER_OWNED_HARDWARE",
@@ -939,7 +939,7 @@
             "host_id": "urn:soveraeign:host:local-node",
             "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
             "invocation_id": "urn:soveraeign:invocation:control",
-            "model_id": "gpt-oss:20b",
+            "model_id": "lfm2.5:8b",
             "model_version": "sha256:recorded-for-the-fixture",
             "omissions": [
               "lineage/evidence",
@@ -957,7 +957,7 @@
           },
           {
             "adapter_id": "urn:soveraeign:adapter:ollama",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "cost": {
               "amount": 0,
               "basis": "OWNER_OWNED_HARDWARE",
@@ -967,7 +967,7 @@
             "host_id": "urn:soveraeign:host:local-node",
             "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
             "invocation_id": "urn:soveraeign:invocation:orchestration",
-            "model_id": "gpt-oss:20b",
+            "model_id": "lfm2.5:8b",
             "model_version": "sha256:recorded-for-the-fixture",
             "omissions": [
               "lineage/evidence",
@@ -985,7 +985,7 @@
           },
           {
             "adapter_id": "urn:soveraeign:adapter:ollama",
-            "binding_id": "urn:soveraeign:binding:ollama:qwen3-4b",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
             "cost": {
               "amount": 0,
               "basis": "OWNER_OWNED_HARDWARE",
@@ -995,7 +995,7 @@
             "host_id": "urn:soveraeign:host:local-node",
             "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
             "invocation_id": "urn:soveraeign:invocation:work",
-            "model_id": "qwen3:4b",
+            "model_id": "qwen3.5:4b",
             "model_version": "sha256:recorded-for-the-fixture",
             "omissions": [
               "lineage/evidence",
@@ -1013,7 +1013,7 @@
           },
           {
             "adapter_id": "urn:soveraeign:adapter:ollama",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "cost": {
               "amount": 0,
               "basis": "OWNER_OWNED_HARDWARE",
@@ -1023,7 +1023,7 @@
             "host_id": "urn:soveraeign:host:local-node",
             "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
             "invocation_id": "urn:soveraeign:invocation:observe",
-            "model_id": "gpt-oss:20b",
+            "model_id": "lfm2.5:8b",
             "model_version": "sha256:recorded-for-the-fixture",
             "omissions": [
               "lineage/evidence",
@@ -1042,12 +1042,12 @@
         ],
         "objective": "close the founding docket",
         "observation": {
-          "observed_binding_id": "urn:soveraeign:binding:ollama:qwen3-4b",
+          "observed_binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
           "observer": "urn:soveraeign:actor:observer",
-          "observer_binding_id": "urn:soveraeign:binding:ollama:qwen3-4b"
+          "observer_binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b"
         },
         "report": {
-          "binding_id": "urn:soveraeign:binding:ollama:qwen3-4b",
+          "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
           "produced_by": "urn:soveraeign:actor:worker"
         },
         "run_id": "urn:soveraeign:run:4cd8bf727cb860f1",
@@ -1067,7 +1067,7 @@
         "chain": [
           {
             "actor_id": "urn:soveraeign:actor:controller",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "capabilities": [
               "select_operation",
               "issue_grant",
@@ -1082,7 +1082,7 @@
           },
           {
             "actor_id": "urn:soveraeign:actor:orchestrator",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "capabilities": [
               "issue_grant",
               "observe",
@@ -1094,7 +1094,7 @@
           },
           {
             "actor_id": "urn:soveraeign:actor:worker",
-            "binding_id": "urn:soveraeign:binding:ollama:qwen3-4b",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
             "capabilities": [
               "execute"
             ],
@@ -1107,7 +1107,7 @@
         "invocations": [
           {
             "adapter_id": "urn:soveraeign:adapter:ollama",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "cost": {
               "amount": 0,
               "basis": "OWNER_OWNED_HARDWARE",
@@ -1117,7 +1117,7 @@
             "host_id": "urn:soveraeign:host:local-node",
             "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
             "invocation_id": "urn:soveraeign:invocation:control",
-            "model_id": "gpt-oss:20b",
+            "model_id": "lfm2.5:8b",
             "model_version": "sha256:recorded-for-the-fixture",
             "omissions": [
               "lineage/evidence",
@@ -1135,7 +1135,7 @@
           },
           {
             "adapter_id": "urn:soveraeign:adapter:ollama",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "cost": {
               "amount": 0,
               "basis": "OWNER_OWNED_HARDWARE",
@@ -1145,7 +1145,7 @@
             "host_id": "urn:soveraeign:host:local-node",
             "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
             "invocation_id": "urn:soveraeign:invocation:orchestration",
-            "model_id": "gpt-oss:20b",
+            "model_id": "lfm2.5:8b",
             "model_version": "sha256:recorded-for-the-fixture",
             "omissions": [
               "lineage/evidence",
@@ -1163,7 +1163,7 @@
           },
           {
             "adapter_id": "urn:soveraeign:adapter:ollama",
-            "binding_id": "urn:soveraeign:binding:ollama:qwen3-4b",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
             "cost": {
               "amount": 0,
               "basis": "OWNER_OWNED_HARDWARE",
@@ -1173,7 +1173,7 @@
             "host_id": "urn:soveraeign:host:local-node",
             "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
             "invocation_id": "urn:soveraeign:invocation:work",
-            "model_id": "qwen3:4b",
+            "model_id": "qwen3.5:4b",
             "model_version": "sha256:recorded-for-the-fixture",
             "omissions": [
               "lineage/evidence",
@@ -1191,7 +1191,7 @@
           },
           {
             "adapter_id": "urn:soveraeign:adapter:ollama",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "cost": {
               "amount": 0,
               "basis": "OWNER_OWNED_HARDWARE",
@@ -1201,7 +1201,7 @@
             "host_id": "urn:soveraeign:host:local-node",
             "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
             "invocation_id": "urn:soveraeign:invocation:observe",
-            "model_id": "gpt-oss:20b",
+            "model_id": "lfm2.5:8b",
             "model_version": "sha256:recorded-for-the-fixture",
             "omissions": [
               "lineage/evidence",
@@ -1220,12 +1220,12 @@
         ],
         "objective": "close the founding docket",
         "observation": {
-          "observed_binding_id": "urn:soveraeign:binding:ollama:qwen3-4b",
+          "observed_binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
           "observer": "urn:soveraeign:actor:observer",
-          "observer_binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b"
+          "observer_binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b"
         },
         "report": {
-          "binding_id": "urn:soveraeign:binding:ollama:qwen3-4b",
+          "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
           "produced_by": "urn:soveraeign:actor:worker"
         },
         "run_id": "urn:soveraeign:run:4cd8bf727cb860f1",
@@ -1245,7 +1245,7 @@
         "chain": [
           {
             "actor_id": "urn:soveraeign:actor:controller",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "capabilities": [
               "select_operation",
               "issue_grant",
@@ -1260,7 +1260,7 @@
           },
           {
             "actor_id": "urn:soveraeign:actor:orchestrator",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "capabilities": [
               "issue_grant",
               "observe",
@@ -1272,7 +1272,7 @@
           },
           {
             "actor_id": "urn:soveraeign:actor:worker",
-            "binding_id": "urn:soveraeign:binding:ollama:qwen3-4b",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
             "capabilities": [
               "execute"
             ],
@@ -1285,7 +1285,7 @@
         "invocations": [
           {
             "adapter_id": "urn:soveraeign:adapter:ollama",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "cost": {
               "amount": 0,
               "basis": "OWNER_OWNED_HARDWARE",
@@ -1295,7 +1295,7 @@
             "host_id": "urn:soveraeign:host:local-node",
             "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
             "invocation_id": "urn:soveraeign:invocation:control",
-            "model_id": "gpt-oss:20b",
+            "model_id": "lfm2.5:8b",
             "model_version": "sha256:recorded-for-the-fixture",
             "omissions": [
               "lineage/evidence",
@@ -1313,7 +1313,7 @@
           },
           {
             "adapter_id": "urn:soveraeign:adapter:ollama",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "cost": {
               "amount": 0,
               "basis": "OWNER_OWNED_HARDWARE",
@@ -1323,7 +1323,7 @@
             "host_id": "urn:soveraeign:host:local-node",
             "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
             "invocation_id": "urn:soveraeign:invocation:orchestration",
-            "model_id": "gpt-oss:20b",
+            "model_id": "lfm2.5:8b",
             "model_version": "sha256:recorded-for-the-fixture",
             "omissions": [
               "lineage/evidence",
@@ -1341,7 +1341,7 @@
           },
           {
             "adapter_id": "urn:soveraeign:adapter:ollama",
-            "binding_id": "urn:soveraeign:binding:ollama:qwen3-4b",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
             "cost": {
               "amount": 0,
               "basis": "OWNER_OWNED_HARDWARE",
@@ -1351,7 +1351,7 @@
             "host_id": "urn:soveraeign:host:local-node",
             "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
             "invocation_id": "urn:soveraeign:invocation:work",
-            "model_id": "qwen3:4b",
+            "model_id": "qwen3.5:4b",
             "model_version": null,
             "omissions": [
               "lineage/evidence",
@@ -1369,7 +1369,7 @@
           },
           {
             "adapter_id": "urn:soveraeign:adapter:ollama",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "cost": {
               "amount": 0,
               "basis": "OWNER_OWNED_HARDWARE",
@@ -1379,7 +1379,7 @@
             "host_id": "urn:soveraeign:host:local-node",
             "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
             "invocation_id": "urn:soveraeign:invocation:observe",
-            "model_id": "gpt-oss:20b",
+            "model_id": "lfm2.5:8b",
             "model_version": "sha256:recorded-for-the-fixture",
             "omissions": [
               "lineage/evidence",
@@ -1398,12 +1398,12 @@
         ],
         "objective": "close the founding docket",
         "observation": {
-          "observed_binding_id": "urn:soveraeign:binding:ollama:qwen3-4b",
+          "observed_binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
           "observer": "urn:soveraeign:actor:observer",
-          "observer_binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b"
+          "observer_binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b"
         },
         "report": {
-          "binding_id": "urn:soveraeign:binding:ollama:qwen3-4b",
+          "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
           "produced_by": "urn:soveraeign:actor:worker"
         },
         "run_id": "urn:soveraeign:run:4cd8bf727cb860f1",
@@ -1415,7 +1415,7 @@
     },
     {
       "case_id": "LOOP-009",
-      "description": "Work runs on the controller binding, collapsing the dyad",
+      "description": "Work runs on the judging binding, collapsing the dyad",
       "expect_refusals": [
         "BINDING_UNDECLARED",
         "SELF_WITNESS_REFUSED"
@@ -1424,7 +1424,7 @@
         "chain": [
           {
             "actor_id": "urn:soveraeign:actor:controller",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "capabilities": [
               "select_operation",
               "issue_grant",
@@ -1439,7 +1439,7 @@
           },
           {
             "actor_id": "urn:soveraeign:actor:orchestrator",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "capabilities": [
               "issue_grant",
               "observe",
@@ -1451,7 +1451,7 @@
           },
           {
             "actor_id": "urn:soveraeign:actor:worker",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "capabilities": [
               "execute"
             ],
@@ -1464,7 +1464,7 @@
         "invocations": [
           {
             "adapter_id": "urn:soveraeign:adapter:ollama",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "cost": {
               "amount": 0,
               "basis": "OWNER_OWNED_HARDWARE",
@@ -1474,7 +1474,7 @@
             "host_id": "urn:soveraeign:host:local-node",
             "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
             "invocation_id": "urn:soveraeign:invocation:control",
-            "model_id": "gpt-oss:20b",
+            "model_id": "lfm2.5:8b",
             "model_version": "sha256:recorded-for-the-fixture",
             "omissions": [
               "lineage/evidence",
@@ -1492,7 +1492,7 @@
           },
           {
             "adapter_id": "urn:soveraeign:adapter:ollama",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "cost": {
               "amount": 0,
               "basis": "OWNER_OWNED_HARDWARE",
@@ -1502,7 +1502,7 @@
             "host_id": "urn:soveraeign:host:local-node",
             "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
             "invocation_id": "urn:soveraeign:invocation:orchestration",
-            "model_id": "gpt-oss:20b",
+            "model_id": "lfm2.5:8b",
             "model_version": "sha256:recorded-for-the-fixture",
             "omissions": [
               "lineage/evidence",
@@ -1520,7 +1520,7 @@
           },
           {
             "adapter_id": "urn:soveraeign:adapter:ollama",
-            "binding_id": "urn:soveraeign:binding:ollama:qwen3-4b",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
             "cost": {
               "amount": 0,
               "basis": "OWNER_OWNED_HARDWARE",
@@ -1530,7 +1530,7 @@
             "host_id": "urn:soveraeign:host:local-node",
             "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
             "invocation_id": "urn:soveraeign:invocation:work",
-            "model_id": "qwen3:4b",
+            "model_id": "qwen3.5:4b",
             "model_version": "sha256:recorded-for-the-fixture",
             "omissions": [
               "lineage/evidence",
@@ -1548,7 +1548,7 @@
           },
           {
             "adapter_id": "urn:soveraeign:adapter:ollama",
-            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
             "cost": {
               "amount": 0,
               "basis": "OWNER_OWNED_HARDWARE",
@@ -1558,7 +1558,7 @@
             "host_id": "urn:soveraeign:host:local-node",
             "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
             "invocation_id": "urn:soveraeign:invocation:observe",
-            "model_id": "gpt-oss:20b",
+            "model_id": "lfm2.5:8b",
             "model_version": "sha256:recorded-for-the-fixture",
             "omissions": [
               "lineage/evidence",
@@ -1577,12 +1577,12 @@
         ],
         "objective": "close the founding docket",
         "observation": {
-          "observed_binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+          "observed_binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
           "observer": "urn:soveraeign:actor:observer",
-          "observer_binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b"
+          "observer_binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b"
         },
         "report": {
-          "binding_id": "urn:soveraeign:binding:ollama:qwen3-4b",
+          "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
           "produced_by": "urn:soveraeign:actor:worker"
         },
         "run_id": "urn:soveraeign:run:4cd8bf727cb860f1",

@@ -6,10 +6,14 @@ Status: `PROPOSED`
 
 Bind each SDLC tier to a declared model binding in
 `contracts/tier-bindings.json`, and make the Control -> Orchestration -> Work
-loop executable through `scripts/sov_loop.py`. Control and Orchestration run on
-`gpt-oss-20b`; Work runs on `qwen3-4b`; the observation stance runs on
-`gpt-oss-20b` and must differ from the binding that produced the output it
-judges. Every tier step and the observation emit a receipt, and every model
+loop executable through `scripts/sov_loop.py`. Control, Orchestration, and the
+observation stance run on `lfm2-5-8b`; Work runs on `qwen3-5-4b`; the observer
+must differ from the binding that produced the output it judges.
+
+The pair was measured on the owner's hardware, not chosen from parameter
+counts. `scripts/sov_bench.py` grades a candidate on how many of five planted
+defects it names in a plausible-looking worker report, and each pair is tested
+for whether both models stay resident at once. Every tier step and the observation emit a receipt, and every model
 invocation records the eleven provenance fields `PRD.md` PROD-I-9 requires.
 
 Seven separation rules are enforced mechanically, each with a named refusal
@@ -26,8 +30,15 @@ ceiling, declared binding, and complete provenance.
 - `CLAUDE.md`: "Launched agents inherit the session model today; no tier is
   pinned" - the open item this closes
 - `adapters/ollama/bindings/gpt-oss-20b.json`, `qwen3-4b.json`
-- Live run 2026-08-23: 4 invocations, 4 receipts, 4446 input and 5486 output
-  tokens, 94.6s wall, `LOCAL_ONLY` throughout, settlement `COMMITTED`
+- Observer probe, worst of three samples per candidate, RTX 5080 16 GB:
+  `gpt-oss:20b` 4/5 at 67 tok/s and 12.8 GB; `lfm2.5:8b` 4/5 at 165 tok/s and
+  6.43 GB; `qwen3.5:9b` 3/5; `qwen3.5:4b` 3/5; `qwen3:4b` 3/5
+- Co-residency: `lfm2.5:8b + qwen3.5:4b` both resident at 12.04 GB with 2.19 GB
+  headroom. `lfm2.5:8b + qwen3.5:9b` refused, 9b evicts lfm2.5.
+  `lfm2.5:8b + qwen3:4b` refused, qwen3:4b takes 12.74 GB of KV cache.
+- Live run before: 94.6s wall, `gpt-oss:20b` reloading twice
+- Live run after: 32.6s wall, both models resident throughout, same objective,
+  4 invocations, 4 receipts, `LOCAL_ONLY`, settlement `COMMITTED`
 
 ## Constraints
 
@@ -57,6 +68,32 @@ report of work done from a report of work imagined. That is the `RED` stance
 `COMMITTED` settlement from this loop is `BUILT` evidence about the machinery,
 not evidence about the work.
 
+## What the measurement overturned
+
+Parameter count predicted neither score nor cost here.
+
+- `lfm2.5:8b` matched `gpt-oss:20b`'s worst-case probe score on half the VRAM
+  and 2.5x the throughput, so the larger model earned nothing in this role.
+- `qwen3.5:9b` is newer and larger than `lfm2.5:8b` and scored lower, 3/5
+  against 4/5.
+- `qwen3:4b` is a 2.5 GB model that took 12.74 GB of VRAM once its context
+  cache was allocated, which is why the original pairing reloaded on every
+  tier change.
+
+## Residuals this run exposed
+
+- The observer's raw `<think>` reasoning is captured verbatim into the
+  transcript. `lfm2.5:8b` and `qwen3.5:4b` are both thinking models and nothing
+  strips those blocks, so the recorded output is not the observer's answer.
+- In the live run the observer said it could not find a report to judge. The
+  loop passes accumulated context rather than an addressed report, so the
+  observation stance is reading a conversation, not an artifact. That is a
+  prompt and interface defect, not a model defect, and it weakens every
+  observation the loop currently produces.
+- Marker-based grading is coarse: it can miss a correct objection phrased
+  unusually, so each score is a floor. No candidate caught all five planted
+  defects in every sample.
+
 ## Consequences
 
 - `python scripts/sov_loop.py table | selfcheck | audit | run` exists.
@@ -69,9 +106,14 @@ not evidence about the work.
 
 ## Defaults taken
 
-- Assigned the larger local model to Control, Orchestration, and observation,
-  and the smaller to Work, on the reasoning that judgement and decomposition
-  carry more consequence than execution. Reversible: it is one field per tier.
+- Assigned the better-scoring model to Control, Orchestration, and observation
+  and the other to Work, on the reasoning that judgement carries more
+  consequence than execution. Reversible: it is one field per tier.
+- Chose the pair that co-resides over the pair with the higher ceiling, because
+  the owner asked for the fast loop and eviction cost more than the score
+  difference bought.
+- Kept `gpt-oss-20b` and `qwen3-4b` as declared bindings rather than deleting
+  them; they are the recorded comparison the choice rests on.
 - Modelled observation as a stance rather than a fourth tier, because
   `SDLC.md` fixes depth at three.
 - Modelled grant narrowing as authority scope rather than verb subsetting: a

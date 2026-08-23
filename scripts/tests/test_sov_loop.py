@@ -28,13 +28,17 @@ RECEIPT_REQUIRED = ("receipt_id", "event_id", "event_type", "actor_id", "interfa
                     "emitted_record_addresses", "observed_evidence_addresses",
                     "created_at", "receipt_digest")
 
-GPT = "urn:soveraeign:binding:ollama:gpt-oss-20b"
-QWEN = "urn:soveraeign:binding:ollama:qwen3-4b"
+# Read from the contract rather than repeating it: which model a tier runs on is a
+# measured, revisable choice, and a test that hard-codes it fails on every revision
+# for the wrong reason.
+_TABLE = rules.load_table(ROOT)
+JUDGE = _TABLE["tiers"]["CONTROL"]["binding_id"]
+WORK = _TABLE["tiers"]["WORK"]["binding_id"]
 
 
 def recorded(binding_id: str, prompt: str, *, purpose: str) -> dict:
     """A recorded invocation standing in for a model call."""
-    model = {GPT: "gpt-oss:20b", QWEN: "qwen3:4b"}[binding_id]
+    model = f"model-for/{binding_id.rsplit(':', 1)[-1]}"
     return {
         "invocation_id": f"urn:soveraeign:invocation:{purpose.lower()}", "purpose": purpose,
         "binding_id": binding_id, "adapter_id": "urn:soveraeign:adapter:ollama",
@@ -126,7 +130,9 @@ class LiveBinding(unittest.TestCase):
         self.assertIn("MODEL_INCOMPATIBLE", str(caught.exception))
 
     def test_a_declared_binding_loads(self):
-        self.assertEqual(ollama.load_binding(QWEN)["model_id"], "qwen3:4b")
+        binding = ollama.load_binding(WORK)
+        self.assertEqual(binding["binding_id"], WORK)
+        self.assertEqual(binding["data_boundary"], "LOCAL_ONLY")
 
     def test_the_projection_withholds_declared_omissions(self):
         projected = ollama.project_input("keep this\ncredentials: secret\nkeep that",
@@ -139,7 +145,7 @@ class LiveBinding(unittest.TestCase):
         try:
             ollama._post = lambda *a, **k: (_ for _ in ()).throw(OSError("connection refused"))
             with self.assertRaises(ollama.Refusal) as caught:
-                ollama.invoke(QWEN, "anything", purpose="WORK")
+                ollama.invoke(WORK, "anything", purpose="WORK")
         finally:
             ollama._post = original
         self.assertIn("MODEL_UNAVAILABLE", str(caught.exception))
@@ -149,7 +155,7 @@ class LiveBinding(unittest.TestCase):
         try:
             ollama.load_binding = lambda _: {"data_boundary": "REMOTE", "model_id": "x"}
             with self.assertRaises(ollama.Refusal) as caught:
-                ollama.invoke(QWEN, "anything", purpose="WORK")
+                ollama.invoke(WORK, "anything", purpose="WORK")
         finally:
             ollama.load_binding = original
         self.assertIn("DATA_BOUNDARY_REFUSED", str(caught.exception))

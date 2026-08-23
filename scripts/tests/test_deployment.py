@@ -26,8 +26,13 @@ class DeploymentTests(unittest.TestCase):
         path = ROOT / "infrastructure" / "phase-i.local.json"
         return json.loads(path.read_text(encoding="utf-8"))
 
+    def runtime_contract(self) -> dict:
+        path = ROOT / "infrastructure" / "phase-i.runtime-image.json"
+        return json.loads(path.read_text(encoding="utf-8"))
+
     def test_manifest_preserves_portable_single_node_boundary(self):
         self.assertEqual(deployment.validate_manifest(self.manifest()), [])
+        self.assertEqual(deployment.validate_runtime_contract(self.runtime_contract()), [])
 
     def test_both_profile_plans_are_observation_only(self):
         manifest = self.manifest()
@@ -36,6 +41,9 @@ class DeploymentTests(unittest.TestCase):
         kubernetes = deployment.plan(manifest, "customer-kubernetes")
         self.assertEqual(local["gateway"]["exposure"], "LOOPBACK")
         self.assertEqual(kubernetes["gateway"]["exposure"], "CLUSTER_INTERNAL")
+        self.assertEqual(kubernetes["runtime_image_contract"], "phase-i.runtime-image.json")
+        self.assertEqual(kubernetes["runtime_image_contract_digest"],
+                         deployment.runtime_contract_digest(self.runtime_contract()))
         self.assertEqual(json.dumps(manifest, sort_keys=True), before)
 
     def test_kubernetes_bundle_is_provider_neutral_and_verifiable(self):
@@ -60,6 +68,38 @@ class DeploymentTests(unittest.TestCase):
                          local["custody"]["paths"])
         self.assertEqual(pod["metadata"]["annotations"][
             "soveraeign.io/custody-manifest-digest"], digest)
+
+    def test_kubernetes_binds_runtime_entrypoint_listener_and_health(self):
+        runtime = self.runtime_contract()
+        bundle = deployment.render_kubernetes(self.manifest(), PINNED_IMAGE, CUSTODY_CLAIM,
+                                              runtime_contract=runtime)
+        config = next(item for item in bundle["items"] if item["kind"] == "ConfigMap")["data"]
+        workload = next(item for item in bundle["items"] if item["kind"] == "Deployment")
+        template = workload["spec"]["template"]
+        node = template["spec"]["containers"][0]
+        digest = deployment.runtime_contract_digest(runtime)
+        self.assertEqual(json.loads(config["phase-i.runtime-image.json"]), runtime)
+        self.assertEqual(config["SOVERAEIGN_RUNTIME_IMAGE_CONTRACT_DIGEST"], digest)
+        self.assertEqual(template["metadata"]["annotations"][
+            "soveraeign.io/runtime-image-contract-digest"], digest)
+        self.assertEqual(node["command"], runtime["entrypoint"])
+        self.assertEqual(node["ports"][0]["containerPort"], 8080)
+        self.assertEqual(node["startupProbe"]["httpGet"]["path"], "/health/startup")
+        self.assertEqual(node["readinessProbe"]["httpGet"]["path"], "/health/ready")
+        self.assertEqual(node["livenessProbe"]["httpGet"]["path"], "/health/live")
+        self.assertEqual(deployment.verify_bundle(bundle), [])
+
+    def test_runtime_contract_requires_python_scripts_and_refusal_boundary(self):
+        runtime = self.runtime_contract()
+        self.assertEqual(set(runtime["required_paths"]), {
+            "/opt/soveraeign/scripts/custody_activation.py",
+            "/opt/soveraeign/scripts/node_runtime.py",
+        })
+        self.assertEqual(runtime["python_min"], "3.11")
+        self.assertEqual(runtime["gateway"]["unactivated_response"], "REFUSE")
+        runtime["gateway"]["unactivated_response"] = "ALLOW"
+        self.assertIn("RUNTIME_GATEWAY_PREMATURELY_ACTIVATED",
+                      deployment.validate_runtime_contract(runtime))
 
     def test_runtime_is_gated_by_verify_only_custody_activation(self):
         bundle = deployment.render_kubernetes(self.manifest(), PINNED_IMAGE, CUSTODY_CLAIM)
@@ -88,6 +128,24 @@ class DeploymentTests(unittest.TestCase):
         config = next(item for item in bundle["items"] if item["kind"] == "ConfigMap")["data"]
         config["SOVERAEIGN_CUSTODY_MANIFEST_DIGEST"] = "0" * 64
         self.assertIn("CUSTODY_MANIFEST_DIGEST_UNBOUND", deployment.verify_bundle(bundle))
+
+    def test_verifier_defeats_runtime_contract_digest_drift(self):
+        bundle = deployment.render_kubernetes(self.manifest(), PINNED_IMAGE, CUSTODY_CLAIM)
+        config = next(item for item in bundle["items"] if item["kind"] == "ConfigMap")["data"]
+        config["SOVERAEIGN_RUNTIME_IMAGE_CONTRACT_DIGEST"] = "0" * 64
+        self.assertIn("RUNTIME_IMAGE_CONTRACT_DIGEST_UNBOUND", deployment.verify_bundle(bundle))
+
+    def test_verifier_defeats_runtime_entrypoint_or_probe_drift(self):
+        bundle = deployment.render_kubernetes(self.manifest(), PINNED_IMAGE, CUSTODY_CLAIM)
+        workload = next(item for item in bundle["items"] if item["kind"] == "Deployment")
+        node = workload["spec"]["template"]["spec"]["containers"][0]
+        node["command"] = ["python", "other.py"]
+        self.assertIn("RUNTIME_ENTRYPOINT_UNBOUND", deployment.verify_bundle(bundle))
+        bundle = deployment.render_kubernetes(self.manifest(), PINNED_IMAGE, CUSTODY_CLAIM)
+        workload = next(item for item in bundle["items"] if item["kind"] == "Deployment")
+        node = workload["spec"]["template"]["spec"]["containers"][0]
+        node["readinessProbe"]["httpGet"]["path"] = "/always-ready"
+        self.assertIn("RUNTIME_HEALTH_PROBES_UNBOUND", deployment.verify_bundle(bundle))
 
     def test_verifier_defeats_missing_startup_activation(self):
         bundle = deployment.render_kubernetes(self.manifest(), PINNED_IMAGE, CUSTODY_CLAIM)

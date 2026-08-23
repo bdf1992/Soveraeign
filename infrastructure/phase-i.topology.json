@@ -4,6 +4,7 @@
   "node": {
     "replicas": 1,
     "custody_manifest": "phase-i.local.json",
+    "runtime_image_contract": "phase-i.runtime-image.json",
     "custody_activation": {
       "policy": "VERIFY_ONLY",
       "expected_uid": 65532,

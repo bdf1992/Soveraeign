@@ -12,6 +12,10 @@ PINNED_IMAGE = re.compile(r"^[^\s@]+@sha256:[0-9a-f]{64}$")
 RESOURCE_NAME = re.compile(r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$")
 CUSTODY_ROOT = "/var/lib/soveraeign"
 CONTRACT_PATH = "/etc/soveraeign/custody/phase-i.local.json"
+RUNTIME_REQUIRED_PATHS = {
+    "/opt/soveraeign/scripts/custody_activation.py",
+    "/opt/soveraeign/scripts/node_runtime.py",
+}
 
 
 class DeploymentRefused(RuntimeError):
@@ -29,9 +33,9 @@ def _metadata(name: str, namespace: str | None = None) -> dict[str, Any]:
     return value
 
 
-def render_bundle(manifest: dict[str, Any], binding: dict[str, Any], image: str,
-                  custody_claim: str, *, replicas: int = 1,
-                  service_type: str = "ClusterIP", federation: bool = False,
+def render_bundle(manifest: dict[str, Any], binding: dict[str, Any],
+                  runtime_binding: dict[str, Any], image: str, custody_claim: str, *,
+                  replicas: int = 1, service_type: str = "ClusterIP", federation: bool = False,
                   custody_activation_policy: str = "VERIFY_ONLY") -> dict[str, Any]:
     """Render provider-neutral Kubernetes JSON; never contact or mutate a cluster."""
     if not PINNED_IMAGE.fullmatch(image):
@@ -48,6 +52,9 @@ def render_bundle(manifest: dict[str, Any], binding: dict[str, Any], image: str,
         raise DeploymentRefused("CUSTODY_ACTIVATION_POLICY_UNSUPPORTED")
     settings = manifest["deployment"]["customer_kubernetes"]
     activation = manifest["node"]["custody_activation"]
+    runtime = runtime_binding["contract"]
+    gateway = runtime["gateway"]
+    health = gateway["health"]
     namespace = settings["namespace"]
     labels = {"app.kubernetes.io/name": "soveraeign", "app.kubernetes.io/component": "node"}
     pod_security = {"runAsNonRoot": True, "runAsUser": 65532, "runAsGroup": 65532,
@@ -59,6 +66,8 @@ def render_bundle(manifest: dict[str, Any], binding: dict[str, Any], image: str,
         "SOVERAEIGN_GATEWAY_MODE": "POLICY_GUARDED_TERMINAL_PULL",
         "SOVERAEIGN_GATEWAY_MAX_INFLIGHT": "1",
         "SOVERAEIGN_GATEWAY_PATROL_MODE": "OBSERVE_ONLY",
+        "SOVERAEIGN_GATEWAY_BIND": gateway["bind"],
+        "SOVERAEIGN_GATEWAY_PORT": str(gateway["port"]),
         "SOVERAEIGN_BROKER_MODE": "IN_PROCESS_NON_AUTHORITATIVE",
         "SOVERAEIGN_QUEUE_MODE": "IN_PROCESS_NON_AUTHORITATIVE",
         "SOVERAEIGN_FEDERATION_MODE": "DISABLED",
@@ -68,24 +77,36 @@ def render_bundle(manifest: dict[str, Any], binding: dict[str, Any], image: str,
                                                 separators=(",", ":")),
         "SOVERAEIGN_CUSTODY_ACTIVATION_POLICY": custody_activation_policy,
         "SOVERAEIGN_CUSTODY_ACTIVATION_RECEIPTS": f"{CUSTODY_ROOT}/{activation['receipt_directory']}",
+        "SOVERAEIGN_RUNTIME_IMAGE_CONTRACT_DIGEST": runtime_binding["contract_digest"],
         "phase-i.local.json": json.dumps(binding["manifest"], indent=2, sort_keys=True) + "\n",
+        "phase-i.runtime-image.json": json.dumps(runtime, indent=2, sort_keys=True) + "\n",
     }
-    mounts = [{"name": "custody", "mountPath": CUSTODY_ROOT},
-              {"name": "custody-contract", "mountPath": "/etc/soveraeign/custody", "readOnly": True}]
+    custody_mounts = [{"name": "custody", "mountPath": CUSTODY_ROOT},
+                      {"name": "custody-contract", "mountPath": "/etc/soveraeign/custody",
+                       "readOnly": True}]
+    node_mounts = custody_mounts + [{"name": "runtime-contract",
+                                     "mountPath": "/etc/soveraeign/runtime", "readOnly": True}]
     init = {
         "name": "custody-activation", "image": image, "imagePullPolicy": "IfNotPresent",
         "command": ["python", activation["script"]],
         "args": ["--manifest", CONTRACT_PATH, "--root", CUSTODY_ROOT, "--policy",
-                 custody_activation_policy,
-                 "--expected-uid", str(activation["expected_uid"]),
+                 custody_activation_policy, "--expected-uid", str(activation["expected_uid"]),
                  "--expected-gid", str(activation["expected_gid"])],
-        "securityContext": container_security, "volumeMounts": mounts,
+        "securityContext": container_security, "volumeMounts": custody_mounts,
     }
     node = {
         "name": "node", "image": image, "imagePullPolicy": "IfNotPresent",
-        "ports": [{"name": "gateway", "containerPort": settings["gateway_port"]}],
+        "command": runtime["entrypoint"],
+        "args": ["--bind", gateway["bind"], "--port", str(gateway["port"])],
+        "ports": [{"name": "gateway", "containerPort": gateway["port"]}],
         "envFrom": [{"configMapRef": {"name": "soveraeign-topology"}}],
-        "securityContext": container_security, "volumeMounts": mounts,
+        "startupProbe": {"httpGet": {"path": health["startup"], "port": "gateway"},
+                         "periodSeconds": 2, "failureThreshold": 15},
+        "readinessProbe": {"httpGet": {"path": health["readiness"], "port": "gateway"},
+                           "periodSeconds": 5, "failureThreshold": 3},
+        "livenessProbe": {"httpGet": {"path": health["liveness"], "port": "gateway"},
+                          "periodSeconds": 10, "failureThreshold": 3},
+        "securityContext": container_security, "volumeMounts": node_mounts,
     }
     items = [
         {"apiVersion": "v1", "kind": "Namespace", "metadata": {
@@ -99,13 +120,17 @@ def render_bundle(manifest: dict[str, Any], binding: dict[str, Any], image: str,
          "metadata": _metadata("soveraeign-node", namespace), "spec": {
              "replicas": 1, "strategy": {"type": "Recreate"}, "selector": {"matchLabels": labels},
              "template": {"metadata": {"labels": labels, "annotations": {
-                 "soveraeign.io/custody-manifest-digest": binding["manifest_digest"]}}, "spec": {
-                     "serviceAccountName": "soveraeign-node", "automountServiceAccountToken": False,
-                     "securityContext": pod_security, "initContainers": [init], "containers": [node],
-                     "volumes": [
+                 "soveraeign.io/custody-manifest-digest": binding["manifest_digest"],
+                 "soveraeign.io/runtime-image-contract-digest": runtime_binding["contract_digest"]}},
+                 "spec": {"serviceAccountName": "soveraeign-node",
+                     "automountServiceAccountToken": False, "securityContext": pod_security,
+                     "initContainers": [init], "containers": [node], "volumes": [
                          {"name": "custody", "persistentVolumeClaim": {"claimName": custody_claim}},
                          {"name": "custody-contract", "configMap": {"name": "soveraeign-topology",
                           "items": [{"key": "phase-i.local.json", "path": "phase-i.local.json"}]}},
+                         {"name": "runtime-contract", "configMap": {"name": "soveraeign-topology",
+                          "items": [{"key": "phase-i.runtime-image.json",
+                                     "path": "phase-i.runtime-image.json"}]}},
                      ]}}}},
         {"apiVersion": "v1", "kind": "Service", "metadata": _metadata("soveraeign-gateway", namespace),
          "spec": {"type": "ClusterIP", "selector": labels, "ports": [{"name": "gateway",
@@ -123,7 +148,7 @@ def render_bundle(manifest: dict[str, Any], binding: dict[str, Any], image: str,
 
 
 def verify_bundle(bundle: dict[str, Any]) -> list[str]:
-    """Observe safety and local-contract binding properties of a rendered bundle."""
+    """Observe safety and local/runtime-contract binding properties of a rendered bundle."""
     defects: list[str] = []
     items = bundle.get("items") if bundle.get("kind") == "List" else None
     if not isinstance(items, list) or any(not isinstance(item, dict) for item in items):
@@ -189,6 +214,37 @@ def verify_bundle(bundle: dict[str, Any]) -> list[str]:
     if data.get("SOVERAEIGN_CUSTODY_ACTIVATION_RECEIPTS") != (
             CUSTODY_ROOT + "/receipts/custody-activations"):
         defects.append("CUSTODY_ACTIVATION_RECEIPT_UNBOUND")
+    try:
+        runtime = json.loads(data["phase-i.runtime-image.json"])
+        runtime_digest = sha256(_canonical(runtime)).hexdigest()
+        runtime_gateway = runtime["gateway"]
+        runtime_health = runtime_gateway["health"]
+    except (KeyError, TypeError, ValueError):
+        defects.append("RUNTIME_IMAGE_CONTRACT_NOT_EMBEDDED")
+        runtime, runtime_gateway, runtime_health, runtime_digest = {}, {}, {}, ""
+    runtime_annotation = template.get("metadata", {}).get("annotations", {}).get(
+        "soveraeign.io/runtime-image-contract-digest")
+    if (runtime_digest != data.get("SOVERAEIGN_RUNTIME_IMAGE_CONTRACT_DIGEST") or
+            runtime_digest != runtime_annotation):
+        defects.append("RUNTIME_IMAGE_CONTRACT_DIGEST_UNBOUND")
+    if (runtime.get("python_min") != "3.11" or
+            set(runtime.get("required_paths") or []) != RUNTIME_REQUIRED_PATHS):
+        defects.append("RUNTIME_IMAGE_REQUIREMENTS_INCOMPLETE")
+    if (container.get("command") != runtime.get("entrypoint") or
+            container.get("args") != ["--bind", runtime_gateway.get("bind"), "--port",
+                                      str(runtime_gateway.get("port"))]):
+        defects.append("RUNTIME_ENTRYPOINT_UNBOUND")
+    if not container.get("ports") or container["ports"][0].get("containerPort") != 8080:
+        defects.append("RUNTIME_LISTENER_UNBOUND")
+    for probe_name, health_name in (("startupProbe", "startup"),
+                                    ("readinessProbe", "readiness"),
+                                    ("livenessProbe", "liveness")):
+        http_get = container.get(probe_name, {}).get("httpGet", {})
+        if http_get.get("path") != runtime_health.get(health_name) or http_get.get("port") != "gateway":
+            defects.append("RUNTIME_HEALTH_PROBES_UNBOUND")
+            break
+    if runtime_gateway.get("unactivated_response") != "REFUSE":
+        defects.append("GATEWAY_OPERATION_PREMATURELY_ACTIVATED")
     policies = [item for item in items if item.get("kind") == "NetworkPolicy"]
     if not any(policy.get("spec", {}).get("egress") == [] for policy in policies):
         defects.append("DEFAULT_DENY_EGRESS_MISSING")

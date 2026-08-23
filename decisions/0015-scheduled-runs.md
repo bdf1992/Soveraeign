@@ -62,7 +62,7 @@ admitted in Phase I.
 4. Are cloud routines (repository cloned and run outside the node) ever
    admissible, and under which crossing contract?
 5. Should scheduled-run reports become Console Service notifications or
-   judgement requests once O14 settles, through a declared crossing?
+   judgement requests once O18 settles, through a declared crossing?
 
 ## Source and authority
 

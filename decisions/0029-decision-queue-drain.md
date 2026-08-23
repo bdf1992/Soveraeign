@@ -12,14 +12,14 @@ and `python scripts/sov_accept.py audit` fails on a ruling that names none.
 
 ## Presented for acceptance
 
-Three had a finished result already sitting behind them, so they are presented
-rather than ruled.
+Two had a finished result already sitting behind them, so they are presented
+rather than ruled. The third presents this change itself.
 
 | Was | Packet | Claim |
 | --- | --- | --- |
 | O2 | `acceptance/A1.json` | The Phase-I engineering baseline, built and self-tested |
 | O10 | `acceptance/A2.json` | `SPEC.md` as the Phase-I logical specification, witnessed |
-| O13 | `acceptance/A3.json` | The acceptance gate itself |
+| none | `acceptance/A3.json` | The acceptance gate itself. O13 is ruled below; what A3 presents is the gate, which no O-number ever named. |
 
 ## Held, with a declared reason
 

@@ -6,7 +6,7 @@
     "artifact": "STATUS.yaml",
     "from_standing": "PROPOSED",
     "to_standing": "RATIFIED",
-    "supersedes_open_decision": "O13"
+    "supersedes_open_decision": null
   },
   "presented_by_seat": "seat:session-control",
   "accepted_by_seat": "seat:root",
@@ -17,7 +17,11 @@
   },
   "witnessed_by": null,
   "visible_result": {
-    "demo": ["python", "scripts/sov_accept.py", "audit"],
+    "demo": [
+      "python",
+      "scripts/sov_accept.py",
+      "audit"
+    ],
     "shows": "the owner queue checked against contracts/acceptance-policy.json: seventeen open questions before this change, three presented results and three declared holds after it",
     "expect": "PASS with 14 rulings, 3 presented for acceptance, 3 admissible holds, 0 open questions. Revert STATUS.yaml and the same command fails with seventeen UNDRAINED_QUESTION lines."
   },

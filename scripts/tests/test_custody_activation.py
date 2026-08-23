@@ -19,7 +19,17 @@ assert SPEC and SPEC.loader
 activation = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(activation)
 
+#: The custody contract is a POSIX node volume: it verifies uid/gid ownership and sets
+#: file modes through ``os.fchmod``. A host without POSIX identity cannot hold that
+#: contract, so these cases declare the requirement and skip visibly rather than erroring
+#: with an AttributeError that reads like a defect in the code under test.
+POSIX_CUSTODY = unittest.skipUnless(
+    hasattr(os, "geteuid") and hasattr(os, "fchmod"),
+    "custody materialization requires POSIX ownership and file modes",
+)
 
+
+@POSIX_CUSTODY
 class CustodyActivationTests(unittest.TestCase):
     def manifest(self) -> dict:
         return json.loads((ROOT / "infrastructure" / "phase-i.local.json").read_text(

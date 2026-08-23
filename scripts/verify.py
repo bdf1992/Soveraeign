@@ -26,6 +26,7 @@ CHECKS = (
         [sys.executable, "-m", "unittest", "discover", "-s", "bindings/sov/tests", "-v"],
         ROOT,
     ),
+    ("Record Service reference tests", [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"], ROOT / "services" / "record"),
     ("Asset Service reference tests", [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"], ROOT / "services" / "asset"),
 )
 

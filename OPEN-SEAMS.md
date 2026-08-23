@@ -137,3 +137,9 @@ renumbers at rebase. The open choice is the allocation mechanism — reservation
 through the `decisions/0016` coordination registrar, or a
 next-free-number-at-rebase rule — and which surviving record keeps each
 contested number is Bdo's.
+
+Movement 2026-08-23: `0020-owner-seat-topology` landed on `main` via pull
+request #68 and settled that number; this branch renumbered its claimants to
+`0025` (verification channels) and `0026` (federation harness). Still open:
+PR #38's `0014`/`0015`, PR #61's `0019`, PR #64's duplicate copy of the
+verification-channels record, and the allocation mechanism itself.

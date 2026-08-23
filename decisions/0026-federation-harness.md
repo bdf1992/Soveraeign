@@ -1,13 +1,15 @@
-# 0020 · Local federation harness and role-based agents
+# 0026 · Local federation harness and role-based agents
 
 Status: `PROPOSED · OWNER RATIFICATION PENDING`
 
-Renumbered twice, for the same reason both times: a locally drafted record
-collides with one merged upstream in parallel, and the unmerged record moves.
-`0013` went to `decisions/0013-domain-mapped-sdlc-loop.md`; `0018` then went to
-`decisions/0018-verification-engagement-kind.md`, merged via pull request #60.
-`0019` is claimed by the verification-channel projection, so `0020` is the first
-number free of all of them. See `reports/2026-08-23-merge-readiness.md`.
+Renumbered three times, for the same reason each time: a locally drafted
+record collides with one merged upstream in parallel, and the unmerged record
+moves. `0013` went to `decisions/0013-domain-mapped-sdlc-loop.md`; `0018` then
+went to `decisions/0018-verification-engagement-kind.md`, merged via pull
+request #60. `0019` then went to `decisions/0019-kernel-transition-contract.md`
+(pull request #62) and `0020` to `decisions/0020-owner-seat-topology.md` (pull
+request #68), while this branch claims `0021` through `0025`, so `0026` is the
+first number free of all of them. See `reports/2026-08-23-merge-readiness.md`.
 
 ## Decision
 

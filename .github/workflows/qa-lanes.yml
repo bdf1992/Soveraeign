@@ -50,7 +50,7 @@ jobs:
     # Gated at the job so an unconfigured lane renders as SKIPPED, not as a pass.
     # It previously exited zero after writing a refusal to the step summary, which
     # made a refusal and a real screening indistinguishable in the check list -
-    # the defect named in decisions/0019. Generative screening stays optional; the
+    # the defect named in decisions/0025. Generative screening stays optional; the
     # blocking adversarial gate is `mutation`, which needs no key.
     if: vars.SOV_RED_LANE_ENABLED == 'true'
     permissions:
@@ -135,7 +135,7 @@ jobs:
             echo 'than reporting a score.'
             echo
             echo 'Mutants per file are capped at 40 and the cap is reported, never silent.'
-            echo 'No threshold is enforced yet - `decisions/0019` leaves the number to Bdo,'
+            echo 'No threshold is enforced yet - `decisions/0025` leaves the number to Bdo,'
             echo 'because a floor invented before a baseline would be asserted, not measured.'
           } >> "$GITHUB_STEP_SUMMARY"
 

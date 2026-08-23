@@ -149,7 +149,7 @@ open_decisions:
     gates:
       - ticket_kind.ratify_verification_engagement
   - id: O20
-    question: Does Bdo ratify the verification-channel projection in decisions/0019, and rule the collision between SDLC.md GREEN (derived go-state) and the green channel (contact with the world) by renaming the channel or adopting the existing term?
+    question: Does Bdo ratify the verification-channel projection in decisions/0025, and rule the collision between SDLC.md GREEN (derived go-state) and the green channel (contact with the world) by renaming the channel or adopting the existing term?
     gates:
       - channels.activate_projection
   - id: O21
@@ -161,7 +161,7 @@ open_decisions:
     gates:
       - ticket_kind.ratify_story
       - classification.ratify
-  # The federation-harness ratification question (decisions/0020-federation-harness.md,
+  # The federation-harness ratification question (decisions/0026-federation-harness.md,
   # reports/2026-08-22-christening.md item 1) holds no id. O13 was reserved for it locally
   # while the SDLC loop took O13 upstream; it is registered only when Bdo rules.
 

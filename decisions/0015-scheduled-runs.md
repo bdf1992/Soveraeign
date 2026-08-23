@@ -73,6 +73,6 @@ admitted in Phase I.
 - `ENGINEERING.md`: Growth triggers ("durable work must outlive a process ->
   lease-backed queue component using the Run contract"); Kernel primitives
 - `STATUS.yaml`: protected boundary `no_external_effects_in_phase_i`
-- `decisions/0020-federation-harness.md`
+- `decisions/0026-federation-harness.md`
 - Bdo's 2026-08-22 request for the primitives needed to schedule agent action
   on workflows and skills

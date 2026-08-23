@@ -1,6 +1,10 @@
-# 0019 · Verification channels and delegated merge authority
+# 0025 · Verification channels and delegated merge authority
 
 Status: `PROPOSED · OWNER DIRECTED · OWNER RATIFICATION PENDING`
+
+Renumbered from `0019`: that number went upstream to
+`decisions/0019-kernel-transition-contract.md` (pull request #62), and the
+unmerged record moves.
 
 Bdo directed this design in session on 2026-08-23. Direction is not
 ratification: under `AGENTS.md` only Bdo ratifies, and ratification reaches the

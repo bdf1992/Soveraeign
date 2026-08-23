@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import threading
@@ -14,6 +15,15 @@ SPEC = importlib.util.spec_from_file_location("infrastructure", ROOT / "scripts"
 assert SPEC and SPEC.loader
 infrastructure = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(infrastructure)
+
+#: The custody contract is a POSIX node volume: it verifies uid/gid ownership and sets
+#: file modes through ``os.fchmod``. A host without POSIX identity cannot hold that
+#: contract, so these cases declare the requirement and skip visibly rather than erroring
+#: with an AttributeError that reads like a defect in the code under test.
+POSIX_CUSTODY = unittest.skipUnless(
+    hasattr(os, "geteuid") and hasattr(os, "fchmod"),
+    "custody materialization requires POSIX ownership and file modes",
+)
 
 
 class InfrastructureTests(unittest.TestCase):
@@ -30,15 +40,6 @@ class InfrastructureTests(unittest.TestCase):
             self.assertEqual(proposal["disposition"], "CREATE")
             self.assertFalse(node.exists())
 
-    def test_apply_is_idempotent_and_verifiable(self):
-        with TemporaryDirectory() as temporary:
-            node = Path(temporary) / "node"
-            first = infrastructure.apply(node, self.manifest())
-            second = infrastructure.apply(node, self.manifest())
-            self.assertEqual(first["outcome"], "COMMITTED")
-            self.assertEqual(second["outcome"], "NOOP")
-            self.assertEqual(infrastructure.verify(node, self.manifest()), [])
-
     def test_unmanaged_nonempty_root_refuses(self):
         with TemporaryDirectory() as temporary:
             node = Path(temporary) / "node"
@@ -48,6 +49,11 @@ class InfrastructureTests(unittest.TestCase):
                 infrastructure.apply(node, self.manifest())
 
     def test_escape_and_absolute_paths_are_defeating(self):
+        """Judged as POSIX on every host: a manifest is not safe on one and unsafe on another.
+
+        ``.`` and ``./`` name the node root itself rather than a custody path under it, so
+        a path that resolves to no parts is refused alongside the escaping ones.
+        """
         for unsafe in ("../escape", "/tmp/escape", "C:\\escape"):
             manifest = self.manifest()
             manifest["custody"]["paths"]["work"] = unsafe
@@ -62,6 +68,23 @@ class InfrastructureTests(unittest.TestCase):
         self.assertIn("NETWORK_DEPENDENCY_NOT_ADMITTED", defects)
         self.assertIn("PROVIDER_DEPENDENCY_NOT_ADMITTED", defects)
         self.assertIn("EXTERNAL_EFFECTS_NOT_ADMITTED", defects)
+
+
+@POSIX_CUSTODY
+class CustodyMaterializationTests(unittest.TestCase):
+    """Cases that actually create the custody volume, and so need POSIX modes."""
+
+    def manifest(self) -> dict:
+        return json.loads((ROOT / "infrastructure" / "phase-i.local.json").read_text(encoding="utf-8"))
+
+    def test_apply_is_idempotent_and_verifiable(self):
+        with TemporaryDirectory() as temporary:
+            node = Path(temporary) / "node"
+            first = infrastructure.apply(node, self.manifest())
+            second = infrastructure.apply(node, self.manifest())
+            self.assertEqual(first["outcome"], "COMMITTED")
+            self.assertEqual(second["outcome"], "NOOP")
+            self.assertEqual(infrastructure.verify(node, self.manifest()), [])
 
     def test_receipt_drift_is_observed(self):
         with TemporaryDirectory() as temporary:

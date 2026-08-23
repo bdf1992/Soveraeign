@@ -77,7 +77,7 @@ every row still resolves, so a rename breaks the check instead of the reader.
 
 | Phase | Epic ticket | Governing debt or objective | Drawn as |
 | --- | --- | --- | --- |
-| `F3` Minimal local kernel | `#6` Shared Kernel, materializing at `#25` `contracts/` | `SPEC.md` transition contract, projected to `contracts/kernel-transitions.json` | `K` in `diagrams/crossing-topology.md` |
+| `F3` Minimal local kernel | `#25` Shared contracts, carrying `#6` Shared Kernel (closed before its standing settled) | `SPEC.md` transition contract, projected to `contracts/kernel-transitions.json` | `K` in `diagrams/crossing-topology.md` |
 | — service-internal | `#27` Asset reference participant | `ENGINEERING.md` named module debt: split `core.py` by owned responsibility | — |
 | `F2` Conformance corpus | `#26` Conformance harness | `SPEC.md` Conformance boundary | control pairs in `conformance/` |
 | `F4` Binding and model-portability proof | `#30` Operator bindings | `PRD.md` two-binding proof | `C1` in `diagrams/crossing-typology.md` |

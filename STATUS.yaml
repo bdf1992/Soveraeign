@@ -120,6 +120,9 @@ open_decisions:
   - id: O18
     question: Is Console Service the accepted third service boundary under that name, and does Bdo authorize a provisional Human Binding target for it ahead of O10?
     blocks: console_implementation
+  - id: O19
+    question: Does Bdo ratify the verification-channel projection in decisions/0019, and rule the collision between SDLC.md GREEN (derived go-state) and the green channel (contact with the world) by renaming the channel or adopting the existing term?
+    blocks: channel_projection_activation
   # The federation-harness ratification question (decisions/0018-federation-harness.md,
   # reports/2026-08-22-christening.md item 1) holds no id. O13 was reserved for it locally
   # while the SDLC loop took O13 upstream; it is registered only when Bdo rules.

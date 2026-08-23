@@ -40,7 +40,13 @@ so every binding discovers one list (`SPEC.md`, Interface parity).
 3. Evaluates the grant for type, capability, scope, budget, validity, and
    revocation at this moment; budget spend is derived from receipts on record.
 4. Commits or refuses, appending exactly one `EventEnvelope` and exactly one
-   `Receipt` to the journal. There is no other way to put either on record.
+   `Receipt` to the journal. A commit over a failed precondition raises and
+   appends nothing.
+
+A call whose actor kind or effect class is outside the contract vocabulary is
+not an attempt: the kernel raises before opening one, because it cannot journal
+a record its own contracts reject. A grant with an unknown authority type or a
+malformed timestamp is refused at registration for the same reason.
 
 Standing `RECORDED -> ADMITTED -> RATIFIED -> EFFECTIVE` climbs one rung per
 transition. `ratify` never sets effectiveness; `make_effective` requires a
@@ -58,10 +64,14 @@ executor's report. `settle_run` reads observations, never the report.
 digests its body with the prior entry's digest. `Kernel.audit()` names every
 visible defect: a broken chain, an event without a receipt, a receipt without
 an event, more than one receipt for one event, a counter-record whose original
-is missing, and a record whose in-memory standing or effectiveness disagrees
-with what the journal supports. That is how "service writes authoritative state
-around the kernel" is exposed rather than prevented. Durable storage behind the
-same surface is issue #7.
+is missing, a committed receipt that does not carry every predicate its
+transition requires as passed, and a record whose projected fields, standing,
+or effectiveness disagree with what the journal supports. Budget spend and the
+prior receipt of a retraction are read from the journal, never from the
+projection dictionaries. That is how "service writes authoritative state around
+the kernel" is exposed rather than prevented: a caller holding a reference to
+the kernel's state can edit it, and an independent reader of the journal will
+see that it did. Durable storage behind the same surface is issue #7.
 
 ## Running it
 
@@ -70,13 +80,18 @@ python -m unittest discover -s kernel/tests -v   # the transition matrix
 python scripts/verify.py                          # includes it
 ```
 
-`kernel/fixtures/transition-matrix.json` declares 39 cases, 12 positive and 27
-defeating, at least one of each per realized transition. `kernel/tests/` executes each case
-against the declared outcome and reason code, validates every emitted receipt
-and envelope against `contracts/receipt.schema.json` and
-`contracts/event-envelope.schema.json` through the independent validator in
-`scripts/sovticket/jsonschema.py`, and fails if any declared case was not
-exercised or any transition lacks its pair.
+`kernel/fixtures/transition-matrix.json` declares 41 cases, 12 positive and 29
+defeating, at least one of each per realized transition and at least one per
+refusal reason code. `kernel/tests/` executes each case against the declared
+outcome and reason code, validates every emitted receipt and envelope against
+`contracts/receipt.schema.json` and `contracts/event-envelope.schema.json`
+through the independent validator in `scripts/sovticket/jsonschema.py`, probes
+the audit with forged commits and edited projections, and fails if any declared
+case or reason code was not exercised or any transition lacks its pair.
+
+Witnessed once: `reports/2026-08-23-kernel-witness.md` records the independent
+observation over commit `681861e`, the defeats it found, and which of them the
+following commit closed.
 
 ## Known gaps
 
@@ -89,5 +104,9 @@ exercised or any transition lacks its pair.
 | Proposed reason codes | `INCOMPLETE_PLAN`, `EFFECT_CLASS_REFUSED`, `STANDING_REFUSED`, `OBSERVATION_MISSING`, `TARGET_UNKNOWN`, `PREDICATE_FAILED`, `PREDICATE_UNRESOLVED` are not in `SPEC.md` | Named refusals comparable across bindings | O10 |
 | Scope model | Grant scope is exact, `*`, or a `/`-prefix | Whatever O5 and the Gauge decide | O5 |
 | Judgement queue | `UNRESOLVED` settlement is receipted; no persistent pending-right record is created | Pending judgement visible and non-blocking | PROD-I-6 |
+| Observer relation | Refused only when it names the executor or the executor's report | The relation must state how the observer avoids the report; the kernel cannot verify prose | SPEC `Observation`; C7 |
+| Settlement input state | `current_input_state_digest` is declared by the caller; the kernel fences the run state it holds, not world state it cannot see | Settlement refuses on changed input state | SPEC `settle_run` |
+| Crash inside an attempt | An exception between open and close appends nothing and audit sees nothing | Whether a crash owes a `FAILED` receipt is queued | SPEC Transition contract |
+| `UNATTESTABLE` beside `REPRODUCED` | Effectiveness is refused on `DISSENTED` only; an `UNATTESTABLE` outcome over the same inputs does not block | Attestation policy for mixed outcomes | SPEC `make_effective`; O4 |
 
 These are reference gaps, not reasons to relax `SPEC.md`.

@@ -15,7 +15,8 @@ from typing import Any
 from .records import AuthorityGrant
 
 
-def _parse(timestamp: str) -> datetime:
+def parse_timestamp(timestamp: str) -> datetime:
+    """Parse an RFC 3339 timestamp; a malformed one raises ``ValueError``."""
     return datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
 
 
@@ -32,7 +33,7 @@ def evaluate(grant: AuthorityGrant | None, *, actor_id: str, authority_type: str
     if grant is None:
         return [{"predicate": "grant_present", "result": False}]
     live = (grant.revoked_at is None
-            and _parse(grant.valid_from) <= now <= _parse(grant.valid_until))
+            and parse_timestamp(grant.valid_from) <= now <= parse_timestamp(grant.valid_until))
     return [
         {"predicate": "grant_present", "result": True},
         {"predicate": "actor_matches", "result": grant.actor_id == actor_id},

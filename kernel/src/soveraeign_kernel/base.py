@@ -3,9 +3,12 @@
 Every transition the kernel realizes runs through ``Attempt``: open it with the
 declared actor, inputs, authority, and effect class; add precondition results;
 then close it exactly once with ``refuse`` or ``commit``. Closing appends one
-``EventEnvelope`` and one ``Receipt`` to the journal. There is no other way to
-put an event or receipt on record, which is how "exactly one terminal receipt per
-attempted transition" is kept by construction rather than by discipline.
+``EventEnvelope`` and one ``Receipt`` to the journal, and a commit over a failed
+precondition raises rather than closes. That keeps "exactly one terminal receipt
+per attempted transition" by construction for every attempt that closes. What
+construction cannot stop, a caller closing an attempt that checked nothing, the
+audit exposes: a committed receipt must carry every predicate its transition
+requires (``audit.REQUIRED_PASSING``).
 """
 
 from __future__ import annotations
@@ -15,16 +18,16 @@ from typing import Any, Callable
 import itertools
 import uuid
 
-from .authority import authorized, evaluate
+from . import audit as kernel_audit
+from .authority import authorized, evaluate, parse_timestamp
 from .digests import digest_of
 from .journal import Journal
 from .records import (
-    KERNEL_TRANSITIONS, LEGAL_TRANSITIONS, Attestation, AuthorityGrant, CounterRecord,
-    Observation, Record, Run,
+    ACTOR_KINDS, AUTHORITY_TYPES, EFFECT_CLASSES, KERNEL_TRANSITIONS, LEGAL_TRANSITIONS,
+    Attestation, AuthorityGrant, CounterRecord, Observation, Record, Run,
 )
 
 DEFAULT_INTERFACE = "urn:soveraeign:interface:kernel-python-v1"
-STANDING_TRANSITIONS = ("submit_proposal", "admit", "ratify", "make_effective")
 
 
 def _utc_now() -> datetime:
@@ -93,6 +96,9 @@ class Attempt:
                evidence: list[str], prior_receipt_id: str | None) -> dict[str, Any]:
         if self.closed:
             raise RuntimeError(f"{self.transition}: attempt already closed")
+        failed = [item["predicate"] for item in self.preconditions if item["result"] is not True]
+        if outcome != "REFUSED" and failed:
+            raise RuntimeError(f"{self.transition}: cannot commit over failed {failed}")
         self.closed = True
         kernel, created_at = self.kernel, self.kernel.timestamp()
         event_id, receipt_id = kernel.new_id("event"), kernel.new_id("receipt")
@@ -154,13 +160,26 @@ class KernelBase:
         return {"legal": list(LEGAL_TRANSITIONS), "realized_by_kernel": list(KERNEL_TRANSITIONS)}
 
     def register_grant(self, grant: AuthorityGrant) -> AuthorityGrant:
-        """Place a grant on record. Issuing authority is O3's open question; this records only."""
+        """Place a grant on record. Issuing authority is O3's open question; this records only.
+
+        A grant outside the contract vocabulary is not registered: a later transition
+        could neither evaluate it nor journal a receipt its own contracts accept.
+        """
+        if grant.authority_type not in AUTHORITY_TYPES:
+            raise ValueError(f"grant {grant.grant_id}: unknown authority type")
+        if not isinstance(grant.budget, int) or isinstance(grant.budget, bool) or grant.budget < 0:
+            raise ValueError(f"grant {grant.grant_id}: budget must be a non-negative integer")
+        for name in ("valid_from", "valid_until", "revoked_at"):
+            value = getattr(grant, name)
+            if value is not None:
+                parse_timestamp(value)  # raises ValueError on a malformed timestamp
         self.grants[grant.grant_id] = grant
         self.journal.append("GRANT", grant.to_dict())
         return grant
 
     def spent(self, grant_id: str) -> int:
-        return sum(1 for receipt in self.receipts.values()
+        """Uses of a grant, counted from receipts on record, never from a projection."""
+        return sum(1 for receipt in self.journal.bodies("RECEIPT")
                    if grant_id in receipt["authority_grant_ids"]
                    and receipt["outcome"] in ("COMMITTED", "COUNTERED"))
 
@@ -176,35 +195,16 @@ class KernelBase:
                 inputs: list[dict[str, str]], effect_class: str = "RECORD_LOCAL",
                 grant_ids: list[str] | None = None, operation_id: str | None = None,
                 interface_id: str | None = None) -> Attempt:
+        """Open an attempt. A call outside the contract vocabulary is not an attempt at all."""
+        if actor_kind not in ACTOR_KINDS:
+            raise ValueError(f"{transition}: actor kind {actor_kind!r} is not in the contract")
+        if effect_class not in EFFECT_CLASSES:
+            raise ValueError(f"{transition}: effect class {effect_class!r} is not in the contract")
         return Attempt(self, transition, actor_id=actor_id, actor_kind=actor_kind,
                        operation_id=operation_id or self.new_id("operation"), inputs=inputs,
                        effect_class=effect_class, grant_ids=grant_ids or [],
                        interface_id=interface_id or self.interface_id)
 
     def audit(self) -> list[str]:
-        """Journal defects plus any record whose projection disagrees with the journal."""
-        defects = self.journal.audit()
-        history: dict[str, list[str]] = {}
-        effective: dict[str, bool] = {}
-        for receipt in self.journal.bodies("RECEIPT"):
-            if receipt["outcome"] not in ("COMMITTED", "COUNTERED"):
-                continue
-            addresses = (receipt["emitted_record_addresses"]
-                         if receipt["event_type"] == "submit_proposal"
-                         else receipt["input_addresses"])
-            target = addresses[0] if addresses else None
-            if target is None:
-                continue
-            if receipt["event_type"] in STANDING_TRANSITIONS:
-                standing = {"submit_proposal": "RECORDED", "admit": "ADMITTED",
-                            "ratify": "RATIFIED", "make_effective": "EFFECTIVE"}
-                history.setdefault(target, []).append(standing[receipt["event_type"]])
-                effective[target] = receipt["event_type"] == "make_effective"
-            elif receipt["event_type"] == "retract":
-                effective[target] = False
-        for record_id, record in self.records.items():
-            if record.standing_history != history.get(record_id, []):
-                defects.append(f"record {record_id}: standing projection diverges from journal")
-            if record.effective != effective.get(record_id, False):
-                defects.append(f"record {record_id}: effectiveness diverges from journal")
-        return defects
+        """Every visible defect: chain, receipts, committed-without-passing, projections."""
+        return kernel_audit.audit(self.journal, self.records)

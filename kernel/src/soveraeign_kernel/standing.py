@@ -175,7 +175,7 @@ class StandingTransitions(KernelBase):
                               emitted=[counter.counter_record_id], prior_receipt_id=target_receipt)
 
     def _last_receipt_for(self, record_id: str) -> str:
-        for receipt in reversed(list(self.receipts.values())):
+        for receipt in reversed(self.journal.bodies("RECEIPT")):
             if record_id in receipt["input_addresses"] and receipt["outcome"] == "COMMITTED":
                 return receipt["receipt_id"]
         return "urn:soveraeign:receipt:absent"

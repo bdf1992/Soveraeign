@@ -45,6 +45,9 @@ class RunTransitions(KernelBase):
         missing = [name for name in PLAN_FIELDS if plan.get(name) in (None, "", [], {})]
         if not attempt.check("plan_complete", not missing, missing=missing):
             return attempt.refuse(reasons.INCOMPLETE_PLAN, f"plan missing {', '.join(missing)}")
+        paired = len(plan["input_addresses"]) == len(plan["input_digests"])
+        if not attempt.check("inputs_paired", paired):
+            return attempt.refuse(reasons.INCOMPLETE_PLAN, "every input address needs a digest")
         if not attempt.check("effect_class_admitted", effect_class != "EXTERNAL_WORLD"):
             return attempt.refuse(reasons.EFFECT_CLASS_REFUSED,
                                   "EXTERNAL_WORLD is refused in Phase I")

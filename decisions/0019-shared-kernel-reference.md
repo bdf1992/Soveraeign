@@ -52,9 +52,29 @@ thing a witness can run.
 - An attestation JSON Schema is still not authored (O4). The kernel records
   the `SPEC.md` field block and nothing more.
 
+## Witnessed
+
+An independent witness (`reports/2026-08-23-kernel-witness.md`) reproduced the
+build claims over commit `681861e` and supported `OPEN -> BUILT`, not
+`BUILT -> WITNESSED`: it found the public attempt envelope could forge a commit
+the audit did not see, that the audit ignored edited record fields, that budget
+spend read a projection, that vocabulary was unenforced at the gate, and that
+a plan with unpaired inputs lost one silently. The following commit closes
+those five and declares each as a defeating test; the remaining findings are
+queued below.
+
 ## Judgement queued for Bdo
 
 1. Accept `/kernel` as the boundary, or fold the reference under `/contracts`.
 2. Accept, rename, or strike the seven proposed reason codes at O10.
 3. Whether the journal's chain digest is the mechanism #7 should persist, or
    only the exposure rule it must preserve.
+4. Does a transition that raises between open and close owe a `FAILED`
+   receipt, or is a crash outside the contract?
+5. Does one `UNATTESTABLE` beside one `REPRODUCED` over exact inputs satisfy
+   the attestation policy `make_effective` requires?
+6. Is `Kernel.attempt()` a surface services may call, or internal to the
+   transitions? The audit now covers the former; the README describes the
+   latter.
+7. `kernel/pyproject.toml` carries the same `setuptools` build-system line as
+   `services/asset/pyproject.toml`; neither has a decision record.

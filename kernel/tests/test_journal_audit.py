@@ -6,7 +6,7 @@ from pathlib import Path
 import json
 import sys
 
-from support import BDO, REPO_ROOT, KernelCase
+from support import BDO, REPO_ROOT, KernelCase, grant, plan
 
 sys.path.insert(0, str(REPO_ROOT / "scripts"))
 
@@ -87,6 +87,60 @@ class JournalAudit(KernelCase):
                             if not (e["kind"] == "RECORD" and e["body"]["record_id"] == record_id)]
         defects = journal.audit()
         self.assertTrue(any("original record is not on record" in d for d in defects), defects)
+
+    def test_forged_commit_through_attempt_is_exposed(self) -> None:
+        record_id = self.recorded()
+        forged = self.kernel.attempt("ratify", actor_id=BDO, actor_kind="HUMAN",
+                                     inputs=[{"address": record_id, "digest": "sha256:x"}])
+        forged.commit(reason="no checks at all")
+        self.kernel.records[record_id].standing_history.append("ADMITTED")
+        self.kernel.records[record_id].standing_history.append("RATIFIED")
+        defects = self.kernel.audit()
+        self.assertTrue(any("ratify committed without passing" in d for d in defects), defects)
+
+    def test_commit_over_failed_precondition_is_impossible(self) -> None:
+        attempt = self.kernel.attempt("admit", actor_id=BDO, actor_kind="HUMAN",
+                                      inputs=[{"address": "r", "digest": "sha256:x"}])
+        attempt.check("pre_state_current", False)
+        with self.assertRaises(RuntimeError):
+            attempt.commit(reason="forced")
+        self.assertEqual(self.kernel.journal.bodies("RECEIPT"), [])
+
+    def test_mutated_record_fields_are_exposed(self) -> None:
+        record_id = self.ratified()
+        self.kernel.records[record_id].input_digests = ["sha256:other"]
+        self.kernel.records[record_id].scope = "asset/2"
+        defects = self.kernel.audit()
+        self.assertIn(f"record {record_id}: input_digests diverges from journal", defects)
+        self.assertIn(f"record {record_id}: scope diverges from journal", defects)
+
+    def test_spend_is_read_from_the_journal(self) -> None:
+        grant(self.kernel, "g-one", BDO, "JUDGEMENT", "ratify", budget=1)
+        record_id = self.admitted()
+        self.kernel.ratify(record_id, actor_id=BDO, actor_kind="HUMAN",
+                           expected_state=self.kernel.state_digest(record_id), grant_id="g-one")
+        self.kernel.receipts.clear()  # a projection, not the record
+        self.assertEqual(self.kernel.spent("g-one"), 1)
+        second = self.admitted()
+        receipt = self.kernel.ratify(second, actor_id=BDO, actor_kind="HUMAN",
+                                     expected_state=self.kernel.state_digest(second),
+                                     grant_id="g-one")
+        self.assertEqual(receipt["reason_code"], "AUTHORITY_REFUSED")
+
+    def test_vocabulary_is_enforced_before_an_attempt_opens(self) -> None:
+        with self.assertRaises(ValueError):
+            self.submit(actor_kind="ROBOT")
+        with self.assertRaises(ValueError):
+            self.kernel.begin_run(plan(effect_class="EXTERNAL_WORLD_LATER"), actor_id=BDO,
+                                  actor_kind="HUMAN", grant_id="g-operate")
+        self.assertEqual(len(self.kernel.journal), 4, "only the four setUp grants are on record")
+
+    def test_malformed_grant_is_not_registered(self) -> None:
+        with self.assertRaises(ValueError):
+            grant(self.kernel, "g-bad", BDO, "JUDGEMENT", "ratify", valid_until="not-a-time")
+        with self.assertRaises(ValueError):
+            grant(self.kernel, "g-bad", BDO, "OPINION", "ratify")
+        self.assertNotIn("g-bad", self.kernel.grants)
 
     def test_legal_transitions_are_discoverable(self) -> None:
         listed = self.kernel.transitions()

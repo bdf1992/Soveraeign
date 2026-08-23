@@ -6,7 +6,7 @@ import unittest
 
 from support import COVERED, EXPECTED  # support puts kernel/src on sys.path
 
-from soveraeign_kernel import KERNEL_TRANSITIONS  # noqa: E402
+from soveraeign_kernel import KERNEL_TRANSITIONS, reasons  # noqa: E402
 
 
 class MatrixCoverage(unittest.TestCase):
@@ -22,3 +22,8 @@ class MatrixCoverage(unittest.TestCase):
         gaps = sorted(name for name, polarities in seen.items()
                       if polarities != {"positive", "defeating"})
         self.assertEqual(gaps, [], f"transitions without a positive and defeating case: {gaps}")
+
+    def test_every_declared_reason_code_has_a_case(self) -> None:
+        declared = {case["expected"]["reason_code"] for case in EXPECTED.values()}
+        unexercised = sorted(reasons.ALL - declared)
+        self.assertEqual(unexercised, [], f"reason codes with no declared case: {unexercised}")

@@ -48,6 +48,11 @@ class StandingMatrix(KernelCase):
         self.expect("KERNEL-ADMIT-DEF-PREDICATE", receipt)
         self.assertEqual(self.kernel.records[record_id].standing, "RECORDED")
 
+    def test_admit_unknown_record(self) -> None:
+        receipt = self.kernel.admit("urn:soveraeign:record:none", actor_id=BDO, actor_kind="HUMAN",
+                                    expected_state=None, predicate_results=[])
+        self.expect("KERNEL-ADMIT-DEF-UNKNOWN", receipt)
+
     def ratify_with(self, record_id: str, grant_id: str | None, actor: str = BDO,
                     expected_state: str | None = "current") -> dict:
         if expected_state == "current":
@@ -188,6 +193,11 @@ class RunMatrix(KernelCase):
         receipt = self.kernel.begin_run(plan(expected_observations=[]), actor_id=BDO,
                                         actor_kind="HUMAN", grant_id="g-operate")
         self.expect("KERNEL-BEGIN-DEF-PLAN", receipt)
+
+    def test_begin_unpaired_inputs(self) -> None:
+        receipt = self.kernel.begin_run(plan(input_addresses=["a", "b"]), actor_id=BDO,
+                                        actor_kind="HUMAN", grant_id="g-operate")
+        self.expect("KERNEL-BEGIN-DEF-UNPAIRED", receipt)
 
     def test_begin_external_world(self) -> None:
         receipt = self.kernel.begin_run(plan(effect_class="EXTERNAL_WORLD"), actor_id=BDO,

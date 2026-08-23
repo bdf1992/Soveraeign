@@ -1,0 +1,24 @@
+id: PROJ-006
+title: embedding_provenance_required
+status: SEED
+given:
+  - one READY collection C-1
+  - one Model Binding MB-1 declared with data_boundary LOCAL_ONLY whose provider is not running
+  - one set of owner-supplied vectors V-1 with a declared external provenance record naming their producer, model, version, and dimension
+  - one HUMAN actor H-1 holding a live grant scoped to register-vectors and search-dense on C-1
+when:
+  - H-1 attempts register-vectors on C-1 naming MB-1 as the embedding source
+  - H-1 attempts register-vectors on C-1 naming no binding and no provenance
+  - H-1 registers vectors on C-1 from V-1 under its declared provenance and runs search-dense with index_kind NONE
+then:
+  - the first attempt returns a receipt with outcome REFUSED and reason_code MODEL_UNAVAILABLE; no other binding is invoked and no vectors are registered
+  - the second attempt returns a receipt with outcome REFUSED and reason_code INCOMPLETE_PROPOSAL
+  - the third registration returns COMMITTED, and the vector registration record names the provenance, dimension, distance, and index_kind NONE of V-1
+  - the dense retrieval receipt names the vector registration and its provenance on every hit, and every hit resolves to a record in the Asset Service by address and digest
+  - the receipt states index_kind NONE, so the result is exact and carries no approximation omission
+defeating:
+  - the unavailable binding is replaced by another binding or provider without a new attributed registration and receipt
+  - vectors are registered with no binding and no provenance
+  - a dense hit names no embedding provenance, or names a binding other than the one that produced its vector
+  - a registration built with an approximate index reports index_kind NONE, or an exact scan is reported as approximate
+  - the service computes embeddings itself rather than through invoke_model or declared provenance

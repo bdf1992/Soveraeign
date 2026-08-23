@@ -1,0 +1,10 @@
+{
+  "service_id": "projection",
+  "standing": "PROPOSED",
+  "owns": ["projection-collection", "text-configuration", "vector-registration", "graph-configuration", "index-declaration", "projection-build", "retrieval-receipt", "context-package", "fidelity-observation", "projection-receipt"],
+  "references": ["shared-kernel-contracts", "asset:asset-version", "asset:asset-relationship", "asset:derivation-lineage", "asset:event-and-receipt-stream", "model-binding"],
+  "operations": ["declare-collection", "configure-text", "configure-graph", "register-vectors", "build-projection", "search-text", "traverse-graph", "find-path", "search-dense", "search-sparse", "search-hybrid", "package-context", "observe-fidelity", "propose-from-projection"],
+  "uses_kernel_contracts": ["standing", "typed-authority", "operation", "observation", "receipt", "retraction"],
+  "ports": ["asset-record-stream", "model-binding", "external-index", "http-binding", "federation"],
+  "forbids": ["projection-as-authority", "direct-asset-state-write", "hit-without-source", "undeclared-omission", "silent-staleness", "embedding-without-provenance", "approximate-served-as-exact", "executor-report-as-observation", "unconfigured-external-success", "history-erasure"]
+}

@@ -24,6 +24,8 @@ REQUIRED = (
     "services/asset/CHARTER.md",
     "services/proofing/CHARTER.md",
     "services/console/CHARTER.md",
+    "services/projection/CHARTER.md",
+    "services/projection/PARITY.md",
     "ROADMAP.md",
     "STATUS.yaml",
     "AGENTS.md",
@@ -46,6 +48,7 @@ REQUIRED = (
     "services/asset/contracts/service.json",
     "services/proofing/contracts/service.json",
     "services/console/contracts/service.json",
+    "services/projection/contracts/service.json",
     "decisions/0001-founding-boundary.md",
     "decisions/0002-naming-process.md",
     "decisions/0003-evidence-boundary.md",
@@ -59,6 +62,7 @@ REQUIRED = (
     "decisions/0011-local-personal-byom.md",
     "decisions/0012-engineering-baseline.md",
     "decisions/0014-console-service-boundary.md",
+    "decisions/0021-asset-projection-service-boundary.md",
 )
 
 
@@ -181,7 +185,7 @@ def verify_json_documents() -> int:
             json.loads(path.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError) as error:
             fail(f"invalid JSON document {path.relative_to(ROOT)}: {error}")
-    for service in ("asset", "proofing", "console"):
+    for service in ("asset", "proofing", "console", "projection"):
         manifest = json.loads((ROOT / "services" / service / "contracts" / "service.json").read_text(encoding="utf-8"))
         for field in ("service_id", "standing", "owns", "operations", "uses_kernel_contracts", "forbids"):
             if not manifest.get(field):

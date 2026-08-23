@@ -1,0 +1,21 @@
+id: PROJ-002
+title: rebuild_identical
+status: SEED
+given:
+  - one projection collection C-1 with text, graph, and filter lanes declared
+  - a fixed authoritative record set R, unchanged for the whole scenario
+  - one HUMAN actor H-1 holding a live grant scoped to build-projection on C-1 and holding no grant for any transition on the records C-1 projects
+when:
+  - H-1 requests build-projection for C-1
+  - H-1 requests build-projection for C-1 a second time with R unchanged
+then:
+  - each build emits ATTEMPTED, stores a worker report, and settles COMMITTED only after an independent observation of the resulting content_digest against R
+  - the two builds carry the same content_digest and byte-identical lane contents; only the build time differs
+  - both builds remain in history; the second does not erase the first
+  - the collection lifecycle is READY after each build
+  - every receipt carries effect class RECORD_LOCAL
+defeating:
+  - the two builds from unchanged R differ in content_digest or in the contents of any lane
+  - a build settles on the worker report alone without an independent observation
+  - the first build record is overwritten or deleted by the second
+  - a build leaves no receipt, or a receipt whose input_addresses do not name R

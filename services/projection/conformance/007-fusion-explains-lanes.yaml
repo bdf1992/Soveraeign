@@ -1,0 +1,22 @@
+id: PROJ-007
+title: fusion_explains_lanes
+status: SEED
+given:
+  - one READY collection C-1 with text, graph, and dense lanes built, dense vectors carrying declared provenance
+  - an authoritative record set R containing at least one asset reachable only through the graph lane from the seed of the query and at least one asset matched only by the text lane
+  - one MODEL actor M-1 holding a live grant scoped to search-hybrid on C-1
+when:
+  - M-1 runs search-hybrid in mode JOINT with seed_lane TEXT, graph_hops 2, weights declared, and limit 10
+then:
+  - the receipt has outcome COMMITTED, names mode JOINT, score_kind, the RRF constant k, and the declared weights
+  - every hit carries a score breakdown naming each lane that contributed, lane evidence with the rank in that lane, and a boolean introduced_by_graph
+  - the asset reachable only through the graph carries introduced_by_graph true; the text-only asset carries introduced_by_graph false
+  - results are deduplicated; no source_address appears twice
+  - every hit resolves to a record in R by address and digest, and omissions names any lane that was declared but not READY
+  - the receipt records the binding identity of M-1 as the actor and carries effect class RECORD_LOCAL
+defeating:
+  - a fused hit cannot show which lanes produced it, or introduced_by_graph is absent or wrong
+  - the same source_address appears more than once in the result
+  - a lane that was not READY is silently skipped without appearing in omissions
+  - the weights or k applied differ from those on the receipt
+  - a hit names no source address or digest

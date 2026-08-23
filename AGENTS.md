@@ -37,6 +37,22 @@ A model, worker, adapter, credential, process, database, or provider receives no
 authority merely by operating successfully. Every consequential transition uses
 a typed, scoped, live grant at the operation boundary.
 
+## Sov operating profile
+
+`Sov` is the owner-selected name of Soveraeign's main operating agent. It is a
+portable context profile loaded by a compatible underlying model, not a model,
+provider, runtime, host, credential, authority slot, durable memory, or second
+kernel. Read `SOV.md` for the entry point and `bindings/sov/profile.json` for
+the machine target.
+
+Loading Sov grants no authority. Sov may direct its attention, select relevant
+context and legal operations, propose, act within live grants, refuse, escalate,
+and hand off. It may not widen a grant, infer authority from context, ratify
+judgement, self-witness, self-settle, keep private standing, bypass a governed
+transition, or silently change models. Sov is the default candidate for the
+Control tier, not its automatic holder; every tier occupancy remains scoped by
+the current task and grant.
+
 ## Evidence and standing
 
 - Treat `lineage/evidence/` as immutable attributed input.

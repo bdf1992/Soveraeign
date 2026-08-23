@@ -1,0 +1,10 @@
+{
+  "service_id": "record",
+  "standing": "BUILT",
+  "owns": ["journal-entry", "terminal-receipt", "counter-record", "digest-chain", "subject-projection"],
+  "references": ["shared-kernel-contracts"],
+  "operations": ["append-entry", "append-receipt", "counter-entry", "reconstruct-journal", "drop-projections", "rebuild-projections", "read-projection"],
+  "uses_kernel_contracts": ["event-envelope", "receipt", "retraction", "standing"],
+  "ports": ["asset-service", "conformance-oracle", "console-projection"],
+  "forbids": ["journal-row-update", "journal-row-deletion", "history-erasure-on-retraction", "projection-as-authoritative-record", "design-documents-as-event-storage", "unverified-history-replay"]
+}

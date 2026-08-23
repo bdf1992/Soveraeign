@@ -64,9 +64,30 @@ CHECKS = (
           ("conformance/tests",)),
     Check("kernel transition contract", [sys.executable, "scripts/sov_kernel.py", "selfcheck"],
           ROOT,
-          "re-derives the transition table from SPEC.md bytes rather than trusting the "
-          "stored projection it is comparing against",
+          "judges a declared corpus of positive and defeating requests against the "
+          "authored table; it reads no participant verdict and asks the table nothing "
+          "about whether it is correct, only what it admits",
+          ("contracts/kernel-transitions.json",
+           "conformance/fixtures/kernel/transition-cases.json")),
+    Check("kernel contract against SPEC.md", [sys.executable, "scripts/sov_kernel.py", "drift"],
+          ROOT,
+          "re-reads SPEC.md bytes and derives the transition set and refusal codes from "
+          "the governing document rather than trusting the authored table it is checking",
           ("SPEC.md", "contracts/kernel-transitions.json")),
+    Check("kernel participant parity", [sys.executable, "scripts/sov_kernel.py", "parity"],
+          ROOT,
+          "compares each participant's declared refusal vocabulary against the kernel "
+          "contract, so a participant cannot vouch for its own correspondence",
+          ("contracts/kernel-parity.json", "contracts/kernel-transitions.json")),
+    Check("specification traceability", [sys.executable, "scripts/sov_spec.py", "trace"], ROOT,
+          "walks from SPEC.md requirements to the evidence records that claim them and "
+          "refuses a standing whose predecessor standing is unreached",
+          ("SPEC.md", "PRD.md")),
+    Check("semantic cold-start task", [sys.executable, "scripts/sov_witness.py", "semantic"],
+          ROOT,
+          "judges the custody round trip by digests the witness computes itself rather than "
+          "by any value the participant reported",
+          ("conformance/founding-scenarios/010-semantic-custody-round-trip.yaml",)),
     Check("participant against its baseline", [sys.executable, "scripts/sov_baseline.py"], ROOT,
           "runs the participant in a separate process and grades it through the frozen "
           "oracle, which never imports participant code; the participant does not report its "
@@ -89,6 +110,12 @@ CHECKS = (
           "inventory rather than a live daemon, so the result cannot depend on whether a "
           "model server happens to be running on the checking machine",
           ("adapters/ollama", "contracts/model-binding.schema.json")),
+    Check("Record Service reference tests",
+          [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
+          ROOT / "services" / "record",
+          "the participant's own tests; these establish BUILT evidence about local mechanics "
+          "and are explicitly NOT independent of the code they exercise",
+          ("services/record/tests",)),
     Check("Asset Service reference tests",
           [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
           ROOT / "services" / "asset",

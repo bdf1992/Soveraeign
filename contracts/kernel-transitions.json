@@ -1,199 +1,263 @@
 {
   "table_id": "soveraeign-kernel-transitions/v1",
+  "status": "PROPOSED",
+  "compiles": "SPEC.md Transition contract",
   "governed_by": [
-    "SPEC.md"
+    "SPEC.md",
+    "CONTRACT.md",
+    "CLASSIFICATION.md",
+    "PRD.md"
   ],
-  "note": "Projection of the SPEC.md transition contract table. SPEC.md is authoritative; this file is rebuildable and holds no standing. scripts/sov_kernel.py selfcheck refuses when the two disagree.",
-  "source_digest": "ef6264c4b5734e59",
-  "order": [
-    "capture_source",
-    "read_source",
-    "submit_proposal",
-    "admit",
-    "ratify",
-    "attest",
-    "make_effective",
-    "begin_run",
-    "report_run",
-    "observe_run",
-    "settle_run",
-    "retract",
-    "cross",
-    "invoke_model"
+  "note": "The declared kernel transitions, compiled from the SPEC.md Transition contract table. SPEC.md states these transitions in prose; nothing compiled them, so every participant re-stated them privately. This table is the single machine-readable statement all services check against. It is a proposal: SPEC.md is not frozen (O10) and the vocabulary is not ratified (O9), so a mismatch found here queues as a judgement item rather than a rename.",
+  "settles_only_with_observation": [
+    "settle_run"
   ],
-  "refusal_codes": [
-    "ADMISSION_REFUSED",
-    "AUTHORITY_REFUSED",
-    "DATA_BOUNDARY_REFUSED",
-    "DIGEST_MISMATCH",
-    "DISSENTED",
-    "INCOMPLETE_PROPOSAL",
-    "MODEL_INCOMPATIBLE",
-    "MODEL_UNAVAILABLE",
-    "OBSERVER_NOT_INDEPENDENT",
-    "POLICY_REFUSED",
-    "READER_UNDECLARED",
-    "SOURCE_CHANGED",
-    "STALE_LEASE",
-    "STALE_STATE",
-    "UNATTESTABLE",
-    "UNREADABLE",
-    "VALIDATOR_UNDECLARED"
+  "never_settles": [
+    "report_run"
   ],
-  "transitions": {
-    "capture_source": {
+  "phase_refused_effect_classes": [
+    "EXTERNAL_WORLD"
+  ],
+  "refusal_codes": {
+    "UNREADABLE": "The source bytes could not be read.",
+    "DIGEST_MISMATCH": "The declared digest does not match the bytes.",
+    "SOURCE_CHANGED": "The source changed between capture and reading.",
+    "READER_UNDECLARED": "The reader or projection was not fully declared.",
+    "INCOMPLETE_PROPOSAL": "A required proposal field is absent.",
+    "ADMISSION_REFUSED": "Admission predicates did not pass against the exact proposal state.",
+    "AUTHORITY_REFUSED": "No live matching authority grant covers this transition.",
+    "STALE_STATE": "The declared pre-state is not the current state.",
+    "STALE_LEASE": "The lease is expired, superseded by a newer fence, or held by another worker.",
+    "VALIDATOR_UNDECLARED": "The attestation validator or its exact inputs were not declared.",
+    "DISSENTED": "An attestation dissented.",
+    "UNATTESTABLE": "The claim cannot be attested.",
+    "POLICY_REFUSED": "The required attestation policy is not satisfied.",
+    "OBSERVER_NOT_INDEPENDENT": "The observer is the actor that produced the report.",
+    "OBSERVATION_MISSING": "Settlement was requested with no satisfactory observation.",
+    "EFFECT_CLASS_REFUSED": "The declared effect class is not admitted in the current phase.",
+    "MODEL_UNAVAILABLE": "The declared model binding could not be reached.",
+    "MODEL_INCOMPATIBLE": "The declared model binding cannot serve the operation.",
+    "DATA_BOUNDARY_REFUSED": "The operation would cross the declared data boundary.",
+    "UNKNOWN_TRANSITION": "The requested transition is not declared in this table.",
+    "MISSING_PRECONDITION": "A declared precondition key is absent or empty."
+  },
+  "transitions": [
+    {
+      "transition": "capture_source",
       "preconditions": [
-        "readable bytes",
-        "address and digest available"
+        "source_address",
+        "source_digest"
       ],
-      "commit": "create immutable Source",
-      "refusal_codes": [
+      "commit": "COMMITTED",
+      "refusals": [
         "UNREADABLE",
         "DIGEST_MISMATCH"
       ],
-      "reasoned_refusal_admitted": false
+      "effect_class": "RECORD_LOCAL"
     },
-    "read_source": {
+    {
+      "transition": "read_source",
       "preconditions": [
-        "source digest verifies",
-        "reader fully declared"
+        "source_digest",
+        "reader_declaration"
       ],
-      "commit": "emit Recording; source unchanged",
-      "refusal_codes": [
+      "commit": "COMMITTED",
+      "refusals": [
         "SOURCE_CHANGED",
         "READER_UNDECLARED"
       ],
-      "reasoned_refusal_admitted": false
+      "effect_class": "RECORD_LOCAL"
     },
-    "submit_proposal": {
+    {
+      "transition": "submit_proposal",
       "preconditions": [
-        "actor, cost, source, scope, and required authority declared"
+        "actor_id",
+        "cost",
+        "source_address",
+        "scope",
+        "required_authority"
       ],
-      "commit": "record proposal as RECORDED",
-      "refusal_codes": [
+      "commit": "RECORDED",
+      "refusals": [
         "INCOMPLETE_PROPOSAL"
       ],
-      "reasoned_refusal_admitted": false
+      "effect_class": "RECORD_LOCAL"
     },
-    "admit": {
+    {
+      "transition": "admit",
       "preconditions": [
-        "admission predicates pass against exact proposal state"
+        "pre_state_digest",
+        "admission_predicates"
       ],
-      "commit": "preserve RECORDED; add ADMITTED event",
-      "refusal_codes": [
-        "ADMISSION_REFUSED"
+      "commit": "ADMITTED",
+      "refusals": [
+        "ADMISSION_REFUSED",
+        "STALE_STATE"
       ],
-      "reasoned_refusal_admitted": false
+      "requires_exact_pre_state": true,
+      "effect_class": "RECORD_LOCAL"
     },
-    "ratify": {
+    {
+      "transition": "ratify",
       "preconditions": [
-        "proposal admitted",
-        "live matching authority grant"
+        "pre_state_digest",
+        "authority_grant_id"
       ],
-      "commit": "preserve history; add RATIFIED event",
-      "refusal_codes": [
+      "commit": "RATIFIED",
+      "refusals": [
         "AUTHORITY_REFUSED",
         "STALE_STATE"
       ],
-      "reasoned_refusal_admitted": false
+      "requires_exact_pre_state": true,
+      "requires_authority_type": "JUDGEMENT",
+      "effect_class": "RECORD_LOCAL"
     },
-    "attest": {
+    {
+      "transition": "attest",
       "preconditions": [
-        "ratified executable claim",
-        "declared validator and exact inputs"
+        "ratified_claim_id",
+        "validator_id",
+        "input_digests"
       ],
-      "commit": "emit one attestation outcome",
-      "refusal_codes": [
+      "commit": "COMMITTED",
+      "refusals": [
         "VALIDATOR_UNDECLARED"
       ],
-      "reasoned_refusal_admitted": false
+      "effect_class": "RESOURCE_CONSUMPTION"
     },
-    "make_effective": {
+    {
+      "transition": "make_effective",
       "preconditions": [
-        "ratified",
-        "required attestation policy satisfied",
-        "no current counter"
+        "ratified_claim_id",
+        "attestation_policy"
       ],
-      "commit": "add EFFECTIVE event",
-      "refusal_codes": [
+      "commit": "EFFECTIVE",
+      "refusals": [
         "DISSENTED",
         "UNATTESTABLE",
         "POLICY_REFUSED"
       ],
-      "reasoned_refusal_admitted": false
+      "effect_class": "RECORD_LOCAL"
     },
-    "begin_run": {
+    {
+      "transition": "begin_run",
       "preconditions": [
-        "complete plan",
-        "capability, budget, input, and effect gates pass"
+        "operation_plan_id",
+        "capability_gate",
+        "budget_gate",
+        "input_state_digest"
       ],
-      "commit": "emit ATTEMPTED; issue lease if delegated",
-      "refusal_codes": [],
-      "reasoned_refusal_admitted": true
+      "commit": "ATTEMPTED",
+      "refusals": [
+        "AUTHORITY_REFUSED",
+        "EFFECT_CLASS_REFUSED",
+        "MISSING_PRECONDITION"
+      ],
+      "issues_lease": true,
+      "effect_class": "RESOURCE_CONSUMPTION"
     },
-    "report_run": {
+    {
+      "transition": "report_run",
       "preconditions": [
-        "current lease and fence",
-        "declared output records"
+        "lease_fence",
+        "lease_expires_at",
+        "worker_id",
+        "output_record_addresses"
       ],
-      "commit": "store executor report; do not settle",
-      "refusal_codes": [
+      "commit": "ATTEMPTED",
+      "refusals": [
         "STALE_LEASE"
       ],
-      "reasoned_refusal_admitted": false
+      "requires_current_lease": true,
+      "settles": false,
+      "note": "Executor completion is a report, not settlement.",
+      "effect_class": "RECORD_LOCAL"
     },
-    "observe_run": {
+    {
+      "transition": "observe_run",
       "preconditions": [
-        "independent observer relation",
-        "expected predicates declared"
+        "run_id",
+        "observer_id",
+        "observer_relation",
+        "predicate_results"
       ],
-      "commit": "emit observation",
-      "refusal_codes": [
+      "commit": "REPORTED",
+      "refusals": [
         "OBSERVER_NOT_INDEPENDENT"
       ],
-      "reasoned_refusal_admitted": false
+      "requires_independent_observer": true,
+      "effect_class": "RECORD_LOCAL"
     },
-    "settle_run": {
+    {
+      "transition": "settle_run",
       "preconditions": [
-        "current input state",
-        "satisfactory observation"
+        "run_id",
+        "input_state_digest",
+        "observation_id"
       ],
-      "commit": "COMMITTED, FAILED, or UNRESOLVED receipt",
-      "refusal_codes": [
-        "STALE_STATE"
+      "commit": "COMMITTED",
+      "refusals": [
+        "STALE_STATE",
+        "OBSERVATION_MISSING"
       ],
-      "reasoned_refusal_admitted": false
+      "requires_exact_pre_state": true,
+      "requires_observation": true,
+      "settles": true,
+      "terminal_outcomes": [
+        "COMMITTED",
+        "FAILED",
+        "UNRESOLVED"
+      ],
+      "effect_class": "RECORD_LOCAL"
     },
-    "retract": {
+    {
+      "transition": "retract",
       "preconditions": [
-        "live matching retraction authority",
-        "target and effect known"
+        "target_record_address",
+        "authority_grant_id",
+        "known_effect"
       ],
-      "commit": "emit counter-record and COUNTERED receipt",
-      "refusal_codes": [
+      "commit": "COUNTERED",
+      "refusals": [
         "AUTHORITY_REFUSED"
       ],
-      "reasoned_refusal_admitted": false
+      "requires_authority_type": "JUDGEMENT",
+      "effect_class": "RECORD_LOCAL"
     },
-    "cross": {
+    {
+      "transition": "cross",
       "preconditions": [
-        "declared source, reader/projection, omissions, authority, destination"
+        "source_address",
+        "reader_declaration",
+        "omissions",
+        "authority_grant_id",
+        "destination_address"
       ],
-      "commit": "destination record and receipt",
-      "refusal_codes": [],
-      "reasoned_refusal_admitted": true
+      "commit": "COMMITTED",
+      "refusals": [
+        "READER_UNDECLARED",
+        "AUTHORITY_REFUSED"
+      ],
+      "effect_class": "RECORD_LOCAL"
     },
-    "invoke_model": {
+    {
+      "transition": "invoke_model",
       "preconditions": [
-        "declared binding, operation plan, authority, input projection, data boundary, usage and cost meters"
+        "model_binding_id",
+        "operation_plan_id",
+        "authority_grant_id",
+        "input_projection",
+        "data_boundary",
+        "usage_meter"
       ],
-      "commit": "proposal, recording, report, or observation plus receipt",
-      "refusal_codes": [
+      "commit": "ATTEMPTED",
+      "refusals": [
         "MODEL_UNAVAILABLE",
         "MODEL_INCOMPATIBLE",
-        "DATA_BOUNDARY_REFUSED"
+        "DATA_BOUNDARY_REFUSED",
+        "AUTHORITY_REFUSED"
       ],
-      "reasoned_refusal_admitted": true
+      "effect_class": "RESOURCE_CONSUMPTION"
     }
-  }
+  ]
 }

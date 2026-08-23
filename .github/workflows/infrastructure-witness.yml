@@ -1,0 +1,54 @@
+name: infrastructure witness candidate
+
+on:
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: Exact commit to witness
+        required: true
+        type: string
+      witness_id:
+        description: Stable identity of the fresh Red witness
+        required: true
+        type: string
+      declare_independent:
+        description: I did not author the implementation under review
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  witness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      EXPECTED_COMMIT: ${{ inputs.commit }}
+      WITNESS_ID: ${{ inputs.witness_id }}
+      DECLARE_INDEPENDENT: ${{ inputs.declare_independent }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.commit }}
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Require an explicit independence declaration
+        run: test "$DECLARE_INDEPENDENT" = "true"
+      - name: Run clean-room infrastructure witness
+        run: >-
+          python scripts/witness_infrastructure.py
+          --witness-id "$WITNESS_ID"
+          --expected-commit "$EXPECTED_COMMIT"
+          --declare-independent
+          --output "$RUNNER_TEMP/soveraeign-infrastructure-witness.json"
+      - name: Retain candidate receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: infrastructure-witness-${{ inputs.commit }}
+          path: ${{ runner.temp }}/soveraeign-infrastructure-witness.json
+          if-no-files-found: error
+          retention-days: 30

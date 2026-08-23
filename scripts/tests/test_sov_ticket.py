@@ -18,7 +18,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from sovticket import queue as queuemod  # noqa: E402
 from sovticket import transitions as transmod  # noqa: E402
-from sovticket.jsonschema import validate  # noqa: E402
+from sovkernel.jsonschema import validate  # noqa: E402
 from sovticket.yamlblock import TicketBlockError, load_ticket, parse_block  # noqa: E402
 
 BODY = """# Title — bounded outcome

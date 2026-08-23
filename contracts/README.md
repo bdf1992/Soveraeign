@@ -17,6 +17,7 @@ or deployment topology.
 | `event-envelope.schema.json` | records who decided or acted, why, exact inputs and outputs, authority, effects, and outcome |
 | `kernel-transitions.json` | the transitions compiled from the SPEC.md transition contract, with their preconditions and refusals |
 | `transition.schema.json` | a request to perform one declared transition, with the pre-state, lease, observation, and authority it is checked against |
+| `kernel-parity.json` | the declared correspondence between each participant's own refusal vocabulary and the kernel refusal it realizes |
 
 A schema-valid record can still be semantically unfit. Conformance fixtures and
 independent observation remain necessary.

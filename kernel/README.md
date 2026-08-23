@@ -78,10 +78,13 @@ journal alone and names every visible defect in three readings:
 - **ladder and provenance** — walking the journal in order, every committed
   receipt must be admitted by what precedes it: no rung skipped, no
   `EFFECTIVE` without a `REPRODUCED` attestation over exact inputs on record
-  and no counter on record, no attestation over an unratified claim, no
-  settlement without an observation on record, no run transition over a run
-  that is not on record; and every record, attestation, run, observation, and
-  counter body must be named by the receipt of the transition that emits it;
+  and no counter on record, no attestation over an unratified claim, no run
+  transition over a run that is not on record, no report by an actor who is
+  not the run's worker, no observation by the executor or by the executor's
+  report, and a settlement outcome that matches what the observations on
+  record derive; provenance runs both ways — every emitted body must be named
+  by the receipt of its transition, and every committed receipt must name a
+  body of the right kind, on record before it, about the same target;
 - **projections** — every projected grant, attestation, observation, counter,
   record, and run must equal its journaled body on every immutable field, and
   the fields transitions mutate (standing, effectiveness, counters, run
@@ -117,9 +120,10 @@ through the independent validator in `scripts/sovticket/jsonschema.py`, probes
 the audit with forged commits and edited projections, and fails if any declared
 case or reason code was not exercised or any transition lacks its pair.
 
-Witnessed three times: `reports/2026-08-23-kernel-witness.md` records the
-independent observations over commits `681861e`, `d534dbd`, and `1485439`, the
-defeats each found, and which of them the following commit closed.
+Witnessed four times: `reports/2026-08-23-kernel-witness.md` records the
+independent observations over commits `681861e`, `d534dbd`, `1485439`, and
+`55e7754`, the defeats each found, and which of them the following commit
+closed. The last closing commit has not been witnessed.
 
 ## Known gaps
 

@@ -212,7 +212,7 @@ class JournalAudit(KernelCase):
         from soveraeign_kernel import Run
         run = Run("urn:soveraeign:run:forged", "urn:soveraeign:operation:derive-1", MODEL, None,
                   "sha256:v", None, None, "t", "RECORD_LOCAL", [])
-        self.kernel.journal.append("PLAN", plan())
+        self.kernel.journal.append("PLAN", {"run_id": run.run_id, **plan()})
         self.kernel.journal.append("RUN", run.to_dict())
         self.forge("begin_run", "urn:soveraeign:version:1", ["g-judgement"], actor=MODEL,
                    emitted=[run.run_id], operation_id=run.operation_id)
@@ -237,6 +237,56 @@ class JournalAudit(KernelCase):
         defects = self.kernel.audit()
         self.assertIn("attestation a-raw: no attest receipt emits it", defects)
         self.assertIn("observation o-raw: no observe_run receipt emits it", defects)
+
+    def test_operation_retry_with_another_plan_audits_clean(self) -> None:
+        grant(self.kernel, "g-ratify-cap", BDO, "VERIFICATION", "ratify")
+        self.begun()
+        receipt = self.kernel.begin_run(plan(required_capabilities=["ratify"]), actor_id=BDO,
+                                        actor_kind="HUMAN", grant_id="g-ratify-cap")
+        self.assertEqual(receipt["outcome"], "COMMITTED")
+        self.assertEqual(self.kernel.audit(), [], "a retry keeps one operation identity")
+
+    def test_forged_observation_by_the_worker_is_exposed(self) -> None:
+        run_id = self.begun()
+        self.kernel.journal.append("OBSERVATION", {
+            "observation_id": "o-worker", "run_id": run_id, "observer_id": WORKER,
+            "observer_relation": "EXECUTOR", "observed_state_addresses": [],
+            "observed_state_digests": [],
+            "predicate_results": [{"predicate": "derivative_present", "result": True}],
+            "observed_at": "t"})
+        self.forge("observe_run", run_id, emitted=["o-worker"])
+        defects = self.kernel.audit()
+        self.assertTrue(any("names an observation by the executor" in d for d in defects),
+                        defects)
+
+    def test_forged_settlement_contradicting_observations_is_exposed(self) -> None:
+        run_id = self.begun()
+        self.observed(run_id, result=False)
+        self.forge("settle_run", run_id)
+        defects = self.kernel.audit()
+        self.assertTrue(any("outcome COMMITTED contradicts the observations on record (FAILED)"
+                            in d for d in defects), defects)
+
+    def test_countered_receipt_without_counter_body_is_exposed(self) -> None:
+        record_id = self.ratified()
+        forged = self.kernel.attempt("retract", actor_id=BDO, actor_kind="HUMAN",
+                                     inputs=[{"address": record_id, "digest": "sha256:x"}],
+                                     grant_ids=["g-retract"])
+        from soveraeign_kernel.audit import REQUIRED_PASSING
+        for predicate in REQUIRED_PASSING["retract"]:
+            forged.check(predicate, True)
+        forged.commit(outcome="COUNTERED", phase="COUNTERED", reason="no counter body",
+                      emitted=["urn:soveraeign:counter:phantom"])
+        self.kernel.records[record_id].effective = False
+        defects = self.kernel.audit()
+        self.assertTrue(any("no COUNTER body is on record" in d for d in defects), defects)
+
+    def test_report_by_a_non_worker_is_exposed(self) -> None:
+        run_id = self.begun()
+        self.forge("report_run", run_id, actor="urn:soveraeign:actor:intruder")
+        defects = self.kernel.audit()
+        self.assertTrue(any("by an actor who is not the run's worker" in d for d in defects),
+                        defects)
 
     def test_gate_and_receipt_share_one_clock_reading(self) -> None:
         receipt = self.kernel.ratify(self.admitted(), actor_id=BDO, actor_kind="HUMAN",

@@ -1,6 +1,6 @@
 # Shared kernel witness, 2026-08-23
 
-Status: `WITNESSED THREE TIMES AT BUILT · NOT RATIFIED`
+Status: `WITNESSED FOUR TIMES AT BUILT · NOT RATIFIED`
 
 Issue #6, branch `feat/6-shared-kernel-transitions`, draft PR #61. The builder
 was the interactive Claude session; the witness was a separately launched
@@ -87,14 +87,33 @@ sentence with eight further paths:
 
 Standing supported by the third pass: `OPEN -> BUILT` for the narrowed claim.
 
-## Checks after the third closing commit
+## Fourth pass, over `55e7754`
+
+The same witness re-ran H1 through H8 and the full prior probe set: all
+reproduced-closed, the ladder walk order-correct on every honest sequence it
+constructed (attested, retracted, re-attested; observed twice; non-delegated;
+resource-consuming retraction; budget and validity boundaries). It found:
+
+| # | Finding | Closed in the next commit |
+| --- | --- | --- |
+| FP10 | **false positive**: two honest `begin_run` calls reusing one `operation_id` with different plans; the replay read the last plan for both | yes: the plan is journaled keyed to its run and replayed from the receipt's emitted run id |
+| H11 | raw observation by the worker, named by a forged `observe_run` receipt, settled a run | yes: the named observation is replayed against the `RUN` body |
+| H13 | forged `settle_run COMMITTED` over an observation with `result: false` on record | yes: the settlement outcome is derived from the observations on record and compared |
+| H14 | forged `COUNTERED` receipt naming a counter id with no `COUNTER` body cleared effectiveness | yes: provenance runs both ways |
+| H15 | forged `report_run` by an actor who is not the run's worker | yes: replayed against the `RUN` body |
+| H12 | forged `attest` over a raw attestation with an empty validator version | yes: named |
+| — | `report_run` read the clock a second time for lease expiry | yes: one reading |
+
+Standing supported by the fourth pass: `OPEN -> BUILT` for the narrowed claim.
+
+## Checks after the fourth closing commit
 
 ```text
-python scripts/verify.py    PASS, under the 3 s budget; kernel suite 75 tests OK
+python scripts/verify.py    PASS, under the 3 s budget; kernel suite 80 tests OK
 python scripts/lint.py      PASS; every kernel module under 300 lines
 ```
 
 Standing after this file: still `BUILT`. Each closing commit was written by
-the builder, and a build cannot witness itself. The next witness step is the
-same command set over the new head, with the three tables above as the
-checklist.
+the builder, and a build cannot witness itself. The fourth closing commit has
+not been witnessed at all; the next witness step is the same command set over
+it, with the four tables above as the checklist.

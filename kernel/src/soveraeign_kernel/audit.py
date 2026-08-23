@@ -97,7 +97,7 @@ def audit_receipts(journal: Journal) -> list[str]:
 
 
 def _requirement(transition: str, receipt: dict[str, Any], records: dict[str, Any],
-                 plans: dict[str, Any], events: dict[str, Any]) -> dict[str, str] | None:
+                 plans: dict[str, Any]) -> dict[str, str] | None:
     """What the grant had to match, from journaled bodies: type, capability, scope."""
     if transition in ("ratify", "retract"):
         record = records.get(rebuild.target_of(receipt) or "")
@@ -105,8 +105,8 @@ def _requirement(transition: str, receipt: dict[str, Any], records: dict[str, An
             return None
         return {"authority_type": record["required_authority_type"], "capability": transition,
                 "scope": record["scope"]}
-    operation_id = (events.get(receipt.get("event_id")) or {}).get("operation_id")
-    plan = plans.get(operation_id)
+    emitted = receipt.get("emitted_record_addresses") or [None]
+    plan = plans.get(emitted[0])  # the plan journaled for the run this receipt opened
     if plan is None:
         return None
     capabilities = plan.get("required_capabilities") or []
@@ -120,8 +120,7 @@ def audit_authority(journal: Journal) -> list[str]:
     defects: list[str] = []
     grants = {body["grant_id"]: body for body in journal.bodies("GRANT")}
     records = {body["record_id"]: body for body in journal.bodies("RECORD")}
-    plans = {body.get("operation_id"): body for body in journal.bodies("PLAN")}
-    events = {body.get("event_id"): body for body in journal.bodies("EVENT")}
+    plans = {body.get("run_id"): body for body in journal.bodies("PLAN")}
     uses: dict[str, int] = {}
     for receipt in journal.bodies("RECEIPT"):
         transition, receipt_id = receipt.get("event_type"), receipt.get("receipt_id")
@@ -131,7 +130,7 @@ def audit_authority(journal: Journal) -> list[str]:
             uses[grant_id] = uses.get(grant_id, 0) + 1
         if transition not in REPLAYED:
             continue
-        required = _requirement(transition, receipt, records, plans, events)
+        required = _requirement(transition, receipt, records, plans)
         if required is None:
             defects.append(f"receipt {receipt_id}: {transition} has no journaled record or plan "
                            "to replay against")

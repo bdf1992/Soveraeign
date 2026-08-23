@@ -78,8 +78,18 @@ observation), and a body appended raw needed no receipt. The next commit walks
 the journal in order and checks each committed receipt against what precedes
 it, requires every emitted body to be named by its transition's receipt,
 journals the plan so `begin_run` replays like `ratify`, and reads the clock
-once per attempt. Standing after three passes: `BUILT`, because each closing
-commit is the builder's. The remaining findings are queued below.
+once per attempt.
+
+A fourth pass over `55e7754` reproduced every closure and found the first
+false positive (a retried operation with a different plan tripped the
+`begin_run` replay, because plans were keyed by operation id) and four
+forgeries the journal already contradicted (an observation by the worker, a
+settlement contradicting the observations on record, a `COUNTERED` receipt
+naming no counter body, a report by a non-worker). The next commit keys the
+plan to its run, replays what the bodies derive, and runs provenance both
+ways. That commit is un-witnessed. Standing after four passes: `BUILT`,
+because each closing commit is the builder's. The remaining findings are
+queued below.
 
 ## Judgement queued for Bdo
 
@@ -104,3 +114,6 @@ commit is the builder's. The remaining findings are queued below.
    the only exposure left and the README limit sentence should say so.
 10. Should grants carry a receipt, so a raw `GRANT` append is exposed like any
     other body? This is O3's question seen from the journal.
+11. Should a reused `operation_id` be refused at `begin_run`, or is reuse the
+    retry identity `ENGINEERING.md` describes? The reference admits it and
+    keys the plan to the run.

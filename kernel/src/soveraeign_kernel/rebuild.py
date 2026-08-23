@@ -24,6 +24,9 @@ SETTLED = ("COMMITTED", "FAILED", "UNRESOLVED")
 RUN_MUTABLE = ("completed_at", "outcome", "emitted_record_addresses", "report",
                "observation_ids", "begin_receipt_id")
 RECORD_MUTABLE = ("standing_history", "effective", "countered_by")
+EXECUTOR_RELATIONS = ("EXECUTOR", "EXECUTOR_REPORT", "")
+BODY_KEY = {"RECORD": "record_id", "ATTESTATION": "attestation_id", "RUN": "run_id",
+            "OBSERVATION": "observation_id", "COUNTER": "counter_record_id"}
 # Which transition's committed receipt must name each emitted body kind.
 EMITTED_BY = {"RECORD": ("submit_proposal", "record_id"),
               "ATTESTATION": ("attest", "attestation_id"),
@@ -139,58 +142,102 @@ def audit_provenance(journal: Journal) -> list[str]:
 def audit_ladder(journal: Journal) -> list[str]:
     """Walk the journal in order; every committed receipt must be admitted by what precedes it."""
     defects: list[str] = []
-    records: dict[str, dict[str, Any]] = {}
+    seen: dict[str, dict[str, dict[str, Any]]] = {kind: {} for kind in BODY_KEY}
     standing: dict[str, str | None] = {}
-    attested: dict[str, list[dict[str, Any]]] = {}
-    countered: set[str] = set()
-    observed: set[str] = set()
-    runs: set[str] = set()
     for entry in journal.entries():
         kind, body = entry.get("kind"), entry.get("body") or {}
-        if kind == "RECORD":
-            records[body.get("record_id")] = body
-        elif kind == "ATTESTATION":
-            attested.setdefault(body.get("claim_id"), []).append(body)
-        elif kind == "COUNTER":
-            countered.add(body.get("target_record_id"))
-        elif kind == "OBSERVATION":
-            observed.add(body.get("run_id"))
-        elif kind == "RUN":
-            runs.add(body.get("run_id"))
+        if kind in BODY_KEY:
+            seen[kind][body.get(BODY_KEY[kind])] = body
         elif kind == "RECEIPT":
-            defects.extend(_admits(body, standing, records, attested, countered, observed, runs))
+            defects.extend(_admits(body, standing, seen))
     return defects
 
 
+def _emitted(receipt: dict[str, Any], kind: str, seen: dict[str, dict[str, dict[str, Any]]],
+             where: str) -> tuple[list[dict[str, Any]], list[str]]:
+    """The bodies a committed receipt names must be on record before it, of the right kind."""
+    bodies, defects = [], []
+    for address in receipt.get("emitted_record_addresses", []):
+        body = seen[kind].get(address)
+        if body is None:
+            defects.append(f"{where} names {address} but no {kind} body is on record")
+        else:
+            bodies.append(body)
+    if not bodies and not defects:
+        defects.append(f"{where} emits no {kind} body")
+    return bodies, defects
+
+
 def _admits(receipt: dict[str, Any], standing: dict[str, str | None],
-            records: dict[str, dict[str, Any]], attested: dict[str, list[dict[str, Any]]],
-            countered: set[str], observed: set[str], runs: set[str]) -> list[str]:
+            seen: dict[str, dict[str, dict[str, Any]]]) -> list[str]:
     transition, target = receipt.get("event_type"), target_of(receipt)
-    receipt_id, outcome = receipt.get("receipt_id"), receipt.get("outcome")
-    if not committed(receipt) and not (transition == "settle_run" and outcome in SETTLED):
+    where = f"receipt {receipt.get('receipt_id')}: {transition}"
+    settled = transition == "settle_run" and receipt.get("outcome") in SETTLED
+    if not committed(receipt) and not settled:
         return []
-    where = f"receipt {receipt_id}: {transition}"
-    defects: list[str] = []
+    records, runs = seen["RECORD"], seen["RUN"]
     if transition in STANDING_OF:
-        if standing.get(target) != PRIOR_RUNG[transition]:
+        return _admits_standing(receipt, standing, seen, where)
+    if transition in ("attest", "retract") and target not in records:
+        return [f"{where} over a record that is not on record"]
+    if transition in ("report_run", "observe_run", "settle_run") and target not in runs:
+        return [f"{where} over a run that is not on record"]
+    defects: list[str] = []
+    if transition == "attest":
+        if standing.get(target) not in ("RATIFIED", "EFFECTIVE"):
             defects.append(f"{where} over a record whose journaled standing is "
-                           f"{standing.get(target)!r}, not {PRIOR_RUNG[transition]!r}")
-        if transition == "make_effective":
-            digests = (records.get(target) or {}).get("input_digests")
-            exact = [a for a in attested.get(target, []) if a.get("input_digests") == digests]
-            outcomes = {a.get("outcome") for a in exact}
-            if "REPRODUCED" not in outcomes or "DISSENTED" in outcomes:
-                defects.append(f"{where} without a REPRODUCED attestation over exact inputs")
-            if target in countered:
-                defects.append(f"{where} over a countered record")
-        standing[target] = STANDING_OF[transition]
-    elif transition in ("report_run", "observe_run", "settle_run") and target not in runs:
-        defects.append(f"{where} over a run that is not on record")
-    elif transition == "settle_run" and target not in observed:
-        defects.append(f"{where} with no observation on record")
-    elif transition in ("attest", "retract") and target not in records:
-        defects.append(f"{where} over a record that is not on record")
-    elif transition == "attest" and standing.get(target) not in ("RATIFIED", "EFFECTIVE"):
+                           f"{standing.get(target)!r}, not ratified")
+        bodies, named = _emitted(receipt, "ATTESTATION", seen, where)
+        defects += named + [f"{where} names an attestation of another claim or no validator"
+                            for a in bodies
+                            if a.get("claim_id") != target or not a.get("validator_version")]
+    elif transition == "retract":
+        bodies, named = _emitted(receipt, "COUNTER", seen, where)
+        defects += named + [f"{where} names a counter of another record"
+                            for c in bodies if c.get("target_record_id") != target]
+    elif transition == "begin_run":
+        defects += _emitted(receipt, "RUN", seen, where)[1]
+    elif transition == "report_run":
+        if receipt.get("actor_id") != runs[target].get("worker_id"):
+            defects.append(f"{where} by an actor who is not the run's worker")
+    elif transition == "observe_run":
+        bodies, named = _emitted(receipt, "OBSERVATION", seen, where)
+        run = runs[target]
+        defects += named + [f"{where} names an observation by the executor"
+                            for o in bodies
+                            if o.get("run_id") != target
+                            or o.get("observer_id") in (run.get("worker_id"), run.get("actor_id"))
+                            or o.get("observer_relation") in EXECUTOR_RELATIONS]
+    elif settled:
+        results = [item.get("result") for o in seen["OBSERVATION"].values()
+                   if o.get("run_id") == target for item in o.get("predicate_results", [])]
+        if not results:
+            defects.append(f"{where} with no observation on record")
+        else:
+            derived = ("UNRESOLVED" if any(r is None for r in results)
+                       else "COMMITTED" if all(results) else "FAILED")
+            if receipt.get("outcome") != derived:
+                defects.append(f"{where} outcome {receipt.get('outcome')} contradicts the "
+                               f"observations on record ({derived})")
+    return defects
+
+
+def _admits_standing(receipt: dict[str, Any], standing: dict[str, str | None],
+                     seen: dict[str, dict[str, dict[str, Any]]], where: str) -> list[str]:
+    transition, target = receipt.get("event_type"), target_of(receipt)
+    defects: list[str] = []
+    if standing.get(target) != PRIOR_RUNG[transition]:
         defects.append(f"{where} over a record whose journaled standing is "
-                       f"{standing.get(target)!r}, not ratified")
+                       f"{standing.get(target)!r}, not {PRIOR_RUNG[transition]!r}")
+    if transition == "submit_proposal":
+        defects += _emitted(receipt, "RECORD", seen, where)[1]
+    if transition == "make_effective":
+        digests = (seen["RECORD"].get(target) or {}).get("input_digests")
+        outcomes = {a.get("outcome") for a in seen["ATTESTATION"].values()
+                    if a.get("claim_id") == target and a.get("input_digests") == digests}
+        if "REPRODUCED" not in outcomes or "DISSENTED" in outcomes:
+            defects.append(f"{where} without a REPRODUCED attestation over exact inputs")
+        if any(c.get("target_record_id") == target for c in seen["COUNTER"].values()):
+            defects.append(f"{where} over a countered record")
+    standing[target] = STANDING_OF[transition]
     return defects

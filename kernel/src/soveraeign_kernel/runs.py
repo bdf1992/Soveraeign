@@ -65,7 +65,9 @@ class RunTransitions(KernelBase):
             expires = self.now() + timedelta(seconds=lease_seconds or 60)
             run.lease_expires_at = expires.isoformat().replace("+00:00", "Z")
         self.runs[run.run_id] = run
-        self.journal.append("PLAN", dict(plan))  # so the begin_run gate can be replayed
+        # Keyed to the run, not the operation: a retry reuses one operation identity
+        # (ENGINEERING.md, Composing larger motion) and must replay against its own plan.
+        self.journal.append("PLAN", {"run_id": run.run_id, **plan})
         self.journal.append("RUN", run.to_dict())
         receipt = attempt.commit(event_outcome="ATTEMPTED", phase="ATTEMPTED",
                                  reason="plan complete; gates passed", emitted=[run.run_id])
@@ -85,7 +87,8 @@ class RunTransitions(KernelBase):
             return attempt.refuse(reasons.STANDING_REFUSED, f"run is {run.outcome}")
         current = run.lease_fence is not None and lease_fence == run.lease_fence
         attempt.check("lease_current", current, presented=lease_fence)
-        unexpired = bool(run.lease_expires_at) and self.timestamp() <= run.lease_expires_at
+        opened = attempt.opened_at.isoformat().replace("+00:00", "Z")
+        unexpired = bool(run.lease_expires_at) and opened <= run.lease_expires_at
         attempt.check("lease_unexpired", unexpired, expires_at=run.lease_expires_at)
         if not (current and unexpired and attempt.check("worker_matches",
                                                          run.worker_id == worker_id)):

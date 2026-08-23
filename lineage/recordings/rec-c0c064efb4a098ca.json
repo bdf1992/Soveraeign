@@ -1,0 +1,15 @@
+{
+  "configuration_digest": "sha256:14beaf73530bd610e0ce452c80a2d1227d5efafd80bedee3642a81b9c85e1835",
+  "fidelity": "EXACT",
+  "omissions": [],
+  "payload_address": "cas:sha256/f3a4104d22f1a18bbe157f52a10baed686557e39dd5cb2f34aa12348264f6b48",
+  "payload_digest": "sha256:f3a4104d22f1a18bbe157f52a10baed686557e39dd5cb2f34aa12348264f6b48",
+  "produced_at": "2026-08-23T20:19:24+00:00",
+  "produced_by": "asset-history-driver",
+  "reader_id": "soveraeign-asset-history-reader",
+  "reader_version": "1",
+  "recording_id": "rec-c0c064efb4a098ca",
+  "source_digest": "sha256:f3a4104d22f1a18bbe157f52a10baed686557e39dd5cb2f34aa12348264f6b48",
+  "source_id": "git-commit:062f04875557c67fa85b472d9c7fd0c50d298a13",
+  "standing": "RECORDED"
+}

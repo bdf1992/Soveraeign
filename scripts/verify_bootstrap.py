@@ -6,10 +6,18 @@ from __future__ import annotations
 from hashlib import sha256
 from pathlib import Path
 import json
+import re
 import sys
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
+# Shapes that must never be committed inside lineage/SOURCES.lock. Built
+# without literal user-path substrings so lint never matches this file itself.
+_BACKSLASH = chr(92)
+EMAIL_SHAPE = re.compile("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+[.][A-Za-z]{2,}")
+HOST_PATH_SHAPE = re.compile(
+    "[/" + _BACKSLASH * 2 + "](?:Users|home)[/" + _BACKSLASH * 2 + "]")
 
 REQUIRED = (
     "README.md",
@@ -124,13 +132,42 @@ def verify_engineering_framework() -> int:
     return count
 
 
+def verify_json_source_lock(text: str) -> int:
+    """Structural check of the JSON source lock (soveraeign-sources-lock/1):
+    every entry carries the SPEC `Source` fields and a sha256 address, and no
+    email address or absolute host path is committed. lint.py skips lineage/,
+    so the sensitive-shape check lives here, independent of the reader that
+    wrote the lock."""
+    try:
+        document = json.loads(text)
+    except json.JSONDecodeError as error:
+        fail(f"source lock is not valid JSON: {error}")
+    sources = document.get("sources")
+    if not isinstance(sources, list) or not sources:
+        fail("source lock contains no entries")
+    required = ("source_id", "source_address", "payload_digest", "payload_size",
+                "captured_at", "captured_by")
+    for entry in sources:
+        for field in required:
+            if entry.get(field) in (None, ""):
+                fail(f"source lock entry lacks {field}")
+        if not str(entry["payload_digest"]).startswith("sha256:"):
+            fail(f"source {entry['source_id']} is not sha256-addressed")
+    if EMAIL_SHAPE.search(text) or HOST_PATH_SHAPE.search(text):
+        fail("source lock leaks an email address or absolute host path")
+    return len(sources)
+
+
 def verify_sources() -> int:
     lock = ROOT / "lineage" / "SOURCES.lock"
     if not lock.is_file():
         print("SKIP: historical evidence archive is not present in this checkout")
         return 0
+    text = lock.read_text(encoding="utf-8")
+    if text.lstrip().startswith("{"):
+        return verify_json_source_lock(text)
     count = 0
-    for number, raw in enumerate(lock.read_text(encoding="utf-8").splitlines(), 1):
+    for number, raw in enumerate(text.splitlines(), 1):
         line = raw.strip()
         if not line or line.startswith("#"):
             continue

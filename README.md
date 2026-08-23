@@ -133,7 +133,8 @@ The founding set contains:
 - `CLASSIFICATION.md` — the proposed controlled vocabulary and identity tests;
 - `AI-NATIVE.md` — the falsifiable per-surface standard and verdict derivation;
 - `BYOM.md` — the personal-local ownership and model-portability pattern;
-- `ENGINEERING.md` — the minimal reference stack and composable kernel primitives;\n- `infrastructure/` — provisional local custody plus customer-owned Kubernetes topology manifests and renderers;
+- `ENGINEERING.md` — the minimal reference stack and composable kernel primitives;
+- `infrastructure/` — provisional local custody plus customer-owned Kubernetes topology manifests and renderers;
 - `services/asset/` — the Asset Service charter, contract, reference participant, and tests;
 - `services/proofing/` — the proposed sibling review-and-approval service boundary;
 - `CONTRACT.md` — invariants implementations must preserve;

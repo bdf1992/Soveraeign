@@ -36,7 +36,8 @@ loss of optional providers, and can be replaced behind an existing contract.
 | Operational record | Append-preserving events and receipts in transactional SQLite | SQLite does not define service or kernel semantics |
 | Immutable payload custody | Filesystem content-addressed store using SHA-256 | Payload address differs from asset and source identity |
 | Machine contracts | JSON Schema Draft 2020-12 | Schema validity is not semantic fitness |
-| Human control files | Markdown and small YAML fixtures | YAML is not a parallel runtime contract |\n| Portable infrastructure | Versioned custody/topology manifests plus dependency-free planners and renderers | Local apply only; Kubernetes is render-only, customer-owned, and provider-neutral |
+| Human control files | Markdown and small YAML fixtures | YAML is not a parallel runtime contract |
+| Portable infrastructure | Versioned custody/topology manifests plus dependency-free planners and renderers | Local apply only; Kubernetes is render-only, customer-owned, and provider-neutral |
 | Local surface | Python API and CLI | Human and model bindings use the same kernel operations |
 | Tests and lint | `unittest` and dependency-free repository scripts | Local, deterministic, network-free, under three seconds |
 | Search and graph | Rebuildable local projections | External systems integrate through adapters later |

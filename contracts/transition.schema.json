@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/bdf1992/Soveraeign/blob/main/contracts/transition.schema.json",
+  "title": "Soveraeign kernel transition request v1",
+  "description": "A request to perform one transition declared in contracts/kernel-transitions.json. The request states the actor, the transition, the exact pre-state it believes it is acting on, and the evidence its preconditions require. It carries no authority: a well-formed request is still refused when the kernel's checks do not hold.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "request_schema",
+    "transition",
+    "actor_id",
+    "actor_kind",
+    "effect_class",
+    "reason",
+    "declared"
+  ],
+  "properties": {
+    "request_schema": {
+      "const": "soveraeign-kernel-transition/v1"
+    },
+    "transition": {
+      "description": "Transition id declared in contracts/kernel-transitions.json.",
+      "type": "string",
+      "pattern": "^[a-z][a-z_]+$"
+    },
+    "actor_id": {
+      "description": "Attributable identity of the requesting actor. Never a credential.",
+      "type": "string",
+      "minLength": 1
+    },
+    "actor_kind": {
+      "enum": [
+        "HUMAN",
+        "MODEL",
+        "WORKER",
+        "SYSTEM"
+      ]
+    },
+    "effect_class": {
+      "enum": [
+        "RECORD_LOCAL",
+        "RESOURCE_CONSUMPTION",
+        "EXTERNAL_WORLD"
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1
+    },
+    "requested_outcome": {
+      "description": "Terminal outcome the caller asks the kernel to record. A transition the table marks as never settling may not request one.",
+      "enum": [
+        "ATTEMPTED",
+        "COMMITTED",
+        "FAILED",
+        "REFUSED",
+        "COUNTERED",
+        "UNRESOLVED"
+      ]
+    },
+    "declared": {
+      "description": "The precondition keys the transition requires, with their declared values. A key the table requires and this object omits or leaves empty is MISSING_PRECONDITION.",
+      "type": "object",
+      "minProperties": 1
+    },
+    "pre_state_digest": {
+      "description": "The state the caller believes it is acting on.",
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "lease": {
+      "description": "The lease the caller holds. A fencing token, not a credential.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "holder_id",
+        "fence",
+        "expires_at"
+      ],
+      "properties": {
+        "holder_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "expires_at": {
+          "type": "number"
+        }
+      }
+    },
+    "observation": {
+      "description": "The observation offered in support of settlement. An observation whose observer produced the report is not independent.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "observation_id",
+        "observer_id",
+        "satisfactory"
+      ],
+      "properties": {
+        "observation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "observer_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "observer_relation": {
+          "enum": [
+            "INDEPENDENT",
+            "SELF",
+            "DELEGATED"
+          ]
+        },
+        "satisfactory": {
+          "type": "boolean"
+        }
+      }
+    },
+    "authority": {
+      "description": "The live grant the caller is acting under. Verification authority cannot ratify a judgement claim.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "grant_id",
+        "authority_type"
+      ],
+      "properties": {
+        "grant_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "authority_type": {
+          "enum": [
+            "VERIFICATION",
+            "JUDGEMENT"
+          ]
+        }
+      }
+    }
+  }
+}

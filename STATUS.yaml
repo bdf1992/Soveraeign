@@ -18,6 +18,7 @@ sdlc_loop_status: OWNER_DIRECTED_LOOP_AND_BINDING_SKELETON_PROPOSED
 coordination_registrar_status: BUILT_SELF_TESTED_NOT_WITNESSED
 sov_operating_agent_status: OWNER_DIRECTED_CONTEXT_PROFILE_BUILT_SELF_TESTED_NOT_WITNESSED
 ticket_kind_vocabulary_status: PROPOSED_OWNER_RATIFICATION_PENDING
+kernel_transition_contract_status: PROPOSED_OWNER_RATIFICATION_PENDING
 
 authority:
   product_intent:
@@ -116,6 +117,9 @@ open_decisions:
   - id: O17
     question: Does Bdo accept Sov's exact agency envelope, context declaration, and activation gates?
     blocks: sov_live_activation
+  - id: O20
+    question: Does Bdo ratify contracts/kernel-transitions.json as the compiled statement of the SPEC.md transition contract, and accept that the ticket workflow and the Asset Service migrate onto it rather than keeping private transition rules?
+    blocks: kernel_semantics_shared
   - id: O19
     question: Does Bdo ratify verification-engagement as a fifth ticket kind, with engagement_id, a pinned target_pr and full-length target_head, and a refusal of construction identity on it?
     blocks: engagement_ticket_vocabulary

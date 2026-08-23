@@ -1,0 +1,498 @@
+{
+  "corpus_id": "soveraeign-kernel-transition-cases/v1",
+  "note": "Positive and defeating cases for contracts/kernel-transitions.json. The three defeating cases named on issue #6 - a stale pre-state settling, a successful executor report becoming an observation, and a participant settling around the kernel - are K-005, K-006 and K-007. Every refusal code the evaluator can raise has at least one case proving it actually fires. A case states the world the kernel can see in 'current'; a key omitted there is unknown rather than satisfied.",
+  "cases": [
+    {
+      "case_id": "K-001-settlement-with-an-independent-observation",
+      "expect": "PERMITTED",
+      "proves": "Settlement is permitted when the pre-state is current and an observer other than the executor found the report satisfactory.",
+      "request": {
+        "request_schema": "soveraeign-kernel-transition/v1",
+        "transition": "settle_run",
+        "actor_id": "model/controller",
+        "actor_kind": "MODEL",
+        "effect_class": "RECORD_LOCAL",
+        "reason": "declared in the fixture corpus",
+        "declared": {
+          "run_id": "run-1",
+          "input_state_digest": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+          "observation_id": "obs-1"
+        },
+        "requested_outcome": "COMMITTED",
+        "pre_state_digest": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "observation": {
+          "observation_id": "obs-1",
+          "observer_id": "model/witness-b",
+          "observer_relation": "INDEPENDENT",
+          "satisfactory": true
+        }
+      },
+      "current": {
+        "state_digest": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "lease_holder_id": "model/worker-a",
+        "lease_fence": 2,
+        "reporter_id": "model/worker-a",
+        "now": 1000
+      }
+    },
+    {
+      "case_id": "K-002-report-under-the-current-lease",
+      "expect": "PERMITTED",
+      "proves": "An executor holding the current fence may record its report.",
+      "request": {
+        "request_schema": "soveraeign-kernel-transition/v1",
+        "transition": "report_run",
+        "actor_id": "model/worker-a",
+        "actor_kind": "WORKER",
+        "effect_class": "RECORD_LOCAL",
+        "reason": "declared in the fixture corpus",
+        "declared": {
+          "lease_fence": 2,
+          "lease_expires_at": 2000,
+          "worker_id": "model/worker-a",
+          "output_record_addresses": [
+            "version-1"
+          ]
+        },
+        "requested_outcome": "ATTEMPTED",
+        "lease": {
+          "holder_id": "model/worker-a",
+          "fence": 2,
+          "expires_at": 2000
+        }
+      },
+      "current": {
+        "state_digest": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "lease_holder_id": "model/worker-a",
+        "lease_fence": 2,
+        "reporter_id": "model/worker-a",
+        "now": 1000
+      }
+    },
+    {
+      "case_id": "K-003-judgement-authority-may-ratify",
+      "expect": "PERMITTED",
+      "proves": "Ratification is permitted under a live judgement grant against the current state.",
+      "request": {
+        "request_schema": "soveraeign-kernel-transition/v1",
+        "transition": "ratify",
+        "actor_id": "Bdo",
+        "actor_kind": "HUMAN",
+        "effect_class": "RECORD_LOCAL",
+        "reason": "declared in the fixture corpus",
+        "declared": {
+          "pre_state_digest": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+          "authority_grant_id": "grant-1"
+        },
+        "pre_state_digest": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "authority": {
+          "grant_id": "grant-1",
+          "authority_type": "JUDGEMENT"
+        }
+      },
+      "current": {
+        "state_digest": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "lease_holder_id": "model/worker-a",
+        "lease_fence": 2,
+        "reporter_id": "model/worker-a",
+        "now": 1000
+      }
+    },
+    {
+      "case_id": "K-004-a-complete-plan-may-begin-a-run",
+      "expect": "PERMITTED",
+      "proves": "A run may begin when the plan, capability gate, budget gate and input state are all declared.",
+      "request": {
+        "request_schema": "soveraeign-kernel-transition/v1",
+        "transition": "begin_run",
+        "actor_id": "model/controller",
+        "actor_kind": "MODEL",
+        "effect_class": "RESOURCE_CONSUMPTION",
+        "reason": "declared in the fixture corpus",
+        "declared": {
+          "operation_plan_id": "plan-1",
+          "capability_gate": "passed",
+          "budget_gate": "passed",
+          "input_state_digest": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+        },
+        "requested_outcome": "ATTEMPTED"
+      },
+      "current": {
+        "state_digest": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "lease_holder_id": "model/worker-a",
+        "lease_fence": 2,
+        "reporter_id": "model/worker-a",
+        "now": 1000
+      }
+    },
+    {
+      "case_id": "K-005-stale-pre-state-cannot-settle",
+      "expect": "STALE_STATE",
+      "proves": "SPEC.md: a stale pre-state cannot settle. The state moved under the caller between plan and settlement. Named as a defeating case on issue #6.",
+      "request": {
+        "request_schema": "soveraeign-kernel-transition/v1",
+        "transition": "settle_run",
+        "actor_id": "model/controller",
+        "actor_kind": "MODEL",
+        "effect_class": "RECORD_LOCAL",
+        "reason": "declared in the fixture corpus",
+        "declared": {
+          "run_id": "run-1",
+          "input_state_digest": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+          "observation_id": "obs-1"
+        },
+        "requested_outcome": "COMMITTED",
+        "pre_state_digest": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "observation": {
+          "observation_id": "obs-1",
+          "observer_id": "model/witness-b",
+          "observer_relation": "INDEPENDENT",
+          "satisfactory": true
+        }
+      },
+      "current": {
+        "state_digest": "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+        "lease_holder_id": "model/worker-a",
+        "lease_fence": 2,
+        "reporter_id": "model/worker-a",
+        "now": 1000
+      }
+    },
+    {
+      "case_id": "K-006-executor-report-is-not-observation",
+      "expect": "OBSERVER_NOT_INDEPENDENT",
+      "proves": "A successful executor report offered as its own observation is refused. Named as a defeating case on issue #6.",
+      "request": {
+        "request_schema": "soveraeign-kernel-transition/v1",
+        "transition": "settle_run",
+        "actor_id": "model/worker-a",
+        "actor_kind": "WORKER",
+        "effect_class": "RECORD_LOCAL",
+        "reason": "declared in the fixture corpus",
+        "declared": {
+          "run_id": "run-1",
+          "input_state_digest": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+          "observation_id": "obs-1"
+        },
+        "requested_outcome": "COMMITTED",
+        "pre_state_digest": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "observation": {
+          "observation_id": "obs-2",
+          "observer_id": "model/worker-a",
+          "observer_relation": "SELF",
+          "satisfactory": true
+        }
+      },
+      "current": {
+        "state_digest": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "lease_holder_id": "model/worker-a",
+        "lease_fence": 2,
+        "reporter_id": "model/worker-a",
+        "now": 1000
+      }
+    },
+    {
+      "case_id": "K-007-a-report-may-not-settle-itself",
+      "expect": "STALE_LEASE",
+      "proves": "Executor completion is a report, not settlement. Asking report_run for a terminal outcome is refused, which is how a participant is stopped from settling around the kernel.",
+      "request": {
+        "request_schema": "soveraeign-kernel-transition/v1",
+        "transition": "report_run",
+        "actor_id": "model/worker-a",
+        "actor_kind": "WORKER",
+        "effect_class": "RECORD_LOCAL",
+        "reason": "declared in the fixture corpus",
+        "declared": {
+          "lease_fence": 2,
+          "lease_expires_at": 2000,
+          "worker_id": "model/worker-a",
+          "output_record_addresses": [
+            "version-1"
+          ]
+        },
+        "requested_outcome": "COMMITTED",
+        "lease": {
+          "holder_id": "model/worker-a",
+          "fence": 2,
+          "expires_at": 2000
+        }
+      },
+      "current": {
+        "state_digest": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "lease_holder_id": "model/worker-a",
+        "lease_fence": 2,
+        "reporter_id": "model/worker-a",
+        "now": 1000
+      }
+    },
+    {
+      "case_id": "K-008-a-superseded-fence-cannot-report",
+      "expect": "STALE_LEASE",
+      "proves": "The lease is a fencing token: a newer fence supersedes an older holder outright.",
+      "request": {
+        "request_schema": "soveraeign-kernel-transition/v1",
+        "transition": "report_run",
+        "actor_id": "model/worker-a",
+        "actor_kind": "WORKER",
+        "effect_class": "RECORD_LOCAL",
+        "reason": "declared in the fixture corpus",
+        "declared": {
+          "lease_fence": 2,
+          "lease_expires_at": 2000,
+          "worker_id": "model/worker-a",
+          "output_record_addresses": [
+            "version-1"
+          ]
+        },
+        "requested_outcome": "ATTEMPTED",
+        "lease": {
+          "holder_id": "model/worker-a",
+          "fence": 2,
+          "expires_at": 2000
+        }
+      },
+      "current": {
+        "state_digest": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "lease_holder_id": "model/worker-b",
+        "lease_fence": 3,
+        "reporter_id": "model/worker-a",
+        "now": 1000
+      }
+    },
+    {
+      "case_id": "K-009-an-expired-lease-cannot-report",
+      "expect": "STALE_LEASE",
+      "proves": "A lease that expired before the request was made is not a lease.",
+      "request": {
+        "request_schema": "soveraeign-kernel-transition/v1",
+        "transition": "report_run",
+        "actor_id": "model/worker-a",
+        "actor_kind": "WORKER",
+        "effect_class": "RECORD_LOCAL",
+        "reason": "declared in the fixture corpus",
+        "declared": {
+          "lease_fence": 2,
+          "lease_expires_at": 2000,
+          "worker_id": "model/worker-a",
+          "output_record_addresses": [
+            "version-1"
+          ]
+        },
+        "requested_outcome": "ATTEMPTED",
+        "lease": {
+          "holder_id": "model/worker-a",
+          "fence": 2,
+          "expires_at": 500
+        }
+      },
+      "current": {
+        "state_digest": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "lease_holder_id": "model/worker-a",
+        "lease_fence": 2,
+        "reporter_id": "model/worker-a",
+        "now": 1000
+      }
+    },
+    {
+      "case_id": "K-010-settlement-without-observation",
+      "expect": "OBSERVATION_MISSING",
+      "proves": "Settlement offered with no observation at all is refused rather than defaulted.",
+      "request": {
+        "request_schema": "soveraeign-kernel-transition/v1",
+        "transition": "settle_run",
+        "actor_id": "model/controller",
+        "actor_kind": "MODEL",
+        "effect_class": "RECORD_LOCAL",
+        "reason": "declared in the fixture corpus",
+        "declared": {
+          "run_id": "run-1",
+          "input_state_digest": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+          "observation_id": "obs-1"
+        },
+        "requested_outcome": "COMMITTED",
+        "pre_state_digest": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+      },
+      "current": {
+        "state_digest": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "lease_holder_id": "model/worker-a",
+        "lease_fence": 2,
+        "reporter_id": "model/worker-a",
+        "now": 1000
+      }
+    },
+    {
+      "case_id": "K-011-an-unsatisfactory-observation-does-not-settle",
+      "expect": "OBSERVATION_MISSING",
+      "proves": "An observation that ran and was not satisfied is not a licence to settle.",
+      "request": {
+        "request_schema": "soveraeign-kernel-transition/v1",
+        "transition": "settle_run",
+        "actor_id": "model/controller",
+        "actor_kind": "MODEL",
+        "effect_class": "RECORD_LOCAL",
+        "reason": "declared in the fixture corpus",
+        "declared": {
+          "run_id": "run-1",
+          "input_state_digest": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+          "observation_id": "obs-1"
+        },
+        "requested_outcome": "COMMITTED",
+        "pre_state_digest": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "observation": {
+          "observation_id": "obs-3",
+          "observer_id": "model/witness-b",
+          "observer_relation": "INDEPENDENT",
+          "satisfactory": false
+        }
+      },
+      "current": {
+        "state_digest": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "lease_holder_id": "model/worker-a",
+        "lease_fence": 2,
+        "reporter_id": "model/worker-a",
+        "now": 1000
+      }
+    },
+    {
+      "case_id": "K-012-verification-authority-cannot-ratify",
+      "expect": "AUTHORITY_REFUSED",
+      "proves": "CLASSIFICATION.md: verification authority cannot ratify a judgement claim.",
+      "request": {
+        "request_schema": "soveraeign-kernel-transition/v1",
+        "transition": "ratify",
+        "actor_id": "model/verifier",
+        "actor_kind": "MODEL",
+        "effect_class": "RECORD_LOCAL",
+        "reason": "declared in the fixture corpus",
+        "declared": {
+          "pre_state_digest": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+          "authority_grant_id": "grant-1"
+        },
+        "pre_state_digest": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "authority": {
+          "grant_id": "grant-9",
+          "authority_type": "VERIFICATION"
+        }
+      },
+      "current": {
+        "state_digest": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "lease_holder_id": "model/worker-a",
+        "lease_fence": 2,
+        "reporter_id": "model/worker-a",
+        "now": 1000
+      }
+    },
+    {
+      "case_id": "K-013-external-world-effects-are-refused-in-phase-i",
+      "expect": "EFFECT_CLASS_REFUSED",
+      "proves": "SPEC.md refuses EXTERNAL_WORLD in Phase I regardless of how well-formed the request is.",
+      "request": {
+        "request_schema": "soveraeign-kernel-transition/v1",
+        "transition": "cross",
+        "actor_id": "model/controller",
+        "actor_kind": "MODEL",
+        "effect_class": "EXTERNAL_WORLD",
+        "reason": "declared in the fixture corpus",
+        "declared": {
+          "source_address": "src-1",
+          "reader_declaration": "reader-1",
+          "omissions": [
+            "none"
+          ],
+          "authority_grant_id": "grant-1",
+          "destination_address": "dst-1"
+        }
+      },
+      "current": {
+        "state_digest": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "lease_holder_id": "model/worker-a",
+        "lease_fence": 2,
+        "reporter_id": "model/worker-a",
+        "now": 1000
+      }
+    },
+    {
+      "case_id": "K-014-an-undeclared-transition-is-refused",
+      "expect": "UNKNOWN_TRANSITION",
+      "proves": "The table is closed. A transition must be declared before it can be requested.",
+      "request": {
+        "request_schema": "soveraeign-kernel-transition/v1",
+        "transition": "settle_everything",
+        "actor_id": "model/controller",
+        "actor_kind": "MODEL",
+        "effect_class": "RECORD_LOCAL",
+        "reason": "declared in the fixture corpus",
+        "declared": {
+          "run_id": "run-1"
+        }
+      },
+      "current": {
+        "state_digest": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "lease_holder_id": "model/worker-a",
+        "lease_fence": 2,
+        "reporter_id": "model/worker-a",
+        "now": 1000
+      }
+    },
+    {
+      "case_id": "K-015-an-absent-precondition-is-refused",
+      "expect": "MISSING_PRECONDITION",
+      "proves": "A precondition the table names and the request omits fails closed rather than defaulting.",
+      "request": {
+        "request_schema": "soveraeign-kernel-transition/v1",
+        "transition": "settle_run",
+        "actor_id": "model/controller",
+        "actor_kind": "MODEL",
+        "effect_class": "RECORD_LOCAL",
+        "reason": "declared in the fixture corpus",
+        "declared": {
+          "run_id": "run-1",
+          "input_state_digest": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+        },
+        "requested_outcome": "COMMITTED",
+        "pre_state_digest": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "observation": {
+          "observation_id": "obs-1",
+          "observer_id": "model/witness-b",
+          "observer_relation": "INDEPENDENT",
+          "satisfactory": true
+        }
+      },
+      "current": {
+        "state_digest": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "lease_holder_id": "model/worker-a",
+        "lease_fence": 2,
+        "reporter_id": "model/worker-a",
+        "now": 1000
+      }
+    },
+    {
+      "case_id": "K-016-self-relation-cannot-observe",
+      "expect": "OBSERVER_NOT_INDEPENDENT",
+      "proves": "An observation declaring itself SELF is refused at observe_run, before it can reach settlement.",
+      "request": {
+        "request_schema": "soveraeign-kernel-transition/v1",
+        "transition": "observe_run",
+        "actor_id": "model/worker-a",
+        "actor_kind": "WORKER",
+        "effect_class": "RECORD_LOCAL",
+        "reason": "declared in the fixture corpus",
+        "declared": {
+          "run_id": "run-1",
+          "observer_id": "model/worker-a",
+          "observer_relation": "SELF",
+          "predicate_results": [
+            "digest_matches"
+          ]
+        }
+      },
+      "current": {
+        "state_digest": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "lease_holder_id": "model/worker-a",
+        "lease_fence": 2,
+        "reporter_id": "model/worker-a",
+        "now": 1000
+      }
+    }
+  ]
+}

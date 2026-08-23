@@ -70,6 +70,13 @@ microservices.
 Field names and transition predicates remain normative in `SPEC.md` and
 `contracts/`.
 
+`kernel/` holds the executable reference for these primitives: ten of the
+fourteen `SPEC.md` transitions behind one attempt path, an append-only journal
+whose audit exposes writes that bypassed it, and a declared positive and
+defeating transition matrix (`decisions/0019-shared-kernel-reference.md`). The
+Asset Service predates it and still carries private transition rules; rebinding
+is named in `services/asset/KNOWN-GAPS.md` and `kernel/README.md`.
+
 ## Composing larger motion
 
 A service operation composes primitives instead of creating a custom authority

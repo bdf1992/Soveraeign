@@ -18,3 +18,7 @@ or deployment topology.
 
 A schema-valid record can still be semantically unfit. Conformance fixtures and
 independent observation remain necessary.
+
+`kernel/` is the executable reference that emits receipts and event envelopes
+these schemas validate; its tests check every emitted record against
+`receipt.schema.json` and `event-envelope.schema.json`.

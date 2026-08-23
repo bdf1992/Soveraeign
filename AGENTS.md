@@ -203,6 +203,7 @@ dependency or a substitute for repository verification.
 | Path | Owns | Must not own |
 | --- | --- | --- |
 | `/contracts` | Shared kernel and crossing schemas | Service-specific lifecycle logic |
+| `/kernel` | Executable reference for the shared transition, receipt, and journal semantics | A service lifecycle, provider types, or durable storage policy |
 | `/conformance` | Independent scenarios, oracle controls, witness inputs | Participant implementation or direct participant imports |
 | `/services/<domain>` | One bounded lifecycle, contract, implementation, and tests | Another service's state or provider-specific authority |
 | `/bindings` | Human/model realizations of declared interfaces | Authoritative writes or semantic forks |

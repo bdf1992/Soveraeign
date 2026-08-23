@@ -42,6 +42,8 @@ REQUIRED = (
     "contracts/event-envelope.schema.json",
     "services/README.md",
     "services/asset/contracts/service.json",
+    "kernel/README.md",
+    "kernel/fixtures/transition-matrix.json",
     "services/proofing/contracts/service.json",
     "decisions/0001-founding-boundary.md",
     "decisions/0002-naming-process.md",

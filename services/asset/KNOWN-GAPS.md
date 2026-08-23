@@ -19,6 +19,7 @@ the full Phase-I logical contract.
 | Judgement queue | Missing authority refuses synchronously | Judgement-dependent work must remain visible and non-blocking | PROD-I-6 |
 | Model portability | No Model Binding or Model Adapter participant exists | Two materially different models must use one kernel contract with exact identity, data-boundary, usage, cost, and provider-loss receipts | PROD-I-9; BYOM.md |
 | Operational journal | Mutable lifecycle tables and partial receipts do not yet implement the complete append-preserving Event Envelope | Every consequential decision and state transition must remain reconstructable independently of current projections | C15; SPEC `EventEnvelope` |
+| Kernel rebinding | Transitions are realized by private rules inside `core.py` | Services compose the shared kernel reference in `kernel/` rather than keeping private transition rules | C1; issue #6 acceptance 5 |
 | Module boundary | `core.py` combines storage, authority/receipts, execution, observation, projections, and Asset lifecycle in more than 300 lines | Split by owned responsibility before adding behavior; preserve the public participant contract | ENGINEERING `Context and module budget` |
 
 These are participant defects or unimplemented requirements, not reasons to

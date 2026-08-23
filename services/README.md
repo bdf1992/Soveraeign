@@ -2,7 +2,9 @@
 
 Services are bounded enterprise capabilities inside a local Soveraeign Node.
 They share the kernel's standing, authority, transition, observation, receipt,
-and retraction semantics; no service creates a private authority system.
+and retraction semantics; no service creates a private authority system. The
+executable reference for those semantics is `kernel/`; the Asset Service
+predates it and has not yet been rebound (`services/asset/KNOWN-GAPS.md`).
 
 ## Current boundaries
 

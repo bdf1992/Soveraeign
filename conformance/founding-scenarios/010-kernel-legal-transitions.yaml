@@ -1,0 +1,24 @@
+id: FOUND-010
+title: kernel_governs_legal_transitions
+status: SEED
+given:
+  - a proposal, a typed grant, an operation plan, and a delegated worker
+  - one shared kernel that every service composes
+when:
+  - each transition declares its actor and exact pre-state
+  - the worker reports, an independent observer observes, the kernel settles
+then:
+  - a stale pre-state refuses STALE_STATE and nothing settles
+  - recorded, admitted, ratified, and effective remain distinct rungs
+  - an executor report is stored and never settles its own run
+  - every attempted transition emits exactly one terminal receipt
+  - retraction counters effectiveness and keeps the original record and receipt
+defeating:
+  - stale pre-state settles
+  - successful executor report becomes observation
+  - service writes authoritative state around the kernel
+  - refusal or unresolved work produces no receipt
+  - retraction erases the prior record
+executable:
+  - kernel/fixtures/transition-matrix.json
+  - python -m unittest discover -s kernel/tests

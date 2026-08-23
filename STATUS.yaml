@@ -10,6 +10,7 @@ specification_status: PROPOSED_LOGICAL_SPEC_OWNER_FREEZE_PENDING
 conformance_status: EXECUTABLE_ORACLE_CONTROLS_PARTICIPANT_BINDING_OPEN
 classification_status: PROPOSED_OWNER_RATIFICATION_PENDING
 asset_service_status: BUILT_SELF_TESTED_NOT_WITNESSED
+shared_kernel_status: EXPERIMENTAL_REFERENCE_BUILT_SELF_TESTED_NOT_WITNESSED
 proofing_service_status: CHARTERED_NOT_IMPLEMENTED
 byom_status: OWNER_DIRECTED_CONTRACT_AND_FIXTURE_PROPOSED
 ai_native_definition_status: FREEZE_CANDIDATE
@@ -65,6 +66,7 @@ proposed_repository_claims:
   - authority_and_verification_stance_dyads
   - red_gated_release_requirement
   - sov_portable_bounded_agency_profile
+  - shared_kernel_reference_transitions
 
 open_decisions:
   - id: O1

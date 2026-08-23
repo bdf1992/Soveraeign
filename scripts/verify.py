@@ -25,6 +25,7 @@ CHECKS = (
         ROOT,
     ),
     ("Asset Service reference tests", [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"], ROOT / "services" / "asset"),
+    ("shared kernel transition matrix", [sys.executable, "-m", "unittest", "discover", "-s", "kernel/tests", "-v"], ROOT),
 )
 
 BUDGET_SECONDS = 3.0

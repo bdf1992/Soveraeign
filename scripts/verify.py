@@ -14,6 +14,8 @@ ROOT = Path(__file__).resolve().parents[1]
 
 CHECKS = (
     ("repository hygiene", [sys.executable, "scripts/lint.py"], ROOT),
+    ("recorded traps still hold", [sys.executable, "scripts/sov_traps.py"], ROOT),
+    ("standing claims carry a witness", [sys.executable, "scripts/sov_standing.py"], ROOT),
     ("bootstrap and locked evidence", [sys.executable, "scripts/verify_bootstrap.py"], ROOT),
     ("conformance oracle controls", [sys.executable, "conformance/run.py"], ROOT),
     ("conformance oracle tests", [sys.executable, "-m", "unittest", "discover", "-s", "conformance/tests", "-v"], ROOT),

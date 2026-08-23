@@ -84,6 +84,13 @@ operation boundary and says only Bdo ratifies judgement. Whether a CODEOWNERS
 approval is that grant, or an explicit recorded decision is required, is
 unsettled; 0016 is still `PROPOSED`.
 
+Owner input, 2026-08-23: Bdo will rarely interact with GitHub directly, so a
+code-owner review click cannot be the owner's ratification surface. The
+surface has to be a Human Binding the owner actually uses; the Console
+Service charter (`services/console/CHARTER.md`, judgement requests) is the
+chartered home for it. 0016's mechanism stands as a proposal until a decision
+amends it. This seam stays open on the mechanism, not on the direction.
+
 ## S13 · Retraction in the Soveraeign bar
 
 `AI-NATIVE.md` requires `FULL` on reachability, commitment, provenance, and

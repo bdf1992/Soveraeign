@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/seat-registry.schema.json",
+  "title": "Soveraeign Seat Registry (PROPOSED, decisions/0020)",
+  "description": "The current view of the ownership topology: seats, their type, the owner edge, what each settles, and the attributable occupancy claim. A rebuildable projection, never a second System of Record. Rooted-tree constraints are semantic and checked by fixtures, not by this schema.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["registry_schema", "status", "root_seat", "seats"],
+  "properties": {
+    "registry_schema": {"const": "soveraeign-seat-registry/v1"},
+    "status": {"enum": ["PROPOSED", "RATIFIED"]},
+    "root_seat": {"type": "string", "minLength": 1},
+    "seats": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/seat"}
+    }
+  },
+  "$defs": {
+    "seat": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["seat_id", "seat_type", "owner_seat", "settles", "cares_about", "occupant"],
+      "properties": {
+        "seat_id": {"type": "string", "minLength": 1},
+        "seat_type": {"enum": ["root", "control", "orchestration", "work"]},
+        "owner_seat": {"anyOf": [{"type": "string", "minLength": 1}, {"type": "null"}]},
+        "settles": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"enum": ["JUDGEMENT", "VERIFICATION"]}
+        },
+        "cares_about": {"type": "string", "minLength": 1},
+        "occupant": {"anyOf": [{"$ref": "#/$defs/occupancy"}, {"type": "null"}]},
+        "eligibility": {"type": "string", "minLength": 1}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"seat_type": {"const": "root"}}},
+          "then": {"properties": {"owner_seat": {"type": "null"}}},
+          "else": {"properties": {"owner_seat": {"type": "string", "minLength": 1}}}
+        },
+        {
+          "if": {"properties": {"seat_type": {"const": "work"}}},
+          "then": {"properties": {"settles": {"const": []}}},
+          "else": {"properties": {"settles": {"minItems": 1}}}
+        }
+      ]
+    },
+    "occupancy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["actor_id", "actor_kind", "claimed_at", "claim_basis"],
+      "properties": {
+        "actor_id": {"type": "string", "minLength": 1},
+        "actor_kind": {"enum": ["HUMAN", "MODEL"]},
+        "claimed_at": {"type": "string", "format": "date-time"},
+        "claim_basis": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

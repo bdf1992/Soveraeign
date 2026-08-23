@@ -19,7 +19,13 @@ assert SPEC and SPEC.loader
 activation = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(activation)
 
+# Activation proves exclusive control through effective uid, gid and 0700 modes. A host
+# with none of those cannot make the claim, so these cases do not run there; the class at
+# the end of this file proves the refusal that replaces them.
+ENFORCES = activation.infrastructure.HOST_ENFORCES_POSIX_CUSTODY
 
+
+@unittest.skipUnless(ENFORCES, "host has no POSIX effective identity or mode enforcement")
 class CustodyActivationTests(unittest.TestCase):
     def manifest(self) -> dict:
         return json.loads((ROOT / "infrastructure" / "phase-i.local.json").read_text(
@@ -113,6 +119,21 @@ class CustodyActivationTests(unittest.TestCase):
             with self.assertRaisesRegex(activation.CustodyActivationRefused,
                                         "CUSTODY_ACTIVATION_RECEIPT_STALE"):
                 self.activate(node)
+
+
+@unittest.skipIf(ENFORCES, "this host does enforce POSIX custody")
+class HostWithoutPosixCustody(unittest.TestCase):
+    """Activation on a host with no custody mechanism refuses; it does not half-succeed."""
+
+    def test_activation_refuses_and_writes_nothing(self):
+        with TemporaryDirectory() as temporary:
+            node = Path(temporary) / "node"
+            manifest = json.loads((ROOT / "infrastructure" / "phase-i.local.json").read_text(
+                encoding="utf-8"))
+            with self.assertRaisesRegex(activation.CustodyActivationRefused,
+                                        activation.infrastructure.HOST_REFUSAL):
+                activation.activate(node, manifest, "VERIFY_OR_INITIALIZE_EMPTY", 0, 0)
+            self.assertFalse(node.exists())
 
 
 if __name__ == "__main__":

@@ -121,6 +121,10 @@ def activate(root: Path, manifest: dict[str, Any], policy: str,
     """Verify or explicitly initialize custody and append an activation receipt."""
     if policy not in POLICIES:
         raise CustodyActivationRefused("ACTIVATION_POLICY_UNSUPPORTED")
+    if not infrastructure.HOST_ENFORCES_POSIX_CUSTODY:
+        # Effective identity and 0700 modes are the whole proof of exclusive control.
+        # A host that has neither cannot activate custody, and must not appear to.
+        raise CustodyActivationRefused(infrastructure.HOST_REFUSAL)
     if os.geteuid() != expected_uid or os.getegid() != expected_gid:
         raise CustodyActivationRefused("EFFECTIVE_IDENTITY_MISMATCH")
     proposal = infrastructure.plan(root, manifest)

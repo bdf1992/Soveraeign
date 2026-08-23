@@ -15,6 +15,11 @@ assert SPEC and SPEC.loader
 infrastructure = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(infrastructure)
 
+# Materializing custody needs POSIX ownership and mode bits. Where the host has none the
+# cases below cannot run, and the pair at the end of this file proves the refusal instead.
+ENFORCES = infrastructure.HOST_ENFORCES_POSIX_CUSTODY
+NEEDS_POSIX = unittest.skipUnless(ENFORCES, "host has no POSIX ownership or mode enforcement")
+
 
 class InfrastructureTests(unittest.TestCase):
     def manifest(self) -> dict:
@@ -30,6 +35,7 @@ class InfrastructureTests(unittest.TestCase):
             self.assertEqual(proposal["disposition"], "CREATE")
             self.assertFalse(node.exists())
 
+    @NEEDS_POSIX
     def test_apply_is_idempotent_and_verifiable(self):
         with TemporaryDirectory() as temporary:
             node = Path(temporary) / "node"
@@ -63,6 +69,7 @@ class InfrastructureTests(unittest.TestCase):
         self.assertIn("PROVIDER_DEPENDENCY_NOT_ADMITTED", defects)
         self.assertIn("EXTERNAL_EFFECTS_NOT_ADMITTED", defects)
 
+    @NEEDS_POSIX
     def test_receipt_drift_is_observed(self):
         with TemporaryDirectory() as temporary:
             node = Path(temporary) / "node"
@@ -73,6 +80,7 @@ class InfrastructureTests(unittest.TestCase):
             receipt.write_text(json.dumps(value), encoding="utf-8")
             self.assertIn("MANIFEST_DIGEST_MISMATCH", infrastructure.verify(node, self.manifest()))
 
+    @NEEDS_POSIX
     def test_receipt_path_binding_drift_is_observed(self):
         with TemporaryDirectory() as temporary:
             node = Path(temporary) / "node"
@@ -84,6 +92,7 @@ class InfrastructureTests(unittest.TestCase):
             self.assertIn("RECEIPT_PATH_BINDING_MISMATCH",
                           infrastructure.verify(node, self.manifest()))
 
+    @NEEDS_POSIX
     def test_symlinked_custody_path_is_observed(self):
         with TemporaryDirectory() as temporary:
             node = Path(temporary) / "node"
@@ -93,6 +102,7 @@ class InfrastructureTests(unittest.TestCase):
             work.symlink_to(node / "record", target_is_directory=True)
             self.assertIn("CUSTODY_PATH_MISSING_OR_UNSAFE:work", infrastructure.verify(node, self.manifest()))
 
+    @NEEDS_POSIX
     def test_concurrent_apply_is_fenced(self):
         with TemporaryDirectory() as temporary:
             node = Path(temporary) / "node"
@@ -124,6 +134,31 @@ class InfrastructureTests(unittest.TestCase):
             self.assertFalse(thread.is_alive())
             self.assertEqual(failures, [])
             self.assertEqual(infrastructure.verify(node, self.manifest()), [])
+
+
+class HostWithoutPosixCustody(unittest.TestCase):
+    """A host that cannot enforce custody must say so, not quietly proceed."""
+
+    def manifest(self) -> dict:
+        return json.loads((ROOT / "infrastructure" / "phase-i.local.json").read_text(
+            encoding="utf-8"))
+
+    @unittest.skipIf(ENFORCES, "this host does enforce POSIX custody")
+    def test_apply_refuses_before_it_creates_anything(self):
+        with TemporaryDirectory() as temporary:
+            node = Path(temporary) / "node"
+            with self.assertRaisesRegex(infrastructure.InfrastructureRefused,
+                                        infrastructure.HOST_REFUSAL):
+                infrastructure.apply(node, self.manifest())
+            self.assertFalse(node.exists())
+
+    @unittest.skipIf(ENFORCES, "this host does enforce POSIX custody")
+    def test_verify_reports_the_refusal_rather_than_no_defects(self):
+        with TemporaryDirectory() as temporary:
+            node = Path(temporary) / "node"
+            node.mkdir()
+            self.assertEqual(infrastructure.verify(node, self.manifest()),
+                             [infrastructure.HOST_REFUSAL])
 
 
 if __name__ == "__main__":

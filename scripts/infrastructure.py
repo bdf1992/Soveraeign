@@ -7,7 +7,7 @@ import argparse
 from hashlib import sha256
 import json
 import os
-from pathlib import Path, PurePath
+from pathlib import Path, PurePosixPath
 import stat
 import sys
 import tempfile
@@ -19,6 +19,15 @@ DEFAULT_MANIFEST = ROOT / "infrastructure" / "phase-i.local.json"
 RECEIPT_NAME = ".soveraeign-infrastructure.json"
 LOCK_NAME = ".soveraeign-infrastructure.lock"
 REQUIRED_PATHS = {"record", "payloads", "projections", "receipts", "work"}
+
+# POSIX ownership and mode bits are the mechanism this custody model uses to prove
+# exclusive control of a volume. Windows has neither: os.fchmod and os.geteuid do not
+# exist there and the mode bits stat() returns carry no meaning. The node this custody
+# serves is a Linux container, so the enforcement is not portable. Simulating it would
+# report a custody claim as satisfied that was never checked, so an unenforcing host
+# refuses instead.
+HOST_ENFORCES_POSIX_CUSTODY = hasattr(os, "fchmod") and hasattr(os, "geteuid")
+HOST_REFUSAL = "HOST_CANNOT_ENFORCE_CUSTODY"
 
 
 class InfrastructureRefused(RuntimeError):
@@ -44,9 +53,17 @@ def load_manifest(path: Path) -> dict[str, Any]:
 
 
 def _valid_relative_path(value: object) -> bool:
-    if not isinstance(value, str) or not value or "\\" in value:
+    """Judge a declared custody path by POSIX rules whatever host is reading it.
+
+    The manifest describes a Linux node, so its paths mean what POSIX says they mean.
+    `PurePath` resolves to the checking host's flavour, under which `/tmp/escape` is not
+    absolute on Windows - so an escape the node would honour validated clean whenever the
+    manifest was checked from a Windows machine. A drive letter is rejected outright: it
+    can only be a Windows path smuggled into a POSIX declaration.
+    """
+    if not isinstance(value, str) or not value or "\\" in value or ":" in value:
         return False
-    path = PurePath(value)
+    path = PurePosixPath(value)
     return not path.is_absolute() and all(part not in {"", ".", ".."} for part in path.parts)
 
 
@@ -161,6 +178,10 @@ def apply(root: Path, manifest: dict[str, Any]) -> dict[str, Any]:
         raise InfrastructureRefused("MANIFEST_DRIFT")
     if root.is_symlink():
         raise InfrastructureRefused("ROOT_IS_SYMLINK")
+    # Last read-only step. Everything below mutates the volume, and this host may have no
+    # way to lock it down afterwards; the refusal belongs before the first mkdir, not after.
+    if not HOST_ENFORCES_POSIX_CUSTODY:
+        raise InfrastructureRefused(HOST_REFUSAL)
 
     root.mkdir(parents=True, exist_ok=True, mode=0o700)
     os.chmod(root, 0o700)
@@ -192,6 +213,9 @@ def apply(root: Path, manifest: dict[str, Any]) -> dict[str, Any]:
 
 
 def verify(root: Path, manifest: dict[str, Any]) -> list[str]:
+    if not HOST_ENFORCES_POSIX_CUSTODY:
+        # An empty defect list reads as "custody is sound". This host cannot look.
+        return [HOST_REFUSAL]
     defects: list[str] = []
     digest = manifest_digest(manifest)
     receipt_path = root / RECEIPT_NAME

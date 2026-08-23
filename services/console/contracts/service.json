@@ -1,9 +1,9 @@
 {
   "service_id": "console",
   "standing": "PROPOSED",
-  "owns": ["operator-session", "channel", "thread", "post", "notification", "judgement-request", "operator-setting", "projection-view", "console-receipt"],
+  "owns": ["operator-session", "channel", "thread", "post", "notification", "judgement-request", "judgement-resolution", "operator-setting", "projection-view", "console-receipt"],
   "references": ["shared-kernel-contracts", "asset:asset-version", "asset:event-and-receipt-stream", "proofing:event-and-receipt-stream"],
-  "operations": ["open-session", "close-session", "open-channel", "open-thread", "post", "notify", "acknowledge-notification", "request-judgement", "resolve-judgement", "set-setting", "rebuild-projection"],
+  "operations": ["open-session", "close-session", "open-channel", "open-thread", "post", "notify", "acknowledge-notification", "request-judgement", "list-pending-judgement-requests", "show-judgement-request", "resolve-judgement", "set-setting", "rebuild-projection", "show-receipt"],
   "uses_kernel_contracts": ["standing", "typed-authority", "operation", "observation", "receipt", "retraction"],
   "ports": ["human-binding", "model-binding", "service-activity", "delivery", "federation"],
   "forbids": ["blocking-on-judgement", "hidden-pending-right", "model-resolves-judgement", "setting-grants-authority", "notification-without-source", "projection-as-authority", "direct-service-state-write", "unconfigured-delivery-success", "executor-report-as-observation", "history-erasure"]

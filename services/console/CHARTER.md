@@ -60,8 +60,12 @@ standing, or settlement, and it never becomes a private authority system.
 - notification — an addressed input to an operator naming its source record
   address and digest, its kind, and its acknowledgement;
 - judgement request — a queued request for a judgement-typed right, with loop
-  mode, requested authority type, the operation it conditions, and its
-  resolution receipt;
+  mode, requested authority type, the operation it conditions, and a
+  `resolution_id` back-reference to its judgement resolution;
+- judgement resolution (proposed) — the answer record for one judgement
+  request: the resolver, the grant checked at the transition, the decision, a
+  rationale address and digest, and its receipt; the only console record whose
+  standing is expected to reach `RATIFIED`, and only by an appended event;
 - operator setting — a typed, scoped preference held by an operator or by the
   node, with the authority required to change it;
 - projection view — a declared dashboard or activity view with its source
@@ -98,9 +102,16 @@ The Console Service:
    counteraction; every emission carries a receipt;
 3. records a judgement request when an operation's required authority type is
    `JUDGEMENT` and no live grant covers it; the conditioned operation receives
-   an `UNRESOLVED` receipt and other operation continues;
+   an `UNRESOLVED` receipt and other operation continues; reach (proposed):
+   the request emits a `JUDGEMENT_REQUESTED` notification with delivery
+   `LOCAL` whose recipient is the owner; Phase I has no push, so the owner
+   pulls the pending list from an operator session through the Human Binding;
 4. resolves a judgement request only through a typed, scoped, live human
    `JUDGEMENT` grant checked at the transition; a model attempt is `REFUSED`;
+   `resolve-judgement` (proposed) is the `SPEC.md` `ratify` transition row —
+   preconditions: proposal admitted and a live matching grant; refusals:
+   `AUTHORITY_REFUSED` or `STALE_STATE` — in which the request's question is
+   the Proposal being ratified and the answer lands as a judgement resolution;
 5. stores operator settings as records that condition projections and
    notification routing only; a setting never grants capability or authority;
 6. rebuilds dashboard and activity projections from authoritative records on
@@ -130,6 +141,37 @@ Humans and models operate the same console through different bindings:
 - every open, post, request, resolution, acknowledgement, setting change, and
   rebuild returns a receipt.
 
+### First slice: the owner's judgement surface (proposed)
+
+`OPEN-SEAMS.md` S12 records the owner's input of 2026-08-23: Bdo will rarely
+interact with GitHub, so a code-owner review click cannot be the owner's
+ratification surface. The first console slice is therefore the surface through
+which the owner receives a judgement request, answers it, and has the answer
+land as a record that can carry `RATIFIED` standing. It has three legs:
+
+- reach — `request-judgement` records the judgement request, the conditioned
+  operation receives an `UNRESOLVED` receipt, and a `JUDGEMENT_REQUESTED`
+  notification with delivery `LOCAL` is addressed to the owner as its
+  recipient; Phase I has no push, so the owner pulls the pending list from an
+  operator session through the Human Binding;
+- answer — the owner invokes `resolve-judgement` through the Human Binding;
+  the console realizes it as the `SPEC.md` `ratify` transition, with the
+  request's question as the Proposal being ratified;
+- land — a judgement resolution record carries the resolver, the grant
+  checked, the decision, a rationale address, its receipt, and the
+  `UNRESOLVED` receipt it answers (`unresolved_receipt_id`); its standing
+  reaches `RATIFIED` by an appended event, never by overwrite; the conditioned
+  operation receives a successor receipt whose `prior_receipt_id` names its
+  `UNRESOLVED` receipt.
+
+Target: a local CLI over the Python API, the Local surface row of
+`ENGINEERING.md` (Python API and CLI; human and model bindings use the same
+kernel operations). No HTTP and no UI framework. This is not a GUI claim; it
+is the smallest Human Binding the owner can actually use, and every effect in
+it is `RECORD_LOCAL`. Nothing in this slice is implemented: O18 gates
+`console_implementation`, not this charter text, and the slice remains a
+proposal until O18 is ruled and a logical spec and defeating fixtures exist.
+
 ## Initial proving narrative
 
 From a clean local checkout:
@@ -141,29 +183,44 @@ From a clean local checkout:
    receipts as the same transition; show the model post standing `RECORDED`;
 4. let the model mention the human; observe the issued notification resolving
    to the post address and digest;
-5. let the model attempt an operation whose required authority is
-   `JUDGEMENT`; observe an `UNRESOLVED` receipt and a `QUEUED` judgement
-   request while an unrelated operation still commits;
+5. reach: let the model attempt an operation whose required authority is
+   `JUDGEMENT`; observe an `UNRESOLVED` receipt, a `QUEUED` judgement request,
+   and a `JUDGEMENT_REQUESTED` notification with delivery `LOCAL` addressed to
+   the human operator, while an unrelated operation still commits; pull the
+   pending list through the Human Binding and show the request on it;
 6. let the model attempt to resolve the request; observe `REFUSED`;
-7. let the human resolve it under a live grant; observe the resolution receipt
-   and the notification to the model session;
-8. change a human setting; show it alters notification routing and changes no
+7. answer: let the human invoke `resolve-judgement` through the Human Binding
+   under a live `JUDGEMENT` grant; observe the `ratify` transition check the
+   grant against the request's Proposal;
+8. land: observe the judgement resolution record, its `RECORDED` event and the
+   appended `RATIFIED` event, its receipt, a successor receipt for the
+   conditioned operation whose `prior_receipt_id` names the `UNRESOLVED`
+   receipt, and the `JUDGEMENT_RESOLVED` notification whose `recipient_id` is
+   the requesting model operator;
+9. change a human setting; show it alters notification routing and changes no
    authority check;
-9. rebuild the admin dashboard and the activity view from receipts; show every
-   value resolves to a source address and digest and that a second rebuild is
-   identical;
-10. let the human counter one effective record from the activity view through
+10. rebuild the admin dashboard and the activity view from receipts; show every
+    value resolves to a source address and digest and that a second rebuild is
+    identical;
+11. let the human counter one effective record from the activity view through
     kernel retraction; show the original event and the counter-record both
     remain visible;
-11. attempt external delivery of a notification and cross-node activity; observe
+12. attempt external delivery of a notification and cross-node activity; observe
     `UNCONFIGURED` refusals with receipts;
-12. close both sessions with reconstructable receipts.
+13. close both sessions with reconstructable receipts.
 
 ## Defeating cases
 
 - a judgement request blocks the whole node, or the pending right is hidden;
 - a model resolves a judgement request, or a setting, dashboard role, or
   session state widens an authority check;
+- a resolution that enters through any surface that is not a kernel transition
+  with a receipt — a code-owner review click, a chat reply, an edited file — is
+  treated as the owner's judgement;
+- a judgement resolution reaches `RATIFIED` without its `RECORDED` event, the
+  grant checked at the transition, or its receipt;
+- a judgement request addressed to the owner is absent from the owner's
+  pending list;
 - a notification cannot name its source address and digest, or is treated as
   the record it points to;
 - a dashboard or activity value does not resolve to an authoritative record,

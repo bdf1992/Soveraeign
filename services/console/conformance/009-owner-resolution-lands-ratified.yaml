@@ -1,0 +1,41 @@
+id: CONS-009
+title: owner_resolution_lands_ratified
+status: SEED
+given:
+  - one local node with the Console Service and the kernel available; the Console Service has no runtime implementation, and these payloads are what a future participant must satisfy
+  - one judgement-request JR-1 with lifecycle QUEUED, loop_mode IN_LOOP, required_authority_type JUDGEMENT, addressed to BDO, conditioning operation OP-J, requested by a MODEL operator M-1 holding an open session S-M; JR-1's question is a Proposal Q-1 with standing ADMITTED
+  - OP-J holds a receipt RCPT-U with outcome UNRESOLVED that names JR-1 in emitted_record_addresses
+  - one HUMAN operator BDO, the owner, holding an open operator session S-H through a human binding HB-CLI and a live AuthorityGrant G-1 with authority_type JUDGEMENT, capability resolve-judgement, scope covering JR-1, valid_from before and valid_until after the attempt time, and revoked_at null
+  - one GitHub code-owner approval A-GH on a pull request touching STATUS.yaml, existing as an artifact outside the kernel; no kernel transition, grant, or receipt names it
+  - one rationale text with a content address RAT-1 and digest, captured before the attempt
+  - one DASHBOARD projection-view D-1 declared for judgement spend, and a live grant held by BDO scoped to read and rebuild D-1
+  - no judgement-resolution record exists on the node
+when:
+  - BDO invokes resolve-judgement on JR-1 through HB-CLI with decision ACCEPTED and rationale RAT-1
+  - BDO requests rebuild-projection for D-1 after the resolution
+  - an observer that is not HB-CLI reads JR-1, the judgement-resolution record, their events, and their receipts through a record read path
+then:
+  - the transition checked for the attempt is the SPEC.md ratify transition; its preconditions are Q-1 ADMITTED and a live matching grant, and the authority check evaluates G-1's type, capability, scope, budget, time, and revocation against JR-1's Proposal Q-1
+  - a judgement-resolution record RES-1 exists naming resolver_id BDO, resolver_kind HUMAN, resolver_grant_id G-1, request_id JR-1, decision ACCEPTED, rationale_address RAT-1 with its digest, interface_id HB-CLI, and unresolved_receipt_id RCPT-U
+  - RES-1's receipt RCPT-R has outcome COMMITTED, a null reason_code, interface_id HB-CLI, authority_grant_ids naming G-1 and no other grant, and effect_class RECORD_LOCAL
+  - RES-1's standing history is a RECORDED event followed by an appended RATIFIED event whose pre-state is RECORDED; both events remain addressable, and no record of RES-1 is overwritten
+  - the RATIFIED event names G-1 in authority_grant_ids and RCPT-R as its receipt_id; RES-1 is the only console record in this case whose standing reaches RATIFIED
+  - JR-1 is lifecycle RESOLVED with resolution_id RES-1, reached by an appended transition event whose pre-state is QUEUED; the QUEUED record of JR-1 and RCPT-U remain addressable
+  - OP-J receives a successor receipt RCPT-S whose prior_receipt_id names RCPT-U; RCPT-U is neither modified nor deleted
+  - a notification N-2 of kind JUDGEMENT_RESOLVED with recipient_id M-1 and delivery LOCAL is issued by an event whose actor_kind is SYSTEM; its source_address and source_digest equal RES-1's address and digest, and the issue carries its own receipt with outcome COMMITTED
+  - the rebuilt D-1 reports one unit of judgement spend for JR-1 whose source address is RCPT-R and whose digest resolves to RCPT-R byte-identical; D-1 carries authoritative false
+  - the observer's reading of JR-1, RES-1, their events, and their receipts agrees with HB-CLI's report in every field; HB-CLI's report alone settles nothing
+  - A-GH is named by no event, grant, receipt, or record on the node; JR-1 and RES-1 are unchanged by its existence
+  - the record judgement-resolution and its fields resolver_kind, decision, rationale_address, and unresolved_receipt_id, the field resolution_id on the judgement request, the addressee of a judgement request, the decision value ACCEPTED, and the lifecycle RESOLVED are Console Service proposals from CHARTER.md and are not yet defined by SPEC.md
+  - whether the question of a judgement request is admitted by the SPEC.md admit transition before ratify, or enters admitted at request-judgement, is a proposal and is not yet decided
+defeating:
+  - A-GH alone changes JR-1's lifecycle, yields any record with standing RATIFIED, or is named as the grant in any authority_grant_ids
+  - RES-1's resolver_grant_id differs from the grant the authority check evaluated, or RCPT-R's authority_grant_ids name a grant other than G-1
+  - RES-1 reaches RATIFIED without a RECORDED event, without a grant named in the RATIFIED event, or without RCPT-R
+  - RES-1's standing becomes RATIFIED by overwriting its RECORDED record rather than by an appended event
+  - JR-1's QUEUED record or RCPT-U is overwritten or deleted, or RCPT-S carries a null prior_receipt_id or one that does not name RCPT-U
+  - the attempt is checked against a transition other than ratify, or the check does not evaluate G-1 against Q-1
+  - JR-1 is RESOLVED with resolution_id null, or naming a record other than RES-1
+  - RES-1 carries a null unresolved_receipt_id, or one that does not name RCPT-U, or an interface_id other than HB-CLI
+  - the observer's reading of JR-1, RES-1, their events, or their receipts differs from HB-CLI's report in any field, or HB-CLI's report is taken as settlement without the observer's reading
+  - M-1 receives no JUDGEMENT_RESOLVED notification, or D-1 shows judgement spend without a source address that resolves to RCPT-R

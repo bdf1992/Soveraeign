@@ -130,8 +130,9 @@ class Drift(unittest.TestCase):
 class AgainstTheRepository(unittest.TestCase):
     """The checked-in projection must match the checked-in SPEC.md."""
 
-    def test_selfcheck_passes_on_the_repository_as_committed(self):
-        self.assertEqual(sov_kernel.command_selfcheck(None), 0)
+    # selfcheck against the live repository is the "kernel transition contract"
+    # check in scripts/verify.py. The comparison logic it exercises is covered
+    # by the Drift cases above without paying for a second full derivation.
 
     def test_every_spec_transition_is_projected(self):
         spec = (sov_kernel.ROOT / "SPEC.md").read_bytes().decode("utf-8")

@@ -79,9 +79,10 @@ class AgainstTheRepository(unittest.TestCase):
         record = sov_baseline.recorded(sov_baseline.BASELINE.read_bytes().decode("utf-8"))
         self.assertEqual(len(record), 9)
 
-    def test_the_participant_still_matches_its_record(self):
-        record = sov_baseline.recorded(sov_baseline.BASELINE.read_bytes().decode("utf-8"))
-        self.assertEqual(sov_baseline.compare(record, sov_baseline.observed()), [])
+    # The live participant run is deliberately not repeated here. The
+    # "participant against its baseline" check in scripts/verify.py performs it
+    # once per verification run; duplicating it doubled the slowest cost in
+    # scripts/tests for no additional coverage.
 
 
 if __name__ == "__main__":

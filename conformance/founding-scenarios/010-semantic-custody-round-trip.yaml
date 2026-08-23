@@ -1,0 +1,23 @@
+id: FOUND-010
+title: semantic_custody_round_trip
+status: DECLARED
+answers: O8
+given:
+  - a clean local checkout
+  - bytes the witness authored, which the corpus has never held
+  - no access to the implementation
+when:
+  - the witness ingests the bytes, reads the version back, and compares digests it computed itself
+  - the witness mutates the source on disk and asks the system to read the source again
+then:
+  - the returned bytes are byte-identical to the bytes supplied
+  - the version resolves the exact source it was captured from
+  - an unchanged source still verifies against the digest captured at ingest
+  - a changed source is refused as SOURCE_CHANGED rather than read
+  - custody is unaffected by the mutation
+  - the refusal is receipted
+defeating:
+  - the system returns bytes that merely satisfy a schema
+  - the system silently returns the mutated bytes
+  - the system returns the captured bytes without recording that the source changed
+  - the verdict requires the witness to read the implementation

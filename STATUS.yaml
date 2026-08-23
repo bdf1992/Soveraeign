@@ -19,6 +19,7 @@ coordination_registrar_status: BUILT_SELF_TESTED_NOT_WITNESSED
 sov_operating_agent_status: OWNER_DIRECTED_CONTEXT_PROFILE_BUILT_SELF_TESTED_NOT_WITNESSED
 ticket_kind_vocabulary_status: PROPOSED_OWNER_RATIFICATION_PENDING
 kernel_transition_contract_status: PROPOSED_OWNER_RATIFICATION_PENDING
+semantic_cold_start_status: DECLARED_TASK_EXECUTED_OWNER_RATIFICATION_PENDING
 
 authority:
   product_intent:
@@ -90,6 +91,8 @@ open_decisions:
   - id: O7
     question: What external-effect isolation and later compensation model is admitted?
     blocks: external_effects
+  # O8 is answered by decisions/0021-semantic-cold-start-task.md and executed as
+  # FOUND-010. It stays open until Bdo rules on the task that was chosen.
   - id: O8
     question: What observation completes semantic cold-start beyond schema validity?
     blocks: operational_qualification_measurement

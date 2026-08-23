@@ -82,6 +82,13 @@ CHECKS = (
           "invokes the profile checker over declared fixtures, including one defeating "
           "declaration, rather than asking the profile whether it is valid",
           ("bindings/sov",)),
+    Check("local model adapter",
+          [sys.executable, "-m", "unittest", "discover", "-s", "adapters/ollama/tests", "-v"],
+          ROOT,
+          "grades declared bindings and invocation records against a recorded runtime "
+          "inventory rather than a live daemon, so the result cannot depend on whether a "
+          "model server happens to be running on the checking machine",
+          ("adapters/ollama", "contracts/model-binding.schema.json")),
     Check("Asset Service reference tests",
           [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
           ROOT / "services" / "asset",

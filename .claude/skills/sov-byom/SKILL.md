@@ -31,6 +31,7 @@ authority.
 - `BYOM.md` - the practice: personal-local pattern, binding/adapter boundary, data-boundary modes, portability test.
 - `bindings/README.md` - operator bindings and the two-model parity requirement.
 - `adapters/README.md` - declared adapter boundaries; Model provider row.
+- `adapters/ollama/` - the first Model Adapter implementation: `capture.py` (attended runtime read), `inventory.json` (rebuildable projection), `adapter.py` and `validate.py` (binding, invocation, and parity checks), two declared bindings, sixteen fixtures, and `tests/`. Standing `BUILT`, self-tested, not witnessed; `decisions/0027-local-model-adapter.md`.
 - `contracts/model-binding.schema.json` - proposed Model Binding schema (Draft 2020-12).
 - `decisions/0011-local-personal-byom.md` - owner-directed decision and sources.
 - `PRD.md` - PROD-I-9 "Bring your own model" and the "Two-binding proof" section.
@@ -42,7 +43,7 @@ authority.
 
 ## Standing and blockers
 
-- `byom_status: OWNER_DIRECTED_CONTRACT_AND_FIXTURE_PROPOSED` (STATUS.yaml).
+- `byom_status: OWNER_DIRECTED_CONTRACT_BUILT_SELF_TESTED_NOT_WITNESSED` (STATUS.yaml).
 - O12 gates `model_binding.ratify_contract`: exact binding fields, data-boundary modes,
   and the two-model Phase-I fixture await Bdo's ratification. Draft work stays
   marked as proposal.
@@ -58,7 +59,8 @@ authority.
 4. Defeating-case audit: check every PROD-I-9 defeating case has a matching control in `conformance/oracle-controls.json`; record gaps without weakening the oracle.
 5. O12 ratification packet: assemble the exact binding fields, data-boundary modes, and two-model fixture into a decision-ready question set for Bdo.
 6. Doc coherence pass: align BYOM.md, bindings/README.md, adapters/README.md, and decisions/0011 with CLASSIFICATION.md vocabulary and cross-references.
-7. Vocabulary drift scan: grep byom-owned files for synonyms of standing, event, effect, or role terms and propose exact-term corrections.
+7. Adapter witness: have a different agent verify `adapters/ollama/` through an independent path, above all whether the recorded inventory can be trusted as the custody authority.
+8. Vocabulary drift scan: grep byom-owned files for synonyms of standing, event, effect, or role terms and propose exact-term corrections.
 
 ## Verification
 

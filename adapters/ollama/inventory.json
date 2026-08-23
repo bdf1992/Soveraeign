@@ -1,0 +1,99 @@
+{
+  "inventory_id": "urn:soveraeign:inventory:ollama:local-node",
+  "information_role": "PROJECTION",
+  "standing": "PROPOSED",
+  "source": {
+    "address": "http://localhost:11434/api/tags",
+    "capture_kind": "LOCAL_RUNTIME_READ",
+    "effect_class": "RECORD_LOCAL",
+    "runtime_id": "ollama",
+    "runtime_version": "0.32.9",
+    "host_id": "urn:soveraeign:host:local-node",
+    "captured_at": "2026-08-23T20:41:53.319761Z",
+    "response_digest": "sha256:22763d2e28d2b7f5ae5f0543738c448bb46be09b3461f0b57b89e9fe6314b0dc"
+  },
+  "models": [
+    {
+      "model_id": "gpt-oss:120b-cloud",
+      "model_version": "sha256:569662207105c69bb0eca2f79a3fdf8691ad6301def477a5ec66f8e8bae237e3",
+      "family": "gptoss",
+      "parameter_size": "116.8B",
+      "quantization_level": "MXFP4",
+      "context_length": 131072,
+      "capabilities": [
+        "completion",
+        "thinking",
+        "tools"
+      ],
+      "remote_host": "https://ollama.com:443"
+    },
+    {
+      "model_id": "gpt-oss:20b",
+      "model_version": "sha256:17052f91a42e97930aa6e28a6c6c06a983e6a58dbb00434885a0cf5313e376f7",
+      "family": "gptoss",
+      "parameter_size": "20.9B",
+      "quantization_level": "MXFP4",
+      "context_length": 131072,
+      "capabilities": [
+        "completion",
+        "thinking",
+        "tools"
+      ],
+      "remote_host": null
+    },
+    {
+      "model_id": "gpt-oss:20b-cloud",
+      "model_version": "sha256:875e8e3a629ad3c2e66f1f1c461e3d140474212f44a34f4687ae1d927db41690",
+      "family": "gptoss",
+      "parameter_size": "20.9B",
+      "quantization_level": "MXFP4",
+      "context_length": 131072,
+      "capabilities": [
+        "completion",
+        "thinking",
+        "tools"
+      ],
+      "remote_host": "https://ollama.com:443"
+    },
+    {
+      "model_id": "lfm2.5:8b",
+      "model_version": "sha256:9cf756159fc2f3b9128c6a3f544ec90c5e9b8afdbb4179a57b8aea9de589cfb2",
+      "family": "lfm2moe",
+      "parameter_size": "8.5B",
+      "quantization_level": "Q4_K_M",
+      "context_length": null,
+      "capabilities": [
+        "completion",
+        "thinking",
+        "tools"
+      ],
+      "remote_host": null
+    },
+    {
+      "model_id": "nomic-embed-text:latest",
+      "model_version": "sha256:0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+      "family": "nomic-bert",
+      "parameter_size": "137M",
+      "quantization_level": "F16",
+      "context_length": 2048,
+      "capabilities": [
+        "embedding"
+      ],
+      "remote_host": null
+    },
+    {
+      "model_id": "qwen3:4b",
+      "model_version": "sha256:359d7dd4bcdab3d86b87d73ac27966f4dbb9f5efdfcc75d34a8764a09474fae7",
+      "family": "qwen3",
+      "parameter_size": "4.0B",
+      "quantization_level": "Q4_K_M",
+      "context_length": 262144,
+      "capabilities": [
+        "completion",
+        "thinking",
+        "tools"
+      ],
+      "remote_host": null
+    }
+  ]
+}

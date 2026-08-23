@@ -58,9 +58,13 @@ standing change proposed in the pull request body and refuses what the table for
 - A CI adversarial pass is screening, not a Red engagement. Its findings stay `PROPOSED`
   because independent reproduction is what promotes them, and CI reviewing its own
   repository is not independent.
-- Three live tickets already violate the ticket contract and carry no labels. Turning
-  the `ticket contract` workflow on makes the board red until they are repaired. That
-  visibility is the point; it is not a reason to weaken the check.
+- Nine live tickets already violate the ticket contract and several carry no labels.
+  The `board drift` job reports that on every issue change and on demand. It is
+  deliberately not a merge gate: a pull request cannot repair the board, and state that
+  every issue edit mutates independently of any pull request must not hold one closed.
+  The check itself is not weakened - it stays strict and its findings are queued work.
+  The `contract` job, which judges this repository's ticket code against its own fixture
+  corpus, is deterministic from the checkout alone and does gate.
 - The bounded JSON Schema validator refuses any keyword it does not implement. Adding a
   keyword to a contract without adding it to the validator fails loudly rather than
   passing an unchecked constraint.

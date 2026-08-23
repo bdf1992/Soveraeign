@@ -3,6 +3,13 @@ name: ticket contract
 # The coordination surface is checked the same way the repository is: capture it
 # through the declared registrar, then judge the capture offline. Nothing here writes
 # to an issue, a label, or a project field. See adapters/github/README.md.
+#
+# Two jobs, because they judge two different things. `contract` judges this
+# repository's ticket code against its own fixture corpus, so it is deterministic
+# from the checkout alone and may gate a pull request. `board` judges the live
+# coordination surface, which every issue edit mutates independently of any pull
+# request. Board drift is work, not a merge defect, so it never gates a merge: it
+# reports, and the queue is where it gets taken.
 
 on:
   issues:
@@ -30,6 +37,8 @@ concurrency:
 
 jobs:
   contract:
+    name: contract
+    if: github.event_name != 'issues'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -43,29 +52,60 @@ jobs:
       - name: Ticket mechanics
         run: python -m unittest discover -s scripts/tests -v
 
+  board:
+    name: board drift (report only)
+    runs-on: ubuntu-latest
+    # A pull request cannot repair the live board, so a drifting board must not
+    # hold one closed. The step summary carries the finding to whoever takes it.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
       - name: Capture the coordination surface
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          python adapters/github/export.py \
-            --repo "${{ github.repository }}" \
-            --out .local/registrar/tickets.json
+          python adapters/github/export.py             --repo "${{ github.repository }}"             --out .local/registrar/tickets.json
 
       - name: Every ticket satisfies soveraeign-ticket/v1
-        run: python scripts/sov_ticket.py validate --export .local/registrar/tickets.json
+        id: validate
+        shell: bash
+        run: |
+          python scripts/sov_ticket.py validate             --export .local/registrar/tickets.json | tee .local/registrar/validate.txt
 
       - name: Labels match the declared projection
-        run: python scripts/sov_ticket.py labels --export .local/registrar/tickets.json --strict
+        id: labels
+        if: always()
+        shell: bash
+        run: |
+          python scripts/sov_ticket.py labels             --export .local/registrar/tickets.json --strict | tee .local/registrar/labels.txt
 
-      - name: Publish the takeable queue
+      - name: Publish the drift report and the takeable queue
         if: always()
         run: |
           {
+            echo '## Board drift'
+            echo
+            echo 'Report only. A drifting board is queued work, not a merge defect.'
+            echo
+            echo '### Ticket contract'
+            echo '```text'
+            cat .local/registrar/validate.txt 2>/dev/null || echo 'capture unavailable'
+            echo '```'
+            echo
+            echo '### Label projection'
+            echo '```text'
+            cat .local/registrar/labels.txt 2>/dev/null || echo 'capture unavailable'
+            echo '```'
+            echo
             echo '## Takeable work queue'
             echo
             echo 'Projection over the captured board. Position grants nothing.'
             echo
             echo '```text'
-            python scripts/sov_ticket.py queue --export .local/registrar/tickets.json --limit 25 || true
+            python scripts/sov_ticket.py queue               --export .local/registrar/tickets.json --limit 25 || true
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"

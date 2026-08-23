@@ -13,7 +13,8 @@ Before a consequential change, read `STATUS.yaml`, `SYSTEM.md`, `CONTRACT.md`,
 The governing documents form one design System of Record with explicit roles:
 
 - `SYSTEM.md` owns the system boundary and operating model;
-- `CLASSIFICATION.md` owns architectural and information-role vocabulary;
+- `CLASSIFICATION.md` owns architectural, information-role, and
+  operating-loop vocabulary;
 - `CONTRACT.md` owns invariants;
 - `PRD.md` owns Phase-I requirements;
 - `SPEC.md` owns logical objects, transitions, predicates, and refusals;

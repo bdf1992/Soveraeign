@@ -15,13 +15,13 @@ subject to the `AI-NATIVE.md` axes and, eventually, the Soveraeign bar.
 ## Three tiers
 
 The loop runs on an authority-delegation chain. Grants flow down and narrow at
-every step; reports flow up and are never self-settling; settlement happens one
-tier above execution.
+every step; reports flow up and are never self-settling; each tier's output is
+settled by the tier above it.
 
 | Tier | Role | May | May not |
 | --- | --- | --- | --- |
 | **Control** | Strategic planning and monitoring over registered concerns | Read the concern registry, select the next named operation, declare the operation plan, issue scoped grants, launch orchestrations, observe results independently, settle receipts, update standing, escalate to the owner | Ratify judgement, widen its own grant or effect class, keep private state about concerns |
-| **Orchestration** | Decomposition and supervision of one launched operation | Lease workers, fence execution, collect reports, run independent observation over durable outputs, report settlement evidence upward | Widen the received grant, settle its own operation, ratify anything |
+| **Orchestration** | Decomposition and supervision of one launched operation | Lease workers, fence execution, collect reports, run independent observation over durable outputs, settle worker-task outcomes, report settlement evidence upward | Widen the received grant, settle its own operation, ratify anything |
 | **Work** | Scoped leased execution in a declared environment | Execute the leased task, emit an attributed report | Settle, witness its own output, write authoritative state, outlive its lease |
 
 Escalation to the owner is a first-class transition, not a failure: judgement
@@ -119,9 +119,10 @@ and the domain skills its concern requires.
 - `Feedback Skill` — standing review, residual and seam capture, correction
   proposals routed into `OPEN-SEAMS.md`, `decisions/`, and `STATUS.yaml`.
 
-A skill links to the owning governing document for every rule it applies. A
-skill that restates a rule in its own words creates a competing authority and
-is defective.
+A skill links to the owning governing document for every rule it applies and
+may sequence or cite owned rules; a skill that restates one as independent
+authority is defective. On any divergence between a skill and an owning
+document, the owning document prevails.
 
 ## Workflow templates
 
@@ -187,5 +188,8 @@ enforce.
 This loop is `BUILT` when the governing documents register it, repository
 verification passes, and the binding skeleton exists at proposal standing. It
 is `WITNESSED` only after its own release gate is exercised against a real
-concern. It is `RATIFIED` only when Bdo accepts the tiers, dyads, registry
-derivation, and Red-gated release requirement recorded as open decision O13.
+concern; a bounded, owner-directed provisional exercise is admitted for that
+witnessing before ratification. It is `RATIFIED` only when Bdo accepts the
+tiers, dyads, registry derivation, and Red-gated release requirement recorded
+as open decision O13. O13 therefore gates activation — the loop becoming the
+required process — not the provisional exercise that witnesses it.

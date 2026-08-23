@@ -9,8 +9,8 @@ operating loop in `SDLC.md`: a three-tier authority-delegation chain
 (Control, Orchestration, Work) running workflow templates over a registry of
 domain-mapped concerns.
 
-Grants flow down and narrow; reports flow up and never self-settle;
-settlement happens one tier above execution; escalation to the owner is a
+Grants flow down and narrow; reports flow up and never self-settle; each
+tier's output is settled by the tier above it; escalation to the owner is a
 first-class transition. Tier depth is fixed at three.
 
 Name two paired stances as typed dyads rather than named people or models,

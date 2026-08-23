@@ -62,6 +62,8 @@ class Attempt:
         self.interface_id = interface_id
         self.preconditions: list[dict[str, Any]] = []
         self.closed = False
+        # One reading of the clock per attempt: the gate and the receipt agree on "now".
+        self.opened_at = kernel.now()
 
     def check(self, predicate: str, result: bool, **detail: Any) -> bool:
         self.preconditions.append({"predicate": predicate, "result": bool(result), **detail})
@@ -75,7 +77,7 @@ class Attempt:
                         scope: str) -> bool:
         grant = self.kernel.grants.get(grant_id) if grant_id else None
         results = evaluate(grant, actor_id=self.actor_id, authority_type=authority_type,
-                           capability=capability, scope=scope, now=self.kernel.now(),
+                           capability=capability, scope=scope, now=self.opened_at,
                            spent=self.kernel.spent(grant_id) if grant_id else 0)
         self.preconditions.extend(results)
         return authorized(results)
@@ -101,7 +103,8 @@ class Attempt:
         if outcome != "REFUSED" and failed:
             raise RuntimeError(f"{self.transition}: cannot commit over failed {failed}")
         self.closed = True
-        kernel, created_at = self.kernel, self.kernel.timestamp()
+        kernel = self.kernel
+        created_at = self.opened_at.isoformat().replace("+00:00", "Z")
         event_id, receipt_id = kernel.new_id("event"), kernel.new_id("receipt")
         receipt = {
             "receipt_id": receipt_id, "event_id": event_id, "event_type": self.transition,

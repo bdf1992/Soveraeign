@@ -19,8 +19,8 @@ from typing import Any
 from .digests import digest_of
 
 ENTRY_KINDS = (
-    "GRANT", "RECORD", "EVENT", "RECEIPT", "ATTESTATION", "RUN", "REPORT", "OBSERVATION",
-    "COUNTER",
+    "GRANT", "RECORD", "EVENT", "RECEIPT", "ATTESTATION", "PLAN", "RUN", "REPORT",
+    "OBSERVATION", "COUNTER",
 )
 TERMINAL_OUTCOMES = ("COMMITTED", "FAILED", "REFUSED", "COUNTERED", "UNRESOLVED")
 GENESIS = "sha256:genesis"

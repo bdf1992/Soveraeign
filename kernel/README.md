@@ -70,10 +70,18 @@ journal alone and names every visible defect in three readings:
   committed receipt missing any predicate its transition requires as passed
   (`audit.REQUIRED_PASSING`); a committed receipt that required authority but
   names no journaled grant;
-- **authority replay** — for `ratify` and `retract`, the grant named on the
-  receipt is re-evaluated from its journaled body against the journaled
-  record's authority type and scope, the receipt's own timestamp, and the
-  count of prior uses on record;
+- **authority replay** — for `ratify`, `retract`, and `begin_run`, the grant
+  named on the receipt is re-evaluated from its journaled body against the
+  journaled record's authority type and scope (or the journaled plan's
+  operation type and capability), the receipt's own timestamp, and the count
+  of prior uses on record;
+- **ladder and provenance** — walking the journal in order, every committed
+  receipt must be admitted by what precedes it: no rung skipped, no
+  `EFFECTIVE` without a `REPRODUCED` attestation over exact inputs on record
+  and no counter on record, no attestation over an unratified claim, no
+  settlement without an observation on record, no run transition over a run
+  that is not on record; and every record, attestation, run, observation, and
+  counter body must be named by the receipt of the transition that emits it;
 - **projections** — every projected grant, attestation, observation, counter,
   record, and run must equal its journaled body on every immutable field, and
   the fields transitions mutate (standing, effectiveness, counters, run
@@ -82,13 +90,16 @@ journal alone and names every visible defect in three readings:
 Budget spend and the prior receipt of a retraction are likewise read from the
 journal, never from the projection dictionaries. That is how "service writes
 authoritative state around the kernel" is exposed rather than prevented: a
-caller holding a reference to the kernel's state can edit any projection, and
-an independent reader of the journal will see that it did. What the audit
-cannot replay is the pre-state digest a transition compared against, because
-the journal does not carry intermediate projections; a forger who fabricates a
-complete, grant-backed, replay-consistent receipt over a record whose journaled
-history admits it is indistinguishable from the kernel. Durable storage behind
-the same surface is issue #7.
+caller holding a reference to the kernel's state can edit any projection or
+append any body, and an independent reader of the journal will see that it
+did. What the audit cannot replay is the pre-state digest a transition compared
+against, because the journal does not carry intermediate projections, and it
+cannot tell a grant appended raw from one registered (grants have no receipt
+of their own until O3 settles issuance). A forger who writes a complete,
+consistent history — body, receipt, predicates, a journaled grant that replays,
+in the order the ladder requires — is indistinguishable from the kernel; that
+is the boundary #7 moves when the journal leaves the process. Durable storage
+behind the same surface is issue #7.
 
 ## Running it
 
@@ -106,9 +117,9 @@ through the independent validator in `scripts/sovticket/jsonschema.py`, probes
 the audit with forged commits and edited projections, and fails if any declared
 case or reason code was not exercised or any transition lacks its pair.
 
-Witnessed twice: `reports/2026-08-23-kernel-witness.md` records the
-independent observations over commits `681861e` and `d534dbd`, the defeats each
-found, and which of them the following commit closed.
+Witnessed three times: `reports/2026-08-23-kernel-witness.md` records the
+independent observations over commits `681861e`, `d534dbd`, and `1485439`, the
+defeats each found, and which of them the following commit closed.
 
 ## Known gaps
 

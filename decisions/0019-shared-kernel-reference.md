@@ -69,8 +69,17 @@ transitions trusted; it also found a regression where a caller predicate
 without a result crashed a refusal path instead of receipting it. The next
 commit rebuilds every projection from the journal, replays the authority gate
 for `ratify` and `retract` from journaled bodies, and restores the refusal.
-Standing after both passes: `BUILT`, because each closing commit is the
-builder's. The remaining findings are queued below.
+
+A third pass over `1485439` reproduced every closure with no false positives
+and found the last structural layer: the audit rebuilt standing from receipts
+but never asked whether the journal admitted each receipt (a rung skipped, an
+`EFFECTIVE` with no attestation or over a counter, a settlement with no
+observation), and a body appended raw needed no receipt. The next commit walks
+the journal in order and checks each committed receipt against what precedes
+it, requires every emitted body to be named by its transition's receipt,
+journals the plan so `begin_run` replays like `ratify`, and reads the clock
+once per attempt. Standing after three passes: `BUILT`, because each closing
+commit is the builder's. The remaining findings are queued below.
 
 ## Judgement queued for Bdo
 
@@ -90,3 +99,8 @@ builder's. The remaining findings are queued below.
 8. Is an out-of-vocabulary call a refusal that owes a receipt (`SPEC.md`
    Receipt: attributable even when refused), or a non-attempt that may raise?
    The reference raises.
+9. Is `Journal.append` a surface services may call? The tests use it to
+   simulate a bypass; if services may, the ladder and provenance readings are
+   the only exposure left and the README limit sentence should say so.
+10. Should grants carry a receipt, so a raw `GRANT` append is exposed like any
+    other body? This is O3's question seen from the journal.

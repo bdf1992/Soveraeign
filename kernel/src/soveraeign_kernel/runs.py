@@ -65,6 +65,7 @@ class RunTransitions(KernelBase):
             expires = self.now() + timedelta(seconds=lease_seconds or 60)
             run.lease_expires_at = expires.isoformat().replace("+00:00", "Z")
         self.runs[run.run_id] = run
+        self.journal.append("PLAN", dict(plan))  # so the begin_run gate can be replayed
         self.journal.append("RUN", run.to_dict())
         receipt = attempt.commit(event_outcome="ATTEMPTED", phase="ATTEMPTED",
                                  reason="plan complete; gates passed", emitted=[run.run_id])

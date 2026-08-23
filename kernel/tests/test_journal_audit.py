@@ -6,7 +6,7 @@ from pathlib import Path
 import json
 import sys
 
-from support import BDO, MODEL, REPO_ROOT, KernelCase, grant, plan
+from support import BDO, MODEL, REPO_ROOT, WORKER, KernelCase, grant, plan
 
 sys.path.insert(0, str(REPO_ROOT / "scripts"))
 
@@ -110,7 +110,7 @@ class JournalAudit(KernelCase):
         forged.commit(reason="every predicate fabricated, no grant named")
         self.kernel.records[record_id].standing_history.append("RATIFIED")
         defects = self.kernel.audit()
-        self.assertTrue(any("of which none are on record" in d for d in defects), defects)
+        self.assertTrue(any("not on record: all of them" in d for d in defects), defects)
 
     def test_fabricated_commit_under_wrong_grant_fails_replay(self) -> None:
         record_id = self.admitted()  # requires JUDGEMENT; g-verify is VERIFICATION
@@ -166,6 +166,82 @@ class JournalAudit(KernelCase):
         record_id = self.full_walk()
         self.kernel.records[record_id].countered_by.clear()
         self.assertIn(f"record {record_id}: counters diverge from journal", self.kernel.audit())
+
+    def forge(self, transition: str, target: str, grant_ids: list[str] | None = None,
+              actor: str = BDO, emitted: list[str] | None = None,
+              operation_id: str | None = None) -> dict:
+        """A forger who fabricates every predicate the audit table asks for."""
+        from soveraeign_kernel.audit import REQUIRED_PASSING
+        forged = self.kernel.attempt(transition, actor_id=actor, actor_kind="HUMAN",
+                                     inputs=[{"address": target, "digest": "sha256:x"}],
+                                     grant_ids=grant_ids or [], operation_id=operation_id)
+        for predicate in REQUIRED_PASSING[transition]:
+            forged.check(predicate, True)
+        return forged.commit(reason="fabricated", emitted=emitted or [])
+
+    def test_forged_rung_skip_is_exposed(self) -> None:
+        record_id = self.recorded()  # RECORDED only; no ADMITTED on record
+        self.forge("ratify", record_id, ["g-judgement"])
+        defects = self.kernel.audit()
+        self.assertTrue(any("journaled standing is 'RECORDED', not 'ADMITTED'" in d
+                            for d in defects), defects)
+
+    def test_forged_effectiveness_without_attestation_is_exposed(self) -> None:
+        record_id = self.ratified()
+        self.forge("make_effective", record_id)
+        defects = self.kernel.audit()
+        self.assertTrue(any("without a REPRODUCED attestation" in d for d in defects), defects)
+
+    def test_forged_effectiveness_over_counter_is_exposed(self) -> None:
+        record_id = self.ratified()
+        self.attested(record_id)
+        self.kernel.retract(record_id, actor_id=BDO, actor_kind="HUMAN", grant_id="g-retract",
+                            reason="withdrawn")
+        self.forge("make_effective", record_id)
+        defects = self.kernel.audit()
+        self.assertTrue(any("over a countered record" in d for d in defects), defects)
+
+    def test_forged_settlement_without_observation_is_exposed(self) -> None:
+        run_id = self.begun()
+        self.reported(run_id)
+        self.forge("settle_run", run_id)
+        defects = self.kernel.audit()
+        self.assertTrue(any("with no observation on record" in d for d in defects), defects)
+
+    def test_forged_begin_run_fails_replay(self) -> None:
+        from soveraeign_kernel import Run
+        run = Run("urn:soveraeign:run:forged", "urn:soveraeign:operation:derive-1", MODEL, None,
+                  "sha256:v", None, None, "t", "RECORD_LOCAL", [])
+        self.kernel.journal.append("PLAN", plan())
+        self.kernel.journal.append("RUN", run.to_dict())
+        self.forge("begin_run", "urn:soveraeign:version:1", ["g-judgement"], actor=MODEL,
+                   emitted=[run.run_id], operation_id=run.operation_id)
+        defects = self.kernel.audit()
+        self.assertTrue(any("begin_run under g-judgement fails replay" in d for d in defects),
+                        defects)
+        # A forged begin_run that names no journaled plan is exposed for that instead.
+        self.forge("begin_run", "urn:soveraeign:version:1", ["g-operate"], emitted=["r2"])
+        self.assertTrue(any("no journaled record or plan" in d for d in self.kernel.audit()))
+
+    def test_raw_bodies_without_receipts_are_exposed(self) -> None:
+        record_id = self.ratified()
+        run_id = self.begun()
+        self.kernel.journal.append("ATTESTATION", {
+            "attestation_id": "a-raw", "claim_id": record_id, "validator_id": "v",
+            "validator_version": "1", "input_addresses": [], "input_digests": ["sha256:in1"],
+            "run_id": None, "outcome": "REPRODUCED", "evidence_addresses": [], "created_at": "t"})
+        self.kernel.journal.append("OBSERVATION", {
+            "observation_id": "o-raw", "run_id": run_id, "observer_id": WORKER,
+            "observer_relation": "EXECUTOR", "observed_state_addresses": [],
+            "observed_state_digests": [], "predicate_results": [], "observed_at": "t"})
+        defects = self.kernel.audit()
+        self.assertIn("attestation a-raw: no attest receipt emits it", defects)
+        self.assertIn("observation o-raw: no observe_run receipt emits it", defects)
+
+    def test_gate_and_receipt_share_one_clock_reading(self) -> None:
+        receipt = self.kernel.ratify(self.admitted(), actor_id=BDO, actor_kind="HUMAN",
+                                     expected_state=None, grant_id="g-judgement")
+        self.assertEqual(receipt["created_at"], "2026-08-23T12:00:00Z")
 
     def test_commit_over_failed_precondition_is_impossible(self) -> None:
         attempt = self.kernel.attempt("admit", actor_id=BDO, actor_kind="HUMAN",

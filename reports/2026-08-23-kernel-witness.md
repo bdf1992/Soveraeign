@@ -1,6 +1,6 @@
 # Shared kernel witness, 2026-08-23
 
-Status: `WITNESSED TWICE AT BUILT · NOT RATIFIED`
+Status: `WITNESSED THREE TIMES AT BUILT · NOT RATIFIED`
 
 Issue #6, branch `feat/6-shared-kernel-transitions`, draft PR #61. The builder
 was the interactive Claude session; the witness was a separately launched
@@ -65,13 +65,36 @@ It then found:
 
 Standing supported by the second pass: `OPEN -> BUILT` for the narrowed claim.
 
-## Checks after the second closing commit
+## Third pass, over `1485439`
+
+The same witness re-ran P1b, P1c, P5b, and N1 through N7: all reproduced-
+closed, no false positives across the 43 honest cases, budget and time replay
+agreeing with the gate. It dissented from the README's "only remaining path"
+sentence with eight further paths:
+
+| # | Defeat | Closed in the next commit |
+| --- | --- | --- |
+| H1 | forged `ratify` over a `RECORDED` record (no `ADMITTED` on record) passed audit | yes: the ladder walk refuses a skipped rung |
+| H2 | forged `make_effective` with no attestation on record | yes: `EFFECTIVE` needs a `REPRODUCED` attestation over exact inputs on record before it |
+| H3 | forged `make_effective` over a record with a live counter on record | yes: named |
+| H4 | forged `settle_run` with no observation on record | yes: named |
+| H5 | forged `begin_run` under the wrong grant, unreplayable because the plan was not journaled | yes: the plan is journaled and `begin_run` replays like `ratify` |
+| H6 | raw `ATTESTATION` append with no `attest` receipt made a record effective | yes: every emitted body must be named by its transition's receipt |
+| H7 | raw `OBSERVATION` append by the worker with no `observe_run` receipt settled a run | yes: same |
+| H8 | raw `GRANT` append bypassing registration | no: grants have no receipt until O3; queued as judgement 10 |
+| — | inverted wording in the unknown-grant message | yes |
+| — | two clock readings per attempt could disagree under a real clock | yes: one reading per attempt |
+
+Standing supported by the third pass: `OPEN -> BUILT` for the narrowed claim.
+
+## Checks after the third closing commit
 
 ```text
-python scripts/verify.py    PASS, under the 3 s budget; kernel suite 68 tests OK
+python scripts/verify.py    PASS, under the 3 s budget; kernel suite 75 tests OK
 python scripts/lint.py      PASS; every kernel module under 300 lines
 ```
 
 Standing after this file: still `BUILT`. Each closing commit was written by
 the builder, and a build cannot witness itself. The next witness step is the
-same command set over the new head, with both tables above as the checklist.
+same command set over the new head, with the three tables above as the
+checklist.

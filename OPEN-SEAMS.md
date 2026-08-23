@@ -59,6 +59,16 @@ Record-local retraction is defined. Irreversible resource consumption and
 external-world mutation need explicit Phase-I refusal/isolation rules. World
 rollback or compensation remains later work.
 
+`STATUS.yaml` states the boundary as `no_external_effects_in_phase_i`, with no
+exception. Bdo granted one on 2026-08-23 for board management: write to the
+GitHub coordination surface, with a confirm on each batch. The capability is
+built and refuses without a per-action approval
+(`decisions/0027-board-management-role.md`), so the grant is honoured in
+practice while the boundary text still reads as absolute. The two must be
+reconciled: either the boundary is restated to admit an owner-approved,
+per-action external effect, or the capability is withdrawn. The restatement is
+Bdo's; it is drafted in 0027 and is not applied here.
+
 ## S10 · Product boundary
 
 The system is currently described as an enterprise operating environment. The

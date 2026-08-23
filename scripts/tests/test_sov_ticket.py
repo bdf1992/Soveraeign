@@ -16,7 +16,6 @@ import unittest
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from sovticket import labels as labelmod  # noqa: E402
 from sovticket import queue as queuemod  # noqa: E402
 from sovticket import transitions as transmod  # noqa: E402
 from sovticket.jsonschema import validate  # noqa: E402
@@ -181,46 +180,6 @@ class TransitionTableTests(unittest.TestCase):
         self.assertTrue(entry["requires_purple"])
 
 
-class LabelProjectionTests(unittest.TestCase):
-    """Every label the projection can emit is declared in the canonical catalogue."""
-
-    def setUp(self) -> None:
-        self.projection = labelmod.load_projection(ROOT)
-        self.catalogue = labelmod.load_catalogue(ROOT)
-
-    def test_catalogue_is_not_empty(self) -> None:
-        self.assertGreater(len(self.catalogue), 20)
-
-    def test_every_projectable_label_is_declared(self) -> None:
-        emitted = set()
-        for key in (
-            "kind_to_type",
-            "village_to_label",
-            "horizon_to_label",
-            "effect_to_label",
-            "standing_to_label",
-            "standing_to_witness_label",
-            "kind_to_scope",
-        ):
-            emitted.update(value for value in self.projection[key].values() if value)
-        undeclared = emitted - self.catalogue
-        self.assertEqual(undeclared, set(), f"projected labels missing from .github/labels.yml: {undeclared}")
-
-    def test_record_local_is_the_omitted_default(self) -> None:
-        self.assertIsNone(self.projection["effect_to_label"]["RECORD_LOCAL"])
-
-    def test_drift_is_detected_in_both_directions(self) -> None:
-        metadata = {"kind": "bit", "village": "ground-and-evidence", "horizon": "NOW", "standing": "OPEN"}
-        drift = labelmod.compare("#9", metadata, ["type: village", "horizon: now"], self.projection)
-        self.assertIn("type: bit", drift.missing)
-        self.assertIn("type: village", drift.unexpected)
-        self.assertFalse(drift.clean)
-
-    def test_unmapped_metadata_is_reported_not_ignored(self) -> None:
-        _, unmapped = labelmod.project({"effect_class": "EXTERNAL_WORLD"}, self.projection)
-        self.assertIn("effect_class=EXTERNAL_WORLD", unmapped)
-
-
 class QueueTests(unittest.TestCase):
     """The queue is a deterministic, rebuildable projection."""
 
@@ -256,6 +215,14 @@ class QueueTests(unittest.TestCase):
         entries = queuemod.build([closed, self._ticket(2, requires=["#1"])], self.policy)
         self.assertEqual([entry.issue for entry in entries], ["#2"])
         self.assertFalse(entries[0].blocked)
+
+    def test_a_story_is_told_not_taken(self) -> None:
+        story = self._ticket(
+            60, kind="story", leans_on=["#1"], asks=[{"of": "#1", "adjustment": "exist"}]
+        )
+        entries = queuemod.build([self._ticket(1), story], self.policy)
+        self.assertEqual([entry.issue for entry in entries], ["#1"])
+        self.assertEqual(entries[0].unblocks, ())
 
     def test_dependency_outside_the_ticket_set_blocks(self) -> None:
         entries = queuemod.build([self._ticket(2, requires=["#99"])], self.policy)

@@ -37,7 +37,8 @@ Implementation begins only after:
 2. console-specific positive and defeating fixtures are executable;
 3. the Asset Service and Proofing Service event and receipt read paths are
    stable enough to project without direct database access;
-4. Bdo accepts the Console Service boundary (`decisions/0014`; `STATUS.yaml`
-   O18).
+4. Bdo authorizes a provisional Human Binding target or O10 closes
+   (`decisions/0014`; `STATUS.yaml` O18).
+   Ratifying the boundary itself gates only the standing word.
 
 No placeholder implementation is treated as progress toward those gates.

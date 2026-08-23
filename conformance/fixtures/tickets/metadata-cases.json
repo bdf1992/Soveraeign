@@ -402,6 +402,836 @@
         "target_pr": "#43",
         "target_head": "b03a0ea9b832b226150a27d6986e69f1b492b22d"
       }
+    },
+    {
+      "case_id": "MC-011-story-is-a-declared-kind",
+      "expect": "VALID",
+      "proves": "A told story - one actor in one role, one counter, what they expected, what they found, and what they ask of the substrate - is a first-class ticket kind.",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:story",
+          "village:reach-and-motion",
+          "horizon:now-to-next",
+          "effect:record-local"
+        ],
+        "kind": "story",
+        "story_id": "STORY-OPERATOR-DESK-HUMAN-JUDGEMENT-REQUEST",
+        "actor_kind": "HUMAN",
+        "role": "operator",
+        "village": "reach-and-motion",
+        "village_issue": "#2",
+        "parent": "#30",
+        "expected": "Raise one question for the owner from my desk and have it land on theirs, attributed to me, without deciding it for them.",
+        "found": "There is no desk. The Console is chartered and not implemented, and nothing can tell the record who I am.",
+        "leans_on": [
+          "#6",
+          "#7",
+          "#11",
+          "#12",
+          "#13"
+        ],
+        "asks": [
+          {
+            "of": "#11",
+            "adjustment": "give a human operator a continuous identity the record can attribute a request to"
+          },
+          {
+            "of": "#30",
+            "adjustment": "realize the judgement-request post as a Human Binding surface"
+          }
+        ],
+        "scenario": null,
+        "standing": "PROPOSED",
+        "horizon": "NOW_TO_NEXT",
+        "authority": "Bdo/product-intent",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": ".claude/epic/NARRATIVE.md#the-operator-desk-30-45",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "trust-control",
+          "record-spine"
+        ]
+      }
+    },
+    {
+      "case_id": "MC-012-story-bound-to-a-scenario-may-rise-above-proposed",
+      "expect": "VALID",
+      "proves": "Once a story names the scenario that walks it, its standing may leave PROPOSED.",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:story",
+          "village:reach-and-motion",
+          "horizon:now-to-next",
+          "effect:record-local"
+        ],
+        "kind": "story",
+        "story_id": "STORY-OPERATOR-DESK-HUMAN-JUDGEMENT-REQUEST",
+        "actor_kind": "HUMAN",
+        "role": "operator",
+        "village": "reach-and-motion",
+        "village_issue": "#2",
+        "parent": "#30",
+        "expected": "Raise one question for the owner from my desk and have it land on theirs, attributed to me, without deciding it for them.",
+        "found": "There is no desk. The Console is chartered and not implemented, and nothing can tell the record who I am.",
+        "leans_on": [
+          "#6",
+          "#7",
+          "#11",
+          "#12",
+          "#13"
+        ],
+        "asks": [
+          {
+            "of": "#11",
+            "adjustment": "give a human operator a continuous identity the record can attribute a request to"
+          },
+          {
+            "of": "#30",
+            "adjustment": "realize the judgement-request post as a Human Binding surface"
+          }
+        ],
+        "scenario": "RUN-I1-PROPOSE",
+        "standing": "DECLARED_NOT_IMPLEMENTED",
+        "horizon": "NOW_TO_NEXT",
+        "authority": "Bdo/product-intent",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": ".claude/epic/NARRATIVE.md#the-operator-desk-30-45",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "trust-control",
+          "record-spine"
+        ]
+      }
+    },
+    {
+      "case_id": "MC-013-story-without-an-actor",
+      "expect": "INVALID",
+      "proves": "A story with nobody telling it is not a story; the teller is attributed in the kernel's own actor_kind.",
+      "refuses": "actor_kind",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:story",
+          "village:reach-and-motion",
+          "horizon:now-to-next",
+          "effect:record-local"
+        ],
+        "kind": "story",
+        "story_id": "STORY-OPERATOR-DESK-HUMAN-JUDGEMENT-REQUEST",
+        "role": "operator",
+        "village": "reach-and-motion",
+        "village_issue": "#2",
+        "parent": "#30",
+        "expected": "Raise one question for the owner from my desk and have it land on theirs, attributed to me, without deciding it for them.",
+        "found": "There is no desk. The Console is chartered and not implemented, and nothing can tell the record who I am.",
+        "leans_on": [
+          "#6",
+          "#7",
+          "#11",
+          "#12",
+          "#13"
+        ],
+        "asks": [
+          {
+            "of": "#11",
+            "adjustment": "give a human operator a continuous identity the record can attribute a request to"
+          },
+          {
+            "of": "#30",
+            "adjustment": "realize the judgement-request post as a Human Binding surface"
+          }
+        ],
+        "scenario": null,
+        "standing": "PROPOSED",
+        "horizon": "NOW_TO_NEXT",
+        "authority": "Bdo/product-intent",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": ".claude/epic/NARRATIVE.md#the-operator-desk-30-45",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "trust-control",
+          "record-spine"
+        ]
+      }
+    },
+    {
+      "case_id": "MC-014-story-role-outside-the-classification",
+      "expect": "INVALID",
+      "proves": "The role must be a participation or boundary role from CLASSIFICATION.md; owner is a context, not a role, and is refused here.",
+      "refuses": "role",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:story",
+          "village:reach-and-motion",
+          "horizon:now-to-next",
+          "effect:record-local"
+        ],
+        "kind": "story",
+        "story_id": "STORY-OPERATOR-DESK-HUMAN-JUDGEMENT-REQUEST",
+        "actor_kind": "HUMAN",
+        "role": "owner",
+        "village": "reach-and-motion",
+        "village_issue": "#2",
+        "parent": "#30",
+        "expected": "Raise one question for the owner from my desk and have it land on theirs, attributed to me, without deciding it for them.",
+        "found": "There is no desk. The Console is chartered and not implemented, and nothing can tell the record who I am.",
+        "leans_on": [
+          "#6",
+          "#7",
+          "#11",
+          "#12",
+          "#13"
+        ],
+        "asks": [
+          {
+            "of": "#11",
+            "adjustment": "give a human operator a continuous identity the record can attribute a request to"
+          },
+          {
+            "of": "#30",
+            "adjustment": "realize the judgement-request post as a Human Binding surface"
+          }
+        ],
+        "scenario": null,
+        "standing": "PROPOSED",
+        "horizon": "NOW_TO_NEXT",
+        "authority": "Bdo/product-intent",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": ".claude/epic/NARRATIVE.md#the-operator-desk-30-45",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "trust-control",
+          "record-spine"
+        ]
+      }
+    },
+    {
+      "case_id": "MC-015-story-without-an-ask",
+      "expect": "INVALID",
+      "proves": "A story that asks nothing of the substrate is a walked scenario, not a story.",
+      "refuses": "asks",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:story",
+          "village:reach-and-motion",
+          "horizon:now-to-next",
+          "effect:record-local"
+        ],
+        "kind": "story",
+        "story_id": "STORY-OPERATOR-DESK-HUMAN-JUDGEMENT-REQUEST",
+        "actor_kind": "HUMAN",
+        "role": "operator",
+        "village": "reach-and-motion",
+        "village_issue": "#2",
+        "parent": "#30",
+        "expected": "Raise one question for the owner from my desk and have it land on theirs, attributed to me, without deciding it for them.",
+        "found": "There is no desk. The Console is chartered and not implemented, and nothing can tell the record who I am.",
+        "leans_on": [
+          "#6",
+          "#7",
+          "#11",
+          "#12",
+          "#13"
+        ],
+        "asks": [],
+        "scenario": null,
+        "standing": "PROPOSED",
+        "horizon": "NOW_TO_NEXT",
+        "authority": "Bdo/product-intent",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": ".claude/epic/NARRATIVE.md#the-operator-desk-30-45",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "trust-control",
+          "record-spine"
+        ]
+      }
+    },
+    {
+      "case_id": "MC-016-story-ask-must-name-its-owner",
+      "expect": "INVALID",
+      "proves": "Every ask is addressed to the issue that owns the substrate it wants changed.",
+      "refuses": "of",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:story",
+          "village:reach-and-motion",
+          "horizon:now-to-next",
+          "effect:record-local"
+        ],
+        "kind": "story",
+        "story_id": "STORY-OPERATOR-DESK-HUMAN-JUDGEMENT-REQUEST",
+        "actor_kind": "HUMAN",
+        "role": "operator",
+        "village": "reach-and-motion",
+        "village_issue": "#2",
+        "parent": "#30",
+        "expected": "Raise one question for the owner from my desk and have it land on theirs, attributed to me, without deciding it for them.",
+        "found": "There is no desk. The Console is chartered and not implemented, and nothing can tell the record who I am.",
+        "leans_on": [
+          "#6",
+          "#7",
+          "#11",
+          "#12",
+          "#13"
+        ],
+        "asks": [
+          {
+            "adjustment": "just make it work"
+          }
+        ],
+        "scenario": null,
+        "standing": "PROPOSED",
+        "horizon": "NOW_TO_NEXT",
+        "authority": "Bdo/product-intent",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": ".claude/epic/NARRATIVE.md#the-operator-desk-30-45",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "trust-control",
+          "record-spine"
+        ]
+      }
+    },
+    {
+      "case_id": "MC-017-story-above-proposed-needs-a-scenario",
+      "expect": "INVALID",
+      "proves": "A story cannot be bound, walked, or witnessed without the scenario that walks it.",
+      "refuses": "scenario",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:story",
+          "village:reach-and-motion",
+          "horizon:now-to-next",
+          "effect:record-local"
+        ],
+        "kind": "story",
+        "story_id": "STORY-OPERATOR-DESK-HUMAN-JUDGEMENT-REQUEST",
+        "actor_kind": "HUMAN",
+        "role": "operator",
+        "village": "reach-and-motion",
+        "village_issue": "#2",
+        "parent": "#30",
+        "expected": "Raise one question for the owner from my desk and have it land on theirs, attributed to me, without deciding it for them.",
+        "found": "There is no desk. The Console is chartered and not implemented, and nothing can tell the record who I am.",
+        "leans_on": [
+          "#6",
+          "#7",
+          "#11",
+          "#12",
+          "#13"
+        ],
+        "asks": [
+          {
+            "of": "#11",
+            "adjustment": "give a human operator a continuous identity the record can attribute a request to"
+          },
+          {
+            "of": "#30",
+            "adjustment": "realize the judgement-request post as a Human Binding surface"
+          }
+        ],
+        "scenario": null,
+        "standing": "DECLARED_NOT_IMPLEMENTED",
+        "horizon": "NOW_TO_NEXT",
+        "authority": "Bdo/product-intent",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": ".claude/epic/NARRATIVE.md#the-operator-desk-30-45",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "trust-control",
+          "record-spine"
+        ]
+      }
+    },
+    {
+      "case_id": "MC-018-story-may-not-carry-construction-identity",
+      "expect": "INVALID",
+      "proves": "A story closes no repository surface; a stub_id on it is refused outright.",
+      "refuses": "stub_id",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:story",
+          "village:reach-and-motion",
+          "horizon:now-to-next",
+          "effect:record-local"
+        ],
+        "kind": "story",
+        "story_id": "STORY-OPERATOR-DESK-HUMAN-JUDGEMENT-REQUEST",
+        "actor_kind": "HUMAN",
+        "role": "operator",
+        "village": "reach-and-motion",
+        "village_issue": "#2",
+        "parent": "#30",
+        "expected": "Raise one question for the owner from my desk and have it land on theirs, attributed to me, without deciding it for them.",
+        "found": "There is no desk. The Console is chartered and not implemented, and nothing can tell the record who I am.",
+        "leans_on": [
+          "#6",
+          "#7",
+          "#11",
+          "#12",
+          "#13"
+        ],
+        "asks": [
+          {
+            "of": "#11",
+            "adjustment": "give a human operator a continuous identity the record can attribute a request to"
+          },
+          {
+            "of": "#30",
+            "adjustment": "realize the judgement-request post as a Human Binding surface"
+          }
+        ],
+        "scenario": null,
+        "standing": "PROPOSED",
+        "horizon": "NOW_TO_NEXT",
+        "authority": "Bdo/product-intent",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": ".claude/epic/NARRATIVE.md#the-operator-desk-30-45",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "trust-control",
+          "record-spine"
+        ],
+        "stub_id": "STUB-OPERATOR-DESK"
+      }
+    },
+    {
+      "case_id": "MC-019-story-may-not-require",
+      "expect": "INVALID",
+      "proves": "A story leans on supports and is never dispatched; a requires edge would put it in the queue's DAG.",
+      "refuses": "requires",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:story",
+          "village:reach-and-motion",
+          "horizon:now-to-next",
+          "effect:record-local"
+        ],
+        "kind": "story",
+        "story_id": "STORY-OPERATOR-DESK-HUMAN-JUDGEMENT-REQUEST",
+        "actor_kind": "HUMAN",
+        "role": "operator",
+        "village": "reach-and-motion",
+        "village_issue": "#2",
+        "parent": "#30",
+        "expected": "Raise one question for the owner from my desk and have it land on theirs, attributed to me, without deciding it for them.",
+        "found": "There is no desk. The Console is chartered and not implemented, and nothing can tell the record who I am.",
+        "leans_on": [
+          "#6",
+          "#7",
+          "#11",
+          "#12",
+          "#13"
+        ],
+        "asks": [
+          {
+            "of": "#11",
+            "adjustment": "give a human operator a continuous identity the record can attribute a request to"
+          },
+          {
+            "of": "#30",
+            "adjustment": "realize the judgement-request post as a Human Binding surface"
+          }
+        ],
+        "scenario": null,
+        "standing": "PROPOSED",
+        "horizon": "NOW_TO_NEXT",
+        "authority": "Bdo/product-intent",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": ".claude/epic/NARRATIVE.md#the-operator-desk-30-45",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "trust-control",
+          "record-spine"
+        ],
+        "requires": [
+          "#11"
+        ]
+      }
+    },
+    {
+      "case_id": "MC-020-story-without-what-was-found",
+      "expect": "INVALID",
+      "proves": "A story exists because a participant found the realization short; it must say where.",
+      "refuses": "found",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:story",
+          "village:reach-and-motion",
+          "horizon:now-to-next",
+          "effect:record-local"
+        ],
+        "kind": "story",
+        "story_id": "STORY-OPERATOR-DESK-HUMAN-JUDGEMENT-REQUEST",
+        "actor_kind": "HUMAN",
+        "role": "operator",
+        "village": "reach-and-motion",
+        "village_issue": "#2",
+        "parent": "#30",
+        "expected": "Raise one question for the owner from my desk and have it land on theirs, attributed to me, without deciding it for them.",
+        "leans_on": [
+          "#6",
+          "#7",
+          "#11",
+          "#12",
+          "#13"
+        ],
+        "asks": [
+          {
+            "of": "#11",
+            "adjustment": "give a human operator a continuous identity the record can attribute a request to"
+          },
+          {
+            "of": "#30",
+            "adjustment": "realize the judgement-request post as a Human Binding surface"
+          }
+        ],
+        "scenario": null,
+        "standing": "PROPOSED",
+        "horizon": "NOW_TO_NEXT",
+        "authority": "Bdo/product-intent",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": ".claude/epic/NARRATIVE.md#the-operator-desk-30-45",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "trust-control",
+          "record-spine"
+        ]
+      }
+    },
+    {
+      "case_id": "MC-021-unblock-is-a-declared-kind",
+      "expect": "VALID",
+      "proves": "Blocked is a ticket, not a status: a proven block files as an unblock request with the held ticket, the exact transition, the provision, and the tier asked.",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:unblock",
+          "village:trust-and-control",
+          "horizon:now",
+          "effect:request-only"
+        ],
+        "kind": "unblock",
+        "unblock_id": "UNBLOCK-PROJECTION-RATIFY-BOUNDARY",
+        "held": "#41",
+        "village": "trust-and-control",
+        "village_issue": "#3",
+        "parent": "#3",
+        "blocked_transition": "projection.ratify_boundary",
+        "missing_precondition": "a live JUDGEMENT grant naming the Asset Projection Service boundary",
+        "governing_rule": "AGENTS.md Authority; STATUS.yaml O21 gates",
+        "requested_provision": "judgement",
+        "requested_by": "controller",
+        "requested_from": "owner",
+        "unblock_condition": "decisions/0021 standing reads RATIFIED with an owner receipt, or a counter-record names the boundary refused",
+        "reachable_alternative": "NONE",
+        "standing": "PROPOSED",
+        "horizon": "NOW",
+        "authority": "controller: request only; no grant widened",
+        "effect_class": "REQUEST_ONLY",
+        "evidence_pointer": "decisions/0023-transition-local-gates.md",
+        "last_observed_at": null,
+        "walker_receipt": "fixture",
+        "demotion_pointer": "#3",
+        "dependency_channels": []
+      }
+    },
+    {
+      "case_id": "MC-022-unblock-worked-by-a-worker-for-a-fixture",
+      "expect": "VALID",
+      "proves": "A missing fixture is a provision a worker can produce; the request routes to that tier, not to the owner.",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:unblock",
+          "village:trust-and-control",
+          "horizon:now",
+          "effect:request-only"
+        ],
+        "kind": "unblock",
+        "unblock_id": "UNBLOCK-PROJ-005-STALE-BUILD-FIXTURE",
+        "held": "#41",
+        "village": "trust-and-control",
+        "village_issue": "#3",
+        "parent": "#3",
+        "blocked_transition": "ticket.promote_to_built",
+        "missing_precondition": "an executable defeating fixture for the stale-build case",
+        "governing_rule": "STATUS.yaml protected boundary no_runtime_code_before_logical_spec_and_defeating_fixtures",
+        "requested_provision": "fixture",
+        "requested_by": "orchestrator",
+        "requested_from": "worker",
+        "unblock_condition": "services/projection/conformance/005 is executable and refuses its defeating branch",
+        "reachable_alternative": "NONE",
+        "standing": "PROPOSED",
+        "horizon": "NOW",
+        "authority": "controller: request only; no grant widened",
+        "effect_class": "REQUEST_ONLY",
+        "evidence_pointer": "decisions/0023-transition-local-gates.md",
+        "last_observed_at": null,
+        "walker_receipt": "fixture",
+        "demotion_pointer": "#3",
+        "dependency_channels": []
+      }
+    },
+    {
+      "case_id": "MC-023-unblock-with-a-reachable-alternative-is-not-blocked",
+      "expect": "INVALID",
+      "proves": "If an admissible path exists the held ticket is gated, not blocked; the request is refused rather than queued.",
+      "refuses": "reachable_alternative",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:unblock",
+          "village:trust-and-control",
+          "horizon:now",
+          "effect:request-only"
+        ],
+        "kind": "unblock",
+        "unblock_id": "UNBLOCK-PROJECTION-RATIFY-BOUNDARY",
+        "held": "#41",
+        "village": "trust-and-control",
+        "village_issue": "#3",
+        "parent": "#3",
+        "blocked_transition": "projection.ratify_boundary",
+        "missing_precondition": "a live JUDGEMENT grant naming the Asset Projection Service boundary",
+        "governing_rule": "AGENTS.md Authority; STATUS.yaml O21 gates",
+        "requested_provision": "judgement",
+        "requested_by": "controller",
+        "requested_from": "owner",
+        "unblock_condition": "decisions/0021 standing reads RATIFIED with an owner receipt, or a counter-record names the boundary refused",
+        "reachable_alternative": "#38 can land the text lane first",
+        "standing": "PROPOSED",
+        "horizon": "NOW",
+        "authority": "controller: request only; no grant widened",
+        "effect_class": "REQUEST_ONLY",
+        "evidence_pointer": "decisions/0023-transition-local-gates.md",
+        "last_observed_at": null,
+        "walker_receipt": "fixture",
+        "demotion_pointer": "#3",
+        "dependency_channels": []
+      }
+    },
+    {
+      "case_id": "MC-024-unblock-may-not-require",
+      "expect": "INVALID",
+      "proves": "Dependency-mapped is not blocked: when some ticket will produce the provision, the held ticket requires that ticket and no unblock request exists.",
+      "refuses": "requires",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:unblock",
+          "village:trust-and-control",
+          "horizon:now",
+          "effect:request-only"
+        ],
+        "kind": "unblock",
+        "unblock_id": "UNBLOCK-PROJECTION-RATIFY-BOUNDARY",
+        "held": "#41",
+        "village": "trust-and-control",
+        "village_issue": "#3",
+        "parent": "#3",
+        "blocked_transition": "projection.ratify_boundary",
+        "missing_precondition": "a live JUDGEMENT grant naming the Asset Projection Service boundary",
+        "governing_rule": "AGENTS.md Authority; STATUS.yaml O21 gates",
+        "requested_provision": "judgement",
+        "requested_by": "controller",
+        "requested_from": "owner",
+        "unblock_condition": "decisions/0021 standing reads RATIFIED with an owner receipt, or a counter-record names the boundary refused",
+        "reachable_alternative": "NONE",
+        "standing": "PROPOSED",
+        "horizon": "NOW",
+        "authority": "controller: request only; no grant widened",
+        "effect_class": "REQUEST_ONLY",
+        "evidence_pointer": "decisions/0023-transition-local-gates.md",
+        "last_observed_at": null,
+        "walker_receipt": "fixture",
+        "demotion_pointer": "#3",
+        "dependency_channels": [],
+        "requires": [
+          "#38"
+        ]
+      }
+    },
+    {
+      "case_id": "MC-025-unblock-judgement-is-asked-of-the-owner",
+      "expect": "INVALID",
+      "proves": "Judgement is owner-held; a request for it addressed to any other tier is a widened grant in disguise.",
+      "refuses": "requested_from",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:unblock",
+          "village:trust-and-control",
+          "horizon:now",
+          "effect:request-only"
+        ],
+        "kind": "unblock",
+        "unblock_id": "UNBLOCK-PROJECTION-RATIFY-BOUNDARY",
+        "held": "#41",
+        "village": "trust-and-control",
+        "village_issue": "#3",
+        "parent": "#3",
+        "blocked_transition": "projection.ratify_boundary",
+        "missing_precondition": "a live JUDGEMENT grant naming the Asset Projection Service boundary",
+        "governing_rule": "AGENTS.md Authority; STATUS.yaml O21 gates",
+        "requested_provision": "judgement",
+        "requested_by": "controller",
+        "requested_from": "controller",
+        "unblock_condition": "decisions/0021 standing reads RATIFIED with an owner receipt, or a counter-record names the boundary refused",
+        "reachable_alternative": "NONE",
+        "standing": "PROPOSED",
+        "horizon": "NOW",
+        "authority": "controller: request only; no grant widened",
+        "effect_class": "REQUEST_ONLY",
+        "evidence_pointer": "decisions/0023-transition-local-gates.md",
+        "last_observed_at": null,
+        "walker_receipt": "fixture",
+        "demotion_pointer": "#3",
+        "dependency_channels": []
+      }
+    },
+    {
+      "case_id": "MC-026-unblock-without-the-held-ticket",
+      "expect": "INVALID",
+      "proves": "An unblock request that names no held ticket unblocks nothing and is a status by another name.",
+      "refuses": "held",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:unblock",
+          "village:trust-and-control",
+          "horizon:now",
+          "effect:request-only"
+        ],
+        "kind": "unblock",
+        "unblock_id": "UNBLOCK-PROJECTION-RATIFY-BOUNDARY",
+        "village": "trust-and-control",
+        "village_issue": "#3",
+        "parent": "#3",
+        "blocked_transition": "projection.ratify_boundary",
+        "missing_precondition": "a live JUDGEMENT grant naming the Asset Projection Service boundary",
+        "governing_rule": "AGENTS.md Authority; STATUS.yaml O21 gates",
+        "requested_provision": "judgement",
+        "requested_by": "controller",
+        "requested_from": "owner",
+        "unblock_condition": "decisions/0021 standing reads RATIFIED with an owner receipt, or a counter-record names the boundary refused",
+        "reachable_alternative": "NONE",
+        "standing": "PROPOSED",
+        "horizon": "NOW",
+        "authority": "controller: request only; no grant widened",
+        "effect_class": "REQUEST_ONLY",
+        "evidence_pointer": "decisions/0023-transition-local-gates.md",
+        "last_observed_at": null,
+        "walker_receipt": "fixture",
+        "demotion_pointer": "#3",
+        "dependency_channels": []
+      }
+    },
+    {
+      "case_id": "MC-027-unblock-without-the-exact-transition",
+      "expect": "INVALID",
+      "proves": "A block names one transition; a whole ticket or service cannot be the thing that is unavailable.",
+      "refuses": "blocked_transition",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:unblock",
+          "village:trust-and-control",
+          "horizon:now",
+          "effect:request-only"
+        ],
+        "kind": "unblock",
+        "unblock_id": "UNBLOCK-PROJECTION-RATIFY-BOUNDARY",
+        "held": "#41",
+        "village": "trust-and-control",
+        "village_issue": "#3",
+        "parent": "#3",
+        "missing_precondition": "a live JUDGEMENT grant naming the Asset Projection Service boundary",
+        "governing_rule": "AGENTS.md Authority; STATUS.yaml O21 gates",
+        "requested_provision": "judgement",
+        "requested_by": "controller",
+        "requested_from": "owner",
+        "unblock_condition": "decisions/0021 standing reads RATIFIED with an owner receipt, or a counter-record names the boundary refused",
+        "reachable_alternative": "NONE",
+        "standing": "PROPOSED",
+        "horizon": "NOW",
+        "authority": "controller: request only; no grant widened",
+        "effect_class": "REQUEST_ONLY",
+        "evidence_pointer": "decisions/0023-transition-local-gates.md",
+        "last_observed_at": null,
+        "walker_receipt": "fixture",
+        "demotion_pointer": "#3",
+        "dependency_channels": []
+      }
+    },
+    {
+      "case_id": "MC-028-unblock-may-not-carry-construction-identity",
+      "expect": "INVALID",
+      "proves": "An unblock request asks for a provision; it is not itself the surface that closes it.",
+      "refuses": "stub_id",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:unblock",
+          "village:trust-and-control",
+          "horizon:now",
+          "effect:request-only"
+        ],
+        "kind": "unblock",
+        "unblock_id": "UNBLOCK-PROJECTION-RATIFY-BOUNDARY",
+        "held": "#41",
+        "village": "trust-and-control",
+        "village_issue": "#3",
+        "parent": "#3",
+        "blocked_transition": "projection.ratify_boundary",
+        "missing_precondition": "a live JUDGEMENT grant naming the Asset Projection Service boundary",
+        "governing_rule": "AGENTS.md Authority; STATUS.yaml O21 gates",
+        "requested_provision": "judgement",
+        "requested_by": "controller",
+        "requested_from": "owner",
+        "unblock_condition": "decisions/0021 standing reads RATIFIED with an owner receipt, or a counter-record names the boundary refused",
+        "reachable_alternative": "NONE",
+        "standing": "PROPOSED",
+        "horizon": "NOW",
+        "authority": "controller: request only; no grant widened",
+        "effect_class": "REQUEST_ONLY",
+        "evidence_pointer": "decisions/0023-transition-local-gates.md",
+        "last_observed_at": null,
+        "walker_receipt": "fixture",
+        "demotion_pointer": "#3",
+        "dependency_channels": [],
+        "stub_id": "STUB-PROJECTION-TEXT-LANE"
+      }
     }
   ]
 }

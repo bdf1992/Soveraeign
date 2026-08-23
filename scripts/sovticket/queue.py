@@ -100,9 +100,13 @@ def build(tickets: list[Ticket], policy: dict[str, Any]) -> list[Entry]:
                 unblocks.setdefault(required, []).append(ticket.ref)
         blocked_by[ticket.ref] = blockers
 
+    outside = set(policy.get("kinds_outside_dispatch", []))
     entries = []
     for ticket in tickets:
         if ticket.state.upper() == "CLOSED":
+            continue
+        # A story is told and walked, never taken; the policy keeps it out of the queue.
+        if ticket.metadata.get("kind") in outside:
             continue
         standing = str(ticket.metadata.get("standing") or "OPEN")
         entries.append(
@@ -138,13 +142,14 @@ def _sort_key(entry: Entry, policy: dict[str, Any]) -> tuple[Any, ...]:
 def render(entries: list[Entry], limit: int | None = None) -> str:
     """Render the queue as a fixed-width table for a report or a terminal."""
     shown = entries[:limit] if limit else entries
-    header = f"{'#':>4}  {'ISSUE':>6}  {'STANDING':<32}  {'HZN':<5}  {'BLK':<3}  TITLE"
+    # HELD is a dependency edge, never a status: the column names what holds the ticket.
+    header = f"{'#':>4}  {'ISSUE':>6}  {'STANDING':<32}  {'HZN':<5}  {'HELD BY':<12}  TITLE"
     lines = [header, "-" * len(header)]
     for rank, entry in enumerate(shown, 1):
-        flag = "yes" if entry.blocked else "-"
+        held = ",".join(ref.split(" ")[0] for ref in entry.blocked_by)[:12] if entry.blocked else "-"
         lines.append(
             f"{rank:>4}  {entry.issue:>6}  {entry.standing:<32}  "
-            f"{entry.horizon[:5]:<5}  {flag:<3}  {entry.title[:56]}"
+            f"{entry.horizon[:5]:<5}  {held:<12}  {entry.title[:52]}"
         )
     takeable = sum(1 for entry in entries if not entry.blocked)
     lines.append("")

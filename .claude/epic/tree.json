@@ -5,7 +5,7 @@
     "repository": "bdf1992/Soveraeign",
     "root_issue": 1
   },
-  "synced_at": "2026-08-23T06:28:38Z",
+  "synced_at": "2026-08-23T19:41:23Z",
   "issues": {
     "1": {
       "number": 1,
@@ -75,7 +75,7 @@
         "village: motion"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/2",
-      "updated_at": "2026-08-23T00:44:14Z",
+      "updated_at": "2026-08-23T19:41:05Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -105,7 +105,8 @@
           "#21",
           "#29",
           "#30",
-          "#31"
+          "#31",
+          "#67"
         ],
         "dependency_channels": {
           "produces": [
@@ -301,14 +302,14 @@
     "6": {
       "number": 6,
       "title": "Shared Kernel — govern legal transitions",
-      "state": "OPEN",
+      "state": "CLOSED",
       "labels": [
         "horizon: now",
         "type: bit",
         "village: ground"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/6",
-      "updated_at": "2026-08-23T00:47:17Z",
+      "updated_at": "2026-08-23T18:37:27Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -1809,7 +1810,7 @@
       "state": "OPEN",
       "labels": [],
       "url": "https://github.com/bdf1992/Soveraeign/issues/40",
-      "updated_at": "2026-08-23T06:03:49Z",
+      "updated_at": "2026-08-23T17:11:39Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -1828,7 +1829,9 @@
         "authority": "Bdo/phase-gate; delegated-verification",
         "effect_class": "RECORD_LOCAL",
         "evidence_pointer": "PENDING",
+        "last_observed_at": null,
         "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
         "dependency_channels": [
           "topology",
           "record-spine",
@@ -1850,7 +1853,7 @@
       "state": "OPEN",
       "labels": [],
       "url": "https://github.com/bdf1992/Soveraeign/issues/41",
-      "updated_at": "2026-08-23T06:03:54Z",
+      "updated_at": "2026-08-23T17:11:41Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -1869,7 +1872,9 @@
         "authority": "Bdo/phase-gate; delegated-verification",
         "effect_class": "RECORD_LOCAL",
         "evidence_pointer": "PENDING",
+        "last_observed_at": null,
         "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
         "dependency_channels": [
           "registry-capability",
           "topology",
@@ -1892,7 +1897,7 @@
       "state": "OPEN",
       "labels": [],
       "url": "https://github.com/bdf1992/Soveraeign/issues/42",
-      "updated_at": "2026-08-23T05:24:18Z",
+      "updated_at": "2026-08-23T17:11:42Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -1911,7 +1916,9 @@
         "authority": "Bdo/phase-gate; delegated-verification",
         "effect_class": "REQUEST_ONLY",
         "evidence_pointer": "PENDING",
+        "last_observed_at": null,
         "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
         "dependency_channels": [
           "bindings-adapters",
           "interface",
@@ -1992,7 +1999,7 @@
       "state": "OPEN",
       "labels": [],
       "url": "https://github.com/bdf1992/Soveraeign/issues/47",
-      "updated_at": "2026-08-23T05:53:13Z",
+      "updated_at": "2026-08-23T17:11:43Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -2003,13 +2010,21 @@
         ],
         "kind": "implementation-stub",
         "stub_id": "STUB-SKILL-DECLARATION-OWNERSHIP",
+        "path": "decisions/",
         "village": "trust-and-control",
         "village_issue": "#3",
         "parent": "#41",
+        "parent_bits": [
+          "#41"
+        ],
         "standing": "OPEN",
         "horizon": "NEXT",
         "authority": "Bdo/phase-gate",
         "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
         "dependency_channels": [
           "registry-capability",
           "topology",
@@ -2029,7 +2044,7 @@
       "state": "OPEN",
       "labels": [],
       "url": "https://github.com/bdf1992/Soveraeign/issues/48",
-      "updated_at": "2026-08-23T05:53:24Z",
+      "updated_at": "2026-08-23T17:11:44Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -2040,13 +2055,21 @@
         ],
         "kind": "implementation-stub",
         "stub_id": "STUB-SKILL-RELATION-SCHEMA",
+        "path": "contracts/",
         "village": "ground-and-evidence",
         "village_issue": "#4",
         "parent": "#41",
+        "parent_bits": [
+          "#41"
+        ],
         "standing": "OPEN",
         "horizon": "NEXT",
         "authority": "Bdo/phase-gate; delegated-verification",
         "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
         "dependency_channels": [
           "conformance",
           "registry-capability",
@@ -2119,7 +2142,7 @@
       "state": "OPEN",
       "labels": [],
       "url": "https://github.com/bdf1992/Soveraeign/issues/50",
-      "updated_at": "2026-08-23T05:53:47Z",
+      "updated_at": "2026-08-23T17:11:47Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -2130,13 +2153,21 @@
         ],
         "kind": "implementation-stub",
         "stub_id": "STUB-SKILL-GRAPH-UI",
+        "path": "bindings/",
         "village": "reach-and-motion",
         "village_issue": "#2",
         "parent": "#42",
+        "parent_bits": [
+          "#42"
+        ],
         "standing": "OPEN",
         "horizon": "NEXT",
         "authority": "Bdo/phase-gate",
         "effect_class": "REQUEST_ONLY",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
         "dependency_channels": [
           "interface",
           "topology",
@@ -2375,17 +2406,17 @@
       "state": "OPEN",
       "labels": [],
       "url": "https://github.com/bdf1992/Soveraeign/issues/57",
-      "updated_at": "2026-08-23T06:22:36Z",
+      "updated_at": "2026-08-23T17:33:40Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
-          "kind:stub",
+          "kind:engagement",
           "village:ground-and-evidence",
           "horizon:now",
           "effect:record-local"
         ],
         "kind": "verification-engagement",
-        "stub_id": "RED-CHARTING-001",
+        "engagement_id": "RED-CHARTING-001",
         "village": "ground-and-evidence",
         "village_issue": "#4",
         "parent": "#40",
@@ -2393,6 +2424,10 @@
         "horizon": "NOW",
         "authority": "delegated-verification-only",
         "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
         "dependency_channels": [
           "topology",
           "conformance",
@@ -2405,6 +2440,113 @@
         ],
         "target_pr": "#43",
         "target_head": "b03a0ea9b832b226150a27d6986e69f1b492b22d"
+      },
+      "parse_error": null
+    },
+    "65": {
+      "number": 65,
+      "title": "System of Record — append-preserving operational journal",
+      "state": "CLOSED",
+      "labels": [],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/65",
+      "updated_at": "2026-08-23T19:12:41Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:stub",
+          "village:ground-and-evidence",
+          "horizon:now",
+          "effect:record-local",
+          "standing:built-self-tested-not-witnessed"
+        ],
+        "kind": "implementation-stub",
+        "stub_id": "STUB-SYSTEM-OF-RECORD",
+        "path": "services/record/",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#1",
+        "parent_bits": [
+          "#7"
+        ],
+        "standing": "BUILT_SELF_TESTED_NOT_WITNESSED",
+        "horizon": "NOW",
+        "authority": "Bdo/phase-gate; delegated-verification",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "services/record/",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "record",
+          "receipts",
+          "observation",
+          "retraction"
+        ],
+        "requires": [
+          "#6"
+        ]
+      },
+      "parse_error": null
+    },
+    "67": {
+      "number": 67,
+      "title": "Operator Desk — a human raises a judgement request",
+      "state": "OPEN",
+      "labels": [
+        "horizon: spanning",
+        "standing: proposed",
+        "type: story",
+        "village: motion"
+      ],
+      "url": "https://github.com/bdf1992/Soveraeign/issues/67",
+      "updated_at": "2026-08-23T19:40:23Z",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:story",
+          "village:reach-and-motion",
+          "horizon:now-to-next",
+          "effect:record-local"
+        ],
+        "kind": "story",
+        "story_id": "STORY-OPERATOR-DESK-HUMAN-JUDGEMENT-REQUEST",
+        "actor_kind": "HUMAN",
+        "role": "operator",
+        "village": "reach-and-motion",
+        "village_issue": "#2",
+        "parent": "#30",
+        "expected": "Raise one question for the owner from my desk and have it land on theirs, attributed to me, without deciding it for them.",
+        "found": "There is no desk. The Console is chartered and not implemented, and nothing can tell the record who I am.",
+        "leans_on": [
+          "#6",
+          "#7",
+          "#11",
+          "#12",
+          "#13"
+        ],
+        "asks": [
+          {
+            "of": "#11",
+            "adjustment": "give a human operator a continuous identity the record can attribute a request to"
+          },
+          {
+            "of": "#30",
+            "adjustment": "realize the judgement-request post as a Human Binding surface"
+          }
+        ],
+        "scenario": null,
+        "standing": "PROPOSED",
+        "horizon": "NOW_TO_NEXT",
+        "authority": "Bdo/product-intent",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": ".claude/epic/NARRATIVE.md#the-operator-desk-30-45",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion",
+        "dependency_channels": [
+          "trust-control",
+          "record-spine"
+        ]
       },
       "parse_error": null
     }

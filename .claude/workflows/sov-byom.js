@@ -64,10 +64,10 @@ log('Scope: planning bounded byom work for objective: ' + objective)
 
 const scopePrompt = 'You are scoping the Soveraeign byom domain (bring-your-own-model bindings and adapters). ' +
   'Read ' + ROOT + '/AGENTS.md, ' + ROOT + '/STATUS.yaml, ' + ROOT + '/BYOM.md, ' + ROOT + '/bindings/README.md, ' + ROOT + '/adapters/README.md, ' + ROOT + '/contracts/model-binding.schema.json, ' + ROOT + '/decisions/0011-local-personal-byom.md, and the PROD-I-9 section of ' + ROOT + '/PRD.md. ' +
-  'Open decision O12 blocks byom_contract_freeze: exact binding fields, data-boundary modes, and the two-model fixture await ratification by Bdo, so every draft stays proposal-marked. ' +
+  'Open decision O12 gates model_binding.ratify_contract: exact binding fields, data-boundary modes, and the two-model fixture await ratification by Bdo, so every draft stays proposal-marked. ' +
   'Produce a bounded plan of mutually independent operations for this objective: ' + objective + '. ' +
   'Allowed effect classes: RECORD_LOCAL and RESOURCE_CONSUMPTION only. No runtime code before logical spec and defeating fixtures. No provider SDK types in kernel or service contracts. No silent provider fallback. Model selection never changes authority. ' +
-  'If the objective needs frozen contract fields or any judgement-typed decision, set blocked true and put the question in judgement_queue instead of deciding it.'
+  'Do not decide judgement-typed questions; put each in judgement_queue. Blocked edge is not blocked frontier (AGENTS.md, Self-direction is not delegation): an unresolved owner decision gates only the transition that needs it. Plan the reachable precursors, take reversible defaults for every other choice and name them in the operation descriptions, and set blocked true only when no admissible operation exists for this objective. Each judgement_queue entry names the transition it gates.'
 
 const plan = await agent(scopePrompt, { agentType: 'sov-orchestrator', schema: PLAN_SCHEMA, phase: 'Scope', label: 'scope' })
 

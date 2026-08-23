@@ -63,7 +63,8 @@ def command_status(args: argparse.Namespace) -> int:
     print(f"epic #{result['root_issue']}  synced {result['synced_at']}")
     print(
         f"issues {counts['issues']}  open {counts['open']}  "
-        f"ready {counts['ready']}  held {counts['held']}  unrouted {counts['unrouted']}"
+        f"ready {counts['ready']}  held {counts['held']}  unrouted {counts['unrouted']}  "
+        f"stories {counts['stories']}"
     )
     print(
         f"defects: contract {len(result['contract_defects'])}  "
@@ -74,6 +75,12 @@ def command_status(args: argparse.Namespace) -> int:
     for entry in result["held"]:
         held = ",".join(entry["blocked_by"])
         print(f"  HELD    #{entry['issue']:<3} {entry['domain']:<12} blocked by {held}")
+    for entry in result["stories"]:
+        short = ",".join(entry["short"]) or "-"
+        print(
+            f"  STORY   #{entry['issue']:<3} {entry['reading']:<9} "
+            f"{entry['actor_kind']}/{entry['role']} at {entry['counter']}  short {short}"
+        )
     return 0
 
 

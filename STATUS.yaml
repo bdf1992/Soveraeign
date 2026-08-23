@@ -12,6 +12,7 @@ classification_status: PROPOSED_OWNER_RATIFICATION_PENDING
 asset_service_status: BUILT_SELF_TESTED_NOT_WITNESSED
 proofing_service_status: CHARTERED_NOT_IMPLEMENTED
 console_service_status: CHARTERED_NOT_IMPLEMENTED
+projection_service_status: CHARTERED_NOT_IMPLEMENTED
 byom_status: OWNER_DIRECTED_CONTRACT_AND_FIXTURE_PROPOSED
 ai_native_definition_status: FREEZE_CANDIDATE
 engineering_framework_status: BUILT_SELF_TESTED_NOT_WITNESSED_BASELINE_PROPOSED
@@ -19,6 +20,7 @@ sdlc_loop_status: OWNER_DIRECTED_LOOP_AND_BINDING_SKELETON_PROPOSED
 coordination_registrar_status: BUILT_SELF_TESTED_NOT_WITNESSED
 sov_operating_agent_status: OWNER_DIRECTED_CONTEXT_PROFILE_BUILT_SELF_TESTED_NOT_WITNESSED
 ticket_kind_vocabulary_status: PROPOSED_OWNER_RATIFICATION_PENDING
+story_ticket_kind_status: PROPOSED_OWNER_RATIFICATION_PENDING
 
 authority:
   product_intent:
@@ -54,6 +56,7 @@ proposed_repository_claims:
   - phase_i_logical_specification
   - asset_and_proofing_sibling_service_boundary
   - console_service_operator_surface_boundary
+  - asset_projection_service_parity_boundary
   - executable_conformance_oracle
   - personal_local_node_profile
   - bring_your_own_model_practice
@@ -69,64 +72,95 @@ proposed_repository_claims:
   - red_gated_release_requirement
   - sov_portable_bounded_agency_profile
 
+# A gate names the exact transition that waits on the ruling. Everything else
+# stays reachable: blocked edge is not blocked frontier (AGENTS.md, Authority).
 open_decisions:
   - id: O1
     question: Does Soveraeign clear current legal, domain, package, and product collision screening?
-    blocks: public_release
+    gates:
+      - repository.publish_public
   - id: O2
     question: Does Bdo ratify ENGINEERING.md's Python, SQLite, filesystem CAS, JSON Schema, and unittest baseline for Phase I?
-    blocks: production_implementation
+    gates:
+      - engineering.ratify_baseline
   - id: O3
     question: What bootstrap authority attests the first attestor?
-    blocks: phase_i_attestation
+    gates:
+      - attestation.bootstrap_first_attestor
   - id: O4
     question: How are historical reproduction and present applicability represented separately?
-    blocks: attestation_schema
+    gates:
+      - attestation.ratify_schema
   - id: O5
     question: How does Gauge include governance and authority without collapsing evidence into authority?
-    blocks: gauge_specification
+    gates:
+      - gauge.ratify_specification
   - id: O6
     question: What is the exact scope of unattestable claims in effective state?
-    blocks: effectiveness_transition
+    gates:
+      - kernel.make_effective_unattestable
   - id: O7
     question: What external-effect isolation and later compensation model is admitted?
-    blocks: external_effects
+    gates:
+      - kernel.commit_external_world_effect
   - id: O8
     question: What observation completes semantic cold-start beyond schema validity?
-    blocks: operational_qualification_measurement
+    gates:
+      - qualification.settle_cold_start
   - id: O9
     question: Does Bdo ratify CLASSIFICATION.md as the canonical vocabulary contract?
-    blocks: terminology_freeze
+    gates:
+      - classification.ratify
   - id: O10
     question: Does Bdo ratify SPEC.md as the Phase-I logical specification?
-    blocks: f1_closure
+    gates:
+      - spec.ratify
+      - roadmap.close_f1
   - id: O11
     question: Is Proofing Service the accepted second service boundary after Asset Service?
-    blocks: proofing_implementation
+    gates:
+      - proofing.ratify_boundary
   - id: O12
     question: Does Bdo ratify the exact BYOM binding fields, data-boundary modes, and two-model Phase-I fixture?
-    blocks: byom_contract_freeze
+    gates:
+      - model_binding.ratify_contract
   - id: O13
     question: Does Bdo ratify SDLC.md's tiers, stance dyads, concern-registry derivation, and Red-gated release requirement?
-    blocks: sdlc_loop_activation
+    gates:
+      - sdlc.activate_loop
   # O14, O15, and O18 are held for questions drafted on concurrent branches: the
   # scheduled-runs pattern and the Console Service boundary. They are not stated here,
   # so the questions below are numbered to avoid colliding; Bdo renumbers on ruling.
   - id: O16
     question: Does Bdo ratify contracts/ticket-transitions.json as the typed ticket workflow, and authorize the outward-facing coordination steps (branch protection requiring code owner review, label synchronization, project field writes) that make its owner-approval gate binding?
-    blocks: coordination_automation_activation
+    gates:
+      - coordination.activate_external_effects
   - id: O17
     question: Does Bdo accept Sov's exact agency envelope, context declaration, and activation gates?
-    blocks: sov_live_activation
+    gates:
+      - sov.activate_live
   - id: O18
     question: Is Console Service the accepted third service boundary under that name, and does Bdo authorize a provisional Human Binding target for it ahead of O10?
-    blocks: console_implementation
+    gates:
+      - console.ratify_boundary
+      - console.authorize_provisional_human_binding
   - id: O19
     question: Does Bdo ratify verification-engagement as a fifth ticket kind, with engagement_id, a pinned target_pr and full-length target_head, and a refusal of construction identity on it?
-    blocks: engagement_ticket_vocabulary
+    gates:
+      - ticket_kind.ratify_verification_engagement
   - id: O20
     question: Does Bdo ratify the verification-channel projection in decisions/0019, and rule the collision between SDLC.md GREEN (derived go-state) and the green channel (contact with the world) by renaming the channel or adopting the existing term?
-    blocks: channel_projection_activation
+    gates:
+      - channels.activate_projection
+  - id: O21
+    question: Is Asset Projection Service the accepted fourth service boundary, under that name? (Parity target and lane scope are defaults taken in decisions/0021; counter them in review.)
+    gates:
+      - projection.ratify_boundary
+  - id: O22
+    question: Does Bdo ratify story as a ticket kind (an actor in a CLASSIFICATION.md role crossing a counter and asking the substrate for adjustments, bound to a conformance scenario, never dispatched), with Owner read as the context that sets an operator's Binding and Projection rather than as a role?
+    gates:
+      - ticket_kind.ratify_story
+      - classification.ratify
   # The federation-harness ratification question (decisions/0020-federation-harness.md,
   # reports/2026-08-22-christening.md item 1) holds no id. O13 was reserved for it locally
   # while the SDLC loop took O13 upstream; it is registered only when Bdo rules.

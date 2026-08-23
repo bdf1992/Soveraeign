@@ -98,3 +98,42 @@ the admitted effect envelope for `SOVERAEIGN_QUALIFIED`, and omits retraction,
 while the same document and `decisions/0006` call it "the all-`FULL`
 Soveraeign bar". Whether retraction must be `FULL` within the phase's effect
 envelope is a tightening only the owner can make.
+
+## S14 · Two owners of the asset projections
+
+`services/asset/CHARTER.md` line 74 names an "SQLite FTS projection" and a
+`graph-projection` port inside the Asset Service, while
+`services/projection/CHARTER.md` charters a sibling service that owns text,
+graph, and vector projections over the same records. Until `decisions/0021`
+is ruled, the Asset Service's `search` and `neighbors` are a compatibility
+path, not a second retrieval surface. Which service keeps `rebuild-projection`
+for the Asset Service's own two tables after ratification is Bdo's call.
+
+## S15 · Judgement request and unblock request
+
+`services/console/CHARTER.md` charters a judgement request: a queued request
+for an owner-held right, `IN_LOOP` or `ON_LOOP`, resolved only under a live
+`JUDGEMENT` grant. `contracts/issue-metadata.schema.json` now admits an
+`unblock` ticket whose `requested_provision` is `judgement`, addressed to the
+owner. These are one record seen from two surfaces: the coordination registrar
+and the operator console. One must project from the other; neither may become
+a second queue of owner rights. Which is the source is a charter question for
+the Console Service, carried here until it is written down.
+
+## S16 · Decision-number allocation across branches
+
+Decision records mint their numbers on the branch that drafts them, and no
+mechanism reserves a number across branches. Observed 2026-08-23: `0014` and
+`0015` each name different decisions on `feat/federation-harness-and-hardening`
+(console boundary, scheduled runs) and PR #38 (local infrastructure, deployment
+pattern); `0019` names three decisions (kernel transition contract, settled on
+`main`; verification channels on this branch; shared kernel reference on PR
+#61); `0020` names three more (federation harness, this branch; owner seat
+topology, PR #68; verification channels again, PR #64 — the same decision this
+branch carries as `0019`, under a second number). Governing text cites
+decisions by number, so a collision silently redirects a citation when the
+other branch lands. Numbers already on `main` are settled; every other claimant
+renumbers at rebase. The open choice is the allocation mechanism — reservation
+through the `decisions/0016` coordination registrar, or a
+next-free-number-at-rebase rule — and which surviving record keeps each
+contested number is Bdo's.

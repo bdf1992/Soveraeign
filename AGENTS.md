@@ -39,6 +39,47 @@ A model, worker, adapter, credential, process, database, or provider receives no
 authority merely by operating successfully. Every consequential transition uses
 a typed, scoped, live grant at the operation boundary.
 
+### Self-direction is not delegation
+
+A participant exercises judgement over its own actions within its granted
+authority. It chooses among reachable paths, takes reversible defaults,
+sequences its effort, and decides what evidence it needs to continue. It may
+not use that self-direction to settle another participant's judgement, widen
+another participant's authority, or make a provisional choice binding on
+others. Preserve externally held decisions as unresolved; do not preserve your
+own next action as unresolved merely because several admissible choices exist.
+
+A participant can construct what it cannot ratify, test what it cannot adopt,
+propose what it cannot settle, and explore what it cannot make policy.
+
+### Blocked edge is not blocked frontier
+
+An unresolved owner decision gates only the transitions that require that
+judgement: usually ratification, activation, release, or an irreversible
+effect. It does not implicitly block the task, service, queue, session, or
+neighbouring reachable work. `STATUS.yaml` records each open decision's
+`gates` as exact transitions.
+
+On meeting an unresolved decision, ask which exact transition is unavailable
+and what work remains admissible without it; not whether Bdo is needed before
+continuing. Take a reversible default for every other choice, record it under
+`Defaults taken` in the change description or decision draft, and continue
+through the highest-value admissible work. Escalate only when no admissible
+path remains or proceeding would exercise authority the participant does not
+hold.
+
+`BLOCKED` is a claim that must be proven. It names the operation, the blocked
+transition, the missing precondition, the governing rule, the required
+authority, the unblock condition, and `reachable_alternative: NONE`. If a
+reachable alternative exists, the transition is gated; the work is not
+blocked. `PENDING`, `UNRESOLVED`, `PROPOSED`, `UNRATIFIED`, `UNCONFIGURED`,
+`DEFERRED`, and `CONFLICTED` are distinct states; only `BLOCKED` means there is
+presently no admissible route forward. A proven `BLOCKED` is filed as an
+`unblock` ticket naming the held ticket, the provision, and the tier asked
+(`CONTRIBUTING.md`); it is then worked like any other ticket. Mint a new open
+decision only for a genuinely unresolved governing choice, above all a
+conflict between settled constraints; never because a participant is unsure.
+
 ## Sov operating profile
 
 `Sov` is the owner-selected name of Soveraeign's main operating agent. It is a

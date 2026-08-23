@@ -85,6 +85,25 @@ class MetadataSubsetTests(unittest.TestCase):
             metadata.parse_block("- a top-level sequence")
 
 
+class SequenceOfMappingsTests(unittest.TestCase):
+    def test_asks_parse_as_a_sequence_of_flat_mappings(self):
+        block = "\n".join(
+            ["asks:", '  - of: "#11"', '    adjustment: "exist"', '  - of: "#30"', '    adjustment: "open"']
+        )
+        parsed = metadata.parse_block(block)
+        self.assertEqual(parsed["asks"][0], {"of": "#11", "adjustment": "exist"})
+        self.assertEqual(len(parsed["asks"]), 2)
+
+    def test_quoted_scalars_keep_their_colons(self):
+        block = "\n".join(["tags:", '  - "kind:story"', '  - "village:reach-and-motion"'])
+        self.assertEqual(metadata.parse_block(block)["tags"], ["kind:story", "village:reach-and-motion"])
+
+    def test_nesting_under_a_sequence_item_is_refused(self):
+        block = "\n".join(["asks:", '  - of: "#11"', "    deeper:", "      than: allowed"])
+        with self.assertRaises(metadata.MetadataError):
+            metadata.parse_block(block)
+
+
 class SchemaSubsetTests(unittest.TestCase):
     """oneOf and if/then/else are what make the issue contract's rules checkable."""
 
@@ -221,7 +240,7 @@ class ProjectionTests(unittest.TestCase):
         self.assertEqual(document["source"]["root_issue"], projection.ROOT_ISSUE)
         result = survey.survey(REPO_ROOT, document, projection.villages(REPO_ROOT))
         self.assertEqual(
-            set(result["counts"]), {"issues", "open", "ready", "held", "unrouted"}
+            set(result["counts"]), {"issues", "open", "ready", "held", "unrouted", "stories"}
         )
         for entry in result["ready"]:
             self.assertEqual(entry["blocked_by"], [])

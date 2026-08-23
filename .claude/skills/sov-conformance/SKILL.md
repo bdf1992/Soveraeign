@@ -54,12 +54,12 @@ Must not:
 - F2 exit (ROADMAP.md): every normative predicate has at least one positive and
   one defeating fixture, and the suite can be bound to more than one
   implementation. Participant binding is the open half.
-- O10 (blocks f1_closure): SPEC.md is not yet ratified, so the predicates the
+- O10 (gates spec.ratify): SPEC.md is not yet ratified, so the predicates the
   fixtures trace to are proposals - author fixtures as proposals, do not freeze.
-- O8 (blocks operational_qualification_measurement): what observation completes
+- O8 (gates qualification.settle_cold_start): what observation completes
   semantic cold-start beyond schema validity - gates any strengthening of
   check_i7 / FOUND-007 measurement semantics; queue for Bdo.
-- O12 (blocks byom_contract_freeze): the exact BYOM binding fields - check_i9's
+- O12 (gates model_binding.ratify_contract): the exact BYOM binding fields - check_i9's
   required-field list embodies the proposed fields; changing it tracks O12.
 
 ## Named operations

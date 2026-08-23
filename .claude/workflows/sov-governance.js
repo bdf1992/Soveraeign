@@ -24,9 +24,9 @@ log('Scope: planning bounded governance work for: ' + objective)
 const plan = await agent(
   'You are the sov-governance planner for Soveraeign at ' + ROOT + '. Read ' + GOVERNING_SET + '. ' +
   'Produce a bounded operation plan for: ' + objective + '. ' +
-  'Honor the blockers in STATUS.yaml: O1 blocks public_release, O9 blocks terminology_freeze, O10 blocks f1_closure; every ratification is Bdo-only and must appear in judgement_queue as a question, never be decided. ' +
+  'Honor the gates in STATUS.yaml: O1 gates repository.publish_public, O9 gates classification.ratify, O10 gates spec.ratify; every ratification is Bdo-only and appears in judgement_queue as a question, never decided. ' +
   'Plan only RECORD_LOCAL or RESOURCE_CONSUMPTION operations; Phase I forbids EXTERNAL_WORLD effects. ' +
-  'Do not plan work a blocker gates. If nothing legitimate remains, set blocked true with blocked_reason. ' +
+  'Do not plan the gated transition itself. Blocked edge is not blocked frontier (AGENTS.md, Self-direction is not delegation): an unresolved owner decision gates only the transition that needs it. Plan the reachable precursors, take reversible defaults for every other choice and name them in the operation descriptions, and set blocked true only when no admissible operation exists for this objective. Each judgement_queue entry names the transition it gates. ' +
   'Each operation is smallest-change, names exact repo-relative files, and never touches lineage/evidence/.',
   { agentType: 'sov-orchestrator', schema: PLAN_SCHEMA, phase: 'Scope', label: 'scope' }
 )

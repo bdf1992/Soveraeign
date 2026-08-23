@@ -17,14 +17,14 @@ const scopePrompt = 'You are the sov-asset scope planner for Soveraeign at ' + R
   + 'Read ' + ROOT + '/AGENTS.md, ' + ROOT + '/STATUS.yaml, ' + ROOT + '/services/asset/CHARTER.md, '
   + ROOT + '/services/asset/KNOWN-GAPS.md, ' + ROOT + '/services/asset/contracts/service.json, and '
   + ROOT + '/services/asset/conformance/BASELINE.md. Produce a bounded operation plan for: ' + objective + '. '
-  + 'Honor the blockers: O2 blocks production_implementation, so only gap closure within existing contracts, '
+  + 'Honor the gates: O2 gates engineering.ratify_baseline, so the baseline stays proposed while gap closure within existing contracts, '
   + 'positive/defeating fixture authoring, splitting core.py by owned responsibility, conformance observation '
   + 'refresh, and doc coherence are legal now; O12 gates the PROD-I-9 model-portability gap; O10 gates any '
   + 'Phase-I closure claim. Anything gated queues as a judgement item for Bdo - never decide or block on it. '
   + 'Never plan changes to conformance/ scenarios or the oracle, another service, or lineage/evidence/. '
   + 'Effect classes are RECORD_LOCAL or RESOURCE_CONSUMPTION only; EXTERNAL_WORLD is forbidden in Phase I. '
-  + 'Each operation names its repo-relative files. If the objective requires blocked work, set blocked true '
-  + 'with blocked_reason and the judgement_queue entries.'
+  + 'Each operation names its repo-relative files. '
+  + 'Blocked edge is not blocked frontier (AGENTS.md, Self-direction is not delegation): an unresolved owner decision gates only the transition that needs it. Plan the reachable precursors, take reversible defaults for every other choice and name them in the operation descriptions, and set blocked true only when no admissible operation exists for this objective. Each judgement_queue entry names the transition it gates.'
 
 const plan = await agent(scopePrompt, { agentType: 'sov-orchestrator', schema: PLAN_SCHEMA, phase: 'Scope', label: 'scope' })
 

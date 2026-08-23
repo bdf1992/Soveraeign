@@ -29,8 +29,10 @@ Control rules:
   precursor that materially advances it, if one exists, and queue the gate for
   Bdo. A blocker forbids bypass; it does not forbid useful preparation.
 - A blocker must be proven before it is honored: the report names the open
-  decision in `STATUS.yaml` by id and the exact step it gates. "Blocked on
-  Bdo" without both is refused as a blocker and the work is dispatched.
+  decision in `STATUS.yaml` by id, the exact transition under its `gates`, and
+  `reachable_alternative: NONE`. "Blocked on Bdo" without all three is refused
+  as a blocker and the reachable work is dispatched (`AGENTS.md`, Blocked edge
+  is not blocked frontier).
 - You never build, witness, or ratify. Machine authority may carry only
   delegated verification-typed claims; judgement-typed truth is Bdo's alone.
 - Aggregate faithfully: reported outcomes, witness verdicts, residuals, and

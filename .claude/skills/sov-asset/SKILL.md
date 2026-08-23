@@ -45,15 +45,17 @@ a named boundary and decision record; import participant code into the oracle.
 next standing transition is independent witnessing (`BUILT -> WITNESSED`) by a
 non-builder; ratification is Bdo-only.
 
-- O2 (Bdo ratifies the ENGINEERING.md baseline) blocks
-  `production_implementation` - only gap closure within existing contracts,
-  fixtures, splits, observation, and doc coherence are legal now.
-- O10 (Bdo ratifies SPEC.md) blocks `f1_closure` - gaps are observed against a
+- O2 (Bdo ratifies the ENGINEERING.md baseline) gates
+  `engineering.ratify_baseline` - build on the proposed baseline; gap closure,
+  fixtures, splits, observation, and doc coherence are all reachable.
+- O10 (Bdo ratifies SPEC.md) gates `spec.ratify` - gaps are observed against a
   proposed spec; never present a gap fix as Phase-I qualification.
-- O12 (BYOM binding fields) blocks `byom_contract_freeze` - the PROD-I-9
-  model-portability gap queues judgement; do not invent binding fields.
-- O9 (CLASSIFICATION.md ratification) blocks `terminology_freeze` - vocabulary
-  is proposed canonical; follow it, do not fork it.
+- O12 (BYOM binding fields) gates `model_binding.ratify_contract` - the
+  PROD-I-9 model-portability gap queues judgement; do not invent binding fields.
+- O9 (CLASSIFICATION.md ratification) gates `classification.ratify` -
+  vocabulary is proposed canonical; follow it, do not fork it.
+- Blocked edge is not blocked frontier (`AGENTS.md`): a gate stops one
+  transition, not the domain.
 
 ## Named operations (available now)
 

@@ -83,8 +83,13 @@ relevant report override it whenever they disagree.
 - Four of six diagrams are stale, and the module budget does not reach
   `conformance/run.py` at 332 lines (`reports/2026-08-23-stack-certification.md`).
 
-Every open decision listed in `STATUS.yaml` is Bdo's. Queue them;
-never decide them.
+Every open decision listed in `STATUS.yaml` is Bdo's. Preserve them without
+resolving them. An unresolved judgement gates only the transitions named under
+its `gates`; take reversible defaults for every other choice, record them, and
+continue through the highest-value admissible work. Escalate only when no
+admissible path remains or proceeding would exercise authority Claude does not
+hold (`AGENTS.md`, Self-direction is not delegation; Blocked edge is not
+blocked frontier).
 
 ## How we launch things and watch them
 
@@ -92,7 +97,7 @@ never decide them.
   `{ domains: [...], objective: "...", sequential: true }`.
 - One domain: Workflow `sov-<domain>` with `{ objective: "..." }`; domains
   are `governance`, `contracts`, `conformance`, `asset`, `proofing`,
-  `console`, `byom`, `verification`.
+  `console`, `projection`, `byom`, `verification`.
 - Observe only: Workflow `sov-qa` witnesses the working tree and builds
   nothing; `sov-baseline` reads readiness before a long run.
 - Epic tree: `python scripts/sov_epic.py status | validate | next | unrouted`
@@ -137,7 +142,7 @@ the accurate reading, not a shortfall.
 
 | Need | Open |
 | --- | --- |
-| What is blocked and who decides | `STATUS.yaml`, `open_decisions` |
+| Which transition a decision gates, and whose it is | `STATUS.yaml`, `open_decisions` (`gates`) |
 | A term or enum | `CLASSIFICATION.md`, then `SPEC.md` |
 | Whether a surface is AI-native | `AI-NATIVE.md` |
 | Harness layout and invocation | `.claude/README.md` |

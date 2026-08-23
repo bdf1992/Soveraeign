@@ -32,6 +32,8 @@ KIND_LABEL = {
     "village": "type: village",
     "bit": "type: bit",
     "implementation-stub": "type: stub",
+    "story": "type: story",
+    "unblock": "type: unblock",
 }
 VILLAGE_LABEL = {
     "ground-and-evidence": "village: ground",
@@ -145,6 +147,17 @@ def containment_defects(by_number: dict[int, Issue], root_issue: int) -> list[st
             defects.append(f"#{number}: parent #{parent} is not present in the projection")
 
     villages = {n for n, i in live.items() if i.metadata.get("kind") == "village"}
+    for number, issue in sorted(live.items()):
+        if issue.metadata.get("kind") != "story":
+            continue
+        counter = _reference(issue.metadata.get("parent"))
+        at = live.get(counter) if counter is not None else None
+        if at is None or at.metadata.get("kind") != "bit":
+            defects.append(f"#{number}: story parent #{counter} is not a live bit (the counter)")
+        for value in issue.metadata.get("leans_on") or []:
+            support = _reference(value)
+            if support is not None and support not in by_number:
+                defects.append(f"#{number}: leans on #{support}, which is not present")
     declared = children.get(root_issue, set())
     for missing in sorted(villages - declared):
         defects.append(f"#{root_issue}: village #{missing} is not listed in child_issues")
@@ -192,3 +205,23 @@ def readiness(by_number: dict[int, Issue]) -> dict[int, list[str]]:
                 blockers.append(f"#{required}")
         result[number] = blockers
     return result
+
+
+def story_reading(issue: Issue, by_number: dict[int, Issue]) -> tuple[str, list[str]]:
+    """Read one story as told, walkable, or walked, with the supports still short.
+
+    A story is walkable when a scenario binds it and every support it leans on is at
+    least BUILT; it is walked once a witness has observed the scenario. The reading is
+    evidence about the tree, never a grant and never a settlement.
+    """
+    block = issue.metadata or {}
+    short = [
+        f"#{support}"
+        for support in (_reference(v) for v in block.get("leans_on") or [])
+        if support is not None and not _satisfied(support, by_number)
+    ]
+    if block.get("standing") in ("WITNESSED", "RATIFIED"):
+        return "walked", short
+    if block.get("scenario") and not short:
+        return "walkable", short
+    return "told", short

@@ -65,6 +65,48 @@ remain explicit in issue metadata and prose. A branch or pull request may close
 an implementation stub; it cannot by itself close its bit, promote a village,
 satisfy independent witness, or ratify the epic.
 
+A **story** (`kind: story`, `type: story`) is one participant crossing one
+counter and finding the substrate short. It names its teller by the kernel's
+`actor_kind` and a `CLASSIFICATION.md` participation `role`, the bit it walks
+up to as `parent`, what the actor `expected`, what they `found`, the supports
+the crossing `leans_on`, and the `asks` it addresses to the issues that own
+the substrate. A story is told, then bound to a `scenario` in
+`conformance/scenarios.json`, then walked. It is never taken as work: it
+carries no `requires`, enters no queue, blocks nothing, and closes no
+repository surface. Only an independent observation of its scenario moves a
+story past `BUILT_SELF_TESTED_NOT_WITNESSED`; a pull request cannot close it.
+Owner is not a role a story can name: it is the context that sets an
+operator's Binding and Projection and travels in `authority`
+(`decisions/0022-story-ticket-kind.md`).
+
+An **unblock request** (`kind: unblock`, `type: unblock`) is a proven block
+filed as work. Blocked is never a ticket status. A ticket that cannot advance
+names the exact `blocked_transition`, the `missing_precondition`, the
+`governing_rule`, the `requested_provision` (grant, judgement, contract,
+fixture, capability, or observation), the tier it was `requested_by`, the tier
+it is `requested_from`, the `unblock_condition` a receipt will settle, and
+`reachable_alternative: NONE`. The held ticket lists the unblock request in
+its `requires`, so it shows as held-by, like any dependency. A request with a
+reachable alternative is refused: that ticket is dependency-mapped, not
+blocked. A request whose provision is already some ticket's work is refused
+for the same reason; link that ticket instead. A judgement is always asked of
+the owner. The queue serves an unblock request at the tier it names and sorts
+it by what it holds (`decisions/0024-unblock-ticket-kind.md`).
+
+An **unblock request** (`kind: unblock`, `type: unblock`) is a proven block
+filed as work. Blocked is never a ticket status. A ticket that cannot advance
+names the exact `blocked_transition`, the `missing_precondition`, the
+`governing_rule`, the `requested_provision` (grant, judgement, contract,
+fixture, capability, or observation), the tier it was `requested_by`, the tier
+it is `requested_from`, the `unblock_condition` a receipt will settle, and
+`reachable_alternative: NONE`. The held ticket lists the unblock request in
+its `requires`, so it shows as held-by, like any dependency. A request with a
+reachable alternative is refused: that ticket is dependency-mapped, not
+blocked. A request whose provision is already some ticket's work is refused
+for the same reason; link that ticket instead. A judgement is always asked of
+the owner. The queue serves an unblock request at the tier it names and sorts
+it by what it holds (`decisions/0024-unblock-ticket-kind.md`).
+
 Changing the issue schema, label axes, color meanings, containment rule, or
 milestone semantics is a reviewed contract change. Update this section, the JSON
 Schema, and the label catalogue together.

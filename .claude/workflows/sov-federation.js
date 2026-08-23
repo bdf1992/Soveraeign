@@ -12,7 +12,7 @@ export const meta = {
 // Nesting note: this is the ONLY workflow allowed to call workflow() —
 // domain workflows are leaf children and may never nest further.
 
-const KNOWN = ['governance', 'contracts', 'conformance', 'asset', 'proofing', 'console', 'byom', 'verification']
+const KNOWN = ['governance', 'contracts', 'conformance', 'asset', 'proofing', 'console', 'projection', 'byom', 'verification']
 
 const requested = args && Array.isArray(args.domains) && args.domains.length > 0 ? args.domains : KNOWN
 const selected = requested.filter(function (d) { return KNOWN.indexOf(d) !== -1 })

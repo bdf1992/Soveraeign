@@ -72,8 +72,10 @@ skill + workflow, riding the same roles.
 - The controller launches `sov-federation` (or a single domain workflow),
   reads the aggregated report, and surfaces the judgement queue to Bdo.
 - Each domain workflow runs Scope -> Build -> Witness and returns a structured
-  report. A blocked domain returns early with its judgement items instead of
-  forcing work.
+  report. A domain is blocked only when no admissible operation exists for
+  the objective; a gated end state with reachable precursors is a plan, not a
+  block (`AGENTS.md`, Blocked edge is not blocked frontier). A blocked domain
+  returns early with its judgement items instead of forcing work.
 - Builders and witnesses are always different agents: a build report cannot
   witness itself (`AGENTS.md`, Evidence and standing).
 
@@ -87,10 +89,11 @@ skill + workflow, riding the same roles.
 | `asset` | Asset Service lifecycle (`services/asset/`) | O2 |
 | `proofing` | Proofing Service charter and contracts only | O11, O2, O10 |
 | `console` | Console Service charter, contracts, and seed fixtures only (`services/console/`) | O18, O2, O10 |
+| `projection` | Asset Projection Service charter, parity ledger, and seed fixtures; lanes after fixtures + the `core.py` split (`services/projection/`) | O21 (standing word only), O12 (dense/sparse) |
 | `byom` | Model bindings, adapters, portability (PROD-I-9) | O12 |
 | `verification` | `scripts/verify.py`, lint, CI gate, baseline | O2 |
 
-These eight domains do not cover the epic-of-epics issue tree. Twenty-two open
+These nine domains do not cover the epic-of-epics issue tree. Twenty-two open
 bits and stubs are claimed by no domain skill, and the whole `trust-and-control`
 village - identity, authority, gates, registry, and the capability broker - has
 no domain at all. `epic/villages.json` leaves them deliberately unrouted rather

@@ -29,6 +29,8 @@ interactive-session action, never a scheduled one.
 | --- | --- |
 | `tree.json` | Every issue: number, title, state, labels, and the parsed `soveraeign-ticket/v1` metadata block, or the parse error that stopped it. Regenerated wholesale by `sync`. |
 | `villages.json` | The village-to-domain routing table. Joins the issue tree's four villages to the harness domains in `.claude/README.md` and owns neither side. An issue routes only where a repository artifact evidences the ownership. |
+| `NARRATIVE.md` | The same issues told by front office (where an actor meets the system) and back office (what holds that meeting up). A second reading for talking about participants and supports; it routes nothing and holds no standing. |
+| `offices.json` | The issue-to-office grouping behind `NARRATIVE.md`, in machine shape. Every issue sits in exactly one office or in `outside_both`. |
 
 ## Three readings, none of which settles anything
 

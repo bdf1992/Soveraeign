@@ -1,9 +1,10 @@
 """Extract the ``soveraeign-ticket/v1`` metadata block from an issue body.
 
 The block is a fenced ``yaml`` region at the top of the body. This module reads
-a deliberately small YAML subset - scalars, block sequences, flow sequences, and
-one level of nested mapping - because the repository carries no runtime
-dependency and the metadata contract needs no more than that. Anything outside
+a deliberately small YAML subset - scalars, block sequences, flow sequences,
+one level of nested mapping, and block sequences of flat mappings (a story's
+``asks``) - because the repository carries no runtime dependency and the
+metadata contract needs no more than that. Anything outside
 the subset raises ``MetadataError`` instead of being guessed at; a parse that
 succeeds is evidence about shape only, never about standing.
 """
@@ -16,6 +17,9 @@ import re
 
 FENCE = re.compile(r"```ya?ml\s*\n(.*?)\n```", re.DOTALL)
 FLOW = re.compile(r"^\[(.*)\]$")
+# A sequence item opens a flat mapping only when it starts with a bare snake_case
+# key; a quoted scalar such as "kind:bit" keeps its colon and stays a scalar.
+MAPPING_ITEM = re.compile(r"^[a-z_][a-z0-9_]*:(\s|$)")
 
 
 class MetadataError(ValueError):
@@ -103,8 +107,24 @@ def _parse_child(lines: list[tuple[int, str]], index: int) -> tuple[Any, int]:
     if lines[index][1].startswith("- "):
         items = []
         while index < len(lines) and lines[index][0] == depth and lines[index][1].startswith("- "):
-            items.append(_scalar(lines[index][1][2:]))
+            head = lines[index][1][2:]
             index += 1
+            if not MAPPING_ITEM.match(head):
+                items.append(_scalar(head))
+                continue
+            key, value = _split_key(head)
+            entry = {key: _flow_sequence(value) if FLOW.fullmatch(value) else _scalar(value)}
+            while index < len(lines) and lines[index][0] > depth and not lines[index][1].startswith("- "):
+                inner_key, inner_value = _split_key(lines[index][1])
+                if not inner_value:
+                    raise MetadataError(
+                        f"nesting under a sequence item is outside the parsed YAML subset: {inner_key!r}"
+                    )
+                entry[inner_key] = (
+                    _flow_sequence(inner_value) if FLOW.fullmatch(inner_value) else _scalar(inner_value)
+                )
+                index += 1
+            items.append(entry)
         return items, index
     mapping: dict[str, Any] = {}
     while index < len(lines) and lines[index][0] == depth:

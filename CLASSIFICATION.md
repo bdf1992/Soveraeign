@@ -164,7 +164,13 @@ notifications, judgement requests, operator settings, and declared dashboard
 and activity projections. It reads sibling-service events and receipts through
 a declared crossing and does not hold, infer, or delegate authority.
 
-All three are sibling services inside one local node. All use the shared
+The **Asset Projection Service** owns projection collections, text, graph,
+and vector configurations, index declarations, builds, retrieval receipts,
+context packages, and fidelity observations over asset records. It reads the
+Asset Service through a declared crossing; everything it holds is a
+rebuildable projection and never an authoritative record.
+
+All four are sibling services inside one local node. All use the shared
 kernel. None is independently a federation, node, platform, or complete
 product.
 
@@ -192,6 +198,6 @@ and the distinction between authoritative records and projections are grounded
 in `ANCHOR.md`, `SUBSTRATE.md`, `PRODUCT(1).md`, and `PRD-PRODUCT(1).md`.
 
 The concrete `Service`/`Component` normalization, the initial
-Asset/Proofing/Console split, and the operating-loop role and stance vocabulary
-are new proposed policy. Bdo's ratification is required before this file becomes
-authoritative vocabulary.
+Asset/Proofing/Console/Asset Projection split, and the operating-loop role and
+stance vocabulary are new proposed policy. Bdo's ratification is required
+before this file becomes authoritative vocabulary.

@@ -1,8 +1,16 @@
 {
   "policy_id": "soveraeign-ticket-queue/v1",
-  "governed_by": ["CONTRIBUTING.md", "SDLC.md", "STATUS.yaml"],
+  "governed_by": [
+    "CONTRIBUTING.md",
+    "SDLC.md",
+    "STATUS.yaml"
+  ],
   "note": "Declared ordering policy for the takeable-work projection over soveraeign-ticket/v1 instances. The queue is a projection and is rebuildable from the tickets alone; it introduces no standing, priority authority, or private state. Changing the order changes what work is offered first, so the policy is declared data rather than code.",
   "dependency_satisfied_at_or_beyond": "BUILT_SELF_TESTED_NOT_WITNESSED",
+  "kinds_outside_dispatch": [
+    "story"
+  ],
+  "kinds_outside_dispatch_note": "A story is told by an actor in a role and walked through a scenario; it is never taken as work, so it never enters the takeable queue and never blocks or unblocks anything in it. Its asks point at the stubs and bits that are.",
   "standing_order": [
     "OPEN",
     "PROPOSED",
@@ -31,10 +39,11 @@
     "RATIFIED": 7
   },
   "kind_rank": {
-    "implementation-stub": 0,
-    "bit": 1,
-    "village": 2,
-    "epic-of-epics": 3
+    "unblock": 0,
+    "implementation-stub": 1,
+    "bit": 2,
+    "village": 3,
+    "epic-of-epics": 4
   },
   "next_action": {
     "DEMOTED": "repair against the defeating observation and re-enter at PROPOSED",
@@ -53,5 +62,33 @@
     "standing_rank",
     "kind_rank",
     "issue_number"
-  ]
+  ],
+  "unblock_note": "An unblock request is takeable work: it is served by the tier it names in requested_from, and it sorts up because the ticket it holds counts toward unblocks. Blocked is never a ticket status; it is a held-by edge to an unblock ticket (AGENTS.md, Blocked edge is not blocked frontier).",
+  "provision_routes": {
+    "grant": [
+      "orchestrator",
+      "controller",
+      "owner"
+    ],
+    "judgement": [
+      "owner"
+    ],
+    "contract": [
+      "worker",
+      "orchestrator"
+    ],
+    "fixture": [
+      "worker"
+    ],
+    "capability": [
+      "controller",
+      "owner"
+    ],
+    "observation": [
+      "worker",
+      "orchestrator",
+      "controller"
+    ]
+  },
+  "provision_routes_note": "Which tiers may serve each provision. Declared data, not authority: serving a grant or judgement still needs the live grant the kernel checks at the transition."
 }

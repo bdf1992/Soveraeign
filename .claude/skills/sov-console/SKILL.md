@@ -71,13 +71,13 @@ renderer's report count as observation; modify `lineage/evidence/`; create
 - `console_service_status: CHARTERED_NOT_IMPLEMENTED` (STATUS.yaml).
 - O18 - "Is Console Service the accepted third service boundary under that
   name, and does Bdo authorize a provisional Human Binding target for it ahead
-  of O10?" - blocks `console_implementation`. Per decision 0014 it bundles: whether
+  of O10?" - gates `console.ratify_boundary` and `console.authorize_provisional_human_binding`. Per decision 0014 it bundles: whether
   the console is the accepted third boundary; whether `Console` is the
   accepted name (alternatives `Session`, `Operator`); and whether Bdo
   authorizes a provisional binding target ahead of O10. All implementation
   requests are refused and queued as judgement items for Bdo.
-- O2 - engineering baseline ratification - blocks `production_implementation`.
-- O10 - SPEC.md ratification - blocks `f1_closure`.
+- O2 - engineering baseline ratification - gates `engineering.ratify_baseline`.
+- O10 - SPEC.md ratification - gates `spec.ratify`.
 - Protected boundary `no_runtime_code_before_logical_spec_and_defeating_fixtures`
   applies to the service and to its bindings alike.
 - `bindings/README.md`: no binding implementation is admitted until the shared

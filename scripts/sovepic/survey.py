@@ -8,7 +8,7 @@ from sovepic import projection, walk
 from sovepic.projection import Issue
 
 
-WORKABLE_KINDS = ("bit", "implementation-stub")
+WORKABLE_KINDS = ("bit", "implementation-stub", "unblock")
 
 
 def _horizon_rank(issue: Issue) -> int:
@@ -55,6 +55,25 @@ def survey(root: Path, document: dict, routing: dict) -> dict:
         else:
             ready.append(entry)
 
+    stories = []
+    for number, issue in sorted(by_number.items()):
+        block = issue.metadata or {}
+        if issue.state != "OPEN" or block.get("kind") != "story":
+            continue
+        reading, short = walk.story_reading(issue, by_number)
+        stories.append(
+            {
+                "issue": number,
+                "title": issue.title,
+                "actor_kind": block.get("actor_kind"),
+                "role": block.get("role"),
+                "counter": block.get("parent"),
+                "reading": reading,
+                "short": short,
+                "asks": [ask.get("of") for ask in block.get("asks") or []],
+            }
+        )
+
     ready.sort(key=lambda e: (_horizon_rank(by_number[e["issue"]]), e["issue"]))
     return {
         "root_issue": root_issue,
@@ -65,6 +84,7 @@ def survey(root: Path, document: dict, routing: dict) -> dict:
             "ready": len(ready),
             "held": len(held),
             "unrouted": len(unrouted),
+            "stories": len(stories),
         },
         "contract_defects": contract,
         "label_defects": labels,
@@ -72,4 +92,5 @@ def survey(root: Path, document: dict, routing: dict) -> dict:
         "ready": ready,
         "held": held,
         "unrouted": unrouted,
+        "stories": stories,
     }

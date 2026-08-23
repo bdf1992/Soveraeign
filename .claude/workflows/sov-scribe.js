@@ -80,7 +80,7 @@ log('Frame: normalizing the writing request')
 const framePrompt = 'Read .claude/skills/sov-scribe/SKILL.md, then normalize this writing request against its request template. Request: ' + requestText + '. '
   + (pathOverride ? 'The caller fixed output_path to: ' + pathOverride + '. ' : '')
   + 'Fill every template field. Apply safe defaults (name them in defaults_applied); a field that would force invention is a gap - put the question in gaps and, when only Bdo can answer it, in judgement_queue. '
-  + 'Set blocked true only when drafting cannot proceed honestly without the missing answers.'
+  + 'Set blocked true only when drafting cannot proceed honestly without the missing answers; a missing owner answer that only gates ratification is a default to take and name, not a block.'
 
 const frame = await agent(framePrompt, { agentType: 'sov-orchestrator', schema: FRAME_SCHEMA, phase: 'Frame', label: 'frame' })
 

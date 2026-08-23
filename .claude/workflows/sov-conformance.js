@@ -20,7 +20,7 @@ const plan = await agent(
   'Produce a bounded operation plan for: ' + objective + '. ' +
   'Honor the blockers: conformance_status is EXECUTABLE_ORACLE_CONTROLS_PARTICIPANT_BINDING_OPEN (no participant has bound); O10 keeps SPEC.md predicates proposals; O8 gates fresh-witness measurement semantics; O12 gates BYOM binding fields; F2 exit needs one positive and one defeating fixture per normative predicate, bindable to more than one implementation. ' +
   'Every operation must stay inside conformance/, never import participant implementation code, never weaken an oracle check, and use effect class RECORD_LOCAL or RESOURCE_CONSUMPTION only (no EXTERNAL_WORLD in Phase I). ' +
-  'If the objective requires a decision reserved to Bdo, set blocked true, explain in blocked_reason, and put each question in judgement_queue instead of deciding it.',
+  'Put each question reserved to Bdo in judgement_queue instead of deciding it. Blocked edge is not blocked frontier (AGENTS.md, Self-direction is not delegation): an unresolved owner decision gates only the transition that needs it. Plan the reachable precursors, take reversible defaults for every other choice and name them in the operation descriptions, and set blocked true only when no admissible operation exists for this objective. Each judgement_queue entry names the transition it gates.',
   { agentType: 'sov-orchestrator', schema: PLAN_SCHEMA, phase: 'Scope', label: 'scope' }
 )
 

@@ -43,7 +43,7 @@ authority.
 ## Standing and blockers
 
 - `byom_status: OWNER_DIRECTED_CONTRACT_AND_FIXTURE_PROPOSED` (STATUS.yaml).
-- O12 blocks `byom_contract_freeze`: exact binding fields, data-boundary modes,
+- O12 gates `model_binding.ratify_contract`: exact binding fields, data-boundary modes,
   and the two-model Phase-I fixture await Bdo's ratification. Draft work stays
   marked as proposal.
 - Protected boundary `no_runtime_code_before_logical_spec_and_defeating_fixtures`

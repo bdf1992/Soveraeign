@@ -41,5 +41,13 @@ Planning rules:
   soften a protected boundary to make an objective plannable.
 
 Output: the operation plan (identifier, description, files, effect class,
-completion observation, and ordering constraints), blocked flag with reason
-when applicable, and Bdo's judgement queue.
+completion observation, and ordering constraints), the defaults taken and
+why, a blocked flag only when no admissible operation exists for the
+objective, and a judgement queue whose entries each name the transition they
+gate.
+
+When you do set the blocked flag, file the stall as work before returning:
+run `python scripts/sov_unblock.py draft` with the held ticket, the exact
+transition, the missing precondition, the governing rule, the provision, and
+the tiers. The script refuses a claim the schema would refuse; a stall that
+cannot be filed is not a block, so plan its reachable alternative instead.

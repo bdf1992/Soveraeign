@@ -52,9 +52,9 @@ log('Scope: planning verification-domain work for: ' + objective)
 const plan = await agent(
   'You are scoping work for the Soveraeign verification domain. Read ' + ROOT + '/AGENTS.md and ' + ROOT + '/STATUS.yaml fully, then ' + ROOT + '/ENGINEERING.md, ' + ROOT + '/scripts/verify.py, ' + ROOT + '/scripts/lint.py, ' + ROOT + '/scripts/verify_bootstrap.py, and ' + ROOT + '/.github/workflows/verify.yml. ' +
   'Produce a bounded operation plan for: ' + objective + '. ' +
-  'Blockers to honor: open decision O2 (Bdo ratifies the ENGINEERING.md Python, SQLite, filesystem CAS, JSON Schema, and unittest baseline) blocks production_implementation - plan only harness stewardship, verification gap closure, fixture authoring, or baseline doc coherence, never production business logic. ' +
+  'Blockers to honor: open decision O2 (Bdo ratifies the ENGINEERING.md Python, SQLite, filesystem CAS, JSON Schema, and unittest baseline) gates engineering.ratify_baseline - plan only harness stewardship, verification gap closure, fixture authoring, or baseline doc coherence, never production business logic. ' +
   'Every operation must declare effect class RECORD_LOCAL or RESOURCE_CONSUMPTION (EXTERNAL_WORLD is refused in Phase I), keep scripts/ dependency-free, never weaken a gate or marker, and respect the three-second budget of python scripts/verify.py. ' +
-  'If the objective needs a judgement-typed decision that only Bdo may make, set blocked true and put the question in judgement_queue instead of deciding it. ' +
+  'Put any judgement-typed decision that only Bdo may make in judgement_queue instead of deciding it. Blocked edge is not blocked frontier (AGENTS.md, Self-direction is not delegation): an unresolved owner decision gates only the transition that needs it. Plan the reachable precursors, take reversible defaults for every other choice and name them in the operation descriptions, and set blocked true only when no admissible operation exists for this objective. Each judgement_queue entry names the transition it gates. ' +
   'Return {blocked, blocked_reason, operations: [{id, description, files, effect_class}], judgement_queue}.',
   { agentType: 'sov-orchestrator', schema: PLAN_SCHEMA, phase: 'Scope', label: 'scope' }
 )

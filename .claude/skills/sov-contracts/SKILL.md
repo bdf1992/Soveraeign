@@ -44,15 +44,15 @@ schema without a positive and a defeating conformance case; touch
 `classification_status: PROPOSED_OWNER_RATIFICATION_PENDING`. Gating open
 decisions (STATUS.yaml):
 
-- **O10** (Bdo ratifies SPEC.md) blocks `f1_closure` — schema changes ahead of
+- **O10** (Bdo ratifies SPEC.md) gates `spec.ratify` — schema changes ahead of
   the spec freeze must be marked proposals with positive and defeating cases.
-- **O9** (Bdo ratifies CLASSIFICATION.md) blocks `terminology_freeze` — enum
+- **O9** (Bdo ratifies CLASSIFICATION.md) gates `classification.ratify` — enum
   vocabulary stays proposed; mismatches queue as judgement items, not renames.
-- **O12** blocks `byom_contract_freeze` — `model-binding.schema.json` fields,
+- **O12** gates `model_binding.ratify_contract` — `model-binding.schema.json` fields,
   data-boundary modes, and the two-model fixture cannot be frozen.
-- **O4** blocks `attestation_schema` — do not author an attestation contract;
+- **O4** gates `attestation.ratify_schema` — do not author an attestation contract;
   queue the question for Bdo.
-- **O2** blocks `production_implementation` — the JSON Schema baseline itself
+- **O2** gates `engineering.ratify_baseline` — the JSON Schema baseline itself
   is proposed, not ratified.
 
 ## Named operations
@@ -72,7 +72,7 @@ decisions (STATUS.yaml):
    and `required` conventions are consistent across all six files.
 6. **Proposal drafting for missing kernel contracts** — draft a clearly marked
    proposal for a SPEC.md object lacking a schema (e.g. retraction,
-   authority-grant) only where no open decision blocks it; attestation is
+   authority-grant) only where no open decision gates that exact transition; attestation is
    O4-blocked and queues instead.
 
 ## Verification

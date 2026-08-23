@@ -1,0 +1,56 @@
+{
+  "table_id": "soveraeign-tier-bindings/v1",
+  "status": "PROPOSED",
+  "compiles": "SDLC.md Three tiers, Two dyads",
+  "governed_by": ["SDLC.md", "AGENTS.md", "SPEC.md", "PRD.md"],
+  "note": "Which model binding each SDLC tier runs on, and the separation rules a run must satisfy. SDLC.md states the tiers and the dyads in prose; nothing bound them to an executing model, so every launch inherited whatever model the host happened to offer. This table holds no standing: SDLC.md remains authoritative and scripts/sov_loop.py refuses when a run disagrees with it.",
+  "tier_order": ["CONTROL", "ORCHESTRATION", "WORK"],
+  "phase_refused_effect_classes": ["EXTERNAL_WORLD"],
+  "refusal_codes": {
+    "TIER_DEPTH_REFUSED": "The run declares a chain that is not exactly Control, Orchestration, Work.",
+    "GRANT_NOT_NARROWED": "A tier claims a capability its parent did not hold, or fails to narrow.",
+    "SELF_SETTLEMENT_REFUSED": "The actor that produced a report also settled it.",
+    "SELF_WITNESS_REFUSED": "The binding that produced an output also observed it.",
+    "EFFECT_CLASS_REFUSED": "A tier declared an effect class above its ceiling, or one Phase I refuses.",
+    "PROVENANCE_INCOMPLETE": "A model invocation omitted a declared provenance field.",
+    "BINDING_UNDECLARED": "A tier named a binding this table does not declare."
+  },
+  "tiers": {
+    "CONTROL": {
+      "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+      "capabilities": ["select_operation", "issue_grant", "launch_orchestration", "observe", "settle", "escalate"],
+      "may_not": ["ratify_judgement", "widen_own_grant", "hold_private_concern_state"],
+      "max_effect_class": "RESOURCE_CONSUMPTION"
+    },
+    "ORCHESTRATION": {
+      "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+      "capabilities": ["issue_grant", "observe", "settle", "escalate"],
+      "may_not": ["widen_received_grant", "settle_own_operation", "ratify_judgement"],
+      "max_effect_class": "RESOURCE_CONSUMPTION"
+    },
+    "WORK": {
+      "binding_id": "urn:soveraeign:binding:ollama:qwen3-4b",
+      "capabilities": ["execute", "escalate"],
+      "may_not": ["settle", "witness_own_output", "write_authoritative_state", "outlive_lease"],
+      "max_effect_class": "RESOURCE_CONSUMPTION"
+    }
+  },
+  "observation": {
+    "note": "Observation is a stance, not a fourth tier. The rule it must satisfy is that the binding observing an output is not the binding that produced it.",
+    "observer_binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+    "must_differ_from": "WORK"
+  },
+  "provenance_fields": [
+    "binding_id",
+    "provider_id",
+    "model_id",
+    "model_version",
+    "runtime_id",
+    "host_id",
+    "input_projection_id",
+    "data_boundary",
+    "omissions",
+    "usage",
+    "cost"
+  ]
+}

@@ -10,6 +10,10 @@ from typing import Any
 
 
 LOCAL_PATHS = {"record", "payloads", "projections", "receipts", "work"}
+RUNTIME_PATHS = {
+    "/opt/soveraeign/scripts/custody_activation.py",
+    "/opt/soveraeign/scripts/node_runtime.py",
+}
 
 
 def canonical_bytes(value: object) -> bytes:
@@ -83,7 +87,8 @@ def independent_activation_defects(node: Path, manifest: dict[str, Any],
 
 
 def independent_bundle_defects(bundle: dict[str, Any], custody_claim: str,
-                               expected_manifest: dict[str, Any] | None = None) -> list[str]:
+                               expected_manifest: dict[str, Any] | None = None,
+                               expected_runtime_contract: dict[str, Any] | None = None) -> list[str]:
     """Inspect Kubernetes objects without calling the deployment renderer verifier."""
     defects: list[str] = []
     items = bundle.get("items") if bundle.get("kind") == "List" else None
@@ -165,6 +170,39 @@ def independent_bundle_defects(bundle: dict[str, Any], custody_claim: str,
     if data.get("SOVERAEIGN_CUSTODY_ACTIVATION_RECEIPTS") != (
             "/var/lib/soveraeign/receipts/custody-activations"):
         defects.append("ACTIVATION_RECEIPT_PATH")
+
+    try:
+        runtime = json.loads(data["phase-i.runtime-image.json"])
+        runtime_digest = sha256(canonical_bytes(runtime)).hexdigest()
+        runtime_gateway = runtime["gateway"]
+        health = runtime_gateway["health"]
+    except (KeyError, TypeError, ValueError):
+        defects.append("RUNTIME_CONTRACT_ABSENT")
+        runtime, runtime_gateway, health, runtime_digest = {}, {}, {}, ""
+    runtime_declared = data.get("SOVERAEIGN_RUNTIME_IMAGE_CONTRACT_DIGEST")
+    runtime_annotated = template.get("metadata", {}).get("annotations", {}).get(
+        "soveraeign.io/runtime-image-contract-digest")
+    if runtime_digest != runtime_declared or runtime_digest != runtime_annotated:
+        defects.append("RUNTIME_DIGEST_NOMINAL")
+    if (runtime.get("python_min") != "3.11" or
+            set(runtime.get("required_paths") or []) != RUNTIME_PATHS):
+        defects.append("RUNTIME_REQUIREMENTS")
+    if expected_runtime_contract is not None and runtime != expected_runtime_contract:
+        defects.append("RUNTIME_CONTRACT_SUBSTITUTED")
+    if (container.get("command") != runtime.get("entrypoint") or
+            container.get("args") != ["--bind", runtime_gateway.get("bind"), "--port",
+                                      str(runtime_gateway.get("port"))]):
+        defects.append("RUNTIME_ENTRYPOINT")
+    if (not container.get("ports") or container["ports"][0].get("containerPort") != 8080 or
+            runtime_gateway.get("unactivated_response") != "REFUSE"):
+        defects.append("RUNTIME_LISTENER")
+    for probe_name, health_name in (("startupProbe", "startup"),
+                                    ("readinessProbe", "readiness"),
+                                    ("livenessProbe", "liveness")):
+        probe = container.get(probe_name, {}).get("httpGet", {})
+        if probe.get("path") != health.get(health_name) or probe.get("port") != "gateway":
+            defects.append("RUNTIME_HEALTH")
+            break
     policies = [item for item in items if item.get("kind") == "NetworkPolicy"]
     if not any(policy.get("spec", {}).get("egress") == [] for policy in policies):
         defects.append("EGRESS_NOT_DENIED")

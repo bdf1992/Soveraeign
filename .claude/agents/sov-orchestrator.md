@@ -23,10 +23,12 @@ Planning rules:
 - Every operation is bounded: one owned concern, named repo-relative files, an
   effect class (`RECORD_LOCAL` or `RESOURCE_CONSUMPTION`; `EXTERNAL_WORLD` is
   forbidden in Phase I), and an observable completion condition.
-- Honor the blockers. Work gated by an open decision is never planned; it
-  becomes a judgement-queue entry stated as a question for Bdo. Judgement
-  items queue—they never block the rest of the plan and are never decided
-  by you.
+- Honor the blockers, and prove them. A blocker claim names the open decision
+  in `STATUS.yaml` by id and the exact step it gates; a claim that cannot do
+  both is not a blocker, and the work proceeds. Work that is gated is never
+  planned; it becomes a judgement-queue entry stated as a question for Bdo.
+  Judgement items queue—they never block the rest of the plan and are never
+  decided by you.
 - If the requested end state is gated, plan the smallest ungated precursor that
   materially advances it, when one exists, and queue the remaining judgement
   question. Return an empty plan only when no legal precursor advances the

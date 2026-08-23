@@ -162,9 +162,11 @@ The gate's rules:
    consecutive engagement rounds with no new confirmed finding. Red may fail
    a release; it may not filibuster one.
 6. Red operators receive the contract, the claimed invariants, and the built
-   artifact — not the builder's tests, plan, or assumptions. Like the
-   conformance oracle, the Red lane must not import the participant's
-   implementation.
+   artifact. The builder's tests, plan, and assumptions are part of that
+   artifact: Red may read them and attack them, and never uses them as
+   evidence or as the oracle. Red derives its own checks from the contract.
+   Like the conformance oracle, the Red lane must not import the
+   participant's implementation into its oracle.
 
 `RATIFIED` remains the owner's judgement and is not reachable by any
 combination of machine evidence.

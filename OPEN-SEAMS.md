@@ -66,13 +66,14 @@ boundary between a primary enterprise application and a constitutional runtime
 over existing applications must be tested through the first real subsystem rather
 than decided by metaphor alone.
 
-## S11 · Red-lane inputs
+## S11 · Red-lane inputs — closed 2026-08-23
 
-`SDLC.md` rule 6 says Red operators receive the contract, the claimed
+`SDLC.md` rule 6 said Red operators receive the contract, the claimed
 invariants, and the built artifact, not the builder's tests, plan, or
-assumptions. `.github/workflows/qa-lanes.yml` hands the Red action the whole
-pull-request diff, tests included, and only instructs it not to use them as
-evidence. One of the two statements must move; which one is owner judgement.
+assumptions, while `.github/workflows/qa-lanes.yml` handed the Red action the
+whole pull-request diff. Bdo chose the independent-verification reading: the
+builder's tests are part of the artifact under attack, readable and never the
+oracle. `SDLC.md` rule 6 now says so; the workflow already did.
 
 ## S12 · Ratification mechanism
 

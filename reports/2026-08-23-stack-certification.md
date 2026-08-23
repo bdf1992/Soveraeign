@@ -86,11 +86,11 @@ renders Console as `chartered, not built — O14`, and the merge renumbered Cons
 
 ## Residuals
 
-- The oracle has never validated the reference participant. Binding them yields 20 `INVALID`
-  and 9 coverage gaps: the oracle indexes by `CONF-I*-POS`/`-DEF`, the Asset Service emits
-  `RUN-I*`. `STATUS.yaml` carries this honestly as
-  `conformance_status: EXECUTABLE_ORACLE_CONTROLS_PARTICIPANT_BINDING_OPEN`. Until it closes,
-  every certified row above is certified against hand-authored controls only.
+- **Corrected 2026-08-23.** This report first claimed the oracle had never validated the
+  reference participant, citing 20 `INVALID` results. That was an error: the run was invoked
+  without `--cases conformance/scenarios.json`, so participant observations were graded
+  against the control fixtures, and `INVALID` correctly meant "cannot grade", not "unbound".
+  The oracle is bound to the reference participant and has been since 2026-08-22. `services/asset/conformance/README.md` documents the command and `services/asset/conformance/BASELINE.md` records the result: all nine requirements `FAIL`, with observed defects, which that file calls the implementation work surface rather than a defect in the binding. `scripts/sov_baseline.py` now runs that comparison in the verification gate and refuses on divergence from the record, in either direction.
 - Coverage is per requirement, not per predicate. Ten positive/defeating pairs cover nine
   requirements; `SPEC.md` declares 25 predicates across 14 transitions and its Conformance
   boundary asks for a pair per predicate. `ROADMAP.md` F2 exit is not met.
@@ -111,9 +111,8 @@ renders Console as `chartered, not built — O14`, and the merge renumbered Cons
 
 ## Next bounded operation per domain
 
-- **conformance** — close the participant binding: align observation `case_id` values with the
-  oracle's, or give the oracle a declared participant-case mapping. This unblocks every
-  certification claim above.
+- **conformance** — the binding is closed and recorded. The open work is repairing the
+  participant against the nine recorded failures, keeping scenarios and oracle frozen.
 - **verification** — decide finding 2, then either widen the production rule in
   `scripts/lint.py` or record the oracle exemption.
 - **diagrams** — refresh the four stale `source_digest` values and the `O14` reference in

@@ -128,10 +128,9 @@ Federation is deferred.
 
 ## Open
 
-The conformance oracle validates `C1` against hand-authored control fixtures
-only. Binding it to the reference participant currently yields no matches —
-the oracle expects `CONF-I*` case identifiers and the Asset Service emits
-`RUN-I*` — which `STATUS.yaml` carries honestly as
-`conformance_status: EXECUTABLE_ORACLE_CONTROLS_PARTICIPANT_BINDING_OPEN`.
-Until that binding closes, no crossing on this canvas has been observed
-end to end by anything other than its own author.
+The conformance oracle grades `C1` against the reference participant, and
+`services/asset/conformance/BASELINE.md` records the result: `PROD-I-3` fails
+because no second binding exists and the crossing does not declare its source,
+version, projection, omissions, or destination. That is a participant gap, not
+an unbound oracle. No crossing on this canvas has yet been performed by two
+materially different bindings, which is what `C1` ultimately owes.

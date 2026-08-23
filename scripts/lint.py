@@ -11,8 +11,10 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 TEXT_SUFFIXES = {".md", ".py", ".json", ".yaml", ".yml", ".toml"}
-TEXT_NAMES = {".cursorrules", ".env.example", ".gitignore"}
-SKIP_PARTS = {".git", ".venv", "__pycache__", "lineage"}
+TEXT_NAMES = {".cursorrules", ".env.example", ".gitattributes", ".gitignore"}
+# .local/ is gitignored runtime state (scheduled-run ledger and captures); it is never
+# repository text and may legitimately contain local paths from captured tool output.
+SKIP_PARTS = {".git", ".venv", "__pycache__", "lineage", ".local"}
 MAX_PRODUCTION_LINES = 300
 KNOWN_MODULE_DEBT = {
     "services/asset/src/soveraeign_asset_service/core.py":
@@ -103,7 +105,16 @@ def main() -> int:
         return 1
     python_count = 0
     for path in paths:
-        text = path.read_text(encoding="utf-8")
+        # Read bytes, never Path.read_text: universal-newline translation silently
+        # rewrites CR and CRLF to LF, which made the check_text CRLF rule unreachable
+        # on every platform. Decoding here keeps the line endings the file really has.
+        data = path.read_bytes()
+        try:
+            text = data.decode("utf-8")
+        except UnicodeDecodeError as error:
+            relative = path.relative_to(ROOT).as_posix()
+            defects.append(f"{relative}: not valid UTF-8 at byte {error.start}")
+            continue
         defects.extend(check_text(path, text))
         if path.suffix == ".py":
             python_count += 1

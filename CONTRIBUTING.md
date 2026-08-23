@@ -150,6 +150,12 @@ modules below 300 lines, future annotations, grouped and sorted imports, typed
 boundaries, `pathlib`, explicit encodings, parameterized SQL, and injectable
 nondeterminism.
 
+`.gitattributes` pins `* text=auto eol=lf` so checkout produces LF on every
+platform regardless of your `core.autocrlf` setting, and exempts `lineage/`
+whose evidence digests must stay byte-exact. `scripts/lint.py` reads file bytes
+and fails on any CR it finds; do not work around either by normalizing at commit
+time only.
+
 Execution never owns authoritative state. Every consequential decision records
 who acted, what operation was attempted, why, when, exact input/output addresses
 and digests, authority, effect class, and terminal outcome. Projections are
@@ -209,8 +215,9 @@ databases, payload stores, logs, or prompt dumps. Copy `.env.example` to `.env`
 for local configuration and keep values out of output. Receipts refer to an
 opaque credential identifier, never credential material.
 
-Run `python scripts/lint.py` to check syntax, repository text, module-size debt,
-and common secret shapes locally without transmitting repository content.
+Run `python scripts/lint.py` to check syntax, repository text encoding and line
+endings, module-size debt, and common secret shapes locally without transmitting
+repository content.
 
 ## Directory ownership
 

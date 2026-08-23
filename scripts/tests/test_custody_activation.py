@@ -101,6 +101,19 @@ class CustodyActivationTests(unittest.TestCase):
                                         "CUSTODY_IDENTITY_DRIFT"):
                 self.activate(node)
 
+    def test_stale_activation_receipt_refuses_restart(self):
+        with TemporaryDirectory() as temporary:
+            node = Path(temporary) / "node"
+            first = self.activate(node, "VERIFY_OR_INITIALIZE_EMPTY")
+            receipt_path = node / "receipts" / "custody-activations" / (
+                first["activation_id"] + ".json")
+            receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+            receipt["manifest_digest"] = "0" * 64
+            receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
+            with self.assertRaisesRegex(activation.CustodyActivationRefused,
+                                        "CUSTODY_ACTIVATION_RECEIPT_STALE"):
+                self.activate(node)
+
 
 if __name__ == "__main__":
     unittest.main()

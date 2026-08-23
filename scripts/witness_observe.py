@@ -39,6 +39,10 @@ def independent_local_defects(node: Path, manifest: dict[str, Any]) -> list[str]
     if set(paths) != LOCAL_PATHS:
         defects.append("PATH_SET")
         return defects
+    expected_paths = {name: str(node.resolve() / relative) for name, relative in paths.items()}
+    if (receipt.get("schema") != "soveraeign-infrastructure-receipt/v1" or
+            receipt.get("root") != str(node.resolve()) or receipt.get("paths") != expected_paths):
+        defects.append("RECEIPT_BINDING")
     root = node.resolve()
     for name, relative in paths.items():
         path = node / relative

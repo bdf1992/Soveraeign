@@ -209,10 +209,17 @@ def verify(root: Path, manifest: dict[str, Any]) -> list[str]:
         except (OSError, ValueError):
             defects.append("RECEIPT_INVALID")
         else:
+            expected_paths = {name: str(path) for name, path in resolved_paths(root, manifest).items()}
+            if receipt.get("schema") != "soveraeign-infrastructure-receipt/v1":
+                defects.append("RECEIPT_SCHEMA_INVALID")
             if receipt.get("manifest_digest") != digest:
                 defects.append("MANIFEST_DIGEST_MISMATCH")
             if receipt.get("effect_class") != "RECORD_LOCAL":
                 defects.append("RECEIPT_EFFECT_INVALID")
+            if receipt.get("root") != str(root.resolve()) or receipt.get("paths") != expected_paths:
+                defects.append("RECEIPT_PATH_BINDING_MISMATCH")
+            if receipt.get("outcome") not in {"COMMITTED", "NOOP"}:
+                defects.append("RECEIPT_OUTCOME_INVALID")
         if stat.S_IMODE(receipt_path.stat().st_mode) & 0o077:
             defects.append("RECEIPT_PERMISSIONS_UNSAFE")
 

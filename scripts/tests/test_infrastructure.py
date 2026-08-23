@@ -73,6 +73,17 @@ class InfrastructureTests(unittest.TestCase):
             receipt.write_text(json.dumps(value), encoding="utf-8")
             self.assertIn("MANIFEST_DIGEST_MISMATCH", infrastructure.verify(node, self.manifest()))
 
+    def test_receipt_path_binding_drift_is_observed(self):
+        with TemporaryDirectory() as temporary:
+            node = Path(temporary) / "node"
+            infrastructure.apply(node, self.manifest())
+            receipt = node / infrastructure.RECEIPT_NAME
+            value = json.loads(receipt.read_text(encoding="utf-8"))
+            value["paths"]["work"] = "/different/work"
+            receipt.write_text(json.dumps(value), encoding="utf-8")
+            self.assertIn("RECEIPT_PATH_BINDING_MISMATCH",
+                          infrastructure.verify(node, self.manifest()))
+
     def test_symlinked_custody_path_is_observed(self):
         with TemporaryDirectory() as temporary:
             node = Path(temporary) / "node"

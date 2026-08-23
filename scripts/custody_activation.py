@@ -95,6 +95,27 @@ def _load_or_create_identity(root: Path, digest: str,
     return identity, True
 
 
+def _verify_prior_receipts(directory: Path, identity: dict[str, Any], digest: str,
+                           paths: dict[str, str]) -> None:
+    if not directory.exists():
+        return
+    if directory.is_symlink() or not directory.is_dir():
+        raise CustodyActivationRefused("CUSTODY_ACTIVATION_RECEIPT_DIRECTORY_UNSAFE")
+    for receipt_path in directory.iterdir():
+        if receipt_path.is_symlink() or not receipt_path.is_file() or receipt_path.suffix != ".json":
+            raise CustodyActivationRefused("CUSTODY_ACTIVATION_RECEIPT_STALE")
+        try:
+            receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as error:
+            raise CustodyActivationRefused("CUSTODY_ACTIVATION_RECEIPT_STALE") from error
+        if (receipt.get("schema") != "soveraeign-custody-activation-receipt/v1" or
+                receipt.get("activation_id") != receipt_path.stem or
+                receipt.get("custody_id") != identity["custody_id"] or
+                receipt.get("manifest_digest") != digest or receipt.get("paths") != paths or
+                receipt.get("effect_class") != "RECORD_LOCAL"):
+            raise CustodyActivationRefused("CUSTODY_ACTIVATION_RECEIPT_STALE")
+
+
 def activate(root: Path, manifest: dict[str, Any], policy: str,
              expected_uid: int, expected_gid: int) -> dict[str, Any]:
     """Verify or explicitly initialize custody and append an activation receipt."""
@@ -138,6 +159,7 @@ def activate(root: Path, manifest: dict[str, Any], policy: str,
         identity, identity_created = _load_or_create_identity(root, digest, relative_paths)
         _require_identity(root / IDENTITY_NAME, expected_uid, expected_gid, "custody-identity")
         receipt_directory = paths["receipts"] / "custody-activations"
+        _verify_prior_receipts(receipt_directory, identity, digest, relative_paths)
         receipt_directory.mkdir(mode=0o700, exist_ok=True)
         os.chmod(receipt_directory, 0o700)
         activation_id = str(uuid4())

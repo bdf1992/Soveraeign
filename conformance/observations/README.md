@@ -64,3 +64,33 @@ question that would declare the missing task.
 
 `O10` cannot be legitimately ruled before that. This scenario remains `SEED`
 because it has been executed and not yet satisfied.
+
+## FOUND-007 · second run, after the semantic task existed
+
+`FOUND-007-rerun-observation.json`, against revision
+`ec0427ad08b0` on a clean clone of `main`.
+
+The first run was refused for the right reason. Decision 0021 declared the
+semantic cold-start task, `FOUND-010`, and `custody.py` implemented the
+`read-version` operation the service contract had always claimed. With a task to
+observe, the same procedure was performed again from a fresh clone: authority
+located, conformance suite executed, every verdict reconstructed, and the
+semantic task run and held.
+
+```
+PASS  WIT-007-2026-08-23-B  PROD-I-7  defects=0
+```
+
+`PROD-I-7`, independent qualification, is satisfied. `SPEC.md` is therefore
+proposed at `WITNESSED`, which is a proposal supported by this observation and
+not a ratification: a witness can support a standing proposal and can never
+ratify one.
+
+Read the suite line on that run carefully. `SUITE FAIL cases=1 coverage_gaps=8`
+is not a failure of this case. Submitting one participant observation leaves the
+other eight requirements without one, and the runner reports that absence as
+missing coverage. The case itself passed with zero defects.
+
+**O10 is now legitimately askable.** It was not before, and that was the whole
+problem: the owner was being asked to ratify a document that had skipped two
+standings, which this repository refuses everywhere else as `SKIPPED_STANDING`.

@@ -4,6 +4,13 @@
   "node": {
     "replicas": 1,
     "custody_manifest": "phase-i.local.json",
+    "custody_activation": {
+      "policy": "VERIFY_ONLY",
+      "expected_uid": 65532,
+      "expected_gid": 65532,
+      "script": "/opt/soveraeign/scripts/custody_activation.py",
+      "receipt_directory": "receipts/custody-activations"
+    },
     "roles": {
       "gateway": {
         "placement": "IN_NODE",

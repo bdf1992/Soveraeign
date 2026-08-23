@@ -50,7 +50,36 @@ def independent_local_defects(node: Path, manifest: dict[str, Any]) -> list[str]
     return defects
 
 
-def independent_bundle_defects(bundle: dict[str, Any], custody_claim: str) -> list[str]:
+def independent_activation_defects(node: Path, manifest: dict[str, Any],
+                                   receipt: dict[str, Any]) -> list[str]:
+    """Inspect custody continuity and an activation receipt without implementation imports."""
+    defects: list[str] = []
+    digest = sha256(canonical_bytes(manifest)).hexdigest()
+    try:
+        identity_path = node / ".soveraeign-custody-identity.json"
+        identity = json.loads(identity_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return ["CUSTODY_IDENTITY_INVALID"]
+    if identity.get("manifest_digest") != digest or identity.get("paths") != manifest["custody"]["paths"]:
+        defects.append("CUSTODY_IDENTITY_UNBOUND")
+    if receipt.get("custody_id") != identity.get("custody_id"):
+        defects.append("CUSTODY_CONTINUITY_LOST")
+    if receipt.get("manifest_digest") != digest or receipt.get("paths") != manifest["custody"]["paths"]:
+        defects.append("ACTIVATION_RECEIPT_UNBOUND")
+    receipt_path = node / "receipts" / "custody-activations" / (
+        str(receipt.get("activation_id")) + ".json")
+    try:
+        stored = json.loads(receipt_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        defects.append("ACTIVATION_RECEIPT_MISSING")
+    else:
+        if stored != receipt or receipt.get("effect_class") != "RECORD_LOCAL":
+            defects.append("ACTIVATION_RECEIPT_INVALID")
+    return defects
+
+
+def independent_bundle_defects(bundle: dict[str, Any], custody_claim: str,
+                               expected_manifest: dict[str, Any] | None = None) -> list[str]:
     """Inspect Kubernetes objects without calling the deployment renderer verifier."""
     defects: list[str] = []
     items = bundle.get("items") if bundle.get("kind") == "List" else None
@@ -66,13 +95,20 @@ def independent_bundle_defects(bundle: dict[str, Any], custody_claim: str) -> li
     if len(deployments) != 1:
         return defects + ["DEPLOYMENT_COUNT"]
     spec = deployments[0].get("spec", {})
-    pod = spec.get("template", {}).get("spec", {})
+    template = spec.get("template", {})
+    pod = template.get("spec", {})
     containers = pod.get("containers", [])
     if spec.get("replicas") != 1 or spec.get("strategy", {}).get("type") != "Recreate":
         defects.append("MULTI_WRITER")
     if len(containers) != 1:
         return defects + ["CONTAINER_COUNT"]
     container = containers[0]
+    initializers = pod.get("initContainers", [])
+    if len(initializers) != 1:
+        defects.append("CUSTODY_ACTIVATION_GATE")
+        initializer = {}
+    else:
+        initializer = initializers[0]
     security = container.get("securityContext", {})
     if "@sha256:" not in container.get("image", ""):
         defects.append("IMAGE_MUTABLE")
@@ -97,7 +133,35 @@ def independent_bundle_defects(bundle: dict[str, Any], custody_claim: str) -> li
         defects.append("FEDERATION_ACTIVE")
     if data.get("SOVERAEIGN_GATEWAY_PATROL_MODE") != "OBSERVE_ONLY":
         defects.append("PATROL_AUTHORITY")
+    try:
+        carried = json.loads(data["phase-i.local.json"])
+        carried_paths = json.loads(data["SOVERAEIGN_CUSTODY_PATHS"])
+        carried_digest = sha256(canonical_bytes(carried)).hexdigest()
+    except (KeyError, TypeError, ValueError):
+        defects.append("CUSTODY_CONTRACT_ABSENT")
+        carried, carried_paths, carried_digest = {}, {}, ""
+    declared_digest = data.get("SOVERAEIGN_CUSTODY_MANIFEST_DIGEST")
+    annotated_digest = template.get("metadata", {}).get("annotations", {}).get(
+        "soveraeign.io/custody-manifest-digest")
+    if carried_digest != declared_digest or carried_digest != annotated_digest:
+        defects.append("CUSTODY_DIGEST_NOMINAL")
+    if carried_paths != carried.get("custody", {}).get("paths") or set(carried_paths) != LOCAL_PATHS:
+        defects.append("CUSTODY_PATHS_NOMINAL")
+    if expected_manifest is not None and carried != expected_manifest:
+        defects.append("LOCAL_CONTRACT_SUBSTITUTED")
+    args = initializer.get("args", [])
+    if (initializer.get("name") != "custody-activation" or
+            initializer.get("image") != container.get("image") or
+            "VERIFY_ONLY" not in args or "/var/lib/soveraeign" not in args or
+            "/etc/soveraeign/custody/phase-i.local.json" not in args):
+        defects.append("CUSTODY_ACTIVATION_GATE")
+    init_security = initializer.get("securityContext", {})
+    if init_security.get("runAsUser") != 65532 or init_security.get("runAsGroup") != 65532:
+        defects.append("CUSTODY_ACTIVATION_IDENTITY")
+    if data.get("SOVERAEIGN_CUSTODY_ACTIVATION_RECEIPTS") != (
+            "/var/lib/soveraeign/receipts/custody-activations"):
+        defects.append("ACTIVATION_RECEIPT_PATH")
     policies = [item for item in items if item.get("kind") == "NetworkPolicy"]
     if not any(policy.get("spec", {}).get("egress") == [] for policy in policies):
         defects.append("EGRESS_NOT_DENIED")
-    return defects
+    return list(dict.fromkeys(defects))

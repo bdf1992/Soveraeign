@@ -15,7 +15,12 @@ import sys
 from tempfile import TemporaryDirectory
 from typing import Any
 
-from witness_observe import canonical_bytes, independent_bundle_defects, independent_local_defects
+from witness_observe import (
+    canonical_bytes,
+    independent_activation_defects,
+    independent_bundle_defects,
+    independent_local_defects,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -143,7 +148,9 @@ def _exercise_deployment() -> list[dict[str, Any]]:
         "--image", PINNED_IMAGE, "--custody-claim", CUSTODY_CLAIM,
     ])
     bundle = json.loads(render["stdout"])
-    defects = independent_bundle_defects(bundle, CUSTODY_CLAIM)
+    local_manifest = json.loads((ROOT / "infrastructure" / "phase-i.local.json").read_text(
+        encoding="utf-8"))
+    defects = independent_bundle_defects(bundle, CUSTODY_CLAIM, local_manifest)
     if defects:
         raise WitnessRefused("BUNDLE_OBSERVATION:" + ",".join(defects))
     render.pop("stdout")
@@ -159,6 +166,51 @@ def _exercise_deployment() -> list[dict[str, Any]]:
         command = [sys.executable, "scripts/deployment.py", "render", "--target", "customer-kubernetes", *arguments]
         cases.append({"case": f"deployment-refusal-{index}", **_expect_refusal(command, reason)})
     return cases
+
+
+def _exercise_activation(temporary: Path) -> list[dict[str, Any]]:
+    manifest = json.loads((ROOT / "infrastructure" / "phase-i.local.json").read_text(
+        encoding="utf-8"))
+    node = temporary / "activation"
+    identity_args = ["--expected-uid", str(os.geteuid()), "--expected-gid", str(os.getegid())]
+    empty = _expect_refusal([
+        sys.executable, "scripts/custody_activation.py", "--root", str(node), *identity_args,
+    ], "EMPTY_CUSTODY_NOT_ACTIVATED")
+    initialized = _run([
+        sys.executable, "scripts/custody_activation.py", "--root", str(node),
+        "--policy", "VERIFY_OR_INITIALIZE_EMPTY", *identity_args,
+    ])
+    first_receipt = json.loads(initialized["stdout"])
+    defects = independent_activation_defects(node, manifest, first_receipt)
+    if defects:
+        raise WitnessRefused("ACTIVATION_OBSERVATION:" + ",".join(defects))
+    restarted = _run([
+        sys.executable, "scripts/custody_activation.py", "--root", str(node), *identity_args,
+    ])
+    second_receipt = json.loads(restarted["stdout"])
+    if (second_receipt.get("custody_id") != first_receipt.get("custody_id") or
+            second_receipt.get("continuity") != "PRESERVED"):
+        raise WitnessRefused("CUSTODY_CONTINUITY_NOT_PRESERVED")
+    infrastructure_receipt = node / ".soveraeign-infrastructure.json"
+    stale = json.loads(infrastructure_receipt.read_text(encoding="utf-8"))
+    stale["manifest_digest"] = "0" * 64
+    infrastructure_receipt.write_text(json.dumps(stale), encoding="utf-8")
+    stale_result = _expect_refusal([
+        sys.executable, "scripts/custody_activation.py", "--root", str(node), *identity_args,
+    ], "CUSTODY_PRECONDITION_DRIFT")
+    defeating = _run([
+        sys.executable, "-m", "unittest", "discover", "-s", "scripts/tests",
+        "-p", "test_custody_activation.py", "-v",
+    ])
+    for result in (initialized, restarted, defeating):
+        result.pop("stdout")
+    return [
+        {"case": "empty-custody-default-refusal", **empty},
+        {"case": "explicit-custody-initialization-independent-inspection", **initialized},
+        {"case": "custody-restart-continuity", **restarted},
+        {"case": "stale-infrastructure-receipt-refusal", **stale_result},
+        {"case": "custody-defeating-fixtures", **defeating},
+    ]
 
 
 def _exercise_secret_gate(temporary: Path) -> dict[str, Any]:
@@ -187,6 +239,7 @@ def run_witness(witness_id: str, expected_commit: str) -> dict[str, Any]:
     with TemporaryDirectory() as raw_temporary:
         temporary = Path(raw_temporary)
         observations = _exercise_local(temporary)
+        observations.extend(_exercise_activation(temporary))
         observations.extend(_exercise_deployment())
         observations.append(_exercise_secret_gate(temporary))
     receipt = {

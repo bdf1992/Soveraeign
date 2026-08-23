@@ -6,9 +6,11 @@ import os
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
+import sys
 
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "scripts"))
 SPEC = importlib.util.spec_from_file_location(
     "witness_observe", ROOT / "scripts" / "witness_observe.py"
 )
@@ -78,6 +80,19 @@ class WitnessProtocolTests(unittest.TestCase):
         self.assertIn(
             "PUBLIC_GATEWAY", observe.independent_bundle_defects(bundle, CUSTODY_CLAIM)
         )
+
+    def test_independent_observer_detects_substituted_local_contract(self):
+        import deployment
+
+        topology = json.loads((ROOT / "infrastructure" / "phase-i.topology.json").read_text(
+            encoding="utf-8"))
+        local = json.loads((ROOT / "infrastructure" / "phase-i.local.json").read_text(
+            encoding="utf-8"))
+        bundle = deployment.render_kubernetes(topology, PINNED_IMAGE, CUSTODY_CLAIM)
+        expected = json.loads(json.dumps(local))
+        expected["custody"]["paths"]["work"] = "expected-work"
+        self.assertIn("LOCAL_CONTRACT_SUBSTITUTED",
+                      observe.independent_bundle_defects(bundle, CUSTODY_CLAIM, expected))
 
 
 if __name__ == "__main__":

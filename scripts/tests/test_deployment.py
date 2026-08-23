@@ -3,10 +3,12 @@ from __future__ import annotations
 import importlib.util
 import json
 from pathlib import Path
+import sys
 import unittest
 
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "scripts"))
 SPEC = importlib.util.spec_from_file_location("deployment", ROOT / "scripts" / "deployment.py")
 assert SPEC and SPEC.loader
 deployment = importlib.util.module_from_spec(SPEC)
@@ -18,6 +20,10 @@ CUSTODY_CLAIM = "customer-soveraeign-custody"
 class DeploymentTests(unittest.TestCase):
     def manifest(self) -> dict:
         path = ROOT / "infrastructure" / "phase-i.topology.json"
+        return json.loads(path.read_text(encoding="utf-8"))
+
+    def custody_manifest(self) -> dict:
+        path = ROOT / "infrastructure" / "phase-i.local.json"
         return json.loads(path.read_text(encoding="utf-8"))
 
     def test_manifest_preserves_portable_single_node_boundary(self):
@@ -39,6 +45,55 @@ class DeploymentTests(unittest.TestCase):
         self.assertNotIn("Secret", kinds)
         self.assertNotIn("Ingress", kinds)
         self.assertEqual(kinds.count("Service"), 1)
+
+    def test_kubernetes_carries_exact_local_custody_contract(self):
+        local = self.custody_manifest()
+        bundle = deployment.render_kubernetes(self.manifest(), PINNED_IMAGE, CUSTODY_CLAIM,
+                                              custody_manifest=local)
+        config = next(item for item in bundle["items"] if item["kind"] == "ConfigMap")["data"]
+        workload = next(item for item in bundle["items"] if item["kind"] == "Deployment")
+        pod = workload["spec"]["template"]
+        digest = deployment.manifest_digest(local)
+        self.assertEqual(json.loads(config["phase-i.local.json"]), local)
+        self.assertEqual(config["SOVERAEIGN_CUSTODY_MANIFEST_DIGEST"], digest)
+        self.assertEqual(json.loads(config["SOVERAEIGN_CUSTODY_PATHS"]),
+                         local["custody"]["paths"])
+        self.assertEqual(pod["metadata"]["annotations"][
+            "soveraeign.io/custody-manifest-digest"], digest)
+
+    def test_runtime_is_gated_by_verify_only_custody_activation(self):
+        bundle = deployment.render_kubernetes(self.manifest(), PINNED_IMAGE, CUSTODY_CLAIM)
+        workload = next(item for item in bundle["items"] if item["kind"] == "Deployment")
+        pod = workload["spec"]["template"]["spec"]
+        self.assertEqual(len(pod["initContainers"]), 1)
+        activation = pod["initContainers"][0]
+        self.assertEqual(activation["name"], "custody-activation")
+        self.assertEqual(activation["image"], pod["containers"][0]["image"])
+        self.assertIn("VERIFY_ONLY", activation["args"])
+        self.assertEqual(activation["securityContext"]["runAsUser"], 65532)
+        self.assertEqual(activation["securityContext"]["runAsGroup"], 65532)
+
+    def test_initialization_requires_explicit_render_policy(self):
+        bundle = deployment.render_kubernetes(
+            self.manifest(), PINNED_IMAGE, CUSTODY_CLAIM,
+            custody_activation_policy="VERIFY_OR_INITIALIZE_EMPTY",
+        )
+        workload = next(item for item in bundle["items"] if item["kind"] == "Deployment")
+        activation = workload["spec"]["template"]["spec"]["initContainers"][0]
+        self.assertIn("VERIFY_OR_INITIALIZE_EMPTY", activation["args"])
+        self.assertEqual(deployment.verify_bundle(bundle), [])
+
+    def test_verifier_defeats_nominal_filename_only_binding(self):
+        bundle = deployment.render_kubernetes(self.manifest(), PINNED_IMAGE, CUSTODY_CLAIM)
+        config = next(item for item in bundle["items"] if item["kind"] == "ConfigMap")["data"]
+        config["SOVERAEIGN_CUSTODY_MANIFEST_DIGEST"] = "0" * 64
+        self.assertIn("CUSTODY_MANIFEST_DIGEST_UNBOUND", deployment.verify_bundle(bundle))
+
+    def test_verifier_defeats_missing_startup_activation(self):
+        bundle = deployment.render_kubernetes(self.manifest(), PINNED_IMAGE, CUSTODY_CLAIM)
+        workload = next(item for item in bundle["items"] if item["kind"] == "Deployment")
+        workload["spec"]["template"]["spec"]["initContainers"] = []
+        self.assertIn("CUSTODY_ACTIVATION_GATE_MISSING", deployment.verify_bundle(bundle))
 
     def test_mutable_or_unpinned_image_refuses(self):
         for image in ("soveraeign:latest", "soveraeign@sha256:abc", ""):

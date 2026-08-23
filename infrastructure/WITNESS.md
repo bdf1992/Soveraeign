@@ -2,8 +2,9 @@
 
 Status: `BUILT PROTOCOL · NOT YET INDEPENDENTLY EXECUTED`
 
-This protocol lets a fresh Red participant reproduce the local custody and
-customer-Kubernetes claims without importing either implementation module. It
+This protocol lets a fresh Red participant reproduce the local custody,
+custody-activation, and customer-Kubernetes claims without importing any of
+those implementation modules. It
 produces a candidate receipt; it cannot grant itself `WITNESSED` standing and
 cannot ratify O2 or O14.
 
@@ -36,11 +37,19 @@ The runner independently checks:
 - the complete repository verifier;
 - observation-only local planning;
 - local custody paths, permissions, and manifest-digest receipt;
+- default refusal of an empty PVC-shaped root, explicit initialization,
+  machine-readable activation receipt, and custody identity continuity across
+  restart;
+- refusal of wrong manifest digest, missing paths, unwritable ownership, and a
+  stale identity or infrastructure receipt through the defeating fixtures;
 - refusal of unmanaged roots and observation of receipt, manifest, permission,
   and symlink drift plus the real concurrent-apply fixture;
 - a rendered Kubernetes bundle with a pinned image, customer-owned claim,
   single writer, hardened pod, ClusterIP Gateway, disabled Federation,
   observe-only patrol, and default-deny egress;
+- exact embedding of `phase-i.local.json`, its independently computed digest,
+  its five-path mapping, the UID/GID `65532` activation gate, and activation
+  receipt location;
 - refusal of mutable images, invalid claims, public Services, extra replicas,
   and premature Federation;
 - refusal of a force-added ignored synthetic secret.
@@ -54,8 +63,13 @@ the receipt. It performs only `RECORD_LOCAL` effects in temporary directories.
 - owner ratification;
 - a live cluster deployment;
 - production fitness;
+- an image entrypoint, listener, readiness probe, startup contract, or health
+  semantics for port 8080;
 - Gateway operation safety;
 - Broker, Queue, or Federation activation.
 
 The Gateway remains unearned while Asset Service authority, receipt,
 independent-observation, and two-binding gaps remain open.
+
+Passing this protocol repairs the local-to-Kubernetes custody seam. It still
+does not accept issue #39 or ratify O14; Bdo retains both judgements.

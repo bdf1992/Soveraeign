@@ -76,6 +76,8 @@ class AssetStore:
               run_id TEXT PRIMARY KEY REFERENCES runs(id),
               source_id TEXT NOT NULL, source_digest TEXT NOT NULL,
               reader_id TEXT NOT NULL, reader_version TEXT NOT NULL,
+              reader_address TEXT NOT NULL, reader_digest TEXT NOT NULL,
+              configuration_address TEXT NOT NULL,
               configuration_digest TEXT NOT NULL, output_role TEXT NOT NULL,
               fidelity TEXT NOT NULL, omissions_json TEXT NOT NULL);
             CREATE TABLE IF NOT EXISTS recordings(
@@ -83,6 +85,8 @@ class AssetStore:
               output_version_id TEXT NOT NULL UNIQUE REFERENCES versions(id),
               source_id TEXT NOT NULL, source_digest TEXT NOT NULL,
               reader_id TEXT NOT NULL, reader_version TEXT NOT NULL,
+              reader_address TEXT NOT NULL, reader_digest TEXT NOT NULL,
+              configuration_address TEXT NOT NULL,
               configuration_digest TEXT NOT NULL, output_role TEXT NOT NULL,
               payload_address TEXT NOT NULL, payload_digest TEXT NOT NULL,
               fidelity TEXT NOT NULL,
@@ -120,6 +124,30 @@ class AssetStore:
         elif path.read_bytes() != data:
             raise PayloadIntegrityError("digest collision or corrupt blob")
         return digest, path
+
+    def store_addressed_blob(self, data: bytes) -> tuple[str, str]:
+        """Store bytes and return their portable CAS address and digest."""
+        digest, _ = self.store_blob(data)
+        return f"cas:sha256:{digest}", f"sha256:{digest}"
+
+    def verified_address(self, address: str, digest: str) -> bytes:
+        """Resolve a local CAS address only when it agrees with its digest."""
+        if not isinstance(digest, str) or not digest.startswith("sha256:"):
+            raise PayloadIntegrityError("unsupported payload digest")
+        hex_digest = digest.removeprefix("sha256:")
+        if (
+            len(hex_digest) != 64
+            or any(character not in "0123456789abcdef" for character in hex_digest)
+            or address != f"cas:{digest}"
+        ):
+            raise PayloadIntegrityError("payload address and digest disagree")
+        path = self.blobs / hex_digest[:2] / hex_digest
+        if not path.is_file():
+            raise PayloadIntegrityError(f"missing addressed payload {address}")
+        data = path.read_bytes()
+        if sha256(data).hexdigest() != hex_digest:
+            raise PayloadIntegrityError(f"addressed payload changed {address}")
+        return data
 
     def verified_version(self, version_id: str) -> tuple[sqlite3.Row, bytes]:
         """Resolve an exact version and refuse bytes that no longer match it."""

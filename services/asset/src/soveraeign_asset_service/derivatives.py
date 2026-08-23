@@ -3,11 +3,17 @@
 from __future__ import annotations
 
 import json
-from typing import Any
 
 from .control import ControlLedger
+from .reconstruction import RecordingReconstructor
 from .recording import (
-    ReaderDeclaration, ReaderUndeclared, RecordingChanged, SourceChanged, StaleLease,
+    ConfigurationChanged,
+    ReaderChanged,
+    ReaderDeclaration,
+    ReaderMaterials,
+    ReaderUndeclared,
+    SourceChanged,
+    StaleLease,
 )
 from .storage import AssetStore, PayloadIntegrityError, new_id, now
 
@@ -15,10 +21,17 @@ from .storage import AssetStore, PayloadIntegrityError, new_id, now
 class DerivativeLifecycle:
     """Own declared derivative runs without owning authority or storage mechanics."""
 
-    def __init__(self, store: AssetStore, control: ControlLedger):
+    def __init__(
+        self,
+        store: AssetStore,
+        control: ControlLedger,
+        readers: ReaderMaterials,
+    ):
         self.store = store
         self.db = store.db
         self.control = control
+        self.readers = readers
+        self.reconstructor = RecordingReconstructor(store, readers)
 
     def request(
         self,
@@ -37,9 +50,15 @@ class DerivativeLifecycle:
             source_version, _ = self.store.verified_version(version_id)
             if source_version["asset_id"] != asset_id:
                 raise ReaderUndeclared("source version does not belong to the asset")
-        except (PayloadIntegrityError, ReaderUndeclared) as error:
+            reader_materials = self.readers.materialize(reader)
+        except (
+            ConfigurationChanged,
+            PayloadIntegrityError,
+            ReaderChanged,
+            ReaderUndeclared,
+        ) as error:
             integrity_failed = isinstance(error, PayloadIntegrityError)
-            reason = "SOURCE_CHANGED" if integrity_failed else "READER_UNDECLARED"
+            reason = "SOURCE_CHANGED" if integrity_failed else error.reason_code
             self.control.receipt(
                 "REFUSED",
                 "operation.request",
@@ -60,13 +79,19 @@ class DerivativeLifecycle:
             (run_id, kind, asset_id, version_id, actor, now()),
         )
         self.db.execute(
-            "INSERT INTO derivative_plans VALUES(?,?,?,?,?,?,?,?,?)",
+            "INSERT INTO derivative_plans("
+            "run_id,source_id,source_digest,reader_id,reader_version,reader_address,"
+            "reader_digest,configuration_address,configuration_digest,output_role,"
+            "fidelity,omissions_json) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",
             (
                 run_id,
                 version_id,
                 source_digest,
                 reader.reader_id,
                 reader.reader_version,
+                reader_materials["reader_address"],
+                reader_materials["reader_digest"],
+                reader_materials["configuration_address"],
                 reader.configuration_digest,
                 reader.output_role,
                 reader.fidelity,
@@ -85,7 +110,11 @@ class DerivativeLifecycle:
                 "source_digest": source_digest,
                 "reader_id": reader.reader_id,
                 "reader_version": reader.reader_version,
+                "reader_address": reader_materials["reader_address"],
+                "reader_digest": reader_materials["reader_digest"],
+                "configuration_address": reader_materials["configuration_address"],
                 "configuration_digest": reader.configuration_digest,
+                "output_role": reader.output_role,
                 "fidelity": reader.fidelity,
                 "omissions": list(reader.omissions),
             },
@@ -149,6 +178,11 @@ class DerivativeLifecycle:
             self._refuse(run_id, worker, "READER_UNDECLARED")
             raise ReaderUndeclared(run_id)
         try:
+            self.readers.resolve(plan)
+        except (ConfigurationChanged, ReaderChanged) as error:
+            self._refuse(run_id, worker, error.reason_code)
+            raise
+        try:
             source_version, _ = self.store.verified_version(plan["source_id"])
         except PayloadIntegrityError as error:
             self._refuse(run_id, worker, "SOURCE_CHANGED")
@@ -178,7 +212,11 @@ class DerivativeLifecycle:
             ),
         )
         self.db.execute(
-            "INSERT INTO recordings VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            "INSERT INTO recordings("
+            "id,run_id,output_version_id,source_id,source_digest,reader_id,reader_version,"
+            "reader_address,reader_digest,configuration_address,configuration_digest,"
+            "output_role,payload_address,payload_digest,fidelity,omissions_json,produced_at,"
+            "produced_by,standing) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             (
                 recording_id,
                 run_id,
@@ -187,6 +225,9 @@ class DerivativeLifecycle:
                 plan["source_digest"],
                 plan["reader_id"],
                 plan["reader_version"],
+                plan["reader_address"],
+                plan["reader_digest"],
+                plan["configuration_address"],
                 plan["configuration_digest"],
                 plan["output_role"],
                 f"cas:sha256:{digest}",
@@ -228,47 +269,6 @@ class DerivativeLifecycle:
         )
         self.db.commit()
 
-    def reconstruct(self, recording_or_version_id: str) -> dict[str, Any]:
-        """Reconstruct one recording and independently verify both payloads."""
-        recording = self.db.execute(
-            "SELECT * FROM recordings WHERE id=? OR output_version_id=?",
-            (recording_or_version_id, recording_or_version_id),
-        ).fetchone()
-        if recording is None:
-            raise KeyError(recording_or_version_id)
-        run = self.db.execute(
-            "SELECT kind FROM runs WHERE id=?", (recording["run_id"],)
-        ).fetchone()
-        if run is None:
-            raise KeyError(recording["run_id"])
-        try:
-            source, _ = self.store.verified_version(recording["source_id"])
-        except PayloadIntegrityError as error:
-            raise SourceChanged(recording["source_id"]) from error
-        if f"sha256:{source['digest']}" != recording["source_digest"]:
-            raise SourceChanged(recording["source_id"])
-        try:
-            output, _ = self.store.verified_version(recording["output_version_id"])
-        except PayloadIntegrityError as error:
-            raise RecordingChanged(recording["output_version_id"]) from error
-        if f"sha256:{output['digest']}" != recording["payload_digest"]:
-            raise RecordingChanged(recording["output_version_id"])
-        return {
-            "recording_id": recording["id"],
-            "run_id": recording["run_id"],
-            "operation": run["kind"],
-            "output_version_id": recording["output_version_id"],
-            "source_id": recording["source_id"],
-            "source_digest": recording["source_digest"],
-            "reader_id": recording["reader_id"],
-            "reader_version": recording["reader_version"],
-            "configuration_digest": recording["configuration_digest"],
-            "output_role": recording["output_role"],
-            "payload_address": recording["payload_address"],
-            "payload_digest": recording["payload_digest"],
-            "fidelity": recording["fidelity"],
-            "omissions": json.loads(recording["omissions_json"]),
-            "produced_at": recording["produced_at"],
-            "produced_by": recording["produced_by"],
-            "standing": recording["standing"],
-        }
+    def reconstruct(self, recording_or_version_id: str) -> dict[str, object]:
+        """Resolve one recording through the independent reconstruction component."""
+        return self.reconstructor.reconstruct(recording_or_version_id)

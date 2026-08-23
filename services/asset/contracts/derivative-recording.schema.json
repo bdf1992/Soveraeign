@@ -13,6 +13,11 @@
     "source_digest",
     "reader_id",
     "reader_version",
+    "reader_address",
+    "reader_digest",
+    "reader_artifact_address",
+    "reader_artifact_digest",
+    "configuration_address",
     "configuration_digest",
     "output_role",
     "payload_address",
@@ -32,6 +37,11 @@
     "source_digest": {"$ref": "#/$defs/digest"},
     "reader_id": {"type": "string", "minLength": 1},
     "reader_version": {"type": "string", "minLength": 1},
+    "reader_address": {"$ref": "#/$defs/address"},
+    "reader_digest": {"$ref": "#/$defs/digest"},
+    "reader_artifact_address": {"$ref": "#/$defs/address"},
+    "reader_artifact_digest": {"$ref": "#/$defs/digest"},
+    "configuration_address": {"$ref": "#/$defs/address"},
     "configuration_digest": {"$ref": "#/$defs/digest"},
     "output_role": {"type": "string", "minLength": 1},
     "payload_address": {"type": "string", "pattern": "^cas:sha256:[0-9a-f]{64}$"},
@@ -47,6 +57,7 @@
     "standing": {"const": "RECORDED"}
   },
   "$defs": {
+    "address": {"type": "string", "pattern": "^cas:sha256:[0-9a-f]{64}$"},
     "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
   },
   "allOf": [

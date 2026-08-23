@@ -28,9 +28,10 @@ The following prior defects now have self-tested implementation evidence. They
 remain below `WITNESSED` until an independent engagement reproduces them.
 
 **Derivation reconstruction.** Every derivative declares and persists its exact
-source version and digest, reader and version, configuration digest, fidelity,
-recoverable omissions, output address, and recorded standing. Source drift and
-incomplete lossy readers refuse. Evidence:
+source version and digest, CAS-addressed supplied reader artifact and replay
+configuration, fidelity, recoverable omissions, output address, and recorded
+standing. Source, reader, configuration, and output drift refuse. Settlement
+reconstructs the full path instead of checking only the output bytes. Evidence:
 `conformance/PROD-I-2-BUILD.md`, C2, and PROD-I-2.
 
 **Module boundary.** Storage, authority/receipts, derivative execution,

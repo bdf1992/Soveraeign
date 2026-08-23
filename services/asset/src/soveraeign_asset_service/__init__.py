@@ -3,7 +3,9 @@
 from .control import AuthorityRefused
 from .core import AssetService
 from .recording import (
+    ConfigurationChanged,
     ReaderDeclaration,
+    ReaderChanged,
     ReaderUndeclared,
     RecordingChanged,
     SourceChanged,
@@ -14,7 +16,9 @@ from .recording import (
 __all__ = [
     "AssetService",
     "AuthorityRefused",
+    "ConfigurationChanged",
     "ReaderDeclaration",
+    "ReaderChanged",
     "ReaderUndeclared",
     "RecordingChanged",
     "SourceChanged",

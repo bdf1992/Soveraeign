@@ -18,7 +18,6 @@ from soveraeign_asset_service import (
     AssetService,
     AuthorityRefused,
     ReaderDeclaration,
-    digest_configuration,
 )
 
 
@@ -59,12 +58,11 @@ def main() -> int:
 
             service.grant("Bdo", "Bdo", "operate:derive")
             before = original["digest"]
-            reader = ReaderDeclaration(
+            reader = ReaderDeclaration.from_materials(
                 reader_id="asset.metadata-card",
                 reader_version="1.0.0",
-                configuration_digest=digest_configuration(
-                    {"format": "json", "schema": "card-v1"}
-                ),
+                reader_artifact=b'{"entrypoint":"builtin:metadata-card"}',
+                configuration={"format": "json", "schema": "card-v1"},
                 fidelity="LOSSY",
                 omissions=("binary-payload",),
             )

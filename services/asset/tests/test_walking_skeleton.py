@@ -12,7 +12,9 @@ sys.path.insert(0, str(Path(__file__).parents[1] / "src"))
 from soveraeign_asset_service import (
     AssetService,
     AuthorityRefused,
+    ConfigurationChanged,
     ReaderDeclaration,
+    ReaderChanged,
     ReaderUndeclared,
     RecordingChanged,
     SourceChanged,
@@ -29,10 +31,11 @@ class WalkingSkeleton(unittest.TestCase):
         self.service.grant("Bdo", "Bdo", "operate:derive")
         self.service.grant("Bdo", "Bdo", "ratify:judgement")
         self.service.grant("Bdo", "Bdo", "retract:record")
-        self.reader = ReaderDeclaration(
+        self.reader = ReaderDeclaration.from_materials(
             reader_id="asset.metadata-card",
             reader_version="1.0.0",
-            configuration_digest=digest_configuration({"format": "json", "schema": "card-v1"}),
+            reader_artifact=b'{"entrypoint":"builtin:metadata-card"}',
+            configuration={"format": "json", "schema": "card-v1"},
             fidelity="LOSSY",
             omissions=("binary-payload",),
         )
@@ -64,6 +67,18 @@ class WalkingSkeleton(unittest.TestCase):
         self.assertEqual(recording["operation"], "metadata-card")
         self.assertEqual(recording["reader_id"], self.reader.reader_id)
         self.assertEqual(recording["reader_version"], self.reader.reader_version)
+        self.assertTrue(recording["reader_address"].startswith("cas:sha256:"))
+        self.assertTrue(recording["reader_artifact_address"].startswith("cas:sha256:"))
+        self.assertTrue(recording["configuration_address"].startswith("cas:sha256:"))
+        self.assertEqual(recording["reader_address"], f"cas:{recording['reader_digest']}")
+        self.assertEqual(
+            recording["reader_artifact_address"],
+            f"cas:{recording['reader_artifact_digest']}",
+        )
+        self.assertEqual(
+            recording["configuration_address"],
+            f"cas:{recording['configuration_digest']}",
+        )
         self.assertEqual(recording["configuration_digest"], self.reader.configuration_digest)
         self.assertEqual(recording["output_role"], "RECORDING")
         self.assertEqual(recording["fidelity"], "LOSSY")
@@ -145,14 +160,35 @@ class WalkingSkeleton(unittest.TestCase):
         asset = self.service.ingest(path, "Asset", "Bdo")
         configuration_digest = digest_configuration({"mode": "sketch"})
         invalid_readers = (
-            ReaderDeclaration(
-                "asset.pencil", "1", configuration_digest, "LOSSY"
+            ReaderDeclaration.from_materials(
+                "asset.pencil", "1", b"pencil-v1", {"mode": "sketch"}, "LOSSY"
+            ),
+            ReaderDeclaration.from_materials(
+                "asset.pencil",
+                "1",
+                b"pencil-v1",
+                {"mode": "sketch"},
+                "EXACT",
+                ("color",),
+            ),
+            ReaderDeclaration.from_materials(
+                "asset.pencil",
+                "1",
+                b"pencil-v1",
+                {"mode": "sketch"},
+                "LOSSY",
+                ["color"],
+            ),
+            ReaderDeclaration.from_materials(
+                reader_id="asset.pencil",
+                reader_version="1",
+                reader_artifact=b"",
+                configuration={"mode": "sketch"},
+                fidelity="LOSSY",
+                omissions=("color",),
             ),
             ReaderDeclaration(
-                "asset.pencil", "1", configuration_digest, "EXACT", ("color",)
-            ),
-            ReaderDeclaration(
-                "asset.pencil", "1", configuration_digest, "LOSSY", ["color"]
+                "asset.pencil", "1", configuration_digest, "LOSSY", ("color",)
             ),
             None,
         )
@@ -208,6 +244,117 @@ class WalkingSkeleton(unittest.TestCase):
         ).fetchone()[0]
         Path(blob_path).write_bytes(b"corrupt")
         with self.assertRaises(RecordingChanged):
+            self.service.reconstruct_recording(output_version)
+
+    def test_source_corruption_after_report_defeats_observation(self):
+        path = self.source("asset.txt", b"asset")
+        asset = self.service.ingest(path, "Asset", "Bdo")
+        run = self.service.request_derivative(
+            asset["asset_id"], asset["version_id"], "Bdo", reader=self.reader
+        )
+        fence = self.service.claim(run, "local-worker")
+        self.service.report_derivative(run, "local-worker", fence, b"output")
+        blob_path = self.service.db.execute(
+            "SELECT blob_path FROM versions WHERE id=?", (asset["version_id"],)
+        ).fetchone()[0]
+        Path(blob_path).write_bytes(b"corrupt")
+
+        observation_id = self.service.observe(run, "independent-observer")
+
+        run_status = self.service.db.execute(
+            "SELECT status FROM runs WHERE id=?", (run,)
+        ).fetchone()[0]
+        evidence = self.service.db.execute(
+            "SELECT evidence_json FROM observations WHERE id=?", (observation_id,)
+        ).fetchone()[0]
+        self.assertEqual(run_status, "FAILED")
+        self.assertEqual(json.loads(evidence)["reason"], "SOURCE_CHANGED")
+
+    def test_tampered_payload_address_defeats_recording_reconstruction(self):
+        path = self.source("asset.txt", b"asset")
+        asset = self.service.ingest(path, "Asset", "Bdo")
+        run = self.service.request_derivative(
+            asset["asset_id"], asset["version_id"], "Bdo", reader=self.reader
+        )
+        fence = self.service.claim(run, "local-worker")
+        output_version = self.service.report_derivative(
+            run, "local-worker", fence, b"output"
+        )
+        self.service.db.execute(
+            "UPDATE recordings SET payload_address=? WHERE output_version_id=?",
+            (f"cas:sha256:{'0' * 64}", output_version),
+        )
+        self.service.db.commit()
+
+        with self.assertRaises(RecordingChanged):
+            self.service.reconstruct_recording(output_version)
+
+    def test_reader_artifact_corruption_defeats_reconstruction(self):
+        path = self.source("asset.txt", b"asset")
+        asset = self.service.ingest(path, "Asset", "Bdo")
+        run = self.service.request_derivative(
+            asset["asset_id"], asset["version_id"], "Bdo", reader=self.reader
+        )
+        fence = self.service.claim(run, "local-worker")
+        output_version = self.service.report_derivative(
+            run, "local-worker", fence, b"output"
+        )
+        recording = self.service.reconstruct_recording(output_version)
+        artifact_digest = recording["reader_artifact_digest"].removeprefix("sha256:")
+        artifact_path = (
+            self.root / "state" / "blobs" / "sha256" / artifact_digest[:2] / artifact_digest
+        )
+        artifact_path.write_bytes(b"corrupt")
+
+        with self.assertRaises(ReaderChanged):
+            self.service.reconstruct_recording(output_version)
+
+    def test_reader_identity_substitution_defeats_reconstruction(self):
+        path = self.source("asset.txt", b"asset")
+        asset = self.service.ingest(path, "Asset", "Bdo")
+        run = self.service.request_derivative(
+            asset["asset_id"], asset["version_id"], "Bdo", reader=self.reader
+        )
+        fence = self.service.claim(run, "local-worker")
+        output_version = self.service.report_derivative(
+            run, "local-worker", fence, b"output"
+        )
+        self.service.db.execute(
+            "UPDATE derivative_plans SET reader_version='substituted' WHERE run_id=?",
+            (run,),
+        )
+        self.service.db.execute(
+            "UPDATE recordings SET reader_version='substituted' WHERE run_id=?",
+            (run,),
+        )
+        self.service.db.commit()
+
+        with self.assertRaises(ReaderChanged):
+            self.service.reconstruct_recording(output_version)
+
+    def test_configuration_corruption_defeats_reconstruction(self):
+        path = self.source("asset.txt", b"asset")
+        asset = self.service.ingest(path, "Asset", "Bdo")
+        run = self.service.request_derivative(
+            asset["asset_id"], asset["version_id"], "Bdo", reader=self.reader
+        )
+        fence = self.service.claim(run, "local-worker")
+        output_version = self.service.report_derivative(
+            run, "local-worker", fence, b"output"
+        )
+        recording = self.service.reconstruct_recording(output_version)
+        configuration_digest = recording["configuration_digest"].removeprefix("sha256:")
+        configuration_path = (
+            self.root
+            / "state"
+            / "blobs"
+            / "sha256"
+            / configuration_digest[:2]
+            / configuration_digest
+        )
+        configuration_path.write_bytes(b"corrupt")
+
+        with self.assertRaises(ConfigurationChanged):
             self.service.reconstruct_recording(output_version)
 
     def test_same_bytes_do_not_collapse_asset_identity(self):

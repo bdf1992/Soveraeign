@@ -11,7 +11,7 @@ from .control import ControlLedger
 from .derivatives import DerivativeLifecycle
 from .observations import RunObservations
 from .projections import AssetProjections
-from .recording import ReaderDeclaration
+from .recording import ReaderDeclaration, ReaderMaterials
 from .storage import AssetStore, new_id, now
 
 
@@ -22,8 +22,13 @@ class AssetService:
         self._store = AssetStore(root)
         self.db = self._store.db
         self._control = ControlLedger(self.db)
-        self._derivatives = DerivativeLifecycle(self._store, self._control)
-        self._observations = RunObservations(self._store, self._control)
+        self._readers = ReaderMaterials(self._store)
+        self._derivatives = DerivativeLifecycle(
+            self._store, self._control, self._readers
+        )
+        self._observations = RunObservations(
+            self._store, self._control, self._derivatives
+        )
         self._projections = AssetProjections(self._store, self._control)
 
     def close(self) -> None:

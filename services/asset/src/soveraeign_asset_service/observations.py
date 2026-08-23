@@ -5,16 +5,24 @@ from __future__ import annotations
 import json
 
 from .control import ControlLedger
-from .storage import AssetStore, PayloadIntegrityError, new_id, now
+from .derivatives import DerivativeLifecycle
+from .recording import ReaderUndeclared, ReconstructionError
+from .storage import AssetStore, new_id, now
 
 
 class RunObservations:
     """Observe durable run outputs without relying on worker reports."""
 
-    def __init__(self, store: AssetStore, control: ControlLedger):
+    def __init__(
+        self,
+        store: AssetStore,
+        control: ControlLedger,
+        derivatives: DerivativeLifecycle,
+    ):
         self.store = store
         self.db = store.db
         self.control = control
+        self.derivatives = derivatives
 
     def observe(self, run_id: str, observer: str) -> str:
         """Verify the durable output and record the observed outcome."""
@@ -22,16 +30,24 @@ class RunObservations:
         if run is None or run["status"] != "REPORTED":
             raise RuntimeError("run has no independently observable report")
         try:
-            version, data = self.store.verified_version(run["output_version_id"])
+            recording = self.derivatives.reconstruct(run["output_version_id"])
             passed = True
             evidence = {
-                "digest": f"sha256:{version['digest']}",
-                "size": len(data),
-                "exists": True,
+                "configuration_digest": recording["configuration_digest"],
+                "payload_digest": recording["payload_digest"],
+                "reader_digest": recording["reader_digest"],
+                "recording_id": recording["recording_id"],
+                "source_digest": recording["source_digest"],
             }
-        except PayloadIntegrityError:
+        except ReconstructionError as error:
             passed = False
-            evidence = {"digest": None, "size": None, "exists": False}
+            evidence = {"reason": error.reason_code}
+        except ReaderUndeclared as error:
+            passed = False
+            evidence = {"reason": error.reason_code}
+        except (KeyError, ValueError):
+            passed = False
+            evidence = {"reason": "RECORDING_MISSING"}
         observation_id = new_id("obs")
         self.db.execute(
             "INSERT INTO observations VALUES(?,?,?,?,?,?)",

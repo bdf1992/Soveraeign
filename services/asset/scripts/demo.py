@@ -9,7 +9,6 @@ sys.path.insert(0, str(Path(__file__).parents[1] / "src"))
 from soveraeign_asset_service import (
     AssetService,
     ReaderDeclaration,
-    digest_configuration,
 )
 
 
@@ -20,12 +19,11 @@ with TemporaryDirectory() as tmp:
     service = AssetService(root / "state")
     service.grant("Bdo", "Bdo", "operate:derive")
     result = service.ingest(source, "Example Asset", "Bdo")
-    reader = ReaderDeclaration(
+    reader = ReaderDeclaration.from_materials(
         reader_id="asset.metadata-card",
         reader_version="1.0.0",
-        configuration_digest=digest_configuration(
-            {"format": "json", "schema": "card-v1"}
-        ),
+        reader_artifact=b'{"entrypoint":"builtin:metadata-card"}',
+        configuration={"format": "json", "schema": "card-v1"},
         fidelity="LOSSY",
         omissions=("binary-payload",),
     )

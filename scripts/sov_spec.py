@@ -115,6 +115,38 @@ def audit() -> dict[str, Any]:
     }
 
 
+def witness_evidence() -> list[dict[str, Any]]:
+    """Judge every recorded observation with the oracle's own check, not a copy.
+
+    An instrument that asserts a standing is worth less than no instrument. This
+    reads what is in the record and lets the oracle decide, so the verdict moves
+    when the evidence moves.
+    """
+    directory = ROOT / "conformance" / "observations"
+    if not directory.is_dir():
+        return []
+    sys.path.insert(0, str(ROOT / "conformance"))
+    try:
+        from run import CHECKS  # noqa: PLC0415
+    except ImportError:
+        return []
+    judged = []
+    for path in sorted(directory.glob("*-observation.json")):
+        for item in json.loads(path.read_text(encoding="utf-8")):
+            requirement = "PROD-I-7"
+            check = CHECKS.get(requirement)
+            if check is None:
+                continue
+            defects = check(item["observed"])
+            judged.append({
+                "case_id": item["case_id"],
+                "revision": item.get("artifact_revision", "unknown"),
+                "requirement": requirement,
+                "defects": defects,
+            })
+    return judged
+
+
 def command_trace(args: argparse.Namespace) -> int:
     """Report the standing the specification has earned."""
     result = audit()
@@ -136,14 +168,17 @@ def command_trace(args: argparse.Namespace) -> int:
     print("Earned standing for SPEC.md:")
     print("  BUILT      EARNED - every requirement states a predicate, is traced, and")
     print("             carries a positive and a defeating control that pass")
-    print("  WITNESSED  NOT EARNED - no independent run is recorded. FOUND-007 declares")
-    print("             the procedure and has never been executed; it is still a SEED.")
-    print("             This is the blocker, and it is a task, not a judgement.")
-    if not result["lineage_present"]:
-        print("             The source ground is locked evidence that PUBLICATION.md keeps")
-        print("             unpublished. That is governed, not blocking: a witness reports")
-        print("             it unavailable and never claims a verification it could not")
-        print("             perform, which is exactly what verify_bootstrap already does.")
+    judged = witness_evidence()
+    passing = [run for run in judged if not run["defects"]]
+    if passing:
+        newest = passing[-1]
+        print(f"  WITNESSED  EARNED - {newest['case_id']} satisfies PROD-I-7 with zero")
+        print(f"             defects against revision {newest['revision'][:12]}")
+    elif judged:
+        print("  WITNESSED  NOT EARNED - an independent run is recorded and the oracle")
+        print(f"             refused it: {judged[-1]['defects'][0]}")
+    else:
+        print("  WITNESSED  NOT EARNED - no independent run is recorded at all")
     print("  RATIFIED   NOT REACHABLE - owner judgement, and asking for it before")
     print("             WITNESSED skips a standing, which this repository refuses")
     print("             everywhere else as SKIPPED_STANDING")

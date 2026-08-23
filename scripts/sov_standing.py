@@ -83,11 +83,20 @@ def read_claims(status_path: Path = STATUS) -> list[Claim]:
     return claims
 
 
+NOT_A_RECORD = {"readme", "index"}
+
+
 def witness_records(witness_dir: Path = WITNESS_DIR) -> set[str]:
-    """Subjects that carry a witness record, by filename stem."""
+    """Subjects that carry a witness record, by filename stem.
+
+    The directory's own documentation is not an observation of anything. Counting
+    it would let a file that explains the convention satisfy a claim made under
+    that convention.
+    """
     if not witness_dir.is_dir():
         return set()
-    return {p.stem.lower() for p in witness_dir.glob("*.md")}
+    stems = {p.stem.lower() for p in witness_dir.glob("*.md")}
+    return stems - NOT_A_RECORD
 
 
 def unsupported(status_path: Path = STATUS, witness_dir: Path = WITNESS_DIR) -> list[Claim]:

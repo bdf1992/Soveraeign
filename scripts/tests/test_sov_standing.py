@@ -22,12 +22,18 @@ sys.path.insert(0, str(SCRIPTS))
 
 import sov_standing  # noqa: E402
 
+LF = "\n"
+
 
 def _status(body: str) -> Path:
-    handle = tempfile.NamedTemporaryFile("w", suffix=".yaml", delete=False, encoding="utf-8", newline="\n")
+    handle = tempfile.NamedTemporaryFile("w", suffix=".yaml", delete=False, encoding="utf-8", newline=LF)
     handle.write(body)
     handle.close()
     return Path(handle.name)
+
+
+def _record(directory: Path, name: str) -> None:
+    (directory / name).write_text("observation", encoding="utf-8", newline=LF)
 
 
 class ClaimedStanding(unittest.TestCase):
@@ -68,39 +74,47 @@ class SubjectNaming(unittest.TestCase):
 
 class GateBehaviour(unittest.TestCase):
     def test_a_claim_without_a_record_is_refused(self):
-        path = _status("asset_service_status: BUILT_WITNESSED\n")
+        path = _status("asset_service_status: BUILT_WITNESSED" + LF)
         with tempfile.TemporaryDirectory() as empty:
             gaps = sov_standing.unsupported(path, Path(empty))
         self.assertEqual([c.field for c in gaps], ["asset_service_status"])
 
     def test_a_claim_with_a_record_is_supported(self):
-        path = _status("asset_service_status: BUILT_WITNESSED\n")
+        path = _status("asset_service_status: BUILT_WITNESSED" + LF)
         with tempfile.TemporaryDirectory() as tmp:
-            (Path(tmp) / "asset-service.md").write_text("observation", encoding="utf-8", newline="\n")
+            _record(Path(tmp), "asset-service.md")
             gaps = sov_standing.unsupported(path, Path(tmp))
         self.assertEqual(gaps, [])
 
     def test_an_unwitnessed_subject_needs_no_record(self):
         """The whole repository is in this state; the gate must stay quiet about it."""
-        path = _status("asset_service_status: BUILT_SELF_TESTED_NOT_WITNESSED\n")
+        path = _status("asset_service_status: BUILT_SELF_TESTED_NOT_WITNESSED" + LF)
         with tempfile.TemporaryDirectory() as empty:
             self.assertEqual(sov_standing.unsupported(path, Path(empty)), [])
 
     def test_a_record_for_a_different_subject_does_not_satisfy_the_claim(self):
-        """The defeating case for the record lookup: any file must not satisfy any claim."""
-        path = _status("asset_service_status: BUILT_WITNESSED\n")
+        """The defeating case for the lookup: any file must not satisfy any claim."""
+        path = _status("asset_service_status: BUILT_WITNESSED" + LF)
         with tempfile.TemporaryDirectory() as tmp:
-            (Path(tmp) / "console-service.md").write_text("observation", encoding="utf-8", newline="\n")
+            _record(Path(tmp), "console-service.md")
+            gaps = sov_standing.unsupported(path, Path(tmp))
+        self.assertEqual(len(gaps), 1)
+
+    def test_the_directory_readme_is_not_a_witness_record(self):
+        """The file explaining the convention must not satisfy a claim made under it."""
+        path = _status("readme_status: BUILT_WITNESSED" + LF)
+        with tempfile.TemporaryDirectory() as tmp:
+            _record(Path(tmp), "README.md")
             gaps = sov_standing.unsupported(path, Path(tmp))
         self.assertEqual(len(gaps), 1)
 
     def test_a_missing_witness_directory_refuses_rather_than_passing(self):
-        path = _status("asset_service_status: BUILT_RATIFIED\n")
+        path = _status("asset_service_status: BUILT_RATIFIED" + LF)
         gaps = sov_standing.unsupported(path, Path(tempfile.gettempdir()) / "no-such-witness-dir")
         self.assertEqual(len(gaps), 1)
 
     def test_non_status_lines_are_ignored(self):
-        path = _status("phase: FOUNDING\nnote: WITNESSED appears here as prose\n")
+        path = _status("phase: FOUNDING" + LF + "note: WITNESSED appears here as prose" + LF)
         with tempfile.TemporaryDirectory() as empty:
             self.assertEqual(sov_standing.unsupported(path, Path(empty)), [])
 
@@ -109,6 +123,10 @@ class LiveRepository(unittest.TestCase):
     def test_the_repository_currently_claims_no_standing(self):
         """If this ever fails, something advanced standing - and it must carry a record."""
         self.assertEqual(sov_standing.read_claims(), [])
+
+    def test_the_shipped_witness_directory_contributes_no_records(self):
+        """witness/ holds only its README today; nothing has been witnessed."""
+        self.assertEqual(sov_standing.witness_records(), set())
 
 
 if __name__ == "__main__":

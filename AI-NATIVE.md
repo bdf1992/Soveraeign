@@ -98,6 +98,7 @@ Assessment state is separate from verdict:
 For a complete assessment:
 
 - unreachable with another structural axis present → `TRUTH_CAPABLE`;
+- unreachable with no structural axis present → `DECORATION`;
 - reachable but bolted on → `DECORATION`;
 - reachable and substantive but below the supporting-axis threshold →
   `TRUTH_CAPABLE` when a structural axis is present, otherwise `DECORATION`.
@@ -163,13 +164,17 @@ soveraeign_checks:
   receipt_completeness: PASS | FAIL | UNATTESTABLE
   effect_honesty: PASS | FAIL | UNATTESTABLE
   cold_start_competence: PASS | FAIL | UNATTESTABLE
+  two_binding_proof: PASS | FAIL | UNATTESTABLE
+  local_sovereignty: PASS | FAIL | UNATTESTABLE
   model_substitutability: PASS | FAIL | UNATTESTABLE
 qualification: SOVERAEIGN_QUALIFIED | NOT_QUALIFIED
 evidence: [<addresses>]
 defeating_cases: [<fixture identifiers>]
 ```
 
-`UNATTESTABLE` is not a pass and must remain visible.
+`UNATTESTABLE` is not a pass and must remain visible. Qualification is derived,
+never selected directly: it requires a complete `AI_NATIVE` assessment and
+`PASS` on every Soveraeign check.
 
 ## Asset Service proving operation
 

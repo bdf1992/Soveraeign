@@ -5,8 +5,9 @@ rules for its subtree, but it may not weaken this contract. `CONTRIBUTING.md`
 explains the same workflow for human contributors; `ENGINEERING.md` defines the
 current technical baseline.
 
-Before a consequential change, read `STATUS.yaml`, `SYSTEM.md`, `CONTRACT.md`,
-`PRD.md`, `SPEC.md`, `ENGINEERING.md`, `SDLC.md`, and `OPEN-SEAMS.md`.
+Before a consequential change, read `STATUS.yaml`, `SYSTEM.md`,
+`CLASSIFICATION.md`, `CONTRACT.md`, `PRD.md`, `SPEC.md`, `AI-NATIVE.md`,
+`ENGINEERING.md`, `SDLC.md`, and `OPEN-SEAMS.md`.
 
 ## Design System of Record
 
@@ -18,6 +19,7 @@ The governing documents form one design System of Record with explicit roles:
 - `CONTRACT.md` owns invariants;
 - `PRD.md` owns Phase-I requirements;
 - `SPEC.md` owns logical objects, transitions, predicates, and refusals;
+- `AI-NATIVE.md` owns surface evaluation and qualification criteria;
 - `STATUS.yaml` owns current authority, standing, and open decisions;
 - `ENGINEERING.md` owns the proposed reference implementation baseline;
 - `SDLC.md` owns the operating loop: tiers, dyads, concern registry, skill
@@ -65,7 +67,7 @@ the current task and grant.
 - Mark new claims as proposals and preserve open contradictions.
 - Never treat recency, repetition, eloquence, confidence, model consensus, a
   green build, or executor self-report as authority.
-- Preserve the standing lifecycle: `OPEN -> BUILT -> WITNESSED -> RATIFIED`.
+- Preserve the artifact lifecycle: `OPEN -> BUILT -> WITNESSED -> RATIFIED`.
 - A build report cannot witness itself; only Bdo can ratify judgement claims.
 
 ## Change protocol
@@ -89,7 +91,8 @@ disproves.
 2. Add or update the contract and its positive and defeating conformance case.
 3. Make the smallest implementation change that satisfies the visible case.
 4. Add focused unit tests for local mechanics and edge cases.
-5. Run `python scripts/verify.py` from a clean repository root.
+5. Run `python scripts/verify.py` from the repository root against the intended
+   working-tree state.
 6. Record any changed policy in `decisions/` and any changed standing in
    `STATUS.yaml`.
 

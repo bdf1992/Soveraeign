@@ -211,7 +211,8 @@ visible when current effectiveness is evaluated.
 
 #### `Receipt`
 
-Every attempted crossing or consequential transition returns:
+Every attempted crossing and every consequential operation eventually returns
+one terminal receipt:
 
 ```text
 receipt_id, event_id, event_type, actor_id, interface_id,
@@ -266,8 +267,10 @@ conditioning current operation while preserving its history.
 
 ## Transition contract
 
-Every transition checks the declared pre-state and emits exactly one terminal
-receipt. A stale pre-state cannot settle.
+Every transition checks the declared pre-state. Each attempted operation emits
+exactly one terminal receipt; intermediate run transitions append attributable
+events but do not create extra terminal outcomes. A stale pre-state cannot
+settle.
 
 | Transition | Preconditions | Commit | Refusal |
 | --- | --- | --- | --- |

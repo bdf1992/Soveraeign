@@ -121,15 +121,24 @@ remains the standing term.
 An asset is not its payload. Distinct assets may intentionally reference the
 same bytes while preserving distinct identity, use, permissions, and history.
 
-## Standing and outcomes
+## Record standing, artifact lifecycle, and outcomes
 
-Historical standing is orthogonal to information role:
+Operational record standing is orthogonal to information role:
 
 `RECORDED → ADMITTED → RATIFIED → EFFECTIVE`
 
 The transition is not automatic. Each step requires its declared gate and
 receipt. Ratification remains historical even when a later observation changes
 current effectiveness.
+
+Repository requirements and concerns use a separate evidence lifecycle:
+
+`OPEN → BUILT → WITNESSED → RATIFIED`
+
+The shared word `RATIFIED` names a typed authority decision, but the authority
+and carrier differ. An operational record may be ratified under a matching live
+grant; a design artifact or concern requires Bdo's judgement. Advancing one
+never advances the other implicitly.
 
 Event outcome is recorded separately:
 

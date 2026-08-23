@@ -91,12 +91,14 @@ projection, omissions, usage, and cost remain visible through the applicable
 Model Binding contract. Switching models creates a new attributed invocation;
 fallback is never silent.
 
-Dynamic Chart compilation is not claimed here. Until issues #40 and #42 provide
-that boundary, Sov loads explicit governed sources and declares what it omitted.
+Dynamic Chart compilation is not claimed here. Until the boundary currently
+tracked by issues #40 and #42 is ratified and implemented, Sov loads explicit
+governed sources and declares what it omitted.
 
-## Present standing
+## Profile standing
 
-This pass establishes an inspectable context profile and machine-checked positive
-and defeating declarations for issue #45. It does not establish a live controller,
-Gateway operation, binding parity, independent witness, or Phase-I qualification.
-Exact profile acceptance remains Bdo's judgement under open decision O17.
+The profile artifact includes an inspectable context declaration and
+machine-checked positive and defeating declarations for issue #45. It does not
+establish a live controller, Gateway operation, binding parity, independent
+witness, or Phase-I qualification. `STATUS.yaml` owns its current standing;
+exact profile acceptance remains Bdo's judgement under open decision O17.

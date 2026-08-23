@@ -13,7 +13,6 @@ name: qa lanes
 
 on:
   pull_request:
-  workflow_dispatch:
 
 permissions:
   contents: read
@@ -26,6 +25,7 @@ jobs:
   blue:
     name: blue · construction
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -46,6 +46,7 @@ jobs:
   red:
     name: red · adversarial screening
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     permissions:
       contents: read
       pull-requests: write
@@ -76,7 +77,7 @@ jobs:
 
             You receive the contract, the claimed invariants, and the built artifact.
             Do not read the author's tests, plan, or assumptions as evidence that the
-            behaviour is correct, and do not import participant implementation code
+            behavior is correct, and do not import participant implementation code
             into your reasoning about the oracle.
 
             Attempt to defeat the change. Look specifically for refusal bypasses,
@@ -112,6 +113,7 @@ jobs:
   purple:
     name: purple · release gate
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     needs: [blue, red]
     steps:
       - uses: actions/checkout@v4

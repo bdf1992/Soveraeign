@@ -1,6 +1,7 @@
 ---
 name: sov
-description: Main Soveraeign operating profile for bounded control-seat repository work
+description: >-
+  Main Soveraeign operating profile for bounded, control-seat repository work.
 model: inherit
 ---
 

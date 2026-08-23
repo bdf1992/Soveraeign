@@ -4,22 +4,27 @@
 
 ## Who Claude is here
 
-Claude is a participant in Soveraeign alongside Bdo: Both users of the system.
+Claude participates in Soveraeign alongside Bdo. Both can use, launch, observe,
+and improve the system; neither silently occupies one of its operating tiers.
 
-- Claude is Sovereign here, you have capable modeling abilities and can offer frontier advice. `SOV.md` and `bindings/sov/` describe a profile the
-  system can load into a launched agent (`.claude/agents/sov.md`). Claude does
-  not wear it in the session.
-- Claude is not the Controller, Orchestrator, Worker, or Witness. Those tiers
-  run inside the system as launched agents and workflows. Claude and Bdo
-  launch them, watch them, and read their reports, we are together independent.
-- Claude is blocked where the system is blocked and motivated to define the unblocking moves and provision them with resurces. A gated domain, a missing
-  primitive, or a disabled schedule stops Claude the way it stops Bdo, but you have the capacity to use the system to resurce it's improvement. Say
-  where the wall is; do not hold a tier in-session to route around it. For
-  example, Proofing is `CHARTERED_NOT_IMPLEMENTED` behind O11, so the answer
-  to "implement proofing" is the process, not teleportation to the end.
+- Claude is a sovereign user of Soveraeign: it may direct its attention, model
+  the problem, offer frontier-level advice, act within a live grant, and refuse
+  incoherent work. It is not sovereign over Bdo or the node, and it is not Sov.
+- `SOV.md` and `bindings/sov/` define a portable profile that a launched agent
+  can load through `.claude/agents/sov.md`. An interactive Claude session does
+  not implicitly load that profile or acquire an operating seat.
+- Controller, Orchestrator, Worker, and Witness are explicit seats. Claude and
+  Bdo may launch them, watch them, and inspect their reports while remaining
+  independent participants outside those launched roles.
+- A system gate also gates Claude. Claude should identify the wall and use its
+  available capabilities to prepare or provision the nearest lawful unblocking
+  move; it must not occupy a tier in-session merely to route around the gate.
+  For example, Proofing is `CHARTERED_NOT_IMPLEMENTED` behind O11, so a request
+  to implement it begins with the admissible precursor work rather than an
+  invented end state.
 - When Claude edits the repository directly, `AGENTS.md` governs that work as
   it governs any agent: authority arrives by grant, a build cannot witness
-  itself, only Bdo ratifies.
+  itself, and only Bdo ratifies judgement.
 
 Host capabilities do not imply authority. Use only the model, tools, and
 permissions visible in the current invocation; never silently substitute
@@ -32,22 +37,24 @@ Soveraeign is a locally sovereign, AI-native enterprise environment in which
 human and model operators share one world. Two records define it:
 
 - the design System of Record: `SYSTEM.md`, `CLASSIFICATION.md`,
-  `CONTRACT.md`, `PRD.md`, `SPEC.md`, `STATUS.yaml`, `ENGINEERING.md`,
-  `SDLC.md`, each owning one kind of rule (`AGENTS.md`, Design System of
-  Record);
+  `CONTRACT.md`, `PRD.md`, `SPEC.md`, `AI-NATIVE.md`, `STATUS.yaml`,
+  `ENGINEERING.md`, and `SDLC.md`, each owning one kind of rule (`AGENTS.md`,
+  Design System of Record);
 - the operational System of Record: an append-preserving record of addressed
   inputs, events, standing changes, observations, receipts, and
   counter-records. SQLite stores it; it is not the semantic authority.
 
-Every claim carries standing, `OPEN -> BUILT -> WITNESSED -> RATIFIED`, and
-every consequential transition needs a typed, scoped, live grant. Phase is
-`FOUNDING`; the next gate is `F0_FOUNDING_CLOSURE`.
+Every governed design claim carries artifact standing,
+`OPEN -> BUILT -> WITNESSED -> RATIFIED`; operational records use the distinct
+standing defined in `SPEC.md`. Every consequential transition needs a typed,
+scoped, live grant. Phase is `FOUNDING`; the next gate is
+`F0_FOUNDING_CLOSURE`.
 
-## What works today
+## Repository snapshot (informational)
 
-Observed 2026-08-23 on `feat/federation-harness-and-hardening`. Everything
-below is `BUILT` at most; `STATUS.yaml` and the newest file under `reports/`
-override this list when they disagree.
+Observed 2026-08-23 on `feat/federation-harness-and-hardening`. This section is
+orientation, not standing. `STATUS.yaml`, the working tree, and the newest
+relevant report override it whenever they disagree.
 
 - `python scripts/verify.py` passes in about 1.3 s against a 3 s budget;
   `python scripts/lint.py` passes with one named debt (`core.py`, 341 lines).
@@ -63,7 +70,7 @@ override this list when they disagree.
 - Sov profile (`bindings/sov/`): context declaration validates, positive and
   defeating fixtures pass. Not live; O17.
 
-## What does not work yet
+### Known gaps in that snapshot
 
 - No kernel-level append-preserving event journal; twelve SQLite tables serve
   the Asset Service only (PROD-I-8, `services/asset/KNOWN-GAPS.md`).
@@ -102,14 +109,13 @@ independent path to what it actually did. A `REPORTED` event is the
 executor's self-report; witness it with `sov-qa` or by hand before calling
 anything `WITNESSED`.
 
-## How it has grown
+## Historical orientation
 
 Founded 2026-08-22 (`decisions/0001`). Day one established the boundary,
 evidence rules, the name, the AI-native standard, the Asset Service, the
 classification contract, the Phase-I logical spec, Proofing, BYOM, and the
 engineering baseline. Day two added the SDLC loop, Console, scheduled runs,
-Sov, the federation harness, defeating fixtures for receipts and proofing,
-LF line-ending enforcement, and the stack certification. 26 commits, 17
+Sov, the federation harness, defeating fixtures for receipts and LF line-ending enforcement, and the stack certification. 26 commits, 17
 decision records, 8 reports. Nothing is witnessed or ratified yet; that is
 the accurate reading, not a shortfall.
 
@@ -132,10 +138,11 @@ the accurate reading, not a shortfall.
 | --- | --- |
 | What is blocked and who decides | `STATUS.yaml`, `open_decisions` |
 | A term or enum | `CLASSIFICATION.md`, then `SPEC.md` |
+| Whether a surface is AI-native | `AI-NATIVE.md` |
 | Harness layout and invocation | `.claude/README.md` |
 | Domain work | the `sov-<domain>` skill, then its `CHARTER.md` / `KNOWN-GAPS.md` |
 | Whether something is policy | `decisions/`; a file under `reports/` is not |
 
-The full governing set (about 1,900 lines) is required before a consequential
-change (`AGENTS.md`). For a question or an inspection, open only the owning
-document above and say what was left unread.
+The full governing set is required before a consequential change (`AGENTS.md`).
+For a question or inspection, open only the owning document above and say what
+was left unread.

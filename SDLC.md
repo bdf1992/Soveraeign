@@ -14,9 +14,9 @@ subject to the `AI-NATIVE.md` axes and, eventually, the Soveraeign bar.
 
 ## Three tiers
 
-The loop runs on an authority-delegation chain. Grants flow down and narrow at
-every step; reports flow up and are never self-settling; each tier's output is
-settled by the tier above it.
+The loop runs on an authority-delegation chain. Grants flow downward and narrow
+at every step; reports flow upward and are never self-settling; each tier's
+output is settled by the tier above it.
 
 | Tier | Role | May | May not |
 | --- | --- | --- | --- |
@@ -83,7 +83,8 @@ A **concern** is a registered unit of monitored work. Each concern records:
 
 - a stable name and its owning domain or service;
 - the governing contract and document set;
-- current standing in the `OPEN -> BUILT -> WITNESSED -> RATIFIED` lifecycle;
+- current artifact standing in the
+  `OPEN -> BUILT -> WITNESSED -> RATIFIED` lifecycle;
 - the next gate and its blocking open decisions;
 - the admitted effect envelope for the current phase.
 

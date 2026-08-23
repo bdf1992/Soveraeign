@@ -15,8 +15,10 @@ governing set has explicit ownership:
 - `CONTRACT.md`: invariants;
 - `PRD.md`: Phase-I requirements;
 - `SPEC.md`: logical model, transitions, predicates, and refusals;
+- `AI-NATIVE.md`: surface evaluation and qualification criteria;
 - `STATUS.yaml`: current standing, authority, and open decisions;
-- `ENGINEERING.md`: proposed reference stack and composition rules.
+- `ENGINEERING.md`: proposed reference stack and composition rules;
+- `SDLC.md`: operating tiers, verification dyad, and release gate.
 
 The operational System of Record preserves events and receipts with their
 standing. It can record disagreement, failure, and retraction without converting
@@ -69,8 +71,8 @@ Schema, and the label catalogue together.
 
 ## Checking the coordination surface
 
-The board is checked the same way the repository is: capture it through the declared
-registrar, then judge the capture offline.
+The board is checked the same way as the repository: capture it through the
+declared registrar, then judge the capture offline.
 
 ```bash
 python adapters/github/export.py --repo bdf1992/Soveraeign --out .local/registrar/tickets.json
@@ -79,23 +81,25 @@ python scripts/sov_ticket.py labels   --export .local/registrar/tickets.json --s
 python scripts/sov_ticket.py queue    --export .local/registrar/tickets.json --limit 20
 ```
 
-`validate` checks every issue body against `contracts/issue-metadata.schema.json`.
-`labels` reports drift between the live labels and the projection declared in
-`contracts/ticket-label-projection.json`. `queue` orders open tickets by the policy in
-`contracts/ticket-queue-policy.json` and reports what is takeable, what is blocked and
-by what, and what unblocks the most. The queue is a projection; position in it grants
-nothing.
+`validate` checks every issue body against
+`contracts/issue-metadata.schema.json`. `labels` reports drift between the live
+labels and the projection declared in
+`contracts/ticket-label-projection.json`. `queue` orders open tickets by the
+policy in `contracts/ticket-queue-policy.json` and reports what is takeable,
+what is blocked and by what, and what unblocks the most. The queue is a
+projection; position in it grants nothing.
 
-`adapters/github/export.py` is the only module permitted to call the GitHub API. Every
-other check reads its export from disk, so all of them run offline, inside the day-zero
-budget, and in a sealed CI job.
+`adapters/github/export.py` is the only module permitted to call the GitHub API.
+Every other check reads its export from disk, so all of them run offline,
+inside the day-zero budget, and in a sealed CI job.
 
 ## Proposing a standing change
 
-A pull request that only implements something proposes no standing change and needs no
-transition block; it establishes `BUILT` evidence and nothing further. A pull request
-that advances a ticket's standing carries a `soveraeign-ticket-transition/v1` request in
-its body, and the purple gate evaluates it against
+A pull request that only implements something proposes no ticket-standing
+change and needs no transition block; it establishes `BUILT` evidence and
+nothing further. A pull request that advances a ticket's standing carries a
+`soveraeign-ticket-transition/v1` request in its body, and the purple gate
+evaluates it against
 `contracts/ticket-transitions.json`.
 
 ```bash
@@ -103,14 +107,16 @@ python scripts/sov_ticket.py transition <request.json>
 python scripts/sov_ticket.py transition --body <pull-request-body.md>
 ```
 
-The table refuses what the contract forbids: skipped standings, a builder witnessing its
-own work, an unconverged Red engagement, a confirmed finding with no permanent defeating
-fixture, a finding the Red operator reproduced itself, and any machine claiming
-`RATIFIED`. Run `python scripts/sov_ticket.py selfcheck` to exercise every declared
-refusal; `python scripts/verify.py` runs it for you.
+The table refuses what the contract forbids: skipped standings, a builder
+witnessing its own work, an unconverged Red engagement, a confirmed finding
+with no permanent defeating fixture, a finding the Red operator reproduced
+itself, and any machine claiming `RATIFIED`. Run
+`python scripts/sov_ticket.py selfcheck` to exercise every declared refusal;
+`python scripts/verify.py` runs it for you.
 
-Ratification is not reachable from a check. It enters the repository through owner
-review on `STATUS.yaml`, `decisions/`, and the governing set, per `.github/CODEOWNERS`.
+Ratification is not reachable from a check. It enters the repository through
+owner review on `STATUS.yaml`, `decisions/`, and the governing set, per
+`.github/CODEOWNERS`.
 
 ## Before you change code
 

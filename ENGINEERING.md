@@ -61,7 +61,7 @@ microservices.
 | Operation plan | Declare inputs, configuration, preconditions, observations, limits, and effects | Required before consequential execution |
 | Run and lease | Attribute an attempt and fence delegated execution | Worker reports; stale or expired lease cannot settle |
 | Observation | Test expected predicates independently against durable results | Executor output alone cannot establish success |
-| Receipt | Record one terminal outcome for every crossing or transition | Failure, refusal, unresolved work, and counteraction are first-class |
+| Receipt | Record one terminal outcome for every attempted crossing or operation | Failure, refusal, unresolved work, and counteraction are first-class |
 | Counter-record | Stop prior state conditioning current operation without erasure | State what was not undone or refunded |
 | Binding | Present one declared interface to a human or model | Different surfaces resolve to the same operation and receipt |
 | Adapter | Translate a named external runtime or enterprise system | Translation stops at boundary; no authoritative writes |
@@ -138,7 +138,7 @@ places them. This table binds those classes to the current mechanism.
 
 | Class | Passage | Mechanism today | State |
 | --- | --- | --- | --- |
-| `C1` Operator | human ↔ model through one record | Python API and CLI only | one binding, not two |
+| `C1` Operator | human ↔ model through one record | Python API and CLI only | one binding of the three the two-binding proof needs |
 | `C2` Service | sibling ↔ sibling in one node | none; Proofing and Console are charters | no live reader or writer |
 | `C3` Boundary | surface ↔ kernel, node ↔ provider | `bindings/`, `adapters/` hold no executing adapter | egress never exercised |
 | `C4` Federation | node ↔ node | `federation_cross` refusal stub | refuses visibly, as required |

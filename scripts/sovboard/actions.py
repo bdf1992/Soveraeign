@@ -18,12 +18,19 @@ BATCH_SCHEMA_ID = "soveraeign-board-batch/v1"
 
 #: Actions the survey may ask to execute. Each is mechanically derived from a declared
 #: contract and is recoverable after the fact, which is why it may carry an approval.
-PROPOSABLE = frozenset({"LABEL_ADD", "LABEL_REMOVE", "BRANCH_DELETE"})
+PROPOSABLE = frozenset({"LABEL_ADD", "LABEL_REMOVE", "LABEL_CREATE", "BRANCH_DELETE"})
 
 #: Actions the survey may only report. Repairing these needs authored metadata or an
 #: owner judgement, and a batch approval is the wrong instrument for either.
 REPORTABLE = frozenset(
-    {"CONTRACT_DEFECT", "CONTRACT_BEHIND", "PR_STALE", "TICKET_UNROUTED", "LABEL_UNMAPPED"}
+    {
+        "CONTRACT_DEFECT",
+        "CONTRACT_BEHIND",
+        "PR_STALE",
+        "TICKET_UNROUTED",
+        "LABEL_UNMAPPED",
+        "CATALOGUE_UNDECLARED",
+    }
 )
 
 KINDS = PROPOSABLE | REPORTABLE
@@ -36,7 +43,11 @@ class Action:
     ``evidence`` is what was observed, ``rule`` is the declared authority that turns the
     observation into a recommendation, and ``recommendation`` is the plain-English move.
     ``target`` names the GitHub object; ``argument`` carries the single operand an
-    executable action needs, such as a label name or a branch ref.
+    executable action needs, such as a label name or a branch ref. ``extra`` carries the
+    few actions that need more than one operand — creating a label needs its colour and
+    description. It is a tuple of pairs rather than a mapping so the action stays hashable
+    and genuinely frozen, and it is outside the identity so restating a label's
+    description does not mint a second action.
     """
 
     kind: str
@@ -45,6 +56,7 @@ class Action:
     rule: str
     recommendation: str
     argument: str = ""
+    extra: tuple[tuple[str, str], ...] = ()
     effect_class: str = "EXTERNAL_WORLD"
 
     def __post_init__(self) -> None:
@@ -74,6 +86,7 @@ class Action:
             "evidence": self.evidence,
             "rule": self.rule,
             "recommendation": self.recommendation,
+            "extra": dict(self.extra),
         }
 
 
@@ -134,6 +147,7 @@ def load_batch(payload: dict[str, Any]) -> Batch:
                 kind=entry["kind"],
                 target=entry["target"],
                 argument=entry.get("argument", ""),
+                extra=tuple(sorted((entry.get("extra") or {}).items())),
                 evidence=entry["evidence"],
                 rule=entry["rule"],
                 recommendation=entry["recommendation"],

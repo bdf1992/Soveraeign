@@ -7,7 +7,7 @@ in one file without following an import into shared plumbing. Its sibling ``expo
 holds the read crossing and neither calls the other.
 
 Every write here is `EXTERNAL_WORLD`. The module refuses to run without an explicit
-per-action approval, executes only the three reversible action kinds it declares, and
+per-action approval, executes only the four reversible action kinds it declares, and
 writes a receipt for every attempt including the ones that failed.
 """
 
@@ -24,7 +24,7 @@ import sys
 
 #: The write actions this crossing admits. An action kind absent from this table is
 #: refused by name; the adapter never falls through to a generic GitHub call.
-ADMITTED = ("LABEL_ADD", "LABEL_REMOVE", "BRANCH_DELETE")
+ADMITTED = ("LABEL_ADD", "LABEL_REMOVE", "LABEL_CREATE", "BRANCH_DELETE")
 
 
 class CrossingRefusal(RuntimeError):
@@ -60,6 +60,12 @@ def plan(action: dict[str, Any], repo: str) -> list[str]:
     if kind not in ADMITTED:
         raise CrossingRefusal("ACTION_NOT_ADMITTED", f"{kind} is not a declared write action")
     target, argument = action["target"], action["argument"]
+    if kind == "LABEL_CREATE":
+        extra = action.get("extra") or {}
+        if not extra.get("color"):
+            raise CrossingRefusal("MALFORMED_TARGET", f"{argument!r} carries no colour to create it with")
+        return ["gh", "label", "create", argument, "--repo", repo,
+                "--color", extra["color"], "--description", extra.get("description", "")]
     if kind in ("LABEL_ADD", "LABEL_REMOVE"):
         number = target.lstrip("#")
         if not number.isdigit():

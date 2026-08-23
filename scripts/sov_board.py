@@ -54,25 +54,29 @@ def _capture(repo: str, export: Path) -> None:
         raise SystemExit("REFUSED: the registrar could not capture the coordination surface")
 
 
+#: The sidecar files one capture writes, keyed by the survey input each one feeds.
+#: Every one is required. A missing sidecar reads as an empty collection, and an empty
+#: collection is not "nothing to do" — an empty label catalogue makes every declared
+#: label look absent, and an empty branch list makes every merged ref look pruned.
+SIDECARS = {"pulls": ".pulls.json", "branches": ".branches.json", "labels": ".labels.json"}
+
+
 def _load_capture(export: Path) -> dict[str, Any]:
-    """Load the four files one capture writes, refusing a partial or stale capture."""
-    receipt_path = export.with_name(export.stem + ".receipt.json")
-    pulls_path = export.with_name(export.stem + ".pulls.json")
-    branches_path = export.with_name(export.stem + ".branches.json")
-    missing = [path.name for path in (export, receipt_path, pulls_path) if not path.exists()]
+    """Load every file one capture writes, refusing a partial capture rather than
+    surveying against a silently empty collection."""
+    paths = {"receipt": export.with_name(export.stem + ".receipt.json")}
+    for key, suffix in SIDECARS.items():
+        paths[key] = export.with_name(export.stem + suffix)
+    missing = [path.name for path in [export, *paths.values()] if not path.exists()]
     if missing:
-        raise SystemExit(f"REFUSED [CAPTURE_INCOMPLETE]: missing {', '.join(missing)}")
-    branches = []
-    if branches_path.exists():
-        branches = json.loads(branches_path.read_text(encoding="utf-8"))
-    else:
-        print("WARN: capture carries no branch refs; branch recommendations are omitted")
-    return {
-        "issues": json.loads(export.read_text(encoding="utf-8")),
-        "pulls": json.loads(pulls_path.read_text(encoding="utf-8")),
-        "branches": branches,
-        "receipt": json.loads(receipt_path.read_text(encoding="utf-8")),
-    }
+        raise SystemExit(
+            f"REFUSED [CAPTURE_INCOMPLETE]: missing {', '.join(missing)}; "
+            "re-run review without --export to take a fresh capture"
+        )
+    capture = {"issues": json.loads(export.read_text(encoding="utf-8"))}
+    for key, path in paths.items():
+        capture[key] = json.loads(path.read_text(encoding="utf-8"))
+    return capture
 
 
 def command_review(args: argparse.Namespace) -> int:

@@ -31,6 +31,7 @@ RULE_CONTRACT = "contracts/issue-metadata.schema.json: every ticket opens with a
 RULE_BRANCH = "AGENTS.md, Branch and commit strategy: normal work uses a short-lived branch"
 RULE_STALE = "AGENTS.md, Branch and commit strategy: do not use long-lived integration branches"
 RULE_BEHIND = "AGENTS.md, Design System of Record: main is the releasable design System of Record"
+RULE_CATALOGUE = ".github/labels.yml: the canonical label catalogue this repository projects onto"
 
 
 def _parse_time(value: str | None) -> datetime | None:
@@ -47,6 +48,52 @@ def _open_issues(export: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Return the open issues in number order; closed tickets are surveyed for nothing."""
     live = [item for item in export if (item.get("state") or "OPEN").upper() == "OPEN"]
     return sorted(live, key=lambda item: item["number"])
+
+
+def survey_catalogue(root: Path, live: list[dict[str, Any]]) -> list[Action]:
+    """Reconcile the declared label catalogue against the one the repository actually has.
+
+    Nothing syncs ``.github/labels.yml`` to GitHub, so a label can be declared, projected,
+    and still absent from the repository. Catching that here is the difference between a
+    survey that is complete and one whose gap is discovered by a failed write.
+    """
+    declared = labelmod.load_catalogue_entries(root)
+    present = {entry["name"] for entry in live}
+    governed = tuple(labelmod.load_projection(root)["unprojected_label_prefixes"])
+    actions: list[Action] = []
+    for entry in declared:
+        if entry["name"] in present:
+            continue
+        actions.append(
+            Action(
+                kind="LABEL_CREATE",
+                target="repository",
+                argument=entry["name"],
+                extra=(("color", entry["color"]), ("description", entry["description"])),
+                evidence="declared in .github/labels.yml; the repository has no such label",
+                rule=RULE_CATALOGUE,
+                recommendation=f"create {entry['name']!r} so the projection has something to apply",
+            )
+        )
+    known = {entry["name"] for entry in declared}
+    for entry in live:
+        name = entry["name"]
+        if name in known or not name.startswith(governed):
+            continue
+        actions.append(
+            Action(
+                kind="CATALOGUE_UNDECLARED",
+                target="repository",
+                argument=name,
+                evidence=f"repository carries {name!r} in the governed namespace; the catalogue does not declare it",
+                rule=RULE_CATALOGUE,
+                recommendation=(
+                    "declare it in .github/labels.yml, or merge the branch that already does; "
+                    "deleting a label in use is a judgement, not a reconciliation"
+                ),
+            )
+        )
+    return actions
 
 
 def survey_tickets(root: Path, export: list[dict[str, Any]]) -> list[Action]:
@@ -213,6 +260,7 @@ def build(root: Path, capture: dict[str, Any], stale_hours: int = STALE_HOURS) -
         captured_at=receipt["captured_at"],
         export_digest=receipt["export_digest"],
     )
+    batch.actions.extend(survey_catalogue(root, capture.get("labels", [])))
     batch.actions.extend(survey_tickets(root, capture["issues"]))
     batch.actions.extend(survey_branches(capture["pulls"], capture.get("branches", [])))
     batch.actions.extend(

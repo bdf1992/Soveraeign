@@ -54,8 +54,21 @@ def capture_branches(repo: str) -> list[dict[str, Any]]:
     return [{"name": name} for name in sorted(filter(None, names.splitlines()))]
 
 
+def capture_labels(repo: str) -> list[dict[str, Any]]:
+    """Capture the repository's live label catalogue.
+
+    A label the projection implies can be declared in ``.github/labels.yml`` and still not
+    exist on the repository, because nothing syncs the catalogue. Capturing the live set
+    is what lets that gap be judged offline instead of discovered by a failed write.
+    """
+    payload = _run(["gh", "label", "list", "--repo", repo, "--limit", "500",
+                    "--json", "name,color,description"])
+    labels = json.loads(payload)
+    return sorted(labels, key=lambda item: item["name"])
+
+
 def capture(repo: str, limit: int) -> dict[str, Any]:
-    """Capture issues, pull requests, and branch refs with exact provenance."""
+    """Capture issues, pull requests, branch refs, and the label catalogue with provenance."""
     issues = json.loads(
         _run(["gh", "issue", "list", "--repo", repo, "--state", "all",
               "--limit", str(limit), "--json", ISSUE_FIELDS])
@@ -66,7 +79,12 @@ def capture(repo: str, limit: int) -> dict[str, Any]:
     )
     if not issues:
         raise RegistrarRefusal("REGISTRAR_EMPTY", f"{repo} returned no issues")
-    return {"issues": issues, "pulls": pulls, "branches": capture_branches(repo)}
+    return {
+        "issues": issues,
+        "pulls": pulls,
+        "branches": capture_branches(repo),
+        "labels": capture_labels(repo),
+    }
 
 
 def _digest(payload: Any) -> str:
@@ -87,6 +105,7 @@ def write_export(captured: dict[str, Any], repo: str, out: Path) -> dict[str, An
         "issue_count": len(issues),
         "pull_count": len(captured["pulls"]),
         "branch_count": len(captured.get("branches", [])),
+        "label_count": len(captured.get("labels", [])),
         "export_path": out.name,
         "export_digest": _digest(issues),
         "effect_class": "RECORD_LOCAL",
@@ -101,6 +120,9 @@ def write_export(captured: dict[str, Any], repo: str, out: Path) -> dict[str, An
     branches_path = out.with_name(out.stem + ".branches.json")
     branches = captured.get("branches", [])
     branches_path.write_text(json.dumps(branches, indent=2) + "\n", encoding="utf-8", newline="\n")
+    labels_path = out.with_name(out.stem + ".labels.json")
+    labels = captured.get("labels", [])
+    labels_path.write_text(json.dumps(labels, indent=2) + "\n", encoding="utf-8", newline="\n")
     return receipt
 
 
@@ -119,7 +141,8 @@ def main(argv: list[str] | None = None) -> int:
     receipt = write_export(captured, args.repo, args.out)
     print(
         f"CAPTURED: {receipt['issue_count']} issues, {receipt['pull_count']} pull requests, "
-        f"and {receipt['branch_count']} branches from {args.repo} at {receipt['captured_at']}"
+        f"{receipt['branch_count']} branches, and {receipt['label_count']} labels "
+        f"from {args.repo} at {receipt['captured_at']}"
     )
     print(f"  export  {args.out}")
     print(f"  digest  {receipt['export_digest']}")

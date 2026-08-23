@@ -1,16 +1,18 @@
-"""Unit tests for the board management mechanics and the GitHub write crossing.
+"""Unit tests for the board survey, the approval gate, and the review surface.
 
 The semantic cases live in ``conformance/fixtures/board/survey-cases.json`` and run
-through ``scripts/sov_board.py selfcheck``. These tests cover the local mechanics that
-decide whether an approval can turn into a write: which kinds are approvable, which
-commands the crossing builds, and which inputs it refuses instead of approximating.
+through ``scripts/sov_board.py selfcheck``. These tests cover the local mechanics of
+what a survey proposes, what an approval may select, and what the surface must show.
+The write crossing itself is covered by ``test_github_crossing.py``.
 """
 
 from __future__ import annotations
 
 from pathlib import Path
 import importlib.util
+import json
 import sys
+import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -19,19 +21,10 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from sovboard import render as rendermod  # noqa: E402
 from sovboard import survey as surveymod  # noqa: E402
 from sovboard.actions import Action, Batch, load_batch, select  # noqa: E402
+from sovticket import labels as labelmod  # noqa: E402
 
+board = importlib.import_module("sov_board")
 
-def _load_crossing():
-    """Load the write crossing by path; ``adapters/`` is not an importable package."""
-    spec = importlib.util.spec_from_file_location(
-        "github_apply", ROOT / "adapters" / "github" / "apply.py"
-    )
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
-
-
-crossing = _load_crossing()
 
 LABEL_ADD = Action(
     kind="LABEL_ADD", target="#40", argument="type: bit",
@@ -119,83 +112,38 @@ class ApprovalTests(unittest.TestCase):
             load_batch(payload)
 
 
-class CrossingPlanTests(unittest.TestCase):
-    """The crossing builds the exact command it will run, or refuses to build one."""
-
-    def test_label_add_and_remove_use_the_matching_flag(self) -> None:
-        add = crossing.plan(LABEL_ADD.as_dict(), "owner/name")
-        self.assertEqual(add[:5], ["gh", "issue", "edit", "40", "--repo"])
-        self.assertIn("--add-label", add)
-        removal = Action(
-            kind="LABEL_REMOVE", target="#40", argument="type: bit",
-            evidence="e", rule="r", recommendation="d",
-        )
-        self.assertIn("--remove-label", crossing.plan(removal.as_dict(), "owner/name"))
-
-    def test_branch_delete_targets_the_ref_endpoint(self) -> None:
-        action = Action(
-            kind="BRANCH_DELETE", target="feat/done", argument="feat/done",
-            evidence="e", rule="r", recommendation="d",
-        )
-        command = crossing.plan(action.as_dict(), "owner/name")
-        self.assertEqual(command[-1], "repos/owner/name/git/refs/heads/feat/done")
-        self.assertIn("DELETE", command)
-
-    def test_report_only_kind_is_not_admitted_by_the_crossing(self) -> None:
-        with self.assertRaises(crossing.CrossingRefusal) as caught:
-            crossing.plan(DEFECT.as_dict(), "owner/name")
-        self.assertEqual(caught.exception.code, "ACTION_NOT_ADMITTED")
-
-    def test_non_numeric_issue_target_is_refused(self) -> None:
-        action = dict(LABEL_ADD.as_dict(), target="#not-a-number")
-        with self.assertRaises(crossing.CrossingRefusal) as caught:
-            crossing.plan(action, "owner/name")
-        self.assertEqual(caught.exception.code, "MALFORMED_TARGET")
-
-    def test_a_ref_shaped_branch_argument_is_refused(self) -> None:
-        action = {
-            "kind": "BRANCH_DELETE", "target": "x", "argument": "refs/heads/main",
-            "id": "x", "evidence": "e", "rule": "r", "recommendation": "d",
-        }
-        with self.assertRaises(crossing.CrossingRefusal):
-            crossing.plan(action, "owner/name")
-
-
-class CrossingExecuteTests(unittest.TestCase):
-    """Nothing crosses the boundary without an approval, and every attempt leaves a receipt."""
-
-    def test_dry_run_plans_without_crossing(self) -> None:
-        receipt = crossing.execute(LABEL_ADD.as_dict(), "owner/name", dry_run=True)
-        self.assertEqual(receipt["outcome"], "PLANNED")
-        self.assertEqual(receipt["effect_class"], "EXTERNAL_WORLD")
-        self.assertIn("gh issue edit 40", receipt["command"])
-
-    def test_an_empty_approval_refuses_rather_than_succeeding_vacuously(self) -> None:
-        with self.assertRaises(crossing.CrossingRefusal) as caught:
-            crossing.apply_all([], "owner/name", dry_run=True)
-        self.assertEqual(caught.exception.code, "NO_APPROVAL")
-
-    def test_an_unadmitted_action_yields_a_refusal_receipt_not_an_exception(self) -> None:
-        receipts = crossing.apply_all([DEFECT.as_dict()], "owner/name", dry_run=True)
-        self.assertEqual(receipts[0]["outcome"], "REFUSED")
-        self.assertEqual(receipts[0]["reason_code"], "ACTION_NOT_ADMITTED")
-
-    def test_one_refusal_does_not_hide_the_actions_after_it(self) -> None:
-        receipts = crossing.apply_all(
-            [DEFECT.as_dict(), LABEL_ADD.as_dict()], "owner/name", dry_run=True
-        )
-        self.assertEqual([entry["outcome"] for entry in receipts], ["REFUSED", "PLANNED"])
-
-
 class SurveyScopeTests(unittest.TestCase):
     """The survey judges the live board only, against the contracts in this checkout."""
+
+    def setUp(self) -> None:
+        self.catalogue = [dict(entry) for entry in labelmod.load_catalogue_entries(ROOT)]
 
     def test_a_closed_issue_is_surveyed_for_nothing(self) -> None:
         capture = {
             "issues": [{"number": 51, "title": "gone", "state": "CLOSED", "body": "no block", "labels": []}],
-            "pulls": [], "branches": [], "receipt": RECEIPT,
+            "pulls": [], "branches": [], "labels": self.catalogue, "receipt": RECEIPT,
         }
         self.assertEqual(surveymod.build(ROOT, capture).actions, [])
+
+    def test_a_declared_label_the_repository_lacks_is_proposed_for_creation(self) -> None:
+        """The gap that made a write fail must be visible in the survey instead."""
+        actions = surveymod.survey_catalogue(ROOT, self.catalogue[1:])
+        self.assertEqual([action.kind for action in actions], ["LABEL_CREATE"])
+        self.assertEqual(actions[0].argument, self.catalogue[0]["name"])
+        self.assertEqual(dict(actions[0].extra)["color"], self.catalogue[0]["color"])
+
+    def test_a_complete_catalogue_proposes_nothing(self) -> None:
+        self.assertEqual(surveymod.survey_catalogue(ROOT, self.catalogue), [])
+
+    def test_a_stock_label_outside_the_governed_namespace_is_ignored(self) -> None:
+        live = self.catalogue + [{"name": "bug", "color": "d73a4a", "description": "d"}]
+        self.assertEqual(surveymod.survey_catalogue(ROOT, live), [])
+
+    def test_a_governed_label_the_catalogue_omits_is_reported_not_deleted(self) -> None:
+        live = self.catalogue + [{"name": "type: story", "color": "E16F24", "description": "d"}]
+        actions = surveymod.survey_catalogue(ROOT, live)
+        self.assertEqual([action.kind for action in actions], ["CATALOGUE_UNDECLARED"])
+        self.assertEqual(actions[0].disposition, "REPORT")
 
     def test_a_merged_branch_already_deleted_is_not_proposed_again(self) -> None:
         pulls = [{"number": 1, "state": "MERGED", "headRefName": "feat/gone", "title": "t"}]
@@ -209,6 +157,36 @@ class SurveyScopeTests(unittest.TestCase):
         now = surveymod._parse_time(RECEIPT["captured_at"])
         self.assertEqual(len(surveymod.survey_pulls(pulls, now, stale_hours=4)), 1)
         self.assertEqual(surveymod.survey_pulls(pulls, now, stale_hours=12), [])
+
+
+class CaptureCompletenessTests(unittest.TestCase):
+    """A partial capture must refuse, because an empty collection reads as \"nothing to do\"."""
+
+    def _write(self, directory: Path, sidecars: dict[str, str]) -> Path:
+        export = directory / "tickets.json"
+        export.write_text("[]", encoding="utf-8")
+        (directory / "tickets.receipt.json").write_text(json.dumps(RECEIPT), encoding="utf-8")
+        for suffix, payload in sidecars.items():
+            (directory / f"tickets{suffix}").write_text(payload, encoding="utf-8")
+        return export
+
+    def test_a_missing_label_catalogue_refuses_rather_than_surveying_against_none(self) -> None:
+        """Every declared label looks absent against an empty catalogue; that is not a survey."""
+        with tempfile.TemporaryDirectory() as raw:
+            export = self._write(Path(raw), {".pulls.json": "[]", ".branches.json": "[]"})
+            with self.assertRaises(SystemExit) as caught:
+                board._load_capture(export)
+        self.assertIn("CAPTURE_INCOMPLETE", str(caught.exception))
+        self.assertIn("tickets.labels.json", str(caught.exception))
+
+    def test_a_complete_capture_loads_every_sidecar(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            export = self._write(
+                Path(raw),
+                {".pulls.json": "[]", ".branches.json": "[]", ".labels.json": "[]"},
+            )
+            capture = board._load_capture(export)
+        self.assertEqual(set(capture), {"issues", "receipt", "pulls", "branches", "labels"})
 
 
 class RenderTests(unittest.TestCase):

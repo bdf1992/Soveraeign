@@ -28,7 +28,7 @@ settlement, or hidden fallback, and it receives no authority by operating succes
 | Field | Declaration |
 | --- | --- |
 | Data-boundary mode | `LOCAL_READ_ONLY` — issue and pull request text leaves GitHub inbound; nothing crosses outbound |
-| Input projection | issue number, title, state, body, label names; pull request number, title, state, head ref, body, draft flag, last update; branch names |
+| Input projection | issue number, title, state, body, label names; pull request number, title, state, head ref, body, draft flag, last update; branch names; the repository label catalogue |
 | Authority | none granted, none accepted |
 | Effect class | `RECORD_LOCAL` on the capture; the crossing itself consumes a rate-limited external resource |
 | Receipt | every export records source repository, captured-at timestamp, item count, and content digest |
@@ -65,7 +65,7 @@ the eight-line `gh` runner rather than sharing one with `export.py`.
 | Field | Declaration |
 | --- | --- |
 | Data-boundary mode | `OWNER_APPROVED_WRITE` — one approval per action, at the moment of the action |
-| Admitted actions | `LABEL_ADD`, `LABEL_REMOVE`, `BRANCH_DELETE`, and nothing else |
+| Admitted actions | `LABEL_ADD`, `LABEL_REMOVE`, `LABEL_CREATE`, `BRANCH_DELETE`, and nothing else |
 | Authority | none held; an approval accompanies each action and expires with it |
 | Effect class | `EXTERNAL_WORLD` |
 | Receipt | one per attempt, recording the exact command, outcome, and reason code |
@@ -78,7 +78,7 @@ python scripts/sov_board.py apply --batch .local/board/batch.json --approve <id>
 ```
 
 Three things it will not do. It will not run without an approved action list, so no
-schedule can drive it. It will not admit a fourth verb; closing an issue or a pull
+schedule can drive it. It will not admit a fifth verb; closing an issue or a pull
 request is a judgement and is reported for a human instead. It will not stop at the
 first failure, because a partial run is the normal case and the receipt list is the
 record of what actually happened.

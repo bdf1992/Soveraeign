@@ -38,10 +38,12 @@ list of action ids instead.
 | Kind | Disposition | Why |
 | --- | --- | --- |
 | `LABEL_ADD`, `LABEL_REMOVE` | approvable | Derived exactly from `contracts/ticket-label-projection.json`; reversible |
+| `LABEL_CREATE` | approvable | Declared in `.github/labels.yml` but absent from the repository; nothing syncs the catalogue |
 | `BRANCH_DELETE` | approvable | The merge commit keeps the ref recoverable |
 | `CONTRACT_DEFECT` | report only | Repair needs authored metadata; an approval cannot write prose |
 | `CONTRACT_BEHIND` | report only | The board uses vocabulary this checkout lacks; fix the checkout, not the board |
 | `LABEL_UNMAPPED` | report only | Declare the label in `.github/labels.yml` before projecting it |
+| `CATALOGUE_UNDECLARED` | report only | A governed label the repository has and the catalogue omits; deleting one in use is a judgement |
 | `PR_STALE` | report only | Landing, closing, or waiting is a judgement |
 
 ## Boundaries
@@ -53,6 +55,9 @@ list of action ids instead.
   `--approve all` is still one approval per action; it is not a standing grant.
 - A `CONTRACT_BEHIND` report is never resolved by editing the board. The
   checkout is what is behind.
+- The catalogue is surveyed before the tickets, so a `LABEL_CREATE` always precedes
+  the `LABEL_ADD` that needs it. Approving the adds without the create fails at the
+  crossing, which is exactly how the gap was found.
 - Closed issues are surveyed for nothing. A report that includes them can
   never come back clean, which is how the previous drift report went unread.
 

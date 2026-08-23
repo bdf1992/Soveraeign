@@ -141,8 +141,7 @@ class CrosswalkLiveness(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.root = Path(self.tmp.name)
         (self.root / "diagrams").mkdir()
-        (self.root / "diagrams" / "present.md").write_bytes(b"drawn
-")
+        (self.root / "diagrams" / "present.md").write_bytes(b"drawn\n")
         self.addCleanup(self.tmp.cleanup)
 
     def _resolve(self, issues):

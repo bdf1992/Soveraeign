@@ -121,7 +121,7 @@ def _ticket_observations(root: Path) -> dict[str, str]:
             "actor_kind": "HUMAN",
             "evidence": {"owner_ratification": "pull/62#review"},
         }),
-        "external-world effects are refused in this phase": decide({
+        "an external effect outside every declared scope is refused": decide({
             **base,
             "from": "OPEN",
             "to": "PROPOSED",
@@ -130,6 +130,7 @@ def _ticket_observations(root: Path) -> dict[str, str]:
             "effect_class": "EXTERNAL_WORLD",
             "evidence": {"obligation": "#6", "priors": "SPEC.md",
                          "closure_contract": "#6#closure"},
+            "authorization": None,
         }),
     }
 
@@ -195,7 +196,7 @@ KERNEL_FACTS = {
         },
         {"state_digest": DIGEST},
     ),
-    "external-world effects are refused in this phase": (
+    "an external effect outside every declared scope is refused": (
         {
             "request_schema": "soveraeign-kernel-transition/v1",
             "transition": "cross",

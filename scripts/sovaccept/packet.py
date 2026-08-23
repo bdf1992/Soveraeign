@@ -23,11 +23,17 @@ RULE = "-" * 78
 
 
 def load(root: Path, packet_id: str) -> dict:
-    """The packet with this id, read from ``acceptance/``."""
-    path = root / "acceptance" / f"{packet_id}.json"
-    if not path.is_file():
-        raise FileNotFoundError(f"no packet {packet_id} at {path.relative_to(root).as_posix()}")
-    return json.loads(path.read_bytes().decode("utf-8"))
+    """The packet with this id, waiting in ``acceptance/`` or already acted on.
+
+    An acted-on packet moves to ``acceptance/accepted/`` so the queue reads as
+    what is still waiting, but it stays readable: the packet is the evidence the
+    owner acted against and outlives the acting.
+    """
+    for folder in ("acceptance", "acceptance/accepted"):
+        path = root / folder / f"{packet_id}.json"
+        if path.is_file():
+            return json.loads(path.read_bytes().decode("utf-8"))
+    raise FileNotFoundError(f"no packet {packet_id} in acceptance/ or acceptance/accepted/")
 
 
 def _actor(actor: dict | None) -> str:
@@ -118,6 +124,10 @@ def refusals(root: Path, packet: dict, action: str, seat_id: str,
     if actor_id == packet.get("built_by", {}).get("actor_id"):
         problems.append(
             "SELF_ACCEPTANCE_REFUSED: the actor accepting built the thing being accepted")
+    if (root / "acceptance" / "accepted" / f"{packet['packet_id']}.json").is_file():
+        problems.append(
+            f"ALREADY_ACTED: {packet['packet_id']} has already been acted on; "
+            "the record is in .local/acceptance/ledger.ndjson")
     return problems
 
 

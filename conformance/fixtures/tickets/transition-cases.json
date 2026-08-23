@@ -348,9 +348,9 @@
       }
     },
     {
-      "case_id": "TC-015-external-world-effects-refused-in-phase-i",
-      "expect": "EFFECT_CLASS_REFUSED",
-      "proves": "The protected boundary no_external_effects_in_phase_i holds at the coordination surface too.",
+      "case_id": "TC-015-external-effect-without-an-authorized-scope",
+      "expect": "EXTERNAL_EFFECT_UNAUTHORIZED",
+      "proves": "An external effect that names no authorized scope is refused. The refusal is no longer by effect class, so this proves the boundary survived the class refusal being lifted.",
       "request": {
         "request_schema": "soveraeign-ticket-transition/v1",
         "ticket": "#29",
@@ -455,6 +455,136 @@
         "effect_class": "RECORD_LOCAL",
         "evidence": {
           "owner_ratification": "decisions/0007-asset-service-boundary.md"
+        }
+      }
+    },
+    {
+      "case_id": "TC-018-authorized-coordination-write",
+      "expect": "ALLOWED",
+      "proves": "Ordinary board work on this repository's own tickets proceeds without a further owner act, because a declared scope admits it and it leaves a receipt.",
+      "request": {
+        "request_schema": "soveraeign-ticket-transition/v1",
+        "ticket": "#29",
+        "from": "OPEN",
+        "to": "PROPOSED",
+        "actor_id": "model/orchestrator",
+        "actor_kind": "MODEL",
+        "effect_class": "EXTERNAL_WORLD",
+        "evidence": {
+          "obligation": "#29#obligation",
+          "priors": "adapters/README.md",
+          "closure_contract": "#29#closure-contract"
+        },
+        "reason": "label the ticket on the coordination surface",
+        "authorization": {
+          "scope": "coordination.issue_metadata",
+          "verb": "set_label",
+          "target": "github.com/bdf1992/Soveraeign#29",
+          "receipt": "receipt/coordination/2026-08-23-0001"
+        }
+      }
+    },
+    {
+      "case_id": "TC-019-force-push-refused-whatever-scope-is-claimed",
+      "expect": "EXTERNAL_EFFECT_VERB_REFUSED",
+      "proves": "A refused verb stays refused even inside a scope that exists. Lifting the class refusal did not make destructive administration reachable.",
+      "request": {
+        "request_schema": "soveraeign-ticket-transition/v1",
+        "ticket": "#29",
+        "from": "OPEN",
+        "to": "PROPOSED",
+        "actor_id": "model/orchestrator",
+        "actor_kind": "MODEL",
+        "effect_class": "EXTERNAL_WORLD",
+        "evidence": {
+          "obligation": "#29#obligation",
+          "priors": "adapters/README.md",
+          "closure_contract": "#29#closure-contract"
+        },
+        "reason": "rewrite the branch",
+        "authorization": {
+          "scope": "coordination.branch_write",
+          "verb": "force_push",
+          "target": "refs/heads/main",
+          "receipt": "receipt/coordination/2026-08-23-0002"
+        }
+      }
+    },
+    {
+      "case_id": "TC-020-external-effect-leaving-no-receipt",
+      "expect": "EXTERNAL_EFFECT_WITHOUT_RECEIPT",
+      "proves": "An effect that leaves no receipt is indistinguishable from one that never happened, and forward compensation has nothing to compensate against.",
+      "request": {
+        "request_schema": "soveraeign-ticket-transition/v1",
+        "ticket": "#29",
+        "from": "OPEN",
+        "to": "PROPOSED",
+        "actor_id": "model/orchestrator",
+        "actor_kind": "MODEL",
+        "effect_class": "EXTERNAL_WORLD",
+        "evidence": {
+          "obligation": "#29#obligation",
+          "priors": "adapters/README.md",
+          "closure_contract": "#29#closure-contract"
+        },
+        "reason": "label the ticket quietly",
+        "authorization": {
+          "scope": "coordination.issue_metadata",
+          "verb": "set_label",
+          "target": "github.com/bdf1992/Soveraeign#29",
+          "receipt": null
+        }
+      }
+    },
+    {
+      "case_id": "TC-021-merging-is-settlement-not-coordination",
+      "expect": "EXTERNAL_EFFECT_VERB_REFUSED",
+      "proves": "Merging is settlement and belongs to the owning seat, so no coordination scope reaches it however the request is dressed.",
+      "request": {
+        "request_schema": "soveraeign-ticket-transition/v1",
+        "ticket": "#29",
+        "from": "OPEN",
+        "to": "PROPOSED",
+        "actor_id": "model/orchestrator",
+        "actor_kind": "MODEL",
+        "effect_class": "EXTERNAL_WORLD",
+        "evidence": {
+          "obligation": "#29#obligation",
+          "priors": "adapters/README.md",
+          "closure_contract": "#29#closure-contract"
+        },
+        "reason": "merge the pull request",
+        "authorization": {
+          "scope": "coordination.issue_metadata",
+          "verb": "merge_pull_request",
+          "target": "github.com/bdf1992/OtherRepo#1",
+          "receipt": "receipt/coordination/2026-08-23-0003"
+        }
+      }
+    },
+    {
+      "case_id": "TC-022-scope-that-was-never-declared",
+      "expect": "EXTERNAL_EFFECT_OUT_OF_SCOPE",
+      "proves": "An invented scope name grants nothing. Authorization is a list, not a vocabulary.",
+      "request": {
+        "request_schema": "soveraeign-ticket-transition/v1",
+        "ticket": "#29",
+        "from": "OPEN",
+        "to": "PROPOSED",
+        "actor_id": "model/orchestrator",
+        "actor_kind": "MODEL",
+        "effect_class": "EXTERNAL_WORLD",
+        "evidence": {
+          "obligation": "#29#obligation",
+          "priors": "adapters/README.md",
+          "closure_contract": "#29#closure-contract"
+        },
+        "reason": "post to an external service",
+        "authorization": {
+          "scope": "coordination.anything_really",
+          "verb": "set_label",
+          "target": "example.com",
+          "receipt": "receipt/x/1"
         }
       }
     }

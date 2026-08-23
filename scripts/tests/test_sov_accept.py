@@ -114,11 +114,16 @@ class ActionRefusals(unittest.TestCase):
         self.registry = seats.load(ROOT)
         self.owner = seats.occupant_id(self.registry, self.packet["accepted_by_seat"])
 
-    def test_the_owning_seat_may_act(self) -> None:
-        self.assertEqual(
-            packets.refusals(ROOT, self.packet, "ACCEPT",
-                             self.packet["accepted_by_seat"], self.owner),
-            [])
+    def test_an_acted_packet_cannot_be_acted_on_twice(self) -> None:
+        found = packets.refusals(ROOT, self.packet, "ACCEPT",
+                                 self.packet["accepted_by_seat"], self.owner)
+        self.assertTrue(any(line.startswith("ALREADY_ACTED") for line in found))
+
+    def test_the_owning_seat_is_the_only_legal_actor(self) -> None:
+        """Everything except the already-acted refusal clears for the owning seat."""
+        found = packets.refusals(ROOT, self.packet, "ACCEPT",
+                                 self.packet["accepted_by_seat"], self.owner)
+        self.assertEqual([line for line in found if not line.startswith("ALREADY_ACTED")], [])
 
     def test_a_seat_below_the_owner_may_not_act(self) -> None:
         found = packets.refusals(ROOT, self.packet, "ACCEPT", "seat:worker-1",

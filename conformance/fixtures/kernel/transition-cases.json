@@ -383,9 +383,9 @@
       }
     },
     {
-      "case_id": "K-013-external-world-effects-are-refused-in-phase-i",
-      "expect": "EFFECT_CLASS_REFUSED",
-      "proves": "SPEC.md refuses EXTERNAL_WORLD in Phase I regardless of how well-formed the request is.",
+      "case_id": "K-013-external-effect-outside-every-declared-scope",
+      "expect": "EXTERNAL_EFFECT_UNAUTHORIZED",
+      "proves": "An external effect naming no authorized scope is refused however well-formed the rest of the request is.",
       "request": {
         "request_schema": "soveraeign-kernel-transition/v1",
         "transition": "cross",
@@ -484,6 +484,76 @@
           "predicate_results": [
             "digest_matches"
           ]
+        }
+      },
+      "current": {
+        "state_digest": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "lease_holder_id": "model/worker-a",
+        "lease_fence": 2,
+        "reporter_id": "model/worker-a",
+        "now": 1000
+      }
+    },
+    {
+      "case_id": "K-017-authorized-external-effect-with-a-receipt",
+      "expect": "PERMITTED",
+      "proves": "An external effect inside a declared scope, using a verb that scope carries and leaving a receipt, is admitted without a further owner act. This is the half of the old class refusal that was stopping ordinary work.",
+      "request": {
+        "request_schema": "soveraeign-kernel-transition/v1",
+        "transition": "cross",
+        "actor_id": "model/controller",
+        "actor_kind": "MODEL",
+        "effect_class": "EXTERNAL_WORLD",
+        "reason": "declared in the fixture corpus",
+        "declared": {
+          "source_address": "src-1",
+          "reader_declaration": "reader-1",
+          "omissions": [
+            "none"
+          ],
+          "authority_grant_id": "grant-1",
+          "destination_address": "dst-1"
+        },
+        "authorization": {
+          "scope": "coordination.issue_metadata",
+          "verb": "set_label",
+          "target": "github.com/bdf1992/Soveraeign#29",
+          "receipt": "receipt/coordination/2026-08-23-0001"
+        }
+      },
+      "current": {
+        "state_digest": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "lease_holder_id": "model/worker-a",
+        "lease_fence": 2,
+        "reporter_id": "model/worker-a",
+        "now": 1000
+      }
+    },
+    {
+      "case_id": "K-018-refused-verb-inside-a-real-scope",
+      "expect": "EXTERNAL_EFFECT_UNAUTHORIZED",
+      "proves": "A verb refused by name stays refused inside a scope that exists, so lifting the class refusal did not make destructive administration reachable.",
+      "request": {
+        "request_schema": "soveraeign-kernel-transition/v1",
+        "transition": "cross",
+        "actor_id": "model/controller",
+        "actor_kind": "MODEL",
+        "effect_class": "EXTERNAL_WORLD",
+        "reason": "declared in the fixture corpus",
+        "declared": {
+          "source_address": "src-1",
+          "reader_declaration": "reader-1",
+          "omissions": [
+            "none"
+          ],
+          "authority_grant_id": "grant-1",
+          "destination_address": "dst-1"
+        },
+        "authorization": {
+          "scope": "coordination.branch_write",
+          "verb": "force_push",
+          "target": "refs/heads/main",
+          "receipt": "receipt/coordination/2026-08-23-0002"
         }
       },
       "current": {

@@ -4,36 +4,52 @@ product_name: Soveraeign
 repository_name: Soveraeign
 category: locally-sovereign-algorithmic-ai-native-enterprise-environment
 phase: FOUNDING
-naming_status: OWNER_SELECTED_COLLISION_SCREEN_OPEN
+naming_status: OWNER_SELECTED_WORKING_NAME_CLEARANCE_HELD_O1
 implementation_status: EXPERIMENTAL_REFERENCE_PARTICIPANT
-specification_status: WITNESSED_PROPOSED_OWNER_FREEZE_PENDING
+specification_status: RATIFIED_BY_OWNER_ACCEPTANCE_A2
 conformance_status: EXECUTABLE_ORACLE_CONTROLS_PARTICIPANT_BINDING_OPEN
-classification_status: PROPOSED_OWNER_RATIFICATION_PENDING
+classification_status: RULED_CANONICAL_FOR_PHASE_O9
 asset_service_status: BUILT_SELF_TESTED_NOT_WITNESSED
 proofing_service_status: CHARTERED_NOT_IMPLEMENTED
-byom_status: OWNER_DIRECTED_CONTRACT_AND_FIXTURE_PROPOSED
+byom_status: RULED_CONTRACT_STANDS_O12
 ai_native_definition_status: FREEZE_CANDIDATE
-engineering_framework_status: BUILT_SELF_TESTED_NOT_WITNESSED_BASELINE_PROPOSED
-sdlc_loop_status: OWNER_DIRECTED_LOOP_AND_BINDING_SKELETON_PROPOSED
+engineering_framework_status: RATIFIED_BY_OWNER_ACCEPTANCE_A1
+sdlc_loop_status: RATIFIED_BY_OWNER_ACCEPTANCE_A3_ACCEPTANCE_NOT_APPROVAL
 coordination_registrar_status: BUILT_SELF_TESTED_NOT_WITNESSED
-sov_operating_agent_status: OWNER_DIRECTED_CONTEXT_PROFILE_BUILT_SELF_TESTED_NOT_WITNESSED
-ticket_kind_vocabulary_status: PROPOSED_OWNER_RATIFICATION_PENDING
-kernel_transition_contract_status: PROPOSED_OWNER_RATIFICATION_PENDING
-semantic_cold_start_status: DECLARED_TASK_EXECUTED_OWNER_RATIFICATION_PENDING
+sov_operating_agent_status: RULED_ENVELOPE_STANDS_O17_BUILT_SELF_TESTED
+ticket_kind_vocabulary_status: RULED_O19
+kernel_transition_contract_status: RULED_O20
+semantic_cold_start_status: RULED_O8_TASK_EXECUTED
 
+# RULED_ values are reversible defaults taken under decisions/0029, not owner
+# acceptance. RATIFIED_BY_OWNER_ACCEPTANCE_* names the packet the root seat acted
+# on; the record is .local/acceptance/ledger.ndjson.
 authority:
   product_intent:
-    holder: Bdo
+    seat: seat:root
+    occupied_by: Bdo
     type: human_judgement
+    gate: acceptance
   product_name:
-    holder: Bdo
+    seat: seat:root
+    occupied_by: Bdo
     type: human_judgement
+    gate: acceptance
   phase_gate:
-    holder: Bdo
+    seat: seat:root
+    occupied_by: Bdo
     type: human_judgement
+    gate: acceptance
+  bounded_execution:
+    seat: any
+    occupied_by: the seat doing the work
+    type: self_directed_within_declared_effect_envelope
+    gate: none
   verification:
-    holder: delegated_machine_or_human
+    seat: owner_seat_of_the_presenter
+    occupied_by: delegated_machine_or_human
     type: scoped_verification
+    gate: evidence
 
 settled_source_claims:
   - same_world_human_and_model_operators
@@ -83,19 +99,33 @@ proposed_repository_claims:
 # The O-numbers are kept so the documents that cite them still resolve.
 open_decisions: []
 
-owner_acceptance_queue:
+owner_acceptance_queue: []
+
+owner_accepted:
   - id: A1
-    packet: acceptance/A1.json
-    waits_on: seat:root
-    presented: The Phase-I engineering baseline, built and self-tested (was O2)
+    packet: acceptance/accepted/A1.json
+    action: ACCEPT
+    by_seat: seat:root
+    at: 2026-08-23T21:31:30Z
+    claim: The Phase-I engineering baseline (was O2)
   - id: A2
-    packet: acceptance/A2.json
-    waits_on: seat:root
-    presented: SPEC.md as the Phase-I logical specification, witnessed (was O10)
+    packet: acceptance/accepted/A2.json
+    action: ACCEPT
+    by_seat: seat:root
+    at: 2026-08-23T21:31:30Z
+    claim: SPEC.md as the Phase-I logical specification (was O10)
   - id: A3
-    packet: acceptance/A3.json
-    waits_on: seat:root
-    presented: The acceptance gate itself, replacing pre-approval (decision 0028)
+    packet: acceptance/accepted/A3.json
+    action: ACCEPT
+    by_seat: seat:root
+    at: 2026-08-23T21:31:30Z
+    claim: The acceptance gate itself (decisions 0028 and 0029)
+  - id: A4
+    packet: acceptance/accepted/A4.json
+    action: ACCEPT
+    by_seat: seat:root
+    at: 2026-08-23T21:31:30Z
+    claim: External effects admitted inside declared scopes (was O7 and O16b)
 
 owner_holds:
   - id: O1
@@ -103,18 +133,14 @@ owner_holds:
     blocks: repository.publish_public
     question: Does Soveraeign clear legal, domain, package, and product collision screening?
     reachable_alternative: Every Phase-I engineering task proceeds under the working name; no agent claims clearance.
-  - id: O7
-    reason: EXTERNAL_WORLD_EFFECT
-    blocks: kernel.commit_external_world_effect
-    question: What external-effect isolation and later compensation model is admitted?
-    reachable_alternative: Record-local doubles and receipts are built and tested; no effect leaves the node.
-  - id: O16b
-    reason: EXTERNAL_WORLD_EFFECT
-    blocks: coordination.activate_external_effects
-    question: Are branch protection, label synchronisation, and project field writes authorised against the live repository?
-    reachable_alternative: The ticket transition table, its corpus, and every draft are built and checked offline.
 
 rulings:
+  - id: O7
+    ruling: External effects are no longer refused by class. One is admitted inside a scope contracts/external-effect-authorization.json declares, using a verb that scope carries, leaving a receipt. Every refused verb stays refused. Compensation is forward only, and no receipt ever claims world rollback.
+    counter: An effect admitted by a scope that turns out not to be reversible by the inverse it names, or a receipt claiming a rollback that did not occur.
+  - id: O16b
+    ruling: Label, project-field, state, and comment writes on this repository's own tickets, and pushing branches and opening pull requests, are authorised under coordination.issue_metadata and coordination.branch_write. Force-push, shared-branch deletion, branch-protection changes, visibility changes, secret writes, merging, and acting on any other repository are refused by name.
+    counter: A coordination write that cannot be undone by the inverse verb its scope names, or an agent reaching a refused verb through a scope that admits it.
   - id: O3
     ruling: Bootstrap trust is explicit, local, and finite. A founding BootstrapGrant pins one attestor identity, validator version, capability, scope, validity window, and artifact revision, and may attest verification-typed claims only. Every later attestor resolves through ordinary authority lineage.
     counter: A fixture in which a bootstrap grant attests a judgement-typed claim, or in which a second attestor is admitted without lineage.
@@ -172,6 +198,9 @@ protected_boundaries:
   - product_name_changes_require_owner_authority
   - no_runtime_code_before_logical_spec_and_defeating_fixtures
   - no_whole_repository_imports
-  - no_external_effects_in_phase_i
+  - no_external_effect_outside_a_declared_authorized_scope
+  - no_external_effect_without_a_receipt
+  - no_refused_verb_reachable_through_any_scope
+  - no_claim_that_an_external_effect_was_rolled_back
 
 next_gate: F0_FOUNDING_CLOSURE

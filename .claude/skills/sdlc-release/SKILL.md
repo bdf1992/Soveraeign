@@ -8,7 +8,7 @@ description: Release domain competence for the SDLC loop - draft release notes, 
 Standing: `OPEN` (proposal; see decision 0013 and open decision O13).
 
 In Phase I this skill is mostly a refusal boundary. `STATUS.yaml` protects
-`no_external_effects_in_phase_i`, and open decision O1 (collision screening)
+the O1 publication hold (collision screening)
 blocks public release; `AGENTS.md` restricts what publication may ever
 include.
 
@@ -24,7 +24,7 @@ include.
    separate explicit owner instruction.
 4. Refuse, visibly and with a receipt, every `EXTERNAL_WORLD` step:
    publishing, initializing remotes, enabling integrations, announcements.
-   Name the blocking boundary (O1, `no_external_effects_in_phase_i`) in the
+   Name the blocking boundary (the O1 publication hold) in the
    refusal.
 
 ## Refusals

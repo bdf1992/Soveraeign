@@ -1,6 +1,6 @@
 # 0029 · Drain the founding decision queue
 
-Status: `OWNER-DIRECTED · RULINGS TAKEN AS REVERSIBLE DEFAULTS`
+Status: `OWNER-DIRECTED · RULINGS IN FORCE, REVERSIBLE ON THE EVIDENCE EACH NAMES`
 
 Seventeen questions sat in `STATUS.yaml` addressed to the owner. Roughly two of
 them needed to be. The rest were reversible choices that any seat could have made
@@ -23,20 +23,20 @@ rather than ruled. The third presents this change itself.
 
 ## Held, with a declared reason
 
-Three name an effect that genuinely leaves the node or makes the repository
-public. They stay held, each blocking exactly one transition and naming what
-stays reachable meanwhile.
+One remains. Making the repository public is irreversible and no work needs it.
 
 | Held | Reason | Blocks |
 | --- | --- | --- |
 | O1 | `PUBLICATION` | `repository.publish_public` |
-| O7 | `EXTERNAL_WORLD_EFFECT` | `kernel.commit_external_world_effect` |
-| O16b | `EXTERNAL_WORLD_EFFECT` | `coordination.activate_external_effects` |
 
 O1 does not block Phase-I engineering. Work continues under the working name and
-no agent claims legal clearance. O7 does not block building record-local doubles
-and receipts. O16b does not block the ticket table, its corpus, or any draft; it
-blocks writing to the live coordination surface.
+no agent claims legal clearance.
+
+O7 and O16b were held here for `EXTERNAL_WORLD_EFFECT` on the day this record was
+written. `0030` replaced that hold with declared scopes the same day, on Bdo's
+"unblock it all" direction: an external effect inside a named scope, using a verb
+that scope carries and leaving a receipt, needs no owner act. They appear below as
+rulings.
 
 ## Ruled
 

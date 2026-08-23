@@ -1,6 +1,6 @@
 # 0028 · The owner gate is acceptance, not permission
 
-Status: `OWNER-DIRECTED · PRESENTED FOR ACCEPTANCE AS acceptance/A3.json`
+Status: `OWNER-DIRECTED · ACCEPTED AS acceptance/accepted/A3.json`
 
 Numbering note: 0022 through 0027 are taken by records on unmerged branches, and
 `0023-acceptance-not-approval.md` on `feat/acceptance-not-approval` is an earlier
@@ -101,12 +101,13 @@ build failure.
 
 - It does not weaken any evidence rule. A build still cannot witness itself, no
   seat settles its own output, and a green run is still not authority.
-- It does not admit external-world effects. Three of them are recorded as holds
-  and stay held.
+- It does not by itself admit external-world effects. It records three as holds.
+  `0030` later replaces two of them with declared scopes; the third, publication,
+  is still held.
 - It does not verify identity. A seat claim is still attributable and unverified;
   that is `O3`, ruled in `0029` and unbuilt.
-- It does not accept itself. This record is presented as `acceptance/A3.json` and
-  stands at proposal until the root seat acts.
+- It did not accept itself. It was presented as `A3` and acted on by the root
+  seat on 2026-08-23; the record is `.local/acceptance/ledger.ndjson`.
 
 ## Demotion
 
@@ -124,4 +125,5 @@ not a person — Bdo may own a controller while a worker owns its own work and
 decisions. The seat reading in `0020` is that correction, and this record applies
 it rather than restating it.
 
-Drafted and built by the control seat. Presented, not settled.
+Drafted and built by the control seat. Presented as `A3`, accepted by the root
+seat on Bdo's direction the same day.

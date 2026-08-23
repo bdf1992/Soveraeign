@@ -62,7 +62,8 @@
     "UNDRAINED_QUESTION": "A question sits in the owner queue that is neither a recorded ruling, a presented acceptance item, nor an admissible hold.",
     "ACCEPTANCE_SEAT_CANNOT_SETTLE": "The accepting seat's settles list does not contain the claim's type.",
     "SELF_DIRECTION_PRESENTED": "A seat presented its own bounded execution choice for acceptance. It decides that itself.",
-    "UNOCCUPIED_SEAT": "The accepting seat has no recorded occupant, so no actor can take the action."
+    "UNOCCUPIED_SEAT": "The accepting seat has no recorded occupant, so no actor can take the action.",
+    "ALREADY_ACTED": "The packet has already been acted on. A second action would overwrite a recorded owner act; a changed mind is a new packet, not a rewritten one."
   },
   "ledger": ".local/acceptance/ledger.ndjson",
   "ledger_note": "Owner actions append to a local ledger. The ledger is a record of what the owner did; the standing change it authorises still lands in the owning governing document by an ordinary edit.",

@@ -7,7 +7,7 @@ import argparse
 from hashlib import sha256
 import json
 import os
-from pathlib import Path, PurePath
+from pathlib import Path, PurePosixPath
 import stat
 import sys
 import tempfile
@@ -44,10 +44,19 @@ def load_manifest(path: Path) -> dict[str, Any]:
 
 
 def _valid_relative_path(value: object) -> bool:
+    """Judge a declared custody path as POSIX regardless of the host reading the manifest.
+
+    ``PurePath`` resolves to the host's flavour, and a Windows reader does not consider
+    ``/tmp/escape`` absolute because it carries no drive. A custody manifest describes a
+    POSIX node volume, so it is judged as one everywhere; otherwise the same manifest is
+    safe or unsafe depending on who validates it.
+    """
     if not isinstance(value, str) or not value or "\\" in value:
         return False
-    path = PurePath(value)
-    return not path.is_absolute() and all(part not in {"", ".", ".."} for part in path.parts)
+    path = PurePosixPath(value)
+    if path.is_absolute() or not path.parts:
+        return False
+    return all(part not in {"", ".", ".."} for part in path.parts)
 
 
 def validate_manifest(manifest: dict[str, Any]) -> list[str]:

@@ -119,8 +119,11 @@ batch. The seam is recorded under `OPEN-SEAMS.md` S9.
 ## Evidence
 
 - `conformance/fixtures/board/survey-cases.json`: 17 cases, 9 positive and 8
-  defeating, run offline by `python scripts/sov_board.py selfcheck` and wired
-  into `scripts/verify.py`.
+  defeating, judged by `sovboard/corpus.py`. Two callers share it: the
+  `selfcheck` subcommand for running it by hand, and a case inside
+  `scripts/tests/`, so `scripts/verify.py` proves the corpus without paying for
+  another subprocess. Process startup is most of what the three-second budget
+  spends, and on a cold runner it has about a tenth of a second to spare.
 - `scripts/tests/test_sov_board.py`: 31 unit tests over action dispositions,
   approval refusals, the exact commands the crossing builds, and the inputs it
   refuses.

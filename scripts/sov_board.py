@@ -21,6 +21,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from sovboard import corpus as corpusmod  # noqa: E402
 from sovboard import render as rendermod  # noqa: E402
 from sovboard import survey as surveymod  # noqa: E402
 from sovboard.actions import Batch, load_batch, select  # noqa: E402
@@ -28,7 +29,6 @@ from sovboard.actions import Batch, load_batch, select  # noqa: E402
 ROOT = Path(__file__).resolve().parents[1]
 REGISTRAR = ROOT / "adapters" / "github" / "export.py"
 CROSSING = ROOT / "adapters" / "github" / "apply.py"
-FIXTURES = ROOT / "conformance" / "fixtures" / "board"
 DEFAULT_DIR = ROOT / ".local" / "board"
 
 
@@ -135,30 +135,14 @@ def command_apply(args: argparse.Namespace) -> int:
 
 def command_selfcheck(_: argparse.Namespace) -> int:
     """Run the declared positive and defeating board fixtures without a network."""
-    cases = json.loads((FIXTURES / "survey-cases.json").read_text(encoding="utf-8"))
-    failures: list[str] = []
-    for case in cases["cases"]:
-        batch = surveymod.build(ROOT, case["capture"])
-        observed = sorted(f"{action.kind}:{action.target}:{action.argument}" for action in batch.actions)
-        expected = sorted(case["expect_actions"])
-        if observed != expected:
-            failures.append(f"{case['case_id']}: expected {expected}, observed {observed}")
-    for case in cases["approval_cases"]:
-        batch = load_batch(case["batch"])
-        _, refusals = select(batch, case["approve"])
-        wanted = case.get("refuses")
-        if wanted and not any(wanted in refusal for refusal in refusals):
-            failures.append(f"{case['case_id']}: expected a refusal naming {wanted!r}, observed {refusals}")
-        if not wanted and refusals:
-            failures.append(f"{case['case_id']}: expected no refusal, observed {refusals}")
-    for failure in failures:
+    cases = corpusmod.load(ROOT)
+    found = corpusmod.failures(ROOT, cases)
+    total, defeating = corpusmod.tally(cases)
+    for failure in found:
         print(f"FAIL: {failure}")
-    total = len(cases["cases"]) + len(cases["approval_cases"])
-    if failures:
-        print(f"\nFAIL: {len(failures)} of {total} board fixture cases")
+    if found:
+        print(f"\nFAIL: {len(found)} of {total} board fixture cases")
         return 1
-    defeating = sum(1 for case in cases["approval_cases"] if case.get("refuses"))
-    defeating += sum(1 for case in cases["cases"] if case.get("defeating"))
     print(f"PASS: {total} board fixture cases ({total - defeating} positive, {defeating} defeating)")
     return 0
 

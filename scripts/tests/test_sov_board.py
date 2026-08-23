@@ -18,6 +18,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
+from sovboard import corpus as corpusmod  # noqa: E402
 from sovboard import render as rendermod  # noqa: E402
 from sovboard import survey as surveymod  # noqa: E402
 from sovboard.actions import Action, Batch, load_batch, select  # noqa: E402
@@ -157,6 +158,19 @@ class SurveyScopeTests(unittest.TestCase):
         now = surveymod._parse_time(RECEIPT["captured_at"])
         self.assertEqual(len(surveymod.survey_pulls(pulls, now, stale_hours=4)), 1)
         self.assertEqual(surveymod.survey_pulls(pulls, now, stale_hours=12), [])
+
+
+class DeclaredCorpusTests(unittest.TestCase):
+    """The semantic corpus, run here so verify.py proves it without a subprocess."""
+
+    def test_every_declared_case_meets_its_expectation(self) -> None:
+        self.assertEqual(corpusmod.failures(ROOT), [])
+
+    def test_the_corpus_carries_positive_and_defeating_cases(self) -> None:
+        """A corpus of only positive cases proves a survey cannot fail, not that it works."""
+        total, defeating = corpusmod.tally(corpusmod.load(ROOT))
+        self.assertGreater(defeating, 0)
+        self.assertGreater(total - defeating, 0)
 
 
 class CaptureCompletenessTests(unittest.TestCase):

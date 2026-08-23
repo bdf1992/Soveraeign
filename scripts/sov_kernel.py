@@ -17,6 +17,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from sovkernel import parity as parity_check  # noqa: E402
 from sovkernel import transitions as kernel  # noqa: E402
 from sovkernel.jsonschema import validate  # noqa: E402
 
@@ -70,6 +71,21 @@ def command_selfcheck(_: argparse.Namespace) -> int:
     return 0
 
 
+def command_parity(_: argparse.Namespace) -> int:
+    """Prove each participant already decides the way the kernel decides."""
+    failures, checked = parity_check.run(ROOT)
+    for failure in failures:
+        print(f"FAIL: {failure}")
+    if failures:
+        print(f"FAIL: {len(failures)} parity defect(s) across {checked} correspondences")
+        return 1
+    print(
+        f"PASS: {checked} kernel parity correspondences; "
+        "every participant refusal matches the kernel refusal it declares"
+    )
+    return 0
+
+
 def command_check(args: argparse.Namespace) -> int:
     """Judge one transition request read from a file."""
     request = json.loads(Path(args.request).read_text(encoding="utf-8"))
@@ -115,6 +131,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     selfcheck = sub.add_parser("selfcheck", help="run the declared fixture corpus")
     selfcheck.set_defaults(handler=command_selfcheck)
+
+    parity = sub.add_parser("parity", help="check participants against the kernel")
+    parity.set_defaults(handler=command_parity)
 
     check = sub.add_parser("check", help="judge one transition request")
     check.add_argument("--request", required=True, help="path to a transition request")

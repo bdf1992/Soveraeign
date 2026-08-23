@@ -73,8 +73,12 @@ happen.
 - Six of the fourteen declared transitions are exercised by the corpus. The
   remaining eight are declared and unexercised, which the selfcheck reports on
   every run rather than leaving to be discovered.
-- The two private implementations are not migrated, so the fifth acceptance
-  criterion on issue #6 is stated and targeted, not met.
+- The two private implementations are not rewritten onto the kernel. They are
+  bound to it instead, by `contracts/kernel-parity.json` and the `parity` check:
+  five declared correspondences, each driven on both sides and compared. This is
+  what `SPEC.md` means by admitting reference implementations as participants
+  tested against the contract, and it is how the fifth acceptance criterion on
+  issue #6 is met without a rewrite standing in as its own evidence.
 - `ratify` names `pre_state_digest` both as a declared precondition, because
   `SPEC.md` lists it, and as a typed request field, because the kernel checks it
   structurally. The duplication is deliberate but ungainly.

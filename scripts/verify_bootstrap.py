@@ -42,6 +42,7 @@ REQUIRED = (
     "contracts/event-envelope.schema.json",
     "contracts/transition.schema.json",
     "contracts/kernel-transitions.json",
+    "contracts/kernel-parity.json",
     "services/README.md",
     "services/asset/contracts/service.json",
     "services/proofing/contracts/service.json",

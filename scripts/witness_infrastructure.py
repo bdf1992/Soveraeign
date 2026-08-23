@@ -150,7 +150,11 @@ def _exercise_deployment() -> list[dict[str, Any]]:
     bundle = json.loads(render["stdout"])
     local_manifest = json.loads((ROOT / "infrastructure" / "phase-i.local.json").read_text(
         encoding="utf-8"))
-    defects = independent_bundle_defects(bundle, CUSTODY_CLAIM, local_manifest)
+    runtime_contract = json.loads((ROOT / "infrastructure" / "phase-i.runtime-image.json").read_text(
+        encoding="utf-8"))
+    defects = independent_bundle_defects(
+        bundle, CUSTODY_CLAIM, local_manifest, runtime_contract
+    )
     if defects:
         raise WitnessRefused("BUNDLE_OBSERVATION:" + ",".join(defects))
     render.pop("stdout")
@@ -163,7 +167,8 @@ def _exercise_deployment() -> list[dict[str, Any]]:
         (["--image", PINNED_IMAGE, "--custody-claim", CUSTODY_CLAIM, "--federation"], "FEDERATION"),
     ]
     for index, (arguments, reason) in enumerate(defeating, start=1):
-        command = [sys.executable, "scripts/deployment.py", "render", "--target", "customer-kubernetes", *arguments]
+        command = [sys.executable, "scripts/deployment.py", "render", "--target",
+                   "customer-kubernetes", *arguments]
         cases.append({"case": f"deployment-refusal-{index}", **_expect_refusal(command, reason)})
     return cases
 
@@ -255,7 +260,7 @@ def run_witness(witness_id: str, expected_commit: str) -> dict[str, Any]:
         "repository_verification": repository,
         "observations": observations,
         "standing_claim": "WITNESS_CANDIDATE_PENDING_REVIEW",
-        "owner_ratification": "PENDING_BDO",
+        "owner_acceptance": "PENDING_BDO",
     }
     receipt["receipt_digest"] = sha256(canonical_bytes(receipt)).hexdigest()
     return receipt

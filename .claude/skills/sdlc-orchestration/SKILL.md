@@ -16,9 +16,10 @@ you ratify nothing.
 1. Decompose the operation into leased worker tasks, each with a declared
    environment, exact inputs, bounded scope, and expiry. Retries keep one
    attributable operation identity per `ENGINEERING.md`.
-2. Treat worker reports as claims. Establish outcomes by observing durable
-   results through a path independent of the worker, per the observation
-   primitive in `ENGINEERING.md`. A stale or expired lease cannot settle.
+2. Treat worker reports as claims. Settle worker-task outcomes by observing
+   durable results through a path independent of the worker, per the
+   observation primitive in `ENGINEERING.md`. A stale or expired lease
+   cannot settle.
 3. For Review-template work, run both QA lanes from `SDLC.md`: the Blue lane
    proves declared cases; the Red lane engages adversarially. Red workers
    receive the contract, claimed invariants, and built artifact only —

@@ -49,9 +49,8 @@ Neither owns authoritative state or gains authority from provider credentials.
   effects one attributable event. It is not merely a lower architecture box.
 - **Record substrate** preserves addressed sources, immutable payloads,
   revisioned records, provenance, and reconstruction authority.
-- **Atlas, Gauge, definition, pedagogy, and observation** are concerns or
-  capabilities until evidence gives one an independently useful service
-  boundary.
+- **Atlas, Gauge, definition, pedagogy, and observation** are capabilities
+  until evidence gives one an independently useful service boundary.
 
 ## Participation and boundary roles
 
@@ -70,13 +69,14 @@ Neither owns authoritative state or gains authority from provider credentials.
 
 ## Operating-loop roles and stances
 
-`SDLC.md` owns the loop semantics; this contract owns only the vocabulary.
+`SDLC.md` owns the loop's semantics, gates, and derivations; this contract
+owns only the terms.
 
 | Term | Use |
 | --- | --- |
 | **Concern** | A registered unit of monitored work with an owning domain, governing contract, standing, next gate, and effect envelope |
-| **Controller** | The operator holding the Control tier for the loop: plans, dispatches, observes, settles, escalates; never ratifies |
-| **Orchestrator** | The operator supervising one launched operation: leases workers, observes their durable outputs, reports upward |
+| **Controller** | The operator holding the loop's Control tier; never ratifies judgement, may machine-ratify verification-typed claims only under explicit delegation |
+| **Orchestrator** | The operator holding the loop's Orchestration tier for one launched operation |
 
 Stances are typed hands an operator holds under grant, never a named person,
 model, or provider:
@@ -88,12 +88,8 @@ model, or provider:
 | `BLUE` | Verification | Construction: build the positive path and its declared positive and defeating cases |
 | `RED` | Verification | Adversarial witnessing: seek undeclared defeats of the built artifact |
 
-Neither hand of a dyad settles anything alone. `RED`/`BLUE` are engagement
-stances that produce fixtures; `positive` and `defeating` remain the
-artifact-level terms and are not synonyms for the stances.
-
-Combination outcomes name what settled combination produces — receipts and
-derived state, never a stance an operator holds and never a new standing:
+Combination outcomes name receipts and derived state, never a stance an
+operator holds and never a new standing:
 
 | Outcome | Combination | Names |
 | --- | --- | --- |
@@ -101,9 +97,9 @@ derived state, never a stance an operator holds and never a new standing:
 | `JOINED` | `LEFT` + `RIGHT` | The ratification receipt over a synthesis proposal |
 | `GREEN` | `PURPLE` + `JOINED` | The derived go-state of a concern at its current gate |
 
-`JOINED` is a receipt over a combination event; `RATIFIED` remains the
-standing term. `GREEN` is derived from recorded receipts, never selected
-directly.
+`RED`/`BLUE` are engagement stances; `positive` and `defeating` remain the
+artifact-level terms. `JOINED` names a combination receipt; `RATIFIED`
+remains the standing term.
 
 ## Information roles
 

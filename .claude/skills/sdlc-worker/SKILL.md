@@ -15,8 +15,9 @@ output, or write authoritative state, and your lease bounds your life.
 
 1. Verify the lease: task, environment, exact inputs, scope, expiry. Refuse
    work outside it rather than improvising.
-2. Execute within the declared effect class. Phase I admits `RECORD_LOCAL`
-   only.
+2. Execute within the declared effect class. `EXTERNAL_WORLD` effects are
+   refused in Phase I per `SPEC.md`; a Red engagement lease is
+   `RECORD_LOCAL` only per the release gate in `SDLC.md`.
 3. Load the domain skills the task names and follow their owning documents;
    for code, that is the implementation order in `AGENTS.md`.
 4. Report faithfully: what was attempted, what was produced, exact output

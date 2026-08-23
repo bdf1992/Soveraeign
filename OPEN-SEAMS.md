@@ -65,3 +65,28 @@ The system is currently described as an enterprise operating environment. The
 boundary between a primary enterprise application and a constitutional runtime
 over existing applications must be tested through the first real subsystem rather
 than decided by metaphor alone.
+
+## S11 · Red-lane inputs
+
+`SDLC.md` rule 6 says Red operators receive the contract, the claimed
+invariants, and the built artifact, not the builder's tests, plan, or
+assumptions. `.github/workflows/qa-lanes.yml` hands the Red action the whole
+pull-request diff, tests included, and only instructs it not to use them as
+evidence. One of the two statements must move; which one is owner judgement.
+
+## S12 · Ratification mechanism
+
+`decisions/0016` and `.github/CODEOWNERS` say ratification enters the
+repository through code-owner review on `STATUS.yaml`, `decisions/`, and the
+governing set. `AGENTS.md` requires a typed, scoped, live grant at the
+operation boundary and says only Bdo ratifies judgement. Whether a CODEOWNERS
+approval is that grant, or an explicit recorded decision is required, is
+unsettled; 0016 is still `PROPOSED`.
+
+## S13 · Retraction in the Soveraeign bar
+
+`AI-NATIVE.md` requires `FULL` on reachability, commitment, provenance, and
+the admitted effect envelope for `SOVERAEIGN_QUALIFIED`, and omits retraction,
+while the same document and `decisions/0006` call it "the all-`FULL`
+Soveraeign bar". Whether retraction must be `FULL` within the phase's effect
+envelope is a tightening only the owner can make.

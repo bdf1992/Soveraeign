@@ -19,7 +19,7 @@ const KNOWN = ['governance', 'contracts', 'conformance', 'asset', 'proofing', 'c
 
 const requested = args && Array.isArray(args.domains) && args.domains.length > 0 ? args.domains : KNOWN
 const selected = requested.filter(function (d) { return KNOWN.indexOf(d) !== -1 })
-const horizon = args && args.horizon ? args.horizon : 'a long-horizon sov-federation session advancing every domain one bounded, witnessed operation at a time, concurrently, under the current open decisions O1-O12'
+const horizon = args && args.horizon ? args.horizon : 'a long-horizon sov-federation session advancing every domain one bounded, witnessed operation at a time, concurrently, under the current open decisions in STATUS.yaml'
 const maxRounds = args && typeof args.max_rounds === 'number' ? args.max_rounds : 2
 const maxProbes = args && typeof args.max_probes_per_round === 'number' ? args.max_probes_per_round : 4
 const runDate = args && args.run_date ? args.run_date : 'unstamped'
@@ -118,7 +118,7 @@ function scoutPrompt(d) {
     'Do, in order: (1) standing - the STATUS.yaml status field value(s) that cover this domain, or "none"; ' +
     '(2) git status --short and git diff --stat restricted to the domain key files, summarized as observations; ' +
     '(3) run python scripts/verify.py from the repository root plus every domain verification command the skill names, recording exact commands and exit codes in checks; ' +
-    '(4) available_operations - every operation legitimately available now under open decisions O1-O12, taken from the skill named operations and bounded: id, description, exact repo-relative files it would change, effect_class RECORD_LOCAL or RESOURCE_CONSUMPTION, depends_on other operation ids; these are candidates for concurrent execution so file lists must be exact and complete; ' +
+    '(4) available_operations - every operation legitimately available now under the open decisions in STATUS.yaml, taken from the skill named operations and bounded: id, description, exact repo-relative files it would change, effect_class RECORD_LOCAL or RESOURCE_CONSUMPTION, depends_on other operation ids; these are candidates for concurrent execution so file lists must be exact and complete; ' +
     '(5) blocked - what this domain cannot do and the open decision or boundary that gates it; ' +
     '(6) touchpoints - every file or vocabulary term outside this domain Owns clause that the available operations would read, write, share, or claim: nature is reads, writes, shared_vocabulary, or ownership_claim, with the other domain named; ' +
     '(7) judgement_items - questions only Bdo can decide; ' +

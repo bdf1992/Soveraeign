@@ -1,6 +1,6 @@
 ---
 name: sov-governance
-description: Governance domain of the Soveraeign design System of Record - coherence of the governing document set (SYSTEM.md, CONTRACT.md, CLASSIFICATION.md, PRD.md, SPEC.md, STATUS.yaml, OPEN-SEAMS.md, NAMING.md, PUBLICATION.md, ROADMAP.md), drafting decision records in decisions/, maintaining STATUS.yaml standing fields, and the O1-O12 open-decision judgement queue for Bdo. Load on "sov-governance", "governance domain", "decision record", "STATUS.yaml standing", "open decisions", "judgement queue", "document coherence", "OPEN-SEAMS", or "naming collision screen". Not for building services, contracts/, conformance/, or BYOM work - those belong to sibling sov-* skills.
+description: Governance domain of the Soveraeign design System of Record - coherence of the governing document set (SYSTEM.md, CONTRACT.md, CLASSIFICATION.md, PRD.md, SPEC.md, STATUS.yaml, OPEN-SEAMS.md, NAMING.md, PUBLICATION.md, ROADMAP.md), drafting decision records in decisions/, maintaining STATUS.yaml standing fields, and the open-decision judgement queue for Bdo. Load on "sov-governance", "governance domain", "decision record", "STATUS.yaml standing", "open decisions", "judgement queue", "document coherence", "OPEN-SEAMS", or "naming collision screen". Not for building services, contracts/, conformance/, or BYOM work - those belong to sibling sov-* skills.
 ---
 
 # sov-governance

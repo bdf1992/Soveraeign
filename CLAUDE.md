@@ -83,7 +83,7 @@ relevant report override it whenever they disagree.
 - Four of six diagrams are stale, and the module budget does not reach
   `conformance/run.py` at 332 lines (`reports/2026-08-23-stack-certification.md`).
 
-Open decisions O1-O13, O17, and O18 in `STATUS.yaml` are Bdo's. Queue them;
+Every open decision listed in `STATUS.yaml` is Bdo's. Queue them;
 never decide them.
 
 ## How we launch things and watch them
@@ -115,7 +115,8 @@ Founded 2026-08-22 (`decisions/0001`). Day one established the boundary,
 evidence rules, the name, the AI-native standard, the Asset Service, the
 classification contract, the Phase-I logical spec, Proofing, BYOM, and the
 engineering baseline. Day two added the SDLC loop, Console, scheduled runs,
-Sov, the federation harness, defeating fixtures for receipts and LF line-ending enforcement, and the stack certification. 26 commits, 17
+Sov, the federation harness, defeating fixtures for receipts and proofing,
+LF line-ending enforcement, and the stack certification. 26 commits, 17
 decision records, 8 reports. Nothing is witnessed or ratified yet; that is
 the accurate reading, not a shortfall.
 

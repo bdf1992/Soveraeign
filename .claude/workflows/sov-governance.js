@@ -1,7 +1,7 @@
 export const meta = {
   name: 'sov-governance',
   description: 'Advance Soveraeign design System of Record governance one bounded, witnessed operation: document-set coherence, decision drafting, STATUS.yaml standing fields, and the open-decision judgement queue',
-  whenToUse: 'When the governing document set, decisions/ records, STATUS.yaml standing, or the O1-O12 judgement queue needs bounded, witnessed governance work',
+  whenToUse: 'When the governing document set, decisions/ records, STATUS.yaml standing, or the open-decision judgement queue needs bounded, witnessed governance work',
   phases: [{ title: 'Scope' }, { title: 'Build' }, { title: 'Witness' }],
 }
 

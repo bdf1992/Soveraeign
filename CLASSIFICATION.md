@@ -131,7 +131,7 @@ The transition is not automatic. Each step requires its declared gate and
 receipt. Ratification remains historical even when a later observation changes
 current effectiveness.
 
-Repository requirements and concerns use a separate evidence lifecycle:
+Repository requirements and concerns use a separate artifact lifecycle:
 
 `OPEN → BUILT → WITNESSED → RATIFIED`
 

@@ -1,0 +1,25 @@
+{
+  "schema": "soveraeign-local-node/v1",
+  "profile": "PERSONAL_LOCAL",
+  "runtime": {
+    "python_min": "3.11",
+    "dependency_policy": "STANDARD_LIBRARY_FIRST",
+    "network_required": false
+  },
+  "custody": {
+    "paths": {
+      "record": "record",
+      "payloads": "payloads/sha256",
+      "projections": "projections",
+      "receipts": "receipts",
+      "work": "work"
+    },
+    "directory_mode": "0700",
+    "receipt_mode": "0600"
+  },
+  "policy": {
+    "external_effects": "REFUSE",
+    "provider_required": false,
+    "projections_authoritative": false
+  }
+}

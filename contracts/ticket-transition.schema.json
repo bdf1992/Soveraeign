@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/bdf1992/Soveraeign/blob/main/contracts/ticket-transition.schema.json",
+  "title": "soveraeign-ticket-transition/v1",
+  "description": "A request to change the standing of a soveraeign-ticket/v1 instance. The request is a proposal: it is evaluated against contracts/ticket-transitions.json and either ALLOWED or REFUSED with a declared reason code. An allowed request settles nothing on its own.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "request_schema",
+    "ticket",
+    "from",
+    "to",
+    "actor_id",
+    "actor_kind",
+    "reason",
+    "effect_class",
+    "evidence"
+  ],
+  "properties": {
+    "request_schema": {
+      "const": "soveraeign-ticket-transition/v1"
+    },
+    "ticket": {
+      "description": "Issue reference the transition applies to.",
+      "type": "string",
+      "pattern": "^#[0-9]+$"
+    },
+    "from": {
+      "$ref": "#/$defs/standing"
+    },
+    "to": {
+      "$ref": "#/$defs/standing"
+    },
+    "actor_id": {
+      "description": "Attributable identity of the requesting operator. Never a credential.",
+      "type": "string",
+      "minLength": 1
+    },
+    "actor_kind": {
+      "description": "Actor vocabulary shared with contracts/event-envelope.schema.json.",
+      "enum": ["HUMAN", "MODEL", "WORKER", "SYSTEM"]
+    },
+    "builder_actor_id": {
+      "description": "Actor that produced the artifact under review. Required for a witness transition so self-witnessing can be refused.",
+      "type": ["string", "null"],
+      "minLength": 1
+    },
+    "red_operator_actor_id": {
+      "description": "Actor that held the RED stance for the engagement backing a purple receipt.",
+      "type": ["string", "null"],
+      "minLength": 1
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1
+    },
+    "effect_class": {
+      "enum": ["RECORD_LOCAL", "RESOURCE_CONSUMPTION", "EXTERNAL_WORLD"]
+    },
+    "requested_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    },
+    "evidence": {
+      "description": "Evidence keys required by the declared transition, each resolving to a repository address, receipt identifier, or issue reference.",
+      "type": "object",
+      "minProperties": 0,
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "purple_receipt": {
+      "$ref": "#/$defs/engagementReceipt"
+    }
+  },
+  "$defs": {
+    "standing": {
+      "enum": [
+        "OPEN",
+        "PROPOSED",
+        "DECLARED_NOT_IMPLEMENTED",
+        "CHARTERED_NOT_IMPLEMENTED",
+        "BUILT_SELF_TESTED_NOT_WITNESSED",
+        "WITNESSED",
+        "RATIFIED",
+        "DEMOTED"
+      ]
+    },
+    "engagementReceipt": {
+      "description": "The settled combination of the verification dyad for one concern, per SDLC.md, Release gate.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "blue_receipt",
+        "red_operator_actor_id",
+        "rounds",
+        "dry_rounds",
+        "findings"
+      ],
+      "properties": {
+        "blue_receipt": {
+          "type": "string",
+          "minLength": 1
+        },
+        "red_operator_actor_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rounds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "dry_rounds": {
+          "description": "Consecutive engagement rounds ending with no new confirmed finding. The declared bounded exit criterion.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "required_dry_rounds": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 2
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/finding"
+          }
+        }
+      }
+    },
+    "finding": {
+      "description": "A Red proposal. It counts only after it reproduces under observation independent of the Red operator and lands as a permanent defeating fixture.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "finding_id",
+        "status",
+        "summary"
+      ],
+      "properties": {
+        "finding_id": {
+          "type": "string",
+          "pattern": "^RED-[0-9]+-[0-9]{3}$"
+        },
+        "status": {
+          "enum": ["PROPOSED", "REPRODUCED", "CONFIRMED", "DISMISSED", "ACCEPTED_AS_DEBT"]
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fixture_pointer": {
+          "description": "Permanent defeating fixture in the conformance corpus. Required once a finding is CONFIRMED.",
+          "type": ["string", "null"],
+          "minLength": 1
+        },
+        "reproduced_by_actor_id": {
+          "description": "Actor that reproduced the finding. Must differ from red_operator_actor_id.",
+          "type": ["string", "null"],
+          "minLength": 1
+        },
+        "debt_decision_pointer": {
+          "description": "Decision record accepting the residual as named debt, when status is ACCEPTED_AS_DEBT.",
+          "type": ["string", "null"],
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

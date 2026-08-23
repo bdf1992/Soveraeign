@@ -1,0 +1,443 @@
+{
+  "corpus_id": "soveraeign-ticket-transition-cases/v1",
+  "note": "Positive and defeating cases for contracts/ticket-transitions.json. Every refusal code the table declares has at least one case proving the refusal actually fires. A case may not be weakened to admit a participant; a confirmed Red finding is added here permanently.",
+  "cases": [
+    {
+      "case_id": "TC-001-draft-a-ticket",
+      "expect": "ALLOWED",
+      "proves": "A drafted ticket carrying its obligation, priors, and closure contract may reach PROPOSED.",
+      "request": {
+        "request_schema": "soveraeign-ticket-transition/v1",
+        "ticket": "#25",
+        "from": "OPEN",
+        "to": "PROPOSED",
+        "actor_id": "model/orchestrator",
+        "actor_kind": "MODEL",
+        "reason": "ticket drafted with a closure contract",
+        "effect_class": "RECORD_LOCAL",
+        "evidence": {
+          "obligation": "#25#obligation",
+          "priors": "CONTRACT.md",
+          "closure_contract": "#25#closure-contract"
+        }
+      }
+    },
+    {
+      "case_id": "TC-002-build-establishes-built-only",
+      "expect": "ALLOWED",
+      "proves": "A passing Blue lane advances a chartered ticket to BUILT and no further.",
+      "request": {
+        "request_schema": "soveraeign-ticket-transition/v1",
+        "ticket": "#28",
+        "from": "CHARTERED_NOT_IMPLEMENTED",
+        "to": "BUILT_SELF_TESTED_NOT_WITNESSED",
+        "actor_id": "model/worker-a",
+        "actor_kind": "WORKER",
+        "reason": "closure contract satisfied and repository verification passed",
+        "effect_class": "RECORD_LOCAL",
+        "evidence": {
+          "closure_contract_complete": "#28#closure-contract",
+          "blue_receipt": "receipt/blue/0001"
+        }
+      }
+    },
+    {
+      "case_id": "TC-003-independent-witness-with-settled-purple",
+      "expect": "ALLOWED",
+      "proves": "An independent witness plus a converged Red engagement combines to PURPLE and earns WITNESSED.",
+      "request": {
+        "request_schema": "soveraeign-ticket-transition/v1",
+        "ticket": "#27",
+        "from": "BUILT_SELF_TESTED_NOT_WITNESSED",
+        "to": "WITNESSED",
+        "actor_id": "model/witness-b",
+        "actor_kind": "MODEL",
+        "builder_actor_id": "model/worker-a",
+        "reason": "independent observation reproduced the claimed behaviour",
+        "effect_class": "RECORD_LOCAL",
+        "evidence": {
+          "witness_receipt": "receipt/witness/0007",
+          "purple_receipt": "receipt/purple/0007"
+        },
+        "purple_receipt": {
+          "blue_receipt": "receipt/blue/0007",
+          "red_operator_actor_id": "model/red-c",
+          "rounds": 3,
+          "dry_rounds": 2,
+          "required_dry_rounds": 2,
+          "findings": [
+            {
+              "finding_id": "RED-27-001",
+              "status": "CONFIRMED",
+              "summary": "refusal bypass on an unmanaged root",
+              "fixture_pointer": "conformance/fixtures/tickets/RED-27-001.json",
+              "reproduced_by_actor_id": "model/witness-b"
+            },
+            {
+              "finding_id": "RED-27-002",
+              "status": "DISMISSED",
+              "summary": "claimed provenance gap did not reproduce"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "case_id": "TC-004-owner-ratifies",
+      "expect": "ALLOWED",
+      "proves": "The owner, and only the owner, may ratify a witnessed claim.",
+      "request": {
+        "request_schema": "soveraeign-ticket-transition/v1",
+        "ticket": "#27",
+        "from": "WITNESSED",
+        "to": "RATIFIED",
+        "actor_id": "Bdo",
+        "actor_kind": "HUMAN",
+        "reason": "owner accepts the witnessed claim",
+        "effect_class": "RECORD_LOCAL",
+        "evidence": {
+          "owner_ratification": "decisions/0007-asset-service-boundary.md"
+        }
+      }
+    },
+    {
+      "case_id": "TC-005-model-may-not-ratify",
+      "expect": "ACTOR_KIND_REFUSED",
+      "proves": "No accumulation of machine evidence reaches ratification.",
+      "request": {
+        "request_schema": "soveraeign-ticket-transition/v1",
+        "ticket": "#27",
+        "from": "WITNESSED",
+        "to": "RATIFIED",
+        "actor_id": "model/controller",
+        "actor_kind": "MODEL",
+        "reason": "every check is green",
+        "effect_class": "RECORD_LOCAL",
+        "evidence": {
+          "owner_ratification": "reports/green.md"
+        }
+      }
+    },
+    {
+      "case_id": "TC-006-non-owner-human-may-not-ratify",
+      "expect": "OWNER_RATIFICATION_REQUIRED",
+      "proves": "Ratification is owner judgement, not merely human action.",
+      "request": {
+        "request_schema": "soveraeign-ticket-transition/v1",
+        "ticket": "#27",
+        "from": "WITNESSED",
+        "to": "RATIFIED",
+        "actor_id": "human/contributor",
+        "actor_kind": "HUMAN",
+        "reason": "reviewed and approved on the pull request",
+        "effect_class": "RECORD_LOCAL",
+        "evidence": {
+          "owner_ratification": "pull/38#review"
+        }
+      }
+    },
+    {
+      "case_id": "TC-007-builder-may-not-witness-itself",
+      "expect": "SELF_WITNESS_REFUSED",
+      "proves": "A build report cannot witness itself.",
+      "request": {
+        "request_schema": "soveraeign-ticket-transition/v1",
+        "ticket": "#27",
+        "from": "BUILT_SELF_TESTED_NOT_WITNESSED",
+        "to": "WITNESSED",
+        "actor_id": "model/worker-a",
+        "actor_kind": "MODEL",
+        "builder_actor_id": "model/worker-a",
+        "reason": "my own tests pass",
+        "effect_class": "RECORD_LOCAL",
+        "evidence": {
+          "witness_receipt": "receipt/witness/0008",
+          "purple_receipt": "receipt/purple/0008"
+        },
+        "purple_receipt": {
+          "blue_receipt": "receipt/blue/0008",
+          "red_operator_actor_id": "model/red-c",
+          "rounds": 2,
+          "dry_rounds": 2,
+          "findings": []
+        }
+      }
+    },
+    {
+      "case_id": "TC-008-engagement-has-not-converged",
+      "expect": "PURPLE_NOT_SETTLED",
+      "proves": "The bounded exit criterion is dry-run convergence, not a single clean round.",
+      "request": {
+        "request_schema": "soveraeign-ticket-transition/v1",
+        "ticket": "#27",
+        "from": "BUILT_SELF_TESTED_NOT_WITNESSED",
+        "to": "WITNESSED",
+        "actor_id": "model/witness-b",
+        "actor_kind": "MODEL",
+        "builder_actor_id": "model/worker-a",
+        "reason": "red found nothing on the first pass",
+        "effect_class": "RECORD_LOCAL",
+        "evidence": {
+          "witness_receipt": "receipt/witness/0009",
+          "purple_receipt": "receipt/purple/0009"
+        },
+        "purple_receipt": {
+          "blue_receipt": "receipt/blue/0009",
+          "red_operator_actor_id": "model/red-c",
+          "rounds": 1,
+          "dry_rounds": 1,
+          "required_dry_rounds": 2,
+          "findings": []
+        }
+      }
+    },
+    {
+      "case_id": "TC-009-confirmed-finding-without-permanent-fixture",
+      "expect": "FINDING_WITHOUT_FIXTURE",
+      "proves": "A defeat, once found, can never recur silently.",
+      "request": {
+        "request_schema": "soveraeign-ticket-transition/v1",
+        "ticket": "#27",
+        "from": "BUILT_SELF_TESTED_NOT_WITNESSED",
+        "to": "WITNESSED",
+        "actor_id": "model/witness-b",
+        "actor_kind": "MODEL",
+        "builder_actor_id": "model/worker-a",
+        "reason": "finding was fixed in the same change",
+        "effect_class": "RECORD_LOCAL",
+        "evidence": {
+          "witness_receipt": "receipt/witness/0010",
+          "purple_receipt": "receipt/purple/0010"
+        },
+        "purple_receipt": {
+          "blue_receipt": "receipt/blue/0010",
+          "red_operator_actor_id": "model/red-c",
+          "rounds": 3,
+          "dry_rounds": 2,
+          "findings": [
+            {
+              "finding_id": "RED-27-003",
+              "status": "CONFIRMED",
+              "summary": "authority escalation through a stale grant",
+              "reproduced_by_actor_id": "model/witness-b"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "case_id": "TC-010-red-operator-may-not-reproduce-its-own-finding",
+      "expect": "FINDING_NOT_REPRODUCED",
+      "proves": "A claimed defect counts only after it reproduces independently of the Red operator.",
+      "request": {
+        "request_schema": "soveraeign-ticket-transition/v1",
+        "ticket": "#27",
+        "from": "BUILT_SELF_TESTED_NOT_WITNESSED",
+        "to": "WITNESSED",
+        "actor_id": "model/witness-b",
+        "actor_kind": "MODEL",
+        "builder_actor_id": "model/worker-a",
+        "reason": "red confirmed its own finding",
+        "effect_class": "RECORD_LOCAL",
+        "evidence": {
+          "witness_receipt": "receipt/witness/0011",
+          "purple_receipt": "receipt/purple/0011"
+        },
+        "purple_receipt": {
+          "blue_receipt": "receipt/blue/0011",
+          "red_operator_actor_id": "model/red-c",
+          "rounds": 3,
+          "dry_rounds": 2,
+          "findings": [
+            {
+              "finding_id": "RED-27-004",
+              "status": "CONFIRMED",
+              "summary": "retraction erased the original event",
+              "fixture_pointer": "conformance/fixtures/tickets/RED-27-004.json",
+              "reproduced_by_actor_id": "model/red-c"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "case_id": "TC-011-open-finding-blocks-the-gate",
+      "expect": "FINDING_UNRESOLVED",
+      "proves": "An unresolved Red proposal keeps the engagement open.",
+      "request": {
+        "request_schema": "soveraeign-ticket-transition/v1",
+        "ticket": "#27",
+        "from": "BUILT_SELF_TESTED_NOT_WITNESSED",
+        "to": "WITNESSED",
+        "actor_id": "model/witness-b",
+        "actor_kind": "MODEL",
+        "builder_actor_id": "model/worker-a",
+        "reason": "shipping with one finding still open",
+        "effect_class": "RECORD_LOCAL",
+        "evidence": {
+          "witness_receipt": "receipt/witness/0012",
+          "purple_receipt": "receipt/purple/0012"
+        },
+        "purple_receipt": {
+          "blue_receipt": "receipt/blue/0012",
+          "red_operator_actor_id": "model/red-c",
+          "rounds": 3,
+          "dry_rounds": 2,
+          "findings": [
+            {
+              "finding_id": "RED-27-005",
+              "status": "PROPOSED",
+              "summary": "possible provenance gap on reconstructed payloads"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "case_id": "TC-012-absent-required-evidence",
+      "expect": "MISSING_EVIDENCE",
+      "proves": "A transition names the evidence it requires and refuses without it.",
+      "request": {
+        "request_schema": "soveraeign-ticket-transition/v1",
+        "ticket": "#25",
+        "from": "OPEN",
+        "to": "PROPOSED",
+        "actor_id": "model/orchestrator",
+        "actor_kind": "MODEL",
+        "reason": "ticket drafted",
+        "effect_class": "RECORD_LOCAL",
+        "evidence": {
+          "obligation": "#25#obligation",
+          "priors": "CONTRACT.md"
+        }
+      }
+    },
+    {
+      "case_id": "TC-013-standing-may-not-be-skipped",
+      "expect": "SKIPPED_STANDING",
+      "proves": "The lifecycle is preserved rather than jumped.",
+      "request": {
+        "request_schema": "soveraeign-ticket-transition/v1",
+        "ticket": "#31",
+        "from": "PROPOSED",
+        "to": "BUILT_SELF_TESTED_NOT_WITNESSED",
+        "actor_id": "model/worker-a",
+        "actor_kind": "MODEL",
+        "reason": "implementation landed before the charter",
+        "effect_class": "RECORD_LOCAL",
+        "evidence": {
+          "blue_receipt": "receipt/blue/0013"
+        }
+      }
+    },
+    {
+      "case_id": "TC-014-undeclared-pair",
+      "expect": "UNKNOWN_TRANSITION",
+      "proves": "Only declared transitions are accepted.",
+      "request": {
+        "request_schema": "soveraeign-ticket-transition/v1",
+        "ticket": "#27",
+        "from": "RATIFIED",
+        "to": "WITNESSED",
+        "actor_id": "Bdo",
+        "actor_kind": "HUMAN",
+        "reason": "walking a ratified claim backwards",
+        "effect_class": "RECORD_LOCAL",
+        "evidence": {}
+      }
+    },
+    {
+      "case_id": "TC-015-external-world-effects-refused-in-phase-i",
+      "expect": "EFFECT_CLASS_REFUSED",
+      "proves": "The protected boundary no_external_effects_in_phase_i holds at the coordination surface too.",
+      "request": {
+        "request_schema": "soveraeign-ticket-transition/v1",
+        "ticket": "#29",
+        "from": "OPEN",
+        "to": "PROPOSED",
+        "actor_id": "model/orchestrator",
+        "actor_kind": "MODEL",
+        "reason": "adapter publishes to the external system",
+        "effect_class": "EXTERNAL_WORLD",
+        "evidence": {
+          "obligation": "#29#obligation",
+          "priors": "adapters/README.md",
+          "closure_contract": "#29#closure-contract"
+        }
+      }
+    },
+    {
+      "case_id": "TC-016-only-the-owner-demotes-a-ratified-claim",
+      "expect": "OWNER_JUDGEMENT_REQUIRED",
+      "proves": "Demoting owner judgement is itself owner judgement.",
+      "request": {
+        "request_schema": "soveraeign-ticket-transition/v1",
+        "ticket": "#27",
+        "from": "RATIFIED",
+        "to": "DEMOTED",
+        "actor_id": "human/contributor",
+        "actor_kind": "HUMAN",
+        "reason": "found a counterexample",
+        "effect_class": "RECORD_LOCAL",
+        "evidence": {
+          "demotion_pointer": "#demotion-pointer",
+          "defeating_observation": "conformance/fixtures/tickets/RED-27-004.json"
+        }
+      }
+    },
+    {
+      "case_id": "TC-017-malformed-finding-identifier",
+      "expect": "MALFORMED_REQUEST",
+      "proves": "A request that does not satisfy the transition schema is refused before any rule runs.",
+      "request": {
+        "request_schema": "soveraeign-ticket-transition/v1",
+        "ticket": "#27",
+        "from": "BUILT_SELF_TESTED_NOT_WITNESSED",
+        "to": "WITNESSED",
+        "actor_id": "model/witness-b",
+        "actor_kind": "MODEL",
+        "builder_actor_id": "model/worker-a",
+        "reason": "finding identifier is not in the declared form",
+        "effect_class": "RECORD_LOCAL",
+        "evidence": {
+          "witness_receipt": "receipt/witness/0014",
+          "purple_receipt": "receipt/purple/0014"
+        },
+        "purple_receipt": {
+          "blue_receipt": "receipt/blue/0014",
+          "red_operator_actor_id": "model/red-c",
+          "rounds": 2,
+          "dry_rounds": 2,
+          "findings": [
+            {
+              "finding_id": "red-27-6",
+              "status": "CONFIRMED",
+              "summary": "identifier does not match the declared pattern",
+              "fixture_pointer": "conformance/fixtures/tickets/RED-27-006.json",
+              "reproduced_by_actor_id": "model/witness-b"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "case_id": "TC-018-repair-re-enters-at-proposal",
+      "expect": "ALLOWED",
+      "proves": "Repair after demotion re-enters the lifecycle rather than restoring the prior standing.",
+      "request": {
+        "request_schema": "soveraeign-ticket-transition/v1",
+        "ticket": "#32",
+        "from": "DEMOTED",
+        "to": "PROPOSED",
+        "actor_id": "model/worker-a",
+        "actor_kind": "MODEL",
+        "reason": "repair landed against the defeating observation",
+        "effect_class": "RECORD_LOCAL",
+        "evidence": {
+          "repair_pointer": "pull/40",
+          "demotion_pointer": "#demotion-pointer"
+        }
+      }
+    }
+  ]
+}

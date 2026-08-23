@@ -1,0 +1,142 @@
+name: qa lanes
+
+# The verification dyad from SDLC.md, run per pull request.
+#
+#   blue   builds the positive path and its declared cases; a pass establishes BUILT
+#          evidence and nothing further
+#   red    screens adversarially; its output is PROPOSED findings, never CONFIRMED,
+#          because a finding counts only after independent reproduction
+#   purple gates any standing advance past BUILT on a settled engagement receipt
+#
+# No job here ratifies. Ratification reaches the repository through CODEOWNERS review
+# on STATUS.yaml and decisions/, which is owner judgement, not a check.
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: qa-lanes-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  blue:
+    name: blue · construction
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Repository verification
+        run: python scripts/verify.py
+      - name: Record the standing this establishes
+        if: always()
+        run: |
+          {
+            echo '## Blue lane'
+            echo
+            echo 'A passing Blue lane establishes `BUILT` evidence only.'
+            echo 'It is not a witness and it is not a ratification.'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  red:
+    name: red · adversarial screening
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve the lane state
+        id: lane
+        env:
+          RED_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          RED_ENABLED: ${{ vars.SOV_RED_LANE_ENABLED }}
+        run: |
+          if [ -n "$RED_KEY" ] && [ "$RED_ENABLED" = "true" ]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Adversarial screening pass
+        if: steps.lane.outputs.configured == 'true'
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            Hold the RED stance defined in SDLC.md over this pull request's diff.
+
+            You receive the contract, the claimed invariants, and the built artifact.
+            Do not read the author's tests, plan, or assumptions as evidence that the
+            behaviour is correct, and do not import participant implementation code
+            into your reasoning about the oracle.
+
+            Attempt to defeat the change. Look specifically for refusal bypasses,
+            authority escalation, stale-source use, provenance gaps, retraction that
+            erases history, projections treated as authoritative, effect classes
+            widened without a decision, and any defeat the builder did not anticipate.
+
+            Report each candidate as a PROPOSED finding with an identifier of the form
+            RED-<issue>-<nnn>, a one-line summary, and the exact reproduction steps.
+            State plainly that these are proposals: a finding counts only after it
+            reproduces under observation independent of you, and only after it lands
+            as a permanent defeating fixture in the conformance corpus.
+
+            Do not claim a finding is confirmed. Do not claim the change is witnessed.
+            Do not approve the pull request.
+
+      - name: Declare an unconfigured lane
+        if: steps.lane.outputs.configured != 'true'
+        run: |
+          {
+            echo '## Red lane'
+            echo
+            echo '`RED_LANE_UNCONFIGURED` — no adversarial screening ran.'
+            echo
+            echo 'The lane is opt-in: it needs the `ANTHROPIC_API_KEY` secret and the'
+            echo '`SOV_RED_LANE_ENABLED` repository variable set to `true`.'
+            echo
+            echo 'This is a visible refusal, not a silent skip. A pull request may still'
+            echo 'establish `BUILT` evidence; nothing may advance past it without a'
+            echo 'settled engagement receipt, which the purple gate enforces.'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  purple:
+    name: purple · release gate
+    runs-on: ubuntu-latest
+    needs: [blue, red]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Capture the proposed transition
+        env:
+          BODY: ${{ github.event.pull_request.body }}
+        run: |
+          mkdir -p .local/pr
+          printf '%s' "$BODY" > .local/pr/body.md
+
+      - name: Evaluate the proposed standing change
+        run: python scripts/sov_ticket.py transition --body .local/pr/body.md
+
+      - name: Record the gate outcome
+        if: always()
+        run: |
+          {
+            echo '## Purple gate'
+            echo
+            echo 'A pull request that proposes no standing change passes this gate and'
+            echo 'establishes `BUILT` evidence only. A pull request that proposes an'
+            echo 'advance past `BUILT` must carry a settled engagement receipt with an'
+            echo 'independent witness. `RATIFIED` is unreachable here by design.'
+          } >> "$GITHUB_STEP_SUMMARY"

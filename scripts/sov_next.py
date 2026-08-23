@@ -136,7 +136,8 @@ def closed_unsettled(issues: dict) -> list[str]:
 
 
 def resolve(rows: list[dict[str, str]], ready: list[dict[str, str]],
-            phases: dict[str, str], roadmap_text: str, root: Path = ROOT) -> list[str]:
+            phases: dict[str, str], roadmap_text: str, root: Path = ROOT,
+            issues: dict | None = None) -> list[str]:
     """Defects: a crosswalk row that no longer resolves, or a signpost conflict."""
     defects = []
     ready_numbers = {row["number"] for row in ready}
@@ -145,6 +146,16 @@ def resolve(rows: list[dict[str, str]], ready: list[dict[str, str]],
             defects.append(f"crosswalk names phase {row['phase']}, absent from ROADMAP.md")
         if not row["ticket"]:
             defects.append(f"crosswalk row {row['phase_label']} names no epic ticket")
+        if issues is not None and row["ticket"]:
+            ticket = issues.get(row["ticket"])
+            if ticket is None:
+                defects.append(
+                    f"crosswalk row {row['phase'] or row['phase_label']} names #{row['ticket']}, "
+                    "which is absent from the epic projection")
+            elif ticket.get("state") == "CLOSED":
+                defects.append(
+                    f"crosswalk row {row['phase'] or row['phase_label']} names #{row['ticket']}, "
+                    "which is closed; the row asserts an identity against dead work")
         drawn = re.search(r"`?(diagrams/[\w.-]+)`?", row["drawn"])
         if drawn and not (root / drawn.group(1)).exists():
             defects.append(f"crosswalk row {row['phase']} draws to missing {drawn.group(1)}")
@@ -175,7 +186,7 @@ def main(argv: list[str] | None = None) -> int:
     ready = epic_ready(issues)
     stale = stale_views(ROOT)
     unsettled = closed_unsettled(issues)
-    defects = resolve(rows, ready, phases, roadmap_text)
+    defects = resolve(rows, ready, phases, roadmap_text, issues=issues)
 
     by_ticket = {row["ticket"]: row for row in rows}
     conflict = None

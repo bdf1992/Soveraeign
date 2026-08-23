@@ -134,6 +134,40 @@ class Resolution(unittest.TestCase):
         self.assertEqual(defects, [])
 
 
+class CrosswalkLiveness(unittest.TestCase):
+    """A crosswalk row asserts an identity. It must resolve to live work."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+        (self.root / "diagrams").mkdir()
+        (self.root / "diagrams" / "present.md").write_bytes(b"drawn
+")
+        self.addCleanup(self.tmp.cleanup)
+
+    def _resolve(self, issues):
+        return sov_next.resolve(sov_next.crosswalk(ROADMAP), [{"number": "6"}],
+                                sov_next.roadmap_phases(ROADMAP), ROADMAP,
+                                root=self.root, issues=issues)
+
+    def test_a_row_naming_a_live_ticket_reports_no_defect(self):
+        self.assertEqual(self._resolve({"6": _issue("6", "bit", "OPEN")}), [])
+
+    def test_a_row_naming_a_closed_ticket_is_a_defect(self):
+        """The ticket can die while the job does not; the row must not lie."""
+        defects = self._resolve({"6": _issue("6", "bit", "OPEN", state="CLOSED")})
+        self.assertIn("closed", " ".join(defects))
+
+    def test_a_row_naming_an_absent_ticket_is_a_defect(self):
+        self.assertIn("absent from the epic projection", " ".join(self._resolve({})))
+
+    def test_without_a_projection_liveness_is_not_asserted(self):
+        """No tree available is not evidence the ticket is dead."""
+        self.assertEqual(sov_next.resolve(sov_next.crosswalk(ROADMAP), [{"number": "6"}],
+                                          sov_next.roadmap_phases(ROADMAP), ROADMAP,
+                                          root=self.root), [])
+
+
 class ActionableKinds(unittest.TestCase):
     def test_a_story_is_reachable_work(self):
         """Stories are a declared ticket kind; a reconciler blind to them

@@ -1,8 +1,14 @@
-"""Cases for the kernel transition projection.
+"""Cases for the SPEC.md transition projection and the drift check over it.
 
-Every check has a positive case and a case proving the required refusal. The
-projection is derived from `SPEC.md`; these cases prove it cannot silently
-disagree with the document that governs it.
+`contracts/kernel-transitions.json` is authored, not generated, so nothing but a
+check stops an edit to one file from widening or narrowing what the other
+admits. Every case here has a positive form and a form proving the required
+defect is reported.
+
+Judging one transition request against that table is a different concern,
+covered by the declared corpus in
+`conformance/fixtures/kernel/transition-cases.json` and run by
+`scripts/sov_kernel.py selfcheck`.
 """
 
 from __future__ import annotations
@@ -14,8 +20,10 @@ import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-import sov_kernel  # noqa: E402
+from sovkernel import projection  # noqa: E402
+from sovkernel import transitions as kernel  # noqa: E402
 
+ROOT = Path(__file__).resolve().parents[2]
 
 SPEC = """## Transition contract
 
@@ -28,121 +36,141 @@ Trailing prose.
 """
 
 
+def authored(*rows: dict) -> dict:
+    """A kernel table in the shape contracts/kernel-transitions.json uses."""
+    return {"transitions": list(rows)}
+
+
 class Derivation(unittest.TestCase):
     def test_transitions_derive_in_declared_order(self):
-        table = sov_kernel.derive(SPEC)
-        self.assertEqual(table["order"], ["capture_source", "cross"])
+        self.assertEqual(list(projection.derive(SPEC)), ["capture_source", "cross"])
 
     def test_preconditions_split_on_semicolons(self):
-        table = sov_kernel.derive(SPEC)
-        self.assertEqual(table["transitions"]["capture_source"]["preconditions"],
+        table = projection.derive(SPEC)
+        self.assertEqual(table["capture_source"]["preconditions"],
                          ["readable bytes", "address available"])
 
     def test_named_refusal_codes_are_captured_in_order(self):
-        table = sov_kernel.derive(SPEC)
-        self.assertEqual(table["transitions"]["capture_source"]["refusal_codes"],
+        table = projection.derive(SPEC)
+        self.assertEqual(table["capture_source"]["refusals"],
                          ["UNREADABLE", "DIGEST_MISMATCH"])
 
     def test_an_open_reasoned_refusal_is_recorded_as_such(self):
-        table = sov_kernel.derive(SPEC)
-        cross = table["transitions"]["cross"]
-        self.assertEqual(cross["refusal_codes"], [])
+        cross = projection.derive(SPEC)["cross"]
+        self.assertEqual(cross["refusals"], [])
         self.assertTrue(cross["reasoned_refusal_admitted"])
 
     def test_a_spec_without_the_table_refuses_rather_than_deriving_nothing(self):
-        with self.assertRaises(SystemExit):
-            sov_kernel.derive("# Spec\n\nNo transition table here.\n")
+        with self.assertRaises(ValueError):
+            projection.derive("# Spec\n\nNo transition table here.\n")
+
+    def test_a_table_header_with_no_rows_refuses_rather_than_reporting_agreement(self):
+        """Deriving zero transitions would make every authored row look like drift."""
+        with self.assertRaises(ValueError):
+            projection.derive("## Transition contract\n\n"
+                              "| Transition | Preconditions | Commit | Refusal |\n"
+                              "| --- | --- | --- | --- |\n\nProse.\n")
 
 
 class Invariants(unittest.TestCase):
-    def _table(self, **transition):
+    def _derived(self, **transition):
         base = {"preconditions": ["a precondition"], "commit": "a commit",
-                "refusal_codes": ["A_CODE"], "reasoned_refusal_admitted": False}
+                "refusals": ["A_CODE"], "reasoned_refusal_admitted": False}
         base.update(transition)
-        return {"transitions": {"t": base}}
+        return {"t": base}
 
     def test_a_complete_transition_carries_no_defect(self):
-        self.assertEqual(sov_kernel.invariants(self._table()), [])
+        self.assertEqual(projection.invariants(self._derived()), [])
 
     def test_a_transition_with_no_precondition_is_a_defect(self):
-        self.assertIn("no precondition", " ".join(sov_kernel.invariants(
-            self._table(preconditions=[]))))
+        self.assertIn("no precondition",
+                      " ".join(projection.invariants(self._derived(preconditions=[]))))
 
     def test_a_transition_with_no_commit_is_a_defect(self):
-        self.assertIn("no commit", " ".join(sov_kernel.invariants(self._table(commit=""))))
+        self.assertIn("no commit",
+                      " ".join(projection.invariants(self._derived(commit=""))))
 
     def test_a_transition_with_no_refusal_path_at_all_is_a_defect(self):
         """A transition that cannot refuse is a transition that cannot gate."""
-        defects = sov_kernel.invariants(
-            self._table(refusal_codes=[], reasoned_refusal_admitted=False))
+        defects = projection.invariants(
+            self._derived(refusals=[], reasoned_refusal_admitted=False))
         self.assertIn("no refusal path", " ".join(defects))
 
     def test_an_open_reasoned_refusal_satisfies_the_refusal_path(self):
-        self.assertEqual(sov_kernel.invariants(
-            self._table(refusal_codes=[], reasoned_refusal_admitted=True)), [])
+        self.assertEqual(projection.invariants(
+            self._derived(refusals=[], reasoned_refusal_admitted=True)), [])
 
     def test_a_lower_case_refusal_code_is_a_defect(self):
-        self.assertIn("not upper case", " ".join(sov_kernel.invariants(
-            self._table(refusal_codes=["stale_state"]))))
-
-    def test_an_empty_projection_is_a_defect(self):
-        self.assertIn("no transitions", " ".join(sov_kernel.invariants({"transitions": {}})))
+        self.assertIn("not upper case", " ".join(projection.invariants(
+            self._derived(refusals=["stale_state"]))))
 
 
 class Drift(unittest.TestCase):
     def setUp(self):
-        self.derived = sov_kernel.derive(SPEC)
-        self.stored = json.loads(json.dumps(self.derived))
+        self.derived = projection.derive(SPEC)
+        self.compiled = authored(
+            {"transition": "capture_source", "preconditions": ["source_address"],
+             "commit": "COMMITTED", "refusals": ["UNREADABLE", "DIGEST_MISMATCH"]},
+            {"transition": "cross", "preconditions": ["source"], "commit": "COMMITTED",
+             "refusals": []},
+        )
 
-    def test_an_identical_projection_reports_no_drift(self):
-        self.assertEqual(sov_kernel.compare(self.derived, self.stored), [])
+    def test_an_agreeing_contract_reports_no_drift(self):
+        self.assertEqual(projection.conflicts(self.derived, self.compiled), [])
 
-    def test_a_transition_added_to_spec_is_reported_missing(self):
-        del self.stored["transitions"]["cross"]
-        self.assertIn("absent from the projection",
-                      " ".join(sov_kernel.compare(self.derived, self.stored)))
+    def test_a_normalised_precondition_is_not_drift(self):
+        """The authored table states field names on purpose; SPEC states prose."""
+        self.compiled["transitions"][0]["preconditions"] = ["something", "entirely", "other"]
+        self.assertEqual(projection.conflicts(self.derived, self.compiled), [])
 
-    def test_a_transition_only_in_the_projection_is_reported(self):
-        self.stored["transitions"]["invented"] = self.stored["transitions"]["cross"]
-        self.assertIn("absent from SPEC.md",
-                      " ".join(sov_kernel.compare(self.derived, self.stored)))
+    def test_a_transition_missing_from_the_contract_is_reported(self):
+        self.compiled["transitions"] = self.compiled["transitions"][:1]
+        self.assertIn("the kernel table does not carry it",
+                      " ".join(projection.conflicts(self.derived, self.compiled)))
 
-    def test_a_changed_refusal_code_is_reported(self):
-        self.stored["transitions"]["capture_source"]["refusal_codes"] = ["RENAMED"]
-        self.assertIn("refusal_codes", " ".join(sov_kernel.compare(self.derived, self.stored)))
+    def test_a_transition_only_in_the_contract_is_reported(self):
+        self.compiled["transitions"].append(
+            {"transition": "invented", "commit": "COMMITTED", "refusals": []})
+        self.assertIn("SPEC.md does not declare it",
+                      " ".join(projection.conflicts(self.derived, self.compiled)))
 
-    def test_a_changed_precondition_is_reported(self):
-        self.stored["transitions"]["capture_source"]["preconditions"] = ["something else"]
-        self.assertIn("preconditions", " ".join(sov_kernel.compare(self.derived, self.stored)))
+    def test_a_refusal_code_dropped_from_the_contract_is_reported(self):
+        """The direction that matters: the kernel would accept what SPEC refuses."""
+        self.compiled["transitions"][0]["refusals"] = ["UNREADABLE"]
+        self.assertIn("SPEC.md names refusal DIGEST_MISMATCH; the kernel table omits it",
+                      " ".join(projection.conflicts(self.derived, self.compiled)))
 
-    def test_a_moved_spec_digest_is_reported_with_the_repair(self):
-        self.stored["source_digest"] = "0000000000000000"
-        defects = " ".join(sov_kernel.compare(self.derived, self.stored))
-        self.assertIn("SPEC.md moved", defects)
-        self.assertIn("sync", defects)
+    def test_an_extra_code_on_a_closed_spec_row_is_reported(self):
+        self.compiled["transitions"][0]["refusals"].append("INVENTED")
+        self.assertIn("the kernel table names refusal INVENTED; SPEC.md does not",
+                      " ".join(projection.conflicts(self.derived, self.compiled)))
 
-    def test_a_drifted_table_id_is_reported(self):
-        self.stored["table_id"] = "something-else/v1"
-        self.assertIn("table_id drifted",
-                      " ".join(sov_kernel.compare(self.derived, self.stored)))
+    def test_an_extra_code_under_an_open_reasoned_refusal_is_admitted(self):
+        """Naming a specific code for an open reasoned refusal is what SPEC invites."""
+        self.compiled["transitions"][1]["refusals"] = ["AUTHORITY_REFUSED"]
+        self.assertEqual(projection.conflicts(self.derived, self.compiled), [])
 
 
 class AgainstTheRepository(unittest.TestCase):
-    """The checked-in projection must match the checked-in SPEC.md."""
+    """The checked-in contract must agree with the checked-in SPEC.md."""
 
-    # selfcheck against the live repository is the "kernel transition contract"
-    # check in scripts/verify.py. The comparison logic it exercises is covered
-    # by the Drift cases above without paying for a second full derivation.
+    def test_the_repository_carries_no_drift(self):
+        spec = (ROOT / "SPEC.md").read_bytes().decode("utf-8")
+        derived = projection.derive(spec)
+        self.assertEqual(projection.invariants(derived), [])
+        self.assertEqual(projection.conflicts(derived, kernel.load_table(ROOT)), [])
 
-    def test_every_spec_transition_is_projected(self):
-        spec = (sov_kernel.ROOT / "SPEC.md").read_bytes().decode("utf-8")
-        derived = sov_kernel.derive(spec)
-        stored = json.loads(sov_kernel.PROJECTION.read_bytes().decode("utf-8"))
-        self.assertEqual(sorted(derived["transitions"]), sorted(stored["transitions"]))
+    def test_every_authored_transition_declares_a_refusal_path(self):
+        table = kernel.load_table(ROOT)
+        without = [row["transition"] for row in table["transitions"]
+                   if not row.get("refusals")]
+        self.assertEqual(without, [], "a transition that cannot refuse cannot gate")
 
-    def test_no_transition_lacks_a_refusal_path(self):
-        stored = json.loads(sov_kernel.PROJECTION.read_bytes().decode("utf-8"))
-        self.assertEqual(sov_kernel.invariants(stored), [])
+    def test_the_authored_contract_is_valid_json_with_a_transition_list(self):
+        raw = json.loads((ROOT / "contracts" / "kernel-transitions.json")
+                         .read_bytes().decode("utf-8"))
+        self.assertIsInstance(raw["transitions"], list)
+        self.assertTrue(raw["transitions"])
 
 
 if __name__ == "__main__":

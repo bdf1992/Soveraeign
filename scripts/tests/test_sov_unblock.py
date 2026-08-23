@@ -24,13 +24,13 @@ GOOD = [
     "--village", "trust-and-control",
     "--village-issue", "#3",
     "--parent", "#3",
-    "--blocked-transition", "projection.ratify_boundary",
-    "--missing-precondition", "a live JUDGEMENT grant naming the boundary",
-    "--governing-rule", "STATUS.yaml O21 gates",
+    "--blocked-transition", "projection.implement_read_path",
+    "--missing-precondition", "a declared parity fixture the read path can be graded against",
+    "--governing-rule", "AGENTS.md, Implementation order, step 2",
     "--provision", "judgement",
     "--requested-by", "controller",
     "--requested-from", "owner",
-    "--unblock-condition", "decisions/0021 standing reads RATIFIED with an owner receipt",
+    "--unblock-condition", "services/projection/conformance carries a positive and a defeating case",
 ]
 
 

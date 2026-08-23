@@ -73,7 +73,7 @@ REQUIRED = (
     "decisions/0011-local-personal-byom.md",
     "decisions/0012-engineering-baseline.md",
     "decisions/0014-console-service-boundary.md",
-    "decisions/0021-asset-projection-service-boundary.md",
+    "decisions/0030-asset-projection-service-boundary.md",
 )
 
 

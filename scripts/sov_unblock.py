@@ -5,8 +5,8 @@ Blocked is never a status: an agent that cannot advance names the exact
 transition, the missing precondition, and the provision it asks a tier for,
 and this script writes that claim as a schema-valid ticket draft under
 ``.claude/drafts/unblocks/``. Posting the draft as a live issue is an attended
-action while O16 gates ``coordination.activate_external_effects``; the draft
-is the record-local half the agent may always take.
+action: Phase I admits no unattended external-world effect. The draft is the
+record-local half the agent may always take.
 
 ``draft`` refuses an invalid claim the same way the registrar would, so a
 stall that cannot prove itself (``AGENTS.md``, Blocked edge is not blocked
@@ -24,7 +24,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from sovticket.jsonschema import validate  # noqa: E402
+from sovkernel.jsonschema import validate  # noqa: E402
 
 DRAFTS = ROOT / ".claude" / "drafts" / "unblocks"
 SCHEMA = ROOT / "contracts" / "issue-metadata.schema.json"
@@ -128,7 +128,7 @@ def command_draft(args: argparse.Namespace) -> int:
     print(f"DRAFTED: {shown}")
     print(f"  holds {metadata['held']} on {metadata['blocked_transition']}; "
           f"asks {metadata['requested_from']} for a {metadata['requested_provision']}")
-    print("  posting it is an attended action while O16 gates coordination.activate_external_effects")
+    print("  posting it is an attended action; Phase I admits no unattended external effect")
     return 0
 
 

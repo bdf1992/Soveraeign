@@ -17,6 +17,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from sovkernel import projection  # noqa: E402
 from sovkernel import parity as parity_check  # noqa: E402
 from sovkernel import transitions as kernel  # noqa: E402
 from sovkernel.jsonschema import validate  # noqa: E402
@@ -124,6 +125,30 @@ def command_table(_: argparse.Namespace) -> int:
     return 0
 
 
+def command_drift(_: argparse.Namespace) -> int:
+    """Refuse when the authored contract and SPEC.md disagree about the kernel.
+
+    `contracts/kernel-transitions.json` is authored, not generated, so nothing but
+    this check stops an edit to one file from silently changing what the other
+    admits. Only what SPEC.md actually states is compared: which transitions exist
+    and which refusal codes each names.
+    """
+    spec = (ROOT / "SPEC.md").read_bytes().decode("utf-8")
+    derived = projection.derive(spec)
+    defects = projection.invariants(derived) + projection.conflicts(
+        derived, kernel.load_table(ROOT))
+    for defect in defects:
+        print(f"DRIFT   {defect}")
+    if defects:
+        print(f"FAIL: {len(defects)} disagreements between SPEC.md and "
+              "contracts/kernel-transitions.json")
+        return 1
+    codes = sorted({code for row in derived.values() for code in row["refusals"]})
+    print(f"PASS: {len(derived)} transitions and {len(codes)} named refusal codes stated "
+          "by SPEC.md agree with the authored kernel table")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Return the argument parser for every kernel subcommand."""
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
@@ -139,6 +164,9 @@ def build_parser() -> argparse.ArgumentParser:
     check.add_argument("--request", required=True, help="path to a transition request")
     check.add_argument("--current", help="path to the observed current state")
     check.set_defaults(handler=command_check)
+
+    drift = sub.add_parser("drift", help="compare the compiled contract against SPEC.md")
+    drift.set_defaults(handler=command_drift)
 
     table = sub.add_parser("table", help="print the declared transition table")
     table.set_defaults(handler=command_table)

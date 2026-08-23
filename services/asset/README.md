@@ -20,6 +20,13 @@ The graph is a rebuildable SQLite projection, not authoritative state. A later
 `GraphProjection` adapter may target Neo4j Community or another local graph
 service without changing the asset contract.
 
+Derivative requests use a complete `ReaderDeclaration`. The declaration names
+the reader and version, configuration digest, exact-or-lossy fidelity, and
+recoverable omissions before a worker can claim the run. A resulting recording
+can be reconstructed by recording or output-version ID without exposing its
+local filesystem path. This is the substrate for later local model enrichment;
+no model output is admitted or ratified by this mechanism.
+
 The proving narrative is described in `CHARTER.md` and evaluated by
 `../../AI-NATIVE.md`. Known differences from the proposed logical specification
 are recorded in `KNOWN-GAPS.md`; those gaps must be fixed in the participant,

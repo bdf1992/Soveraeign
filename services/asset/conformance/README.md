@@ -12,6 +12,9 @@ python conformance/run.py \
   --observations /tmp/asset-observations.json
 ```
 
-The current baseline is expected to fail. That failure is the implementation
-work surface: repair the participant while keeping the scenarios and oracle
-frozen. `BASELINE.md` records the observed defects.
+The Phase-I participant suite is expected to fail overall while open
+requirements remain. Individual repairs may move one requirement to participant
+`PASS` without changing the frozen scenarios or oracle. `BASELINE.md` preserves
+the initial observed defects; later bounded build records sit beside it.
+
+- `PROD-I-2-BUILD.md` records the self-tested reconstruction repair.

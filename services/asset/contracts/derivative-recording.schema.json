@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/bdf1992/Soveraeign/blob/main/services/asset/contracts/derivative-recording.schema.json",
+  "title": "Asset Service derivative recording",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "recording_id",
+    "run_id",
+    "operation",
+    "output_version_id",
+    "source_id",
+    "source_digest",
+    "reader_id",
+    "reader_version",
+    "configuration_digest",
+    "output_role",
+    "payload_address",
+    "payload_digest",
+    "fidelity",
+    "omissions",
+    "produced_at",
+    "produced_by",
+    "standing"
+  ],
+  "properties": {
+    "recording_id": {"type": "string", "pattern": "^recording_[0-9a-f]{32}$"},
+    "run_id": {"type": "string", "pattern": "^run_[0-9a-f]{32}$"},
+    "operation": {"type": "string", "minLength": 1},
+    "output_version_id": {"type": "string", "pattern": "^version_[0-9a-f]{32}$"},
+    "source_id": {"type": "string", "pattern": "^version_[0-9a-f]{32}$"},
+    "source_digest": {"$ref": "#/$defs/digest"},
+    "reader_id": {"type": "string", "minLength": 1},
+    "reader_version": {"type": "string", "minLength": 1},
+    "configuration_digest": {"$ref": "#/$defs/digest"},
+    "output_role": {"type": "string", "minLength": 1},
+    "payload_address": {"type": "string", "pattern": "^cas:sha256:[0-9a-f]{64}$"},
+    "payload_digest": {"$ref": "#/$defs/digest"},
+    "fidelity": {"enum": ["EXACT", "LOSSY"]},
+    "omissions": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "produced_at": {"type": "number"},
+    "produced_by": {"type": "string", "minLength": 1},
+    "standing": {"const": "RECORDED"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"fidelity": {"const": "EXACT"}}},
+      "then": {"properties": {"omissions": {"maxItems": 0}}}
+    },
+    {
+      "if": {"properties": {"fidelity": {"const": "LOSSY"}}},
+      "then": {"properties": {"omissions": {"minItems": 1}}}
+    }
+  ]
+}

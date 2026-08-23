@@ -1,15 +1,24 @@
 from __future__ import annotations
 
-from pathlib import Path
-from tempfile import TemporaryDirectory
 import json
 import sys
 import time
 import unittest
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
 sys.path.insert(0, str(Path(__file__).parents[1] / "src"))
 
-from soveraeign_asset_service import AssetService, AuthorityRefused, StaleLease
+from soveraeign_asset_service import (
+    AssetService,
+    AuthorityRefused,
+    ReaderDeclaration,
+    ReaderUndeclared,
+    RecordingChanged,
+    SourceChanged,
+    StaleLease,
+    digest_configuration,
+)
 
 
 class WalkingSkeleton(unittest.TestCase):
@@ -20,6 +29,13 @@ class WalkingSkeleton(unittest.TestCase):
         self.service.grant("Bdo", "Bdo", "operate:derive")
         self.service.grant("Bdo", "Bdo", "ratify:judgement")
         self.service.grant("Bdo", "Bdo", "retract:record")
+        self.reader = ReaderDeclaration(
+            reader_id="asset.metadata-card",
+            reader_version="1.0.0",
+            configuration_digest=digest_configuration({"format": "json", "schema": "card-v1"}),
+            fidelity="LOSSY",
+            omissions=("binary-payload",),
+        )
 
     def tearDown(self):
         self.service.close()
@@ -37,13 +53,40 @@ class WalkingSkeleton(unittest.TestCase):
         asset = self.service.ingest(original, "Campaign Hero", "Bdo")
         campaign_asset = self.service.ingest(campaign, "Autumn Campaign", "Bdo")
 
-        run = self.service.request_derivative(asset["asset_id"], asset["version_id"], "Bdo")
+        run = self.service.request_derivative(
+            asset["asset_id"], asset["version_id"], "Bdo", reader=self.reader
+        )
         fence = self.service.claim(run, "local-worker")
         card = json.dumps({"title": "Campaign Hero", "source": asset["digest"]}).encode()
         output_version = self.service.report_derivative(run, "local-worker", fence, card)
-        self.assertEqual(self.service.db.execute("SELECT status FROM runs WHERE id=?", (run,)).fetchone()[0], "REPORTED")
+        recording = self.service.reconstruct_recording(output_version)
+        self.assertEqual(recording["source_id"], asset["version_id"])
+        self.assertEqual(recording["operation"], "metadata-card")
+        self.assertEqual(recording["reader_id"], self.reader.reader_id)
+        self.assertEqual(recording["reader_version"], self.reader.reader_version)
+        self.assertEqual(recording["configuration_digest"], self.reader.configuration_digest)
+        self.assertEqual(recording["output_role"], "RECORDING")
+        self.assertEqual(recording["fidelity"], "LOSSY")
+        self.assertEqual(recording["omissions"], ["binary-payload"])
+        self.assertEqual(recording["standing"], "RECORDED")
+        contract = json.loads(
+            (Path(__file__).parents[1] / "contracts" / "derivative-recording.schema.json")
+            .read_text(encoding="utf-8")
+        )
+        self.assertEqual(set(recording), set(contract["properties"]))
+        self.assertEqual(
+            self.service.db.execute(
+                "SELECT status FROM runs WHERE id=?", (run,)
+            ).fetchone()[0],
+            "REPORTED",
+        )
         self.service.observe(run, "independent-observer")
-        self.assertEqual(self.service.db.execute("SELECT status FROM runs WHERE id=?", (run,)).fetchone()[0], "COMMITTED")
+        self.assertEqual(
+            self.service.db.execute(
+                "SELECT status FROM runs WHERE id=?", (run,)
+            ).fetchone()[0],
+            "COMMITTED",
+        )
         self.assertEqual(original.read_bytes(), before)
 
         proposal = self.service.propose(asset["asset_id"], "claude-adapter", {
@@ -65,25 +108,107 @@ class WalkingSkeleton(unittest.TestCase):
         self.service.retract("relationship", relation_id, "Bdo", "wrong campaign use")
         self.service.rebuild_projections()
         self.assertEqual(self.service.neighbors(asset["asset_id"]), [])
-        self.assertIsNotNone(self.service.db.execute(
-            "SELECT id FROM relationships WHERE id=? AND standing='COUNTERED'", (relation_id,)).fetchone())
-        self.assertIsNotNone(self.service.db.execute("SELECT id FROM versions WHERE id=?", (output_version,)).fetchone())
+        self.assertIsNotNone(
+            self.service.db.execute(
+                "SELECT id FROM relationships WHERE id=? AND standing='COUNTERED'",
+                (relation_id,),
+            ).fetchone()
+        )
+        self.assertIsNotNone(
+            self.service.db.execute(
+                "SELECT id FROM versions WHERE id=?", (output_version,)
+            ).fetchone()
+        )
 
         receipt = self.service.federation_cross("Bdo", asset["asset_id"])
-        outcome = self.service.db.execute("SELECT outcome,payload_json FROM receipts WHERE id=?", (receipt,)).fetchone()
+        outcome = self.service.db.execute(
+            "SELECT outcome,payload_json FROM receipts WHERE id=?", (receipt,)
+        ).fetchone()
         self.assertEqual(outcome["outcome"], "REFUSED")
         self.assertEqual(json.loads(outcome["payload_json"])["reason"], "UNCONFIGURED")
 
     def test_stale_worker_cannot_settle(self):
         path = self.source("asset.txt", b"asset")
         asset = self.service.ingest(path, "Asset", "Bdo")
-        run = self.service.request_derivative(asset["asset_id"], asset["version_id"], "Bdo")
+        run = self.service.request_derivative(
+            asset["asset_id"], asset["version_id"], "Bdo", reader=self.reader
+        )
         stale = self.service.claim(run, "worker-a", ttl_seconds=0.001)
         time.sleep(0.01)
         current = self.service.claim(run, "worker-b")
         with self.assertRaises(StaleLease):
             self.service.report_derivative(run, "worker-a", stale, b"stale")
         self.service.report_derivative(run, "worker-b", current, b"current")
+
+    def test_lossy_reader_without_recoverable_omissions_is_refused(self):
+        path = self.source("asset.txt", b"asset")
+        asset = self.service.ingest(path, "Asset", "Bdo")
+        configuration_digest = digest_configuration({"mode": "sketch"})
+        invalid_readers = (
+            ReaderDeclaration(
+                "asset.pencil", "1", configuration_digest, "LOSSY"
+            ),
+            ReaderDeclaration(
+                "asset.pencil", "1", configuration_digest, "EXACT", ("color",)
+            ),
+            ReaderDeclaration(
+                "asset.pencil", "1", configuration_digest, "LOSSY", ["color"]
+            ),
+            None,
+        )
+        for reader in invalid_readers:
+            with self.subTest(reader=reader), self.assertRaises(ReaderUndeclared):
+                self.service.request_derivative(
+                    asset["asset_id"], asset["version_id"], "Bdo", reader=reader
+                )
+        with self.assertRaises(ReaderUndeclared):
+            self.service.request_derivative(
+                asset["asset_id"], asset["version_id"], "Bdo"
+            )
+        refusal = self.service.db.execute(
+            "SELECT payload_json FROM receipts WHERE event='operation.request' "
+            "AND outcome='REFUSED' ORDER BY created_at DESC LIMIT 1"
+        ).fetchone()
+        self.assertEqual(json.loads(refusal["payload_json"])["reason"], "READER_UNDECLARED")
+
+    def test_source_change_after_request_refuses_derivative_report(self):
+        path = self.source("asset.txt", b"asset")
+        asset = self.service.ingest(path, "Asset", "Bdo")
+        run = self.service.request_derivative(
+            asset["asset_id"], asset["version_id"], "Bdo", reader=self.reader
+        )
+        fence = self.service.claim(run, "local-worker")
+        blob_path = self.service.db.execute(
+            "SELECT blob_path FROM versions WHERE id=?", (asset["version_id"],)
+        ).fetchone()[0]
+        Path(blob_path).write_bytes(b"changed")
+        with self.assertRaises(SourceChanged):
+            self.service.report_derivative(run, "local-worker", fence, b"output")
+        self.assertEqual(
+            self.service.db.execute("SELECT status FROM runs WHERE id=?", (run,)).fetchone()[0],
+            "REFUSED",
+        )
+        self.assertEqual(
+            self.service.db.execute("SELECT COUNT(*) FROM recordings").fetchone()[0],
+            0,
+        )
+
+    def test_output_corruption_defeats_recording_reconstruction(self):
+        path = self.source("asset.txt", b"asset")
+        asset = self.service.ingest(path, "Asset", "Bdo")
+        run = self.service.request_derivative(
+            asset["asset_id"], asset["version_id"], "Bdo", reader=self.reader
+        )
+        fence = self.service.claim(run, "local-worker")
+        output_version = self.service.report_derivative(
+            run, "local-worker", fence, b"output"
+        )
+        blob_path = self.service.db.execute(
+            "SELECT blob_path FROM versions WHERE id=?", (output_version,)
+        ).fetchone()[0]
+        Path(blob_path).write_bytes(b"corrupt")
+        with self.assertRaises(RecordingChanged):
+            self.service.reconstruct_recording(output_version)
 
     def test_same_bytes_do_not_collapse_asset_identity(self):
         path = self.source("same.bin", b"same")

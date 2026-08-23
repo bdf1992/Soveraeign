@@ -23,8 +23,9 @@ may be declared capabilities; they cannot create a second authority path.
 `adapters/ollama/` is the first implementation of the Model provider row: two
 declared bindings over locally hosted models, positive and defeating fixtures,
 and a check suite in `scripts/verify.py`. It checks declarations and records
-against a captured runtime inventory; it does not execute `invoke_model`, which
-remains absent (PROD-I-9) and gated by O12. Standing: `BUILT`, self-tested, not
+against a captured runtime inventory, and it executes `invoke_model` against the
+local runtime through `adapters/ollama/invoke.py`, producing the record rather
+than reading a declared one (PROD-I-9). Standing: `BUILT`, self-tested, not
 witnessed with dissent: an independent observer found the custody refusal defeasible
 (`reports/2026-08-23-local-model-adapter-witness.md`). Standing of the pattern:
 `decisions/0027-local-model-adapter.md` (proposed).

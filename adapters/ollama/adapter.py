@@ -120,7 +120,7 @@ def _check_custody(binding: dict, model: dict) -> None:
 
 def _schema_defects(binding: dict) -> list[str]:
     """Validate against the shared Model Binding contract, not against a local copy."""
-    from sovticket.jsonschema import validate
+    from sovkernel.jsonschema import validate
 
     return validate(binding, load_json(BINDING_SCHEMA))
 

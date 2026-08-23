@@ -96,11 +96,46 @@ python -m unittest discover -s adapters/ollama/tests -v
 
 `python scripts/verify.py` runs the test suite as the `local model adapter` check.
 
+## Executing a model
+
+`run.py` performs the invocation and prints the record it produced. Exit codes match
+`validate.py`: 0 accepted, 2 refused with a reason code, 1 the input could not be read.
+Effect class is `RESOURCE_CONSUMPTION` — these commands spend wall clock and memory on
+owner-owned hardware, and they need the runtime to be up.
+
+```bash
+python adapters/ollama/run.py run urn:soveraeign:binding:ollama:qwen3-4b \
+    --prompt "Name the capital of France in one word." \
+    --operation operation_byom_smoke --authority grant:propose:smoke --show-output
+
+python adapters/ollama/run.py parity \
+    urn:soveraeign:binding:ollama:qwen3-4b \
+    urn:soveraeign:binding:ollama:gpt-oss-20b \
+    --prompt "Name the capital of France in one word." \
+    --operation operation_byom_parity_live --authority grant:propose:asset-description \
+    --out adapters/ollama/observations/parity-live.json
+```
+
+`observations/parity-live.json` is a captured run of the second command, kept because a
+portability claim from two real models is worth more than the same claim from two
+hand-written fixtures. Both models answered, the input digest and the required authority
+were identical across them, and `authority_changed_with_model` was false. It is a
+recording of one run on one host, not a general result, and it holds no standing.
+
+Two things the execution path enforces that the checks alone cannot. The binding's
+declared omissions are applied to the input before anything is sent, and an input
+carrying one is refused rather than quietly stripped — a redacted prompt would address a
+digest over text the caller never wrote. And the outcome is graded from the runtime's
+`done_reason`: a model cut off mid-answer records `UNRESOLVED` with a reason code, never
+`COMMITTED`. That case is not hypothetical. `qwen3:4b` spent an entire 64-token budget on
+hidden thinking and returned an empty answer, which an earlier version of this code
+recorded as a committed run.
+
 ## What this does not do
 
-- It does not execute `invoke_model`. No request is sent to any model; the invocation
-  records are declared fixtures, not captured runs. Executing the transition needs the
-  kernel path, and the transition is O12-gated.
+- It does not settle anything it executes. `invoke.py` runs the model and produces the
+  record; the kernel still decides whether that record commits, and the run holds no
+  standing on its own.
 - It does not prove `FOUND-006` human/model binding parity. There is no human-facing
   binding here; `bindings/console/interface.json` declares one and holds no code.
 - It does not cover the `FOUND-008` case "provider loss makes the local record

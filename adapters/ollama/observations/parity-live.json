@@ -1,0 +1,102 @@
+{
+  "parity": {
+    "outcome": "ACCEPTED",
+    "operation_id": "operation_byom_parity_live",
+    "models": [
+      "gpt-oss:20b",
+      "qwen3:4b"
+    ],
+    "required_authority": "grant:propose:asset-description",
+    "authority_changed_with_model": false
+  },
+  "invocations": [
+    {
+      "invocation_id": "urn:soveraeign:invocation:fc7487799e271409646a57d7",
+      "binding_id": "urn:soveraeign:binding:ollama:qwen3-4b",
+      "operation_id": "operation_byom_parity_live",
+      "actor_id": "urn:soveraeign:actor:model:ollama:qwen3-4b",
+      "interface_contract_id": "urn:soveraeign:contract:model-binding:proposed",
+      "required_authority": "grant:propose:asset-description",
+      "requested_capability": "completion",
+      "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+      "input_digest": "sha256:9ed8aedbf837250a95871c33e457ab91d8d679c4006a1859623b299f875eaf40",
+      "omissions": [
+        "lineage/evidence",
+        "credentials",
+        "absolute host paths"
+      ],
+      "data_boundary_applied": "LOCAL_ONLY",
+      "executed": {
+        "provider_id": "urn:soveraeign:provider:ollama:local-node",
+        "model_id": "qwen3:4b",
+        "model_version": "sha256:359d7dd4bcdab3d86b87d73ac27966f4dbb9f5efdfcc75d34a8764a09474fae7",
+        "runtime_id": "ollama",
+        "runtime_version": "0.32.9",
+        "host_id": "urn:soveraeign:host:local-node",
+        "remote_host": null
+      },
+      "usage": {
+        "input_tokens": 19,
+        "output_tokens": 236,
+        "response_bytes": 5,
+        "thinking_bytes": 1014,
+        "wall_clock_seconds": 3.203
+      },
+      "cost": {
+        "unit": "USD",
+        "monetary_charge": 0,
+        "basis": "OWNER_OWNED_HARDWARE",
+        "wall_clock_seconds": 3.203
+      },
+      "information_role": "PROPOSAL",
+      "output_digest": "sha256:5dd272b4f316b776a7b8e3d0894b37e1e42be3d5d3b204b8a5836cc50597a6b1",
+      "thinking_digest": "sha256:3a8ffb89f0c15d913da9b3fb30e5e7c7cc6e1bc75f5ce022a2c476250b627414",
+      "done_reason": "stop",
+      "outcome": "COMMITTED"
+    },
+    {
+      "invocation_id": "urn:soveraeign:invocation:e4dff650a8dc5ee4410969ed",
+      "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+      "operation_id": "operation_byom_parity_live",
+      "actor_id": "urn:soveraeign:actor:model:ollama:gpt-oss-20b",
+      "interface_contract_id": "urn:soveraeign:contract:model-binding:proposed",
+      "required_authority": "grant:propose:asset-description",
+      "requested_capability": "completion",
+      "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+      "input_digest": "sha256:9ed8aedbf837250a95871c33e457ab91d8d679c4006a1859623b299f875eaf40",
+      "omissions": [
+        "lineage/evidence",
+        "credentials",
+        "absolute host paths"
+      ],
+      "data_boundary_applied": "LOCAL_ONLY",
+      "executed": {
+        "provider_id": "urn:soveraeign:provider:ollama:local-node",
+        "model_id": "gpt-oss:20b",
+        "model_version": "sha256:17052f91a42e97930aa6e28a6c6c06a983e6a58dbb00434885a0cf5313e376f7",
+        "runtime_id": "ollama",
+        "runtime_version": "0.32.9",
+        "host_id": "urn:soveraeign:host:local-node",
+        "remote_host": null
+      },
+      "usage": {
+        "input_tokens": 76,
+        "output_tokens": 141,
+        "response_bytes": 5,
+        "thinking_bytes": 577,
+        "wall_clock_seconds": 46.5
+      },
+      "cost": {
+        "unit": "USD",
+        "monetary_charge": 0,
+        "basis": "OWNER_OWNED_HARDWARE",
+        "wall_clock_seconds": 46.5
+      },
+      "information_role": "PROPOSAL",
+      "output_digest": "sha256:5dd272b4f316b776a7b8e3d0894b37e1e42be3d5d3b204b8a5836cc50597a6b1",
+      "thinking_digest": "sha256:aa76d05c15e6e81500c328d98b0f94ae903779922825ee567cad1fded0234666",
+      "done_reason": "stop",
+      "outcome": "COMMITTED"
+    }
+  ]
+}

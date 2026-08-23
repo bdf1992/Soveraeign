@@ -149,7 +149,10 @@ The founding set contains:
 - `CONTRACT.md` — invariants implementations must preserve;
 - `PRD.md` — the normalized Phase-I requirements;
 - `SPEC.md` — the proposed stack-neutral Phase-I logical specification;
-- `ROADMAP.md` — evidence-gated construction phases;
+- `ROADMAP.md` — evidence-gated construction phases and the name crosswalk;
+- `SDLC.md` — the operating loop: tiers, dyads, and the Red-gated release requirement;
+- `services/console/` — the proposed third sibling operator-surface boundary;
+- `diagrams/` — rebuildable views of the corpus, each declaring its source digests;
 - `STATUS.yaml` — machine-readable authority, standing, and open decisions;
 - `OPEN-SEAMS.md` — contradictions that must remain visible;
 - `decisions/` — consequential choices and their authority;
@@ -184,9 +187,12 @@ or reviewed implementation adoption.
 3. Read `ENGINEERING.md` and inspect `OPEN-SEAMS.md` before implementation.
 4. Run `python scripts/verify.py`; the dependency-free local and CI loop is
    budgeted to finish in under three seconds after Python starts.
-5. Work the next declared gate in `ROADMAP.md`; use the proposed reference
-   baseline without treating it as owner-ratified or importing an ancestor
-   implementation.
+5. Run `python scripts/sov_next.py`. It reconciles every signpost that claims
+   to say what happens next and prints one answer with each alias the job
+   travels under. Where the declared gate and the reachable work name different
+   jobs it reports the disagreement rather than resolving it, because that
+   choice is owner judgement. Use the proposed reference baseline without
+   treating it as owner-ratified or importing an ancestor implementation.
 
 ## Immediate objective
 
@@ -198,7 +204,14 @@ Close the founding layer without promoting implementation into policy:
 - review and ratify or strike `CLASSIFICATION.md` and `SPEC.md`;
 - bind the executable conformance observations to the reference Asset Service;
 - preserve known participant failures instead of weakening the oracle;
-- then implement the shared kernel required for two independent bindings.
+- implement the shared kernel the bindings resolve through.
+
+These are two lanes, not one ordered list. The document lane closes the
+founding layer; the code lane is blocked behind the shared kernel, which is the
+only reachable ticket in the epic tree. `STATUS.yaml` declares the document
+gate; `scripts/sov_next.py` reports the reachable code work and names the
+disagreement. Neither lane is ranked here — ordering them is owner judgement,
+and this file does not hold it.
 
 The next code change must satisfy an already-visible conformance failure. It
 must not decide what the product means.

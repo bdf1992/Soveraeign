@@ -24,9 +24,9 @@ log('Scope: planning bounded governance work for: ' + objective)
 const plan = await agent(
   'You are the sov-governance planner for Soveraeign at ' + ROOT + '. Read ' + GOVERNING_SET + '. ' +
   'Produce a bounded operation plan for: ' + objective + '. ' +
-  'Honor the gates in STATUS.yaml: O1 gates repository.publish_public, O9 gates classification.ratify, O10 gates spec.ratify; every ratification is Bdo-only and appears in judgement_queue as a question, never decided. ' +
+  'The founding docket is closed: open_decisions is empty and the O<n> identifiers are retired (decisions/0033-close-the-founding-docket.md). Settle a decision at the lowest tier that can produce evidence defeating the alternatives, and record what would defeat the ruling. Only PUBLIC-CLEARANCE and owner-held product intent, public naming, external commitment, irreversible external effect, secrets, and destructive repository administration reach Bdo, and his gate is acceptance over an evidenced result, never permission to begin. The one acceptance hold in STATUS.yaml is PUBLIC-CLEARANCE, which blocks public release and no Phase-I engineering. Never claim legal, trademark, or domain clearance. ' +
   'Plan only RECORD_LOCAL or RESOURCE_CONSUMPTION operations; Phase I forbids EXTERNAL_WORLD effects. ' +
-  'Do not plan the gated transition itself. Blocked edge is not blocked frontier (AGENTS.md, Self-direction is not delegation): an unresolved owner decision gates only the transition that needs it. Plan the reachable precursors, take reversible defaults for every other choice and name them in the operation descriptions, and set blocked true only when no admissible operation exists for this objective. Each judgement_queue entry names the transition it gates. ' +
+  'Do not plan the gated transition itself. Blocked edge is not blocked frontier (AGENTS.md, Self-direction is not delegation): an unresolved owner decision gates only the transition that needs it. Plan the reachable precursors, take reversible defaults for every other choice and name them in the operation descriptions, and set blocked true only when no admissible operation exists for this objective. Each judgement_queue entry is an owner-held boundary only, and names why no evidence at this tier could settle it. ' +
   'Each operation is smallest-change, names exact repo-relative files, and never touches lineage/evidence/.',
   { agentType: 'sov-orchestrator', schema: PLAN_SCHEMA, phase: 'Scope', label: 'scope' }
 )
@@ -69,7 +69,7 @@ function buildPrompt(op) {
   return 'You are the sov-governance builder for Soveraeign at ' + ROOT + '. Read AGENTS.md and STATUS.yaml before changing anything. ' +
     'Execute exactly one bounded operation: ' + op.id + ' - ' + op.description + '. Touch only these files: ' + op.files.join(', ') + '. ' +
     'Follow the AGENTS.md change protocol: record requested outcome and current authoritative state, affected contracts and fixtures, preconditions and expected observable result, effect class (' + op.effect_class + '), and rollback or refusal boundary. ' +
-    'Hard rules: never run git commit or git push; never ratify or witness your own work; queue judgement-typed questions for Bdo in judgement_items instead of deciding them; do not duplicate a rule owned by another document - link to it; lineage/evidence/ is immutable; vocabulary must match CLASSIFICATION.md and SPEC.md. ' +
+    'Hard rules: never run git commit or git push; never ratify or witness your own work; settle what evidence can settle at this tier, name what would defeat each ruling, and put only an owner-held boundary in judgement_items; do not duplicate a rule owned by another document - link to it; lineage/evidence/ is immutable; vocabulary must match CLASSIFICATION.md and SPEC.md. ' +
     'Make the smallest change, then run python scripts/verify.py from the repository root and report its exit code.'
 }
 

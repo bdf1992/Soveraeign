@@ -1,4 +1,4 @@
-export const meta = { name: 'sov-byom', description: 'Advance the Soveraeign byom domain (model bindings, adapters, PROD-I-9 portability) one bounded, witnessed, proposal-marked operation', whenToUse: 'When BYOM.md, bindings/, adapters/, contracts/model-binding.schema.json, or the PROD-I-9 fixtures need bounded work under the O12 freeze gate', phases: [{ title: 'Scope' }, { title: 'Build' }, { title: 'Witness' }] }
+export const meta = { name: 'sov-byom', description: 'Advance the Soveraeign byom domain (model bindings, adapters, PROD-I-9 portability) one bounded, witnessed, proposal-marked operation', whenToUse: 'When BYOM.md, bindings/, adapters/, contracts/model-binding.schema.json, or the PROD-I-9 fixtures need bounded work', phases: [{ title: 'Scope' }, { title: 'Build' }, { title: 'Witness' }] }
 
 const ROOT = '.'
 
@@ -57,17 +57,17 @@ const WITNESS_SCHEMA = {
   },
 }
 
-const objective = (args && args.objective) ? args.objective : 'advance the byom domain one bounded proposal-grade operation toward the O12 ratification packet'
+const objective = (args && args.objective) ? args.objective : 'advance the byom domain one bounded operation that produces inspectable evidence'
 
 phase('Scope')
 log('Scope: planning bounded byom work for objective: ' + objective)
 
 const scopePrompt = 'You are scoping the Soveraeign byom domain (bring-your-own-model bindings and adapters). ' +
   'Read ' + ROOT + '/AGENTS.md, ' + ROOT + '/STATUS.yaml, ' + ROOT + '/BYOM.md, ' + ROOT + '/bindings/README.md, ' + ROOT + '/adapters/README.md, ' + ROOT + '/contracts/model-binding.schema.json, ' + ROOT + '/decisions/0011-local-personal-byom.md, and the PROD-I-9 section of ' + ROOT + '/PRD.md. ' +
-  'Open decision O12 gates model_binding.ratify_contract: exact binding fields, data-boundary modes, and the two-model fixture await ratification by Bdo, so every draft stays proposal-marked. ' +
+  'The founding docket is closed: open_decisions is empty and the O<n> identifiers are retired (decisions/0033-close-the-founding-docket.md). Settle a decision at the lowest tier that can produce evidence defeating the alternatives, and record what would defeat the ruling. Only PUBLIC-CLEARANCE and owner-held product intent, public naming, external commitment, irreversible external effect, secrets, and destructive repository administration reach Bdo, and his gate is acceptance over an evidenced result, never permission to begin. The exact binding fields, the three data-boundary modes, and the two-model shape are accepted (decisions/0024-open-decision-drain.md, O12); what a binding still owes is independent observation, which its builder cannot supply. ' +
   'Produce a bounded plan of mutually independent operations for this objective: ' + objective + '. ' +
   'Allowed effect classes: RECORD_LOCAL and RESOURCE_CONSUMPTION only. No runtime code before logical spec and defeating fixtures. No provider SDK types in kernel or service contracts. No silent provider fallback. Model selection never changes authority. ' +
-  'Do not decide judgement-typed questions; put each in judgement_queue. Blocked edge is not blocked frontier (AGENTS.md, Self-direction is not delegation): an unresolved owner decision gates only the transition that needs it. Plan the reachable precursors, take reversible defaults for every other choice and name them in the operation descriptions, and set blocked true only when no admissible operation exists for this objective. Each judgement_queue entry names the transition it gates.'
+  'Do not decide judgement-typed questions; put each in judgement_queue. Blocked edge is not blocked frontier (AGENTS.md, Self-direction is not delegation): an unresolved owner decision gates only the transition that needs it. Plan the reachable precursors, take reversible defaults for every other choice and name them in the operation descriptions, and set blocked true only when no admissible operation exists for this objective. Each judgement_queue entry is an owner-held boundary only, and names why no evidence at this tier could settle it.'
 
 const plan = await agent(scopePrompt, { agentType: 'sov-orchestrator', schema: PLAN_SCHEMA, phase: 'Scope', label: 'scope' })
 
@@ -93,9 +93,9 @@ const buildOne = function (op) {
   const prompt = 'You are the sov-byom builder executing exactly one bounded operation. ' +
     'Operation ' + op.id + ': ' + op.description + '. Files in scope: ' + op.files.join(', ') + '. Effect class: ' + op.effect_class + '. ' +
     'Read ' + ROOT + '/AGENTS.md and ' + ROOT + '/STATUS.yaml first. Follow the AGENTS.md change protocol: record requested outcome and current authoritative state, affected contracts and fixtures, preconditions and expected observable result, effect class, and rollback or refusal boundary. ' +
-    'Contract and fixtures before code; smallest change that satisfies the visible case; mark every draft as proposal because O12 keeps the byom contract unfrozen. ' +
+    'Contract and fixtures before code; smallest change that satisfies the visible case; a passing self-test establishes BUILT and never WITNESSED. ' +
     'Run python scripts/verify.py from the repository root and record the exact command and exit code. ' +
-    'You must NOT run git commit or git push. You must not witness or ratify your own work. Queue judgement-typed questions in judgement_items for Bdo instead of deciding them.'
+    'You must NOT run git commit or git push. You must not witness or ratify your own work. Settle what evidence can settle at your tier and name the observation that would defeat each ruling. Put only an owner-held boundary in judgement_items. An owner-held boundary is public naming, external commitment, irreversible external-world effect, secrets, or destructive repository administration.'
   return agent(prompt, { agentType: 'sov-worker', schema: BUILD_SCHEMA, phase: 'Build', label: 'build-' + op.id })
 }
 

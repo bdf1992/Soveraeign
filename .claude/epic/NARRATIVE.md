@@ -95,10 +95,11 @@ The Door (`#16`).
 **What they leave with:** one attributable event per consequential thing
 they did, and a judgement request that lands on the owner's desk instead of
 being decided for them.
-**Today:** the Console is chartered, not implemented; the owner holds O18.
-The Sov profile validates and its fixtures pass; it is not live, owner holds
-O17. `#30` is `held` on nine issues, `#45` on two. The story is fully told
-(`services/console/CHARTER.md`, `SOV.md`); no actor can walk it.
+**Today:** the Console boundary and its name are accepted; the service is not
+built. The Sov profile validates and its fixtures pass; it is accepted as the
+operating shape and is not live. `#30` is `held` on nine issues, `#45` on two.
+The story is fully told (`services/console/CHARTER.md`, `SOV.md`); no actor can
+walk it, because the contract and its defeating fixtures do not exist yet.
 
 ### The Door: `#16`, `#17`
 
@@ -131,9 +132,10 @@ The Job Window (`#18`), The Record (`#25`).
 **What they leave with:** a declared binding with a data-boundary mode, and a
 receipt for every call, with only an opaque credential reference on it.
 **Today:** the binding contract exists (`contracts/model-binding.schema.json`)
-and two scenarios wait for it (`006`, `008`). Nothing can call a model:
-`invoke_model` has no implementation (PROD-I-9). That is waiting on the
-owner's sourcing decision, O12, not on a bug. `#19` and `#29` are `held`.
+and two scenarios wait for it (`006`, `008`). The binding contract is
+accepted; the kernel has no `invoke_model` implementation (PROD-I-9), and the
+Ollama adapter grades declared bindings against a recorded inventory rather than
+executing one. Nothing waits on the owner here. `#19` and `#29` are `held`.
 
 ### The Job Window: `#18`, `#20`, `#21`, `#31`
 
@@ -169,8 +171,9 @@ reference participant.
 **Leans on:** The Record (`#8`, `#10`), The Permits Office (`#11`, `#12`,
 `#13`, `#14`), The Job Window (`#18`, `#20`), The Model Counter (`#19`).
 **What they leave with:** a decision record pinned to the versions reviewed.
-**Today:** chartered, not implemented, behind O11
-(`services/proofing/CHARTER.md`, two schemas, a defeating fixture). `#22` is
+**Today:** the boundary is accepted and the service is not built
+(`services/proofing/CHARTER.md`, two schemas, a defeating fixture). What is
+missing is the contract and its fixtures, not permission. `#22` is
 `held` on ten issues. The longest "Leans on" line in the front office: this
 desk opens last.
 
@@ -295,11 +298,15 @@ None of these are decided here.
    `#20`, `#21`, `#31`) could be read as back office; it was placed front
    because an actor hands work in there. The Review Desk is front for
    the same reason. Either could be moved.
-3. **The story kind itself.** `kind: story` is proposed in decision 0022
-   and queued as O22, including whether the cast enters
+3. **The story kind itself.** `kind: story` is accepted
+   (`decisions/0022-story-ticket-kind.md`, ruled by
+   `decisions/0033-close-the-founding-docket.md`). It is defeated by a story
+   that dispatches work, or by an Owner reading that needs a new role value in
    `CLASSIFICATION.md`.
-4. **The Permits Office routing.** `trust-and-control` has no domain. Until
-   Bdo routes it, every front-office story stays told, not walkable.
+4. **The Permits Office routing.** `trust-and-control` has no domain. Routing
+   it is a Control-tier ruling, defeated by a domain skill that cannot state
+   what it owns; until someone takes it, every front-office story stays told,
+   not walkable.
 
 ## How to add a story
 

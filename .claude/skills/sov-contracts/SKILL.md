@@ -40,20 +40,20 @@ schema without a positive and a defeating conformance case; touch
 
 ## Standing and blockers
 
-`specification_status: PROPOSED_LOGICAL_SPEC_OWNER_FREEZE_PENDING`;
-`classification_status: PROPOSED_OWNER_RATIFICATION_PENDING`. Gating open
-decisions (STATUS.yaml):
+`specification_status: OWNER_ACCEPTED_PHASE_I_LOGICAL_SPEC_WITH_SOVEREIGNTY_CLARIFICATION`;
+`classification_status: OWNER_ACCEPTED_CANONICAL_VOCABULARY`. Constraints that
+still bind (STATUS.yaml, `decisions/0024-open-decision-drain.md`):
 
-- **O10** (Bdo ratifies SPEC.md) gates `spec.ratify` — schema changes ahead of
-  the spec freeze must be marked proposals with positive and defeating cases.
-- **O9** (Bdo ratifies CLASSIFICATION.md) gates `classification.ratify` — enum
-  vocabulary stays proposed; mismatches queue as judgement items, not renames.
-- **O12** gates `model_binding.ratify_contract` — `model-binding.schema.json` fields,
-  data-boundary modes, and the two-model fixture cannot be frozen.
-- **O4** gates `attestation.ratify_schema` — do not author an attestation contract;
-  queue the question for Bdo.
-- **O2** gates `engineering.ratify_baseline` — the JSON Schema baseline itself
-  is proposed, not ratified.
+- `SPEC.md` and `CLASSIFICATION.md` are accepted. A schema that disagrees with
+  either is a defect in the schema. Fix it; do not fork the vocabulary and do
+  not rename an enum without a fixture proving the rename.
+- The `model-binding.schema.json` fields, the three data-boundary modes, and the
+  two-model shape are accepted (0024, O12).
+- Attestation has a ruled shape (0024, O3 and O4): an `Attestation` is immutable
+  historical evidence about an exact claim, input, and run; `CurrentEffectiveness`
+  is a rebuildable evaluation over it. Author the contract to that split.
+- Every schema needs a positive and a defeating fixture before anything depends
+  on it. That is the constraint, not owner permission.
 
 ## Named operations
 
@@ -70,10 +70,10 @@ decisions (STATUS.yaml):
    the actual schema files and their SPEC.md purposes.
 5. **Draft 2020-12 hygiene** — verify `$schema`, `$id`, `additionalProperties`,
    and `required` conventions are consistent across all six files.
-6. **Proposal drafting for missing kernel contracts** — draft a clearly marked
-   proposal for a SPEC.md object lacking a schema (e.g. retraction,
-   authority-grant) only where no open decision gates that exact transition; attestation is
-   O4-blocked and queues instead.
+6. **Drafting a missing kernel contract** — author a schema for a SPEC.md object
+   that lacks one (retraction, authority-grant, attestation) with its positive and
+   defeating fixture pair. Attestation follows the immutable-evidence versus
+   rebuildable-effectiveness split ruled in `decisions/0024-open-decision-drain.md`.
 
 ## Verification
 

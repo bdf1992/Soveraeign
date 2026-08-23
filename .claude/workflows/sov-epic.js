@@ -118,11 +118,11 @@ log('Selecting the next bounded operation across ' + selectedVillages.length + '
 function planPrompt(v) {
   return 'You are planning the next bounded operation for the Soveraeign village "' + v + '" of the epic-of-epics tree (issue #1). Objective: ' + objective + '. '
     + 'Read .claude/epic/README.md and .claude/epic/villages.json, then run `python scripts/sov_epic.py next --village ' + v + '` and `python scripts/sov_epic.py unrouted` from the repository root. '
-    + 'For each candidate issue read its projected metadata in .claude/epic/tree.json, load the .claude/skills/sov-<domain>/SKILL.md of the routed domain, and read the open_decisions block of STATUS.yaml. '
-    + 'Choose ONE issue: prefer horizon NOW, reachable (no unsatisfied requires), routed to a domain, and not blocked by an open decision. If every candidate is blocked, say so and return the blockers rather than inventing work. '
+    + 'For each candidate issue read its projected metadata in .claude/epic/tree.json, load the .claude/skills/sov-<domain>/SKILL.md of the routed domain, and read the external_acceptance_holds block of STATUS.yaml. '
+    + 'Choose ONE issue: prefer horizon NOW, reachable (no unsatisfied requires), and routed to a domain. Do not treat an unsettled question as a blocker: under decisions/0033-close-the-founding-docket.md a decision is settled at the lowest tier that can evidence it, and only external_acceptance_holds genuinely wait on Bdo. If every candidate is truly unreachable, say so and name the unsatisfied requires rather than inventing work. '
     + 'An unrouted issue is never a valid selection - routing it is a judgement only Bdo makes; report it as a judgement item instead. '
     + 'You plan only; edit nothing. '
-    + 'Return: village, operation (one bounded sentence), issue (as "#N" or "none"), domain (or "unrouted"), blocked_by (open-decision ids and unsatisfied requires), rationale, files, effect_class, and judgement_items.'
+    + 'Return: village, operation (one bounded sentence), issue (as "#N" or "none"), domain (or "unrouted"), blocked_by (unsatisfied requires only), rationale, files, effect_class, and rulings_taken (each with the observation that would defeat it).'
 }
 
 const plans = await parallel(selectedVillages.map(function (v) {

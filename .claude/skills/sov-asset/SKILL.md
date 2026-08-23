@@ -45,17 +45,16 @@ a named boundary and decision record; import participant code into the oracle.
 next standing transition is independent witnessing (`BUILT -> WITNESSED`) by a
 non-builder; ratification is Bdo-only.
 
-- O2 (Bdo ratifies the ENGINEERING.md baseline) gates
-  `engineering.ratify_baseline` - build on the proposed baseline; gap closure,
-  fixtures, splits, observation, and doc coherence are all reachable.
-- O10 (Bdo ratifies SPEC.md) gates `spec.ratify` - gaps are observed against a
-  proposed spec; never present a gap fix as Phase-I qualification.
-- O12 (BYOM binding fields) gates `model_binding.ratify_contract` - the
-  PROD-I-9 model-portability gap queues judgement; do not invent binding fields.
-- O9 (CLASSIFICATION.md ratification) gates `classification.ratify` -
-  vocabulary is proposed canonical; follow it, do not fork it.
-- Blocked edge is not blocked frontier (`AGENTS.md`): a gate stops one
-  transition, not the domain.
+- The `ENGINEERING.md` baseline, `SPEC.md`, `CLASSIFICATION.md`, and the BYOM
+  contract are all accepted (`decisions/0024-open-decision-drain.md`). Build on
+  them. Follow the vocabulary exactly; do not fork it, and do not invent binding
+  fields the model-binding contract does not declare.
+- A gap fix is never Phase-I qualification. Qualification needs independent
+  observation, which a builder cannot supply for its own build.
+- Nothing in this domain waits on Bdo. Settle what evidence can settle and
+  record what would defeat the ruling (`decisions/0033-close-the-founding-docket.md`,
+  Ruling 1); the only owner hold is `PUBLIC-CLEARANCE`, which blocks public
+  release and no engineering.
 
 ## Named operations (available now)
 
@@ -71,8 +70,9 @@ non-builder; ratification is Bdo-only.
    `services/asset/conformance/BASELINE.md`.
 5. Doc coherence: reconcile CHARTER/README/KNOWN-GAPS wording with
    `CLASSIFICATION.md` and `SPEC.md` vocabulary without changing semantics.
-6. Judgement-queue drafting: write up O2/O10/O12-gated questions as visible
-   items for Bdo instead of deciding or blocking on them.
+6. Acceptance packet: when a result is built and independently observed,
+   assemble the six-part packet of `decisions/0023-acceptance-not-approval.md`
+   over it. Never over work not yet done.
 
 ## Verification
 

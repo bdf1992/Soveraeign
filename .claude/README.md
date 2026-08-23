@@ -70,7 +70,8 @@ Cross-cutting capabilities (`sov-qa`, `sov-scribe`) follow the same rule:
 skill + workflow, riding the same roles.
 
 - The controller launches `sov-federation` (or a single domain workflow),
-  reads the aggregated report, and surfaces the judgement queue to Bdo.
+  reads the aggregated report, and surfaces to Bdo only what an owner-held
+  boundary genuinely reserves to him.
 - Each domain workflow runs Scope -> Build -> Witness and returns a structured
   report. A domain is blocked only when no admissible operation exists for
   the objective; a gated end state with reachable precursors is a plan, not a
@@ -81,24 +82,29 @@ skill + workflow, riding the same roles.
 
 ### Domains
 
-| Domain | Owns | Gated by |
+| Domain | Owns | What it is waiting on |
 | --- | --- | --- |
-| `governance` | Design System of Record, decisions, STATUS standing | O1, O9 |
-| `contracts` | Shared kernel/crossing JSON Schemas | O10 |
-| `conformance` | Oracle, scenarios, fresh-witness qualification | binding open |
-| `asset` | Asset Service lifecycle (`services/asset/`) | O2 |
-| `proofing` | Proofing Service charter and contracts only | O11, O2, O10 |
-| `console` | Console Service charter, contracts, and seed fixtures only (`services/console/`) | O18, O2, O10 |
-| `projection` | Asset Projection Service charter, parity ledger, and seed fixtures; lanes after fixtures + the `core.py` split (`services/projection/`) | O21 (standing word only), O12 (dense/sparse) |
-| `byom` | Model bindings, adapters, portability (PROD-I-9) | O12 |
-| `verification` | `scripts/verify.py`, lint, CI gate, baseline | O2 |
+| `governance` | Design System of Record, decisions, STATUS standing | nothing; `PUBLIC-CLEARANCE` blocks release only |
+| `contracts` | Shared kernel/crossing JSON Schemas | a fixture pair per schema |
+| `conformance` | Oracle, scenarios, fresh-witness qualification | a participant binding |
+| `asset` | Asset Service lifecycle (`services/asset/`) | an independent witness, and the `core.py` split |
+| `proofing` | Proofing Service charter and contracts only | its contract and defeating fixtures |
+| `console` | Console Service charter, contracts, and seed fixtures only (`services/console/`) | its contract and defeating fixtures |
+| `projection` | Asset Projection Service charter, parity ledger, and seed fixtures (`services/projection/`) | executable fixtures, then the asset `core.py` split |
+| `byom` | Model bindings, adapters, portability (PROD-I-9) | an independent witness of the adapter |
+| `verification` | `scripts/verify.py`, lint, CI gate, baseline | nothing |
+
+Nothing in this table waits on Bdo. Each entry names a missing precondition a
+tier can produce, which is what `decisions/0033-close-the-founding-docket.md`
+Ruling 1 asks a column like this to say.
 
 These nine domains do not cover the epic-of-epics issue tree. Twenty-two open
 bits and stubs are claimed by no domain skill, and the whole `trust-and-control`
 village - identity, authority, gates, registry, and the capability broker - has
 no domain at all. `epic/villages.json` leaves them deliberately unrouted rather
 than force-fitting them; `python scripts/sov_epic.py unrouted` lists them, and
-the walk reports each as a judgement item for Bdo.
+the walk reports each as unrouted work needing a domain, not as a question for
+Bdo.
 
 ### Files
 
@@ -110,7 +116,7 @@ the walk reports each as a judgement item for Bdo.
 - `agents/sov-witness.md` — stable read-only witness; verifies build claims
   through an independent path and may dissent.
 - `agents/sov-controller.md` — control role for headless or scheduled runs:
-  dispatches, aggregates, maintains the judgement queue for Bdo.
+  dispatches, aggregates, and packages evidenced results for Bdo's acceptance.
 - `skills/sov-<domain>/SKILL.md` — domain know-how: owned files, blockers,
   named operations, verification commands, vocabulary. Role agents load the
   skill matching the domain their prompt names.
@@ -129,7 +135,7 @@ the walk reports each as a judgement item for Bdo.
   writing capability: a templated request becomes a drafted, independently
   critiqued prompt or document (Frame -> Draft -> Critique).
 - `workflows/sov-federation.js` — the only workflow allowed to nest: dispatches
-  domain workflows and aggregates reports and the judgement queue.
+  domain workflows and aggregates reports and rulings taken.
 - `workflows/sov-epic.js` + `epic/` — the walk of the epic-of-epics issue tree
   (`#1 — Soveraeign system of villages`). `epic/tree.json` is a checked-in
   projection of the GitHub issue tree so an unattended run never crosses an

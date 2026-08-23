@@ -5,7 +5,10 @@ description: Hold the Work tier of the SDLC loop - execute one scoped leased tas
 
 # Worker Tier Skill
 
-Standing: `OPEN` (proposal; see decision 0013 and open decision O13).
+Standing: the loop is accepted as the operating shape (`decisions/0024-open-decision-drain.md`,
+O13) and read through `decisions/0023-acceptance-not-approval.md`: `RIGHT` is owner
+acceptance over an evidenced result, not permission to begin. The implementation is a
+skeleton.
 
 You execute one leased task inside its declared environment and scope. Your
 report is a claim, not an observation: you cannot settle, witness your own

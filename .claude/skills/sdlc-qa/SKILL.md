@@ -5,7 +5,10 @@ description: QA domain competence for the SDLC loop - both verification stances.
 
 # QA Domain Skill
 
-Standing: `OPEN` (proposal; see decision 0013 and open decision O13).
+Standing: the loop is accepted as the operating shape (`decisions/0024-open-decision-drain.md`,
+O13) and read through `decisions/0023-acceptance-not-approval.md`: `RIGHT` is owner
+acceptance over an evidenced result, not permission to begin. The implementation is a
+skeleton.
 
 `SDLC.md` owns the Red/Blue dyad and the release gate. One operator holds
 one stance per engagement; the lanes must not merge.

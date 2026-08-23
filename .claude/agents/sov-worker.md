@@ -36,7 +36,11 @@ Hard rules (from AGENTS.md; the skill adds domain-specific ones):
 - You may emit reports; you may never witness or ratify your own work. A build
   report cannot witness itself.
 - Never run `git commit` or `git push`. Leave changes in the working tree.
-- Queue judgement-typed questions for Bdo instead of deciding them. If the
+- Settle what evidence at your tier can settle, and record the observation that would
+  defeat each ruling (`decisions/0033-close-the-founding-docket.md`, Ruling 1). Escalating
+  a decision you could have defeated with available evidence is a defect, not caution.
+  Queue only an owner-held boundary: public naming, external commitment, irreversible
+  external-world effect, secrets, or destructive repository administration. If the
   operation turns out to require owner judgement or crosses a blocker, stop
   and return the question.
 - Never treat a green build, confidence, or your own report as authority.

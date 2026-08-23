@@ -36,8 +36,8 @@ before the Asset Service `core.py` split gives the read stream a stable owner;
 open the Asset Service database directly (the crossing is a declared read-only
 stream); write Asset Service, Proofing Service, or Console Service state;
 generate embeddings inside the service (they arrive by `invoke_model` on a
-declared Model Binding or by declared external provenance; O12 gates
-`model_binding.ratify_contract`); serve an approximate index as exact; skip a
+declared Model Binding or by declared external provenance, never inside this
+service); serve an approximate index as exact; skip a
 staleness omission; let a projected value, score, or package change an
 authority check; add NetworkX, Neo4j, HNSW, Postgres, or any external index
 without an observed need and a decision record; report an external index,
@@ -52,7 +52,7 @@ HTTP binding, or cross-node query as anything but `UNCONFIGURED`; modify
   integration, 14-step proving narrative, defeating cases, deferred scope.
 - `services/projection/PARITY.md` - the owner-directed capability target
   against Polygres: every capability, its operation here, its lane (Phase I,
-  after O12, port, declined), and its gate. A row reaches parity when its
+  needs embeddings, port, declined), and its precondition. A row reaches parity when its
   operation is BUILT with a positive and defeating fixture, then WITNESSED.
 - `services/projection/README.md` - the two implementation gates; boundary
   ratification changes the standing word, not the build.
@@ -60,25 +60,28 @@ HTTP binding, or cross-node query as anything but `UNCONFIGURED`; modify
 - `services/projection/conformance/` - seed fixtures PROJ-001..008
   (hit-resolves-to-source through context-package-budgeted); a future
   participant must satisfy each `then` and refuse each `defeating`.
-- `decisions/0021-asset-projection-service-boundary.md` - boundary decision
-  with defaults taken; `decisions/0024-unblock-ticket-kind.md` for filing a
+- `decisions/0030-asset-projection-service-boundary.md` - boundary decision
+  with defaults taken; `decisions/0032-unblock-ticket-kind.md` for filing a
   stall.
 - `reports/2026-08-23-polygres-parity-pressure-map.md` - the reasoning behind
   the parity target.
 - Governing set: `AGENTS.md`, `STATUS.yaml`, `CLASSIFICATION.md`, `SPEC.md`,
   `PRD.md`, `CONTRACT.md`, `ENGINEERING.md`.
 
-## Standing and gates
+## Standing and constraints
 
-- `projection_service_status: CHARTERED_NOT_IMPLEMENTED` (STATUS.yaml).
-- O21 gates `projection.ratify_boundary` only: the name and the boundary's
-  standing word. Parity target and lane scope are defaults taken in
-  decisions/0021; Bdo counters them in review, they gate nothing.
-- O12 gates `model_binding.ratify_contract`: the dense and sparse lanes need
-  it for embeddings with provenance. The text, graph, filter, and fusion
-  lanes do not wait on it.
-- O2 gates `engineering.ratify_baseline`; O10 gates `spec.ratify`. Build on
-  the proposed baseline; mark schema-shaped work as proposals.
+- `projection_service_status: OWNER_ACCEPTED_BOUNDARY_NOT_IMPLEMENTED` (STATUS.yaml).
+- The boundary and the name are accepted
+  (`decisions/0033-close-the-founding-docket.md`). Parity target and lane scope
+  remain defaults taken in `decisions/0030-asset-projection-service-boundary.md`:
+  counter them with a fixture, which is cheaper than asking.
+- The ruling is defeated by a retrieval result this service can produce that the
+  Asset Service cannot reconstruct from authoritative records - that would make
+  the projection a second authority. It is the thing to test first.
+- The dense and sparse lanes need embeddings with declared provenance, which
+  arrive through `invoke_model`. The text, graph, filter, and fusion lanes do
+  not depend on that.
+- The engineering baseline and `SPEC.md` are accepted (0024, O2 and O10).
 - Precursor, not a gate you can vote on: the Asset Service `core.py` split
   (`ENGINEERING.md`, Context and module budget) must land before this service
   reads its stream. If it will not land, that is an unblock request for the

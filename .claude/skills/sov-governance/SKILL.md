@@ -9,13 +9,14 @@ description: Governance domain of the Soveraeign design System of Record - coher
 
 Keep the Soveraeign design System of Record coherent: one rule, one owning
 document, contradictions carried visibly. Draft decision records, keep
-STATUS.yaml standing fields honest, and keep the judgement queue for Bdo
-accurate without ever deciding it.
+STATUS.yaml standing fields honest. Rule what this tier can rule and record
+what defeats it; escalate only an owner-held boundary
+(`decisions/0033-close-the-founding-docket.md`, Ruling 1).
 
 ## Owns / Must not
 
 Owns: coherence of the governing set listed above; `decisions/` drafting;
-STATUS.yaml standing fields and `open_decisions`; seam registration in
+STATUS.yaml standing fields and `external_acceptance_holds`; seam registration in
 OPEN-SEAMS.md. Per AGENTS.md directory boundaries, `/decisions` owns
 consequential choices, status, rationale, and consequences - never mutable
 runtime state.
@@ -36,20 +37,22 @@ enable external effects.
 - `decisions/0001-founding-boundary.md` ... `decisions/0012-engineering-baseline.md`
 - `scripts/verify.py`, `scripts/lint.py`
 
-## Standing and blockers
+## Standing and constraints
 
-STATUS.yaml: `phase: FOUNDING`, `next_gate: F0_FOUNDING_CLOSURE`,
-`naming_status: OWNER_SELECTED_COLLISION_SCREEN_OPEN`,
-`classification_status: PROPOSED_OWNER_RATIFICATION_PENDING`,
-`specification_status: PROPOSED_LOGICAL_SPEC_OWNER_FREEZE_PENDING`.
+STATUS.yaml: `phase: FOUNDING`, `next_gate: EVIDENCE_PRODUCING_EXECUTION`,
+`naming_status: OWNER_SELECTED_WORKING_NAME_PUBLIC_CLEARANCE_EXTERNAL`,
+`classification_status: OWNER_ACCEPTED_CANONICAL_VOCABULARY`,
+`specification_status: OWNER_ACCEPTED_PHASE_I_LOGICAL_SPEC_WITH_SOVEREIGNTY_CLARIFICATION`.
 
-Gating open decisions (all ratifications are Bdo-only):
-- O1 blocks `public_release` - Soveraeign collision screening is open.
-- O9 blocks `terminology_freeze` - CLASSIFICATION.md is proposed, not canon.
-- O10 blocks `f1_closure` - SPEC.md is proposed, freeze pending.
+`open_decisions` is empty and the `O<n>` identifiers are retired
+(`decisions/0033-close-the-founding-docket.md`). One acceptance hold remains:
 
-While these are open, this domain proposes and prepares; it never freezes,
-publishes, or ratifies.
+- `PUBLIC-CLEARANCE` blocks public release only. It blocks no Phase-I
+  engineering, and `STATUS.yaml` states both halves on purpose.
+
+This domain settles what evidence can settle and records what would defeat each
+ruling. It never publishes, never claims legal clearance, and never presents its
+own synthesis as Bdo's judgement.
 
 ## Named operations (available now)
 
@@ -60,20 +63,26 @@ publishes, or ratifies.
 3. Decision drafting: draft a new `decisions/NNNN-<slug>.md` with Status,
    Decision, Evidence, and Consequence sections, marked PROPOSED, citing
    evidence paths and clause identifiers.
-4. Judgement queue maintenance: add a newly surfaced judgement-typed question
-   to `open_decisions` with an `id` and `blocks` field; never remove one
-   without a Bdo decision record.
+4. Docket discipline: rule a newly surfaced question at this tier and record
+   the observation that would defeat the ruling. Never mint an `O<n>`; the
+   O-space is retired. Only an owner-held boundary (public naming, external
+   commitment, irreversible external effect, secrets, destructive repository
+   administration) enters `external_acceptance_holds`, and it must state what
+   it does not block.
 5. Standing proposal: update a STATUS.yaml `*_status` field to match
    independently observed standing (e.g. BUILT_SELF_TESTED_NOT_WITNESSED),
    as a proposal with the observation cited.
-6. Ratification package prep for O9 or O10: assemble exactly what Bdo would
-   ratify - the document, its evidence citations, and known objections - and
-   queue it as a judgement item.
-7. Collision-screen evidence prep for O1: record screening results and
-   objections under the NAMING.md process without publishing anything.
+6. Acceptance packet: assemble the six-part packet of
+   `decisions/0023-acceptance-not-approval.md` - claim, visible result,
+   evidence, why it matters, what could defeat it, owner action - over a
+   result that is already built and observed. Never over unstarted work.
+7. Collision-screen evidence prep for PUBLIC-CLEARANCE: record screening
+   results and objections under the NAMING.md process without publishing
+   anything and without claiming clearance.
 8. Vocabulary drift check: grep canonical documents for synonyms of standing,
    event, effect, or role terms and align them to CLASSIFICATION.md/SPEC.md
-   wording, as a proposal while O9 is open.
+   wording. `CLASSIFICATION.md` is accepted, so a synonym is a defect to fix,
+   not a question to raise.
 
 ## Verification
 

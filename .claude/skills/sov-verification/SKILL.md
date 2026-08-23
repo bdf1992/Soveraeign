@@ -43,17 +43,18 @@ service's state; touch immutable lineage/ evidence.
   scripts/verify_bootstrap.py; keep them consistent, never delete a marker to
   make a broken document pass.
 
-## Standing and blockers
+## Standing and constraints
 
-- STATUS.yaml: engineering_framework_status is
-  BUILT_SELF_TESTED_NOT_WITNESSED_BASELINE_PROPOSED - self-tests establish
-  BUILT only; no independent witness or owner ratification is implied.
-- O2 (Does Bdo ratify ENGINEERING.md's Python, SQLite, filesystem CAS, JSON
-  Schema, and unittest baseline for Phase I?) blocks production_implementation.
-  Harness stewardship, gap closure, fixtures, and doc coherence remain open;
-  production business logic does not.
-- Adjacent gates to respect, not act on: O9 (CLASSIFICATION.md ratification)
-  blocks terminology_freeze; O10 (SPEC.md ratification) blocks f1_closure.
+- STATUS.yaml: `engineering_framework_status: OWNER_ACCEPTED_PHASE_I_REFERENCE_BASELINE`.
+  Python 3.11+, SQLite, filesystem content-addressed custody, JSON Schema
+  Draft 2020-12, dependency-light unittest, and local-process/CLI-first
+  operation are accepted (`decisions/0024-open-decision-drain.md`, O2). They are
+  mechanisms, not semantic authority, and may be replaced behind proved contracts.
+- The harness's own self-tests establish `BUILT` only. A check cannot witness
+  itself, and `scripts/verify.py` emitting a green run is never authority.
+- Every check must declare how it avoids relying on the thing it checks. That
+  relation string is a claim; if it is false, the check is worse than absent.
+  Correct it the moment the check changes.
 
 ## Named operations
 

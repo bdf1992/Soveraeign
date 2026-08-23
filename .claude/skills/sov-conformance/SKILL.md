@@ -54,13 +54,15 @@ Must not:
 - F2 exit (ROADMAP.md): every normative predicate has at least one positive and
   one defeating fixture, and the suite can be bound to more than one
   implementation. Participant binding is the open half.
-- O10 (gates spec.ratify): SPEC.md is not yet ratified, so the predicates the
-  fixtures trace to are proposals - author fixtures as proposals, do not freeze.
-- O8 (gates qualification.settle_cold_start): what observation completes
-  semantic cold-start beyond schema validity - gates any strengthening of
-  check_i7 / FOUND-007 measurement semantics; queue for Bdo.
-- O12 (gates model_binding.ratify_contract): the exact BYOM binding fields - check_i9's
-  required-field list embodies the proposed fields; changing it tracks O12.
+- `SPEC.md` is accepted (`decisions/0024-open-decision-drain.md`, O10), so the
+  predicates fixtures trace to are the accepted ones. A fixture that contradicts
+  a predicate is a defect in the fixture until an observation says otherwise.
+- The semantic cold-start observation shape is accepted (0024, O8): a fresh
+  participant performs a named domain task against exact held data and produces
+  attributable outputs. Schema validity alone is not enough, and future
+  qualification should measure time, interventions, refusals, and corrections.
+- The BYOM binding fields are accepted (0024, O12); `check_i9`'s required-field
+  list realises them. Change the list only with a fixture proving the change.
 
 ## Named operations
 
@@ -80,7 +82,8 @@ Must not:
   wording with CLASSIFICATION.md and SPEC.md vocabulary without weakening any
   check.
 - Fresh-witness drill preparation: tighten FOUND-007 and check_i7 observables
-  within current spec text; queue O8 measurement questions for Bdo.
+  within current spec text, and add the measurement dimensions the accepted
+  cold-start shape names - time, interventions, refusals, corrections.
 
 ## Verification
 
@@ -119,5 +122,6 @@ Must not:
 - checks_observed: exact commands, exit codes, bounded excerpts.
 - standing_proposals: at most OPEN -> BUILT; never WITNESSED or RATIFIED from a
   builder.
-- judgement_items: questions queued for Bdo (O8, O10, O12 touchpoints).
+- rulings_taken: each decision settled at this tier, with the observation that
+  would defeat it (`decisions/0033-close-the-founding-docket.md`, Ruling 1).
 - next_bounded_operation: single next step, or none.

@@ -1,6 +1,6 @@
 ---
 name: sov-console
-description: Domain know-how for the Soveraeign console domain - the services/console chartered boundary (Console Service). Load when a task mentions "sov-console", "console domain", "Console Service", "operator session", "thread", "post", "notification", "judgement request", "operator setting", "dashboard projection", "activity view", "human in the loop", "human on the loop", or names the artifacts CHARTER.md, README.md, contracts/service.json, or conformance/ seed fixtures under services/console. Covers charter gap closure, schema refinement, seed-fixture authoring, doc coherence, sibling read-path precondition mapping, and Human Binding interface declaration while O18 keeps implementation queued. Not for the Asset Service, Proofing Service, kernel contracts, conformance oracle, byom, or governance work - those have sibling sov-* skills.
+description: Domain know-how for the Soveraeign console domain - the services/console chartered boundary (Console Service). Load when a task mentions "sov-console", "console domain", "Console Service", "operator session", "thread", "post", "notification", "judgement request", "operator setting", "dashboard projection", "activity view", "human in the loop", "human on the loop", or names the artifacts CHARTER.md, README.md, contracts/service.json, or conformance/ seed fixtures under services/console. Covers charter gap closure, schema refinement, seed-fixture authoring, doc coherence, sibling read-path precondition mapping, and Human Binding interface declaration while the service is accepted but unbuilt. Not for the Asset Service, Proofing Service, kernel contracts, conformance oracle, byom, or governance work - those have sibling sov-* skills.
 ---
 
 # sov-console
@@ -29,10 +29,8 @@ acknowledge-notification, request-judgement, resolve-judgement, set-setting,
 rebuild-projection. Declared ports: human-binding, model-binding,
 service-activity, delivery, federation.
 
-Must not: implement runtime code before O18 ratification plus logical spec and
-defeating fixtures (`no_runtime_code_before_logical_spec_and_defeating_fixtures`);
-implement a binding before the shared transition contract is frozen or Bdo
-authorizes a provisional target (`bindings/README.md`); write Asset Service or
+Must not: implement runtime code before its defeating fixtures exist
+(`no_runtime_code_before_logical_spec_and_defeating_fixtures`); write Asset Service or
 Proofing Service state (the crossing is read-only); let a setting, session,
 dashboard role, or thread state widen an authority check; let a model resolve
 a judgement request; block the node on a judgement request or hide a pending
@@ -66,18 +64,18 @@ renderer's report count as observation; modify `lineage/evidence/`; create
 - Governing set: `AGENTS.md`, `STATUS.yaml`, `CLASSIFICATION.md`, `SPEC.md`,
   `PRD.md`, `CONTRACT.md`.
 
-## Standing and blockers
+## Standing and constraints
 
-- `console_service_status: CHARTERED_NOT_IMPLEMENTED` (STATUS.yaml).
-- O18 - "Is Console Service the accepted third service boundary under that
-  name, and does Bdo authorize a provisional Human Binding target for it ahead
-  of O10?" - gates `console.ratify_boundary` and `console.authorize_provisional_human_binding`. Per decision 0014 it bundles: whether
-  the console is the accepted third boundary; whether `Console` is the
-  accepted name (alternatives `Session`, `Operator`); and whether Bdo
-  authorizes a provisional binding target ahead of O10. All implementation
-  requests are refused and queued as judgement items for Bdo.
-- O2 - engineering baseline ratification - gates `engineering.ratify_baseline`.
-- O10 - SPEC.md ratification - gates `spec.ratify`.
+- `console_service_status: OWNER_ACCEPTED_BOUNDARY_NOT_IMPLEMENTED` (STATUS.yaml).
+- The boundary, the name `Console`, and the provisional Human Binding target are
+  accepted (`decisions/0033-close-the-founding-docket.md`, O14/O18). What is
+  missing is not permission - it is the contract and the defeating fixtures.
+  Accepting a boundary is not building the service.
+- The ruling is defeated by a Console record that can only be produced through
+  the human interface: that would prove the interface is authority rather than a
+  binding. Watch for it while designing the contract.
+- The engineering baseline and `SPEC.md` are accepted (0024, O2 and O10). Build
+  on them.
 - Protected boundary `no_runtime_code_before_logical_spec_and_defeating_fixtures`
   applies to the service and to its bindings alike.
 - `bindings/README.md`: no binding implementation is admitted until the shared
@@ -111,9 +109,10 @@ renderer's report count as observation; modify `lineage/evidence/`; create
    and the state, choices, authority, provenance, and receipts it must expose
    - with the Model Binding reading the same records as typed structure. A
    declared interface only; no implementation.
-7. O18 judgement-queue drafting: write the precise O18 ratification question
-   set for Bdo (boundary, name, provisional binding target) with the evidence
-   paths a decision needs.
+7. Acceptance packet: over a Console slice that is built and independently
+   observed, assemble the six-part packet of
+   `decisions/0023-acceptance-not-approval.md`. The visible result matters most
+   here - a console is a surface, so show it rather than describe it.
 
 ## Verification
 
@@ -121,8 +120,8 @@ renderer's report count as observation; modify `lineage/evidence/`; create
 - `python scripts/lint.py` - hygiene, module size, secret shapes.
 - `python -m json.tool services/console/contracts/service.json` (and any
   `.schema.json` or fixture `.json` file added) - JSON syntax check per file.
-- No `services/console/tests/` exists yet by design; do not create test
-  scaffolding that implies implementation before O18.
+- No `services/console/tests/` exists yet; create tests when there is an
+  implementation to test, and the defeating fixture before the code.
 
 ## Vocabulary (exact; no synonyms)
 

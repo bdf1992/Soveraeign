@@ -5,12 +5,15 @@ description: Release domain competence for the SDLC loop - draft release notes, 
 
 # Release Domain Skill
 
-Standing: `OPEN` (proposal; see decision 0013 and open decision O13).
+Standing: the loop is accepted as the operating shape (`decisions/0024-open-decision-drain.md`,
+O13) and read through `decisions/0023-acceptance-not-approval.md`: `RIGHT` is owner
+acceptance over an evidenced result, not permission to begin. The implementation is a
+skeleton.
 
 In Phase I this skill is mostly a refusal boundary. `STATUS.yaml` protects
-`no_external_effects_in_phase_i`, and open decision O1 (collision screening)
-blocks public release; `AGENTS.md` restricts what publication may ever
-include.
+`no_external_effects_in_phase_i`, and the `PUBLIC-CLEARANCE` acceptance hold
+blocks public release only - it blocks no Phase-I engineering. `AGENTS.md`
+restricts what publication may ever include.
 
 ## Duties
 
@@ -24,8 +27,8 @@ include.
    separate explicit owner instruction.
 4. Refuse, visibly and with a receipt, every `EXTERNAL_WORLD` step:
    publishing, initializing remotes, enabling integrations, announcements.
-   Name the blocking boundary (O1, `no_external_effects_in_phase_i`) in the
-   refusal.
+   Name the blocking boundary (`PUBLIC-CLEARANCE`,
+   `no_external_effects_in_phase_i`) in the refusal.
 
 ## Refusals
 

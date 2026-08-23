@@ -1,0 +1,311 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/bdf1992/Soveraeign/blob/main/contracts/issue-metadata.schema.json",
+  "title": "Soveraeign issue metadata v1",
+  "description": "Machine-readable contract for the YAML metadata block at the top of a Soveraeign GitHub issue.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "issue_schema",
+    "tags",
+    "kind",
+    "standing",
+    "horizon",
+    "authority",
+    "effect_class",
+    "evidence_pointer",
+    "last_observed_at",
+    "walker_receipt",
+    "demotion_pointer",
+    "dependency_channels"
+  ],
+  "properties": {
+    "issue_schema": {
+      "const": "soveraeign-ticket/v1"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z]+:[a-z0-9-]+$"
+      },
+      "uniqueItems": true,
+      "minItems": 3
+    },
+    "kind": {
+      "enum": [
+        "epic-of-epics",
+        "village",
+        "bit",
+        "implementation-stub"
+      ]
+    },
+    "epic_id": {
+      "type": "string",
+      "pattern": "^EPIC-[A-Z0-9-]+$"
+    },
+    "village_id": {
+      "type": "string",
+      "pattern": "^VILLAGE-[A-Z0-9-]+$"
+    },
+    "bit_id": {
+      "type": "string",
+      "pattern": "^BIT-[A-Z0-9-]+$"
+    },
+    "stub_id": {
+      "type": "string",
+      "pattern": "^STUB-[A-Z0-9-]+$"
+    },
+    "path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "village": {
+      "enum": [
+        "ground-and-evidence",
+        "trust-and-control",
+        "reach-and-motion",
+        "domain-and-qualification"
+      ]
+    },
+    "village_issue": {
+      "$ref": "#/$defs/issueRef"
+    },
+    "parent": {
+      "$ref": "#/$defs/issueRef"
+    },
+    "parent_bits": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/issueRef"
+      },
+      "uniqueItems": true,
+      "minItems": 1
+    },
+    "child_issues": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/issueRef"
+      },
+      "uniqueItems": true,
+      "minItems": 1
+    },
+    "villages": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "ground-and-evidence",
+          "trust-and-control",
+          "reach-and-motion",
+          "domain-and-qualification"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "standing": {
+      "enum": [
+        "OPEN",
+        "PROPOSED",
+        "DECLARED_NOT_IMPLEMENTED",
+        "CHARTERED_NOT_IMPLEMENTED",
+        "BUILT_SELF_TESTED_NOT_WITNESSED",
+        "WITNESSED",
+        "RATIFIED",
+        "DEMOTED"
+      ]
+    },
+    "horizon": {
+      "enum": [
+        "NOW",
+        "NEXT",
+        "NOW_TO_NEXT",
+        "NEXT_TO_SCALE_TRUST",
+        "NOW_TO_SCALE_TRUST",
+        "ON_SCALE_TRUST"
+      ]
+    },
+    "authority": {
+      "type": "string",
+      "minLength": 1
+    },
+    "effect_class": {
+      "enum": [
+        "RECORD_LOCAL",
+        "OBSERVE_ONLY",
+        "REQUEST_ONLY",
+        "BOUNDED_EXECUTION",
+        "CONTROL",
+        "EXTERNAL_BOUNDARY",
+        "RESOURCE_CONSUMPTION",
+        "EXTERNAL_WORLD"
+      ]
+    },
+    "evidence_pointer": {
+      "type": "string",
+      "minLength": 1
+    },
+    "last_observed_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "walker_receipt": {
+      "type": "string",
+      "minLength": 1
+    },
+    "demotion_pointer": {
+      "type": "string",
+      "pattern": "^#[a-z0-9-]+$"
+    },
+    "dependency_channels": {
+      "oneOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]+$"
+          },
+          "uniqueItems": true
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "produces",
+            "consumes"
+          ],
+          "properties": {
+            "produces": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z0-9-]+$"
+              },
+              "uniqueItems": true
+            },
+            "consumes": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z0-9-]+$"
+              },
+              "uniqueItems": true
+            }
+          }
+        }
+      ]
+    },
+    "requires": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/issueRef"
+      },
+      "uniqueItems": true
+    },
+    "membership": {
+      "type": "string"
+    },
+    "visibility": {
+      "type": "string"
+    },
+    "custody": {
+      "type": "string"
+    },
+    "attention": {
+      "type": "string"
+    }
+  },
+  "$defs": {
+    "issueRef": {
+      "type": "string",
+      "pattern": "^#[1-9][0-9]*$"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "epic-of-epics"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "then": {
+        "required": [
+          "epic_id",
+          "child_issues",
+          "villages"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "village"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "then": {
+        "required": [
+          "village_id",
+          "village",
+          "parent",
+          "child_issues"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "bit"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "then": {
+        "required": [
+          "bit_id",
+          "village",
+          "village_issue",
+          "parent",
+          "requires"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "implementation-stub"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "then": {
+        "required": [
+          "stub_id",
+          "path",
+          "village",
+          "village_issue",
+          "parent",
+          "parent_bits",
+          "requires"
+        ]
+      }
+    }
+  ]
+}

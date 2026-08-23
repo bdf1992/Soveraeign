@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+from hashlib import sha256
 import json
 from pathlib import Path
 import sys
@@ -17,7 +18,59 @@ from infrastructure import manifest_digest
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_MANIFEST = ROOT / "infrastructure" / "phase-i.topology.json"
 DEFAULT_CUSTODY_MANIFEST = ROOT / "infrastructure" / "phase-i.local.json"
+DEFAULT_RUNTIME_CONTRACT = ROOT / "infrastructure" / "phase-i.runtime-image.json"
 ROLES = {"gateway", "broker", "queue", "federation"}
+RUNTIME_PATHS = {
+    "/opt/soveraeign/scripts/custody_activation.py",
+    "/opt/soveraeign/scripts/node_runtime.py",
+}
+
+
+def _canonical(value: object) -> bytes:
+    return json.dumps(value, sort_keys=True, separators=(",", ":")).encode("utf-8")
+
+
+def load_runtime_contract(path: Path) -> dict[str, Any]:
+    value = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(value, dict):
+        raise DeploymentRefused("RUNTIME_CONTRACT_NOT_OBJECT")
+    defects = validate_runtime_contract(value)
+    if defects:
+        raise DeploymentRefused("; ".join(defects))
+    return value
+
+
+def validate_runtime_contract(contract: dict[str, Any]) -> list[str]:
+    defects: list[str] = []
+    if contract.get("schema") != "soveraeign-runtime-image-contract/v1":
+        defects.append("RUNTIME_CONTRACT_SCHEMA_UNSUPPORTED")
+    if contract.get("python_min") != "3.11":
+        defects.append("RUNTIME_PYTHON_BASELINE_LOST")
+    if set(contract.get("required_paths") or []) != RUNTIME_PATHS:
+        defects.append("RUNTIME_REQUIRED_PATHS_INCOMPLETE")
+    if contract.get("entrypoint") != ["python", "/opt/soveraeign/scripts/node_runtime.py"]:
+        defects.append("RUNTIME_ENTRYPOINT_UNBOUND")
+    gateway = contract.get("gateway") or {}
+    if gateway.get("bind") != "0.0.0.0" or gateway.get("port") != 8080:
+        defects.append("RUNTIME_LISTENER_UNBOUND")
+    if gateway.get("unactivated_response") != "REFUSE":
+        defects.append("RUNTIME_GATEWAY_PREMATURELY_ACTIVATED")
+    if gateway.get("health") != {
+            "startup": "/health/startup",
+            "readiness": "/health/ready",
+            "liveness": "/health/live"}:
+        defects.append("RUNTIME_HEALTH_CONTRACT_INVALID")
+    policy = contract.get("policy") or {}
+    if policy != {
+            "provider_required": False,
+            "embedded_secrets": "FORBID",
+            "gateway_operation_activation": "SEPARATE_GOVERNED_OPERATION"}:
+        defects.append("RUNTIME_POLICY_WIDENED")
+    return defects
+
+
+def runtime_contract_digest(contract: dict[str, Any]) -> str:
+    return sha256(_canonical(contract)).hexdigest()
 
 
 def load_manifest(path: Path) -> dict[str, Any]:
@@ -43,6 +96,8 @@ def validate_manifest(manifest: dict[str, Any]) -> list[str]:
         defects.append("MULTI_WRITER_NOT_ADMITTED")
     if node.get("custody_manifest") != "phase-i.local.json":
         defects.append("LOCAL_CUSTODY_REFERENCE_LOST")
+    if node.get("runtime_image_contract") != "phase-i.runtime-image.json":
+        defects.append("RUNTIME_IMAGE_CONTRACT_REFERENCE_LOST")
     expected_activation = {
         "policy": "VERIFY_ONLY",
         "expected_uid": 65532,
@@ -106,21 +161,33 @@ def custody_binding(custody_manifest: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def runtime_binding(runtime_contract: dict[str, Any]) -> dict[str, Any]:
+    return {"contract": runtime_contract, "contract_digest": runtime_contract_digest(runtime_contract)}
+
+
 def plan(manifest: dict[str, Any], target: str,
-         custody_manifest: dict[str, Any] | None = None) -> dict[str, Any]:
+         custody_manifest: dict[str, Any] | None = None,
+         runtime_contract: dict[str, Any] | None = None) -> dict[str, Any]:
     defects = validate_manifest(manifest)
     if defects:
         raise DeploymentRefused("; ".join(defects))
     if target not in {"local", "customer-kubernetes"}:
         raise DeploymentRefused("TARGET_UNSUPPORTED")
     custody_manifest = custody_manifest or load_custody_manifest(DEFAULT_CUSTODY_MANIFEST)
+    runtime_contract = runtime_contract or load_runtime_contract(DEFAULT_RUNTIME_CONTRACT)
+    runtime_defects = validate_runtime_contract(runtime_contract)
+    if runtime_defects:
+        raise DeploymentRefused("; ".join(runtime_defects))
     binding = custody_binding(custody_manifest)
+    runtime = runtime_binding(runtime_contract)
     roles = manifest["node"]["roles"]
     return {
         "schema": "soveraeign-deployment-plan/v1", "target": target, "replicas": 1,
         "custody_manifest": manifest["node"]["custody_manifest"],
         "custody_manifest_digest": binding["manifest_digest"], "custody_paths": binding["paths"],
         "custody_activation_policy": manifest["node"]["custody_activation"]["policy"],
+        "runtime_image_contract": manifest["node"]["runtime_image_contract"],
+        "runtime_image_contract_digest": runtime["contract_digest"],
         "gateway": {"exposure": "LOOPBACK" if target == "local" else roles["gateway"]["exposure"],
                     "guard_policy": roles["gateway"]["guard_policy"], "max_inflight": 1,
                     "patrol": roles["gateway"]["patrol"]["mode"], "terminal_pull": True},
@@ -131,14 +198,16 @@ def plan(manifest: dict[str, Any], target: str,
 
 
 def render_kubernetes(manifest: dict[str, Any], image: str, custody_claim: str, *,
-                      custody_manifest: dict[str, Any] | None = None, replicas: int = 1,
+                      custody_manifest: dict[str, Any] | None = None,
+                      runtime_contract: dict[str, Any] | None = None, replicas: int = 1,
                       service_type: str = "ClusterIP", federation: bool = False,
                       custody_activation_policy: str = "VERIFY_ONLY") -> dict[str, Any]:
     custody_manifest = custody_manifest or load_custody_manifest(DEFAULT_CUSTODY_MANIFEST)
-    plan(manifest, "customer-kubernetes", custody_manifest)
-    return render_bundle(manifest, custody_binding(custody_manifest), image, custody_claim,
-                         replicas=replicas, service_type=service_type, federation=federation,
-                         custody_activation_policy=custody_activation_policy)
+    runtime_contract = runtime_contract or load_runtime_contract(DEFAULT_RUNTIME_CONTRACT)
+    plan(manifest, "customer-kubernetes", custody_manifest, runtime_contract)
+    return render_bundle(manifest, custody_binding(custody_manifest), runtime_binding(runtime_contract),
+                         image, custody_claim, replicas=replicas, service_type=service_type,
+                         federation=federation, custody_activation_policy=custody_activation_policy)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -146,6 +215,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("operation", choices=("validate", "plan", "render", "verify"))
     parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
     parser.add_argument("--custody-manifest", type=Path, default=DEFAULT_CUSTODY_MANIFEST)
+    parser.add_argument("--runtime-contract", type=Path, default=DEFAULT_RUNTIME_CONTRACT)
     parser.add_argument("--target", choices=("local", "customer-kubernetes"), default="local")
     parser.add_argument("--image")
     parser.add_argument("--custody-claim")
@@ -157,16 +227,19 @@ def main(argv: list[str] | None = None) -> int:
     try:
         manifest = load_manifest(args.manifest)
         local_manifest = load_custody_manifest(args.custody_manifest)
+        runtime_contract = load_runtime_contract(args.runtime_contract)
         if args.operation == "validate":
             result: object = {"outcome": "PASS", "profile": manifest["profile"],
-                              "custody_manifest_digest": manifest_digest(local_manifest)}
+                              "custody_manifest_digest": manifest_digest(local_manifest),
+                              "runtime_image_contract_digest": runtime_contract_digest(runtime_contract)}
         elif args.operation == "plan":
-            result = plan(manifest, args.target, local_manifest)
+            result = plan(manifest, args.target, local_manifest, runtime_contract)
         else:
             if args.target != "customer-kubernetes" or args.image is None or args.custody_claim is None:
                 raise DeploymentRefused("KUBERNETES_TARGET_IMAGE_AND_CUSTODY_REQUIRED")
             bundle = render_kubernetes(manifest, args.image, args.custody_claim,
-                                       custody_manifest=local_manifest, replicas=args.replicas,
+                                       custody_manifest=local_manifest,
+                                       runtime_contract=runtime_contract, replicas=args.replicas,
                                        service_type=args.service_type, federation=args.federation,
                                        custody_activation_policy=args.custody_activation_policy)
             if args.operation == "render":

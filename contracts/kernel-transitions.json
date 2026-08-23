@@ -1,0 +1,199 @@
+{
+  "table_id": "soveraeign-kernel-transitions/v1",
+  "governed_by": [
+    "SPEC.md"
+  ],
+  "note": "Projection of the SPEC.md transition contract table. SPEC.md is authoritative; this file is rebuildable and holds no standing. scripts/sov_kernel.py selfcheck refuses when the two disagree.",
+  "source_digest": "ef6264c4b5734e59",
+  "order": [
+    "capture_source",
+    "read_source",
+    "submit_proposal",
+    "admit",
+    "ratify",
+    "attest",
+    "make_effective",
+    "begin_run",
+    "report_run",
+    "observe_run",
+    "settle_run",
+    "retract",
+    "cross",
+    "invoke_model"
+  ],
+  "refusal_codes": [
+    "ADMISSION_REFUSED",
+    "AUTHORITY_REFUSED",
+    "DATA_BOUNDARY_REFUSED",
+    "DIGEST_MISMATCH",
+    "DISSENTED",
+    "INCOMPLETE_PROPOSAL",
+    "MODEL_INCOMPATIBLE",
+    "MODEL_UNAVAILABLE",
+    "OBSERVER_NOT_INDEPENDENT",
+    "POLICY_REFUSED",
+    "READER_UNDECLARED",
+    "SOURCE_CHANGED",
+    "STALE_LEASE",
+    "STALE_STATE",
+    "UNATTESTABLE",
+    "UNREADABLE",
+    "VALIDATOR_UNDECLARED"
+  ],
+  "transitions": {
+    "capture_source": {
+      "preconditions": [
+        "readable bytes",
+        "address and digest available"
+      ],
+      "commit": "create immutable Source",
+      "refusal_codes": [
+        "UNREADABLE",
+        "DIGEST_MISMATCH"
+      ],
+      "reasoned_refusal_admitted": false
+    },
+    "read_source": {
+      "preconditions": [
+        "source digest verifies",
+        "reader fully declared"
+      ],
+      "commit": "emit Recording; source unchanged",
+      "refusal_codes": [
+        "SOURCE_CHANGED",
+        "READER_UNDECLARED"
+      ],
+      "reasoned_refusal_admitted": false
+    },
+    "submit_proposal": {
+      "preconditions": [
+        "actor, cost, source, scope, and required authority declared"
+      ],
+      "commit": "record proposal as RECORDED",
+      "refusal_codes": [
+        "INCOMPLETE_PROPOSAL"
+      ],
+      "reasoned_refusal_admitted": false
+    },
+    "admit": {
+      "preconditions": [
+        "admission predicates pass against exact proposal state"
+      ],
+      "commit": "preserve RECORDED; add ADMITTED event",
+      "refusal_codes": [
+        "ADMISSION_REFUSED"
+      ],
+      "reasoned_refusal_admitted": false
+    },
+    "ratify": {
+      "preconditions": [
+        "proposal admitted",
+        "live matching authority grant"
+      ],
+      "commit": "preserve history; add RATIFIED event",
+      "refusal_codes": [
+        "AUTHORITY_REFUSED",
+        "STALE_STATE"
+      ],
+      "reasoned_refusal_admitted": false
+    },
+    "attest": {
+      "preconditions": [
+        "ratified executable claim",
+        "declared validator and exact inputs"
+      ],
+      "commit": "emit one attestation outcome",
+      "refusal_codes": [
+        "VALIDATOR_UNDECLARED"
+      ],
+      "reasoned_refusal_admitted": false
+    },
+    "make_effective": {
+      "preconditions": [
+        "ratified",
+        "required attestation policy satisfied",
+        "no current counter"
+      ],
+      "commit": "add EFFECTIVE event",
+      "refusal_codes": [
+        "DISSENTED",
+        "UNATTESTABLE",
+        "POLICY_REFUSED"
+      ],
+      "reasoned_refusal_admitted": false
+    },
+    "begin_run": {
+      "preconditions": [
+        "complete plan",
+        "capability, budget, input, and effect gates pass"
+      ],
+      "commit": "emit ATTEMPTED; issue lease if delegated",
+      "refusal_codes": [],
+      "reasoned_refusal_admitted": true
+    },
+    "report_run": {
+      "preconditions": [
+        "current lease and fence",
+        "declared output records"
+      ],
+      "commit": "store executor report; do not settle",
+      "refusal_codes": [
+        "STALE_LEASE"
+      ],
+      "reasoned_refusal_admitted": false
+    },
+    "observe_run": {
+      "preconditions": [
+        "independent observer relation",
+        "expected predicates declared"
+      ],
+      "commit": "emit observation",
+      "refusal_codes": [
+        "OBSERVER_NOT_INDEPENDENT"
+      ],
+      "reasoned_refusal_admitted": false
+    },
+    "settle_run": {
+      "preconditions": [
+        "current input state",
+        "satisfactory observation"
+      ],
+      "commit": "COMMITTED, FAILED, or UNRESOLVED receipt",
+      "refusal_codes": [
+        "STALE_STATE"
+      ],
+      "reasoned_refusal_admitted": false
+    },
+    "retract": {
+      "preconditions": [
+        "live matching retraction authority",
+        "target and effect known"
+      ],
+      "commit": "emit counter-record and COUNTERED receipt",
+      "refusal_codes": [
+        "AUTHORITY_REFUSED"
+      ],
+      "reasoned_refusal_admitted": false
+    },
+    "cross": {
+      "preconditions": [
+        "declared source, reader/projection, omissions, authority, destination"
+      ],
+      "commit": "destination record and receipt",
+      "refusal_codes": [],
+      "reasoned_refusal_admitted": true
+    },
+    "invoke_model": {
+      "preconditions": [
+        "declared binding, operation plan, authority, input projection, data boundary, usage and cost meters"
+      ],
+      "commit": "proposal, recording, report, or observation plus receipt",
+      "refusal_codes": [
+        "MODEL_UNAVAILABLE",
+        "MODEL_INCOMPATIBLE",
+        "DATA_BOUNDARY_REFUSED"
+      ],
+      "reasoned_refusal_admitted": true
+    }
+  }
+}

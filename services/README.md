@@ -10,6 +10,7 @@ and retraction semantics; no service creates a private authority system.
 | --- | --- | --- |
 | `asset/` | experimental reference participant | asset identity, payload custody, versions, derivation lineage, discovery, and asset-use records |
 | `proofing/` | chartered, not implemented | version-pinned review sessions, annotations, rounds, and decision history |
+| `console/` | chartered, not implemented | operator sessions, channels, threads, posts, notifications, judgement requests, operator settings, and dashboard and activity projections |
 
 Each service directory may contain:
 

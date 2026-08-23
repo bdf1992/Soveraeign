@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/judgement-request.schema.json",
+  "title": "Console Judgement Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["request_id", "operation_id", "requester_id", "requester_kind", "required_authority_type", "capability", "scope", "loop_mode", "lifecycle", "queued_at", "resolved_at", "resolver_id", "resolver_grant_id", "resolution_receipt_id", "thread_id", "standing"],
+  "properties": {
+    "request_id": {"type": "string", "minLength": 1},
+    "operation_id": {"type": "string", "minLength": 1, "description": "The operation this request conditions; it receives an UNRESOLVED receipt while the request is QUEUED and unrelated operation continues."},
+    "requester_id": {"type": "string", "minLength": 1},
+    "requester_kind": {"enum": ["HUMAN", "MODEL", "WORKER", "SYSTEM"]},
+    "required_authority_type": {"const": "JUDGEMENT", "description": "A judgement request exists only because no live JUDGEMENT grant covered the operation; VERIFICATION authority is settled by the kernel without a request."},
+    "capability": {"type": "string", "minLength": 1, "description": "Capability the resolving grant must carry, checked at the resolution transition."},
+    "scope": {"type": "string", "minLength": 1, "description": "Scope the resolving grant must cover, checked at the resolution transition."},
+    "loop_mode": {"enum": ["IN_LOOP", "ON_LOOP"], "description": "IN_LOOP keeps the conditioned operation UNRESOLVED until a human right resolves it; ON_LOOP lets it proceed while a human watches and may counter through retraction."},
+    "lifecycle": {"enum": ["QUEUED", "RESOLVED", "WITHDRAWN", "EXPIRED"]},
+    "queued_at": {"type": "string", "format": "date-time"},
+    "resolved_at": {"type": ["string", "null"], "format": "date-time"},
+    "resolver_id": {"type": ["string", "null"], "minLength": 1, "description": "Human actor whose live JUDGEMENT grant resolved the request; a model resolution attempt is REFUSED and records no resolver."},
+    "resolver_grant_id": {"type": ["string", "null"], "minLength": 1, "description": "The typed, scoped, live grant checked at resolution; the request never holds or infers the right itself."},
+    "resolution_receipt_id": {"type": ["string", "null"], "minLength": 1},
+    "thread_id": {"type": ["string", "null"], "minLength": 1, "description": "Thread where the request surfaces for discussion and recommendation; null when raised outside any thread."},
+    "standing": {"enum": ["RECORDED", "ADMITTED", "RATIFIED", "EFFECTIVE"]}
+  }
+}

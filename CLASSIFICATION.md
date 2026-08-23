@@ -150,8 +150,14 @@ version comparisons, reviewer assignments, requested changes, approval or
 rejection proposals, decisions, and proofing history. It references exact Asset
 Service version identifiers and does not create a second authoritative asset.
 
-Both are sibling services inside one local node. Both use the shared kernel.
-Neither is independently a federation, node, platform, or complete product.
+The **Console Service** owns operator sessions, channels, threads, posts,
+notifications, judgement requests, operator settings, and declared dashboard
+and activity projections. It reads sibling-service events and receipts through
+a declared crossing and does not hold, infer, or delegate authority.
+
+All three are sibling services inside one local node. All use the shared
+kernel. None is independently a federation, node, platform, or complete
+product.
 
 ## Naming rules
 
@@ -176,7 +182,7 @@ federation at node two, stack-neutral logical specification, runtime semantics,
 and the distinction between authoritative records and projections are grounded
 in `ANCHOR.md`, `SUBSTRATE.md`, `PRODUCT(1).md`, and `PRD-PRODUCT(1).md`.
 
-The concrete `Service`/`Component` normalization, the initial Asset/Proofing
-split, and the operating-loop role and stance vocabulary are new proposed
-policy. Bdo's ratification is required before this file becomes authoritative
-vocabulary.
+The concrete `Service`/`Component` normalization, the initial
+Asset/Proofing/Console split, and the operating-loop role and stance vocabulary
+are new proposed policy. Bdo's ratification is required before this file becomes
+authoritative vocabulary.

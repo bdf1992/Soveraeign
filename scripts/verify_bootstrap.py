@@ -23,6 +23,7 @@ REQUIRED = (
     "ENGINEERING.md",
     "services/asset/CHARTER.md",
     "services/proofing/CHARTER.md",
+    "services/console/CHARTER.md",
     "ROADMAP.md",
     "STATUS.yaml",
     "AGENTS.md",
@@ -44,15 +45,20 @@ REQUIRED = (
     "services/README.md",
     "services/asset/contracts/service.json",
     "services/proofing/contracts/service.json",
+    "services/console/contracts/service.json",
     "decisions/0001-founding-boundary.md",
     "decisions/0002-naming-process.md",
     "decisions/0003-evidence-boundary.md",
+    "decisions/0004-soveraeign-name.md",
+    "decisions/0005-operational-qualification-language.md",
+    "decisions/0006-ai-native-standard.md",
     "decisions/0007-asset-service-boundary.md",
     "decisions/0008-classification-contract.md",
     "decisions/0009-phase-i-logical-spec.md",
     "decisions/0010-proofing-service-boundary.md",
     "decisions/0011-local-personal-byom.md",
     "decisions/0012-engineering-baseline.md",
+    "decisions/0014-console-service-boundary.md",
 )
 
 
@@ -175,7 +181,7 @@ def verify_json_documents() -> int:
             json.loads(path.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError) as error:
             fail(f"invalid JSON document {path.relative_to(ROOT)}: {error}")
-    for service in ("asset", "proofing"):
+    for service in ("asset", "proofing", "console"):
         manifest = json.loads((ROOT / "services" / service / "contracts" / "service.json").read_text(encoding="utf-8"))
         for field in ("service_id", "standing", "owns", "operations", "uses_kernel_contracts", "forbids"):
             if not manifest.get(field):

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/thread.schema.json",
+  "title": "Console Thread",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["thread_id", "channel_id", "title", "opened_by", "opened_at", "lifecycle", "pinned_address", "pinned_digest", "standing"],
+  "properties": {
+    "thread_id": {"type": "string", "minLength": 1},
+    "channel_id": {"type": "string", "minLength": 1},
+    "title": {"type": "string", "minLength": 1},
+    "opened_by": {"type": "string", "minLength": 1},
+    "opened_at": {"type": "string", "format": "date-time"},
+    "lifecycle": {"enum": ["OPEN", "ARCHIVED"]},
+    "pinned_address": {"type": ["string", "null"], "minLength": 1, "description": "Exact operation, record, or asset version address the thread is pinned to; null when unpinned. Present together with pinned_digest or both null."},
+    "pinned_digest": {"type": ["string", "null"], "minLength": 1, "description": "Digest of the pinned record so the thread cannot silently follow a moved or rewritten target."},
+    "standing": {"enum": ["RECORDED", "ADMITTED", "RATIFIED", "EFFECTIVE"]}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"pinned_address": {"type": "null"}}},
+      "then": {"properties": {"pinned_digest": {"type": "null"}}},
+      "else": {"properties": {"pinned_digest": {"type": "string", "minLength": 1}}}
+    }
+  ]
+}

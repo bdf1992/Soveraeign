@@ -123,6 +123,9 @@ open_decisions:
   - id: O19
     question: Does Bdo ratify verification-engagement as a fifth ticket kind, with engagement_id, a pinned target_pr and full-length target_head, and a refusal of construction identity on it?
     blocks: engagement_ticket_vocabulary
+  - id: O21
+    question: Does Bdo ratify the verification-channel projection in decisions/0020, and rule the collision between SDLC.md GREEN (derived go-state) and the green channel (contact with the world) by renaming the channel or adopting the existing term?
+    blocks: channel_projection_activation
 
 protected_boundaries:
   - evidence_files_are_immutable

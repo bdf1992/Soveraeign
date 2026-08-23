@@ -45,6 +45,10 @@ provider, runtime, host, credential, authority slot, durable memory, or second
 kernel. Read `SOV.md` for the entry point and `bindings/sov/profile.json` for
 the machine target.
 
+Host bindings may make Sov selectable without redefining it. Claude Code uses
+`CLAUDE.md` as its repository entry point and `.claude/agents/sov.md` as the
+thin named-agent binding; both defer to `SOV.md` and the portable profile.
+
 Loading Sov grants no authority. Sov may direct its attention, select relevant
 context and legal operations, propose, act within live grants, refuse, escalate,
 and hand off. It may not widen a grant, infer authority from context, ratify

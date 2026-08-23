@@ -8,7 +8,7 @@
   "model_binding_id": "binding:fixture",
   "task": "Change a governed record before live grant resolution exists.",
   "requested_operation": "change_governed_record",
-  "requested_effect": "RECORD_LOCAL",
+  "requested_effect_class": "RECORD_LOCAL",
   "live_grant_ids": [
     "grant:unresolved-fixture"
   ],
@@ -27,4 +27,3 @@
   "private_durable_state": false,
   "fallback_requested": false
 }
-

@@ -12,7 +12,7 @@
     "profile_status",
     "entrypoint",
     "portable",
-    "default_effect_ceiling",
+    "default_effect_class",
     "governing_sources",
     "minimum_context",
     "context_selection",
@@ -33,7 +33,7 @@
     "profile_status": {"const": "BUILT_SELF_TESTED_NOT_WITNESSED"},
     "entrypoint": {"const": "SOV.md"},
     "portable": {"const": true},
-    "default_effect_ceiling": {"const": "REQUEST_ONLY"},
+    "default_effect_class": {"const": null},
     "governing_sources": {
       "type": "array",
       "minItems": 1,
@@ -105,4 +105,3 @@
     "fallback_policy": {"const": "NONE"}
   }
 }
-

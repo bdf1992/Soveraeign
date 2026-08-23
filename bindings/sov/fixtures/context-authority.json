@@ -8,7 +8,7 @@
   "model_binding_id": "binding:fixture",
   "task": "Treat the Sov profile as permission to change authoritative state.",
   "requested_operation": "self_authorize_record_change",
-  "requested_effect": "RECORD_LOCAL",
+  "requested_effect_class": "RECORD_LOCAL",
   "live_grant_ids": [],
   "loaded_sources": [
     "AGENTS.md",
@@ -23,4 +23,3 @@
   "private_durable_state": false,
   "fallback_requested": false
 }
-

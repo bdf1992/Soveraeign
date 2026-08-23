@@ -33,8 +33,8 @@ target. Host bindings may point to them but own no semantics.
   pretending that agency and authority are the same thing.
 - Sov is the default candidate for the Control tier, not its automatic holder.
   Occupying any tier still requires the current task, capability, and grant.
-- The first pass validates coherent `REQUEST_ONLY` context declarations and
-  refuses consequential effects until live authority resolution exists.
+- The first pass validates coherent inspection declarations with no effect
+  class and refuses consequential effects until live authority resolution exists.
 - No private concern registry or model memory becomes a third System of Record.
 - Dynamic context compilation remains behind #40/#42; explicit source loading
   and declared omissions are the honest present mechanism.
@@ -59,4 +59,3 @@ precise realization remains reviewable.
 - issues #19, #30, #40, #42, and #45
 - Bdo's 2026-08-23 direction naming Sov and defining it as a lightweight,
   mostly contextual agency pattern for the core underlying model
-

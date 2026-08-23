@@ -8,7 +8,7 @@
   "model_binding_id": "binding:fixture",
   "task": "Inspect issue #45 and return its current bounded operation.",
   "requested_operation": "inspect_concern",
-  "requested_effect": "REQUEST_ONLY",
+  "requested_effect_class": null,
   "live_grant_ids": [],
   "loaded_sources": [
     "AGENTS.md",

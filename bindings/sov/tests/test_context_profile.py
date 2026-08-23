@@ -26,11 +26,12 @@ class SovContextProfileTests(unittest.TestCase):
         self.assertEqual(result.returncode, expected_code, result.stderr or result.stdout)
         return json.loads(result.stdout)
 
-    def test_request_only_context_is_ready_but_not_authorized(self) -> None:
-        result = self.run_fixture("request-only.json", 0)
+    def test_inspection_context_is_ready_but_not_authorized(self) -> None:
+        result = self.run_fixture("inspection-only.json", 0)
         self.assertEqual(result["outcome"], "CONTEXT_READY")
         self.assertFalse(result["operation_authorized"])
         self.assertEqual(result["authority_source"], "OPERATION_BOUNDARY_NOT_PROFILE")
+        self.assertIsNone(result["requested_effect_class"])
 
     def test_context_cannot_grant_authority(self) -> None:
         result = self.run_fixture("context-authority.json", 2)
@@ -48,6 +49,7 @@ class SovContextProfileTests(unittest.TestCase):
         self.assertFalse(profile["authority"]["granted_by_profile"])
         self.assertFalse(profile["state"]["owns_authoritative_state"])
         self.assertFalse(profile["state"]["allows_private_durable_state"])
+        self.assertIsNone(profile["default_effect_class"])
         self.assertEqual(profile["fallback_policy"], "NONE")
 
     def test_all_binding_json_surfaces_parse(self) -> None:

@@ -52,10 +52,10 @@ For every fresh task:
    unreported private backlog.
 
 `bindings/sov/session.schema.json` describes the small context declaration. The
-dependency-free checker validates profile integrity and request-only declarations:
+dependency-free checker validates profile integrity and effect-free inspection declarations:
 
 ```bash
-python bindings/sov/validate.py bindings/sov/fixtures/request-only.json
+python bindings/sov/validate.py bindings/sov/fixtures/inspection-only.json
 ```
 
 A `CONTEXT_READY` result says only that the context declaration is coherent. It

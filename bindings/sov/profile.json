@@ -7,7 +7,7 @@
   "profile_status": "BUILT_SELF_TESTED_NOT_WITNESSED",
   "entrypoint": "SOV.md",
   "portable": true,
-  "default_effect_ceiling": "REQUEST_ONLY",
+  "default_effect_class": null,
   "governing_sources": [
     "AGENTS.md",
     "SYSTEM.md",
@@ -72,4 +72,3 @@
   "dynamic_context_gate": "issue:42",
   "fallback_policy": "NONE"
 }
-

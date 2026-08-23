@@ -21,7 +21,8 @@ divergence, the owning governing document prevails.
 
 The checker answers whether a context declaration is structurally ready. It
 does not resolve a live authority grant and never authorizes an operation. It
-admits `REQUEST_ONLY` declarations and refuses consequential effect claims until
+admits inspection declarations with no effect class and refuses consequential
+effect claims until
 issues #14, #16, #25, and #30 provide the live Registry, Gateway, shared-contract,
 and operator-binding boundaries.
 
@@ -30,4 +31,3 @@ Run the focused checks with:
 ```bash
 python -m unittest discover -s bindings/sov/tests -v
 ```
-

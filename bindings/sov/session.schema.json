@@ -14,7 +14,7 @@
     "model_binding_id",
     "task",
     "requested_operation",
-    "requested_effect",
+    "requested_effect_class",
     "live_grant_ids",
     "loaded_sources",
     "material_omissions",
@@ -34,8 +34,8 @@
     "model_binding_id": {"type": "string", "minLength": 1},
     "task": {"type": "string", "minLength": 1},
     "requested_operation": {"type": "string", "minLength": 1},
-    "requested_effect": {
-      "enum": ["REQUEST_ONLY", "RECORD_LOCAL", "RESOURCE_CONSUMPTION", "EXTERNAL_WORLD"]
+    "requested_effect_class": {
+      "enum": [null, "RECORD_LOCAL", "RESOURCE_CONSUMPTION", "EXTERNAL_WORLD"]
     },
     "live_grant_ids": {
       "type": "array",
@@ -60,4 +60,3 @@
     "fallback_requested": {"const": false}
   }
 }
-

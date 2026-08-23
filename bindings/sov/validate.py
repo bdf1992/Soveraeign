@@ -12,7 +12,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[2]
 PROFILE_PATH = ROOT / "bindings" / "sov" / "profile.json"
 MINIMUM_CONTEXT = {"AGENTS.md", "SOV.md", "STATUS.yaml"}
-EFFECTS = {"REQUEST_ONLY", "RECORD_LOCAL", "RESOURCE_CONSUMPTION", "EXTERNAL_WORLD"}
+EFFECTS = {"RECORD_LOCAL", "RESOURCE_CONSUMPTION", "EXTERNAL_WORLD"}
 PROFILE_FIELDS = {
     "$schema",
     "schema_version",
@@ -22,7 +22,7 @@ PROFILE_FIELDS = {
     "profile_status",
     "entrypoint",
     "portable",
-    "default_effect_ceiling",
+    "default_effect_class",
     "governing_sources",
     "minimum_context",
     "context_selection",
@@ -44,7 +44,7 @@ SESSION_FIELDS = {
     "model_binding_id",
     "task",
     "requested_operation",
-    "requested_effect",
+    "requested_effect_class",
     "live_grant_ids",
     "loaded_sources",
     "material_omissions",
@@ -81,7 +81,13 @@ def validate_profile(profile: dict[str, Any]) -> None:
         "profile_kind": "MODEL_CONTEXT_PROFILE",
         "entrypoint": "SOV.md",
         "portable": True,
-        "default_effect_ceiling": "REQUEST_ONLY",
+        "profile_status": "BUILT_SELF_TESTED_NOT_WITNESSED",
+        "default_effect_class": None,
+        "context_selection": (
+            "OWNING_DOCUMENTS_PLUS_RELEVANT_CONTRACT_FIXTURE_SERVICE_DECISION_ISSUE"
+        ),
+        "session_declaration_schema": "bindings/sov/session.schema.json",
+        "dynamic_context_gate": "issue:42",
         "fallback_policy": "NONE",
     }
     for field, value in expected.items():
@@ -92,6 +98,8 @@ def validate_profile(profile: dict[str, Any]) -> None:
         raise ContextRefused("PROFILE_AUTHORITY_INVALID")
     if authority.get("granted_by_profile") is not False:
         raise ContextRefused("PROFILE_AUTHORITY_REFUSED")
+    if authority.get("source") != "LIVE_TYPED_GRANT_AT_OPERATION_BOUNDARY":
+        raise ContextRefused("PROFILE_AUTHORITY_SOURCE_INVALID")
     state = profile.get("state")
     if not isinstance(state, dict):
         raise ContextRefused("PROFILE_STATE_INVALID")
@@ -156,10 +164,10 @@ def validate_session(session: dict[str, Any]) -> dict[str, Any]:
             raise ContextRefused(f"SESSION_LIST_DUPLICATE:{field}")
     if not MINIMUM_CONTEXT <= set(session["loaded_sources"]):
         raise ContextRefused("MINIMUM_CONTEXT_MISSING")
-    effect = session.get("requested_effect")
-    if effect not in EFFECTS:
+    effect = session.get("requested_effect_class")
+    if effect is not None and effect not in EFFECTS:
         raise ContextRefused("EFFECT_CLASS_INVALID")
-    if effect != "REQUEST_ONLY":
+    if effect is not None:
         raise ContextRefused("LIVE_GRANT_RESOLUTION_UNAVAILABLE")
     return {
         "schema": "soveraeign-sov-context-check/v1",
@@ -167,7 +175,7 @@ def validate_session(session: dict[str, Any]) -> dict[str, Any]:
         "profile_revision": 1,
         "artifact_revision": session["artifact_revision"],
         "requested_operation": session["requested_operation"],
-        "requested_effect": effect,
+        "requested_effect_class": effect,
         "outcome": "CONTEXT_READY",
         "operation_authorized": False,
         "authority_source": "OPERATION_BOUNDARY_NOT_PROFILE",

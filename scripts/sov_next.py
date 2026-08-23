@@ -6,7 +6,9 @@ them, resolves the ``ROADMAP.md`` name crosswalk, and prints one answer with
 every alias it travels under. It settles nothing: where the declared gate and
 the reachable work name different jobs, that disagreement is reported rather
 than resolved, because choosing between them is judgement and judgement is
-owner-held.
+owner-held. Blocked edge is not blocked frontier: a declared gate stops one
+transition, and the reachable work printed here stays reachable regardless
+(``AGENTS.md``, Authority).
 
 Every read is local. Nothing here reaches the coordination surface.
 """
@@ -72,7 +74,7 @@ def crosswalk(roadmap_text: str) -> list[dict[str, str]]:
 def epic_ready(issues: dict) -> list[dict[str, str]]:
     """Open tickets whose every requirement is satisfied, from the local projection."""
     settled = {"WITNESSED", "RATIFIED", "DEMOTED"}
-    actionable = {"bit", "implementation-stub"}
+    actionable = {"bit", "implementation-stub", "story"}
     ready = []
     for number, issue in issues.items():
         metadata = issue.get("metadata") or {}
@@ -81,7 +83,7 @@ def epic_ready(issues: dict) -> list[dict[str, str]]:
         if metadata.get("kind") not in actionable:
             continue
         blockers = []
-        for requirement in metadata.get("requires", []):
+        for requirement in (metadata.get("requires") or []):
             other = issues.get(requirement.lstrip("#")) or {}
             if (other.get("metadata") or {}).get("standing") not in settled:
                 blockers.append(requirement)
@@ -116,6 +118,23 @@ def stale_views(root: Path) -> list[tuple[str, list[str]]]:
     return stale
 
 
+def closed_unsettled(issues: dict) -> list[str]:
+    """Issues closed on the coordination surface without a settled standing.
+
+    Closing a ticket is a coordination act; settling its standing is a
+    governance act. When they disagree the tree says a job is finished and
+    unfinished at once, so it is reported rather than resolved here.
+    """
+    settled = {"WITNESSED", "RATIFIED", "DEMOTED"}
+    return sorted(
+        (f"#{number} {issue.get('title', '')[:52]} "
+         f"(closed, standing {(issue.get('metadata') or {}).get('standing')})"
+         for number, issue in issues.items()
+         if issue.get("state") == "CLOSED"
+         and (issue.get("metadata") or {}).get("standing") not in settled),
+        key=lambda line: int(line.split()[0].lstrip("#")))
+
+
 def resolve(rows: list[dict[str, str]], ready: list[dict[str, str]],
             phases: dict[str, str], roadmap_text: str, root: Path = ROOT) -> list[str]:
     """Defects: a crosswalk row that no longer resolves, or a signpost conflict."""
@@ -131,8 +150,10 @@ def resolve(rows: list[dict[str, str]], ready: list[dict[str, str]],
             defects.append(f"crosswalk row {row['phase']} draws to missing {drawn.group(1)}")
     if "split `core.py`" not in roadmap_text:
         defects.append("crosswalk no longer names the ENGINEERING.md module debt")
-    if not ready_numbers:
-        defects.append("no reachable epic work; every open ticket is held")
+    # An empty frontier is deliberately not a defect. Every open ticket being
+    # held is a legitimate state, and a gate that fails on it teaches operators
+    # to clear the alarm unread. It is reported under "reachable work" instead.
+    del ready_numbers
     return defects
 
 
@@ -153,6 +174,7 @@ def main(argv: list[str] | None = None) -> int:
     rows = crosswalk(roadmap_text)
     ready = epic_ready(issues)
     stale = stale_views(ROOT)
+    unsettled = closed_unsettled(issues)
     defects = resolve(rows, ready, phases, roadmap_text)
 
     by_ticket = {row["ticket"]: row for row in rows}
@@ -168,6 +190,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.json:
         print(json.dumps({"declared_gate": gate, "crosswalk": rows, "ready": ready,
                           "stale_views": [{"view": v, "drifted": d} for v, d in stale],
+                          "closed_unsettled": unsettled,
                           "conflict": conflict, "defects": defects},
                          indent=2, sort_keys=True))
         return 1 if args.strict and defects else 0
@@ -183,12 +206,18 @@ def main(argv: list[str] | None = None) -> int:
         else:
             print("      (no crosswalk row; this job travels under one name)")
     if not ready:
-        print("  none")
+        print("  none — every open ticket is held. This is a state, not a defect.")
 
     print(f"\n== declared gate ==\n  STATUS.yaml  {gate or 'absent'}")
     if conflict:
         print(f"  DISAGREE: {conflict}")
         print("  Both lanes may be legitimate. Choosing between them is owner judgement.")
+
+    if unsettled:
+        print("\n== closed without a settled standing ==")
+        for line in unsettled:
+            print(f"  {line}")
+        print("  Closing is a coordination act; settling standing is a governance act.")
 
     if stale:
         print("\n== stale views ==")

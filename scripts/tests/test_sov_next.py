@@ -125,11 +125,40 @@ class Resolution(unittest.TestCase):
         broken = ROADMAP.replace("split `core.py`", "split the service")
         self.assertIn("module debt", " ".join(self._resolve(broken)))
 
-    def test_no_reachable_work_at_all_is_a_defect(self):
+    def test_an_empty_frontier_is_a_state_not_a_defect(self):
+        """Every open ticket being held is legitimate; failing the build on it
+        teaches operators to clear the alarm unread."""
         rows = sov_next.crosswalk(ROADMAP)
         defects = sov_next.resolve(rows, [], sov_next.roadmap_phases(ROADMAP),
                                    ROADMAP, root=self.root)
-        self.assertIn("no reachable epic work", " ".join(defects))
+        self.assertEqual(defects, [])
+
+
+class ActionableKinds(unittest.TestCase):
+    def test_a_story_is_reachable_work(self):
+        """Stories are a declared ticket kind; a reconciler blind to them
+        reports an empty frontier while real work waits."""
+        ready = sov_next.epic_ready({"67": _issue("67", "story", "PROPOSED")})
+        self.assertEqual([row["number"] for row in ready], ["67"])
+
+    def test_a_null_requires_list_does_not_crash(self):
+        issue = _issue("67", "story", "PROPOSED")
+        issue["metadata"]["requires"] = None
+        self.assertEqual([row["number"] for row in sov_next.epic_ready({"67": issue})], ["67"])
+
+
+class ClosedWithoutSettledStanding(unittest.TestCase):
+    def test_a_closed_ticket_with_an_open_standing_is_reported(self):
+        issues = {"6": _issue("6", "bit", "OPEN", state="CLOSED")}
+        self.assertIn("#6", " ".join(sov_next.closed_unsettled(issues)))
+
+    def test_a_closed_ticket_that_is_settled_is_not_reported(self):
+        issues = {"6": _issue("6", "bit", "RATIFIED", state="CLOSED")}
+        self.assertEqual(sov_next.closed_unsettled(issues), [])
+
+    def test_an_open_ticket_is_never_reported_here(self):
+        issues = {"6": _issue("6", "bit", "OPEN")}
+        self.assertEqual(sov_next.closed_unsettled(issues), [])
 
 
 class StaleViews(unittest.TestCase):

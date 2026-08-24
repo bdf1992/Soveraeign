@@ -18,7 +18,10 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 TEST_ROOT = ROOT / "scripts" / "tests"
-DEFAULT_WORKERS = 4
+# Four shards preserved the full suite but left one measured 2.392s critical
+# path on hosted CI. Eight keeps the same deterministic partition contract while
+# reducing the maximum modules per worker from eight to four on the current tree.
+DEFAULT_WORKERS = 8
 
 
 def test_modules() -> tuple[Path, ...]:

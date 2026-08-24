@@ -76,7 +76,7 @@ non-builder; ratification is Bdo-only.
 
 ## Verification
 
-- `python scripts/verify.py` (repo root; required gate, three-second budget)
+- `python scripts/verify.py` (repo root; required gate, graded budget (PLATINUM 3 s, GOLD 6 s, SILVER 15 s))
 - `python scripts/lint.py` (repo root; text, syntax, module size, secrets)
 - `python -m unittest discover -s tests -v` (from `services/asset/`)
 - `PYTHONPATH=src python scripts/demo.py` (from `services/asset/`)

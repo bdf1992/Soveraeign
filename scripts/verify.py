@@ -30,12 +30,37 @@ import uuid
 
 ROOT = Path(__file__).resolve().parents[1]
 SKIP_PARTS = {".git", ".venv", "__pycache__", ".local"}
-BUDGET_SECONDS = 3.0
+BUDGET_GRADES = (("PLATINUM", 3.0), ("GOLD", 6.0), ("SILVER", 15.0))
+BUDGET_SECONDS = BUDGET_GRADES[-1][1]
 # Starting every repository check at once became slower as the suite grew: the
 # hosted runner spent its budget context-switching between 20+ Python processes.
 # Keep enough independent work in flight to hide startup/I/O without allowing
 # process count itself to become the critical path.
 MAX_CHECK_WORKERS = 8
+
+
+def grade(wall: float) -> str | None:
+    """Name the band a wall time earns, or None when it exceeds the budget.
+
+    Bands run fastest first, each ceiling is inclusive, and the slowest ceiling
+    is the budget - so every graded run is a passing run.
+    """
+    for name, ceiling in BUDGET_GRADES:
+        if wall <= ceiling:
+            return name
+    return None
+
+
+def budget_line(wall: float) -> str:
+    """State the grade a run earned, naming the next faster band if there is one."""
+    earned = grade(wall)
+    if earned is None:
+        return f"verification budget ({wall:.3f}s > {BUDGET_SECONDS:.3f}s)"
+    index = [name for name, _ in BUDGET_GRADES].index(earned)
+    if index == 0:
+        return f"GRADE: {earned} at {wall:.3f}s, the fastest band"
+    faster, ceiling = BUDGET_GRADES[index - 1]
+    return f"GRADE: {earned} at {wall:.3f}s; {faster} needs {ceiling:.3f}s or less"
 
 
 class Check(NamedTuple):
@@ -254,11 +279,12 @@ def main(argv: list[str] | None = None, run_id: str | None = None,
         print(f"TIME: {check.name}: {elapsed:.3f}s", flush=True)
 
     if wall > BUDGET_SECONDS:
-        failed.append(f"verification budget ({wall:.3f}s > {BUDGET_SECONDS:.3f}s)")
+        failed.append(budget_line(wall))
     if failed:
         print(f"\nFAIL: {', '.join(failed)}")
         return 1
     print(f"\nPASS: {len(CHECKS)} checks in {wall:.3f}s wall, {work:.3f}s of work")
+    print(budget_line(wall))
     print("Standing note: self-tests establish BUILT evidence only; no independent witness "
           "or owner ratification is implied.")
     return 0

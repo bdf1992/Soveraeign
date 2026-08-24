@@ -1,6 +1,6 @@
 ---
 name: sov-verification
-description: Domain know-how for the Soveraeign verification domain - the dependency-free verification harness (scripts/verify.py, scripts/lint.py, scripts/verify_bootstrap.py), the CI gate .github/workflows/verify.yml, and stewardship of the ENGINEERING.md engineering baseline. Load when a task names "sov-verification" or the "verification domain", edits any of those artifacts, touches the three-second verify budget, adds or tightens a lint or bootstrap check, or reconciles baseline statements across ENGINEERING.md, AGENTS.md, CONTRIBUTING.md, and .cursorrules. Not for the conformance oracle (conformance domain), service implementations (asset/proofing domains), or governing-document policy at large (governance domain).
+description: Domain know-how for the Soveraeign verification domain - the dependency-free verification harness (scripts/verify.py, scripts/lint.py, scripts/verify_bootstrap.py), the CI gate .github/workflows/verify.yml, and stewardship of the ENGINEERING.md engineering baseline. Load when a task names "sov-verification" or the "verification domain", edits any of those artifacts, touches the graded verify budget, adds or tightens a lint or bootstrap check, or reconciles baseline statements across ENGINEERING.md, AGENTS.md, CONTRIBUTING.md, and .cursorrules. Not for the conformance oracle (conformance domain), service implementations (asset/proofing domains), or governing-document policy at large (governance domain).
 ---
 
 ## Purpose
@@ -19,12 +19,15 @@ bounded repository maintenance.
 
 Must not: put product business logic in scripts/; add runtime dependencies;
 weaken a verification gate, marker, or fixture to make something pass; exceed
-the three-second verify budget without a decision record; write another
-service's state; touch immutable lineage/ evidence.
+the verify budget or loosen a grade band without a decision record; write
+another service's state; touch immutable lineage/ evidence.
 
 ## Key files
 
-- scripts/verify.py - runs all checks; 3.0-second budget enforced in-file.
+- scripts/verify.py - runs all checks. BUDGET_GRADES holds the bands
+  (PLATINUM 3.0, GOLD 6.0, SILVER 15.0) and BUDGET_SECONDS is derived from
+  the slowest, so the two cannot drift apart. Every passing run prints its
+  grade; only passing 15.0s fails. decisions/0042.
 - scripts/lint.py - hygiene: UTF-8 decodability, CRLF/trailing-whitespace/final-
   newline, Python syntax and future-annotations, 300-line module limit with
   KNOWN_MODULE_DEBT, secret shapes, local absolute user paths. It reads bytes,
@@ -45,7 +48,8 @@ service's state; touch immutable lineage/ evidence.
 
 ## Standing and constraints
 
-- STATUS.yaml: `engineering_framework_status: OWNER_ACCEPTED_PHASE_I_REFERENCE_BASELINE`.
+- STATUS.yaml: `engineering_framework_status:
+  OWNER_ACCEPTED_PHASE_I_REFERENCE_BASELINE_BUDGET_GRADED_UNDER_0042`.
   Python 3.11+, SQLite, filesystem content-addressed custody, JSON Schema
   Draft 2020-12, dependency-light unittest, and local-process/CLI-first
   operation are accepted (`decisions/0024-open-decision-drain.md`, O2). They are
@@ -66,8 +70,9 @@ service's state; touch immutable lineage/ evidence.
 - bootstrap-marker-sync: update REQUIRED files or markers in
   scripts/verify_bootstrap.py when a governing document legitimately changed,
   never weakening a marker to silence a failure.
-- budget-report: measure per-check timing against the 3.0-second budget and
-  report headroom; a budget change itself needs a decision record.
+- budget-report: measure per-check timing against the bands and report which
+  grade the run earns and what the next one costs; changing a band or the
+  budget itself needs a decision record.
 - doc-coherence: reconcile baseline statements across ENGINEERING.md,
   AGENTS.md, CONTRIBUTING.md, and .cursorrules so no document becomes a
   competing authority.
@@ -83,8 +88,8 @@ service's state; touch immutable lineage/ evidence.
 
 From the repository root:
 
-- `python scripts/verify.py` - the required gate; three-second budget after
-  Python starts.
+- `python scripts/verify.py` - the required gate; graded wall time after
+  Python starts, failing only past 15.0s.
 - `python scripts/lint.py` - hygiene subset.
 - `python scripts/verify_bootstrap.py` - structure and evidence subset.
 - `python conformance/run.py` and

@@ -70,7 +70,7 @@ authority.
 
 ## Verification
 
-- `python scripts/verify.py` (from repo root; required gate, three-second budget).
+- `python scripts/verify.py` (from repo root; required gate, graded budget (PLATINUM 3 s, GOLD 6 s, SILVER 15 s)).
 - `python scripts/lint.py` (text, syntax, module size, secret shapes).
 - `python conformance/run.py` (oracle self-controls; proves the oracle distinguishes positive and defeating narratives, does not witness a participant).
 - `python conformance/run.py --cases conformance/scenarios.json --observations <path>` (participant binding form; derives defects from observation records, never trusts pass/fail claims).

@@ -101,11 +101,23 @@ Two records of one act disagree about who acted, and the caller picks one of
 them. A later reader reconstructing custody from the asset store gets the
 model's answer, not the gate's.
 
-The narrow fix is to stop accepting the argument for gateway-gated endpoints and
-pass the gated identity instead: drop `actor` from `asset_ingest` in
-`manifest.json` and have `_ingest` use `self.actor`. Whether that is the right
-fix, or whether the asset service should refuse an unchecked actor at its own
-boundary, is a builder's call. A witness does not make it.
+There are two fixes and they are not equivalent. The narrow one drops `actor`
+from `asset_ingest` in `manifest.json` and has `_ingest` pass `self.actor`; it
+closes this door. The boundary one makes `AssetService` refuse an actor nothing
+checked, at its own edge; it closes every door of this shape, including ones
+nobody has built yet, and it is the one that survives a second binding being
+added. A witness does not choose between them, but the difference should not be
+lost in the word "fix".
+
+That this is a class rather than a one-off is not inference. An independent run
+against the console CLI the same evening found `granted_by` defaulting to the
+literal string `"Bdo"`, so any caller could write an authority grant into the
+journal attributed to the one actor holding ratification authority; it was fixed
+on `fix/console-grant-attribution` at `3fadaab`. Same shape, different surface: a
+record naming an actor that nothing checked, where the caller picks the name.
+Two independent findings of one shape in one evening is a pattern, and the
+pattern is that identity arrives as an argument in this codebase more often than
+it arrives from a check.
 
 ## Two smaller things
 

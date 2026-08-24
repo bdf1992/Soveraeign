@@ -106,6 +106,12 @@ def queue() -> int:
     for row in below:
         print(_line(row))
         print(f"        {row['routing']['reason'][:96]}")
+    contested = [row for row in routed if row["routing"].get("contested_by")]
+    if contested:
+        print(f"\n== routed, and someone has pushed back on the routing: {len(contested)} ==")
+        for row in contested:
+            print(_line(row))
+            print(f"        {row['routing']['contested_by'][:150]}")
     unrouted = [row for row in unsettled if not row["routing"]]
     if unrouted:
         print(f"\n== unrouted, so nobody can say whose they are: {len(unrouted)} ==")

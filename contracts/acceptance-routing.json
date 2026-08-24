@@ -148,7 +148,8 @@
       "categories": [],
       "already_recorded_as": null,
       "reason": "A rebuildable projection over manifests that already exist, effect class RECORD_LOCAL, and the record states it introduces no vocabulary of its own. Nothing owner-held is touched. The transport it deliberately does not build is what would be.",
-      "action_if_confirmed": "Close at Control."
+      "action_if_confirmed": "Close at Control.",
+      "contested_by": "reports/2026-08-23-qa-witness-sweep-c296c25.md section 7 item 3: 0038 states as a constraint that no capability is served on MCP and that standing up a stdio surface is not admitted by it, and commit d850c6d - the next commit - did exactly that. Whether a record whose stated constraint was contradicted by the following commit still stands is not a projection question, so reaches_owner false is probably wrong here. Recorded, not corrected: reports/2026-08-24-reconciled-owner-docket.md."
     },
     "0039": {
       "title": "the-node-surface",
@@ -186,7 +187,9 @@
     "categories",
     "already_recorded_as",
     "reason",
-    "action_if_confirmed"
+    "action_if_confirmed",
+    "contested_by"
   ],
-  "entry_keys_note": "The whole vocabulary of a routing entry. There is deliberately no field that could record a settlement, an acceptance, or a date one happened: this file says who settles a record, never that anyone did. Recording an acceptance is STATUS.yaml's job and Bdo's act."
+  "entry_keys_note": "The whole vocabulary of a routing entry. There is deliberately no field that could record a settlement, an acceptance, or a date one happened: this file says who settles a record, never that anyone did. Recording an acceptance is STATUS.yaml's job and Bdo's act.",
+  "contested_note": "An entry someone has pushed back on, naming the evidence. A routing table that quietly rewrites itself when challenged is worth less than one that shows where it was pushed, so the doubt is recorded beside the claim rather than replacing it. The entry still reads as its author left it until whoever holds the tier rules."
 }

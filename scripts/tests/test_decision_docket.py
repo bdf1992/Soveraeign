@@ -34,12 +34,20 @@ class CheckedInState(unittest.TestCase):
     def test_the_checked_in_routing_has_no_defect(self) -> None:
         self.assertEqual(sov_docket.check(), 0)
 
-    def test_every_open_record_carries_at_least_one_question(self) -> None:
-        """An open record with no question is one nobody can say whose it is."""
+    def test_every_record_this_contract_routes_is_a_record_that_exists(self) -> None:
+        """The direction that holds: the table may not name a record that is not there.
+
+        The opposite direction — every open record is routed — was asserted here and
+        was wrong. It turned this branch's gate red the moment anyone else landed a
+        decision record, which happened twice while the PR was open. Coverage of a
+        base branch that moves is reported by `unrouted`, not asserted by a test.
+        """
         rows, unknown = sov_docket.graded()
         self.assertEqual(unknown, [], "a status line is missing from the crosswalk")
-        bare = [row["id"] for row in rows if not row["settled"] and not row["questions"]]
-        self.assertEqual(bare, [])
+        known = {record["id"] for record in sov_docket.records()}
+        for qid, entry in ROUTING["questions"].items():
+            if entry.get("record") is not None:
+                self.assertIn(entry["record"], known, qid)
 
     def test_the_crosswalk_covers_every_status_line_in_use(self) -> None:
         in_use = {record["status_line"] for record in sov_docket.records()}

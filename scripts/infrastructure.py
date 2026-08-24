@@ -8,7 +8,6 @@ from hashlib import sha256
 import json
 import os
 from pathlib import Path, PurePosixPath
-import re
 import stat
 import sys
 import tempfile
@@ -45,26 +44,21 @@ def load_manifest(path: Path) -> dict[str, Any]:
     return value
 
 
-_DRIVE_LETTER = re.compile(r"^[A-Za-z]:")
-
-
 def _valid_relative_path(value: object) -> bool:
-    """Judge a declared custody path as POSIX regardless of the host reading the manifest.
+    """Judge a declared custody path by POSIX rules whatever host is reading it.
 
-    Manifest paths are declared data, not host paths, so they are validated as POSIX
-    everywhere; otherwise the same manifest is safe or unsafe depending on who checks it.
-    ``PurePath`` resolves to ``PureWindowsPath`` on Windows, where ``/tmp/escape`` carries
-    no drive and so is not absolute, and the guard would admit exactly what it exists to
-    refuse.
+    The manifest describes a Linux node, so its paths mean what POSIX says they mean.
+    `PurePath` resolves to the checking host's flavour, under which `/tmp/escape` is not
+    absolute on Windows - so an escape the node would honour validated clean whenever the
+    manifest was checked from a Windows machine. A drive letter is rejected outright: it
+    can only be a Windows path smuggled into a POSIX declaration.
 
-    Three defeats, and the two sides of this merge each caught one of them: a leading
-    slash, a bare drive letter (``C:escape`` is drive-relative on Windows and escapes the
-    node root when joined), and a path that resolves to no parts at all (``.`` collapses
-    onto the root). All three are refused here.
+    Three escapes, and this branch and main each refused two of them. Main admitted
+    `C:escape`, which is drive-relative on Windows and leaves the node root when joined.
+    This branch admitted `.`, whose POSIX parts are empty, so it collapsed onto the root
+    past a parts check that never ran. Both refusals are kept.
     """
-    if not isinstance(value, str) or not value or "\\" in value:
-        return False
-    if value.startswith("/") or _DRIVE_LETTER.match(value):
+    if not isinstance(value, str) or not value or "\\" in value or ":" in value:
         return False
     path = PurePosixPath(value)
     if path.is_absolute() or not path.parts:

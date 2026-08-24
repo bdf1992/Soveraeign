@@ -18,7 +18,12 @@ export const meta = {
 // It never pushes, never leaves the tree dirty between ticks, and never claims
 // RATIFIED: a witnessed tick proposes BUILT->WITNESSED and nothing further.
 
-const ROOT = (args && args.root) ? args.root : '.'
+const ROOT = (args && args.root) ? args.root : null
+if (!ROOT) {
+  // The loop reverts with git. A default of '.' would run that against whatever tree
+  // the process started in, which on this machine is a checkout seven sessions share.
+  return { error: 'sov-f2-control requires an explicit args.root naming a dedicated git worktree' }
+}
 const MAX_TICKS = (args && args.maxTicks) ? args.maxTicks : 40
 const PER_TICK = (args && args.perTick) ? args.perTick : 3
 
@@ -133,7 +138,8 @@ const GATE_LAW = 'The milestone under work is ROADMAP.md F2, which exits when ev
   + 'progress at all, and the witness is instructed to hunt for it. '
 
 const ORACLE_LAW = 'AGENTS.md: never weaken an oracle merely to make a participant pass. Specifically, in this '
-  + 'run you may NOT raise BUDGET_SECONDS in scripts/verify.py, delete or skip a failing test or check, relax '
+  + 'run you may NOT raise BUDGET_SECONDS or loosen a BUDGET_GRADES band in scripts/verify.py, delete or skip '
+  + 'a failing test or check, relax '
   + 'an expected_oracle value, loosen a schema to admit a defeat, or edit a defeating fixture so it stops '
   + 'defeating. If a check fails, either fix the thing it caught or report it in residuals unchanged. '
 
@@ -147,12 +153,15 @@ const VERIFY_LAW = 'How to read scripts/verify.py, which is easy to get wrong: i
   + 'an entry whose predicate_results.outcome is not "PASS". Report verify_failures as the subject names of '
   + 'those entries - an empty list when every check passes. '
 
-const BUDGET_LAW = 'The wall-clock budget is deliberately not in that JSON. One known host residual, measured '
-  + 'before this run started: this working tree is a git worktree whose filesystem runs the 376 tooling tests '
-  + 'about 0.5s slower than the main checkout, so scripts/verify.py exits 1 on its 3.0s budget here (about '
-  + '3.2s) while every one of its checks passes. That is an artifact of the worktree, not a repository defect '
-  + 'and not yours to fix. A verify.py run with an empty verify_failures list is semantically green no matter '
-  + 'what the process exited: record the budget miss, do not repair it, do not change BUDGET_SECONDS. '
+const BUDGET_LAW = 'The wall-clock budget is deliberately not in that JSON. verify.py grades its own wall '
+  + 'time instead - PLATINUM at 3.0s or less, GOLD at 6.0s, SILVER at 15.0s - and fails only past 15.0s '
+  + '(decisions/0042). This matters because the old 3.0s ceiling produced a standing residual here: this '
+  + 'working tree is a git worktree whose filesystem runs the tooling tests about 0.5s slower than the main '
+  + 'checkout, so the run exited 1 on budget at about 3.2s while every one of its checks passed. That residual '
+  + 'is gone - a run at that speed now earns GOLD and passes. Record the grade the run printed if you saw it, '
+  + 'and treat a lost grade as an observation, not a defect to repair. A verify.py run with an empty '
+  + 'verify_failures list is semantically green no matter what the process exited: do not change '
+  + 'BUDGET_SECONDS and do not widen a grade band. '
 
 function readPrompt(tick) {
   return GROUND + GATE_LAW + VERIFY_LAW + BUDGET_LAW
@@ -223,7 +232,7 @@ function witnessPrompt(claims, read, tick) {
     + 'Return a verdict per operation_id - reproduced (independently confirmed in the repository), dissented '
     + '(the evidence contradicts the claim), or unattestable (cannot be independently confirmed) - plus '
     + 'verify_failures from verify.py --json, gate_covered_after (predicates_covered from the gate JSON), residuals and any judgement '
-    + 'items. Also inspect the diff for any weakening of an oracle - a changed BUDGET_SECONDS, a deleted or '
+    + 'items. Also inspect the diff for any weakening of an oracle - a changed BUDGET_SECONDS or BUDGET_GRADES band, a deleted or '
     + 'skipped test, a relaxed expected_oracle, a loosened schema, a defeating fixture that no longer '
     + 'defeats - and list each one in oracle_weakened. Report verify_failures as the exact "FAIL:" lines. '
     + 'Set standing_supported to BUILT->WITNESSED only when every verdict is reproduced, '
@@ -232,25 +241,50 @@ function witnessPrompt(claims, read, tick) {
     + 'being independent.'
 }
 
-function settlePrompt(decision, tick, summary) {
+function settlePrompt(decision, tick, summary, paths) {
   const base = GROUND + 'This is tick ' + tick + '. You are the Control tier settling one tick. Do exactly the '
     + 'action named below from ' + ROOT + ' and nothing else. Never push. '
+  const scope = (paths && paths.length) ? paths.join(' ') : ''
   if (decision === 'commit') {
     return base
-      + 'The witness reproduced every claimed operation, found no fabricated coverage, and every verify.py check passed. '
-      + 'Settle it: run git add -A, then commit with a subject line of at most 72 characters in the imperative '
-      + 'mood naming what closed, and a body naming the predicates covered and the F2 gate counter before and '
-      + 'after. Facts for the message: ' + summary + '. End the commit message with the trailer '
-      + '"Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>". Then run git status --porcelain '
-      + 'and git log --oneline -1 and report action=committed, the new short head, the subject you used, and '
-      + 'tree_clean.'
+      + 'The witness reproduced every claimed operation and found no fabricated coverage. Facts for the '
+      + 'message: ' + summary + '. '
+      + 'FIRST, SETTLE FOR YOURSELF - a witness report is an executor self-report, and AGENTS.md does not let '
+      + 'one authorise a commit. Run "python scripts/verify.py --json" and read it yourself: if any entry has '
+      + 'a predicate_results.outcome other than "PASS", DO NOT COMMIT. Instead restore exactly these paths '
+      + 'with "git checkout -- ' + scope + '", report action=reverted, and name the failing subjects in note. '
+      + 'Ignore the process exit code and the wall-clock budget; the per-check outcomes are the verdict. '
+      + 'If every check passes, stage exactly these paths and nothing else - a blanket stage in a repository '
+      + 'this busy sweeps uncommitted work belonging to another session into your commit, and a hook will refuse it: '
+      + '"git add ' + scope + '". If the tick created a file not in that list, add it by name too. Then commit '
+      + 'with a subject line of at most 72 characters in the imperative mood naming what closed, and a body '
+      + 'naming the predicates covered and the F2 gate counter before and after. End the message with the '
+      + 'trailer "Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>". Then run '
+      + 'git status --porcelain and git log --oneline -1 and report action=committed, the new short head, the '
+      + 'subject you used, and tree_clean.'
   }
   return base
-    + 'The witness did NOT reproduce this tick (' + summary + '). Roll the tree back to its last known-good '
-    + 'commit so the next tick does not build on unwitnessed work: run git checkout -- . and then git clean -fd. '
-    + 'This discards the tick\'s uncommitted changes, which is the intent - everything of value is already '
-    + 'committed. Then run git status --porcelain and git log --oneline -1 and report action=reverted, the '
-    + 'unchanged short head, and tree_clean. Put in note exactly which paths git clean removed.'
+    + 'The witness did NOT reproduce this tick (' + summary + '). Roll these paths back to their last '
+    + 'known-good state so the next tick does not build on unwitnessed work: "git checkout -- ' + scope + '". '
+    + 'For any file this tick created that git status shows as untracked, delete it by name. Do NOT run '
+    + '"git checkout -- ." or a blanket clean: an unscoped discard in a repository this busy destroys work '
+    + 'that is not this tick\'s. Discarding the tick\'s own changes is the intent; everything of value is '
+    + 'already committed. Then run git status --porcelain and git log --oneline -1 and report '
+    + 'action=reverted, the unchanged short head, tree_clean, and in note exactly which paths you restored '
+    + 'or deleted.'
+}
+
+function unique(list) {
+  const seen = {}
+  return (list || []).filter(function (x) {
+    if (!x || seen[x]) { return false }
+    seen[x] = true
+    return true
+  })
+}
+
+function opFiles(ops) {
+  return unique((ops || []).reduce(function (all, o) { return all.concat(o.files || []) }, []))
 }
 
 // ---------------------------------------------------------------- the loop
@@ -316,7 +350,7 @@ for (let tick = 1; tick <= MAX_TICKS; tick++) {
   if (built.length === 0) {
     consecutiveUnsettled++
     log('tick ' + tick + ': no builder reported; reverting so the next tick starts clean')
-    await agent(settlePrompt('revert', tick, 'no builder returned a report'), { agentType: 'sov-controller', schema: SETTLE_SCHEMA, phase: 'Settle', label: 't' + tick + ':revert', effort: 'low' })
+    await agent(settlePrompt('revert', tick, 'no builder returned a report', opFiles(ops)), { agentType: 'sov-controller', schema: SETTLE_SCHEMA, phase: 'Settle', label: 't' + tick + ':revert', effort: 'low' })
     ticks.push({ tick: tick, gate: read.predicates_covered + '/' + read.predicates_total, outcome: 'no build report' })
     if (consecutiveUnsettled >= 2) { stopReason = 'two consecutive ticks produced nothing witnessable'; break }
     continue
@@ -356,7 +390,8 @@ for (let tick = 1; tick <= MAX_TICKS; tick++) {
           : (!verifyGreen ? 'verify.py checks failed: ' + failures.join('; ')
              : 'verdicts: ' + verdicts.map(function (v) { return v.operation_id + '=' + v.verdict }).join(', ')))))
 
-  const settled = await agent(settlePrompt(settleIt ? 'commit' : 'revert', tick, summary), { agentType: 'sov-controller', schema: SETTLE_SCHEMA, phase: 'Settle', label: 't' + tick + ':settle', effort: 'low' })
+  const tickPaths = opFiles(ops).concat(built.reduce(function (all, b) { return all.concat(b.files_changed || []) }, []))
+  const settled = await agent(settlePrompt(settleIt ? 'commit' : 'revert', tick, summary, unique(tickPaths)), { agentType: 'sov-controller', schema: SETTLE_SCHEMA, phase: 'Settle', label: 't' + tick + ':settle', effort: 'low' })
 
   if (settleIt) {
     consecutiveUnsettled = 0

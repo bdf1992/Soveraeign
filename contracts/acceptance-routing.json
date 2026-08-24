@@ -239,6 +239,18 @@
       "action_if_confirmed": "Close at Work.",
       "contested_by": "Witness of 06be56c, flagged rather than dissented: 0040 declares per-operation refusal codes that previously existed only in Python, and CLASSIFICATION.md owns vocabulary. The witness was not confident either way and neither is this entry. Left at reaches_owner false with the doubt recorded."
     },
+    "0041-A": {
+      "record": "0041",
+      "question": "the-observation-service",
+      "enumerated_from": "headline",
+      "reaches_owner": true,
+      "categories": [
+        "product_intent"
+      ],
+      "already_recorded_as": "observation_service_status",
+      "reason": "A chartered service boundary says what the system contains, which is the shape 0007 and 0010 already route to the owner. STATUS.yaml carries the field, but it reads CHARTERED_BOUNDARY_NOT_IMPLEMENTED rather than the OWNER_ACCEPTED_ wording 0010 carries, so unlike those two the acceptance itself is outstanding, not only the record's status line. Drafted at Bdo's direction; direction is not acceptance.",
+      "action_if_confirmed": "Present the boundary for acceptance, then update both the status line and observation_service_status."
+    },
     "0042-A": {
       "record": "0042",
       "question": "the-decision-queue-is-not-a-queue",
@@ -250,6 +262,19 @@
       "already_recorded_as": null,
       "reason": "Proposes machinery over the acceptance rule itself, which decisions/0023 names as owner-held. It settles no decision and changes no status line, but it does decide how the queue in front of him is assembled, and that is his.",
       "action_if_confirmed": "Accept or reject the routing shape. Rejecting it leaves the seventeen records exactly where they were."
+    },
+    "0044-A": {
+      "record": "0044",
+      "question": "github-coordination-write-crossing",
+      "enumerated_from": "headline",
+      "reaches_owner": true,
+      "categories": [
+        "external_commitment"
+      ],
+      "already_recorded_as": null,
+      "reason": "The read half is already accepted as github_coordination_registrar_and_typed_ticket_workflow. This adds a write half that mutates a public repository, which is an irreversible external effect and owner-held however carefully it is gated. Bdo directed the crossing type; he has not accepted this shape of it. The record is also contested on the facts: it states that no lawful write path existed, and decisions/0027 on main had declared one nineteen hours earlier. Both define adapters/github/apply.py and neither is a superset.",
+      "action_if_confirmed": "Hold at the owner. Reconcile against decisions/0027 before presenting, since accepting both would admit two write paths to one surface.",
+      "contested_by": "Open-PR review of 2026-08-24: main and feat/federation-harness-and-hardening each implement the whole coordination surface, written blind."
     },
     "SWEEP-01": {
       "record": null,

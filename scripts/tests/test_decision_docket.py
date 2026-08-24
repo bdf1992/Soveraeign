@@ -129,11 +129,17 @@ class OneMergedList(unittest.TestCase):
             self.assertNotIn(entry["question_id"], listed)
             self.assertIn(entry["same_as"], ROUTING["questions"])
 
-    def test_the_owner_count_is_the_reconciled_sixteen(self) -> None:
-        """Derived by the tool, not by arithmetic. Two readers got 15 and 16 by hand."""
+    def test_the_owner_count_is_derived_not_asserted(self) -> None:
+        """Derived by the tool, not by arithmetic. Two readers got 15 and 16 by hand.
+
+        Sixteen when this branch was cut, seventeen once 0044 was routed: the
+        registrar's write half reaches the owner and STATUS.yaml records no claim
+        that answers it. The number is expected to move whenever a record is
+        minted, which is the point - it is read out, never asserted.
+        """
         awaiting = [entry for entry in sov_docket.open_questions()
                     if entry["reaches_owner"] and not entry.get("already_recorded_as")]
-        self.assertEqual(len(awaiting), 16)
+        self.assertEqual(len(awaiting), 17)
 
 
 class OneMergedListDefeats(unittest.TestCase):

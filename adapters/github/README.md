@@ -9,10 +9,26 @@ transition judgement read the registrar's export from disk and run offline. That
 is the point: a check that needs the network cannot run in the day-zero budget, cannot
 run in a sealed CI job, and cannot be reproduced by a fresh witness.
 
+## Two crossings, declared separately
+
+The registrar has a read half and a write half, and they are declared apart because they
+carry different effect classes and different risks.
+
+| Crossing | Module | Effect class | What it moves |
+| --- | --- | --- | --- |
+| `COORDINATION_CAPTURE` | `export.py` | `RECORD_LOCAL` | GitHub to disk: issues, bodies, labels, pull requests |
+| `COORDINATION_WRITE` | `apply.py` | `EXTERNAL_WORLD` | disk to GitHub: label catalogue, containment edges, the rendered relations block |
+
+The write half exists because the board was a projection nobody projected. Colours,
+descriptions, and the containment tree were declared in the repository and never reached
+the surface, so the surface drifted from its own contract with no way to close the gap
+except by hand (`decisions/0044-github-coordination-write-crossing.md`).
+
 ## What it is and is not
 
-The registrar is a **read projection** of a coordination surface. Under
-`AGENTS.md`, Directory boundaries, an adapter may not own standing, ratification,
+The registrar is a **projection of a coordination surface in both directions**: it reads
+what GitHub says, and it writes back only what a local declaration already determined.
+Under `AGENTS.md`, Directory boundaries, an adapter may not own standing, ratification,
 settlement, or hidden fallback, and it receives no authority by operating successfully.
 
 - It **captures** what GitHub currently says, with exact provenance.
@@ -23,14 +39,34 @@ settlement, or hidden fallback, and it receives no authority by operating succes
 - Absence of GitHub produces a visible refusal, never a silent fallback to a cached or
   assumed board.
 
+### `COORDINATION_CAPTURE` — `export.py`
+
 | Field | Declaration |
 | --- | --- |
 | Data-boundary mode | `LOCAL_READ_ONLY` — issue and pull request text leaves GitHub inbound; nothing crosses outbound |
-| Input projection | issue number, title, state, body, label names; pull request number, title, state, head ref, body |
+| Input projection | issue number, title, state, body, label names; the label catalogue's name, colour, and description; pull request number, title, state, head ref, body |
 | Authority | none granted, none accepted |
 | Effect class | `RECORD_LOCAL` on the capture; the crossing itself consumes a rate-limited external resource |
 | Receipt | every export records source repository, captured-at timestamp, item count, and content digest |
 | Refusal | `REGISTRAR_UNAVAILABLE`, `REGISTRAR_UNAUTHENTICATED`, `REGISTRAR_EMPTY` |
+
+### `COORDINATION_WRITE` — `apply.py`
+
+| Field | Declaration |
+| --- | --- |
+| Data-boundary mode | `DECLARED_PROJECTION_OUTBOUND` — only values already derivable from `.github/labels.yml`, `contracts/ticket-label-projection.json`, and an issue's own metadata block cross outbound. No payload bytes, no evidence, no repository source, no credential |
+| Output projection | label name, colour, description; the containment edge parent-to-child; an issue body's delimited relations block, and nothing outside those delimiters |
+| Authority | the invoking operator's, named in the receipt and scoped to this surface. The crossing grants none and accepts none |
+| Effect class | `EXTERNAL_WORLD`. Writing is opt-in: without `--apply` the tool prints the plan and stops |
+| Receipt | `.local/registrar/apply.receipt.json` records the crossing, target repository, start and finish, source export, every action, and each outcome |
+| Counteraction | `.local/registrar/bodies-before/` holds every body as it stood before the run. A rewrite is reversible from that snapshot; a label deletion is not, which is why only labels the catalogue explicitly retires may be deleted |
+| Refusal | the capture refusals, plus `REGISTRAR_REFUSED` for an action no declaration derives |
+
+What it will not do, by construction: open, close, comment on, assign, milestone, or
+label an issue outside the governed axes; touch a body outside its delimiters; delete a
+label the catalogue does not name in its `retire:` section; write standing, ratification,
+or settlement in any form. A label is a projection, and a projection that starts deciding
+things is a second authority.
 
 ## Operating it
 
@@ -40,6 +76,19 @@ python scripts/sov_ticket.py validate --export .local/registrar/tickets.json
 python scripts/sov_ticket.py labels   --export .local/registrar/tickets.json --strict
 python scripts/sov_ticket.py queue    --export .local/registrar/tickets.json --limit 20
 ```
+
+Writing back runs from the same export, and always in two steps. The first prints the
+plan; the second performs it.
+
+```bash
+python adapters/github/apply.py --repo <owner>/<name> --export .local/registrar/tickets.json
+python adapters/github/apply.py --repo <owner>/<name> --export .local/registrar/tickets.json --apply
+python adapters/github/apply.py --repo <owner>/<name> --export .local/registrar/tickets.json --only labels --apply
+```
+
+Then capture again and judge the result through the read path, which is independent of
+the code that performed the write. A run that reports success and a re-capture that still
+shows drift means the write did not do what it said.
 
 The export lands under `.local/`, which is gitignored runtime state. A captured board
 is an observation with a timestamp, not a record; committing one would create a second

@@ -19,6 +19,7 @@ import subprocess
 import sys
 
 ISSUE_FIELDS = "number,title,state,body,labels"
+LABEL_FIELDS = "name,color,description"
 PULL_FIELDS = "number,title,state,headRefName,body"
 DEFAULT_LIMIT = 500
 
@@ -54,9 +55,45 @@ def capture(repo: str, limit: int) -> dict[str, Any]:
         _run(["gh", "pr", "list", "--repo", repo, "--state", "all",
               "--limit", str(limit), "--json", PULL_FIELDS])
     )
+    labels = json.loads(
+        _run(["gh", "label", "list", "--repo", repo,
+              "--limit", str(limit), "--json", LABEL_FIELDS])
+    )
     if not issues:
         raise RegistrarRefusal("REGISTRAR_EMPTY", f"{repo} returned no issues")
-    return {"issues": issues, "pulls": pulls}
+    parents = capture_parents(repo)
+    for issue in issues:
+        issue["parent"] = parents.get(int(issue["number"]))
+    return {"issues": issues, "pulls": pulls, "labels": labels}
+
+
+def capture_parents(repo: str) -> dict[int, int]:
+    """Capture GitHub's native containment graph: child issue number to parent number.
+
+    Sub-issue edges are not on the ``gh issue list`` projection, so they need GraphQL.
+    Without them the containment tree the repository declares cannot be compared against
+    the one the surface actually holds.
+    """
+    owner, name = repo.split("/", 1)
+    query = (
+        "query($owner:String!,$name:String!,$cursor:String){repository(owner:$owner,name:$name)"
+        "{issues(first:100,after:$cursor,states:[OPEN,CLOSED]){pageInfo{hasNextPage endCursor}"
+        "nodes{number parent{number}}}}}"
+    )
+    parents: dict[int, int] = {}
+    cursor: str | None = None
+    while True:
+        args = ["gh", "api", "graphql", "-f", f"query={query}",
+                "-F", f"owner={owner}", "-F", f"name={name}"]
+        if cursor:
+            args += ["-F", f"cursor={cursor}"]
+        page = json.loads(_run(args))["data"]["repository"]["issues"]
+        for node in page["nodes"]:
+            if node.get("parent"):
+                parents[int(node["number"])] = int(node["parent"]["number"])
+        if not page["pageInfo"]["hasNextPage"]:
+            return parents
+        cursor = page["pageInfo"]["endCursor"]
 
 
 def _digest(payload: Any) -> str:
@@ -76,6 +113,7 @@ def write_export(captured: dict[str, Any], repo: str, out: Path) -> dict[str, An
         "captured_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "issue_count": len(issues),
         "pull_count": len(captured["pulls"]),
+        "label_count": len(captured.get("labels", [])),
         "export_path": out.name,
         "export_digest": _digest(issues),
         "effect_class": "RECORD_LOCAL",
@@ -87,6 +125,9 @@ def write_export(captured: dict[str, Any], repo: str, out: Path) -> dict[str, An
     pulls_path = out.with_name(out.stem + ".pulls.json")
     pulls = sorted(captured["pulls"], key=lambda item: item["number"])
     pulls_path.write_text(json.dumps(pulls, indent=2) + "\n", encoding="utf-8", newline="\n")
+    labels = sorted(captured.get("labels", []), key=lambda item: item["name"])
+    labels_path = out.with_name(out.stem + ".labels.json")
+    labels_path.write_text(json.dumps(labels, indent=2) + "\n", encoding="utf-8", newline="\n")
     return receipt
 
 

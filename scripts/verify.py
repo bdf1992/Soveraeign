@@ -31,6 +31,11 @@ import uuid
 ROOT = Path(__file__).resolve().parents[1]
 SKIP_PARTS = {".git", ".venv", "__pycache__", ".local"}
 BUDGET_SECONDS = 3.0
+# Starting every repository check at once became slower as the suite grew: the
+# hosted runner spent its budget context-switching between 20+ Python processes.
+# Keep enough independent work in flight to hide startup/I/O without allowing
+# process count itself to become the critical path.
+MAX_CHECK_WORKERS = 8
 
 
 class Check(NamedTuple):
@@ -153,6 +158,13 @@ CHECKS = (
           "the participant's own tests; these establish BUILT evidence about local mechanics "
           "and are explicitly NOT independent of the code they exercise",
           ("services/asset/tests",)),
+    Check("operation surface page",
+          [sys.executable, "scripts/sov_surface.py", "check"], ROOT,
+          "rebuilds the page from the capability map, the service manifests and the gateway "
+          "manifest at the moment of the check and compares bytes, so a page edited by hand "
+          "or left behind by a manifest change fails rather than misinforming a reader",
+          ("docs/surface.html", "contracts/fixtures/capability-map.reference.json",
+           "bindings/mcp/manifest.json")),
     Check("MCP gateway binding",
           [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
           ROOT / "bindings" / "mcp",
@@ -160,11 +172,11 @@ CHECKS = (
           "services behind it, and reads its evidence back out of the Record Service journal "
           "instead of trusting the gateway's return value",
           ("bindings/mcp", "bindings/mcp/manifest.json")),
-    Check("repository tooling tests",
-          [sys.executable, "-m", "unittest", "discover", "-s", "scripts/tests", "-v"], ROOT,
+    Check("repository tooling tests", [sys.executable, "scripts/run_tooling_tests.py"], ROOT,
           "the harness's own tests; independent of the repository content they check, but "
-          "not of the harness itself",
-          ("scripts/tests",)),
+          "not of the harness itself; the runner partitions the complete discovered module "
+          "population and fails if any shard fails",
+          ("scripts/tests", "scripts/run_tooling_tests.py")),
 )
 
 
@@ -225,7 +237,7 @@ def main(argv: list[str] | None = None, run_id: str | None = None,
     when = now or datetime.now(timezone.utc).isoformat(timespec="seconds")
 
     started = time.perf_counter()
-    with ThreadPoolExecutor(max_workers=len(CHECKS)) as pool:
+    with ThreadPoolExecutor(max_workers=min(MAX_CHECK_WORKERS, len(CHECKS))) as pool:
         results = list(pool.map(run_check, CHECKS))
     wall = time.perf_counter() - started
 

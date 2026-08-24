@@ -34,7 +34,6 @@ class LabelProjectionTests(unittest.TestCase):
             "horizon_to_label",
             "effect_to_label",
             "standing_to_label",
-            "standing_to_witness_label",
             "kind_to_scope",
             "provision_to_label",
             "serve_to_label",
@@ -42,6 +41,35 @@ class LabelProjectionTests(unittest.TestCase):
             emitted.update(value for value in self.projection[key].values() if value)
         undeclared = emitted - self.catalogue
         self.assertEqual(undeclared, set(), f"projected labels missing from .github/labels.yml: {undeclared}")
+
+    def test_the_standing_ramp_covers_every_declared_standing(self) -> None:
+        """Every standing in the issue schema projects to at most one label, and none is unmapped."""
+        import json as _json
+
+        path = ROOT / "contracts" / "issue-metadata.schema.json"
+        schema = _json.loads(path.read_text(encoding="utf-8"))
+        declared = set(schema["properties"]["standing"]["enum"])
+        self.assertEqual(declared, set(self.projection["standing_to_label"]))
+        for standing in declared:
+            labels, unmapped = labelmod.project({"standing": standing}, self.projection)
+            self.assertEqual(unmapped, [], f"{standing} is unmapped")
+            standing_labels = {name for name in labels if name.startswith("standing:")}
+            self.assertLessEqual(len(standing_labels), 1, f"{standing} projects to {standing_labels}")
+
+    def test_a_retired_axis_label_reads_as_drift(self) -> None:
+        """A surviving witness: label is unexpected, not invisible."""
+        for prefix in self.projection["retired_label_prefixes"]:
+            self.assertIn(prefix, self.projection["unprojected_label_prefixes"])
+        metadata = {"kind": "bit", "village": "ground-and-evidence", "horizon": "NOW", "standing": "WITNESSED"}
+        live = ["type: bit", "village: ground", "horizon: now", "standing: witnessed", "witness: witnessed"]
+        drift = labelmod.compare("#7", metadata, live, self.projection)
+        self.assertEqual(drift.unexpected, ("witness: witnessed",))
+        self.assertEqual(drift.missing, ())
+
+    def test_no_retired_label_remains_in_the_catalogue(self) -> None:
+        for prefix in self.projection["retired_label_prefixes"]:
+            surviving = {name for name in self.catalogue if name.startswith(prefix)}
+            self.assertEqual(surviving, set(), f"{prefix} is retired but still declared: {surviving}")
 
     def test_record_local_is_the_omitted_default(self) -> None:
         self.assertIsNone(self.projection["effect_to_label"]["RECORD_LOCAL"])

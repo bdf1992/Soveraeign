@@ -1,0 +1,942 @@
+{
+  "ledger_schema": "soveraeign-doc-ingest/v1",
+  "note": "What the Asset Service holds for each document. A projection of its receipts, not a second record: the service store is the original and this is rebuilt by re-running ingest.",
+  "documents": {
+    ".claude/README.md": {
+      "asset_id": "asset_973227e43ecb487d8a177411da3f34f7",
+      "version_id": "version_2689785bfacc4adfac9be3e034b03a7f",
+      "digest": "249a498e7f666040b68a106de74bc13a8dbf32c25416b6c1d2e3bfe84797b39b",
+      "receipt_id": "rcpt_210f1be50f5f48839946cbf01582063f"
+    },
+    ".claude/agents/sov-controller.md": {
+      "asset_id": "asset_8618cffd50224f418983d991785ff6a9",
+      "version_id": "version_cbe083ca851a4b5fb575b8de060b1faf",
+      "digest": "ea1343052b6131f50c709c988e6ee1611a74ddea0c7be0be96111fc116c75623",
+      "receipt_id": "rcpt_7febb26b2be3425c94bbeda0800ad217"
+    },
+    ".claude/agents/sov-orchestrator.md": {
+      "asset_id": "asset_64b2fc50ecc1444fa29860b3c615966b",
+      "version_id": "version_49d13c2383c24e33a2840448e120d29d",
+      "digest": "75e556d6620c917bec2c59ae837d2a40b2f1fee1cf6df908f8e25db9273c7ada",
+      "receipt_id": "rcpt_8a547fa64d314fccb4acca0e66d62550"
+    },
+    ".claude/agents/sov-witness.md": {
+      "asset_id": "asset_b1343c00ffb04ba0988dffd247f499d1",
+      "version_id": "version_66fed3efba2049f085e11af6c5b10a7e",
+      "digest": "81f4357fad29e4160071834fd56d0238a32583226d59a1e57e6339fce8799c85",
+      "receipt_id": "rcpt_9c06d93495834587b3a78211d0c60214"
+    },
+    ".claude/agents/sov-worker.md": {
+      "asset_id": "asset_2913b5de3351494cbea582c61799bdf2",
+      "version_id": "version_2942373efbab49d1819cf0480fb1a38f",
+      "digest": "0afb7546729474d77e90f498ebf50019cd0d67df26167ea706a2213c23611449",
+      "receipt_id": "rcpt_481288b6c06b4775a33f9c547d4b4545"
+    },
+    ".claude/agents/sov.md": {
+      "asset_id": "asset_53f4115474a74ad69d3229cc28cb267b",
+      "version_id": "version_72942d3b422b4784a4ff1440b8c8d5f6",
+      "digest": "0f58aa3ab4d61f07e99df456daa6decf5dbf8c7d5d58c2c0de1eb0bfcb673401",
+      "receipt_id": "rcpt_f095b84683ff4c4587396579ee82ab19"
+    },
+    ".claude/drafts/history-lineage-and-lessons-brief.md": {
+      "asset_id": "asset_85f86bd11b3c489688770dc0ad8cc3c3",
+      "version_id": "version_9a8008f9af10458294255ca37fa2999c",
+      "digest": "76f6d590a8d066bfcd2df76a50630d0798ed4f78033cf8eb87f91380ca3fbd9d",
+      "receipt_id": "rcpt_c4e96ac5725c4e5ca278c21772f9255b"
+    },
+    ".claude/drafts/o18-console-ratification-packet.md": {
+      "asset_id": "asset_361727b900c642c8b84cd89142c8f159",
+      "version_id": "version_1652e1b7ee32457aa1176c5fdfda0011",
+      "digest": "b191419f06415c7eda0fb054b5f55708a41e9f900edbd2191e8176444520899b",
+      "receipt_id": "rcpt_b1435f77614847a3a3f45deabb78f2d6"
+    },
+    ".claude/drafts/o2-ratification-packet.md": {
+      "asset_id": "asset_9dfe40a96bad44b598253ea32f65cc21",
+      "version_id": "version_3c1805e7ca9a4d55aec860ca12d332d1",
+      "digest": "574a5de43a7747030cd3dbd77e2a4b59ae83613fad3f775300b5ab25029d1a91",
+      "receipt_id": "rcpt_48db14e2378c4db9a7df2b7c65d0f2dc"
+    },
+    ".claude/drafts/o4-applicability-packet.md": {
+      "asset_id": "asset_2ba447be9ef04c26a6f2e681953c9cda",
+      "version_id": "version_0a4043babf6f48bdaedb7c1d04efd49f",
+      "digest": "5b2a8b3c1338fdac246ffe643530d5e38542a5c176bad527f6872289d92132e6",
+      "receipt_id": "rcpt_cc74935fdb80428cad0346dec00ed9bc"
+    },
+    ".claude/drafts/recording-slice-ticket.md": {
+      "asset_id": "asset_d8ad83f4f3654a8581c50c789feaefad",
+      "version_id": "version_c478a0781a0f467c95100d6eaf7eaf94",
+      "digest": "5356aba06972d4ee976ca6874d7ace134215973daec518e442e8d1648749faba",
+      "receipt_id": "rcpt_dcb0cbabaee549cd95554137c87fc1e1"
+    },
+    ".claude/drafts/story-ticket-standard.md": {
+      "asset_id": "asset_d0bc16a020ff44f3b52115933fe222d3",
+      "version_id": "version_546faf8dde084c28bb541e1caafced1b",
+      "digest": "5f807bd7013b5fcde791cfee1c1797fe6d7c70794d15942ab860e50385e6d0c2",
+      "receipt_id": "rcpt_dabdb02b93b045c183f2b628e7eabb49"
+    },
+    ".claude/epic/NARRATIVE.md": {
+      "asset_id": "asset_200450739c514a9e97d62d573c4a4b2e",
+      "version_id": "version_1659fb51beba4e82905ef92837adac42",
+      "digest": "93b1fbc9ebcb02912e7f94b0593066935793f7b6fcce36a7e38aa6ed5ca18938",
+      "receipt_id": "rcpt_db8addb00ef54e3389c424137285071c"
+    },
+    ".claude/epic/README.md": {
+      "asset_id": "asset_46c5b27c079846dfa0e15f24dbd4ba3b",
+      "version_id": "version_2edfb04134b04a05a22bdaaca08ebdc7",
+      "digest": "9c4af35ae9b4b4cefcee4c9a85a38bdcb9de0c20ba3e060ebb737dbb3c7547cb",
+      "receipt_id": "rcpt_494672bb9cc04998b593ee15ba5de9f4"
+    },
+    ".claude/schedules/README.md": {
+      "asset_id": "asset_462db169461e49719d273c02f13355bf",
+      "version_id": "version_f1ef5e83b8d34763b6d9aa4321501916",
+      "digest": "af58a37577fb4e7a7c6491d36a90cde3cd8b9d92bb64437fbd27ba764e5ce392",
+      "receipt_id": "rcpt_2ca4f6c75f124522a5cab2e19b222339"
+    },
+    ".claude/skills/sdlc-control/SKILL.md": {
+      "asset_id": "asset_83ce8229f9364bf7840ef3bc1c7d8cc9",
+      "version_id": "version_76fbc1e23fec496983458494a10ef8d7",
+      "digest": "64839988bfc6c64c1e887504fc80fd6d42f05e2fc731ba16721f319ba082411a",
+      "receipt_id": "rcpt_97012c494ee84b0dac6db908f5ce2758"
+    },
+    ".claude/skills/sdlc-development/SKILL.md": {
+      "asset_id": "asset_78a0e7432b964e6bba0de7c573c2c9d8",
+      "version_id": "version_080568365bf54f79a432e73e86b0af9e",
+      "digest": "7b4925c7e42b3ee7034a09d0185e43de499070070c39aa8c2f9505c99bf131aa",
+      "receipt_id": "rcpt_6c56f86df89849c8b14f038d59a6b8c1"
+    },
+    ".claude/skills/sdlc-feedback/SKILL.md": {
+      "asset_id": "asset_5071c63103cd49749715b11569665920",
+      "version_id": "version_c39f9aa0b1634d48ba089c3167b1792f",
+      "digest": "66fc065b49cf3eaf2749b74b17f5b7b593b5e5cb181dd7e235c7a1a15a8b19bb",
+      "receipt_id": "rcpt_266548fc23f84294aea42865765172f0"
+    },
+    ".claude/skills/sdlc-orchestration/SKILL.md": {
+      "asset_id": "asset_8e9f240ed0a346eface83cb9d9eb3400",
+      "version_id": "version_c49655e669384348ad2ff44390fbf7da",
+      "digest": "7fb2f0f825626ce19ae2de07a098ca80bee2c5959b3806f7d74803f6aadd73bd",
+      "receipt_id": "rcpt_c7683dd90a904cdd921b78cd600676b3"
+    },
+    ".claude/skills/sdlc-product/SKILL.md": {
+      "asset_id": "asset_e24bacde77b34e70a969d0b4c9eb836d",
+      "version_id": "version_9a2a616428644867a9678a89bd10c6ab",
+      "digest": "b93235dc7f18e8685cc294d2409b077de2bd49685ef55431647d01e4c8c6ee5d",
+      "receipt_id": "rcpt_44a959ae3c584e9094c8e6b5d3687492"
+    },
+    ".claude/skills/sdlc-qa/SKILL.md": {
+      "asset_id": "asset_b927852ecfe84be8bdf370f5802674c4",
+      "version_id": "version_7cae164cdd9547b3800a1eefdcc49222",
+      "digest": "525a47da3fbbbf8bfe2272ae6c357ff9f19364e76a1c02f7caa98baa5fbdc4bd",
+      "receipt_id": "rcpt_10cc986ba08b4960822f821829253bdb"
+    },
+    ".claude/skills/sdlc-release/SKILL.md": {
+      "asset_id": "asset_c5c8f3fe3d504883aa2a499f463ca923",
+      "version_id": "version_672adc9ff13440a1a3c4dea111c0dd95",
+      "digest": "0548c2466076fad493d2981af5be6b38f6a2fcc3718a078d736408379792aa07",
+      "receipt_id": "rcpt_b4fc49e1e231411db1f44cfdb751520e"
+    },
+    ".claude/skills/sdlc-worker/SKILL.md": {
+      "asset_id": "asset_41a900e42a164617b2beb12da53b7256",
+      "version_id": "version_356e0748845e47a4bf092247312386b9",
+      "digest": "c058f19c49d847921fd9cf50b7a9d921f0cbe0bced878658557e7a4513a67241",
+      "receipt_id": "rcpt_e65230a8636f4da98253ccc24dd5a5f2"
+    },
+    ".claude/skills/sov-asset/SKILL.md": {
+      "asset_id": "asset_da247c1906534af8bc2f9623497e0c77",
+      "version_id": "version_c13e64d861f14dbeaed53acbe145f9ad",
+      "digest": "6d973ba7273cdce159990f155324de6f0491752abe1e40c91a87631abfc23ddc",
+      "receipt_id": "rcpt_fcfba739fc6c48558c56d2f3141a0708"
+    },
+    ".claude/skills/sov-byom/SKILL.md": {
+      "asset_id": "asset_3b715c6cc3064dbdaa15ed16afa99e2a",
+      "version_id": "version_42a2da2a50ae4088a03494dc66fb5041",
+      "digest": "260aa83bc69ada6a2a0e625572d11380f9551e27f068db80b08459c9d1787cf6",
+      "receipt_id": "rcpt_85d950a302f448efbd59b4ded862d938"
+    },
+    ".claude/skills/sov-conformance/SKILL.md": {
+      "asset_id": "asset_d67636e5ac844accb35d7eeefd1d242a",
+      "version_id": "version_92460f498a464317b1e7e9f361685cba",
+      "digest": "1412748fe7ac256e26579e6262be74a034b98919eaf230b42615111ff5883dde",
+      "receipt_id": "rcpt_843e046705dd40fb970e72cb4359b849"
+    },
+    ".claude/skills/sov-console/SKILL.md": {
+      "asset_id": "asset_572dd5dbe6d84b9bb346039d2432e287",
+      "version_id": "version_343e5b64ce1440bfa9e5c605b9002346",
+      "digest": "f90c1de40ffaa1e1ff36c8c57f481146dd708db7b1ecd47767a1523185fecfe1",
+      "receipt_id": "rcpt_5f9c76c95dbf4a9ea6fcc5efcf30fa52"
+    },
+    ".claude/skills/sov-continuity/SKILL.md": {
+      "asset_id": "asset_9cdc9fd39392494e91250f495bd2f72a",
+      "version_id": "version_55d1ae79356b456d8988c6c62d9be4cc",
+      "digest": "ba5daad03e729a1412bed74dacc5bda497f78613c3b48cce4cb5e84670208ad6",
+      "receipt_id": "rcpt_e71804a564d74c6f93a8f125e321c9a0"
+    },
+    ".claude/skills/sov-contracts/SKILL.md": {
+      "asset_id": "asset_3649883991e94f91b7fa94d6f678ec4c",
+      "version_id": "version_ad59d8a968c04aca93dbd7595c1ffa99",
+      "digest": "1e5661aef6dfc9d9e2e3376b75f87f931763f323ca54e7cdb10f6edc66221a03",
+      "receipt_id": "rcpt_5f516e2ebe134017a98757b497ed86ff"
+    },
+    ".claude/skills/sov-governance/SKILL.md": {
+      "asset_id": "asset_c10f96b4fb8f495e9e19ac26f10702b4",
+      "version_id": "version_b519a6c250db4a2989c6e59654e8f670",
+      "digest": "e6af601faee7c5a7fb4229bc997d0dc7130ddcffd915b642261e2f343093a8d1",
+      "receipt_id": "rcpt_5d7aefca5d904f6e90677b5a905da98a"
+    },
+    ".claude/skills/sov-projection/SKILL.md": {
+      "asset_id": "asset_20ece8c744754f7abe9aeef8b98e391b",
+      "version_id": "version_9cc55a8a28934c259ff387f98c94b2dc",
+      "digest": "bf16dfb96c35a6fc134867be338f4a0d8575f92a0f05c8db2a2d8181858139db",
+      "receipt_id": "rcpt_c3c99782c45b4c0c8223a877b5ba9c39"
+    },
+    ".claude/skills/sov-proofing/SKILL.md": {
+      "asset_id": "asset_fd10dc7a32704208b6194678c9641781",
+      "version_id": "version_35e62ccbbd5647b6b38f6db9de2e3fb3",
+      "digest": "0dfc76d74386ff6394a39208654cb2ab1dfe70b085ff7bc2e61b86d434dfd57b",
+      "receipt_id": "rcpt_6f67c5e78573407683f8a5c0e4d41ac9"
+    },
+    ".claude/skills/sov-scribe/SKILL.md": {
+      "asset_id": "asset_19f9efd10f1f4239bbcf6ab7010eaf3d",
+      "version_id": "version_f9ab0c9ef882441b9d55c15b44aa8777",
+      "digest": "a7cb560c57dedfa38353b520d5b39a38cefdffc318683fe5ee09f954c521e526",
+      "receipt_id": "rcpt_4d3d10fb0cef486c9f2ce2a792f331f0"
+    },
+    ".claude/skills/sov-verification/SKILL.md": {
+      "asset_id": "asset_9c5c77f230e54969b86281ffa398838a",
+      "version_id": "version_844c5dd541bf4d7f9668accef714181d",
+      "digest": "3bb4771719a9b3b6b3c3fad707cf02854894eecdd6d9f152242fb1c8b2994a50",
+      "receipt_id": "rcpt_3cd04eb7bbdf41d28ffffd83f1f56c98"
+    },
+    ".github/pull_request_template.md": {
+      "asset_id": "asset_06ad425323ce448cab2bc0921204f224",
+      "version_id": "version_02f9f99c483e4cb2a7981f3ca1616ade",
+      "digest": "8bdc4f95bbf47bf4b59f9e3a8bc122637e7347b2b37c88a185e481e2c43a8d89",
+      "receipt_id": "rcpt_0bab3414525143dfad6ac2b3cdee7dc5"
+    },
+    "AGENT-BOOTSTRAP-PROMPT.md": {
+      "asset_id": "asset_11afb985cb08427bb64388971124987c",
+      "version_id": "version_093a58f932a74924bce7de9743ebbfcd",
+      "digest": "867a42061ecfd7eeaae7d5d32f67c2005f3928f3c6e509757cbe121ca93caf29",
+      "receipt_id": "rcpt_cffac1df54b04330a3f379ba93dabdd4"
+    },
+    "AGENTS.md": {
+      "asset_id": "asset_cd6c2e8e6ca840dfae0965bb5350b402",
+      "version_id": "version_f3d1907b3b8e4380980a9bdc2173707c",
+      "digest": "2b845c2e505c3cbd4cfa21be789b5e1234f97156857ebca4c23594b07efac3e4",
+      "receipt_id": "rcpt_f4742cd854dc4014869b1128e692d9c4"
+    },
+    "AI-NATIVE.md": {
+      "asset_id": "asset_ed7332c36c2b4157bc10c0bfa61c45a1",
+      "version_id": "version_9e2369fa97f545ca826473a0cb943962",
+      "digest": "12935e633dea1515b15cec0ece94d01ff66d71ea22070160537a310455ec2736",
+      "receipt_id": "rcpt_2bd56c6b436d4e0e9fcd2a302a2d19ea"
+    },
+    "BYOM.md": {
+      "asset_id": "asset_78f5a865f01c485b915d31c0c4ba0ed8",
+      "version_id": "version_ad9bb18ea1e54de6bf331358f11e7a1c",
+      "digest": "cf8c890497f8f71ad502f4c6d931c7d55dbf0c7ea3bea21a3174efcd79b43300",
+      "receipt_id": "rcpt_e3b7b2569d584aa08ab130648068c2a7"
+    },
+    "CLASSIFICATION.md": {
+      "asset_id": "asset_64439761c44f4a36a4222ae593828c37",
+      "version_id": "version_fd050be96fab4779bd245685326b8806",
+      "digest": "9bf10a60a1df0fbcc5781b787e4ae675c5580b46cd48028bc38caff1aff6c64a",
+      "receipt_id": "rcpt_b3ffb77acd264ed5a361c2f5b2cb3c0b"
+    },
+    "CLAUDE.md": {
+      "asset_id": "asset_a5741336c9524cc4bddffae2773d0386",
+      "version_id": "version_b013d14d3371407dabeaab8faa8b45de",
+      "digest": "0df5b28e1c13f63a4021f7ecc62f56e34cbdadf8fb92722866c0ba8c0d2b7b15",
+      "receipt_id": "rcpt_f88505f9e72444aaafc83fe9fbf1e71d"
+    },
+    "CONTRACT.md": {
+      "asset_id": "asset_7d96dc511b994cf7ab273acdd55f73ac",
+      "version_id": "version_4a57c9ff264a4f84a1fc97c1b492bc5f",
+      "digest": "896e59ba90828ad786d1643bcfd5b915462ca3e160bb5138a43d50ef1fd3aa7a",
+      "receipt_id": "rcpt_6521df6ea527457dbee60fc871e0aa9f"
+    },
+    "CONTRIBUTING.md": {
+      "asset_id": "asset_dff422814fdc4f7b8d7a3f71864169ba",
+      "version_id": "version_feae6a8013774c3d80987e6d90c8d55f",
+      "digest": "0d041eb88f5da4272103890f9d229681dafd3dbd432d6981068910ec47b5e734",
+      "receipt_id": "rcpt_390492a0105a4daeb08c554a9029a2bd"
+    },
+    "ENGINEERING.md": {
+      "asset_id": "asset_2e612d0f8690441fb52133821d942da7",
+      "version_id": "version_04fe7a17eea7444eb5160d66e99329be",
+      "digest": "216289bb9c4f16b9e2b64a14b9d7b1e9f799b51c885a889622fdac4c7af772f3",
+      "receipt_id": "rcpt_5003d89d0e0e4353b7a9e3021f4fcf2d"
+    },
+    "LESSONS.md": {
+      "asset_id": "asset_be6f396ac95d4d94866803cce5c827a4",
+      "version_id": "version_6001b2479c3b4950b399db3ee1daf7bc",
+      "digest": "636d20d5148a903cec16125711cc70504c4c2adfee4d55c5a0ca646998c85990",
+      "receipt_id": "rcpt_4b3602cbfb664af285e7cbaed6bdb584"
+    },
+    "NAMING.md": {
+      "asset_id": "asset_0da88673062c44bdaf7476dc1092430a",
+      "version_id": "version_65d56eb2f596473094078fb9914e542b",
+      "digest": "26faa185dbe14d2cfaaee97d827c781e0044f8f2f04053c34d6c8c90287fda5f",
+      "receipt_id": "rcpt_7c92f8fd8e104fe8acb0c9f7f2759e43"
+    },
+    "OPEN-SEAMS.md": {
+      "asset_id": "asset_e066a1447f1f47d6bbe9c899bc03d5c4",
+      "version_id": "version_262bd1d6c926437f9aca3018e1ebaed0",
+      "digest": "a7449c14ed249a33403b175944fe9f82e19608659f4c1550cf0440b973830127",
+      "receipt_id": "rcpt_56c41ed3af0f415ab55a214928148d25"
+    },
+    "PRD.md": {
+      "asset_id": "asset_0d2f948a83de44c1b214bf527da9dbaa",
+      "version_id": "version_b2b14b7e579f49c8b6e77d9fb6a2eda9",
+      "digest": "f1157f2f1ebad6aab70a63752f9bd9169518eb6f0aefde21c7fd05e98d5f1440",
+      "receipt_id": "rcpt_5307111efc734fae919a4ee3ca922124"
+    },
+    "PUBLICATION.md": {
+      "asset_id": "asset_19fa472cbbb941c58b9f8bff91e16663",
+      "version_id": "version_05fd221fda554ee883c2d013b592285f",
+      "digest": "fdbc85578be8b63331de905de0dff8454f3fe6618ce28380856a2f7633e1c3b3",
+      "receipt_id": "rcpt_54af68f2c0424e1380451e75a1c8a181"
+    },
+    "README.md": {
+      "asset_id": "asset_486b02dc6f844de88d5cedfd871e525b",
+      "version_id": "version_b32f6675596747508ebe8ffea389eda9",
+      "digest": "e13d2b5b0c513bcbd14b778a33da1c2c363d0cfcbd3459c2108b0ed43336ed23",
+      "receipt_id": "rcpt_51ff1019f7d7463f960b5b32197adcc5"
+    },
+    "ROADMAP.md": {
+      "asset_id": "asset_d5212dd9c6a248c4861137fd902553ff",
+      "version_id": "version_e323e528857b4b2391c6a26ccd6ca9aa",
+      "digest": "2d547384606200517907a17c38747fff15f388640d5bf3c705bd278e2ac150f0",
+      "receipt_id": "rcpt_382f20e782c3428f8eb12941ec0b3657"
+    },
+    "SDLC.md": {
+      "asset_id": "asset_d88cf79a21634ceeb0931199791077dd",
+      "version_id": "version_3ec21521e540413dbdbb05e964f533b5",
+      "digest": "0b66517f87a7928c0b798379741fba680cd2f24009e19ac9432a2cbfd7c32509",
+      "receipt_id": "rcpt_3fe0b270c31e4d60bfdd89c67b87ec44"
+    },
+    "SOV.md": {
+      "asset_id": "asset_c5979c12330e41b9b20857e40f13f6f6",
+      "version_id": "version_d7d5117e6d414cafaae20e84169fcfc2",
+      "digest": "7caad288e5af3aab3d1074fe40b4223f5f1ae3d616d7b28eb94fbedabaaea91b",
+      "receipt_id": "rcpt_05a8d0e04b9d483ba19db608055119d3"
+    },
+    "SPEC.md": {
+      "asset_id": "asset_19be3fada0064ff591624f34da5a27f9",
+      "version_id": "version_c3501cdbb9dc4db3bc591419fa6e3693",
+      "digest": "6a955e9ddf3c88522e294dec02ff9c1a367955a13212bc12634dda8f74310aa4",
+      "receipt_id": "rcpt_f43c31c459254ff1a8a26004c7d42a14"
+    },
+    "SYSTEM.md": {
+      "asset_id": "asset_8f8195af7bb24b2ab2dfa28b6655cb99",
+      "version_id": "version_08f59f42190f4c46888fa41bd8788059",
+      "digest": "48791de8a0853a68ad1103add42b8e7fb03ddc35128553545c45fccd2ba500fb",
+      "receipt_id": "rcpt_569e20ba029148b398b3cef51bb20e3f"
+    },
+    "adapters/README.md": {
+      "asset_id": "asset_e7af288a016e41eb9bb520f3f9fd772f",
+      "version_id": "version_109fffdb256643a2b350be1aea9a6154",
+      "digest": "021bd2dc9b16f54fba8c37bcc35b19a8860d085b1b966e1cd8db324ef56f500d",
+      "receipt_id": "rcpt_2483257ea0ce4ff28290e6f26017bd26"
+    },
+    "adapters/github/README.md": {
+      "asset_id": "asset_7b19f549503b489b8c79e72fcd9adead",
+      "version_id": "version_11ecedd48ee64a5983bac358b8122049",
+      "digest": "beec3838e4dbec2049b9cc78eb875acf427c912085f81ec5e917bd629cc8fe02",
+      "receipt_id": "rcpt_c900ecf9c947473a9c8518d04bdbaf33"
+    },
+    "adapters/ollama/README.md": {
+      "asset_id": "asset_2ad6d27544a54a7a90795cc515128ec8",
+      "version_id": "version_72f9f61a74674886ac53c37231ba3d9e",
+      "digest": "c1631cd6393c4096d3114fb82bd36d997c4ea76fddd3c5d112daf17c0c866893",
+      "receipt_id": "rcpt_c3cdb5485e1849a4adaf4c833a6cce02"
+    },
+    "bindings/README.md": {
+      "asset_id": "asset_9a83698a130046229cfdd94a59eec25a",
+      "version_id": "version_b21112ae4c3d4db69b12a3350a570d89",
+      "digest": "8f685f4440e2cd693cdd45d4bff4fe4783fa77e32793f4ed11a85f8801a0bc4a",
+      "receipt_id": "rcpt_3aadbafe3256483b8ac1dec6d8d294c7"
+    },
+    "bindings/console/README.md": {
+      "asset_id": "asset_e923c9e4c3eb478494fa074c3cc0cb88",
+      "version_id": "version_1dea9f69a47048018f50d2b5d89eada4",
+      "digest": "e38c11b4c4806e0b1490456782b7a9330f882429f85f5db0c953d274d993105b",
+      "receipt_id": "rcpt_4f023d364d864d2b9248bff1eb5617ed"
+    },
+    "bindings/mcp/README.md": {
+      "asset_id": "asset_c62c275defbc453fb607ea5c8553f389",
+      "version_id": "version_f8e97572dde24ff68859b6ba9a5d5b50",
+      "digest": "a97d1e834361ac757e4b0b6c797aa3a17d9a55b5f9ae6d1607bab523260b8fef",
+      "receipt_id": "rcpt_3d668a6d85a74a859460204fef6dc5b7"
+    },
+    "bindings/sov/README.md": {
+      "asset_id": "asset_510db7d674b94ddbaee26d0d8cc3d2d0",
+      "version_id": "version_7d9d3921015a404888421c92e76b8035",
+      "digest": "31be37bb9e22570bf24339a68d0d69f42cf57d8903fab0755c668014b955456c",
+      "receipt_id": "rcpt_4034190f68734cd99ddb8e9186936efd"
+    },
+    "conformance/README.md": {
+      "asset_id": "asset_b44d12de85b5403c9003df76f9c4291d",
+      "version_id": "version_afaa2af589d14e52b2537fe08f39cf3a",
+      "digest": "848972950b3ae84d9ed74d74f1ab0f5b82f8750929efa0f67c312999ccfcb1e1",
+      "receipt_id": "rcpt_96365ad2aa654aafa429e24462d46bb2"
+    },
+    "conformance/observations/README.md": {
+      "asset_id": "asset_a587ef94a4314231922f20aff60fcd38",
+      "version_id": "version_533adc84ba3e4358883cde5a22ef1596",
+      "digest": "ba84da08bc48b204e35613e317282b0e10726a5a01984f4ae0df141e29494795",
+      "receipt_id": "rcpt_2b64bf5377504d609e38cfc507b8a4cd"
+    },
+    "contracts/README.md": {
+      "asset_id": "asset_7bdfca000ea84da39bcfb08240df0a8c",
+      "version_id": "version_fa37f32589af45ed84742ef6d012c06c",
+      "digest": "4d4a99c69bfb1388030ce2e80226843bf4cfa6c7c9eb54672072e9291a1cf593",
+      "receipt_id": "rcpt_149f18e03fe54920b8f7240c9daa6756"
+    },
+    "decisions/0001-founding-boundary.md": {
+      "asset_id": "asset_062219ca1f6e46178fbe6c0ac526a023",
+      "version_id": "version_10dedbc7cf924f7491c2bef2c4a0b7a0",
+      "digest": "e4f0e33da32d231a081619eb1ecc921384f8976b276fc8eba0ae2a8bf8980a1c",
+      "receipt_id": "rcpt_4e454c4b12bd459197c6611066c7d224"
+    },
+    "decisions/0002-naming-process.md": {
+      "asset_id": "asset_c08811ffe59d4454ac8da7c8c5d25538",
+      "version_id": "version_9aae87d9460f4180b1e98fccfabe4960",
+      "digest": "ffc8046b007882cd89b1f0257cf079834036d4a590185244e20a1fb13b995ea1",
+      "receipt_id": "rcpt_562b0517c7a746cd86dcd23899a7e539"
+    },
+    "decisions/0003-evidence-boundary.md": {
+      "asset_id": "asset_c47ae7eebf4b46f494d322d5d352b97a",
+      "version_id": "version_6fa90f69c3ca48ad9480d93c7be4948d",
+      "digest": "41df739c3754f2f01dbe44c87cbb2578a32267a8e27b9a7fd4231caa389f5af9",
+      "receipt_id": "rcpt_ac217e58f23441c3b4ba90b6081f3ebf"
+    },
+    "decisions/0004-soveraeign-name.md": {
+      "asset_id": "asset_6939788cf3b04bd088982312b2b788ed",
+      "version_id": "version_4faf153bfde442a980626efe0aba1cd5",
+      "digest": "8355ad14ba1fade4952642b43b11fb5ef54a287cd2377bd83f7255b696994daf",
+      "receipt_id": "rcpt_4c30ffa672614c78913f723c8a121f3b"
+    },
+    "decisions/0005-operational-qualification-language.md": {
+      "asset_id": "asset_b5e3590d389d45248fcb302d1dbfb1e8",
+      "version_id": "version_650a7e0de8ab4d4b9ff9cac6dfe39f8e",
+      "digest": "c98ec7ca04675e6d79e37fd1c8c9e2bf95962d7d6e855d4c5d921c8a51848c86",
+      "receipt_id": "rcpt_a6bcd2b1cc0e4670935d2acf842185b6"
+    },
+    "decisions/0006-ai-native-standard.md": {
+      "asset_id": "asset_845d4c5eeec04350b4cd2efe657736a3",
+      "version_id": "version_cf1daf0b810b40809f015a8c5918a827",
+      "digest": "d8b97d4a1409e98eeba9f0d56ed910bff53a3b497eb7699e8410a0e22e5e8ce3",
+      "receipt_id": "rcpt_59c6b1493957401f87130c1963860ce6"
+    },
+    "decisions/0007-asset-service-boundary.md": {
+      "asset_id": "asset_a5ab2bb8458d41e99b737f718a7c3c1a",
+      "version_id": "version_177ec6dddb584e90a35ab6e6abdfc55e",
+      "digest": "67bb10d15b56ef43e82c868756e06ae56a0aefee6c6903775e8c8913198cb940",
+      "receipt_id": "rcpt_7627f09f85984a0da7ec9a668ae9ce2d"
+    },
+    "decisions/0008-classification-contract.md": {
+      "asset_id": "asset_2da91e9df5e042eeaf2db5c47e14ec17",
+      "version_id": "version_d770cb9e7dba4ce78b9bac077137302f",
+      "digest": "de2329baeca1078c10157e26e7464ca9707a2d56fd6d068d84ef40bbc2e59254",
+      "receipt_id": "rcpt_484ab2767d754852b940afcd90bb5d0d"
+    },
+    "decisions/0009-phase-i-logical-spec.md": {
+      "asset_id": "asset_ee53e92d57bc4f519fb23d049d85dad9",
+      "version_id": "version_f17cb1c1001c40158c469a25ba4e734d",
+      "digest": "2b2c8b11290ef3a105a204786d784a96d207a6705a1d87facbc0999a74382729",
+      "receipt_id": "rcpt_f53ae9829d864df1a6d94af038479f75"
+    },
+    "decisions/0010-proofing-service-boundary.md": {
+      "asset_id": "asset_1476443fe4a24e838f81467302311b51",
+      "version_id": "version_1271b82a55124fcc94b881dffc499131",
+      "digest": "d16699081a09d67f464dd8f26d77112965abae3b34d92e23ecedce0b571a86f3",
+      "receipt_id": "rcpt_dd389341519e43cdafefd7182e591a12"
+    },
+    "decisions/0011-local-personal-byom.md": {
+      "asset_id": "asset_85116e81efa14929b41c584d60847fc1",
+      "version_id": "version_9bea6b9985a84687a59a7c636ad94ea3",
+      "digest": "33bb9d456f0da50e92cb563755145019b5b2e1b4ba9e0866c45f77568d2a4d07",
+      "receipt_id": "rcpt_9b070d567f244dbfa8b039d37f50bed8"
+    },
+    "decisions/0012-engineering-baseline.md": {
+      "asset_id": "asset_df58d944bcd94ac4ace396235dad9bf3",
+      "version_id": "version_ddf96516832b4c67af479967afd6ea0c",
+      "digest": "2843e9a000330cec7a05fed2c406b7ad426daefa5a60e621e9ee1245ebb783fd",
+      "receipt_id": "rcpt_8e4ac238eb82452097aefb75340ff091"
+    },
+    "decisions/0013-domain-mapped-sdlc-loop.md": {
+      "asset_id": "asset_f5b1539ae6e74dff8e1584b3d641844c",
+      "version_id": "version_fd887a1f1a434bbe8c2dd874e1c80a81",
+      "digest": "a4e49304d526d889a890d0e432037b4bbb33243e0a748d9e4f14240bd9f4fe29",
+      "receipt_id": "rcpt_1c3be1a92fb94fcb95f624ece0d10afe"
+    },
+    "decisions/0014-console-service-boundary.md": {
+      "asset_id": "asset_25a37d4d208e4161accdfa6359353d6c",
+      "version_id": "version_c6f3e019f8ec460a9c561ff3d57bdaf1",
+      "digest": "b620606b890fe0dfb9047e7eff1629615a88a9ed0e7c4377288e8ac8885a483f",
+      "receipt_id": "rcpt_2ebab170c26246f1af8d83ea7147ed87"
+    },
+    "decisions/0015-scheduled-runs.md": {
+      "asset_id": "asset_cce600d505c340728c556cf2940ae934",
+      "version_id": "version_4e691900703f42339633c5d7555663c3",
+      "digest": "37ac3adfa66fd01e8f760df89bc0b20454cfd64b4092726a5fe634d1b8bd9521",
+      "receipt_id": "rcpt_136e798f752d4138a8622d039a88ab35"
+    },
+    "decisions/0016-github-coordination-registrar.md": {
+      "asset_id": "asset_94bdbd36b19a4e6785410db4ba342699",
+      "version_id": "version_85216659445c43459029b1c619f8d6b5",
+      "digest": "019e9cdc5badd2792cf0c23757e2b2a046021a56e9d583adad3cb6eafad416f4",
+      "receipt_id": "rcpt_623ec7e14b1f46ca9ce2a3fc7bd8ebe2"
+    },
+    "decisions/0017-sov-operating-agent.md": {
+      "asset_id": "asset_fbb9ba4189f04edbab592b644975cc45",
+      "version_id": "version_45bfc9e38324423a999486314d903e13",
+      "digest": "0c727b235a2d189129a6f0b74830b5962e37242366b9d4624b24b96170619ce6",
+      "receipt_id": "rcpt_fefe1e1efe6143648ff94c71a39ddb02"
+    },
+    "decisions/0018-verification-engagement-kind.md": {
+      "asset_id": "asset_136b90694129458b938093df3f1e296a",
+      "version_id": "version_edf8c60b1ba44677aa240b54db9e1d81",
+      "digest": "e07a5fc35c2f453ae467ba2220a5d9dbca7c04a016b850c958f5414cd9e768c0",
+      "receipt_id": "rcpt_416655698f194ce79e523966bac909f8"
+    },
+    "decisions/0019-kernel-transition-contract.md": {
+      "asset_id": "asset_41d45b0fddd1498aa30c1529266fe9ec",
+      "version_id": "version_39d9e3c0239740ae99a36b33d7b46536",
+      "digest": "931aa617b65edd023af0de73af28f4d3685d8c3b2baaf35622af4bcf861f5b4f",
+      "receipt_id": "rcpt_efdb5089dc114d7abce5617f517a8351"
+    },
+    "decisions/0020-owner-seat-topology.md": {
+      "asset_id": "asset_27fb1e262e2943bab5d21a44e421a918",
+      "version_id": "version_3e187e0a8b8d48b78bb2fa8d7c74c173",
+      "digest": "846c5e80d8b00fcd26f95807427636a5dc77237d09d3efdb7b96046a71fc34ef",
+      "receipt_id": "rcpt_2f104fe9dd8a4a1c8fe76048535cc2e2"
+    },
+    "decisions/0021-semantic-cold-start-task.md": {
+      "asset_id": "asset_a5e0d3846783441b96606998a039e96a",
+      "version_id": "version_375dc0784d1849adb9739822ec02e078",
+      "digest": "36d274bd6d3da4c2beb4856162ad348250bc06a374d1476dd7d7006d3c9f1358",
+      "receipt_id": "rcpt_2de92c4f48c5422493abf09f43d7aaf1"
+    },
+    "decisions/0022-story-ticket-kind.md": {
+      "asset_id": "asset_bf9bc4f1332c4dbf957c8248b1741590",
+      "version_id": "version_d62325c7826f489aa83acf2d56830cff",
+      "digest": "96051f2071bc6923b21e7dcf783557aafeb2c7e72f6104b810f43bb0a680147b",
+      "receipt_id": "rcpt_c21dd8dc495240b187de9130ef133397"
+    },
+    "decisions/0023-acceptance-not-approval.md": {
+      "asset_id": "asset_2b505b2b7bdc4dd1939102a546bfd3ce",
+      "version_id": "version_44a2fdcf53704ec0802b69fc4d91ff76",
+      "digest": "6a87319970a017d85624f4a27d041086c848c8f0ba3b578eb51d86d6139f93c8",
+      "receipt_id": "rcpt_ce16fad343fa4f49affaab3d96a294e6"
+    },
+    "decisions/0024-open-decision-drain.md": {
+      "asset_id": "asset_2d1a3bc51ef94c03b7262ac267e028f3",
+      "version_id": "version_6d45f89921884e2ca16f261b86b7e5e9",
+      "digest": "bf50c527df479b927fda2df23ae1722a8eaee9ee6da430aa52168ee0625010c5",
+      "receipt_id": "rcpt_f112052ceef74c0e93a0f0b3303271c1"
+    },
+    "decisions/0025-verification-channels-and-merge-authority.md": {
+      "asset_id": "asset_cd283c7c1e664988a1f033864bfd30c3",
+      "version_id": "version_58dfea2e3b2e4910bec2d1bbcf787d50",
+      "digest": "71261b207fea882e76d21305e82730d3c6d3a7463add3624233fbcfb29723f77",
+      "receipt_id": "rcpt_f8898c36e7d748ce9e3e47266810a9cd"
+    },
+    "decisions/0026-federation-harness.md": {
+      "asset_id": "asset_5d9566de738b41808d30bd005d63e3c4",
+      "version_id": "version_0ce1c1bb86ea42b4a5a03e4d19aeb46b",
+      "digest": "2b768afc1312dcaa394d29bb529f559a3ceb82d6f5082ad373e5a63909c6bb87",
+      "receipt_id": "rcpt_3e95ab6784a6449eaa9b796ad7472e6a"
+    },
+    "decisions/0027-local-model-adapter.md": {
+      "asset_id": "asset_87aba1d1c2f24afd94adedae00a59eb2",
+      "version_id": "version_c09d02348c5e487b99ac51d43dd4ae2d",
+      "digest": "0be06b54b6d86d56c3671f9e23b4f16a60bd21f938584a95d2dba6a71706fac2",
+      "receipt_id": "rcpt_826275b2335c46518cb4b06d2206aa2d"
+    },
+    "decisions/0028-history-as-lineage.md": {
+      "asset_id": "asset_92182753d6f4492495cadc1bf7581160",
+      "version_id": "version_e7011801683b450999805a1d597617b4",
+      "digest": "13782d87de601ab59efd892b7d69865cb47b37fcc2fea3a09cf1b573d99e017a",
+      "receipt_id": "rcpt_c64c51cd9c354375b91a5b200bcf4193"
+    },
+    "decisions/0029-lessons-loop.md": {
+      "asset_id": "asset_f045de45075c4ef3ac3ffd1470445386",
+      "version_id": "version_9d5a68f4d7124de0951b4a10808f0f82",
+      "digest": "911f85f53e99a7746030b1d3da213f5afeaa35ec9a68915222a24d1fe2d7a763",
+      "receipt_id": "rcpt_d1556b6cc7124ffe871c96779ca65b3a"
+    },
+    "decisions/0030-asset-projection-service-boundary.md": {
+      "asset_id": "asset_121b699ea3b34addb93ce5a33e881c12",
+      "version_id": "version_ce40f49227084ce5b081d374d5fca2d5",
+      "digest": "5b6440fca16608e4dde94a93584022a153c4a01a2f0b09e8e60a4b7d52735096",
+      "receipt_id": "rcpt_6f7d3c6e99524df7ac2e815f3b351790"
+    },
+    "decisions/0031-transition-local-gates.md": {
+      "asset_id": "asset_76b8e7ba7e6d403da66efd54e6dc16b3",
+      "version_id": "version_dd39b66a18f84f1ebea769db29d0c457",
+      "digest": "832c5e2ba6310545dc3b0a35dcb4d0a9e646a4f491f08c17658568b6b1efd71b",
+      "receipt_id": "rcpt_e3b52deaeeef4253a9de67a370cb9602"
+    },
+    "decisions/0032-unblock-ticket-kind.md": {
+      "asset_id": "asset_19ebfba9ac60453cb304399a4d9c2a20",
+      "version_id": "version_58f45bb991f24e878518e9bf07365e1f",
+      "digest": "5766776d72672fde757a2a55316923c39310a3b144a90d65dfe2d0c91557fdce",
+      "receipt_id": "rcpt_2c1f5ecb776b43a29c4b6d52010ff8c1"
+    },
+    "decisions/0033-close-the-founding-docket.md": {
+      "asset_id": "asset_0141038b75814fc799d8a16960cbccbe",
+      "version_id": "version_3f1c4666413b49d1b984c757c7a70862",
+      "digest": "bdd9727e8434b295581bd5c4e68f7f2c2a20e3e9fdbb0faea5163e974c76c19d",
+      "receipt_id": "rcpt_8401e838e2334bc191fceef5be94230d"
+    },
+    "decisions/0034-spec-transition-refusal-codes.md": {
+      "asset_id": "asset_846d1771a8684eca9b8557db31a89879",
+      "version_id": "version_b91bb39402ec41bca8464832ae498dd1",
+      "digest": "d98cc06422e4e994c1f4ecf5fad05eabb1a3d095af5faaf6d337d2c92ea46d1d",
+      "receipt_id": "rcpt_eb14dc44e76c48a689138b638dbeb304"
+    },
+    "decisions/0035-seat-message-etiquette.md": {
+      "asset_id": "asset_1ba0cb57c4ab4114a0837eff3a08c9c6",
+      "version_id": "version_f1b09b01949f430293e577dc8f73c50e",
+      "digest": "d4ccfad85baf3070805394f803d9e5a9d02c1ea7a05c059e559f6f765f466a99",
+      "receipt_id": "rcpt_636ed991cce84c22b938378826fbcbe1"
+    },
+    "decisions/0036-operator-continuity-before-the-screen.md": {
+      "asset_id": "asset_00f0bb2c760b40dbb19205c80251514e",
+      "version_id": "version_79042e235d12411998abb59407a8bd0f",
+      "digest": "7fda7a38fbdd3ae4c3a7dcbff46e0f8ea9f2145da6a8e6887ca271e3dfaf7404",
+      "receipt_id": "rcpt_4fa115a79eed479da274383c27d8c046"
+    },
+    "decisions/0037-one-ticket-contract-two-readers.md": {
+      "asset_id": "asset_980a9ac9b2944b699c08c7259a4e51df",
+      "version_id": "version_e06e525eb58e461eaacd5150cb910802",
+      "digest": "672dc2086b31c556320c74faf43933377f1252b790f642cde31c92e57e13fb58",
+      "receipt_id": "rcpt_a44514355c504880bf57b4173abae544"
+    },
+    "decisions/0038-capability-map-front-and-back-office.md": {
+      "asset_id": "asset_470f6a087c2748888ad09a456d1b04cc",
+      "version_id": "version_ef7c829799354d389c22808b025e6a71",
+      "digest": "1b32f2ddeb6cf42e4d1cc7dca8312b1399eaa1b63604b7e9d1e0ac084a7aa326",
+      "receipt_id": "rcpt_9efd38e6be814f628cfcfc43799e4050"
+    },
+    "decisions/0039-the-node-surface.md": {
+      "asset_id": "asset_27f719428add41f7b49681dad32e8362",
+      "version_id": "version_b393acc304c94440a4b3744ceea8ea43",
+      "digest": "3fcae8183d328c35e140d36994b8683ee6000a3184ef8cf03b4f061c2470c5b4",
+      "receipt_id": "rcpt_ebe3d84a330e4981ac19f6efd430ab0d"
+    },
+    "decisions/0040-the-declared-service-surface.md": {
+      "asset_id": "asset_1a42bb680fce49569dd7c3228517fb3a",
+      "version_id": "version_063c7aaa35314f6d8b8911fe26b30028",
+      "digest": "5c8e0baf4a30b3a1d6faeebc1d611664df24653b7e28ed79be42ff7d831e9057",
+      "receipt_id": "rcpt_c005cad2a6324657a3169b80a669ed5c"
+    },
+    "decisions/0041-the-observation-service.md": {
+      "asset_id": "asset_f6e493c86d0e40ecb1bfa5c21568accc",
+      "version_id": "version_11135da3dfe74a2c879ea38de85761e0",
+      "digest": "5c771499aa1036fcf4c43dfff386e610141cd99473ac73de99886f48ac91f4be",
+      "receipt_id": "rcpt_a991dec9be0e4f03a3c8b4a0f8a81a26"
+    },
+    "diagrams/README.md": {
+      "asset_id": "asset_f979735955fc4303a988a8a47e1957f5",
+      "version_id": "version_79a2afe214a04405b07d48ea4e276f20",
+      "digest": "6de1bbeb3ad013d6b4080d5ca38bdf4bc297a21e7e6568f4efca0323f3946f27",
+      "receipt_id": "rcpt_4bbbde3a6214414ab984ec180b8b9416"
+    },
+    "diagrams/authority-typing.md": {
+      "asset_id": "asset_06fc5fb30e974f62b9ad4e7dfe5263ec",
+      "version_id": "version_d3cc7635ab8c4408ad87ab6ecffcc05b",
+      "digest": "02e7440fd417c084923f3e57c43286c0f80738eed7ac1e00f086b5055d1955b0",
+      "receipt_id": "rcpt_1d26ef4780fd4390a90f4f1c77e725ef"
+    },
+    "diagrams/crossing-topology.md": {
+      "asset_id": "asset_f21fa674cad947b68b7fff49c6de7099",
+      "version_id": "version_8f41cb64116d4298bf7b1cadd5433592",
+      "digest": "1c389b3b410e9c0b3fc9a48d5188c0d6a1a59dc461bd94d17a0b2868441737d9",
+      "receipt_id": "rcpt_00b788625afe4659a19e185eb4143f20"
+    },
+    "diagrams/crossing-typology.md": {
+      "asset_id": "asset_e9aadffe741d4f5381833b044d0ce8ee",
+      "version_id": "version_9a92464275814ffbb73ff88720ddfb37",
+      "digest": "24008dc6ac732436db8e88d22117be0eb40b7caa02c0bf7f565a70ca5540f429",
+      "receipt_id": "rcpt_86a67e4ee0204f328fea1fba22a74ef7"
+    },
+    "diagrams/event-outcomes.md": {
+      "asset_id": "asset_22a72c0eb0b14e4f843ca81ba8bfc0cc",
+      "version_id": "version_f235254ed5094c8ead4604a8eb9871e9",
+      "digest": "dbb6b82dd7bd6e7ed66ee60402b4d1b7dc0f8a0c47a4fde285f665e0421e6830",
+      "receipt_id": "rcpt_c71abaab56aa49a2af5b878c026e499c"
+    },
+    "diagrams/requirement-lifecycle.md": {
+      "asset_id": "asset_e6b8d4218a1c491981d60e7510108492",
+      "version_id": "version_8e56d733db3b4207980f78303c095674",
+      "digest": "2a79b051952667ff452078d75052f6a0f260521fdf74da96e6fa1276906fa20a",
+      "receipt_id": "rcpt_c9b2528e835d4f718ee2e505d4eb1f00"
+    },
+    "diagrams/service-map.md": {
+      "asset_id": "asset_0bdd85030e4843ccbe4419477120103a",
+      "version_id": "version_63094ee5628d4a2c911d345ff03388c7",
+      "digest": "6849af9d58db4a7088549a73e074cb22e090bd275d905331bb7c87ca1e12fca3",
+      "receipt_id": "rcpt_f9100d7398b246b79faf5f7506d107ca"
+    },
+    "diagrams/source-reader-recording.md": {
+      "asset_id": "asset_6d237c3243364268b4e9c8b78de8669c",
+      "version_id": "version_104791f522794c4b80c2389dde35d99b",
+      "digest": "dff936c5f36df3ac732abb03748e9c30cafd002273de89e018a9f631eed4358e",
+      "receipt_id": "rcpt_0b8e5f3199f54a699e2572a2e0098a0e"
+    },
+    "diagrams/standing-transition.md": {
+      "asset_id": "asset_371e2e5bdf4f4192bef23500a7ced7c8",
+      "version_id": "version_6bf582378a27429ca345de15d75f6caf",
+      "digest": "ee242a5d7ccb8ba090fa286a50f981c3114819f18f73a21c8323a6a58a7ec0b3",
+      "receipt_id": "rcpt_9ae12156f89d48d596262b3ca3a7170f"
+    },
+    "infrastructure/README.md": {
+      "asset_id": "asset_fa039a24c1e447c18f5548a9c083fedd",
+      "version_id": "version_baac1d6ce4784420925db92d181c6b51",
+      "digest": "4c29a9b0bb4f748fb74445168b2e89a87a3561cdb55b04f0b28b7c635e7c7779",
+      "receipt_id": "rcpt_49472e2d49fa4d7f8c3b565ed5129df8"
+    },
+    "infrastructure/WITNESS.md": {
+      "asset_id": "asset_c5198e337f0e4ce8b75daf411d6a4f06",
+      "version_id": "version_a2139ea908b846bba0db2db7fec02171",
+      "digest": "43f5319f04e33803d19f749fc6c80ae0be3d767f77d02a75828a2dc4f9e4a256",
+      "receipt_id": "rcpt_8d0cfd4c06974c79972c41c82ee9604f"
+    },
+    "reports/2026-08-22-baseline.md": {
+      "asset_id": "asset_eb230b4b76174aa29f56eff797ae4c44",
+      "version_id": "version_c58eb4eeb3aa4c52822ba3c10634e6fd",
+      "digest": "4cb80dd510924321e736c4672017181cd0930c10a10d33e0294eaf17558e0531",
+      "receipt_id": "rcpt_6d9c478cccfa483bae947855502fe9ff"
+    },
+    "reports/2026-08-22-christening.md": {
+      "asset_id": "asset_082c93c8a41c4c0caa9bc2f426df40fe",
+      "version_id": "version_8ddbd6e01f99458cb8e0a50db7fa9eeb",
+      "digest": "df81207798c56d5371eb0b38c13eb46e5dca9dfacb9193a66f3c4e53312adc9e",
+      "receipt_id": "rcpt_11ef0872d242486d8358aa97bb3ac0bf"
+    },
+    "reports/2026-08-22-console.md": {
+      "asset_id": "asset_498300dfbc804b3088088176c20e5b9f",
+      "version_id": "version_d5053515ed624e99b7b316d0506c23a5",
+      "digest": "1d8856c293e1411b633620d568ee3bb549bcd61c30062d15798806a2f135c043",
+      "receipt_id": "rcpt_36c8a20f82e647af99c7b6bc1054e54c"
+    },
+    "reports/2026-08-23-coherence-pass-witness.md": {
+      "asset_id": "asset_2492641a91e149149c194c6dd19e0ac5",
+      "version_id": "version_38e12103bf414715aa9b6711a9a9edf3",
+      "digest": "e4394f81c882e3766abca2e56ffc547a16952d2b49bac91067be93bddd2a08ab",
+      "receipt_id": "rcpt_7af55644bc454437938e9ecc864aa2cc"
+    },
+    "reports/2026-08-23-console-and-seats-independent-observation.md": {
+      "asset_id": "asset_0f6db70256f54b03bca08cb0fa859125",
+      "version_id": "version_d4c4fdc1910940b7972b1d7e4dbe66c7",
+      "digest": "a062e540bc6584ae13e0d7599c1d08455194f19131c1955ab3f005c5c2b51804",
+      "receipt_id": "rcpt_efbe1dfecc2444bcbd89ce09c8919894"
+    },
+    "reports/2026-08-23-console-judgement-slice.md": {
+      "asset_id": "asset_01cde2c04eae4264b891e021ebf79880",
+      "version_id": "version_232fabc3e6b14e4a9c618b0c096fc2d2",
+      "digest": "0a1eafa71ef12eea0aac347465c9ec8283da5a71905522837e58db77e47ffcb5",
+      "receipt_id": "rcpt_29326d61ef0b449782776c677a9cb31f"
+    },
+    "reports/2026-08-23-gateway-research-and-controller-plan.md": {
+      "asset_id": "asset_30dca33725a540c8ba587e9d3cc5e5fb",
+      "version_id": "version_4121c5d5d8904c088b7aabbc7f220adb",
+      "digest": "beacfe8e4357c42958fa4bca7e143eba59964bcfe38fb86f35d0973d00cba979",
+      "receipt_id": "rcpt_6a4dd34ddaee408ab726628afc6dcbec"
+    },
+    "reports/2026-08-23-harness-reconciliation.md": {
+      "asset_id": "asset_877138a3dc024a4f9bbf6ac53a81f91b",
+      "version_id": "version_72afe6ecf98e48d49889d8dca2e7d90b",
+      "digest": "1e920eb4bd1317788be05f5f9625edd65ac70b4b1d11e7b3a29e0f7b02921799",
+      "receipt_id": "rcpt_00f75042799e4f7b839f0768cbfb67a2"
+    },
+    "reports/2026-08-23-line-endings.md": {
+      "asset_id": "asset_107a6e9f6a9542e9a9ea9e39ebe2d2b3",
+      "version_id": "version_6639ff1c383941a190d1a101fc2e128a",
+      "digest": "35165df4c09ea92a6ddf40160e9c15e3e4e9dac2b62d4aec0bab740da10e496e",
+      "receipt_id": "rcpt_69e9791a40ae4be18be27d9e473e1e0d"
+    },
+    "reports/2026-08-23-local-model-adapter-witness.md": {
+      "asset_id": "asset_61f17f6c97ad44bd833759eac05a574a",
+      "version_id": "version_d8438afa6cbc48cabb09087e579077f3",
+      "digest": "14d2931a746262ba08275c074d6f742d6aff4316d3658a328363403ed5be9637",
+      "receipt_id": "rcpt_5ad267d32f5146859f8bf1d277f16e45"
+    },
+    "reports/2026-08-23-merge-integration-observation.md": {
+      "asset_id": "asset_36ab47fb88854952bd971587a2fed3cd",
+      "version_id": "version_e7a8f0068646451c9316fc11b165ab91",
+      "digest": "30ca95503e4302584d724d118dd0bfd59b37cd7c40b939f67baee31901f3e5c3",
+      "receipt_id": "rcpt_be6814e972c04f80ad34c20752c88b49"
+    },
+    "reports/2026-08-23-merge-readiness.md": {
+      "asset_id": "asset_017ee56c5e8d4d43965d14ed1667dd8a",
+      "version_id": "version_669759fff53f46eeb15529329b3b9b97",
+      "digest": "aa9f7595f8d94b6582247f46325e981036e06a774c4af72b9c0c84f97baa838d",
+      "receipt_id": "rcpt_c8a461b124e04be8bdf36e1f7a79ef5f"
+    },
+    "reports/2026-08-23-oracle-hardening.md": {
+      "asset_id": "asset_8319e20a2121400c80cfa64f9d9121a2",
+      "version_id": "version_0aea605308fa4bbbb6985db78698a5d0",
+      "digest": "b2fd21a2a3ca0bfafea1793ae636f92e05aeedbd54118286992ad67cdaf14939",
+      "receipt_id": "rcpt_67a4be93d14a4bbd8f218d342b19a504"
+    },
+    "reports/2026-08-23-polygres-parity-pressure-map.md": {
+      "asset_id": "asset_dffd7fd6ce8b412c9727a09b5563e3a3",
+      "version_id": "version_8fc352df30b94a4987e11ce749703037",
+      "digest": "4e3e02b0b4ab2fcd69101941e3f09703ee901e58923ab33e9d5aee1671c5df01",
+      "receipt_id": "rcpt_f8a42d7f0fa34fa79f0d589c2caf2817"
+    },
+    "reports/2026-08-23-ratification-docket.md": {
+      "asset_id": "asset_56ebd7d683c24b0e91b0b64fad6f4141",
+      "version_id": "version_fc5e0e19b5a44e5cbdabedbb5d293994",
+      "digest": "babc3e651bbe6847268120a3f6477876c18c1baa9bb932c3e3604b3c82a7bc0b",
+      "receipt_id": "rcpt_c47cff731dbd4e948bd5a8ab54ce73bc"
+    },
+    "reports/2026-08-23-seat-adoption.md": {
+      "asset_id": "asset_1ea8c6539032407fba85d2057556c206",
+      "version_id": "version_c55e0edd4fee4efb925df32a2e944b3a",
+      "digest": "f9e482f01b01f43a49c30fe26ec39056cd51e45ef944ee62646e003e76d712a1",
+      "receipt_id": "rcpt_37ba040f3d7d472290aad8de5c5ec3e7"
+    },
+    "reports/2026-08-23-signpost-alignment.md": {
+      "asset_id": "asset_93df1417a3554d31b0228a3caad8c486",
+      "version_id": "version_680ed10f14304369b72ca8a6c4654af0",
+      "digest": "95ec6e2174ca3d484aa358051eef81eaede5bbb1ca4172c759ad3a7473db3d0a",
+      "receipt_id": "rcpt_b84b3e023bb9483da64bf37807965281"
+    },
+    "reports/2026-08-23-stack-certification.md": {
+      "asset_id": "asset_024206a9ba204957af816dc665faca48",
+      "version_id": "version_82ccc353e97948fdb54f9a5726eccf32",
+      "digest": "4537938e02910dbe6dfcbcfd842ebabcd01ec21e0a3b1aa1df295f6a6cac8fd3",
+      "receipt_id": "rcpt_fe1fe3da43734170a4bf09c86a7c3fbd"
+    },
+    "services/README.md": {
+      "asset_id": "asset_2b86b0e869084077b9a70dc3c2cf9b8d",
+      "version_id": "version_a692eba8920c4617ae1fb198d771d3e4",
+      "digest": "9e3fa0f761eb6b3936e946f106f8ec9427c23869949c4b1e24d855836c9bacaf",
+      "receipt_id": "rcpt_44ebceeeba8545bba6c686ea6b01283a"
+    },
+    "services/asset/CHARTER.md": {
+      "asset_id": "asset_16a15b6592a64eeba7396daa7878b0d2",
+      "version_id": "version_0c1e663f5db449279bde85c9ef79fe53",
+      "digest": "8e426fb533d52563ff211f76849c5809b3c78f5b71420522374fba030369080e",
+      "receipt_id": "rcpt_fc86edde2e6744f0b646c3b2b41d4975"
+    },
+    "services/asset/KNOWN-GAPS.md": {
+      "asset_id": "asset_91709e58a7f64096a1c486b9f6581e67",
+      "version_id": "version_22ff55d3e3c1484eb91e168b72f8ed55",
+      "digest": "15e677e4d74c4dffd3136c04948d423b7ee67fa8a70d55b9240f685f51ac637a",
+      "receipt_id": "rcpt_a712a134482e499a96190c84e6c44ec3"
+    },
+    "services/asset/README.md": {
+      "asset_id": "asset_2f229b1470c242ed92248564259f1268",
+      "version_id": "version_c49ee9d3e21f484998b027a441d91106",
+      "digest": "e5136db73e19da1e084d7c9f3f10e6c67c225b8bd0f4b57adf73caed498b6dfe",
+      "receipt_id": "rcpt_a7871ddc77814597bfdbf9a8e1c13531"
+    },
+    "services/asset/conformance/BASELINE.md": {
+      "asset_id": "asset_8b0f307f97694470a54b65c012179691",
+      "version_id": "version_489504698a3d4ffbaeb77c8afa73b952",
+      "digest": "ff48deddd7a469123078b2c4ebd0effac7a438a91937c513d668db104cc4e83e",
+      "receipt_id": "rcpt_2998174b6f09450fb79d9fd89c111080"
+    },
+    "services/asset/conformance/README.md": {
+      "asset_id": "asset_469d9c4c2a3f421890a47b878bbdac47",
+      "version_id": "version_a3719a0b7574406095e577bbb05d95e4",
+      "digest": "68efe6ac8ba63fc0d4acab638d02d1c8724b4831f0aac585d94243e0a99b4750",
+      "receipt_id": "rcpt_d0141c8dcb524d3fb6477bbe6db0a22a"
+    },
+    "services/console/CHARTER.md": {
+      "asset_id": "asset_566a85fa86de4b1cab6eab8e9eb0b0af",
+      "version_id": "version_66c4c3c271bc477894bf13d1176af43f",
+      "digest": "7dec971f8b6d04d8ab9e70b6701c1a86fa6190d1fb39273cb9b441f898ca921f",
+      "receipt_id": "rcpt_34de9fd90303491b8cf94a46f38c68de"
+    },
+    "services/console/KNOWN-GAPS.md": {
+      "asset_id": "asset_9e25ec6e687a4a0884ccc06481cb94f7",
+      "version_id": "version_6221062a96ab4881ae79125f263586cb",
+      "digest": "c2d27ba92adb062cdd043bbfaf556af6951c71eef2fee5b9fac5c046a3e22210",
+      "receipt_id": "rcpt_dbaa7388f13e4db59202a3ab7eb226bf"
+    },
+    "services/console/README.md": {
+      "asset_id": "asset_ef54324cac77441dab5d3f6c5fd1b7e4",
+      "version_id": "version_51d5084fe7d34164a95e18e3e9c3307d",
+      "digest": "8e1ee7c3c0459ab4364573b35d443528fb4f7f2eb1a34e66124b161fd4c95432",
+      "receipt_id": "rcpt_a64159109f5944e0bac9faeae47ee2ac"
+    },
+    "services/gateway/CHARTER.md": {
+      "asset_id": "asset_44ef986eabb641acb4ae31e4bf7ef023",
+      "version_id": "version_8b5db83e9f2b4a67a9dfd20bd6cc0891",
+      "digest": "6668dc28b2e848b7a5407f62d56aca6ec638ad640a3419fa9779d6f9b0e027f7",
+      "receipt_id": "rcpt_d045478478194a1088a688d8a5803884"
+    },
+    "services/gateway/KNOWN-GAPS.md": {
+      "asset_id": "asset_50141f35f08e459a936fc6edefe8d1c0",
+      "version_id": "version_b2f254cf1e6c49e59f8788736cb13911",
+      "digest": "ed8ea1ad5bf6356907a9fe864e5930ff88c9565242112e66f319c47d3b9b51ec",
+      "receipt_id": "rcpt_b686de52de3e4ccdaaa56c17be36fb15"
+    },
+    "services/observation/CHARTER.md": {
+      "asset_id": "asset_e24dc6089ad04b9d8a52539b02bc9d68",
+      "version_id": "version_5455bdadeb9342aca515d2c57f15d7e6",
+      "digest": "1b3412876c552c025e337faa67f6b82f20fce14fd875f1cf722c81b36a944ee6",
+      "receipt_id": "rcpt_86af3b9607d946ec957a060172d2eeb7"
+    },
+    "services/observation/KNOWN-GAPS.md": {
+      "asset_id": "asset_426f95f32c1a4afa871a0677b2949b6c",
+      "version_id": "version_30722c3a1f6e46a2bc557eb41c1a1b72",
+      "digest": "9b5481d6178c7445821c37f173d9d8ceee00f8d263352bbc7d724395ba8d1d0a",
+      "receipt_id": "rcpt_9f1f7dff2e9541f58ec9dadf58258569"
+    },
+    "services/projection/CHARTER.md": {
+      "asset_id": "asset_ee249a0b58684bec9e604ba143e3d201",
+      "version_id": "version_4032ff303271408fbcfc9e8885d9e135",
+      "digest": "f447018d4d490565a4d3889ea23988841c0515cd744e5beb165a07780d833bcf",
+      "receipt_id": "rcpt_47158feb7120464b88c718d500e41e34"
+    },
+    "services/projection/PARITY.md": {
+      "asset_id": "asset_79505641928c4b50b5b20dda64cbdf29",
+      "version_id": "version_e8d0ab5adaae48cfaef996fac0b50992",
+      "digest": "4271408bf0c6209225157af03a2b3919b2f6cfc1a234cb38559f196abed0abe1",
+      "receipt_id": "rcpt_521d25d082e84b1ab83d5d3d03956daa"
+    },
+    "services/projection/README.md": {
+      "asset_id": "asset_64edfdb7a94f4fb180dc42583c16dbc5",
+      "version_id": "version_bf19c57a1dec47aaa90c6eaafc9a105a",
+      "digest": "cc34c09efb032b519fe02957c37a534e4fdc58f616df4ed0cf2fef124c8bf331",
+      "receipt_id": "rcpt_0bc576b38e3d4261b37dabf514f9b678"
+    },
+    "services/proofing/CHARTER.md": {
+      "asset_id": "asset_be2726676922469c9f19dd24ced00c4c",
+      "version_id": "version_dfae89c8a48147e9be9cb70fc3613ce4",
+      "digest": "c92105cb689621495886765e3bf85ebc656331aba5303551fa2aa3631c29fe09",
+      "receipt_id": "rcpt_3cc5376de96c46f2aae57aed81f80259"
+    },
+    "services/proofing/README.md": {
+      "asset_id": "asset_80fbcdd5243a4739ada4a9f9ea80f5d3",
+      "version_id": "version_e0f53b7ce86446d4b64c7f344dbb303b",
+      "digest": "21491d25d1411b24cae1b257319af9d640c6c08d0b8a322e1603d1baf28b442b",
+      "receipt_id": "rcpt_0b90466452f341648eca249b4d02dd1b"
+    },
+    "services/record/CHARTER.md": {
+      "asset_id": "asset_3e698fef18d545df852d22840b5d3614",
+      "version_id": "version_40c85ae3559c426b88a84ea534ebb979",
+      "digest": "1f2fda5917535f886cd495bd4d0cc8a1c8a0ef7f31bedbaf7d6e29149babbdde",
+      "receipt_id": "rcpt_6c42b86200b04e9fbb17658d20bc8696"
+    },
+    "services/registry/CHARTER.md": {
+      "asset_id": "asset_c7beaf85ee2744e9bd705388b49585ed",
+      "version_id": "version_55ed5118805b4b18bf8394bb31a46d72",
+      "digest": "fc337f3a00ef58f035ab3fed04fc120389d4b63ae93445e26e81d0794c6b6e53",
+      "receipt_id": "rcpt_77019e331b76464f9340d6d0cf6ede77"
+    },
+    "workers/README.md": {
+      "asset_id": "asset_f0e68b2c88e548278ec8a517e7b001e4",
+      "version_id": "version_d90c067aacf84b9c97ba87a63df980dc",
+      "digest": "0c87adbd599df30d367343cdccbf4407fa91682a6e29c1b98702ba46b389edd3",
+      "receipt_id": "rcpt_59dc57944e284683ae226f245828968b"
+    }
+  }
+}

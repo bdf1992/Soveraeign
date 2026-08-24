@@ -43,7 +43,21 @@ A request crosses the door in a fixed order, and each step can refuse:
    no receipt behind it is `RECEIPT_MISSING`, not a success.
 
 A refusal at any step is itself recorded through `refuse-request`. A request that was turned
-away leaves a record; it does not vanish.
+away leaves a record; it does not vanish. This is the one thing the gateway does that the
+product category does not: an edge gateway logs a refusal, and a log line is not a record with
+a digest, an attributable actor, and a counter-record path
+(`reports/2026-08-23-gateway-research-and-controller-plan.md`).
+
+Two rules the route needs and does not yet have:
+
+- **Deny is the default and an explicit deny wins.** When no grant covers the call, the answer
+  is refusal; when two grants disagree, the narrower one decides. A system built on attenuating
+  authority cannot let the widest grant win. Not yet in any contract
+  (`KNOWN-GAPS.md`, conflicting grants).
+- **Staleness refuses rather than degrades.** `capability_map_fresh` is a hard precondition.
+  Distributed gateways cannot afford this and run eventually consistent instead; we can afford
+  it because the map is a checked-in file rebuilt on one machine. The first federated crossing
+  turns that free choice into a real one.
 
 ## Authoritative versus derived
 
@@ -75,6 +89,14 @@ and the routing record names both.
 
 That pair is the whole service in miniature: a door that refuses is worth more than a door that
 opens, because only the first one proves the door is there.
+
+## Gaps and standing
+
+`KNOWN-GAPS.md` records every observed difference from this charter.
+`contracts/ai-native-gateway-service.yaml` scores the surface against `AI-NATIVE.md`:
+reachability `PARTIAL` on declaration alone, everything else `NONE`, `earn_it` `OPEN`,
+derived `NOT_QUALIFIED`. The operation sequence a controller would run is in
+`reports/2026-08-23-gateway-research-and-controller-plan.md`.
 
 ## Open before this can be built
 

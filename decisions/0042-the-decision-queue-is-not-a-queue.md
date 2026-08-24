@@ -23,16 +23,23 @@ Seventeen records read as open. Reading each one against
 `decisions/0023-acceptance-not-approval.md` and
 `decisions/0033-close-the-founding-docket.md` Ruling 1 gives a different picture:
 
-- **three** genuinely need Bdo — `0020` seat topology, `0035` seat etiquette,
-  `0039` the node surface;
+- **six** genuinely need Bdo — `0020` seat topology, `0035` seat etiquette,
+  `0036-B` the automatic console session, `0038` the authority assignment, `0039`
+  the node surface, and `0042` itself;
 - **nine** already have his answer recorded in `STATUS.yaml` while the record's
   own status line still says pending, including `0001`, the founding boundary,
   which `STATUS.yaml` has listed under `accepted_repository_claims` since day one;
-- **five** touch no owner-held category at all and can be settled at Control or
+- **four** touch no owner-held category at all and can be settled at Control or
   Work, which is where Ruling 1 says they belong.
 
-So the queue that looked like seventeen judgements owed by one person is three
-judgements, nine edits, and five rulings nobody asked for.
+So the queue that looked like seventeen judgements owed by one person is six
+judgements, nine edits, and four rulings nobody asked for.
+
+The first draft of this record said three, nine and five. An independent witness
+found two of the three counts wrong, and section 4 below is why: routing records
+instead of questions loses whichever question disagrees with a record's headline.
+The numbers here are the ones `scripts/sov_docket.py queue` prints, and if they
+ever disagree again the tool is right and this prose is stale.
 
 The other half of the cause is rate. Seven records were minted on 2026-08-23
 alone. Ruling 1 already says to settle at the lowest tier that can produce
@@ -117,9 +124,9 @@ inferring questions from someone else's prose, and that interpretive step
 produced both defects the witness of this branch found. A record that states its
 questions turns routing into reading a list.
 
-`0001` through `0042` are exempt and stay exempt. Exactly one of them carries the
-section, and only because `0036`'s author happened to write it — nothing asked
-for it. Retrofitting the other seventeen would mean one reader inventing
+`0001` through `0042` are exempt and stay exempt. Two of them carry the section:
+`0036`, whose author happened to write it with nothing asking for it, and this
+record, which follows its own rule rather than exempting itself. Retrofitting the other seventeen would mean one reader inventing
 questions on behalf of records other people wrote, which is the failure the rule
 exists to end. Named as debt rather than silently forgiven, the way
 `scripts/lint.py` handles module size.
@@ -211,3 +218,14 @@ single status line — every one of the nine lagging records still says what it
 said, because editing a record to say Bdo accepted it is exactly the move
 `AGENTS.md` forbids without him. It produces the queue and names what each item
 needs. Acting on it is a separate operation for whoever holds the tier.
+
+## What still waits on Bdo
+
+- Whether routing questions to tiers is a thing this repository should do at all,
+  given #81 is already building an adjacent mechanism and two counts of what
+  waits on him is worse than one.
+- Whether the routing judgements in `contracts/acceptance-routing.json` are
+  right. Each is one reader's claim about someone else's question, and `0040`
+  carries a recorded doubt nobody has settled.
+- Whether requiring `What still waits on Bdo` from `0043` is worth the line it
+  costs every future record.

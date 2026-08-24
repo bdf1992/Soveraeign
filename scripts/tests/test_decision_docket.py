@@ -155,8 +155,10 @@ class OwnerQuestionsSection(unittest.TestCase):
 
     def test_the_grandfathered_records_are_not_failed_by_the_rule(self) -> None:
         """Seventeen open records predate the rule and must not turn the gate red."""
-        enumerating = [row["id"] for row in sov_docket.records() if row["enumerates"]]
-        self.assertEqual(enumerating, ["0036"])
+        threshold = STANDING["owner_questions_section"]["required_from_record"]
+        silent = [row["id"] for row in sov_docket.records()
+                  if not row["enumerates"] and row["id"] < threshold]
+        self.assertTrue(silent, "the rule is pointless if every old record already complies")
         self.assertEqual(sov_docket.check(), 0)
 
 

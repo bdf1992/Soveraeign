@@ -15,7 +15,7 @@ moment a record is minted. This builds the same thing as a projection over
 It settles nothing. Every routing entry is a claim with a reason, and Bdo may
 reject any of them.
 
-    python scripts/sov_docket.py queue      what is genuinely open, and for whom
+    python scripts/sov_docket.py queue      the one merged list, and for whom
     python scripts/sov_docket.py unrouted   open records with no question routed at them
     python scripts/sov_docket.py check      the gate: crosswalk total, routing sound
 """
@@ -78,10 +78,32 @@ def graded() -> tuple[list[dict[str, Any]], list[dict[str, str]]]:
 
 
 def open_questions() -> list[dict[str, Any]]:
-    """Every question routed against a record that is not settled."""
+    """Every open question, from a decision record or from anywhere else.
+
+    Bdo ruled on 2026-08-24 that he wants one merged list, so a question from a
+    commit-range sweep sits beside one from a record and is counted once. A
+    question carrying `same_as` is a second source reaching a question already
+    here; it is kept so the agreement stays visible and excluded from counts.
+    """
     rows, _ = graded()
-    return [dict(entry, slug=row["slug"]) for row in rows if not row["settled"]
-            for entry in row["questions"]]
+    from_records = [dict(entry, slug=row["slug"]) for row in rows if not row["settled"]
+                    for entry in row["questions"]]
+    routed = _read(ROUTING)["questions"]
+    elsewhere = [dict(entry, question_id=qid, slug=_short_source(entry))
+                 for qid, entry in sorted(routed.items()) if entry.get("record") is None]
+    return [entry for entry in from_records + elsewhere if not entry.get("same_as")]
+
+
+def duplicates() -> list[dict[str, Any]]:
+    """Questions two sources reached independently, kept rather than deleted."""
+    routed = _read(ROUTING)["questions"]
+    return [dict(entry, question_id=qid) for qid, entry in sorted(routed.items())
+            if entry.get("same_as")]
+
+
+def _short_source(entry: dict[str, Any]) -> str:
+    source = (entry.get("source") or "").rsplit("/", 1)[-1].removesuffix(".md")
+    return f"{source} {entry.get('source_item', '')}".strip()
 
 
 def _open_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -103,8 +125,10 @@ def queue() -> int:
     stale = [entry for entry in owner if entry.get("already_recorded_as")]
     real = [entry for entry in owner if not entry.get("already_recorded_as")]
 
-    print(f"{len(rows)} decision records, {len(unsettled)} standing PROPOSED, "
-          f"{len(asked)} questions routed against them" + NL)
+    dupes = duplicates()
+    print(f"{len(rows)} decision records, {len(unsettled)} standing PROPOSED. "
+          f"One merged list: {len(asked)} open questions, {len(dupes)} of them reached twice "
+          f"and counted once." + NL)
     print(f"== genuinely waiting on Bdo: {len(real)} ==")
     for entry in real:
         print(_line(entry))
@@ -137,8 +161,8 @@ def queue() -> int:
     print(f"  {len(owner)} questions reach Bdo at all")
     print(f"  {len(stale)} of those he has already answered; the record's status line lags")
     print(f"  {len(real)} genuinely await a judgement from him")
-    print("  a commit-range sweep counts separately; the union is in "
-          "reports/2026-08-24-reconciled-owner-docket.md")
+    sources = sorted({entry.get("source") or "decisions/" for entry in asked})
+    print(f"  merged from {len(sources)} sources: " + ", ".join(sources))
     enumerating = len([row for row in unsettled if row["enumerates"]])
     print(f"  {enumerating} of {len(unsettled)} open records state their own owner questions")
     headline = [entry for entry in asked if entry["enumerated_from"] == "headline"]
@@ -179,9 +203,14 @@ def check() -> int:
     status_text = STATUS.read_text(encoding="utf-8")
 
     for qid, entry in sorted(routed.items()):
-        if entry.get("record") not in known:
-            defects.append(f"{qid}: names record {entry.get('record')!r}, which does not exist")
-        for field in ("record", "question", "enumerated_from", "reaches_owner", "categories",
+        if entry.get("record") is None:
+            if not entry.get("source"):
+                defects.append(f"{qid}: belongs to no record and names no source")
+        elif entry["record"] not in known:
+            defects.append(f"{qid}: names record {entry['record']!r}, which does not exist")
+        if entry.get("same_as") and entry["same_as"] not in routed:
+            defects.append(f"{qid}: same_as names {entry['same_as']!r}, which is not a question")
+        for field in ("question", "enumerated_from", "reaches_owner", "categories",
                       "reason", "action_if_confirmed"):
             if field not in entry:
                 defects.append(f"{qid}: has no {field}")
@@ -225,7 +254,8 @@ def check() -> int:
     covered = len([row for row in unsettled if row["questions"]])
     asked = len(open_questions())
     print(f"PASS: {len(rows)} decision records, {len(unsettled)} open, {covered} with a routed "
-          f"question, {asked} questions, {len(unsettled) - covered} with none")
+          f"question; one merged list of {asked} open questions from "
+          f"{len({e.get('source') or 'decisions/' for e in open_questions()})} sources")
     print("Standing note: routing is a declared claim about who settles what. "
           "It grades no decision as right and settles none of them.")
     return 0

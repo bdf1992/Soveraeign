@@ -48,7 +48,7 @@ gets written and joins a pile whether or not it needed to exist.
 
 ## Decision
 
-Three parts, none of which settles a decision.
+Five parts, none of which settles a decision.
 
 ### 1. A decision record's standing is a closed set, adopted by crosswalk
 
@@ -130,6 +130,31 @@ record, which follows its own rule rather than exempting itself. Retrofitting th
 questions on behalf of records other people wrote, which is the failure the rule
 exists to end. Named as debt rather than silently forgiven, the way
 `scripts/lint.py` handles module size.
+
+### 5. One merged list, ruled by Bdo
+
+Bdo ruled on 2026-08-24 that he wants one list, not two that disagree. So a
+question enters `contracts/acceptance-routing.json` whether it comes from a
+decision record or from anywhere else, `source` says which, and `queue` prints
+one list.
+
+Two mechanisms may still exist, and the distinction is worth keeping: PR #81 is
+a **gate** that stops work being parked on an owner seat without a reason, and
+runs at the moment work would stall. This is a **census** of what is already
+written, and runs over history. They have different failure modes — a gate that
+goes red blocks a build, a census that is wrong only misinforms — and collapsing
+them would couple the two. What Bdo ruled out is two published counts, not two
+mechanisms, and only this one publishes a number.
+
+Twelve items from `reports/2026-08-23-qa-witness-sweep-c296c25.md` are now in the
+list. Two of them are questions a decision record already carries — the sweep's
+item 16 is `0036-B`, its item 3 is `0038-A`. Those are kept as duplicates rather
+than deleted, so the agreement between two independent readings stays visible,
+and they are excluded from every count.
+
+The count is now derived rather than argued. Two readers produced fifteen and
+sixteen from the same file by hand within an hour of each other; `queue` prints
+sixteen and shows its working.
 
 ## Why the check is the part that lasts
 

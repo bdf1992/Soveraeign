@@ -112,6 +112,59 @@ class Defeats(unittest.TestCase):
         self._refuses(mutate)
 
 
+class OneMergedList(unittest.TestCase):
+    """Bdo ruled on 2026-08-24 that he wants one list, not two that disagree."""
+
+    def test_the_list_merges_more_than_one_source(self) -> None:
+        sources = {entry.get("source") for entry in sov_docket.open_questions()}
+        self.assertIn(None, sources, "questions from decision records are missing")
+        self.assertTrue({s for s in sources if s}, "no question from outside decisions/")
+
+    def test_a_question_reached_twice_is_counted_once(self) -> None:
+        """The duplicate is kept so the agreement stays visible, and excluded from counts."""
+        dupes = sov_docket.duplicates()
+        self.assertTrue(dupes)
+        listed = {entry["question_id"] for entry in sov_docket.open_questions()}
+        for entry in dupes:
+            self.assertNotIn(entry["question_id"], listed)
+            self.assertIn(entry["same_as"], ROUTING["questions"])
+
+    def test_the_owner_count_is_the_reconciled_sixteen(self) -> None:
+        """Derived by the tool, not by arithmetic. Two readers got 15 and 16 by hand."""
+        awaiting = [entry for entry in sov_docket.open_questions()
+                    if entry["reaches_owner"] and not entry.get("already_recorded_as")]
+        self.assertEqual(len(awaiting), 16)
+
+
+class OneMergedListDefeats(unittest.TestCase):
+    """The two rules the merged list adds, each given the input it refuses."""
+
+    def setUp(self) -> None:
+        self.contract = json.loads(json.dumps(ROUTING))
+        self.original = sov_docket.ROUTING
+
+    def tearDown(self) -> None:
+        sov_docket.ROUTING = self.original
+
+    def _refuses(self, mutate) -> None:
+        mutate(self.contract["questions"])
+        with TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
+            path = Path(tmp) / "routing.json"
+            path.write_text(json.dumps(self.contract), encoding="utf-8")
+            sov_docket.ROUTING = path
+            self.assertEqual(sov_docket.check(), 1)
+
+    def test_a_question_belonging_to_no_record_and_no_source_fails(self) -> None:
+        def mutate(questions: dict) -> None:
+            questions["SWEEP-01"]["source"] = None
+        self._refuses(mutate)
+
+    def test_a_duplicate_pointing_at_nothing_fails(self) -> None:
+        def mutate(questions: dict) -> None:
+            questions["SWEEP-11"]["same_as"] = "0099-Z"
+        self._refuses(mutate)
+
+
 class OwnerQuestionsSection(unittest.TestCase):
     """The rule that turns routing from inference into reading a list.
 

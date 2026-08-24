@@ -1,5 +1,5 @@
 {
-  "contract_id": "soveraeign-acceptance-routing/v2",
+  "contract_id": "soveraeign-acceptance-routing/v3",
   "status": "PROPOSED",
   "decision": "decisions/0042-the-decision-queue-is-not-a-queue.md",
   "summary": "For every decision record standing PROPOSED, which owner-held category it actually touches, and whether STATUS.yaml already records the answer. decisions/0033 Ruling 1 says a question is settled at the lowest tier that can produce evidence defeating the alternatives, and decisions/0023 says only owner-held product intent, public naming, external commitment, irreversible external-world effect, and the acceptance standing itself reach Bdo. Every entry here is a claim with a reason, defeasible by him and by anyone else.",
@@ -7,6 +7,8 @@
   "already_recorded_note": "already_recorded_as names a field or claim in STATUS.yaml that records the owner's answer to this record's question. Where one is present, the record's own status line is behind STATUS.yaml rather than genuinely open, and closing it is an edit rather than a judgement. The checker proves the named key is really in STATUS.yaml so this cannot be asserted loosely.",
   "entry_keys": [
     "record",
+    "source",
+    "source_item",
     "question",
     "enumerated_from",
     "reaches_owner",
@@ -14,7 +16,8 @@
     "already_recorded_as",
     "reason",
     "action_if_confirmed",
-    "contested_by"
+    "contested_by",
+    "same_as"
   ],
   "entry_keys_note": "The whole vocabulary of a routing entry. There is deliberately no field that could record a settlement, an acceptance, or a date one happened: this file says who settles a record, never that anyone did. Recording an acceptance is STATUS.yaml's job and Bdo's act.",
   "contested_note": "An entry someone has pushed back on, naming the evidence. A routing table that quietly rewrites itself when challenged is worth less than one that shows where it was pushed, so the doubt is recorded beside the claim rather than replacing it. The entry still reads as its author left it until whoever holds the tier rules.",
@@ -247,6 +250,178 @@
       "already_recorded_as": null,
       "reason": "Proposes machinery over the acceptance rule itself, which decisions/0023 names as owner-held. It settles no decision and changes no status line, but it does decide how the queue in front of him is assembled, and that is his.",
       "action_if_confirmed": "Accept or reject the routing shape. Rejecting it leaves the seventeen records exactly where they were."
+    },
+    "SWEEP-01": {
+      "record": null,
+      "source": "reports/2026-08-23-qa-witness-sweep-c296c25.md",
+      "source_item": "item 1",
+      "question": "Is NONE an admissible effect class, and DERIVED, REBUILT, SUPERSEDE, REBUILD, counters?",
+      "enumerated_from": "record-section",
+      "reaches_owner": true,
+      "categories": [
+        "acceptance_standing"
+      ],
+      "already_recorded_as": null,
+      "reason": "Six manifests use effect-class values CLASSIFICATION.md does not define. Either the owner-accepted vocabulary grows or six manifests are wrong, and CLASSIFICATION.md is vocabulary he accepted.",
+      "action_if_confirmed": "Rule the vocabulary once; six manifests follow from it."
+    },
+    "SWEEP-02": {
+      "record": null,
+      "source": "reports/2026-08-23-qa-witness-sweep-c296c25.md",
+      "source_item": "item 2",
+      "question": "Does bindings/mcp/ need a decision record before it stays a required check?",
+      "enumerated_from": "record-section",
+      "reaches_owner": true,
+      "categories": [
+        "product_intent"
+      ],
+      "already_recorded_as": null,
+      "reason": "820 lines that open sessions, issue grants, write to the operational record, and one endpoint spawns the repository gate itself. It is a required verify.py check and no decision record covers it.",
+      "action_if_confirmed": "Either admit it with a record or drop it from the gate until one exists."
+    },
+    "SWEEP-03": {
+      "record": null,
+      "source": "reports/2026-08-23-qa-witness-sweep-c296c25.md",
+      "source_item": "item 3",
+      "question": "Is decisions/0038 admitted retroactively?",
+      "enumerated_from": "record-section",
+      "reaches_owner": true,
+      "categories": [
+        "acceptance_standing"
+      ],
+      "already_recorded_as": null,
+      "reason": "0038 states as a constraint that no capability is served on MCP and that standing up a stdio surface is not admitted by it. Commit d850c6d, the next commit, did exactly that.",
+      "action_if_confirmed": "Amend 0038 or withdraw the surface. Overlaps 0038-A and is counted once.",
+      "same_as": "0038-A"
+    },
+    "SWEEP-04": {
+      "record": null,
+      "source": "reports/2026-08-23-qa-witness-sweep-c296c25.md",
+      "source_item": "item 4",
+      "question": "Is caller-asserted attribution acceptable over a binding?",
+      "enumerated_from": "record-section",
+      "reaches_owner": true,
+      "categories": [
+        "product_intent"
+      ],
+      "already_recorded_as": null,
+      "reason": "The MCP gateway takes actor as a tool argument and the asset receipt records it unchecked, so one act leaves two records naming different actors. The console had the same shape with granted_by defaulting to the owner's own name.",
+      "action_if_confirmed": "Rule whether identity may arrive as an argument at all, or must come from a check."
+    },
+    "SWEEP-05": {
+      "record": null,
+      "source": "reports/2026-08-23-qa-witness-sweep-c296c25.md",
+      "source_item": "item 8",
+      "question": "Which scope semantics is the node's?",
+      "enumerated_from": "record-section",
+      "reaches_owner": true,
+      "categories": [
+        "product_intent"
+      ],
+      "already_recorded_as": null,
+      "reason": "Console matches scope by exact string, so a grant scoped * admits only an operation scoped *. Asset treats * as a wildcard. One node, two meanings, and nothing reconciles them.",
+      "action_if_confirmed": "Pick one and make the other conform."
+    },
+    "SWEEP-06": {
+      "record": null,
+      "source": "reports/2026-08-23-qa-witness-sweep-c296c25.md",
+      "source_item": "item 9",
+      "question": "Does a COUNTERED crossing admit its origin onto the public surface?",
+      "enumerated_from": "record-section",
+      "reaches_owner": true,
+      "categories": [
+        "product_intent"
+      ],
+      "already_recorded_as": null,
+      "reason": "federation.py treats COUNTERED as admitting, alongside COMMITTED. The crossing schema defines COUNTERED as contradicting the peer. With the only inbound crossing at COUNTERED the peer's thread publishes.",
+      "action_if_confirmed": "A semantic call about what countering means at a node boundary."
+    },
+    "SWEEP-07": {
+      "record": null,
+      "source": "reports/2026-08-23-qa-witness-sweep-c296c25.md",
+      "source_item": "item 10",
+      "question": "Is public-projection.schema.json the target, or is the console's simpler view the real one?",
+      "enumerated_from": "record-section",
+      "reaches_owner": true,
+      "categories": [
+        "product_intent"
+      ],
+      "already_recorded_as": null,
+      "reason": "The console documents published_threads() as the read built over that schema; driven live it produces 12 defects and 10 of 13 required properties absent. Two descriptions of one surface and no test links them.",
+      "action_if_confirmed": "Name which is authoritative; the other changes to match."
+    },
+    "SWEEP-08": {
+      "record": null,
+      "source": "reports/2026-08-23-qa-witness-sweep-c296c25.md",
+      "source_item": "item 11",
+      "question": "Which of the three readings of INCOMPLETE_PROPOSAL holds?",
+      "enumerated_from": "record-section",
+      "reaches_owner": true,
+      "categories": [
+        "acceptance_standing"
+      ],
+      "already_recorded_as": null,
+      "reason": "Declared in six manifests and in the kernel table, emitted by nothing. OPEN-SEAMS S17 records the three readings and none is settled.",
+      "action_if_confirmed": "Rule it; the seam closes either way."
+    },
+    "SWEEP-09": {
+      "record": null,
+      "source": "reports/2026-08-23-qa-witness-sweep-c296c25.md",
+      "source_item": "item 7",
+      "question": "Should a service manifest carry standing at all?",
+      "enumerated_from": "record-section",
+      "reaches_owner": true,
+      "categories": [
+        "acceptance_standing"
+      ],
+      "already_recorded_as": null,
+      "reason": "A manifest may declare its own standing as WITNESSED or RATIFIED and the checker accepts it. A build cannot witness itself, so a self-declared standing is a claim no participant may make. All six are honest today.",
+      "action_if_confirmed": "Constrain the field to PROPOSED|BUILT, or remove it."
+    },
+    "SWEEP-10": {
+      "record": null,
+      "source": "reports/2026-08-23-qa-witness-sweep-c296c25.md",
+      "source_item": "item 13",
+      "question": "Is outward publication a root-seat judgement or work any seat may perform?",
+      "enumerated_from": "record-section",
+      "reaches_owner": true,
+      "categories": [
+        "external_commitment"
+      ],
+      "already_recorded_as": null,
+      "reason": "OPEN-SEAMS S19. The projection contract wants a seat, the console record carries an operator id, and nothing bridges them.",
+      "action_if_confirmed": "Rule the relation; the two contracts reconcile from it."
+    },
+    "SWEEP-11": {
+      "record": null,
+      "source": "reports/2026-08-23-qa-witness-sweep-c296c25.md",
+      "source_item": "item 16",
+      "question": "Should opening this repository write an operator session automatically?",
+      "enumerated_from": "record-section",
+      "reaches_owner": true,
+      "categories": [
+        "product_intent"
+      ],
+      "already_recorded_as": null,
+      "reason": "Same question as 0036-B, reached independently by the sweep. Bdo answered No on 2026-08-24 and named a template file as the remedy.",
+      "action_if_confirmed": "Answered. Carried as a duplicate so the two readings visibly reconcile.",
+      "same_as": "0036-B"
+    },
+    "SWEEP-12": {
+      "record": null,
+      "source": "reports/2026-08-23-qa-witness-sweep-c296c25.md",
+      "source_item": "item 17",
+      "question": "Is a self-authored subprocess-only checker an independence claim?",
+      "enumerated_from": "record-section",
+      "reaches_owner": true,
+      "categories": [
+        "acceptance_standing"
+      ],
+      "already_recorded_as": null,
+      "reason": "Several commits this session claim independence on the strength of not importing the code under test. Whether that is independence or only distance is a question about what witnessing means, which reaches the acceptance standing directly.",
+      "action_if_confirmed": "Rule what independence requires; every witness report depends on the answer."
     }
-  }
+  },
+  "one_list_note": "Bdo ruled on 2026-08-24 that he wants one merged list. A question therefore enters here whether it comes from a decision record or from somewhere else, and `source` says which. Two mechanisms may still exist - a gate that stops work being parked on him and this census of what is already written are different jobs with different failure modes - but only one of them publishes a number, and it is this one.",
+  "same_as_note": "Two sources reaching the same question. The duplicate is kept rather than deleted so the agreement between two independent readings stays visible, and it is excluded from every count."
 }

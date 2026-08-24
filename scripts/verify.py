@@ -160,11 +160,11 @@ CHECKS = (
           "services behind it, and reads its evidence back out of the Record Service journal "
           "instead of trusting the gateway's return value",
           ("bindings/mcp", "bindings/mcp/manifest.json")),
-    Check("repository tooling tests",
-          [sys.executable, "-m", "unittest", "discover", "-s", "scripts/tests", "-v"], ROOT,
+    Check("repository tooling tests", [sys.executable, "scripts/run_tooling_tests.py"], ROOT,
           "the harness's own tests; independent of the repository content they check, but "
-          "not of the harness itself",
-          ("scripts/tests",)),
+          "not of the harness itself; the runner partitions the complete discovered module "
+          "population and fails if any shard fails",
+          ("scripts/tests", "scripts/run_tooling_tests.py")),
 )
 
 

@@ -16,7 +16,7 @@ It settles nothing. Every routing entry is a claim with a reason, and Bdo may
 reject any of them.
 
     python scripts/sov_docket.py queue      what is genuinely open, and for whom
-    python scripts/sov_docket.py unrouted   proposals no routing entry covers
+    python scripts/sov_docket.py unrouted   open records with no question routed at them
     python scripts/sov_docket.py check      the gate: crosswalk total, routing sound
 """
 
@@ -34,6 +34,7 @@ DECISIONS = ROOT / "decisions"
 STANDING = ROOT / "contracts" / "decision-standing.json"
 ROUTING = ROOT / "contracts" / "acceptance-routing.json"
 STATUS = ROOT / "STATUS.yaml"
+NL = chr(10)
 STATUS_LINE = re.compile(r"^Status:\s*`([^`]+)`", re.M)
 
 
@@ -52,132 +53,161 @@ def records() -> list[dict[str, str]]:
 
 
 def graded() -> tuple[list[dict[str, Any]], list[dict[str, str]]]:
-    """Each record joined to its standing and its routing entry.
+    """Each record joined to its standing and to the questions routed against it.
 
-    A status line absent from the crosswalk is returned separately rather than
-    guessed at: this contract cannot decide what a phrasing nobody declared means.
+    The unit is a question, not a record. A record may carry several with
+    different answers, so `questions` is a list and may be empty. A status line
+    absent from the crosswalk is returned separately rather than guessed at.
     """
     standing = _read(STANDING)
-    routing = _read(ROUTING)["routing"]
+    routed = _read(ROUTING)["questions"]
     rows, unknown = [], []
     for record in records():
         name = standing["crosswalk"].get(record["status_line"])
         if name is None:
             unknown.append(record)
             continue
+        mine = [dict(entry, question_id=qid) for qid, entry in sorted(routed.items())
+                if entry["record"] == record["id"]]
         rows.append({**record, "standing": name,
-                     "settled": standing["standings"][name]["settled"],
-                     "routing": routing.get(record["id"])})
+                     "settled": standing["standings"][name]["settled"], "questions": mine})
     return rows, unknown
+
+
+def open_questions() -> list[dict[str, Any]]:
+    """Every question routed against a record that is not settled."""
+    rows, _ = graded()
+    return [dict(entry, slug=row["slug"]) for row in rows if not row["settled"]
+            for entry in row["questions"]]
 
 
 def _open_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return [row for row in rows if not row["settled"]]
 
 
-def _line(row: dict[str, Any]) -> str:
-    entry = row["routing"] or {}
-    recorded = entry.get("already_recorded_as")
-    mark = "  [STATUS.yaml already answers this]" if recorded else ""
-    return f"  {row['id']}  {row['slug'][:44]:46}{mark}"
+def _line(entry: dict[str, Any]) -> str:
+    mark = "  [STATUS.yaml already answers this]" if entry.get("already_recorded_as") else ""
+    return f"  {entry['question_id']}  {entry['question'][:58]:60}{mark}"
 
 
 def queue() -> int:
-    """Print what is open, split by who can settle it."""
+    """Print every open question, split by who can settle it."""
     rows, unknown = graded()
     unsettled = _open_rows(rows)
-    routed = [row for row in unsettled if row["routing"]]
-    owner = [row for row in routed if row["routing"]["reaches_owner"]]
-    below = [row for row in routed if not row["routing"]["reaches_owner"]]
-    stale = [row for row in owner if row["routing"].get("already_recorded_as")]
-    real = [row for row in owner if not row["routing"].get("already_recorded_as")]
+    asked = open_questions()
+    owner = [entry for entry in asked if entry["reaches_owner"]]
+    below = [entry for entry in asked if not entry["reaches_owner"]]
+    stale = [entry for entry in owner if entry.get("already_recorded_as")]
+    real = [entry for entry in owner if not entry.get("already_recorded_as")]
 
-    print(f"{len(rows)} decision records, {len(unsettled)} standing PROPOSED\n")
+    print(f"{len(rows)} decision records, {len(unsettled)} standing PROPOSED, "
+          f"{len(asked)} questions routed against them" + NL)
     print(f"== genuinely waiting on Bdo: {len(real)} ==")
-    for row in real:
-        print(_line(row))
-        print(f"        {row['routing']['reason']}")
-        print(f"        -> {row['routing']['action_if_confirmed']}")
-    print(f"\n== his answer is already in STATUS.yaml; the record's status line lags: "
+    for entry in real:
+        print(_line(entry))
+        print(f"        {entry['reason']}")
+        print(f"        -> {entry['action_if_confirmed']}")
+    print(NL + f"== his answer is already in STATUS.yaml; the record's status line lags: "
           f"{len(stale)} ==")
-    for row in stale:
-        print(_line(row) + f"\n        {row['routing']['already_recorded_as']}")
-    print(f"\n== settleable below the owner: {len(below)} ==")
-    for row in below:
-        print(_line(row))
-        print(f"        {row['routing']['reason'][:96]}")
-    contested = [row for row in routed if row["routing"].get("contested_by")]
+    for entry in stale:
+        print(_line(entry) + NL + f"        {entry['already_recorded_as']}")
+    print(NL + f"== settleable below the owner: {len(below)} ==")
+    for entry in below:
+        print(_line(entry))
+        print(f"        {entry['reason'][:96]}")
+    contested = [entry for entry in asked if entry.get("contested_by")]
     if contested:
-        print(f"\n== routed, and someone has pushed back on the routing: {len(contested)} ==")
-        for row in contested:
-            print(_line(row))
-            print(f"        {row['routing']['contested_by'][:150]}")
-    unrouted = [row for row in unsettled if not row["routing"]]
-    if unrouted:
-        print(f"\n== unrouted, so nobody can say whose they are: {len(unrouted)} ==")
-        for row in unrouted:
-            print(_line(row))
+        print(NL + f"== routed, and someone has pushed back on the routing: {len(contested)} ==")
+        for entry in contested:
+            print(_line(entry))
+            print(f"        {entry['contested_by'][:150]}")
+    bare = [row for row in unsettled if not row["questions"]]
+    if bare:
+        print(NL + f"== open records with no question routed against them: {len(bare)} ==")
+        for row in bare:
+            print(f"  {row['id']}  {row['slug']}")
     if unknown:
-        print(f"\n== status line not in the crosswalk: {len(unknown)} ==")
+        print(NL + f"== status line not in the crosswalk: {len(unknown)} ==")
         for row in unknown:
             print(f"  {row['id']}  {row['status_line']}")
-    print("\nStanding note: routing entries are claims with reasons, not settlements. "
+    headline = [entry for entry in asked if entry["enumerated_from"] == "headline"]
+    print(NL + f"{len(headline)} of {len(asked)} questions come from a record that does not "
+          f"enumerate its own; a further question such a record carries is not visible here.")
+    print("Standing note: routing entries are claims with reasons, not settlements. "
           "Nothing here ratifies anything.")
     return 0
 
 
 def unrouted() -> int:
-    """List proposals no routing entry covers."""
+    """List open records no question has been routed against."""
     rows, unknown = graded()
-    missing = [row for row in _open_rows(rows) if not row["routing"]]
-    for row in missing:
+    bare = [row for row in _open_rows(rows) if not row["questions"]]
+    for row in bare:
         print(f"{row['id']}  {row['slug']}  {row['status_line']}")
     for row in unknown:
         print(f"{row['id']}  {row['slug']}  UNKNOWN STATUS: {row['status_line']}")
-    print(f"\n{len(missing)} unrouted, {len(unknown)} with an undeclared status line")
-    return 1 if (missing or unknown) else 0
+    print(NL + f"{len(bare)} open records with no question, "
+          f"{len(unknown)} with an undeclared status line")
+    return 1 if (bare or unknown) else 0
 
 
 def check() -> int:
-    """The gate: the crosswalk is total, and every routing entry is sound."""
+    """The gate: the crosswalk is total, and every routed question is sound."""
     defects: list[str] = []
     standing = _read(STANDING)
-    routing = _read(ROUTING)["routing"]
+    contract = _read(ROUTING)
+    routed = contract["questions"]
+    allowed = set(contract["entry_keys"])
     rows, unknown = graded()
 
     for row in unknown:
         defects.append(f"{row['id']}: status line not in the crosswalk: {row['status_line']!r}")
 
     known = {record["id"] for record in records()}
-    for identifier in sorted(set(routing) - known):
-        defects.append(f"routing names {identifier}, which is not a decision record")
-
     categories = set(standing["owner_held_categories"])
     status_text = STATUS.read_text(encoding="utf-8")
-    for identifier, entry in sorted(routing.items()):
-        for field in ("reaches_owner", "categories", "reason", "action_if_confirmed"):
+
+    for qid, entry in sorted(routed.items()):
+        if entry.get("record") not in known:
+            defects.append(f"{qid}: names record {entry.get('record')!r}, which does not exist")
+        for field in ("record", "question", "enumerated_from", "reaches_owner", "categories",
+                      "reason", "action_if_confirmed"):
             if field not in entry:
-                defects.append(f"{identifier}: routing entry has no {field}")
+                defects.append(f"{qid}: has no {field}")
+        if set(entry) - allowed:
+            defects.append(f"{qid}: carries {sorted(set(entry) - allowed)} outside entry_keys")
+        if entry.get("enumerated_from") not in ("record-section", "headline"):
+            defects.append(f"{qid}: enumerated_from is {entry.get('enumerated_from')!r}")
         stray = set(entry.get("categories", [])) - categories
         if stray:
-            defects.append(f"{identifier}: undeclared owner-held category {sorted(stray)}")
+            defects.append(f"{qid}: undeclared owner-held category {sorted(stray)}")
         if entry.get("reaches_owner") and not entry.get("categories"):
-            defects.append(f"{identifier}: reaches the owner but names no category")
+            defects.append(f"{qid}: reaches the owner but names no category")
         if entry.get("categories") and not entry.get("reaches_owner"):
-            defects.append(f"{identifier}: names a category but does not reach the owner")
+            defects.append(f"{qid}: names a category but does not reach the owner")
         recorded = entry.get("already_recorded_as")
         if recorded and recorded not in status_text:
-            defects.append(f"{identifier}: claims STATUS.yaml records {recorded!r}, and it does not")
+            defects.append(f"{qid}: claims STATUS.yaml records {recorded!r}, and it does not")
+
+    # A record that does not enumerate its own questions cannot have been split into
+    # several here; claiming otherwise would assert a reading nobody did.
+    for row in _open_rows(rows):
+        headline = [entry for entry in row["questions"]
+                    if entry["enumerated_from"] == "headline"]
+        if len(row["questions"]) > 1 and headline:
+            defects.append(f"{row['id']}: several questions, but {len(headline)} claim to come "
+                           f"from a record that does not enumerate its own")
 
     for defect in defects:
         print("DEFECT: " + defect)
     if defects:
-        print(f"\nFAIL: {len(defects)} defects in the acceptance routing")
+        print(NL + f"FAIL: {len(defects)} defects in the acceptance routing")
         return 1
     unsettled = _open_rows(rows)
-    covered = len([row for row in unsettled if row["routing"]])
-    print(f"PASS: {len(rows)} decision records, {len(unsettled)} open, {covered} routed, "
-          f"{len(unsettled) - covered} unrouted")
+    covered = len([row for row in unsettled if row["questions"]])
+    asked = len(open_questions())
+    print(f"PASS: {len(rows)} decision records, {len(unsettled)} open, {covered} with a routed "
+          f"question, {asked} questions, {len(unsettled) - covered} with none")
     print("Standing note: routing is a declared claim about who settles what. "
           "It grades no decision as right and settles none of them.")
     return 0

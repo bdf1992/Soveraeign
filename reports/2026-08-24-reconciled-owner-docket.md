@@ -8,7 +8,7 @@ other and produced different numbers.
 `reports/2026-08-23-qa-witness-sweep-c296c25.md` — six witness agents over the
 nine commits `3341df8..c296c25` — counts **eighteen** items, deduplicated from
 58 raised across the six. `contracts/acceptance-routing.json` in this branch
-counts **three**.
+counted **three** when this reconciliation began.
 
 Both are mine to reconcile because the smaller number is mine, and it is the
 one that was wrong in the more misleading direction.
@@ -94,27 +94,47 @@ Product intent or vocabulary that no lower tier can settle:
     17). This one is about what witnessing means, so it reaches the acceptance
     standing directly.
 
-Plus the three decision records from the routing table — `0020` seat topology,
-`0035` seat etiquette, `0039` the node surface — which the sweep did not cover
-because it read commits rather than records.
+Plus the questions the routing table carries, which the sweep did not cover
+because it read commits rather than records: `0020` seat topology, `0035` seat
+etiquette, `0039` the node surface, `0042` this record's own machinery, and — after
+the witness — `0036-B` and `0038-A`.
 
-**Fifteen, not eighteen and not three.**
+Two of those are the same question the sweep already had. `0036-B` is the sweep's
+item 16, and `0038-A` overlaps its item 3. Counting the union rather than the sum:
 
-## Where the two readings collide
+| | count |
+|---|---|
+| from the sweep, genuinely his | 12 |
+| from the routing, genuinely his | 6 |
+| the same question counted twice — item 16 = `0036-B`, item 3 folded into `0038-A` | −2 |
+| **union** | **16** |
 
-Sweep item 3 challenges this branch's own routing. `contracts/acceptance-routing.json`
-marks `0038` `reaches_owner: false`, reasoning that a rebuildable projection over
-existing manifests touches nothing owner-held. The sweep found that `0038`
-explicitly rules MCP is served nowhere, and that the following commit served it.
+**Sixteen**, against the sweep's eighteen and this branch's original three. Both
+starting numbers were wrong in opposite directions and for different reasons: the
+sweep counted questions the lower tiers can settle, and this branch lost questions
+its unit could not express.
 
-If a decision record's stated constraint was contradicted by the next commit,
-the question of whether the record still stands is not a projection question and
-not mine to route away. **That routing entry is probably wrong**, and it is
-recorded here rather than quietly corrected, because a routing table that edits
-itself when challenged is worth less than one that shows where it was pushed.
+## Where the two readings collided, and what happened
 
-The same doubt does not extend to `0036` and `0040`; nothing in the sweep touches
-their routing.
+Sweep item 3 challenged this branch's routing of `0038`, which marked it
+`reaches_owner: false` on the reasoning that a rebuildable projection over
+existing manifests touches nothing owner-held.
+
+That was recorded as a doubt rather than corrected, on the principle that a
+routing table which rewrites itself when challenged is worth less than one that
+shows where it was pushed. It was then corrected, because an independent witness
+of `06be56c` confirmed it on firmer ground than the sweep had:
+`contracts/capability-offices.json` is not the projection at all. It is an
+authored input carrying 79 assignments, each setting `required_authority`, and
+assigning an authority type to every operation in the node is typed authority.
+
+The original challenge stays on the entry as `contested_by`. The doubt was right;
+the reason given for it was not the strongest one available, and neither was the
+reason it was originally routed away.
+
+`0040` is flagged and unmoved: it declares per-operation refusal codes and
+`CLASSIFICATION.md` owns vocabulary. The witness was not confident either way and
+neither is this record.
 
 ## Two things the sweep says about the evidence itself
 
@@ -132,6 +152,31 @@ every one failed as it should; a seventh mutation turned the full gate red. Ever
 new contract in the range carries both polarities. That is the finding that makes
 the rest of the sweep believable, and it is easy to miss under nine defects.
 
+## The unit was the real problem
+
+An independent witness of `06be56c` reached the reconciliation from a better
+angle than "different frames", and it is worth recording because it makes the
+disagreement disappear rather than explaining it away.
+
+This branch routes **records**. A record can carry several questions with
+different answers — `decisions/0036` names three, one for Control and one for
+Bdo — and a per-record `reaches_owner` boolean cannot represent that. So the
+count was not merely scoped differently from the sweep's; it *structurally lost
+questions* whenever a record was mixed. Route questions and the two readings
+reconcile without either being wrong.
+
+The contract is now `soveraeign-acceptance-routing/v2`, keyed by question. Two
+of the fifteen above changed as a direct result: `0036` split into a Control
+question and an owner question, and `0038` moved to the owner on the
+`required_authority` ground rather than the door-inventory argument its author
+had been having with himself.
+
+Nineteen questions against eighteen open records today. That ratio is close to
+one because exactly one record enumerates its own questions; the others are
+routed on their headline and any further question they carry implicitly is not
+yet visible. `enumerated_from` says which is which, and the checker refuses to
+let a record be split into several questions unless it declared them.
+
 ## What this record is not
 
 A witness. It is a synthesis by the same session that wrote the smaller of the
@@ -139,5 +184,5 @@ two lists it reconciles, which is the defect it opens by admitting. An
 independent reading of the routing has been requested and had not arrived when
 this was written.
 
-It also settles nothing and closes no record. Fifteen items is a claim about
+It also settles nothing and closes no record. Sixteen items is a claim about
 whose each question is, not an answer to any of them.

@@ -55,16 +55,39 @@ a single decision record: a record keeps its own prose and this file says what
 that prose means. A status string absent from the crosswalk is reported as a
 defect rather than guessed at.
 
-### 2. Every open record declares who settles it, and why
+### 2. Every open question declares who settles it, and why
 
-`contracts/acceptance-routing.json` carries one entry per open record: whether it
-reaches the owner, which of the five owner-held categories it touches, a reason a
-reader can disagree with, the `STATUS.yaml` field that already answers it if one
-does, and what to do if the routing is confirmed.
+`contracts/acceptance-routing.json` carries one entry per open **question**:
+which record it comes from, whether it reaches the owner, which of the five
+owner-held categories it touches, a reason a reader can disagree with, the
+`STATUS.yaml` field that already answers it if one does, and what to do if the
+routing is confirmed.
+
+The unit is a question rather than a record, and that correction came from an
+independent witness of this branch rather than from its author. The first version
+routed records, and `decisions/0036` shows why that fails: it names three things
+waiting on Bdo, of which the first is sequencing that Control settles and the
+second — whether every Claude Code session in this repository should open and
+close a console session automatically — is a default applied to anyone who clones
+the repository. A per-record boolean answered the first and silently dropped the
+second. A record with mixed questions loses the ones that disagree with its
+headline.
+
+Bare ratification is not routed. Every `PROPOSED` record needs it by definition,
+so counting it would mark all eighteen and say nothing. The file answers the
+narrower question: does this need a judgement from Bdo *other* than the
+ratification every proposal already needs.
+
+`enumerated_from` records where each question came from — the record's own
+declared list, or its headline where the record does not enumerate. Exactly one
+open record of eighteen enumerates its own owner questions today, so the field is
+honest rather than decorative, and a record marked `headline` may not be split
+into several here: claiming otherwise would assert a reading nobody performed.
 
 Every entry is a claim, not a settlement. `reaches_owner: false` does not close a
-record; it says the record can be closed below the owner and names why. Someone
-at that tier still has to do it, and Bdo may reject any routing in the file.
+question; it says the question can be settled below the owner and names why.
+Someone at that tier still has to do it, and Bdo may reject any routing in the
+file.
 
 ### 3. The docket is rebuilt, never written out
 
@@ -118,6 +141,32 @@ Neither subsumes the other. If both land, `sov_docket.py check` answers "whose i
 each of the forty records" and `sov_accept.py audit` answers "is this new block
 legitimate". If only one lands, the nine records whose status line contradicts
 `STATUS.yaml` stay contradictory under #81 alone.
+
+## What the witness changed
+
+`06be56c` was witnessed by a session that did not write it. It attested the
+crosswalk, the routing mechanics, and that nothing here can express a
+settlement. It dissented on the counts, with two confirmed defects and one
+structural finding, and all three are in this record because they improved it:
+
+- **`0036` was routed on one of its three questions.** Confirmed by reading the
+  record's own `What still waits on Bdo` section. Now two entries, `0036-A` at
+  Control and `0036-B` reaching Bdo.
+- **`0038` was routed wrongly, on a ground its author had not examined.** The v1
+  reason argued that a rebuildable projection touches nothing owner-held.
+  `contracts/capability-offices.json` is not the projection — it is an authored
+  input carrying 79 assignments, every one setting `required_authority`.
+  Assigning an authority type to every operation in the node is typed authority,
+  which `AGENTS.md` reserves. Now `reaches_owner: true`, and the original
+  challenge stays on the entry as `contested_by`.
+- **The unit was wrong**, which is section 2 above.
+
+`0040` was flagged rather than dissented — it declares per-operation refusal
+codes and `CLASSIFICATION.md` owns vocabulary — and the doubt is recorded on the
+entry without moving it.
+
+That the sharpest correction to this record came from outside it is the argument
+for the practice, not an embarrassment to it.
 
 ## What could defeat this
 

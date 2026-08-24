@@ -93,11 +93,12 @@ CHECKS = (
           "oracle, which never imports participant code; the participant does not report its "
           "own verdict",
           ("services/asset/conformance/BASELINE.md", "conformance/scenarios.json")),
-    Check("ticket transition corpus", [sys.executable, "scripts/sov_ticket.py", "selfcheck"],
+    Check("ticket contract corpora", [sys.executable, "scripts/sov_ticket.py", "selfcheck"],
           ROOT,
-          "reads a checked-in ticket export and never contacts the coordination surface it "
-          "describes",
-          ("contracts/ticket-transitions.json",)),
+          "reads checked-in transition, metadata, and issue-body corpora and never contacts the "
+          "coordination surface it describes; the issue-body cases start from bytes a person could "
+          "paste into GitHub, so a shape the schema admits but no ticket body can express fails here",
+          ("contracts/ticket-transitions.json", "conformance/fixtures/tickets/body-cases.json")),
     Check("Sov context profile",
           [sys.executable, "-m", "unittest", "discover", "-s", "bindings/sov/tests", "-v"], ROOT,
           "invokes the profile checker over declared fixtures, including one defeating "

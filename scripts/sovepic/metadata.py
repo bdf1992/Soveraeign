@@ -20,6 +20,8 @@ FLOW = re.compile(r"^\[(.*)\]$")
 # A sequence item opens a flat mapping only when it starts with a bare snake_case
 # key; a quoted scalar such as "kind:bit" keeps its colon and stays a scalar.
 MAPPING_ITEM = re.compile(r"^[a-z_][a-z0-9_]*:(\s|$)")
+OPENING = re.compile(r"^(?:\s*|#{1,6} .*)$")
+ITEM_INDENT = 2
 
 
 class MetadataError(ValueError):
@@ -27,10 +29,19 @@ class MetadataError(ValueError):
 
 
 def extract_block(body: str) -> str:
-    """Return the first fenced YAML block of an issue body."""
+    """Return the fenced YAML block an issue body opens with.
+
+    Only blank lines and markdown headings may precede it. An issue that leads with
+    prose leads with narrative rather than its contract, so its later fenced block is
+    not a ticket's metadata. Searching the whole body instead would let a code sample
+    further down be read as the ticket's own declaration.
+    """
     match = FENCE.search(body or "")
     if not match:
         raise MetadataError("no fenced yaml metadata block found")
+    for line in (body or "")[: match.start()].split("\n"):
+        if not OPENING.match(line):
+            raise MetadataError("issue body does not open with a fenced yaml metadata block")
     return match.group(1)
 
 
@@ -105,21 +116,31 @@ def _parse_child(lines: list[tuple[int, str]], index: int) -> tuple[Any, int]:
         return None, index
     depth = lines[index][0]
     if lines[index][1].startswith("- "):
-        items = []
+        items: list[Any] = []
         while index < len(lines) and lines[index][0] == depth and lines[index][1].startswith("- "):
             head = lines[index][1][2:]
             index += 1
-            if not MAPPING_ITEM.match(head):
+            opens_mapping = bool(MAPPING_ITEM.match(head))
+            if items and isinstance(items[-1], dict) is not opens_mapping:
+                raise MetadataError(f"sequence mixes scalar and mapping items at {head!r}")
+            if not opens_mapping:
                 items.append(_scalar(head))
                 continue
             key, value = _split_key(head)
             entry = {key: _flow_sequence(value) if FLOW.fullmatch(value) else _scalar(value)}
             while index < len(lines) and lines[index][0] > depth and not lines[index][1].startswith("- "):
-                inner_key, inner_value = _split_key(lines[index][1])
+                inner_indent, inner_text = lines[index]
+                if inner_indent != depth + ITEM_INDENT:
+                    raise MetadataError(
+                        f"nesting under a sequence item is outside the parsed YAML subset: {inner_text!r}"
+                    )
+                inner_key, inner_value = _split_key(inner_text)
                 if not inner_value:
                     raise MetadataError(
                         f"nesting under a sequence item is outside the parsed YAML subset: {inner_key!r}"
                     )
+                if inner_key in entry:
+                    raise MetadataError(f"duplicate key {inner_key!r} in one sequence item")
                 entry[inner_key] = (
                     _flow_sequence(inner_value) if FLOW.fullmatch(inner_value) else _scalar(inner_value)
                 )

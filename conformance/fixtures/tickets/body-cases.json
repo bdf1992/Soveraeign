@@ -1,0 +1,141 @@
+{
+  "corpus_id": "soveraeign-ticket-bodies/v1",
+  "note": "Positive and defeating cases that run from a complete GitHub issue body through scripts/sovticket/yamlblock.py and, for a positive case, on into contracts/issue-metadata.schema.json. The metadata corpus beside this one starts from already-parsed JSON, so it can only judge the schema; nothing crossed the reader. That gap let the schema declare an asks shape the reader could not parse, and issue #67 - the one live story ticket - failed the contract check while every fixture passed. A case here is a whole crossing: bytes a person could paste into GitHub in at one end, and either declared metadata or a named refusal out at the other.",
+  "cases": [
+    {
+      "case_id": "BC-001-story-asks-survive-the-parser",
+      "expect": "VALID",
+      "proves": "A story body written the way contracts/issue-metadata.schema.json declares asks - a block sequence whose items are mappings of of and adjustment - parses from the issue body and satisfies the schema. Until this case existed the corpus fed pre-parsed JSON, so the schema could admit a shape no real ticket body could reach.",
+      "body": "```yaml\nissue_schema: soveraeign-ticket/v1\ntags:\n  - \"kind:story\"\n  - \"village:reach-and-motion\"\n  - \"horizon:now-to-next\"\n  - \"effect:record-local\"\nkind: story\nstory_id: STORY-OPERATOR-DESK-HUMAN-JUDGEMENT-REQUEST\nactor_kind: HUMAN\nrole: operator\nvillage: reach-and-motion\nvillage_issue: \"#2\"\nparent: \"#30\"\nexpected: \"Raise one question for the owner from my desk and have it land on theirs, attributed to me, without deciding it for them.\"\nfound: \"There is no desk. The Console is chartered and not implemented, and nothing can tell the record who I am.\"\nleans_on: [\"#6\", \"#7\", \"#11\", \"#12\", \"#13\"]\nasks:\n  - of: \"#11\"\n    adjustment: \"give a human operator a continuous identity the record can attribute a request to\"\n  - of: \"#30\"\n    adjustment: \"realize the judgement-request post as a Human Binding surface\"\nscenario: null\nstanding: PROPOSED\nhorizon: NOW_TO_NEXT\nauthority: Bdo/product-intent\neffect_class: RECORD_LOCAL\nevidence_pointer: .claude/epic/NARRATIVE.md#the-operator-desk-30-45\nlast_observed_at: null\nwalker_receipt: PENDING\ndemotion_pointer: \"#demotion\"\ndependency_channels:\n  produces: [observation]\n  consumes: [record-spine, trust-control]\n```\n\n# Title\n\nProse follows the block.\n",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:story",
+          "village:reach-and-motion",
+          "horizon:now-to-next",
+          "effect:record-local"
+        ],
+        "kind": "story",
+        "story_id": "STORY-OPERATOR-DESK-HUMAN-JUDGEMENT-REQUEST",
+        "actor_kind": "HUMAN",
+        "role": "operator",
+        "village": "reach-and-motion",
+        "village_issue": "#2",
+        "parent": "#30",
+        "expected": "Raise one question for the owner from my desk and have it land on theirs, attributed to me, without deciding it for them.",
+        "found": "There is no desk. The Console is chartered and not implemented, and nothing can tell the record who I am.",
+        "leans_on": [
+          "#6",
+          "#7",
+          "#11",
+          "#12",
+          "#13"
+        ],
+        "asks": [
+          {
+            "of": "#11",
+            "adjustment": "give a human operator a continuous identity the record can attribute a request to"
+          },
+          {
+            "of": "#30",
+            "adjustment": "realize the judgement-request post as a Human Binding surface"
+          }
+        ],
+        "scenario": null,
+        "standing": "PROPOSED",
+        "horizon": "NOW_TO_NEXT",
+        "authority": "Bdo/product-intent",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": ".claude/epic/NARRATIVE.md#the-operator-desk-30-45",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion",
+        "dependency_channels": {
+          "produces": [
+            "observation"
+          ],
+          "consumes": [
+            "record-spine",
+            "trust-control"
+          ]
+        }
+      }
+    },
+    {
+      "case_id": "BC-002-scalar-sequences-and-nested-mappings-still-parse",
+      "expect": "VALID",
+      "proves": "Admitting a sequence of mappings does not disturb the two constructs already in use: a block sequence of scalars and a one-level nested mapping.",
+      "body": "```yaml\nissue_schema: soveraeign-ticket/v1\ntags:\n  - \"kind:bit\"\n  - \"village:ground-and-evidence\"\n  - \"horizon:now\"\nkind: bit\nbit_id: BIT-SHARED-KERNEL\nvillage: ground-and-evidence\nvillage_issue: \"#4\"\nparent: \"#4\"\nrequires: [\"#25\"]\nstanding: OPEN\nhorizon: NOW\nauthority: Bdo/product-intent-and-phase-gate\neffect_class: RECORD_LOCAL\nevidence_pointer: PENDING\nlast_observed_at: null\nwalker_receipt: PENDING\ndemotion_pointer: \"#demotion\"\ndependency_channels:\n  - record-spine\n  - observation\n```\n\n# Title\n\nProse follows the block.\n",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:bit",
+          "village:ground-and-evidence",
+          "horizon:now"
+        ],
+        "kind": "bit",
+        "bit_id": "BIT-SHARED-KERNEL",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#4",
+        "requires": [
+          "#25"
+        ],
+        "standing": "OPEN",
+        "horizon": "NOW",
+        "authority": "Bdo/product-intent-and-phase-gate",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion",
+        "dependency_channels": [
+          "record-spine",
+          "observation"
+        ]
+      }
+    },
+    {
+      "case_id": "BC-003-sequence-may-not-mix-mapping-then-scalar",
+      "expect": "REFUSED",
+      "proves": "A sequence carries one item shape. Mixing them would let a routable ask and an unroutable sentence sit in one list and be read as the same kind of thing.",
+      "refuses": "mixes",
+      "body": "```yaml\nkind: story\nasks:\n  - of: \"#11\"\n    adjustment: \"give a human operator a continuous identity\"\n  - \"#30 should realize the judgement-request post\"\n```\n\n# Title\n\nProse follows the block.\n"
+    },
+    {
+      "case_id": "BC-004-sequence-may-not-mix-scalar-then-mapping",
+      "expect": "REFUSED",
+      "proves": "The refusal does not depend on which shape appears first.",
+      "refuses": "mixes",
+      "body": "```yaml\nkind: story\nasks:\n  - \"#30 should realize the judgement-request post\"\n  - of: \"#11\"\n    adjustment: \"give a human operator a continuous identity\"\n```\n\n# Title\n\nProse follows the block.\n"
+    },
+    {
+      "case_id": "BC-005-sequence-item-may-not-repeat-a-key",
+      "expect": "REFUSED",
+      "proves": "A repeated key inside one sequence item would silently drop an ask. Duplicates are refused inside a sequence item exactly as they are at the top level.",
+      "refuses": "duplicate key",
+      "body": "```yaml\nkind: story\nasks:\n  - of: \"#11\"\n    of: \"#30\"\n```\n\n# Title\n\nProse follows the block.\n"
+    },
+    {
+      "case_id": "BC-006-sequence-item-admits-one-level-only",
+      "expect": "REFUSED",
+      "proves": "The reader admits one level of mapping inside a sequence item. A deeper key is refused by name rather than approximated into the level above it.",
+      "refuses": "nested key outside a nested mapping",
+      "body": "```yaml\nkind: story\nasks:\n  - of: \"#11\"\n    adjustment: \"give a human operator a continuous identity\"\n      note: \"an extra level the contract never declared\"\n```\n\n# Title\n\nProse follows the block.\n"
+    },
+    {
+      "case_id": "BC-007-continuation-key-needs-a-container",
+      "expect": "REFUSED",
+      "proves": "An indented key under a plain scalar has nothing to belong to and is refused.",
+      "refuses": "nested key outside a nested mapping",
+      "body": "```yaml\nkind: story\nstory_id: STORY-X\n  adjustment: \"a continuation key with no sequence item or nested mapping above it\"\n```\n\n# Title\n\nProse follows the block.\n"
+    },
+    {
+      "case_id": "BC-008-an-issue-that-leads-with-prose-is-not-a-ticket",
+      "expect": "REFUSED",
+      "proves": "The end-to-end corpus carries the block-extraction refusal too, so the path from a real issue body is proven whole rather than from the fence inwards.",
+      "refuses": "does not open with a fenced yaml metadata block",
+      "body": "Tracks cleanup only.\n\n```yaml\nkind: bit\n```\n"
+    }
+  ]
+}

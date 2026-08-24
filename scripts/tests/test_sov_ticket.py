@@ -3,7 +3,8 @@
 The semantic cases live in ``conformance/fixtures/tickets/transition-cases.json`` and
 run through ``scripts/sov_ticket.py selfcheck``. These tests cover local mechanics,
 edge cases, and the structural properties that keep the declared contracts and the
-implementation from drifting apart.
+implementation from drifting apart. The two readers of the metadata block are tested
+in ``test_ticket_readers.py``.
 """
 
 from __future__ import annotations
@@ -19,90 +20,6 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from sovticket import queue as queuemod  # noqa: E402
 from sovticket import transitions as transmod  # noqa: E402
 from sovkernel.jsonschema import validate  # noqa: E402
-from sovticket.yamlblock import TicketBlockError, load_ticket, parse_block  # noqa: E402
-
-BODY = """# Title — bounded outcome
-
-```yaml
-issue_schema: soveraeign-ticket/v1
-tags:
-  - "kind:bit"
-  - "village:ground-and-evidence"
-  - "horizon:now"
-kind: bit
-bit_id: BIT-GROUND-KERNEL
-village: ground-and-evidence
-parent: "#1"
-standing: OPEN
-horizon: NOW
-authority: Bdo/phase-gate
-effect_class: RECORD_LOCAL
-evidence_pointer: contracts/
-last_observed_at: null
-requires: ["#25", "#26"]
-dependency_channels:
-  produces: [kernel-transitions]
-  consumes: [receipts]
-```
-
-## Obligation
-
-Body prose.
-"""
-
-
-class YamlBlockTests(unittest.TestCase):
-    """The bounded YAML subset admits what the contract uses and refuses the rest."""
-
-    def test_block_may_sit_under_a_heading(self) -> None:
-        self.assertEqual(load_ticket(BODY)["kind"], "bit")
-
-    def test_prose_before_the_block_is_refused(self) -> None:
-        with self.assertRaises(TicketBlockError):
-            load_ticket("Some narrative first.\n\n```yaml\nkind: bit\n```\n")
-
-    def test_unclosed_fence_is_refused(self) -> None:
-        with self.assertRaises(TicketBlockError):
-            load_ticket("```yaml\nkind: bit\n")
-
-    def test_null_literal_becomes_none(self) -> None:
-        self.assertIsNone(load_ticket(BODY)["last_observed_at"])
-
-    def test_quoted_empty_string_is_not_null(self) -> None:
-        self.assertEqual(parse_block('walker_receipt: ""'), {"walker_receipt": ""})
-
-    def test_block_sequence_and_flow_sequence(self) -> None:
-        metadata = load_ticket(BODY)
-        self.assertEqual(metadata["tags"][0], "kind:bit")
-        self.assertEqual(metadata["requires"], ["#25", "#26"])
-
-    def test_nested_mapping_is_admitted_one_level(self) -> None:
-        channels = load_ticket(BODY)["dependency_channels"]
-        self.assertEqual(channels, {"produces": ["kernel-transitions"], "consumes": ["receipts"]})
-
-    def test_flow_sequence_keeps_quoted_separators(self) -> None:
-        self.assertEqual(parse_block('a: ["x,y", z]'), {"a": ["x,y", "z"]})
-
-    def test_duplicate_key_is_refused(self) -> None:
-        with self.assertRaises(TicketBlockError):
-            parse_block("kind: bit\nkind: village")
-
-    def test_tab_indentation_is_refused(self) -> None:
-        with self.assertRaises(TicketBlockError):
-            parse_block("a:\n\t- b")
-
-    def test_anchor_and_alias_are_refused(self) -> None:
-        for text in ("&anchor value", "*alias"):
-            with self.assertRaises(TicketBlockError):
-                parse_block(text)
-
-    def test_multi_line_scalar_is_refused(self) -> None:
-        with self.assertRaises(TicketBlockError):
-            parse_block("summary: |\n  folded text")
-
-    def test_flow_mapping_is_refused(self) -> None:
-        with self.assertRaises(TicketBlockError):
-            parse_block("a: {b: c}")
 
 
 class JsonSchemaTests(unittest.TestCase):

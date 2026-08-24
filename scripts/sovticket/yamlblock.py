@@ -1,10 +1,16 @@
 """Bounded YAML-subset reader for the metadata block at the top of an issue body.
 
 The reader accepts only the constructs the ticket contract uses: a single document of
-string-valued keys, block sequences, flow sequences, and one level of nested mapping.
-Every other construct is refused by name rather than approximated, so a ticket cannot
-acquire meaning the contract never declared. Scalars are returned as strings or null
-because ``contracts/issue-metadata.schema.json`` declares no numeric or boolean field.
+string-valued keys, block sequences of scalars, block sequences of one-level mappings,
+flow sequences, and one level of nested mapping. Every other construct is refused by
+name rather than approximated, so a ticket cannot acquire meaning the contract never
+declared. Scalars are returned as strings or null because
+``contracts/issue-metadata.schema.json`` declares no numeric or boolean field.
+
+A block sequence carries one item shape throughout. The ``asks`` field pairs an issue
+reference with the adjustment asked of it, so an item that reads as a mapping must stay
+a mapping: mixing shapes in one sequence would let a routable ask and an unroutable
+sentence be read as the same kind of thing.
 """
 
 from __future__ import annotations
@@ -111,12 +117,18 @@ def _refuse_unsupported(line: str, number: int) -> None:
         raise TicketBlockError(f"line {number}: multi-line scalar is not admitted")
 
 
+def _value(raw: str) -> object:
+    """Return one mapping value: a flow sequence when it opens with ``[``, else a scalar."""
+    return _flow_sequence(raw) if raw.strip().startswith("[") else _scalar(raw)
+
+
 def parse_block(text: str) -> dict[str, object]:
     """Parse the admitted YAML subset into a mapping of strings, lists, and mappings."""
     result: dict[str, object] = {}
     lines = text.replace("\r\n", "\n").split("\n")
     current_key: str | None = None
     pending: list[object] | dict[str, object] | None = None
+    item_indent: int | None = None
     for number, line in enumerate(lines, 1):
         if not line.strip() or line.lstrip().startswith("#"):
             continue
@@ -125,20 +137,35 @@ def parse_block(text: str) -> dict[str, object]:
         if item and current_key is not None:
             if not isinstance(pending, list):
                 raise TicketBlockError(f"line {number}: sequence item outside a sequence")
-            pending.append(_scalar(item.group("value")))
+            entry = KEY_LINE.match(item.group("value"))
+            if pending and isinstance(pending[-1], dict) is not bool(entry):
+                raise TicketBlockError(f"line {number}: sequence mixes scalar and mapping items")
+            if entry is None:
+                pending.append(_scalar(item.group("value")))
+                item_indent = None
+                continue
+            pending.append({entry.group("key"): _value(entry.group("rest"))})
+            item_indent = len(item.group("indent")) + 2
             continue
         match = KEY_LINE.match(line)
         if not match:
             raise TicketBlockError(f"line {number}: not an admitted key or sequence item")
         indent, key, rest = match.group("indent"), match.group("key"), match.group("rest")
         if indent:
+            entry = _sequence_item_mapping(pending, item_indent, len(indent))
+            if entry is not None:
+                if key in entry:
+                    raise TicketBlockError(f"line {number}: duplicate key {key!r} in one sequence item")
+                entry[key] = _value(rest)
+                continue
             if not isinstance(pending, dict):
                 raise TicketBlockError(f"line {number}: nested key outside a nested mapping")
-            pending[key] = _flow_sequence(rest) if rest.strip().startswith("[") else _scalar(rest)
+            pending[key] = _value(rest)
             continue
         if key in result:
             raise TicketBlockError(f"line {number}: duplicate key {key!r}")
         value = rest.strip()
+        item_indent = None
         if not value:
             pending = []
             result[key] = pending
@@ -155,6 +182,22 @@ def parse_block(text: str) -> dict[str, object]:
         current_key = key
         pending = None
     return result
+
+
+def _sequence_item_mapping(
+    pending: list[object] | dict[str, object] | None, item_indent: int | None, indent: int
+) -> dict[str, object] | None:
+    """Return the open sequence-item mapping an indented key belongs to, if any.
+
+    The indent must match the one the item opened at exactly. A deeper key has no
+    declared container, so it falls through to the nested-mapping refusal rather than
+    being folded into the level above it.
+    """
+    if item_indent is None or indent != item_indent or not isinstance(pending, list):
+        return None
+    if not pending or not isinstance(pending[-1], dict):
+        return None
+    return pending[-1]
 
 
 def _stage_nested(lines: list[str], number: int, key: str, result: dict[str, object]) -> None:

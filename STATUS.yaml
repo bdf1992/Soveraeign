@@ -24,6 +24,10 @@ sov_operating_agent_status: OWNER_ACCEPTED_CONTEXT_PROFILE_BUILT_SELF_TESTED_NOT
 ticket_kind_vocabulary_status: OWNER_ACCEPTED
 story_ticket_kind_status: OWNER_ACCEPTED
 unblock_ticket_kind_status: OWNER_ACCEPTED
+# Two parsers read soveraeign-ticket/v1. decisions/0037 aligned their admitted
+# subset and made their agreement a check rather than a coincidence. The ruling is
+# accepted; the readers themselves are self-tested only and owe an independent pass.
+ticket_metadata_reader_status: OWNER_ACCEPTED_RULING_READERS_SELF_TESTED_NOT_WITNESSED
 # SPEC.md moved after this acceptance: decisions/0034 adds two refusal codes to the
 # transition contract so the accepted table stops contradicting it. PROPOSED; Bdo
 # has not ruled, so this field describes a SPEC that changed after he accepted it.
@@ -97,6 +101,7 @@ accepted_repository_claims:
   - local_orchestration_harness_as_host_plumbing
   - local_model_adapter_boundary
   - history_carried_forward_as_attributed_lineage
+  - one_ticket_contract_read_by_two_parsers_under_a_parity_check
 
 # The founding decision docket is closed. O1-O22 no longer exist as identifiers:
 # decisions/0024-open-decision-drain.md ruled O1-O13, O16, O17, O19, O20, and

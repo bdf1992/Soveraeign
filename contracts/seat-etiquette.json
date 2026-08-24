@@ -1,0 +1,192 @@
+{
+  "etiquette_schema": "soveraeign-seat-etiquette/v1",
+  "status": "PROPOSED",
+  "decision": "decisions/0035-seat-message-etiquette.md",
+  "summary": "Who may say what to whom, and what a listener owes onward. This table is the whole relationship layer between seats; contracts/seat-message.schema.json owns only the envelope, and neither reads inside a message body.",
+  "reads_topology_from": "contracts/seat-registry.schema.json",
+  "acts": {
+    "REPORT": {
+      "means": "Here is what I did.",
+      "plain_english": "A builder telling its owner what it built. Evidence, never a verdict.",
+      "direction": "UPWARD",
+      "requires_relation": "PERFORMED",
+      "standing_ceiling": {
+        "from": "OPEN",
+        "to": "BUILT"
+      }
+    },
+    "PLAN": {
+      "means": "Here is a bounded operation plan for the objective I was given.",
+      "plain_english": "An orchestrator handing back a sequence of operations, not results.",
+      "direction": "UPWARD",
+      "requires_relation": "PERFORMED",
+      "standing_ceiling": null
+    },
+    "DISPATCH": {
+      "means": "Do this bounded operation under this grant.",
+      "plain_english": "Work going down the tree. The only act that travels downward from a non-root seat.",
+      "direction": "DOWNWARD",
+      "requires_relation": "PERFORMED",
+      "standing_ceiling": null
+    },
+    "ATTEST": {
+      "means": "I looked at this myself, by a path independent of the builder, and it holds.",
+      "plain_english": "A witness verdict. Requires INDEPENDENT: whoever built it cannot say this about it.",
+      "direction": "UPWARD",
+      "requires_relation": "INDEPENDENT",
+      "standing_ceiling": {
+        "from": "BUILT",
+        "to": "WITNESSED"
+      }
+    },
+    "DISSENT": {
+      "means": "I looked at this myself and I disagree with the claim.",
+      "plain_english": "A witness disagreeing. A valid and valuable outcome, and one no listener may drop.",
+      "direction": "UPWARD",
+      "requires_relation": "INDEPENDENT",
+      "standing_ceiling": null
+    },
+    "UNATTESTABLE": {
+      "means": "I looked, and the claim cannot be verified as stated.",
+      "plain_english": "Neither agreement nor disagreement: there is nothing here that could be checked. A claim with no defeating case usually lands here.",
+      "direction": "UPWARD",
+      "requires_relation": "INDEPENDENT",
+      "standing_ceiling": null
+    },
+    "ASK": {
+      "means": "This needs judgement I do not hold. Here is the question.",
+      "plain_english": "A question travelling up toward the root. It queues; it never blocks the asker or anyone else.",
+      "direction": "UPWARD",
+      "requires_relation": "ANY",
+      "standing_ceiling": null
+    },
+    "REFUSE": {
+      "means": "I will not do this, and here is the rule that forbids it.",
+      "plain_english": "Refusal is a legal move for every seat, including downward-facing ones. It names a rule, not a preference.",
+      "direction": "UPWARD",
+      "requires_relation": "PERFORMED",
+      "standing_ceiling": null
+    },
+    "STALL": {
+      "means": "There is no admissible route forward from here, and here is the proof.",
+      "plain_english": "A proven BLOCKED claim. It carries all seven required fields or it is a gate, not a block.",
+      "direction": "UPWARD",
+      "requires_relation": "PERFORMED",
+      "standing_ceiling": null
+    },
+    "AGGREGATE": {
+      "means": "Here are the statements below me, forwarded.",
+      "plain_english": "The only act a control seat uses to move other seats' words upward. It moves nothing on its own: an aggregate proposes no standing, and every item it received must come out the other side unedited.",
+      "direction": "UPWARD",
+      "requires_relation": "FORWARDED",
+      "standing_ceiling": null
+    },
+    "RATIFY": {
+      "means": "This is settled as judgement.",
+      "plain_english": "Root only. The one act that can reach RATIFIED.",
+      "direction": "DOWNWARD",
+      "requires_relation": "INDEPENDENT",
+      "standing_ceiling": {
+        "from": "WITNESSED",
+        "to": "RATIFIED"
+      }
+    },
+    "ACCEPT": {
+      "means": "I accept this finished, evidenced result.",
+      "plain_english": "Root only, and after the fact. Acceptance is never pre-approval (decisions/0023).",
+      "direction": "DOWNWARD",
+      "requires_relation": "INDEPENDENT",
+      "standing_ceiling": null
+    },
+    "HOLD": {
+      "means": "I am holding this, and here is which of the admissible reasons applies.",
+      "plain_english": "Root only. A hold is stated with its reason; silence is not a hold.",
+      "direction": "DOWNWARD",
+      "requires_relation": "INDEPENDENT",
+      "standing_ceiling": null
+    }
+  },
+  "seats": {
+    "root": {
+      "plain_english": "Bdo. Settles judgement. Nothing above it, so it speaks only downward: every question from below terminates here.",
+      "may": [
+        "DISPATCH",
+        "RATIFY",
+        "ACCEPT",
+        "HOLD"
+      ]
+    },
+    "control": {
+      "plain_english": "Selects and dispatches work, then carries what comes back. It never builds, never witnesses, and never edits what it forwards.",
+      "may": [
+        "DISPATCH",
+        "AGGREGATE",
+        "ASK",
+        "REFUSE",
+        "STALL"
+      ]
+    },
+    "orchestration": {
+      "plain_english": "Turns an objective into bounded operations and leases them out. It plans and sequences; it does not build and does not witness.",
+      "may": [
+        "PLAN",
+        "DISPATCH",
+        "AGGREGATE",
+        "ASK",
+        "REFUSE",
+        "STALL"
+      ]
+    },
+    "work": {
+      "plain_english": "Executes exactly one bounded operation, or witnesses one it did not execute. Which of the two it is doing is decided by relation_to_subject, never by a separate seat type: a work seat is a builder or a witness for a given operation, never both.",
+      "may": [
+        "REPORT",
+        "ATTEST",
+        "DISSENT",
+        "UNATTESTABLE",
+        "ASK",
+        "REFUSE",
+        "STALL"
+      ]
+    }
+  },
+  "carriage_duties": [
+    {
+      "duty": "CARRY_EVERYTHING_RECEIVED",
+      "applies_to_act": "AGGREGATE",
+      "kinds": [
+        "judgement_items",
+        "dissents",
+        "residuals",
+        "stalls"
+      ],
+      "rule": "Every item_id present in an aggregated message must be present in the aggregate.",
+      "plain_english": "A listener owes its own listener everything it heard. Dropping a question, a dissent, a residual, or a proven stall is the failure this whole contract exists to catch."
+    },
+    {
+      "duty": "NO_EDIT_IN_TRANSIT",
+      "applies_to_act": "AGGREGATE",
+      "kinds": [
+        "judgement_items",
+        "dissents",
+        "residuals",
+        "stalls"
+      ],
+      "rule": "A carried item forwarded under an existing item_id must be byte-identical to the item it forwards.",
+      "plain_english": "Summarising someone else's dissent is editing it. Add your own item if you have something to add; do not rewrite theirs."
+    },
+    {
+      "duty": "NO_SELF_WITNESS",
+      "kinds": [],
+      "rule": "No statement whose relation_to_subject is INDEPENDENT may be spoken by an actor_id that earlier spoke a PERFORMED statement about the same operation_id.",
+      "plain_english": "A build report cannot witness itself, and the same actor cannot change hats to say so.",
+      "applies_to_relation": "INDEPENDENT"
+    }
+  ],
+  "generative_rule": "A seat type absent from `seats` has no admissible acts, and an act absent from `acts` cannot be spoken. Adding a seat or an act is a change to this table alone: the message schema, the fixtures format, and the checker all read from here. Nothing in this file constrains a message body, and no checker reads inside one.",
+  "not_in_scope": [
+    "The content, shape, length, or wording of a message body.",
+    "Whether a statement is true. Etiquette is about who may say a thing, never about whether it is so.",
+    "Settlement. Every act here proposes; the kernel and the root seat settle."
+  ]
+}

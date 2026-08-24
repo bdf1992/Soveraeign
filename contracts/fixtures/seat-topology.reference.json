@@ -1,0 +1,79 @@
+{
+  "registry_schema": "soveraeign-seat-registry/v1",
+  "status": "PROPOSED",
+  "root_seat": "seat:root",
+  "seats": [
+    {
+      "seat_id": "seat:root",
+      "seat_type": "root",
+      "owner_seat": null,
+      "settles": [
+        "JUDGEMENT",
+        "VERIFICATION"
+      ],
+      "cares_about": "product intent, naming, judgement, phase gates",
+      "occupant": {
+        "actor_id": "bdo",
+        "actor_kind": "HUMAN",
+        "claimed_at": "2026-08-22T00:00:00Z",
+        "claim_basis": "founder of the node (decisions/0001)"
+      }
+    },
+    {
+      "seat_id": "seat:session-control",
+      "seat_type": "control",
+      "owner_seat": "seat:root",
+      "settles": [
+        "VERIFICATION"
+      ],
+      "cares_about": "coordination of launched orchestrations and their reports",
+      "occupant": {
+        "actor_id": "sov-controller@1",
+        "actor_kind": "MODEL",
+        "claimed_at": "2026-08-23T00:00:00Z",
+        "claim_basis": "launched explicitly by the root seat"
+      }
+    },
+    {
+      "seat_id": "seat:orchestrator-1",
+      "seat_type": "orchestration",
+      "owner_seat": "seat:session-control",
+      "settles": [
+        "VERIFICATION"
+      ],
+      "cares_about": "the work of leased workers",
+      "occupant": {
+        "actor_id": "sov-orchestrator@1",
+        "actor_kind": "MODEL",
+        "claimed_at": "2026-08-23T00:00:00Z",
+        "claim_basis": "dispatched by the control seat"
+      }
+    },
+    {
+      "seat_id": "seat:worker-1",
+      "seat_type": "work",
+      "owner_seat": "seat:orchestrator-1",
+      "settles": [],
+      "cares_about": "its own execution",
+      "occupant": {
+        "actor_id": "sov-worker@1",
+        "actor_kind": "MODEL",
+        "claimed_at": "2026-08-23T00:00:00Z",
+        "claim_basis": "leased by the orchestration seat"
+      }
+    },
+    {
+      "seat_id": "seat:witness-1",
+      "seat_type": "work",
+      "owner_seat": "seat:orchestrator-1",
+      "settles": [],
+      "cares_about": "whether another seat's claim survives an independent look",
+      "occupant": {
+        "actor_id": "sov-witness@1",
+        "actor_kind": "MODEL",
+        "claimed_at": "2026-08-23T00:00:00Z",
+        "claim_basis": "leased by the orchestration seat to witness OP-DEMO-1"
+      }
+    }
+  ]
+}

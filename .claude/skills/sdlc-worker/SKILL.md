@@ -15,8 +15,9 @@ output, or write authoritative state, and your lease bounds your life.
 
 1. Verify the lease: task, environment, exact inputs, scope, expiry. Refuse
    work outside it rather than improvising.
-2. Execute within the declared effect class. `EXTERNAL_WORLD` effects are
-   refused in Phase I per `SPEC.md`; a Red engagement lease is
+2. Execute within the declared effect class. An `EXTERNAL_WORLD` effect is
+   refused unless a scope in `contracts/external-effect-authorization.json`
+   admits its verb and it leaves a receipt; a Red engagement lease is
    `RECORD_LOCAL` only per the release gate in `SDLC.md`.
 3. Load the domain skills the task names and follow their owning documents;
    for code, that is the implementation order in `AGENTS.md`.

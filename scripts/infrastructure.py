@@ -13,6 +13,7 @@ import sys
 import tempfile
 from typing import Any
 
+import custody_posix
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_MANIFEST = ROOT / "infrastructure" / "phase-i.local.json"
@@ -44,14 +45,20 @@ def load_manifest(path: Path) -> dict[str, Any]:
 
 
 def _valid_relative_path(value: object) -> bool:
-    """Judge a declared custody path as POSIX regardless of the host reading the manifest.
+    """Judge a declared custody path by POSIX rules whatever host is reading it.
 
-    ``PurePath`` resolves to the host's flavour, and a Windows reader does not consider
-    ``/tmp/escape`` absolute because it carries no drive. A custody manifest describes a
-    POSIX node volume, so it is judged as one everywhere; otherwise the same manifest is
-    safe or unsafe depending on who validates it.
+    The manifest describes a Linux node, so its paths mean what POSIX says they mean.
+    `PurePath` resolves to the checking host's flavour, under which `/tmp/escape` is not
+    absolute on Windows - so an escape the node would honour validated clean whenever the
+    manifest was checked from a Windows machine. A drive letter is rejected outright: it
+    can only be a Windows path smuggled into a POSIX declaration.
+
+    Three escapes, and this branch and main each refused two of them. Main admitted
+    `C:escape`, which is drive-relative on Windows and leaves the node root when joined.
+    This branch admitted `.`, whose POSIX parts are empty, so it collapsed onto the root
+    past a parts check that never ran. Both refusals are kept.
     """
-    if not isinstance(value, str) or not value or "\\" in value:
+    if not isinstance(value, str) or not value or "\\" in value or ":" in value:
         return False
     path = PurePosixPath(value)
     if path.is_absolute() or not path.parts:
@@ -145,7 +152,7 @@ def plan(root: Path, manifest: dict[str, Any]) -> dict[str, Any]:
 def _atomic_write(path: Path, payload: bytes, mode: int) -> None:
     descriptor, temporary = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
     try:
-        os.fchmod(descriptor, mode)
+        custody_posix.set_descriptor_mode(descriptor, mode)
         with os.fdopen(descriptor, "wb") as stream:
             stream.write(payload)
             stream.flush()
@@ -172,7 +179,7 @@ def apply(root: Path, manifest: dict[str, Any]) -> dict[str, Any]:
         raise InfrastructureRefused("ROOT_IS_SYMLINK")
 
     root.mkdir(parents=True, exist_ok=True, mode=0o700)
-    os.chmod(root, 0o700)
+    custody_posix.set_path_mode(root, 0o700)
     lock = root / LOCK_NAME
     try:
         descriptor = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
@@ -184,7 +191,7 @@ def apply(root: Path, manifest: dict[str, Any]) -> dict[str, Any]:
             if path.exists() and (path.is_symlink() or not path.is_dir()):
                 raise InfrastructureRefused(f"CUSTODY_PATH_INVALID:{path.name}")
             path.mkdir(parents=True, exist_ok=True, mode=0o700)
-            os.chmod(path, 0o700)
+            custody_posix.set_path_mode(path, 0o700)
 
         receipt = {
             "schema": "soveraeign-infrastructure-receipt/v1",
@@ -206,7 +213,7 @@ def verify(root: Path, manifest: dict[str, Any]) -> list[str]:
     receipt_path = root / RECEIPT_NAME
     if root.is_symlink() or not root.is_dir():
         return ["ROOT_MISSING_OR_UNSAFE"]
-    if stat.S_IMODE(root.stat().st_mode) & 0o077:
+    if custody_posix.mode_is_unsafe(root.stat()):
         defects.append("ROOT_PERMISSIONS_UNSAFE")
     if (root / LOCK_NAME).exists():
         defects.append("INCOMPLETE_APPLY_LOCK_PRESENT")
@@ -229,13 +236,13 @@ def verify(root: Path, manifest: dict[str, Any]) -> list[str]:
                 defects.append("RECEIPT_PATH_BINDING_MISMATCH")
             if receipt.get("outcome") not in {"COMMITTED", "NOOP"}:
                 defects.append("RECEIPT_OUTCOME_INVALID")
-        if stat.S_IMODE(receipt_path.stat().st_mode) & 0o077:
+        if custody_posix.mode_is_unsafe(receipt_path.stat()):
             defects.append("RECEIPT_PERMISSIONS_UNSAFE")
 
     for name, path in resolved_paths(root, manifest).items():
         if path.is_symlink() or not path.is_dir():
             defects.append(f"CUSTODY_PATH_MISSING_OR_UNSAFE:{name}")
-        elif stat.S_IMODE(path.stat().st_mode) & 0o077:
+        elif custody_posix.mode_is_unsafe(path.stat()):
             defects.append(f"CUSTODY_PERMISSIONS_UNSAFE:{name}")
     return defects
 

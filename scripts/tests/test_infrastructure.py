@@ -4,6 +4,7 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import sys
 from tempfile import TemporaryDirectory
 import threading
 import unittest
@@ -11,6 +12,7 @@ from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "scripts"))
 SPEC = importlib.util.spec_from_file_location("infrastructure", ROOT / "scripts" / "infrastructure.py")
 assert SPEC and SPEC.loader
 infrastructure = importlib.util.module_from_spec(SPEC)

@@ -1,0 +1,51 @@
+{
+  "authorization_id": "soveraeign-external-effect/v1",
+  "governed_by": [
+    "AGENTS.md",
+    "STATUS.yaml",
+    "contracts/acceptance-policy.json",
+    "decisions/0047-external-effects-authorized.md"
+  ],
+  "note": "Phase I refused every EXTERNAL_WORLD effect by class. That refusal was doing two jobs: keeping irreversible acts behind an owner, and keeping ordinary coordination behind one too. This separates them. An effect inside a declared scope below, carrying a receipt, is admitted without a further owner act. Everything else is refused by name. The blanket refusal is gone; the boundary is not.",
+  "authorized_by": {
+    "seat": "seat:root",
+    "occupant": "urn:soveraeign:actor:bdo",
+    "basis": "Bdo, 2026-08-23 interactive session: unblock it all",
+    "packet": "acceptance/accepted/A4.json"
+  },
+  "compensation_model": "Forward compensation only. An external effect is never claimed to be rolled back. A counteraction records the original occurrence, the remedy attempted, what remains changed or consumed, and the evidence for both. A receipt that claims world rollback is a defect against this contract.",
+  "receipt_required": true,
+  "receipt_note": "Every attempt leaves a receipt whether it succeeded, failed, or was refused. An effect with no receipt is indistinguishable from an effect that never happened, which is the state this contract exists to prevent.",
+  "scopes": {
+    "coordination.issue_metadata": {
+      "target": "github.com/bdf1992/Soveraeign issues and pull requests",
+      "verbs": ["set_label", "remove_label", "set_project_field", "set_state", "comment"],
+      "reversible_by": "applying the inverse verb; the original value is recorded in the receipt before the write",
+      "note": "The ordinary board work: labels, project fields, open/closed state, and comments on this repository's own tickets."
+    },
+    "coordination.branch_write": {
+      "target": "github.com/bdf1992/Soveraeign refs under refs/heads",
+      "verbs": ["push_new_branch", "push_fast_forward", "open_pull_request"],
+      "reversible_by": "deleting the branch or closing the pull request; no published history is rewritten",
+      "note": "Publishing work for review. Fast-forward only."
+    }
+  },
+  "refused_verbs": {
+    "force_push": "Rewrites published history. DESTRUCTIVE_ADMIN.",
+    "delete_branch_shared": "Removes a ref other work may depend on. DESTRUCTIVE_ADMIN.",
+    "delete_repository": "DESTRUCTIVE_ADMIN.",
+    "change_branch_protection": "Changes who may write, which is an authority change, not coordination.",
+    "change_repository_visibility": "PUBLICATION, held under O1.",
+    "write_secret": "SECRET_EXPOSURE.",
+    "change_repository_settings": "Changes the boundary rather than acting inside it.",
+    "merge_pull_request": "Merging is settlement, and settlement belongs to the owning seat rather than to the adapter.",
+    "act_outside_this_repository": "Every scope above names one repository. Another target needs its own scope.",
+    "spend_money": "RESOURCE_COMMITMENT."
+  },
+  "refusal_codes": {
+    "EXTERNAL_EFFECT_UNAUTHORIZED": "The request declares EXTERNAL_WORLD and names no scope in this contract.",
+    "EXTERNAL_EFFECT_OUT_OF_SCOPE": "The named scope does not carry the requested verb or target.",
+    "EXTERNAL_EFFECT_VERB_REFUSED": "The verb is named in refused_verbs.",
+    "EXTERNAL_EFFECT_WITHOUT_RECEIPT": "The request carries no receipt address, so the attempt would leave no record."
+  }
+}

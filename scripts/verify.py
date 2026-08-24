@@ -24,6 +24,7 @@ CHECKS = (
     ("kernel transition contract", [sys.executable, "scripts/sov_kernel.py", "selfcheck"], ROOT),
     ("kernel participant parity", [sys.executable, "scripts/sov_kernel.py", "parity"], ROOT),
     ("ticket transition corpus", [sys.executable, "scripts/sov_ticket.py", "selfcheck"], ROOT),
+    ("owner queue", [sys.executable, "scripts/sov_accept.py", "audit"], ROOT),
     ("ticket coordination tests", [sys.executable, "-m", "unittest", "discover", "-s", "scripts/tests", "-v"], ROOT),
     (
         "Sov context profile",
@@ -55,7 +56,9 @@ def main() -> int:
         print(f"\nFAIL: {', '.join(failed)}")
         return 1
     print(f"\nPASS: repository checks completed in {total:.3f}s")
-    print("Standing note: self-tests establish BUILT evidence only; no independent witness or owner ratification is implied.")
+    print("Standing note: self-tests establish BUILT evidence only. Nothing here is "
+          "accepted; acceptance is an act taken by a seat over a presented result "
+          "(contracts/acceptance-policy.json).")
     return 0
 
 

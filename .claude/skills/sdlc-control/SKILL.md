@@ -36,5 +36,5 @@ sequencing decision you make is an attributable event.
 
 Refuse to ratify, to advance standing without the required evidence, to
 launch work with no governing contract, fixture, or explicit experimental
-label, and to perform any `EXTERNAL_WORLD` effect while
-`no_external_effects_in_phase_i` stands.
+label, and to perform any `EXTERNAL_WORLD` effect outside a scope
+`contracts/external-effect-authorization.json` declares.

@@ -17,11 +17,16 @@ SPEC = importlib.util.spec_from_file_location(
 assert SPEC and SPEC.loader
 observe = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(observe)
+NO_POSIX = ("Permission drift is drift in POSIX mode bits, which this platform does not "
+            "have. The observer reports no permission defect here because it cannot see "
+            "one, not because none exists; custody receipts written on this platform say "
+            "identity_enforcement UNAVAILABLE_ON_THIS_PLATFORM for the same reason.")
 PINNED_IMAGE = "registry.example/soveraeign@sha256:" + "a" * 64
 CUSTODY_CLAIM = "witness-owned-custody"
 
 
 class WitnessProtocolTests(unittest.TestCase):
+    @unittest.skipUnless(observe.custody_posix.available, NO_POSIX)
     def test_independent_local_observer_detects_permission_drift(self):
         manifest = json.loads(
             (ROOT / "infrastructure" / "phase-i.local.json").read_text(encoding="utf-8")

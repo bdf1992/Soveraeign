@@ -24,6 +24,7 @@ SECRET_PATTERNS = {
     "GitHub token": re.compile(r"\bgh[pousr]_[A-Za-z0-9]{20,}\b"),
     "AWS access key": re.compile(r"\bAKIA[0-9A-Z]{16}\b"),
 }
+FSTRING_PREFIX = re.compile(r"(?<![A-Za-z0-9_])[fF][rR]?[\"']|(?<![A-Za-z0-9_])[rR][fF][\"']")
 LOCAL_PATH_PATTERNS = (
     re.compile(r"(?:^|[\s'\"])/Users/[^/\s]+/"),
     re.compile(r"(?:^|[\s'\"])/home/[^/\s]+/"),
@@ -63,6 +64,32 @@ def check_text(path: Path, text: str) -> list[str]:
     return defects
 
 
+def backslash_in_fstring(text: str) -> list[int]:
+    """Line numbers where an f-string expression contains a backslash.
+
+    Python 3.12 accepts this and 3.11 refuses it, so a checker running on a newer
+    interpreter passes code the declared baseline cannot parse. The repository
+    targets 3.11 or newer, so the check is written against the older rule rather
+    than against whichever interpreter happens to run it.
+    """
+    found = []
+    for number, line in enumerate(text.splitlines(), 1):
+        for match in FSTRING_PREFIX.finditer(line):
+            rest, depth = line[match.end():], 0
+            for char in rest:
+                if char == "{":
+                    depth += 1
+                elif char == "}":
+                    depth = max(0, depth - 1)
+                elif char == "\\" and depth:
+                    found.append(number)
+                    break
+            if number in found:
+                break
+    return found
+
+
+
 def check_python(path: Path, text: str) -> tuple[list[str], list[str]]:
     relative = path.relative_to(ROOT).as_posix()
     defects = []
@@ -71,6 +98,10 @@ def check_python(path: Path, text: str) -> tuple[list[str], list[str]]:
         tree = ast.parse(text, filename=relative)
     except SyntaxError as error:
         return [f"{relative}:{error.lineno}: syntax error: {error.msg}"], warnings
+    for number in backslash_in_fstring(text):
+        defects.append(
+            f"{relative}:{number}: backslash inside an f-string expression; "
+            "Python 3.11 refuses it and the baseline is 3.11 or newer")
     if path.name != "__init__.py":
         has_future = any(
             isinstance(node, ast.ImportFrom)

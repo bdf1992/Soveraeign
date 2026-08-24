@@ -1,7 +1,10 @@
 {
   "contract_id": "soveraeign-kernel-parity/v1",
   "status": "PROPOSED",
-  "governed_by": ["SPEC.md", "contracts/kernel-transitions.json"],
+  "governed_by": [
+    "SPEC.md",
+    "contracts/kernel-transitions.json"
+  ],
   "note": "Declared correspondence between each participant's own refusal vocabulary and the kernel refusal it realizes. SPEC.md admits reference implementations only as participants tested against the contract, so the fifth acceptance criterion on issue #6 is met by proving the participants already decide the same way on the same fact, not by rewriting them into the kernel. A correspondence declared here is checked by driving both sides and comparing their decisions; a participant that stops agreeing fails the check rather than quietly diverging.",
   "participants": [
     {
@@ -45,11 +48,11 @@
           "note": "The participant splits one kernel refusal into two names by target: OWNER_RATIFICATION_REQUIRED when the target is RATIFIED, OWNER_JUDGEMENT_REQUIRED for any other owner-reserved transition. The kernel makes no such distinction. A finer participant vocabulary over the same kernel refusal is permitted; a coarser one that admitted what the kernel refuses would not be."
         },
         {
-          "fact": "external-world effects are refused in this phase",
-          "participant_refusal": "EFFECT_CLASS_REFUSED",
-          "kernel_refusal": "EFFECT_CLASS_REFUSED",
+          "fact": "an external effect outside every declared scope is refused",
+          "participant_refusal": "EXTERNAL_EFFECT_UNAUTHORIZED",
+          "kernel_refusal": "EXTERNAL_EFFECT_UNAUTHORIZED",
           "kernel_transition": "cross",
-          "note": "The only correspondence where both sides already use the same name."
+          "note": "Both sides read the same authorization contract, so both name the refusal the same way. What changed is that the refusal is now over a scope rather than over an effect class."
         }
       ]
     }

@@ -1,0 +1,257 @@
+{
+  "corpus_id": "soveraeign-acceptance-gate/v1",
+  "note": "Controlled cases for the owner gate. Every case states what it proves and which declared refusal code it expects, so a passing run is readable against contracts/acceptance-policy.json rather than against the checker's prose. The registry below is a fixture, not the live topology: a case that passed only because the real registry happened to be shaped a certain way would prove nothing.",
+  "registry": {
+    "registry_schema": "soveraeign-seat-registry/v1",
+    "status": "PROPOSED",
+    "root_seat": "seat:root",
+    "seats": [
+      {
+        "seat_id": "seat:root",
+        "seat_type": "root",
+        "owner_seat": null,
+        "settles": ["JUDGEMENT", "VERIFICATION"],
+        "cares_about": "product intent and phase gates",
+        "occupant": {
+          "actor_id": "urn:fixture:actor:root",
+          "actor_kind": "HUMAN",
+          "claimed_at": "2026-08-22T00:00:00Z",
+          "claim_basis": "fixture"
+        }
+      },
+      {
+        "seat_id": "seat:control",
+        "seat_type": "control",
+        "owner_seat": "seat:root",
+        "settles": ["VERIFICATION"],
+        "cares_about": "coordination of launched work",
+        "occupant": {
+          "actor_id": "urn:fixture:actor:control",
+          "actor_kind": "MODEL",
+          "claimed_at": "2026-08-23T00:00:00Z",
+          "claim_basis": "fixture"
+        }
+      },
+      {
+        "seat_id": "seat:orchestrator",
+        "seat_type": "orchestration",
+        "owner_seat": "seat:control",
+        "settles": ["VERIFICATION"],
+        "cares_about": "one named operation",
+        "occupant": {
+          "actor_id": "urn:fixture:actor:orchestrator",
+          "actor_kind": "MODEL",
+          "claimed_at": "2026-08-23T00:00:00Z",
+          "claim_basis": "fixture"
+        }
+      },
+      {
+        "seat_id": "seat:worker",
+        "seat_type": "work",
+        "owner_seat": "seat:orchestrator",
+        "settles": [],
+        "cares_about": "one leased task",
+        "occupant": {
+          "actor_id": "urn:fixture:actor:worker",
+          "actor_kind": "MODEL",
+          "claimed_at": "2026-08-23T00:00:00Z",
+          "claim_basis": "fixture"
+        }
+      },
+      {
+        "seat_id": "seat:vacant-orchestrator",
+        "seat_type": "orchestration",
+        "owner_seat": "seat:control",
+        "settles": ["VERIFICATION"],
+        "cares_about": "an operation nobody has been launched into",
+        "occupant": null
+      }
+    ]
+  },
+  "cases": [
+    {
+      "case_id": "AG-001-worker-presents-to-its-orchestrator",
+      "kind": "edge",
+      "expect": "ALLOWED",
+      "proves": "A worker's report is settled by the seat that leased it, one edge up. This is the ordinary case and it never reaches the root.",
+      "input": {
+        "presenting": "seat:worker",
+        "accepting": "seat:orchestrator",
+        "claim_type": "VERIFICATION"
+      }
+    },
+    {
+      "case_id": "AG-002-control-presents-judgement-to-root",
+      "kind": "edge",
+      "expect": "ALLOWED",
+      "proves": "A judgement claim reaches the root seat only from the seat the root actually owns.",
+      "input": {
+        "presenting": "seat:control",
+        "accepting": "seat:root",
+        "claim_type": "JUDGEMENT"
+      }
+    },
+    {
+      "case_id": "AG-003-worker-reaches-past-its-orchestrator",
+      "kind": "edge",
+      "expect": "REFUSED",
+      "refusal": "ACCEPTANCE_BY_NON_OWNER",
+      "proves": "Ownership does not chain. The root owns the control seat and does not thereby own that seat's workers, so a worker cannot route its report to the root even though a path exists.",
+      "input": {
+        "presenting": "seat:worker",
+        "accepting": "seat:root",
+        "claim_type": "VERIFICATION"
+      }
+    },
+    {
+      "case_id": "AG-004-seat-accepts-its-own-output",
+      "kind": "edge",
+      "expect": "REFUSED",
+      "refusal": "SELF_ACCEPTANCE_REFUSED",
+      "proves": "No seat settles its own output, at any tier.",
+      "input": {
+        "presenting": "seat:orchestrator",
+        "accepting": "seat:orchestrator",
+        "claim_type": "VERIFICATION"
+      }
+    },
+    {
+      "case_id": "AG-005-verification-seat-asked-to-settle-judgement",
+      "kind": "edge",
+      "expect": "REFUSED",
+      "refusal": "ACCEPTANCE_SEAT_CANNOT_SETTLE",
+      "proves": "A control seat may settle that a check held; it may not settle what the product is for. Owning the edge is not enough when the claim is judgement-typed.",
+      "input": {
+        "presenting": "seat:orchestrator",
+        "accepting": "seat:control",
+        "claim_type": "JUDGEMENT"
+      }
+    },
+    {
+      "case_id": "AG-006-acceptance-at-an-empty-seat",
+      "kind": "edge",
+      "expect": "REFUSED",
+      "refusal": "UNOCCUPIED_SEAT",
+      "proves": "A seat with no recorded occupant cannot act. Authority is exercised by an attributable actor, never by a position on a chart.",
+      "input": {
+        "presenting": "seat:worker",
+        "accepting": "seat:vacant-orchestrator",
+        "claim_type": "VERIFICATION"
+      }
+    },
+    {
+      "case_id": "AG-007-hold-naming-an-external-effect",
+      "kind": "hold",
+      "expect": "ALLOWED",
+      "proves": "A transition that commits an effect outside the node may wait on an owner seat, provided it names what stays reachable meanwhile.",
+      "input": {
+        "hold": {
+          "id": "H-FIXTURE-1",
+          "reason": "EXTERNAL_WORLD_EFFECT",
+          "blocks": "kernel.commit_external_world_effect",
+          "reachable_alternative": "record-local doubles are built and tested"
+        }
+      }
+    },
+    {
+      "case_id": "AG-008-hold-with-no-declared-reason",
+      "kind": "hold",
+      "expect": "REFUSED",
+      "refusal": "HOLD_WITHOUT_ADMISSIBLE_REASON",
+      "proves": "Wanting the owner's opinion is not a reason to stop. This is the failure the gate exists to catch.",
+      "input": {
+        "hold": {
+          "id": "H-FIXTURE-2",
+          "reason": "AWAITING_OWNER_INPUT",
+          "blocks": "spec.ratify",
+          "reachable_alternative": "none stated"
+        }
+      }
+    },
+    {
+      "case_id": "AG-009-hold-blocking-everything",
+      "kind": "hold",
+      "expect": "REFUSED",
+      "refusal": "HOLD_WITHOUT_NAMED_TRANSITION",
+      "proves": "A hold stops one named transition. A hold that names a whole area of work is a stalled frontier wearing a gate's clothes.",
+      "input": {
+        "hold": {
+          "id": "H-FIXTURE-3",
+          "reason": "PUBLICATION",
+          "blocks": "everything downstream",
+          "reachable_alternative": "wait"
+        }
+      }
+    },
+    {
+      "case_id": "AG-010-hold-with-nothing-reachable",
+      "kind": "hold",
+      "expect": "REFUSED",
+      "refusal": "HOLD_WITHOUT_REACHABLE_ALTERNATIVE",
+      "proves": "A hold must say what work continues while it stands, so that a gated edge is never read as a gated frontier.",
+      "input": {
+        "hold": {
+          "id": "H-FIXTURE-4",
+          "reason": "PUBLICATION",
+          "blocks": "repository.publish_public",
+          "reachable_alternative": null
+        }
+      }
+    },
+    {
+      "case_id": "AG-011-ruling-that-evidence-can-overturn",
+      "kind": "ruling",
+      "expect": "ALLOWED",
+      "proves": "A default taken without asking is legitimate when it names the evidence that would reverse it.",
+      "input": {
+        "ruling": {
+          "id": "R-FIXTURE-1",
+          "ruling": "SQLite holds the local record for Phase I.",
+          "counter": "A required append-preserving behaviour SQLite cannot express without a second store."
+        }
+      }
+    },
+    {
+      "case_id": "AG-012-ruling-with-no-counter",
+      "kind": "ruling",
+      "expect": "REFUSED",
+      "refusal": "RULING_WITHOUT_COUNTER",
+      "proves": "A default that no evidence can overturn is a decree. Draining a question into one of those trades a stall for a lie.",
+      "input": {
+        "ruling": {
+          "id": "R-FIXTURE-2",
+          "ruling": "SQLite holds the local record for Phase I.",
+          "counter": null
+        }
+      }
+    },
+    {
+      "case_id": "AG-013-packet-with-no-defeater",
+      "kind": "packet",
+      "expect": "REFUSED",
+      "refusal": "PACKET_WITHOUT_DEFEATER",
+      "proves": "A result presented with nothing that could defeat it has not been examined, and acceptance of it would be acceptance of a story.",
+      "input": {
+        "packet": {
+          "packet_id": "A-FIXTURE-1",
+          "claim": "The thing works.",
+          "what_could_defeat_it": []
+        }
+      }
+    },
+    {
+      "case_id": "AG-014-open-question-addressed-to-nobody",
+      "kind": "open_decision",
+      "expect": "REFUSED",
+      "refusal": "UNDRAINED_QUESTION",
+      "proves": "A question parked in the register without a ruling, a presentation, or an admissible hold is the exact state this gate refuses to allow back in.",
+      "input": {
+        "open_decision": {
+          "id": "O-FIXTURE-1",
+          "question": "Does Bdo ratify this?",
+          "blocks": "some_area"
+        }
+      }
+    }
+  ]
+}

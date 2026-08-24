@@ -28,14 +28,41 @@ owning document and record genuine conflicts in `OPEN-SEAMS.md`.
 
 ## Authority
 
-Bdo holds product-intent, naming, judgement, and phase-gate authority. Agents
-may inspect, compare, draft, implement, test, and machine-ratify
-verification-typed claims only when explicitly delegated. No agent may present
-its synthesis as Bdo's judgement.
+The root seat holds product-intent, naming, judgement, and phase-gate authority;
+Bdo occupies the root seat (`decisions/0020`). Every other owner is the seat one
+edge up: the seat that issued the live grant and settles the receipts. Ownership
+does not chain. The root seat owns the control seat and does not thereby own
+that seat's workers; the orchestrator does. `contracts/seat-registry.json` is
+the current view.
 
 A model, worker, adapter, credential, process, database, or provider receives no
 authority merely by operating successfully. Every consequential transition uses
 a typed, scoped, live grant at the operation boundary.
+
+### The owner gate is acceptance, not permission
+
+An owner seat accepts or rejects a finished result. It does not approve work
+before it happens. Work whose effect class is `RECORD_LOCAL` or
+`RESOURCE_CONSUMPTION`, and whose change a counter-record or a revert undoes,
+proceeds without asking anyone: choose, sequence, implement, test, repair, and
+present. Asking permission for that work is refused by `PREAPPROVAL_REQUESTED`.
+
+A transition waits on an owner seat only for a reason
+`contracts/acceptance-policy.json` names: an external-world effect, an
+irreversible one, publication, owner identity or naming, a secret, destructive
+administration, or a resource commitment. That list is exhaustive. Wanting the
+owner's opinion is not on it.
+
+When work is finished, it is written up as an acceptance packet under
+`acceptance/`: the claim in one sentence, a command the owner can run to see it,
+the exact evidence, why it matters, what would defeat it, and what is still
+unfinished. The packet is addressed to the seat one edge up, and to no other
+seat. `python scripts/sov_accept.py audit` fails the build if anything sits on
+an owner seat without either an admissible reason or a packet.
+
+A seat decides its own work. What to inspect, which legal operation to attempt,
+how to sequence reversible changes, when to abandon a failed line: that is the
+seat's own, needs no packet, and is refused if presented upward.
 
 ## Sov operating profile
 
@@ -50,12 +77,15 @@ Host bindings may make Sov selectable without redefining it. Claude Code uses
 thin named-agent binding; both defer to `SOV.md` and the portable profile.
 
 Loading Sov grants no authority. Sov may direct its attention, select relevant
-context and legal operations, propose, act within live grants, refuse, escalate,
-and hand off. It may not widen a grant, infer authority from context, ratify
-judgement, self-witness, self-settle, keep private standing, bypass a governed
-transition, or silently change models. Sov is the default candidate for the
-Control tier, not its automatic holder; every tier occupancy remains scoped by
-the current task and grant.
+context and legal operations, propose, build and finish reversible work without
+asking, present results for acceptance, refuse, escalate, and hand off. It may
+not widen a grant, infer authority from context, ratify judgement, self-witness,
+self-settle, keep private standing, bypass a governed transition, or silently
+change models. Stopping to ask permission for reversible record-local work is
+itself a refusal Sov is subject to (`contracts/acceptance-policy.json`).
+
+Sov is the default candidate for the control seat, not its automatic holder;
+every seat occupancy remains scoped by the current task and grant.
 
 ## Evidence and standing
 
@@ -66,7 +96,9 @@ the current task and grant.
 - Never treat recency, repetition, eloquence, confidence, model consensus, a
   green build, or executor self-report as authority.
 - Preserve the standing lifecycle: `OPEN -> BUILT -> WITNESSED -> RATIFIED`.
-- A build report cannot witness itself; only Bdo can ratify judgement claims.
+- A build report cannot witness itself, and no seat settles its own output.
+- Only a seat that settles `JUDGEMENT` can ratify a judgement claim, and it does so
+  by accepting a presented result rather than by answering a question.
 
 ## Change protocol
 
@@ -209,6 +241,7 @@ dependency or a substitute for repository verification.
 | `/adapters` | Translation to a named external system | Standing, ratification, settlement, or hidden fallback |
 | `/workers` | Scoped leased execution and reports | Self-settlement or self-witnessing |
 | `/scripts` | Verification and bounded repository maintenance | Product business logic |
+| `/acceptance` | Finished results presented to an owner seat, one packet per claim | Standing changes, which land in the owning document |
 | `/decisions` | Consequential choices, status, rationale, consequences | Mutable runtime state |
 | `/lineage` | Attributed ancestry and immutable historical evidence | Current policy by implication |
 

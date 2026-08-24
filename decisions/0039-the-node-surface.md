@@ -215,9 +215,23 @@ defeating the ruling.
   addressed-input record, and no operator path for admitting one exists.
 - This node now has a registry: `contracts/fixtures/node-registry.reference.json`
   names `node:local` rooted at `seat:root` with no peers, `scripts/sov_node.py`
-  reads and grades it, and `python scripts/verify.py` runs that grading. The
-  console's default node and the registry's holder are checked against each
-  other, so a console writing for an unknown node fails the build.
+  reads and grades it, and `scripts/tests/test_sov_node.py` runs that grading
+  inside the existing tooling suite. The console's default node and the
+  registry's holder are checked against each other, so a console writing for an
+  unknown node fails the build.
+- The registry grading is not a separate `verify.py` check. One was added and
+  then removed: it cost 0.085s against a gate with about 11ms of headroom in the
+  worst of eight measured runs, and `test_sov_node.py` already invokes
+  `sov_node.main(["validate"])` in process. The budget itself is a separate
+  defect, recorded below.
+- `python scripts/verify.py` has almost no margin. Twenty checks fan out as
+  twenty concurrent subprocesses; measured wall time is 2.55-2.99s against the
+  3.000s budget `AGENTS.md` states, and one observed run reached 4.359s under
+  load from another process working in the same tree. Clearing every
+  `__pycache__` changed wall time by under 50ms, so bytecode compilation is not
+  the cause; the cost is twenty simultaneous interpreter startups. Raising the
+  budget is a policy change and reducing the fan-out is verification-domain
+  work, and this decision does neither.
 - The registry is a checked-in projection, like the seat topology. No transition
   admits a peer, so adding one is an edit to a file rather than a recorded
   judgement. That is the same shape `decisions/0020` left the seat registry in

@@ -5,7 +5,7 @@
     "repository": "bdf1992/Soveraeign",
     "root_issue": 1
   },
-  "synced_at": "2026-08-23T19:41:23Z",
+  "synced_at": "2026-08-24T15:52:36Z",
   "issues": {
     "1": {
       "number": 1,
@@ -17,7 +17,7 @@
         "type: epic"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/1",
-      "updated_at": "2026-08-23T06:22:27Z",
+      "updated_at": "2026-08-23T22:16:56Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -32,8 +32,8 @@
         "horizon": "NOW_TO_SCALE_TRUST",
         "authority": "Bdo/product-intent-and-phase-gate",
         "effect_class": "RECORD_LOCAL",
-        "evidence_pointer": "PENDING",
-        "last_observed_at": "2026-08-23T05:50:49Z",
+        "evidence_pointer": "https://github.com/bdf1992/Soveraeign/issues/1#issuecomment-5388767077",
+        "last_observed_at": "2026-08-23T20:40:00Z",
         "walker_receipt": "PENDING",
         "demotion_pointer": "#demotion",
         "child_issues": [
@@ -351,7 +351,7 @@
         "village: ground"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/7",
-      "updated_at": "2026-08-23T00:47:21Z",
+      "updated_at": "2026-08-24T15:45:58Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -395,7 +395,7 @@
         "village: ground"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/8",
-      "updated_at": "2026-08-23T00:47:26Z",
+      "updated_at": "2026-08-24T15:45:59Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -440,7 +440,7 @@
         "village: ground"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/9",
-      "updated_at": "2026-08-23T00:47:29Z",
+      "updated_at": "2026-08-24T15:46:00Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -485,7 +485,7 @@
         "village: ground"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/10",
-      "updated_at": "2026-08-23T00:47:33Z",
+      "updated_at": "2026-08-24T15:46:01Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -533,7 +533,7 @@
         "village: trust"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/11",
-      "updated_at": "2026-08-23T00:47:37Z",
+      "updated_at": "2026-08-24T15:46:03Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -579,7 +579,7 @@
         "village: trust"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/12",
-      "updated_at": "2026-08-23T00:47:41Z",
+      "updated_at": "2026-08-24T15:46:04Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -625,7 +625,7 @@
         "village: trust"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/13",
-      "updated_at": "2026-08-23T00:47:45Z",
+      "updated_at": "2026-08-24T15:46:05Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -673,7 +673,7 @@
         "village: trust"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/14",
-      "updated_at": "2026-08-23T00:47:50Z",
+      "updated_at": "2026-08-24T15:46:06Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -721,7 +721,7 @@
         "village: trust"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/15",
-      "updated_at": "2026-08-23T00:47:53Z",
+      "updated_at": "2026-08-24T15:46:08Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -771,7 +771,7 @@
         "village: motion"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/16",
-      "updated_at": "2026-08-23T05:28:42Z",
+      "updated_at": "2026-08-24T15:46:09Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -820,7 +820,7 @@
         "village: motion"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/17",
-      "updated_at": "2026-08-23T00:48:21Z",
+      "updated_at": "2026-08-24T15:46:10Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -867,7 +867,7 @@
         "village: motion"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/18",
-      "updated_at": "2026-08-23T00:48:17Z",
+      "updated_at": "2026-08-24T15:46:11Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -916,7 +916,7 @@
         "village: motion"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/19",
-      "updated_at": "2026-08-23T00:48:34Z",
+      "updated_at": "2026-08-24T15:46:12Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -965,7 +965,7 @@
         "village: motion"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/20",
-      "updated_at": "2026-08-23T00:48:30Z",
+      "updated_at": "2026-08-24T15:46:13Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -1016,7 +1016,7 @@
         "village: motion"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/21",
-      "updated_at": "2026-08-23T00:48:25Z",
+      "updated_at": "2026-08-24T15:46:14Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -1068,7 +1068,7 @@
         "village: domain"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/22",
-      "updated_at": "2026-08-23T00:48:37Z",
+      "updated_at": "2026-08-24T15:46:15Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -1123,7 +1123,7 @@
         "village: domain"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/23",
-      "updated_at": "2026-08-23T06:22:33Z",
+      "updated_at": "2026-08-24T15:46:16Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -1192,7 +1192,7 @@
         "village: domain"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/24",
-      "updated_at": "2026-08-23T00:48:41Z",
+      "updated_at": "2026-08-24T15:46:17Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -1249,7 +1249,7 @@
         "village: ground"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/25",
-      "updated_at": "2026-08-23T00:48:48Z",
+      "updated_at": "2026-08-24T15:46:18Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -1301,7 +1301,7 @@
         "village: ground"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/26",
-      "updated_at": "2026-08-23T00:45:56Z",
+      "updated_at": "2026-08-24T15:46:19Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -1354,7 +1354,7 @@
         "village: ground"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/27",
-      "updated_at": "2026-08-23T00:48:52Z",
+      "updated_at": "2026-08-24T15:46:20Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -1409,7 +1409,7 @@
         "village: domain"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/28",
-      "updated_at": "2026-08-23T00:48:56Z",
+      "updated_at": "2026-08-24T15:46:21Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -1472,7 +1472,7 @@
         "village: motion"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/29",
-      "updated_at": "2026-08-23T00:46:16Z",
+      "updated_at": "2026-08-24T15:46:23Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -1532,7 +1532,7 @@
         "village: motion"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/30",
-      "updated_at": "2026-08-23T00:46:24Z",
+      "updated_at": "2026-08-24T15:46:25Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -1593,7 +1593,7 @@
         "village: motion"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/31",
-      "updated_at": "2026-08-23T00:46:20Z",
+      "updated_at": "2026-08-24T15:46:26Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -1656,7 +1656,7 @@
         "village: ground"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/32",
-      "updated_at": "2026-08-23T06:22:30Z",
+      "updated_at": "2026-08-24T15:46:28Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -1709,7 +1709,7 @@
         "village: ground"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/37",
-      "updated_at": "2026-08-23T05:28:53Z",
+      "updated_at": "2026-08-24T15:46:29Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -1761,7 +1761,7 @@
         "village: ground"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/39",
-      "updated_at": "2026-08-23T06:09:03Z",
+      "updated_at": "2026-08-24T15:46:31Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -1784,10 +1784,10 @@
         ],
         "standing": "BUILT_SELF_TESTED_NOT_WITNESSED",
         "horizon": "NOW",
-        "authority": "Bdo/phase-gate",
+        "authority": "Bdo/acceptance",
         "effect_class": "RECORD_LOCAL",
-        "evidence_pointer": "infrastructure/phase-i.topology.json",
-        "last_observed_at": "2026-08-23T05:27:17Z",
+        "evidence_pointer": "infrastructure/phase-i.topology.json, infrastructure/phase-i.runtime-image.json, .github/workflows/runtime-image.yml",
+        "last_observed_at": "2026-08-23T21:04:00Z",
         "walker_receipt": "PENDING",
         "demotion_pointer": "#demotion-pointer",
         "dependency_channels": [
@@ -1808,9 +1808,13 @@
       "number": 40,
       "title": "Charting contract — canonicalize typed points, crossings, coverings, and paradigms",
       "state": "OPEN",
-      "labels": [],
+      "labels": [
+        "horizon: next",
+        "type: bit",
+        "village: ground"
+      ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/40",
-      "updated_at": "2026-08-23T17:11:39Z",
+      "updated_at": "2026-08-24T15:46:32Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -1851,9 +1855,13 @@
       "number": 41,
       "title": "Skill and capability graph — derive competence from SDLC and registry contracts",
       "state": "OPEN",
-      "labels": [],
+      "labels": [
+        "horizon: next",
+        "type: bit",
+        "village: trust"
+      ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/41",
-      "updated_at": "2026-08-23T17:11:41Z",
+      "updated_at": "2026-08-24T15:46:33Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -1895,9 +1903,14 @@
       "number": 42,
       "title": "Chart compiler bindings — lower governed charts into human/model operator environments",
       "state": "OPEN",
-      "labels": [],
+      "labels": [
+        "effect: request-only",
+        "horizon: next",
+        "type: bit",
+        "village: motion"
+      ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/42",
-      "updated_at": "2026-08-23T17:11:42Z",
+      "updated_at": "2026-08-24T15:46:35Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -1948,7 +1961,7 @@
         "village: motion"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/45",
-      "updated_at": "2026-08-23T06:22:40Z",
+      "updated_at": "2026-08-24T15:46:37Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -1997,9 +2010,13 @@
       "number": 47,
       "title": "Skill declaration location — choose canonical ownership for machine-readable competence contracts",
       "state": "OPEN",
-      "labels": [],
+      "labels": [
+        "horizon: next",
+        "type: stub",
+        "village: trust"
+      ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/47",
-      "updated_at": "2026-08-23T17:11:43Z",
+      "updated_at": "2026-08-24T15:46:39Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -2042,9 +2059,13 @@
       "number": 48,
       "title": "Skill relation schema — validate Requirement and Capability declaration shape",
       "state": "OPEN",
-      "labels": [],
+      "labels": [
+        "horizon: next",
+        "type: stub",
+        "village: ground"
+      ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/48",
-      "updated_at": "2026-08-23T17:11:44Z",
+      "updated_at": "2026-08-24T15:46:40Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -2094,7 +2115,7 @@
         "village: trust"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/49",
-      "updated_at": "2026-08-23T06:10:45Z",
+      "updated_at": "2026-08-24T15:46:42Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -2140,9 +2161,14 @@
       "number": 50,
       "title": "Skill graph UI projection — configure and inspect forests without mutating semantic ownership",
       "state": "OPEN",
-      "labels": [],
+      "labels": [
+        "effect: request-only",
+        "horizon: next",
+        "type: stub",
+        "village: motion"
+      ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/50",
-      "updated_at": "2026-08-23T17:11:47Z",
+      "updated_at": "2026-08-24T15:46:43Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -2210,12 +2236,12 @@
       "state": "CLOSED",
       "labels": [
         "horizon: now",
+        "standing: demoted",
         "type: stub",
-        "village: ground",
-        "witness: demoted"
+        "village: ground"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/53",
-      "updated_at": "2026-08-23T06:09:41Z",
+      "updated_at": "2026-08-24T15:46:45Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -2259,12 +2285,12 @@
       "state": "CLOSED",
       "labels": [
         "horizon: now",
+        "standing: demoted",
         "type: stub",
-        "village: ground",
-        "witness: demoted"
+        "village: ground"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/54",
-      "updated_at": "2026-08-23T06:09:33Z",
+      "updated_at": "2026-08-24T15:46:47Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -2308,12 +2334,12 @@
       "state": "CLOSED",
       "labels": [
         "horizon: now",
+        "standing: demoted",
         "type: stub",
-        "village: ground",
-        "witness: demoted"
+        "village: ground"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/55",
-      "updated_at": "2026-08-23T06:09:37Z",
+      "updated_at": "2026-08-24T15:46:48Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -2357,12 +2383,12 @@
       "state": "CLOSED",
       "labels": [
         "horizon: now",
+        "standing: demoted",
         "type: stub",
-        "village: ground",
-        "witness: demoted"
+        "village: ground"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/56",
-      "updated_at": "2026-08-23T06:09:20Z",
+      "updated_at": "2026-08-24T15:46:50Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -2404,9 +2430,13 @@
       "number": 57,
       "title": "RED engagement — defeat the typed-contract charting foundation",
       "state": "OPEN",
-      "labels": [],
+      "labels": [
+        "horizon: now",
+        "type: engagement",
+        "village: ground"
+      ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/57",
-      "updated_at": "2026-08-23T17:33:40Z",
+      "updated_at": "2026-08-24T15:46:51Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -2447,9 +2477,14 @@
       "number": 65,
       "title": "System of Record — append-preserving operational journal",
       "state": "CLOSED",
-      "labels": [],
+      "labels": [
+        "horizon: now",
+        "standing: self-tested",
+        "type: stub",
+        "village: ground"
+      ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/65",
-      "updated_at": "2026-08-23T19:12:41Z",
+      "updated_at": "2026-08-24T15:46:52Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -2499,7 +2534,7 @@
         "village: motion"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/67",
-      "updated_at": "2026-08-23T19:40:23Z",
+      "updated_at": "2026-08-24T15:46:54Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [

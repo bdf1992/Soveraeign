@@ -19,6 +19,11 @@ or deployment topology.
 | `source.schema.json` | identifies captured bytes by address, digest, and size so a reading can verify its input before it begins (`SPEC.md` `Source`) |
 | `recording.schema.json` | records a reading of a source: exact source digest, reader version and configuration, fidelity, and recoverable omissions; it never replaces or mutates its source (`SPEC.md` `Recording`) |
 | `seat-registry.schema.json` | PROPOSED (decisions/0020): the ownership topology as a rebuildable projection — seats, owner edges, what each settles, attributable occupancy claims |
+| `seat-message.schema.json` | PROPOSED (decisions/0035): the envelope one seat speaks to another in — who speaks, from which seat, to which seat, what kind of statement, the highest standing it proposes, and what it carries onward; the body is deliberately unconstrained |
+| `seat-etiquette.json` | the relationship table `seat-message.schema.json` is graded against: which acts each seat type may speak, in which direction, and how far each may propose standing |
+| `node-identity.schema.json` | PROPOSED (decisions/0039): who a node is and which seat settles for it, for itself and every peer a local seat has admitted; it cannot express a grant, so a peer's self-description can never arrive as permission |
+| `federation-crossing.schema.json` | PROPOSED (decisions/0039): one record offered across the boundary between two nodes and what the receiving node did about it; it carries an address and a digest, never standing — an admitted record enters the receiving node at `RECORDED` |
+| `public-projection.schema.json` | PROPOSED (decisions/0039): the outward read model of a node, derived from threads an operator marked public; inbound is an addressed input that queues, never a record the surface admits by itself |
 | `kernel-transitions.json` | the transitions compiled from the SPEC.md transition contract, with their preconditions and refusals |
 | `transition.schema.json` | a request to perform one declared transition, with the pre-state, lease, observation, and authority it is checked against |
 | `kernel-parity.json` | the declared correspondence between each participant's own refusal vocabulary and the kernel refusal it realizes |

@@ -48,10 +48,17 @@ the subject.
 Every issue receives exactly one `type:` label and, except the system epic,
 exactly one `village:` label. It receives exactly one `horizon:` label.
 `effect: record-local` is the default and is omitted from the visible label set;
-non-default effects remain visible. `witness: pending` is carried by body
-metadata or the project and is omitted from the list view until witness state
-changes. Implementation stubs retain a `standing:` label when that standing
-changes how the work may be treated.
+non-default effects remain visible.
+
+`standing:` is one axis for the whole artifact lifecycle, and its colours ramp
+with how much evidence stands behind the claim: `proposed`, `declared`,
+`chartered`, `self-tested` (amber, because the witness is still outstanding),
+`witnessed` (green), `ratified`, and `demoted` (red, a fall off the ramp rather
+than a rung on it). `OPEN` is the default and carries no label, like
+`effect: record-local`. Every standing projects to at most one label. The
+separate `witness:` axis said the same thing a second time and is retired; a
+surviving `witness:` label now reads as drift
+(`decisions/0044-github-coordination-write-crossing.md`).
 
 The canonical names, descriptions, and accessible colors live in
 `.github/labels.yml`. The YAML block at the top of an issue is an instance of
@@ -59,9 +66,14 @@ The canonical names, descriptions, and accessible colors live in
 `contracts/issue-metadata.schema.json`. Display labels are projections of that
 metadata, not a second authority.
 
-Use native relationships only for the containment tree. Cross-village
+Use native relationships only for the containment tree: `child_issues` on the
+epic and `village_issue` on each bit or stub, not `parent`, which a bit may
+point at the epic while its village is the node that contains it. Cross-village
 dependencies, multiple parent bits, dependency channels, and proof obligations
-remain explicit in issue metadata and prose. A branch or pull request may close
+remain explicit in issue metadata, and are rendered into the body as plain
+issue links inside the `sov:relations` delimiters so a reader sees them without
+parsing YAML. The metadata stays authoritative; the rendered block is a
+projection of it and never a second place to declare an edge. A branch or pull request may close
 an implementation stub; it cannot by itself close its bit, promote a village,
 satisfy independent witness, or ratify the epic.
 
@@ -78,20 +90,6 @@ story past `BUILT_SELF_TESTED_NOT_WITNESSED`; a pull request cannot close it.
 Owner is not a role a story can name: it is the context that sets an
 operator's Binding and Projection and travels in `authority`
 (`decisions/0022-story-ticket-kind.md`).
-
-An **unblock request** (`kind: unblock`, `type: unblock`) is a proven block
-filed as work. Blocked is never a ticket status. A ticket that cannot advance
-names the exact `blocked_transition`, the `missing_precondition`, the
-`governing_rule`, the `requested_provision` (grant, judgement, contract,
-fixture, capability, or observation), the tier it was `requested_by`, the tier
-it is `requested_from`, the `unblock_condition` a receipt will settle, and
-`reachable_alternative: NONE`. The held ticket lists the unblock request in
-its `requires`, so it shows as held-by, like any dependency. A request with a
-reachable alternative is refused: that ticket is dependency-mapped, not
-blocked. A request whose provision is already some ticket's work is refused
-for the same reason; link that ticket instead. A judgement is always asked of
-the owner. The queue serves an unblock request at the tier it names and sorts
-it by what it holds (`decisions/0032-unblock-ticket-kind.md`).
 
 An **unblock request** (`kind: unblock`, `type: unblock`) is a proven block
 filed as work. Blocked is never a ticket status. A ticket that cannot advance
@@ -131,7 +129,20 @@ policy in `contracts/ticket-queue-policy.json` and reports what is takeable,
 what is blocked and by what, and what unblocks the most. The queue is a
 projection; position in it grants nothing.
 
-`adapters/github/export.py` is the only module permitted to call the GitHub API.
+A declaration reaches the surface through the registrar's write half, which
+plans offline and performs only what a local declaration already determined:
+
+```bash
+python adapters/github/apply.py --repo bdf1992/Soveraeign --export .local/registrar/tickets.json
+python adapters/github/apply.py --repo bdf1992/Soveraeign --export .local/registrar/tickets.json --apply
+```
+
+Without `--apply` it prints the plan and stops. It writes the label catalogue,
+containment edges, and the rendered relations block, and nothing else; it never
+opens, closes, comments on, assigns, or milestones an issue, and it writes no
+standing. See `adapters/github/README.md` for both crossings' declarations.
+
+`adapters/github/` is the only directory permitted to call the GitHub API.
 Every other check reads its export from disk, so all of them run offline,
 inside the day-zero budget, and in a sealed CI job.
 
@@ -222,8 +233,11 @@ Required local gate:
 python scripts/verify.py
 ```
 
-The gate is dependency-free, network-free, and budgeted to complete in under
-three seconds after Python starts. CI runs the same command.
+The gate is dependency-free, network-free, and graded on wall time after
+Python starts: `PLATINUM` at three seconds or less, `GOLD` at six, `SILVER`
+at fifteen, failing past fifteen. The grade prints on every passing run.
+Losing a grade does not fail the gate; it is worth reporting anyway. CI runs
+the same command.
 
 ## Tests and evidence
 

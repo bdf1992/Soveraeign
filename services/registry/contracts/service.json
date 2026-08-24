@@ -1,0 +1,292 @@
+{
+  "service_id": "registry",
+  "standing": "PROPOSED",
+  "owns": [
+    "registry-entry",
+    "entry-relation",
+    "owner-record",
+    "registry-index",
+    "resolution",
+    "drift-finding",
+    "registry-receipt"
+  ],
+  "references": [
+    "shared-kernel-contracts",
+    "capability-map",
+    "domain-owners"
+  ],
+  "operations": [
+    {
+      "operation": "register-entry",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://registry/register-entry",
+      "subject": "registry-entry",
+      "crud": "CREATE",
+      "requirement": "PROD-I-2",
+      "kernel_transition": "capture_source",
+      "preconditions": [
+        "declared_kind",
+        "declared_name",
+        "owning_document_address",
+        "owning_document_digest",
+        "declared_actor"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "INCOMPLETE_PROPOSAL",
+        "SOURCE_UNRESOLVED",
+        "NAME_COLLIDES"
+      ]
+    },
+    {
+      "operation": "supersede-entry",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://registry/supersede-entry",
+      "subject": "registry-entry",
+      "crud": "SUPERSEDE",
+      "requirement": "PROD-I-2",
+      "preconditions": [
+        "entry_exists",
+        "owning_document_digest",
+        "declared_actor"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "STALE_STATE",
+        "SOURCE_UNRESOLVED",
+        "INCOMPLETE_PROPOSAL"
+      ]
+    },
+    {
+      "operation": "relate-entries",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://registry/relate-entries",
+      "subject": "entry-relation",
+      "crud": "CREATE",
+      "requirement": "PROD-I-2",
+      "preconditions": [
+        "both_entries_exist",
+        "declared_relation_type",
+        "declared_actor"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "RELATION_UNTYPED",
+        "NAME_UNKNOWN",
+        "INCOMPLETE_PROPOSAL"
+      ]
+    },
+    {
+      "operation": "declare-owner",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://registry/declare-owner",
+      "subject": "owner-record",
+      "crud": "CREATE",
+      "requirement": "PROD-I-5",
+      "preconditions": [
+        "domain_entry_exists",
+        "declared_owner",
+        "declared_mandate",
+        "declared_budget",
+        "declared_deadline",
+        "declared_witness"
+      ],
+      "commit": "RECORDED",
+      "refusals": [
+        "INCOMPLETE_PROPOSAL",
+        "WITNESS_NOT_INDEPENDENT",
+        "NAME_UNKNOWN"
+      ]
+    },
+    {
+      "operation": "supersede-owner",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://registry/supersede-owner",
+      "subject": "owner-record",
+      "crud": "SUPERSEDE",
+      "requirement": "PROD-I-5",
+      "preconditions": [
+        "owner_record_exists",
+        "declared_budget",
+        "declared_deadline",
+        "declared_witness"
+      ],
+      "commit": "RECORDED",
+      "refusals": [
+        "STALE_STATE",
+        "WITNESS_NOT_INDEPENDENT",
+        "INCOMPLETE_PROPOSAL"
+      ]
+    },
+    {
+      "operation": "retire-owner",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://registry/retire-owner",
+      "subject": "owner-record",
+      "crud": "COUNTER",
+      "requirement": "PROD-I-5",
+      "kernel_transition": "retract",
+      "preconditions": [
+        "owner_record_exists",
+        "authority_grant_id",
+        "declared_reason"
+      ],
+      "commit": "COUNTERED",
+      "refusals": [
+        "AUTHORITY_REFUSED",
+        "STALE_STATE"
+      ]
+    },
+    {
+      "operation": "resolve",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://registry/resolve",
+      "subject": "resolution",
+      "crud": "READ",
+      "requirement": "PROD-I-2",
+      "preconditions": [
+        "declared_name",
+        "index_fresh"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "NAME_UNKNOWN",
+        "INDEX_STALE"
+      ]
+    },
+    {
+      "operation": "read-entry",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://registry/read-entry",
+      "subject": "registry-entry",
+      "crud": "READ",
+      "requirement": "PROD-I-2",
+      "also_reads": [
+        "entry-relation",
+        "registry-receipt"
+      ],
+      "preconditions": [
+        "entry_exists"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "NAME_UNKNOWN"
+      ]
+    },
+    {
+      "operation": "read-owner",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://registry/read-owner",
+      "subject": "owner-record",
+      "crud": "READ",
+      "requirement": "PROD-I-5",
+      "preconditions": [
+        "domain_entry_exists"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "NAME_UNKNOWN"
+      ]
+    },
+    {
+      "operation": "rebuild-index",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://registry/rebuild-index",
+      "subject": "registry-index",
+      "crud": "REBUILD",
+      "requirement": "PROD-I-2",
+      "preconditions": [
+        "declared_sources",
+        "every_source_readable"
+      ],
+      "commit": "REBUILT",
+      "refusals": [
+        "UNREADABLE",
+        "SOURCE_UNRESOLVED"
+      ]
+    },
+    {
+      "operation": "report-drift",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://registry/report-drift",
+      "subject": "drift-finding",
+      "crud": "CREATE",
+      "requirement": "PROD-I-2",
+      "preconditions": [
+        "index_exists",
+        "source_digest_compared"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "MISSING_PRECONDITION",
+        "SOURCE_CHANGED"
+      ]
+    },
+    {
+      "operation": "read-index",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://registry/read-index",
+      "subject": "registry-index",
+      "crud": "READ",
+      "requirement": "PROD-I-2",
+      "also_reads": [
+        "drift-finding"
+      ],
+      "preconditions": [
+        "index_exists"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "MISSING_PRECONDITION"
+      ]
+    },
+    {
+      "operation": "read-receipt",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://registry/read-receipt",
+      "subject": "registry-receipt",
+      "crud": "READ",
+      "requirement": "PROD-I-4",
+      "preconditions": [
+        "registry_receipt_exists"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "MISSING_PRECONDITION"
+      ]
+    }
+  ],
+  "local_refusals": {
+    "INDEX_STALE": "STALE_STATE",
+    "NAME_COLLIDES": "ADMISSION_REFUSED",
+    "NAME_UNKNOWN": "MISSING_PRECONDITION",
+    "RELATION_UNTYPED": "INCOMPLETE_PROPOSAL",
+    "SOURCE_UNRESOLVED": "READER_UNDECLARED",
+    "WITNESS_NOT_INDEPENDENT": "OBSERVER_NOT_INDEPENDENT"
+  },
+  "uses_kernel_contracts": [
+    "standing",
+    "typed-authority",
+    "operation",
+    "receipt",
+    "retraction"
+  ],
+  "ports": [
+    "human-binding",
+    "model-binding"
+  ],
+  "depends_on": [
+    "record:append-preserving-journal",
+    "console:authority-grant"
+  ],
+  "forbids": [
+    "defining-a-term-any-governing-document-owns",
+    "storing-an-entry-whose-owning-document-does-not-resolve",
+    "answering-a-lookup-from-a-stale-index",
+    "repairing-the-index-in-place-when-a-source-disagrees",
+    "granting-authority-or-standing-by-registration",
+    "witnessing-an-owner-it-declared",
+    "erasing-a-retired-owner-record"
+  ],
+  "note": "The named place to look something up. It resolves a name to the document that owns it and to what it relates to, and it holds the owner record for each domain. It defines nothing: every entry carries its owning document's address and digest, and a source and the index disagreeing is a recorded finding, not a repair."
+}

@@ -30,6 +30,11 @@ public_projection_status: PROPOSED_CONTRACT_BUILT_PUBLICATION_RECORDED_SEAT_SEAM
 # It depends on the Console Service owning authority grants, which is a default
 # taken in that decision rather than a boundary Bdo has settled.
 gateway_service_status: CHARTERED_BOUNDARY_NOT_IMPLEMENTED
+# Owns independent observation under decisions/0041: the kernel observe_run
+# transition had no service behind it, and AI-NATIVE.md check 3 reads
+# UNATTESTABLE on every service assessment. Logging is not its job; the
+# Record Service owns the journal and the Console Service owns the view.
+observation_service_status: CHARTERED_BOUNDARY_NOT_IMPLEMENTED
 # Every service operation now declares its subject, CRUD verb, logical endpoint,
 # preconditions, commit, and refusals (decisions/0040). Self-tested against one
 # admissible manifest and twenty-one defeats; not independently witnessed.

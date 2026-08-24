@@ -213,3 +213,30 @@ one of the two contracts is naming it wrongly. `decisions/0020` owns seat topolo
 
 Until it is settled, a public projection built from console records cannot fill
 `published_by` honestly, and the fixtures that exercise it supply the seat by hand.
+
+## S20 · The gate counts its checks and never says which
+
+`scripts/verify.py` reports a check count and `scripts/verify_bootstrap.py` pins
+the files that must exist, but nothing compares the *set* of checks between two
+runs. A check removed and a check added in one edit leaves the count unchanged
+and the gate green, so coverage can move without anything noticing.
+
+Observed 2026-08-23. An uncommitted edit to `scripts/verify.py` removed the
+`node registry` check and added `operation surface page` in the same diff. The
+count went 21 to 21. `python scripts/sov_node.py validate` still passed, the
+script and its fixture both still existed, and nothing in the repository would
+have reported that the node registry had stopped being checked. It was noticed
+because a session reading the diff by hand asked why two hunks were paired, not
+because any gate said so.
+
+Three readings, and this seam does not settle which: the check set is itself a
+projection and should be checked in and diffed like `contracts/kernel-parity.json`
+is; or each check should declare the artifact it defends so a removal is visible
+as an undefended artifact rather than as an absent name; or this is properly a
+review responsibility and a repository that lints its own gate is checking the
+checker without end. `decisions/0025-verification-channels-and-merge-authority.md`
+owns what verification is allowed to claim and is the nearest owner.
+
+Numbering note: minted on `test/mcp-gateway-observation` off `c296c25`.
+`OPEN-SEAMS.md` S16 carries the allocation seam that makes this note necessary;
+a concurrent branch may hold its own S20.

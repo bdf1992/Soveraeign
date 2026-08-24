@@ -2,7 +2,7 @@
   "gateway_id": "soveraeign-mcp-gateway/v1",
   "standing": "PROPOSED",
   "protocol_version": "2024-11-05",
-  "note": "The exposed surface of this node. The gateway builds its tool list from this file and refuses to start when a declared endpoint has no reachable implementation, so a written-but-unbuilt operation cannot become a tool. Services standing PROPOSED are absent here on purpose.",
+  "note": "The exposed surface of this node. The gateway builds its tool list from this file and refuses to start when a declared endpoint has no reachable implementation, so a written-but-unbuilt operation cannot become a tool. Services standing PROPOSED are absent on purpose. Each endpoint names the service manifest operation it realizes, or states that no manifest declares it yet - the gap is recorded rather than papered over.",
   "participant_default": "operator",
   "tiers": {
     "read": "No grant, no writes. Answers what the state is.",
@@ -32,7 +32,9 @@
         }
       },
       "authority": "bootstrap",
-      "requires_session": false
+      "requires_session": false,
+      "realizes": null,
+      "undeclared_because": "The asset service implements sessions; no service manifest declares them as an operation."
     },
     {
       "tool": "authority_grant",
@@ -63,7 +65,9 @@
           "required": false
         }
       },
-      "authority": "service-enforced"
+      "authority": "service-enforced",
+      "realizes": null,
+      "undeclared_because": "The asset service implements grants; no service manifest declares them as an operation."
     },
     {
       "tool": "asset_ingest",
@@ -87,7 +91,8 @@
           "required": true
         }
       },
-      "authority": "gateway"
+      "authority": "gateway",
+      "realizes": "asset.ingest-asset"
     },
     {
       "tool": "asset_search",
@@ -101,7 +106,9 @@
           "type": "string",
           "required": true
         }
-      }
+      },
+      "realizes": null,
+      "undeclared_because": "Reads the search projection. The asset manifest declares read-asset, which is not the same operation."
     },
     {
       "tool": "record_entries",
@@ -110,7 +117,8 @@
       "operation": "entries",
       "effect_class": "NONE",
       "description": "Every entry in the operational journal, in append order, with its digest chain.",
-      "arguments": {}
+      "arguments": {},
+      "realizes": "record.read-entry"
     },
     {
       "tool": "observe_verify",
@@ -119,7 +127,9 @@
       "operation": "verify",
       "effect_class": "RECORD_LOCAL",
       "description": "Run scripts/verify.py and append the result as an OBSERVATION. Establishes BUILT evidence only; it witnesses and ratifies nothing.",
-      "arguments": {}
+      "arguments": {},
+      "realizes": null,
+      "undeclared_because": "A repository check, not a service operation. No manifest declares it and none should."
     }
   ],
   "authority_modes": {

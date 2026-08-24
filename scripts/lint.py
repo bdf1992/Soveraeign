@@ -16,10 +16,11 @@ TEXT_NAMES = {".cursorrules", ".env.example", ".gitattributes", ".gitignore"}
 # repository text and may legitimately contain local paths from captured tool output.
 SKIP_PARTS = {".git", ".venv", "__pycache__", "lineage", ".local"}
 MAX_PRODUCTION_LINES = 300
-KNOWN_MODULE_DEBT = {
-    "services/asset/src/soveraeign_asset_service/core.py":
-        "split storage, receipts/authority, and asset lifecycle before adding behavior",
-}
+# Retired 2026-08-23: core.py was split into store.py (custody and receipts),
+# authority.py (grants and sessions), runs.py (leased derivation), and
+# projections.py (rebuildable views). Re-entering a module here records debt; it
+# does not grandfather it.
+KNOWN_MODULE_DEBT: dict[str, str] = {}
 SECRET_PATTERNS = {
     "private key": re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"),
     "OpenAI-style token": re.compile(r"\bsk-[A-Za-z0-9_-]{20,}\b"),

@@ -21,34 +21,54 @@ A service's repository implementation and its standing are separate facts. A par
 exist under `src/` and pass its own tests while its manifest remains `PROPOSED`; tests are
 evidence for a standing transition, not the transition itself.
 
-## Construction view: kernel, vertical, horizontal, node surface
+## Construction view: root, vertical, horizontal, surface, node
 
 This is a construction vocabulary, not a new structural scale. `CLASSIFICATION.md` still owns
 `System > Federation > Node > Service > Component`.
 
-- **Kernel** — the irreducible shared semantics: standing, typed authority, transition,
-  observation, receipt, and retraction. Geometrically, the point: no service identity and no
-  deployment claim, just the invariants every valid operation must pass through.
-- **Vertical** — one declared operation carried end to end through those invariants: request,
+Two dimensions must not be collapsed:
+
+- **Kernel** is the available grammar of operation, not a geometric or structural level. It
+  defines the admissible typology (what kinds may exist), topology (how those kinds may relate),
+  legal traversal and transitions, and the invariants that may never collapse. Nodes, services,
+  operations, and crossings instantiate that grammar; they do not redefine it by convenience.
+- **Root** is the irreducible local settlement locus for one Node. Geometrically, the point. A
+  root seat may settle judgement or verification for its Node, but the Root is not the Node and
+  does not travel across a federation crossing.
+- **Vertical** is one declared operation carried end to end through the Kernel: request,
   resolution, authority, service execution, terminal receipt. A completed vertical closes back
-  on durable evidence rather than ending at an executor return. Geometrically, a closed loop.
-- **Horizontal** — several service-owned verticals composed inside one node through shared
+  on durable evidence rather than ending at an executor return. Geometrically, a closed path.
+- **Horizontal** is several service-owned verticals composed inside one Node through shared
   resolution, authority, record, and routing semantics. Horizontal growth adds capabilities
-  without turning Gateway into a domain service or giving any service private kernel rules.
-- **Node surface** — the usable boundary of that horizontal composition: the Console and
-  bindings for actors, the Gateway for governed ingress/egress, and declared projections for
-  what the node exposes. The surface is a boundary over the node; it is not a new authority
-  layer.
+  without turning Gateway into a domain service or giving any service private Kernel rules.
+- **Surface** is the addressable actor- and crossing-facing boundary of that horizontal
+  composition. Console and bindings may realize actor-facing pieces; Gateway may realize a
+  governed crossing seam; projections may describe what is exposed. Exposure creates no new
+  authority.
+- **Node** is the filled locally sovereign operating volume: Root, durable record, services,
+  runtime and custody, history, and crossing policy bounded by its Surface.
 
-The useful geometric progression is therefore `point -> circle -> sphere -> ball` if the filled
-**ball** names the Node itself and the **sphere** names its surface. That avoids calling a filled
-volume a surface: the Node contains the services, durable record, runtime, and crossing policy;
-its surface is what actors or another node may address through governed interfaces.
+The structural construction is therefore:
 
-This view also keeps a root distinct from a node. A root seat is the local settlement root in a
-seat topology. The node is the locally sovereign instance that the root settles for. A crossing
-between roots does not merge them: each node retains its own record and authority and settles
-its own side.
+`Root -> Vertical -> Horizontal -> Surface -> Node`
+
+with **Kernel governing every term in the expression rather than preceding them**.
+
+The useful geometric progression is `point -> closed path -> extent -> sphere -> ball`: Root is
+the point; verticals close paths; horizontal composition gives extent; Surface is the sphere;
+Node is the filled ball. Kernel defines which shapes, relations, and traversals are legal at
+every stage.
+
+A federation crossing relates Node surfaces, not roots. Each receiving Node resolves and admits
+the crossing under its own Kernel and settles its own side against its own Root. A peer's root
+identity or evidence can cross; the peer Root's authority cannot silently become local
+authority.
+
+The current Gateway/Asset slice proves one Vertical. `sov://asset/read-asset` is the next boring
+same-service repetition. `sov://registry/resolve` is the stronger Horizontal proof because it
+adds a second service family without adding Registry-specific logic to Gateway. After those
+survive the same route contract, a Node composition root can assemble identity, Root topology,
+Record, authority, Registry, Gateway, and service-owned routes without becoming a god-service.
 
 ## The declared surface
 
@@ -86,4 +106,4 @@ would restate rules nothing could check.
 Deployment does not define service identity or node identity. One process may host several
 services, and one service may later use several processes, without changing the classification
 contract. Likewise, a second process is not a second node. A distinct Node requires its own
-durable record, local settlement root, and governed crossing boundary.
+durable record, local settlement Root, and governed crossing Surface.

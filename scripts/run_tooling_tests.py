@@ -18,10 +18,10 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 TEST_ROOT = ROOT / "scripts" / "tests"
-# Four shards preserved the full suite but left one measured 2.392s critical
-# path on hosted CI. Eight keeps the same deterministic partition contract while
-# reducing the maximum modules per worker from eight to four on the current tree.
-DEFAULT_WORKERS = 8
+# The root verifier already runs every independent check concurrently. Four
+# tooling workers provide useful module-level concurrency without the hosted
+# runner contention observed when this nested pool was widened to eight.
+DEFAULT_WORKERS = 4
 
 
 def test_modules() -> tuple[Path, ...]:

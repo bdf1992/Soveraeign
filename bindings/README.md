@@ -18,3 +18,11 @@ binding cannot create a provider-specific state or authority path.
 
 No binding implementation is admitted until the shared transition contract is
 frozen or explicitly authorized as a provisional target.
+
+## Sov
+
+[`SOV.md`](../SOV.md) names the main operating agent. `bindings/sov/` is its
+owner-directed provisional context profile: a provider-neutral entry point,
+machine-readable profile, bounded session declaration, and positive/defeating
+checks. It grants no authority and does not claim that live binding parity or
+the operator Gateway exists.

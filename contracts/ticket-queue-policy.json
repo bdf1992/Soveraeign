@@ -1,0 +1,57 @@
+{
+  "policy_id": "soveraeign-ticket-queue/v1",
+  "governed_by": ["CONTRIBUTING.md", "SDLC.md", "STATUS.yaml"],
+  "note": "Declared ordering policy for the takeable-work projection over soveraeign-ticket/v1 instances. The queue is a projection and is rebuildable from the tickets alone; it introduces no standing, priority authority, or private state. Changing the order changes what work is offered first, so the policy is declared data rather than code.",
+  "dependency_satisfied_at_or_beyond": "BUILT_SELF_TESTED_NOT_WITNESSED",
+  "standing_order": [
+    "OPEN",
+    "PROPOSED",
+    "DECLARED_NOT_IMPLEMENTED",
+    "CHARTERED_NOT_IMPLEMENTED",
+    "BUILT_SELF_TESTED_NOT_WITNESSED",
+    "WITNESSED",
+    "RATIFIED"
+  ],
+  "horizon_rank": {
+    "NOW": 0,
+    "NOW_TO_NEXT": 1,
+    "NOW_TO_SCALE_TRUST": 2,
+    "NEXT": 3,
+    "NEXT_TO_SCALE_TRUST": 4,
+    "ON_SCALE_TRUST": 5
+  },
+  "standing_rank": {
+    "DEMOTED": 0,
+    "BUILT_SELF_TESTED_NOT_WITNESSED": 1,
+    "CHARTERED_NOT_IMPLEMENTED": 2,
+    "DECLARED_NOT_IMPLEMENTED": 3,
+    "PROPOSED": 4,
+    "OPEN": 5,
+    "WITNESSED": 6,
+    "RATIFIED": 7
+  },
+  "kind_rank": {
+    "implementation-stub": 0,
+    "bit": 1,
+    "village": 2,
+    "epic-of-epics": 3
+  },
+  "next_action": {
+    "DEMOTED": "repair against the defeating observation and re-enter at PROPOSED",
+    "BUILT_SELF_TESTED_NOT_WITNESSED": "run the Red lane and seek an independent witness",
+    "CHARTERED_NOT_IMPLEMENTED": "build the smallest change that satisfies the visible case",
+    "DECLARED_NOT_IMPLEMENTED": "write the charter and the machine-checkable contract",
+    "PROPOSED": "declare the owned boundary in the repository",
+    "OPEN": "draft the obligation, priors, and closure contract",
+    "WITNESSED": "queued for owner judgement",
+    "RATIFIED": "no further action at this gate"
+  },
+  "order_by": [
+    "blocked",
+    "horizon_rank",
+    "unblocks_count_desc",
+    "standing_rank",
+    "kind_rank",
+    "issue_number"
+  ]
+}

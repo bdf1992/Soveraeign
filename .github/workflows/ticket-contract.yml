@@ -1,0 +1,135 @@
+name: ticket contract
+
+# The coordination surface is checked the same way the repository is: capture it
+# through the declared registrar, then judge the capture offline. Nothing here writes
+# to an issue, a label, or a project field. See adapters/github/README.md.
+#
+# Two jobs, because they judge two different things. `contract` judges this
+# repository's ticket code against its own fixture corpus, so it is deterministic
+# from the checkout alone and may gate a pull request. `board` judges the live
+# coordination surface, which every issue edit mutates independently of any pull
+# request. Board drift is work, not a merge defect, so it never gates a merge: it
+# reports, and the queue is where it gets taken.
+
+on:
+  issues:
+    types: [opened, edited, reopened, labeled, unlabeled]
+  pull_request:
+    paths:
+      - "contracts/ticket-*.json"
+      - "contracts/issue-metadata.schema.json"
+      - ".github/labels.yml"
+      - ".github/workflows/ticket-contract.yml"
+      - "scripts/sov_ticket.py"
+      - "scripts/sovticket/**"
+      - "scripts/tests/**"
+      - "adapters/github/**"
+      - "conformance/fixtures/tickets/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: read
+
+concurrency:
+  group: ticket-contract-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  EXPORT: .local/registrar/tickets.json
+  VALIDATE: .local/registrar/validate.txt
+  LABELS: .local/registrar/labels.txt
+
+jobs:
+  contract:
+    name: contract
+    if: github.event_name != 'issues'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fixture corpus
+        run: python scripts/sov_ticket.py selfcheck
+
+      - name: Ticket mechanics
+        run: python -m unittest discover -s scripts/tests -v
+
+  board:
+    name: board drift
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Capturing is this job's duty, so a registrar that cannot capture fails it.
+      # Judging what was captured is a report: a drifting board is queued work, and a
+      # pull request can neither contain that work nor repair it.
+      - name: Capture the coordination surface
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: python adapters/github/export.py --repo "$REPO" --out "$EXPORT"
+        # REPO is passed rather than interpolated so no run body is built from
+        # untrusted context.
+
+      - name: Judge the capture
+        shell: bash
+        run: |
+          set +e
+          python scripts/sov_ticket.py validate --export "$EXPORT" | tee "$VALIDATE"
+          echo "${PIPESTATUS[0]}" > .local/registrar/validate.rc
+          python scripts/sov_ticket.py labels --export "$EXPORT" --strict | tee "$LABELS"
+          echo "${PIPESTATUS[0]}" > .local/registrar/labels.rc
+          exit 0
+
+      - name: Annotate the drift
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          DRIFT=.local/registrar/drift.txt
+          : > "$DRIFT"
+          grep -h "^FAIL: #" "$VALIDATE" >> "$DRIFT" 2>/dev/null
+          grep -h "^DRIFT: " "$LABELS" >> "$DRIFT" 2>/dev/null
+          while IFS= read -r line; do
+            echo "::warning title=Board drift::${line}"
+          done < "$DRIFT"
+          exit 0
+
+      - name: Publish the drift report and the takeable queue
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          {
+            echo '## Board drift'
+            echo
+            echo 'Report only. A drifting board is queued work, not a merge defect.'
+            echo
+            echo "Ticket contract exit: $(cat .local/registrar/validate.rc)"
+            echo "Label projection exit: $(cat .local/registrar/labels.rc)"
+            echo
+            echo '### Ticket contract'
+            echo '```text'
+            cat "$VALIDATE" 2>/dev/null || echo "capture unavailable"
+            echo '```'
+            echo
+            echo '### Label projection'
+            echo '```text'
+            cat "$LABELS" 2>/dev/null || echo "capture unavailable"
+            echo '```'
+            echo
+            echo '## Takeable work queue'
+            echo
+            echo 'Projection over the captured board. Position grants nothing.'
+            echo
+            echo '```text'
+            python scripts/sov_ticket.py queue --export "$EXPORT" --limit 25 2>&1
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit 0

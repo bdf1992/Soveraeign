@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "profile_id": "sov",
+  "profile_revision": 1,
+  "artifact_revision": "fixture:exact-revision",
+  "actor_id": "model:fixture",
+  "host_id": "host:fixture",
+  "model_binding_id": "binding:fixture",
+  "task": "Inspect issue #45 and return its current bounded operation.",
+  "requested_operation": "inspect_concern",
+  "requested_effect_class": null,
+  "live_grant_ids": [],
+  "loaded_sources": [
+    "AGENTS.md",
+    "SOV.md",
+    "STATUS.yaml",
+    "bindings/sov/profile.json",
+    "issue:45"
+  ],
+  "material_omissions": [
+    "Live Registry and Gateway authority resolution are unavailable."
+  ],
+  "expected_observation": "A bounded state summary cites the exact artifact revision and issue.",
+  "refusal_boundary": "Refuse mutation or any claim that context authorizes the operation.",
+  "authority_claimed_by_context": false,
+  "private_durable_state": false,
+  "fallback_requested": false
+}
+

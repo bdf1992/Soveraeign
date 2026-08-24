@@ -1,0 +1,212 @@
+{
+  "table_id": "soveraeign-ticket-transitions/v1",
+  "governed_by": [
+    "SDLC.md",
+    "AGENTS.md",
+    "CONTRIBUTING.md",
+    "contracts/issue-metadata.schema.json"
+  ],
+  "note": "Declared legal standing transitions for a soveraeign-ticket/v1 instance. Standing changes land in the owning governing documents; this table states which transition a coordination surface may accept, from whom, and on what evidence. It grants no authority and settles nothing.",
+  "owner_actor_ids": [
+    "Bdo"
+  ],
+  "refusal_codes": {
+    "ACTOR_KIND_REFUSED": "The requesting actor_kind may not perform this transition.",
+    "EFFECT_CLASS_REFUSED": "The declared effect class is not admitted in the current phase.",
+    "FINDING_NOT_REPRODUCED": "A Red finding was not reproduced under observation independent of the Red operator.",
+    "FINDING_UNRESOLVED": "A Red finding is still open, so the engagement has not converged.",
+    "FINDING_WITHOUT_FIXTURE": "A confirmed Red finding has no permanent defeating fixture in the conformance corpus.",
+    "MISSING_EVIDENCE": "A required evidence key is absent or empty.",
+    "OWNER_JUDGEMENT_REQUIRED": "The transition is reserved to the owner actor and was requested by another actor.",
+    "OWNER_RATIFICATION_REQUIRED": "Ratification is owner judgement and is not reachable by machine evidence.",
+    "PURPLE_NOT_SETTLED": "The verification dyad has not combined; no settled Red engagement receipt is present.",
+    "SELF_WITNESS_REFUSED": "The witness actor is the same actor that built the artifact.",
+    "SKIPPED_STANDING": "The requested pair skips a declared intermediate standing.",
+    "UNKNOWN_TRANSITION": "The requested from/to pair is not declared in this table."
+  },
+  "phase_refused_effect_classes": [
+    "EXTERNAL_WORLD"
+  ],
+  "order": [
+    "OPEN",
+    "PROPOSED",
+    "DECLARED_NOT_IMPLEMENTED",
+    "CHARTERED_NOT_IMPLEMENTED",
+    "BUILT_SELF_TESTED_NOT_WITNESSED",
+    "WITNESSED",
+    "RATIFIED"
+  ],
+  "transitions": [
+    {
+      "from": "OPEN",
+      "to": "PROPOSED",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "requires_evidence": [
+        "obligation",
+        "priors",
+        "closure_contract"
+      ],
+      "description": "A drafted ticket states its obligation, its priors, and the closure contract that would defeat it."
+    },
+    {
+      "from": "PROPOSED",
+      "to": "DECLARED_NOT_IMPLEMENTED",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "requires_evidence": [
+        "boundary_pointer"
+      ],
+      "description": "The owned boundary is named in the repository before any implementation begins."
+    },
+    {
+      "from": "DECLARED_NOT_IMPLEMENTED",
+      "to": "CHARTERED_NOT_IMPLEMENTED",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "requires_evidence": [
+        "charter_pointer",
+        "contract_pointer"
+      ],
+      "description": "A charter and a machine-checkable contract exist for the declared boundary."
+    },
+    {
+      "from": "CHARTERED_NOT_IMPLEMENTED",
+      "to": "BUILT_SELF_TESTED_NOT_WITNESSED",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL",
+        "WORKER"
+      ],
+      "requires_evidence": [
+        "closure_contract_complete",
+        "blue_receipt"
+      ],
+      "description": "Blue lane only. A passing self-test establishes BUILT evidence and nothing further."
+    },
+    {
+      "from": "BUILT_SELF_TESTED_NOT_WITNESSED",
+      "to": "WITNESSED",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "requires_evidence": [
+        "witness_receipt",
+        "purple_receipt"
+      ],
+      "requires_distinct_actor": true,
+      "requires_purple": true,
+      "description": "An independent witness observed the artifact and the verification dyad combined to PURPLE."
+    },
+    {
+      "from": "WITNESSED",
+      "to": "RATIFIED",
+      "actor_kinds": [
+        "HUMAN"
+      ],
+      "requires_owner": true,
+      "requires_evidence": [
+        "owner_ratification"
+      ],
+      "description": "Owner judgement only. No accumulation of machine evidence reaches this transition."
+    },
+    {
+      "from": "PROPOSED",
+      "to": "DEMOTED",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "requires_evidence": [
+        "demotion_pointer",
+        "defeating_observation"
+      ],
+      "description": "A defeating observation demotes standing and preserves the original record."
+    },
+    {
+      "from": "DECLARED_NOT_IMPLEMENTED",
+      "to": "DEMOTED",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "requires_evidence": [
+        "demotion_pointer",
+        "defeating_observation"
+      ],
+      "description": "A defeating observation demotes standing and preserves the original record."
+    },
+    {
+      "from": "CHARTERED_NOT_IMPLEMENTED",
+      "to": "DEMOTED",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "requires_evidence": [
+        "demotion_pointer",
+        "defeating_observation"
+      ],
+      "description": "A defeating observation demotes standing and preserves the original record."
+    },
+    {
+      "from": "BUILT_SELF_TESTED_NOT_WITNESSED",
+      "to": "DEMOTED",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "requires_evidence": [
+        "demotion_pointer",
+        "defeating_observation"
+      ],
+      "description": "A defeating observation demotes standing and preserves the original record."
+    },
+    {
+      "from": "WITNESSED",
+      "to": "DEMOTED",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "requires_evidence": [
+        "demotion_pointer",
+        "defeating_observation"
+      ],
+      "description": "A later defeating observation demotes a prior witness standing."
+    },
+    {
+      "from": "RATIFIED",
+      "to": "DEMOTED",
+      "actor_kinds": [
+        "HUMAN"
+      ],
+      "requires_owner": true,
+      "requires_evidence": [
+        "demotion_pointer",
+        "defeating_observation"
+      ],
+      "description": "Only the owner may demote a ratified claim."
+    },
+    {
+      "from": "DEMOTED",
+      "to": "PROPOSED",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "requires_evidence": [
+        "repair_pointer",
+        "demotion_pointer"
+      ],
+      "description": "Repair re-enters the lifecycle at proposal; it does not restore the prior standing."
+    }
+  ]
+}

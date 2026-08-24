@@ -17,6 +17,18 @@ CHECKS = (
     ("bootstrap and locked evidence", [sys.executable, "scripts/verify_bootstrap.py"], ROOT),
     ("conformance oracle controls", [sys.executable, "conformance/run.py"], ROOT),
     ("conformance oracle tests", [sys.executable, "-m", "unittest", "discover", "-s", "conformance/tests", "-v"], ROOT),
+    ("semantic cold-start task", [sys.executable, "scripts/sov_witness.py", "semantic"], ROOT),
+    ("specification traceability", [sys.executable, "scripts/sov_spec.py", "trace"], ROOT),
+    ("kernel transition contract", [sys.executable, "scripts/sov_kernel.py", "selfcheck"], ROOT),
+    ("kernel participant parity", [sys.executable, "scripts/sov_kernel.py", "parity"], ROOT),
+    ("ticket transition corpus", [sys.executable, "scripts/sov_ticket.py", "selfcheck"], ROOT),
+    ("ticket coordination tests", [sys.executable, "-m", "unittest", "discover", "-s", "scripts/tests", "-v"], ROOT),
+    (
+        "Sov context profile",
+        [sys.executable, "-m", "unittest", "discover", "-s", "bindings/sov/tests", "-v"],
+        ROOT,
+    ),
+    ("Record Service reference tests", [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"], ROOT / "services" / "record"),
     ("Asset Service reference tests", [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"], ROOT / "services" / "asset"),
 )
 

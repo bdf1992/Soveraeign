@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "profile_id": "sov",
+  "profile_revision": 1,
+  "artifact_revision": "fixture:exact-revision",
+  "actor_id": "model:defeating-fixture",
+  "host_id": "host:fixture",
+  "model_binding_id": "binding:fixture",
+  "task": "Change a governed record before live grant resolution exists.",
+  "requested_operation": "change_governed_record",
+  "requested_effect_class": "RECORD_LOCAL",
+  "live_grant_ids": [
+    "grant:unresolved-fixture"
+  ],
+  "loaded_sources": [
+    "AGENTS.md",
+    "SOV.md",
+    "STATUS.yaml",
+    "bindings/sov/profile.json"
+  ],
+  "material_omissions": [
+    "The live authority registry and operation-boundary resolver are unavailable."
+  ],
+  "expected_observation": "The checker refuses rather than trusting an unresolved grant reference.",
+  "refusal_boundary": "Only the live operation boundary may resolve and authorize the grant.",
+  "authority_claimed_by_context": false,
+  "private_durable_state": false,
+  "fallback_requested": false
+}

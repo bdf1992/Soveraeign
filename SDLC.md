@@ -176,6 +176,12 @@ operator binding under `bindings/` rules: it may project the loop differently
 but may not introduce private standing, authority, transitions, or storage
 writes.
 
+`Sov` is the portable main operating-agent profile and the default candidate to
+occupy Control. The candidate designation supplies context and agency, not the
+Control grant: the current actor, task, capability, effect envelope, and live
+authority still determine whether Sov may occupy that tier. `SOV.md` and
+`bindings/sov/` own the portable profile; no host binding owns its semantics.
+
 The `.claude/` directory is the first such binding, admitted as a provisional
 target by owner direction. The model-substitutability requirement applies to
 the loop itself: a second, materially different binding must be able to run

@@ -4,6 +4,11 @@ This directory is the first harness binding of the operating loop defined in
 `SDLC.md`, admitted as a provisional target by owner direction (decision
 0013). It realizes the loop for the Claude Code harness; it owns no policy.
 
+When the underlying Claude model is asked to act as Soveraeign's main operating
+agent, load the portable `SOV.md` profile before selecting a tier skill. Claude
+is the current model/host binding; Sov is the operating profile. Loading Sov
+does not grant Control or any other authority.
+
 Binding rules from `bindings/README.md` apply: this surface may project the
 loop for this harness, but it may not introduce private standing, authority,
 transitions, or direct storage writes. Every rule a skill applies is owned by

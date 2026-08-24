@@ -1,0 +1,54 @@
+{
+  "projection_id": "soveraeign-ticket-labels/v1",
+  "governed_by": ["CONTRIBUTING.md", ".github/labels.yml", "contracts/issue-metadata.schema.json"],
+  "note": "Declared derivation of the visible GitHub label set from soveraeign-ticket/v1 metadata. Labels are a projection of the metadata and never a second authority; a label that cannot be derived here is drift, and a metadata value with no declared label is an unmapped gap rather than a silently omitted one.",
+  "kind_to_type": {
+    "epic-of-epics": "type: epic",
+    "village": "type: village",
+    "bit": "type: bit",
+    "implementation-stub": "type: stub",
+    "verification-engagement": "type: engagement"
+  },
+  "village_to_label": {
+    "ground-and-evidence": "village: ground",
+    "trust-and-control": "village: trust",
+    "reach-and-motion": "village: motion",
+    "domain-and-qualification": "village: domain"
+  },
+  "horizon_to_label": {
+    "NOW": "horizon: now",
+    "NEXT": "horizon: next",
+    "NOW_TO_NEXT": "horizon: spanning",
+    "NOW_TO_SCALE_TRUST": "horizon: spanning",
+    "NEXT_TO_SCALE_TRUST": "horizon: spanning",
+    "ON_SCALE_TRUST": "horizon: scale-trust"
+  },
+  "effect_to_label": {
+    "RECORD_LOCAL": null,
+    "OBSERVE_ONLY": "effect: observe-only",
+    "REQUEST_ONLY": "effect: request-only",
+    "BOUNDED_EXECUTION": "effect: bounded-execution",
+    "CONTROL": "effect: control",
+    "EXTERNAL_BOUNDARY": "effect: external-boundary"
+  },
+  "standing_to_label": {
+    "OPEN": null,
+    "PROPOSED": "standing: proposed",
+    "DECLARED_NOT_IMPLEMENTED": "standing: declared",
+    "CHARTERED_NOT_IMPLEMENTED": "standing: chartered",
+    "BUILT_SELF_TESTED_NOT_WITNESSED": "standing: self-tested",
+    "WITNESSED": null,
+    "RATIFIED": null,
+    "DEMOTED": null
+  },
+  "standing_to_witness_label": {
+    "WITNESSED": "witness: witnessed",
+    "DEMOTED": "witness: demoted"
+  },
+  "kind_to_scope": {
+    "epic-of-epics": "scope: system"
+  },
+  "kinds_without_village_label": ["epic-of-epics"],
+  "default_effect_class": "RECORD_LOCAL",
+  "unprojected_label_prefixes": ["type:", "village:", "horizon:", "effect:", "standing:", "witness:", "scope:"]
+}

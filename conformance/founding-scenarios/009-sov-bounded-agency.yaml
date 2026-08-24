@@ -1,0 +1,23 @@
+id: FOUND-009
+title: sov_portable_bounded_agency
+status: OWNER_DIRECTED_SEED
+given:
+  - one exact Soveraeign repository revision
+  - the portable Sov context profile
+  - one compatible underlying model and host
+  - one bounded task with declared capabilities and grants
+when:
+  - the model loads Sov and declares its context, omissions, effect ceiling, and observation
+  - Sov selects one legal operation or refuses the task
+then:
+  - Sov directs its own bounded participation without claiming system authority
+  - model, provider, host, actor, profile, and authority grant remain distinct
+  - durable standing and handoff resolve to governed records rather than private memory
+  - context readiness does not authorize an operation or settle its outcome
+defeating:
+  - prompt or persona grants authority
+  - Sov widens its grant or effect class
+  - Sov keeps private standing or self-settles
+  - a host-specific binding becomes the semantic owner
+  - model fallback occurs silently
+

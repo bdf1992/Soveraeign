@@ -1,0 +1,109 @@
+name: runtime image proof
+
+on:
+  pull_request:
+    paths:
+      - "infrastructure/runtime/**"
+      - "infrastructure/phase-i.runtime-image.json"
+      - "scripts/node_runtime.py"
+      - "scripts/custody_activation.py"
+      - ".github/workflows/runtime-image.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prove-runtime-image:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build digest-pinned local image
+        run: docker build --pull=false -f infrastructure/runtime/Dockerfile -t soveraeign-phase-i:${{ github.sha }} .
+
+      - name: Observe image identity and Python baseline
+        run: |
+          set -euo pipefail
+          image="soveraeign-phase-i:${GITHUB_SHA}"
+          test "$(docker image inspect "$image" --format '{{.Config.User}}')" = "65532:65532"
+          test "$(docker image inspect "$image" --format '{{json .Config.Entrypoint}}')" = '["python","/opt/soveraeign/scripts/node_runtime.py"]'
+          docker run --rm --entrypoint python "$image" --version 2>&1 | grep -E '^Python 3\.11\.'
+
+      - name: Prove image carries exact repository runtime scripts
+        run: |
+          set -euo pipefail
+          image="soveraeign-phase-i:${GITHUB_SHA}"
+          for source in scripts/custody_activation.py scripts/node_runtime.py; do
+            target="/opt/soveraeign/$source"
+            host_digest="$(sha256sum "$source" | awk '{print $1}')"
+            image_digest="$(docker run --rm --entrypoint python "$image" -c "import hashlib; print(hashlib.sha256(open('$target','rb').read()).hexdigest())")"
+            test "$host_digest" = "$image_digest"
+          done
+
+      - name: Exercise listener health and refusal boundary
+        run: |
+          set -euo pipefail
+          image="soveraeign-phase-i:${GITHUB_SHA}"
+          docker run -d --name soveraeign-runtime-proof -p 127.0.0.1:18080:8080 "$image"
+          trap 'docker rm -f soveraeign-runtime-proof >/dev/null 2>&1 || true' EXIT
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:18080/health/ready > /tmp/health.json; then
+              break
+            fi
+            sleep 0.2
+          done
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          body = json.loads(Path('/tmp/health.json').read_text())
+          assert body['outcome'] == 'PASS', body
+          assert body['surface'] == '/health/ready', body
+          PY
+          status="$(curl --silent --output /tmp/refusal.json --write-out '%{http_code}' http://127.0.0.1:18080/work)"
+          test "$status" = "503"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          body = json.loads(Path('/tmp/refusal.json').read_text())
+          assert body == {'outcome': 'REFUSED', 'reason': 'GATEWAY_OPERATION_NOT_ACTIVATED'}, body
+          PY
+
+      - name: Write image proof receipt
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          import pathlib
+          import subprocess
+          image = f"soveraeign-phase-i:{os.environ['GITHUB_SHA']}"
+          def run(*args):
+              return subprocess.check_output(args, text=True).strip()
+          files = {}
+          for source in ('scripts/custody_activation.py', 'scripts/node_runtime.py'):
+              files[source] = hashlib.sha256(pathlib.Path(source).read_bytes()).hexdigest()
+          receipt = {
+              'schema': 'soveraeign-runtime-image-proof/v1',
+              'commit': os.environ['GITHUB_SHA'],
+              'effect_class': 'RECORD_LOCAL',
+              'image_id': run('docker', 'image', 'inspect', image, '--format', '{{.Id}}'),
+              'user': run('docker', 'image', 'inspect', image, '--format', '{{.Config.User}}'),
+              'python': run('docker', 'run', '--rm', '--entrypoint', 'python', image, '--version'),
+              'source_digests': files,
+              'listener': {'health': 200, 'unactivated_gateway': 503},
+              'outcome': 'PASS',
+          }
+          encoded = json.dumps(receipt, indent=2, sort_keys=True) + '\n'
+          pathlib.Path('runtime-image-proof.json').write_text(encoded)
+          print(encoded, end='')
+          PY
+
+      - name: Retain image proof receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: runtime-image-proof-${{ github.sha }}
+          path: runtime-image-proof.json
+          if-no-files-found: error
+          retention-days: 30

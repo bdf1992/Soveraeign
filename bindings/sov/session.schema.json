@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/bindings/sov/session.schema.json",
+  "title": "Sov context session declaration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "profile_id",
+    "profile_revision",
+    "artifact_revision",
+    "actor_id",
+    "host_id",
+    "model_binding_id",
+    "task",
+    "requested_operation",
+    "requested_effect_class",
+    "live_grant_ids",
+    "loaded_sources",
+    "material_omissions",
+    "expected_observation",
+    "refusal_boundary",
+    "authority_claimed_by_context",
+    "private_durable_state",
+    "fallback_requested"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "profile_id": {"const": "sov"},
+    "profile_revision": {"const": 1},
+    "artifact_revision": {"type": "string", "minLength": 1},
+    "actor_id": {"type": "string", "minLength": 1},
+    "host_id": {"type": "string", "minLength": 1},
+    "model_binding_id": {"type": "string", "minLength": 1},
+    "task": {"type": "string", "minLength": 1},
+    "requested_operation": {"type": "string", "minLength": 1},
+    "requested_effect_class": {
+      "enum": [null, "RECORD_LOCAL", "RESOURCE_CONSUMPTION", "EXTERNAL_WORLD"]
+    },
+    "live_grant_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "loaded_sources": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "material_omissions": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "expected_observation": {"type": "string", "minLength": 1},
+    "refusal_boundary": {"type": "string", "minLength": 1},
+    "authority_claimed_by_context": {"const": false},
+    "private_durable_state": {"const": false},
+    "fallback_requested": {"const": false}
+  }
+}

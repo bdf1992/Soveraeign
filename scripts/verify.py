@@ -31,6 +31,11 @@ import uuid
 ROOT = Path(__file__).resolve().parents[1]
 SKIP_PARTS = {".git", ".venv", "__pycache__", ".local"}
 BUDGET_SECONDS = 3.0
+# Starting every repository check at once became slower as the suite grew: the
+# hosted runner spent its budget context-switching between 20+ Python processes.
+# Keep enough independent work in flight to hide startup/I/O without allowing
+# process count itself to become the critical path.
+MAX_CHECK_WORKERS = 8
 
 
 class Check(NamedTuple):
@@ -225,7 +230,7 @@ def main(argv: list[str] | None = None, run_id: str | None = None,
     when = now or datetime.now(timezone.utc).isoformat(timespec="seconds")
 
     started = time.perf_counter()
-    with ThreadPoolExecutor(max_workers=len(CHECKS)) as pool:
+    with ThreadPoolExecutor(max_workers=min(MAX_CHECK_WORKERS, len(CHECKS))) as pool:
         results = list(pool.map(run_check, CHECKS))
     wall = time.perf_counter() - started
 

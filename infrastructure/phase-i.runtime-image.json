@@ -1,0 +1,27 @@
+{
+  "schema": "soveraeign-runtime-image-contract/v1",
+  "python_min": "3.11",
+  "required_paths": [
+    "/opt/soveraeign/scripts/custody_activation.py",
+    "/opt/soveraeign/scripts/node_runtime.py"
+  ],
+  "entrypoint": [
+    "python",
+    "/opt/soveraeign/scripts/node_runtime.py"
+  ],
+  "gateway": {
+    "bind": "0.0.0.0",
+    "port": 8080,
+    "unactivated_response": "REFUSE",
+    "health": {
+      "startup": "/health/startup",
+      "readiness": "/health/ready",
+      "liveness": "/health/live"
+    }
+  },
+  "policy": {
+    "provider_required": false,
+    "embedded_secrets": "FORBID",
+    "gateway_operation_activation": "SEPARATE_GOVERNED_OPERATION"
+  }
+}

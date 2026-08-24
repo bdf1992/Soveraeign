@@ -1,0 +1,2386 @@
+{
+  "corpus_id": "soveraeign-board-cases/v1",
+  "note": "Declared positive and defeating cases for the board survey and the approval gate. Every case runs offline against a synthetic capture; none reaches GitHub.",
+  "cases": [
+    {
+      "case_id": "BOARD-001-missing-labels",
+      "note": "A conforming ticket missing two projected labels yields one add per label.",
+      "capture": {
+        "issues": [
+          {
+            "number": 101,
+            "title": "fixture 101",
+            "state": "OPEN",
+            "body": "```yaml\nissue_schema: soveraeign-ticket/v1\ntags: [village:ground, horizon:now, type:bit]\nkind: bit\nbit_id: BIT-FIXTURE\nvillage: ground-and-evidence\nvillage_issue: \"#4\"\nparent: \"#4\"\nrequires: []\nstanding: OPEN\nhorizon: NOW\nauthority: none\neffect_class: RECORD_LOCAL\nevidence_pointer: conformance/fixtures/board/survey-cases.json\nlast_observed_at: null\nwalker_receipt: none\ndemotion_pointer: \"#none\"\ndependency_channels: []\n```\n\nFixture ticket.\n",
+            "labels": [
+              {
+                "name": "type: bit"
+              }
+            ]
+          }
+        ],
+        "pulls": [],
+        "branches": [],
+        "receipt": {
+          "source_repository": "fixture/board",
+          "captured_at": "2026-08-23T12:00:00Z",
+          "export_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+        },
+        "labels": [
+          {
+            "name": "type: epic",
+            "color": "6F42C1",
+            "description": "System-spanning coordination and qualification."
+          },
+          {
+            "name": "type: village",
+            "color": "0969DA",
+            "description": "Bounded operational surface containing bits and stubs."
+          },
+          {
+            "name": "type: bit",
+            "color": "1A7F37",
+            "description": "Named, independently inspectable system obligation."
+          },
+          {
+            "name": "type: stub",
+            "color": "57606A",
+            "description": "Repository implementation surface closing one or more bits."
+          },
+          {
+            "name": "type: engagement",
+            "color": "B60205",
+            "description": "Verification engagement against a pinned target; produces findings, builds nothing."
+          },
+          {
+            "name": "scope: system",
+            "color": "5319E7",
+            "description": "Applies to the complete Soveraeign node."
+          },
+          {
+            "name": "village: ground",
+            "color": "BF8700",
+            "description": "Ground and Evidence: record, asset, graph, and observation."
+          },
+          {
+            "name": "village: trust",
+            "color": "CF222E",
+            "description": "Trust and Control: identity, authority, gates, registry, and capability."
+          },
+          {
+            "name": "village: motion",
+            "color": "008B8B",
+            "description": "Reach and Motion: ingress, delivery, execution, bindings, and composition."
+          },
+          {
+            "name": "village: domain",
+            "color": "8250DF",
+            "description": "Domain and Qualification: proofing, qualification, and federation."
+          },
+          {
+            "name": "horizon: now",
+            "color": "D1242F",
+            "description": "Required in the current evidence-gated construction band."
+          },
+          {
+            "name": "horizon: next",
+            "color": "FBCA04",
+            "description": "Begins after the current gate earns its prerequisites."
+          },
+          {
+            "name": "horizon: spanning",
+            "color": "A371F7",
+            "description": "Coordinates more than one construction horizon."
+          },
+          {
+            "name": "horizon: scale-trust",
+            "color": "0550AE",
+            "description": "Deferred until local Phase-I trust is independently qualified."
+          },
+          {
+            "name": "effect: record-local",
+            "color": "D0D7DE",
+            "description": "Default: changes governed local record state only; normally omitted."
+          },
+          {
+            "name": "effect: control",
+            "color": "A40E26",
+            "description": "Changes admission, authority, or control state."
+          },
+          {
+            "name": "effect: observe-only",
+            "color": "1F6FEB",
+            "description": "Observes and reports without committing domain state."
+          },
+          {
+            "name": "effect: request-only",
+            "color": "218BFF",
+            "description": "May propose or request work but cannot settle it."
+          },
+          {
+            "name": "effect: bounded-execution",
+            "color": "BC4C00",
+            "description": "Executes within an admitted, leased, and observable boundary."
+          },
+          {
+            "name": "effect: external-boundary",
+            "color": "CF222E",
+            "description": "Translates across a declared external-system boundary."
+          },
+          {
+            "name": "standing: proposed",
+            "color": "D4C5F9",
+            "description": "Defined as a proposal; no built evidence exists."
+          },
+          {
+            "name": "standing: declared",
+            "color": "B6BBC0",
+            "description": "Boundary is declared but implementation has not begun."
+          },
+          {
+            "name": "standing: chartered",
+            "color": "54AEFF",
+            "description": "Contract or charter exists; implementation is incomplete."
+          },
+          {
+            "name": "standing: self-tested",
+            "color": "2DA44E",
+            "description": "Built and self-tested; independent witness remains outstanding."
+          },
+          {
+            "name": "witness: pending",
+            "color": "D29922",
+            "description": "Independent witness receipt is outstanding; normally held in project metadata."
+          },
+          {
+            "name": "witness: witnessed",
+            "color": "2DA44E",
+            "description": "Independent witness receipt is current and resolvable."
+          },
+          {
+            "name": "witness: demoted",
+            "color": "CF222E",
+            "description": "Prior witness standing was demoted by a defeating observation."
+          }
+        ]
+      },
+      "expect_actions": [
+        "LABEL_ADD:#101:horizon: now",
+        "LABEL_ADD:#101:village: ground"
+      ]
+    },
+    {
+      "case_id": "BOARD-002-clean-ticket",
+      "note": "A ticket whose live labels match the projection yields nothing.",
+      "capture": {
+        "issues": [
+          {
+            "number": 102,
+            "title": "fixture 102",
+            "state": "OPEN",
+            "body": "```yaml\nissue_schema: soveraeign-ticket/v1\ntags: [village:ground, horizon:now, type:bit]\nkind: bit\nbit_id: BIT-FIXTURE\nvillage: ground-and-evidence\nvillage_issue: \"#4\"\nparent: \"#4\"\nrequires: []\nstanding: OPEN\nhorizon: NOW\nauthority: none\neffect_class: RECORD_LOCAL\nevidence_pointer: conformance/fixtures/board/survey-cases.json\nlast_observed_at: null\nwalker_receipt: none\ndemotion_pointer: \"#none\"\ndependency_channels: []\n```\n\nFixture ticket.\n",
+            "labels": [
+              {
+                "name": "type: bit"
+              },
+              {
+                "name": "village: ground"
+              },
+              {
+                "name": "horizon: now"
+              }
+            ]
+          }
+        ],
+        "pulls": [],
+        "branches": [],
+        "receipt": {
+          "source_repository": "fixture/board",
+          "captured_at": "2026-08-23T12:00:00Z",
+          "export_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+        },
+        "labels": [
+          {
+            "name": "type: epic",
+            "color": "6F42C1",
+            "description": "System-spanning coordination and qualification."
+          },
+          {
+            "name": "type: village",
+            "color": "0969DA",
+            "description": "Bounded operational surface containing bits and stubs."
+          },
+          {
+            "name": "type: bit",
+            "color": "1A7F37",
+            "description": "Named, independently inspectable system obligation."
+          },
+          {
+            "name": "type: stub",
+            "color": "57606A",
+            "description": "Repository implementation surface closing one or more bits."
+          },
+          {
+            "name": "type: engagement",
+            "color": "B60205",
+            "description": "Verification engagement against a pinned target; produces findings, builds nothing."
+          },
+          {
+            "name": "scope: system",
+            "color": "5319E7",
+            "description": "Applies to the complete Soveraeign node."
+          },
+          {
+            "name": "village: ground",
+            "color": "BF8700",
+            "description": "Ground and Evidence: record, asset, graph, and observation."
+          },
+          {
+            "name": "village: trust",
+            "color": "CF222E",
+            "description": "Trust and Control: identity, authority, gates, registry, and capability."
+          },
+          {
+            "name": "village: motion",
+            "color": "008B8B",
+            "description": "Reach and Motion: ingress, delivery, execution, bindings, and composition."
+          },
+          {
+            "name": "village: domain",
+            "color": "8250DF",
+            "description": "Domain and Qualification: proofing, qualification, and federation."
+          },
+          {
+            "name": "horizon: now",
+            "color": "D1242F",
+            "description": "Required in the current evidence-gated construction band."
+          },
+          {
+            "name": "horizon: next",
+            "color": "FBCA04",
+            "description": "Begins after the current gate earns its prerequisites."
+          },
+          {
+            "name": "horizon: spanning",
+            "color": "A371F7",
+            "description": "Coordinates more than one construction horizon."
+          },
+          {
+            "name": "horizon: scale-trust",
+            "color": "0550AE",
+            "description": "Deferred until local Phase-I trust is independently qualified."
+          },
+          {
+            "name": "effect: record-local",
+            "color": "D0D7DE",
+            "description": "Default: changes governed local record state only; normally omitted."
+          },
+          {
+            "name": "effect: control",
+            "color": "A40E26",
+            "description": "Changes admission, authority, or control state."
+          },
+          {
+            "name": "effect: observe-only",
+            "color": "1F6FEB",
+            "description": "Observes and reports without committing domain state."
+          },
+          {
+            "name": "effect: request-only",
+            "color": "218BFF",
+            "description": "May propose or request work but cannot settle it."
+          },
+          {
+            "name": "effect: bounded-execution",
+            "color": "BC4C00",
+            "description": "Executes within an admitted, leased, and observable boundary."
+          },
+          {
+            "name": "effect: external-boundary",
+            "color": "CF222E",
+            "description": "Translates across a declared external-system boundary."
+          },
+          {
+            "name": "standing: proposed",
+            "color": "D4C5F9",
+            "description": "Defined as a proposal; no built evidence exists."
+          },
+          {
+            "name": "standing: declared",
+            "color": "B6BBC0",
+            "description": "Boundary is declared but implementation has not begun."
+          },
+          {
+            "name": "standing: chartered",
+            "color": "54AEFF",
+            "description": "Contract or charter exists; implementation is incomplete."
+          },
+          {
+            "name": "standing: self-tested",
+            "color": "2DA44E",
+            "description": "Built and self-tested; independent witness remains outstanding."
+          },
+          {
+            "name": "witness: pending",
+            "color": "D29922",
+            "description": "Independent witness receipt is outstanding; normally held in project metadata."
+          },
+          {
+            "name": "witness: witnessed",
+            "color": "2DA44E",
+            "description": "Independent witness receipt is current and resolvable."
+          },
+          {
+            "name": "witness: demoted",
+            "color": "CF222E",
+            "description": "Prior witness standing was demoted by a defeating observation."
+          }
+        ]
+      },
+      "expect_actions": []
+    },
+    {
+      "case_id": "BOARD-003-unexpected-label",
+      "note": "A governed label the metadata does not imply is proposed for removal.",
+      "capture": {
+        "issues": [
+          {
+            "number": 103,
+            "title": "fixture 103",
+            "state": "OPEN",
+            "body": "```yaml\nissue_schema: soveraeign-ticket/v1\ntags: [village:ground, horizon:now, type:bit]\nkind: bit\nbit_id: BIT-FIXTURE\nvillage: ground-and-evidence\nvillage_issue: \"#4\"\nparent: \"#4\"\nrequires: []\nstanding: OPEN\nhorizon: NOW\nauthority: none\neffect_class: RECORD_LOCAL\nevidence_pointer: conformance/fixtures/board/survey-cases.json\nlast_observed_at: null\nwalker_receipt: none\ndemotion_pointer: \"#none\"\ndependency_channels: []\n```\n\nFixture ticket.\n",
+            "labels": [
+              {
+                "name": "type: bit"
+              },
+              {
+                "name": "village: ground"
+              },
+              {
+                "name": "horizon: now"
+              },
+              {
+                "name": "horizon: next"
+              }
+            ]
+          }
+        ],
+        "pulls": [],
+        "branches": [],
+        "receipt": {
+          "source_repository": "fixture/board",
+          "captured_at": "2026-08-23T12:00:00Z",
+          "export_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+        },
+        "labels": [
+          {
+            "name": "type: epic",
+            "color": "6F42C1",
+            "description": "System-spanning coordination and qualification."
+          },
+          {
+            "name": "type: village",
+            "color": "0969DA",
+            "description": "Bounded operational surface containing bits and stubs."
+          },
+          {
+            "name": "type: bit",
+            "color": "1A7F37",
+            "description": "Named, independently inspectable system obligation."
+          },
+          {
+            "name": "type: stub",
+            "color": "57606A",
+            "description": "Repository implementation surface closing one or more bits."
+          },
+          {
+            "name": "type: engagement",
+            "color": "B60205",
+            "description": "Verification engagement against a pinned target; produces findings, builds nothing."
+          },
+          {
+            "name": "scope: system",
+            "color": "5319E7",
+            "description": "Applies to the complete Soveraeign node."
+          },
+          {
+            "name": "village: ground",
+            "color": "BF8700",
+            "description": "Ground and Evidence: record, asset, graph, and observation."
+          },
+          {
+            "name": "village: trust",
+            "color": "CF222E",
+            "description": "Trust and Control: identity, authority, gates, registry, and capability."
+          },
+          {
+            "name": "village: motion",
+            "color": "008B8B",
+            "description": "Reach and Motion: ingress, delivery, execution, bindings, and composition."
+          },
+          {
+            "name": "village: domain",
+            "color": "8250DF",
+            "description": "Domain and Qualification: proofing, qualification, and federation."
+          },
+          {
+            "name": "horizon: now",
+            "color": "D1242F",
+            "description": "Required in the current evidence-gated construction band."
+          },
+          {
+            "name": "horizon: next",
+            "color": "FBCA04",
+            "description": "Begins after the current gate earns its prerequisites."
+          },
+          {
+            "name": "horizon: spanning",
+            "color": "A371F7",
+            "description": "Coordinates more than one construction horizon."
+          },
+          {
+            "name": "horizon: scale-trust",
+            "color": "0550AE",
+            "description": "Deferred until local Phase-I trust is independently qualified."
+          },
+          {
+            "name": "effect: record-local",
+            "color": "D0D7DE",
+            "description": "Default: changes governed local record state only; normally omitted."
+          },
+          {
+            "name": "effect: control",
+            "color": "A40E26",
+            "description": "Changes admission, authority, or control state."
+          },
+          {
+            "name": "effect: observe-only",
+            "color": "1F6FEB",
+            "description": "Observes and reports without committing domain state."
+          },
+          {
+            "name": "effect: request-only",
+            "color": "218BFF",
+            "description": "May propose or request work but cannot settle it."
+          },
+          {
+            "name": "effect: bounded-execution",
+            "color": "BC4C00",
+            "description": "Executes within an admitted, leased, and observable boundary."
+          },
+          {
+            "name": "effect: external-boundary",
+            "color": "CF222E",
+            "description": "Translates across a declared external-system boundary."
+          },
+          {
+            "name": "standing: proposed",
+            "color": "D4C5F9",
+            "description": "Defined as a proposal; no built evidence exists."
+          },
+          {
+            "name": "standing: declared",
+            "color": "B6BBC0",
+            "description": "Boundary is declared but implementation has not begun."
+          },
+          {
+            "name": "standing: chartered",
+            "color": "54AEFF",
+            "description": "Contract or charter exists; implementation is incomplete."
+          },
+          {
+            "name": "standing: self-tested",
+            "color": "2DA44E",
+            "description": "Built and self-tested; independent witness remains outstanding."
+          },
+          {
+            "name": "witness: pending",
+            "color": "D29922",
+            "description": "Independent witness receipt is outstanding; normally held in project metadata."
+          },
+          {
+            "name": "witness: witnessed",
+            "color": "2DA44E",
+            "description": "Independent witness receipt is current and resolvable."
+          },
+          {
+            "name": "witness: demoted",
+            "color": "CF222E",
+            "description": "Prior witness standing was demoted by a defeating observation."
+          }
+        ]
+      },
+      "expect_actions": [
+        "LABEL_REMOVE:#103:horizon: next"
+      ]
+    },
+    {
+      "case_id": "BOARD-004-no-metadata-block",
+      "defeating": true,
+      "note": "An issue with no metadata block is reported, never silently dropped.",
+      "capture": {
+        "issues": [
+          {
+            "number": 104,
+            "title": "fixture 104",
+            "state": "OPEN",
+            "body": "Just prose, no contract.\n",
+            "labels": []
+          }
+        ],
+        "pulls": [],
+        "branches": [],
+        "receipt": {
+          "source_repository": "fixture/board",
+          "captured_at": "2026-08-23T12:00:00Z",
+          "export_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+        },
+        "labels": [
+          {
+            "name": "type: epic",
+            "color": "6F42C1",
+            "description": "System-spanning coordination and qualification."
+          },
+          {
+            "name": "type: village",
+            "color": "0969DA",
+            "description": "Bounded operational surface containing bits and stubs."
+          },
+          {
+            "name": "type: bit",
+            "color": "1A7F37",
+            "description": "Named, independently inspectable system obligation."
+          },
+          {
+            "name": "type: stub",
+            "color": "57606A",
+            "description": "Repository implementation surface closing one or more bits."
+          },
+          {
+            "name": "type: engagement",
+            "color": "B60205",
+            "description": "Verification engagement against a pinned target; produces findings, builds nothing."
+          },
+          {
+            "name": "scope: system",
+            "color": "5319E7",
+            "description": "Applies to the complete Soveraeign node."
+          },
+          {
+            "name": "village: ground",
+            "color": "BF8700",
+            "description": "Ground and Evidence: record, asset, graph, and observation."
+          },
+          {
+            "name": "village: trust",
+            "color": "CF222E",
+            "description": "Trust and Control: identity, authority, gates, registry, and capability."
+          },
+          {
+            "name": "village: motion",
+            "color": "008B8B",
+            "description": "Reach and Motion: ingress, delivery, execution, bindings, and composition."
+          },
+          {
+            "name": "village: domain",
+            "color": "8250DF",
+            "description": "Domain and Qualification: proofing, qualification, and federation."
+          },
+          {
+            "name": "horizon: now",
+            "color": "D1242F",
+            "description": "Required in the current evidence-gated construction band."
+          },
+          {
+            "name": "horizon: next",
+            "color": "FBCA04",
+            "description": "Begins after the current gate earns its prerequisites."
+          },
+          {
+            "name": "horizon: spanning",
+            "color": "A371F7",
+            "description": "Coordinates more than one construction horizon."
+          },
+          {
+            "name": "horizon: scale-trust",
+            "color": "0550AE",
+            "description": "Deferred until local Phase-I trust is independently qualified."
+          },
+          {
+            "name": "effect: record-local",
+            "color": "D0D7DE",
+            "description": "Default: changes governed local record state only; normally omitted."
+          },
+          {
+            "name": "effect: control",
+            "color": "A40E26",
+            "description": "Changes admission, authority, or control state."
+          },
+          {
+            "name": "effect: observe-only",
+            "color": "1F6FEB",
+            "description": "Observes and reports without committing domain state."
+          },
+          {
+            "name": "effect: request-only",
+            "color": "218BFF",
+            "description": "May propose or request work but cannot settle it."
+          },
+          {
+            "name": "effect: bounded-execution",
+            "color": "BC4C00",
+            "description": "Executes within an admitted, leased, and observable boundary."
+          },
+          {
+            "name": "effect: external-boundary",
+            "color": "CF222E",
+            "description": "Translates across a declared external-system boundary."
+          },
+          {
+            "name": "standing: proposed",
+            "color": "D4C5F9",
+            "description": "Defined as a proposal; no built evidence exists."
+          },
+          {
+            "name": "standing: declared",
+            "color": "B6BBC0",
+            "description": "Boundary is declared but implementation has not begun."
+          },
+          {
+            "name": "standing: chartered",
+            "color": "54AEFF",
+            "description": "Contract or charter exists; implementation is incomplete."
+          },
+          {
+            "name": "standing: self-tested",
+            "color": "2DA44E",
+            "description": "Built and self-tested; independent witness remains outstanding."
+          },
+          {
+            "name": "witness: pending",
+            "color": "D29922",
+            "description": "Independent witness receipt is outstanding; normally held in project metadata."
+          },
+          {
+            "name": "witness: witnessed",
+            "color": "2DA44E",
+            "description": "Independent witness receipt is current and resolvable."
+          },
+          {
+            "name": "witness: demoted",
+            "color": "CF222E",
+            "description": "Prior witness standing was demoted by a defeating observation."
+          }
+        ]
+      },
+      "expect_actions": [
+        "CONTRACT_DEFECT:#104:"
+      ]
+    },
+    {
+      "case_id": "BOARD-005-schema-defect",
+      "defeating": true,
+      "note": "A readable block that fails the schema is reported, not label-reconciled.",
+      "capture": {
+        "issues": [
+          {
+            "number": 105,
+            "title": "fixture 105",
+            "state": "OPEN",
+            "body": "```yaml\nissue_schema: soveraeign-ticket/v1\ntags: [village:ground, horizon:now, type:bit]\nkind: bit\nbit_id: BIT-FIXTURE\nvillage: ground-and-evidence\nvillage_issue: \"#4\"\nparent: \"#4\"\nrequires: []\nstanding: OPEN\nhorizon: SOMEDAY\nauthority: none\neffect_class: RECORD_LOCAL\nevidence_pointer: conformance/fixtures/board/survey-cases.json\nlast_observed_at: null\nwalker_receipt: none\ndemotion_pointer: \"#none\"\ndependency_channels: []\n```\n\nFixture ticket.\n",
+            "labels": []
+          }
+        ],
+        "pulls": [],
+        "branches": [],
+        "receipt": {
+          "source_repository": "fixture/board",
+          "captured_at": "2026-08-23T12:00:00Z",
+          "export_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+        },
+        "labels": [
+          {
+            "name": "type: epic",
+            "color": "6F42C1",
+            "description": "System-spanning coordination and qualification."
+          },
+          {
+            "name": "type: village",
+            "color": "0969DA",
+            "description": "Bounded operational surface containing bits and stubs."
+          },
+          {
+            "name": "type: bit",
+            "color": "1A7F37",
+            "description": "Named, independently inspectable system obligation."
+          },
+          {
+            "name": "type: stub",
+            "color": "57606A",
+            "description": "Repository implementation surface closing one or more bits."
+          },
+          {
+            "name": "type: engagement",
+            "color": "B60205",
+            "description": "Verification engagement against a pinned target; produces findings, builds nothing."
+          },
+          {
+            "name": "scope: system",
+            "color": "5319E7",
+            "description": "Applies to the complete Soveraeign node."
+          },
+          {
+            "name": "village: ground",
+            "color": "BF8700",
+            "description": "Ground and Evidence: record, asset, graph, and observation."
+          },
+          {
+            "name": "village: trust",
+            "color": "CF222E",
+            "description": "Trust and Control: identity, authority, gates, registry, and capability."
+          },
+          {
+            "name": "village: motion",
+            "color": "008B8B",
+            "description": "Reach and Motion: ingress, delivery, execution, bindings, and composition."
+          },
+          {
+            "name": "village: domain",
+            "color": "8250DF",
+            "description": "Domain and Qualification: proofing, qualification, and federation."
+          },
+          {
+            "name": "horizon: now",
+            "color": "D1242F",
+            "description": "Required in the current evidence-gated construction band."
+          },
+          {
+            "name": "horizon: next",
+            "color": "FBCA04",
+            "description": "Begins after the current gate earns its prerequisites."
+          },
+          {
+            "name": "horizon: spanning",
+            "color": "A371F7",
+            "description": "Coordinates more than one construction horizon."
+          },
+          {
+            "name": "horizon: scale-trust",
+            "color": "0550AE",
+            "description": "Deferred until local Phase-I trust is independently qualified."
+          },
+          {
+            "name": "effect: record-local",
+            "color": "D0D7DE",
+            "description": "Default: changes governed local record state only; normally omitted."
+          },
+          {
+            "name": "effect: control",
+            "color": "A40E26",
+            "description": "Changes admission, authority, or control state."
+          },
+          {
+            "name": "effect: observe-only",
+            "color": "1F6FEB",
+            "description": "Observes and reports without committing domain state."
+          },
+          {
+            "name": "effect: request-only",
+            "color": "218BFF",
+            "description": "May propose or request work but cannot settle it."
+          },
+          {
+            "name": "effect: bounded-execution",
+            "color": "BC4C00",
+            "description": "Executes within an admitted, leased, and observable boundary."
+          },
+          {
+            "name": "effect: external-boundary",
+            "color": "CF222E",
+            "description": "Translates across a declared external-system boundary."
+          },
+          {
+            "name": "standing: proposed",
+            "color": "D4C5F9",
+            "description": "Defined as a proposal; no built evidence exists."
+          },
+          {
+            "name": "standing: declared",
+            "color": "B6BBC0",
+            "description": "Boundary is declared but implementation has not begun."
+          },
+          {
+            "name": "standing: chartered",
+            "color": "54AEFF",
+            "description": "Contract or charter exists; implementation is incomplete."
+          },
+          {
+            "name": "standing: self-tested",
+            "color": "2DA44E",
+            "description": "Built and self-tested; independent witness remains outstanding."
+          },
+          {
+            "name": "witness: pending",
+            "color": "D29922",
+            "description": "Independent witness receipt is outstanding; normally held in project metadata."
+          },
+          {
+            "name": "witness: witnessed",
+            "color": "2DA44E",
+            "description": "Independent witness receipt is current and resolvable."
+          },
+          {
+            "name": "witness: demoted",
+            "color": "CF222E",
+            "description": "Prior witness standing was demoted by a defeating observation."
+          }
+        ]
+      },
+      "expect_actions": [
+        "CONTRACT_DEFECT:#105:"
+      ]
+    },
+    {
+      "case_id": "BOARD-006-closed-ticket-is-not-surveyed",
+      "defeating": true,
+      "note": "A closed ticket cannot drift. Judging one produces a report that never clears.",
+      "capture": {
+        "issues": [
+          {
+            "number": 106,
+            "title": "fixture 106",
+            "state": "CLOSED",
+            "body": "No contract here.\n",
+            "labels": []
+          }
+        ],
+        "pulls": [],
+        "branches": [],
+        "receipt": {
+          "source_repository": "fixture/board",
+          "captured_at": "2026-08-23T12:00:00Z",
+          "export_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+        },
+        "labels": [
+          {
+            "name": "type: epic",
+            "color": "6F42C1",
+            "description": "System-spanning coordination and qualification."
+          },
+          {
+            "name": "type: village",
+            "color": "0969DA",
+            "description": "Bounded operational surface containing bits and stubs."
+          },
+          {
+            "name": "type: bit",
+            "color": "1A7F37",
+            "description": "Named, independently inspectable system obligation."
+          },
+          {
+            "name": "type: stub",
+            "color": "57606A",
+            "description": "Repository implementation surface closing one or more bits."
+          },
+          {
+            "name": "type: engagement",
+            "color": "B60205",
+            "description": "Verification engagement against a pinned target; produces findings, builds nothing."
+          },
+          {
+            "name": "scope: system",
+            "color": "5319E7",
+            "description": "Applies to the complete Soveraeign node."
+          },
+          {
+            "name": "village: ground",
+            "color": "BF8700",
+            "description": "Ground and Evidence: record, asset, graph, and observation."
+          },
+          {
+            "name": "village: trust",
+            "color": "CF222E",
+            "description": "Trust and Control: identity, authority, gates, registry, and capability."
+          },
+          {
+            "name": "village: motion",
+            "color": "008B8B",
+            "description": "Reach and Motion: ingress, delivery, execution, bindings, and composition."
+          },
+          {
+            "name": "village: domain",
+            "color": "8250DF",
+            "description": "Domain and Qualification: proofing, qualification, and federation."
+          },
+          {
+            "name": "horizon: now",
+            "color": "D1242F",
+            "description": "Required in the current evidence-gated construction band."
+          },
+          {
+            "name": "horizon: next",
+            "color": "FBCA04",
+            "description": "Begins after the current gate earns its prerequisites."
+          },
+          {
+            "name": "horizon: spanning",
+            "color": "A371F7",
+            "description": "Coordinates more than one construction horizon."
+          },
+          {
+            "name": "horizon: scale-trust",
+            "color": "0550AE",
+            "description": "Deferred until local Phase-I trust is independently qualified."
+          },
+          {
+            "name": "effect: record-local",
+            "color": "D0D7DE",
+            "description": "Default: changes governed local record state only; normally omitted."
+          },
+          {
+            "name": "effect: control",
+            "color": "A40E26",
+            "description": "Changes admission, authority, or control state."
+          },
+          {
+            "name": "effect: observe-only",
+            "color": "1F6FEB",
+            "description": "Observes and reports without committing domain state."
+          },
+          {
+            "name": "effect: request-only",
+            "color": "218BFF",
+            "description": "May propose or request work but cannot settle it."
+          },
+          {
+            "name": "effect: bounded-execution",
+            "color": "BC4C00",
+            "description": "Executes within an admitted, leased, and observable boundary."
+          },
+          {
+            "name": "effect: external-boundary",
+            "color": "CF222E",
+            "description": "Translates across a declared external-system boundary."
+          },
+          {
+            "name": "standing: proposed",
+            "color": "D4C5F9",
+            "description": "Defined as a proposal; no built evidence exists."
+          },
+          {
+            "name": "standing: declared",
+            "color": "B6BBC0",
+            "description": "Boundary is declared but implementation has not begun."
+          },
+          {
+            "name": "standing: chartered",
+            "color": "54AEFF",
+            "description": "Contract or charter exists; implementation is incomplete."
+          },
+          {
+            "name": "standing: self-tested",
+            "color": "2DA44E",
+            "description": "Built and self-tested; independent witness remains outstanding."
+          },
+          {
+            "name": "witness: pending",
+            "color": "D29922",
+            "description": "Independent witness receipt is outstanding; normally held in project metadata."
+          },
+          {
+            "name": "witness: witnessed",
+            "color": "2DA44E",
+            "description": "Independent witness receipt is current and resolvable."
+          },
+          {
+            "name": "witness: demoted",
+            "color": "CF222E",
+            "description": "Prior witness standing was demoted by a defeating observation."
+          }
+        ]
+      },
+      "expect_actions": []
+    },
+    {
+      "case_id": "BOARD-007-merged-branch-still-live",
+      "note": "A merged pull request whose ref still exists is proposed for deletion.",
+      "capture": {
+        "issues": [
+          {
+            "number": 107,
+            "title": "fixture 107",
+            "state": "OPEN",
+            "body": "```yaml\nissue_schema: soveraeign-ticket/v1\ntags: [village:ground, horizon:now, type:bit]\nkind: bit\nbit_id: BIT-FIXTURE\nvillage: ground-and-evidence\nvillage_issue: \"#4\"\nparent: \"#4\"\nrequires: []\nstanding: OPEN\nhorizon: NOW\nauthority: none\neffect_class: RECORD_LOCAL\nevidence_pointer: conformance/fixtures/board/survey-cases.json\nlast_observed_at: null\nwalker_receipt: none\ndemotion_pointer: \"#none\"\ndependency_channels: []\n```\n\nFixture ticket.\n",
+            "labels": [
+              {
+                "name": "type: bit"
+              },
+              {
+                "name": "village: ground"
+              },
+              {
+                "name": "horizon: now"
+              }
+            ]
+          }
+        ],
+        "pulls": [
+          {
+            "number": 7,
+            "state": "MERGED",
+            "headRefName": "feat/done",
+            "title": "t",
+            "isDraft": false,
+            "updatedAt": "2026-08-23T11:00:00Z"
+          }
+        ],
+        "branches": [
+          {
+            "name": "main"
+          },
+          {
+            "name": "feat/done"
+          }
+        ],
+        "receipt": {
+          "source_repository": "fixture/board",
+          "captured_at": "2026-08-23T12:00:00Z",
+          "export_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+        },
+        "labels": [
+          {
+            "name": "type: epic",
+            "color": "6F42C1",
+            "description": "System-spanning coordination and qualification."
+          },
+          {
+            "name": "type: village",
+            "color": "0969DA",
+            "description": "Bounded operational surface containing bits and stubs."
+          },
+          {
+            "name": "type: bit",
+            "color": "1A7F37",
+            "description": "Named, independently inspectable system obligation."
+          },
+          {
+            "name": "type: stub",
+            "color": "57606A",
+            "description": "Repository implementation surface closing one or more bits."
+          },
+          {
+            "name": "type: engagement",
+            "color": "B60205",
+            "description": "Verification engagement against a pinned target; produces findings, builds nothing."
+          },
+          {
+            "name": "scope: system",
+            "color": "5319E7",
+            "description": "Applies to the complete Soveraeign node."
+          },
+          {
+            "name": "village: ground",
+            "color": "BF8700",
+            "description": "Ground and Evidence: record, asset, graph, and observation."
+          },
+          {
+            "name": "village: trust",
+            "color": "CF222E",
+            "description": "Trust and Control: identity, authority, gates, registry, and capability."
+          },
+          {
+            "name": "village: motion",
+            "color": "008B8B",
+            "description": "Reach and Motion: ingress, delivery, execution, bindings, and composition."
+          },
+          {
+            "name": "village: domain",
+            "color": "8250DF",
+            "description": "Domain and Qualification: proofing, qualification, and federation."
+          },
+          {
+            "name": "horizon: now",
+            "color": "D1242F",
+            "description": "Required in the current evidence-gated construction band."
+          },
+          {
+            "name": "horizon: next",
+            "color": "FBCA04",
+            "description": "Begins after the current gate earns its prerequisites."
+          },
+          {
+            "name": "horizon: spanning",
+            "color": "A371F7",
+            "description": "Coordinates more than one construction horizon."
+          },
+          {
+            "name": "horizon: scale-trust",
+            "color": "0550AE",
+            "description": "Deferred until local Phase-I trust is independently qualified."
+          },
+          {
+            "name": "effect: record-local",
+            "color": "D0D7DE",
+            "description": "Default: changes governed local record state only; normally omitted."
+          },
+          {
+            "name": "effect: control",
+            "color": "A40E26",
+            "description": "Changes admission, authority, or control state."
+          },
+          {
+            "name": "effect: observe-only",
+            "color": "1F6FEB",
+            "description": "Observes and reports without committing domain state."
+          },
+          {
+            "name": "effect: request-only",
+            "color": "218BFF",
+            "description": "May propose or request work but cannot settle it."
+          },
+          {
+            "name": "effect: bounded-execution",
+            "color": "BC4C00",
+            "description": "Executes within an admitted, leased, and observable boundary."
+          },
+          {
+            "name": "effect: external-boundary",
+            "color": "CF222E",
+            "description": "Translates across a declared external-system boundary."
+          },
+          {
+            "name": "standing: proposed",
+            "color": "D4C5F9",
+            "description": "Defined as a proposal; no built evidence exists."
+          },
+          {
+            "name": "standing: declared",
+            "color": "B6BBC0",
+            "description": "Boundary is declared but implementation has not begun."
+          },
+          {
+            "name": "standing: chartered",
+            "color": "54AEFF",
+            "description": "Contract or charter exists; implementation is incomplete."
+          },
+          {
+            "name": "standing: self-tested",
+            "color": "2DA44E",
+            "description": "Built and self-tested; independent witness remains outstanding."
+          },
+          {
+            "name": "witness: pending",
+            "color": "D29922",
+            "description": "Independent witness receipt is outstanding; normally held in project metadata."
+          },
+          {
+            "name": "witness: witnessed",
+            "color": "2DA44E",
+            "description": "Independent witness receipt is current and resolvable."
+          },
+          {
+            "name": "witness: demoted",
+            "color": "CF222E",
+            "description": "Prior witness standing was demoted by a defeating observation."
+          }
+        ]
+      },
+      "expect_actions": [
+        "BRANCH_DELETE:feat/done:feat/done"
+      ]
+    },
+    {
+      "case_id": "BOARD-008-merged-branch-already-pruned",
+      "defeating": true,
+      "note": "A merged pull request whose ref is gone must not be proposed again.",
+      "capture": {
+        "issues": [
+          {
+            "number": 108,
+            "title": "fixture 108",
+            "state": "OPEN",
+            "body": "```yaml\nissue_schema: soveraeign-ticket/v1\ntags: [village:ground, horizon:now, type:bit]\nkind: bit\nbit_id: BIT-FIXTURE\nvillage: ground-and-evidence\nvillage_issue: \"#4\"\nparent: \"#4\"\nrequires: []\nstanding: OPEN\nhorizon: NOW\nauthority: none\neffect_class: RECORD_LOCAL\nevidence_pointer: conformance/fixtures/board/survey-cases.json\nlast_observed_at: null\nwalker_receipt: none\ndemotion_pointer: \"#none\"\ndependency_channels: []\n```\n\nFixture ticket.\n",
+            "labels": [
+              {
+                "name": "type: bit"
+              },
+              {
+                "name": "village: ground"
+              },
+              {
+                "name": "horizon: now"
+              }
+            ]
+          }
+        ],
+        "pulls": [
+          {
+            "number": 8,
+            "state": "MERGED",
+            "headRefName": "feat/gone",
+            "title": "t",
+            "isDraft": false,
+            "updatedAt": "2026-08-23T11:00:00Z"
+          }
+        ],
+        "branches": [
+          {
+            "name": "main"
+          }
+        ],
+        "receipt": {
+          "source_repository": "fixture/board",
+          "captured_at": "2026-08-23T12:00:00Z",
+          "export_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+        },
+        "labels": [
+          {
+            "name": "type: epic",
+            "color": "6F42C1",
+            "description": "System-spanning coordination and qualification."
+          },
+          {
+            "name": "type: village",
+            "color": "0969DA",
+            "description": "Bounded operational surface containing bits and stubs."
+          },
+          {
+            "name": "type: bit",
+            "color": "1A7F37",
+            "description": "Named, independently inspectable system obligation."
+          },
+          {
+            "name": "type: stub",
+            "color": "57606A",
+            "description": "Repository implementation surface closing one or more bits."
+          },
+          {
+            "name": "type: engagement",
+            "color": "B60205",
+            "description": "Verification engagement against a pinned target; produces findings, builds nothing."
+          },
+          {
+            "name": "scope: system",
+            "color": "5319E7",
+            "description": "Applies to the complete Soveraeign node."
+          },
+          {
+            "name": "village: ground",
+            "color": "BF8700",
+            "description": "Ground and Evidence: record, asset, graph, and observation."
+          },
+          {
+            "name": "village: trust",
+            "color": "CF222E",
+            "description": "Trust and Control: identity, authority, gates, registry, and capability."
+          },
+          {
+            "name": "village: motion",
+            "color": "008B8B",
+            "description": "Reach and Motion: ingress, delivery, execution, bindings, and composition."
+          },
+          {
+            "name": "village: domain",
+            "color": "8250DF",
+            "description": "Domain and Qualification: proofing, qualification, and federation."
+          },
+          {
+            "name": "horizon: now",
+            "color": "D1242F",
+            "description": "Required in the current evidence-gated construction band."
+          },
+          {
+            "name": "horizon: next",
+            "color": "FBCA04",
+            "description": "Begins after the current gate earns its prerequisites."
+          },
+          {
+            "name": "horizon: spanning",
+            "color": "A371F7",
+            "description": "Coordinates more than one construction horizon."
+          },
+          {
+            "name": "horizon: scale-trust",
+            "color": "0550AE",
+            "description": "Deferred until local Phase-I trust is independently qualified."
+          },
+          {
+            "name": "effect: record-local",
+            "color": "D0D7DE",
+            "description": "Default: changes governed local record state only; normally omitted."
+          },
+          {
+            "name": "effect: control",
+            "color": "A40E26",
+            "description": "Changes admission, authority, or control state."
+          },
+          {
+            "name": "effect: observe-only",
+            "color": "1F6FEB",
+            "description": "Observes and reports without committing domain state."
+          },
+          {
+            "name": "effect: request-only",
+            "color": "218BFF",
+            "description": "May propose or request work but cannot settle it."
+          },
+          {
+            "name": "effect: bounded-execution",
+            "color": "BC4C00",
+            "description": "Executes within an admitted, leased, and observable boundary."
+          },
+          {
+            "name": "effect: external-boundary",
+            "color": "CF222E",
+            "description": "Translates across a declared external-system boundary."
+          },
+          {
+            "name": "standing: proposed",
+            "color": "D4C5F9",
+            "description": "Defined as a proposal; no built evidence exists."
+          },
+          {
+            "name": "standing: declared",
+            "color": "B6BBC0",
+            "description": "Boundary is declared but implementation has not begun."
+          },
+          {
+            "name": "standing: chartered",
+            "color": "54AEFF",
+            "description": "Contract or charter exists; implementation is incomplete."
+          },
+          {
+            "name": "standing: self-tested",
+            "color": "2DA44E",
+            "description": "Built and self-tested; independent witness remains outstanding."
+          },
+          {
+            "name": "witness: pending",
+            "color": "D29922",
+            "description": "Independent witness receipt is outstanding; normally held in project metadata."
+          },
+          {
+            "name": "witness: witnessed",
+            "color": "2DA44E",
+            "description": "Independent witness receipt is current and resolvable."
+          },
+          {
+            "name": "witness: demoted",
+            "color": "CF222E",
+            "description": "Prior witness standing was demoted by a defeating observation."
+          }
+        ]
+      },
+      "expect_actions": []
+    },
+    {
+      "case_id": "BOARD-009-stale-open-pull-request",
+      "note": "An open pull request quiet past the threshold is reported for triage.",
+      "capture": {
+        "issues": [
+          {
+            "number": 109,
+            "title": "fixture 109",
+            "state": "OPEN",
+            "body": "```yaml\nissue_schema: soveraeign-ticket/v1\ntags: [village:ground, horizon:now, type:bit]\nkind: bit\nbit_id: BIT-FIXTURE\nvillage: ground-and-evidence\nvillage_issue: \"#4\"\nparent: \"#4\"\nrequires: []\nstanding: OPEN\nhorizon: NOW\nauthority: none\neffect_class: RECORD_LOCAL\nevidence_pointer: conformance/fixtures/board/survey-cases.json\nlast_observed_at: null\nwalker_receipt: none\ndemotion_pointer: \"#none\"\ndependency_channels: []\n```\n\nFixture ticket.\n",
+            "labels": [
+              {
+                "name": "type: bit"
+              },
+              {
+                "name": "village: ground"
+              },
+              {
+                "name": "horizon: now"
+              }
+            ]
+          }
+        ],
+        "pulls": [
+          {
+            "number": 9,
+            "state": "OPEN",
+            "headRefName": "feat/quiet",
+            "title": "quiet",
+            "isDraft": true,
+            "updatedAt": "2026-08-20T11:00:00Z"
+          }
+        ],
+        "branches": [
+          {
+            "name": "main"
+          },
+          {
+            "name": "feat/quiet"
+          }
+        ],
+        "receipt": {
+          "source_repository": "fixture/board",
+          "captured_at": "2026-08-23T12:00:00Z",
+          "export_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+        },
+        "labels": [
+          {
+            "name": "type: epic",
+            "color": "6F42C1",
+            "description": "System-spanning coordination and qualification."
+          },
+          {
+            "name": "type: village",
+            "color": "0969DA",
+            "description": "Bounded operational surface containing bits and stubs."
+          },
+          {
+            "name": "type: bit",
+            "color": "1A7F37",
+            "description": "Named, independently inspectable system obligation."
+          },
+          {
+            "name": "type: stub",
+            "color": "57606A",
+            "description": "Repository implementation surface closing one or more bits."
+          },
+          {
+            "name": "type: engagement",
+            "color": "B60205",
+            "description": "Verification engagement against a pinned target; produces findings, builds nothing."
+          },
+          {
+            "name": "scope: system",
+            "color": "5319E7",
+            "description": "Applies to the complete Soveraeign node."
+          },
+          {
+            "name": "village: ground",
+            "color": "BF8700",
+            "description": "Ground and Evidence: record, asset, graph, and observation."
+          },
+          {
+            "name": "village: trust",
+            "color": "CF222E",
+            "description": "Trust and Control: identity, authority, gates, registry, and capability."
+          },
+          {
+            "name": "village: motion",
+            "color": "008B8B",
+            "description": "Reach and Motion: ingress, delivery, execution, bindings, and composition."
+          },
+          {
+            "name": "village: domain",
+            "color": "8250DF",
+            "description": "Domain and Qualification: proofing, qualification, and federation."
+          },
+          {
+            "name": "horizon: now",
+            "color": "D1242F",
+            "description": "Required in the current evidence-gated construction band."
+          },
+          {
+            "name": "horizon: next",
+            "color": "FBCA04",
+            "description": "Begins after the current gate earns its prerequisites."
+          },
+          {
+            "name": "horizon: spanning",
+            "color": "A371F7",
+            "description": "Coordinates more than one construction horizon."
+          },
+          {
+            "name": "horizon: scale-trust",
+            "color": "0550AE",
+            "description": "Deferred until local Phase-I trust is independently qualified."
+          },
+          {
+            "name": "effect: record-local",
+            "color": "D0D7DE",
+            "description": "Default: changes governed local record state only; normally omitted."
+          },
+          {
+            "name": "effect: control",
+            "color": "A40E26",
+            "description": "Changes admission, authority, or control state."
+          },
+          {
+            "name": "effect: observe-only",
+            "color": "1F6FEB",
+            "description": "Observes and reports without committing domain state."
+          },
+          {
+            "name": "effect: request-only",
+            "color": "218BFF",
+            "description": "May propose or request work but cannot settle it."
+          },
+          {
+            "name": "effect: bounded-execution",
+            "color": "BC4C00",
+            "description": "Executes within an admitted, leased, and observable boundary."
+          },
+          {
+            "name": "effect: external-boundary",
+            "color": "CF222E",
+            "description": "Translates across a declared external-system boundary."
+          },
+          {
+            "name": "standing: proposed",
+            "color": "D4C5F9",
+            "description": "Defined as a proposal; no built evidence exists."
+          },
+          {
+            "name": "standing: declared",
+            "color": "B6BBC0",
+            "description": "Boundary is declared but implementation has not begun."
+          },
+          {
+            "name": "standing: chartered",
+            "color": "54AEFF",
+            "description": "Contract or charter exists; implementation is incomplete."
+          },
+          {
+            "name": "standing: self-tested",
+            "color": "2DA44E",
+            "description": "Built and self-tested; independent witness remains outstanding."
+          },
+          {
+            "name": "witness: pending",
+            "color": "D29922",
+            "description": "Independent witness receipt is outstanding; normally held in project metadata."
+          },
+          {
+            "name": "witness: witnessed",
+            "color": "2DA44E",
+            "description": "Independent witness receipt is current and resolvable."
+          },
+          {
+            "name": "witness: demoted",
+            "color": "CF222E",
+            "description": "Prior witness standing was demoted by a defeating observation."
+          }
+        ]
+      },
+      "expect_actions": [
+        "PR_STALE:#9:feat/quiet"
+      ]
+    },
+    {
+      "case_id": "BOARD-010-fresh-open-pull-request",
+      "defeating": true,
+      "note": "A pull request touched inside the threshold is not reported as stale.",
+      "capture": {
+        "issues": [
+          {
+            "number": 110,
+            "title": "fixture 110",
+            "state": "OPEN",
+            "body": "```yaml\nissue_schema: soveraeign-ticket/v1\ntags: [village:ground, horizon:now, type:bit]\nkind: bit\nbit_id: BIT-FIXTURE\nvillage: ground-and-evidence\nvillage_issue: \"#4\"\nparent: \"#4\"\nrequires: []\nstanding: OPEN\nhorizon: NOW\nauthority: none\neffect_class: RECORD_LOCAL\nevidence_pointer: conformance/fixtures/board/survey-cases.json\nlast_observed_at: null\nwalker_receipt: none\ndemotion_pointer: \"#none\"\ndependency_channels: []\n```\n\nFixture ticket.\n",
+            "labels": [
+              {
+                "name": "type: bit"
+              },
+              {
+                "name": "village: ground"
+              },
+              {
+                "name": "horizon: now"
+              }
+            ]
+          }
+        ],
+        "pulls": [
+          {
+            "number": 10,
+            "state": "OPEN",
+            "headRefName": "feat/live",
+            "title": "live",
+            "isDraft": false,
+            "updatedAt": "2026-08-23T11:00:00Z"
+          }
+        ],
+        "branches": [
+          {
+            "name": "main"
+          },
+          {
+            "name": "feat/live"
+          }
+        ],
+        "receipt": {
+          "source_repository": "fixture/board",
+          "captured_at": "2026-08-23T12:00:00Z",
+          "export_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+        },
+        "labels": [
+          {
+            "name": "type: epic",
+            "color": "6F42C1",
+            "description": "System-spanning coordination and qualification."
+          },
+          {
+            "name": "type: village",
+            "color": "0969DA",
+            "description": "Bounded operational surface containing bits and stubs."
+          },
+          {
+            "name": "type: bit",
+            "color": "1A7F37",
+            "description": "Named, independently inspectable system obligation."
+          },
+          {
+            "name": "type: stub",
+            "color": "57606A",
+            "description": "Repository implementation surface closing one or more bits."
+          },
+          {
+            "name": "type: engagement",
+            "color": "B60205",
+            "description": "Verification engagement against a pinned target; produces findings, builds nothing."
+          },
+          {
+            "name": "scope: system",
+            "color": "5319E7",
+            "description": "Applies to the complete Soveraeign node."
+          },
+          {
+            "name": "village: ground",
+            "color": "BF8700",
+            "description": "Ground and Evidence: record, asset, graph, and observation."
+          },
+          {
+            "name": "village: trust",
+            "color": "CF222E",
+            "description": "Trust and Control: identity, authority, gates, registry, and capability."
+          },
+          {
+            "name": "village: motion",
+            "color": "008B8B",
+            "description": "Reach and Motion: ingress, delivery, execution, bindings, and composition."
+          },
+          {
+            "name": "village: domain",
+            "color": "8250DF",
+            "description": "Domain and Qualification: proofing, qualification, and federation."
+          },
+          {
+            "name": "horizon: now",
+            "color": "D1242F",
+            "description": "Required in the current evidence-gated construction band."
+          },
+          {
+            "name": "horizon: next",
+            "color": "FBCA04",
+            "description": "Begins after the current gate earns its prerequisites."
+          },
+          {
+            "name": "horizon: spanning",
+            "color": "A371F7",
+            "description": "Coordinates more than one construction horizon."
+          },
+          {
+            "name": "horizon: scale-trust",
+            "color": "0550AE",
+            "description": "Deferred until local Phase-I trust is independently qualified."
+          },
+          {
+            "name": "effect: record-local",
+            "color": "D0D7DE",
+            "description": "Default: changes governed local record state only; normally omitted."
+          },
+          {
+            "name": "effect: control",
+            "color": "A40E26",
+            "description": "Changes admission, authority, or control state."
+          },
+          {
+            "name": "effect: observe-only",
+            "color": "1F6FEB",
+            "description": "Observes and reports without committing domain state."
+          },
+          {
+            "name": "effect: request-only",
+            "color": "218BFF",
+            "description": "May propose or request work but cannot settle it."
+          },
+          {
+            "name": "effect: bounded-execution",
+            "color": "BC4C00",
+            "description": "Executes within an admitted, leased, and observable boundary."
+          },
+          {
+            "name": "effect: external-boundary",
+            "color": "CF222E",
+            "description": "Translates across a declared external-system boundary."
+          },
+          {
+            "name": "standing: proposed",
+            "color": "D4C5F9",
+            "description": "Defined as a proposal; no built evidence exists."
+          },
+          {
+            "name": "standing: declared",
+            "color": "B6BBC0",
+            "description": "Boundary is declared but implementation has not begun."
+          },
+          {
+            "name": "standing: chartered",
+            "color": "54AEFF",
+            "description": "Contract or charter exists; implementation is incomplete."
+          },
+          {
+            "name": "standing: self-tested",
+            "color": "2DA44E",
+            "description": "Built and self-tested; independent witness remains outstanding."
+          },
+          {
+            "name": "witness: pending",
+            "color": "D29922",
+            "description": "Independent witness receipt is outstanding; normally held in project metadata."
+          },
+          {
+            "name": "witness: witnessed",
+            "color": "2DA44E",
+            "description": "Independent witness receipt is current and resolvable."
+          },
+          {
+            "name": "witness: demoted",
+            "color": "CF222E",
+            "description": "Prior witness standing was demoted by a defeating observation."
+          }
+        ]
+      },
+      "expect_actions": []
+    },
+    {
+      "case_id": "BOARD-011-declared-label-absent-from-the-repository",
+      "note": "Nothing syncs .github/labels.yml to GitHub, so a declared label can be projected and still not exist. The survey must catch that, not the write.",
+      "capture": {
+        "issues": [
+          {
+            "number": 102,
+            "title": "fixture 102",
+            "state": "OPEN",
+            "body": "```yaml\nissue_schema: soveraeign-ticket/v1\ntags: [village:ground, horizon:now, type:bit]\nkind: bit\nbit_id: BIT-FIXTURE\nvillage: ground-and-evidence\nvillage_issue: \"#4\"\nparent: \"#4\"\nrequires: []\nstanding: OPEN\nhorizon: NOW\nauthority: none\neffect_class: RECORD_LOCAL\nevidence_pointer: conformance/fixtures/board/survey-cases.json\nlast_observed_at: null\nwalker_receipt: none\ndemotion_pointer: \"#none\"\ndependency_channels: []\n```\n\nFixture ticket.\n",
+            "labels": [
+              {
+                "name": "type: bit"
+              },
+              {
+                "name": "village: ground"
+              },
+              {
+                "name": "horizon: now"
+              }
+            ]
+          }
+        ],
+        "pulls": [],
+        "branches": [],
+        "labels": [
+          {
+            "name": "type: epic",
+            "color": "6F42C1",
+            "description": "System-spanning coordination and qualification."
+          },
+          {
+            "name": "type: village",
+            "color": "0969DA",
+            "description": "Bounded operational surface containing bits and stubs."
+          },
+          {
+            "name": "type: bit",
+            "color": "1A7F37",
+            "description": "Named, independently inspectable system obligation."
+          },
+          {
+            "name": "type: stub",
+            "color": "57606A",
+            "description": "Repository implementation surface closing one or more bits."
+          },
+          {
+            "name": "scope: system",
+            "color": "5319E7",
+            "description": "Applies to the complete Soveraeign node."
+          },
+          {
+            "name": "village: ground",
+            "color": "BF8700",
+            "description": "Ground and Evidence: record, asset, graph, and observation."
+          },
+          {
+            "name": "village: trust",
+            "color": "CF222E",
+            "description": "Trust and Control: identity, authority, gates, registry, and capability."
+          },
+          {
+            "name": "village: motion",
+            "color": "008B8B",
+            "description": "Reach and Motion: ingress, delivery, execution, bindings, and composition."
+          },
+          {
+            "name": "village: domain",
+            "color": "8250DF",
+            "description": "Domain and Qualification: proofing, qualification, and federation."
+          },
+          {
+            "name": "horizon: now",
+            "color": "D1242F",
+            "description": "Required in the current evidence-gated construction band."
+          },
+          {
+            "name": "horizon: next",
+            "color": "FBCA04",
+            "description": "Begins after the current gate earns its prerequisites."
+          },
+          {
+            "name": "horizon: spanning",
+            "color": "A371F7",
+            "description": "Coordinates more than one construction horizon."
+          },
+          {
+            "name": "horizon: scale-trust",
+            "color": "0550AE",
+            "description": "Deferred until local Phase-I trust is independently qualified."
+          },
+          {
+            "name": "effect: record-local",
+            "color": "D0D7DE",
+            "description": "Default: changes governed local record state only; normally omitted."
+          },
+          {
+            "name": "effect: control",
+            "color": "A40E26",
+            "description": "Changes admission, authority, or control state."
+          },
+          {
+            "name": "effect: observe-only",
+            "color": "1F6FEB",
+            "description": "Observes and reports without committing domain state."
+          },
+          {
+            "name": "effect: request-only",
+            "color": "218BFF",
+            "description": "May propose or request work but cannot settle it."
+          },
+          {
+            "name": "effect: bounded-execution",
+            "color": "BC4C00",
+            "description": "Executes within an admitted, leased, and observable boundary."
+          },
+          {
+            "name": "effect: external-boundary",
+            "color": "CF222E",
+            "description": "Translates across a declared external-system boundary."
+          },
+          {
+            "name": "standing: proposed",
+            "color": "D4C5F9",
+            "description": "Defined as a proposal; no built evidence exists."
+          },
+          {
+            "name": "standing: declared",
+            "color": "B6BBC0",
+            "description": "Boundary is declared but implementation has not begun."
+          },
+          {
+            "name": "standing: chartered",
+            "color": "54AEFF",
+            "description": "Contract or charter exists; implementation is incomplete."
+          },
+          {
+            "name": "standing: self-tested",
+            "color": "2DA44E",
+            "description": "Built and self-tested; independent witness remains outstanding."
+          },
+          {
+            "name": "witness: pending",
+            "color": "D29922",
+            "description": "Independent witness receipt is outstanding; normally held in project metadata."
+          },
+          {
+            "name": "witness: witnessed",
+            "color": "2DA44E",
+            "description": "Independent witness receipt is current and resolvable."
+          },
+          {
+            "name": "witness: demoted",
+            "color": "CF222E",
+            "description": "Prior witness standing was demoted by a defeating observation."
+          }
+        ],
+        "receipt": {
+          "source_repository": "fixture/board",
+          "captured_at": "2026-08-23T12:00:00Z",
+          "export_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+        }
+      },
+      "expect_actions": [
+        "LABEL_CREATE:repository:type: engagement"
+      ]
+    },
+    {
+      "case_id": "BOARD-012-governed-label-not-declared",
+      "note": "A live label inside the governed namespace that the catalogue omits is reported.",
+      "capture": {
+        "issues": [
+          {
+            "number": 102,
+            "title": "fixture 102",
+            "state": "OPEN",
+            "body": "```yaml\nissue_schema: soveraeign-ticket/v1\ntags: [village:ground, horizon:now, type:bit]\nkind: bit\nbit_id: BIT-FIXTURE\nvillage: ground-and-evidence\nvillage_issue: \"#4\"\nparent: \"#4\"\nrequires: []\nstanding: OPEN\nhorizon: NOW\nauthority: none\neffect_class: RECORD_LOCAL\nevidence_pointer: conformance/fixtures/board/survey-cases.json\nlast_observed_at: null\nwalker_receipt: none\ndemotion_pointer: \"#none\"\ndependency_channels: []\n```\n\nFixture ticket.\n",
+            "labels": [
+              {
+                "name": "type: bit"
+              },
+              {
+                "name": "village: ground"
+              },
+              {
+                "name": "horizon: now"
+              }
+            ]
+          }
+        ],
+        "pulls": [],
+        "branches": [],
+        "labels": [
+          {
+            "name": "type: epic",
+            "color": "6F42C1",
+            "description": "System-spanning coordination and qualification."
+          },
+          {
+            "name": "type: village",
+            "color": "0969DA",
+            "description": "Bounded operational surface containing bits and stubs."
+          },
+          {
+            "name": "type: bit",
+            "color": "1A7F37",
+            "description": "Named, independently inspectable system obligation."
+          },
+          {
+            "name": "type: stub",
+            "color": "57606A",
+            "description": "Repository implementation surface closing one or more bits."
+          },
+          {
+            "name": "type: engagement",
+            "color": "B60205",
+            "description": "Verification engagement against a pinned target; produces findings, builds nothing."
+          },
+          {
+            "name": "scope: system",
+            "color": "5319E7",
+            "description": "Applies to the complete Soveraeign node."
+          },
+          {
+            "name": "village: ground",
+            "color": "BF8700",
+            "description": "Ground and Evidence: record, asset, graph, and observation."
+          },
+          {
+            "name": "village: trust",
+            "color": "CF222E",
+            "description": "Trust and Control: identity, authority, gates, registry, and capability."
+          },
+          {
+            "name": "village: motion",
+            "color": "008B8B",
+            "description": "Reach and Motion: ingress, delivery, execution, bindings, and composition."
+          },
+          {
+            "name": "village: domain",
+            "color": "8250DF",
+            "description": "Domain and Qualification: proofing, qualification, and federation."
+          },
+          {
+            "name": "horizon: now",
+            "color": "D1242F",
+            "description": "Required in the current evidence-gated construction band."
+          },
+          {
+            "name": "horizon: next",
+            "color": "FBCA04",
+            "description": "Begins after the current gate earns its prerequisites."
+          },
+          {
+            "name": "horizon: spanning",
+            "color": "A371F7",
+            "description": "Coordinates more than one construction horizon."
+          },
+          {
+            "name": "horizon: scale-trust",
+            "color": "0550AE",
+            "description": "Deferred until local Phase-I trust is independently qualified."
+          },
+          {
+            "name": "effect: record-local",
+            "color": "D0D7DE",
+            "description": "Default: changes governed local record state only; normally omitted."
+          },
+          {
+            "name": "effect: control",
+            "color": "A40E26",
+            "description": "Changes admission, authority, or control state."
+          },
+          {
+            "name": "effect: observe-only",
+            "color": "1F6FEB",
+            "description": "Observes and reports without committing domain state."
+          },
+          {
+            "name": "effect: request-only",
+            "color": "218BFF",
+            "description": "May propose or request work but cannot settle it."
+          },
+          {
+            "name": "effect: bounded-execution",
+            "color": "BC4C00",
+            "description": "Executes within an admitted, leased, and observable boundary."
+          },
+          {
+            "name": "effect: external-boundary",
+            "color": "CF222E",
+            "description": "Translates across a declared external-system boundary."
+          },
+          {
+            "name": "standing: proposed",
+            "color": "D4C5F9",
+            "description": "Defined as a proposal; no built evidence exists."
+          },
+          {
+            "name": "standing: declared",
+            "color": "B6BBC0",
+            "description": "Boundary is declared but implementation has not begun."
+          },
+          {
+            "name": "standing: chartered",
+            "color": "54AEFF",
+            "description": "Contract or charter exists; implementation is incomplete."
+          },
+          {
+            "name": "standing: self-tested",
+            "color": "2DA44E",
+            "description": "Built and self-tested; independent witness remains outstanding."
+          },
+          {
+            "name": "witness: pending",
+            "color": "D29922",
+            "description": "Independent witness receipt is outstanding; normally held in project metadata."
+          },
+          {
+            "name": "witness: witnessed",
+            "color": "2DA44E",
+            "description": "Independent witness receipt is current and resolvable."
+          },
+          {
+            "name": "witness: demoted",
+            "color": "CF222E",
+            "description": "Prior witness standing was demoted by a defeating observation."
+          },
+          {
+            "name": "type: story",
+            "color": "E16F24",
+            "description": "d"
+          }
+        ],
+        "receipt": {
+          "source_repository": "fixture/board",
+          "captured_at": "2026-08-23T12:00:00Z",
+          "export_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+        }
+      },
+      "expect_actions": [
+        "CATALOGUE_UNDECLARED:repository:type: story"
+      ]
+    },
+    {
+      "case_id": "BOARD-013-stock-label-outside-the-namespace-is-ignored",
+      "defeating": true,
+      "note": "GitHub's stock labels sit outside the governed prefixes. Reporting them would make the survey noisy enough to stop being read.",
+      "capture": {
+        "issues": [
+          {
+            "number": 102,
+            "title": "fixture 102",
+            "state": "OPEN",
+            "body": "```yaml\nissue_schema: soveraeign-ticket/v1\ntags: [village:ground, horizon:now, type:bit]\nkind: bit\nbit_id: BIT-FIXTURE\nvillage: ground-and-evidence\nvillage_issue: \"#4\"\nparent: \"#4\"\nrequires: []\nstanding: OPEN\nhorizon: NOW\nauthority: none\neffect_class: RECORD_LOCAL\nevidence_pointer: conformance/fixtures/board/survey-cases.json\nlast_observed_at: null\nwalker_receipt: none\ndemotion_pointer: \"#none\"\ndependency_channels: []\n```\n\nFixture ticket.\n",
+            "labels": [
+              {
+                "name": "type: bit"
+              },
+              {
+                "name": "village: ground"
+              },
+              {
+                "name": "horizon: now"
+              }
+            ]
+          }
+        ],
+        "pulls": [],
+        "branches": [],
+        "labels": [
+          {
+            "name": "type: epic",
+            "color": "6F42C1",
+            "description": "System-spanning coordination and qualification."
+          },
+          {
+            "name": "type: village",
+            "color": "0969DA",
+            "description": "Bounded operational surface containing bits and stubs."
+          },
+          {
+            "name": "type: bit",
+            "color": "1A7F37",
+            "description": "Named, independently inspectable system obligation."
+          },
+          {
+            "name": "type: stub",
+            "color": "57606A",
+            "description": "Repository implementation surface closing one or more bits."
+          },
+          {
+            "name": "type: engagement",
+            "color": "B60205",
+            "description": "Verification engagement against a pinned target; produces findings, builds nothing."
+          },
+          {
+            "name": "scope: system",
+            "color": "5319E7",
+            "description": "Applies to the complete Soveraeign node."
+          },
+          {
+            "name": "village: ground",
+            "color": "BF8700",
+            "description": "Ground and Evidence: record, asset, graph, and observation."
+          },
+          {
+            "name": "village: trust",
+            "color": "CF222E",
+            "description": "Trust and Control: identity, authority, gates, registry, and capability."
+          },
+          {
+            "name": "village: motion",
+            "color": "008B8B",
+            "description": "Reach and Motion: ingress, delivery, execution, bindings, and composition."
+          },
+          {
+            "name": "village: domain",
+            "color": "8250DF",
+            "description": "Domain and Qualification: proofing, qualification, and federation."
+          },
+          {
+            "name": "horizon: now",
+            "color": "D1242F",
+            "description": "Required in the current evidence-gated construction band."
+          },
+          {
+            "name": "horizon: next",
+            "color": "FBCA04",
+            "description": "Begins after the current gate earns its prerequisites."
+          },
+          {
+            "name": "horizon: spanning",
+            "color": "A371F7",
+            "description": "Coordinates more than one construction horizon."
+          },
+          {
+            "name": "horizon: scale-trust",
+            "color": "0550AE",
+            "description": "Deferred until local Phase-I trust is independently qualified."
+          },
+          {
+            "name": "effect: record-local",
+            "color": "D0D7DE",
+            "description": "Default: changes governed local record state only; normally omitted."
+          },
+          {
+            "name": "effect: control",
+            "color": "A40E26",
+            "description": "Changes admission, authority, or control state."
+          },
+          {
+            "name": "effect: observe-only",
+            "color": "1F6FEB",
+            "description": "Observes and reports without committing domain state."
+          },
+          {
+            "name": "effect: request-only",
+            "color": "218BFF",
+            "description": "May propose or request work but cannot settle it."
+          },
+          {
+            "name": "effect: bounded-execution",
+            "color": "BC4C00",
+            "description": "Executes within an admitted, leased, and observable boundary."
+          },
+          {
+            "name": "effect: external-boundary",
+            "color": "CF222E",
+            "description": "Translates across a declared external-system boundary."
+          },
+          {
+            "name": "standing: proposed",
+            "color": "D4C5F9",
+            "description": "Defined as a proposal; no built evidence exists."
+          },
+          {
+            "name": "standing: declared",
+            "color": "B6BBC0",
+            "description": "Boundary is declared but implementation has not begun."
+          },
+          {
+            "name": "standing: chartered",
+            "color": "54AEFF",
+            "description": "Contract or charter exists; implementation is incomplete."
+          },
+          {
+            "name": "standing: self-tested",
+            "color": "2DA44E",
+            "description": "Built and self-tested; independent witness remains outstanding."
+          },
+          {
+            "name": "witness: pending",
+            "color": "D29922",
+            "description": "Independent witness receipt is outstanding; normally held in project metadata."
+          },
+          {
+            "name": "witness: witnessed",
+            "color": "2DA44E",
+            "description": "Independent witness receipt is current and resolvable."
+          },
+          {
+            "name": "witness: demoted",
+            "color": "CF222E",
+            "description": "Prior witness standing was demoted by a defeating observation."
+          },
+          {
+            "name": "bug",
+            "color": "d73a4a",
+            "description": "d"
+          }
+        ],
+        "receipt": {
+          "source_repository": "fixture/board",
+          "captured_at": "2026-08-23T12:00:00Z",
+          "export_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+        }
+      },
+      "expect_actions": []
+    }
+  ],
+  "approval_cases": [
+    {
+      "case_id": "APPROVE-001-executable-id",
+      "note": "A proposed action id approves cleanly.",
+      "batch": {
+        "batch_schema": "soveraeign-board-batch/v1",
+        "repository": "fixture/board",
+        "captured_at": "2026-08-23T12:00:00Z",
+        "export_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "actions": [
+          {
+            "kind": "LABEL_ADD",
+            "target": "#101",
+            "argument": "horizon: now",
+            "evidence": "e",
+            "rule": "r",
+            "recommendation": "d"
+          }
+        ]
+      },
+      "approve": [
+        "338f52d3a103"
+      ]
+    },
+    {
+      "case_id": "APPROVE-002-all",
+      "note": "'all' selects every proposed action and no report.",
+      "batch": {
+        "batch_schema": "soveraeign-board-batch/v1",
+        "repository": "fixture/board",
+        "captured_at": "2026-08-23T12:00:00Z",
+        "export_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "actions": [
+          {
+            "kind": "LABEL_ADD",
+            "target": "#101",
+            "argument": "horizon: now",
+            "evidence": "e",
+            "rule": "r",
+            "recommendation": "d"
+          },
+          {
+            "kind": "CONTRACT_DEFECT",
+            "target": "#104",
+            "argument": "",
+            "evidence": "e",
+            "rule": "r",
+            "recommendation": "d"
+          }
+        ]
+      },
+      "approve": [
+        "all"
+      ]
+    },
+    {
+      "case_id": "APPROVE-003-report-only",
+      "defeating": true,
+      "note": "Approving a report-only action is refused by name, never silently dropped.",
+      "batch": {
+        "batch_schema": "soveraeign-board-batch/v1",
+        "repository": "fixture/board",
+        "captured_at": "2026-08-23T12:00:00Z",
+        "export_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "actions": [
+          {
+            "kind": "LABEL_ADD",
+            "target": "#101",
+            "argument": "horizon: now",
+            "evidence": "e",
+            "rule": "r",
+            "recommendation": "d"
+          },
+          {
+            "kind": "CONTRACT_DEFECT",
+            "target": "#104",
+            "argument": "",
+            "evidence": "e",
+            "rule": "r",
+            "recommendation": "d"
+          }
+        ]
+      },
+      "approve": [
+        "614239c5535c"
+      ],
+      "refuses": "report-only"
+    },
+    {
+      "case_id": "APPROVE-004-unknown-id",
+      "defeating": true,
+      "note": "An id absent from the batch is refused rather than ignored.",
+      "batch": {
+        "batch_schema": "soveraeign-board-batch/v1",
+        "repository": "fixture/board",
+        "captured_at": "2026-08-23T12:00:00Z",
+        "export_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+        "actions": [
+          {
+            "kind": "LABEL_ADD",
+            "target": "#101",
+            "argument": "horizon: now",
+            "evidence": "e",
+            "rule": "r",
+            "recommendation": "d"
+          }
+        ]
+      },
+      "approve": [
+        "deadbeefcafe"
+      ],
+      "refuses": "no action with that id"
+    }
+  ]
+}

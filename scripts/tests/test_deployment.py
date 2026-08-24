@@ -1,0 +1,201 @@
+from __future__ import annotations
+
+import importlib.util
+import json
+from pathlib import Path
+import sys
+import unittest
+
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "scripts"))
+SPEC = importlib.util.spec_from_file_location("deployment", ROOT / "scripts" / "deployment.py")
+assert SPEC and SPEC.loader
+deployment = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(deployment)
+PINNED_IMAGE = "registry.example/soveraeign@sha256:" + "a" * 64
+CUSTODY_CLAIM = "customer-soveraeign-custody"
+
+
+class DeploymentTests(unittest.TestCase):
+    def manifest(self) -> dict:
+        path = ROOT / "infrastructure" / "phase-i.topology.json"
+        return json.loads(path.read_text(encoding="utf-8"))
+
+    def custody_manifest(self) -> dict:
+        path = ROOT / "infrastructure" / "phase-i.local.json"
+        return json.loads(path.read_text(encoding="utf-8"))
+
+    def runtime_contract(self) -> dict:
+        path = ROOT / "infrastructure" / "phase-i.runtime-image.json"
+        return json.loads(path.read_text(encoding="utf-8"))
+
+    def test_manifest_preserves_portable_single_node_boundary(self):
+        self.assertEqual(deployment.validate_manifest(self.manifest()), [])
+        self.assertEqual(deployment.validate_runtime_contract(self.runtime_contract()), [])
+
+    def test_both_profile_plans_are_observation_only(self):
+        manifest = self.manifest()
+        before = json.dumps(manifest, sort_keys=True)
+        local = deployment.plan(manifest, "local")
+        kubernetes = deployment.plan(manifest, "customer-kubernetes")
+        self.assertEqual(local["gateway"]["exposure"], "LOOPBACK")
+        self.assertEqual(kubernetes["gateway"]["exposure"], "CLUSTER_INTERNAL")
+        self.assertEqual(kubernetes["runtime_image_contract"], "phase-i.runtime-image.json")
+        self.assertEqual(kubernetes["runtime_image_contract_digest"],
+                         deployment.runtime_contract_digest(self.runtime_contract()))
+        self.assertEqual(json.dumps(manifest, sort_keys=True), before)
+
+    def test_kubernetes_bundle_is_provider_neutral_and_verifiable(self):
+        bundle = deployment.render_kubernetes(self.manifest(), PINNED_IMAGE, CUSTODY_CLAIM)
+        self.assertEqual(deployment.verify_bundle(bundle), [])
+        kinds = [item["kind"] for item in bundle["items"]]
+        self.assertNotIn("Secret", kinds)
+        self.assertNotIn("Ingress", kinds)
+        self.assertEqual(kinds.count("Service"), 1)
+
+    def test_kubernetes_carries_exact_local_custody_contract(self):
+        local = self.custody_manifest()
+        bundle = deployment.render_kubernetes(self.manifest(), PINNED_IMAGE, CUSTODY_CLAIM,
+                                              custody_manifest=local)
+        config = next(item for item in bundle["items"] if item["kind"] == "ConfigMap")["data"]
+        workload = next(item for item in bundle["items"] if item["kind"] == "Deployment")
+        pod = workload["spec"]["template"]
+        digest = deployment.manifest_digest(local)
+        self.assertEqual(json.loads(config["phase-i.local.json"]), local)
+        self.assertEqual(config["SOVERAEIGN_CUSTODY_MANIFEST_DIGEST"], digest)
+        self.assertEqual(json.loads(config["SOVERAEIGN_CUSTODY_PATHS"]),
+                         local["custody"]["paths"])
+        self.assertEqual(pod["metadata"]["annotations"][
+            "soveraeign.io/custody-manifest-digest"], digest)
+
+    def test_kubernetes_binds_runtime_entrypoint_listener_and_health(self):
+        runtime = self.runtime_contract()
+        bundle = deployment.render_kubernetes(self.manifest(), PINNED_IMAGE, CUSTODY_CLAIM,
+                                              runtime_contract=runtime)
+        config = next(item for item in bundle["items"] if item["kind"] == "ConfigMap")["data"]
+        workload = next(item for item in bundle["items"] if item["kind"] == "Deployment")
+        template = workload["spec"]["template"]
+        node = template["spec"]["containers"][0]
+        digest = deployment.runtime_contract_digest(runtime)
+        self.assertEqual(json.loads(config["phase-i.runtime-image.json"]), runtime)
+        self.assertEqual(config["SOVERAEIGN_RUNTIME_IMAGE_CONTRACT_DIGEST"], digest)
+        self.assertEqual(template["metadata"]["annotations"][
+            "soveraeign.io/runtime-image-contract-digest"], digest)
+        self.assertEqual(node["command"], runtime["entrypoint"])
+        self.assertEqual(node["ports"][0]["containerPort"], 8080)
+        self.assertEqual(node["startupProbe"]["httpGet"]["path"], "/health/startup")
+        self.assertEqual(node["readinessProbe"]["httpGet"]["path"], "/health/ready")
+        self.assertEqual(node["livenessProbe"]["httpGet"]["path"], "/health/live")
+        self.assertEqual(deployment.verify_bundle(bundle), [])
+
+    def test_runtime_contract_requires_python_scripts_and_refusal_boundary(self):
+        runtime = self.runtime_contract()
+        self.assertEqual(set(runtime["required_paths"]), {
+            "/opt/soveraeign/scripts/custody_activation.py",
+            "/opt/soveraeign/scripts/node_runtime.py",
+        })
+        self.assertEqual(runtime["python_min"], "3.11")
+        self.assertEqual(runtime["gateway"]["unactivated_response"], "REFUSE")
+        runtime["gateway"]["unactivated_response"] = "ALLOW"
+        self.assertIn("RUNTIME_GATEWAY_PREMATURELY_ACTIVATED",
+                      deployment.validate_runtime_contract(runtime))
+
+    def test_runtime_is_gated_by_verify_only_custody_activation(self):
+        bundle = deployment.render_kubernetes(self.manifest(), PINNED_IMAGE, CUSTODY_CLAIM)
+        workload = next(item for item in bundle["items"] if item["kind"] == "Deployment")
+        pod = workload["spec"]["template"]["spec"]
+        self.assertEqual(len(pod["initContainers"]), 1)
+        activation = pod["initContainers"][0]
+        self.assertEqual(activation["name"], "custody-activation")
+        self.assertEqual(activation["image"], pod["containers"][0]["image"])
+        self.assertIn("VERIFY_ONLY", activation["args"])
+        self.assertEqual(activation["securityContext"]["runAsUser"], 65532)
+        self.assertEqual(activation["securityContext"]["runAsGroup"], 65532)
+
+    def test_initialization_requires_explicit_render_policy(self):
+        bundle = deployment.render_kubernetes(
+            self.manifest(), PINNED_IMAGE, CUSTODY_CLAIM,
+            custody_activation_policy="VERIFY_OR_INITIALIZE_EMPTY",
+        )
+        workload = next(item for item in bundle["items"] if item["kind"] == "Deployment")
+        activation = workload["spec"]["template"]["spec"]["initContainers"][0]
+        self.assertIn("VERIFY_OR_INITIALIZE_EMPTY", activation["args"])
+        self.assertEqual(deployment.verify_bundle(bundle), [])
+
+    def test_verifier_defeats_nominal_filename_only_binding(self):
+        bundle = deployment.render_kubernetes(self.manifest(), PINNED_IMAGE, CUSTODY_CLAIM)
+        config = next(item for item in bundle["items"] if item["kind"] == "ConfigMap")["data"]
+        config["SOVERAEIGN_CUSTODY_MANIFEST_DIGEST"] = "0" * 64
+        self.assertIn("CUSTODY_MANIFEST_DIGEST_UNBOUND", deployment.verify_bundle(bundle))
+
+    def test_verifier_defeats_runtime_contract_digest_drift(self):
+        bundle = deployment.render_kubernetes(self.manifest(), PINNED_IMAGE, CUSTODY_CLAIM)
+        config = next(item for item in bundle["items"] if item["kind"] == "ConfigMap")["data"]
+        config["SOVERAEIGN_RUNTIME_IMAGE_CONTRACT_DIGEST"] = "0" * 64
+        self.assertIn("RUNTIME_IMAGE_CONTRACT_DIGEST_UNBOUND", deployment.verify_bundle(bundle))
+
+    def test_verifier_defeats_runtime_entrypoint_or_probe_drift(self):
+        bundle = deployment.render_kubernetes(self.manifest(), PINNED_IMAGE, CUSTODY_CLAIM)
+        workload = next(item for item in bundle["items"] if item["kind"] == "Deployment")
+        node = workload["spec"]["template"]["spec"]["containers"][0]
+        node["command"] = ["python", "other.py"]
+        self.assertIn("RUNTIME_ENTRYPOINT_UNBOUND", deployment.verify_bundle(bundle))
+        bundle = deployment.render_kubernetes(self.manifest(), PINNED_IMAGE, CUSTODY_CLAIM)
+        workload = next(item for item in bundle["items"] if item["kind"] == "Deployment")
+        node = workload["spec"]["template"]["spec"]["containers"][0]
+        node["readinessProbe"]["httpGet"]["path"] = "/always-ready"
+        self.assertIn("RUNTIME_HEALTH_PROBES_UNBOUND", deployment.verify_bundle(bundle))
+
+    def test_verifier_defeats_missing_startup_activation(self):
+        bundle = deployment.render_kubernetes(self.manifest(), PINNED_IMAGE, CUSTODY_CLAIM)
+        workload = next(item for item in bundle["items"] if item["kind"] == "Deployment")
+        workload["spec"]["template"]["spec"]["initContainers"] = []
+        self.assertIn("CUSTODY_ACTIVATION_GATE_MISSING", deployment.verify_bundle(bundle))
+
+    def test_mutable_or_unpinned_image_refuses(self):
+        for image in ("soveraeign:latest", "soveraeign@sha256:abc", ""):
+            with self.assertRaisesRegex(deployment.DeploymentRefused, "IMAGE_DIGEST"):
+                deployment.render_kubernetes(self.manifest(), image, CUSTODY_CLAIM)
+
+    def test_customer_owned_custody_claim_is_required_and_not_provisioned(self):
+        with self.assertRaisesRegex(deployment.DeploymentRefused, "CUSTODY_CLAIM"):
+            deployment.render_kubernetes(self.manifest(), PINNED_IMAGE, "Not Valid")
+        bundle = deployment.render_kubernetes(self.manifest(), PINNED_IMAGE, CUSTODY_CLAIM)
+        kinds = [item["kind"] for item in bundle["items"]]
+        self.assertNotIn("PersistentVolumeClaim", kinds)
+        workload = next(item for item in bundle["items"] if item["kind"] == "Deployment")
+        volume = workload["spec"]["template"]["spec"]["volumes"][0]
+        self.assertEqual(volume["persistentVolumeClaim"]["claimName"], CUSTODY_CLAIM)
+
+    def test_multiple_replicas_refuse_until_write_fencing_is_earned(self):
+        with self.assertRaisesRegex(deployment.DeploymentRefused, "MULTI_WRITER"):
+            deployment.render_kubernetes(self.manifest(), PINNED_IMAGE, CUSTODY_CLAIM, replicas=2)
+
+    def test_public_gateway_service_refuses(self):
+        for service_type in ("LoadBalancer", "NodePort", "ExternalName"):
+            with self.assertRaisesRegex(deployment.DeploymentRefused, "PUBLIC_SERVICE"):
+                deployment.render_kubernetes(self.manifest(), PINNED_IMAGE, CUSTODY_CLAIM,
+                                             service_type=service_type)
+
+    def test_federation_refuses_before_two_node_crossing_case(self):
+        with self.assertRaisesRegex(deployment.DeploymentRefused, "FEDERATION"):
+            deployment.render_kubernetes(self.manifest(), PINNED_IMAGE, CUSTODY_CLAIM,
+                                         federation=True)
+
+    def test_queue_and_broker_cannot_claim_authority(self):
+        for role in ("queue", "broker"):
+            manifest = self.manifest()
+            manifest["node"]["roles"][role]["authority"] = "EXECUTION"
+            self.assertIn(f"ROLE_AUTHORITY_INFLATED:{role}", deployment.validate_manifest(manifest))
+
+    def test_independent_verifier_observes_security_regression(self):
+        bundle = deployment.render_kubernetes(self.manifest(), PINNED_IMAGE, CUSTODY_CLAIM)
+        workload = next(item for item in bundle["items"] if item["kind"] == "Deployment")
+        container = workload["spec"]["template"]["spec"]["containers"][0]
+        container["securityContext"]["readOnlyRootFilesystem"] = False
+        self.assertIn("CONTAINER_SECURITY_UNSAFE", deployment.verify_bundle(bundle))
+
+
+if __name__ == "__main__":
+    unittest.main()

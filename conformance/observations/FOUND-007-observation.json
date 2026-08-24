@@ -1,0 +1,17 @@
+[
+  {
+    "case_id": "WIT-007-2026-08-23",
+    "participant_id": "witness/claude-opus-5-session",
+    "artifact_revision": "bbeb5d6a235e61e13237a3f9b0a04654434280f7",
+    "observed": {
+      "clean_checkout": true,
+      "authority_located": true,
+      "conformance_executed": true,
+      "evidence_reconstructed": true,
+      "semantic_task_observed": false,
+      "oral_explanation_used": false,
+      "time_to_safe_competence_seconds": 6,
+      "owner_acceptance": "PENDING"
+    }
+  }
+]

@@ -28,31 +28,32 @@
 /NAMING.md                                        @bdf1992
 /PUBLICATION.md                                   @bdf1992
 
-# Shared kernel and machine boundary contracts
+# Shared Kernel and machine boundary contracts.
+# Kernel is the available typology/topology/traversal/invariant grammar, not a structural level.
 /contracts/                                       @bdf1992
 /conformance/                                     @bdf1992
 
-# Root / seat settlement: who may settle inside one node.
-# These paths do not define node identity or federation membership.
+# Root / seat settlement: who may settle inside one Node.
+# These paths do not define Node identity or federation membership.
 /contracts/seat-registry.schema.json              @bdf1992
 /contracts/fixtures/seat-topology.reference.json  @bdf1992
 
-# Node identity: who this locally sovereign instance is and which root settles for it.
+# Node identity: who this locally sovereign instance is and which Root settles for it.
 # Identity deliberately carries no capability or grant.
 /contracts/node-identity.schema.json               @bdf1992
 /contracts/fixtures/node-registry.reference.json  @bdf1992
 /scripts/sovkernel/node_identity.py                @bdf1992
 /scripts/sov_node.py                               @bdf1992
 
-# Cross-node semantics: how independently sovereign roots relate without merging.
+# Cross-node semantics: how independently sovereign Node surfaces relate without merging Roots.
 # A crossing may carry identity/evidence; sender authority never becomes receiver authority.
 /contracts/federation-crossing.schema.json         @bdf1992
 /scripts/sovkernel/federation.py                   @bdf1992
 
-# Service boundaries inside one node.
+# Service boundaries inside one Node.
 /services/                                         @bdf1992
 
-# Deployment is a rendering of a node, never the definition of one.
+# Deployment is a rendering of a Node, never the definition of one.
 /infrastructure/                                   @bdf1992
 /scripts/node_runtime.py                           @bdf1992
 

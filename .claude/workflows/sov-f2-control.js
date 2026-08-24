@@ -31,6 +31,7 @@ const READ_SCHEMA = {
     predicates_covered: { type: 'integer' },
     bound_participants: { type: 'integer' },
     verify_exit: { type: 'integer' },
+    verify_failures: { type: 'array', items: { type: 'string' } },
     lint_exit: { type: 'integer' },
     oracle_exit: { type: 'integer' },
     tree_clean: { type: 'boolean' },
@@ -87,10 +88,12 @@ const BUILD_SCHEMA = {
 
 const WITNESS_SCHEMA = {
   type: 'object',
-  required: ['verdicts', 'fabricated_coverage', 'verify_exit', 'gate_covered_after', 'residuals', 'standing_supported'],
+  required: ['verdicts', 'fabricated_coverage', 'verify_exit', 'verify_failures', 'oracle_weakened', 'gate_covered_after', 'residuals', 'standing_supported'],
   properties: {
     verdicts: { type: 'array', items: { type: 'object', required: ['operation_id', 'verdict'], properties: { operation_id: { type: 'string' }, verdict: { type: 'string', enum: ['reproduced', 'dissented', 'unattestable'] }, reason: { type: 'string' } } } },
     fabricated_coverage: { type: 'array', items: { type: 'string' } },
+    oracle_weakened: { type: 'array', items: { type: 'string' } },
+    verify_failures: { type: 'array', items: { type: 'string' } },
     verify_exit: { type: 'integer' },
     gate_covered_after: { type: 'integer' },
     residuals: { type: 'array', items: { type: 'string' } },
@@ -129,8 +132,21 @@ const GATE_LAW = 'The milestone under work is ROADMAP.md F2, which exits when ev
   + 'is fabricated coverage. It is the single failure this run exists to avoid, it is worse than making no '
   + 'progress at all, and the witness is instructed to hunt for it. '
 
+const ORACLE_LAW = 'AGENTS.md: never weaken an oracle merely to make a participant pass. Specifically, in this '
+  + 'run you may NOT raise BUDGET_SECONDS in scripts/verify.py, delete or skip a failing test or check, relax '
+  + 'an expected_oracle value, loosen a schema to admit a defeat, or edit a defeating fixture so it stops '
+  + 'defeating. If a check fails, either fix the thing it caught or report it in residuals unchanged. '
+
+const BUDGET_LAW = 'One known host residual, measured before this run started: this working tree is a git '
+  + 'worktree whose filesystem runs the tooling test suite about 0.5s slower than the main checkout, so '
+  + 'scripts/verify.py fails its 3.0s wall-clock budget here (about 3.13s) while all 23 of its checks pass. '
+  + 'That is an artifact of the worktree, not a repository defect and not yours to fix. Treat a verify.py run '
+  + 'whose ONLY failure line is the verification budget as semantically green: record it, do not repair it, and '
+  + 'do not change BUDGET_SECONDS. Any other failure line is a real failure. Always report verify_failures as '
+  + 'the exact list of "FAIL:" lines verify.py printed. '
+
 function readPrompt(tick) {
-  return GROUND + GATE_LAW
+  return GROUND + GATE_LAW + BUDGET_LAW
     + 'This is tick ' + tick + '. Observe only; change nothing. From ' + ROOT + ' run exactly these and record '
     + 'each real exit code yourself: (1) python scripts/sov_f2_gate.py --json --next 12, (2) python '
     + 'scripts/verify.py, (3) python scripts/lint.py, (4) python conformance/run.py, (5) git status --porcelain, '
@@ -142,7 +158,7 @@ function readPrompt(tick) {
 
 function planPrompt(read, tick) {
   const ranked = (read.open || []).slice(0, 8)
-  return GROUND + GATE_LAW
+  return GROUND + GATE_LAW + ORACLE_LAW + BUDGET_LAW
     + 'This is tick ' + tick + '. You are the Orchestration tier: plan, do not build. The gate currently reads '
     + read.predicates_covered + '/' + read.predicates_total + ' predicates covered. The ranked open predicates '
     + 'are: ' + JSON.stringify(ranked) + '. '
@@ -163,7 +179,7 @@ function planPrompt(read, tick) {
 }
 
 function buildPrompt(op, tick) {
-  return GROUND + GATE_LAW
+  return GROUND + GATE_LAW + ORACLE_LAW + BUDGET_LAW
     + 'This is tick ' + tick + '. You are the Work tier. Execute exactly this one bounded operation and nothing '
     + 'else: [' + op.id + '] ' + op.description + '. Predicates it must genuinely close: '
     + (op.predicates || []).join(', ') + '. Expected files: ' + (op.files || []).join(', ') + '. Effect class: '
@@ -181,7 +197,7 @@ function buildPrompt(op, tick) {
 }
 
 function witnessPrompt(claims, read, tick) {
-  return GROUND + GATE_LAW
+  return GROUND + GATE_LAW + ORACLE_LAW + BUDGET_LAW
     + 'This is tick ' + tick + '. You are the independent witness. You did not build this and a build report '
     + 'cannot witness itself, so consult the repository, never the builder\'s reasoning. Claimed operations: '
     + JSON.stringify(claims) + '. The gate read ' + read.predicates_covered + '/' + read.predicates_total
@@ -198,8 +214,11 @@ function witnessPrompt(claims, read, tick) {
     + 'Return a verdict per operation_id - reproduced (independently confirmed in the repository), dissented '
     + '(the evidence contradicts the claim), or unattestable (cannot be independently confirmed) - plus '
     + 'verify_exit, gate_covered_after (predicates_covered from the gate JSON), residuals and any judgement '
-    + 'items. Set standing_supported to BUILT->WITNESSED only when every verdict is reproduced, '
-    + 'fabricated_coverage is empty, and verify.py exited 0. Otherwise none. Never RATIFIED: ratification is '
+    + 'items. Also inspect the diff for any weakening of an oracle - a changed BUDGET_SECONDS, a deleted or '
+    + 'skipped test, a relaxed expected_oracle, a loosened schema, a defeating fixture that no longer '
+    + 'defeats - and list each one in oracle_weakened. Report verify_failures as the exact "FAIL:" lines. '
+    + 'Set standing_supported to BUILT->WITNESSED only when every verdict is reproduced, '
+    + 'fabricated_coverage and oracle_weakened are both empty, and verify.py failed nothing but its wall-clock budget. Otherwise none. Never RATIFIED: ratification is '
     + 'Bdo\'s alone. Do not edit, fix or commit anything - a witness that repairs what it observes has stopped '
     + 'being independent.'
 }
@@ -301,8 +320,17 @@ for (let tick = 1; tick <= MAX_TICKS; tick++) {
   const verdicts = witness && witness.verdicts ? witness.verdicts : []
   const allReproduced = verdicts.length > 0 && verdicts.every(function (v) { return v.verdict === 'reproduced' })
   const fabricated = witness && witness.fabricated_coverage ? witness.fabricated_coverage : []
-  const verifyGreen = witness ? witness.verify_exit === 0 : false
-  const settleIt = !!witness && allReproduced && fabricated.length === 0 && verifyGreen
+  const tampered = witness && witness.oracle_weakened ? witness.oracle_weakened : []
+  // Semantically green: either verify.py passed outright, or its only failure was the
+  // wall-clock budget this worktree is known to miss for filesystem reasons alone.
+  const failures = witness && witness.verify_failures ? witness.verify_failures : []
+  const budgetOnly = failures.length > 0 && failures.every(function (f) { return /budget/i.test(f) })
+  const verifyGreen = witness ? (witness.verify_exit === 0 || budgetOnly) : false
+  const settleIt = !!witness && allReproduced && fabricated.length === 0 && tampered.length === 0 && verifyGreen
+
+  if (tampered.length > 0) {
+    log('tick ' + tick + ': WITNESS FOUND A WEAKENED ORACLE: ' + tampered.join(', ') + ' - reverting')
+  }
 
   if (fabricated.length > 0) {
     log('tick ' + tick + ': WITNESS FOUND FABRICATED COVERAGE: ' + fabricated.join(', ') + ' - reverting')
@@ -316,8 +344,9 @@ for (let tick = 1; tick <= MAX_TICKS; tick++) {
        + '; witness reproduced every operation and found no fabricated coverage')
     : (!witness ? 'the witness returned no observation, so the tick is unattestable'
        : (fabricated.length > 0 ? 'fabricated coverage: ' + fabricated.join(', ')
-          : (!verifyGreen ? 'verify.py exited ' + witness.verify_exit
-             : 'verdicts: ' + verdicts.map(function (v) { return v.operation_id + '=' + v.verdict }).join(', '))))
+          : (tampered.length > 0 ? 'a weakened oracle: ' + tampered.join(', ')
+          : (!verifyGreen ? 'verify.py failed: ' + failures.join('; ')
+             : 'verdicts: ' + verdicts.map(function (v) { return v.operation_id + '=' + v.verdict }).join(', ')))))
 
   const settled = await agent(settlePrompt(settleIt ? 'commit' : 'revert', tick, summary), { agentType: 'sov-controller', schema: SETTLE_SCHEMA, phase: 'Settle', label: 't' + tick + ':settle', effort: 'low' })
 
@@ -335,6 +364,8 @@ for (let tick = 1; tick <= MAX_TICKS; tick++) {
     predicates: built.reduce(function (all, b) { return all.concat(b.predicates_claimed || []) }, []),
     verdicts: verdicts,
     fabricated_coverage: fabricated,
+    oracle_weakened: tampered,
+    verify_failures: failures,
     standing_supported: witness ? witness.standing_supported : null,
     settled: settled ? settled.action : 'settle agent returned nothing',
     head: settled ? settled.head : null,
@@ -343,7 +374,9 @@ for (let tick = 1; tick <= MAX_TICKS; tick++) {
     judgement_queue: (plan.judgement_queue || []).concat(witness && witness.judgement_queue ? witness.judgement_queue : []),
   })
 
-  log('tick ' + tick + ': ' + (settled ? settled.action : 'unsettled') + '; ' + stopReason)
+  log('tick ' + tick + ': ' + (settled ? settled.action : 'unsettled') + '; gate '
+    + read.predicates_covered + ' -> ' + (witness ? witness.gate_covered_after : '?')
+    + ' of ' + read.predicates_total)
 
   if (consecutiveUnsettled >= 2) {
     stopReason = 'two consecutive ticks failed to settle; stopping rather than building on unwitnessed work'
@@ -361,6 +394,7 @@ const judgement = ticks.reduce(function (all, t) { return all.concat(t.judgement
 const defaults = ticks.reduce(function (all, t) { return all.concat(t.defaults_taken || []) }, [])
 const residuals = ticks.reduce(function (all, t) { return all.concat(t.residuals || []) }, [])
 const fabricated = ticks.reduce(function (all, t) { return all.concat(t.fabricated_coverage || []) }, [])
+const tamperedAll = ticks.reduce(function (all, t) { return all.concat(t.oracle_weakened || []) }, [])
 
 log('Loop finished after ' + ticks.length + ' tick(s): ' + committed.length + ' committed, '
   + reverted.length + ' reverted. Stop reason: ' + stopReason)
@@ -375,6 +409,7 @@ return {
   gate_first: ticks.length ? (ticks[0].gate_before || ticks[0].gate) : null,
   gate_last: lastRead ? (lastRead.predicates_covered + '/' + lastRead.predicates_total) : null,
   fabricated_coverage_caught: fabricated,
+  weakened_oracles_caught: tamperedAll,
   defaults_taken: defaults,
   residuals: residuals,
   judgement_queue: judgement,

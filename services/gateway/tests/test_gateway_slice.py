@@ -21,6 +21,12 @@ from soveraeign_console_service.refusals import AuthorityRefused  # noqa: E402
 from soveraeign_gateway_service import Gateway, load_surface  # noqa: E402
 from soveraeign_record_service import RecordService  # noqa: E402
 
+# Authored declarations are immutable inputs for one test process. Load them once so
+# each defeating case pays only for its own temporary participant state, not another
+# complete walk of the repository service surface. Tests that alter the projection
+# always deep-copy it before mutation.
+CAPABILITY_MAP, MANIFESTS, CAPABILITY_TABLE = load_surface(ROOT)
+
 
 class GatewayVerticalSlice(unittest.TestCase):
     def setUp(self) -> None:
@@ -29,7 +35,9 @@ class GatewayVerticalSlice(unittest.TestCase):
         self.record = RecordService(self.root / "record")
         self.console = ConsoleService(self.record, self.root / "console", "node:test")
         self.asset = AssetService(self.root / "asset")
-        self.capability_map, self.manifests, self.capability_table = load_surface(ROOT)
+        self.capability_map = CAPABILITY_MAP
+        self.manifests = MANIFESTS
+        self.capability_table = CAPABILITY_TABLE
         self.gateway = self.new_gateway()
 
     def new_gateway(self, capability_map: dict | None = None,

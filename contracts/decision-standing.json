@@ -1,0 +1,75 @@
+{
+  "contract_id": "soveraeign-decision-standing/v1",
+  "status": "PROPOSED",
+  "decision": "decisions/0042-the-decision-queue-is-not-a-queue.md",
+  "summary": "The standing a decision record carries, as a small closed set, plus a crosswalk from every status line the forty existing records already use. The crosswalk exists so this contract can be adopted without rewriting a single decision record: a reader keeps its own prose, and this file says what that prose means.",
+  "governed_by": ["decisions/0023-acceptance-not-approval.md", "decisions/0033-close-the-founding-docket.md"],
+  "not_in_scope": [
+    "Whether a decision is right. Standing is about who has settled it, never about whether it is so.",
+    "Artifact standing. OPEN -> BUILT -> WITNESSED -> RATIFIED grades an artifact; this grades a record's settlement."
+  ],
+  "standings": {
+    "PROPOSED": {
+      "settled": false,
+      "plain_english": "Drafted. Nobody has ruled on it.",
+      "settled_by": null,
+      "blocks": "Only the transitions its own routing entry names. A proposal blocks no neighbouring work (decisions/0031)."
+    },
+    "RULED_BELOW": {
+      "settled": true,
+      "plain_english": "Settled at Control or Work tier, which decisions/0033 Ruling 1 says is where a question belongs when evidence at that tier can defeat the alternatives. The owner may still reject or redirect the outcome; he is not waiting to permit it.",
+      "settled_by": "control_or_work",
+      "blocks": "Nothing. The ruling stands until a defeating observation demotes it."
+    },
+    "OWNER_DIRECTED": {
+      "settled": true,
+      "plain_english": "Bdo asked for this. The direction is settled; the record's exact wording may still be a proposal, which its routing entry says.",
+      "settled_by": "owner",
+      "blocks": "Nothing."
+    },
+    "OWNER_ACCEPTED": {
+      "settled": true,
+      "plain_english": "Accepted over evidence, after the fact. Never pre-approval (decisions/0023).",
+      "settled_by": "owner",
+      "blocks": "Nothing."
+    },
+    "SUPERSEDED": {
+      "settled": true,
+      "plain_english": "Replaced by a later record, which the status line names.",
+      "settled_by": "record",
+      "blocks": "Nothing."
+    }
+  },
+  "owner_held_categories": {
+    "product_intent": "What the system is for and what it contains. A new chartered boundary or a change to the primary interface lands here.",
+    "public_naming": "What the thing is called in public.",
+    "external_commitment": "A promise made outside this machine.",
+    "irreversible_external_effect": "An effect that cannot be counter-recorded away.",
+    "acceptance_standing": "A change to something the owner already accepted, or to the acceptance rule itself."
+  },
+  "crosswalk_note": "Every status string observed across decisions/ on 2026-08-23, mapped to a standing. Twenty-two distinct strings for forty records is the condition this contract exists to end; the crosswalk is the bridge, not the destination. A status string absent from here is a defect the checker reports rather than guessing at.",
+  "crosswalk": {
+    "PROPOSED FOR BDO RATIFICATION": "PROPOSED",
+    "PROPOSED · OWNER RATIFICATION PENDING": "PROPOSED",
+    "PROPOSED · OWNER FREEZE PENDING": "PROPOSED",
+    "PROPOSED · OWNER ACCEPTANCE OVER EVIDENCE": "PROPOSED",
+    "PROPOSED · BDO HAS NOT RULED": "PROPOSED",
+    "PROPOSED · BUILT AND SELF-TESTED · RATIFICATION PENDING": "PROPOSED",
+    "PROPOSED · DRAFTED AT OWNER DIRECTION · RATIFICATION PENDING": "PROPOSED",
+    "SOURCE-GROUNDED PROPOSAL": "PROPOSED",
+    "RULED AT CONTROL RESOLUTION · OWNER ACCEPTANCE OVER EVIDENCE": "RULED_BELOW",
+    "OWNER-DIRECTED · RULED AT CONTROL RESOLUTION": "RULED_BELOW",
+    "OWNER-DIRECTED": "OWNER_DIRECTED",
+    "OWNER-DIRECTED OPERATING RULINGS · ACCEPTANCE POLICY APPLIES": "OWNER_DIRECTED",
+    "OWNER-DIRECTED NAME AND PURPOSE · EXACT PROFILE PROPOSED": "OWNER_DIRECTED",
+    "OWNER-DIRECTED · CONTRACT WORDING PROPOSED": "OWNER_DIRECTED",
+    "OWNER-DIRECTED · EXACT BASELINE PROPOSED": "OWNER_DIRECTED",
+    "OWNER-DIRECTED · FREEZE CANDIDATE": "OWNER_DIRECTED",
+    "OWNER-DIRECTED · LOOP PROPOSED": "OWNER_DIRECTED",
+    "OWNER-DIRECTED · ACCEPTED POLICY": "OWNER_ACCEPTED",
+    "OWNER-DIRECTED · ACCEPTED WORDING": "OWNER_ACCEPTED",
+    "OWNER-SELECTED": "OWNER_ACCEPTED",
+    "OWNER-ACCEPTED 2026-08-23 · BUILT AND SELF-TESTED · NOT WITNESSED": "OWNER_ACCEPTED",
+    "SUPERSEDED BY 0004": "SUPERSEDED"
+  }
+}

@@ -107,6 +107,13 @@ CHECKS = (
           "coordination surface it describes; the issue-body cases start from bytes a person could "
           "paste into GitHub, so a shape the schema admits but no ticket body can express fails here",
           ("contracts/ticket-transitions.json", "conformance/fixtures/tickets/body-cases.json")),
+    Check("acceptance routing", [sys.executable, "scripts/sov_accept.py", "check"], ROOT,
+          "reads the decision records and the two declared contracts and proves the crosswalk "
+          "is total, no routing names a record that does not exist, and every claim that "
+          "STATUS.yaml already answers a record is true of the file; it grades no decision as "
+          "right and settles none of them",
+          ("contracts/decision-standing.json", "contracts/acceptance-routing.json",
+           "decisions", "STATUS.yaml")),
     Check("node registry", [sys.executable, "scripts/sov_node.py", "validate"], ROOT,
           "reads the checked-in registry and the seat topology and grades one against the "
           "other; it contacts no peer and opens no socket, so the check cannot pass or fail "

@@ -1,0 +1,192 @@
+{
+  "contract_id": "soveraeign-acceptance-routing/v1",
+  "status": "PROPOSED",
+  "decision": "decisions/0042-the-decision-queue-is-not-a-queue.md",
+  "summary": "For every decision record standing PROPOSED, which owner-held category it actually touches, and whether STATUS.yaml already records the answer. decisions/0033 Ruling 1 says a question is settled at the lowest tier that can produce evidence defeating the alternatives, and decisions/0023 says only owner-held product intent, public naming, external commitment, irreversible external-world effect, and the acceptance standing itself reach Bdo. Every entry here is a claim with a reason, defeasible by him and by anyone else.",
+  "reading": "reaches_owner false does not settle the record. It says the record can be settled below the owner and names why. Someone at that tier still has to do it.",
+  "already_recorded_note": "already_recorded_as names a field or claim in STATUS.yaml that records the owner's answer to this record's question. Where one is present, the record's own status line is behind STATUS.yaml rather than genuinely open, and closing it is an edit rather than a judgement. The checker proves the named key is really in STATUS.yaml so this cannot be asserted loosely.",
+  "routing": {
+    "0001": {
+      "title": "founding-boundary",
+      "reaches_owner": true,
+      "categories": [
+        "product_intent"
+      ],
+      "already_recorded_as": "founding_contract_c1_through_c15",
+      "reason": "The founding boundary is product intent by definition. STATUS.yaml already lists the contract among accepted_repository_claims, so what is outstanding is the record's own status line, not the judgement.",
+      "action_if_confirmed": "Update the status line to match the claim STATUS.yaml already carries."
+    },
+    "0003": {
+      "title": "evidence-boundary",
+      "reaches_owner": true,
+      "categories": [
+        "product_intent"
+      ],
+      "already_recorded_as": "sources_survive_reading",
+      "reason": "How evidence binds is a rule about what the system is. STATUS.yaml carries the settled source claim; the record still reads as pending.",
+      "action_if_confirmed": "Update the status line."
+    },
+    "0007": {
+      "title": "asset-service-boundary",
+      "reaches_owner": true,
+      "categories": [
+        "product_intent"
+      ],
+      "already_recorded_as": "asset_and_proofing_sibling_service_boundary",
+      "reason": "A chartered service boundary says what the system contains. Already an accepted repository claim.",
+      "action_if_confirmed": "Update the status line."
+    },
+    "0008": {
+      "title": "classification-contract",
+      "reaches_owner": true,
+      "categories": [
+        "product_intent"
+      ],
+      "already_recorded_as": "classification_status",
+      "reason": "The vocabulary every other document reads. STATUS.yaml reads OWNER_ACCEPTED_CANONICAL_VOCABULARY.",
+      "action_if_confirmed": "Update the status line."
+    },
+    "0009": {
+      "title": "phase-i-logical-spec",
+      "reaches_owner": true,
+      "categories": [
+        "product_intent",
+        "acceptance_standing"
+      ],
+      "already_recorded_as": "specification_status",
+      "reason": "STATUS.yaml reads OWNER_ACCEPTED_PHASE_I_LOGICAL_SPEC_WITH_SOVEREIGNTY_CLARIFICATION. The record says OWNER FREEZE PENDING. Freeze and acceptance are different acts and only one of them happened, which is why this one also touches acceptance_standing.",
+      "action_if_confirmed": "Ask the narrower question: accepted is recorded, frozen is not. Does he want it frozen?"
+    },
+    "0010": {
+      "title": "proofing-service-boundary",
+      "reaches_owner": true,
+      "categories": [
+        "product_intent"
+      ],
+      "already_recorded_as": "proofing_service_status",
+      "reason": "STATUS.yaml reads OWNER_ACCEPTED_BOUNDARY_NOT_IMPLEMENTED. Accepted as a boundary; the record lags.",
+      "action_if_confirmed": "Update the status line."
+    },
+    "0016": {
+      "title": "github-coordination-registrar",
+      "reaches_owner": true,
+      "categories": [
+        "product_intent",
+        "external_commitment"
+      ],
+      "already_recorded_as": "github_coordination_registrar_and_typed_ticket_workflow",
+      "reason": "Already an accepted claim. It keeps external_commitment because the registrar reaches a service outside this machine whenever it is actually used.",
+      "action_if_confirmed": "Update the status line; the external crossing stays gated separately."
+    },
+    "0018": {
+      "title": "verification-engagement-kind",
+      "reaches_owner": false,
+      "categories": [],
+      "already_recorded_as": "verification_engagement_ticket_kind",
+      "reason": "A ticket kind is workflow vocabulary. It touches no owner-held category, and STATUS.yaml already carries the claim.",
+      "action_if_confirmed": "Close below the owner. Update the status line."
+    },
+    "0019": {
+      "title": "kernel-transition-contract",
+      "reaches_owner": true,
+      "categories": [
+        "acceptance_standing"
+      ],
+      "already_recorded_as": "kernel_transition_contract_status",
+      "reason": "Accepted, then moved: STATUS.yaml records the acceptance and, in a comment, that decisions/0034 changed the table afterwards. The open question is not the original acceptance but whether it survives the change.",
+      "action_if_confirmed": "Settle together with 0034; they are one question asked twice."
+    },
+    "0020": {
+      "title": "owner-seat-topology",
+      "reaches_owner": true,
+      "categories": [
+        "product_intent"
+      ],
+      "already_recorded_as": null,
+      "reason": "Genuinely open. No STATUS.yaml field or claim records an answer, and seat topology decides how authority is addressed, which is product intent. decisions/0035 and 0039 both now build on it.",
+      "action_if_confirmed": "Needs a real acceptance packet. Two later records depend on it."
+    },
+    "0021": {
+      "title": "semantic-cold-start-task",
+      "reaches_owner": false,
+      "categories": [],
+      "already_recorded_as": "semantic_cold_start_observation_shape",
+      "reason": "An observation shape, already an accepted claim. No owner-held category.",
+      "action_if_confirmed": "Close below the owner. Update the status line."
+    },
+    "0034": {
+      "title": "spec-transition-refusal-codes",
+      "reaches_owner": true,
+      "categories": [
+        "acceptance_standing"
+      ],
+      "already_recorded_as": "kernel_transition_contract_status",
+      "reason": "Adds two refusal codes to a table Bdo already accepted, so the accepted table stops contradicting SPEC.md. It reaches him only because he accepted the earlier version.",
+      "action_if_confirmed": "One question, jointly with 0019. OPEN-SEAMS S17 is the same subject from the other end."
+    },
+    "0035": {
+      "title": "seat-message-etiquette",
+      "reaches_owner": true,
+      "categories": [
+        "product_intent"
+      ],
+      "already_recorded_as": null,
+      "reason": "Drafted at his direction, so the direction is settled and the wording is the question. It rules how every seat may speak, which is structural rather than an implementation choice.",
+      "action_if_confirmed": "Evidence exists: scripts/witness_seats.py, sixteen independent observations, plus fourteen defeating fixtures."
+    },
+    "0036": {
+      "title": "operator-continuity-before-the-screen",
+      "reaches_owner": false,
+      "categories": [],
+      "already_recorded_as": "console_service_operator_surface_boundary",
+      "reason": "Implementation inside a boundary STATUS.yaml already records as owner-accepted. decisions/0023 says ordinary implementation work inside a declared boundary does not wait for him. The record's own open question - whether this slice is the console's first - is sequencing, which decisions/0033 Ruling 1 assigns to Control.",
+      "action_if_confirmed": "Close at Control. Evidence exists: scripts/witness_console.py, twenty independent observations."
+    },
+    "0038": {
+      "title": "capability-map-front-and-back-office",
+      "reaches_owner": false,
+      "categories": [],
+      "already_recorded_as": null,
+      "reason": "A rebuildable projection over manifests that already exist, effect class RECORD_LOCAL, and the record states it introduces no vocabulary of its own. Nothing owner-held is touched. The transport it deliberately does not build is what would be.",
+      "action_if_confirmed": "Close at Control."
+    },
+    "0039": {
+      "title": "the-node-surface",
+      "reaches_owner": true,
+      "categories": [
+        "product_intent",
+        "external_commitment"
+      ],
+      "already_recorded_as": null,
+      "reason": "The largest genuinely open item. It promotes channel, thread and post to the node's primary interface for every actor, opens the federation boundary that SPEC.md and SYSTEM.md both defer, and rules the shape of a public surface. All three are product intent, and the public surface touches external commitment even at proposal standing.",
+      "action_if_confirmed": "Needs a real acceptance packet. This is the one worth his attention first."
+    },
+    "0040": {
+      "title": "the-declared-service-surface",
+      "reaches_owner": false,
+      "categories": [],
+      "already_recorded_as": null,
+      "reason": "Makes each manifest operation an object carrying its preconditions and refusals instead of a bare string, so the conformance oracle can test a refusal it was never told to expect. A schema shape, defeasible by a fixture. No owner-held category.",
+      "action_if_confirmed": "Close at Work."
+    },
+    "0042": {
+      "title": "the-decision-queue-is-not-a-queue",
+      "reaches_owner": true,
+      "categories": [
+        "acceptance_standing"
+      ],
+      "already_recorded_as": null,
+      "reason": "Proposes machinery over the acceptance rule itself, which decisions/0023 names as owner-held. It settles no decision and changes no status line, but it does decide how the queue in front of him is assembled, and that is his.",
+      "action_if_confirmed": "Accept or reject the routing shape. Rejecting it leaves the seventeen records exactly where they were."
+    }
+  },
+  "entry_keys": [
+    "title",
+    "reaches_owner",
+    "categories",
+    "already_recorded_as",
+    "reason",
+    "action_if_confirmed"
+  ],
+  "entry_keys_note": "The whole vocabulary of a routing entry. There is deliberately no field that could record a settlement, an acceptance, or a date one happened: this file says who settles a record, never that anyone did. Recording an acceptance is STATUS.yaml's job and Bdo's act."
+}

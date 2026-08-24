@@ -63,6 +63,31 @@ class ReaderRefusesUndecodableText(unittest.TestCase):
         self.assertIn("note.md: not valid UTF-8", report)
 
 
+class RepositoryTraversal(unittest.TestCase):
+    def test_skipped_trees_are_pruned_before_walk_descends(self) -> None:
+        root = Path("/synthetic-repository")
+        kept_dirs: list[str] = []
+
+        def fake_walk(start: Path, topdown: bool = True):
+            self.assertEqual(start, root)
+            self.assertTrue(topdown)
+            dirs = [".git", "visible", ".local"]
+            yield str(root), dirs, ["root.md"]
+            kept_dirs.extend(dirs)
+            if ".git" in dirs:
+                yield str(root / ".git"), [], ["secret.md"]
+            if "visible" in dirs:
+                yield str(root / "visible"), [], ["child.py"]
+            if ".local" in dirs:
+                yield str(root / ".local"), [], ["capture.md"]
+
+        with patch.object(lint, "ROOT", root), patch.object(lint.os, "walk", fake_walk):
+            paths = lint.repository_text_files()
+
+        self.assertEqual(kept_dirs, ["visible"])
+        self.assertEqual(paths, [root / "root.md", root / "visible" / "child.py"])
+
+
 class RepositoryTreeHoldsTheInvariant(unittest.TestCase):
     def test_no_repository_text_file_carries_a_cr_byte(self) -> None:
         """Checked by byte scan, independently of the lint rule the scan protects."""

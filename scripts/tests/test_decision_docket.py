@@ -112,6 +112,54 @@ class Defeats(unittest.TestCase):
         self._refuses(mutate)
 
 
+class OwnerQuestionsSection(unittest.TestCase):
+    """The rule that turns routing from inference into reading a list.
+
+    Grandfathered below the threshold and required at or above it, the way
+    `scripts/lint.py` names module-size debt rather than silently forgiving it.
+    """
+
+    def setUp(self) -> None:
+        self.original = sov_docket.DECISIONS
+
+    def tearDown(self) -> None:
+        sov_docket.DECISIONS = self.original
+
+    def _check_with(self, name: str, body: str) -> int:
+        with TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
+            staged = Path(tmp) / "decisions"
+            staged.mkdir()
+            for path in self.original.glob("0*.md"):
+                (staged / path.name).write_text(path.read_text("utf-8"), encoding="utf-8")
+            (staged / name).write_text(body, encoding="utf-8")
+            sov_docket.DECISIONS = staged
+            return sov_docket.check()
+
+    def test_a_new_record_without_the_section_fails(self) -> None:
+        body = "# 0043 · invented\n\nStatus: `PROPOSED · BDO HAS NOT RULED`\n\n## Decision\n\nx\n"
+        self.assertEqual(self._check_with("0043-invented.md", body), 1)
+
+    def test_a_new_record_with_the_section_passes_the_rule(self) -> None:
+        """It still fails for being unrouted, which is a different defect and the right one."""
+        body = ("# 0043 · invented\n\nStatus: `PROPOSED · BDO HAS NOT RULED`\n\n"
+                "## Decision\n\nx\n\n## What still waits on Bdo\n\n- one question\n")
+        with TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
+            staged = Path(tmp) / "decisions"
+            staged.mkdir()
+            for path in self.original.glob("0*.md"):
+                (staged / path.name).write_text(path.read_text("utf-8"), encoding="utf-8")
+            (staged / "0043-invented.md").write_text(body, encoding="utf-8")
+            sov_docket.DECISIONS = staged
+            records = {r["id"]: r["enumerates"] for r in sov_docket.records()}
+            self.assertTrue(records["0043"])
+
+    def test_the_grandfathered_records_are_not_failed_by_the_rule(self) -> None:
+        """Seventeen open records predate the rule and must not turn the gate red."""
+        enumerating = [row["id"] for row in sov_docket.records() if row["enumerates"]]
+        self.assertEqual(enumerating, ["0036"])
+        self.assertEqual(sov_docket.check(), 0)
+
+
 class Routing(unittest.TestCase):
     """What the routing says, held against the rules it claims to apply."""
 

@@ -106,6 +106,24 @@ run: `0036` claimed `console_service_boundary` and the real key is
 `console_service_operator_surface_boundary`. A routing file that could assert
 `STATUS.yaml already answers this` without proving it would be worse than no file.
 
+### 4. A decision record states its own owner questions
+
+`contracts/decision-standing.json` declares the heading `What still waits on Bdo`
+and requires it from record `0043` onward. One bullet per question; a bullet
+saying only that the record awaits ratification is not a question.
+
+This is the durable half of the enumeration finding. Today routing is one reader
+inferring questions from someone else's prose, and that interpretive step
+produced both defects the witness of this branch found. A record that states its
+questions turns routing into reading a list.
+
+`0001` through `0042` are exempt and stay exempt. Exactly one of them carries the
+section, and only because `0036`'s author happened to write it — nothing asked
+for it. Retrofitting the other seventeen would mean one reader inventing
+questions on behalf of records other people wrote, which is the failure the rule
+exists to end. Named as debt rather than silently forgiven, the way
+`scripts/lint.py` handles module size.
+
 ## Why the check is the part that lasts
 
 Minting a decision record now costs a routing entry with a reason, because an open

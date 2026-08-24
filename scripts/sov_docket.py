@@ -35,6 +35,7 @@ STANDING = ROOT / "contracts" / "decision-standing.json"
 ROUTING = ROOT / "contracts" / "acceptance-routing.json"
 STATUS = ROOT / "STATUS.yaml"
 NL = chr(10)
+_OWNER_SECTION = re.compile(r"^## What still waits on Bdo\s*$", re.M)
 STATUS_LINE = re.compile(r"^Status:\s*`([^`]+)`", re.M)
 
 
@@ -46,9 +47,11 @@ def records() -> list[dict[str, str]]:
     """Every decision record, with the status line it carries, in number order."""
     found = []
     for path in sorted(DECISIONS.glob("0*.md")):
-        match = STATUS_LINE.search(path.read_text(encoding="utf-8"))
+        text = path.read_text(encoding="utf-8")
+        match = STATUS_LINE.search(text)
         found.append({"id": path.stem[:4], "slug": path.stem[5:], "path": str(path),
-                      "status_line": match.group(1) if match else ""})
+                      "status_line": match.group(1) if match else "",
+                      "enumerates": _OWNER_SECTION.search(text) is not None})
     return found
 
 
@@ -130,6 +133,14 @@ def queue() -> int:
         print(NL + f"== status line not in the crosswalk: {len(unknown)} ==")
         for row in unknown:
             print(f"  {row['id']}  {row['status_line']}")
+    print(NL + "== counts, so nobody has to add them up ==")
+    print(f"  {len(owner)} questions reach Bdo at all")
+    print(f"  {len(stale)} of those he has already answered; the record's status line lags")
+    print(f"  {len(real)} genuinely await a judgement from him")
+    print("  a commit-range sweep counts separately; the union is in "
+          "reports/2026-08-24-reconciled-owner-docket.md")
+    enumerating = len([row for row in unsettled if row["enumerates"]])
+    print(f"  {enumerating} of {len(unsettled)} open records state their own owner questions")
     headline = [entry for entry in asked if entry["enumerated_from"] == "headline"]
     print(NL + f"{len(headline)} of {len(asked)} questions come from a record that does not "
           f"enumerate its own; a further question such a record carries is not visible here.")
@@ -197,6 +208,13 @@ def check() -> int:
         if len(row["questions"]) > 1 and headline:
             defects.append(f"{row['id']}: several questions, but {len(headline)} claim to come "
                            f"from a record that does not enumerate its own")
+
+    rule = standing["owner_questions_section"]
+    threshold = rule["required_from_record"]
+    for record in records():
+        if record["id"] >= threshold and not record["enumerates"]:
+            defects.append(f"{record['id']}: minted at or after {threshold} and carries no "
+                           f"'{rule['heading']}' section")
 
     for defect in defects:
         print("DEFECT: " + defect)

@@ -1,12 +1,15 @@
-# 0028 · The owner gate is acceptance, not permission
+# 0045 · The owner gate is acceptance, not permission
 
 Status: `OWNER-DIRECTED · ACCEPTED AS acceptance/accepted/A3.json`
 
-Numbering note: 0022 through 0027 are taken by records on unmerged branches, and
-`0023-acceptance-not-approval.md` on `feat/acceptance-not-approval` is an earlier
-prose draft of this same direction. This record takes 0028 to avoid a fourth
-collision and supersedes that draft; the drain it carried is restated, extended,
-and made checkable in `0029`.
+Numbering note: this record was drafted as 0028 and moved twice. The first move
+dodged `0023-acceptance-not-approval.md`, then an earlier prose draft on an
+unmerged branch; that draft has since landed on `main` and this record
+supersedes it. 0028 through 0044 were taken meanwhile by
+`feat/federation-harness-and-hardening`, so the record now takes 0045, the
+first number free against both `main` and that branch. The drain carried by
+`main`'s `0024-open-decision-drain.md` is restated, extended, and made
+checkable in `0046`.
 
 ## Decision
 
@@ -86,7 +89,7 @@ build failure.
 
 ## Consequences
 
-- Seventeen founding questions leave the owner queue. `0029` records what each
+- Seventeen founding questions leave the owner queue. `0046` records what each
   became.
 - `WITNESSED -> RATIFIED` requires an `acceptance_packet` in its evidence
   (`contracts/ticket-transitions.json`), so ratification cannot be asked for as a
@@ -102,10 +105,10 @@ build failure.
 - It does not weaken any evidence rule. A build still cannot witness itself, no
   seat settles its own output, and a green run is still not authority.
 - It does not by itself admit external-world effects. It records three as holds.
-  `0030` later replaces two of them with declared scopes; the third, publication,
+  `0047` later replaces two of them with declared scopes; the third, publication,
   is still held.
 - It does not verify identity. A seat claim is still attributable and unverified;
-  that is `O3`, ruled in `0029` and unbuilt.
+  that is `O3`, ruled in `0046` and unbuilt.
 - It did not accept itself. It was presented as `A3` and acted on by the root
   seat on 2026-08-23; the record is `.local/acceptance/ledger.ndjson`.
 

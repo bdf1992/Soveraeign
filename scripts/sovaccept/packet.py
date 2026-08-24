@@ -1,6 +1,6 @@
 """Load, render, and act on one acceptance packet.
 
-Rendering is the product here. The owner's whole job under decision 0028 is to
+Rendering is the product here. The owner's whole job under decision 0045 is to
 look at a finished result and answer; a packet that cannot be read in a minute
 has failed even when every required field is present. So the rendering leads
 with the claim, then the command the owner can run to see it, then the evidence,

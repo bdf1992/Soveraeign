@@ -1,4 +1,4 @@
-# 0029 · Drain the founding decision queue
+# 0046 · Drain the founding decision queue
 
 Status: `OWNER-DIRECTED · RULINGS IN FORCE, REVERSIBLE ON THE EVIDENCE EACH NAMES`
 
@@ -6,7 +6,7 @@ Seventeen questions sat in `STATUS.yaml` addressed to the owner. Roughly two of
 them needed to be. The rest were reversible choices that any seat could have made
 and recorded, and leaving them open stopped work that no rule actually stopped.
 
-This record says what each became. Under `0028` a ruling is a default taken
+This record says what each became. Under `0045` a ruling is a default taken
 without asking, not a settlement: every one names the evidence that overturns it,
 and `python scripts/sov_accept.py audit` fails on a ruling that names none.
 
@@ -33,7 +33,7 @@ O1 does not block Phase-I engineering. Work continues under the working name and
 no agent claims legal clearance.
 
 O7 and O16b were held here for `EXTERNAL_WORLD_EFFECT` on the day this record was
-written. `0030` replaced that hold with declared scopes the same day, on Bdo's
+written. `0047` replaced that hold with declared scopes the same day, on Bdo's
 "unblock it all" direction: an external effect inside a named scope, using a verb
 that scope carries and leaving a receipt, needs no owner act. They appear below as
 rulings.
@@ -79,7 +79,7 @@ two-model fixture stand. A second adapter that the fields cannot describe
 overturns it.
 
 **O13, SDLC loop.** Tiers, dyads, concern-registry derivation, and Red-gated
-release stand, amended by `0028` so ordinary work needs no pre-approval. The
+release stand, amended by `0045` so ordinary work needs no pre-approval. The
 loop's shape was never the thing blocking work; the pre-approval reading was.
 
 **O16, ticket workflow.** The table is the workflow. Its outward-facing steps
@@ -125,5 +125,5 @@ accepting it does not freeze the mechanism.
 ## Source and authority
 
 Bdo's direction, 2026-08-23, to stop generating decisions that do not need an
-owner. Ruled by the control seat as reversible defaults under `0028`. None of
+owner. Ruled by the control seat as reversible defaults under `0045`. None of
 these rulings is an owner acceptance, and none claims to be.

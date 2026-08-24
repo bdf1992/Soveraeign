@@ -18,7 +18,7 @@ engineering_framework_status: OWNER_ACCEPTED_A1_PHASE_I_REFERENCE_BASELINE
 sdlc_loop_status: OWNER_ACCEPTED_A3_ACCEPTANCE_NOT_APPROVAL
 external_effect_status: OWNER_ACCEPTED_A4_SCOPED_NOT_REFUSED
 
-# RULED_ values are reversible defaults taken under decisions/0029. They are not
+# RULED_ values are reversible defaults taken under decisions/0046. They are not
 # owner acceptance and do not claim to be; each names what would overturn it.
 classification_status: RULED_CANONICAL_FOR_PHASE_O9
 proofing_service_status: RULED_SECOND_BOUNDARY_O11_CHARTERED_NOT_IMPLEMENTED
@@ -91,7 +91,7 @@ accepted_repository_claims:
   - external_effects_scoped_not_refused
 
 # The owner gate is acceptance of a finished result, not permission to begin
-# (decisions/0028, which supersedes the prose in 0023 and 0024). A transition
+# (decisions/0045, which supersedes the prose in 0023 and 0024). A transition
 # waits on an owner seat only for a reason contracts/acceptance-policy.json
 # names. Everything else is drained below into a standing default the evidence
 # under `counter` overturns, or presented as a finished result with a packet.
@@ -122,7 +122,7 @@ owner_accepted:
     action: ACCEPT
     by_seat: seat:root
     at: 2026-08-23T21:31:30Z
-    claim: The acceptance gate itself (decisions 0028 and 0029)
+    claim: The acceptance gate itself (decisions 0045 and 0046)
   - id: A4
     packet: acceptance/accepted/A4.json
     action: ACCEPT
@@ -174,7 +174,7 @@ rulings:
     ruling: The BYOM binding fields, data-boundary modes, and the two-model Phase-I fixture in contracts/model-binding.schema.json stand as declared.
     counter: A second adapter that cannot be described by the declared fields, or a data-boundary mode that admits a silent provider fallback.
   - id: O13
-    ruling: The SDLC.md tiers, stance dyads, concern-registry derivation, and Red-gated release requirement stand as the operating loop, amended by decision 0028 so that ordinary work needs no pre-approval.
+    ruling: The SDLC.md tiers, stance dyads, concern-registry derivation, and Red-gated release requirement stand as the operating loop, amended by decision 0045 so that ordinary work needs no pre-approval.
     counter: A run in which the declared loop cannot describe what actually happened, or in which Red gating blocks a release that carries no external effect.
   - id: O16
     ruling: contracts/ticket-transitions.json is the typed ticket workflow. Its outward-facing coordination steps stay held under O16b.
@@ -196,9 +196,9 @@ acceptance_policy:
   contract: contracts/acceptance-policy.json
   seats: contracts/seat-registry.json
   external_effects: contracts/external-effect-authorization.json
-  decision: decisions/0028-acceptance-not-approval.md
-  drain: decisions/0029-decision-queue-drain.md
-  external_effects_decision: decisions/0030-external-effects-authorized.md
+  decision: decisions/0045-acceptance-not-approval.md
+  drain: decisions/0046-decision-queue-drain.md
+  external_effects_decision: decisions/0047-external-effects-authorized.md
   superseded_prose: decisions/0023-acceptance-not-approval.md, decisions/0024-open-decision-drain.md
   gate: acceptance
   ordinary_work_requires_preapproval: false

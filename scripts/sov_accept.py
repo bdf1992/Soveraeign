@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """The owner gate, as a command.
 
-Under ``decisions/0028-acceptance-not-approval.md`` the owner does not approve
+Under ``decisions/0045-acceptance-not-approval.md`` the owner does not approve
 work before it happens; the owner accepts or rejects a finished result. This
 command is the whole surface of that gate.
 

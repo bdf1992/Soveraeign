@@ -2,7 +2,7 @@
 
 The audit answers one question: is anything sitting on the owner that has no
 right to sit there? A question with no admissible hold reason is a defect, not a
-state, because under decision 0028 the owner gate is acceptance of a finished
+state, because under decision 0045 the owner gate is acceptance of a finished
 result and wanting an opinion is not a reason to stop building.
 
 Every defect is returned as a declared refusal code from the policy contract, so

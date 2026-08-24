@@ -47,7 +47,7 @@
       "says": "the drained register: fourteen rulings each naming what would overturn it, three holds each naming an external or irreversible effect, three results presented"
     },
     {
-      "address": "decisions/0029-decision-queue-drain.md",
+      "address": "decisions/0046-decision-queue-drain.md",
       "digest": null,
       "says": "which question became which ruling, and the reasoning for each"
     }
@@ -65,6 +65,6 @@
     "The seat registry is a checked-in file, not yet a projection rebuilt from the operational record.",
     "This packet is presented by the seat that built the change. The build is not witnessed, so ACCEPT here accepts a build claim."
   ],
-  "on_accept": "STATUS.yaml sdlc_loop_status becomes RATIFIED, decisions 0028 and 0029 move from proposed to accepted, and decision 0020's held amendment text is applied to AGENTS.md as written.",
+  "on_accept": "STATUS.yaml sdlc_loop_status becomes RATIFIED, decisions 0045 and 0046 move from proposed to accepted, and decision 0020's held amendment text is applied to AGENTS.md as written.",
   "on_reject": "The gate reverts by dropping this branch; the seventeen open decisions return exactly as they were, since nothing outside the repository changed."
 }

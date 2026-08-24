@@ -1,4 +1,4 @@
-# 0030 · External effects are scoped, not refused
+# 0047 · External effects are scoped, not refused
 
 Status: `OWNER-DIRECTED · ACCEPTED AS acceptance/accepted/A4.json`
 
@@ -77,5 +77,5 @@ stated inverse verb is genuinely inverse.
 ## Source and authority
 
 Bdo, 2026-08-23 interactive session: "unblock it all". Built by the control seat
-and accepted by the root seat under `0028`; the record is
+and accepted by the root seat under `0045`; the record is
 `.local/acceptance/ledger.ndjson`.

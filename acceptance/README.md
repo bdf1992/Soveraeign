@@ -41,5 +41,5 @@ so a `VERIFICATION`-only seat cannot accept a `JUDGEMENT` claim.
 
 ## The rules behind it
 
-`contracts/acceptance-policy.json`, `decisions/0028-acceptance-not-approval.md`,
+`contracts/acceptance-policy.json`, `decisions/0045-acceptance-not-approval.md`,
 and `decisions/0020-owner-seat-topology.md` for what an owner is.

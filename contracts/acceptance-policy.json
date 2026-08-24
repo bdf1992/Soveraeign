@@ -4,7 +4,7 @@
     "AGENTS.md",
     "SDLC.md",
     "STATUS.yaml",
-    "decisions/0028-acceptance-not-approval.md",
+    "decisions/0045-acceptance-not-approval.md",
     "decisions/0020-owner-seat-topology.md"
   ],
   "note": "The owner gate is acceptance of a finished, evidenced result. It is not permission to begin. Owner is a seat, not a person: owner(X) is the seat one edge up, the seat that issued X's grant and settles X's receipts (decisions/0020). Acceptance therefore happens at whatever height the work actually reached, not at the root by default. This file states machine-checkably which work needs no owner act at all, which transitions may still wait and for exactly which reason, and what a presented result must contain. It grants no authority: an owner action is still taken by the seat that holds it.",

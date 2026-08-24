@@ -4,7 +4,7 @@
     "AGENTS.md",
     "STATUS.yaml",
     "contracts/acceptance-policy.json",
-    "decisions/0030-external-effects-authorized.md"
+    "decisions/0047-external-effects-authorized.md"
   ],
   "note": "Phase I refused every EXTERNAL_WORLD effect by class. That refusal was doing two jobs: keeping irreversible acts behind an owner, and keeping ordinary coordination behind one too. This separates them. An effect inside a declared scope below, carrying a receipt, is admitted without a further owner act. Everything else is refused by name. The blanket refusal is gone; the boundary is not.",
   "authorized_by": {

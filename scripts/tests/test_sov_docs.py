@@ -10,7 +10,9 @@ BUILT evidence only. Rendering a document witnesses nothing about it.
 
 from __future__ import annotations
 
+from hashlib import sha256
 from pathlib import Path
+from unittest import mock
 import re
 import sys
 import unittest
@@ -121,6 +123,8 @@ class EveryPublishedDocument(unittest.TestCase):
 class Custody(unittest.TestCase):
     """The page shows what the Asset Service holds, and flags where it has moved on."""
 
+    SOURCE = ROOT / "AGENTS.md"
+
     def test_an_uningested_document_says_so_rather_than_claiming_custody(self):
         page = sov_docs.render_site(*self._one({}), 0)
         self.assertIn("Not yet ingested", page)
@@ -139,15 +143,16 @@ class Custody(unittest.TestCase):
         self.assertIn("changed since ingest", page)
 
     def _one(self, ledger):
-        built = [document for document in sov_docs.documents(ledger)
-                 if document["path"] == "AGENTS.md"]
-        self.assertEqual(len(built), 1, "AGENTS.md is expected to be a published document")
+        # Custody semantics only need one real published document. Full-corpus
+        # coverage is independently exercised by EveryPublishedDocument above.
+        with mock.patch.object(sov_docs, "sources", return_value=[self.SOURCE]):
+            built = sov_docs.documents(ledger)
+        self.assertEqual(len(built), 1)
+        self.assertEqual(built[0]["path"], "AGENTS.md")
         return built, [("Governing set", built)]
 
     def _ledger(self, match: bool):
-        actual = sov_docs.documents({})[0]
-        digest = next(d["digest"] for d in sov_docs.documents({}) if d["path"] == "AGENTS.md")
-        del actual
+        digest = sha256(self.SOURCE.read_bytes()).hexdigest()
         return {"AGENTS.md": {"asset_id": "asset_recorded", "version_id": "version_recorded",
                               "receipt_id": "rcpt_recorded",
                               "digest": digest if match else "0" * 64}}
@@ -155,18 +160,23 @@ class Custody(unittest.TestCase):
 
 class Staleness(unittest.TestCase):
     def test_the_built_page_is_current(self):
+        # This is the real-corpus integration check.
         self.assertEqual(sov_docs.cmd_check(None), 0)
 
     def test_the_same_documents_produce_the_same_bytes(self):
         self.assertEqual(sov_docs.build(), sov_docs.build())
 
     def test_an_edited_page_is_refused(self):
-        original = sov_docs.PAGE.read_bytes()
+        # This case tests comparison/refusal mechanics; the preceding case already
+        # proves the canonical real-corpus build. Avoid re-rendering the corpus a
+        # third time merely to plant an edited-page defeat.
+        original = sov_docs.PAGE.read_text(encoding="utf-8")
         try:
-            sov_docs.PAGE.write_bytes(original + b"<!-- by hand -->")
-            self.assertEqual(sov_docs.cmd_check(None), 1)
+            sov_docs.PAGE.write_text(original + "<!-- by hand -->", encoding="utf-8")
+            with mock.patch.object(sov_docs, "build", return_value=original):
+                self.assertEqual(sov_docs.cmd_check(None), 1)
         finally:
-            sov_docs.PAGE.write_bytes(original)
+            sov_docs.PAGE.write_text(original, encoding="utf-8", newline="\n")
 
 
 class Slugs(unittest.TestCase):

@@ -1,9 +1,14 @@
 name: verify
 
+# Pull-request root verification lives in qa-lanes.yml's Blue matrix. Keeping a
+# second pull_request trigger here made the same repository observation run a
+# third time on every PR and multiplied one runner/timing defect into several
+# red checks. This workflow verifies the merged main state and remains manually
+# runnable for an explicit repository-wide observation.
 on:
   push:
     branches: [main]
-  pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read

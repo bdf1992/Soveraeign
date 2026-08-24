@@ -87,8 +87,8 @@ Must not:
 
 ## Verification
 
-- `python scripts/verify.py` - required gate, from repo root, three-second
-  budget (runs the oracle controls and the oracle unit tests).
+- `python scripts/verify.py` - required gate, from repo root, graded budget (PLATINUM 3 s, GOLD 6 s, SILVER 15 s);
+  runs the oracle controls and the oracle unit tests.
 - `python scripts/lint.py` - repository text, syntax, size, secret shapes.
 - `python conformance/run.py` - embedded controls; add `--json` for machine
   output.

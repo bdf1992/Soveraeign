@@ -103,8 +103,16 @@ class Digests(unittest.TestCase):
 
 
 class BudgetReporting(unittest.TestCase):
-    def test_the_budget_is_still_declared(self):
-        self.assertEqual(verify.BUDGET_SECONDS, 3.0)
+    def test_the_bands_are_the_ones_the_record_declares(self):
+        """Guards the same thing the bare 3.0 assertion did: the budget cannot be
+        loosened quietly. It now pins the bands from decisions/0050 rather than a
+        single number, so widening any one of them trips here and has to be argued.
+        """
+        self.assertEqual(verify.BUDGET_GRADES,
+                         (("PLATINUM", 3.0), ("GOLD", 6.0), ("SILVER", 15.0)))
+
+    def test_the_ceiling_is_derived_from_the_slowest_band(self):
+        self.assertEqual(verify.BUDGET_SECONDS, verify.BUDGET_GRADES[-1][1])
 
     def test_checks_are_unique_by_name(self):
         names = [check.name for check in verify.CHECKS]

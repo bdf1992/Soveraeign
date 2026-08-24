@@ -86,8 +86,8 @@ own synthesis as Bdo's judgement.
 
 ## Verification
 
-- `python scripts/verify.py` - required, from repository root, three-second
-  budget after Python starts.
+- `python scripts/verify.py` - required, from repository root, graded budget (PLATINUM 3 s, GOLD 6 s, SILVER 15 s)
+  after Python starts.
 - `python scripts/lint.py` - text, syntax, module size, and secret shapes.
 - If Ruff is available: `python -m ruff format --check .` and
   `python -m ruff check .` (convenience, not a substitute for verify).

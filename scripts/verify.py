@@ -146,6 +146,13 @@ CHECKS = (
           "the participant's own tests; these establish BUILT evidence about local mechanics "
           "and are explicitly NOT independent of the code they exercise",
           ("services/asset/tests",)),
+    Check("MCP gateway binding",
+          [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
+          ROOT / "bindings" / "mcp",
+          "drives the gateway through its declared JSON-RPC surface rather than calling the "
+          "services behind it, and reads its evidence back out of the Record Service journal "
+          "instead of trusting the gateway's return value",
+          ("bindings/mcp", "bindings/mcp/manifest.json")),
     Check("repository tooling tests",
           [sys.executable, "-m", "unittest", "discover", "-s", "scripts/tests", "-v"], ROOT,
           "the harness's own tests; independent of the repository content they check, but "

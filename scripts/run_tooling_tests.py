@@ -23,11 +23,12 @@ TEST_ROOT = ROOT / "scripts" / "tests"
 # runner contention observed when this nested pool was widened to five or eight.
 DEFAULT_WORKERS = 4
 # Most tooling modules exercise bounded fixtures. test_sov_docs deliberately renders
-# the complete published corpus several times, and hosted observations consistently
-# place the round-robin shard containing it on the critical path. Give that known
-# full-corpus module enough scheduling weight to receive fewer peers; this changes
-# no test population and adds no worker process.
-MODULE_WEIGHTS = {"test_sov_docs.py": 4}
+# the complete published corpus several times and is an order-of-magnitude different
+# unit of work. Hosted observations showed that giving it ordinary module weight left
+# its shard on the critical path even after pre-descent pruning. Weight it as roughly
+# ten bounded modules so the existing four-worker pool nearly isolates that corpus
+# reader without adding a process or dropping evidence.
+MODULE_WEIGHTS = {"test_sov_docs.py": 10}
 
 
 def test_modules() -> tuple[Path, ...]:

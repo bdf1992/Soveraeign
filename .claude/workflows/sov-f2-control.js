@@ -138,8 +138,8 @@ const GATE_LAW = 'The milestone under work is ROADMAP.md F2, which exits when ev
   + 'progress at all, and the witness is instructed to hunt for it. '
 
 const ORACLE_LAW = 'AGENTS.md: never weaken an oracle merely to make a participant pass. Specifically, in this '
-  + 'run you may NOT raise BUDGET_SECONDS or loosen a BUDGET_GRADES band in scripts/verify.py, delete or skip '
-  + 'a failing test or check, relax '
+  + 'run you may NOT raise BUDGET_SECONDS or loosen a BUDGET_GRADES band in scripts/verify.py, delete or '
+  + 'skip a failing test or check, relax '
   + 'an expected_oracle value, loosen a schema to admit a defeat, or edit a defeating fixture so it stops '
   + 'defeating. If a check fails, either fix the thing it caught or report it in residuals unchanged. '
 
@@ -163,6 +163,15 @@ const BUDGET_LAW = 'The wall-clock budget is deliberately not in that JSON. veri
   + 'verify_failures list is semantically green no matter what the process exited: do not change '
   + 'BUDGET_SECONDS and do not widen a grade band. '
 
+const DOCS_LAW = 'One coupling that ended two ticks of an earlier run: scripts/sov_docs.py renders '
+  + 'docs/documentation.html from every *.md file in the repository, and a tooling test asserts that page is '
+  + 'current. So editing ANY markdown file - conformance/README.md above all - makes that page stale and turns '
+  + 'the "repository tooling tests" check red, which reverts the whole tick and discards work that was '
+  + 'otherwise sound. If your operation touches a .md file, run "python scripts/sov_docs.py build" afterwards '
+  + 'and include docs/documentation.html in files_changed. It writes only that one derived page, its effect '
+  + 'class is RECORD_LOCAL, and re-running it is the rollback. Do not instead revert the markdown edit, and do '
+  + 'not skip or weaken the staleness test. '
+
 function readPrompt(tick) {
   return GROUND + GATE_LAW + VERIFY_LAW + BUDGET_LAW
     + 'This is tick ' + tick + '. Observe only; change nothing. From ' + ROOT + ' run exactly these and record '
@@ -176,10 +185,14 @@ function readPrompt(tick) {
 
 function planPrompt(read, tick) {
   const ranked = (read.open || []).slice(0, 8)
-  return GROUND + GATE_LAW + ORACLE_LAW + VERIFY_LAW + BUDGET_LAW
+  return GROUND + GATE_LAW + ORACLE_LAW + VERIFY_LAW + BUDGET_LAW + DOCS_LAW
     + 'This is tick ' + tick + '. You are the Orchestration tier: plan, do not build. The gate currently reads '
     + read.predicates_covered + '/' + read.predicates_total + ' predicates covered. The ranked open predicates '
     + 'are: ' + JSON.stringify(ranked) + '. '
+    + 'Coverage is uneven by family: the requirement predicates are nearly closed, while the transition '
+    + 'contract (14 rows) and interface parity (5 bullets) are barely started. A transition row needs a '
+    + 'fixture for its commit path and one for each refusal code it names, and the oracle may have no '
+    + 'check that can see a transition at all yet - building that grader is legitimate, in-scope work. '
     + 'Read ' + ROOT + '/SPEC.md (Requirement predicates, Transition contract, Interface parity, Conformance '
     + 'boundary), ' + ROOT + '/conformance/README.md, ' + ROOT + '/conformance/run.py and '
     + ROOT + '/conformance/oracle-controls.json before planning. '
@@ -197,7 +210,7 @@ function planPrompt(read, tick) {
 }
 
 function buildPrompt(op, tick) {
-  return GROUND + GATE_LAW + ORACLE_LAW + VERIFY_LAW + BUDGET_LAW
+  return GROUND + GATE_LAW + ORACLE_LAW + VERIFY_LAW + BUDGET_LAW + DOCS_LAW
     + 'This is tick ' + tick + '. You are the Work tier. Execute exactly this one bounded operation and nothing '
     + 'else: [' + op.id + '] ' + op.description + '. Predicates it must genuinely close: '
     + (op.predicates || []).join(', ') + '. Expected files: ' + (op.files || []).join(', ') + '. Effect class: '
@@ -215,7 +228,7 @@ function buildPrompt(op, tick) {
 }
 
 function witnessPrompt(claims, read, tick) {
-  return GROUND + GATE_LAW + ORACLE_LAW + VERIFY_LAW + BUDGET_LAW
+  return GROUND + GATE_LAW + ORACLE_LAW + VERIFY_LAW + BUDGET_LAW + DOCS_LAW
     + 'This is tick ' + tick + '. You are the independent witness. You did not build this and a build report '
     + 'cannot witness itself, so consult the repository, never the builder\'s reasoning. Claimed operations: '
     + JSON.stringify(claims) + '. The gate read ' + read.predicates_covered + '/' + read.predicates_total

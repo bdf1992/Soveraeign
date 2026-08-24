@@ -113,7 +113,7 @@ HTTP binding, or cross-node query as anything but `UNCONFIGURED`; modify
 
 ## Verification
 
-- `python scripts/verify.py` - required, from repo root, three-second budget.
+- `python scripts/verify.py` - required, from repo root, graded budget (PLATINUM 3 s, GOLD 6 s, SILVER 15 s).
 - `python scripts/lint.py` - hygiene, module size, secret shapes.
 - `python -m json.tool services/projection/contracts/service.json` and any
   added schema or fixture JSON.

@@ -78,7 +78,7 @@ observation; run `git commit` or `git push`.
 
 ## Verification
 
-- `python scripts/verify.py` — required, from repo root, three-second budget.
+- `python scripts/verify.py` — required, from repo root, graded budget (PLATINUM 3 s, GOLD 6 s, SILVER 15 s).
 - `python scripts/lint.py` — hygiene, module size, secret shapes.
 - `python -m json.tool services/proofing/contracts/service.json` (and the two
   `.schema.json` files) — JSON syntax check per contract file.

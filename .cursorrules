@@ -25,7 +25,8 @@ into competing authorities.
 - Never commit secrets, `.env`, local paths, databases, payload stores, logs, or
   prompt dumps. Use `.env.example` names only.
 - Tests are local, deterministic, network-free, and inspect durable results.
-  Run `python scripts/verify.py`; the default budget is under three seconds.
+  Run `python scripts/verify.py`; wall time is graded PLATINUM/GOLD/SILVER at
+  3/6/15 s and fails past 15. Do not loosen a band to earn a grade.
 - Treat `lineage/evidence/` as immutable and do not publish `lineage/` without
   separate explicit owner instruction.
 - Use short-lived typed branches and reviewed PRs into `main`; direct main

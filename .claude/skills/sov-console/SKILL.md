@@ -116,7 +116,7 @@ renderer's report count as observation; modify `lineage/evidence/`; create
 
 ## Verification
 
-- `python scripts/verify.py` - required, from repo root, three-second budget.
+- `python scripts/verify.py` - required, from repo root, graded budget (PLATINUM 3 s, GOLD 6 s, SILVER 15 s).
 - `python scripts/lint.py` - hygiene, module size, secret shapes.
 - `python -m json.tool services/console/contracts/service.json` (and any
   `.schema.json` or fixture `.json` file added) - JSON syntax check per file.

@@ -18,11 +18,10 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 TEST_ROOT = ROOT / "scripts" / "tests"
-# The root verifier already runs independent checks concurrently. Five tooling
-# workers keep the 32-module suite from leaving one long four-way shard on the
-# critical path while staying below the eight-worker nested contention already
-# observed on hosted runners.
-DEFAULT_WORKERS = 5
+# The root verifier already runs every independent check concurrently. Four
+# tooling workers provide useful module-level concurrency without the hosted
+# runner contention observed when this nested pool was widened to eight.
+DEFAULT_WORKERS = 4
 
 
 def test_modules() -> tuple[Path, ...]:

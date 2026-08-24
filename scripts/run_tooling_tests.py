@@ -62,7 +62,8 @@ def main() -> int:
         results = list(pool.map(_run, buckets))
     failed = False
     for index, ((code, output), bucket) in enumerate(zip(results, buckets), start=1):
-        print(f"\n== tooling shard {index}/{len(buckets)}: {len(bucket)} modules ==")
+        names = ", ".join(path.stem for path in bucket)
+        print(f"\n== tooling shard {index}/{len(buckets)}: {names} ==")
         if output.rstrip():
             print(output.rstrip())
         if code:

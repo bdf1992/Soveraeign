@@ -17,6 +17,7 @@ from hashlib import sha256
 from pathlib import Path
 from typing import Any
 import json
+import re
 import time
 import urllib.error
 import urllib.request
@@ -26,9 +27,35 @@ BINDINGS = ROOT / "adapters" / "ollama" / "bindings"
 ENDPOINT = "http://localhost:11434"
 
 
+THINK_BLOCK = re.compile(r"<(think|thinking|reasoning)>(.*?)</\1>", re.DOTALL | re.IGNORECASE)
+OPEN_THINK = re.compile(r"<(think|thinking|reasoning)>(.*)\Z", re.DOTALL | re.IGNORECASE)
+
+
 class Refusal(Exception):
     """A named, visible refusal. The loop never falls back to another model."""
 
+
+def split_thinking(body: dict[str, Any]) -> tuple[str, str]:
+    """Separate a thinking model's reasoning from its answer.
+
+    Both bindings this loop uses are thinking models. Their reasoning arrives
+    either in a `thinking` field or inline in `<think>` tags, and an earlier run
+    recorded the reasoning as though it were the answer. The reasoning is kept -
+    it is evidence about the run - but it is not what the next tier reads.
+
+    An unterminated opening tag means the model was cut off mid-thought. Its
+    reasoning is captured and the answer is empty, which the caller refuses
+    rather than passing a truncated thought on as a result.
+    """
+    text = body.get("response", "")
+    parts = [body.get("thinking", "") or ""]
+    parts += [match.group(2) for match in THINK_BLOCK.finditer(text)]
+    text = THINK_BLOCK.sub("", text)
+    open_tag = OPEN_THINK.search(text)
+    if open_tag:
+        parts.append(open_tag.group(2))
+        text = OPEN_THINK.sub("", text)
+    return text.strip(), "\n".join(p.strip() for p in parts if p.strip())
 
 def load_binding(binding_id: str) -> dict[str, Any]:
     """Read the declared binding whose `binding_id` matches, or refuse."""
@@ -80,6 +107,10 @@ def invoke(binding_id: str, prompt: str, *, purpose: str,
     except (urllib.error.URLError, OSError) as error:
         raise Refusal(f"MODEL_UNAVAILABLE: {binding['model_id']} at {ENDPOINT}: {error}") from error
     wall = time.monotonic() - started
+    answer, thinking = split_thinking(body)
+    if not answer:
+        raise Refusal(f"MODEL_INCOMPATIBLE: {binding['model_id']} returned only reasoning, "
+                      "no answer to record")
 
     return {
         "invocation_id": "urn:soveraeign:invocation:" + sha256(
@@ -102,7 +133,9 @@ def invoke(binding_id: str, prompt: str, *, purpose: str,
         "cost": {"unit": binding["cost_meter"]["unit"],
                  "amount": 0, "basis": binding["cost_meter"]["basis"],
                  "wall_clock_seconds": round(wall, 3)},
-        "output_text": body.get("response", ""),
-        "output_digest": "sha256:" + sha256(
-            body.get("response", "").encode("utf-8")).hexdigest(),
+        "output_text": answer,
+        "output_digest": "sha256:" + sha256(answer.encode("utf-8")).hexdigest(),
+        "thinking_characters": len(thinking),
+        "thinking_digest": ("sha256:" + sha256(thinking.encode("utf-8")).hexdigest()
+                            if thinking else None),
     }

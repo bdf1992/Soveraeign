@@ -16,6 +16,7 @@ from hashlib import sha256
 from typing import Any, Callable, Protocol
 import json
 
+from sovloop import artifacts
 from sovloop import rules
 
 EFFECT = "RESOURCE_CONSUMPTION"
@@ -67,22 +68,21 @@ def _step(tier: str, table: dict[str, Any], actor: str, capabilities: list[str],
             "capabilities": capabilities, "scope": scope, "effect_class": EFFECT}
 
 
-PROMPTS = {
-    "CONTROL": "Select the next bounded operation for this objective and state its plan.",
-    "ORCHESTRATION": "Decompose this operation into one leased task with a declared check.",
-    "WORK": "Execute the leased task and report what you did and what you observed.",
-    "OBSERVE": "Judge whether the report's claims are supported. Do not repair the work.",
-}
+OUTPUT_KIND = {"CONTROL": "PLAN", "ORCHESTRATION": "TASK", "WORK": "REPORT"}
 
 
 def execute(objective: str, table: dict[str, Any], invoke: Invoke, created_at: str,
             actors: dict[str, str] | None = None) -> dict[str, Any]:
     """Run the three tiers plus an independent observation, and audit the result.
 
-    Returns a run record carrying the chain, every model invocation's provenance,
-    the receipts, and the separation defects found. A run with defects is
-    reported, never silently repaired: the caller decides what a refused run
-    means.
+    Each tier receives exactly one addressed artifact and emits exactly one. The
+    observer receives the Work tier's report by address and digest, not the
+    conversation that produced it, so its judgement is about an artifact rather
+    than about a transcript it was not part of.
+
+    Returns a run record carrying the chain, the artifacts, every invocation's
+    provenance, the receipts, and the separation defects found. A run with
+    defects is reported, never silently repaired.
     """
     who = {"CONTROL": "urn:soveraeign:actor:controller",
            "ORCHESTRATION": "urn:soveraeign:actor:orchestrator",
@@ -100,49 +100,94 @@ def execute(objective: str, table: dict[str, Any], invoke: Invoke, created_at: s
         _step("WORK", table, who["WORK"], ["execute"], f"{root}/operation-1/task-1"),
     ]
 
+    current = artifacts.artifact("OBJECTIVE", objective, "urn:soveraeign:actor:owner",
+                                 "urn:soveraeign:binding:none", root, [])
+    produced = [current]
     invocations: list[dict[str, Any]] = []
     receipts: list[dict[str, Any]] = []
-    transcript: dict[str, Any] = {}
-    context = objective
 
     for seq, step in enumerate(chain, start=1):
         tier = step["tier"]
-        record = invoke(step["binding_id"], f"{PROMPTS[tier]}\n\nContext:\n{context}",
-                        purpose=tier)
+        record = invoke(step["binding_id"], artifacts.prompt_for(tier, current), purpose=tier)
         invocations.append(record)
-        transcript[tier] = record.get("output_text", "")
-        context = f"{context}\n\n[{tier}] {transcript[tier]}"
+        current = artifacts.artifact(OUTPUT_KIND[tier], record.get("output_text", ""),
+                                     step["actor_id"], step["binding_id"], step["scope"],
+                                     [produced[-1]["artifact_id"]])
+        produced.append(current)
         receipts.append(_receipt(
             f"loop.{tier.lower()}", step["actor_id"], EFFECT, "COMMITTED",
-            [f"urn:soveraeign:objective:{_digest(objective)[7:23]}"],
-            [record.get("invocation_id", "")], [], [f"urn:soveraeign:grant:{tier.lower()}"],
-            [{"predicate": "binding declared", "result": "PASS"}], created_at, seq))
+            [produced[-2]["artifact_id"]], [current["artifact_id"]], [],
+            [f"urn:soveraeign:grant:{tier.lower()}"],
+            [{"predicate": "input resolves by address and digest", "result": "PASS"}],
+            created_at, seq))
 
+    report = current
     observer_binding = table["observation"]["observer_binding_id"]
-    observation = invoke(observer_binding, f"{PROMPTS['OBSERVE']}\n\nContext:\n{context}",
-                         purpose="OBSERVE")
-    invocations.append(observation)
-    transcript["OBSERVE"] = observation.get("output_text", "")
+    observation_record = invoke(observer_binding, artifacts.prompt_for("OBSERVE", report),
+                                purpose="OBSERVE")
+    invocations.append(observation_record)
+    observation_artifact = artifacts.artifact(
+        "OBSERVATION", observation_record.get("output_text", ""), who["OBSERVE"],
+        observer_binding, chain[-1]["scope"], [report["artifact_id"]])
+    produced.append(observation_artifact)
+    findings, verdict = read_observation(observation_artifact["body"])
     receipts.append(_receipt(
         "loop.observe", who["OBSERVE"], EFFECT, "COMMITTED",
-        [chain[-1]["binding_id"]], [observation.get("invocation_id", "")],
-        [observation.get("invocation_id", "")], ["urn:soveraeign:grant:observe"],
-        [{"predicate": "observer differs from producer", "result": "PASS"}], created_at, 4))
+        [report["artifact_id"]], [observation_artifact["artifact_id"]],
+        [report["digest"]], ["urn:soveraeign:grant:observe"],
+        [{"predicate": "observer differs from producer", "result": "PASS"},
+         {"predicate": "observation names its subject by digest", "result": "PASS"}],
+        created_at, 4))
 
     run = {
         "run_id": f"urn:soveraeign:run:{_digest(objective)[7:23]}",
         "objective": objective,
         "created_at": created_at,
         "chain": chain,
-        "report": {"produced_by": who["WORK"], "binding_id": chain[-1]["binding_id"]},
+        "artifacts": produced,
+        "report": {"produced_by": who["WORK"], "binding_id": chain[-1]["binding_id"],
+                   "artifact_id": report["artifact_id"], "digest": report["digest"]},
         "observation": {"observer_binding_id": observer_binding,
                         "observed_binding_id": chain[-1]["binding_id"],
-                        "observer": who["OBSERVE"]},
+                        "observer": who["OBSERVE"],
+                        "subject_artifact_id": report["artifact_id"],
+                        "subject_digest": report["digest"],
+                        "findings": findings,
+                        "verdict": verdict,
+                        "clean": verdict == "CLEARED"},
         "settlement": {"settled_by": who["CONTROL"], "outcome": "COMMITTED"},
         "invocations": invocations,
-        "transcript": transcript,
+        "transcript": {a["kind"]: a["body"] for a in produced},
         "receipts": receipts,
     }
     run["defects"] = rules.audit(run, table)
-    run["settlement"]["outcome"] = "UNRESOLVED" if run["defects"] else "COMMITTED"
+    cleared = verdict == "CLEARED" and not run["defects"]
+    run["settlement"]["outcome"] = "COMMITTED" if cleared else "UNRESOLVED"
+    run["settlement"]["reason"] = (
+        "observer cleared the report and no separation rule was defeated" if cleared
+        else "separation defects" if run["defects"]
+        else f"observation {verdict.lower()}")
     return run
+
+
+def _findings(text: str) -> list[str]:
+    """The observer's findings, one per declared FINDING line."""
+    return [line.split(":", 1)[1].strip()
+            for line in text.splitlines() if line.strip().upper().startswith("FINDING:")]
+
+
+def read_observation(text: str) -> tuple[list[str], str]:
+    """The observer's findings and what its answer actually establishes.
+
+    Silence is not a clearance. An observation only clears a report by saying so
+    in the declared form; anything else that names no finding is `UNPARSABLE`,
+    which settles `UNRESOLVED` rather than `COMMITTED`. Treating an unreadable
+    observation as a pass is exactly the rubber stamp the observation stance
+    exists to prevent.
+    """
+    findings = _findings(text)
+    if findings:
+        return findings, "FINDINGS"
+    if "NO FINDINGS" in text.upper():
+        return [], "CLEARED"
+    return [], "UNPARSABLE"

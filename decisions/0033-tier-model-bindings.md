@@ -7,8 +7,13 @@ Status: `PROPOSED`
 Bind each SDLC tier to a declared model binding in
 `contracts/tier-bindings.json`, and make the Control -> Orchestration -> Work
 loop executable through `scripts/sov_loop.py`. Control, Orchestration, and the
-observation stance run on `lfm2-5-8b`; Work runs on `qwen3-5-4b`; the observer
+observation stance run on `gpt-oss-20b`; Work runs on `qwen3-5-4b`; the observer
 must differ from the binding that produced the output it judges.
+
+A tier receives exactly one addressed artifact and emits exactly one. The
+observer receives the Work tier's report by address and digest, and answers in
+a declared form that either names findings or says `NO FINDINGS`. Silence does
+not clear a report.
 
 The pair was measured on the owner's hardware, not chosen from parameter
 counts. `scripts/sov_bench.py` grades a candidate on how many of five planted
@@ -80,19 +85,57 @@ Parameter count predicted neither score nor cost here.
   cache was allocated, which is why the original pairing reloaded on every
   tier change.
 
+## The reversal, and why it matters more than the choice
+
+The first version of this decision put `lfm2-5-8b` in the judging tiers on a
+probe score of 4/5 against `gpt-oss-20b`'s 4/5, at half the VRAM and 2.5x the
+throughput. That measurement was taken with a bench prompt, not through the
+interface the model would actually run in.
+
+Re-graded through the loop's own observation interface - an addressed artifact,
+a declared output form, and the loop's own parser - the ordering inverted:
+
+| Binding | Bench prompt | Loop interface |
+| --- | --- | --- |
+| `gpt-oss:20b` | 4/5 | 5/5 in every sample |
+| `qwen3.5:4b` | 3/5 | 3/5 worst, 3.7 mean |
+| `lfm2.5:8b` | 4/5 | 2/5 worst, 2.3 mean |
+
+`lfm2.5:8b` scored well on the loose prompt because marker matching caught its
+prose. Asked for disciplined findings about a named artifact, it collapsed. The
+general lesson is the one worth keeping: a model graded outside the interface
+it will run in has not been graded, and the interface moved the score further
+than the model choice did.
+
+This costs co-residency. `gpt-oss:20b` at 12.8 GB plus `qwen3.5:4b` at 5.61 GB
+exceeds the 16 GB card, so the loop reloads twice per run: 32.6s resident
+against 93.2s with reloads. An observer that names two of five planted defects
+is not performing the function the tier exists for, so the time is spent.
+
 ## Residuals this run exposed
 
-- The observer's raw `<think>` reasoning is captured verbatim into the
-  transcript. `lfm2.5:8b` and `qwen3.5:4b` are both thinking models and nothing
-  strips those blocks, so the recorded output is not the observer's answer.
-- In the live run the observer said it could not find a report to judge. The
-  loop passes accumulated context rather than an addressed report, so the
-  observation stance is reading a conversation, not an artifact. That is a
-  prompt and interface defect, not a model defect, and it weakens every
-  observation the loop currently produces.
+Both defects the previous version recorded are now closed and their fixes are
+covered by cases.
+
+- Thinking blocks are separated from the answer in `sovloop/ollama.py`. The
+  reasoning is kept as evidence with its own digest and character count; it is
+  not what the next tier reads. A model returning only reasoning refuses rather
+  than recording an empty answer.
+- The observer receives an addressed artifact instead of a transcript. In the
+  live run on the new interface it named two genuinely unsupported claims in
+  the worker's own output - a placeholder ticket id, and an audit-log entry the
+  report claimed while also admitting it could not be written - and the run
+  settled `UNRESOLVED`.
+
+What remains open:
+
 - Marker-based grading is coarse: it can miss a correct objection phrased
-  unusually, so each score is a floor. No candidate caught all five planted
-  defects in every sample.
+  unusually, so each score is a floor.
+- The probe grades the observation stance only. Nothing yet grades Control,
+  Orchestration, or Work on what those tiers are for, so their bindings rest on
+  a weaker basis than the observer's does.
+- `UNPARSABLE` and `FINDINGS` both settle `UNRESOLVED`. They are distinguished
+  on the record but not yet acted on differently.
 
 ## Consequences
 
@@ -109,9 +152,11 @@ Parameter count predicted neither score nor cost here.
 - Assigned the better-scoring model to Control, Orchestration, and observation
   and the other to Work, on the reasoning that judgement carries more
   consequence than execution. Reversible: it is one field per tier.
-- Chose the pair that co-resides over the pair with the higher ceiling, because
-  the owner asked for the fast loop and eviction cost more than the score
-  difference bought.
+- Chose observer quality over co-residency, reversing the earlier default. Bdo
+  asked for the resident pair when the evidence said the resident pair judged
+  as well; it does not. Restoring the fast pair is one field per tier and the
+  cost is stated above.
+- Treated an unreadable observation as `UNRESOLVED` rather than as a pass.
 - Kept `gpt-oss-20b` and `qwen3-4b` as declared bindings rather than deleting
   them; they are the recorded comparison the choice rests on.
 - Modelled observation as a stance rather than a fourth tier, because

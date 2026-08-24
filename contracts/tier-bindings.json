@@ -28,7 +28,7 @@
   },
   "tiers": {
     "CONTROL": {
-      "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
+      "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
       "capabilities": [
         "select_operation",
         "issue_grant",
@@ -45,7 +45,7 @@
       "max_effect_class": "RESOURCE_CONSUMPTION"
     },
     "ORCHESTRATION": {
-      "binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
+      "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
       "capabilities": [
         "issue_grant",
         "observe",
@@ -76,7 +76,7 @@
   },
   "observation": {
     "note": "Observation is a stance, not a fourth tier. The rule it must satisfy is that the binding observing an output is not the binding that produced it.",
-    "observer_binding_id": "urn:soveraeign:binding:ollama:lfm2-5-8b",
+    "observer_binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
     "must_differ_from": "WORK"
   },
   "provenance_fields": [
@@ -95,7 +95,7 @@
   "selection_evidence": {
     "measured_on": "2026-08-23",
     "host": "NVIDIA GeForce RTX 5080, 16 GB VRAM; Intel i9-14900K; 32 GB RAM",
-    "probe": "conformance/fixtures/loop/observer-probe.json, 3 samples per candidate",
+    "probe": "conformance/fixtures/loop/observer-probe.json, 3 samples per candidate, graded twice: standalone via `sov_bench observe`, and through the loop's real observation interface via `sov_bench loop-observe`",
     "method": "Each candidate was graded on how many of five planted defects it named in a plausible-looking worker report, and each pair was tested for whether both models stay resident at once. Parameter count did not predict either.",
     "observer_scores_worst_of_three": {
       "gpt-oss:20b": "4/5",
@@ -107,13 +107,20 @@
     "co_residency": {
       "lfm2.5:8b + qwen3.5:4b": "both resident, 12.04 GB, 2.19 GB headroom",
       "lfm2.5:8b + qwen3.5:9b": "refused: 9b evicts lfm2.5",
-      "lfm2.5:8b + qwen3:4b": "refused: qwen3:4b takes 12.74 GB of KV cache and evicts lfm2.5"
+      "lfm2.5:8b + qwen3:4b": "refused: qwen3:4b takes 12.74 GB of KV cache and evicts lfm2.5",
+      "gpt-oss:20b + qwen3.5:4b": "refused: 18.4 GB exceeds the 16 GB card; two reloads per run, accepted for observer quality"
     },
     "findings": [
-      "lfm2.5:8b matched gpt-oss:20b's worst-case probe score on half the VRAM and 2.5x the throughput, so the larger model earns nothing here.",
-      "qwen3.5:9b is newer and larger than lfm2.5:8b and scored lower, 3/5 against 4/5.",
+      "The interface decides the score more than the model does. lfm2.5:8b scored 4/5 on a plain bench prompt and 2/5 when asked for structured findings about an addressed artifact; gpt-oss:20b went from 4/5 to 5/5 in every sample.",
+      "The first selection was made on the standalone number and was wrong. A model graded outside the interface it will run in is not graded.",
+      "gpt-oss:20b costs co-residency: 12.8 GB against qwen3.5:4b's 5.61 GB exceeds the card, so the loop reloads twice per run. Measured 32.6s resident against 93.2s with reloads.",
       "The two chosen bindings come from different vendors, so the observer's blind spots are not the worker's."
     ],
-    "residual": "Marker-based grading is coarse and can miss a correct objection phrased unusually, so each score is a floor. No candidate caught all five defects in every sample."
+    "residual": "Marker-based grading is coarse and each score is a floor. The probe grades the observation stance only; nothing yet grades the Control, Orchestration or Work tiers on what they are for.",
+    "observer_scores_through_the_loop_interface": {
+      "gpt-oss:20b": "5/5 in every sample",
+      "qwen3.5:4b": "3/5 worst, 3.7 mean",
+      "lfm2.5:8b": "2/5 worst, 2.3 mean"
+    }
   }
 }

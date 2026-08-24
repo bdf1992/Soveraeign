@@ -15,6 +15,7 @@ import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from sovloop import artifacts  # noqa: E402
 from sovloop import ollama  # noqa: E402
 from sovloop import rules  # noqa: E402
 from sovloop import run as loop  # noqa: E402
@@ -49,7 +50,8 @@ def recorded(binding_id: str, prompt: str, *, purpose: str) -> dict:
         "data_boundary": "LOCAL_ONLY", "omissions": ["credentials"],
         "usage": {"input_tokens": 8, "output_tokens": 4, "wall_clock_seconds": 0.1},
         "cost": {"unit": "USD", "amount": 0, "basis": "OWNER_OWNED_HARDWARE"},
-        "output_text": f"recorded {purpose} output",
+        "output_text": ("NO FINDINGS" if purpose == "OBSERVE"
+                        else f"recorded {purpose} output"),
     }
 
 
@@ -115,10 +117,93 @@ class Loop(unittest.TestCase):
         self.assertTrue(defective["defects"])
         self.assertEqual(defective["settlement"]["outcome"], "UNRESOLVED")
 
+    def test_the_observer_judges_an_addressed_artifact_not_a_transcript(self):
+        observation = self.run["observation"]
+        report = next(a for a in self.run["artifacts"] if a["kind"] == "REPORT")
+        self.assertEqual(observation["subject_artifact_id"], report["artifact_id"])
+        self.assertEqual(observation["subject_digest"], report["digest"])
+
+    def test_the_artifact_chain_links_by_address(self):
+        kinds = [a["kind"] for a in self.run["artifacts"]]
+        self.assertEqual(kinds, ["OBJECTIVE", "PLAN", "TASK", "REPORT", "OBSERVATION"])
+        for parent, child in zip(self.run["artifacts"], self.run["artifacts"][1:]):
+            self.assertEqual(child["input_addresses"], [parent["artifact_id"]])
+
+    def test_an_observation_with_findings_does_not_settle(self):
+        def finds(binding_id, prompt, *, purpose):
+            record = recorded(binding_id, prompt, purpose=purpose)
+            if purpose == "OBSERVE":
+                record["output_text"] = "FINDING: step 2 -- the digest is a placeholder"
+            return record
+
+        run = loop.execute("an objective", self.table, finds, "1970-01-01T00:00:00Z")
+        self.assertEqual(run["observation"]["findings"],
+                         ["step 2 -- the digest is a placeholder"])
+        self.assertEqual(run["settlement"]["outcome"], "UNRESOLVED")
+
+    def test_silence_is_not_a_clean_observation(self):
+        """An observer that says nothing has not cleared the report."""
+        def silent(binding_id, prompt, *, purpose):
+            record = recorded(binding_id, prompt, purpose=purpose)
+            if purpose == "OBSERVE":
+                record["output_text"] = "Looks broadly reasonable to me."
+            return record
+
+        run = loop.execute("an objective", self.table, silent, "1970-01-01T00:00:00Z")
+        self.assertFalse(run["observation"]["clean"])
+
     def test_scope_narrows_strictly_at_every_step(self):
         scopes = [step["scope"] for step in self.run["chain"]]
         for parent, child in zip(scopes, scopes[1:]):
             self.assertTrue(child.startswith(parent + "/"), f"{child} not inside {parent}")
+
+
+class Thinking(unittest.TestCase):
+    """A thinking model's reasoning is kept, but it is not the answer."""
+
+    def test_inline_think_blocks_are_stripped_from_the_answer(self):
+        answer, thinking = ollama.split_thinking(
+            {"response": "<think>secret reasoning</think>The answer."})
+        self.assertEqual(answer, "The answer.")
+        self.assertEqual(thinking, "secret reasoning")
+
+    def test_a_thinking_field_is_captured_separately(self):
+        answer, thinking = ollama.split_thinking(
+            {"response": "Plain answer.", "thinking": "field reasoning"})
+        self.assertEqual(answer, "Plain answer.")
+        self.assertEqual(thinking, "field reasoning")
+
+    def test_an_unterminated_think_tag_leaves_no_answer(self):
+        answer, thinking = ollama.split_thinking({"response": "<think>truncated mid-thought"})
+        self.assertEqual(answer, "")
+        self.assertEqual(thinking, "truncated mid-thought")
+
+    def test_text_without_reasoning_passes_through(self):
+        answer, thinking = ollama.split_thinking({"response": "Just an answer."})
+        self.assertEqual(answer, "Just an answer.")
+        self.assertEqual(thinking, "")
+
+
+class Artifacts(unittest.TestCase):
+    """Addressing and framing of the artifacts tiers pass between them."""
+
+    def test_an_artifact_address_follows_its_digest(self):
+        first = artifacts.artifact("REPORT", "same bytes", "a", "b", "s", [])
+        second = artifacts.artifact("REPORT", "same bytes", "z", "y", "t", ["x"])
+        self.assertEqual(first["artifact_id"], second["artifact_id"])
+        self.assertNotEqual(first["artifact_id"],
+                            artifacts.artifact("REPORT", "other", "a", "b", "s", [])["artifact_id"])
+
+    def test_an_unknown_kind_refuses(self):
+        with self.assertRaises(ValueError):
+            artifacts.artifact("GOSSIP", "body", "a", "b", "s", [])
+
+    def test_the_observe_prompt_carries_the_address_and_the_digest(self):
+        item = artifacts.artifact("REPORT", "the body", "a", "b", "s", [])
+        rendered = artifacts.prompt_for("OBSERVE", item)
+        self.assertIn(item["artifact_id"], rendered)
+        self.assertIn(item["digest"], rendered)
+        self.assertIn("the body", rendered)
 
 
 class LiveBinding(unittest.TestCase):

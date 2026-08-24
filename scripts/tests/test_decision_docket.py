@@ -16,7 +16,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-import sov_accept  # noqa: E402
+import sov_docket  # noqa: E402
 
 STANDING = json.loads((ROOT / "contracts" / "decision-standing.json").read_text("utf-8"))
 ROUTING = json.loads((ROOT / "contracts" / "acceptance-routing.json").read_text("utf-8"))
@@ -26,17 +26,17 @@ class CheckedInState(unittest.TestCase):
     """The repository as it stands passes its own gate."""
 
     def test_the_checked_in_routing_has_no_defect(self) -> None:
-        self.assertEqual(sov_accept.check(), 0)
+        self.assertEqual(sov_docket.check(), 0)
 
     def test_every_open_record_is_routed(self) -> None:
         """An open record nobody routed is one nobody can say whose it is."""
-        rows, unknown = sov_accept.graded()
+        rows, unknown = sov_docket.graded()
         self.assertEqual(unknown, [], "a status line is missing from the crosswalk")
         unrouted = [row["id"] for row in rows if not row["settled"] and not row["routing"]]
         self.assertEqual(unrouted, [])
 
     def test_the_crosswalk_covers_every_status_line_in_use(self) -> None:
-        in_use = {record["status_line"] for record in sov_accept.records()}
+        in_use = {record["status_line"] for record in sov_docket.records()}
         self.assertEqual(in_use - set(STANDING["crosswalk"]), set())
 
     def test_every_crosswalk_target_is_a_declared_standing(self) -> None:
@@ -49,16 +49,16 @@ class Defeats(unittest.TestCase):
 
     def setUp(self) -> None:
         self.routing = json.loads(json.dumps(ROUTING))
-        self.original = sov_accept.ROUTING
+        self.original = sov_docket.ROUTING
 
     def tearDown(self) -> None:
-        sov_accept.ROUTING = self.original
+        sov_docket.ROUTING = self.original
 
     def _check_with(self, routing: dict, tmp: Path) -> int:
         path = tmp / "routing.json"
         path.write_text(json.dumps(routing), encoding="utf-8")
-        sov_accept.ROUTING = path
-        return sov_accept.check()
+        sov_docket.ROUTING = path
+        return sov_docket.check()
 
     def _in_tmp(self, mutate) -> int:
         from tempfile import TemporaryDirectory

@@ -15,9 +15,9 @@ moment a record is minted. This builds the same thing as a projection over
 It settles nothing. Every routing entry is a claim with a reason, and Bdo may
 reject any of them.
 
-    python scripts/sov_accept.py queue      what is genuinely open, and for whom
-    python scripts/sov_accept.py unrouted   proposals no routing entry covers
-    python scripts/sov_accept.py check      the gate: crosswalk total, routing sound
+    python scripts/sov_docket.py queue      what is genuinely open, and for whom
+    python scripts/sov_docket.py unrouted   proposals no routing entry covers
+    python scripts/sov_docket.py check      the gate: crosswalk total, routing sound
 """
 
 from __future__ import annotations
@@ -178,7 +178,7 @@ def check() -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="sov-accept", description=__doc__.splitlines()[0])
+    parser = argparse.ArgumentParser(prog="sov-docket", description=__doc__.splitlines()[0])
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("queue", help="what is open, and for whom")
     sub.add_parser("unrouted", help="proposals no routing entry covers")

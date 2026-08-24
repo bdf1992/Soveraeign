@@ -68,12 +68,12 @@ at that tier still has to do it, and Bdo may reject any routing in the file.
 
 ### 3. The docket is rebuilt, never written out
 
-`scripts/sov_accept.py queue` builds the queue from `decisions/` and the two
+`scripts/sov_docket.py queue` builds the queue from `decisions/` and the two
 contracts at the moment it runs. `reports/2026-08-23-ratification-docket.md` is
 the same artifact written by hand at 16:06 and stale by 19:00, because a docket
 assembled by hand rots the moment a record is minted. A projection does not.
 
-`scripts/sov_accept.py check` runs in `scripts/verify.py`. It proves the crosswalk
+`scripts/sov_docket.py check` runs in `scripts/verify.py`. It proves the crosswalk
 is total, that no routing entry names a record that does not exist, that a
 `reaches_owner` claim names a category and a category claim reaches the owner, and
 that any `already_recorded_as` key is genuinely present in `STATUS.yaml`.
@@ -89,6 +89,35 @@ Minting a decision record now costs a routing entry with a reason, because an op
 record with no entry is reported by `unrouted` and fails `check`. Writing that
 reason is where Ruling 1 gets applied — at drafting time, by the drafter, while
 the question is fresh — instead of months later by whoever tries to read the pile.
+
+## Relationship to PR #81
+
+This was drafted without knowing PR #81 (`feat/acceptance-gate`, opened 21:49 the
+same evening) existed. It does, and it reaches the same headline from the other
+direction: its description says seventeen questions sat addressed to the owner and
+roughly two needed to be. Two readers arriving at three and two independently is
+corroboration, and the agreement is worth more than either count.
+
+The overlap was also literal. Both defined `scripts/sov_accept.py`, so this one
+was renamed to `scripts/sov_docket.py` before landing. That collision is the same
+allocation seam as `OPEN-SEAMS.md` S16, one layer down: concurrent branches mint
+file names as well as decision numbers.
+
+What they actually own is different, and both are needed:
+
+- **#81 polices the gate going forward.** `contracts/acceptance-policy.json` names
+  seven admissible reasons a transition may wait on an owner seat, and its `audit`
+  fails the build when work parks on Bdo without one. It also carries the
+  acceptance packet schema that `decisions/0023` requires and nothing had built.
+- **This record polices the records already written.** #81 reads an owner-queue
+  register and the packets under `acceptance/`; nothing in it parses a decision
+  record's status line, which is where the twenty-two phrasings and the nine
+  lagging records live.
+
+Neither subsumes the other. If both land, `sov_docket.py check` answers "whose is
+each of the forty records" and `sov_accept.py audit` answers "is this new block
+legitimate". If only one lands, the nine records whose status line contradicts
+`STATUS.yaml` stay contradictory under #81 alone.
 
 ## What could defeat this
 

@@ -165,6 +165,13 @@ CHECKS = (
           "services behind it, and reads its evidence back out of the Record Service journal "
           "instead of trusting the gateway's return value",
           ("bindings/mcp", "bindings/mcp/manifest.json")),
+    Check("Gateway Service reference tests",
+          [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
+          ROOT / "services" / "gateway",
+          "the participant's own tests; these establish BUILT evidence about Gateway mechanics "
+          "and are explicitly NOT independent of the code they exercise. Keeping participant "
+          "evidence separate prevents service growth from becoming tooling-harness growth",
+          ("services/gateway/tests",)),
     Check("repository tooling tests", [sys.executable, "scripts/run_tooling_tests.py"], ROOT,
           "the harness's own tests; independent of the repository content they check, but "
           "not of the harness itself; the runner partitions the complete discovered module "

@@ -137,19 +137,28 @@ const ORACLE_LAW = 'AGENTS.md: never weaken an oracle merely to make a participa
   + 'an expected_oracle value, loosen a schema to admit a defeat, or edit a defeating fixture so it stops '
   + 'defeating. If a check fails, either fix the thing it caught or report it in residuals unchanged. '
 
-const BUDGET_LAW = 'One known host residual, measured before this run started: this working tree is a git '
-  + 'worktree whose filesystem runs the tooling test suite about 0.5s slower than the main checkout, so '
-  + 'scripts/verify.py fails its 3.0s wall-clock budget here (about 3.13s) while all 23 of its checks pass. '
-  + 'That is an artifact of the worktree, not a repository defect and not yours to fix. Treat a verify.py run '
-  + 'whose ONLY failure line is the verification budget as semantically green: record it, do not repair it, and '
-  + 'do not change BUDGET_SECONDS. Any other failure line is a real failure. Always report verify_failures as '
-  + 'the exact list of "FAIL:" lines verify.py printed. '
+const VERIFY_LAW = 'How to read scripts/verify.py, which is easy to get wrong: its human output interleaves '
+  + 'the stdout of every check, and several tooling tests exercise staleness checkers against deliberately '
+  + 'stale fixtures, so lines like "FAIL: docs/documentation.html is stale" and "FAIL: docs surface.html has '
+  + 'not been rendered" appear inside the "repository tooling tests" section while that suite passes. Those are '
+  + 'test output, NOT check failures, and acting on them (running sov_docs.py build or sov_surface.py render) '
+  + 'would be repairing nothing. Never scrape "FAIL:" lines out of the human output. Instead run '
+  + '"python scripts/verify.py --json": it emits one observation per check, and the only failure that counts is '
+  + 'an entry whose predicate_results.outcome is not "PASS". Report verify_failures as the subject names of '
+  + 'those entries - an empty list when every check passes. '
+
+const BUDGET_LAW = 'The wall-clock budget is deliberately not in that JSON. One known host residual, measured '
+  + 'before this run started: this working tree is a git worktree whose filesystem runs the 376 tooling tests '
+  + 'about 0.5s slower than the main checkout, so scripts/verify.py exits 1 on its 3.0s budget here (about '
+  + '3.2s) while every one of its checks passes. That is an artifact of the worktree, not a repository defect '
+  + 'and not yours to fix. A verify.py run with an empty verify_failures list is semantically green no matter '
+  + 'what the process exited: record the budget miss, do not repair it, do not change BUDGET_SECONDS. '
 
 function readPrompt(tick) {
-  return GROUND + GATE_LAW + BUDGET_LAW
+  return GROUND + GATE_LAW + VERIFY_LAW + BUDGET_LAW
     + 'This is tick ' + tick + '. Observe only; change nothing. From ' + ROOT + ' run exactly these and record '
     + 'each real exit code yourself: (1) python scripts/sov_f2_gate.py --json --next 12, (2) python '
-    + 'scripts/verify.py, (3) python scripts/lint.py, (4) python conformance/run.py, (5) git status --porcelain, '
+    + 'scripts/verify.py --json, (3) python scripts/lint.py, (4) python conformance/run.py, (5) git status --porcelain, '
     + '(6) git log --oneline -1. Return gate_closed, predicates_total, predicates_covered, bound_participants, '
     + 'the three exit codes, tree_clean (true when git status --porcelain printed nothing), head (the short '
     + 'commit hash), and open (the ranked open predicates the gate printed, id/family/text/missing). Put '
@@ -158,7 +167,7 @@ function readPrompt(tick) {
 
 function planPrompt(read, tick) {
   const ranked = (read.open || []).slice(0, 8)
-  return GROUND + GATE_LAW + ORACLE_LAW + BUDGET_LAW
+  return GROUND + GATE_LAW + ORACLE_LAW + VERIFY_LAW + BUDGET_LAW
     + 'This is tick ' + tick + '. You are the Orchestration tier: plan, do not build. The gate currently reads '
     + read.predicates_covered + '/' + read.predicates_total + ' predicates covered. The ranked open predicates '
     + 'are: ' + JSON.stringify(ranked) + '. '
@@ -179,7 +188,7 @@ function planPrompt(read, tick) {
 }
 
 function buildPrompt(op, tick) {
-  return GROUND + GATE_LAW + ORACLE_LAW + BUDGET_LAW
+  return GROUND + GATE_LAW + ORACLE_LAW + VERIFY_LAW + BUDGET_LAW
     + 'This is tick ' + tick + '. You are the Work tier. Execute exactly this one bounded operation and nothing '
     + 'else: [' + op.id + '] ' + op.description + '. Predicates it must genuinely close: '
     + (op.predicates || []).join(', ') + '. Expected files: ' + (op.files || []).join(', ') + '. Effect class: '
@@ -189,22 +198,22 @@ function buildPrompt(op, tick) {
     + 'Stay inside the files above. Do not run git commit, git add, git checkout, git clean, or git push - the '
     + 'controller settles this tick, not you. '
     + 'Then run, from ' + ROOT + ': python conformance/run.py, python scripts/sov_f2_gate.py, python '
-    + 'scripts/verify.py and python scripts/lint.py, and record each exact command and real exit code in checks. '
-    + 'If your change makes verify.py red and you cannot repair it inside your own files, say so in residuals '
+    + 'scripts/verify.py --json and python scripts/lint.py, and record each exact command and real exit code in checks. '
+    + 'If your change makes a verify.py check fail and you cannot repair it inside your own files, say so in residuals '
     + 'rather than widening scope. Report predicates_claimed honestly: list only predicates whose violation your '
     + 'new fixture actually detects. Your output is a builder self-report and establishes BUILT evidence only; '
     + 'it cannot witness or ratify itself.'
 }
 
 function witnessPrompt(claims, read, tick) {
-  return GROUND + GATE_LAW + ORACLE_LAW + BUDGET_LAW
+  return GROUND + GATE_LAW + ORACLE_LAW + VERIFY_LAW + BUDGET_LAW
     + 'This is tick ' + tick + '. You are the independent witness. You did not build this and a build report '
     + 'cannot witness itself, so consult the repository, never the builder\'s reasoning. Claimed operations: '
     + JSON.stringify(claims) + '. The gate read ' + read.predicates_covered + '/' + read.predicates_total
     + ' before this tick, at commit ' + (read.head || 'unknown') + '. '
     + 'Independently inspect the real diff (git diff HEAD, git status --porcelain, direct reads of the changed '
     + 'files) and check it against SPEC.md, conformance/README.md and AGENTS.md. Run, observing real exit codes '
-    + 'yourself: python scripts/verify.py, python scripts/lint.py, python conformance/run.py, and python '
+    + 'yourself: python scripts/verify.py --json, python scripts/lint.py, python conformance/run.py, and python '
     + 'scripts/sov_f2_gate.py --json. '
     + 'YOUR PRIMARY JOB IS TO FIND FABRICATED COVERAGE. For every predicate id newly written into '
     + 'conformance/oracle-controls.json, read SPEC.md for what that predicate actually claims, then read the '
@@ -213,12 +222,12 @@ function witnessPrompt(claims, read, tick) {
     + 'fabricated_coverage. An empty fabricated_coverage list is a positive claim that you checked each one. '
     + 'Return a verdict per operation_id - reproduced (independently confirmed in the repository), dissented '
     + '(the evidence contradicts the claim), or unattestable (cannot be independently confirmed) - plus '
-    + 'verify_exit, gate_covered_after (predicates_covered from the gate JSON), residuals and any judgement '
+    + 'verify_failures from verify.py --json, gate_covered_after (predicates_covered from the gate JSON), residuals and any judgement '
     + 'items. Also inspect the diff for any weakening of an oracle - a changed BUDGET_SECONDS, a deleted or '
     + 'skipped test, a relaxed expected_oracle, a loosened schema, a defeating fixture that no longer '
     + 'defeats - and list each one in oracle_weakened. Report verify_failures as the exact "FAIL:" lines. '
     + 'Set standing_supported to BUILT->WITNESSED only when every verdict is reproduced, '
-    + 'fabricated_coverage and oracle_weakened are both empty, and verify.py failed nothing but its wall-clock budget. Otherwise none. Never RATIFIED: ratification is '
+    + 'fabricated_coverage and oracle_weakened are both empty, and verify_failures is empty. Otherwise none. Never RATIFIED: ratification is '
     + 'Bdo\'s alone. Do not edit, fix or commit anything - a witness that repairs what it observes has stopped '
     + 'being independent.'
 }
@@ -228,7 +237,7 @@ function settlePrompt(decision, tick, summary) {
     + 'action named below from ' + ROOT + ' and nothing else. Never push. '
   if (decision === 'commit') {
     return base
-      + 'The witness reproduced every claimed operation, found no fabricated coverage, and verify.py exited 0. '
+      + 'The witness reproduced every claimed operation, found no fabricated coverage, and every verify.py check passed. '
       + 'Settle it: run git add -A, then commit with a subject line of at most 72 characters in the imperative '
       + 'mood naming what closed, and a body naming the predicates covered and the F2 gate counter before and '
       + 'after. Facts for the message: ' + summary + '. End the commit message with the trailer '
@@ -321,11 +330,10 @@ for (let tick = 1; tick <= MAX_TICKS; tick++) {
   const allReproduced = verdicts.length > 0 && verdicts.every(function (v) { return v.verdict === 'reproduced' })
   const fabricated = witness && witness.fabricated_coverage ? witness.fabricated_coverage : []
   const tampered = witness && witness.oracle_weakened ? witness.oracle_weakened : []
-  // Semantically green: either verify.py passed outright, or its only failure was the
-  // wall-clock budget this worktree is known to miss for filesystem reasons alone.
+  // verify.py --json carries one entry per check; the wall-clock budget is not among them,
+  // so an empty failure list is semantically green even when the process exits 1 on it.
   const failures = witness && witness.verify_failures ? witness.verify_failures : []
-  const budgetOnly = failures.length > 0 && failures.every(function (f) { return /budget/i.test(f) })
-  const verifyGreen = witness ? (witness.verify_exit === 0 || budgetOnly) : false
+  const verifyGreen = !!witness && failures.length === 0
   const settleIt = !!witness && allReproduced && fabricated.length === 0 && tampered.length === 0 && verifyGreen
 
   if (tampered.length > 0) {
@@ -345,7 +353,7 @@ for (let tick = 1; tick <= MAX_TICKS; tick++) {
     : (!witness ? 'the witness returned no observation, so the tick is unattestable'
        : (fabricated.length > 0 ? 'fabricated coverage: ' + fabricated.join(', ')
           : (tampered.length > 0 ? 'a weakened oracle: ' + tampered.join(', ')
-          : (!verifyGreen ? 'verify.py failed: ' + failures.join('; ')
+          : (!verifyGreen ? 'verify.py checks failed: ' + failures.join('; ')
              : 'verdicts: ' + verdicts.map(function (v) { return v.operation_id + '=' + v.verdict }).join(', ')))))
 
   const settled = await agent(settlePrompt(settleIt ? 'commit' : 'revert', tick, summary), { agentType: 'sov-controller', schema: SETTLE_SCHEMA, phase: 'Settle', label: 't' + tick + ':settle', effort: 'low' })

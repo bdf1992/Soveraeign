@@ -38,7 +38,7 @@ loss of optional providers, and can be replaced behind an existing contract.
 | Machine contracts | JSON Schema Draft 2020-12 | Schema validity is not semantic fitness |
 | Human control files | Markdown and small YAML fixtures | YAML is not a parallel runtime contract |
 | Local surface | Python API and CLI | Human and model bindings use the same kernel operations |
-| Tests and lint | `unittest` and dependency-free repository scripts | Local, deterministic, network-free, under three seconds |
+| Tests and lint | `unittest` and dependency-free repository scripts | Local, deterministic, network-free; wall time graded PLATINUM/GOLD/SILVER to a fifteen-second ceiling |
 | Search and graph | Rebuildable local projections | External systems integrate through adapters later |
 | Model execution | Declared Model Binding plus Model Adapter | BYOM; no provider-derived authority or silent fallback |
 
@@ -134,7 +134,7 @@ replaceable boundary resolving an observed failure while preserving the kernel.
 ## Acceptance
 
 The framework is `BUILT` when the root instruction surfaces agree, the
-dependency-free lint and verification loop enforce their invariants in under
-three seconds, and existing conformance and participant tests still run. It is
+dependency-free lint and verification loop enforce their invariants inside the
+graded budget, and existing conformance and participant tests still run. It is
 `RATIFIED` only when Bdo accepts the exact Phase-I technology choices and
 composition rules.

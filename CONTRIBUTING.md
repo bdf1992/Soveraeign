@@ -168,8 +168,9 @@ Required local gate:
 python scripts/verify.py
 ```
 
-The gate is dependency-free, network-free, and budgeted to complete in under
-three seconds after Python starts. CI runs the same command.
+The gate is dependency-free and network-free. Its wall time is graded rather
+than pass/fail: `PLATINUM` at three seconds or less, `GOLD` at six, `SILVER`
+at fifteen, failing past fifteen (`decisions/0050`). CI runs the same command.
 
 ## Tests and evidence
 

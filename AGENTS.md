@@ -200,8 +200,11 @@ dependency or a substitute for repository verification.
 - Tests use temporary directories, fixed inputs, bounded waits, and no network.
 - Tests distinguish attempted, reported, observed, and settled outcomes.
 - A test may establish `BUILT`; it may not claim `WITNESSED` or `RATIFIED`.
-- The required local and CI command is `python scripts/verify.py`; its default
-  execution budget is three seconds after Python starts.
+- The required local and CI command is `python scripts/verify.py`. Its wall
+  time after Python starts is graded, not pass/fail: `PLATINUM` at three
+  seconds or less, `GOLD` at six, `SILVER` at fifteen. Past fifteen seconds
+  nothing is earned and the run fails. A slipped grade is a reportable
+  observation, not a failing gate (`decisions/0050`).
 
 ## Context hygiene
 

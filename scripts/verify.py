@@ -79,6 +79,14 @@ CHECKS = (
           "compares each participant's declared refusal vocabulary against the kernel "
           "contract, so a participant cannot vouch for its own correspondence",
           ("contracts/kernel-parity.json", "contracts/kernel-transitions.json")),
+    Check("service manifest contract", [sys.executable, "scripts/sov_service.py", "check"],
+          ROOT,
+          "derives the refusal vocabulary and transition ids from the kernel table and the "
+          "requirement ids from PRD.md at check time, and rebuilds each logical endpoint from "
+          "the manifest's own service and operation id rather than trusting the address it "
+          "declares",
+          ("contracts/service-manifest.schema.json",
+           "contracts/fixtures/service-manifest.fixtures.json")),
     Check("specification traceability", [sys.executable, "scripts/sov_spec.py", "trace"], ROOT,
           "walks from SPEC.md requirements to the evidence records that claim them and "
           "refuses a standing whose predecessor standing is unreached",

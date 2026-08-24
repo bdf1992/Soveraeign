@@ -57,6 +57,8 @@ REQUIRED = (
     "contracts/kernel-parity.json",
     "services/README.md",
     "services/asset/contracts/service.json",
+    "services/gateway/contracts/service.json",
+    "services/record/contracts/service.json",
     "services/proofing/contracts/service.json",
     "services/console/contracts/service.json",
     "services/projection/contracts/service.json",
@@ -225,7 +227,7 @@ def verify_json_documents() -> int:
             json.loads(path.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError) as error:
             fail(f"invalid JSON document {path.relative_to(ROOT)}: {error}")
-    for service in ("asset", "proofing", "console", "projection"):
+    for service in ("asset", "console", "gateway", "projection", "proofing", "record"):
         manifest = json.loads((ROOT / "services" / service / "contracts" / "service.json").read_text(encoding="utf-8"))
         for field in ("service_id", "standing", "owns", "operations", "uses_kernel_contracts", "forbids"):
             if not manifest.get(field):

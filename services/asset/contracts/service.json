@@ -1,10 +1,210 @@
 {
   "service_id": "asset",
   "standing": "BUILT",
-  "owns": ["asset", "asset-version", "payload-custody", "source", "derivation-lineage", "asset-relationship", "asset-use-record"],
-  "references": ["shared-kernel-contracts"],
-  "operations": ["ingest-asset", "read-version", "request-derivative", "propose-description", "ratify-proposal", "retract-record", "rebuild-projection"],
-  "uses_kernel_contracts": ["standing", "typed-authority", "operation", "observation", "receipt", "retraction"],
-  "ports": ["model-analysis", "github-source", "graph-projection", "media-worker", "federation"],
-  "forbids": ["direct-projection-authority", "source-mutation-during-reading", "executor-report-as-observation", "unconfigured-federation-success", "history-erasure"]
+  "owns": [
+    "asset",
+    "asset-version",
+    "payload-custody",
+    "source",
+    "derivation-lineage",
+    "asset-relationship",
+    "asset-use-record"
+  ],
+  "references": [
+    "shared-kernel-contracts"
+  ],
+  "operations": [
+    {
+      "operation": "ingest-asset",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://asset/ingest-asset",
+      "subject": "asset",
+      "crud": "CREATE",
+      "requirement": "PROD-I-2",
+      "kernel_transition": "capture_source",
+      "preconditions": [
+        "payload_bytes_readable",
+        "declared_label",
+        "live_grant"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "PAYLOAD_ABSENT",
+        "DIGEST_MISMATCH",
+        "GRANT_NOT_COVERED"
+      ]
+    },
+    {
+      "operation": "read-version",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://asset/read-version",
+      "subject": "asset-version",
+      "crud": "READ",
+      "requirement": "PROD-I-2",
+      "kernel_transition": "read_source",
+      "preconditions": [
+        "version_exists",
+        "stored_digest_verifies"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "PAYLOAD_ABSENT",
+        "DIGEST_MISMATCH",
+        "SOURCE_UNREACHABLE",
+        "SOURCE_CHANGED"
+      ]
+    },
+    {
+      "operation": "request-derivative",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://asset/request-derivative",
+      "subject": "asset-use-record",
+      "crud": "CREATE",
+      "kernel_transition": "begin_run",
+      "preconditions": [
+        "source_version_exists",
+        "declared_plan",
+        "live_grant"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "GRANT_NOT_COVERED",
+        "STALE_LEASE"
+      ]
+    },
+    {
+      "operation": "propose-description",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://asset/propose-description",
+      "subject": "asset",
+      "crud": "CREATE",
+      "requirement": "PROD-I-1",
+      "kernel_transition": "submit_proposal",
+      "preconditions": [
+        "asset_exists",
+        "declared_actor",
+        "declared_payload"
+      ],
+      "commit": "RECORDED",
+      "refusals": [
+        "INCOMPLETE_PROPOSAL",
+        "GRANT_NOT_COVERED"
+      ]
+    },
+    {
+      "operation": "ratify-proposal",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://asset/ratify-proposal",
+      "subject": "asset",
+      "crud": "SUPERSEDE",
+      "requirement": "PROD-I-5",
+      "kernel_transition": "ratify",
+      "preconditions": [
+        "proposal_recorded",
+        "live_matching_grant",
+        "human_actor"
+      ],
+      "commit": "EFFECTIVE",
+      "refusals": [
+        "AUTHORITY_REFUSED",
+        "GRANT_NOT_COVERED",
+        "STALE_STATE"
+      ]
+    },
+    {
+      "operation": "retract-record",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://asset/retract-record",
+      "subject": "asset-use-record",
+      "crud": "COUNTER",
+      "requirement": "PROD-I-4",
+      "kernel_transition": "retract",
+      "preconditions": [
+        "target_exists",
+        "live_retraction_grant",
+        "declared_reason"
+      ],
+      "commit": "COUNTERED",
+      "refusals": [
+        "AUTHORITY_REFUSED",
+        "GRANT_NOT_COVERED"
+      ]
+    },
+    {
+      "operation": "rebuild-projection",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://asset/rebuild-projection",
+      "subject": "asset-relationship",
+      "crud": "REBUILD",
+      "requirement": "PROD-I-2",
+      "preconditions": [
+        "authoritative_records_readable"
+      ],
+      "commit": "REBUILT",
+      "refusals": [
+        "UNREADABLE"
+      ]
+    },
+    {
+      "operation": "read-asset",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://asset/read-asset",
+      "subject": "asset",
+      "crud": "READ",
+      "requirement": "PROD-I-2",
+      "also_reads": [
+        "asset-relationship",
+        "derivation-lineage"
+      ],
+      "preconditions": [
+        "asset_exists"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "MISSING_PRECONDITION"
+      ]
+    },
+    {
+      "operation": "read-use-record",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://asset/read-use-record",
+      "subject": "asset-use-record",
+      "crud": "READ",
+      "requirement": "PROD-I-4",
+      "preconditions": [
+        "use_record_exists"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "MISSING_PRECONDITION"
+      ]
+    }
+  ],
+  "local_refusals": {
+    "GRANT_NOT_COVERED": "AUTHORITY_REFUSED",
+    "PAYLOAD_ABSENT": "UNREADABLE",
+    "SOURCE_UNREACHABLE": "UNREADABLE"
+  },
+  "uses_kernel_contracts": [
+    "standing",
+    "typed-authority",
+    "operation",
+    "observation",
+    "receipt",
+    "retraction"
+  ],
+  "ports": [
+    "model-analysis",
+    "github-source",
+    "graph-projection",
+    "media-worker",
+    "federation"
+  ],
+  "forbids": [
+    "direct-projection-authority",
+    "source-mutation-during-reading",
+    "executor-report-as-observation",
+    "unconfigured-federation-success",
+    "history-erasure"
+  ]
 }

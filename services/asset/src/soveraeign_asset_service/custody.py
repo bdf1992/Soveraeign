@@ -57,7 +57,7 @@ def read_version(service: Any, version_id: str, actor: str) -> dict[str, Any]:
 
     blob = Path(row["blob_path"])
     if not blob.is_file():
-        service._receipt("REFUSED", "version.read", "version", version_id, actor,
+        service._control.receipt("REFUSED", "version.read", "version", version_id, actor,
                          {"reason": "PAYLOAD_ABSENT"})
         service.db.commit()
         raise DigestMismatch(f"{version_id}: payload absent from custody")
@@ -65,13 +65,13 @@ def read_version(service: Any, version_id: str, actor: str) -> dict[str, Any]:
     data = blob.read_bytes()
     digest = sha256(data).hexdigest()
     if digest != row["digest"]:
-        service._receipt("REFUSED", "version.read", "version", version_id, actor,
+        service._control.receipt("REFUSED", "version.read", "version", version_id, actor,
                          {"reason": "DIGEST_MISMATCH", "recorded": row["digest"],
                           "observed": digest})
         service.db.commit()
         raise DigestMismatch(f"{version_id}: recorded {row['digest']}, read {digest}")
 
-    service._receipt("COMMITTED", "version.read", "version", version_id, actor,
+    service._control.receipt("COMMITTED", "version.read", "version", version_id, actor,
                      {"digest": digest, "size": len(data)})
     service.db.commit()
     return {
@@ -101,7 +101,7 @@ def reread_source(service: Any, source_id: str, actor: str) -> dict[str, Any]:
 
     path = _path_from_locator(row["locator"])
     if path is None or not path.is_file():
-        service._receipt("REFUSED", "source.reread", "source", source_id, actor,
+        service._control.receipt("REFUSED", "source.reread", "source", source_id, actor,
                          {"reason": "SOURCE_UNREACHABLE", "locator": row["locator"]})
         service.db.commit()
         raise SourceChanged(f"{source_id}: source is no longer reachable")
@@ -109,13 +109,13 @@ def reread_source(service: Any, source_id: str, actor: str) -> dict[str, Any]:
     data = path.read_bytes()
     digest = sha256(data).hexdigest()
     if digest != row["digest"]:
-        service._receipt("REFUSED", "source.reread", "source", source_id, actor,
+        service._control.receipt("REFUSED", "source.reread", "source", source_id, actor,
                          {"reason": "SOURCE_CHANGED", "captured": row["digest"],
                           "observed": digest})
         service.db.commit()
         raise SourceChanged(f"{source_id}: captured {row['digest']}, now {digest}")
 
-    service._receipt("COMMITTED", "source.reread", "source", source_id, actor,
+    service._control.receipt("COMMITTED", "source.reread", "source", source_id, actor,
                      {"digest": digest})
     service.db.commit()
     return {"source_id": source_id, "digest": digest, "locator": row["locator"],

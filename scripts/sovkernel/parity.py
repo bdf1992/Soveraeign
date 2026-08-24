@@ -40,14 +40,18 @@ def _asset_service(root: Path):
     src = root / "services" / "asset" / "src"
     if str(src) not in sys.path:
         sys.path.insert(0, str(src))
-    from soveraeign_asset_service.core import AssetService, StaleLease  # noqa: E402
+    from soveraeign_asset_service import (  # noqa: E402
+        AssetService,
+        ReaderDeclaration,
+        StaleLease,
+    )
 
-    return AssetService, StaleLease
+    return AssetService, ReaderDeclaration, StaleLease
 
 
 def _asset_observations(root: Path) -> dict[str, str]:
     """Drive the real Asset Service and record what it refused."""
-    AssetService, StaleLease = _asset_service(root)
+    AssetService, ReaderDeclaration, StaleLease = _asset_service(root)
     observed: dict[str, str] = {}
     # ignore_cleanup_errors: SQLite on Windows holds the file until the handle is
     # released, and a temp directory that will not delete must not fail a check
@@ -60,7 +64,20 @@ def _asset_observations(root: Path) -> dict[str, str]:
             source = store / "parity.txt"
             source.write_bytes(b"parity")
             asset = service.ingest(source, "Parity source", "Bdo")
-            run = service.request_derivative(asset["asset_id"], asset["version_id"], "Bdo")
+            # A derivative run now requires a declared reader; omitting one is a
+            # receipted refusal, not a default. This observation is about lease
+            # fencing, so the reader is the minimum that lets the run be requested.
+            reader = ReaderDeclaration.from_materials(
+                reader_id="asset.metadata-card",
+                reader_version="1.0.0",
+                reader_artifact=b'{"entrypoint":"builtin:metadata-card"}',
+                configuration={"format": "json", "schema": "card-v1"},
+                fidelity="LOSSY",
+                omissions=("binary-payload",),
+            )
+            run = service.request_derivative(
+                asset["asset_id"], asset["version_id"], "Bdo", reader=reader
+            )
 
             superseded = service.claim(run, "worker-a", ttl_seconds=0)
             service.claim(run, "worker-b")
@@ -71,7 +88,7 @@ def _asset_observations(root: Path) -> dict[str, str]:
                 observed["a superseded fence may not report"] = "StaleLease"
 
             unreported = service.request_derivative(
-                asset["asset_id"], asset["version_id"], "Bdo"
+                asset["asset_id"], asset["version_id"], "Bdo", reader=reader
             )
             try:
                 service.observe(unreported, "witness-b")

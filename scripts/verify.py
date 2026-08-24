@@ -34,9 +34,7 @@ BUDGET_SECONDS = 3.0
 # Starting every repository check at once became slower as the suite grew: the
 # hosted runner spent its budget context-switching between 20+ Python processes.
 # Keep enough independent work in flight to hide startup/I/O without allowing
-# process count itself to become the critical path. Long-running independent
-# checks are declared first so the bounded pool does not strand them behind
-# short structural work.
+# process count itself to become the critical path.
 MAX_CHECK_WORKERS = 8
 
 
@@ -53,45 +51,6 @@ CHECKS = (
           "reads repository bytes directly with read_bytes, never a build report, and never "
           "Path.read_text whose newline translation would hide the defect it looks for",
           (".gitattributes", "scripts/lint.py")),
-    Check("repository tooling tests", [sys.executable, "scripts/run_tooling_tests.py"], ROOT,
-          "the harness's own tests; independent of the repository content they check, but "
-          "not of the harness itself; the runner partitions the complete discovered module "
-          "population and fails if any shard fails",
-          ("scripts/tests", "scripts/run_tooling_tests.py")),
-    Check("Gateway Service reference tests",
-          [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
-          ROOT / "services" / "gateway",
-          "the participant's own tests; these establish BUILT evidence about Gateway mechanics "
-          "and are explicitly NOT independent of the code they exercise. Keeping participant "
-          "evidence separate prevents service growth from becoming tooling-harness growth",
-          ("services/gateway/tests",)),
-    Check("Asset Service reference tests",
-          [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
-          ROOT / "services" / "asset",
-          "the participant's own tests; these establish BUILT evidence about local mechanics "
-          "and are explicitly NOT independent of the code they exercise",
-          ("services/asset/tests",)),
-    Check("Console Service reference tests",
-          [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
-          ROOT / "services" / "console",
-          "the participant's own tests; these establish BUILT evidence about local mechanics "
-          "and are explicitly NOT independent of the code they exercise. The contract-shape "
-          "cases are the exception worth naming: they validate the records the service emits "
-          "against the schema files in services/console/contracts/, which were written before "
-          "the implementation existed and are not edited to accommodate it",
-          ("services/console/tests", "services/console/contracts")),
-    Check("MCP gateway binding",
-          [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
-          ROOT / "bindings" / "mcp",
-          "drives the gateway through its declared JSON-RPC surface rather than calling the "
-          "services behind it, and reads its evidence back out of the Record Service journal "
-          "instead of trusting the gateway's return value",
-          ("bindings/mcp", "bindings/mcp/manifest.json")),
-    Check("conformance oracle tests",
-          [sys.executable, "-m", "unittest", "discover", "-s", "conformance/tests", "-v"], ROOT,
-          "tests the oracle from outside itself, including cases proving it refuses reports "
-          "it cannot read",
-          ("conformance/tests",)),
     Check("bootstrap and locked evidence", [sys.executable, "scripts/verify_bootstrap.py"], ROOT,
           "re-digests locked evidence from disk rather than trusting a recorded digest",
           ("scripts/verify_bootstrap.py",)),
@@ -103,6 +62,11 @@ CHECKS = (
           "the oracle derives every defect from observation records and never reads a "
           "participant verdict field, and never imports participant implementation code",
           ("conformance/oracle-controls.json", "conformance/run.py")),
+    Check("conformance oracle tests",
+          [sys.executable, "-m", "unittest", "discover", "-s", "conformance/tests", "-v"], ROOT,
+          "tests the oracle from outside itself, including cases proving it refuses reports "
+          "it cannot read",
+          ("conformance/tests",)),
     Check("kernel transition contract", [sys.executable, "scripts/sov_kernel.py", "selfcheck"],
           ROOT,
           "judges a declared corpus of positive and defeating requests against the "
@@ -172,6 +136,21 @@ CHECKS = (
           "the participant's own tests; these establish BUILT evidence about local mechanics "
           "and are explicitly NOT independent of the code they exercise",
           ("services/record/tests",)),
+    Check("Console Service reference tests",
+          [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
+          ROOT / "services" / "console",
+          "the participant's own tests; these establish BUILT evidence about local mechanics "
+          "and are explicitly NOT independent of the code they exercise. The contract-shape "
+          "cases are the exception worth naming: they validate the records the service emits "
+          "against the schema files in services/console/contracts/, which were written before "
+          "the implementation existed and are not edited to accommodate it",
+          ("services/console/tests", "services/console/contracts")),
+    Check("Asset Service reference tests",
+          [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
+          ROOT / "services" / "asset",
+          "the participant's own tests; these establish BUILT evidence about local mechanics "
+          "and are explicitly NOT independent of the code they exercise",
+          ("services/asset/tests",)),
     Check("operation surface page",
           [sys.executable, "scripts/sov_surface.py", "check"], ROOT,
           "rebuilds the page from the capability map, the service manifests and the gateway "
@@ -179,6 +158,18 @@ CHECKS = (
           "or left behind by a manifest change fails rather than misinforming a reader",
           ("docs/surface.html", "contracts/fixtures/capability-map.reference.json",
            "bindings/mcp/manifest.json")),
+    Check("MCP gateway binding",
+          [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
+          ROOT / "bindings" / "mcp",
+          "drives the gateway through its declared JSON-RPC surface rather than calling the "
+          "services behind it, and reads its evidence back out of the Record Service journal "
+          "instead of trusting the gateway's return value",
+          ("bindings/mcp", "bindings/mcp/manifest.json")),
+    Check("repository tooling tests", [sys.executable, "scripts/run_tooling_tests.py"], ROOT,
+          "the harness's own tests; independent of the repository content they check, but "
+          "not of the harness itself; the runner partitions the complete discovered module "
+          "population and fails if any shard fails",
+          ("scripts/tests", "scripts/run_tooling_tests.py")),
 )
 
 

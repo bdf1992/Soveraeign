@@ -1,6 +1,12 @@
 # Console Service Charter
 
-Status: `PROPOSED SERVICE BOUNDARY · NOT IMPLEMENTED`
+Status: `PROPOSED SERVICE BOUNDARY · CONTINUITY PATH BUILT AND SELF-TESTED`
+
+The continuity record path - channels, threads, posts, operator sessions and
+grants - is implemented under `src/` and reached through `cli.py`
+(`decisions/0036`). The other four operator surfaces described below remain
+boundary with no implementation; `KNOWN-GAPS.md` says which is which. No
+binding implementation was built, and the gate below still stands.
 
 ## Role
 

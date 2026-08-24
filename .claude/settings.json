@@ -1,0 +1,36 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "$CLAUDE_PROJECT_DIR/.claude/hooks/console_session.py",
+              "start"
+            ],
+            "timeout": 25,
+            "statusMessage": "Reading console continuity"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "$CLAUDE_PROJECT_DIR/.claude/hooks/console_session.py",
+              "end"
+            ],
+            "timeout": 25,
+            "statusMessage": "Closing the console session"
+          }
+        ]
+      }
+    ]
+  }
+}

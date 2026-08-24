@@ -123,6 +123,15 @@ CHECKS = (
           "the participant's own tests; these establish BUILT evidence about local mechanics "
           "and are explicitly NOT independent of the code they exercise",
           ("services/record/tests",)),
+    Check("Console Service reference tests",
+          [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
+          ROOT / "services" / "console",
+          "the participant's own tests; these establish BUILT evidence about local mechanics "
+          "and are explicitly NOT independent of the code they exercise. The contract-shape "
+          "cases are the exception worth naming: they validate the records the service emits "
+          "against the schema files in services/console/contracts/, which were written before "
+          "the implementation existed and are not edited to accommodate it",
+          ("services/console/tests", "services/console/contracts")),
     Check("Asset Service reference tests",
           [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
           ROOT / "services" / "asset",

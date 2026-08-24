@@ -117,6 +117,19 @@ Bdo.
   through an independent path and may dissent.
 - `agents/sov-controller.md` — control role for headless or scheduled runs:
   dispatches, aggregates, and packages evidenced results for Bdo's acceptance.
+- `hooks/console_session.py` — session hooks, wired in `settings.json`. On
+  `SessionStart` it opens (or resumes) a Console Service operator session and
+  prints what landed while this operator was away, which becomes the starting
+  session's context; on `SessionEnd` it closes that session so the read position
+  advances. It reaches the console only through the service's own CLI, writes no
+  console state itself, and never fails a session: an unreachable console prints
+  a note and exits 0. Standing: host plumbing, none
+  (`decisions/0036-operator-continuity-before-the-screen.md`).
+- `skills/sov-continuity/SKILL.md` — operating skill for the built continuity
+  path: read what landed, post a message a later session or another operator
+  will receive, read a thread. Distinct from `skills/sov-console/`, which is the
+  design skill for the same boundary; use that one to change what the service
+  is, this one to use it.
 - `skills/sov-<domain>/SKILL.md` — domain know-how: owned files, blockers,
   named operations, verification commands, vocabulary. Role agents load the
   skill matching the domain their prompt names.

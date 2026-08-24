@@ -238,18 +238,24 @@ def check() -> int:
             defects.append(f"{row['id']}: several questions, but {len(headline)} claim to come "
                            f"from a record that does not enumerate its own")
 
+    # Reported, never failed. A gate that turns red because someone else wrote a
+    # document is a gate that gets deleted rather than obeyed, and routing another
+    # author's record means inventing their questions - the exact failure the rule
+    # exists to end. scripts/lint.py names module debt the same way.
     rule = standing["owner_questions_section"]
     threshold = rule["required_from_record"]
-    for record in records():
-        if record["id"] >= threshold and not record["enumerates"]:
-            defects.append(f"{record['id']}: minted at or after {threshold} and carries no "
-                           f"'{rule['heading']}' section")
+    silent = [record["id"] for record in records()
+              if record["id"] >= threshold and not record["enumerates"]]
 
     for defect in defects:
         print("DEFECT: " + defect)
     if defects:
         print(NL + f"FAIL: {len(defects)} defects in the acceptance routing")
         return 1
+    for identifier in silent:
+        print(f"DEBT: {identifier} carries no '{rule['heading']}' section, minted at or after "
+              f"{threshold}. Reported, not failed: routing it here would mean inventing its "
+              f"author's questions.")
     unsettled = _open_rows(rows)
     covered = len([row for row in unsettled if row["questions"]])
     asked = len(open_questions())

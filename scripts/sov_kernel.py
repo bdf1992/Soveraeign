@@ -1,10 +1,16 @@
 #!/usr/bin/env python3
-"""Kernel transition contract command line.
+"""Kernel traversal-projection command line.
 
-Reads `contracts/kernel-transitions.json`, the table compiled from the SPEC.md
-Transition contract, and judges requests against it. It contacts no network,
-touches no service, and records nothing: it answers whether a transition is
-legal, never whether it happened.
+The Shared Kernel is broader than this table: SPEC.md supplies its logical typology,
+topology, traversal, and invariants. This command reads
+`contracts/kernel-transitions.json`, the authored executable projection of the
+SPEC.md Transition contract, and judges transition requests against that traversal
+projection.
+
+It contacts no network, touches no service, and records nothing: it answers whether
+a declared transition path is legal, never whether it happened. Passing this command
+therefore proves correspondence with one Kernel projection, not completeness of the
+Kernel itself.
 """
 
 from __future__ import annotations
@@ -126,12 +132,13 @@ def command_table(_: argparse.Namespace) -> int:
 
 
 def command_drift(_: argparse.Namespace) -> int:
-    """Refuse when the authored contract and SPEC.md disagree about the kernel.
+    """Refuse when the transition projection and SPEC.md disagree about traversal.
 
     `contracts/kernel-transitions.json` is authored, not generated, so nothing but
     this check stops an edit to one file from silently changing what the other
-    admits. Only what SPEC.md actually states is compared: which transitions exist
-    and which refusal codes each names.
+    admits. Only the traversal facts SPEC.md actually states are compared here:
+    which transitions exist and which refusal codes each names. Typology, topology,
+    and other Kernel invariants remain governed by their own contracts and checks.
     """
     spec = (ROOT / "SPEC.md").read_bytes().decode("utf-8")
     derived = projection.derive(spec)

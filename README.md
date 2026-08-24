@@ -182,8 +182,9 @@ or reviewed implementation adoption.
 1. Read `AGENTS.md`, `SOV.md`, `CONTRIBUTING.md`, and `STATUS.yaml`.
 2. Read `SYSTEM.md`, `CONTRACT.md`, `PRD.md`, and `SPEC.md` as one governing set.
 3. Read `ENGINEERING.md` and inspect `OPEN-SEAMS.md` before implementation.
-4. Run `python scripts/verify.py`; the dependency-free local and CI loop is
-   budgeted to finish in under three seconds after Python starts.
+4. Run `python scripts/verify.py`; the dependency-free local and CI loop grades
+   its wall time - `PLATINUM` at three seconds, `GOLD` at six, `SILVER` at
+   fifteen - and fails only past fifteen (`decisions/0050`).
 5. Work the next declared gate in `ROADMAP.md`; use the proposed reference
    baseline without treating it as owner-ratified or importing an ancestor
    implementation.

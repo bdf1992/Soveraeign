@@ -4,22 +4,30 @@ on:
   pull_request:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   render:
+    if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Render documentation
+      - name: Render documentation from repository sources
         run: python scripts/sov_docs.py build
-      - uses: actions/upload-artifact@v4
-        with:
-          name: rendered-documentation
-          path: docs/documentation.html
-          if-no-files-found: error
-          retention-days: 1
+      - name: Land derived page and remove this temporary workflow
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          rm .github/workflows/render-docs-temporary.yml
+          git config user.name "soveraeign-doc-renderer"
+          git config user.email "actions@users.noreply.github.com"
+          git add docs/documentation.html .github/workflows/render-docs-temporary.yml
+          git diff --cached --quiet && exit 0
+          git commit -m "docs: regenerate documentation after Root Kernel cleanup"
+          git push origin "HEAD:${HEAD_REF}"

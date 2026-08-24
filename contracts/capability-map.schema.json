@@ -1,0 +1,199 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/capability-map.schema.json",
+  "title": "Soveraeign Capability Map (PROPOSED, decisions/0036)",
+  "description": "One row per declared service operation: which office an actor meets it at, what authority it costs, which actor kinds may ask, and the activation state of every transport that could carry it. A rebuildable projection over the service manifests and contracts/capability-offices.json; never a second System of Record and never a grant. An endpoint object admits no authority field at all, so a transport cannot become a second authority path by construction rather than by rule.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "map_schema",
+    "status",
+    "phase",
+    "derived_from",
+    "capabilities"
+  ],
+  "properties": {
+    "map_schema": {
+      "const": "soveraeign-capability-map/v1"
+    },
+    "status": {
+      "enum": [
+        "PROPOSED",
+        "RATIFIED"
+      ]
+    },
+    "phase": {
+      "type": "string",
+      "minLength": 1
+    },
+    "derived_from": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "input_state_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "capabilities": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/capability"
+      }
+    }
+  },
+  "$defs": {
+    "capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "capability_id",
+        "service_id",
+        "operation",
+        "office",
+        "counter",
+        "service_standing",
+        "effect_class",
+        "required_authority",
+        "actor_kinds",
+        "endpoints"
+      ],
+      "properties": {
+        "capability_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*[.][a-z][a-z0-9-]*$"
+        },
+        "service_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "operation": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "office": {
+          "enum": [
+            "FRONT",
+            "BACK"
+          ]
+        },
+        "counter": {
+          "type": "string",
+          "minLength": 1
+        },
+        "service_standing": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Copied verbatim from the service manifest. The legal standing vocabulary is owned by contracts/service-manifest.schema.json, not restated here; the map records what it found so drift is visible rather than unrepresentable. A standing the map does not recognise as built is never served on any transport."
+        },
+        "effect_class": {
+          "enum": [
+            "RECORD_LOCAL",
+            "RESOURCE_CONSUMPTION",
+            "EXTERNAL_WORLD"
+          ]
+        },
+        "required_authority": {
+          "type": "string",
+          "minLength": 1
+        },
+        "actor_kinds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "HUMAN",
+              "MODEL",
+              "WORKER",
+              "SYSTEM"
+            ]
+          }
+        },
+        "endpoints": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/endpoint"
+          }
+        }
+      }
+    },
+    "endpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "transport",
+        "activation"
+      ],
+      "properties": {
+        "transport": {
+          "enum": [
+            "IN_PROCESS",
+            "CLI",
+            "MCP",
+            "HTTP"
+          ]
+        },
+        "activation": {
+          "enum": [
+            "ACTIVE",
+            "DECLARED_NOT_ACTIVATED",
+            "REFUSED_UNCONFIGURED"
+          ]
+        },
+        "address": {
+          "type": "string",
+          "minLength": 1
+        },
+        "refusal_code": {
+          "enum": [
+            "UNCONFIGURED",
+            "MODEL_UNAVAILABLE",
+            "EFFECT_CLASS_REFUSED"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "activation": {
+                "const": "ACTIVE"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "transport",
+              "activation",
+              "address"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "activation": {
+                "const": "REFUSED_UNCONFIGURED"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "transport",
+              "activation",
+              "refusal_code"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

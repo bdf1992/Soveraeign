@@ -1,0 +1,805 @@
+[
+  {
+    "id": "CAPMAP-POS-BUILT-SERVICE",
+    "contract": "capability-map.schema.json",
+    "status": "PROPOSED",
+    "polarity": "positive",
+    "expected_validity": "VALID",
+    "note": "A built service: served in process, declared on MCP, refused on HTTP.",
+    "record": {
+      "map_schema": "soveraeign-capability-map/v1",
+      "status": "PROPOSED",
+      "phase": "FOUNDING",
+      "derived_from": [
+        "services/asset/contracts/service.json",
+        "contracts/capability-offices.json"
+      ],
+      "capabilities": [
+        {
+          "capability_id": "asset.ingest-asset",
+          "service_id": "asset",
+          "operation": "ingest-asset",
+          "office": "FRONT",
+          "counter": "operator-desk",
+          "service_standing": "BUILT",
+          "effect_class": "RECORD_LOCAL",
+          "required_authority": "ingest:asset",
+          "actor_kinds": [
+            "HUMAN",
+            "MODEL"
+          ],
+          "endpoints": [
+            {
+              "transport": "IN_PROCESS",
+              "activation": "ACTIVE",
+              "address": "asset:in-process"
+            },
+            {
+              "transport": "MCP",
+              "activation": "DECLARED_NOT_ACTIVATED"
+            },
+            {
+              "transport": "HTTP",
+              "activation": "REFUSED_UNCONFIGURED",
+              "refusal_code": "UNCONFIGURED"
+            }
+          ]
+        },
+        {
+          "capability_id": "record.append-entry",
+          "service_id": "record",
+          "operation": "append-entry",
+          "office": "BACK",
+          "counter": "record",
+          "service_standing": "BUILT",
+          "effect_class": "RECORD_LOCAL",
+          "required_authority": "append:entry",
+          "actor_kinds": [
+            "SYSTEM"
+          ],
+          "endpoints": [
+            {
+              "transport": "IN_PROCESS",
+              "activation": "ACTIVE",
+              "address": "asset:in-process"
+            },
+            {
+              "transport": "MCP",
+              "activation": "DECLARED_NOT_ACTIVATED"
+            },
+            {
+              "transport": "HTTP",
+              "activation": "REFUSED_UNCONFIGURED",
+              "refusal_code": "UNCONFIGURED"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "CAPMAP-NEG-ACTIVE-WITHOUT-ADDRESS",
+    "contract": "capability-map.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "note": "An active endpoint that names no address is a door with no handle.",
+    "record": {
+      "map_schema": "soveraeign-capability-map/v1",
+      "status": "PROPOSED",
+      "phase": "FOUNDING",
+      "derived_from": [
+        "services/asset/contracts/service.json",
+        "contracts/capability-offices.json"
+      ],
+      "capabilities": [
+        {
+          "capability_id": "asset.ingest-asset",
+          "service_id": "asset",
+          "operation": "ingest-asset",
+          "office": "FRONT",
+          "counter": "operator-desk",
+          "service_standing": "BUILT",
+          "effect_class": "RECORD_LOCAL",
+          "required_authority": "ingest:asset",
+          "actor_kinds": [
+            "HUMAN",
+            "MODEL"
+          ],
+          "endpoints": [
+            {
+              "transport": "IN_PROCESS",
+              "activation": "ACTIVE"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "CAPMAP-NEG-REFUSED-WITHOUT-CODE",
+    "contract": "capability-map.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "note": "A refusal must carry its code; a silent refusal is indistinguishable from a bug.",
+    "record": {
+      "map_schema": "soveraeign-capability-map/v1",
+      "status": "PROPOSED",
+      "phase": "FOUNDING",
+      "derived_from": [
+        "services/asset/contracts/service.json",
+        "contracts/capability-offices.json"
+      ],
+      "capabilities": [
+        {
+          "capability_id": "asset.ingest-asset",
+          "service_id": "asset",
+          "operation": "ingest-asset",
+          "office": "FRONT",
+          "counter": "operator-desk",
+          "service_standing": "BUILT",
+          "effect_class": "RECORD_LOCAL",
+          "required_authority": "ingest:asset",
+          "actor_kinds": [
+            "HUMAN",
+            "MODEL"
+          ],
+          "endpoints": [
+            {
+              "transport": "HTTP",
+              "activation": "REFUSED_UNCONFIGURED"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "CAPMAP-NEG-ENDPOINT-CARRIES-AUTHORITY",
+    "contract": "capability-map.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "note": "A transport that declares its own authority is a second authority path. The endpoint object admits no such field, so this fails structurally.",
+    "record": {
+      "map_schema": "soveraeign-capability-map/v1",
+      "status": "PROPOSED",
+      "phase": "FOUNDING",
+      "derived_from": [
+        "services/asset/contracts/service.json",
+        "contracts/capability-offices.json"
+      ],
+      "capabilities": [
+        {
+          "capability_id": "asset.ingest-asset",
+          "service_id": "asset",
+          "operation": "ingest-asset",
+          "office": "FRONT",
+          "counter": "operator-desk",
+          "service_standing": "BUILT",
+          "effect_class": "RECORD_LOCAL",
+          "required_authority": "ingest:asset",
+          "actor_kinds": [
+            "HUMAN",
+            "MODEL"
+          ],
+          "endpoints": [
+            {
+              "transport": "MCP",
+              "activation": "ACTIVE",
+              "address": "mcp://asset/ingest",
+              "required_authority": "ingest:asset"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "CAPMAP-NEG-UNKNOWN-EFFECT-CLASS",
+    "contract": "capability-map.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "note": "Effect class is a closed vocabulary from AGENTS.md; a new one is refused.",
+    "record": {
+      "map_schema": "soveraeign-capability-map/v1",
+      "status": "PROPOSED",
+      "phase": "FOUNDING",
+      "derived_from": [
+        "services/asset/contracts/service.json",
+        "contracts/capability-offices.json"
+      ],
+      "capabilities": [
+        {
+          "capability_id": "asset.ingest-asset",
+          "service_id": "asset",
+          "operation": "ingest-asset",
+          "office": "FRONT",
+          "counter": "operator-desk",
+          "service_standing": "BUILT",
+          "effect_class": "MOSTLY_HARMLESS",
+          "required_authority": "ingest:asset",
+          "actor_kinds": [
+            "HUMAN",
+            "MODEL"
+          ],
+          "endpoints": [
+            {
+              "transport": "IN_PROCESS",
+              "activation": "ACTIVE",
+              "address": "asset:in-process"
+            },
+            {
+              "transport": "MCP",
+              "activation": "DECLARED_NOT_ACTIVATED"
+            },
+            {
+              "transport": "HTTP",
+              "activation": "REFUSED_UNCONFIGURED",
+              "refusal_code": "UNCONFIGURED"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "CAPMAP-SEM-SERVED-BEFORE-BUILT",
+    "contract": "capability-map.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "note": "A proposed service serving a live endpoint. Schema-shaped, and still a door onto an operation that does not exist.",
+    "record": {
+      "map_schema": "soveraeign-capability-map/v1",
+      "status": "PROPOSED",
+      "phase": "FOUNDING",
+      "derived_from": [
+        "services/asset/contracts/service.json",
+        "contracts/capability-offices.json"
+      ],
+      "capabilities": [
+        {
+          "capability_id": "asset.ingest-asset",
+          "service_id": "asset",
+          "operation": "ingest-asset",
+          "office": "FRONT",
+          "counter": "operator-desk",
+          "service_standing": "PROPOSED",
+          "effect_class": "RECORD_LOCAL",
+          "required_authority": "ingest:asset",
+          "actor_kinds": [
+            "HUMAN",
+            "MODEL"
+          ],
+          "endpoints": [
+            {
+              "transport": "IN_PROCESS",
+              "activation": "ACTIVE",
+              "address": "asset:in-process"
+            },
+            {
+              "transport": "MCP",
+              "activation": "DECLARED_NOT_ACTIVATED"
+            },
+            {
+              "transport": "HTTP",
+              "activation": "REFUSED_UNCONFIGURED",
+              "refusal_code": "UNCONFIGURED"
+            }
+          ]
+        }
+      ]
+    },
+    "manifests": {
+      "asset": {
+        "service_id": "asset",
+        "standing": "PROPOSED",
+        "operations": [
+          {
+            "operation": "ingest-asset",
+            "standing": "PROPOSED"
+          }
+        ]
+      }
+    },
+    "table": {
+      "counters": {
+        "FRONT": {
+          "operator-desk": "An operator working inside the node."
+        },
+        "BACK": {
+          "record": "The journal and its projections."
+        }
+      },
+      "transport_policy": {
+        "IN_PROCESS": {
+          "operator_facing": false,
+          "external": false
+        },
+        "MCP": {
+          "operator_facing": true,
+          "external": false
+        },
+        "HTTP": {
+          "operator_facing": true,
+          "external": true
+        }
+      },
+      "external_transports_refused_in_phase": [
+        "HTTP"
+      ],
+      "assignments": {
+        "asset.ingest-asset": {
+          "office": "FRONT",
+          "counter": "operator-desk",
+          "required_authority": "ingest:asset",
+          "effect_class": "RECORD_LOCAL",
+          "actor_kinds": [
+            "HUMAN",
+            "MODEL"
+          ]
+        },
+        "record.append-entry": {
+          "office": "BACK",
+          "counter": "record",
+          "required_authority": "append:entry",
+          "effect_class": "RECORD_LOCAL",
+          "actor_kinds": [
+            "SYSTEM"
+          ]
+        }
+      }
+    },
+    "expected_map_defects": [
+      "SERVED_BEFORE_BUILT"
+    ],
+    "defeats": "an endpoint serving an operation whose service is not built"
+  },
+  {
+    "id": "CAPMAP-SEM-EXTERNAL-TRANSPORT-ACTIVATED",
+    "contract": "capability-map.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "note": "HTTP activated while the phase refuses every external transport.",
+    "record": {
+      "map_schema": "soveraeign-capability-map/v1",
+      "status": "PROPOSED",
+      "phase": "FOUNDING",
+      "derived_from": [
+        "services/asset/contracts/service.json",
+        "contracts/capability-offices.json"
+      ],
+      "capabilities": [
+        {
+          "capability_id": "asset.ingest-asset",
+          "service_id": "asset",
+          "operation": "ingest-asset",
+          "office": "FRONT",
+          "counter": "operator-desk",
+          "service_standing": "BUILT",
+          "effect_class": "RECORD_LOCAL",
+          "required_authority": "ingest:asset",
+          "actor_kinds": [
+            "HUMAN",
+            "MODEL"
+          ],
+          "endpoints": [
+            {
+              "transport": "HTTP",
+              "activation": "ACTIVE",
+              "address": "http://0.0.0.0:8080/ingest"
+            }
+          ]
+        }
+      ]
+    },
+    "manifests": {
+      "asset": {
+        "service_id": "asset",
+        "standing": "BUILT",
+        "operations": [
+          {
+            "operation": "ingest-asset",
+            "standing": "BUILT"
+          }
+        ]
+      }
+    },
+    "table": {
+      "counters": {
+        "FRONT": {
+          "operator-desk": "An operator working inside the node."
+        },
+        "BACK": {
+          "record": "The journal and its projections."
+        }
+      },
+      "transport_policy": {
+        "IN_PROCESS": {
+          "operator_facing": false,
+          "external": false
+        },
+        "MCP": {
+          "operator_facing": true,
+          "external": false
+        },
+        "HTTP": {
+          "operator_facing": true,
+          "external": true
+        }
+      },
+      "external_transports_refused_in_phase": [
+        "HTTP"
+      ],
+      "assignments": {
+        "asset.ingest-asset": {
+          "office": "FRONT",
+          "counter": "operator-desk",
+          "required_authority": "ingest:asset",
+          "effect_class": "RECORD_LOCAL",
+          "actor_kinds": [
+            "HUMAN",
+            "MODEL"
+          ]
+        },
+        "record.append-entry": {
+          "office": "BACK",
+          "counter": "record",
+          "required_authority": "append:entry",
+          "effect_class": "RECORD_LOCAL",
+          "actor_kinds": [
+            "SYSTEM"
+          ]
+        }
+      }
+    },
+    "expected_map_defects": [
+      "EXTERNAL_TRANSPORT_ACTIVATED"
+    ],
+    "defeats": "no_external_effects_in_phase_i, which STATUS.yaml still carries"
+  },
+  {
+    "id": "CAPMAP-SEM-BACK-OFFICE-EXPOSED",
+    "contract": "capability-map.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "note": "Journal append served straight to a model operator over MCP, with no front office operation in front of it.",
+    "record": {
+      "map_schema": "soveraeign-capability-map/v1",
+      "status": "PROPOSED",
+      "phase": "FOUNDING",
+      "derived_from": [
+        "services/asset/contracts/service.json",
+        "contracts/capability-offices.json"
+      ],
+      "capabilities": [
+        {
+          "capability_id": "record.append-entry",
+          "service_id": "record",
+          "operation": "append-entry",
+          "office": "BACK",
+          "counter": "record",
+          "service_standing": "BUILT",
+          "effect_class": "RECORD_LOCAL",
+          "required_authority": "append:entry",
+          "actor_kinds": [
+            "SYSTEM"
+          ],
+          "endpoints": [
+            {
+              "transport": "MCP",
+              "activation": "ACTIVE",
+              "address": "mcp://record/append"
+            }
+          ]
+        }
+      ]
+    },
+    "manifests": {
+      "record": {
+        "service_id": "record",
+        "standing": "BUILT",
+        "operations": [
+          {
+            "operation": "append-entry",
+            "standing": "BUILT"
+          }
+        ]
+      }
+    },
+    "table": {
+      "counters": {
+        "FRONT": {
+          "operator-desk": "An operator working inside the node."
+        },
+        "BACK": {
+          "record": "The journal and its projections."
+        }
+      },
+      "transport_policy": {
+        "IN_PROCESS": {
+          "operator_facing": false,
+          "external": false
+        },
+        "MCP": {
+          "operator_facing": true,
+          "external": false
+        },
+        "HTTP": {
+          "operator_facing": true,
+          "external": true
+        }
+      },
+      "external_transports_refused_in_phase": [
+        "HTTP"
+      ],
+      "assignments": {
+        "asset.ingest-asset": {
+          "office": "FRONT",
+          "counter": "operator-desk",
+          "required_authority": "ingest:asset",
+          "effect_class": "RECORD_LOCAL",
+          "actor_kinds": [
+            "HUMAN",
+            "MODEL"
+          ]
+        },
+        "record.append-entry": {
+          "office": "BACK",
+          "counter": "record",
+          "required_authority": "append:entry",
+          "effect_class": "RECORD_LOCAL",
+          "actor_kinds": [
+            "SYSTEM"
+          ]
+        }
+      }
+    },
+    "expected_map_defects": [
+      "BACK_OFFICE_EXPOSED"
+    ],
+    "defeats": "the back office being reachable without passing a front office counter"
+  },
+  {
+    "id": "CAPMAP-SEM-UNDECLARED-OPERATION",
+    "contract": "capability-map.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "note": "A capability for an operation no service manifest declares: an invented door.",
+    "record": {
+      "map_schema": "soveraeign-capability-map/v1",
+      "status": "PROPOSED",
+      "phase": "FOUNDING",
+      "derived_from": [
+        "services/asset/contracts/service.json",
+        "contracts/capability-offices.json"
+      ],
+      "capabilities": [
+        {
+          "capability_id": "asset.delete-everything",
+          "service_id": "asset",
+          "operation": "delete-everything",
+          "office": "FRONT",
+          "counter": "operator-desk",
+          "service_standing": "BUILT",
+          "effect_class": "RECORD_LOCAL",
+          "required_authority": "ingest:asset",
+          "actor_kinds": [
+            "HUMAN",
+            "MODEL"
+          ],
+          "endpoints": [
+            {
+              "transport": "IN_PROCESS",
+              "activation": "ACTIVE",
+              "address": "asset:in-process"
+            },
+            {
+              "transport": "MCP",
+              "activation": "DECLARED_NOT_ACTIVATED"
+            },
+            {
+              "transport": "HTTP",
+              "activation": "REFUSED_UNCONFIGURED",
+              "refusal_code": "UNCONFIGURED"
+            }
+          ]
+        }
+      ]
+    },
+    "manifests": {
+      "asset": {
+        "service_id": "asset",
+        "standing": "BUILT",
+        "operations": [
+          {
+            "operation": "ingest-asset",
+            "standing": "BUILT"
+          }
+        ]
+      },
+      "record": {
+        "service_id": "record",
+        "standing": "BUILT",
+        "operations": [
+          {
+            "operation": "append-entry",
+            "standing": "BUILT"
+          }
+        ]
+      }
+    },
+    "table": {
+      "counters": {
+        "FRONT": {
+          "operator-desk": "An operator working inside the node."
+        },
+        "BACK": {
+          "record": "The journal and its projections."
+        }
+      },
+      "transport_policy": {
+        "IN_PROCESS": {
+          "operator_facing": false,
+          "external": false
+        },
+        "MCP": {
+          "operator_facing": true,
+          "external": false
+        },
+        "HTTP": {
+          "operator_facing": true,
+          "external": true
+        }
+      },
+      "external_transports_refused_in_phase": [
+        "HTTP"
+      ],
+      "assignments": {
+        "asset.ingest-asset": {
+          "office": "FRONT",
+          "counter": "operator-desk",
+          "required_authority": "ingest:asset",
+          "effect_class": "RECORD_LOCAL",
+          "actor_kinds": [
+            "HUMAN",
+            "MODEL"
+          ]
+        },
+        "record.append-entry": {
+          "office": "BACK",
+          "counter": "record",
+          "required_authority": "append:entry",
+          "effect_class": "RECORD_LOCAL",
+          "actor_kinds": [
+            "SYSTEM"
+          ]
+        }
+      }
+    },
+    "expected_map_defects": [
+      "UNDECLARED_OPERATION",
+      "UNMAPPED_OPERATION"
+    ],
+    "defeats": "a capability map row with no operation behind it"
+  },
+  {
+    "id": "CAPMAP-SEM-AUTHORITY-DRIFT",
+    "contract": "capability-map.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "note": "The map asks for a cheaper grant than the office table states.",
+    "record": {
+      "map_schema": "soveraeign-capability-map/v1",
+      "status": "PROPOSED",
+      "phase": "FOUNDING",
+      "derived_from": [
+        "services/asset/contracts/service.json",
+        "contracts/capability-offices.json"
+      ],
+      "capabilities": [
+        {
+          "capability_id": "asset.ingest-asset",
+          "service_id": "asset",
+          "operation": "ingest-asset",
+          "office": "FRONT",
+          "counter": "operator-desk",
+          "service_standing": "BUILT",
+          "effect_class": "RECORD_LOCAL",
+          "required_authority": "read:version",
+          "actor_kinds": [
+            "HUMAN",
+            "MODEL"
+          ],
+          "endpoints": [
+            {
+              "transport": "IN_PROCESS",
+              "activation": "ACTIVE",
+              "address": "asset:in-process"
+            },
+            {
+              "transport": "MCP",
+              "activation": "DECLARED_NOT_ACTIVATED"
+            },
+            {
+              "transport": "HTTP",
+              "activation": "REFUSED_UNCONFIGURED",
+              "refusal_code": "UNCONFIGURED"
+            }
+          ]
+        }
+      ]
+    },
+    "manifests": {
+      "asset": {
+        "service_id": "asset",
+        "standing": "BUILT",
+        "operations": [
+          {
+            "operation": "ingest-asset",
+            "standing": "BUILT"
+          }
+        ]
+      }
+    },
+    "table": {
+      "counters": {
+        "FRONT": {
+          "operator-desk": "An operator working inside the node."
+        },
+        "BACK": {
+          "record": "The journal and its projections."
+        }
+      },
+      "transport_policy": {
+        "IN_PROCESS": {
+          "operator_facing": false,
+          "external": false
+        },
+        "MCP": {
+          "operator_facing": true,
+          "external": false
+        },
+        "HTTP": {
+          "operator_facing": true,
+          "external": true
+        }
+      },
+      "external_transports_refused_in_phase": [
+        "HTTP"
+      ],
+      "assignments": {
+        "asset.ingest-asset": {
+          "office": "FRONT",
+          "counter": "operator-desk",
+          "required_authority": "ingest:asset",
+          "effect_class": "RECORD_LOCAL",
+          "actor_kinds": [
+            "HUMAN",
+            "MODEL"
+          ]
+        },
+        "record.append-entry": {
+          "office": "BACK",
+          "counter": "record",
+          "required_authority": "append:entry",
+          "effect_class": "RECORD_LOCAL",
+          "actor_kinds": [
+            "SYSTEM"
+          ]
+        }
+      }
+    },
+    "expected_map_defects": [
+      "AUTHORITY_DRIFT"
+    ],
+    "defeats": "the map quietly lowering the grant an operation costs"
+  }
+]

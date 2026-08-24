@@ -1,0 +1,2639 @@
+{
+  "map_schema": "soveraeign-capability-map/v1",
+  "status": "PROPOSED",
+  "phase": "FOUNDING",
+  "derived_from": [
+    "services/asset/contracts/service.json",
+    "services/console/contracts/service.json",
+    "services/gateway/contracts/service.json",
+    "services/projection/contracts/service.json",
+    "services/proofing/contracts/service.json",
+    "services/record/contracts/service.json",
+    "contracts/capability-offices.json"
+  ],
+  "input_state_digest": "0fa84cccc8dbae2910984b88c1963199d73637a16715092641f5a917a80b8fce",
+  "capabilities": [
+    {
+      "capability_id": "asset.ingest-asset",
+      "service_id": "asset",
+      "operation": "ingest-asset",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "ingest:asset",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "asset:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "ACTIVE",
+          "address": "python -m soveraeign_asset_service.cli ingest"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "asset.propose-description",
+      "service_id": "asset",
+      "operation": "propose-description",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "propose:description",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "asset:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "asset.ratify-proposal",
+      "service_id": "asset",
+      "operation": "ratify-proposal",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "ratify:judgement",
+      "actor_kinds": [
+        "HUMAN"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "asset:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "asset.read-asset",
+      "service_id": "asset",
+      "operation": "read-asset",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:version",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "asset:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "asset.read-use-record",
+      "service_id": "asset",
+      "operation": "read-use-record",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:receipt",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "asset:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "asset.read-version",
+      "service_id": "asset",
+      "operation": "read-version",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:version",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "asset:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "asset.rebuild-projection",
+      "service_id": "asset",
+      "operation": "rebuild-projection",
+      "office": "BACK",
+      "counter": "record",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "rebuild:projection",
+      "actor_kinds": [
+        "SYSTEM"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "asset:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "ACTIVE",
+          "address": "python -m soveraeign_asset_service.cli rebuild"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "asset.request-derivative",
+      "service_id": "asset",
+      "operation": "request-derivative",
+      "office": "FRONT",
+      "counter": "job-window",
+      "service_standing": "BUILT",
+      "effect_class": "RESOURCE_CONSUMPTION",
+      "required_authority": "request:derivative",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "asset:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "asset.retract-record",
+      "service_id": "asset",
+      "operation": "retract-record",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "retract:record",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "asset:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "console.acknowledge-notification",
+      "service_id": "console",
+      "operation": "acknowledge-notification",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "acknowledge:notification",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "console.archive-thread",
+      "service_id": "console",
+      "operation": "archive-thread",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "archive:thread",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "console:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "console.close-session",
+      "service_id": "console",
+      "operation": "close-session",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "close:session",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "console:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "console.discover-operations",
+      "service_id": "console",
+      "operation": "discover-operations",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:session",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "console:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "console.grant",
+      "service_id": "console",
+      "operation": "grant",
+      "office": "BACK",
+      "counter": "permits-office",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "grant:authority",
+      "actor_kinds": [
+        "HUMAN"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "console:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "console.list-channels",
+      "service_id": "console",
+      "operation": "list-channels",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:thread",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "console.list-grants",
+      "service_id": "console",
+      "operation": "list-grants",
+      "office": "BACK",
+      "counter": "permits-office",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:authority",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "console:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "console.list-notifications",
+      "service_id": "console",
+      "operation": "list-notifications",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "acknowledge:notification",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "console.list-pending-judgement-requests",
+      "service_id": "console",
+      "operation": "list-pending-judgement-requests",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:judgement",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "console.list-publications",
+      "service_id": "console",
+      "operation": "list-publications",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:thread",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "console:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "ACTIVE",
+          "address": "python -m soveraeign_console_service.cli list-publications"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "console.notify",
+      "service_id": "console",
+      "operation": "notify",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "notify:operator",
+      "actor_kinds": [
+        "SYSTEM"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "console.open-channel",
+      "service_id": "console",
+      "operation": "open-channel",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "open:channel",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "console:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "console.open-session",
+      "service_id": "console",
+      "operation": "open-session",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "open:session",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "console:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "console.open-thread",
+      "service_id": "console",
+      "operation": "open-thread",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "open:thread",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "console:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "console.post",
+      "service_id": "console",
+      "operation": "post",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "post:message",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "console:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "console.publish-thread",
+      "service_id": "console",
+      "operation": "publish-thread",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "publish:thread",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "console:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "ACTIVE",
+          "address": "python -m soveraeign_console_service.cli publish-thread"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "console.read-thread",
+      "service_id": "console",
+      "operation": "read-thread",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:thread",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "console:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "console.rebuild-projection",
+      "service_id": "console",
+      "operation": "rebuild-projection",
+      "office": "BACK",
+      "counter": "record",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "rebuild:projection",
+      "actor_kinds": [
+        "SYSTEM"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "console.request-judgement",
+      "service_id": "console",
+      "operation": "request-judgement",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "request:judgement",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "console.resolve-judgement",
+      "service_id": "console",
+      "operation": "resolve-judgement",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "ratify:judgement",
+      "actor_kinds": [
+        "HUMAN"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "console.revoke",
+      "service_id": "console",
+      "operation": "revoke",
+      "office": "BACK",
+      "counter": "permits-office",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "revoke:authority",
+      "actor_kinds": [
+        "HUMAN"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "console:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "console.session-context",
+      "service_id": "console",
+      "operation": "session-context",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:session",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "console:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "console.set-setting",
+      "service_id": "console",
+      "operation": "set-setting",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "set:setting",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "console.show-judgement-request",
+      "service_id": "console",
+      "operation": "show-judgement-request",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:judgement",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "console.show-receipt",
+      "service_id": "console",
+      "operation": "show-receipt",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:receipt",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "console.withdraw-publication",
+      "service_id": "console",
+      "operation": "withdraw-publication",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "publish:thread",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "console:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "ACTIVE",
+          "address": "python -m soveraeign_console_service.cli withdraw-publication"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "gateway.accept-request",
+      "service_id": "gateway",
+      "operation": "accept-request",
+      "office": "FRONT",
+      "counter": "door",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "open:session",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "gateway.bind-transport",
+      "service_id": "gateway",
+      "operation": "bind-transport",
+      "office": "BACK",
+      "counter": "ground",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "bind:transport",
+      "actor_kinds": [
+        "HUMAN"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "gateway.check-authority",
+      "service_id": "gateway",
+      "operation": "check-authority",
+      "office": "BACK",
+      "counter": "permits-office",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:authority",
+      "actor_kinds": [
+        "SYSTEM"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "gateway.list-endpoints",
+      "service_id": "gateway",
+      "operation": "list-endpoints",
+      "office": "FRONT",
+      "counter": "door",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:capability",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "gateway.read-receipt",
+      "service_id": "gateway",
+      "operation": "read-receipt",
+      "office": "FRONT",
+      "counter": "door",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:receipt",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "gateway.refuse-request",
+      "service_id": "gateway",
+      "operation": "refuse-request",
+      "office": "FRONT",
+      "counter": "door",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "route:request",
+      "actor_kinds": [
+        "SYSTEM"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "gateway.resolve-capability",
+      "service_id": "gateway",
+      "operation": "resolve-capability",
+      "office": "FRONT",
+      "counter": "door",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:capability",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "gateway.return-receipt",
+      "service_id": "gateway",
+      "operation": "return-receipt",
+      "office": "FRONT",
+      "counter": "door",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:receipt",
+      "actor_kinds": [
+        "SYSTEM"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "gateway.route-request",
+      "service_id": "gateway",
+      "operation": "route-request",
+      "office": "FRONT",
+      "counter": "door",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "route:request",
+      "actor_kinds": [
+        "SYSTEM"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "projection.build-projection",
+      "service_id": "projection",
+      "operation": "build-projection",
+      "office": "BACK",
+      "counter": "pattern-room",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "rebuild:projection",
+      "actor_kinds": [
+        "SYSTEM"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "projection.configure-graph",
+      "service_id": "projection",
+      "operation": "configure-graph",
+      "office": "BACK",
+      "counter": "pattern-room",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "configure:collection",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "projection.configure-text",
+      "service_id": "projection",
+      "operation": "configure-text",
+      "office": "BACK",
+      "counter": "pattern-room",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "configure:collection",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "projection.declare-collection",
+      "service_id": "projection",
+      "operation": "declare-collection",
+      "office": "BACK",
+      "counter": "pattern-room",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "declare:collection",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "projection.describe-collection",
+      "service_id": "projection",
+      "operation": "describe-collection",
+      "office": "BACK",
+      "counter": "pattern-room",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:projection",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "projection.find-path",
+      "service_id": "projection",
+      "operation": "find-path",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:projection",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "projection.observe-fidelity",
+      "service_id": "projection",
+      "operation": "observe-fidelity",
+      "office": "BACK",
+      "counter": "inspectorate",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "observe:fidelity",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "projection.package-context",
+      "service_id": "projection",
+      "operation": "package-context",
+      "office": "FRONT",
+      "counter": "model-counter",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:projection",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "projection.propose-from-projection",
+      "service_id": "projection",
+      "operation": "propose-from-projection",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "propose:record",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "projection.read-context-package",
+      "service_id": "projection",
+      "operation": "read-context-package",
+      "office": "FRONT",
+      "counter": "model-counter",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:projection",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "projection.register-vectors",
+      "service_id": "projection",
+      "operation": "register-vectors",
+      "office": "BACK",
+      "counter": "pattern-room",
+      "service_standing": "PROPOSED",
+      "effect_class": "RESOURCE_CONSUMPTION",
+      "required_authority": "register:vectors",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "projection.search-dense",
+      "service_id": "projection",
+      "operation": "search-dense",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:projection",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "projection.search-hybrid",
+      "service_id": "projection",
+      "operation": "search-hybrid",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:projection",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "projection.search-sparse",
+      "service_id": "projection",
+      "operation": "search-sparse",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:projection",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "projection.search-text",
+      "service_id": "projection",
+      "operation": "search-text",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:projection",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "projection.traverse-graph",
+      "service_id": "projection",
+      "operation": "traverse-graph",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:projection",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "proofing.add-annotation",
+      "service_id": "proofing",
+      "operation": "add-annotation",
+      "office": "FRONT",
+      "counter": "review-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "annotate:version",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "proofing.assign-reviewer",
+      "service_id": "proofing",
+      "operation": "assign-reviewer",
+      "office": "FRONT",
+      "counter": "review-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "assign:reviewer",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "proofing.close-session",
+      "service_id": "proofing",
+      "operation": "close-session",
+      "office": "FRONT",
+      "counter": "review-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "close:session",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "proofing.open-session",
+      "service_id": "proofing",
+      "operation": "open-session",
+      "office": "FRONT",
+      "counter": "review-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "open:session",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "proofing.propose-decision",
+      "service_id": "proofing",
+      "operation": "propose-decision",
+      "office": "FRONT",
+      "counter": "review-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "propose:decision",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "proofing.ratify-decision",
+      "service_id": "proofing",
+      "operation": "ratify-decision",
+      "office": "FRONT",
+      "counter": "review-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "ratify:judgement",
+      "actor_kinds": [
+        "HUMAN"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "proofing.read-annotations",
+      "service_id": "proofing",
+      "operation": "read-annotations",
+      "office": "FRONT",
+      "counter": "review-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:version",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "proofing.read-decision",
+      "service_id": "proofing",
+      "operation": "read-decision",
+      "office": "FRONT",
+      "counter": "review-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:judgement",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "proofing.read-session",
+      "service_id": "proofing",
+      "operation": "read-session",
+      "office": "FRONT",
+      "counter": "review-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:session",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "proofing.request-comparison",
+      "service_id": "proofing",
+      "operation": "request-comparison",
+      "office": "FRONT",
+      "counter": "review-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RESOURCE_CONSUMPTION",
+      "required_authority": "request:comparison",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "proofing.request-revision",
+      "service_id": "proofing",
+      "operation": "request-revision",
+      "office": "FRONT",
+      "counter": "review-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "request:revision",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "record.append-entry",
+      "service_id": "record",
+      "operation": "append-entry",
+      "office": "BACK",
+      "counter": "record",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "append:entry",
+      "actor_kinds": [
+        "SYSTEM"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "record:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "record.append-receipt",
+      "service_id": "record",
+      "operation": "append-receipt",
+      "office": "BACK",
+      "counter": "record",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "append:receipt",
+      "actor_kinds": [
+        "SYSTEM"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "record:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "record.counter-entry",
+      "service_id": "record",
+      "operation": "counter-entry",
+      "office": "BACK",
+      "counter": "record",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "counter:entry",
+      "actor_kinds": [
+        "SYSTEM"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "record:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "record.drop-projections",
+      "service_id": "record",
+      "operation": "drop-projections",
+      "office": "BACK",
+      "counter": "record",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "rebuild:projection",
+      "actor_kinds": [
+        "SYSTEM"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "record:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "record.read-entry",
+      "service_id": "record",
+      "operation": "read-entry",
+      "office": "BACK",
+      "counter": "record",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:journal",
+      "actor_kinds": [
+        "SYSTEM"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "record:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "record.read-projection",
+      "service_id": "record",
+      "operation": "read-projection",
+      "office": "BACK",
+      "counter": "record",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:projection",
+      "actor_kinds": [
+        "SYSTEM"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "record:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "record.rebuild-projections",
+      "service_id": "record",
+      "operation": "rebuild-projections",
+      "office": "BACK",
+      "counter": "record",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "rebuild:projection",
+      "actor_kinds": [
+        "SYSTEM"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "record:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "record.reconstruct-journal",
+      "service_id": "record",
+      "operation": "reconstruct-journal",
+      "office": "BACK",
+      "counter": "record",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:journal",
+      "actor_kinds": [
+        "SYSTEM"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "record:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    }
+  ]
+}

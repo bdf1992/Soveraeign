@@ -49,20 +49,27 @@ _DRIVE_LETTER = re.compile(r"^[A-Za-z]:")
 
 
 def _valid_relative_path(value: object) -> bool:
-    """Whether a manifest path is a safe relative path, judged the same everywhere.
+    """Judge a declared custody path as POSIX regardless of the host reading the manifest.
 
-    Manifest paths are declared data, not host paths, so they are validated as
-    POSIX regardless of the checking machine. ``PurePath`` resolves to
-    ``PureWindowsPath`` on Windows, where ``/etc/passwd`` is neither absolute nor
-    built of refused parts, and the guard would admit exactly what it exists to
+    Manifest paths are declared data, not host paths, so they are validated as POSIX
+    everywhere; otherwise the same manifest is safe or unsafe depending on who checks it.
+    ``PurePath`` resolves to ``PureWindowsPath`` on Windows, where ``/tmp/escape`` carries
+    no drive and so is not absolute, and the guard would admit exactly what it exists to
     refuse.
+
+    Three defeats, and the two sides of this merge each caught one of them: a leading
+    slash, a bare drive letter (``C:escape`` is drive-relative on Windows and escapes the
+    node root when joined), and a path that resolves to no parts at all (``.`` collapses
+    onto the root). All three are refused here.
     """
     if not isinstance(value, str) or not value or "\\" in value:
         return False
     if value.startswith("/") or _DRIVE_LETTER.match(value):
         return False
     path = PurePosixPath(value)
-    return not path.is_absolute() and all(part not in {"", ".", ".."} for part in path.parts)
+    if path.is_absolute() or not path.parts:
+        return False
+    return all(part not in {"", ".", ".."} for part in path.parts)
 
 
 def validate_manifest(manifest: dict[str, Any]) -> list[str]:

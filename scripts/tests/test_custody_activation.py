@@ -19,6 +19,14 @@ assert SPEC and SPEC.loader
 activation = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(activation)
 
+#: The custody contract is a POSIX node volume: it verifies uid/gid ownership and sets
+#: file modes through ``os.fchmod``. A host without POSIX identity cannot hold that
+#: contract, so these cases declare the requirement and skip visibly rather than erroring
+#: with an AttributeError that reads like a defect in the code under test.
+#:
+#: This stays a bool rather than a ready-made decorator because two cases below branch on
+#: it (``if POSIX_CUSTODY:`` asserts POSIX enforcement or the UNAVAILABLE receipt), and a
+#: ``skipUnless`` object is always truthy - it would take the POSIX branch on Windows.
 POSIX_CUSTODY = activation.custody_posix.available
 NO_POSIX = ("POSIX ownership and mode bits do not exist on this platform. The check is "
             "skipped rather than passed, and every receipt written here records "
@@ -26,6 +34,7 @@ NO_POSIX = ("POSIX ownership and mode bits do not exist on this platform. The ch
             "proof that custody was verified.")
 
 
+@unittest.skipUnless(POSIX_CUSTODY, NO_POSIX)
 class CustodyActivationTests(unittest.TestCase):
     def manifest(self) -> dict:
         return json.loads((ROOT / "infrastructure" / "phase-i.local.json").read_text(

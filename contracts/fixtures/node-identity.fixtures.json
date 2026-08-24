@@ -1,0 +1,215 @@
+[
+  {
+    "id": "NODE-POS-SELF",
+    "contract": "node-identity.schema.json",
+    "status": "PROPOSED",
+    "polarity": "positive",
+    "expected_validity": "VALID",
+    "expected_registry": true,
+    "note": "The node holding the registry, rooted at the seat the local topology is rooted at.",
+    "record": {
+      "node_schema": "soveraeign-node-identity/v1",
+      "node_id": "node:home",
+      "display_name": "Bdo's node",
+      "relation": "SELF",
+      "root_seat": "seat:root",
+      "founded_at": "2026-08-22T00:00:00Z",
+      "known_since": null,
+      "admitted_by": null,
+      "standing": "RECORDED"
+    }
+  },
+  {
+    "id": "NODE-POS-PEER",
+    "contract": "node-identity.schema.json",
+    "status": "PROPOSED",
+    "polarity": "positive",
+    "expected_validity": "VALID",
+    "expected_registry": true,
+    "note": "A peer admitted by the local root seat. Its own root seat is named but is absent from the local topology, which is what makes the relationship a crossing.",
+    "context": [
+      {
+        "node_schema": "soveraeign-node-identity/v1",
+        "node_id": "node:home",
+        "display_name": "Bdo's node",
+        "relation": "SELF",
+        "root_seat": "seat:root",
+        "founded_at": "2026-08-22T00:00:00Z",
+        "known_since": null,
+        "admitted_by": null,
+        "standing": "RECORDED"
+      }
+    ],
+    "record": {
+      "node_schema": "soveraeign-node-identity/v1",
+      "node_id": "node:peer-one",
+      "display_name": "A second sovereign node",
+      "relation": "PEER",
+      "root_seat": "seat:peer-one-root",
+      "founded_at": "2026-08-20T00:00:00Z",
+      "known_since": "2026-08-23T12:00:00Z",
+      "admitted_by": "seat:root",
+      "standing": "RECORDED"
+    }
+  },
+  {
+    "id": "NODE-NEG-CARRIES-A-GRANT",
+    "contract": "node-identity.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "note": "The central refusal. A node identity that could carry a grant would let a peer's own description of itself arrive as permission inside this node. The contract closes its object so the field cannot be written at all.",
+    "record": {
+      "node_schema": "soveraeign-node-identity/v1",
+      "node_id": "node:peer-two",
+      "display_name": "A peer that describes its own authority",
+      "relation": "PEER",
+      "root_seat": "seat:peer-two-root",
+      "founded_at": "2026-08-20T00:00:00Z",
+      "known_since": "2026-08-23T12:00:00Z",
+      "admitted_by": "seat:root",
+      "standing": "RECORDED",
+      "grants": [
+        {"capability": "post", "scope": "any-thread"}
+      ]
+    }
+  },
+  {
+    "id": "NODE-NEG-SELF-WAS-ADMITTED",
+    "contract": "node-identity.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "note": "A node did not learn of itself and was not admitted by anyone. A SELF record carrying either field is describing a peer while claiming to be the holder.",
+    "record": {
+      "node_schema": "soveraeign-node-identity/v1",
+      "node_id": "node:home",
+      "display_name": "Bdo's node",
+      "relation": "SELF",
+      "root_seat": "seat:root",
+      "founded_at": "2026-08-22T00:00:00Z",
+      "known_since": "2026-08-23T12:00:00Z",
+      "admitted_by": "seat:root",
+      "standing": "RECORDED"
+    }
+  },
+  {
+    "id": "NODE-NEG-PEER-NOBODY-ADMITTED",
+    "contract": "node-identity.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "note": "A peer no local seat admitted is not in the registry. Null admitted_by is how a peer would appear by merely announcing itself.",
+    "record": {
+      "node_schema": "soveraeign-node-identity/v1",
+      "node_id": "node:peer-three",
+      "display_name": "A node that announced itself",
+      "relation": "PEER",
+      "root_seat": "seat:peer-three-root",
+      "founded_at": "2026-08-20T00:00:00Z",
+      "known_since": "2026-08-23T12:00:00Z",
+      "admitted_by": null,
+      "standing": "RECORDED"
+    }
+  },
+  {
+    "id": "NODE-SEM-PEER-ROOT-SEAT-IS-LOCAL",
+    "contract": "node-identity.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "expected_registry": false,
+    "defeats": "the claim that a peer's identity crosses while its authority stays home; this record is a well-formed peer whose root seat is a seat in the local topology, which makes the peer's settlement authority local and turns the crossing into a merge",
+    "note": "Schema-valid and individually unremarkable. Only reading the record against the local seat topology shows the defect, so scripts/sovkernel/node_identity.py is the check that catches it.",
+    "context": [
+      {
+        "node_schema": "soveraeign-node-identity/v1",
+        "node_id": "node:home",
+        "display_name": "Bdo's node",
+        "relation": "SELF",
+        "root_seat": "seat:root",
+        "founded_at": "2026-08-22T00:00:00Z",
+        "known_since": null,
+        "admitted_by": null,
+        "standing": "RECORDED"
+      }
+    ],
+    "record": {
+      "node_schema": "soveraeign-node-identity/v1",
+      "node_id": "node:peer-four",
+      "display_name": "A peer rooted in this node's own topology",
+      "relation": "PEER",
+      "root_seat": "seat:root",
+      "founded_at": "2026-08-20T00:00:00Z",
+      "known_since": "2026-08-23T12:00:00Z",
+      "admitted_by": "seat:root",
+      "standing": "RECORDED"
+    }
+  },
+  {
+    "id": "NODE-SEM-TWO-SELVES",
+    "contract": "node-identity.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "expected_registry": false,
+    "defeats": "the claim that one registry is held by one node; two SELF records leave no answer to which node this registry describes, and every peer check below depends on that answer",
+    "context": [
+      {
+        "node_schema": "soveraeign-node-identity/v1",
+        "node_id": "node:home",
+        "display_name": "Bdo's node",
+        "relation": "SELF",
+        "root_seat": "seat:root",
+        "founded_at": "2026-08-22T00:00:00Z",
+        "known_since": null,
+        "admitted_by": null,
+        "standing": "RECORDED"
+      }
+    ],
+    "record": {
+      "node_schema": "soveraeign-node-identity/v1",
+      "node_id": "node:also-home",
+      "display_name": "A second holder of one registry",
+      "relation": "SELF",
+      "root_seat": "seat:root",
+      "founded_at": "2026-08-22T00:00:00Z",
+      "known_since": null,
+      "admitted_by": null,
+      "standing": "RECORDED"
+    }
+  },
+  {
+    "id": "NODE-SEM-PEER-ADMITTED-BY-A-WORKER",
+    "contract": "node-identity.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "expected_registry": false,
+    "defeats": "the rule that admitting a peer is a judgement the root seat settles; a work seat that could admit a peer would widen the node's federation by building, which is the authority-from-successful-operation path AGENTS.md refuses",
+    "context": [
+      {
+        "node_schema": "soveraeign-node-identity/v1",
+        "node_id": "node:home",
+        "display_name": "Bdo's node",
+        "relation": "SELF",
+        "root_seat": "seat:root",
+        "founded_at": "2026-08-22T00:00:00Z",
+        "known_since": null,
+        "admitted_by": null,
+        "standing": "RECORDED"
+      }
+    ],
+    "record": {
+      "node_schema": "soveraeign-node-identity/v1",
+      "node_id": "node:peer-five",
+      "display_name": "A peer a worker let in",
+      "relation": "PEER",
+      "root_seat": "seat:peer-five-root",
+      "founded_at": "2026-08-20T00:00:00Z",
+      "known_since": "2026-08-23T12:00:00Z",
+      "admitted_by": "seat:worker-1",
+      "standing": "RECORDED"
+    }
+  }
+]

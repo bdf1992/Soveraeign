@@ -99,6 +99,12 @@ CHECKS = (
           "coordination surface it describes; the issue-body cases start from bytes a person could "
           "paste into GitHub, so a shape the schema admits but no ticket body can express fails here",
           ("contracts/ticket-transitions.json", "conformance/fixtures/tickets/body-cases.json")),
+    Check("node registry", [sys.executable, "scripts/sov_node.py", "validate"], ROOT,
+          "reads the checked-in registry and the seat topology and grades one against the "
+          "other; it contacts no peer and opens no socket, so the check cannot pass or fail "
+          "because of what another node happened to be doing",
+          ("contracts/fixtures/node-registry.reference.json",
+           "contracts/node-identity.schema.json")),
     Check("Sov context profile",
           [sys.executable, "-m", "unittest", "discover", "-s", "bindings/sov/tests", "-v"], ROOT,
           "invokes the profile checker over declared fixtures, including one defeating "

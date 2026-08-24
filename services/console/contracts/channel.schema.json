@@ -4,13 +4,49 @@
   "title": "Console Channel",
   "type": "object",
   "additionalProperties": false,
-  "required": ["channel_id", "name", "domain", "opened_by", "opened_at", "standing"],
+  "required": [
+    "node_id",
+    "channel_id",
+    "name",
+    "domain",
+    "opened_by",
+    "opened_at",
+    "standing"
+  ],
   "properties": {
-    "channel_id": {"type": "string", "minLength": 1},
-    "name": {"type": "string", "minLength": 1},
-    "domain": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$", "description": "The domain or purpose the channel serves, e.g. asset, proofing, governance."},
-    "opened_by": {"type": "string", "minLength": 1},
-    "opened_at": {"type": "string", "format": "date-time"},
-    "standing": {"enum": ["RECORDED", "ADMITTED", "RATIFIED", "EFFECTIVE"]}
+    "node_id": {
+      "type": "string",
+      "pattern": "^node:[a-z0-9][a-z0-9-]*$",
+      "description": "The node this record belongs to, as contracts/node-identity.schema.json names it. Required so a record read on its own says which node it is from; a console that holds a peer's records through a crossing must never present them as its own (decisions/0039)."
+    },
+    "channel_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "domain": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "The domain or purpose the channel serves, e.g. asset, proofing, governance."
+    },
+    "opened_by": {
+      "type": "string",
+      "minLength": 1
+    },
+    "opened_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "standing": {
+      "enum": [
+        "RECORDED",
+        "ADMITTED",
+        "RATIFIED",
+        "EFFECTIVE"
+      ]
+    }
   }
 }

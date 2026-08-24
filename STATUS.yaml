@@ -12,8 +12,28 @@ classification_status: OWNER_ACCEPTED_CANONICAL_VOCABULARY
 asset_service_status: BUILT_SELF_TESTED_NOT_WITNESSED
 record_service_status: BUILT_SELF_TESTED_NOT_WITNESSED
 proofing_service_status: OWNER_ACCEPTED_BOUNDARY_NOT_IMPLEMENTED
-console_service_status: OWNER_ACCEPTED_BOUNDARY_NOT_IMPLEMENTED
+# The continuity record path is built and self-tested (decisions/0036); the four
+# other operator surfaces in services/console/CHARTER.md are still boundary only.
+# Bdo has not ruled on whether this slice stands as the console's first.
+console_service_status: BUILT_CONTINUITY_PATH_SELF_TESTED_REMAINDER_BOUNDARY
 projection_service_status: OWNER_ACCEPTED_BOUNDARY_NOT_IMPLEMENTED
+# decisions/0039 opens the node and federation boundary SPEC.md defers, and rules the
+# suite Bdo named as three layers with three membership models. Node identity is
+# contracted and graded against fixtures; console channels and threads now carry node
+# scope. The federation crossing and the public projection are contracted and graded
+# too; neither moves a byte, and no transport exists for either.
+# Bdo has not ruled on the three questions in that decision's judgement queue.
+node_identity_status: PROPOSED_CONTRACT_BUILT_REGISTRY_READ_NO_ADMISSION_TRANSITION
+federation_crossing_status: PROPOSED_CONTRACT_BUILT_SELF_TESTED_NO_TRANSPORT
+public_projection_status: PROPOSED_CONTRACT_BUILT_PUBLICATION_RECORDED_SEAT_SEAM_OPEN
+# The node's door: chartered and contracted under decisions/0040, nothing built.
+# It depends on the Console Service owning authority grants, which is a default
+# taken in that decision rather than a boundary Bdo has settled.
+gateway_service_status: CHARTERED_BOUNDARY_NOT_IMPLEMENTED
+# Every service operation now declares its subject, CRUD verb, logical endpoint,
+# preconditions, commit, and refusals (decisions/0040). Self-tested against one
+# admissible manifest and twenty-one defeats; not independently witnessed.
+service_manifest_contract_status: BUILT_SELF_TESTED_NOT_WITNESSED
 byom_status: OWNER_ACCEPTED_PHASE_I_CONTRACT
 local_model_adapter_status: BUILT_SELF_TESTED_NOT_WITNESSED
 ai_native_definition_status: FREEZE_CANDIDATE

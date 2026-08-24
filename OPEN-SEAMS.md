@@ -143,3 +143,73 @@ request #68 and settled that number; this branch renumbered its claimants to
 `0025` (verification channels) and `0026` (federation harness). Still open:
 PR #38's `0014`/`0015`, PR #61's `0019`, PR #64's duplicate copy of the
 verification-channels record, and the allocation mechanism itself.
+
+Two further claimants observed 2026-08-23 by reading the branches directly, both
+still unmerged and both certain to redirect a citation if they land unchanged:
+`docs/principal-identity` (pushed) carries `0021-principal-identity` and
+`0022-stack-durability-row`, while this branch already spends `0021` on the
+semantic cold-start task and `0022` on the story ticket kind — a double
+collision on one branch. `feat/acceptance-gate` (pushed, fifteen commits ahead
+of `main`) carries the acceptance decision under two numbers at once,
+`0023-acceptance-not-approval` and `0028-acceptance-not-approval`, and this
+branch spends `0028` on history-as-lineage. Neither branch is wrong to have
+minted a number; the seam is that nothing told them the number was taken.
+
+## S17 · A kernel refusal code the evaluator cannot emit
+
+`contracts/kernel-transitions.json` lists `INCOMPLETE_PROPOSAL` under
+`submit_proposal`, and `SPEC.md` defines it. Nothing produces it:
+`scripts/sovkernel/transitions.py` refuses every absent precondition with
+`MISSING_PRECONDITION` and emits `INCOMPLETE_PROPOSAL` nowhere. Observed
+2026-08-23 while registering the Console Service in `contracts/kernel-parity.json`,
+where the correspondence had to be declared against the refusal the kernel
+actually returns rather than the one the table advertises.
+
+Three readings, and which one holds is not this seam's to settle:
+`INCOMPLETE_PROPOSAL` is a finer refusal the evaluator has not yet implemented;
+or it is a synonym `MISSING_PRECONDITION` has since absorbed and the table
+should drop it; or `submit_proposal` needs a completeness check distinct from
+precondition presence. `decisions/0034-spec-transition-refusal-codes.md` already
+moved this vocabulary once and is the nearest owner. Until it is settled, a
+declared refusal code no participant can be graded against is a gap in the
+contract, not in the participants.
+
+## S18 · Two layers named gateway
+
+`bindings/mcp/gateway.py` carries the name for the local tool-surface binding.
+`services/gateway/` now carries it for the node's door
+(`decisions/0040-the-declared-service-surface.md`, Ruling 5). Observed 2026-08-23 while
+wiring the service manifest check into `scripts/verify.py`, where the check named "MCP
+gateway binding" and the new service both appeared in one run.
+
+The two are not the same thing. The service resolves a logical endpoint, checks a grant, and
+records what crossed; the binding translates one transport's calls into whatever it reaches.
+Read one way the binding is a transport into the service and the shared word is accurate; read
+another way one of them should be renamed before either is built, because an operator reading
+a receipt cannot tell which gateway refused.
+
+`NAMING.md` owns the collision screen and Bdo owns naming. Nothing is renamed here.
+
+## S19 · Who publishes: an operator or a seat
+
+`contracts/public-projection.schema.json` requires every published entry to name a
+`published_by` seat, because publishing is an outward effect and `decisions/0039`
+rules it attributable to a seat the node holds. `services/console/contracts/publication.schema.json`
+records `published_by` as an operator id, because that is what every other console
+record carries and the Console Service has no seat model. Observed 2026-08-23 while
+building the publication record the projection was written to read.
+
+Nothing bridges them. `contracts/fixtures/seat-topology.reference.json` does carry
+`occupant.actor_id`, so the mapping exists as data, but it is a kernel fixture and no
+service reads it; a service that did would be reaching past a contract into another
+layer's reference file.
+
+Three readings, and this seam does not settle which: the console should carry a seat
+alongside its operator id, and something must then check the operator occupies it; or
+the projection builder is a kernel-tier component that holds both and resolves the
+mapping there; or operator id and seat are the same identity at different altitudes and
+one of the two contracts is naming it wrongly. `decisions/0020` owns seat topology and
+`decisions/0039` owns the outward surface; neither has been asked.
+
+Until it is settled, a public projection built from console records cannot fill
+`published_by` honestly, and the fixtures that exercise it supply the seat by hand.

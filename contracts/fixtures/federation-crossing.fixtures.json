@@ -1,0 +1,268 @@
+[
+  {
+    "id": "FED-POS-INBOUND-ADMITTED",
+    "contract": "federation-crossing.schema.json",
+    "status": "PROPOSED",
+    "polarity": "positive",
+    "expected_validity": "VALID",
+    "expected_crossing": true,
+    "note": "A peer offers a thread it holds at RATIFIED. The local root seat admits it, and the record it creates here enters at RECORDED. Standing did not cross; only the address and digest did.",
+    "record": {
+      "crossing_schema": "soveraeign-federation-crossing/v1",
+      "crossing_id": "crossing:1",
+      "from_node": "node:peer-one",
+      "to_node": "node:home",
+      "origin_seat": "seat:peer-one-root",
+      "offer": {
+        "record_kind": "thread",
+        "record_address": "thread/T-14",
+        "record_digest": "sha256:9f2c",
+        "standing_at_origin": "RATIFIED"
+      },
+      "offered_at": "2026-08-23T12:00:00Z",
+      "admission": {
+        "admitted_by": "seat:root",
+        "admitted_at": "2026-08-23T12:05:00Z",
+        "outcome": "COMMITTED",
+        "reason_code": null,
+        "local_record_address": "thread/local-3",
+        "local_standing": "RECORDED"
+      },
+      "standing": "RECORDED"
+    }
+  },
+  {
+    "id": "FED-POS-INBOUND-REFUSED",
+    "contract": "federation-crossing.schema.json",
+    "status": "PROPOSED",
+    "polarity": "positive",
+    "expected_validity": "VALID",
+    "expected_crossing": true,
+    "note": "Refusing an offer is an ordinary settled outcome, not a failure. Nothing local was created, so there is no local address and no local standing.",
+    "record": {
+      "crossing_schema": "soveraeign-federation-crossing/v1",
+      "crossing_id": "crossing:2",
+      "from_node": "node:peer-one",
+      "to_node": "node:home",
+      "origin_seat": "seat:peer-one-worker",
+      "offer": {
+        "record_kind": "post",
+        "record_address": "post/P-9",
+        "record_digest": "sha256:11ab",
+        "standing_at_origin": "RECORDED"
+      },
+      "offered_at": "2026-08-23T12:10:00Z",
+      "admission": {
+        "admitted_by": "seat:root",
+        "admitted_at": "2026-08-23T12:11:00Z",
+        "outcome": "REFUSED",
+        "reason_code": "ADMISSION_REFUSED",
+        "local_record_address": null,
+        "local_standing": null
+      },
+      "standing": "RECORDED"
+    }
+  },
+  {
+    "id": "FED-POS-OUTBOUND-UNSETTLED",
+    "contract": "federation-crossing.schema.json",
+    "status": "PROPOSED",
+    "polarity": "positive",
+    "expected_validity": "VALID",
+    "expected_crossing": true,
+    "note": "This node offered a record to a peer and holds no settlement for it. The peer's answer is the peer's record; a null admission is the honest state here, not a missing one.",
+    "record": {
+      "crossing_schema": "soveraeign-federation-crossing/v1",
+      "crossing_id": "crossing:3",
+      "from_node": "node:home",
+      "to_node": "node:peer-one",
+      "origin_seat": "seat:root",
+      "offer": {
+        "record_kind": "thread",
+        "record_address": "thread/local-1",
+        "record_digest": "sha256:5e0d",
+        "standing_at_origin": "RECORDED"
+      },
+      "offered_at": "2026-08-23T12:20:00Z",
+      "admission": null,
+      "standing": "RECORDED"
+    }
+  },
+  {
+    "id": "FED-NEG-DELIVERS-ABOVE-RECORDED",
+    "contract": "federation-crossing.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "note": "The central refusal. A crossing that could deliver a record already RATIFIED would carry another node's settlement into this one, which is the merge decisions/0039 says federation avoids. The contract admits exactly one non-null local standing so the shape cannot be written.",
+    "record": {
+      "crossing_schema": "soveraeign-federation-crossing/v1",
+      "crossing_id": "crossing:4",
+      "from_node": "node:peer-one",
+      "to_node": "node:home",
+      "origin_seat": "seat:peer-one-root",
+      "offer": {
+        "record_kind": "thread",
+        "record_address": "thread/T-20",
+        "record_digest": "sha256:77aa",
+        "standing_at_origin": "RATIFIED"
+      },
+      "offered_at": "2026-08-23T12:30:00Z",
+      "admission": {
+        "admitted_by": "seat:root",
+        "admitted_at": "2026-08-23T12:31:00Z",
+        "outcome": "COMMITTED",
+        "reason_code": null,
+        "local_record_address": "thread/local-9",
+        "local_standing": "RATIFIED"
+      },
+      "standing": "RECORDED"
+    }
+  },
+  {
+    "id": "FED-NEG-REFUSED-BUT-WROTE-A-RECORD",
+    "contract": "federation-crossing.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "note": "A refusal that created a local record is not a refusal. The two halves of the outcome must agree or the receipt is describing something that did not happen.",
+    "record": {
+      "crossing_schema": "soveraeign-federation-crossing/v1",
+      "crossing_id": "crossing:5",
+      "from_node": "node:peer-one",
+      "to_node": "node:home",
+      "origin_seat": "seat:peer-one-root",
+      "offer": {
+        "record_kind": "post",
+        "record_address": "post/P-3",
+        "record_digest": "sha256:0c31",
+        "standing_at_origin": "RECORDED"
+      },
+      "offered_at": "2026-08-23T12:40:00Z",
+      "admission": {
+        "admitted_by": "seat:root",
+        "admitted_at": "2026-08-23T12:41:00Z",
+        "outcome": "REFUSED",
+        "reason_code": "ADMISSION_REFUSED",
+        "local_record_address": "post/local-4",
+        "local_standing": "RECORDED"
+      },
+      "standing": "RECORDED"
+    }
+  },
+  {
+    "id": "FED-SEM-SETTLED-AN-OFFER-WE-SENT",
+    "contract": "federation-crossing.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "expected_crossing": false,
+    "defeats": "the rule that each node settles its own copy; this node sent the offer and holds an admission for it, which is this node claiming to know how another sovereign node ruled",
+    "note": "Individually well formed. Only reading it against the node registry shows which side of the crossing the holder is on, so scripts/sovkernel/federation.py is the check that catches it.",
+    "record": {
+      "crossing_schema": "soveraeign-federation-crossing/v1",
+      "crossing_id": "crossing:6",
+      "from_node": "node:home",
+      "to_node": "node:peer-one",
+      "origin_seat": "seat:root",
+      "offer": {
+        "record_kind": "thread",
+        "record_address": "thread/local-2",
+        "record_digest": "sha256:aa10",
+        "standing_at_origin": "RECORDED"
+      },
+      "offered_at": "2026-08-23T12:50:00Z",
+      "admission": {
+        "admitted_by": "seat:root",
+        "admitted_at": "2026-08-23T12:51:00Z",
+        "outcome": "COMMITTED",
+        "reason_code": null,
+        "local_record_address": "thread/peer-copy-1",
+        "local_standing": "RECORDED"
+      },
+      "standing": "RECORDED"
+    }
+  },
+  {
+    "id": "FED-SEM-ADMITTED-BY-A-WORKER",
+    "contract": "federation-crossing.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "expected_crossing": false,
+    "defeats": "the rule that admitting a peer's record is a judgement the root seat settles; a work seat that could admit a crossing would let the node's federation widen by building",
+    "record": {
+      "crossing_schema": "soveraeign-federation-crossing/v1",
+      "crossing_id": "crossing:7",
+      "from_node": "node:peer-one",
+      "to_node": "node:home",
+      "origin_seat": "seat:peer-one-root",
+      "offer": {
+        "record_kind": "post",
+        "record_address": "post/P-7",
+        "record_digest": "sha256:bb20",
+        "standing_at_origin": "RECORDED"
+      },
+      "offered_at": "2026-08-23T13:00:00Z",
+      "admission": {
+        "admitted_by": "seat:worker-1",
+        "admitted_at": "2026-08-23T13:01:00Z",
+        "outcome": "COMMITTED",
+        "reason_code": null,
+        "local_record_address": "post/local-8",
+        "local_standing": "RECORDED"
+      },
+      "standing": "RECORDED"
+    }
+  },
+  {
+    "id": "FED-SEM-ORIGIN-SEAT-IS-OURS",
+    "contract": "federation-crossing.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "expected_crossing": false,
+    "defeats": "the claim that a peer's seats do not exist in this node; an inbound offer attributed to a local seat means either the attribution is wrong or a peer is operating a seat here, and both are the leak node identity was written to prevent",
+    "record": {
+      "crossing_schema": "soveraeign-federation-crossing/v1",
+      "crossing_id": "crossing:8",
+      "from_node": "node:peer-one",
+      "to_node": "node:home",
+      "origin_seat": "seat:worker-1",
+      "offer": {
+        "record_kind": "post",
+        "record_address": "post/P-8",
+        "record_digest": "sha256:cc30",
+        "standing_at_origin": "RECORDED"
+      },
+      "offered_at": "2026-08-23T13:10:00Z",
+      "admission": null,
+      "standing": "RECORDED"
+    }
+  },
+  {
+    "id": "FED-SEM-UNKNOWN-PEER",
+    "contract": "federation-crossing.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "expected_crossing": false,
+    "defeats": "the rule that a peer enters the registry by a local seat admitting it; a crossing from a node nobody admitted is a stranger's offer arriving as though it were a peer's",
+    "record": {
+      "crossing_schema": "soveraeign-federation-crossing/v1",
+      "crossing_id": "crossing:9",
+      "from_node": "node:stranger",
+      "to_node": "node:home",
+      "origin_seat": "seat:stranger-root",
+      "offer": {
+        "record_kind": "post",
+        "record_address": "post/P-99",
+        "record_digest": "sha256:dd40",
+        "standing_at_origin": "RECORDED"
+      },
+      "offered_at": "2026-08-23T13:20:00Z",
+      "admission": null,
+      "standing": "RECORDED"
+    }
+  }
+]

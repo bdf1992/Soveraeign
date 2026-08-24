@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/federation-crossing.schema.json",
+  "title": "Soveraeign Federation Crossing",
+  "description": "One record offered across the boundary between two sovereign nodes, and what the receiving node did about it. A crossing carries an address and a digest, never authority and never standing: whatever standing the record holds in the node that offered it, the record a receiving node admits enters that node at RECORDED and climbs only through that node's own transitions (decisions/0039). Nothing here transports bytes; a crossing names content the two nodes address the same way.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "crossing_schema",
+    "crossing_id",
+    "from_node",
+    "to_node",
+    "origin_seat",
+    "offer",
+    "offered_at",
+    "admission",
+    "standing"
+  ],
+  "properties": {
+    "crossing_schema": {
+      "const": "soveraeign-federation-crossing/v1"
+    },
+    "crossing_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "from_node": {
+      "type": "string",
+      "pattern": "^node:[a-z0-9][a-z0-9-]*$",
+      "description": "The node that offered the record."
+    },
+    "to_node": {
+      "type": "string",
+      "pattern": "^node:[a-z0-9][a-z0-9-]*$",
+      "description": "The node the record was offered to. Exactly one of from_node and to_node is the node holding this crossing; scripts/sovkernel/federation.py checks that against the node registry."
+    },
+    "origin_seat": {
+      "type": "string",
+      "pattern": "^seat:[a-z0-9][a-z0-9-]*$",
+      "description": "The seat in the offering node that produced the record. Carried so a reader can attribute the offer. It is not a seat in the receiving node and confers nothing there."
+    },
+    "offer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["record_kind", "record_address", "record_digest", "standing_at_origin"],
+      "properties": {
+        "record_kind": {
+          "type": "string",
+          "minLength": 1,
+          "description": "What kind of record is offered, e.g. thread, post, asset-version."
+        },
+        "record_address": {"type": "string", "minLength": 1},
+        "record_digest": {"type": "string", "minLength": 1},
+        "standing_at_origin": {
+          "enum": ["RECORDED", "ADMITTED", "RATIFIED", "EFFECTIVE"],
+          "description": "What the record stands at in the node that offered it. Reported, never inherited. A receiving node reads this as a claim about somewhere else."
+        }
+      }
+    },
+    "offered_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "admission": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["admitted_by", "admitted_at", "outcome", "reason_code", "local_record_address", "local_standing"],
+      "description": "The receiving node's settlement of this offer, or null while the offer is unsettled. A node may only fill this in for a crossing addressed to it; a peer's settlement of an outbound offer is the peer's record and cannot be held here as settled.",
+      "properties": {
+        "admitted_by": {
+          "type": "string",
+          "pattern": "^seat:[a-z0-9][a-z0-9-]*$",
+          "description": "The local seat that settled the offer. Admitting a peer's record is a judgement, so this must be the receiving node's root seat."
+        },
+        "admitted_at": {"type": "string", "format": "date-time"},
+        "outcome": {
+          "enum": ["COMMITTED", "REFUSED", "COUNTERED"],
+          "description": "Receipt vocabulary. COMMITTED created a local record; REFUSED created none; COUNTERED created a counter-record against a local record this offer contradicts."
+        },
+        "reason_code": {"type": ["string", "null"]},
+        "local_record_address": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "description": "The record this node created. Present for COMMITTED and COUNTERED, null for REFUSED."
+        },
+        "local_standing": {
+          "enum": ["RECORDED", null],
+          "description": "What the local record stands at on creation. The enum has one non-null member on purpose: a crossing cannot deliver a record above RECORDED, whatever it stood at in the offering node. Null when nothing local was created."
+        }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"outcome": {"const": "REFUSED"}}},
+          "then": {
+            "properties": {
+              "local_record_address": {"type": "null"},
+              "local_standing": {"type": "null"},
+              "reason_code": {"type": "string", "minLength": 1}
+            }
+          },
+          "else": {
+            "properties": {
+              "local_record_address": {"type": "string", "minLength": 1},
+              "local_standing": {"const": "RECORDED"}
+            }
+          }
+        }
+      ]
+    },
+    "standing": {
+      "enum": ["RECORDED", "ADMITTED", "RATIFIED", "EFFECTIVE"]
+    }
+  }
+}

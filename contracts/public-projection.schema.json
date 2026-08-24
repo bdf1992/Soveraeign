@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/public-projection.schema.json",
+  "title": "Soveraeign Public Projection",
+  "description": "The outward-facing read model of a node: threads an operator marked public, rendered for people who are not members of anything. It is a projection under the SPEC.md projection rule and shares that discipline with services/console/contracts/projection-view.schema.json, which is the operator-facing sibling; the field names are deliberately the same so the two are read as one rule. What this contract adds is the boundary. Outbound is derived from records the node already holds; inbound is never a record. A reply from outside is an addressed input that queues for an operator and becomes a record only when one admits it, so moderation and abuse stay publishing policy instead of kernel problems (decisions/0039).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "projection_schema",
+    "projection_id",
+    "node_id",
+    "entries",
+    "source_addresses",
+    "omissions",
+    "inbound",
+    "rebuild_operation_id",
+    "rebuilt_at",
+    "content_address",
+    "content_digest",
+    "authoritative",
+    "standing"
+  ],
+  "properties": {
+    "projection_schema": {
+      "const": "soveraeign-public-projection/v1"
+    },
+    "projection_id": {"type": "string", "minLength": 1},
+    "node_id": {
+      "type": "string",
+      "pattern": "^node:[a-z0-9][a-z0-9-]*$",
+      "description": "The node publishing this view. A projection publishes one node's records; a record from anywhere else reached it through an admitted crossing or does not belong in it."
+    },
+    "entries": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/entry"},
+      "description": "One entry per published thread. May be empty: a node that has published nothing still declares a projection rather than leaving the surface undefined."
+    },
+    "source_addresses": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/addressedValue"},
+      "description": "Authoritative records this view was rebuilt from; every entry must resolve to one of them."
+    },
+    "omissions": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "description": "Sources deliberately left out of this rebuild. May be empty only when nothing was left out; scripts/sovkernel/publication.py checks that against the counts, because a silent filter is how a public surface starts misrepresenting what the node holds."
+    },
+    "inbound": {
+      "const": "QUEUED_AS_ADDRESSED_INPUT",
+      "description": "How a reply from outside is handled. The single admitted value is the asymmetry this contract exists to hold: nothing a non-member writes becomes a record of this node by being written."
+    },
+    "rebuild_operation_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Operation that produced this rebuild; a second rebuild from the same records must yield the same content_digest."
+    },
+    "rebuilt_at": {"type": "string", "format": "date-time"},
+    "content_address": {"type": "string", "minLength": 1},
+    "content_digest": {"type": "string", "minLength": 1},
+    "authoritative": {
+      "const": false,
+      "description": "A public projection never becomes authoritative by being read. Withdrawing publication removes an entry from the next rebuild; it does not erase the thread, and it does not claim the view was never read."
+    },
+    "standing": {"enum": ["RECORDED", "ADMITTED", "RATIFIED", "EFFECTIVE"]}
+  },
+  "$defs": {
+    "addressedValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["address", "digest"],
+      "properties": {
+        "address": {"type": "string", "minLength": 1},
+        "digest": {"type": "string", "minLength": 1}
+      }
+    },
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["thread_address", "thread_digest", "origin_node", "published_by", "published_at", "post_count"],
+      "properties": {
+        "thread_address": {"type": "string", "minLength": 1},
+        "thread_digest": {"type": "string", "minLength": 1},
+        "origin_node": {
+          "type": "string",
+          "pattern": "^node:[a-z0-9][a-z0-9-]*$",
+          "description": "The node the thread belongs to. Equal to node_id for a local thread; a peer's node only when a crossing admitted the record, which the checker verifies against the crossing register."
+        },
+        "published_by": {
+          "type": "string",
+          "pattern": "^seat:[a-z0-9][a-z0-9-]*$",
+          "description": "The local seat that marked the thread public. Publishing is an outward effect, so it is attributable to a seat this node holds."
+        },
+        "published_at": {"type": "string", "format": "date-time"},
+        "post_count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "How many posts the entry summarises. Carried so a reader can see that a rendered excerpt is partial without fetching the thread."
+        }
+      }
+    }
+  }
+}

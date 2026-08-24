@@ -146,6 +146,13 @@ CHECKS = (
           "the participant's own tests; these establish BUILT evidence about local mechanics "
           "and are explicitly NOT independent of the code they exercise",
           ("services/asset/tests",)),
+    Check("operation surface page",
+          [sys.executable, "scripts/sov_surface.py", "check"], ROOT,
+          "rebuilds the page from the capability map, the service manifests and the gateway "
+          "manifest at the moment of the check and compares bytes, so a page edited by hand "
+          "or left behind by a manifest change fails rather than misinforming a reader",
+          ("docs/surface.html", "contracts/fixtures/capability-map.reference.json",
+           "bindings/mcp/manifest.json")),
     Check("MCP gateway binding",
           [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
           ROOT / "bindings" / "mcp",

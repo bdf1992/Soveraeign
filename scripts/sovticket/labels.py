@@ -100,9 +100,6 @@ def project(metadata: dict[str, Any], projection: dict[str, Any]) -> tuple[set[s
             labels.add(label)
     elif standing is not None:
         unmapped.append(f"standing={standing}")
-    witness = projection["standing_to_witness_label"].get(standing)
-    if witness:
-        labels.add(witness)
 
     # An unblock request is the only kind that carries a provision and a serving tier;
     # both are projected so the queue reads as typed and coloured on the surface itself.

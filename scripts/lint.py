@@ -16,11 +16,30 @@ TEXT_NAMES = {".cursorrules", ".env.example", ".gitattributes", ".gitignore"}
 # repository text and may legitimately contain local paths from captured tool output.
 SKIP_PARTS = {".git", ".venv", "__pycache__", "lineage", ".local"}
 MAX_PRODUCTION_LINES = 300
+# The module budget reached only `scripts/` and packaged `src/` trees, so an adapter,
+# binding, worker, or the oracle itself could grow past the limit unseen. Adding a root
+# here surfaces existing overruns; each is entered as named debt below, never grandfathered.
+PRODUCTION_ROOTS = ("scripts/", "adapters/", "bindings/", "workers/", "conformance/")
 # Retired 2026-08-23: core.py was split into store.py (custody and receipts),
 # authority.py (grants and sessions), runs.py (leased derivation), and
 # projections.py (rebuildable views). Re-entering a module here records debt; it
 # does not grandfather it.
-KNOWN_MODULE_DEBT: dict[str, str] = {}
+KNOWN_MODULE_DEBT: dict[str, str] = {
+    "scripts/verify.py": (
+        "the CHECKS table has grown to 24 entries and is now most of the file; the split is "
+        "the table into its own module, leaving the runner behind. Entered 2026-08-24 while "
+        "the landing branch was frozen, because refactoring the verification harness during "
+        "a landing freeze risks the gate every session depends on. Owed to the verification "
+        "domain, not paid"
+    ),
+    "conformance/run.py": (
+        "the oracle grew past the limit before the budget reached conformance/ at all, so "
+        "this is an overrun the gate had never seen rather than a new one. Observed in "
+        "reports/2026-08-23-stack-certification.md and entered 2026-08-24 when the budget "
+        "was widened to adapters/, bindings/, workers/, and conformance/. Owed to the "
+        "conformance domain, which holds the file, not paid"
+    ),
+}
 SECRET_PATTERNS = {
     "private key": re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"),
     "OpenAI-style token": re.compile(r"\bsk-[A-Za-z0-9_-]{20,}\b"),
@@ -84,7 +103,10 @@ def check_python(path: Path, text: str) -> tuple[list[str], list[str]]:
         if not has_future:
             defects.append(f"{relative}: missing future annotations import")
     lines = len(text.splitlines())
-    is_production = "/src/" in f"/{relative}" or relative.startswith("scripts/")
+    is_production = (
+        "/src/" in f"/{relative}"
+        or relative.startswith(PRODUCTION_ROOTS)
+    ) and "/tests/" not in f"/{relative}"
     if is_production and lines > MAX_PRODUCTION_LINES:
         if relative in KNOWN_MODULE_DEBT:
             warnings.append(

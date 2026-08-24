@@ -30,6 +30,7 @@ from pathlib import Path
 from typing import Any
 import argparse
 import json
+import os
 import re
 import sys
 
@@ -60,8 +61,14 @@ GROUPS = (
 
 def sources() -> list[Path]:
     """Every markdown document this node publishes to its own readers, in a stable order."""
-    found = [path for path in ROOT.rglob("*.md")
-             if not (set(path.relative_to(ROOT).parts) & SKIP_PARTS)]
+    found: list[Path] = []
+    for raw_root, dirs, files in os.walk(ROOT, topdown=True):
+        # The published-document population excludes these trees. Prune them before
+        # descent so a documentation check never pays to walk Git objects, local
+        # runtime state, generated docs, or dependency trees it will discard anyway.
+        dirs[:] = sorted(name for name in dirs if name not in SKIP_PARTS)
+        root = Path(raw_root)
+        found.extend(root / name for name in sorted(files) if name.endswith(".md"))
     return sorted(found, key=lambda path: path.relative_to(ROOT).as_posix())
 
 

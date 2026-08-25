@@ -124,7 +124,7 @@ jobs:
 
       - name: Score the mutants this change admits
         run: |
-          python scripts/sov_mutate.py run             --changed             --base "origin/${{ github.base_ref || 'main' }}"             --limit 40
+          python scripts/sov_mutate.py run             --changed             --base "origin/${{ github.base_ref || 'main' }}"             --limit 40             --total-limit 120
 
       - name: Record what the score means
         if: always()
@@ -141,6 +141,8 @@ jobs:
             echo 'than reporting a score.'
             echo
             echo 'Mutants per file are capped at 40 and the cap is reported, never silent.'
+            echo 'A run is capped at 120 mutants. Large diffs sample paths evenly across'
+            echo 'the full ordered target set and report every omitted path.'
             echo 'No threshold is enforced yet - `decisions/0025` leaves the number to Bdo,'
             echo 'because a floor invented before a baseline would be asserted, not measured.'
           } >> "$GITHUB_STEP_SUMMARY"

@@ -1,4 +1,4 @@
-# 0052 · Service manifests bind the Kernel
+# 0062 · Service manifests bind the Kernel
 
 Status: `PROPOSED · OWNER ACCEPTANCE OVER EVIDENCE`
 

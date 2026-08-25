@@ -75,7 +75,7 @@ def read_version(service: Any, version_id: str, actor: str) -> dict[str, Any]:
     ).fetchone()
     if row is None:
         receipt = service._receipt(
-            "REFUSED", "version.read", "version", version_id, actor,
+            "REFUSED", "asset.read-version", "version", version_id, actor,
             {"reason": "VERSION_UNKNOWN", "version_id": version_id},
         )
         service.db.commit()
@@ -84,7 +84,7 @@ def read_version(service: Any, version_id: str, actor: str) -> dict[str, Any]:
     blob = Path(row["blob_path"])
     if not blob.is_file():
         receipt = service._receipt(
-            "REFUSED", "version.read", "version", version_id, actor,
+            "REFUSED", "asset.read-version", "version", version_id, actor,
             {"reason": "PAYLOAD_ABSENT", "version_id": version_id,
              "asset_id": row["asset_id"], "digest": row["digest"]},
         )
@@ -95,7 +95,7 @@ def read_version(service: Any, version_id: str, actor: str) -> dict[str, Any]:
     digest = sha256(data).hexdigest()
     if digest != row["digest"]:
         receipt = service._receipt(
-            "REFUSED", "version.read", "version", version_id, actor,
+            "REFUSED", "asset.read-version", "version", version_id, actor,
             {"reason": "DIGEST_MISMATCH", "version_id": version_id,
              "asset_id": row["asset_id"], "recorded": row["digest"],
              "observed": digest},
@@ -107,7 +107,7 @@ def read_version(service: Any, version_id: str, actor: str) -> dict[str, Any]:
     metadata = _version_metadata(row)
     payload_address = f"urn:sha256:{digest}"
     receipt = service._receipt(
-        "COMMITTED", "version.read", "version", version_id, actor,
+        "COMMITTED", "asset.read-version", "version", version_id, actor,
         {"version_id": version_id, "asset_id": row["asset_id"], "digest": digest,
          "metadata": metadata, "payload_address": payload_address},
     )

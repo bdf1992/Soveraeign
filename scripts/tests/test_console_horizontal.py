@@ -30,12 +30,14 @@ class ConsoleHorizontal(unittest.TestCase):
         if defects:
             raise RuntimeError(defects)
         self.operation = resolve(self.document, "console.read-thread")
-        self.node.console.grant("reader", "open-channel", "work")
+        # Use the exact authority capabilities declared by current main. These are
+        # setup grants for the object we read; they do not grant the read itself.
+        self.node.console.grant("reader", "open:channel", "work")
         channel = self.node.console.open_channel("reader", "work", "work")
-        self.node.console.grant("reader", "open-thread", channel["channel_id"])
+        self.node.console.grant("reader", "open:thread", channel["channel_id"])
         self.thread = self.node.console.open_thread(
             "reader", channel["channel_id"], "Horizontal read")
-        self.node.console.grant("reader", "post", self.thread["thread_id"])
+        self.node.console.grant("reader", "post:message", self.thread["thread_id"])
         self.sessions = {
             HUMAN: self.node.console.open_session("reader", HUMAN, "human-binding"),
             MODEL: self.node.console.open_session("reader", MODEL, "model-binding"),

@@ -1,0 +1,27 @@
+{
+  "artifact_revision": "37ebc85+WORKTREE",
+  "case_id": "WITNESS-ISSUE-7-RECORD-WALK",
+  "observed": {
+    "head": "6f9b1e213a496c9536584149afabfc7d57a28607b7e2bbe07273d5385b477335",
+    "invoked_interface": "sov://record/* through soveraeign_record_service.cli",
+    "observations_held": 21,
+    "observations_total": 21,
+    "observer_relation": "SUBPROCESS_ONLY",
+    "receipt_addresses": [
+      "entry_f2e2db7a807941d1a2bebe3a55055613"
+    ],
+    "record_addresses": [
+      "ebbe37555e73d7d7e72543acfac3a6ef393034576057f2c31eca89ef1a0e01e0",
+      "e593a11ce417c2bac86777d6308012f47b984f2abc18a1a5c0216b03ef9690bc",
+      "c808b942b2a28935d9616295039f12552daf2bb73ae6b1462959ff67bd2dc47a",
+      "6f9b1e213a496c9536584149afabfc7d57a28607b7e2bbe07273d5385b477335"
+    ],
+    "walker_id": "witness/record@witness_record.py"
+  },
+  "participant_claim": "COMPLETED",
+  "participant_id": "record-service-reference",
+  "telemetry": {
+    "elapsed_seconds": 1.1108922958374023,
+    "started_at": 1787623932.2684462
+  }
+}

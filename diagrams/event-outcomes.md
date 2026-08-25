@@ -2,7 +2,7 @@
 
 ```text
 source          CLASSIFICATION.md · SPEC.md · CONTRACT.md
-source_digest   23a2826915e3143a · 274a3669df8144cf · 896e59ba90828ad7
+source_digest   db432f7d9556286b · 108497d370c0fd8d · 896e59ba90828ad7
 reader          hand-authored · v1
 fidelity        LOSSY
 omissions       EventEnvelope and Receipt field shapes (contracts/);
@@ -64,7 +64,9 @@ standing chain — see `standing-transition.md`.
 ## The Phase-I line
 
 `EXTERNAL_WORLD` is drawn in pencil because Phase I refuses it. `STATUS.yaml`
-carries `no_external_effects_in_phase_i` as a protected boundary, and O7 asks
-what external-effect isolation and later compensation model is admitted. Until
-Bdo rules, anything that reaches outside the local record refuses visibly and
-leaves a receipt saying so.
+carries `no_real_external_world_effects_in_phase_i` as a protected boundary, and
+decision 0024 settled what happens after: isolated test doubles are admitted
+only while their observable effect is record-local, and later phases use forward
+compensation — record the external occurrence, the attempted remedy, and what
+remains changed or consumed. Never claim world rollback. Anything that reaches
+outside the local record today refuses visibly and leaves a receipt saying so.

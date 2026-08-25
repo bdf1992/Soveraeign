@@ -7,6 +7,7 @@
     "services/console/contracts/service.json",
     "services/gateway/contracts/service.json",
     "services/host/contracts/service.json",
+    "services/identity/contracts/service.json",
     "services/observation/contracts/service.json",
     "services/projection/contracts/service.json",
     "services/proofing/contracts/service.json",
@@ -14,7 +15,7 @@
     "services/registry/contracts/service.json",
     "contracts/capability-offices.json"
   ],
-  "input_state_digest": "0a28f1a582c81f56caa121677fa3febf3db7fa6c188f383be3026050ff1f0549",
+  "input_state_digest": "4917d42eaf287b60a0e985c9a10e36d403d4b8cbc8ef1bcc225db0c0567e7a4d",
   "capabilities": [
     {
       "capability_id": "asset.ingest-asset",
@@ -42,14 +43,35 @@
         },
         {
           "transport": "MCP",
-          "activation": "DECLARED_NOT_ACTIVATED"
+          "activation": "ACTIVE",
+          "address": "asset_ingest"
         },
         {
           "transport": "HTTP",
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://asset/ingest-asset",
+        "subject": "asset",
+        "crud": "CREATE",
+        "requirement": "PROD-I-2",
+        "kernel_transition": "capture_source",
+        "preconditions": [
+          "payload_bytes_readable",
+          "declared_label",
+          "declared_locator",
+          "live_grant"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "DIGEST_MISMATCH",
+          "GRANT_NOT_COVERED",
+          "MISSING_PRECONDITION",
+          "PAYLOAD_ABSENT"
+        ]
+      }
     },
     {
       "capability_id": "asset.propose-description",
@@ -83,7 +105,24 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://asset/propose-description",
+        "subject": "asset",
+        "crud": "CREATE",
+        "requirement": "PROD-I-1",
+        "kernel_transition": "submit_proposal",
+        "preconditions": [
+          "asset_exists",
+          "declared_actor",
+          "declared_payload"
+        ],
+        "commit": "RECORDED",
+        "refusals": [
+          "INCOMPLETE_PROPOSAL",
+          "GRANT_NOT_COVERED"
+        ]
+      }
     },
     {
       "capability_id": "asset.ratify-proposal",
@@ -116,7 +155,25 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://asset/ratify-proposal",
+        "subject": "asset",
+        "crud": "SUPERSEDE",
+        "requirement": "PROD-I-5",
+        "kernel_transition": "ratify",
+        "preconditions": [
+          "proposal_recorded",
+          "live_matching_grant",
+          "human_actor"
+        ],
+        "commit": "EFFECTIVE",
+        "refusals": [
+          "AUTHORITY_REFUSED",
+          "GRANT_NOT_COVERED",
+          "STALE_STATE"
+        ]
+      }
     },
     {
       "capability_id": "asset.read-asset",
@@ -150,7 +207,67 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://asset/read-asset",
+        "subject": "asset",
+        "crud": "READ",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "asset_exists"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "MISSING_PRECONDITION"
+        ]
+      }
+    },
+    {
+      "capability_id": "asset.read-shared-custody",
+      "service_id": "asset",
+      "operation": "read-shared-custody",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:version",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "asset:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ],
+      "shape": {
+        "logical_endpoint": "sov://asset/read-shared-custody",
+        "subject": "payload-custody",
+        "crud": "READ",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "payload_store_readable"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "MISSING_PRECONDITION"
+        ]
+      }
     },
     {
       "capability_id": "asset.read-use-record",
@@ -184,7 +301,20 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://asset/read-use-record",
+        "subject": "asset-use-record",
+        "crud": "READ",
+        "requirement": "PROD-I-4",
+        "preconditions": [
+          "use_record_exists"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "MISSING_PRECONDITION"
+        ]
+      }
     },
     {
       "capability_id": "asset.read-version",
@@ -218,7 +348,73 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://asset/read-version",
+        "subject": "asset-version",
+        "crud": "READ",
+        "requirement": "PROD-I-2",
+        "kernel_transition": "read_source",
+        "preconditions": [
+          "version_exists",
+          "stored_digest_verifies"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "PAYLOAD_ABSENT",
+          "DIGEST_MISMATCH",
+          "SOURCE_UNREACHABLE",
+          "SOURCE_CHANGED",
+          "VERSION_UNKNOWN"
+        ]
+      }
+    },
+    {
+      "capability_id": "asset.read-version-history",
+      "service_id": "asset",
+      "operation": "read-version-history",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:version",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "asset:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ],
+      "shape": {
+        "logical_endpoint": "sov://asset/read-version-history",
+        "subject": "asset-version",
+        "crud": "READ",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "asset_exists"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "MISSING_PRECONDITION"
+        ]
+      }
     },
     {
       "capability_id": "asset.rebuild-projection",
@@ -252,7 +448,20 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://asset/rebuild-projection",
+        "subject": "asset-relationship",
+        "crud": "REBUILD",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "authoritative_records_readable"
+        ],
+        "commit": "REBUILT",
+        "refusals": [
+          "UNREADABLE"
+        ]
+      }
     },
     {
       "capability_id": "asset.request-derivative",
@@ -286,7 +495,23 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://asset/request-derivative",
+        "subject": "asset-use-record",
+        "crud": "CREATE",
+        "kernel_transition": "begin_run",
+        "preconditions": [
+          "source_version_exists",
+          "declared_plan",
+          "live_grant"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "GRANT_NOT_COVERED",
+          "STALE_LEASE"
+        ]
+      }
     },
     {
       "capability_id": "asset.retract-record",
@@ -320,7 +545,24 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://asset/retract-record",
+        "subject": "asset-use-record",
+        "crud": "COUNTER",
+        "requirement": "PROD-I-4",
+        "kernel_transition": "retract",
+        "preconditions": [
+          "target_exists",
+          "live_retraction_grant",
+          "declared_reason"
+        ],
+        "commit": "COUNTERED",
+        "refusals": [
+          "AUTHORITY_REFUSED",
+          "GRANT_NOT_COVERED"
+        ]
+      }
     },
     {
       "capability_id": "console.acknowledge-notification",
@@ -353,7 +595,22 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://console/acknowledge-notification",
+        "subject": "notification",
+        "crud": "SUPERSEDE",
+        "requirement": "PROD-I-6",
+        "preconditions": [
+          "notification_exists",
+          "session_live"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "SESSION_NOT_LIVE",
+          "STALE_STATE"
+        ]
+      }
     },
     {
       "capability_id": "console.archive-thread",
@@ -387,7 +644,22 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://console/archive-thread",
+        "subject": "thread",
+        "crud": "SUPERSEDE",
+        "requirement": "PROD-I-6",
+        "preconditions": [
+          "thread_exists",
+          "session_live"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "SESSION_NOT_LIVE",
+          "STALE_STATE"
+        ]
+      }
     },
     {
       "capability_id": "console.close-session",
@@ -421,7 +693,22 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://console/close-session",
+        "subject": "operator-session",
+        "crud": "SUPERSEDE",
+        "requirement": "PROD-I-6",
+        "preconditions": [
+          "session_live",
+          "declared_actor"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "SESSION_NOT_LIVE",
+          "STALE_STATE"
+        ]
+      }
     },
     {
       "capability_id": "console.discover-operations",
@@ -444,18 +731,35 @@
         },
         {
           "transport": "CLI",
-          "activation": "DECLARED_NOT_ACTIVATED"
+          "activation": "ACTIVE",
+          "address": "python -m soveraeign_console_service.cli operations"
         },
         {
           "transport": "MCP",
-          "activation": "DECLARED_NOT_ACTIVATED"
+          "activation": "ACTIVE",
+          "address": "console_operations"
         },
         {
           "transport": "HTTP",
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://console/discover-operations",
+        "subject": "operator-session",
+        "crud": "READ",
+        "requirement": "PROD-I-6",
+        "preconditions": [
+          "session_live",
+          "capability_map_fresh"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "SESSION_NOT_LIVE",
+          "MISSING_PRECONDITION"
+        ]
+      }
     },
     {
       "capability_id": "console.grant",
@@ -488,7 +792,24 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://console/grant",
+        "subject": "authority-grant",
+        "crud": "CREATE",
+        "requirement": "PROD-I-5",
+        "preconditions": [
+          "session_live",
+          "declared_capability",
+          "declared_scope",
+          "issuer_holds_authority"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "AUTHORITY_REFUSED",
+          "SESSION_NOT_LIVE"
+        ]
+      }
     },
     {
       "capability_id": "console.list-channels",
@@ -521,7 +842,20 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://console/list-channels",
+        "subject": "channel",
+        "crud": "READ",
+        "requirement": "PROD-I-6",
+        "preconditions": [
+          "session_live"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "SESSION_NOT_LIVE"
+        ]
+      }
     },
     {
       "capability_id": "console.list-grants",
@@ -555,7 +889,20 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://console/list-grants",
+        "subject": "authority-grant",
+        "crud": "READ",
+        "requirement": "PROD-I-5",
+        "preconditions": [
+          "session_live"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "SESSION_NOT_LIVE"
+        ]
+      }
     },
     {
       "capability_id": "console.list-notifications",
@@ -588,7 +935,20 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://console/list-notifications",
+        "subject": "notification",
+        "crud": "READ",
+        "requirement": "PROD-I-6",
+        "preconditions": [
+          "session_live"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "SESSION_NOT_LIVE"
+        ]
+      }
     },
     {
       "capability_id": "console.list-pending-judgement-requests",
@@ -621,7 +981,20 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://console/list-pending-judgement-requests",
+        "subject": "judgement-request",
+        "crud": "READ",
+        "requirement": "PROD-I-6",
+        "preconditions": [
+          "session_live"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "SESSION_NOT_LIVE"
+        ]
+      }
     },
     {
       "capability_id": "console.list-publications",
@@ -656,7 +1029,20 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://console/list-publications",
+        "subject": "publication",
+        "crud": "READ",
+        "requirement": "PROD-I-6",
+        "preconditions": [
+          "local_node_record"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "SESSION_NOT_LIVE"
+        ]
+      }
     },
     {
       "capability_id": "console.notify",
@@ -688,7 +1074,21 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://console/notify",
+        "subject": "notification",
+        "crud": "CREATE",
+        "requirement": "PROD-I-6",
+        "preconditions": [
+          "declared_recipient",
+          "declared_subject"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "INCOMPLETE_PROPOSAL"
+        ]
+      }
     },
     {
       "capability_id": "console.open-channel",
@@ -722,7 +1122,22 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://console/open-channel",
+        "subject": "channel",
+        "crud": "CREATE",
+        "requirement": "PROD-I-6",
+        "preconditions": [
+          "session_live",
+          "declared_channel_name"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "SESSION_NOT_LIVE",
+          "INCOMPLETE_PROPOSAL"
+        ]
+      }
     },
     {
       "capability_id": "console.open-session",
@@ -756,7 +1171,22 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://console/open-session",
+        "subject": "operator-session",
+        "crud": "CREATE",
+        "requirement": "PROD-I-6",
+        "preconditions": [
+          "declared_participant",
+          "declared_actor_kind"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "INCOMPLETE_PROPOSAL",
+          "SESSION_NOT_LIVE"
+        ]
+      }
     },
     {
       "capability_id": "console.open-thread",
@@ -790,7 +1220,23 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://console/open-thread",
+        "subject": "thread",
+        "crud": "CREATE",
+        "requirement": "PROD-I-6",
+        "preconditions": [
+          "channel_exists",
+          "session_live",
+          "declared_subject"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "SESSION_NOT_LIVE",
+          "INCOMPLETE_PROPOSAL"
+        ]
+      }
     },
     {
       "capability_id": "console.post",
@@ -824,7 +1270,23 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://console/post",
+        "subject": "post",
+        "crud": "CREATE",
+        "requirement": "PROD-I-6",
+        "preconditions": [
+          "thread_exists",
+          "session_live",
+          "declared_body"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "SESSION_NOT_LIVE",
+          "INCOMPLETE_PROPOSAL"
+        ]
+      }
     },
     {
       "capability_id": "console.publish-thread",
@@ -859,7 +1321,23 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://console/publish-thread",
+        "subject": "publication",
+        "crud": "CREATE",
+        "requirement": "PROD-I-6",
+        "preconditions": [
+          "thread_exists",
+          "local_node_record",
+          "live_publish_grant"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "NO_LIVE_GRANT",
+          "FOREIGN_NODE_RECORD"
+        ]
+      }
     },
     {
       "capability_id": "console.read-thread",
@@ -893,7 +1371,27 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://console/read-thread",
+        "subject": "thread",
+        "crud": "READ",
+        "requirement": "PROD-I-6",
+        "preconditions": [
+          "declared_thread_identity",
+          "declared_session_identity",
+          "thread_exists",
+          "session_live",
+          "session_actor_matches_checked_actor"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "ACTOR_ATTRIBUTION_MISMATCH",
+          "MALFORMED_IDENTITY",
+          "SESSION_NOT_LIVE",
+          "THREAD_UNKNOWN"
+        ]
+      }
     },
     {
       "capability_id": "console.rebuild-projection",
@@ -925,7 +1423,20 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://console/rebuild-projection",
+        "subject": "projection-view",
+        "crud": "REBUILD",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "journal_readable"
+        ],
+        "commit": "REBUILT",
+        "refusals": [
+          "UNREADABLE"
+        ]
+      }
     },
     {
       "capability_id": "console.request-judgement",
@@ -958,7 +1469,24 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://console/request-judgement",
+        "subject": "judgement-request",
+        "crud": "CREATE",
+        "requirement": "PROD-I-6",
+        "kernel_transition": "submit_proposal",
+        "preconditions": [
+          "declared_question",
+          "declared_evidence",
+          "session_live"
+        ],
+        "commit": "RECORDED",
+        "refusals": [
+          "INCOMPLETE_PROPOSAL",
+          "SESSION_NOT_LIVE"
+        ]
+      }
     },
     {
       "capability_id": "console.resolve-judgement",
@@ -990,7 +1518,24 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://console/resolve-judgement",
+        "subject": "judgement-resolution",
+        "crud": "CREATE",
+        "requirement": "PROD-I-6",
+        "kernel_transition": "ratify",
+        "preconditions": [
+          "judgement_request_recorded",
+          "human_actor",
+          "live_matching_grant"
+        ],
+        "commit": "EFFECTIVE",
+        "refusals": [
+          "AUTHORITY_REFUSED",
+          "STALE_STATE"
+        ]
+      }
     },
     {
       "capability_id": "console.revoke",
@@ -1023,7 +1568,24 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://console/revoke",
+        "subject": "authority-grant",
+        "crud": "COUNTER",
+        "requirement": "PROD-I-5",
+        "preconditions": [
+          "grant_exists",
+          "session_live",
+          "issuer_holds_authority"
+        ],
+        "commit": "COUNTERED",
+        "refusals": [
+          "AUTHORITY_REFUSED",
+          "SESSION_NOT_LIVE",
+          "STALE_STATE"
+        ]
+      }
     },
     {
       "capability_id": "console.session-context",
@@ -1057,7 +1619,20 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://console/session-context",
+        "subject": "operator-session",
+        "crud": "READ",
+        "requirement": "PROD-I-6",
+        "preconditions": [
+          "session_live"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "SESSION_NOT_LIVE"
+        ]
+      }
     },
     {
       "capability_id": "console.set-setting",
@@ -1090,7 +1665,22 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://console/set-setting",
+        "subject": "operator-setting",
+        "crud": "SUPERSEDE",
+        "preconditions": [
+          "session_live",
+          "declared_key",
+          "declared_value"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "SESSION_NOT_LIVE",
+          "INCOMPLETE_PROPOSAL"
+        ]
+      }
     },
     {
       "capability_id": "console.show-judgement-request",
@@ -1123,7 +1713,21 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://console/show-judgement-request",
+        "subject": "judgement-request",
+        "crud": "READ",
+        "requirement": "PROD-I-6",
+        "preconditions": [
+          "judgement_request_exists",
+          "session_live"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "SESSION_NOT_LIVE"
+        ]
+      }
     },
     {
       "capability_id": "console.show-receipt",
@@ -1156,7 +1760,21 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://console/show-receipt",
+        "subject": "console-receipt",
+        "crud": "READ",
+        "requirement": "PROD-I-4",
+        "preconditions": [
+          "receipt_exists",
+          "session_live"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "SESSION_NOT_LIVE"
+        ]
+      }
     },
     {
       "capability_id": "console.withdraw-publication",
@@ -1191,7 +1809,22 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://console/withdraw-publication",
+        "subject": "publication",
+        "crud": "SUPERSEDE",
+        "requirement": "PROD-I-6",
+        "preconditions": [
+          "publication_exists",
+          "live_publish_grant"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "NO_LIVE_GRANT",
+          "STALE_STATE"
+        ]
+      }
     },
     {
       "capability_id": "gateway.accept-request",
@@ -1224,7 +1857,24 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://gateway/accept-request",
+        "subject": "gateway-request",
+        "crud": "CREATE",
+        "requirement": "PROD-I-3",
+        "preconditions": [
+          "declared_transport",
+          "declared_actor",
+          "declared_logical_endpoint",
+          "well_formed_envelope"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "MALFORMED_REQUEST",
+          "TRANSPORT_NOT_ACTIVATED"
+        ]
+      }
     },
     {
       "capability_id": "gateway.bind-transport",
@@ -1256,7 +1906,24 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://gateway/bind-transport",
+        "subject": "transport-binding",
+        "crud": "CREATE",
+        "requirement": "PROD-I-3",
+        "preconditions": [
+          "transport_declared_admissible",
+          "phase_permits_transport",
+          "live_matching_grant"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "TRANSPORT_REFUSED_IN_PHASE",
+          "POLICY_REFUSED",
+          "AUTHORITY_REFUSED"
+        ]
+      }
     },
     {
       "capability_id": "gateway.check-authority",
@@ -1288,7 +1955,23 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://gateway/check-authority",
+        "subject": "authority-check",
+        "crud": "READ",
+        "requirement": "PROD-I-5",
+        "preconditions": [
+          "capability_resolved",
+          "declared_actor",
+          "required_authority_named"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "AUTHORITY_REFUSED",
+          "GRANT_NOT_COVERED"
+        ]
+      }
     },
     {
       "capability_id": "gateway.list-endpoints",
@@ -1321,7 +2004,20 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://gateway/list-endpoints",
+        "subject": "capability-resolution",
+        "crud": "READ",
+        "requirement": "PROD-I-3",
+        "preconditions": [
+          "capability_map_fresh"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "MISSING_PRECONDITION"
+        ]
+      }
     },
     {
       "capability_id": "gateway.read-receipt",
@@ -1354,7 +2050,20 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://gateway/read-receipt",
+        "subject": "gateway-receipt",
+        "crud": "READ",
+        "requirement": "PROD-I-4",
+        "preconditions": [
+          "gateway_receipt_exists"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "MISSING_PRECONDITION"
+        ]
+      }
     },
     {
       "capability_id": "gateway.refuse-request",
@@ -1386,7 +2095,21 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://gateway/refuse-request",
+        "subject": "gateway-receipt",
+        "crud": "CREATE",
+        "requirement": "PROD-I-4",
+        "preconditions": [
+          "gateway_request_exists",
+          "declared_refusal_code"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "MALFORMED_REQUEST"
+        ]
+      }
     },
     {
       "capability_id": "gateway.resolve-capability",
@@ -1419,7 +2142,22 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://gateway/resolve-capability",
+        "subject": "capability-resolution",
+        "crud": "READ",
+        "requirement": "PROD-I-3",
+        "preconditions": [
+          "gateway_request_exists",
+          "capability_map_fresh"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "ENDPOINT_UNKNOWN",
+          "MISSING_PRECONDITION"
+        ]
+      }
     },
     {
       "capability_id": "gateway.return-receipt",
@@ -1451,7 +2189,22 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://gateway/return-receipt",
+        "subject": "gateway-receipt",
+        "crud": "CREATE",
+        "requirement": "PROD-I-4",
+        "preconditions": [
+          "routing_record_exists",
+          "owning_service_returned_terminal_receipt"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "RECEIPT_MISSING",
+          "STALE_STATE"
+        ]
+      }
     },
     {
       "capability_id": "gateway.route-request",
@@ -1483,7 +2236,26 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://gateway/route-request",
+        "subject": "routing-record",
+        "crud": "CREATE",
+        "requirement": "PROD-I-3",
+        "kernel_transition": "cross",
+        "preconditions": [
+          "capability_resolved",
+          "authority_check_passed",
+          "owning_service_reachable",
+          "effect_class_admissible"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "SERVICE_UNREACHABLE",
+          "AUTHORITY_REFUSED",
+          "EFFECT_CLASS_REFUSED"
+        ]
+      }
     },
     {
       "capability_id": "host.apply-driver-update",
@@ -1516,7 +2288,27 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://host/apply-driver-update",
+        "subject": "host-operation",
+        "crud": "SUPERSEDE",
+        "requirement": "PROD-I-3",
+        "kernel_transition": "begin_run",
+        "preconditions": [
+          "driver_update_proposal_admitted",
+          "live_matching_grant",
+          "driver_update_adapter_configured",
+          "source_digest_verified"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "AUTHORITY_REFUSED",
+          "DRIVER_UPDATE_UNAVAILABLE",
+          "STALE_STATE",
+          "EFFECT_CLASS_REFUSED"
+        ]
+      }
     },
     {
       "capability_id": "host.install-utility",
@@ -1549,7 +2341,27 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://host/install-utility",
+        "subject": "host-operation",
+        "crud": "CREATE",
+        "requirement": "PROD-I-3",
+        "kernel_transition": "begin_run",
+        "preconditions": [
+          "complete_operation_plan",
+          "live_matching_grant",
+          "utility_manager_adapter_configured",
+          "source_provenance_declared"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "AUTHORITY_REFUSED",
+          "UTILITY_MANAGER_UNAVAILABLE",
+          "INCOMPLETE_PROPOSAL",
+          "EFFECT_CLASS_REFUSED"
+        ]
+      }
     },
     {
       "capability_id": "host.list-drivers",
@@ -1582,7 +2394,21 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://host/list-drivers",
+        "subject": "driver-inventory",
+        "crud": "READ",
+        "requirement": "PROD-I-3",
+        "preconditions": [
+          "driver_inventory_adapter_configured"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "HOST_UNAVAILABLE",
+          "DRIVER_INVENTORY_UNAVAILABLE"
+        ]
+      }
     },
     {
       "capability_id": "host.list-utilities",
@@ -1615,7 +2441,21 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://host/list-utilities",
+        "subject": "utility-inventory",
+        "crud": "READ",
+        "requirement": "PROD-I-3",
+        "preconditions": [
+          "utility_inventory_adapter_configured"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "HOST_UNAVAILABLE",
+          "UTILITY_INVENTORY_UNAVAILABLE"
+        ]
+      }
     },
     {
       "capability_id": "host.power-off",
@@ -1648,7 +2488,25 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://host/power-off",
+        "subject": "host-operation",
+        "crud": "CREATE",
+        "requirement": "PROD-I-3",
+        "kernel_transition": "begin_run",
+        "preconditions": [
+          "complete_operation_plan",
+          "live_matching_grant",
+          "power_adapter_configured"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "AUTHORITY_REFUSED",
+          "POLICY_REFUSED",
+          "EFFECT_CLASS_REFUSED"
+        ]
+      }
     },
     {
       "capability_id": "host.propose-driver-update",
@@ -1681,7 +2539,24 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://host/propose-driver-update",
+        "subject": "host-operation",
+        "crud": "CREATE",
+        "requirement": "PROD-I-3",
+        "kernel_transition": "submit_proposal",
+        "preconditions": [
+          "driver_identity_declared",
+          "target_version_declared",
+          "source_provenance_declared"
+        ],
+        "commit": "RECORDED",
+        "refusals": [
+          "DRIVER_UNKNOWN",
+          "INCOMPLETE_PROPOSAL"
+        ]
+      }
     },
     {
       "capability_id": "host.read-health",
@@ -1715,7 +2590,24 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://host/read-health",
+        "subject": "host-health",
+        "crud": "READ",
+        "requirement": "PROD-I-3",
+        "preconditions": [
+          "host_port_configured",
+          "execution_boundary_declared"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "HOST_UNAVAILABLE",
+          "HOST_READ_FAILED",
+          "HOST_BOUNDARY_UNKNOWN",
+          "MALFORMED_HOST_REQUEST"
+        ]
+      }
     },
     {
       "capability_id": "host.read-network",
@@ -1748,7 +2640,22 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://host/read-network",
+        "subject": "network-state",
+        "crud": "READ",
+        "requirement": "PROD-I-3",
+        "preconditions": [
+          "host_port_configured",
+          "network_scope_declared"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "HOST_UNAVAILABLE",
+          "HOST_READ_FAILED"
+        ]
+      }
     },
     {
       "capability_id": "host.read-operation",
@@ -1781,7 +2688,20 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://host/read-operation",
+        "subject": "host-operation",
+        "crud": "READ",
+        "requirement": "PROD-I-3",
+        "preconditions": [
+          "host_operation_exists"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "OPERATION_UNKNOWN"
+        ]
+      }
     },
     {
       "capability_id": "host.remove-utility",
@@ -1814,7 +2734,26 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://host/remove-utility",
+        "subject": "host-operation",
+        "crud": "COUNTER",
+        "requirement": "PROD-I-3",
+        "kernel_transition": "begin_run",
+        "preconditions": [
+          "utility_installed",
+          "live_matching_grant",
+          "utility_manager_adapter_configured"
+        ],
+        "commit": "COUNTERED",
+        "refusals": [
+          "AUTHORITY_REFUSED",
+          "UTILITY_MANAGER_UNAVAILABLE",
+          "UTILITY_UNKNOWN",
+          "EFFECT_CLASS_REFUSED"
+        ]
+      }
     },
     {
       "capability_id": "host.request-restart",
@@ -1848,7 +2787,24 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://host/request-restart",
+        "subject": "host-operation",
+        "crud": "CREATE",
+        "requirement": "PROD-I-3",
+        "kernel_transition": "submit_proposal",
+        "preconditions": [
+          "declared_reason",
+          "current_boot_id_recorded",
+          "requested_window_declared"
+        ],
+        "commit": "RECORDED",
+        "refusals": [
+          "BOOT_ID_UNAVAILABLE",
+          "INCOMPLETE_PROPOSAL"
+        ]
+      }
     },
     {
       "capability_id": "host.request-scan",
@@ -1882,7 +2838,25 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://host/request-scan",
+        "subject": "host-operation",
+        "crud": "CREATE",
+        "requirement": "PROD-I-3",
+        "kernel_transition": "begin_run",
+        "preconditions": [
+          "complete_operation_plan",
+          "scanner_adapter_configured",
+          "resource_budget_available"
+        ],
+        "commit": "RECORDED",
+        "refusals": [
+          "SCAN_UNAVAILABLE",
+          "MISSING_PRECONDITION",
+          "EFFECT_CLASS_REFUSED"
+        ]
+      }
     },
     {
       "capability_id": "host.restart",
@@ -1916,7 +2890,27 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://host/restart",
+        "subject": "host-operation",
+        "crud": "CREATE",
+        "requirement": "PROD-I-3",
+        "kernel_transition": "begin_run",
+        "preconditions": [
+          "restart_request_admitted",
+          "live_matching_grant",
+          "current_boot_id_matches_request",
+          "power_adapter_configured"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "AUTHORITY_REFUSED",
+          "STALE_STATE",
+          "BOOT_ID_UNAVAILABLE",
+          "EFFECT_CLASS_REFUSED"
+        ]
+      }
     },
     {
       "capability_id": "host.suspend",
@@ -1949,7 +2943,25 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://host/suspend",
+        "subject": "host-operation",
+        "crud": "CREATE",
+        "requirement": "PROD-I-3",
+        "kernel_transition": "begin_run",
+        "preconditions": [
+          "complete_operation_plan",
+          "live_matching_grant",
+          "power_adapter_configured"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "AUTHORITY_REFUSED",
+          "POLICY_REFUSED",
+          "EFFECT_CLASS_REFUSED"
+        ]
+      }
     },
     {
       "capability_id": "host.update-utility",
@@ -1982,7 +2994,361 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://host/update-utility",
+        "subject": "host-operation",
+        "crud": "SUPERSEDE",
+        "requirement": "PROD-I-3",
+        "kernel_transition": "begin_run",
+        "preconditions": [
+          "utility_installed",
+          "live_matching_grant",
+          "utility_manager_adapter_configured",
+          "source_provenance_declared"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "AUTHORITY_REFUSED",
+          "UTILITY_MANAGER_UNAVAILABLE",
+          "UTILITY_UNKNOWN",
+          "EFFECT_CLASS_REFUSED"
+        ]
+      }
+    },
+    {
+      "capability_id": "identity.deliver-challenge",
+      "service_id": "identity",
+      "operation": "deliver-challenge",
+      "office": "BACK",
+      "counter": "permits-office",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "deliver:challenge",
+      "actor_kinds": [
+        "SYSTEM"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ],
+      "shape": {
+        "logical_endpoint": "sov://identity/deliver-challenge",
+        "subject": "challenge",
+        "crud": "READ",
+        "requirement": "PROD-I-3",
+        "preconditions": [
+          "challenge_exists",
+          "declared_channel"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "MISSING_PRECONDITION",
+          "CHANNEL_REFUSED"
+        ]
+      }
+    },
+    {
+      "capability_id": "identity.enroll-recovery",
+      "service_id": "identity",
+      "operation": "enroll-recovery",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "enroll:recovery",
+      "actor_kinds": [
+        "HUMAN"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ],
+      "shape": {
+        "logical_endpoint": "sov://identity/enroll-recovery",
+        "subject": "recovery-set",
+        "crud": "CREATE",
+        "requirement": "PROD-I-3",
+        "preconditions": [
+          "declared_principal",
+          "declared_secret_digest"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "MISSING_PRECONDITION",
+          "PRINCIPAL_REVOKED"
+        ]
+      }
+    },
+    {
+      "capability_id": "identity.mint-challenge",
+      "service_id": "identity",
+      "operation": "mint-challenge",
+      "office": "BACK",
+      "counter": "permits-office",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "mint:challenge",
+      "actor_kinds": [
+        "SYSTEM"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ],
+      "shape": {
+        "logical_endpoint": "sov://identity/mint-challenge",
+        "subject": "challenge",
+        "crud": "CREATE",
+        "requirement": "PROD-I-3",
+        "preconditions": [
+          "declared_principal",
+          "declared_channel",
+          "declared_expiry"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "MISSING_PRECONDITION",
+          "CHANNEL_UNDECLARED",
+          "CHANNEL_REFUSED",
+          "PRINCIPAL_REVOKED"
+        ]
+      }
+    },
+    {
+      "capability_id": "identity.present-challenge",
+      "service_id": "identity",
+      "operation": "present-challenge",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "present:challenge",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ],
+      "shape": {
+        "logical_endpoint": "sov://identity/present-challenge",
+        "subject": "challenge",
+        "crud": "SUPERSEDE",
+        "requirement": "PROD-I-3",
+        "preconditions": [
+          "challenge_exists",
+          "token_matches",
+          "within_window"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "TOKEN_UNKNOWN",
+          "CHALLENGE_SPENT",
+          "CHALLENGE_EXPIRED",
+          "PRINCIPAL_MISMATCH"
+        ]
+      }
+    },
+    {
+      "capability_id": "identity.redeem-recovery",
+      "service_id": "identity",
+      "operation": "redeem-recovery",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "redeem:recovery",
+      "actor_kinds": [
+        "HUMAN"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ],
+      "shape": {
+        "logical_endpoint": "sov://identity/redeem-recovery",
+        "subject": "recovery-set",
+        "crud": "SUPERSEDE",
+        "requirement": "PROD-I-3",
+        "preconditions": [
+          "recovery_set_exists",
+          "secret_digest_matches"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "MISSING_PRECONDITION",
+          "DIGEST_MISMATCH"
+        ]
+      }
+    },
+    {
+      "capability_id": "identity.report-unenrolled",
+      "service_id": "identity",
+      "operation": "report-unenrolled",
+      "office": "BACK",
+      "counter": "permits-office",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:recovery",
+      "actor_kinds": [
+        "SYSTEM"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ],
+      "shape": {
+        "logical_endpoint": "sov://identity/report-unenrolled",
+        "subject": "recovery-set",
+        "crud": "READ",
+        "requirement": "PROD-I-3",
+        "preconditions": [
+          "declared_principal"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "MISSING_PRECONDITION"
+        ]
+      }
+    },
+    {
+      "capability_id": "identity.revoke-recovery",
+      "service_id": "identity",
+      "operation": "revoke-recovery",
+      "office": "BACK",
+      "counter": "permits-office",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "revoke:recovery",
+      "actor_kinds": [
+        "HUMAN"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ],
+      "shape": {
+        "logical_endpoint": "sov://identity/revoke-recovery",
+        "subject": "recovery-set",
+        "crud": "COUNTER",
+        "requirement": "PROD-I-3",
+        "preconditions": [
+          "recovery_set_exists",
+          "declared_actor"
+        ],
+        "commit": "COUNTERED",
+        "refusals": [
+          "MISSING_PRECONDITION",
+          "AUTHORITY_REFUSED"
+        ]
+      }
     },
     {
       "capability_id": "observation.attest-observation",
@@ -2015,39 +3381,24 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
-    },
-    {
-      "capability_id": "observation.check-independence",
-      "service_id": "observation",
-      "operation": "check-independence",
-      "office": "BACK",
-      "counter": "inspectorate",
-      "service_standing": "PROPOSED",
-      "effect_class": "RECORD_LOCAL",
-      "required_authority": "observe:run",
-      "actor_kinds": [
-        "SYSTEM"
       ],
-      "endpoints": [
-        {
-          "transport": "IN_PROCESS",
-          "activation": "DECLARED_NOT_ACTIVATED"
-        },
-        {
-          "transport": "CLI",
-          "activation": "DECLARED_NOT_ACTIVATED"
-        },
-        {
-          "transport": "MCP",
-          "activation": "DECLARED_NOT_ACTIVATED"
-        },
-        {
-          "transport": "HTTP",
-          "activation": "REFUSED_UNCONFIGURED",
-          "refusal_code": "UNCONFIGURED"
-        }
-      ]
+      "shape": {
+        "logical_endpoint": "sov://observation/attest-observation",
+        "subject": "observation-receipt",
+        "crud": "CREATE",
+        "requirement": "PROD-I-8",
+        "kernel_transition": "attest",
+        "preconditions": [
+          "observation_exists",
+          "declared_validator",
+          "validator_inputs_addressed"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "VALIDATOR_UNDECLARED",
+          "UNATTESTABLE"
+        ]
+      }
     },
     {
       "capability_id": "observation.counter-observation",
@@ -2079,7 +3430,24 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://observation/counter-observation",
+        "subject": "observation",
+        "crud": "COUNTER",
+        "requirement": "PROD-I-4",
+        "kernel_transition": "retract",
+        "preconditions": [
+          "observation_exists",
+          "declared_reason",
+          "live_matching_grant"
+        ],
+        "commit": "COUNTERED",
+        "refusals": [
+          "AUTHORITY_REFUSED",
+          "OBSERVATION_MISSING"
+        ]
+      }
     },
     {
       "capability_id": "observation.declare-predicates",
@@ -2112,7 +3480,72 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://observation/declare-predicates",
+        "subject": "predicate-declaration",
+        "crud": "CREATE",
+        "requirement": "PROD-I-7",
+        "preconditions": [
+          "declared_subject",
+          "declared_predicates",
+          "predicates_evaluable_without_executor_report"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "INCOMPLETE_PROPOSAL",
+          "MISSING_PRECONDITION"
+        ]
+      }
+    },
+    {
+      "capability_id": "observation.infer-relation",
+      "service_id": "observation",
+      "operation": "infer-relation",
+      "office": "BACK",
+      "counter": "inspectorate",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "observe:run",
+      "actor_kinds": [
+        "SYSTEM"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ],
+      "shape": {
+        "logical_endpoint": "sov://observation/infer-relation",
+        "subject": "relation-inference",
+        "crud": "CREATE",
+        "requirement": "PROD-I-8",
+        "preconditions": [
+          "run_terminal",
+          "run_record_complete",
+          "candidate_observer_named"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "RELATION_UNDETERMINED",
+          "RUN_NOT_TERMINAL",
+          "UNREADABLE"
+        ]
+      }
     },
     {
       "capability_id": "observation.list-pending-observations",
@@ -2145,7 +3578,20 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://observation/list-pending-observations",
+        "subject": "observation-request",
+        "crud": "READ",
+        "requirement": "PROD-I-7",
+        "preconditions": [
+          "journal_readable"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "UNREADABLE"
+        ]
+      }
     },
     {
       "capability_id": "observation.observe-run",
@@ -2178,7 +3624,27 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://observation/observe-run",
+        "subject": "observation",
+        "crud": "CREATE",
+        "requirement": "PROD-I-7",
+        "kernel_transition": "observe_run",
+        "preconditions": [
+          "relation_inferred_independent",
+          "predicates_declared",
+          "durable_outputs_readable"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "OBSERVER_NOT_INDEPENDENT",
+          "RELATION_UNDETERMINED",
+          "PREDICATES_UNDECLARED",
+          "UNREADABLE",
+          "DIGEST_MISMATCH"
+        ]
+      }
     },
     {
       "capability_id": "observation.read-observation",
@@ -2211,72 +3677,20 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
-    },
-    {
-      "capability_id": "observation.read-observer",
-      "service_id": "observation",
-      "operation": "read-observer",
-      "office": "BACK",
-      "counter": "inspectorate",
-      "service_standing": "PROPOSED",
-      "effect_class": "RECORD_LOCAL",
-      "required_authority": "read:observation",
-      "actor_kinds": [
-        "HUMAN",
-        "MODEL"
       ],
-      "endpoints": [
-        {
-          "transport": "IN_PROCESS",
-          "activation": "DECLARED_NOT_ACTIVATED"
-        },
-        {
-          "transport": "CLI",
-          "activation": "DECLARED_NOT_ACTIVATED"
-        },
-        {
-          "transport": "MCP",
-          "activation": "DECLARED_NOT_ACTIVATED"
-        },
-        {
-          "transport": "HTTP",
-          "activation": "REFUSED_UNCONFIGURED",
-          "refusal_code": "UNCONFIGURED"
-        }
-      ]
-    },
-    {
-      "capability_id": "observation.register-observer",
-      "service_id": "observation",
-      "operation": "register-observer",
-      "office": "BACK",
-      "counter": "inspectorate",
-      "service_standing": "PROPOSED",
-      "effect_class": "RECORD_LOCAL",
-      "required_authority": "register:observer",
-      "actor_kinds": [
-        "HUMAN"
-      ],
-      "endpoints": [
-        {
-          "transport": "IN_PROCESS",
-          "activation": "DECLARED_NOT_ACTIVATED"
-        },
-        {
-          "transport": "CLI",
-          "activation": "DECLARED_NOT_ACTIVATED"
-        },
-        {
-          "transport": "MCP",
-          "activation": "DECLARED_NOT_ACTIVATED"
-        },
-        {
-          "transport": "HTTP",
-          "activation": "REFUSED_UNCONFIGURED",
-          "refusal_code": "UNCONFIGURED"
-        }
-      ]
+      "shape": {
+        "logical_endpoint": "sov://observation/read-observation",
+        "subject": "observation",
+        "crud": "READ",
+        "requirement": "PROD-I-7",
+        "preconditions": [
+          "observation_exists"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "OBSERVATION_MISSING"
+        ]
+      }
     },
     {
       "capability_id": "observation.request-observation",
@@ -2310,7 +3724,23 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://observation/request-observation",
+        "subject": "observation-request",
+        "crud": "CREATE",
+        "requirement": "PROD-I-7",
+        "preconditions": [
+          "run_terminal",
+          "declared_subject",
+          "declared_requester"
+        ],
+        "commit": "RECORDED",
+        "refusals": [
+          "RUN_NOT_TERMINAL",
+          "INCOMPLETE_PROPOSAL"
+        ]
+      }
     },
     {
       "capability_id": "projection.build-projection",
@@ -2342,7 +3772,22 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://projection/build-projection",
+        "subject": "projection-build",
+        "crud": "REBUILD",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "collection_exists",
+          "authoritative_records_readable"
+        ],
+        "commit": "REBUILT",
+        "refusals": [
+          "UNREADABLE",
+          "STALE_STATE"
+        ]
+      }
     },
     {
       "capability_id": "projection.configure-graph",
@@ -2375,7 +3820,22 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://projection/configure-graph",
+        "subject": "graph-configuration",
+        "crud": "CREATE",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "collection_exists",
+          "declared_edge_rules"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "INCOMPLETE_PROPOSAL",
+          "STALE_STATE"
+        ]
+      }
     },
     {
       "capability_id": "projection.configure-text",
@@ -2408,7 +3868,22 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://projection/configure-text",
+        "subject": "text-configuration",
+        "crud": "CREATE",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "collection_exists",
+          "declared_analyzer"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "INCOMPLETE_PROPOSAL",
+          "STALE_STATE"
+        ]
+      }
     },
     {
       "capability_id": "projection.declare-collection",
@@ -2441,7 +3916,21 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://projection/declare-collection",
+        "subject": "projection-collection",
+        "crud": "CREATE",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "declared_name",
+          "declared_record_stream"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "INCOMPLETE_PROPOSAL"
+        ]
+      }
     },
     {
       "capability_id": "projection.describe-collection",
@@ -2474,7 +3963,20 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://projection/describe-collection",
+        "subject": "projection-collection",
+        "crud": "READ",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "collection_exists"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "MISSING_PRECONDITION"
+        ]
+      }
     },
     {
       "capability_id": "projection.find-path",
@@ -2507,7 +4009,24 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://projection/find-path",
+        "subject": "retrieval-receipt",
+        "crud": "READ",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "build_current",
+          "graph_configured",
+          "declared_start",
+          "declared_end"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "MISSING_PRECONDITION",
+          "STALE_STATE"
+        ]
+      }
     },
     {
       "capability_id": "projection.observe-fidelity",
@@ -2540,7 +4059,24 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://projection/observe-fidelity",
+        "subject": "fidelity-observation",
+        "crud": "CREATE",
+        "requirement": "PROD-I-7",
+        "kernel_transition": "observe_run",
+        "preconditions": [
+          "build_exists",
+          "observer_independent",
+          "declared_predicates"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "OBSERVER_NOT_INDEPENDENT",
+          "OBSERVATION_MISSING"
+        ]
+      }
     },
     {
       "capability_id": "projection.package-context",
@@ -2573,7 +4109,24 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://projection/package-context",
+        "subject": "context-package",
+        "crud": "CREATE",
+        "requirement": "PROD-I-3",
+        "kernel_transition": "cross",
+        "preconditions": [
+          "build_current",
+          "declared_projection",
+          "declared_omissions"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "INCOMPLETE_PROPOSAL",
+          "DATA_BOUNDARY_REFUSED"
+        ]
+      }
     },
     {
       "capability_id": "projection.propose-from-projection",
@@ -2606,7 +4159,24 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://projection/propose-from-projection",
+        "subject": "projection-receipt",
+        "crud": "CREATE",
+        "requirement": "PROD-I-1",
+        "kernel_transition": "submit_proposal",
+        "preconditions": [
+          "build_current",
+          "declared_actor",
+          "declared_source_records"
+        ],
+        "commit": "RECORDED",
+        "refusals": [
+          "INCOMPLETE_PROPOSAL",
+          "STALE_STATE"
+        ]
+      }
     },
     {
       "capability_id": "projection.read-context-package",
@@ -2639,7 +4209,20 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://projection/read-context-package",
+        "subject": "context-package",
+        "crud": "READ",
+        "requirement": "PROD-I-3",
+        "preconditions": [
+          "package_exists"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "MISSING_PRECONDITION"
+        ]
+      }
     },
     {
       "capability_id": "projection.register-vectors",
@@ -2672,7 +4255,25 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://projection/register-vectors",
+        "subject": "vector-registration",
+        "crud": "CREATE",
+        "requirement": "PROD-I-9",
+        "kernel_transition": "invoke_model",
+        "preconditions": [
+          "collection_exists",
+          "declared_model_binding",
+          "declared_dimension"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "INCOMPLETE_PROPOSAL",
+          "MODEL_UNAVAILABLE",
+          "MODEL_INCOMPATIBLE"
+        ]
+      }
     },
     {
       "capability_id": "projection.search-dense",
@@ -2705,7 +4306,23 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://projection/search-dense",
+        "subject": "retrieval-receipt",
+        "crud": "READ",
+        "requirement": "PROD-I-9",
+        "preconditions": [
+          "build_current",
+          "declared_query",
+          "vectors_registered"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "MISSING_PRECONDITION",
+          "MODEL_UNAVAILABLE"
+        ]
+      }
     },
     {
       "capability_id": "projection.search-hybrid",
@@ -2738,7 +4355,23 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://projection/search-hybrid",
+        "subject": "retrieval-receipt",
+        "crud": "READ",
+        "requirement": "PROD-I-9",
+        "preconditions": [
+          "build_current",
+          "declared_query",
+          "vectors_registered"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "MISSING_PRECONDITION",
+          "MODEL_UNAVAILABLE"
+        ]
+      }
     },
     {
       "capability_id": "projection.search-sparse",
@@ -2771,7 +4404,22 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://projection/search-sparse",
+        "subject": "retrieval-receipt",
+        "crud": "READ",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "build_current",
+          "declared_query"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "MISSING_PRECONDITION",
+          "STALE_STATE"
+        ]
+      }
     },
     {
       "capability_id": "projection.search-text",
@@ -2804,7 +4452,22 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://projection/search-text",
+        "subject": "retrieval-receipt",
+        "crud": "READ",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "build_current",
+          "declared_query"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "MISSING_PRECONDITION",
+          "STALE_STATE"
+        ]
+      }
     },
     {
       "capability_id": "projection.traverse-graph",
@@ -2837,7 +4500,23 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://projection/traverse-graph",
+        "subject": "retrieval-receipt",
+        "crud": "READ",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "build_current",
+          "graph_configured",
+          "declared_start"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "MISSING_PRECONDITION",
+          "STALE_STATE"
+        ]
+      }
     },
     {
       "capability_id": "proofing.add-annotation",
@@ -2870,7 +4549,25 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://proofing/add-annotation",
+        "subject": "version-pinned-annotation",
+        "crud": "CREATE",
+        "requirement": "PROD-I-2",
+        "kernel_transition": "read_source",
+        "preconditions": [
+          "session_open",
+          "pinned_version_digest_verifies",
+          "declared_body"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "DIGEST_MISMATCH",
+          "SOURCE_CHANGED",
+          "INCOMPLETE_PROPOSAL"
+        ]
+      }
     },
     {
       "capability_id": "proofing.assign-reviewer",
@@ -2903,7 +4600,23 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://proofing/assign-reviewer",
+        "subject": "participant-assignment",
+        "crud": "CREATE",
+        "requirement": "PROD-I-8",
+        "preconditions": [
+          "session_open",
+          "declared_reviewer",
+          "declared_actor_kind"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "INCOMPLETE_PROPOSAL",
+          "STALE_STATE"
+        ]
+      }
     },
     {
       "capability_id": "proofing.close-session",
@@ -2936,7 +4649,21 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://proofing/close-session",
+        "subject": "proofing-session",
+        "crud": "SUPERSEDE",
+        "requirement": "PROD-I-4",
+        "preconditions": [
+          "session_open",
+          "every_round_terminal"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "STALE_STATE"
+        ]
+      }
     },
     {
       "capability_id": "proofing.open-session",
@@ -2969,7 +4696,21 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://proofing/open-session",
+        "subject": "proofing-session",
+        "crud": "CREATE",
+        "requirement": "PROD-I-1",
+        "preconditions": [
+          "declared_subject_version",
+          "declared_actor"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "INCOMPLETE_PROPOSAL"
+        ]
+      }
     },
     {
       "capability_id": "proofing.propose-decision",
@@ -3002,7 +4743,24 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://proofing/propose-decision",
+        "subject": "decision-proposal",
+        "crud": "CREATE",
+        "requirement": "PROD-I-1",
+        "kernel_transition": "submit_proposal",
+        "preconditions": [
+          "session_open",
+          "declared_actor",
+          "declared_scope",
+          "required_authority_named"
+        ],
+        "commit": "RECORDED",
+        "refusals": [
+          "INCOMPLETE_PROPOSAL"
+        ]
+      }
     },
     {
       "capability_id": "proofing.ratify-decision",
@@ -3034,7 +4792,24 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://proofing/ratify-decision",
+        "subject": "authorized-decision",
+        "crud": "CREATE",
+        "requirement": "PROD-I-5",
+        "kernel_transition": "ratify",
+        "preconditions": [
+          "decision_proposal_recorded",
+          "human_actor",
+          "live_matching_grant"
+        ],
+        "commit": "EFFECTIVE",
+        "refusals": [
+          "AUTHORITY_REFUSED",
+          "STALE_STATE"
+        ]
+      }
     },
     {
       "capability_id": "proofing.read-annotations",
@@ -3067,7 +4842,20 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://proofing/read-annotations",
+        "subject": "version-pinned-annotation",
+        "crud": "READ",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "session_exists"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "MISSING_PRECONDITION"
+        ]
+      }
     },
     {
       "capability_id": "proofing.read-decision",
@@ -3100,7 +4888,20 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://proofing/read-decision",
+        "subject": "decision-proposal",
+        "crud": "READ",
+        "requirement": "PROD-I-1",
+        "preconditions": [
+          "decision_proposal_exists"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "MISSING_PRECONDITION"
+        ]
+      }
     },
     {
       "capability_id": "proofing.read-session",
@@ -3133,7 +4934,20 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://proofing/read-session",
+        "subject": "proofing-session",
+        "crud": "READ",
+        "requirement": "PROD-I-1",
+        "preconditions": [
+          "session_exists"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "MISSING_PRECONDITION"
+        ]
+      }
     },
     {
       "capability_id": "proofing.request-comparison",
@@ -3166,7 +4980,24 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://proofing/request-comparison",
+        "subject": "comparison-recording",
+        "crud": "CREATE",
+        "requirement": "PROD-I-2",
+        "kernel_transition": "begin_run",
+        "preconditions": [
+          "session_open",
+          "two_pinned_versions",
+          "declared_plan"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "INCOMPLETE_PROPOSAL",
+          "SOURCE_CHANGED"
+        ]
+      }
     },
     {
       "capability_id": "proofing.request-revision",
@@ -3199,7 +5030,22 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://proofing/request-revision",
+        "subject": "review-round",
+        "crud": "CREATE",
+        "requirement": "PROD-I-1",
+        "preconditions": [
+          "session_open",
+          "declared_reason"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "INCOMPLETE_PROPOSAL",
+          "STALE_STATE"
+        ]
+      }
     },
     {
       "capability_id": "record.append-entry",
@@ -3232,7 +5078,25 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://record/append-entry",
+        "subject": "journal-entry",
+        "crud": "CREATE",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "declared_kind",
+          "declared_subject",
+          "declared_actor",
+          "current_head"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "STALE_STATE",
+          "MISSING_PRECONDITION",
+          "DESIGN_RECORD_REFUSED"
+        ]
+      }
     },
     {
       "capability_id": "record.append-receipt",
@@ -3265,7 +5129,22 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://record/append-receipt",
+        "subject": "terminal-receipt",
+        "crud": "CREATE",
+        "requirement": "PROD-I-4",
+        "preconditions": [
+          "entry_exists",
+          "declared_outcome"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "STALE_STATE",
+          "MISSING_PRECONDITION"
+        ]
+      }
     },
     {
       "capability_id": "record.counter-entry",
@@ -3298,7 +5177,24 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://record/counter-entry",
+        "subject": "counter-record",
+        "crud": "COUNTER",
+        "requirement": "PROD-I-4",
+        "kernel_transition": "retract",
+        "preconditions": [
+          "entry_exists",
+          "declared_reason",
+          "declared_actor"
+        ],
+        "commit": "COUNTERED",
+        "refusals": [
+          "STALE_STATE",
+          "MISSING_PRECONDITION"
+        ]
+      }
     },
     {
       "capability_id": "record.drop-projections",
@@ -3331,17 +5227,29 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://record/drop-projections",
+        "subject": "subject-projection",
+        "crud": "REBUILD",
+        "preconditions": [
+          "projection_store_writable"
+        ],
+        "commit": "REBUILT",
+        "refusals": [
+          "MISSING_PRECONDITION"
+        ]
+      }
     },
     {
-      "capability_id": "record.read-entry",
+      "capability_id": "record.export-journal",
       "service_id": "record",
-      "operation": "read-entry",
+      "operation": "export-journal",
       "office": "BACK",
       "counter": "record",
       "service_standing": "BUILT",
       "effect_class": "RECORD_LOCAL",
-      "required_authority": "read:journal",
+      "required_authority": "export:journal",
       "actor_kinds": [
         "SYSTEM"
       ],
@@ -3364,7 +5272,69 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://record/export-journal",
+        "subject": "journal-export",
+        "crud": "READ",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "journal_verifies"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "EXPORT_REFUSED",
+          "DIGEST_MISMATCH"
+        ]
+      }
+    },
+    {
+      "capability_id": "record.read-entry",
+      "service_id": "record",
+      "operation": "read-entry",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:journal",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "record:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "ACTIVE",
+          "address": "record_entries"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ],
+      "shape": {
+        "logical_endpoint": "sov://record/read-entry",
+        "subject": "journal-entry",
+        "crud": "READ",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "entry_exists"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "MISSING_PRECONDITION"
+        ]
+      }
     },
     {
       "capability_id": "record.read-projection",
@@ -3397,7 +5367,20 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://record/read-projection",
+        "subject": "subject-projection",
+        "crud": "READ",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "projection_built"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "MISSING_PRECONDITION"
+        ]
+      }
     },
     {
       "capability_id": "record.rebuild-projections",
@@ -3430,7 +5413,21 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://record/rebuild-projections",
+        "subject": "subject-projection",
+        "crud": "REBUILD",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "journal_readable"
+        ],
+        "commit": "REBUILT",
+        "refusals": [
+          "UNREADABLE",
+          "DIGEST_MISMATCH"
+        ]
+      }
     },
     {
       "capability_id": "record.reconstruct-journal",
@@ -3463,7 +5460,118 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://record/reconstruct-journal",
+        "subject": "digest-chain",
+        "crud": "READ",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "journal_readable"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "UNREADABLE",
+          "DIGEST_MISMATCH"
+        ]
+      }
+    },
+    {
+      "capability_id": "record.restore-journal",
+      "service_id": "record",
+      "operation": "restore-journal",
+      "office": "BACK",
+      "counter": "record",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "restore:journal",
+      "actor_kinds": [
+        "SYSTEM"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "record:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ],
+      "shape": {
+        "logical_endpoint": "sov://record/restore-journal",
+        "subject": "journal-entry",
+        "crud": "CREATE",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "export_verifies",
+          "store_empty"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "RESTORE_REFUSED",
+          "DIGEST_MISMATCH",
+          "TRUNCATED_EXPORT"
+        ]
+      }
+    },
+    {
+      "capability_id": "record.verify-export",
+      "service_id": "record",
+      "operation": "verify-export",
+      "office": "BACK",
+      "counter": "record",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "verify:export",
+      "actor_kinds": [
+        "SYSTEM"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "record:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ],
+      "shape": {
+        "logical_endpoint": "sov://record/verify-export",
+        "subject": "journal-export",
+        "crud": "READ",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "export_readable"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "RESTORE_REFUSED",
+          "DIGEST_MISMATCH",
+          "TRUNCATED_EXPORT"
+        ]
+      }
     },
     {
       "capability_id": "registry.declare-owner",
@@ -3495,7 +5603,27 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://registry/declare-owner",
+        "subject": "owner-record",
+        "crud": "CREATE",
+        "requirement": "PROD-I-5",
+        "preconditions": [
+          "domain_entry_exists",
+          "declared_owner",
+          "declared_mandate",
+          "declared_budget",
+          "declared_deadline",
+          "declared_witness"
+        ],
+        "commit": "RECORDED",
+        "refusals": [
+          "INCOMPLETE_PROPOSAL",
+          "WITNESS_NOT_INDEPENDENT",
+          "NAME_UNKNOWN"
+        ]
+      }
     },
     {
       "capability_id": "registry.read-entry",
@@ -3528,7 +5656,20 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://registry/read-entry",
+        "subject": "registry-entry",
+        "crud": "READ",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "entry_exists"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "NAME_UNKNOWN"
+        ]
+      }
     },
     {
       "capability_id": "registry.read-index",
@@ -3561,7 +5702,20 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://registry/read-index",
+        "subject": "registry-index",
+        "crud": "READ",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "index_exists"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "MISSING_PRECONDITION"
+        ]
+      }
     },
     {
       "capability_id": "registry.read-owner",
@@ -3594,7 +5748,20 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://registry/read-owner",
+        "subject": "owner-record",
+        "crud": "READ",
+        "requirement": "PROD-I-5",
+        "preconditions": [
+          "domain_entry_exists"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "NAME_UNKNOWN"
+        ]
+      }
     },
     {
       "capability_id": "registry.read-receipt",
@@ -3627,7 +5794,20 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://registry/read-receipt",
+        "subject": "registry-receipt",
+        "crud": "READ",
+        "requirement": "PROD-I-4",
+        "preconditions": [
+          "registry_receipt_exists"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "MISSING_PRECONDITION"
+        ]
+      }
     },
     {
       "capability_id": "registry.rebuild-index",
@@ -3660,7 +5840,22 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://registry/rebuild-index",
+        "subject": "registry-index",
+        "crud": "REBUILD",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "declared_sources",
+          "every_source_readable"
+        ],
+        "commit": "REBUILT",
+        "refusals": [
+          "UNREADABLE",
+          "SOURCE_UNRESOLVED"
+        ]
+      }
     },
     {
       "capability_id": "registry.register-entry",
@@ -3693,7 +5888,27 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://registry/register-entry",
+        "subject": "registry-entry",
+        "crud": "CREATE",
+        "requirement": "PROD-I-2",
+        "kernel_transition": "capture_source",
+        "preconditions": [
+          "declared_kind",
+          "declared_name",
+          "owning_document_address",
+          "owning_document_digest",
+          "declared_actor"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "INCOMPLETE_PROPOSAL",
+          "SOURCE_UNRESOLVED",
+          "NAME_COLLIDES"
+        ]
+      }
     },
     {
       "capability_id": "registry.relate-entries",
@@ -3726,7 +5941,24 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://registry/relate-entries",
+        "subject": "entry-relation",
+        "crud": "CREATE",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "both_entries_exist",
+          "declared_relation_type",
+          "declared_actor"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "RELATION_UNTYPED",
+          "NAME_UNKNOWN",
+          "INCOMPLETE_PROPOSAL"
+        ]
+      }
     },
     {
       "capability_id": "registry.report-drift",
@@ -3759,7 +5991,22 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://registry/report-drift",
+        "subject": "drift-finding",
+        "crud": "CREATE",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "index_exists",
+          "source_digest_compared"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "MISSING_PRECONDITION",
+          "SOURCE_CHANGED"
+        ]
+      }
     },
     {
       "capability_id": "registry.resolve",
@@ -3793,7 +6040,22 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://registry/resolve",
+        "subject": "resolution",
+        "crud": "READ",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "declared_name",
+          "index_fresh"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "NAME_UNKNOWN",
+          "INDEX_STALE"
+        ]
+      }
     },
     {
       "capability_id": "registry.retire-owner",
@@ -3825,7 +6087,24 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://registry/retire-owner",
+        "subject": "owner-record",
+        "crud": "COUNTER",
+        "requirement": "PROD-I-5",
+        "kernel_transition": "retract",
+        "preconditions": [
+          "owner_record_exists",
+          "authority_grant_id",
+          "declared_reason"
+        ],
+        "commit": "COUNTERED",
+        "refusals": [
+          "AUTHORITY_REFUSED",
+          "STALE_STATE"
+        ]
+      }
     },
     {
       "capability_id": "registry.supersede-entry",
@@ -3858,7 +6137,24 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://registry/supersede-entry",
+        "subject": "registry-entry",
+        "crud": "SUPERSEDE",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "entry_exists",
+          "owning_document_digest",
+          "declared_actor"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "STALE_STATE",
+          "SOURCE_UNRESOLVED",
+          "INCOMPLETE_PROPOSAL"
+        ]
+      }
     },
     {
       "capability_id": "registry.supersede-owner",
@@ -3890,7 +6186,25 @@
           "activation": "REFUSED_UNCONFIGURED",
           "refusal_code": "UNCONFIGURED"
         }
-      ]
+      ],
+      "shape": {
+        "logical_endpoint": "sov://registry/supersede-owner",
+        "subject": "owner-record",
+        "crud": "SUPERSEDE",
+        "requirement": "PROD-I-5",
+        "preconditions": [
+          "owner_record_exists",
+          "declared_budget",
+          "declared_deadline",
+          "declared_witness"
+        ],
+        "commit": "RECORDED",
+        "refusals": [
+          "STALE_STATE",
+          "WITNESS_NOT_INDEPENDENT",
+          "INCOMPLETE_PROPOSAL"
+        ]
+      }
     }
   ]
 }

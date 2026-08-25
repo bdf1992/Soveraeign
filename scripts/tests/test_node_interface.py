@@ -39,7 +39,7 @@ class ProjectionFacts(unittest.TestCase):
 
     def test_evidence_layers_remain_independent(self) -> None:
         self.assertEqual(self.document["counts"], {
-            "declared": 117, "bound": 117, "policy_active": 34,
+            "declared": 127, "bound": 127, "policy_active": 39,
             "reachable": 5, "observed": 0,
         })
         self.assertEqual(self.operation("asset.ingest-asset")["facts"], {
@@ -228,7 +228,7 @@ class HumanModelParity(unittest.TestCase):
             self.assertEqual(result["operation_digest"], self.record["record_digest"])
             self.assertEqual(result["required_authority"], "ingest:asset")
             self.assertEqual(result["terminal_outcome"], "COMMITTED")
-            self.assertEqual(result["terminal_event"], "asset.ingest")
+            self.assertEqual(result["terminal_event"], "asset.ingest-asset")
 
     def test_human_and_model_resolve_through_same_registry_receipt(self) -> None:
         self.assertTrue(self.proof["same_registry_semantics"])

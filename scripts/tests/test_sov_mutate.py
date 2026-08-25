@@ -96,7 +96,7 @@ class OperatorMechanics(unittest.TestCase):
 class ScorerDiscriminates(unittest.TestCase):
     """Scoring spawns one subprocess per mutant, so both scores are taken once
     for the whole class. Recomputing them per test multiplied the repository's
-    three-second verification budget by the number of assertions."""
+    verification budget by the number of assertions."""
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -197,10 +197,43 @@ class SuiteRouting(unittest.TestCase):
         self.assertIsNone(sov_mutate.suite_for(Path(tempfile.gettempdir()) / "elsewhere.py"))
 
 
+class WholeRunBudget(unittest.TestCase):
+    def paths(self, count: int) -> list[Path]:
+        return [Path(f"target-{index:02d}.py") for index in range(count)]
+
+    def test_a_small_diff_keeps_every_file_and_honours_the_per_file_cap(self):
+        planned, omitted = sov_mutate._budgeted_targets(self.paths(3), 4, 30)
+        self.assertEqual(planned, [(path, 4) for path in self.paths(3)])
+        self.assertEqual(omitted, [])
+
+    def test_a_large_diff_is_sampled_across_its_full_ordered_extent(self):
+        planned, omitted = sov_mutate._budgeted_targets(self.paths(10), 40, 3)
+        self.assertEqual([path for path, _limit in planned],
+                         [Path("target-00.py"), Path("target-04.py"), Path("target-09.py")])
+        self.assertEqual([limit for _path, limit in planned], [1, 1, 1])
+        self.assertEqual(len(omitted), 7)
+
+    def test_the_declared_total_can_never_be_exceeded(self):
+        for files in range(1, 20):
+            for budget in range(1, 20):
+                planned, _omitted = sov_mutate._budgeted_targets(
+                    self.paths(files), 40, budget)
+                self.assertLessEqual(sum(limit for _path, limit in planned), budget)
+
+    def test_no_whole_run_cap_preserves_the_previous_behavior(self):
+        planned, omitted = sov_mutate._budgeted_targets(self.paths(5), 7, None)
+        self.assertEqual(planned, [(path, 7) for path in self.paths(5)])
+        self.assertEqual(omitted, [])
+
+    def test_a_zero_budget_is_refused_instead_of_reporting_an_empty_pass(self):
+        with self.assertRaisesRegex(ValueError, "total-limit"):
+            sov_mutate._budgeted_targets(self.paths(5), 40, 0)
+
+
 # The shipped `sov_mutate.py selfcheck` command is deliberately NOT wrapped in a
 # test here. It runs a full scoring pass, which costs a subprocess per mutant,
 # and `ScorerDiscriminates` already proves the same discrimination in-process.
-# Running it twice consumed a third of the repository's three-second budget to
+# Running it twice consumed a third of the repository's budget at the time to
 # re-prove a settled fact. It runs instead as its own step in the mutation gate,
 # which is the gate that depends on it.
 

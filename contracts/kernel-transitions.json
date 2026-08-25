@@ -15,9 +15,7 @@
   "never_settles": [
     "report_run"
   ],
-  "phase_refused_effect_classes": [
-    "EXTERNAL_WORLD"
-  ],
+  "phase_refused_effect_classes": [],
   "refusal_codes": {
     "UNREADABLE": "The source bytes could not be read.",
     "DIGEST_MISMATCH": "The declared digest does not match the bytes.",
@@ -34,12 +32,12 @@
     "POLICY_REFUSED": "The required attestation policy is not satisfied.",
     "OBSERVER_NOT_INDEPENDENT": "The observer is the actor that produced the report.",
     "OBSERVATION_MISSING": "Settlement was requested with no satisfactory observation.",
-    "EFFECT_CLASS_REFUSED": "The declared effect class is not admitted in the current phase.",
     "MODEL_UNAVAILABLE": "The declared model binding could not be reached.",
     "MODEL_INCOMPATIBLE": "The declared model binding cannot serve the operation.",
     "DATA_BOUNDARY_REFUSED": "The operation would cross the declared data boundary.",
     "UNKNOWN_TRANSITION": "The requested transition is not declared in this table.",
-    "MISSING_PRECONDITION": "A declared precondition key is absent or empty."
+    "MISSING_PRECONDITION": "A declared precondition key is absent or empty.",
+    "EXTERNAL_EFFECT_UNAUTHORIZED": "An EXTERNAL_WORLD effect named no authorized scope, used a verb its scope does not carry, used a verb refused by name, or would leave no receipt."
   },
   "transitions": [
     {
@@ -259,5 +257,7 @@
       ],
       "effect_class": "RESOURCE_CONSUMPTION"
     }
-  ]
+  ],
+  "external_effect_authorization": "contracts/external-effect-authorization.json",
+  "external_effect_note": "SPEC.md no longer refuses EXTERNAL_WORLD by class. An external effect is admitted inside a declared scope, with a verb that scope carries, leaving a receipt; every other one is refused. EXTERNAL_EFFECT_UNAUTHORIZED is the kernel name for that refusal."
 }

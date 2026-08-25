@@ -1,0 +1,53 @@
+{
+  "packet_schema": "soveraeign-acceptance-packet/v1",
+  "packet_id": "A1",
+  "claim": "The Phase-I engineering baseline in ENGINEERING.md is the one this repository actually runs on, and it holds under its own checks.",
+  "subject": {
+    "artifact": "ENGINEERING.md",
+    "from_standing": "BUILT_SELF_TESTED_NOT_WITNESSED",
+    "to_standing": "RATIFIED",
+    "supersedes_open_decision": "O2"
+  },
+  "presented_by_seat": "seat:session-control",
+  "accepted_by_seat": "seat:root",
+  "claim_type": "JUDGEMENT",
+  "built_by": {
+    "actor_id": "urn:soveraeign:actor:claude-interactive-session",
+    "actor_kind": "MODEL"
+  },
+  "witnessed_by": null,
+  "visible_result": {
+    "demo": ["python", "scripts/verify.py"],
+    "shows": "every repository check running on exactly the baseline the document declares: Python 3.11+, standard library only, SQLite and a filesystem content-addressed store, JSON Schema at machine boundaries, unittest",
+    "expect": "PASS, inside the three-second budget, with no third-party import anywhere in the run"
+  },
+  "evidence": [
+    {
+      "address": "ENGINEERING.md",
+      "digest": "32ae88f4b4c9d0a5472beeef7c3577f6ab0d3b04726a848fd55409e16bb412cd",
+      "says": "the baseline as written: two Systems of Record, the minimal reference stack, kernel primitives, and the growth triggers that would force a dependency"
+    },
+    {
+      "address": "scripts/verify.py",
+      "digest": null,
+      "says": "thirteen checks, each a separate process, none importing a third-party package"
+    },
+    {
+      "address": "scripts/lint.py",
+      "digest": null,
+      "says": "enforces the style half of the baseline against working-tree bytes: line endings, module size, secret shapes"
+    }
+  ],
+  "why_it_matters": "Every later choice inherits this. While it sat as an open question, no agent could say whether adding a dependency was a decision or a defect, so both answers stayed available and the argument reran on every branch.",
+  "what_could_defeat_it": [
+    "A required Phase-I behaviour that the standard library genuinely cannot express, which would make the dependency-free rule a fiction rather than a constraint.",
+    "A verify run that passes on a machine with packages installed and fails on a clean one, which would mean the checks never actually tested the baseline.",
+    "SQLite proving unable to hold the append-preserving record without a second store, which would move the storage claim from mechanism to semantics."
+  ],
+  "residuals": [
+    "services/asset/src/soveraeign_asset_service/core.py is 341 lines against the 300-line limit, recorded as named debt in scripts/lint.py rather than silently allowed.",
+    "The baseline is self-tested. No independent witness has run it, so ACCEPT here is acceptance of a build claim, not of a witnessed one."
+  ],
+  "on_accept": "STATUS.yaml engineering_framework_status becomes RATIFIED and ENGINEERING.md drops its proposal framing; the O2 ruling in STATUS.yaml rulings is deleted as spent.",
+  "on_reject": "ENGINEERING.md stays proposed, the O2 ruling stands as the working default, and the rejection reason names which of the three defeaters landed."
+}

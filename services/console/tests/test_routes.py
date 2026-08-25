@@ -25,13 +25,13 @@ class ConsoleReadRoute(unittest.TestCase):
         root = Path(self.tmp.name)
         self.record = RecordService(root / "record")
         self.console = ConsoleService(self.record, root / "console", "node:test")
-        self.console.grant("reader", "open-channel", "work")
+        self.console.grant("reader", "open:channel", "work")
         channel = self.console.open_channel("reader", "work", "work")
-        self.console.grant("reader", "open-thread", channel["channel_id"])
+        self.console.grant("reader", "open:thread", channel["channel_id"])
         self.thread = self.console.open_thread(
             "reader", channel["channel_id"], "Read plane")
         self.session = self.console.open_session("reader", "HUMAN", "human-binding")
-        self.console.grant("reader", "post", self.thread["thread_id"])
+        self.console.grant("reader", "post:message", self.thread["thread_id"])
         self.post = self.console.post(
             self.session["session_id"], self.thread["thread_id"], b"grounded post")
         self.routes = ConsoleRoutes(self.console)

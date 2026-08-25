@@ -6,7 +6,8 @@
     "terminal-receipt",
     "counter-record",
     "digest-chain",
-    "subject-projection"
+    "subject-projection",
+    "journal-export"
   ],
   "references": [
     "shared-kernel-contracts"
@@ -28,7 +29,8 @@
       "commit": "COMMITTED",
       "refusals": [
         "STALE_STATE",
-        "MISSING_PRECONDITION"
+        "MISSING_PRECONDITION",
+        "DESIGN_RECORD_REFUSED"
       ]
     },
     {
@@ -146,8 +148,65 @@
       "refusals": [
         "MISSING_PRECONDITION"
       ]
+    },
+    {
+      "operation": "export-journal",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://record/export-journal",
+      "subject": "journal-export",
+      "crud": "READ",
+      "requirement": "PROD-I-2",
+      "preconditions": [
+        "journal_verifies"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "EXPORT_REFUSED",
+        "DIGEST_MISMATCH"
+      ]
+    },
+    {
+      "operation": "verify-export",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://record/verify-export",
+      "subject": "journal-export",
+      "crud": "READ",
+      "requirement": "PROD-I-2",
+      "preconditions": [
+        "export_readable"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "RESTORE_REFUSED",
+        "DIGEST_MISMATCH",
+        "TRUNCATED_EXPORT"
+      ]
+    },
+    {
+      "operation": "restore-journal",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://record/restore-journal",
+      "subject": "journal-entry",
+      "crud": "CREATE",
+      "requirement": "PROD-I-2",
+      "preconditions": [
+        "export_verifies",
+        "store_empty"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "RESTORE_REFUSED",
+        "DIGEST_MISMATCH",
+        "TRUNCATED_EXPORT"
+      ]
     }
   ],
+  "local_refusals": {
+    "DESIGN_RECORD_REFUSED": "ADMISSION_REFUSED",
+    "EXPORT_REFUSED": "MISSING_PRECONDITION",
+    "RESTORE_REFUSED": "MISSING_PRECONDITION",
+    "TRUNCATED_EXPORT": "DIGEST_MISMATCH"
+  },
   "uses_kernel_contracts": [
     "standing",
     "operation",
@@ -164,6 +223,15 @@
     "entry-deletion",
     "projection-as-authority",
     "digest-chain-rewrite",
-    "history-erasure"
+    "history-erasure",
+    "journal-row-update",
+    "journal-row-deletion",
+    "history-erasure-on-retraction",
+    "projection-as-authoritative-record",
+    "design-documents-as-event-storage",
+    "unverified-history-replay",
+    "export-of-an-unverifiable-journal",
+    "restore-into-a-non-empty-journal",
+    "truncation-detected-without-an-external-head"
   ]
 }

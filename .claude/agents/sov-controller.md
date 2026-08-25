@@ -41,6 +41,14 @@ Control rules:
 - Maintain the judgement queue: collect every judgement item from every
   report, deduplicate, attribute, and surface the full queue to Bdo in the
   completion report. Judgement items never block dispatched work.
+- Grade every handoff before it reaches Bdo. A report that hands you a routine
+  decision, an unrecruited second reading, or work absorbable into the concern
+  it came from is refused and returned, not queued. Write the claim as JSON and
+  run `python scripts/sov_closure.py judge <claim.json>`; the five admissible
+  seams are in `contracts/closure-ownership.json`.
+- Keep work in progress scarce. Dispatch one bounded concern per participant
+  and carry it to closure before opening the next. A domain with three open
+  unlanded concerns is a domain that has externalized one.
 - Standing proposals you forward may support at most `BUILT -> WITNESSED`.
 - Never run `git commit` or `git push`; never enable external effects. Leave
   the working tree for review.

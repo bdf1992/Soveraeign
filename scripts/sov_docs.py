@@ -26,10 +26,12 @@ record under `docs/`.
 from __future__ import annotations
 
 from hashlib import sha256
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any
 import argparse
 import json
+import os
+import posixpath
 import re
 import sys
 
@@ -37,31 +39,31 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 sys.path.insert(0, str(ROOT / "services" / "asset" / "src"))
 
+from sovdocs import facets as facet_rules  # noqa: E402
 from sovdocs.markdown import render as render_markdown  # noqa: E402
+from sovdocs.render import NEWLINE, _rendered, _resolver  # noqa: E402
 from sovdocs.site import render as render_site  # noqa: E402
 
 SKIP_PARTS = {".git", ".venv", "__pycache__", ".local", "node_modules", "lineage", "docs"}
 PAGE = ROOT / "docs" / "documentation.html"
 LEDGER = ROOT / "docs" / "ingest.json"
 STORE = ROOT / ".local" / "docs-assets"
-SEARCH_BUDGET = 4000
+ANCHOR = re.compile(r'href="#([a-z0-9-]+)"')
 
-GROUPS = (
-    ("Governing set", lambda path: "/" not in path),
-    ("Decisions", lambda path: path.startswith("decisions/")),
-    ("Services", lambda path: path.startswith("services/")),
-    ("Contracts and bindings", lambda path: path.startswith(("contracts/", "bindings/",
-                                                             "adapters/", "conformance/"))),
-    ("Reports", lambda path: path.startswith("reports/")),
-    ("Diagrams", lambda path: path.startswith("diagrams/")),
-    ("Harness", lambda path: path.startswith(".claude/")),
-)
 
 
 def sources() -> list[Path]:
     """Every markdown document this node publishes to its own readers, in a stable order."""
-    found = [path for path in ROOT.rglob("*.md")
-             if not (set(path.relative_to(ROOT).parts) & SKIP_PARTS)]
+    found: list[Path] = []
+    for raw_root, dirs, files in os.walk(ROOT, topdown=True):
+        # The published-document population excludes these trees. Prune them before
+        # descent so a documentation check never pays to walk Git objects, local
+        # runtime state, generated docs, or dependency trees it will discard anyway.
+        dirs[:] = sorted(name for name in dirs if name not in SKIP_PARTS)
+        root = Path(raw_root)
+        found.extend(root / name for name in sorted(files)
+                     if name.endswith(".md")
+                     and not facet_rules.excluded((root / name).relative_to(ROOT).as_posix()))
     return sorted(found, key=lambda path: path.relative_to(ROOT).as_posix())
 
 
@@ -76,36 +78,67 @@ def _identifier(path: str) -> str:
 
 def documents(ledger: dict[str, Any]) -> list[dict[str, Any]]:
     """Render every document once, joined to whatever the Asset Service recorded for it."""
+    found = sources()
+    known = {source.relative_to(ROOT).as_posix(): _identifier(source.relative_to(ROOT).as_posix())
+             for source in found}
+    corpus = sha256(NEWLINE.join(sorted(known)).encode("utf-8")).hexdigest()
+    offices = facet_rules.Offices(ROOT)
+    declared = facet_rules.service_standings(ROOT)
     built = []
-    for source in sources():
+    for source in found:
         path = source.relative_to(ROOT).as_posix()
-        raw = source.read_bytes()
-        text = raw.decode("utf-8", errors="replace")
-        body, _ = render_markdown(text)
+        digest, text, body, search, headings = _rendered(source, _resolver(path, known),
+                                                         corpus)
         built.append({
-            "id": _identifier(path),
+            "id": known[path],
             "path": path,
             "title": _title(text, path),
-            "digest": sha256(raw).hexdigest(),
+            "digest": digest,
             "html": body,
-            "search": re.sub(r"\s+", " ", text.lower())[:SEARCH_BUDGET],
+            "search": search,
+            "outline": [{"level": level, "text": label, "anchor": anchor}
+                        for level, label, anchor in headings if 2 <= level <= 3],
+            "facets": facet_rules.facets_for(path, text, offices, declared),
             "asset": ledger.get(path),
         })
+    _attach_citations(built)
     return built
 
 
+def _attach_citations(built: list[dict[str, Any]]) -> None:
+    """Derive who cites whom from the links already rendered, in both directions.
+
+    A citation is an observation about the corpus, not an assertion anyone made,
+    so it is read off the rendered text rather than recorded. Nothing here writes
+    an asset relationship: that is an assertion and would need ratifying.
+    """
+    by_id = {document["id"]: document for document in built}
+    for document in built:
+        document["cites"] = []
+        document["cited_by"] = []
+    for document in built:
+        targets = {match for match in ANCHOR.findall(document["html"])}
+        document["cites"] = sorted(target for target in targets
+                                   if target in by_id and target != document["id"])
+    for document in built:
+        for target in document["cites"]:
+            by_id[target]["cited_by"].append(document["id"])
+    for document in built:
+        document["cited_by"] = sorted(set(document["cited_by"]))
+
+
 def grouped(built: list[dict[str, Any]]) -> list[tuple[str, list[dict[str, Any]]]]:
-    """Group for the sidebar. A document lands in the first group that claims it."""
-    remaining = list(built)
-    groups: list[tuple[str, list[dict[str, Any]]]] = []
-    for label, claims in GROUPS:
-        taken = [document for document in remaining if claims(document["path"])]
-        if taken:
-            groups.append((label, taken))
-        remaining = [document for document in remaining if document not in taken]
-    if remaining:
-        groups.append(("Elsewhere", remaining))
-    return groups
+    """Group the sidebar by kind, in the order the rules declare them.
+
+    There is no trailing catch-all. A document no rule claims never reaches this
+    function: `facets.kind` raises and the documentation check fails naming the
+    file, which is the point of having rules at all.
+    """
+    order = [name for _, name, _ in facet_rules.KIND_RULES]
+    seen: dict[str, list[dict[str, Any]]] = {}
+    for document in built:
+        seen.setdefault(document["facets"]["kind"], []).append(document)
+    return [(name, seen[name]) for name in dict.fromkeys(order) if name in seen]
 
 
 def read_ledger() -> dict[str, Any]:
@@ -133,8 +166,15 @@ def cmd_ingest(args: argparse.Namespace) -> int:
             result = service.ingest(source, _title(source.read_text(encoding="utf-8",
                                                                    errors="replace"), path),
                                     args.actor, locator=f"repo:{path}")
-            recorded[path] = {key: result[key] for key in
-                              ("asset_id", "version_id", "digest", "receipt_id")}
+            history = service.history(result["asset_id"])
+            recorded[path] = {
+                **{key: result[key] for key in
+                   ("asset_id", "version_id", "digest", "receipt_id")},
+                "role": result.get("role", "ORIGINAL"),
+                "versions": [{"version_id": entry["id"], "digest": entry["digest"],
+                              "role": entry["role"], "size": entry["size"]}
+                             for entry in history],
+            }
         service.rebuild_projections()
     finally:
         service.close()

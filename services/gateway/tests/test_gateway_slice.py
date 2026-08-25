@@ -147,7 +147,7 @@ class GatewayVerticalSlice(unittest.TestCase):
                 durable = self.asset.receipts()[-1]
                 self.assertEqual(returned, durable)
                 self.assertEqual(returned["outcome"], "COMMITTED")
-                self.assertEqual(returned["event"], "asset.ingest")
+                self.assertEqual(returned["event"], "asset.ingest-asset")
                 self.assertEqual(returned["actor"], actor)
 
         routes = self.gateway_events("gateway-routing-record")
@@ -332,7 +332,7 @@ class GatewayVerticalSlice(unittest.TestCase):
 
         self.assertEqual(returned, durable)
         self.assertEqual(returned["outcome"], "COMMITTED")
-        self.assertEqual(returned["event"], "version.read")
+        self.assertEqual(returned["event"], "asset.read-version")
         self.assertEqual(returned["actor"], "operator")
         self.assertEqual(detail["version_id"], version_id)
         self.assertEqual(detail["asset_id"], ingested["asset_id"])

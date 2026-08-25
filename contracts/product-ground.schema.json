@@ -1,0 +1,193 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/product-ground.schema.json",
+  "title": "Soveraeign Product Ground (PROPOSED, decisions/0047)",
+  "description": "The small set of stable claims that say what product Soveraeign is. A ground claim earns its place by the test: if this statement became false, would we merely implement Soveraeign differently, or would we be building a materially different product? Only the second belongs here. Ground supplies the meaning of a state fact; it never asserts that the fact is currently true. It sits above the product canon and below CONTRACT.md, and it is deliberately smaller and more stable than either. GROUND.md owns the wording; this record owns the identifiers.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "ground_schema",
+    "epoch",
+    "revision",
+    "rendering",
+    "status",
+    "wording_owned_by",
+    "amendment_rule",
+    "grounded_in",
+    "claims",
+    "retired"
+  ],
+  "properties": {
+    "ground_schema": {
+      "const": "soveraeign-product-ground/v1"
+    },
+    "epoch": {
+      "description": "The product epoch. It changes when a ground claim is retired or replaced rather than added to, because that is when what product is being made has changed. Adding a claim does not mint an epoch.",
+      "type": "string",
+      "pattern": "^EPOCH-[1-9][0-9]*$"
+    },
+    "revision": {
+      "description": "The semantic revision. It increments when meaning changes: a claim added, retired, or reworded to say something different.",
+      "type": "string",
+      "pattern": "^GROUND-[1-9][0-9]*$"
+    },
+    "rendering": {
+      "description": "The artifact revision: this exact immutable copy. Its whole part must equal `revision`, and its fractional part increments for an amendment that carries no change of meaning - a typo, a citation repair, a formatting fix. A rendering must never be used to change meaning.",
+      "type": "string",
+      "pattern": "^GROUND-[1-9][0-9]*[.][0-9]+$"
+    },
+    "status": {
+      "enum": [
+        "PROPOSED",
+        "ACCEPTED",
+        "SUPERSEDED"
+      ]
+    },
+    "wording_owned_by": {
+      "type": "string",
+      "minLength": 1
+    },
+    "amendment_rule": {
+      "type": "string",
+      "minLength": 120
+    },
+    "supersedes": {
+      "description": "The revision this one replaces, present from the second revision onward.",
+      "type": "string",
+      "pattern": "^GROUND-[1-9][0-9]*$"
+    },
+    "grounded_in": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "claims": {
+      "description": "Between eight and twenty. Fewer would mean the ground is not carrying the product; more means claims are being minted for features, services or operations, which belong below this altitude.",
+      "type": "array",
+      "minItems": 8,
+      "maxItems": 20,
+      "items": {
+        "$ref": "#/$defs/claim"
+      }
+    },
+    "retired": {
+      "description": "Ground identifiers withdrawn by a later revision. Retired, not reserved: a retired identifier is never reused for a different meaning, because work attributed under it must keep meaning what it meant.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "retired_in",
+          "epoch",
+          "because"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^GROUND-[0-9]{3}$"
+          },
+          "retired_in": {
+            "type": "string",
+            "pattern": "^GROUND-[1-9][0-9]*$"
+          },
+          "epoch": {
+            "type": "string",
+            "pattern": "^EPOCH-[1-9][0-9]*$"
+          },
+          "because": {
+            "type": "string",
+            "minLength": 20
+          }
+        }
+      }
+    },
+    "accepted": {
+      "description": "Owner acceptance of this exact revision, recorded here and in STATUS.yaml. Accepting a revision is not a claim that the node keeps any of it; it fixes the meaning that later work is attributed against.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "epoch",
+        "by",
+        "on",
+        "recorded_in"
+      ],
+      "properties": {
+        "revision": {
+          "type": "string",
+          "minLength": 5
+        },
+        "epoch": {
+          "type": "string",
+          "pattern": "^EPOCH-[1-9][0-9]*$"
+        },
+        "by": {
+          "type": "string",
+          "minLength": 1
+        },
+        "on": {
+          "type": "string",
+          "minLength": 8
+        },
+        "recorded_in": {
+          "type": "string",
+          "minLength": 1
+        },
+        "decision": {
+          "type": "string",
+          "minLength": 1
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ground_id",
+        "statement",
+        "grounded_in",
+        "if_false"
+      ],
+      "properties": {
+        "ground_id": {
+          "type": "string",
+          "pattern": "^GROUND-[0-9]{3}$"
+        },
+        "statement": {
+          "description": "What is stably true about this product. Not a requirement, not a mechanism, not a service.",
+          "type": "string",
+          "minLength": 60
+        },
+        "grounded_in": {
+          "description": "Addresses in the governing set where this claim's language already lives. Ground is read out of the governing set, never invented beside it.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "if_false": {
+          "description": "What changing this would mean. This field is the admission test: if the answer is that Soveraeign would be implemented differently, the claim does not belong in Ground.",
+          "type": "string",
+          "minLength": 60
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

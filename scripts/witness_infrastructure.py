@@ -179,7 +179,8 @@ def _exercise_activation(temporary: Path) -> list[dict[str, Any]]:
     manifest = json.loads((ROOT / "infrastructure" / "phase-i.local.json").read_text(
         encoding="utf-8"))
     node = temporary / "activation"
-    identity_args = ["--expected-uid", str(os.geteuid()), "--expected-gid", str(os.getegid())]
+    uid, gid = custody_posix.effective()
+    identity_args = ["--expected-uid", str(uid), "--expected-gid", str(gid)]
     empty = _expect_refusal([
         sys.executable, "scripts/custody_activation.py", "--root", str(node), *identity_args,
     ], "EMPTY_CUSTODY_NOT_ACTIVATED")

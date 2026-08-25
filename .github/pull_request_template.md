@@ -13,13 +13,28 @@
 - Effect class: `RECORD_LOCAL` | `RESOURCE_CONSUMPTION` | `EXTERNAL_WORLD`
 - Rollback, counteraction, or refusal boundary:
 
-## Tickets
+## Concern and settlement
 
-<!-- Implementation stubs this change closes. A branch or pull request may close a
-     stub; it cannot by itself close a bit, promote a village, satisfy independent
-     witness, or ratify the epic. -->
+<!-- Name the durable concern this execution branch carries. Product meaning stays on
+     the concern's canonical source references; do not copy product semantics into the
+     branch or PR. See contracts/ticket-settlement.json. -->
 
-Closes #
+- Concern: #
+- Relation: `advances` | `satisfies` | `supersedes`
+- Remaining unsatisfied state or named successor:
+
+<!-- Use GitHub's `Closes #N` syntax only when Relation is `satisfies`. A PR that merely
+     advances a concern must leave it open. A superseded concern must name its successor
+     before closure. -->
+
+## Related tickets
+
+<!-- Name implementation stubs or other tickets this change touches without implying
+     settlement. Use `Closes #N` only under the satisfies rule above. A branch or pull
+     request cannot by itself close a bit, promote a village, satisfy independent witness,
+     or ratify the epic. -->
+
+Related #
 
 ## Observation
 

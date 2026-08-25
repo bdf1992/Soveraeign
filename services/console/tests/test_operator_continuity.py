@@ -42,7 +42,7 @@ class OperatorContinuity(unittest.TestCase):
     The fixture is built once and copied per test rather than rebuilt per test.
     The Record Service commits with `synchronous=FULL`, so every record costs an
     fsync - correct for a journal, and expensive enough at five records times
-    thirty tests to push `scripts/verify.py` past its three-second budget. Copying
+    thirty tests to push `scripts/verify.py` past its budget. Copying
     keeps each test fully isolated; it only stops paying for the same setup thirty
     times.
     """
@@ -53,11 +53,11 @@ class OperatorContinuity(unittest.TestCase):
         root = Path(cls._template.name) / "console"
         record = RecordService(root / "journal")
         console = ConsoleService(record, root, "node:test")
-        console.grant("Bdo", "open-channel", "governance")
+        console.grant("Bdo", "open:channel", "governance")
         channel = console.open_channel("Bdo", "governance", "governance")
-        console.grant("Bdo", "open-thread", channel["channel_id"])
+        console.grant("Bdo", "open:thread", channel["channel_id"])
         thread = console.open_thread("Bdo", channel["channel_id"], "F0 closure")
-        cls.prepared_grants = {operator: console.grant(operator, "post",
+        cls.prepared_grants = {operator: console.grant(operator, "post:message",
                                                        thread["thread_id"])["grant_id"]
                                for operator in ("Bdo", "sov")}
         cls.prepared_channel = channel["channel_id"]
@@ -247,11 +247,28 @@ class OperatorContinuity(unittest.TestCase):
 
     def test_a_post_into_an_archived_thread_is_refused(self):
         session = self.console.open_session("Bdo", "HUMAN", "cli")
+        self.console.grant("Bdo", "archive:thread", self.channel["channel_id"])
         self.console.archive_thread("Bdo", self.thread["thread_id"])
         with self.assertRaises(ThreadArchived):
             self.console.post(session["session_id"], self.thread["thread_id"], b"reopened?")
         self.assertEqual(
             read_thread(self.console, self.thread["thread_id"])["lifecycle"], "ARCHIVED")
+
+    def test_opening_a_thread_does_not_carry_the_right_to_archive_it(self):
+        """Archiving THE thread needs its own grant (Bdo, 2026-08-24; decisions/0054).
+
+        The fixture operator holds `open:thread` over this channel and opened the thread
+        under it. Archiving stops every operator posting into it, so it is a wider act
+        than opening one and no longer rides on the opener's grant.
+        """
+        held = {record["capability"] for record in self.console.grants("Bdo")}
+        self.assertIn("open:thread", held)
+        self.assertNotIn("archive:thread", held)
+        with self.assertRaises(AuthorityRefused) as refused:
+            self.console.archive_thread("Bdo", self.thread["thread_id"])
+        self.assertIn("archive:thread", str(refused.exception))
+        self.assertEqual(
+            read_thread(self.console, self.thread["thread_id"])["lifecycle"], "OPEN")
 
     def test_a_thread_pinned_without_a_digest_is_refused(self):
         with self.assertRaises(PinIncomplete):
@@ -264,7 +281,25 @@ class OperatorContinuity(unittest.TestCase):
         post = console.post(session["session_id"], self.thread["thread_id"], b"still granted")
         self.assertEqual(post["standing"], "RECORDED")
         self.assertEqual({record["capability"] for record in console.grants("Bdo")},
-                         {"open-channel", "open-thread", "post"})
+                         {"open:channel", "open:thread", "post:message"})
+
+    def test_the_grant_named_on_the_receipt_is_the_one_that_admitted_the_operation(self):
+        """`check` claims the newest matching grant wins; the receipt has to show it.
+
+        Mutation scoring found this unasserted on 2026-08-24: `check` could return
+        nothing at all and the suite stayed green, so a receipt could name no grant -
+        or the revoked one - while the operation still committed.
+        """
+        stale = self.grants["Bdo"]
+        self.console.revoke(stale)
+        fresh = self.console.grant("Bdo", "post:message",
+                                   self.thread["thread_id"])["grant_id"]
+        session = self.console.open_session("Bdo", "HUMAN", "cli")
+        post = self.console.post(session["session_id"], self.thread["thread_id"], b"regranted")
+        receipt = self.receipts("console.post")[-1]
+        self.assertEqual(receipt["detail"]["authority_grant_ids"], [fresh])
+        self.assertNotIn(stale, receipt["detail"]["authority_grant_ids"])
+        self.assertEqual(post["standing"], "RECORDED")
 
     def test_a_revocation_leaves_the_operation_it_already_admitted_standing(self):
         session = self.console.open_session("Bdo", "HUMAN", "cli")

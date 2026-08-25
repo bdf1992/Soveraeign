@@ -70,7 +70,7 @@
       "admitted_by": "seat:root",
       "standing": "RECORDED",
       "grants": [
-        {"capability": "post", "scope": "any-thread"}
+        {"capability": "post:message", "scope": "any-thread"}
       ]
     }
   },

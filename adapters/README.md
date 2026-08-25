@@ -9,7 +9,8 @@ Initial declared adapter boundaries:
 | Adapter | Input standing | Allowed output |
 | --- | --- | --- |
 | Model provider | addressed source or declared projection within its data boundary | proposal, recording, usage/cost receipt, refusal |
-| GitHub | repository, commit, and path address | captured source with exact revision provenance |
+| GitHub (read) | repository, commit, and path address; issue, pull request, and branch refs | captured source with exact revision provenance, and a capture receipt |
+| GitHub (write) | one owner-approved board action: a label on an issue, or a merged branch ref | an `EXTERNAL_WORLD` receipt per attempt, including refusals and failures |
 | Local host | process execution environment | normalized read-only host snapshot or refusal |
 | Graph | canonical relationship records | rebuildable projection and traversal results |
 | Media tool | exact asset version + declared operation | derivative recording and worker report |

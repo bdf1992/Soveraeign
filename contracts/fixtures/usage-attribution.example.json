@@ -1,0 +1,36 @@
+{
+  "note": "An ILLUSTRATION, not a record of anything that happened. No receipt carries consumption yet (contracts/receipt.schema.json has no field for it), so these three units are hand-written to show the shape and to exercise the one rule that matters: a unit of consumption is measured once and viewed through every intention that contains it. Read with `python scripts/sov_canon.py rollup contracts/fixtures/usage-attribution.example.json`.",
+  "why_these_three": "asset.read-version is crossed by JOURNEY-04 and by JOURNEY-11, which serve different promises. That is the ordinary case that breaks naive rollups: one run, two journeys, four promises, and still one expenditure.",
+  "units": [
+    {
+      "unit_id": "unit-0001",
+      "directly_serves": "asset.ingest-asset",
+      "consumed": {
+        "wallclock_seconds": 12.5,
+        "tokens": 4100,
+        "tool_calls": 6,
+        "usd": 0
+      }
+    },
+    {
+      "unit_id": "unit-0002",
+      "directly_serves": "asset.read-version",
+      "consumed": {
+        "wallclock_seconds": 3.2,
+        "tokens": 900,
+        "tool_calls": 2,
+        "usd": 0
+      }
+    },
+    {
+      "unit_id": "unit-0003",
+      "directly_serves": "console.discover-operations",
+      "consumed": {
+        "wallclock_seconds": 0.8,
+        "tokens": 15000,
+        "tool_calls": 1,
+        "usd": 0
+      }
+    }
+  ]
+}

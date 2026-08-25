@@ -58,24 +58,24 @@ class DeclaredRecordShapes(unittest.TestCase):
         root = Path(cls.tmp.name) / "console"
         cls.record = RecordService(root / "journal")
         console = ConsoleService(cls.record, root, NODE)
-        console.grant("Bdo", "open-channel", "governance")
+        console.grant("Bdo", "open:channel", "governance")
         channel = console.open_channel("Bdo", "governance", "governance")
-        console.grant("Bdo", "open-thread", channel["channel_id"])
+        console.grant("Bdo", "open:thread", channel["channel_id"])
         thread = console.open_thread("Bdo", channel["channel_id"], "F0 closure",
                                      pinned_address="asset/v1", pinned_digest="sha256:ab")
-        console.grant("Bdo", "post", thread["thread_id"])
-        console.grant("sov", "post", thread["thread_id"])
+        console.grant("Bdo", "post:message", thread["thread_id"])
+        console.grant("sov", "post:message", thread["thread_id"])
         human = console.open_session("Bdo", "HUMAN", "human-binding")
         model = console.open_session("sov", "MODEL", "model-binding")
         console.post(human["session_id"], thread["thread_id"], b"a plain statement",
                      mentions=["sov"])
         console.post(model["session_id"], thread["thread_id"], b"a claim",
                      claims=True, proposal_id="proposal_1")
-        console.grant("Bdo", "publish", thread["thread_id"])
+        console.grant("Bdo", "publish:thread", thread["thread_id"])
         cls.published = console.publish_thread("Bdo", thread["thread_id"])
         second = console.open_thread("Bdo", channel["channel_id"], "withdrawn work",
                                      pinned_address="asset/v2", pinned_digest="sha256:cd")
-        console.grant("Bdo", "publish", second["thread_id"])
+        console.grant("Bdo", "publish:thread", second["thread_id"])
         withdrawn = console.publish_thread("Bdo", second["thread_id"])
         console.withdraw_publication("Bdo", withdrawn["publication_id"])
         cls.withdrawn_id = withdrawn["publication_id"]
@@ -252,13 +252,13 @@ class NodeScopeRefusals(unittest.TestCase):
     def test_publishing_a_thread_from_another_node_is_refused(self):
         """Publishing a peer's thread would republish their record under this node's name."""
         console = ConsoleService(self.record, self.root, NODE)
-        console.grant("Bdo", "open-channel", "governance")
+        console.grant("Bdo", "open:channel", "governance")
         channel = console.open_channel("Bdo", "governance", "governance")
-        console.grant("Bdo", "open-thread", channel["channel_id"])
+        console.grant("Bdo", "open:thread", channel["channel_id"])
         thread = console.open_thread("Bdo", channel["channel_id"], "local work")
 
         peer = ConsoleService(self.record, self.root, "node:peer-one")
-        peer.grant("Bdo", "publish", thread["thread_id"])
+        peer.grant("Bdo", "publish:thread", thread["thread_id"])
         with self.assertRaises(ForeignNodeRecord) as refused:
             peer.publish_thread("Bdo", thread["thread_id"])
         self.assertEqual(refused.exception.reason_code, "FOREIGN_NODE_RECORD")
@@ -266,19 +266,86 @@ class NodeScopeRefusals(unittest.TestCase):
     def test_publishing_without_a_grant_is_refused(self):
         """Publishing is an outward effect and takes its own capability, not open-thread's."""
         console = ConsoleService(self.record, self.root, NODE)
-        console.grant("Bdo", "open-channel", "governance")
+        console.grant("Bdo", "open:channel", "governance")
         channel = console.open_channel("Bdo", "governance", "governance")
-        console.grant("Bdo", "open-thread", channel["channel_id"])
+        console.grant("Bdo", "open:thread", channel["channel_id"])
         thread = console.open_thread("Bdo", channel["channel_id"], "unpublishable")
         with self.assertRaises(AuthorityRefused):
             console.publish_thread("Bdo", thread["thread_id"])
 
+    def test_an_ungranted_transition_leaves_a_refused_receipt(self):
+        """The defeating case for `append.py`'s own rule.
+
+        Every other refusal in this service goes through `append.refuse`, which writes
+        a REFUSED receipt before raising. `authority.check` reads the journal and
+        cannot append to it, so a NO_LIVE_GRANT used to leave nothing behind, and a
+        transition that refused was indistinguishable from one nobody attempted.
+        """
+        console = ConsoleService(self.record, self.root, NODE)
+        before = len(self.record.reconstruct())
+        with self.assertRaises(AuthorityRefused):
+            console.open_channel("Bdo", "governance", "governance")
+
+        entries = self.record.reconstruct()
+        self.assertEqual(len(entries), before + 1, "the refusal left no trace")
+        receipt = entries[-1]
+        self.assertEqual(receipt["kind"], "RECEIPT")
+        self.assertEqual(receipt["payload"]["outcome"], "REFUSED")
+        self.assertEqual(receipt["payload"]["detail"]["reason_code"], "NO_LIVE_GRANT")
+        self.assertEqual(receipt["payload"]["event"], "console.open-channel")
+        self.assertEqual(receipt["actor"], "Bdo")
+
+    def test_every_ungranted_transition_is_written_down_not_just_the_first(self):
+        """One refusal per attempt, naming the transition attempted.
+
+        A single refusal path would be easy to fix in one place and leave wrong in
+        five, so each transition that checks a grant is driven without one.
+        """
+        console = ConsoleService(self.record, self.root, NODE)
+        console.grant("Bdo", "open:channel", "governance")
+        channel = console.open_channel("Bdo", "governance", "governance")["channel_id"]
+        console.grant("Bdo", "open:thread", channel)
+        thread = console.open_thread("Bdo", channel, "what a refusal leaves")["thread_id"]
+        session = console.open_session("Ana", "HUMAN", "binding:test")["session_id"]
+
+        attempts = {
+            "console.open-channel": lambda: console.open_channel("Ana", "ops", "ops"),
+            "console.open-thread": lambda: console.open_thread("Ana", channel, "no"),
+            "console.archive-thread": lambda: console.archive_thread("Ana", thread),
+            "console.publish-thread": lambda: console.publish_thread("Ana", thread),
+            "console.post": lambda: console.post(session, thread, b"unauthorised"),
+        }
+        for event, attempt in attempts.items():
+            with self.subTest(event=event):
+                before = len(self.record.reconstruct())
+                with self.assertRaises(AuthorityRefused):
+                    attempt()
+                entries = self.record.reconstruct()
+                self.assertEqual(len(entries), before + 1)
+                payload = entries[-1]["payload"]
+                self.assertEqual(payload["outcome"], "REFUSED")
+                self.assertEqual(payload["event"], event)
+                self.assertEqual(payload["detail"]["reason_code"], "NO_LIVE_GRANT")
+
+    def test_a_refused_transition_emits_no_record_of_its_own(self):
+        """The refusal is written; the thing refused is not.
+
+        The counterpart to the case above: a receipt saying a channel was refused must
+        not arrive alongside the channel it refused.
+        """
+        console = ConsoleService(self.record, self.root, NODE)
+        with self.assertRaises(AuthorityRefused):
+            console.open_channel("Bdo", "governance", "governance")
+        kinds = [entry["kind"] for entry in self.record.reconstruct()]
+        self.assertEqual(kinds, ["RECEIPT"])
+        self.assertEqual(contract.records(self.record.reconstruct())["channels"], [])
+
     def test_archiving_a_thread_from_another_node_is_refused(self):
         """The refusal a crossing needs: a local seat may not close a peer's thread."""
         console = ConsoleService(self.record, self.root, NODE)
-        console.grant("Bdo", "open-channel", "governance")
+        console.grant("Bdo", "open:channel", "governance")
         channel = console.open_channel("Bdo", "governance", "governance")
-        console.grant("Bdo", "open-thread", channel["channel_id"])
+        console.grant("Bdo", "open:thread", channel["channel_id"])
         thread = console.open_thread("Bdo", channel["channel_id"], "F0 closure")
 
         peer = ConsoleService(self.record, self.root, "node:peer-one")

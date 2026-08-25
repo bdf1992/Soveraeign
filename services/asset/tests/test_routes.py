@@ -79,7 +79,7 @@ class AssetRouteReceipts(unittest.TestCase):
 
         self.assertEqual(returned, self.service.receipts()[-1])
         self.assertEqual(returned["outcome"], "COMMITTED")
-        self.assertEqual(returned["event"], "asset.ingest")
+        self.assertEqual(returned["event"], "asset.ingest-asset")
         self.assertEqual(returned["actor"], "operator")
 
     def test_read_success_returns_the_durable_asset_receipt(self) -> None:
@@ -93,7 +93,7 @@ class AssetRouteReceipts(unittest.TestCase):
 
         self.assertEqual(returned, durable)
         self.assertEqual(returned["outcome"], "COMMITTED")
-        self.assertEqual(returned["event"], "version.read")
+        self.assertEqual(returned["event"], "asset.read-version")
         self.assertEqual(returned["actor"], "operator")
         self.assertEqual(detail["version_id"], ingested["version_id"])
         self.assertEqual(detail["asset_id"], ingested["asset_id"])

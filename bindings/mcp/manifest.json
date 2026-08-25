@@ -111,16 +111,6 @@
       "undeclared_because": "Reads the search projection. The asset manifest declares read-asset, which is not the same operation."
     },
     {
-      "tool": "record_entries",
-      "tier": "read",
-      "service": "record",
-      "operation": "entries",
-      "effect_class": "NONE",
-      "description": "Every entry in the operational journal, in append order, with its digest chain.",
-      "arguments": {},
-      "realizes": "record.read-entry"
-    },
-    {
       "tool": "observe_verify",
       "tier": "observe",
       "service": "repository",
@@ -130,8 +120,39 @@
       "arguments": {},
       "realizes": null,
       "undeclared_because": "A repository check, not a service operation. No manifest declares it and none should."
+    },
+    {
+      "tool": "record_entries",
+      "tier": "read",
+      "service": "record",
+      "operation": "entries",
+      "effect_class": "NONE",
+      "description": "Every entry in the operational journal, in append order, with its digest chain.",
+      "arguments": {},
+      "realizes": "record.read-entry",
+      "authority": "read:journal",
+      "requires_session": false,
+      "note": "Withheld on 2026-08-24 as the reversible default when the build fired BACK_OFFICE_EXPOSED, and restored the same day: Bdo ruled that reading authorized operational history is an operator act, and the office table was the wrong side. decisions/0052."
+    },
+    {
+      "tool": "console_operations",
+      "tier": "observe",
+      "service": "console",
+      "operation": "discover-operations",
+      "effect_class": "RECORD_LOCAL",
+      "description": "What can be asked of this node, and what one operator may currently ask. Every declared operation with where it is reachable, what authority it costs, what it acts on, what must already be true, what it commits and how it refuses - read from the capability projection the repository rebuilds and checks, never from a list beside it.",
+      "arguments": {
+        "operator_id": {
+          "type": "string",
+          "required": false
+        }
+      },
+      "realizes": "console.discover-operations",
+      "requires_session": false,
+      "note": "observe rather than read, so the crossing is journalled. A participant asking what it may do is an act the node should be able to account for afterwards (GROUND-007)."
     }
   ],
+  "withheld_endpoints": [],
   "authority_modes": {
     "gateway": "The gateway requires the caller to hold the declared capability.",
     "service-enforced": "The service owns the check. The gateway adds no second, stricter rule it has no bootstrap for.",

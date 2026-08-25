@@ -41,9 +41,21 @@ fidelity        EXACT | LOSSY  (a diagram is always LOSSY)
 omissions       what this view dropped to stay legible
 ```
 
-A digest that no longer matches its source means the diagram is stale. That
-check belongs in `scripts/lint.py` once these views are generated rather than
-authored; until then it is a manual read.
+A digest that no longer matches its source means the diagram is stale.
+
+That check is executable and runs in `scripts/verify.py`:
+
+```
+python scripts/sov_diagrams.py             # grade every view
+python scripts/sov_diagrams.py stamp       # record a re-reading, after correcting the view
+python scripts/sov_diagrams.py selfcheck   # prove the grader detects its declared defeats
+```
+
+It was a manual read until 2026-08-24, and a manual read nobody performs reports
+every view as current. When the check was first executed all eight views were
+stale: five of the six sources had moved, and four views still cited retired
+`O<n>` decision identifiers. `stamp` records a re-reading and cannot perform
+one, so correct the drawing first and stamp second.
 
 ## Files
 

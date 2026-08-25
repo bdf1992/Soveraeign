@@ -68,8 +68,8 @@ class ProjectionAuthority(unittest.TestCase):
         self.assertEqual(edges[0]["src_asset"], hero)
         self.assertEqual(edges[0]["predicate"], "USED_BY")
         self.assertEqual(edges[0]["dst_asset"], campaign)
-        self.assertEqual(self.receipt_event(edges[0]["source_receipt"]), "proposal.ratify")
-        rebuilds = [r for r in self.service.receipts() if r["event"] == "projection.rebuild"]
+        self.assertEqual(self.receipt_event(edges[0]["source_receipt"]), "asset.ratify-proposal")
+        rebuilds = [r for r in self.service.receipts() if r["event"] == "asset.rebuild-projection"]
         self.assertEqual([r["outcome"] for r in rebuilds], ["COMMITTED"])
 
     def test_direct_projection_write_does_not_survive_rebuild(self):
@@ -99,7 +99,7 @@ class ProjectionAuthority(unittest.TestCase):
         edges = self.service.neighbors(hero)
         self.assertEqual([e["predicate"] for e in edges], ["USED_BY"])
         self.assertNotEqual(edges[0]["source_receipt"], FORGED_RECEIPT)
-        self.assertEqual(self.receipt_event(edges[0]["source_receipt"]), "proposal.ratify")
+        self.assertEqual(self.receipt_event(edges[0]["source_receipt"]), "asset.ratify-proposal")
         self.assertEqual(self.service.search(FORGED_TEXT), [])
         self.assertNotIn(FORGED_ASSET, self.service.search("campaign"))
         self.assertEqual(self.service.db.execute(

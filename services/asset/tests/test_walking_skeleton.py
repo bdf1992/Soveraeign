@@ -86,12 +86,40 @@ class WalkingSkeleton(unittest.TestCase):
         self.service.report_derivative(run, "worker-b", current, b"current")
 
     def test_same_bytes_do_not_collapse_asset_identity(self):
-        path = self.source("same.bin", b"same")
-        first = self.service.ingest(path, "First use", "Bdo")
-        second = self.service.ingest(path, "Second use", "Bdo")
+        """Two sources holding identical bytes are two identities sharing one blob.
+
+        The fixture uses two paths deliberately. Capturing one path twice is the
+        same source again, which is a version of one asset rather than a second
+        asset (`test_recapturing_one_source_versions_it`), so it cannot test this
+        claim.
+        """
+        first = self.service.ingest(self.source("same.bin", b"same"), "First use", "Bdo")
+        second = self.service.ingest(self.source("copy.bin", b"same"), "Second use", "Bdo")
         self.assertEqual(first["digest"], second["digest"])
         self.assertNotEqual(first["asset_id"], second["asset_id"])
         self.assertEqual(len(list((self.root / "state" / "blobs" / "sha256").glob("*/*"))), 1)
+        self.assertEqual([entry["holders"] for entry in self.service.duplicates()], [2])
+
+    def test_recapturing_one_source_versions_it(self):
+        """`CLASSIFICATION.md`: an asset is an identity with a version history."""
+        path = self.source("brief.md", b"first draft\n")
+        first = self.service.ingest(path, "Brief", "Bdo", locator="repo:brief.md")
+        path.write_bytes(b"second draft\n")
+        second = self.service.ingest(path, "Brief", "Bdo", locator="repo:brief.md")
+        self.assertEqual(first["asset_id"], second["asset_id"])
+        self.assertEqual([first["role"], second["role"]], ["ORIGINAL", "REVISION"])
+        self.assertEqual(len(self.service.history(first["asset_id"])), 2)
+
+    def test_recapturing_unchanged_bytes_adds_no_version(self):
+        """The defeating case: a re-read is not a new state, so it earns no version."""
+        path = self.source("brief.md", b"first draft\n")
+        first = self.service.ingest(path, "Brief", "Bdo", locator="repo:brief.md")
+        again = self.service.ingest(path, "Brief", "Bdo", locator="repo:brief.md")
+        self.assertTrue(again["unchanged"])
+        self.assertEqual(again["version_id"], first["version_id"])
+        self.assertEqual(len(self.service.history(first["asset_id"])), 1)
+        outcomes = [r["outcome"] for r in self.service.receipts() if r["event"] == "asset.ingest-asset"]
+        self.assertEqual(outcomes, ["COMMITTED", "ATTEMPTED"])
 
 
 if __name__ == "__main__":

@@ -168,6 +168,14 @@ CHECKS = (
           "the participant's own tests; these establish BUILT evidence about local mechanics "
           "and are explicitly NOT independent of the code they exercise",
           ("services/record/tests",)),
+    Check("Record Service independent witness",
+          [sys.executable, "scripts/witness_record.py"], ROOT,
+          "performs the witness walk declared on issue #7 without importing the participant: "
+          "the service is reached only as a subprocess through its CLI, every digest is "
+          "recomputed from the chain rule the charter states, and the interrupt is staged "
+          "against the store from outside the service",
+          ("scripts/witness_record.py",
+           "services/record/src/soveraeign_record_service/cli.py")),
     Check("Console Service reference tests",
           [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
           ROOT / "services" / "console",

@@ -13,7 +13,7 @@
     "services/registry/contracts/service.json",
     "contracts/capability-offices.json"
   ],
-  "input_state_digest": "8ad6bc71ab473b53866ba9a374de2d492855ef2dc734a01150e4afc31865d2b6",
+  "input_state_digest": "449cadc53a4b867bb20a01611cb4a16bb1db72c4e3f1a3eafef5400d5eda4763",
   "capabilities": [
     {
       "capability_id": "asset.ingest-asset",

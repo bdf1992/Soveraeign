@@ -27,13 +27,14 @@
      advances a concern must leave it open. A superseded concern must name its successor
      before closure. -->
 
-## Tickets
+## Related tickets
 
-<!-- Implementation stubs this change closes. A branch or pull request may close a
-     stub; it cannot by itself close a bit, promote a village, satisfy independent
-     witness, or ratify the epic. -->
+<!-- Name implementation stubs or other tickets this change touches without implying
+     settlement. Use `Closes #N` only under the satisfies rule above. A branch or pull
+     request cannot by itself close a bit, promote a village, satisfy independent witness,
+     or ratify the epic. -->
 
-Closes #
+Related #
 
 ## Observation
 

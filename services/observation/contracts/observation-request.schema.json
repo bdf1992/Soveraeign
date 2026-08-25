@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/services/observation/contracts/observation-request.schema.json",
+  "title": "Observation Request",
+  "description": "A request that a terminal run be observed by something that did not perform it. The executor may raise it - asking is not observing, and an executor that wants its work checked is the common case - but the request confers no independence on anyone. Whether a candidate may observe is settled by relation-inference over the run's own record, never by a field here.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "request_id",
+    "run_id",
+    "subject",
+    "requester_id",
+    "requester_kind",
+    "run_outcome",
+    "durable_output_addresses",
+    "standing",
+    "requested_at"
+  ],
+  "properties": {
+    "request_id": {"type": "string", "pattern": "^urn:soveraeign:observation:request:[a-z0-9-]+$"},
+    "run_id": {"type": "string", "minLength": 1},
+    "subject": {
+      "description": "What is to be observed: the record the run acted on, addressed.",
+      "type": "string",
+      "minLength": 1
+    },
+    "requester_id": {"type": "string", "minLength": 1},
+    "requester_kind": {"enum": ["HUMAN", "MODEL", "WORKER", "SYSTEM"]},
+    "run_outcome": {
+      "description": "The run's terminal receipt outcome. A run still in flight cannot be observed; request-observation refuses RUN_NOT_TERMINAL.",
+      "enum": ["COMMITTED", "FAILED", "REFUSED", "COUNTERED", "UNRESOLVED"]
+    },
+    "durable_output_addresses": {
+      "description": "What an observer could read for itself, independent of any report. A request naming none leaves nothing to observe but the executor's word.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "proposed_observer_id": {
+      "description": "Optional. A suggestion, not a claim. It must not be the requester: an executor nominating itself is the substitution this service exists to refuse.",
+      "type": "string",
+      "minLength": 1
+    },
+    "predicate_declaration_id": {
+      "description": "Optional at request time. Predicates must exist before observe-run, not before the ask.",
+      "type": "string",
+      "minLength": 1
+    },
+    "standing": {
+      "description": "A request enters RECORDED and is never lifted by this service. An observation answers it; the request does not answer itself.",
+      "const": "RECORDED"
+    },
+    "requested_at": {"type": "string", "format": "date-time"}
+  }
+}

@@ -15,7 +15,7 @@ is never silently shown as less than it is.
 
 from __future__ import annotations
 
-from typing import Iterator
+from typing import Any, Callable, Iterator
 import html
 import re
 
@@ -34,8 +34,15 @@ LINK = re.compile(r"\[([^\]]+)\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
 BOLD = re.compile(r"\*\*(\S(?:.*?\S)?)\*\*")
 ITALIC = re.compile(r"(?<![*\w])\*(\S(?:[^*]*?\S)?)\*(?!\*)")
 AUTOLINK = re.compile(r"<(https?://[^>\s]+)>")
+# Only a span shaped like a repository path is offered to the resolver, so an
+# ordinary code span never costs a lookup.
+CITATION = re.compile(r"[\w./-]+\.(?:md|yaml|json|py)")
 
 SAFE_SCHEMES = ("http://", "https://", "mailto:", "#")
+
+# Maps a document-relative link target to a final href, or None when this page
+# holds no such document.
+Resolver = "Callable[[str], str | None]"
 
 
 def slug(text: str) -> str:
@@ -51,23 +58,55 @@ def _href(target: str) -> str:
     return "#"
 
 
-def inline(text: str) -> str:
+def inline(text: str, resolve: Any = None) -> str:
     """Render inline markup. Code spans are rendered first and never re-scanned."""
     parts: list[str] = []
     position = 0
     for match in CODE_SPAN.finditer(text):
-        parts.append(_inline_rest(text[position:match.start()]))
-        parts.append(f"<code>{html.escape(match.group(2).strip(), quote=True)}</code>")
+        parts.append(_inline_rest(text[position:match.start()], resolve))
+        parts.append(_code_span(match.group(2).strip(), resolve))
         position = match.end()
-    parts.append(_inline_rest(text[position:]))
+    parts.append(_inline_rest(text[position:], resolve))
     return "".join(parts)
 
 
-def _inline_rest(text: str) -> str:
+def _code_span(body: str, resolve: Any) -> str:
+    """A code span, linked when it names a document this page carries.
+
+    These documents cite each other in backticks rather than markdown links -
+    1210 such citations against 3 markdown links. Leaving them inert would leave
+    almost the whole cross-reference graph unreachable, so a span that resolves
+    to a document becomes a link and every other span stays exactly what it was.
+    """
+    escaped = html.escape(body, quote=True)
+    if resolve is not None and CITATION.fullmatch(body):
+        resolved = resolve(body)
+        if resolved is not None:
+            return (f'<a class="cite" href="{html.escape(resolved, quote=True)}">'
+                    f"<code>{escaped}</code></a>")
+    return f"<code>{escaped}</code>"
+
+
+def _link(target: str, label: str, resolve: Any) -> str:
+    """One link. A resolver may redirect a document-relative target inside the page.
+
+    Without one, a link to a sibling document points at a file the reader does
+    not have, which is worse than silence: it looks navigable and is not. An
+    internal target the resolver does not know becomes plain text that still
+    carries the address it meant.
+    """
+    if resolve is not None and not target.startswith(SAFE_SCHEMES):
+        resolved = resolve(target)
+        if resolved is not None:
+            return f'<a href="{html.escape(resolved, quote=True)}">{label}</a>'
+        return f'<span class="unresolved" title="{html.escape(target, quote=True)}">{label}</span>'
+    return f'<a href="{_href(target)}">{label}</a>'
+
+
+def _inline_rest(text: str, resolve: Any = None) -> str:
     escaped = html.escape(text, quote=True)
     escaped = AUTOLINK.sub(lambda m: f'<a href="{_href(m.group(1))}">{m.group(1)}</a>', escaped)
-    escaped = LINK.sub(
-        lambda m: f'<a href="{_href(html.unescape(m.group(2)))}">{m.group(1)}</a>', escaped)
+    escaped = LINK.sub(lambda m: _link(html.unescape(m.group(2)), m.group(1), resolve), escaped)
     escaped = BOLD.sub(r"<strong>\1</strong>", escaped)
     escaped = ITALIC.sub(r"<em>\1</em>", escaped)
     return escaped
@@ -85,9 +124,13 @@ def strip_front_matter(lines: list[str]) -> list[str]:
 class Renderer:
     """One document. `headings` collects the outline as a side effect of rendering."""
 
-    def __init__(self, text: str) -> None:
+    def __init__(self, text: str, resolve: Any = None) -> None:
         self.lines = strip_front_matter(text.replace("\r\n", "\n").split("\n"))
         self.headings: list[tuple[int, str, str]] = []
+        self.resolve = resolve
+
+    def _inline(self, text: str) -> str:
+        return inline(text, self.resolve)
 
     def html(self) -> str:
         return "".join(self._blocks())
@@ -132,7 +175,7 @@ class Renderer:
     def _heading(self, level: int, text: str) -> str:
         anchor = slug(text)
         self.headings.append((level, text, anchor))
-        return f'<h{level} id="{anchor}">{inline(text)}</h{level}>'
+        return f'<h{level} id="{anchor}">{self._inline(text)}</h{level}>'
 
     def _fence(self, index: int, marker: str) -> tuple[int, str]:
         language = FENCE.match(self.lines[index]).group(2)
@@ -153,7 +196,7 @@ class Renderer:
                 break
             body.append(match.group(1))
             index += 1
-        inner = Renderer("\n".join(body)).html()
+        inner = Renderer("\n".join(body), self.resolve).html()
         return index, f"<blockquote>{inner}</blockquote>"
 
     def _table(self, index: int) -> tuple[int, str]:
@@ -166,9 +209,9 @@ class Renderer:
         while index < len(self.lines) and ROW.match(self.lines[index]):
             rows.append(cells(self.lines[index]))
             index += 1
-        head = "".join(f"<th>{inline(cell)}</th>" for cell in header)
+        head = "".join(f"<th>{self._inline(cell)}</th>" for cell in header)
         body = "".join(
-            "<tr>" + "".join(f"<td>{inline(cell)}</td>" for cell in row) + "</tr>"
+            "<tr>" + "".join(f"<td>{self._inline(cell)}</td>" for cell in row) + "</tr>"
             for row in rows)
         return index, ("<div class=\"scroll\"><table><thead><tr>" + head
                        + f"</tr></thead><tbody>{body}</tbody></table></div>")
@@ -188,7 +231,7 @@ class Renderer:
             match = ORDERED.match(line) or BULLET.match(line)
             if not match:
                 if items and line.startswith(" " * (depth + 2)):
-                    items[-1] += " " + inline(line.strip())
+                    items[-1] += " " + self._inline(line.strip())
                     index += 1
                     continue
                 break
@@ -200,7 +243,7 @@ class Renderer:
                 items[-1] = items[-1] + nested if items else nested
                 continue
             content = match.group(3) if ORDERED.match(line) else match.group(2)
-            items.append(inline(content))
+            items.append(self._inline(content))
             index += 1
         tag = "ol" if ordered else "ul"
         body = "".join(f"<li>{item}</li>" for item in items)
@@ -216,10 +259,10 @@ class Renderer:
                 break
             body.append(line.strip())
             index += 1
-        return index, f"<p>{inline(' '.join(body))}</p>"
+        return index, f"<p>{self._inline(' '.join(body))}</p>"
 
 
-def render(text: str) -> tuple[str, list[tuple[int, str, str]]]:
+def render(text: str, resolve: Any = None) -> tuple[str, list[tuple[int, str, str]]]:
     """Render one document, returning its HTML and its heading outline."""
-    renderer = Renderer(text)
+    renderer = Renderer(text, resolve)
     return renderer.html(), renderer.headings

@@ -22,6 +22,7 @@ from soveraeign_asset_service.authority import (
     Authority,
     AuthorityRefused,
 )
+from soveraeign_asset_service.identity import ORIGINAL, REVISION, Identity
 from soveraeign_asset_service.projections import Projections
 from soveraeign_asset_service.runs import DEFAULT_LEASE_TTL_SECONDS, Runs, StaleLease
 from soveraeign_asset_service.store import Store, new_id
@@ -72,6 +73,7 @@ class AssetService:
         self.store.apply_schema(SCHEMA, authority_module.SCHEMA,
                                 projections_module.SCHEMA, runs_module.SCHEMA)
         self.authority = Authority(self.store)
+        self.identity = Identity(self.db)
         self.projections = Projections(self.store)
         self.runs = Runs(self.store, self.authority)
 
@@ -119,25 +121,45 @@ class AssetService:
 
     def ingest(self, path: str | Path, label: str, actor: str,
                locator: str | None = None) -> dict[str, str]:
-        """Capture a payload as an addressed source and its original version."""
+        """Capture a payload as a version of the asset its locator identifies.
+
+        An asset is an identity with a version history (`CLASSIFICATION.md`), so
+        capturing the same locator again adds a version rather than a second
+        identity. Unchanged bytes add nothing: that is not a new state of the
+        asset, so no version follows.
+        """
         source_path = Path(path)
         data = source_path.read_bytes()
         digest, blob = self._store_blob(data)
+        address = locator or source_path.resolve().as_uri()
+        held = self.identity.by_locator(address)
+        if held is not None and held["digest"] == digest:
+            receipt = self._receipt("ATTEMPTED", "asset.ingest-asset", "asset", held["asset_id"],
+                                    actor, {"version_id": held["version_id"],
+                                            "digest": digest, "locator": address,
+                                            "reason": "NO_NEW_STATE"})
+            self.db.commit()
+            return {"asset_id": held["asset_id"], "source_id": held["source_id"],
+                    "version_id": held["version_id"], "digest": digest,
+                    "receipt_id": receipt, "role": held["role"], "unchanged": True}
         source = _id("source")
-        asset = _id("asset")
+        asset = held["asset_id"] if held is not None else _id("asset")
+        role = REVISION if held is not None else ORIGINAL
         version = _id("version")
         self.db.execute("INSERT INTO sources VALUES(?,?,?,?)",
-                        (source, locator or source_path.resolve().as_uri(), digest, _now()))
-        self.db.execute("INSERT INTO assets VALUES(?,?,?)", (asset, label, _now()))
+                        (source, address, digest, _now()))
+        if held is None:
+            self.db.execute("INSERT INTO assets VALUES(?,?,?)", (asset, label, _now()))
         mime = mimetypes.guess_type(source_path.name)[0] or "application/octet-stream"
         self.db.execute("INSERT INTO versions VALUES(?,?,?,?,?,?,?,?,?,?)",
                         (version, asset, source, digest, mime, len(data), str(blob),
-                         "ORIGINAL", None, _now()))
-        receipt = self._receipt("COMMITTED", "asset.ingest", "asset", asset, actor,
+                         role, None, _now()))
+        receipt = self._receipt("COMMITTED", "asset.ingest-asset", "asset", asset, actor,
                                 {"source_id": source, "version_id": version,
-                                 "digest": digest})
+                                 "digest": digest, "role": role,
+                                 "supersedes": held["version_id"] if held else None})
         self.db.commit()
-        return {"asset_id": asset, "source_id": source, "version_id": version,
+        return {"asset_id": asset, "source_id": source, "version_id": version, "role": role,
                 "digest": digest, "receipt_id": receipt}
 
     def propose(self, asset_id: str, actor: str, payload: dict[str, Any],
@@ -147,7 +169,7 @@ class AssetService:
         self.db.execute("INSERT INTO proposals VALUES(?,?,?,?,?,?,?)",
                         (proposal, asset_id, actor, json.dumps(payload, sort_keys=True),
                          "RECORDED", required_authority, _now()))
-        self._receipt("COMMITTED", "proposal.record", "proposal", proposal, actor,
+        self._receipt("COMMITTED", "asset.propose-description", "proposal", proposal, actor,
                       {"asset_id": asset_id, "standing": "RECORDED"})
         self.db.commit()
         return proposal
@@ -167,7 +189,7 @@ class AssetService:
             self.db.execute("INSERT INTO relationships VALUES(?,?,?,?,?,?,?)",
                             (relationship, proposal["asset_id"], relation["predicate"],
                              relation["dst_asset"], proposal_id, "EFFECTIVE", _now()))
-        receipt = self._receipt("COMMITTED", "proposal.ratify", "proposal",
+        receipt = self._receipt("COMMITTED", "asset.ratify-proposal", "proposal",
                                 proposal_id, actor, {"asset_id": proposal["asset_id"]})
         self.db.commit()
         return receipt
@@ -207,7 +229,7 @@ class AssetService:
         if target_type == "relationship":
             self.db.execute("UPDATE relationships SET standing='COUNTERED' WHERE id=?",
                             (target_id,))
-        receipt = self._receipt("COUNTERED", "record.retract", target_type,
+        receipt = self._receipt("COUNTERED", "asset.retract-record", target_type,
                                 target_id, actor, {"retraction_id": retraction,
                                                    "reason": reason})
         self.db.commit()
@@ -218,6 +240,18 @@ class AssetService:
     def rebuild_projections(self, actor: str = "projector") -> dict[str, int]:
         """Derive both views again from ratified records."""
         return self.projections.rebuild(actor)
+
+    def history(self, asset_id: str) -> list[dict[str, Any]]:
+        """Every version of one asset, oldest first."""
+        return self.identity.history(asset_id)
+
+    def duplicates(self) -> list[dict[str, Any]]:
+        """Distinct assets whose newest versions share one payload digest."""
+        return self.identity.duplicates()
+
+    def relationships(self, asset_id: str) -> list[dict[str, Any]]:
+        """Asserted relations touching this asset, in either direction."""
+        return self.identity.relationships(asset_id)
 
     def search(self, query: str) -> list[str]:
         """Assets whose projected text contains the query."""

@@ -4,27 +4,180 @@
   "title": "Soveraeign Receipt",
   "type": "object",
   "additionalProperties": false,
-  "required": ["receipt_id", "event_id", "event_type", "actor_id", "interface_id", "input_addresses", "input_state_digest", "authority_grant_ids", "precondition_results", "effect_class", "outcome", "emitted_record_addresses", "observed_evidence_addresses", "created_at", "receipt_digest"],
+  "required": [
+    "receipt_id",
+    "event_id",
+    "event_type",
+    "actor_id",
+    "interface_id",
+    "input_addresses",
+    "input_state_digest",
+    "authority_grant_ids",
+    "precondition_results",
+    "effect_class",
+    "outcome",
+    "emitted_record_addresses",
+    "observed_evidence_addresses",
+    "created_at",
+    "receipt_digest"
+  ],
   "properties": {
-    "receipt_id": {"type": "string", "minLength": 1},
-    "event_id": {"type": "string", "minLength": 1},
-    "event_type": {"type": "string", "minLength": 1},
-    "actor_id": {"type": "string", "minLength": 1},
-    "interface_id": {"type": "string", "minLength": 1},
-    "input_addresses": {"type": "array", "items": {"type": "string"}},
-    "input_state_digest": {"type": "string", "minLength": 1},
-    "authority_grant_ids": {"type": "array", "items": {"type": "string"}},
-    "precondition_results": {"type": "array", "items": {"type": "object"}},
-    "effect_class": {"enum": ["RECORD_LOCAL", "RESOURCE_CONSUMPTION", "EXTERNAL_WORLD"]},
-    "outcome": {"enum": ["COMMITTED", "FAILED", "REFUSED", "COUNTERED", "UNRESOLVED"]},
-    "reason_code": {"type": ["string", "null"]},
-    "emitted_record_addresses": {"type": "array", "items": {"type": "string"}},
-    "observed_evidence_addresses": {"type": "array", "items": {"type": "string"}},
-    "prior_receipt_id": {"type": ["string", "null"]},
-    "created_at": {"type": "string", "format": "date-time"},
-    "receipt_digest": {"type": "string", "minLength": 1}
+    "actor_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "authority_grant_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "consumed": {
+      "description": "What this operation actually consumed, per dimension. USAGE only, and independent of effect_class: a RECORD_LOCAL operation still spends wall clock, tokens, tool calls and electricity, and its effect being record-local must not make that consumption disappear (Bdo, Q2 2026-08-24). BUDGET is an intended envelope, COST is a valuation of usage, and EFFORT is activity attributable to an objective; none of the three belongs here. No conversion between dimensions exists - a zero usd amount on a local run is a valuation, not an absence of usage, and nothing turns tokens or seconds into money without a declared policy. Optional, so a receipt for an operation that measured nothing does not have to invent a number.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "dimension",
+          "amount"
+        ],
+        "properties": {
+          "dimension": {
+            "description": "The measurement taken. One of the four usage dimensions; a fifth needs a decision record rather than a new string.",
+            "enum": [
+              "wallclock_seconds",
+              "tokens",
+              "tool_calls",
+              "usd"
+            ]
+          },
+          "amount": {
+            "type": "number",
+            "minimum": 0
+          },
+          "measured_by": {
+            "description": "What took the measurement, so a reader can weigh it.",
+            "type": "string",
+            "minLength": 1
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "effect_class": {
+      "enum": [
+        "RECORD_LOCAL",
+        "RESOURCE_CONSUMPTION",
+        "EXTERNAL_WORLD"
+      ]
+    },
+    "emitted_record_addresses": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "event_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "event_type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "input_addresses": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "input_state_digest": {
+      "type": "string",
+      "minLength": 1
+    },
+    "interface_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "observed_evidence_addresses": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "outcome": {
+      "enum": [
+        "COMMITTED",
+        "FAILED",
+        "REFUSED",
+        "COUNTERED",
+        "UNRESOLVED"
+      ]
+    },
+    "precondition_results": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "prior_receipt_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "reason_code": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "receipt_digest": {
+      "type": "string",
+      "minLength": 1
+    },
+    "receipt_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "serves_capability": {
+      "description": "The canonical capability this operation served, so consumption resolves upward to the intention that justified it (GROUND-014). Exactly one: what a run directly served is measured once, and every broader intention containing it - journey, promise, ground claim - is a view rather than a second expenditure (scripts/sovkernel/attribution.py).",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*[.][a-z][a-z0-9-]*$"
+    }
   },
   "allOf": [
-    {"if": {"properties": {"outcome": {"enum": ["FAILED", "REFUSED", "UNRESOLVED"]}}}, "then": {"required": ["reason_code"], "properties": {"reason_code": {"type": "string", "minLength": 1}}}}
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "enum": [
+              "FAILED",
+              "REFUSED",
+              "UNRESOLVED"
+            ]
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "reason_code"
+        ],
+        "properties": {
+          "reason_code": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
   ]
 }

@@ -96,7 +96,7 @@ class OperatorMechanics(unittest.TestCase):
 class ScorerDiscriminates(unittest.TestCase):
     """Scoring spawns one subprocess per mutant, so both scores are taken once
     for the whole class. Recomputing them per test multiplied the repository's
-    three-second verification budget by the number of assertions."""
+    verification budget by the number of assertions."""
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -177,7 +177,7 @@ class SuiteRouting(unittest.TestCase):
 # The shipped `sov_mutate.py selfcheck` command is deliberately NOT wrapped in a
 # test here. It runs a full scoring pass, which costs a subprocess per mutant,
 # and `ScorerDiscriminates` already proves the same discrimination in-process.
-# Running it twice consumed a third of the repository's three-second budget to
+# Running it twice consumed a third of the repository's budget at the time to
 # re-prove a settled fact. It runs instead as its own step in the mutation gate,
 # which is the gate that depends on it.
 

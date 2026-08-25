@@ -1,0 +1,424 @@
+[
+  {
+    "id": "OBS-RELATION-POS-INDEPENDENT",
+    "contract": "relation-inference.schema.json",
+    "status": "PROPOSED",
+    "polarity": "positive",
+    "expected_validity": "VALID",
+    "description": "No edge held and the record answered all five. The observer may observe. Note what is absent: nothing here is an assertion by the observer.",
+    "record": {
+      "inference_id": "urn:soveraeign:observation:relation-inference:asset-ingest-1",
+      "run_id": "urn:soveraeign:run:asset-ingest-1",
+      "candidate_observer_id": "urn:soveraeign:actor:qa-witness",
+      "candidate_observer_kind": "MODEL",
+      "executor_id": "urn:soveraeign:actor:asset-worker",
+      "edges_examined": [
+        "SAME_ACTOR",
+        "HOLDS_RUN_LEASE",
+        "GRANT_DESCENDS_FROM_RUN",
+        "PRODUCED_THE_OUTPUT",
+        "ONLY_EXECUTOR_REPORT"
+      ],
+      "edges_found": [],
+      "record_completeness": "COMPLETE",
+      "outcome": "INDEPENDENT",
+      "evidence_addresses": [
+        "record/journal/entry/17",
+        "record/receipts/asset-ingest-1"
+      ],
+      "evidence_digests": [
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f"
+      ],
+      "inferred_at": "2026-08-24T02:10:00Z"
+    }
+  },
+  {
+    "id": "OBS-RELATION-POS-DIRECT-SAME-ACTOR",
+    "contract": "relation-inference.schema.json",
+    "status": "PROPOSED",
+    "polarity": "positive",
+    "expected_validity": "VALID",
+    "description": "The candidate is the executor. DIRECT, with the address in the run's record where the edge was seen. This is the refusal the service exists for.",
+    "record": {
+      "inference_id": "urn:soveraeign:observation:relation-inference:asset-ingest-1",
+      "run_id": "urn:soveraeign:run:asset-ingest-1",
+      "candidate_observer_id": "urn:soveraeign:actor:asset-worker",
+      "candidate_observer_kind": "MODEL",
+      "executor_id": "urn:soveraeign:actor:asset-worker",
+      "edges_examined": [
+        "SAME_ACTOR",
+        "HOLDS_RUN_LEASE",
+        "GRANT_DESCENDS_FROM_RUN",
+        "PRODUCED_THE_OUTPUT",
+        "ONLY_EXECUTOR_REPORT"
+      ],
+      "edges_found": [
+        {
+          "edge": "SAME_ACTOR",
+          "evidence_address": "record/journal/entry/17#actor"
+        }
+      ],
+      "record_completeness": "COMPLETE",
+      "outcome": "DIRECT",
+      "evidence_addresses": [
+        "record/journal/entry/17",
+        "record/receipts/asset-ingest-1"
+      ],
+      "evidence_digests": [
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f"
+      ],
+      "inferred_at": "2026-08-24T02:10:00Z"
+    }
+  },
+  {
+    "id": "OBS-RELATION-POS-UNDETERMINED",
+    "contract": "relation-inference.schema.json",
+    "status": "PROPOSED",
+    "polarity": "positive",
+    "expected_validity": "VALID",
+    "description": "The run's record never attributed its grant chain, so one edge could not be answered. UNDETERMINED refuses; it does not read as independence.",
+    "record": {
+      "inference_id": "urn:soveraeign:observation:relation-inference:asset-ingest-1",
+      "run_id": "urn:soveraeign:run:asset-ingest-1",
+      "candidate_observer_id": "urn:soveraeign:actor:qa-witness",
+      "candidate_observer_kind": "MODEL",
+      "executor_id": "urn:soveraeign:actor:asset-worker",
+      "edges_examined": [
+        "SAME_ACTOR",
+        "HOLDS_RUN_LEASE",
+        "GRANT_DESCENDS_FROM_RUN",
+        "PRODUCED_THE_OUTPUT",
+        "ONLY_EXECUTOR_REPORT"
+      ],
+      "edges_found": [],
+      "record_completeness": "INCOMPLETE",
+      "outcome": "UNDETERMINED",
+      "evidence_addresses": [
+        "record/journal/entry/17",
+        "record/receipts/asset-ingest-1"
+      ],
+      "evidence_digests": [
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f"
+      ],
+      "inferred_at": "2026-08-24T02:10:00Z",
+      "unanswerable_edges": [
+        "GRANT_DESCENDS_FROM_RUN"
+      ]
+    }
+  },
+  {
+    "id": "OBS-RELATION-NEG-INDEPENDENT-WITH-EDGE",
+    "contract": "relation-inference.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "description": "Independence claimed while an edge was found. The single failure the ruling exists to prevent: the candidate executed the run and the finding says it is independent anyway.",
+    "record": {
+      "inference_id": "urn:soveraeign:observation:relation-inference:asset-ingest-1",
+      "run_id": "urn:soveraeign:run:asset-ingest-1",
+      "candidate_observer_id": "urn:soveraeign:actor:qa-witness",
+      "candidate_observer_kind": "MODEL",
+      "executor_id": "urn:soveraeign:actor:asset-worker",
+      "edges_examined": [
+        "SAME_ACTOR",
+        "HOLDS_RUN_LEASE",
+        "GRANT_DESCENDS_FROM_RUN",
+        "PRODUCED_THE_OUTPUT",
+        "ONLY_EXECUTOR_REPORT"
+      ],
+      "edges_found": [
+        {
+          "edge": "SAME_ACTOR",
+          "evidence_address": "record/journal/entry/17#actor"
+        }
+      ],
+      "record_completeness": "COMPLETE",
+      "outcome": "INDEPENDENT",
+      "evidence_addresses": [
+        "record/journal/entry/17",
+        "record/receipts/asset-ingest-1"
+      ],
+      "evidence_digests": [
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f"
+      ],
+      "inferred_at": "2026-08-24T02:10:00Z"
+    }
+  },
+  {
+    "id": "OBS-RELATION-NEG-INDEPENDENT-ON-INCOMPLETE",
+    "contract": "relation-inference.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "description": "Independence claimed over a record that could not answer. Absence of a recorded edge is not absence of a relation, and this is the case that would let every thin record pass.",
+    "record": {
+      "inference_id": "urn:soveraeign:observation:relation-inference:asset-ingest-1",
+      "run_id": "urn:soveraeign:run:asset-ingest-1",
+      "candidate_observer_id": "urn:soveraeign:actor:qa-witness",
+      "candidate_observer_kind": "MODEL",
+      "executor_id": "urn:soveraeign:actor:asset-worker",
+      "edges_examined": [
+        "SAME_ACTOR",
+        "HOLDS_RUN_LEASE",
+        "GRANT_DESCENDS_FROM_RUN",
+        "PRODUCED_THE_OUTPUT",
+        "ONLY_EXECUTOR_REPORT"
+      ],
+      "edges_found": [],
+      "record_completeness": "INCOMPLETE",
+      "outcome": "INDEPENDENT",
+      "evidence_addresses": [
+        "record/journal/entry/17",
+        "record/receipts/asset-ingest-1"
+      ],
+      "evidence_digests": [
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f"
+      ],
+      "inferred_at": "2026-08-24T02:10:00Z"
+    }
+  },
+  {
+    "id": "OBS-RELATION-NEG-DIRECT-WITH-NO-EDGE",
+    "contract": "relation-inference.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "description": "A direct finding naming no edge. A refusal with no ground is as unaccountable as an admission with none.",
+    "record": {
+      "inference_id": "urn:soveraeign:observation:relation-inference:asset-ingest-1",
+      "run_id": "urn:soveraeign:run:asset-ingest-1",
+      "candidate_observer_id": "urn:soveraeign:actor:qa-witness",
+      "candidate_observer_kind": "MODEL",
+      "executor_id": "urn:soveraeign:actor:asset-worker",
+      "edges_examined": [
+        "SAME_ACTOR",
+        "HOLDS_RUN_LEASE",
+        "GRANT_DESCENDS_FROM_RUN",
+        "PRODUCED_THE_OUTPUT",
+        "ONLY_EXECUTOR_REPORT"
+      ],
+      "edges_found": [],
+      "record_completeness": "COMPLETE",
+      "outcome": "DIRECT",
+      "evidence_addresses": [
+        "record/journal/entry/17",
+        "record/receipts/asset-ingest-1"
+      ],
+      "evidence_digests": [
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f"
+      ],
+      "inferred_at": "2026-08-24T02:10:00Z"
+    }
+  },
+  {
+    "id": "OBS-RELATION-NEG-UNDETERMINED-NAMING-NOTHING",
+    "contract": "relation-inference.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "description": "An incomplete verdict that does not say which edge it could not answer, so nobody can tell what to record next time.",
+    "record": {
+      "inference_id": "urn:soveraeign:observation:relation-inference:asset-ingest-1",
+      "run_id": "urn:soveraeign:run:asset-ingest-1",
+      "candidate_observer_id": "urn:soveraeign:actor:qa-witness",
+      "candidate_observer_kind": "MODEL",
+      "executor_id": "urn:soveraeign:actor:asset-worker",
+      "edges_examined": [
+        "SAME_ACTOR",
+        "HOLDS_RUN_LEASE",
+        "GRANT_DESCENDS_FROM_RUN",
+        "PRODUCED_THE_OUTPUT",
+        "ONLY_EXECUTOR_REPORT"
+      ],
+      "edges_found": [],
+      "record_completeness": "INCOMPLETE",
+      "outcome": "UNDETERMINED",
+      "evidence_addresses": [
+        "record/journal/entry/17",
+        "record/receipts/asset-ingest-1"
+      ],
+      "evidence_digests": [
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f"
+      ],
+      "inferred_at": "2026-08-24T02:10:00Z"
+    }
+  },
+  {
+    "id": "OBS-RELATION-NEG-FOUND-EDGE-WITHOUT-ADDRESS",
+    "contract": "relation-inference.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "description": "An edge asserted with no address in the run's record. That is a claim, not a finding.",
+    "record": {
+      "inference_id": "urn:soveraeign:observation:relation-inference:asset-ingest-1",
+      "run_id": "urn:soveraeign:run:asset-ingest-1",
+      "candidate_observer_id": "urn:soveraeign:actor:qa-witness",
+      "candidate_observer_kind": "MODEL",
+      "executor_id": "urn:soveraeign:actor:asset-worker",
+      "edges_examined": [
+        "SAME_ACTOR",
+        "HOLDS_RUN_LEASE",
+        "GRANT_DESCENDS_FROM_RUN",
+        "PRODUCED_THE_OUTPUT",
+        "ONLY_EXECUTOR_REPORT"
+      ],
+      "edges_found": [
+        {
+          "edge": "SAME_ACTOR"
+        }
+      ],
+      "record_completeness": "COMPLETE",
+      "outcome": "DIRECT",
+      "evidence_addresses": [
+        "record/journal/entry/17",
+        "record/receipts/asset-ingest-1"
+      ],
+      "evidence_digests": [
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f"
+      ],
+      "inferred_at": "2026-08-24T02:10:00Z"
+    }
+  },
+  {
+    "id": "OBS-RELATION-NEG-NARROWED-EXAMINATION",
+    "contract": "relation-inference.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "description": "Only two of the five edges examined. A narrowed examination reaches INDEPENDENT by not looking, which is the quietest way past this service.",
+    "record": {
+      "inference_id": "urn:soveraeign:observation:relation-inference:asset-ingest-1",
+      "run_id": "urn:soveraeign:run:asset-ingest-1",
+      "candidate_observer_id": "urn:soveraeign:actor:qa-witness",
+      "candidate_observer_kind": "MODEL",
+      "executor_id": "urn:soveraeign:actor:asset-worker",
+      "edges_examined": [
+        "SAME_ACTOR",
+        "HOLDS_RUN_LEASE"
+      ],
+      "edges_found": [],
+      "record_completeness": "COMPLETE",
+      "outcome": "INDEPENDENT",
+      "evidence_addresses": [
+        "record/journal/entry/17",
+        "record/receipts/asset-ingest-1"
+      ],
+      "evidence_digests": [
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f"
+      ],
+      "inferred_at": "2026-08-24T02:10:00Z"
+    }
+  },
+  {
+    "id": "OBS-RELATION-NEG-EDGE-OUTSIDE-THE-SET",
+    "contract": "relation-inference.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "description": "An edge outside the closed vocabulary. The set is the enforcement surface; extending it in a record rather than in the contract makes two services disagree about what direct means.",
+    "record": {
+      "inference_id": "urn:soveraeign:observation:relation-inference:asset-ingest-1",
+      "run_id": "urn:soveraeign:run:asset-ingest-1",
+      "candidate_observer_id": "urn:soveraeign:actor:qa-witness",
+      "candidate_observer_kind": "MODEL",
+      "executor_id": "urn:soveraeign:actor:asset-worker",
+      "edges_examined": [
+        "SAME_ACTOR",
+        "HOLDS_RUN_LEASE",
+        "GRANT_DESCENDS_FROM_RUN",
+        "PRODUCED_THE_OUTPUT",
+        "ONLY_EXECUTOR_REPORT",
+        "SAME_MACHINE"
+      ],
+      "edges_found": [],
+      "record_completeness": "COMPLETE",
+      "outcome": "INDEPENDENT",
+      "evidence_addresses": [
+        "record/journal/entry/17",
+        "record/receipts/asset-ingest-1"
+      ],
+      "evidence_digests": [
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f"
+      ],
+      "inferred_at": "2026-08-24T02:10:00Z"
+    }
+  },
+  {
+    "id": "OBS-RELATION-NEG-INFERENCE-THAT-READ-NOTHING",
+    "contract": "relation-inference.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "description": "A finding with no evidence addresses. An inference that read nothing has not inferred.",
+    "record": {
+      "inference_id": "urn:soveraeign:observation:relation-inference:asset-ingest-1",
+      "run_id": "urn:soveraeign:run:asset-ingest-1",
+      "candidate_observer_id": "urn:soveraeign:actor:qa-witness",
+      "candidate_observer_kind": "MODEL",
+      "executor_id": "urn:soveraeign:actor:asset-worker",
+      "edges_examined": [
+        "SAME_ACTOR",
+        "HOLDS_RUN_LEASE",
+        "GRANT_DESCENDS_FROM_RUN",
+        "PRODUCED_THE_OUTPUT",
+        "ONLY_EXECUTOR_REPORT"
+      ],
+      "edges_found": [],
+      "record_completeness": "COMPLETE",
+      "outcome": "INDEPENDENT",
+      "evidence_addresses": [],
+      "evidence_digests": [
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f"
+      ],
+      "inferred_at": "2026-08-24T02:10:00Z"
+    }
+  },
+  {
+    "id": "OBS-RELATION-SEM-SELF-AS-OBSERVER",
+    "contract": "relation-inference.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "description": "candidate_observer_id equals executor_id, edges_found is empty, and the outcome is INDEPENDENT. Every field is well formed and the finding is false. The schema cannot compare one field to another, so it admits this.",
+    "expected_inference_check": "candidate_observer_id != executor_id implies SAME_ACTOR is recorded in edges_found",
+    "defeats": "an executor observing its own run through a well-formed record",
+    "record": {
+      "inference_id": "urn:soveraeign:observation:relation-inference:asset-ingest-1",
+      "run_id": "urn:soveraeign:run:asset-ingest-1",
+      "candidate_observer_id": "urn:soveraeign:actor:asset-worker",
+      "candidate_observer_kind": "MODEL",
+      "executor_id": "urn:soveraeign:actor:asset-worker",
+      "edges_examined": [
+        "SAME_ACTOR",
+        "HOLDS_RUN_LEASE",
+        "GRANT_DESCENDS_FROM_RUN",
+        "PRODUCED_THE_OUTPUT",
+        "ONLY_EXECUTOR_REPORT"
+      ],
+      "edges_found": [],
+      "record_completeness": "COMPLETE",
+      "outcome": "INDEPENDENT",
+      "evidence_addresses": [
+        "record/journal/entry/17",
+        "record/receipts/asset-ingest-1"
+      ],
+      "evidence_digests": [
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
+        "sha256:3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f"
+      ],
+      "inferred_at": "2026-08-24T02:10:00Z"
+    }
+  }
+]

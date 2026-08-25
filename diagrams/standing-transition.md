@@ -2,7 +2,7 @@
 
 ```text
 source          CLASSIFICATION.md · CONTRACT.md
-source_digest   23a2826915e3143a · 896e59ba90828ad7
+source_digest   db432f7d9556286b · 896e59ba90828ad7
 reader          hand-authored · v1
 fidelity        LOSSY
 omissions       the specific gate and receipt required at each step;
@@ -45,6 +45,23 @@ consumption or external-world mutation (`CONTRACT.md` C9).
 
 ## Where the corpus sits on this chain today
 
-Almost everything in this repository is `RECORDED` or `ADMITTED`. `CONTRACT.md`,
-`SPEC.md`, and `CLASSIFICATION.md` are proposed and awaiting owner ratification
-(O9, O10). That is the whole reason the pencil-and-pen convention exists.
+Almost everything in this repository is `RECORDED` or `ADMITTED`, and the
+governing documents no longer sit together. `STATUS.yaml` records
+`classification_status: OWNER_ACCEPTED_CANONICAL_VOCABULARY` and
+`specification_status: OWNER_ACCEPTED_PHASE_I_LOGICAL_SPEC_WITH_SOVEREIGNTY_CLARIFICATION`
+(decision 0024, rulings on classification vocabulary and the Phase-I logical
+specification). `CONTRACT.md` has no acceptance field and its own header still
+reads `PROPOSED FOR OWNER RATIFICATION`.
+
+Both `CLASSIFICATION.md` and `SPEC.md` also still carry `PROPOSED` in their own
+headers, and that is not automatically a contradiction. An acceptance field
+names the version Bdo accepted; the file on disk has kept moving since. For
+`SPEC.md` the movement is named — `decisions/0034` adds two refusal codes to
+the transition contract and sits in `STATUS.yaml` under `unruled_proposals` —
+so its header describes a document that changed after acceptance rather than an
+acceptance that never happened. Flipping it would claim a ratification nobody
+gave.
+
+`CLASSIFICATION.md` carries no equivalent note, so whether its header is simply
+stale is open and unruled. `CONTRACT.md` has no acceptance field at all. This
+view reports the three states and rules on none of them.

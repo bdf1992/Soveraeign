@@ -87,7 +87,7 @@ def _latest_digest(service: Any, asset_id: str, manifest: dict[str, Any] | None)
     if manifest is not None:
         return str(manifest["payload_digest"])
     for receipt in service.receipts():
-        if receipt["event"] == "asset.ingest" and receipt["subject_id"] == asset_id:
+        if receipt["event"] == "asset.ingest-asset" and receipt["subject_id"] == asset_id:
             return "sha256:" + json.loads(receipt["payload_json"])["digest"]
     return None
 
@@ -113,7 +113,7 @@ def _reread_version(service: Any, asset_id: str, payload: bytes, actor: str,
     leased derivative pipeline, the only existing-API path for versions."""
     version_id = None
     for receipt in service.receipts():
-        if receipt["event"] == "asset.ingest" and receipt["subject_id"] == asset_id:
+        if receipt["event"] == "asset.ingest-asset" and receipt["subject_id"] == asset_id:
             version_id = json.loads(receipt["payload_json"])["version_id"]
     if version_id is None:
         return "REREAD_ASSET_AMBIGUOUS"

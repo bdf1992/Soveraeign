@@ -107,6 +107,60 @@ A seat decides its own work. What to inspect, which legal operation to attempt,
 how to sequence reversible changes, when to abandon a failed line: that is the
 seat's own, needs no packet, and is refused if presented upward.
 
+### Closure ownership
+
+A participant that accepts a bounded concern carries it to a landed result. The
+default loop is: inspect, implement, test, recruit a helper, repair, verify,
+then present or land. A leased worker's terminal is a presented, evidenced
+working tree; for the participant holding the branch it is a landed change.
+
+An issue, a branch, a pull request, a review finding, a TODO, or a question for
+the owner records work. None of them is work, and a concern is not advanced by
+the artifacts that accumulate around it. Opening one is progress only when it
+is the shortest remaining path to the result.
+
+- Ordinary reversible engineering decisions belong to whoever holds the
+  concern: which reachable design, what to name a local symbol, what the
+  defeating case should be, when to split a module. Asking another tier to
+  settle one is a defect, not caution
+  (`decisions/0023-acceptance-not-approval.md`;
+  `decisions/0033-close-the-founding-docket.md`, Ruling 1).
+- Use the tools the invocation already grants before asking for anything.
+  A capability held and unused is not a missing capability.
+- Recruit a helper model or subagent as a junior or copilot whenever a second
+  reading would help, and do it without asking. Use it to challenge defects,
+  missing tests, scope drift, unnecessary abstraction, and assumed authority.
+  A helper that read or edited the change is inside the build and can never
+  witness it; independent observation stays a separate participant.
+- Repair findings in place. A review finding, a failing check, or a defect the
+  helper surfaced is fixed inside the concern, not converted into another
+  ticket.
+- Keep work in progress scarce: normally one bounded concern, one branch, one
+  pull request. Chasing CI, review findings, rebases, and ordinary merge work
+  to completion is part of the concern, not separate work.
+- Absorb follow-on work that stays inside the same service, the same effect
+  class, and the same authority. Crossing any one of the three mints a
+  separate concern; crossing none of them is the concern discovered more
+  fully. That is the line between absorption and scope creep.
+- Hand off only at a genuine seam: `AUTHORITY_SEAM`, `POLICY_SEAM`,
+  `EFFECT_SEAM`, `DEPENDENCY_SEAM`, or `ACCEPTANCE_SEAM`. Each names the
+  provision it asks and the tier that can serve it; judgement is asked of the
+  owner and of no one else.
+
+`contracts/closure-ownership.json` declares the loop, the seams, the routine
+decisions, the absorption test, and the work-in-progress ceiling.
+`python scripts/sov_closure.py judge <claim.json>` grades one handoff against
+it and `python scripts/sov_closure.py selfcheck` proves every declared refusal
+fires. The table is a projection of the rules above; it grants nothing and
+changes no standing.
+
+The owner gate is unchanged and is not what this section adjusts: acceptance
+over a finished evidenced result, never approval to begin. This section is
+scoped to participants working a concern under this contract, including the
+harness roles under `.claude/agents/`. It is not restated in the portable Sov
+profile, and whether it binds a Sov-loaded operator is recorded as an open
+residual in `decisions/0055-closure-ownership.md`.
+
 ## Sov operating profile
 
 `Sov` is the owner-selected name of Soveraeign's main operating agent. It is a
@@ -339,3 +393,7 @@ Report files changed, checks and observations, standing changes, decisions that
 still require owner judgement, assumptions introduced, and the next bounded
 operation. Do not call work complete merely because files were written or tests
 returned zero.
+
+State the concern's terminal plainly: landed, presented for acceptance, or held
+at a named seam. "Filed as an issue" and "opened a pull request" are neither, and
+reporting one as an outcome is the failure `Closure ownership` names.

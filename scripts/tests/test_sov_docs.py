@@ -21,6 +21,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import sov_docs  # noqa: E402
+from sovdocs import facets as facet_rules  # noqa: E402
 from sovdocs.markdown import render, slug  # noqa: E402
 
 BALANCED = ("table", "pre", "ul", "ol", "li", "blockquote", "p", "strong", "em", "code",
@@ -143,10 +144,11 @@ class EveryPublishedDocument(unittest.TestCase):
         self.assertEqual(len(set(identifiers)), len(identifiers))
 
     def test_no_document_lands_outside_a_group(self):
-        # Grouping depends only on each document's path. Re-rendering the whole
-        # corpus here duplicates the renderer proof immediately above without
-        # strengthening this assertion.
-        built = [{"path": source.relative_to(ROOT).as_posix()} for source in self.sources]
+        # Grouping depends only on each document's kind, which facets derives from
+        # its path. Re-rendering the whole corpus here duplicates the renderer proof
+        # immediately above without strengthening this assertion.
+        built = [{"path": path, "facets": {"kind": facet_rules.kind(path)}}
+                 for path in (source.relative_to(ROOT).as_posix() for source in self.sources)]
         placed = sum(len(group) for _, group in sov_docs.grouped(built))
         self.assertEqual(placed, len(built))
 
@@ -183,10 +185,10 @@ class Custody(unittest.TestCase):
         return built, [("Governing set", built)]
 
     def _ledger(self, match: bool):
-        digest = sha256(self.SOURCE.read_bytes()).hexdigest()
+        """A recorded custody for AGENTS.md whose digest either matches disk or does not."""
+        recorded = sha256(self.SOURCE.read_bytes()).hexdigest() if match else "0" * 64
         return {"AGENTS.md": {"asset_id": "asset_recorded", "version_id": "version_recorded",
-                              "receipt_id": "rcpt_recorded",
-                              "digest": digest if match else "0" * 64}}
+                              "receipt_id": "rcpt_recorded", "digest": recorded}}
 
 
 class Staleness(unittest.TestCase):

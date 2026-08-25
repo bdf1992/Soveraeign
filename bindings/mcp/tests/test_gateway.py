@@ -98,6 +98,79 @@ class ExposedSurface(SharedGatewayCase):
             Gateway(self.root / "other-state", manifest_path=path)
         self.assertIn("proofing_open_session", str(raised.exception))
 
+    def _manifest(self) -> dict:
+        return json.loads((Path(__file__).parents[1] / "manifest.json")
+                          .read_text(encoding="utf-8"))
+
+    def _start_from(self, manifest: dict, name: str) -> None:
+        path = self.root / name
+        path.write_text(json.dumps(manifest), encoding="utf-8")
+        Gateway(self.root / f"state-{name}", manifest_path=path)
+
+    def _withholding(self, tool: str) -> dict:
+        """Move one served endpoint into withheld_endpoints, with a reason.
+
+        The checked-in manifest withholds nothing since Bdo ruled record.read-entry an
+        operator act (decisions/0052), so the withholding machinery has to be exercised
+        against a manifest built here rather than against whatever happens to be withheld.
+        """
+        manifest = self._manifest()
+        entry = next(e for e in manifest["endpoints"] if e["tool"] == tool)
+        manifest["endpoints"] = [e for e in manifest["endpoints"] if e["tool"] != tool]
+        entry["withheld_because"] = ("withheld by this case to prove the refusal, and for "
+                                     "no reason that holds outside it")
+        manifest["withheld_endpoints"] = [entry]
+        return manifest
+
+    def test_nothing_is_currently_withheld(self):
+        """The positive case, and the record of a ruling.
+
+        record_entries was withheld on 2026-08-24 as the reversible default when the
+        capability build fired BACK_OFFICE_EXPOSED. Bdo ruled the same day that reading
+        authorized operational history is an operator act and the office table was the
+        wrong side, so the binding serves it again.
+        """
+        self.assertEqual(self.gateway.withheld, {})
+        self.assertIn("record_entries", {tool["name"] for tool in self.gateway.tools()})
+
+    def test_an_implementation_that_is_neither_declared_nor_withheld_refuses_to_start(self):
+        """Withholding is the only admitted reason for a built tool to be unserved."""
+        manifest = self._manifest()
+        manifest["endpoints"] = [e for e in manifest["endpoints"]
+                                 if e["tool"] != "record_entries"]
+        with self.assertRaises(UnbuiltEndpoint) as raised:
+            self._start_from(manifest, "unwithheld-manifest.json")
+        self.assertIn("record_entries", str(raised.exception))
+
+    def test_a_withheld_endpoint_with_no_reason_refuses_to_start(self):
+        """A capability may not quietly vanish; withholding states why."""
+        manifest = self._withholding("record_entries")
+        manifest["withheld_endpoints"][0].pop("withheld_because")
+        with self.assertRaises(UnbuiltEndpoint) as raised:
+            self._start_from(manifest, "unreasoned-manifest.json")
+        self.assertIn("without a stated reason", str(raised.exception))
+
+    def test_an_endpoint_both_declared_and_withheld_refuses_to_start(self):
+        """One tool, one answer: served or not, never recorded as both."""
+        manifest = self._manifest()
+        manifest["withheld_endpoints"].append(dict(manifest["endpoints"][0],
+                                                   withheld_because="x" * 50))
+        with self.assertRaises(UnbuiltEndpoint) as raised:
+            self._start_from(manifest, "contradictory-manifest.json")
+        self.assertIn("both declared and withheld", str(raised.exception))
+
+    def test_a_withheld_tool_is_not_offered(self):
+        """The withheld endpoint must be absent from the surface a client sees."""
+        manifest = self._withholding("record_entries")
+        path = self.root / "withholding-manifest.json"
+        path.write_text(json.dumps(manifest), encoding="utf-8")
+        gateway = Gateway(self.root / "state-withholding", manifest_path=path)
+        try:
+            self.assertNotIn("record_entries", {tool["name"] for tool in gateway.tools()})
+            self.assertIn("record_entries", gateway.withheld)
+        finally:
+            gateway.close()
+
 
 class GovernedCrossing(GatewayCase):
     def test_a_read_needs_no_session_and_no_grant(self):

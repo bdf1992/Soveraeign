@@ -10,6 +10,11 @@ never left to assume a view was complete.
 start of a new session to continue work a previous session left open. It reads
 the operator's last closed session, takes the read position that session pinned,
 and reports what landed after it.
+
+Discovery used to live here as a hand-written tuple of nine console operations.
+It now comes from the capability projection - see `discovery.py` - because a
+second list beside the map answers confidently and is wrong the first time an
+operation moves (Bdo, 2026-08-24; `decisions/0053`).
 """
 
 from __future__ import annotations
@@ -18,30 +23,6 @@ from typing import Any
 
 from soveraeign_console_service import contract
 from soveraeign_console_service.core import ConsoleService
-
-# What a fresh model instance must be able to discover before it can act. The
-# AI-native reachability gate in `AI-NATIVE.md` is a discovery question, so the
-# answer is a record rather than documentation.
-OPERATIONS: tuple[dict[str, Any], ...] = (
-    {"operation": "console.open-channel", "capability": "open-channel", "scope": "domain",
-     "inputs": ["operator_id", "name", "domain"]},
-    {"operation": "console.open-thread", "capability": "open-thread", "scope": "channel_id",
-     "inputs": ["operator_id", "channel_id", "title", "pinned_address?", "pinned_digest?"]},
-    {"operation": "console.archive-thread", "capability": "open-thread", "scope": "channel_id",
-     "inputs": ["operator_id", "thread_id"]},
-    {"operation": "console.publish-thread", "capability": "publish", "scope": "thread_id",
-     "inputs": ["operator_id", "thread_id"]},
-    {"operation": "console.withdraw-publication", "capability": "publish", "scope": "thread_id",
-     "inputs": ["operator_id", "publication_id"]},
-    {"operation": "console.list-publications", "capability": "read", "scope": "thread_id",
-     "inputs": []},
-    {"operation": "console.open-session", "capability": None, "scope": None,
-     "inputs": ["operator_id", "actor_kind", "binding_id"]},
-    {"operation": "console.close-session", "capability": None, "scope": None,
-     "inputs": ["session_id"]},
-    {"operation": "console.post", "capability": "post", "scope": "thread_id",
-     "inputs": ["session_id", "thread_id", "body", "mentions?", "claims?", "proposal_id?"]},
-)
 
 # Each console record folds under one identity key. A lifecycle entry updates the
 # record it names rather than replacing it, so `thread` and `thread-lifecycle`

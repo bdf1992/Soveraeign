@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Score how much the test suite actually asserts, by mutating what it tests.
 
-Deliberately not part of `scripts/verify.py`: verify holds a three-second
+Deliberately not part of `scripts/verify.py`: verify holds a fifteen-second
 budget and mutation scoring runs the suite once per mutant. This is a separate
 command with its own budget, run as its own gate.
 
@@ -40,6 +40,7 @@ SUITES = (
     ("conformance", ("-m", "unittest", "discover", "-s", "conformance/tests", "-q"), ROOT),
     (str(Path("bindings/sov")), ("-m", "unittest", "discover", "-s", "bindings/sov/tests", "-q"), ROOT),
     (str(Path("services/asset")), ("-m", "unittest", "discover", "-s", "tests", "-q"), ROOT / "services" / "asset"),
+    (str(Path("services/console")), ("-m", "unittest", "discover", "-s", "tests", "-q"), ROOT / "services" / "console"),
     ("scripts", ("-m", "unittest", "discover", "-s", "scripts/tests", "-q"), ROOT),
 )
 

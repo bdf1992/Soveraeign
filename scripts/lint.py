@@ -26,27 +26,13 @@ PRODUCTION_ROOTS = ("scripts/", "adapters/", "bindings/", "workers/", "conforman
 # projections.py (rebuildable views). Re-entering a module here records debt; it
 # does not grandfather it.
 KNOWN_MODULE_DEBT: dict[str, str] = {
-    "scripts/verify.py": (
-        "the CHECKS table has grown to 24 entries and is now most of the file; the split is "
-        "the table into its own module, leaving the runner behind. Entered 2026-08-24 while "
-        "the landing branch was frozen, because refactoring the verification harness during "
-        "a landing freeze risks the gate every session depends on. Owed to the verification "
-        "domain, not paid"
-    ),
     "scripts/witness_infrastructure.py": (
-        "the module arrived from main at 301 lines, one over, when this branch's wider "
-        "module budget first reached scripts/. It is one witness protocol in four "
-        "_exercise_* stages; the split is those stages into their own module. Entered "
-        "2026-08-24 during the main-into-federation merge, where splitting a witness "
-        "harness would put the merge's own evidence in doubt. Owed to the verification "
-        "domain, not paid"
-    ),
-    "conformance/run.py": (
-        "the oracle grew past the limit before the budget reached conformance/ at all, so "
-        "this is an overrun the gate had never seen rather than a new one. Observed in "
-        "reports/2026-08-23-stack-certification.md and entered 2026-08-24 when the budget "
-        "was widened to adapters/, bindings/, workers/, and conformance/. Owed to the "
-        "conformance domain, which holds the file, not paid"
+        "301 lines, one over. The overrun is main's host-portable custody lookup, which "
+        "replaced a direct os.geteuid() call that cannot run on Windows; the correct "
+        "behaviour costs one line. The split is the four _exercise_* stages into their own "
+        "module. Entered 2026-08-24 while reconciling main with the federation branch, where "
+        "splitting a witness harness would put the merge's own evidence in doubt. Owed to "
+        "the verification domain, not paid"
     ),
 }
 SECRET_PATTERNS = {
@@ -166,9 +152,26 @@ def check_python(path: Path, text: str) -> tuple[list[str], list[str]]:
     return defects, warnings
 
 
+def check_decision_numbers(directory: Path) -> list[str]:
+    """Report every decision number carried by more than one record.
+
+    Two branches that each mint the next free number produce two records with one
+    identifier, and every citation of that number becomes ambiguous. Four such pairs
+    reached the tree before this check existed. It reads filenames rather than any
+    index, so a record cannot be counted by the thing that lists it.
+    """
+    by_number: dict[str, list[str]] = {}
+    for path in sorted(directory.glob("[0-9][0-9][0-9][0-9]-*.md")):
+        by_number.setdefault(path.name[:4], []).append(path.name)
+    return [f"decisions/: number {number} is carried by {len(names)} records: "
+            + ", ".join(names)
+            for number, names in sorted(by_number.items()) if len(names) > 1]
+
+
 def main() -> int:
     defects = []
     warnings = []
+    defects.extend(check_decision_numbers(ROOT / "decisions"))
     paths = repository_text_files()
     if not paths:
         print("FAIL: repository text population is empty")

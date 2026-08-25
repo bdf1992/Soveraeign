@@ -32,6 +32,8 @@ gateway_service_status: CHARTERED_BOUNDARY_NOT_IMPLEMENTED
 # transition had no service behind it, and AI-NATIVE.md check 3 reads
 # UNATTESTABLE on every service assessment. Logging is not its job; the
 # Record Service owns the journal and the Console Service owns the view.
+# Bdo ruled 2026-08-23 that independence is inferred from the run's record
+# when no direct relation is found, never declared by the observer.
 observation_service_status: CHARTERED_BOUNDARY_NOT_IMPLEMENTED
 # Every service operation now declares its subject, CRUD verb, logical endpoint,
 # preconditions, commit, and refusals (decisions/0040). Self-tested against one
@@ -40,7 +42,13 @@ service_manifest_contract_status: BUILT_SELF_TESTED_NOT_WITNESSED
 byom_status: OWNER_ACCEPTED_PHASE_I_CONTRACT
 local_model_adapter_status: BUILT_SELF_TESTED_NOT_WITNESSED
 ai_native_definition_status: FREEZE_CANDIDATE
-engineering_framework_status: OWNER_ACCEPTED_PHASE_I_REFERENCE_BASELINE
+# The verify budget the baseline states is now graded on Bdo's direction
+# (decisions/0042): PLATINUM 3s, GOLD 6s, SILVER 15s, failing past 15s.
+# The gate was failing outright on the old 3s ceiling at 4.02s, which now
+# earns GOLD. The twenty-subprocess fan-out behind it is unfixed and
+# PLATINUM is the name of that job. Bdo has not re-accepted the baseline
+# with the new terms.
+engineering_framework_status: OWNER_ACCEPTED_PHASE_I_REFERENCE_BASELINE_BUDGET_GRADED_UNDER_0042
 sdlc_loop_status: OWNER_ACCEPTED_ACCEPTANCE_NOT_APPROVAL
 coordination_registrar_status: BUILT_SELF_TESTED_NOT_WITNESSED
 sov_operating_agent_status: OWNER_ACCEPTED_CONTEXT_PROFILE_BUILT_SELF_TESTED_NOT_WITNESSED
@@ -78,6 +86,40 @@ sov_operating_agent_status: RULED_ENVELOPE_STANDS_O17_BUILT_SELF_TESTED
 ticket_kind_vocabulary_status: RULED_O19
 kernel_transition_contract_status: RULED_O20
 semantic_cold_start_status: RULED_O8_TASK_EXECUTED
+
+# Bdo accepted the product ground on 2026-08-24 (decisions/0052). Sixteen claims say
+# what product Soveraeign is, and revision GROUND-1 is now fixed: later work is
+# attributed against those claims meaning what they mean at that revision. Accepting
+# the ground is not a claim that the node keeps any of it - GROUND-010, a report is not
+# an observation, is one the node presently cannot keep.
+product_ground_status: OWNER_ACCEPTED_EPOCH_1_GROUND_1
+# Accepted the same day with PROMISE-14 struck, which minted CANON-3. Standing a node
+# up is a product experience beneath GROUND-016, not a durable promise; JOURNEY-12 is
+# kept as a real gap. PROMISE-13 and PROMISE-14 are retired, not reserved.
+product_canon_status: OWNER_ACCEPTED_CANON_3_PROMISE_13_AND_14_RETIRED
+# JOURNEY-02 is served: console.discover-operations answers from the capability
+# projection over IN_PROCESS, CLI and MCP, and a participant holding no session and no
+# grant got an answer through the binding (decisions/0053). Four of the journey's five
+# crossings are still declared and unreachable, so the journey is not walkable.
+discovery_surface_status: BUILT_SERVED_ON_CLI_AND_MCP_JOURNEY_NOT_WALKABLE
+# Every declared capability's authority is now answerable. Bdo ruled 2026-08-24 that
+# archiving the thread needs its own grant, so console.archive-thread enforces
+# archive:thread and the last declared/enforced divergence is closed (decisions/0054).
+# The UNDETERMINABLE reading has no instance on this node and is kept under test.
+console_authority_divergences: 0
+# Reading the discovery surface's own output on 2026-08-24 found nine BUILT console
+# operations that declare an authority and check none, console.grant and console.revoke
+# among them: anyone reaching the service can write themselves a grant. The surface now
+# reports them as NOT_ENFORCED and names them rather than reporting them as unanswerable.
+# Seven of the nine are IN_PROCESS only, grant and revoke among them, so reaching them
+# means already holding the service object rather than crossing a transport. The two wider
+# ones are reads. Nothing was guarded: adding a check removes an ability from whoever can
+# call them today, which is Bdo's call the way archive:thread was (decisions/0054).
+console_built_operations_enforcing_no_authority: 9
+# A receipt can now record what it served and what it consumed, and a work item can name
+# the capability it serves. One real measured crossing resolves the whole chain from
+# ground to usage. Nothing joins a work item to a run yet; the two meet at the capability.
+attribution_join_status: BUILT_SELF_TESTED_ONE_MEASURED_TRACE_END_TO_END
 
 # Owner is a seat, not a person: owner(X) is the seat one edge up, the seat that
 # issued X's grant and settles its receipts (decisions/0020, applied). The live
@@ -151,6 +193,16 @@ accepted_repository_claims:
   - local_model_adapter_boundary
   - history_carried_forward_as_attributed_lineage
   - one_ticket_contract_read_by_two_parsers_under_a_parity_check
+  - product_ground_sixteen_claims_epoch_1
+  - product_canon_participants_promises_and_journeys
+  - promise_derives_from_ground_or_it_is_not_a_promise
+  - implementation_is_evidence_about_intent_never_authority_for_it
+  - rendering_revision_and_epoch_are_three_levels
+  - measured_usage_counted_once_and_viewed_through_every_ancestor
+  - reading_authorized_operational_history_is_an_operator_act
+  - bare_requirement_means_the_product_requirement_ladder
+  - discovery_answers_from_the_capability_projection_not_a_second_list
+  - available_and_permitted_are_related_readings_and_not_the_same_reading
 
   - seat_relative_owner_topology
   - external_effects_scoped_not_refused
@@ -206,6 +258,17 @@ owner_holds:
 # demoted by a defeating observation recorded in a new decision, never by reopening an
 # identifier. Status values elsewhere in this file still carry O-numbers so the documents
 # citing them resolve; that spelling is Bdo's to settle.
+
+# Canon identifiers follow the same rule as the founding docket: retired, not reserved.
+# A promise whose meaning changes is retired and a new identifier minted, because work
+# attributed under an identifier has to keep meaning what it meant when it was done.
+retired_canon_ids:
+  - id: CANON-2
+    retired: PROMISE-13
+    why: PROMISE-13 said proofing and was superseded by PROMISE-16, the durable claim underneath it.
+  - id: CANON-3
+    retired: PROMISE-14
+    why: PROMISE-14 said standing a node up and was struck by Bdo with no successor. GROUND-016 carries the meaning and JOURNEY-12 keeps the gap.
 retired_decision_ids:
   - "decisions/0024-open-decision-drain.md: O1 O2 O3 O4 O5 O6 O7 O8 O9 O10 O11 O12 O13 O16 O17 O19 O20"
   - "decisions/0033-close-the-founding-docket.md: O14 O15 O18 O21 O22"
@@ -269,8 +332,9 @@ acceptance_policy:
   drain: decisions/0046-decision-queue-drain.md
   external_effects_decision: decisions/0047-external-effects-authorized.md
   superseded_prose: decisions/0023-acceptance-not-approval.md, decisions/0024-open-decision-drain.md
+  docket_closure: decisions/0033-close-the-founding-docket.md
   gate: acceptance
-  unruled_proposals: decisions/0034-spec-transition-refusal-codes.md
+  unruled_proposals: decisions/0034-spec-transition-refusal-codes.md, decisions/0055-closure-ownership.md
   ordinary_work_requires_preapproval: false
   owner_acceptance_requires_evidence: true
   owner_acceptance_requires_presentation: true

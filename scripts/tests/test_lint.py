@@ -109,3 +109,42 @@ class RepositoryTreeHoldsTheInvariant(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class DecisionNumbers(unittest.TestCase):
+    """One decision number, one record. Two branches minting the next free number
+    independently is how four collisions reached the tree before this check existed."""
+
+    def _over(self, names: list[str]) -> list[str]:
+        with TemporaryDirectory() as raw:
+            directory = Path(raw)
+            for name in names:
+                (directory / name).write_bytes(b"# a record\n")
+            return lint.check_decision_numbers(directory)
+
+    def test_distinct_numbers_pass(self):
+        self.assertEqual(self._over(["0001-a.md", "0002-b.md", "0057-c.md"]), [])
+
+    def test_a_repeated_number_is_reported(self):
+        """The defeating case: the exact shape that reached the tree, two different
+        records both numbered 0027."""
+        defects = self._over(["0027-board-management-role.md", "0027-local-model-adapter.md"])
+        self.assertEqual(len(defects), 1)
+        self.assertIn("number 0027 is carried by 2 records", defects[0])
+        self.assertIn("0027-board-management-role.md", defects[0])
+        self.assertIn("0027-local-model-adapter.md", defects[0])
+
+    def test_every_repeated_number_is_reported_not_only_the_first(self):
+        defects = self._over(["0027-a.md", "0027-b.md", "0042-c.md", "0042-d.md"])
+        self.assertEqual(len(defects), 2)
+
+    def test_a_number_carried_three_times_says_three(self):
+        defects = self._over(["0051-a.md", "0051-b.md", "0051-c.md"])
+        self.assertIn("carried by 3 records", defects[0])
+
+    def test_files_that_are_not_numbered_records_are_ignored(self):
+        self.assertEqual(self._over(["README.md", "0001-a.md"]), [])
+
+    def test_the_real_decisions_directory_carries_no_duplicate(self):
+        """The regression guard: this is the state the reconciliation left behind."""
+        self.assertEqual(lint.check_decision_numbers(REPO_ROOT / "decisions"), [])

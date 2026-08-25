@@ -1,0 +1,204 @@
+{
+  "policy_id": "soveraeign-closure-ownership/v1",
+  "governed_by": [
+    "AGENTS.md",
+    "CONTRIBUTING.md",
+    "decisions/0023-acceptance-not-approval.md",
+    "decisions/0033-close-the-founding-docket.md",
+    "decisions/0055-closure-ownership.md"
+  ],
+  "note": "Declared table for judging a handoff: the moment a participant stops carrying a bounded concern and turns it into an artifact for someone else. An issue, a branch, a pull request, a review finding, a TODO, or a question to the owner is a record of work, never a substitute for it. The table admits five seams and refuses everything else as reachable closure. It grants nothing, changes no standing, and is a projection of the rules the governing documents already own.",
+  "loop": [
+    {
+      "step": "inspect",
+      "required": true,
+      "note": "read the owning contract, the service, and the failing evidence before changing anything",
+      "tool": "read"
+    },
+    {
+      "step": "implement",
+      "required": true,
+      "note": "the smallest change that satisfies the visible case",
+      "tool": "edit"
+    },
+    {
+      "step": "test",
+      "required": true,
+      "note": "at least one positive case and one proving the required refusal or failure",
+      "tool": "run_tests"
+    },
+    {
+      "step": "recruit_helper",
+      "required": false,
+      "note": "conditional: required when a second reading is what the participant would otherwise ask another tier for",
+      "tool": "recruit_helper"
+    },
+    {
+      "step": "repair",
+      "required": false,
+      "note": "conditional: required once a finding exists. A finding is repaired in place, not filed",
+      "tool": "edit"
+    },
+    {
+      "step": "verify",
+      "required": true,
+      "note": "python scripts/verify.py against the intended working-tree state",
+      "tool": "run_verify"
+    },
+    {
+      "step": "present_or_land",
+      "required": true,
+      "note": "a leased worker presents an evidenced tree; the participant holding the branch carries it to landed",
+      "tool": "report"
+    }
+  ],
+  "handoff_kinds": [
+    "issue",
+    "branch",
+    "pull_request",
+    "review_finding",
+    "todo",
+    "owner_question",
+    "unblock_request",
+    "seam",
+    "residual"
+  ],
+  "admissible_seams": {
+    "AUTHORITY_SEAM": {
+      "means": "the next transition needs a typed grant the participant does not hold and cannot mint",
+      "provisions": [
+        "grant"
+      ],
+      "requested_from": [
+        "orchestrator",
+        "controller",
+        "owner"
+      ]
+    },
+    "POLICY_SEAM": {
+      "means": "two settled constraints conflict, or no governing document rules the choice and evidence cannot defeat either side",
+      "provisions": [
+        "judgement",
+        "contract"
+      ],
+      "requested_from": [
+        "controller",
+        "owner"
+      ]
+    },
+    "EFFECT_SEAM": {
+      "means": "closing requires an effect class the phase does not admit, an irreversible external-world effect, secrets, or destructive repository administration",
+      "provisions": [
+        "grant",
+        "judgement",
+        "capability"
+      ],
+      "requested_from": [
+        "owner"
+      ]
+    },
+    "DEPENDENCY_SEAM": {
+      "means": "the concern needs an artifact another participant must produce first - including an independent observation, which the builder can never produce for itself - and no reachable precursor advances it",
+      "provisions": [
+        "contract",
+        "fixture",
+        "capability",
+        "observation"
+      ],
+      "requested_from": [
+        "worker",
+        "orchestrator",
+        "controller"
+      ]
+    },
+    "ACCEPTANCE_SEAM": {
+      "means": "an evidenced result exists and only owner acceptance remains; the packet of decisions/0023 accompanies it",
+      "provisions": [
+        "judgement"
+      ],
+      "requested_from": [
+        "owner"
+      ]
+    }
+  },
+  "routine_decisions": [
+    "implementation choice among reachable designs",
+    "reversible design choice a later change can undo",
+    "naming of a local symbol, file, or test",
+    "test authoring, including the defeating case",
+    "recruiting an available helper model or subagent",
+    "rebasing onto the base branch",
+    "repairing a failing check the participant's own change caused",
+    "repairing a review finding inside the concern's boundary",
+    "formatting, line endings, import ordering",
+    "splitting a module that crossed the size budget",
+    "regenerating a projection the change made stale"
+  ],
+  "routine_decisions_note": "These are the participant's own to settle. Asking another tier for one is refused as ROUTINE_DECISION; decisions/0023 already places them inside self-directed judgement, and decisions/0033 Ruling 1 makes escalating a settleable question a defect rather than caution.",
+  "absorption_test": {
+    "predicates": [
+      "same_service",
+      "same_effect_class",
+      "same_authority"
+    ],
+    "rule": "all three hold: absorb the follow-on into the current concern. Any one crosses: mint a separate concern.",
+    "note": "This is the boundary between absorption and scope creep. Scope creep crosses a service, an effect class, or an authority; follow-on work that crosses none of them is the same concern discovered more fully, and filing it is REFUSED as ABSORBABLE_FOLLOW_ON."
+  },
+  "wip_policy": {
+    "max_unlanded_concerns_per_participant": 1,
+    "note": "One bounded concern, one branch, one pull request. A second concern opened while the first is unlanded is refused as WIP_EXCEEDED. Landing includes chasing CI, review findings, and rebases to completion."
+  },
+  "helper_policy": {
+    "may_recruit_without_asking": true,
+    "helper_roles": [
+      "editing",
+      "reading"
+    ],
+    "helper_uses": [
+      "challenge a defect the participant cannot see",
+      "name the missing test",
+      "name scope drift",
+      "name an unnecessary abstraction",
+      "name an authority the participant assumed rather than held"
+    ],
+    "witness_rule": "A helper that read or edited the change is inside the build and can never witness it. Independent witness stays a separate participant that did not contribute to the artifact.",
+    "governed_by": [
+      "AGENTS.md",
+      "SDLC.md"
+    ]
+  },
+  "refusals": {
+    "SEAM_UNDECLARED": "the handoff names no seam, or names one outside admissible_seams",
+    "ROUTINE_DECISION": "the handoff asks another tier to settle something on routine_decisions",
+    "REACHABLE_ALTERNATIVE": "an admissible route forward exists, so the concern is gated or dependency-mapped, not handed off",
+    "LOOP_INCOMPLETE": "a required loop step the participant's own tools could perform was not taken",
+    "HELPER_NOT_RECRUITED": "the handoff asks another tier for a reading a recruitable helper could have given",
+    "HELPER_AS_WITNESS": "an editing helper is offered as the independent observation",
+    "ABSORBABLE_FOLLOW_ON": "the filed work crosses no service, effect class, or authority boundary and belongs to the concern in hand",
+    "WIP_EXCEEDED": "a new concern is opened while the participant's previous concern is unlanded",
+    "JUDGEMENT_NOT_OWNER": "judgement is owner-held; it may be asked of no other tier",
+    "PROVISION_UNROUTED": "the named provision is not one the declared seam can ask for, or the tier asked cannot serve it"
+  },
+  "tools": [
+    "read",
+    "edit",
+    "run_tests",
+    "run_verify",
+    "report",
+    "recruit_helper"
+  ],
+  "tools_note": "A required loop step is excused only when the participant genuinely lacks the tool it needs. A tool the invocation grants and the participant did not use is not a missing capability, and the step is not excused.",
+  "evaluation_order": [
+    "WIP_EXCEEDED",
+    "ABSORBABLE_FOLLOW_ON",
+    "HELPER_AS_WITNESS",
+    "ROUTINE_DECISION",
+    "SEAM_UNDECLARED",
+    "JUDGEMENT_NOT_OWNER",
+    "PROVISION_UNROUTED",
+    "REACHABLE_ALTERNATIVE",
+    "HELPER_NOT_RECRUITED",
+    "LOOP_INCOMPLETE"
+  ],
+  "evaluation_order_note": "The first refusal in this order is the one reported. Order runs from 'this artifact should not exist' to 'this handoff is shaped wrongly', so a participant reads the most actionable objection first."
+}

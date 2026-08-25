@@ -2,7 +2,7 @@
 
 ```text
 source          STATUS.yaml · PRD.md · CONTRACT.md
-source_digest   e701388223866b3d · 641281625d74b53a · 896e59ba90828ad7
+source_digest   c141d6f181709311 · f1157f2f1ebad6aa · 896e59ba90828ad7
 reader          hand-authored · v1
 fidelity        LOSSY
 omissions       AuthorityGrant field shape (contracts/);
@@ -60,7 +60,14 @@ Attestation is drawn off to the side because it reports rather than rules. It
 says `reproduced`, `dissented`, or `unattestable`, changes current
 effectiveness, and cannot touch a historical sign (`CONTRACT.md` C5).
 
-## Open
+## How the first grant is founded
 
-O3 asks what bootstrap authority attests the first attestor. The diagram shows
-the steady state; it does not show how the first grant is founded.
+The diagram shows the steady state. It does not show the bootstrap, which
+decision 0024 settled: the first attestor is admitted by a founding
+`BootstrapGrant` accepted by the owner and pinned to an exact attestor identity,
+validator version, capability, scope, validity, and artifact revision. It may
+attest verification-typed claims only and can never ratify judgement. Every
+later attestor resolves through ordinary authority and identity lineage.
+
+Bootstrap is finite and explicit, not ambient root permission — which is why it
+is drawn nowhere on this canvas rather than as a box above `Bdo`.

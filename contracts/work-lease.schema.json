@@ -1,0 +1,217 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/work-lease.schema.json",
+  "title": "Soveraeign Work Lease (PROPOSED, decisions/0056)",
+  "description": "One concern, actively possessed by one attributable machine principal, under a grant, inside a budget, against a stated closure condition. A lease is the difference between a ticket that has an assignee and work somebody is holding right now. It confers nothing: the grant carries authority, the lease only says who is on the hook and what envelope they operate inside. Helper and witness invocations are leases too, subordinate to the parent that recruited them, and the parent stays responsible for closure. Semantic constraints a schema cannot express - a child exceeding its parent's grant, a budget overdrawn, a parent completing while a helper is still held - are checked by scripts/sovkernel/work_lease.py and named in the fixtures that defeat them.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "lease_schema",
+    "status",
+    "lease_id",
+    "concern",
+    "holder",
+    "grant",
+    "budget",
+    "closure",
+    "fence",
+    "granted_at",
+    "expires_at",
+    "state"
+  ],
+  "properties": {
+    "lease_schema": {"const": "soveraeign-work-lease/v1"},
+    "status": {"enum": ["PROPOSED", "RATIFIED"]},
+    "lease_id": {"type": "string", "pattern": "^lease:[a-z0-9][a-z0-9-]*$"},
+    "concern": {"$ref": "#/$defs/concern"},
+    "holder": {"$ref": "#/$defs/holder"},
+    "grant": {"$ref": "#/$defs/grant"},
+    "budget": {"$ref": "#/$defs/budget"},
+    "closure": {"$ref": "#/$defs/closure"},
+    "fence": {
+      "description": "A fencing token, in the sense scripts/sovkernel/transitions.py already uses: a newer fence supersedes an older one outright, so a holder that lost the lease cannot write behind the one that took it. Refused with the kernel's existing STALE_LEASE rather than a synonym.",
+      "type": "integer",
+      "minimum": 1
+    },
+    "granted_at": {"type": "string", "format": "date-time"},
+    "expires_at": {"type": "string", "format": "date-time"},
+    "state": {
+      "description": "RELEASED is given back deliberately, EXPIRED ran out of time, COMPLETED reached the closure condition with evidence, FAILED stopped short and says so. Distinguishing them is the point: a lease that merely stops tells a reader nothing about whether the concern is still owned.",
+      "enum": ["HELD", "RELEASED", "EXPIRED", "COMPLETED", "FAILED"]
+    },
+    "closure_evidence": {"$ref": "#/$defs/closureEvidence"},
+    "note": {"type": "string"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"state": {"const": "COMPLETED"}}},
+      "then": {"required": ["closure_evidence"]}
+    },
+    {
+      "if": {"properties": {"holder": {"properties": {"relation": {"const": "PARENT"}}}}},
+      "then": {"properties": {"holder": {"properties": {"parent_lease": {"type": "null"}}}}},
+      "else": {"properties": {"holder": {"properties": {
+        "parent_lease": {"type": "string", "minLength": 1}}}}}
+    },
+    {
+      "if": {"properties": {"grant": {"properties": {"grant_id": {"type": "null"}}}}},
+      "then": {"properties": {"grant": {"properties": {
+        "effect_ceiling": {"const": "RECORD_LOCAL"},
+        "authority_type": {"type": "null"},
+        "capabilities": {"const": []}}}}}
+    }
+  ],
+  "$defs": {
+    "concern": {
+      "description": "What is being held. A referent into a surface that already owns the item; the lease never carries a second definition of the work.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "reference"],
+      "properties": {
+        "kind": {"enum": ["ticket", "operation", "gate", "thread", "seam", "concern"]},
+        "reference": {"type": "string", "minLength": 1},
+        "capability": {
+          "description": "The canonical capability this work serves, so its consumption resolves upward through the product canon exactly as a receipt's does. Exactly one, for the reason scripts/sovkernel/attribution.py states: a unit of work is measured once and viewed through many intentions.",
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*[.][a-z][a-z0-9-]*$"
+        }
+      }
+    },
+    "holder": {
+      "description": "The particular running participant that possesses this lease. Identity, never authority (decisions/0021, ID-8): a holder with a null grant may still hold a lease, and may still do nothing consequential with it.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["principal_id", "relation", "parent_lease", "controller_principal", "definition"],
+      "properties": {
+        "principal_id": {
+          "description": "The instance principal: this invocation, not the definition it derives from and not the durable operator behind it. Two runs of the same agent are two principals.",
+          "type": "string",
+          "pattern": "^urn:soveraeign:principal:[a-z][a-z0-9-]*:[A-Za-z0-9._-]+$"
+        },
+        "relation": {
+          "description": "PARENT holds the concern. HELPER was recruited by a parent to do part of it. WITNESS was recruited to check it and must not be the principal that built it.",
+          "enum": ["PARENT", "HELPER", "WITNESS"]
+        },
+        "parent_lease": {"anyOf": [{"type": "string", "minLength": 1}, {"type": "null"}]},
+        "controller_principal": {
+          "description": "The principal one step up that launched this one and can revoke it. Null only for a root principal, which nothing launched.",
+          "anyOf": [{"type": "string", "minLength": 1}, {"type": "null"}]
+        },
+        "session": {
+          "description": "The host session this instance runs inside, as the live-session registry names it. The join between governed leases and the host plumbing that already knows which processes are alive; null for a principal that runs outside any session.",
+          "anyOf": [{"type": "string", "minLength": 1}, {"type": "null"}]
+        },
+        "definition": {"$ref": "#/$defs/definition"}
+      }
+    },
+    "definition": {
+      "description": "What this invocation derives from. Kept separate from the principal on purpose: one definition yields many principals, and provenance changes how a reader weighs a participant without changing what it may do.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["definition_id", "definition_kind", "provenance", "version"],
+      "properties": {
+        "definition_id": {"type": "string", "minLength": 1},
+        "definition_kind": {
+          "description": "The species of definition, and deliberately not a species of participant: the kernel asks whether a participant satisfies the identity, grant, budget and closure contracts, never which of these it happens to be.",
+          "enum": ["agent", "workflow", "skill", "service", "schedule", "human"]
+        },
+        "provenance": {
+          "description": "Who authored the definition. SYSTEM_AUTHORED ships with the repository, USER_AUTHORED was written here by an operator, PERSONALIZED derives from a shipped definition with local adjustment, IMPORTED came from outside unchanged, FORKED came from outside and diverged.",
+          "enum": ["SYSTEM_AUTHORED", "USER_AUTHORED", "PERSONALIZED", "IMPORTED", "FORKED"]
+        },
+        "version": {"type": "string", "minLength": 1},
+        "derives_from": {
+          "description": "The upstream definition a PERSONALIZED, IMPORTED or FORKED definition came from, so divergence stays visible rather than being absorbed.",
+          "anyOf": [{"type": "string", "minLength": 1}, {"type": "null"}]
+        },
+        "source": {"type": "string", "minLength": 1}
+      }
+    },
+    "grant": {
+      "description": "What this holder may currently do. A null grant_id is the ordinary case for exploratory work and is not a defect; it simply cannot carry an effect beyond the local record.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["grant_id", "authority_type", "capabilities", "effect_ceiling"],
+      "properties": {
+        "grant_id": {"anyOf": [{"type": "string", "minLength": 1}, {"type": "null"}]},
+        "authority_type": {
+          "anyOf": [{"enum": ["VERIFICATION", "JUDGEMENT"]}, {"type": "null"}]
+        },
+        "capabilities": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^[a-z][a-z0-9-]*[.][a-z][a-z0-9-]*$"}
+        },
+        "effect_ceiling": {"enum": ["RECORD_LOCAL", "RESOURCE_CONSUMPTION", "EXTERNAL_WORLD"]}
+      }
+    },
+    "budget": {
+      "description": "The operating envelope, multidimensional by construction (CANON.md, resource words). BUDGET is an intended envelope, never a synonym for money, and no arithmetic here converts one dimension into another because this repository has declared no such policy. Consumption and emission are kept apart because they are different measurements: tokens are spent, branches are produced.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["consumption", "emission"],
+      "properties": {
+        "consumption": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["dimension", "limit"],
+            "properties": {
+              "dimension": {
+                "description": "wallclock_seconds, tokens, tool_calls and usd are the four usage dimensions a receipt can already record. turns and skill_invocations can be bounded here but have no receipt field yet; scripts/sovkernel/lease_budget.py reports that gap rather than hiding it.",
+                "enum": ["wallclock_seconds", "tokens", "tool_calls", "usd",
+                         "turns", "skill_invocations"]
+              },
+              "limit": {"type": "number", "minimum": 0}
+            }
+          }
+        },
+        "emission": {
+          "description": "Coordination objects this holder may create. Not consumption: a pull request costs nothing to hold and still clutters the world. Counting them is what makes the pathology visible - a participant burning context while producing coordination objects and never approaching closure.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["counter", "limit"],
+            "properties": {
+              "counter": {
+                "enum": ["helper_leases", "witness_leases", "branches",
+                         "pull_requests", "issues", "external_effects"]
+              },
+              "limit": {"type": "integer", "minimum": 0}
+            }
+          }
+        }
+      }
+    },
+    "closure": {
+      "description": "What would count as done, and what would show it is not. A lease with no defeating evidence is a lease nobody can close honestly.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["condition", "defeating_evidence"],
+      "properties": {
+        "condition": {"type": "string", "minLength": 1},
+        "defeating_evidence": {"type": "string", "minLength": 1}
+      }
+    },
+    "closureEvidence": {
+      "description": "What was produced when the lease reached COMPLETED. A holder's own report reaches BUILT and no further; WITNESSED requires a witness lease held by a different principal, which scripts/sovkernel/work_lease.py checks because the schema cannot.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["receipt_id", "standing_reached", "evidence_addresses"],
+      "properties": {
+        "receipt_id": {"type": "string", "minLength": 1},
+        "standing_reached": {"enum": ["BUILT", "WITNESSED"]},
+        "evidence_addresses": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "witnessed_by": {"anyOf": [{"type": "string", "minLength": 1}, {"type": "null"}]}
+      }
+    }
+  }
+}

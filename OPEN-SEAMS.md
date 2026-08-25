@@ -63,11 +63,11 @@ rollback or compensation remains later work.
 exception. Bdo granted one on 2026-08-23 for board management: write to the
 GitHub coordination surface, with a confirm on each batch. The capability is
 built and refuses without a per-action approval
-(`decisions/0027-board-management-role.md`), so the grant is honoured in
+(`decisions/0057-board-management-role.md`), so the grant is honoured in
 practice while the boundary text still reads as absolute. The two must be
 reconciled: either the boundary is restated to admit an owner-approved,
 per-action external effect, or the capability is withdrawn. The restatement is
-Bdo's; it is drafted in 0027 and is not applied here.
+Bdo's; it is drafted in `0057-board-management-role.md` and is not applied here.
 
 ## S10 · Product boundary
 
@@ -200,6 +200,7 @@ a receipt cannot tell which gateway refused.
 
 `NAMING.md` owns the collision screen and Bdo owns naming. Nothing is renamed here.
 
+
 ## S19 · Who publishes: an operator or a seat
 
 `contracts/public-projection.schema.json` requires every published entry to name a
@@ -224,7 +225,56 @@ one of the two contracts is naming it wrongly. `decisions/0020` owns seat topolo
 Until it is settled, a public projection built from console records cannot fill
 `published_by` honestly, and the fixtures that exercise it supply the seat by hand.
 
-## S20 · The gate counts its checks and never says which
+## S20 · Two ladders named requirement — closed 2026-08-24
+
+`#41` and `#48` name a `Requirement` that is an obligation a skill carries — "QA
+requirements may cover repository verification and independent observation". `PRD.md`
+names a requirement that the phase must prove. The attribution spine uses the second. Both
+were about to be mechanized in typed graphs, where a reader following a `Requirement` edge
+could not have told which ladder it was on.
+
+Caught before either half landed, which is the difference from S18. Bdo ruled 2026-08-24
+(`decisions/0052`): bare `Requirement` is reserved for the product ladder, the `#41`/`#48`
+concept is `CompetenceRequirement`, and `PROD-I-*` is not renamed.
+`CLASSIFICATION.md` owns the distinction.
+
+**Residual.** `#41` and `#48` still carry the unqualified word in their live bodies on
+GitHub. Amending them is an attended external action and has not been taken;
+`decisions/0052` carries the exact wording.
+
+## S21 · The contract names a terminal no harness role can reach
+
+`AGENTS.md`, Closure ownership, requires a participant to carry a bounded concern to a
+landed result, and `contracts/closure-ownership.json` names `present_or_land` as the
+loop's terminal step. Every harness role under `.claude/agents/` is forbidden to run
+`git commit` or `git push` and leaves its changes in the working tree. Observed
+2026-08-24 while writing the section that says so.
+
+So no launched agent can reach the terminal the contract names. The loop's landed half
+is held by the interactive participant and by Bdo, and an unattended run cannot close a
+concern however completely it built one. The contract records this honestly by giving a
+leased worker `present` as its terminal, but that is a description of the gap, not a
+closure of it.
+
+Three readings, and nothing here settles which. The commit boundary is correct and
+`land` simply is not a work-tier transition, so the loop should name two terminals
+permanently. Or the boundary is a Phase-I caution about unattended external effects,
+and a record-local commit on a feature branch is not that effect, so a worker should be
+able to commit what it built. Or the missing piece is a landing capability with its own
+grant — something that takes a presented tree, checks it, and lands it under an
+attributable receipt — in which case neither the worker nor the contract is wrong and
+the capability is simply absent.
+
+Five sessions currently share one working tree (`python scripts/sov_session.py list`),
+which makes the second reading more expensive than it looks: a commit from a launched
+agent would stage another session's uncommitted work. That is a reason the boundary is
+where it is, not an argument that it belongs there.
+
+Until it is settled, `WIP_EXCEEDED` and the work-in-progress ceiling are graded against
+concerns rather than against branches, because nothing in the harness can open or close
+a branch on its own.
+
+## S22 · The gate counts its checks and never says which
 
 `scripts/verify.py` reports a check count and `scripts/verify_bootstrap.py` pins
 the files that must exist, but nothing compares the *set* of checks between two
@@ -247,6 +297,38 @@ review responsibility and a repository that lints its own gate is checking the
 checker without end. `decisions/0025-verification-channels-and-merge-authority.md`
 owns what verification is allowed to claim and is the nearest owner.
 
-Numbering note: minted on `test/mcp-gateway-observation` off `c296c25`.
-`OPEN-SEAMS.md` S16 carries the allocation seam that makes this note necessary;
-a concurrent branch may hold its own S20.
+Numbering note: minted as S20 on `test/mcp-gateway-observation` off `c296c25`, and
+renumbered to S22 on 2026-08-24 when main and the federation branch were reconciled
+and both were found holding an S20. The concurrent S20 was already cited by number in
+`decisions/0052`, so this seam moved rather than that one. `OPEN-SEAMS.md` S16 carries
+the allocation seam that made the collision predictable; it is about decision numbers,
+and this is the first time it has been observed for seam numbers too.
+
+## S23 · The gateway slice landed without its standing
+
+`services/gateway/src` and `services/gateway/tests` exist, `services/README.md` reads
+"first IN_PROCESS route pattern built and self-tested", and `scripts/verify.py` runs an
+`MCP gateway binding` check against it. `STATUS.yaml` reads
+`gateway_service_status: CHARTERED_BOUNDARY_NOT_IMPLEMENTED`.
+
+Observed 2026-08-24 while reconciling `main` with
+`feat/federation-harness-and-hardening`. It is not a merge artifact: the same
+disagreement is present on `feat/federation-harness-and-hardening` alone, where the
+slice landed as PR #87 without the standing field moving with it. `diagrams/service-map.md`
+draws the box where the tree puts it, in pencil, and says so.
+
+Two readings, and this seam does not settle which. Either `STATUS.yaml` is simply stale
+and the field should read a compound value the way Console's does
+(`BUILT_CONTINUITY_PATH_SELF_TESTED_REMAINDER_BOUNDARY` is the precedent for a service
+that is part built and part boundary), or the slice is deliberately not a claim about
+the service's standing — one route pattern proving a vertical is not the Gateway Service
+being implemented — and the field is correct as written while `services/README.md`
+overstates. The first reading is the cheaper one and is probably right; nothing here
+proves it.
+
+Owned by the gateway domain, which holds both the service and the evidence that would
+settle it. `AGENTS.md` gives `STATUS.yaml` the standing question, so the fix lands there
+whichever reading wins.
+
+Numbering note: minted while reconciling the two trunks, which is also where S22 was
+renumbered out of a collision. S16 carries the allocation seam.

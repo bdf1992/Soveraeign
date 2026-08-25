@@ -19,6 +19,7 @@ from soveraeign_record_service import RecordService  # noqa: E402
 from soveraeign_registry_service import (  # noqa: E402
     RegistryIndexError, RegistryRoutes, RegistryService, build_operation_index,
 )
+from soveraeign_registry_service import index as registry_index  # noqa: E402
 from sovkernel.closure_inputs import rebuild as rebuild_closure  # noqa: E402
 from sovkernel import closure_inputs  # noqa: E402
 from sovkernel.kernel_sources import load_source_digests  # noqa: E402
@@ -65,6 +66,7 @@ class RegistryResolution(unittest.TestCase):
         self.assertEqual(resolution["capability_id"], "asset.ingest-asset")
         self.assertEqual(resolution["required_authority"], "ingest:asset")
         self.assertEqual(resolution["standing_effect"], "NONE")
+        self.assertRegex(resolution["record_digest"], "^[0-9a-f]{64}$")
         self.assertEqual(detail["commit_semantics"], "DERIVED")
         self.assertEqual(
             [source["address"] for source in resolution["sources"]],
@@ -109,6 +111,27 @@ class RegistryResolution(unittest.TestCase):
                 "name": "asset.ingest-asset", "actor": "spoof",
             }, "checked-actor")
 
+    def test_route_census_and_arguments_are_service_owned(self) -> None:
+        self.assertEqual(RegistryRoutes.operation_ids(), ("resolve",))
+        self.assertEqual(RegistryRoutes.argument_contract("resolve"), {
+            "required": ("name",), "optional": (),
+        })
+
+    def test_route_returns_the_registry_terminal_receipt(self) -> None:
+        receipt = RegistryRoutes(self.service).call(
+            "resolve", {"name": "asset.ingest-asset"}, "checked-actor")
+        self.assertEqual(receipt["actor"], "checked-actor")
+        self.assertEqual(receipt["payload"]["event"], "registry.resolve")
+
+    def test_route_refuses_unknown_operation_and_bad_name_shapes(self) -> None:
+        routes = RegistryRoutes(self.service)
+        with self.assertRaises(KeyError):
+            routes.call("read-entry", {"name": "asset.ingest-asset"}, "actor")
+        for arguments in ({}, {"name": ""}, {"name": 3},
+                          {"name": "asset.ingest-asset", "extra": True}):
+            with self.subTest(arguments=arguments), self.assertRaises(ValueError):
+                routes.call("resolve", arguments, "actor")
+
     def test_default_reader_accepts_the_exact_repository_sources(self) -> None:
         service = RegistryService(
             self.record, ROOT, self.closure, self.manifests, self.policy, self.sources)
@@ -138,6 +161,11 @@ class RegistryResolution(unittest.TestCase):
 
 
 class RegistryIndexDefeaters(unittest.TestCase):
+    def test_registry_record_digest_is_independent_of_mapping_order(self) -> None:
+        forward = {"a": 1, "b": 2}
+        reverse = {"b": 2, "a": 1}
+        self.assertEqual(registry_index._digest(forward), registry_index._digest(reverse))
+
     def test_kernel_loader_refuses_a_snapshot_that_moves_between_reads(self) -> None:
         closure, manifests, policy, sources = inputs()
         transitions = json.loads(
@@ -173,6 +201,20 @@ class RegistryIndexDefeaters(unittest.TestCase):
         del policy["assignments"]["asset.ingest-asset"]
         with self.assertRaisesRegex(RegistryIndexError, "no authored detail or policy"):
             build_operation_index(closure, manifests, policy, sources)
+
+    def test_index_names_only_the_manifest_operation_the_closure_omits(self) -> None:
+        closure, manifests, policy, sources = inputs()
+        closure = deepcopy(closure)
+        asset = next(item for item in closure["participants"]
+                     if item["service_id"] == "asset")
+        asset["operations"] = [item for item in asset["operations"]
+                               if item["capability_id"] != "asset.ingest-asset"]
+        with self.assertRaises(RegistryIndexError) as raised:
+            build_operation_index(closure, manifests, policy, sources)
+        self.assertEqual(
+            str(raised.exception),
+            "closure omits manifest operations: ['asset.ingest-asset']",
+        )
 
 
 if __name__ == "__main__":

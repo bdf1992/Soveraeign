@@ -5,6 +5,8 @@ from __future__ import annotations
 from typing import Any
 import html
 
+from sovnode.affordances import INVOKABLE
+
 STYLE = """
 :root{--bg:#f7f6f2;--fg:#171916;--muted:#666a62;--line:#d9dbd3;--card:#fff;
 --yes:#176a50;--warn:#98531e;--no:#8d9189;--ink:#253d35}
@@ -60,7 +62,7 @@ def _sources(record: dict[str, Any]) -> str:
 
 
 def _try(record: dict[str, Any]) -> str:
-    if not record["facts"]["reachable"]:
+    if record["affordance"]["kind"] not in INVOKABLE:
         return ""
     route = next(route for route in record["reachability"] if route["policy_active"])
     arguments = " ".join(f"{name}=..." for name in route["required_arguments"])
@@ -73,9 +75,12 @@ def _try(record: dict[str, Any]) -> str:
 
 def _operation(record: dict[str, Any]) -> str:
     facts = record["facts"]
+    affordance = record["affordance"]
     badges = "".join(_tag(label, facts[name]) for label, name in (
         ("bound", "bound"), ("policy active", "policy_active"),
         ("reachable", "reachable"), ("observed", "observed")))
+    badges += f'<span class="tag {"yes" if affordance["kind"] in INVOKABLE else "warn"}">' \
+               f'{_e(affordance["kind"])}</span>'
     rows = [
         ("Address", f'<code>{_e(record["logical_endpoint"])}</code>'),
         ("Record digest", f'<code>{record["record_digest"]}</code>'),
@@ -88,6 +93,9 @@ def _operation(record: dict[str, Any]) -> str:
         ("Preconditions", " ".join(f'<code>{_e(item)}</code>' for item in record["preconditions"]) or "none"),
         ("Refusals", " ".join(f'<code>{_e(item)}</code>' for item in record["refusals"]) or "none"),
         ("Legal choices", " ".join(f'<code>{_e(item)}</code>' for item in record["legal_choices"]) or "none"),
+        ("Surface affordance", f'<code>{_e(affordance["kind"])}</code> — '
+         f'{_e(affordance["explanation"])} '
+         f'(<code>{_e(affordance["reason_code"])}</code>)'),
         ("Policy", _policy(record)),
         ("Observations", " ".join(map(_e, record["observation_ids"])) or "none admitted"),
         ("Sources", _sources(record)),
@@ -107,6 +115,14 @@ def _seams(interface: dict[str, Any]) -> str:
         f'route; {len(seams["reachable_not_observed"])} reachable operation has no admitted '
         f'observation; {len(seams["unmapped_kernel_transition"])} operations have no named '
         f'Kernel transition.<ul>{examples_html}</ul></div>')
+
+
+def _omissions(interface: dict[str, Any]) -> str:
+    items = "".join(
+        f'<li><code>{_e(item["code"])}</code> — {_e(item["explanation"])}</li>'
+        for item in interface["omissions"]
+    )
+    return f'<div class="note"><b>Material omissions.</b><ul>{items}</ul></div>'
 
 
 def render(interface: dict[str, Any]) -> str:
@@ -133,7 +149,8 @@ def render(interface: dict[str, Any]) -> str:
         f'<div><small>Local Root</small><code>{_e(node["root_seat"])}</code></div>'
         f'<div><small>Kernel closure</small><code>{kernel["closure_input_state_digest"][:16]}</code><br>'
         f'{kernel["participants"]} participants · {len(kernel["paradigms"])} paradigms</div></div>'
-        f'<ul class="counts">{tiles}</ul>{_seams(interface)}{"".join(sections)}'
+        f'<ul class="counts">{tiles}</ul>{_seams(interface)}{_omissions(interface)}'
+        f'{"".join(sections)}'
         '<footer>Generated from <code>contracts/fixtures/node-interface.reference.json</code> '
         "and rebuilt from its authored inputs at check time. Human and Model renderings resolve "
         "the same operation records and digests. This projection grants nothing, opens nothing, "

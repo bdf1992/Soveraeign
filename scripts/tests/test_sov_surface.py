@@ -39,6 +39,8 @@ class SurfaceProjection(unittest.TestCase):
         marker = '<code class="id">asset.read-asset</code>'
         section = self.page.split(marker, 1)[1].split("</details>", 1)[0]
         self.assertNotIn("sov_surface.py try", section)
+        self.assertIn("INSPECT", section)
+        self.assertIn("ACTIVE_POLICY_HAS_NO_EXACT_ROUTE", section)
 
     def test_only_the_two_exact_service_owned_routes_are_actionable(self) -> None:
         reachable = [item for item in self.interface["operations"]
@@ -49,12 +51,27 @@ class SurfaceProjection(unittest.TestCase):
             marker = f'<code class="id">{operation}</code>'
             section = self.page.split(marker, 1)[1].split("</details>", 1)[0]
             self.assertIn("sov_surface.py try", section)
+        self.assertIn("ACTION", self.page.split(
+            '<code class="id">asset.ingest-asset</code>', 1)[1].split("</details>", 1)[0])
+        self.assertIn("READ", self.page.split(
+            '<code class="id">registry.resolve</code>', 1)[1].split("</details>", 1)[0])
+
+    def test_every_operation_has_exactly_one_derived_affordance(self) -> None:
+        kinds = {item["affordance"]["kind"] for item in self.interface["operations"]}
+        self.assertEqual(kinds, {"ACTION", "READ", "INSPECT"})
+        self.assertEqual(
+            sum(item["affordance"]["kind"] in {"ACTION", "READ"}
+                for item in self.interface["operations"]),
+            self.interface["counts"]["reachable"],
+        )
 
     def test_node_root_kernel_and_open_seams_are_visible(self) -> None:
         self.assertIn(self.interface["node"]["node_id"], self.page)
         self.assertIn(self.interface["node"]["root_seat"], self.page)
         self.assertIn("No universal health score", self.page)
         self.assertIn("asset.read-asset", self.page)
+        self.assertIn("MODEL_BINDINGS_NOT_PROJECTED", self.page)
+        self.assertIn("HARNESS_STATE_NOT_PROJECTED", self.page)
 
     def test_rendering_claims_neither_observation_nor_authority(self) -> None:
         self.assertEqual(self.interface["counts"]["observed"], 0)

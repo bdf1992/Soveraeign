@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
+from hashlib import sha256
 from pathlib import Path
 import json
 import sys
@@ -71,6 +72,66 @@ class ProjectionFacts(unittest.TestCase):
             {"name": "sov://asset/ingest-asset"})
         self.assertEqual(request["logical_endpoint"], "sov://registry/resolve")
 
+    def test_affordances_are_derived_across_two_services(self) -> None:
+        ingest = self.operation("asset.ingest-asset")
+        resolve_registry = self.operation("registry.resolve")
+        unavailable_read = self.operation("asset.read-asset")
+        self.assertEqual(ingest["affordance"], {
+            "kind": "ACTION",
+            "reason_code": "EXACT_ROUTE_ACTIVE",
+            "explanation": "An exact policy-active service route exposes this operation.",
+        })
+        self.assertEqual(resolve_registry["affordance"]["kind"], "READ")
+        self.assertEqual(resolve_registry["affordance"]["reason_code"],
+                         "EXACT_READ_ROUTE_ACTIVE")
+        self.assertEqual(unavailable_read["affordance"]["kind"], "INSPECT")
+        self.assertEqual(unavailable_read["affordance"]["reason_code"],
+                         "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE")
+        self.assertIn(
+            "scripts/sovnode/affordances.py",
+            {source["address"] for source in ingest["sources"]},
+        )
+
+    def test_affordance_edit_cannot_make_topology_invokable(self) -> None:
+        edited = deepcopy(self.document)
+        record = next(item for item in edited["operations"]
+                      if item["operation_id"] == "asset.read-asset")
+        record["affordance"] = {
+            "kind": "ACTION", "reason_code": "EXACT_ROUTE_ACTIVE",
+            "explanation": "renderer says yes",
+        }
+        material = dict(record)
+        material.pop("record_digest")
+        record["record_digest"] = sha256(json.dumps(
+            material, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
+        with self.assertRaises(BindingRefusal) as raised:
+            invocation_request(edited, "asset.read-asset", HUMAN, "actor", "scope", {})
+        self.assertEqual(raised.exception.code, "AFFORDANCE_DRIFT")
+
+    def test_model_inventory_and_harness_are_declared_omissions_not_capabilities(self) -> None:
+        inventory = json.loads(
+            (ROOT / "adapters" / "ollama" / "inventory.json").read_text("utf-8"))
+        binding = json.loads((ROOT / "adapters" / "ollama" / "bindings" /
+                              "qwen3-4b.json").read_text("utf-8"))
+        self.assertTrue(any(
+            model["model_id"] == binding["model_id"]
+            and model["model_version"] == binding["model_version"]
+            for model in inventory["models"]
+        ))
+        self.assertNotIn(
+            "invoke_model", {item["operation"] for item in self.document["operations"]})
+        self.assertEqual(
+            {item["code"] for item in self.document["omissions"]},
+            {
+                "OBJECT_INSTANCES_NOT_PROJECTED",
+                "MODEL_BINDINGS_NOT_PROJECTED",
+                "HARNESS_STATE_NOT_PROJECTED",
+            },
+        )
+        self.assertNotIn("HARNESS", {
+            item["affordance"]["kind"] for item in self.document["operations"]
+        })
+
     def test_projection_cannot_promote_its_own_status(self) -> None:
         promoted = deepcopy(self.document)
         promoted["status"] = "RATIFIED"
@@ -110,6 +171,8 @@ class HumanModelParity(unittest.TestCase):
         self.assertIn(self.record["record_digest"][:12], human)
         self.assertEqual(model["record_digest"], self.record["record_digest"])
         self.assertEqual(model["required_authority"], self.record["required_authority"])
+        self.assertEqual(model["affordance"], self.record["affordance"])
+        self.assertIn("affordance ACTION", human)
         self.assertEqual(model["sources"], self.record["sources"])
 
     def test_human_and_model_cross_same_governed_action_semantics(self) -> None:

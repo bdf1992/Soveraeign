@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://soveraeign.local/contracts/node-interface.schema.json",
   "title": "Soveraeign Node Interface (PROPOSED)",
-  "description": "A discardable read projection joining Node identity and local Root, Kernel closure, capability policy, exact route census, and admitted observations. Declared, bound, policy-active, reachable, and observed are independent facts. This interface grants no authority, opens no route, settles nothing, and cannot promote its own standing.",
+  "description": "A discardable read projection joining Node identity and local Root, Kernel closure, capability policy, exact route census, and admitted observations. Declared, bound, policy-active, reachable, and observed are independent facts. ACTION, READ, INSPECT, HARNESS, and NONE are derived presentation semantics, never standing or authority. This interface grants no authority, opens no route, settles nothing, and cannot promote its own standing.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -15,6 +15,7 @@
     "input_state_digest",
     "counts",
     "seams",
+    "omissions",
     "operations"
   ],
   "properties": {
@@ -37,6 +38,11 @@
     "input_state_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "counts": {"$ref": "#/$defs/counts"},
     "seams": {"$ref": "#/$defs/seams"},
+    "omissions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/omission"}
+    },
     "operations": {
       "type": "array",
       "minItems": 1,
@@ -170,7 +176,7 @@
         "operation_id", "service_id", "operation", "logical_endpoint", "standing",
         "subject", "crud", "commit", "kernel_paradigms", "kernel_transition",
         "required_authority", "effect_class", "actor_kinds", "preconditions",
-        "refusals", "legal_choices", "policy_endpoints", "reachability",
+        "refusals", "legal_choices", "policy_endpoints", "reachability", "affordance",
         "observation_ids", "facts", "sources", "record_digest"
       ],
       "properties": {
@@ -198,10 +204,37 @@
         "legal_choices": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
         "policy_endpoints": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/policyEndpoint"}},
         "reachability": {"type": "array", "items": {"$ref": "#/$defs/route"}},
+        "affordance": {"$ref": "#/$defs/affordance"},
         "observation_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
         "facts": {"$ref": "#/$defs/facts"},
         "sources": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/source"}},
         "record_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "affordance": {
+      "type": "object",
+      "description": "Derived UI semantics. ACTION and READ require an exact policy-active route. INSPECT exposes declared topology without implying execution. HARNESS is reserved for explicitly identified host plumbing and may never stand in for governed service state. NONE exposes no gesture. Editing this value changes neither policy nor reachability.",
+      "additionalProperties": false,
+      "required": ["kind", "reason_code", "explanation"],
+      "properties": {
+        "kind": {"enum": ["ACTION", "READ", "INSPECT", "HARNESS", "NONE"]},
+        "reason_code": {"type": "string", "minLength": 1},
+        "explanation": {"type": "string", "minLength": 1}
+      }
+    },
+    "omission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "explanation"],
+      "properties": {
+        "code": {
+          "enum": [
+            "OBJECT_INSTANCES_NOT_PROJECTED",
+            "MODEL_BINDINGS_NOT_PROJECTED",
+            "HARNESS_STATE_NOT_PROJECTED"
+          ]
+        },
+        "explanation": {"type": "string", "minLength": 1}
       }
     }
   }

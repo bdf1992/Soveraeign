@@ -6,6 +6,9 @@ from hashlib import sha256
 from typing import Any
 import json
 
+from sovnode.affordances import INVOKABLE
+from sovnode.affordances import defects as affordance_defects
+
 HUMAN = "HUMAN"
 MODEL = "MODEL"
 BINDING_IDS = {
@@ -38,6 +41,9 @@ def resolve(document: dict[str, Any], operation_id: str) -> dict[str, Any]:
     actual = sha256(_canonical(material).encode("utf-8")).hexdigest()
     if recorded != actual:
         raise BindingRefusal("INTERFACE_RECORD_DRIFT", operation_id)
+    defects = affordance_defects(record)
+    if defects:
+        raise BindingRefusal("AFFORDANCE_DRIFT", "; ".join(defects))
     return record
 
 
@@ -60,6 +66,8 @@ def render_human(record: dict[str, Any]) -> str:
         f"authority  {record['required_authority']}\n"
         f"effect     {record['effect_class']}\n"
         f"actors     {', '.join(record['actor_kinds'])}\n"
+        f"affordance {record['affordance']['kind']} "
+        f"({record['affordance']['reason_code']})\n"
         f"transition {record['kernel_transition'] or 'unmapped'}\n"
         f"choices    {choices}\n"
         f"sources\n{sources}"
@@ -72,6 +80,8 @@ def invocation_request(document: dict[str, Any], operation_id: str, binding_kind
     if binding_kind not in BINDING_IDS:
         raise BindingRefusal("BINDING_UNKNOWN", binding_kind)
     record = resolve(document, operation_id)
+    if record["affordance"]["kind"] not in INVOKABLE:
+        raise BindingRefusal("OPERATION_NOT_REACHABLE", operation_id)
     if not record["facts"]["reachable"]:
         raise BindingRefusal("OPERATION_NOT_REACHABLE", operation_id)
     if binding_kind not in record["actor_kinds"]:

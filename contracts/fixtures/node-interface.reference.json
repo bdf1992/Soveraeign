@@ -36,12 +36,16 @@
     "contracts/fixtures/seat-topology.reference.json",
     "contracts/kernel-paradigms.json",
     "contracts/kernel-transitions.json",
+    "contracts/node-interface.schema.json",
     "contracts/observation.schema.json",
     "contracts/operation-plan.schema.json",
     "contracts/participant-observation.schema.json",
     "contracts/receipt.schema.json",
     "scripts/sovkernel/closure_inputs.py",
+    "scripts/sovkernel/node_interface.py",
+    "scripts/sovnode/affordances.py",
     "scripts/sovnode/composition.py",
+    "scripts/sovnode/interface_inputs.py",
     "services/asset/contracts/service.json",
     "services/asset/src/soveraeign_asset_service/core.py",
     "services/asset/src/soveraeign_asset_service/routes.py",
@@ -104,6 +108,10 @@
       "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
     },
     {
+      "address": "contracts/node-interface.schema.json",
+      "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+    },
+    {
       "address": "contracts/observation.schema.json",
       "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
     },
@@ -124,8 +132,20 @@
       "digest": "2e94057ea3288ab3c24b4958d47a5f1721bfedef3320ed578cdb10148d5d7a82"
     },
     {
+      "address": "scripts/sovkernel/node_interface.py",
+      "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+    },
+    {
+      "address": "scripts/sovnode/affordances.py",
+      "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+    },
+    {
       "address": "scripts/sovnode/composition.py",
       "digest": "387877026329db94a79760706917bc5ac6d8062653c261582d8f375088bc6fdb"
+    },
+    {
+      "address": "scripts/sovnode/interface_inputs.py",
+      "digest": "e7d9811964827423048b0218021742b07609bfd1eba44a37446e89231fabd56d"
     },
     {
       "address": "services/asset/contracts/service.json",
@@ -188,7 +208,7 @@
       "digest": "150834886995a8e0c32334beb5ef53dbc69cbb244172b510a06b056e608bf4b0"
     }
   ],
-  "input_state_digest": "42b08f4e6c4e63b479a0c949aac74548737fd4eb9c12ca6171ff11e211a9451a",
+  "input_state_digest": "bb83ffaabc944dc30b6e4e2b447088efee94500b08c9c76b54a60b3ecb2605b6",
   "counts": {
     "declared": 102,
     "bound": 102,
@@ -349,6 +369,20 @@
       "registry.supersede-owner"
     ]
   },
+  "omissions": [
+    {
+      "code": "OBJECT_INSTANCES_NOT_PROJECTED",
+      "explanation": "Service-owned types and operations are visible; live object instances and their current relations are not yet Node Interface inputs."
+    },
+    {
+      "code": "MODEL_BINDINGS_NOT_PROJECTED",
+      "explanation": "Adapter declarations and recorded model inventories are not Node routes; an inventory match cannot expose model invocation here."
+    },
+    {
+      "code": "HARNESS_STATE_NOT_PROJECTED",
+      "explanation": "Host schedules and workflows are harness plumbing, not governed service state."
+    }
+  ],
   "operations": [
     {
       "operation_id": "asset.ingest-asset",
@@ -469,6 +503,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -483,6 +521,14 @@
         {
           "address": "contracts/receipt.schema.json",
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
+        },
+        {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
         },
         {
           "address": "scripts/sovnode/composition.py",
@@ -509,7 +555,12 @@
           "digest": "a175f55a47256414fda78f75b0c7e5acc877b93b6f0abc984930fa6a0306147d"
         }
       ],
-      "record_digest": "83cda6823ac6da740e50ffa90f65a57e48994e819a00756f82fc0f92abcf4a64"
+      "affordance": {
+        "kind": "ACTION",
+        "reason_code": "EXACT_ROUTE_ACTIVE",
+        "explanation": "An exact policy-active service route exposes this operation."
+      },
+      "record_digest": "4f9477afbd51d829400420d5fcfac6655d2b34ea9bf5fba752ea9ff6e7c072e9"
     },
     {
       "operation_id": "asset.propose-description",
@@ -608,6 +659,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -624,11 +679,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/asset/contracts/service.json",
           "digest": "d74f9b396b05cb43d8b51f45cee99b30f72a2f5c7d06ace9b335b54fb0b22790"
         }
       ],
-      "record_digest": "71bfc003399f1bff3eefcff77683bbf851fd4b006a5114426e3bd4def3547bf5"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
+        "explanation": "Policy is active, but this composition has no exact service-owned route."
+      },
+      "record_digest": "26a5aa3b988802619c7859e87a0e02ab008c38a305d7810af6ab73736b655aaf"
     },
     {
       "operation_id": "asset.ratify-proposal",
@@ -727,6 +795,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -743,11 +815,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/asset/contracts/service.json",
           "digest": "d74f9b396b05cb43d8b51f45cee99b30f72a2f5c7d06ace9b335b54fb0b22790"
         }
       ],
-      "record_digest": "039edf76a797a1378425a745a7d19319493a3fc884c664f9025b94a77bf95f4b"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
+        "explanation": "Policy is active, but this composition has no exact service-owned route."
+      },
+      "record_digest": "ad988aefead4d883281c96a527c464faaedec93682e4b6f9a4a9ca3ed93415d6"
     },
     {
       "operation_id": "asset.read-asset",
@@ -843,6 +928,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -859,11 +948,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/asset/contracts/service.json",
           "digest": "d74f9b396b05cb43d8b51f45cee99b30f72a2f5c7d06ace9b335b54fb0b22790"
         }
       ],
-      "record_digest": "b6b5a845101cbe0c84d410e104a2b6c787d8f7d74041e889f2c3fe5de20a978b"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
+        "explanation": "Policy is active, but this composition has no exact service-owned route."
+      },
+      "record_digest": "3e1f3d96c900f8dc49ea4ee2092988a437b6ac0858216693b8b520d12a76ca35"
     },
     {
       "operation_id": "asset.read-use-record",
@@ -959,6 +1061,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -975,11 +1081,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/asset/contracts/service.json",
           "digest": "d74f9b396b05cb43d8b51f45cee99b30f72a2f5c7d06ace9b335b54fb0b22790"
         }
       ],
-      "record_digest": "077a8cb9bb76c24dd4f9a33571efa293e28728c2cdebca26215244f017496a0b"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
+        "explanation": "Policy is active, but this composition has no exact service-owned route."
+      },
+      "record_digest": "ba4a81b1f8cd3876ec30d35600a6885fd085b1f036310231e50afdc6ecfee8bc"
     },
     {
       "operation_id": "asset.read-version",
@@ -1079,6 +1198,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -1095,11 +1218,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/asset/contracts/service.json",
           "digest": "d74f9b396b05cb43d8b51f45cee99b30f72a2f5c7d06ace9b335b54fb0b22790"
         }
       ],
-      "record_digest": "25afa32711a11fe4d97c37d7c92ba13cd85bca79258d47540fab8f4ed2efb357"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
+        "explanation": "Policy is active, but this composition has no exact service-owned route."
+      },
+      "record_digest": "f7e501362351465f21af56ca443d2701a3ee388bcbd8253cac64a14b47e51e11"
     },
     {
       "operation_id": "asset.rebuild-projection",
@@ -1195,6 +1331,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -1211,11 +1351,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/asset/contracts/service.json",
           "digest": "d74f9b396b05cb43d8b51f45cee99b30f72a2f5c7d06ace9b335b54fb0b22790"
         }
       ],
-      "record_digest": "38657f01854feefe508c96dc7d5a574f5cda9e71fffa6297fecc7794364f927f"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
+        "explanation": "Policy is active, but this composition has no exact service-owned route."
+      },
+      "record_digest": "c3bb25f452175a598f908da34dcfe40a57e7fdcc17f307b5c4028473218aa297"
     },
     {
       "operation_id": "asset.request-derivative",
@@ -1314,6 +1467,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -1330,11 +1487,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/asset/contracts/service.json",
           "digest": "d74f9b396b05cb43d8b51f45cee99b30f72a2f5c7d06ace9b335b54fb0b22790"
         }
       ],
-      "record_digest": "6228edcfaedd7be2622ee674e4e7da12763340a818bab24fe04089f3a4f13884"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
+        "explanation": "Policy is active, but this composition has no exact service-owned route."
+      },
+      "record_digest": "0834a762b1ab03427aa5095c1134248eb4b5099581dadd7e22bee9c822bace49"
     },
     {
       "operation_id": "asset.retract-record",
@@ -1433,6 +1603,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -1449,11 +1623,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/asset/contracts/service.json",
           "digest": "d74f9b396b05cb43d8b51f45cee99b30f72a2f5c7d06ace9b335b54fb0b22790"
         }
       ],
-      "record_digest": "1af90e348ed681bd6d454c38b2c377120c7536d432da4442f7c0cafb075b3de1"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
+        "explanation": "Policy is active, but this composition has no exact service-owned route."
+      },
+      "record_digest": "3fa5b986b67c64748c666bfa5d367152e8da08627b6c37b22fc4e54a3af03c88"
     },
     {
       "operation_id": "console.acknowledge-notification",
@@ -1554,6 +1741,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -1570,11 +1761,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/console/contracts/service.json",
           "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
         }
       ],
-      "record_digest": "8b50f16c8640596a03033d46cd4efd759d5561cad12f1e17a8bfce00b3fdd32c"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "6e7c5e49e8a4a629540393846dc8c3804a366763c57f13fb828aeef63ad82ed6"
     },
     {
       "operation_id": "console.archive-thread",
@@ -1676,6 +1880,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -1692,11 +1900,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/console/contracts/service.json",
           "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
         }
       ],
-      "record_digest": "e906ca409071cfebe6564e26c079203a76353f942a17ea5aee21a446c72aab25"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
+        "explanation": "Policy is active, but this composition has no exact service-owned route."
+      },
+      "record_digest": "7f9aad752f1b088dfacc5bb70053d08b485488a420e87bd8cc8db47de650ecea"
     },
     {
       "operation_id": "console.close-session",
@@ -1798,6 +2019,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -1814,11 +2039,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/console/contracts/service.json",
           "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
         }
       ],
-      "record_digest": "0a25016a6d2fa5c2071e56e1cd940be8670510cedae6addbf0dc70fda2a39426"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
+        "explanation": "Policy is active, but this composition has no exact service-owned route."
+      },
+      "record_digest": "08185874a051eea4751da422ebb4795611d2f8e3a8c0a1f7bbc40d79f49a7ba8"
     },
     {
       "operation_id": "console.discover-operations",
@@ -1920,6 +2158,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -1936,11 +2178,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/console/contracts/service.json",
           "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
         }
       ],
-      "record_digest": "f08af2018a14e8c8303f45ef3a907a29c52fa73b6901e1de4e7fb3956d0c9a19"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
+        "explanation": "Policy is active, but this composition has no exact service-owned route."
+      },
+      "record_digest": "f07286e4c406b8a33733357cfa4136914d56e6ffb07efe8d3a663ab3bc493833"
     },
     {
       "operation_id": "console.grant",
@@ -2043,6 +2298,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -2059,11 +2318,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/console/contracts/service.json",
           "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
         }
       ],
-      "record_digest": "6bb2b08dbbf4206d151258726956adfe3dd67db4cc43ce8c8ae2f59fd0dd18cf"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
+        "explanation": "Policy is active, but this composition has no exact service-owned route."
+      },
+      "record_digest": "db099a77285cb8c6dc07736d6ca6aba796f4e82c303c39d01418eb7bdc6ed086"
     },
     {
       "operation_id": "console.list-channels",
@@ -2162,6 +2434,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -2178,11 +2454,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/console/contracts/service.json",
           "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
         }
       ],
-      "record_digest": "cc408fe88d0f71ee2d6a869c5b0e4adf82ee0583c9686292455a673076593527"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "f61226e57bdb76d3675d089c93a1e7b242004f2e77b1f8f77a5a83c6a8a76554"
     },
     {
       "operation_id": "console.list-grants",
@@ -2282,6 +2571,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -2298,11 +2591,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/console/contracts/service.json",
           "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
         }
       ],
-      "record_digest": "4366f52bf4c1c19ef639c7c99057dcc639f2c6d1164dc478203082818b4d2905"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
+        "explanation": "Policy is active, but this composition has no exact service-owned route."
+      },
+      "record_digest": "4111557b52898cf37f26c46ce7e07f9f1d798e73c960cc00e98f5b180174d9dd"
     },
     {
       "operation_id": "console.list-notifications",
@@ -2401,6 +2707,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -2417,11 +2727,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/console/contracts/service.json",
           "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
         }
       ],
-      "record_digest": "72246f222240bcd279796345ca3777d248e13dbfddeb277168d5ef5e27c42b4d"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "71101f8b535547999c3ce7703667b4d858b1e951c420be6ccd32861242d9852a"
     },
     {
       "operation_id": "console.list-pending-judgement-requests",
@@ -2520,6 +2843,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -2536,11 +2863,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/console/contracts/service.json",
           "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
         }
       ],
-      "record_digest": "71074f9eff19a87743c4cd09c2eace6048e669bc8b0c15c96b56055de1fef984"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "fe141c27dca809631ae120a01e13065ae334dd2b00c6baac54dae21b4e92d186"
     },
     {
       "operation_id": "console.list-publications",
@@ -2641,6 +2981,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -2657,11 +3001,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/console/contracts/service.json",
           "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
         }
       ],
-      "record_digest": "9fb221f8d35c128d7aedd00b31d121f56141e2ae7596ecd4a102b40d3bf803d5"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
+        "explanation": "Policy is active, but this composition has no exact service-owned route."
+      },
+      "record_digest": "3b606c7feaca478280d7ffcd42723298374bb6c5d2ead22aeb61c5560faaf3ae"
     },
     {
       "operation_id": "console.notify",
@@ -2760,6 +3117,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -2776,11 +3137,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/console/contracts/service.json",
           "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
         }
       ],
-      "record_digest": "f9e0aec91826e07f313c2a6777dfa61129343e885264c04b0d8fa5e62011504d"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "2305c52ff4ea7b392ccc4c72f089e56deb3976c2c503e90887917b17b5f9964d"
     },
     {
       "operation_id": "console.open-channel",
@@ -2882,6 +3256,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -2898,11 +3276,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/console/contracts/service.json",
           "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
         }
       ],
-      "record_digest": "7cb391877e51a4c7536494b633cef9b4031b2dd1ea30ebdedf8267db1ce2692f"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
+        "explanation": "Policy is active, but this composition has no exact service-owned route."
+      },
+      "record_digest": "e523d2722e8e9e82e29b6668301a8b4c8cdaa0195c18e6c0ae789fce42fb904f"
     },
     {
       "operation_id": "console.open-session",
@@ -3004,6 +3395,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -3020,11 +3415,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/console/contracts/service.json",
           "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
         }
       ],
-      "record_digest": "c0fe115a1ef61eb30ee1f0e3ee83180c30a487d6c0c3772c7771ef9cb661af49"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
+        "explanation": "Policy is active, but this composition has no exact service-owned route."
+      },
+      "record_digest": "4b3c0ad171b2c8a83a8ec51fc6de32b22eb19bcadd7e3b9bb9d676f4042fbc6b"
     },
     {
       "operation_id": "console.open-thread",
@@ -3127,6 +3535,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -3143,11 +3555,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/console/contracts/service.json",
           "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
         }
       ],
-      "record_digest": "d5deb4b083c90b1bf90a35c5680599420ba0f5b37c3afa3eb70da52cfc1bbba3"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
+        "explanation": "Policy is active, but this composition has no exact service-owned route."
+      },
+      "record_digest": "a18248c1b9819c9be3af725d8be1837a1718db9c3edbb919d559eab32d7219ff"
     },
     {
       "operation_id": "console.post",
@@ -3250,6 +3675,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -3266,11 +3695,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/console/contracts/service.json",
           "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
         }
       ],
-      "record_digest": "433e6848119fc64e9047f2462f5921b7d928590db762c228e45d8d4cb7c67941"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
+        "explanation": "Policy is active, but this composition has no exact service-owned route."
+      },
+      "record_digest": "202bf30f686f02052705320cda4a7e43988d32757848c1b438e2283c408ac80c"
     },
     {
       "operation_id": "console.publish-thread",
@@ -3374,6 +3816,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -3390,11 +3836,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/console/contracts/service.json",
           "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
         }
       ],
-      "record_digest": "394544fc62317cd1567da510e44f2419354f0f4914a53fcb4db633d6b5d43b89"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
+        "explanation": "Policy is active, but this composition has no exact service-owned route."
+      },
+      "record_digest": "272079899d4c0a12a062cc7e9eeb2b69d129b3e40d2fa7aa09465dc415d33039"
     },
     {
       "operation_id": "console.read-thread",
@@ -3495,6 +3954,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -3511,11 +3974,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/console/contracts/service.json",
           "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
         }
       ],
-      "record_digest": "29cf5857e872eb69add7eca24a9b117e49fdbb917202b7d3fdbc8c170d1bb39e"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
+        "explanation": "Policy is active, but this composition has no exact service-owned route."
+      },
+      "record_digest": "2650504a8c9412b516dff4fd9c2df46220efdd4cc4d43f433eef62ece7ec6942"
     },
     {
       "operation_id": "console.rebuild-projection",
@@ -3613,6 +4089,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -3629,11 +4109,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/console/contracts/service.json",
           "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
         }
       ],
-      "record_digest": "ff2baa76df0e69ed8c38a2cdbfcb8c55931d98a082f7cafcd5f7188256703e3e"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "569993653b9c74918e3f83eb83fc110fb8ff2a0756b07007d20c0d0f929ad5dc"
     },
     {
       "operation_id": "console.request-judgement",
@@ -3735,6 +4228,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -3751,11 +4248,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/console/contracts/service.json",
           "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
         }
       ],
-      "record_digest": "bc0d1fbcac987befd73580f1dc2876fc37174a6317eda40ea065242c17eeccf2"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "547722c512c766f2a984d5ee9031f6520b5215303d54ae6c19c5ff53eaa042b5"
     },
     {
       "operation_id": "console.resolve-judgement",
@@ -3860,6 +4370,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -3876,11 +4390,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/console/contracts/service.json",
           "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
         }
       ],
-      "record_digest": "e8c4beeafdba62e36d3490408e9ae7e718175fb308c1cba62f36c21ce154a930"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "0479a39d3986dad6e63f1281a14f8b8f1e3ea2d214b4589455ec6a47ac2c5081"
     },
     {
       "operation_id": "console.revoke",
@@ -3983,6 +4510,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -3999,11 +4530,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/console/contracts/service.json",
           "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
         }
       ],
-      "record_digest": "03e3980273ca36241f1632a8dc4250d5f545308fc7a98f08875017dbac32a5ae"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
+        "explanation": "Policy is active, but this composition has no exact service-owned route."
+      },
+      "record_digest": "f2724bdbd8cad6f6d0b284c6f5cc66d71cc4687b0c24d3b79004c957112e2b81"
     },
     {
       "operation_id": "console.session-context",
@@ -4103,6 +4647,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -4119,11 +4667,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/console/contracts/service.json",
           "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
         }
       ],
-      "record_digest": "5a5516c9af2291e1cb42553f888eec2c9d2b1a0305c5684b501af35e274be276"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
+        "explanation": "Policy is active, but this composition has no exact service-owned route."
+      },
+      "record_digest": "059083f0241977e3bdf2c702ac765a711c0ba566b23f6d444ba35a5e6874ca40"
     },
     {
       "operation_id": "console.set-setting",
@@ -4225,6 +4786,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -4241,11 +4806,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/console/contracts/service.json",
           "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
         }
       ],
-      "record_digest": "9330c42ff509a0b39689d4c23540d8bd92e16fe876d7935bbe9e7e265bd9472b"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "1f6033c0d4998efbf42cde4f9d15b4cb3baf21790257cde393b2e6f8442727f4"
     },
     {
       "operation_id": "console.show-judgement-request",
@@ -4345,6 +4923,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -4361,11 +4943,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/console/contracts/service.json",
           "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
         }
       ],
-      "record_digest": "26a27832882443b7f514d78fcd87b56605428a6412d601abd4e255014729749b"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "734f3808b62680770bdbb5276f963f013e36e190ed71026b0455576d920117c8"
     },
     {
       "operation_id": "console.show-receipt",
@@ -4465,6 +5060,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -4481,11 +5080,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/console/contracts/service.json",
           "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
         }
       ],
-      "record_digest": "ff2d96e873f59e72fe97528fa7b98d2a533c582e525b76e41e73c6e05aa9b6e6"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "1d591c5269ba36312c0669a80fafab66406a2ce338902ad17cc8c8fa9d376f68"
     },
     {
       "operation_id": "console.withdraw-publication",
@@ -4588,6 +5200,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -4604,11 +5220,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/console/contracts/service.json",
           "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
         }
       ],
-      "record_digest": "214b5d4bf4909378ed704a73ccd404453a1664cfd984626c5fae89c8fa46d348"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
+        "explanation": "Policy is active, but this composition has no exact service-owned route."
+      },
+      "record_digest": "3f1bb96972534734ade621cea451f188d65b102589faf3bdaea7bb14b7d7b979"
     },
     {
       "operation_id": "gateway.accept-request",
@@ -4705,6 +5334,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/operation-plan.schema.json",
           "digest": "f5448eb6dd28a2aafa84b1b1bee7394b3348e897aec3920319dbed962b9320d9"
         },
@@ -4713,11 +5346,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/gateway/contracts/service.json",
           "digest": "3840877cc3ccde29a7e4c6662f09f36e8a6c1403f33fd8ab59e7d849164812a6"
         }
       ],
-      "record_digest": "5238832b4daf2cdd525ef9e09289d7691bcde5385c9b248bd65abf5b5bab6410"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "19d5e0dfee85877259684059f94e64c8b7497909f2022d477066aa99f0c28700"
     },
     {
       "operation_id": "gateway.bind-transport",
@@ -4813,6 +5459,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/operation-plan.schema.json",
           "digest": "f5448eb6dd28a2aafa84b1b1bee7394b3348e897aec3920319dbed962b9320d9"
         },
@@ -4821,11 +5471,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/gateway/contracts/service.json",
           "digest": "3840877cc3ccde29a7e4c6662f09f36e8a6c1403f33fd8ab59e7d849164812a6"
         }
       ],
-      "record_digest": "114a28180e9f1b3d9b71ed9c548f3e257847e5b965c24c9e8e9bf7c67dd79b67"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "96002110c5ecd2f07f53a29bcff60c990aca59a01fc42fdab0afbc095330c5cb"
     },
     {
       "operation_id": "gateway.check-authority",
@@ -4920,6 +5583,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/operation-plan.schema.json",
           "digest": "f5448eb6dd28a2aafa84b1b1bee7394b3348e897aec3920319dbed962b9320d9"
         },
@@ -4928,11 +5595,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/gateway/contracts/service.json",
           "digest": "3840877cc3ccde29a7e4c6662f09f36e8a6c1403f33fd8ab59e7d849164812a6"
         }
       ],
-      "record_digest": "1d21127e2859998860fb5d846d1ab03be7064ff3df17276ef925b37d2312aebe"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "2941bab54e0464ff436f0834706c577b9c4feab9cd585b66512c82b8fb4c5dbe"
     },
     {
       "operation_id": "gateway.list-endpoints",
@@ -5025,6 +5705,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/operation-plan.schema.json",
           "digest": "f5448eb6dd28a2aafa84b1b1bee7394b3348e897aec3920319dbed962b9320d9"
         },
@@ -5033,11 +5717,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/gateway/contracts/service.json",
           "digest": "3840877cc3ccde29a7e4c6662f09f36e8a6c1403f33fd8ab59e7d849164812a6"
         }
       ],
-      "record_digest": "a6de61f8ff807f9ee5b39ea7476339e5cd1fbebe1222735f809eb6a441027225"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "ca2e718367db5aabe93a074942f1c3f0139905533bc23c68c868821f9e8a0461"
     },
     {
       "operation_id": "gateway.read-receipt",
@@ -5130,6 +5827,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/operation-plan.schema.json",
           "digest": "f5448eb6dd28a2aafa84b1b1bee7394b3348e897aec3920319dbed962b9320d9"
         },
@@ -5138,11 +5839,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/gateway/contracts/service.json",
           "digest": "3840877cc3ccde29a7e4c6662f09f36e8a6c1403f33fd8ab59e7d849164812a6"
         }
       ],
-      "record_digest": "7db3f92a1f373dbdf081db25863936b4d9b2b200a7dfc20c8deb882a948edb18"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "630ac98fc0ee3f32887c2bbdb2b4ada7b22a16d6fee2fac71770640e72f98e7a"
     },
     {
       "operation_id": "gateway.refuse-request",
@@ -5235,6 +5949,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/operation-plan.schema.json",
           "digest": "f5448eb6dd28a2aafa84b1b1bee7394b3348e897aec3920319dbed962b9320d9"
         },
@@ -5243,11 +5961,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/gateway/contracts/service.json",
           "digest": "3840877cc3ccde29a7e4c6662f09f36e8a6c1403f33fd8ab59e7d849164812a6"
         }
       ],
-      "record_digest": "aa573fe7c6391578b48f4f6bb963f0cd5dac4378ed996da9853f71343473b0d7"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "755ffdd5907731b559da98b691a5814699c9ae035dc86aa941ccd6e204401f22"
     },
     {
       "operation_id": "gateway.resolve-capability",
@@ -5342,6 +6073,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/operation-plan.schema.json",
           "digest": "f5448eb6dd28a2aafa84b1b1bee7394b3348e897aec3920319dbed962b9320d9"
         },
@@ -5350,11 +6085,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/gateway/contracts/service.json",
           "digest": "3840877cc3ccde29a7e4c6662f09f36e8a6c1403f33fd8ab59e7d849164812a6"
         }
       ],
-      "record_digest": "3f2142eb8063cab939658f42c434679b8c99fdad0c4f77d9d2774eec6203d69f"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "320fa9a1fbda748beee452f1f000e62689d1b21b23ee5094f3efd1f3397629b1"
     },
     {
       "operation_id": "gateway.return-receipt",
@@ -5448,6 +6196,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/operation-plan.schema.json",
           "digest": "f5448eb6dd28a2aafa84b1b1bee7394b3348e897aec3920319dbed962b9320d9"
         },
@@ -5456,11 +6208,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/gateway/contracts/service.json",
           "digest": "3840877cc3ccde29a7e4c6662f09f36e8a6c1403f33fd8ab59e7d849164812a6"
         }
       ],
-      "record_digest": "f646b76d23b2bcd4a9c01eb960a2ae4c37fbe9f47dd1ef25378bc890478f08ef"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "c3766a075179ce913e1f270bce22e55aa5c1b546651c1fe18e91166f9644e554"
     },
     {
       "operation_id": "gateway.route-request",
@@ -5557,6 +6322,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/operation-plan.schema.json",
           "digest": "f5448eb6dd28a2aafa84b1b1bee7394b3348e897aec3920319dbed962b9320d9"
         },
@@ -5565,11 +6334,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/gateway/contracts/service.json",
           "digest": "3840877cc3ccde29a7e4c6662f09f36e8a6c1403f33fd8ab59e7d849164812a6"
         }
       ],
-      "record_digest": "1d58e5a7989de7501f9464b8a8161daf04d4742471f8008a0d980c6e93f383d8"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "7a65dbca4af928351571739df87edfb60b7a0738646d3782735d8c55210148e3"
     },
     {
       "operation_id": "observation.attest-observation",
@@ -5668,6 +6450,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -5684,11 +6470,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/observation/contracts/service.json",
           "digest": "9d93676590b47bdbde987989d332fec52a158922c7c1e4ff7416e276265437c1"
         }
       ],
-      "record_digest": "4d6f3de77394d1f3c41da3c287b75bc222fe0d2a6382a35f61bab46a28fe2683"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "b6130e31870d4ca38e165053b14fe01216f97c932fdbe0ad82fa4a083940df71"
     },
     {
       "operation_id": "observation.check-independence",
@@ -5785,6 +6584,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -5801,11 +6604,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/observation/contracts/service.json",
           "digest": "9d93676590b47bdbde987989d332fec52a158922c7c1e4ff7416e276265437c1"
         }
       ],
-      "record_digest": "6c71b8c6eec3de1c43da6d1c1d32816cc4424a4cf8cde18a46ede0835604253b"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "0563067a3e1032f2d323769d98b7ae1ee14e7389e66198b734006cf1deac0370"
     },
     {
       "operation_id": "observation.counter-observation",
@@ -5903,6 +6719,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -5919,11 +6739,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/observation/contracts/service.json",
           "digest": "9d93676590b47bdbde987989d332fec52a158922c7c1e4ff7416e276265437c1"
         }
       ],
-      "record_digest": "695e43799b9ab87adcf5ef78252c44d8d768681b6f443386e7559210f205e5ec"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "ddddea358aea04460d92bde40bb75d6df1cedcd707444ff4fb098fd1f5948101"
     },
     {
       "operation_id": "observation.declare-predicates",
@@ -6022,6 +6855,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -6038,11 +6875,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/observation/contracts/service.json",
           "digest": "9d93676590b47bdbde987989d332fec52a158922c7c1e4ff7416e276265437c1"
         }
       ],
-      "record_digest": "998be451385ec803352687316ad18994b4e21f665aa5b056eec4ee8cefb47f91"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "75b0f7674710c9423f4e8acaede75386b625c956df53b92e8202f202f1c33376"
     },
     {
       "operation_id": "observation.list-pending-observations",
@@ -6138,6 +6988,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -6154,11 +7008,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/observation/contracts/service.json",
           "digest": "9d93676590b47bdbde987989d332fec52a158922c7c1e4ff7416e276265437c1"
         }
       ],
-      "record_digest": "0051431919fac1356e3271f4f62bbc05b89a7530601dce32a05c6ddc83c0c8c2"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "75b33a9fb9cf06835a78ca518314261c97bc60e7b0a0bf3770c4b64eeca2bf58"
     },
     {
       "operation_id": "observation.observe-run",
@@ -6259,6 +7126,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -6275,11 +7146,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/observation/contracts/service.json",
           "digest": "9d93676590b47bdbde987989d332fec52a158922c7c1e4ff7416e276265437c1"
         }
       ],
-      "record_digest": "7ebd1b34464e34046bb527275509e914b2bb39360e9f9882e9457d1e9b46543b"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "8068a294255e53fc856ad40b4062d272539265ded8b3bffda23f69ae0d7d4da0"
     },
     {
       "operation_id": "observation.read-observation",
@@ -6375,6 +7259,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -6391,11 +7279,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/observation/contracts/service.json",
           "digest": "9d93676590b47bdbde987989d332fec52a158922c7c1e4ff7416e276265437c1"
         }
       ],
-      "record_digest": "5fb6e609f6b380766e76f30a94e93a89793b239af890dd26f60965ea789feebc"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "1769dbb822dc289ef31d66eab187092f060b7f737b900f4c4a4dba39fcc0b91c"
     },
     {
       "operation_id": "observation.read-observer",
@@ -6491,6 +7392,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -6507,11 +7412,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/observation/contracts/service.json",
           "digest": "9d93676590b47bdbde987989d332fec52a158922c7c1e4ff7416e276265437c1"
         }
       ],
-      "record_digest": "c4d30ad73495b3d75360ca377b847338ba5be635dddfb1752712daea48978fc9"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "50afe7a6f1d95292497dc4de1cdf735f39a4582119a590ccd8e0cecb951607ec"
     },
     {
       "operation_id": "observation.register-observer",
@@ -6609,6 +7527,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -6625,11 +7547,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/observation/contracts/service.json",
           "digest": "9d93676590b47bdbde987989d332fec52a158922c7c1e4ff7416e276265437c1"
         }
       ],
-      "record_digest": "bb6d21e94773ac8441707d3bd9b41ef36036aabb65cf4f856ccf00eff9a2b729"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "c5753d0d5aaf2115bb4e71cbaead298cfb68d412822ef2767fc471dca6e9762d"
     },
     {
       "operation_id": "observation.request-observation",
@@ -6729,6 +7664,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -6745,11 +7684,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/observation/contracts/service.json",
           "digest": "9d93676590b47bdbde987989d332fec52a158922c7c1e4ff7416e276265437c1"
         }
       ],
-      "record_digest": "d089f4f876764a53396f5d398c4833fb395edaaca8be2f39d47be1378b5ce198"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "a7a7d58fbda2715d9736bc2babdb89a90a28dbd8bbcf1918119ccf0842d56a67"
     },
     {
       "operation_id": "projection.build-projection",
@@ -6844,6 +7796,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -6860,11 +7816,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/projection/contracts/service.json",
           "digest": "3f14fc3c68604024b2ba0ce03b0b22c1dd7e92882e393d63a0b927cb2bb8dda3"
         }
       ],
-      "record_digest": "3b97fb8a1319cd3cd0157e73561d1d7ef999df9f3373cbc2cb398040b81a3216"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "b8cd0d76641b63ad8f8ec1f22bb515f83d47181dc5bc97e2a9e61c19e56f75e0"
     },
     {
       "operation_id": "projection.configure-graph",
@@ -6960,6 +7929,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -6976,11 +7949,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/projection/contracts/service.json",
           "digest": "3f14fc3c68604024b2ba0ce03b0b22c1dd7e92882e393d63a0b927cb2bb8dda3"
         }
       ],
-      "record_digest": "62acb360130999ac5d7c9123681e579f21f546aff6961bf6cd09eb97cecb7760"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "352d349fdb1ea4aeee5f72e69517d9af195bba704d7096ac66332cd5f0182f6d"
     },
     {
       "operation_id": "projection.configure-text",
@@ -7076,6 +8062,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -7092,11 +8082,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/projection/contracts/service.json",
           "digest": "3f14fc3c68604024b2ba0ce03b0b22c1dd7e92882e393d63a0b927cb2bb8dda3"
         }
       ],
-      "record_digest": "f73ff35a34d13ee2c251f6d95257aae5ac488e36831d5ff4b6cea6be081662c1"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "53bd8a542de41bc0d82460eecbfafe711060326effd759e25d559b1cd0cde8d9"
     },
     {
       "operation_id": "projection.declare-collection",
@@ -7191,6 +8194,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -7207,11 +8214,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/projection/contracts/service.json",
           "digest": "3f14fc3c68604024b2ba0ce03b0b22c1dd7e92882e393d63a0b927cb2bb8dda3"
         }
       ],
-      "record_digest": "00a527ae583238ec5508858b54d9266cb9853c7a72b28932cafb322e18f936b0"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "16bd09e5b91f1de2e0c026d0ea1f3aa74f814719d50c037cf779b608005866ce"
     },
     {
       "operation_id": "projection.describe-collection",
@@ -7305,6 +8325,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -7321,11 +8345,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/projection/contracts/service.json",
           "digest": "3f14fc3c68604024b2ba0ce03b0b22c1dd7e92882e393d63a0b927cb2bb8dda3"
         }
       ],
-      "record_digest": "fd72a1504908a32c56a1fe0e15b8ca24f932f26c662c4d5395d3a2e578b834b1"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "a20a6d46f294c13d60b4178bbdb6c1c14d7c258f8a2e31624962d69fceeb1aaa"
     },
     {
       "operation_id": "projection.find-path",
@@ -7423,6 +8460,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -7439,11 +8480,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/projection/contracts/service.json",
           "digest": "3f14fc3c68604024b2ba0ce03b0b22c1dd7e92882e393d63a0b927cb2bb8dda3"
         }
       ],
-      "record_digest": "baa3cec6466b8bf2b93062c7f92f72059ab61e40ff8c15fb9beac5359bc95991"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "488d267bdf91671c1f64981eb7c53f123df53266c53dc2af9670b324d2639af6"
     },
     {
       "operation_id": "projection.observe-fidelity",
@@ -7540,6 +8594,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -7556,11 +8614,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/projection/contracts/service.json",
           "digest": "3f14fc3c68604024b2ba0ce03b0b22c1dd7e92882e393d63a0b927cb2bb8dda3"
         }
       ],
-      "record_digest": "e1b4eb1da0fd5ccee72ac37520391f12241fa5d2ec625fce7fc9e5f2b061ed2d"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "25eea49c390de4c096198c8e7419af30c8ded5d543cfc2a667c779a9cf588af5"
     },
     {
       "operation_id": "projection.package-context",
@@ -7657,6 +8728,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -7673,11 +8748,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/projection/contracts/service.json",
           "digest": "3f14fc3c68604024b2ba0ce03b0b22c1dd7e92882e393d63a0b927cb2bb8dda3"
         }
       ],
-      "record_digest": "c4b54433e392f5a7adf94c6afbc488186ccbb48e6d6a83c54c2a169e75675731"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "d7a4cb680dc4570c2da363c778da866f55a2caf826cf8dcf1528598cc4c57a57"
     },
     {
       "operation_id": "projection.propose-from-projection",
@@ -7774,6 +8862,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -7790,11 +8882,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/projection/contracts/service.json",
           "digest": "3f14fc3c68604024b2ba0ce03b0b22c1dd7e92882e393d63a0b927cb2bb8dda3"
         }
       ],
-      "record_digest": "3aad0dc25cb984e394a7d0a3270dc3e2f939faf12d8d89aac30cf916a2a95f36"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "fbea240790d08b5f1a649e9d90327d96980d1c94eb5172c4d20979cfb344feaa"
     },
     {
       "operation_id": "projection.read-context-package",
@@ -7888,6 +8993,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -7904,11 +9013,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/projection/contracts/service.json",
           "digest": "3f14fc3c68604024b2ba0ce03b0b22c1dd7e92882e393d63a0b927cb2bb8dda3"
         }
       ],
-      "record_digest": "d811fecf2219dd329f9ccbe37654fdf643aabcdf6c210746b3263d7fca1856fb"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "484164b7acea70a467c1ae5a38f4bd339e987a4cb80116faab74519617fa4632"
     },
     {
       "operation_id": "projection.register-vectors",
@@ -8006,6 +9128,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -8022,11 +9148,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/projection/contracts/service.json",
           "digest": "3f14fc3c68604024b2ba0ce03b0b22c1dd7e92882e393d63a0b927cb2bb8dda3"
         }
       ],
-      "record_digest": "b44e4128a0c71bb2b49a4a886fc2b4c26fdacce23989d60356298839627c341c"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "e7f87e549718564aa37981fafaa72e313756cdb212fbff5f72a1a3d9f9af90cc"
     },
     {
       "operation_id": "projection.search-dense",
@@ -8123,6 +9262,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -8139,11 +9282,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/projection/contracts/service.json",
           "digest": "3f14fc3c68604024b2ba0ce03b0b22c1dd7e92882e393d63a0b927cb2bb8dda3"
         }
       ],
-      "record_digest": "1fd22b5816309d6e142bb7083511655c11c12e226c4d23540413c994f74c3791"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "64653b118895a87cb006890cb425d8225b2cd501800708439075f5bc8cd74b37"
     },
     {
       "operation_id": "projection.search-hybrid",
@@ -8240,6 +9396,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -8256,11 +9416,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/projection/contracts/service.json",
           "digest": "3f14fc3c68604024b2ba0ce03b0b22c1dd7e92882e393d63a0b927cb2bb8dda3"
         }
       ],
-      "record_digest": "9a3475b28075fa60873a77c9f988a3cb0dcb878e9028ee13ed52f12826284afc"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "7594d3332c1462e049f5e464f8256fac1a84ec4ee76d941f16522d5061c2ef6c"
     },
     {
       "operation_id": "projection.search-sparse",
@@ -8356,6 +9529,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -8372,11 +9549,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/projection/contracts/service.json",
           "digest": "3f14fc3c68604024b2ba0ce03b0b22c1dd7e92882e393d63a0b927cb2bb8dda3"
         }
       ],
-      "record_digest": "6515605d7869fd100288bfd090fb2680465da27dab348008a63fad7184966a6c"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "9d5aee5b127f221ae46e5fb544efb76ca3e4b2bab38558f88652d47bee0d3a59"
     },
     {
       "operation_id": "projection.search-text",
@@ -8472,6 +9662,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -8488,11 +9682,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/projection/contracts/service.json",
           "digest": "3f14fc3c68604024b2ba0ce03b0b22c1dd7e92882e393d63a0b927cb2bb8dda3"
         }
       ],
-      "record_digest": "f172222189e4138af006ad7fc6a072629f48f2a3d29005a061d957d308c96c27"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "7a20f0660138d536443db5644179d9c7e0ed7c737d6b0ffa7c90da73ada78ed4"
     },
     {
       "operation_id": "projection.traverse-graph",
@@ -8589,6 +9796,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -8605,11 +9816,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/projection/contracts/service.json",
           "digest": "3f14fc3c68604024b2ba0ce03b0b22c1dd7e92882e393d63a0b927cb2bb8dda3"
         }
       ],
-      "record_digest": "0d361f193bb03c23409748fbb893c665a93cddb085966ecae29def5a352e35ef"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "4a6b6545d827cfdf751332e6d92b687c1c7721ea4d23e6a1175f88336b03a22e"
     },
     {
       "operation_id": "proofing.add-annotation",
@@ -8708,6 +9932,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -8724,11 +9952,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/proofing/contracts/service.json",
           "digest": "f4e4e082557a8bd3196f09046e7113048fed0dc49b0f0eb3ad6bc6c55aad1e22"
         }
       ],
-      "record_digest": "43531630ec818157fe67018ca70279659a6c3cbe3757b713694508ea41db74c9"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "a458512cf215681a572bbe3a541c7061c9f3b60ef1d7e76be0f02bdc3d9c6ec7"
     },
     {
       "operation_id": "proofing.assign-reviewer",
@@ -8826,6 +10067,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -8842,11 +10087,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/proofing/contracts/service.json",
           "digest": "f4e4e082557a8bd3196f09046e7113048fed0dc49b0f0eb3ad6bc6c55aad1e22"
         }
       ],
-      "record_digest": "38e4aa8d7e2b9142ac27cca3d3b71586f773bc8796197addf898f78d7dd12bfe"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "d1a45f364b156c26ba9ed73d048ef38ef367d70688998d48a91e9230516ac346"
     },
     {
       "operation_id": "proofing.close-session",
@@ -8942,6 +10200,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -8958,11 +10220,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/proofing/contracts/service.json",
           "digest": "f4e4e082557a8bd3196f09046e7113048fed0dc49b0f0eb3ad6bc6c55aad1e22"
         }
       ],
-      "record_digest": "870bb905b4f8827da7212c9ec68c6b4d6f98eba9cecb0e499f6718d76b396ded"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "dc3e547704c814f3c27303f36079b9342cd9580d8def14e6d2821b427e0723fc"
     },
     {
       "operation_id": "proofing.open-session",
@@ -9058,6 +10333,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -9074,11 +10353,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/proofing/contracts/service.json",
           "digest": "f4e4e082557a8bd3196f09046e7113048fed0dc49b0f0eb3ad6bc6c55aad1e22"
         }
       ],
-      "record_digest": "9ab77c23c3966541d662e797a0e0a60b3641717bfa1e3696ae709b415d304725"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "cec5ebd56e23623c60aca715191089d7e24da9b128effe625f58f5a5a4faadfa"
     },
     {
       "operation_id": "proofing.propose-decision",
@@ -9176,6 +10468,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -9192,11 +10488,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/proofing/contracts/service.json",
           "digest": "f4e4e082557a8bd3196f09046e7113048fed0dc49b0f0eb3ad6bc6c55aad1e22"
         }
       ],
-      "record_digest": "fd5ee46a2b3f3370509a868997029a398c72e86f7dbe4e90f195f672b25f8382"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "0c1eaf99564d68abb6d0c5d9ab60a36b9edd724508e3a216298a90c64cdb92b9"
     },
     {
       "operation_id": "proofing.ratify-decision",
@@ -9293,6 +10602,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -9309,11 +10622,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/proofing/contracts/service.json",
           "digest": "f4e4e082557a8bd3196f09046e7113048fed0dc49b0f0eb3ad6bc6c55aad1e22"
         }
       ],
-      "record_digest": "df1314bb3a643bf60516a51645c302e028e28ab45f9ecbeac0e87ace3d135ebe"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "08ed79888bd40d2a077468e6f6ab911e55ca4cd93b22c20bdd47ef177c3cfb58"
     },
     {
       "operation_id": "proofing.read-annotations",
@@ -9408,6 +10734,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -9424,11 +10754,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/proofing/contracts/service.json",
           "digest": "f4e4e082557a8bd3196f09046e7113048fed0dc49b0f0eb3ad6bc6c55aad1e22"
         }
       ],
-      "record_digest": "34a8b805b0a875cb47206dc9a767f3d8c6ca6157ea8ff79526fc09c15e5013c3"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "48ea95730561fa28f6693e3ae31337e29d8d7079a072b9d25a822c8bbb4fead8"
     },
     {
       "operation_id": "proofing.read-decision",
@@ -9523,6 +10866,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -9539,11 +10886,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/proofing/contracts/service.json",
           "digest": "f4e4e082557a8bd3196f09046e7113048fed0dc49b0f0eb3ad6bc6c55aad1e22"
         }
       ],
-      "record_digest": "ec080db314677f7d8bdafcd20ff776fea4bb765744668e45cc1c9c74866a8b1b"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "4d651f6af733e7c2f94e9a145bf77a74c1265d299490f5f9ce56ff420e65c7cc"
     },
     {
       "operation_id": "proofing.read-session",
@@ -9638,6 +10998,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -9654,11 +11018,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/proofing/contracts/service.json",
           "digest": "f4e4e082557a8bd3196f09046e7113048fed0dc49b0f0eb3ad6bc6c55aad1e22"
         }
       ],
-      "record_digest": "81017caf2f6eb710340bf272b3d831ddccdd4c0561d0ca67b6a8319cb1401d91"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "4bd2c6ae7dfb7759857d29e4412077b356a7ca52bfe9adc3fea2f2199a45c6af"
     },
     {
       "operation_id": "proofing.request-comparison",
@@ -9756,6 +11133,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -9772,11 +11153,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/proofing/contracts/service.json",
           "digest": "f4e4e082557a8bd3196f09046e7113048fed0dc49b0f0eb3ad6bc6c55aad1e22"
         }
       ],
-      "record_digest": "fdb6d53a50c0516f51d651e05fcecba92a5c7492a73e4c45edd8e4888ea9b72f"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "5416fbd071f17f93b2b8a10f9740a41435e6c5995f04fd6c0a58d5f24e125355"
     },
     {
       "operation_id": "proofing.request-revision",
@@ -9873,6 +11267,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/observation.schema.json",
           "digest": "a08931e3e03e143f359ccfbc60823d078155815fc955adeeec040e191843d988"
         },
@@ -9889,11 +11287,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/proofing/contracts/service.json",
           "digest": "f4e4e082557a8bd3196f09046e7113048fed0dc49b0f0eb3ad6bc6c55aad1e22"
         }
       ],
-      "record_digest": "2aaa9f051827ac7ebf44a54d5b880d6245de3c5d20aa9713ab01b8e7f3506c8e"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "29943536e9af40fcde023225e7c739b3559a267c78dab400ce35ed2ef6a4d292"
     },
     {
       "operation_id": "record.append-entry",
@@ -9990,6 +11401,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/operation-plan.schema.json",
           "digest": "f5448eb6dd28a2aafa84b1b1bee7394b3348e897aec3920319dbed962b9320d9"
         },
@@ -9998,11 +11413,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/record/contracts/service.json",
           "digest": "0376f91719461a9d1f2c43dd5d625602a011b01c655a4e650628e9f9e7ede998"
         }
       ],
-      "record_digest": "85bcbaaec9b31168ce1106323659d2d6479f2ad00c3e2ad078b371735d2093f2"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
+        "explanation": "Policy is active, but this composition has no exact service-owned route."
+      },
+      "record_digest": "7c7f0dd111a5cfb4e8fab98cdcef41673e2ee8e517326dc7bcf766e643de9c61"
     },
     {
       "operation_id": "record.append-receipt",
@@ -10097,6 +11525,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/operation-plan.schema.json",
           "digest": "f5448eb6dd28a2aafa84b1b1bee7394b3348e897aec3920319dbed962b9320d9"
         },
@@ -10105,11 +11537,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/record/contracts/service.json",
           "digest": "0376f91719461a9d1f2c43dd5d625602a011b01c655a4e650628e9f9e7ede998"
         }
       ],
-      "record_digest": "a5a03d2fad2a0f3eab1079ad442055de13fdf7fd61526dc86bae8dbcc45eafb0"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
+        "explanation": "Policy is active, but this composition has no exact service-owned route."
+      },
+      "record_digest": "1b2e2c4b13611486db3459a4bbc04de8427987818e85fcef199943a9a8e6f15a"
     },
     {
       "operation_id": "record.counter-entry",
@@ -10205,6 +11650,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/operation-plan.schema.json",
           "digest": "f5448eb6dd28a2aafa84b1b1bee7394b3348e897aec3920319dbed962b9320d9"
         },
@@ -10213,11 +11662,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/record/contracts/service.json",
           "digest": "0376f91719461a9d1f2c43dd5d625602a011b01c655a4e650628e9f9e7ede998"
         }
       ],
-      "record_digest": "5bc86ae6b1941ffba3a76254fe7575d758cd36d0785f134d1a1c200b2a4cb7b4"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
+        "explanation": "Policy is active, but this composition has no exact service-owned route."
+      },
+      "record_digest": "9f2b0dfa989a592def817a15946c26932bae516e167bcd9e8e922c189228f721"
     },
     {
       "operation_id": "record.drop-projections",
@@ -10310,6 +11772,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/operation-plan.schema.json",
           "digest": "f5448eb6dd28a2aafa84b1b1bee7394b3348e897aec3920319dbed962b9320d9"
         },
@@ -10318,11 +11784,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/record/contracts/service.json",
           "digest": "0376f91719461a9d1f2c43dd5d625602a011b01c655a4e650628e9f9e7ede998"
         }
       ],
-      "record_digest": "8d3a8f2083b23c9ae79d4ea99f923a4118d7f15286ec22df5765fdc032349161"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
+        "explanation": "Policy is active, but this composition has no exact service-owned route."
+      },
+      "record_digest": "4fafb18e90a2af59c7988dd21dff85ac757c546b7ebedd8f4b3ec9ab707618a2"
     },
     {
       "operation_id": "record.read-entry",
@@ -10415,6 +11894,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/operation-plan.schema.json",
           "digest": "f5448eb6dd28a2aafa84b1b1bee7394b3348e897aec3920319dbed962b9320d9"
         },
@@ -10423,11 +11906,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/record/contracts/service.json",
           "digest": "0376f91719461a9d1f2c43dd5d625602a011b01c655a4e650628e9f9e7ede998"
         }
       ],
-      "record_digest": "07a6217ccdbb3ccf2121a5d3f68e7928641b225d873063d993aa7ad69d749618"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
+        "explanation": "Policy is active, but this composition has no exact service-owned route."
+      },
+      "record_digest": "25a0dbaeced5c81394b1859ec988853f5b84bdda3032b20c9347740ff3bf0a8a"
     },
     {
       "operation_id": "record.read-projection",
@@ -10520,6 +12016,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/operation-plan.schema.json",
           "digest": "f5448eb6dd28a2aafa84b1b1bee7394b3348e897aec3920319dbed962b9320d9"
         },
@@ -10528,11 +12028,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/record/contracts/service.json",
           "digest": "0376f91719461a9d1f2c43dd5d625602a011b01c655a4e650628e9f9e7ede998"
         }
       ],
-      "record_digest": "211cdb10da21f12046663f80aff4f1dd1a39ce204aefc159ef7cbc8a257fe758"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
+        "explanation": "Policy is active, but this composition has no exact service-owned route."
+      },
+      "record_digest": "5015e30cbec15a7c3be5f576e7577b3fdc408f354399ebd974f50c45d5a579b9"
     },
     {
       "operation_id": "record.rebuild-projections",
@@ -10626,6 +12139,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/operation-plan.schema.json",
           "digest": "f5448eb6dd28a2aafa84b1b1bee7394b3348e897aec3920319dbed962b9320d9"
         },
@@ -10634,11 +12151,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/record/contracts/service.json",
           "digest": "0376f91719461a9d1f2c43dd5d625602a011b01c655a4e650628e9f9e7ede998"
         }
       ],
-      "record_digest": "68971ff6208681e7d4e6d1ba700e3dd2ce019772ebc03cb03aaac73d70f878f4"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
+        "explanation": "Policy is active, but this composition has no exact service-owned route."
+      },
+      "record_digest": "5fd04d7c28a9283ba5dfb961d3e12220833817250ca83b89bb9061f056699ad3"
     },
     {
       "operation_id": "record.reconstruct-journal",
@@ -10732,6 +12262,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/operation-plan.schema.json",
           "digest": "f5448eb6dd28a2aafa84b1b1bee7394b3348e897aec3920319dbed962b9320d9"
         },
@@ -10740,11 +12274,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/record/contracts/service.json",
           "digest": "0376f91719461a9d1f2c43dd5d625602a011b01c655a4e650628e9f9e7ede998"
         }
       ],
-      "record_digest": "a26e74b0e624be1958070831d2d741ab2580935761d09e689412a67626415890"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
+        "explanation": "Policy is active, but this composition has no exact service-owned route."
+      },
+      "record_digest": "5ad46092c3b3032fa3e00f8262407e35fa74c884bfbd6835ee532f293cecbf9e"
     },
     {
       "operation_id": "registry.declare-owner",
@@ -10844,6 +12391,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/operation-plan.schema.json",
           "digest": "f5448eb6dd28a2aafa84b1b1bee7394b3348e897aec3920319dbed962b9320d9"
         },
@@ -10852,11 +12403,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/registry/contracts/service.json",
           "digest": "9c6fafd93db96f62074aa8d7efc146253a06f6128492af3f74c22db805c49b01"
         }
       ],
-      "record_digest": "fd3894cd256ae898019507ff8c47d92e883c1c50479d74aeba39cc15a0178bf4"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "4f7408b415cd5bd719d129efdceff6384130146e06fa1085d7a58ea1eb2bb6ba"
     },
     {
       "operation_id": "registry.read-entry",
@@ -10950,6 +12514,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/operation-plan.schema.json",
           "digest": "f5448eb6dd28a2aafa84b1b1bee7394b3348e897aec3920319dbed962b9320d9"
         },
@@ -10958,11 +12526,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/registry/contracts/service.json",
           "digest": "9c6fafd93db96f62074aa8d7efc146253a06f6128492af3f74c22db805c49b01"
         }
       ],
-      "record_digest": "d9257f75a8a53262d04d796f05c7b05d21aa6c12d688b0cef22199de3b5ec93c"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "cafe7f6b3c326bf1e89ecf57f6ea3d197c5b8e1a073cfde216bf7a8c3f3bc5a9"
     },
     {
       "operation_id": "registry.read-index",
@@ -11056,6 +12637,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/operation-plan.schema.json",
           "digest": "f5448eb6dd28a2aafa84b1b1bee7394b3348e897aec3920319dbed962b9320d9"
         },
@@ -11064,11 +12649,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/registry/contracts/service.json",
           "digest": "9c6fafd93db96f62074aa8d7efc146253a06f6128492af3f74c22db805c49b01"
         }
       ],
-      "record_digest": "e79a3063fce4501fa2c1f75cc292d7425bc6031c365ea5c18b43cfb39f9b79d6"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "88247f98904f4b4934641ed2f5e487bf911c90d3d6f679b21149bc6ab3171ffa"
     },
     {
       "operation_id": "registry.read-owner",
@@ -11162,6 +12760,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/operation-plan.schema.json",
           "digest": "f5448eb6dd28a2aafa84b1b1bee7394b3348e897aec3920319dbed962b9320d9"
         },
@@ -11170,11 +12772,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/registry/contracts/service.json",
           "digest": "9c6fafd93db96f62074aa8d7efc146253a06f6128492af3f74c22db805c49b01"
         }
       ],
-      "record_digest": "afd3ab959d32cd0186b49891ed8d91cd54fed479f9bdeb39cfbb9c0bfed3b802"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "38bfae538644898b5aa8125670fca7a9e7957cf83786269c94f3df06b27adf2a"
     },
     {
       "operation_id": "registry.read-receipt",
@@ -11268,6 +12883,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/operation-plan.schema.json",
           "digest": "f5448eb6dd28a2aafa84b1b1bee7394b3348e897aec3920319dbed962b9320d9"
         },
@@ -11276,11 +12895,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/registry/contracts/service.json",
           "digest": "9c6fafd93db96f62074aa8d7efc146253a06f6128492af3f74c22db805c49b01"
         }
       ],
-      "record_digest": "0c05d7469ab1e649a834391936c6ba2b8b1744a227c833a1c8557962121bb0a1"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "28aaa5e4f4d8976e17490ce0b069bc3840d5761f2fba45a38154de4cbbc01548"
     },
     {
       "operation_id": "registry.rebuild-index",
@@ -11376,6 +13008,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/operation-plan.schema.json",
           "digest": "f5448eb6dd28a2aafa84b1b1bee7394b3348e897aec3920319dbed962b9320d9"
         },
@@ -11384,11 +13020,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/registry/contracts/service.json",
           "digest": "9c6fafd93db96f62074aa8d7efc146253a06f6128492af3f74c22db805c49b01"
         }
       ],
-      "record_digest": "52670ee3a6010662ebc42f6da905e9f2f20d2fb6b5e451a0332a2dbf2a591c2f"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "7c53525a9264b9a20eeffda6042b4b58acf90c649bcf21176d7c30899f4d321e"
     },
     {
       "operation_id": "registry.register-entry",
@@ -11488,6 +13137,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/operation-plan.schema.json",
           "digest": "f5448eb6dd28a2aafa84b1b1bee7394b3348e897aec3920319dbed962b9320d9"
         },
@@ -11496,11 +13149,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/registry/contracts/service.json",
           "digest": "9c6fafd93db96f62074aa8d7efc146253a06f6128492af3f74c22db805c49b01"
         }
       ],
-      "record_digest": "b135c743d5a20c9ce66f6a52b74a1a4faa14943e979cd272c46048b34ad72e0b"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "ba323c95399651bbfe31bc22a177a815781b4c092538a7b1de5855a1daf4e710"
     },
     {
       "operation_id": "registry.relate-entries",
@@ -11598,6 +13264,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/operation-plan.schema.json",
           "digest": "f5448eb6dd28a2aafa84b1b1bee7394b3348e897aec3920319dbed962b9320d9"
         },
@@ -11606,11 +13276,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/registry/contracts/service.json",
           "digest": "9c6fafd93db96f62074aa8d7efc146253a06f6128492af3f74c22db805c49b01"
         }
       ],
-      "record_digest": "9f585b34f61dcd0dcc846386d0e9e0298ffcb7256dbf3d4e44a791d709f20581"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "88e775cbc831f61f1f6e6d061b7b162155c03dcd3e1236daf0c29752e5da46ed"
     },
     {
       "operation_id": "registry.report-drift",
@@ -11706,6 +13389,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/operation-plan.schema.json",
           "digest": "f5448eb6dd28a2aafa84b1b1bee7394b3348e897aec3920319dbed962b9320d9"
         },
@@ -11714,11 +13401,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/registry/contracts/service.json",
           "digest": "9c6fafd93db96f62074aa8d7efc146253a06f6128492af3f74c22db805c49b01"
         }
       ],
-      "record_digest": "0eacd580b4fa78b524b4d6bbc7b3c05d065f887229c0a46c7a167360b5cfa4f1"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "5a39dd2753c41d271ffa881709ea3cd6d33082f2ea9f58349ac9586fc7b54511"
     },
     {
       "operation_id": "registry.resolve",
@@ -11834,6 +13534,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/operation-plan.schema.json",
           "digest": "f5448eb6dd28a2aafa84b1b1bee7394b3348e897aec3920319dbed962b9320d9"
         },
@@ -11844,6 +13548,14 @@
         {
           "address": "scripts/sovkernel/closure_inputs.py",
           "digest": "2e94057ea3288ab3c24b4958d47a5f1721bfedef3320ed578cdb10148d5d7a82"
+        },
+        {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
         },
         {
           "address": "scripts/sovnode/composition.py",
@@ -11874,7 +13586,12 @@
           "digest": "150834886995a8e0c32334beb5ef53dbc69cbb244172b510a06b056e608bf4b0"
         }
       ],
-      "record_digest": "52f34870a364157cbdfcb54c60055dc0fd6ff6e801d3d9ab2d254ec3d74e151b"
+      "affordance": {
+        "kind": "READ",
+        "reason_code": "EXACT_READ_ROUTE_ACTIVE",
+        "explanation": "An exact policy-active service route exposes this read."
+      },
+      "record_digest": "168aa4eddbe65a01a5c29af86559cb54ab8995760bcf9aac4a1d15ed3395093f"
     },
     {
       "operation_id": "registry.retire-owner",
@@ -11970,6 +13687,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/operation-plan.schema.json",
           "digest": "f5448eb6dd28a2aafa84b1b1bee7394b3348e897aec3920319dbed962b9320d9"
         },
@@ -11978,11 +13699,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/registry/contracts/service.json",
           "digest": "9c6fafd93db96f62074aa8d7efc146253a06f6128492af3f74c22db805c49b01"
         }
       ],
-      "record_digest": "1f4fcf368163dfca2ad1ac374a4d6babf3c83cbc7ce82d6048b0cd666da6d6d3"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "0016b8f629b8815fcedbaf200d91563278822d55ae8a3ff9abba3e7eba911d9e"
     },
     {
       "operation_id": "registry.supersede-entry",
@@ -12080,6 +13814,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/operation-plan.schema.json",
           "digest": "f5448eb6dd28a2aafa84b1b1bee7394b3348e897aec3920319dbed962b9320d9"
         },
@@ -12088,11 +13826,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/registry/contracts/service.json",
           "digest": "9c6fafd93db96f62074aa8d7efc146253a06f6128492af3f74c22db805c49b01"
         }
       ],
-      "record_digest": "0518d91274008c458c3951b575c7b8202122f4078c074c50e1587f47baa3fc29"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "07dcc6d4cca79b842efc51d7163aca0f8c66b9c9b557d39ce48f3cc8e41d1dba"
     },
     {
       "operation_id": "registry.supersede-owner",
@@ -12190,6 +13941,10 @@
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
         },
         {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "9a32b5c3776faeda9c023d1936fa6528059f5f9258dc4e650e6294f8aa645d0f"
+        },
+        {
           "address": "contracts/operation-plan.schema.json",
           "digest": "f5448eb6dd28a2aafa84b1b1bee7394b3348e897aec3920319dbed962b9320d9"
         },
@@ -12198,11 +13953,24 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "dbb21574ba09ca736ea89c9c612ce805b5a5ef5ef6fb4cc0419f2113c80e55d1"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "31b0eaf2a767622acf977af0ec95bf849ef832a2ed423eb66f7b223a20b1cc75"
+        },
+        {
           "address": "services/registry/contracts/service.json",
           "digest": "9c6fafd93db96f62074aa8d7efc146253a06f6128492af3f74c22db805c49b01"
         }
       ],
-      "record_digest": "dca0e2f13a28136214624e9b6f825e7c0dccb4b2172d6c01c0f04b7065ca44ff"
+      "affordance": {
+        "kind": "INSPECT",
+        "reason_code": "NO_EXACT_ROUTE",
+        "explanation": "The operation is declared topology only; no exact route is bound."
+      },
+      "record_digest": "e47269bfa35a447dffe386158f787ac6090360c17c24d4d246983c3783b1ce50"
     }
   ]
 }

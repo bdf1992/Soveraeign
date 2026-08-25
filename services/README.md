@@ -12,7 +12,7 @@ and retraction semantics; no service creates a private authority system.
 | `record/` | experimental reference participant | the append-preserving journal, terminal receipts, counter-records, the digest chain, and subject projections |
 | `console/` | built in part, remainder chartered | operator sessions, channels, threads, posts, notifications, judgement requests, authority grants, operator settings, and dashboard and activity projections |
 | `gateway/` | proposed boundary; first IN_PROCESS route pattern built and self-tested | the node's door: requests admitted, capabilities resolved, authority checked, routes recorded, receipts returned, transports bound |
-| `registry/` | chartered and contracted; implementation not yet present | versioned name resolution, source-owned registry entries and relations, owner records, rebuildable indexes, and drift findings |
+| `registry/` | chartered and contracted; implementation not yet present | the node's lookup: what a name is, which document owns it, what standing it holds, and what it relates to - for participants, operations, vocabulary, documents, external systems, and accountable owners |
 | `observation/` | chartered, not implemented | independent observation: observer registrations, declared predicates, observation requests, independence checks, observations, and attestations. Not the log - the journal is the Record Service's |
 | `proofing/` | chartered, not implemented | version-pinned review sessions, annotations, rounds, and decision history |
 | `projection/` | chartered, not implemented | projection collections, text, graph, and vector configurations, builds, retrieval receipts, context packages, and fidelity observations over asset records; parity target in `PARITY.md` |

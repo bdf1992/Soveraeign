@@ -30,6 +30,17 @@ class ModelClaimWithoutProposal(ConsoleRefusal):
     reason_code = "CLAIM_WITHOUT_PROPOSAL"
 
 
+class StaleCapabilityMap(ConsoleRefusal):
+    """The capability projection discovery would answer from is behind its own sources.
+
+    `console.discover-operations` declares `capability_map_fresh` as a precondition.
+    Answering from a stale map would tell a participant it may do something the node no
+    longer declares, which is worse than refusing.
+    """
+
+    reason_code = "MISSING_PRECONDITION"
+
+
 class SessionClosed(ConsoleRefusal):
     """The operator session is CLOSED; a closed session is a read position, not a writer."""
 

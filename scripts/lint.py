@@ -5,6 +5,7 @@ from __future__ import annotations
 
 from pathlib import Path
 import ast
+import os
 import re
 import sys
 
@@ -25,19 +26,13 @@ PRODUCTION_ROOTS = ("scripts/", "adapters/", "bindings/", "workers/", "conforman
 # projections.py (rebuildable views). Re-entering a module here records debt; it
 # does not grandfather it.
 KNOWN_MODULE_DEBT: dict[str, str] = {
-    "scripts/verify.py": (
-        "the CHECKS table has grown to 24 entries and is now most of the file; the split is "
-        "the table into its own module, leaving the runner behind. Entered 2026-08-24 while "
-        "the landing branch was frozen, because refactoring the verification harness during "
-        "a landing freeze risks the gate every session depends on. Owed to the verification "
-        "domain, not paid"
-    ),
-    "conformance/run.py": (
-        "the oracle grew past the limit before the budget reached conformance/ at all, so "
-        "this is an overrun the gate had never seen rather than a new one. Observed in "
-        "reports/2026-08-23-stack-certification.md and entered 2026-08-24 when the budget "
-        "was widened to adapters/, bindings/, workers/, and conformance/. Owed to the "
-        "conformance domain, which holds the file, not paid"
+    "scripts/witness_infrastructure.py": (
+        "301 lines, one over. The overrun is main's host-portable custody lookup, which "
+        "replaced a direct os.geteuid() call that cannot run on Windows; the correct "
+        "behaviour costs one line. The split is the four _exercise_* stages into their own "
+        "module. Entered 2026-08-24 while reconciling main with the federation branch, where "
+        "splitting a witness harness would put the merge's own evidence in doubt. Owed to "
+        "the verification domain, not paid"
     ),
 }
 SECRET_PATTERNS = {
@@ -46,6 +41,7 @@ SECRET_PATTERNS = {
     "GitHub token": re.compile(r"\bgh[pousr]_[A-Za-z0-9]{20,}\b"),
     "AWS access key": re.compile(r"\bAKIA[0-9A-Z]{16}\b"),
 }
+FSTRING_PREFIX = re.compile(r"(?<![A-Za-z0-9_])[fF][rR]?[\"']|(?<![A-Za-z0-9_])[rR][fF][\"']")
 LOCAL_PATH_PATTERNS = (
     re.compile(r"(?:^|[\s'\"])/Users/[^/\s]+/"),
     re.compile(r"(?:^|[\s'\"])/home/[^/\s]+/"),
@@ -54,12 +50,19 @@ LOCAL_PATH_PATTERNS = (
 
 
 def repository_text_files() -> list[Path]:
-    paths = []
-    for path in ROOT.rglob("*"):
-        if not path.is_file() or any(part in SKIP_PARTS for part in path.parts):
-            continue
-        if path.suffix in TEXT_SUFFIXES or path.name in TEXT_NAMES:
-            paths.append(path)
+    """Return lintable repository text without descending into excluded trees."""
+    paths: list[Path] = []
+    for raw_root, dirs, files in os.walk(ROOT, topdown=True):
+        # Pruning here matters: filtering paths after Path.rglob() still traverses
+        # .git object storage, virtualenvs and local runtime captures before throwing
+        # their entries away. The hygiene population is unchanged; the excluded trees
+        # simply never become I/O work.
+        dirs[:] = sorted(name for name in dirs if name not in SKIP_PARTS)
+        root = Path(raw_root)
+        for name in sorted(files):
+            path = root / name
+            if path.suffix in TEXT_SUFFIXES or path.name in TEXT_NAMES:
+                paths.append(path)
     return sorted(paths)
 
 
@@ -85,6 +88,32 @@ def check_text(path: Path, text: str) -> list[str]:
     return defects
 
 
+def backslash_in_fstring(text: str) -> list[int]:
+    """Line numbers where an f-string expression contains a backslash.
+
+    Python 3.12 accepts this and 3.11 refuses it, so a checker running on a newer
+    interpreter passes code the declared baseline cannot parse. The repository
+    targets 3.11 or newer, so the check is written against the older rule rather
+    than against whichever interpreter happens to run it.
+    """
+    found = []
+    for number, line in enumerate(text.splitlines(), 1):
+        for match in FSTRING_PREFIX.finditer(line):
+            rest, depth = line[match.end():], 0
+            for char in rest:
+                if char == "{":
+                    depth += 1
+                elif char == "}":
+                    depth = max(0, depth - 1)
+                elif char == "\\" and depth:
+                    found.append(number)
+                    break
+            if number in found:
+                break
+    return found
+
+
+
 def check_python(path: Path, text: str) -> tuple[list[str], list[str]]:
     relative = path.relative_to(ROOT).as_posix()
     defects = []
@@ -93,6 +122,10 @@ def check_python(path: Path, text: str) -> tuple[list[str], list[str]]:
         tree = ast.parse(text, filename=relative)
     except SyntaxError as error:
         return [f"{relative}:{error.lineno}: syntax error: {error.msg}"], warnings
+    for number in backslash_in_fstring(text):
+        defects.append(
+            f"{relative}:{number}: backslash inside an f-string expression; "
+            "Python 3.11 refuses it and the baseline is 3.11 or newer")
     if path.name != "__init__.py":
         has_future = any(
             isinstance(node, ast.ImportFrom)
@@ -119,9 +152,26 @@ def check_python(path: Path, text: str) -> tuple[list[str], list[str]]:
     return defects, warnings
 
 
+def check_decision_numbers(directory: Path) -> list[str]:
+    """Report every decision number carried by more than one record.
+
+    Two branches that each mint the next free number produce two records with one
+    identifier, and every citation of that number becomes ambiguous. Four such pairs
+    reached the tree before this check existed. It reads filenames rather than any
+    index, so a record cannot be counted by the thing that lists it.
+    """
+    by_number: dict[str, list[str]] = {}
+    for path in sorted(directory.glob("[0-9][0-9][0-9][0-9]-*.md")):
+        by_number.setdefault(path.name[:4], []).append(path.name)
+    return [f"decisions/: number {number} is carried by {len(names)} records: "
+            + ", ".join(names)
+            for number, names in sorted(by_number.items()) if len(names) > 1]
+
+
 def main() -> int:
     defects = []
     warnings = []
+    defects.extend(check_decision_numbers(ROOT / "decisions"))
     paths = repository_text_files()
     if not paths:
         print("FAIL: repository text population is empty")

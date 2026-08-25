@@ -26,6 +26,11 @@ import time
 import uuid
 
 from soveraeign_console_service import append, authority, publication, reads
+from soveraeign_console_service.authority import (
+    ENFORCED_AUTHORITY,
+    POST_CAPABILITY,
+    PUBLISH_CAPABILITY,
+)
 from soveraeign_console_service.refusals import (
     ConsoleRefusal,
     ForeignNodeRecord,
@@ -40,8 +45,6 @@ from soveraeign_record_service import RecordService
 # and effectiveness are kernel transitions this service does not own.
 ENTRY_STANDING = "RECORDED"
 POST_OPERATION = "console.post"
-POST_CAPABILITY = "post"
-PUBLISH_CAPABILITY = "publish"
 # The node identifier shape `contracts/node-identity.schema.json` declares. Checked
 # here so a malformed node reaches the constructor rather than the journal.
 NODE_ID = re.compile(r"^node:[a-z0-9][a-z0-9-]*$")
@@ -99,9 +102,11 @@ class ConsoleService:
                        if operator_id is None or record["operator_id"] == operator_id),
                       key=lambda record: record["grant_id"])
 
-    def _grant_id(self, operator_id: str, capability: str, scope: str,
-                  entries: list[dict[str, Any]] | None = None) -> str:
-        return authority.check(self._entries(entries), operator_id, capability, scope)
+    def _grant_id(self, operator_id: str, capability: str, scope: str, event: str,
+                  subject: str, entries: list[dict[str, Any]] | None = None) -> str:
+        """The live grant admitting this operation, or a refusal written to the journal."""
+        return authority.require(self.record, self._entries(entries), operator_id,
+                                 capability, scope, event, subject)
 
     # ---- append path -------------------------------------------------------
 
@@ -118,7 +123,8 @@ class ConsoleService:
     def open_channel(self, operator_id: str, name: str, domain: str) -> dict[str, Any]:
         """Open a named domain container for threads."""
         channel_id = _identifier("channel")
-        grant = self._grant_id(operator_id, "open-channel", domain)
+        grant = self._grant_id(operator_id, ENFORCED_AUTHORITY["console.open-channel"],
+                               domain, "console.open-channel", channel_id)
         return self._emit("channel", channel_id, operator_id, {
             "node_id": self.node_id,
             "channel_id": channel_id, "name": name, "domain": domain,
@@ -135,7 +141,8 @@ class ConsoleService:
             raise self._refuse(
                 PinIncomplete("a pinned thread carries both an address and its digest"),
                 "console.open-thread", thread_id, operator_id)
-        grant = self._grant_id(operator_id, "open-thread", channel_id)
+        grant = self._grant_id(operator_id, ENFORCED_AUTHORITY["console.open-thread"],
+                               channel_id, "console.open-thread", thread_id)
         return self._emit("thread", thread_id, operator_id, {
             "node_id": self.node_id,
             "thread_id": thread_id, "channel_id": channel_id, "title": title,
@@ -154,7 +161,8 @@ class ConsoleService:
             raise self._refuse(
                 ForeignNodeRecord(f"thread {thread_id} {foreign}"),
                 "console.archive-thread", thread_id, operator_id)
-        grant = self._grant_id(operator_id, "open-thread", channel_id, entries)
+        grant = self._grant_id(operator_id, ENFORCED_AUTHORITY["console.archive-thread"],
+                               channel_id, "console.archive-thread", thread_id, entries)
         return self._emit("thread-lifecycle", thread_id, operator_id, {
             "node_id": self.node_id,
             "thread_id": thread_id, "channel_id": channel_id, "lifecycle": "ARCHIVED",
@@ -175,8 +183,9 @@ class ConsoleService:
                 ForeignNodeRecord(f"thread {thread_id} {foreign}; publishing it here would "
                                   "republish a peer's record under this node's name"),
                 "console.publish-thread", thread_id, operator_id)
-        grant = self._grant_id(operator_id, PUBLISH_CAPABILITY, thread_id, entries)
         publication_id = _identifier("publication")
+        grant = self._grant_id(operator_id, PUBLISH_CAPABILITY, thread_id,
+                               "console.publish-thread", publication_id, entries)
         return self._emit("publication", publication_id, operator_id,
                           publication.publication_payload(
                               self.node_id, publication_id, thread_id, operator_id,
@@ -191,7 +200,8 @@ class ConsoleService:
         """
         entries = self.record.reconstruct()
         mark = reads.publication(entries, publication_id)
-        grant = self._grant_id(operator_id, PUBLISH_CAPABILITY, mark["thread_id"], entries)
+        grant = self._grant_id(operator_id, PUBLISH_CAPABILITY, mark["thread_id"],
+                               "console.withdraw-publication", publication_id, entries)
         return self._emit("publication-lifecycle", publication_id, operator_id,
                           publication.withdrawal_payload(
                               self.node_id, publication_id, mark["thread_id"],
@@ -254,7 +264,8 @@ class ConsoleService:
                 ModelClaimWithoutProposal(
                     "a MODEL post that claims enters the kernel as a Proposal first"),
                 POST_OPERATION, post_id, operator_id)
-        grant = self._grant_id(operator_id, POST_CAPABILITY, thread_id, entries)
+        grant = self._grant_id(operator_id, POST_CAPABILITY, thread_id,
+                               POST_OPERATION, post_id, entries)
         digest = hashlib.sha256(body).hexdigest()
         (self.posts / digest).write_bytes(body)
         return self._emit("post", post_id, operator_id, {

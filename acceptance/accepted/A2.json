@@ -1,0 +1,61 @@
+{
+  "packet_schema": "soveraeign-acceptance-packet/v1",
+  "packet_id": "A2",
+  "claim": "SPEC.md is the Phase-I logical specification, and it has earned WITNESSED on a run independent of the code it describes.",
+  "subject": {
+    "artifact": "SPEC.md",
+    "from_standing": "WITNESSED",
+    "to_standing": "RATIFIED",
+    "supersedes_open_decision": "O10"
+  },
+  "presented_by_seat": "seat:session-control",
+  "accepted_by_seat": "seat:root",
+  "claim_type": "JUDGEMENT",
+  "built_by": {
+    "actor_id": "urn:soveraeign:actor:claude-interactive-session",
+    "actor_kind": "MODEL"
+  },
+  "witnessed_by": {
+    "actor_id": "urn:soveraeign:witness:WIT-007-2026-08-23-B",
+    "actor_kind": "MODEL"
+  },
+  "visible_result": {
+    "demo": ["python", "scripts/sov_spec.py", "trace"],
+    "shows": "each standing the specification has actually reached, and the exact evidence that earned it, read out of the record rather than asserted",
+    "expect": "WITNESSED reported as EARNED against WIT-007-2026-08-23-B with zero defects, and RATIFIED reported as NOT REACHABLE because it is this seat's call and not a machine's"
+  },
+  "evidence": [
+    {
+      "address": "SPEC.md",
+      "digest": "2ae6274ce8c18a5cd99441fa02bbaf87036a1b3f8e2365b96dd357b1fbc70a64",
+      "says": "the logical objects, transitions, predicates, and refusals the whole Phase-I stack is built against"
+    },
+    {
+      "address": "conformance/observations/FOUND-007-observation.json",
+      "digest": null,
+      "says": "the first witness run, recorded as an observation rather than a paragraph"
+    },
+    {
+      "address": "conformance/observations/FOUND-007-rerun-observation.json",
+      "digest": null,
+      "says": "the rerun, so the witness result is reproducible rather than a single lucky pass"
+    },
+    {
+      "address": "contracts/kernel-transitions.json",
+      "digest": null,
+      "says": "the transition table compiled from SPEC.md bytes; scripts/sov_kernel.py parity fails if a participant drifts from it"
+    }
+  ],
+  "why_it_matters": "Every service contract, fixture, and refusal code in the repository claims to implement this document. Until it is accepted, each of them implements a proposal, and a disagreement between two services has no authority to settle it.",
+  "what_could_defeat_it": [
+    "A participant whose real transitions cannot be expressed in the declared table, which scripts/sov_kernel.py parity would surface as drift.",
+    "A refusal the specification requires that no defeating fixture actually proves, meaning the witness graded coverage it did not have.",
+    "A term used in SPEC.md with a meaning CLASSIFICATION.md does not carry, which would put the two governing documents in conflict."
+  ],
+  "residuals": [
+    "The witness is a model run, not a second human. It is independent of the builder, which is what WITNESSED requires, but it is not adversarial.",
+    "Four of six diagrams under diagrams/ are stale against their recorded source digests, so the drawn views of this specification lag the text."
+  ],
+  "on_accept": "STATUS.yaml specification_status becomes RATIFIED, roadmap.close_f1 becomes reachable, and the O10 entry is deleted from the acceptance queue.",
+  "on_reject": "SPEC.md stays WITNESSED, F1 stays open, and the rejection reason names which clause is wrong so the repair is a bounded edit rather than a rewrite."
+}

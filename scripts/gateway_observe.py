@@ -149,7 +149,10 @@ def crossing_defects(repository: Path, state: Path, caller_output: dict[str, Any
         if not isinstance(terminal, dict) or terminal not in receipts or len(receipts) != 1:
             defects.append("TERMINAL_RECEIPT_MISMATCH")
             terminal = terminal if isinstance(terminal, dict) else {}
-        if (terminal.get("actor") != actor or terminal.get("event") != "asset.ingest"
+        # The declared receipt-event vocabulary names this `<service>.<operation>`;
+        # `asset.ingest` was the spelling before that vocabulary landed. The
+        # capability_id checked above already uses the current form.
+        if (terminal.get("actor") != actor or terminal.get("event") != "asset.ingest-asset"
                 or terminal.get("outcome") != "COMMITTED"):
             defects.append("TERMINAL_ATTRIBUTION_INVALID")
         if (returned["payload"].get("routing_entry_id") != routing["entry_id"]

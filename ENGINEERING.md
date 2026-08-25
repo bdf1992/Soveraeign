@@ -38,7 +38,7 @@ loss of optional providers, and can be replaced behind an existing contract.
 | Machine contracts | JSON Schema Draft 2020-12 | Schema validity is not semantic fitness |
 | Human control files | Markdown and small YAML fixtures | YAML is not a parallel runtime contract |
 | Local surface | Python API and CLI | Human and model bindings use the same kernel operations |
-| Tests and lint | `unittest` and dependency-free repository scripts | Local, deterministic, network-free; wall time graded PLATINUM/GOLD/SILVER at 3/6/15 s, failing past 15 |
+| Tests and lint | `unittest` and dependency-free repository scripts | Local, deterministic, network-free; wall time graded PLATINUM/GOLD/SILVER at 3/6/15 s, failing past 15 (`decisions/0050`) |
 | Search and graph | Rebuildable local projections | External systems integrate through adapters later |
 | Model execution | Declared Model Binding plus Model Adapter | BYOM; no provider-derived authority or silent fallback |
 

@@ -1,9 +1,11 @@
-# 0052 · Service manifests bind the Kernel
+# 0060 · Service manifests bind the Kernel
 
 Status: `PROPOSED · OWNER ACCEPTANCE OVER EVIDENCE`
 
 This decision follows `0051-root-kernel-and-node-surface.md` and the first Gateway
-Vertical in PR #87. It proposes the mechanism by which distributed services participate
+Vertical in PR #87. It was minted as 0052 on the Node Interface branch and renumbered
+to 0060 when that branch met main, where 0052 had already been taken by the owner
+ruling on the product ground. It proposes the mechanism by which distributed services participate
 in one Shared Kernel without turning the Kernel into a service, shared runtime object,
 or privileged network hop.
 

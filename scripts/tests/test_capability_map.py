@@ -145,5 +145,65 @@ class SemanticFixtures(unittest.TestCase):
                 self.assertEqual(validate(entry["record"], SCHEMA), [])
 
 
+class ModelTransportTest(unittest.TestCase):
+    """The office table and the MCP binding must name the same served capabilities.
+
+    The table is the map's only policy input, so the binding cannot be read directly
+    without giving the map a second source. Two places holding the same fact drift
+    unless something checks them, which is the shape `decisions/0037` settled for the
+    two ticket readers: make the agreement a check rather than a coincidence.
+    """
+
+    BINDING = json.loads((ROOT / "bindings" / "mcp" / "manifest.json").read_text("utf-8"))
+
+    def _served(self) -> dict[str, str]:
+        return {entry["realizes"]: entry["tool"]
+                for entry in self.BINDING["endpoints"] if entry.get("realizes")}
+
+    def test_the_table_names_exactly_what_the_binding_serves(self) -> None:
+        self.assertEqual(TABLE.get("mcp_tools", {}), self._served())
+
+    def test_every_served_capability_is_active_on_mcp_in_the_map(self) -> None:
+        served = self._served()
+        rows = {row["capability_id"]: row for row in REFERENCE["capabilities"]}
+        for capability_id, tool in served.items():
+            with self.subTest(capability=capability_id):
+                endpoint = next(e for e in rows[capability_id]["endpoints"]
+                                if e["transport"] == "MCP")
+                self.assertEqual(endpoint["activation"], "ACTIVE")
+                self.assertEqual(endpoint["address"], tool)
+
+    def test_a_capability_the_map_does_not_serve_reads_declared(self) -> None:
+        """A tool the binding withheld must not read as reachable."""
+        served = set(self._served())
+        for row in REFERENCE["capabilities"]:
+            if row["capability_id"] in served:
+                continue
+            endpoint = next(e for e in row["endpoints"] if e["transport"] == "MCP")
+            with self.subTest(capability=row["capability_id"]):
+                self.assertEqual(endpoint["activation"], "DECLARED_NOT_ACTIVATED")
+
+    def test_a_withheld_endpoint_states_why(self) -> None:
+        """Withholding without a reason is how a capability quietly disappears."""
+        for entry in self.BINDING.get("withheld_endpoints", []):
+            with self.subTest(tool=entry["tool"]):
+                self.assertGreaterEqual(len(entry.get("withheld_because", "")), 40)
+
+    def test_serving_a_back_office_capability_on_mcp_is_refused(self) -> None:
+        """MCP is operator-facing, so a BACK-office capability may not be served on it.
+
+        record.read-entry was the example until Bdo ruled it an operator act on
+        2026-08-24 (decisions/0052) and it moved to FRONT/operator-desk.
+        record.reconstruct-journal is still back-office - its subject is the digest
+        chain, which is journal machinery rather than authorized history reading.
+        """
+        manifests = _manifests()
+        table = json.loads(json.dumps(TABLE))
+        table["mcp_tools"] = {"record.reconstruct-journal": "record_reconstruct"}
+        document = build(manifests, table, phase="FOUNDING", derived_from=["x"])
+        codes = {defect.split(":")[0] for defect in map_defects(document, manifests, table)}
+        self.assertIn("BACK_OFFICE_EXPOSED", codes)
+
+
 if __name__ == "__main__":
     unittest.main()

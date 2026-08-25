@@ -19,6 +19,7 @@ import sys
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 
+from sovkernel import receipt_events  # noqa: E402
 from sovkernel.capability_map import build, is_stale, map_defects  # noqa: E402
 from sovkernel.jsonschema import validate  # noqa: E402
 
@@ -155,9 +156,49 @@ def command_offices(args: argparse.Namespace) -> int:
     return 0
 
 
+def command_events(args: argparse.Namespace) -> int:
+    """Judge the receipt event names each service emits against the map they must resolve to.
+
+    A receipt names the operation it is a receipt for. When that name is not the
+    operation's capability identifier, the receipt cannot be joined to the row saying
+    what the operation costs and where it is reachable, so the node records what
+    happened without recording what it was doing.
+    """
+    document = _load(MAP_PATH)
+    defects, harvested = receipt_events.run(ROOT, document, _manifests())
+    capability_ids = {row["capability_id"] for row in document["capabilities"]}
+    total = 0
+    for service_id, events in sorted(harvested.items()):
+        resolved = sorted(event for event in events if event in capability_ids)
+        excused = sorted(event for event in events if event not in capability_ids)
+        total += len(events)
+        print(f"{service_id:<10} {len(events):>3} emitted   "
+              f"{len(resolved):>3} resolve to a capability   "
+              f"{len(excused):>3} declared as no operation")
+        if args.verbose:
+            for event in resolved:
+                print(f"    {event:<32} {events[event][0]}")
+            for event in excused:
+                print(f"    {event:<32} {events[event][0]}   (undeclared_events)")
+    if defects:
+        print()
+        for defect in defects:
+            print(f"FAIL: {defect}")
+        return 1
+    print(f"\nPASS: {total} emitted receipt events across {len(harvested)} services; "
+          f"every one resolves to a declared capability or to a stated reason it does not")
+    print("Standing note: agreement between names. It witnesses no operation and grants "
+          "nothing.")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="sov_capability", description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
+
+    events = sub.add_parser("events", help="judge emitted receipt events against the map")
+    events.add_argument("--verbose", action="store_true", help="list every event and its site")
+    events.set_defaults(handler=command_events)
 
     builder = sub.add_parser("build", help="rebuild the map from the manifests and the table")
     builder.add_argument("--dry-run", action="store_true", help="print instead of writing")

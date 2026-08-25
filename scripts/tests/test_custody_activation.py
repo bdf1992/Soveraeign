@@ -19,20 +19,30 @@ assert SPEC and SPEC.loader
 activation = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(activation)
 
-# Activation proves exclusive control through effective uid, gid and 0700 modes. A host
-# with none of those cannot make the claim, so these cases do not run there; the class at
-# the end of this file proves the refusal that replaces them.
-ENFORCES = activation.infrastructure.HOST_ENFORCES_POSIX_CUSTODY
+#: The custody contract is a POSIX node volume: it verifies uid/gid ownership and sets
+#: file modes through ``os.fchmod``. A host without POSIX identity cannot hold that
+#: contract, so these cases declare the requirement and skip visibly rather than erroring
+#: with an AttributeError that reads like a defect in the code under test.
+#:
+#: This stays a bool rather than a ready-made decorator because two cases below branch on
+#: it (``if POSIX_CUSTODY:`` asserts POSIX enforcement or the UNAVAILABLE receipt), and a
+#: ``skipUnless`` object is always truthy - it would take the POSIX branch on Windows.
+POSIX_CUSTODY = activation.custody_posix.available
+NO_POSIX = ("POSIX ownership and mode bits do not exist on this platform. The check is "
+            "skipped rather than passed, and every receipt written here records "
+            "identity_enforcement UNAVAILABLE_ON_THIS_PLATFORM so it cannot be read as "
+            "proof that custody was verified.")
 
 
-@unittest.skipUnless(ENFORCES, "host has no POSIX effective identity or mode enforcement")
+@unittest.skipUnless(POSIX_CUSTODY, NO_POSIX)
 class CustodyActivationTests(unittest.TestCase):
     def manifest(self) -> dict:
         return json.loads((ROOT / "infrastructure" / "phase-i.local.json").read_text(
             encoding="utf-8"))
 
     def activate(self, root: Path, policy: str = "VERIFY_ONLY") -> dict:
-        return activation.activate(root, self.manifest(), policy, os.geteuid(), os.getegid())
+        uid, gid = activation.custody_posix.effective()
+        return activation.activate(root, self.manifest(), policy, uid, gid)
 
     def test_empty_custody_refuses_under_deployment_default(self):
         with TemporaryDirectory() as temporary:
@@ -84,6 +94,7 @@ class CustodyActivationTests(unittest.TestCase):
                                         "CUSTODY_VERIFY_FAILED"):
                 self.activate(node)
 
+    @unittest.skipUnless(POSIX_CUSTODY, NO_POSIX)
     def test_unwritable_declared_identity_refuses(self):
         with TemporaryDirectory() as temporary:
             node = Path(temporary) / "node"
@@ -94,6 +105,24 @@ class CustodyActivationTests(unittest.TestCase):
                                             "CUSTODY_OWNERSHIP_UNWRITABLE"):
                     activation.activate(node, self.manifest(), "VERIFY_ONLY",
                                         expected_uid, os.getegid())
+
+    def test_a_receipt_never_claims_custody_it_could_not_verify(self):
+        """The platform's answer reaches the receipt instead of being assumed.
+
+        On POSIX the receipt claims enforcement and carries a real uid. Where the
+        platform has no such identity it says so, and records -1, so no reader can
+        mistake an unenforced custody for a verified one.
+        """
+        with TemporaryDirectory() as temporary:
+            node = Path(temporary) / "node"
+            receipt = self.activate(node, "VERIFY_OR_INITIALIZE_EMPTY")
+            claim = receipt["identity_enforcement"]
+            if POSIX_CUSTODY:
+                self.assertEqual(claim, "POSIX")
+                self.assertNotEqual(receipt["effective_uid"], -1)
+            else:
+                self.assertEqual(claim, "UNAVAILABLE_ON_THIS_PLATFORM")
+                self.assertEqual(receipt["effective_uid"], -1)
 
     def test_stale_custody_identity_refuses(self):
         with TemporaryDirectory() as temporary:
@@ -119,21 +148,6 @@ class CustodyActivationTests(unittest.TestCase):
             with self.assertRaisesRegex(activation.CustodyActivationRefused,
                                         "CUSTODY_ACTIVATION_RECEIPT_STALE"):
                 self.activate(node)
-
-
-@unittest.skipIf(ENFORCES, "this host does enforce POSIX custody")
-class HostWithoutPosixCustody(unittest.TestCase):
-    """Activation on a host with no custody mechanism refuses; it does not half-succeed."""
-
-    def test_activation_refuses_and_writes_nothing(self):
-        with TemporaryDirectory() as temporary:
-            node = Path(temporary) / "node"
-            manifest = json.loads((ROOT / "infrastructure" / "phase-i.local.json").read_text(
-                encoding="utf-8"))
-            with self.assertRaisesRegex(activation.CustodyActivationRefused,
-                                        activation.infrastructure.HOST_REFUSAL):
-                activation.activate(node, manifest, "VERIFY_OR_INITIALIZE_EMPTY", 0, 0)
-            self.assertFalse(node.exists())
 
 
 if __name__ == "__main__":

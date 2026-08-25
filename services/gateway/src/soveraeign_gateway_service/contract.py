@@ -12,6 +12,7 @@ ServiceRoute = Callable[[str, dict[str, Any], str], dict[str, Any]]
 
 RECORD_LOCAL = "RECORD_LOCAL"
 IN_PROCESS = "IN_PROCESS"
+MCP = "MCP"
 ACTIVE = "ACTIVE"
 DECLARED = "DECLARED_NOT_ACTIVATED"
 REFUSED = "REFUSED_UNCONFIGURED"
@@ -50,6 +51,7 @@ def expected_endpoint(service_id: str, capability_id: str, standing: str,
     built = standing in BUILT_STANDINGS
     refused = set(table.get("external_transports_refused_in_phase", []))
     cli_command = (table.get("cli_commands") or {}).get(capability_id)
+    mcp_tool = (table.get("mcp_tools") or {}).get(capability_id)
     if transport in refused:
         endpoint["activation"] = REFUSED
         endpoint["refusal_code"] = "UNCONFIGURED"
@@ -59,6 +61,14 @@ def expected_endpoint(service_id: str, capability_id: str, standing: str,
     elif transport == "CLI" and built and cli_command:
         endpoint["activation"] = ACTIVE
         endpoint["address"] = cli_command
+    elif transport == MCP and built and mcp_tool:
+        # Same rule as CLI, for the model-facing transport. Without this branch the
+        # Gateway re-derives DECLARED_NOT_ACTIVATED for every MCP endpoint and calls
+        # the map's ACTIVE rows drift, faulting CAPABILITY_MAP_INVALID on a correct
+        # map. scripts/sovkernel/capability_map.py holds the same rule; the two
+        # derive the projection independently and must stay in step.
+        endpoint["activation"] = ACTIVE
+        endpoint["address"] = mcp_tool
     else:
         endpoint["activation"] = DECLARED
     return endpoint

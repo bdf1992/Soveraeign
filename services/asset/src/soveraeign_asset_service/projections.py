@@ -37,7 +37,7 @@ class Projections:
     def _ratify_receipt(self, proposal_id: str) -> str | None:
         """The newest ratification receipt for a proposal, which sources its projected row."""
         row = self.db.execute(
-            "SELECT id FROM receipts WHERE event='proposal.ratify' AND subject_id=? "
+            "SELECT id FROM receipts WHERE event='asset.ratify-proposal' AND subject_id=? "
             "ORDER BY created_at DESC LIMIT 1", (proposal_id,)).fetchone()
         return row["id"] if row else None
 
@@ -57,7 +57,7 @@ class Projections:
             "search": self.db.execute("SELECT COUNT(*) FROM search_projection").fetchone()[0],
             "edges": self.db.execute("SELECT COUNT(*) FROM graph_projection").fetchone()[0],
         }
-        self.store.receipt("COMMITTED", "projection.rebuild", "projection", "all", actor, counts)
+        self.store.receipt("COMMITTED", "asset.rebuild-projection", "projection", "all", actor, counts)
         self.db.commit()
         return counts
 

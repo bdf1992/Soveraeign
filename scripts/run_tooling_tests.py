@@ -20,8 +20,15 @@ ROOT = Path(__file__).resolve().parents[1]
 TEST_ROOT = ROOT / "scripts" / "tests"
 # The root verifier already runs every independent check concurrently. Four
 # tooling workers provide useful module-level concurrency without the hosted
-# runner contention observed when this nested pool was widened to eight.
+# runner contention observed when this nested pool was widened to five or eight.
 DEFAULT_WORKERS = 4
+# Most tooling modules exercise bounded fixtures. test_sov_docs deliberately renders
+# the complete published corpus several times and is an order-of-magnitude different
+# unit of work. Hosted observations showed that giving it ordinary module weight left
+# its shard on the critical path even after pre-descent pruning. Weight it as roughly
+# ten bounded modules so the existing four-worker pool nearly isolates that corpus
+# reader without adding a process or dropping evidence.
+MODULE_WEIGHTS = {"test_sov_docs.py": 10}
 
 
 def test_modules() -> tuple[Path, ...]:
@@ -29,14 +36,25 @@ def test_modules() -> tuple[Path, ...]:
     return tuple(sorted(TEST_ROOT.glob("test_*.py")))
 
 
+def module_weight(module: Path) -> int:
+    return MODULE_WEIGHTS.get(module.name, 1)
+
+
 def partition(modules: tuple[Path, ...], workers: int) -> tuple[tuple[Path, ...], ...]:
-    """Round-robin the stable module list so every module is run exactly once."""
+    """Assign every module once using stable longest-weight-first balancing."""
     if workers < 1:
         raise ValueError("workers must be positive")
-    buckets: list[list[Path]] = [[] for _ in range(workers)]
-    for index, module in enumerate(modules):
-        buckets[index % workers].append(module)
-    return tuple(tuple(bucket) for bucket in buckets if bucket)
+    count = min(workers, len(modules))
+    if not count:
+        return ()
+    buckets: list[list[Path]] = [[] for _ in range(count)]
+    loads = [0] * count
+    ordered = sorted(modules, key=lambda module: (-module_weight(module), module.as_posix()))
+    for module in ordered:
+        index = min(range(count), key=lambda item: (loads[item], item))
+        buckets[index].append(module)
+        loads[index] += module_weight(module)
+    return tuple(tuple(sorted(bucket)) for bucket in buckets)
 
 
 def _run(bucket: tuple[Path, ...]) -> tuple[int, str]:

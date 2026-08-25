@@ -1,0 +1,137 @@
+{
+  "observation": "JOURNEY-02 walked through the MCP binding by a fresh participant",
+  "walked_by": "gateway.call, bindings/mcp/gateway.py",
+  "participant": {
+    "actor": "sov",
+    "session": null,
+    "grants_held": 0
+  },
+  "tool_surface": [
+    "asset_ingest",
+    "asset_search",
+    "authority_grant",
+    "authority_open_session",
+    "console_operations",
+    "observe_verify",
+    "record_entries"
+  ],
+  "capability_revision": "fe51377a9ff84a7594c2f7201571a46dcaa37fd937fe29ce5eebecbd852a33bd",
+  "counts": {
+    "declared": 102,
+    "reachable": 35,
+    "authority": {
+      "NOT_ENFORCED": 9,
+      "NOT_HELD": 6,
+      "NOT_KNOWN_HERE": 87
+    }
+  },
+  "freshness": {
+    "verified": null,
+    "how": "python scripts/sov_capability.py check",
+    "note": "unverified means nobody checked, not that the map is current"
+  },
+  "omissions": [
+    "a row here says the node declares the operation, never that it works",
+    "reachability is what the projection recorded, not a call that succeeded",
+    "9 capability(s) are built, declare an authority and check none: console.close-session, console.discover-operations, console.grant, console.list-grants, console.list-publications, console.open-session, console.read-thread, console.revoke, console.session-context. Any caller is admitted to those regardless of what they hold",
+    "87 capability(s) are governed by an authority store this service does not read"
+  ],
+  "journal_entries_left_by_the_crossing": 2,
+  "journal": [
+    {
+      "seq": 1,
+      "kind": "EVENT",
+      "subject": "discover-operations",
+      "actor": "sov",
+      "entry_digest": "d3d7b9dece99b3a2d1ae141a2ffefbb3927ee42fe6411c55f8d605b4e7a54c42",
+      "payload": {
+        "arguments": {
+          "operator_id": "<str:3>"
+        },
+        "effect_class": "RECORD_LOCAL",
+        "session_id": null,
+        "tier": "observe",
+        "tool": "console_operations"
+      }
+    },
+    {
+      "seq": 2,
+      "kind": "RECEIPT",
+      "subject": "discover-operations",
+      "actor": "sov",
+      "entry_digest": "9d31a0f2680dc4eed4798696748c680452d84ad33f12589c14f800b16d4f07c0",
+      "payload": {
+        "detail": {
+          "entry_id": "entry_6224fbe6774442838bc1e81465bc8cd5",
+          "result": {
+            "authoritative": false,
+            "capability_revision": "fe51377a9ff84a7594c2f7201571a46dcaa37fd937fe29ce5eebecbd852a33bd",
+            "map_status": "PROPOSED",
+            "operator_id": "sov"
+          }
+        },
+        "event": "discover-operations",
+        "outcome": "COMMITTED"
+      }
+    }
+  ],
+  "one_row": {
+    "capability_id": "console.discover-operations",
+    "service_id": "console",
+    "operation": "discover-operations",
+    "logical_endpoint": "sov://console/discover-operations",
+    "standing": "BUILT",
+    "office": "FRONT/operator-desk",
+    "actor_kinds": [
+      "HUMAN",
+      "MODEL"
+    ],
+    "effect_class": "RECORD_LOCAL",
+    "reachable": true,
+    "endpoints": [
+      {
+        "transport": "IN_PROCESS",
+        "activation": "ACTIVE",
+        "address": "console:in-process"
+      },
+      {
+        "transport": "CLI",
+        "activation": "ACTIVE",
+        "address": "python -m soveraeign_console_service.cli operations"
+      },
+      {
+        "transport": "MCP",
+        "activation": "ACTIVE",
+        "address": "console_operations"
+      },
+      {
+        "transport": "HTTP",
+        "activation": "REFUSED_UNCONFIGURED",
+        "refusal_code": "UNCONFIGURED"
+      }
+    ],
+    "authority": {
+      "required": "read:session",
+      "reading": "NOT_ENFORCED",
+      "because": "this operation is built and callable, declares 'read:session' and checks nothing; any caller is admitted, so holding a grant makes no difference to whether it runs"
+    },
+    "acts_on": "operator-session",
+    "crud": "READ",
+    "requirement": "PROD-I-6",
+    "kernel_transition": null,
+    "preconditions": [
+      "session_live",
+      "capability_map_fresh"
+    ],
+    "commits": "DERIVED",
+    "refusals": [
+      "SESSION_NOT_LIVE",
+      "MISSING_PRECONDITION"
+    ]
+  },
+  "what_this_does_not_establish": [
+    "that any reachable capability works; only that the node declares it and the projection records a transport",
+    "that the capability map is current, which nobody checked on this call",
+    "that this observation is independent of the gateway - it was taken by calling the gateway. The journal read is a second endpoint, not a second observer, and settling this needs the Observation Service (GROUND-010)"
+  ]
+}

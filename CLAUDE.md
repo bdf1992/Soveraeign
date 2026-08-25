@@ -27,10 +27,53 @@ and improve the system; neither silently occupies one of its operating tiers.
   it governs any agent: authority arrives by grant, a build cannot witness
   itself, and only Bdo ratifies judgement.
 
-Host capabilities do not imply authority. Use only the model, tools, and
-permissions visible in the current invocation; never silently substitute
-another model. Launched agents inherit the session model today; no tier is
+Claude Code is one host binding, not Sov's semantic owner.
+
+Claude carries a concern it accepts to a landed result rather than to an
+artifact about the result. `AGENTS.md`, Closure ownership, owns the rule:
+settle ordinary reversible engineering choices; recruit a helper subagent when
+a second reading would help, without asking; repair findings in place; keep one
+branch and one pull request per concern; absorb follow-on work that stays
+inside the same service, effect class, and authority; and hand off only at one
+of five named seams. A helper that read or edited a change is inside the build
+and can never witness it. `python scripts/sov_closure.py loop` prints the
+table; `judge` grades a handoff before it is sent.
+
+Host capabilities do not imply authority. Use only the model, tools, permissions,
+and live grants visible in the current invocation; never infer them from this file
+or silently substitute another model. Launched agents inherit the session model
+today; no tier is
 pinned (a resource-consumption choice still open for Bdo).
+
+## Known traps
+
+Facts about this repository that answer confidently and wrongly. Each cost a
+session a false claim or a wasted hour. `python scripts/sov_traps.py` asserts
+the checkable ones and **fails when a trap stops being true** — a failure there
+means the hazard is gone and the entry below must be deleted, so this list
+cannot outlive what it warns about.
+
+- **T2 · `verify.py` exit 0 does not mean conformance.** The participant's
+  recorded baseline registers failing requirements as expected, so the suite is
+  green while all nine Phase-I requirements fail. Green here means "unchanged",
+  not "correct".
+- **T3 · `NOT_WITNESSED` contains the token `WITNESSED`.** Any standing check
+  written with a substring match reports every unwitnessed subject in the
+  repository as witnessed. Compare whole tokens and treat a preceding `NOT` as
+  denial; `scripts/sov_standing.py` is the worked example.
+- **T4 · `gh api .../branches/main/protection` returns `404` while a ruleset is
+  active.** Protection on `main` comes from ruleset `Gate`, not classic branch
+  protection. Query `.../rulesets`. The 404 has already produced a false claim
+  in a governed document.
+- **T5 · A skipped required check satisfies the ruleset.** Skipped is not
+  blocked. A job gated off by a repository variable still reports as satisfying
+  the check that requires it.
+- **T6 · Several sessions write this tree at once.** Files appear and change
+  mid-read. Freeze a commit before witnessing, measuring, or ratifying, and
+  work in a worktree rather than racing the shared branch.
+
+T4 through T6 need network or live observation, which Phase I refuses, so they
+are recorded rather than asserted. Silence about them is not confirmation.
 
 ## What the system is
 
@@ -53,21 +96,29 @@ scoped, live grant. Phase is `FOUNDING`; the next gate is
 
 ## Repository snapshot (informational)
 
-Observed 2026-08-23 on `feat/federation-harness-and-hardening`. This section is
-orientation, not standing. `STATUS.yaml`, the working tree, and the newest
-relevant report override it whenever they disagree.
+Observed 2026-08-25 on `merge/one-trunk-reconciliation`, the branch that brings
+`main` and `feat/federation-harness-and-hardening` back together after both had
+been receiving merged pull requests. This section is orientation, not standing.
+`STATUS.yaml`, the working tree, and the newest relevant report override it
+whenever they disagree.
 
-- `python scripts/verify.py` passes in about 1.3 s against a 3 s budget;
-  `python scripts/lint.py` passes with one named debt (`core.py`, 341 lines).
-- Asset Service (`services/asset/`): one executable reference participant
-  with a CLI, content-addressed bytes, leases, receipts, retraction, and
-  rebuildable search and graph projections. Self-tested, not witnessed.
+- `python scripts/verify.py` runs 33 checks in about 8.7 s and grades
+  itself `SILVER` (PLATINUM 3 s, GOLD 6 s, SILVER 15 s, failing past 15 s;
+  `decisions/0050`, which replaced a bare 3 s ceiling the gate was failing).
+  A slipped grade is a reportable observation, not a failing gate.
+  `python scripts/lint.py` passes with one named debt
+  (`scripts/witness_infrastructure.py`, 301 lines).
+- Eight service boundaries under `services/`, 102 declared operations across
+  eight manifests. Asset and Record are built and self-tested; Console's
+  continuity path is built and its other four surfaces are text; Gateway,
+  Observation, Proofing, Projection, and Registry are boundary only.
+  `services/README.md` and `diagrams/service-map.md` carry the current table.
 - Conformance oracle (`conformance/`): executable, 20 controlled cases, every
   defeating fixture fails as declared. Participant binding still open.
-- Harness (`.claude/`): four role agents, thirteen workflows, the epic-tree
-  walk, and scheduled-run gates with a kernel-envelope ledger. Every shipped
-  schedule is disabled. Executable harness workflows are admissible before their
-  defeating fixtures exist, for host plumbing only
+- Harness (`.claude/`): five role agents, nineteen skills, sixteen workflows,
+  the epic-tree walk, and scheduled-run gates with a kernel-envelope ledger.
+  Every shipped schedule is disabled. Executable harness workflows are
+  admissible before their defeating fixtures exist, for host plumbing only
   (`decisions/0033-close-the-founding-docket.md`).
 - Sov profile (`bindings/sov/`): context declaration validates, positive and
   defeating fixtures pass. Accepted as the operating shape; not live and not
@@ -75,18 +126,26 @@ relevant report override it whenever they disagree.
 
 ### Known gaps in that snapshot
 
-- No kernel-level append-preserving event journal; twelve SQLite tables serve
-  the Asset Service only (PROD-I-8, `services/asset/KNOWN-GAPS.md`).
-- `invoke_model` has no kernel implementation (PROD-I-9). The Ollama adapter
-  grades declared bindings against a recorded inventory; it does not execute a
-  model.
-- Proofing, Console, and Asset Projection are accepted boundaries with no
-  implementation.
+- The Record Service owns an append-preserving journal, but it is not the
+  kernel's: the Asset Service still keeps its own SQLite tables (PROD-I-8,
+  `services/asset/KNOWN-GAPS.md`).
+- The `invoke_model` kernel transition is declared in
+  `contracts/kernel-transitions.json` and has no kernel implementation
+  (PROD-I-9). `adapters/ollama/invoke.py` does execute a model against the
+  local runtime and grades its own output, but it settles nothing and its data
+  boundary is `LOCAL_ONLY`, so no crossing has ever put bytes in front of a
+  third party. `services/asset/KNOWN-GAPS.md` still reads "No Model Binding or
+  Model Adapter participant exists", which is stale as repository-wide phrasing
+  and unrepaired.
+- Proofing, Asset Projection, Gateway, Observation, and Registry are boundaries
+  with no implementation.
 - The SDLC loop is a skeleton, and Sov has no live activation.
 - No external-world effects in Phase I. Unattended runs carry no `gh`;
   refreshing the epic projection is an attended action.
-- Four of six diagrams are stale, and the module budget does not reach
-  `conformance/run.py` at 332 lines (`reports/2026-08-23-stack-certification.md`).
+- Diagram staleness is now gated. `python scripts/sov_diagrams.py` grades every
+  view in `diagrams/` against the bytes of the sources it declares, and runs
+  inside `scripts/verify.py`. All eight views were stale when the check was
+  first executed and are current as of this snapshot.
 
 The founding decision docket is closed; `open_decisions` is empty and the
 `O<n>` identifiers are retired. Settle a decision at the lowest tier that can

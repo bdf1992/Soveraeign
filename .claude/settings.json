@@ -7,11 +7,25 @@
             "type": "command",
             "command": "python",
             "args": [
-              "$CLAUDE_PROJECT_DIR/.claude/hooks/console_session.py",
+              "-c",
+              "import os, runpy, sys\nname = sys.argv[1] if len(sys.argv) > 1 else ''\nmode = sys.argv[2] if len(sys.argv) > 2 else ''\nd, p = os.getcwd(), ''\nwhile True:\n    c = os.path.join(d, '.claude', 'hooks', name)\n    if os.path.isfile(c):\n        p = c\n        break\n    n = os.path.dirname(d)\n    if n == d:\n        break\n    d = n\nif p:\n    sys.argv = [p, mode]\n    try:\n        runpy.run_path(p, run_name='__main__')\n    except BaseException:\n        pass\nsys.exit(0)",
+              "console_session.py",
               "start"
             ],
             "timeout": 25,
             "statusMessage": "Reading console continuity"
+          },
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "-c",
+              "import os, runpy, sys\nname = sys.argv[1] if len(sys.argv) > 1 else ''\nmode = sys.argv[2] if len(sys.argv) > 2 else ''\nd, p = os.getcwd(), ''\nwhile True:\n    c = os.path.join(d, '.claude', 'hooks', name)\n    if os.path.isfile(c):\n        p = c\n        break\n    n = os.path.dirname(d)\n    if n == d:\n        break\n    d = n\nif p:\n    sys.argv = [p, mode]\n    try:\n        runpy.run_path(p, run_name='__main__')\n    except BaseException:\n        pass\nsys.exit(0)",
+              "session_registry.py",
+              "start"
+            ],
+            "timeout": 20,
+            "statusMessage": "Reading the live-session registry"
           }
         ]
       }
@@ -23,11 +37,80 @@
             "type": "command",
             "command": "python",
             "args": [
-              "$CLAUDE_PROJECT_DIR/.claude/hooks/console_session.py",
+              "-c",
+              "import os, runpy, sys\nname = sys.argv[1] if len(sys.argv) > 1 else ''\nmode = sys.argv[2] if len(sys.argv) > 2 else ''\nd, p = os.getcwd(), ''\nwhile True:\n    c = os.path.join(d, '.claude', 'hooks', name)\n    if os.path.isfile(c):\n        p = c\n        break\n    n = os.path.dirname(d)\n    if n == d:\n        break\n    d = n\nif p:\n    sys.argv = [p, mode]\n    try:\n        runpy.run_path(p, run_name='__main__')\n    except BaseException:\n        pass\nsys.exit(0)",
+              "console_session.py",
               "end"
             ],
             "timeout": 25,
             "statusMessage": "Closing the console session"
+          },
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "-c",
+              "import os, runpy, sys\nname = sys.argv[1] if len(sys.argv) > 1 else ''\nmode = sys.argv[2] if len(sys.argv) > 2 else ''\nd, p = os.getcwd(), ''\nwhile True:\n    c = os.path.join(d, '.claude', 'hooks', name)\n    if os.path.isfile(c):\n        p = c\n        break\n    n = os.path.dirname(d)\n    if n == d:\n        break\n    d = n\nif p:\n    sys.argv = [p, mode]\n    try:\n        runpy.run_path(p, run_name='__main__')\n    except BaseException:\n        pass\nsys.exit(0)",
+              "session_registry.py",
+              "end"
+            ],
+            "timeout": 20,
+            "statusMessage": "Releasing session claims"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|NotebookEdit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "-c",
+              "import os, runpy, sys\nname = sys.argv[1] if len(sys.argv) > 1 else ''\nmode = sys.argv[2] if len(sys.argv) > 2 else ''\nd, p = os.getcwd(), ''\nwhile True:\n    c = os.path.join(d, '.claude', 'hooks', name)\n    if os.path.isfile(c):\n        p = c\n        break\n    n = os.path.dirname(d)\n    if n == d:\n        break\n    d = n\nif p:\n    sys.argv = [p, mode]\n    try:\n        runpy.run_path(p, run_name='__main__')\n    except BaseException:\n        pass\nsys.exit(0)",
+              "session_registry.py",
+              "pre-write"
+            ],
+            "timeout": 15,
+            "statusMessage": "Checking who holds this path"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "-c",
+              "import os, runpy, sys\nname = sys.argv[1] if len(sys.argv) > 1 else ''\nmode = sys.argv[2] if len(sys.argv) > 2 else ''\nd, p = os.getcwd(), ''\nwhile True:\n    c = os.path.join(d, '.claude', 'hooks', name)\n    if os.path.isfile(c):\n        p = c\n        break\n    n = os.path.dirname(d)\n    if n == d:\n        break\n    d = n\nif p:\n    sys.argv = [p, mode]\n    try:\n        runpy.run_path(p, run_name='__main__')\n    except BaseException:\n        pass\nsys.exit(0)",
+              "session_registry.py",
+              "pre-bash"
+            ],
+            "timeout": 15,
+            "statusMessage": "Checking for a shared-tree sweep"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|NotebookEdit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "-c",
+              "import os, runpy, sys\nname = sys.argv[1] if len(sys.argv) > 1 else ''\nmode = sys.argv[2] if len(sys.argv) > 2 else ''\nd, p = os.getcwd(), ''\nwhile True:\n    c = os.path.join(d, '.claude', 'hooks', name)\n    if os.path.isfile(c):\n        p = c\n        break\n    n = os.path.dirname(d)\n    if n == d:\n        break\n    d = n\nif p:\n    sys.argv = [p, mode]\n    try:\n        runpy.run_path(p, run_name='__main__')\n    except BaseException:\n        pass\nsys.exit(0)",
+              "session_registry.py",
+              "post-write"
+            ],
+            "timeout": 15,
+            "statusMessage": "Recording the path claim"
           }
         ]
       }

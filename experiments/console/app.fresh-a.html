@@ -1,0 +1,686 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Soveraeign — founding a node</title>
+<link rel="icon" href="data:,">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&family=Space+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* Ground and ink carried over from the console freeze, where the ratios were
+     measured against --main. Identity lives in the ground; every text tier keeps
+     its legibility floor even when the register wants quiet. */
+  :root {
+    --bg: #0e0e11;
+    --main: #17171c;
+    --sunk: #101014;
+    --line: #26262e;
+    --hair: #1e1e25;
+    --ink: #ececef;   /* 12.8:1 */
+    --dim: #adadb8;   /* 7.4:1  */
+    --faint: #82828e; /* 4.7:1  — floor */
+    --accent: #86c6b1;
+    --human: #dda468;
+    --warn: #dd8570;
+    --serif: "Fraunces", ui-serif, Georgia, "Times New Roman", serif;
+    --sans: "Space Grotesk", ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { height: 100%; }
+  body { margin: 0; min-height: 100%; background: var(--bg); color: var(--ink);
+         font: 400 15px/1.65 var(--sans); -webkit-font-smoothing: antialiased; }
+  .mono { font-family: var(--mono); font-feature-settings: "tnum"; }
+  .micro { font: 500 9.5px/1 var(--mono); letter-spacing: .22em; text-transform: uppercase;
+           color: var(--faint); }
+  a { color: inherit; }
+
+  #grain { position: fixed; inset: 0; pointer-events: none; z-index: 40;
+           opacity: .045; mix-blend-mode: screen; }
+
+  /* ---- arrival ---------------------------------------------------------- */
+  #arrival { position: fixed; inset: 0; z-index: 60; background: var(--bg);
+             display: grid; place-items: center; transition: opacity .8s ease; }
+  #arrival.gone { opacity: 0; pointer-events: none; }
+  #arrival .plate { text-align: center; max-width: 560px; padding: 0 24px; }
+  #arrival h1 { font: 300 48px/1.05 var(--serif); font-variation-settings: "opsz" 120;
+                margin: 0 0 8px; letter-spacing: -.02em; }
+  #arrival h1 em { font-style: italic; color: var(--accent); }
+  #arrival .sub { color: var(--faint); margin-bottom: 30px; }
+  #arrival .count { font: 500 11px/1 var(--mono); letter-spacing: .3em; color: var(--dim); }
+  #arrival .bar { width: 240px; height: 1px; background: var(--hair); margin: 16px auto 0; }
+  #arrival .bar i { display: block; height: 1px; width: 0; background: var(--accent);
+                    transition: width .4s cubic-bezier(.22,1,.36,1); }
+
+  /* ---- spine: the journal, growing ------------------------------------- */
+  #spine { position: fixed; left: 0; top: 0; bottom: 0; width: 212px; padding: 26px 20px;
+           border-right: 1px solid var(--hair); background: var(--sunk);
+           display: flex; flex-direction: column; gap: 14px; overflow-y: auto; }
+  #spine::-webkit-scrollbar { width: 0; }
+  #spinehead .n { font: 300 20px/1.1 var(--serif); font-variation-settings: "opsz" 40; }
+  #spinehead .id { margin-top: 3px; font: 400 11px/1.4 var(--mono); color: var(--faint); }
+  #tally { font: 300 42px/1 var(--serif); font-feature-settings: "tnum";
+           font-variation-settings: "opsz" 60; color: var(--ink); }
+  #ticks { display: flex; flex-direction: column; gap: 0; margin-top: 2px; }
+  .tick { display: grid; grid-template-columns: 26px 1fr; gap: 8px; align-items: baseline;
+          padding: 4px 0; border-top: 1px solid var(--hair); cursor: pointer;
+          font: 400 10.5px/1.5 var(--mono); color: var(--faint);
+          opacity: 0; transform: translateX(-6px); }
+  .tick.up { opacity: 1; transform: none;
+             transition: opacity .5s ease, transform .6s cubic-bezier(.22,1,.36,1); }
+  .tick:hover b { color: var(--ink); }
+  .tick i { font-style: normal; color: var(--faint); }
+  .tick.EVENT i { color: var(--accent); }
+  .tick b { font-weight: 400; color: var(--dim); overflow: hidden; text-overflow: ellipsis;
+            white-space: nowrap; transition: color .2s; }
+
+  /* ---- the column ------------------------------------------------------- */
+  #page { margin-left: 212px; padding: 84px 48px 160px; }
+  .measure { max-width: 68ch; margin: 0 auto; }
+
+  #lede h2 { margin: 0 0 16px; font: 300 42px/1.12 var(--serif);
+             font-variation-settings: "opsz" 90; letter-spacing: -.02em; }
+  #lede h2 em { font-style: italic; color: var(--accent); }
+  #lede p { margin: 0 0 14px; color: var(--dim); font-size: 16px; }
+  #lede .rule { height: 1px; background: var(--hair); margin: 36px 0 8px; }
+
+  /* The alternative is a real act, not a link to a command someone types. */
+  #instead { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;
+             margin: 28px 0 0; color: var(--faint); font-size: 13.5px; }
+  #instead button { background: none; border: 0; border-bottom: 1px solid var(--line);
+                    color: var(--dim); font: 500 13.5px/1.4 var(--sans); cursor: pointer;
+                    padding: 0 0 2px; transition: color .2s, border-color .2s; }
+  #instead button:hover:not(:disabled) { color: var(--ink); border-color: var(--accent); }
+  #instead button:disabled { cursor: progress; }
+
+  /* ---- act plates ------------------------------------------------------- */
+  .act { position: relative; margin-top: 56px; padding-left: 76px;
+         opacity: 0; transform: translateY(8px); }
+  .act.up { opacity: 1; transform: none;
+            transition: opacity .6s ease, transform .7s cubic-bezier(.22,1,.36,1); }
+  .act .idx { position: absolute; left: 0; top: -6px; width: 58px; text-align: right;
+              font: 300 40px/1 var(--serif); font-feature-settings: "tnum";
+              font-variation-settings: "opsz" 60; color: var(--faint);
+              transition: color .5s ease; }
+  .act.live .idx { color: var(--dim); }
+  .act.done .idx { color: var(--accent); }
+  .act h3 { margin: 0 0 5px; font: 300 25px/1.25 var(--serif);
+            font-variation-settings: "opsz" 48; letter-spacing: -.01em; color: var(--dim);
+            transition: color .4s ease; }
+  .act.live h3, .act.done h3 { color: var(--ink); }
+  /* Plain words lead; the house term rides in brackets behind them. */
+  .act h3 span { font: 400 15px/1.3 var(--sans); color: var(--faint); }
+  .act .op { margin-bottom: 13px; }
+  .act p { margin: 0 0 18px; color: var(--dim); font-size: 14.5px; }
+
+  .field { margin: 0 0 13px; }
+  .field label { display: block; margin-bottom: 6px; }
+  .field input, .field textarea {
+    width: 100%; background: var(--sunk); border: 1px solid var(--line); color: var(--ink);
+    border-radius: 3px; padding: 10px 12px; font: 400 14px/1.55 var(--sans);
+    outline: none; transition: border-color .2s; }
+  .field textarea { min-height: 96px; resize: vertical; }
+  .field input:focus, .field textarea:focus { border-color: var(--accent); }
+  .field input::placeholder, .field textarea::placeholder { color: var(--faint); }
+  .field input:disabled, .field textarea:disabled { opacity: .6; cursor: not-allowed; }
+
+  .go { display: inline-flex; align-items: center; gap: 10px; background: transparent;
+        border: 1px solid var(--line); color: var(--ink); border-radius: 3px;
+        padding: 11px 20px; cursor: pointer;
+        font: 500 10.5px/1 var(--mono); letter-spacing: .2em; text-transform: uppercase;
+        transition: border-color .25s, background .25s, transform .25s; }
+  .go:hover:not(:disabled) { border-color: var(--accent); background: #1b1b21;
+                             transform: translateY(-1px); }
+  .go:disabled { color: var(--faint); cursor: not-allowed; }
+  .go.done { border-color: var(--hair); color: var(--faint); }
+  .aside { margin-left: 14px; background: none; border: 0;
+           border-bottom: 1px dashed var(--line); color: var(--faint);
+           font: 400 12.5px/1.4 var(--sans); cursor: pointer; padding: 0 0 2px; }
+  .aside:hover:not(:disabled) { color: var(--warn); border-color: var(--warn); }
+
+  /* A landed act answers with a readout: what committed, under what authority,
+     where it sits. Not the receipt transcribed — the receipt is in the journal,
+     and every digest here pulls back to it. */
+  .out { margin-top: 18px; border-left: 2px solid var(--accent); padding: 10px 0 10px 15px;
+         display: none; }
+  .out.on { display: block; }
+  .out.refused { border-color: var(--warn); }
+  .out .head { font: 500 10px/1 var(--mono); letter-spacing: .18em; color: var(--accent);
+               margin-bottom: 9px; }
+  .out.refused .head { color: var(--warn); }
+  .out dl { margin: 0; display: grid; grid-template-columns: 112px 1fr; gap: 4px 12px;
+            font: 400 12.5px/1.5 var(--mono); }
+  .out dt { color: var(--faint); }
+  .out dd { margin: 0; color: var(--dim); overflow-wrap: anywhere; }
+  .pull { cursor: pointer; border-bottom: 1px dotted var(--line); color: var(--dim); }
+  .pull:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* ---- founded ---------------------------------------------------------- */
+  #founded { margin-top: 76px; padding: 36px 0 0; border-top: 1px solid var(--hair);
+             display: none; }
+  #founded.on { display: block; }
+  #founded h3 { margin: 0 0 12px; font: 300 32px/1.2 var(--serif);
+                font-variation-settings: "opsz" 60; }
+  #founded p { color: var(--dim); margin: 0 0 22px; }
+  #founded .enter { display: inline-block; text-decoration: none;
+                    border: 1px solid var(--accent); color: var(--ink); border-radius: 3px;
+                    padding: 13px 24px; font: 500 10.5px/1 var(--mono);
+                    letter-spacing: .2em; text-transform: uppercase;
+                    transition: background .25s, transform .25s; }
+  #founded .enter:hover { background: #1b241f; transform: translateY(-1px); }
+
+  /* ---- pull panel ------------------------------------------------------- */
+  #pull { position: fixed; right: 0; top: 0; bottom: 0; width: 480px; background: var(--main);
+          border-left: 1px solid var(--line); padding: 26px 26px 40px; overflow-y: auto;
+          transform: translateX(102%); transition: transform .55s cubic-bezier(.22,1,.36,1);
+          z-index: 50; }
+  #pull.shown { transform: none; }
+  #pull h4 { margin: 0 0 4px; font: 300 22px/1.2 var(--serif); }
+  #pull .lead { color: var(--faint); font-size: 13px; margin-bottom: 16px; }
+  #pull .chain { font: 400 12px/1.7 var(--mono); color: var(--dim); margin-bottom: 16px;
+                 white-space: pre; overflow-x: auto; }
+  #pull .chain b { color: var(--faint); font-weight: 400; }
+  #pull pre { margin: 0; background: var(--sunk); border: 1px solid var(--hair); padding: 14px;
+              border-radius: 3px; font: 400 11.5px/1.6 var(--mono); color: var(--dim);
+              white-space: pre-wrap; overflow-wrap: anywhere; }
+  #pull .close { position: absolute; right: 20px; top: 18px; cursor: pointer;
+                 color: var(--faint); font-size: 20px; line-height: 1; }
+  #pull .close:hover { color: var(--ink); }
+
+  @media (max-width: 900px) {
+    #spine { position: static; width: auto; border-right: 0;
+             border-bottom: 1px solid var(--hair); }
+    #page { margin-left: 0; padding: 44px 22px 100px; }
+    .act { padding-left: 0; }
+    .act .idx { position: static; text-align: left; display: block; margin-bottom: 2px; }
+    #pull { width: 100%; }
+  }
+</style>
+
+<div id="arrival"><div class="plate">
+  <h1 id="ah">A node with <em>nothing</em> in it</h1>
+  <div class="sub">Soveraeign console · founding</div>
+  <div class="count" id="acount">LOADING TYPE</div>
+  <div class="bar"><i id="abar"></i></div>
+</div></div>
+
+<svg id="grain" width="100%" height="100%" preserveAspectRatio="none"><filter id="g" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3"/></filter><rect width="100%" height="100%" filter="url(#g)"/></svg>
+
+<aside id="spine">
+  <div id="spinehead">
+    <div class="n">node</div>
+    <div class="id" id="nodeid">—</div>
+  </div>
+  <div>
+    <div id="tally">0</div>
+    <div class="micro">entries in the journal</div>
+  </div>
+  <div id="ticks"></div>
+</aside>
+
+<main id="page">
+  <div class="measure">
+    <div id="lede">
+      <h2 id="ah2">Nothing has happened here <em>yet</em>.</h2>
+      <p id="ledep">This node's journal is empty. Not broken, not waiting on a
+        configuration file — empty the way a ledger is empty before its first line.</p>
+      <p>Five acts below found it. Each one is a real call to the Console Service,
+        each writes to the journal before this page hears back, and each shows the
+        receipt it wrote. Nothing here is a preview of what would happen.</p>
+      <div id="instead">
+        <span>Rather not start from nothing?</span>
+        <button id="fill">Fill it with the repository's real state instead</button>
+      </div>
+      <div class="rule"></div>
+    </div>
+    <div id="acts"></div>
+    <div id="founded">
+      <h3>The node is founded.</h3>
+      <p id="foundedp">—</p>
+      <a class="enter" href="/">Enter the console</a>
+    </div>
+  </div>
+</main>
+
+<div id="pull"><span class="close" onclick="closePull()">&times;</span>
+  <h4 id="pulltitle">—</h4><div class="lead" id="pulllead"></div>
+  <div class="chain" id="pullchain"></div><pre id="pullbody"></pre></div>
+
+<script>
+// The interaction model is functions and state; the DOM binds to it. A model
+// driving this page uses window.__fresh and reaches exactly the calls a click
+// reaches — there is no second path, and no state lives only in the DOM.
+
+const S = {
+  node: null, ops: null,
+  session: null, domain: null, channel: null, thread: null,
+  entries: 0, seen: new Set(), done: {}, last: {}, arrived: false,
+};
+
+const api = {
+  json: async path => (await fetch(path)).json(),
+  async call(operation, inputs) {
+    const r = await fetch('/api/call', { method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ operation, inputs: inputs || {} }) });
+    return { ok: r.ok, status: r.status, payload: await r.json() };
+  },
+};
+
+const el = (tag, cls, text) => {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text !== undefined) n.textContent = text;
+  return n;
+};
+
+const OPERATOR = 'operator:bdo';
+const BINDING = 'binding:console-surface';
+
+// ---- the five acts ---------------------------------------------------------
+// Each names the operation it calls, the plain reason it comes where it does,
+// and its exact inputs. `run` returns its results in order, so an act that must
+// take a grant before its transition shows both entries rather than one.
+
+const ACTS = [
+  {
+    id: 'session', title: 'Put your name on what follows',
+    term: 'operator session', op: 'console.open-session',
+    why: 'A post with no session behind it is an unattributed record. Opening one is '
+       + 'this node’s first entry, and it is yours: from here every act carries who '
+       + 'did it, through which binding, at what time.',
+    fields: [],
+    run: async () => {
+      const r = await api.call('console.open-session',
+        { operator_id: OPERATOR, actor_kind: 'HUMAN', binding_id: BINDING });
+      if (r.ok) S.session = r.payload.record.session_id;
+      return [r];
+    },
+  },
+  {
+    id: 'grant', title: 'Take the authority to open one',
+    term: 'grant, scoped to a domain', op: 'console.grant',
+    why: 'Operating successfully grants nothing here. Every consequential act is checked '
+       + 'against a live grant scoped to the exact target, and the check runs before the '
+       + 'transition rather than after it.',
+    fields: [{ name: 'domain', label: 'domain the grant covers', value: 'founding' }],
+    probe: {
+      label: 'See what happens without it',
+      run: fields => api.call('console.open-channel',
+        { operator_id: OPERATOR, name: fields.domain || 'founding',
+          domain: fields.domain || 'founding' }),
+    },
+    run: async fields => {
+      S.domain = fields.domain;
+      return [await api.call('console.grant',
+        { operator_id: OPERATOR, capability: 'open-channel', scope: fields.domain })];
+    },
+  },
+  {
+    id: 'channel', title: 'Open the first place work can happen',
+    term: 'channel', op: 'console.open-channel',
+    why: 'A channel holds one domain of work. It is not a room and not a topic: it is the '
+       + 'scope a grant can name, which is why the grant had to come first.',
+    fields: [{ name: 'name', label: 'what to call it', value: 'founding' }],
+    run: async fields => {
+      const r = await api.call('console.open-channel',
+        { operator_id: OPERATOR, name: fields.name, domain: S.domain });
+      if (r.ok) S.channel = r.payload.record.channel_id;
+      return [r];
+    },
+  },
+  {
+    id: 'thread', title: 'Open one bounded conversation',
+    term: 'thread', op: 'console.grant + console.open-thread',
+    why: 'A thread is one question with an end, optionally pinned to the exact file or line '
+       + 'it is about. It needs its own grant, scoped to the channel — so this act takes '
+       + 'that grant first and shows you both entries.',
+    fields: [{ name: 'title', label: 'the question', value: 'What is this node for?' }],
+    run: async fields => {
+      const g = await api.call('console.grant',
+        { operator_id: OPERATOR, capability: 'open-thread', scope: S.channel });
+      if (!g.ok) return [g];
+      const r = await api.call('console.open-thread',
+        { operator_id: OPERATOR, channel_id: S.channel, title: fields.title });
+      if (r.ok) S.thread = r.payload.record.thread_id;
+      return [g, r];
+    },
+  },
+  {
+    id: 'post', title: 'Say the first thing',
+    term: 'post', op: 'console.grant + console.post',
+    why: 'The bytes go to a content-addressed store and the journal keeps the address, so '
+       + 'the record points at exactly what you wrote and nothing else. It lands at '
+       + 'RECORDED. Nothing on this surface enters above that.',
+    fields: [{ name: 'body', label: 'your first post', textarea: true, value: '',
+               placeholder: 'The first line in this node’s journal.' }],
+    run: async fields => {
+      const g = await api.call('console.grant',
+        { operator_id: OPERATOR, capability: 'post', scope: S.thread });
+      if (!g.ok) return [g];
+      const r = await api.call('console.post',
+        { session_id: S.session, thread_id: S.thread, body: fields.body });
+      return [g, r];
+    },
+  },
+];
+
+const liveAt = i => i === 0 || !!S.done[ACTS[i - 1].id];
+
+// ---- render ----------------------------------------------------------------
+
+function renderActs() {
+  const host = document.getElementById('acts');
+  const first = !host.childElementCount;
+  host.replaceChildren();
+  ACTS.forEach((act, i) => {
+    const live = liveAt(i);
+    const done = !!S.done[act.id];
+    const box = el('div', 'act' + (done ? ' done' : live ? ' live' : ''));
+    box.id = 'act-' + act.id;
+    box.append(el('div', 'idx', String(i + 1).padStart(2, '0')));
+
+    const h = el('h3');
+    h.append(document.createTextNode(act.title + '  '));
+    h.append(el('span', '', '(' + act.term + ')'));
+    box.append(h);
+    box.append(el('div', 'op micro', act.op));
+    box.append(el('p', '', act.why));
+
+    const values = {};
+    for (const f of act.fields) {
+      const wrap = el('div', 'field');
+      wrap.append(el('label', 'micro', f.label));
+      const input = el(f.textarea ? 'textarea' : 'input');
+      input.value = S.last[act.id + '.' + f.name] !== undefined
+        ? S.last[act.id + '.' + f.name] : f.value;
+      if (f.placeholder) input.placeholder = f.placeholder;
+      input.disabled = !live || done;
+      input.oninput = () => { S.last[act.id + '.' + f.name] = input.value; };
+      wrap.append(input);
+      values[f.name] = input;
+      box.append(wrap);
+    }
+
+    const row = el('div');
+    const go = el('button', 'go' + (done ? ' done' : ''),
+                  done ? 'recorded' : live ? 'record it' : 'waits on step ' + i);
+    go.disabled = !live || done;
+    go.onclick = () => runAct(act, values, go);
+    row.append(go);
+
+    if (act.probe && live && !done) {
+      const probe = el('button', 'aside', act.probe.label);
+      probe.onclick = async () => {
+        probe.disabled = true;
+        show(box, [await act.probe.run(read(values))]);
+        await refresh();
+        probe.disabled = false;
+      };
+      row.append(probe);
+    }
+    box.append(row);
+    box.append(el('div', 'out'));
+    host.append(box);
+
+    // Entrance choreography on the first assembly only; a re-render after an act
+    // must not replay the whole column's arrival.
+    if (first) requestAnimationFrame(() => setTimeout(() => box.classList.add('up'), 70 * i));
+    else box.classList.add('up');
+  });
+}
+
+const read = values => Object.fromEntries(
+  Object.entries(values).map(([k, v]) => [k, v.value.trim()]));
+
+async function runAct(act, values, button) {
+  button.disabled = true;
+  button.textContent = 'recording…';
+  const results = await act.run(read(values));
+  if (results.every(r => r.ok)) S.done[act.id] = true;
+  await refresh();
+  renderActs();
+  // The plate was rebuilt from state; put the readout back on the new one.
+  show(document.getElementById('act-' + act.id), results);
+  if (ACTS.every(a => S.done[a.id])) finish();
+}
+
+function show(box, results) {
+  const out = box.querySelector('.out');
+  const bad = results.find(r => !r.ok);
+  out.className = 'out on' + (bad ? ' refused' : '');
+  out.replaceChildren();
+  const r = bad || results[results.length - 1];
+  const receipt = r.payload.receipt || {};
+  out.append(el('div', 'head', bad
+    ? 'REFUSED · ' + (r.payload.reason_code || r.status)
+    : 'RECORDED · ' + results.length + (results.length > 1 ? ' entries' : ' entry')));
+
+  const rows = [];
+  if (bad) {
+    rows.push(['why', r.payload.message || 'refused']);
+    rows.push(['on record', r.payload.recorded
+      ? 'written as a REFUSED receipt before you were told about it'
+      : 'not written \u2014 the authority check refuses before the append path']);
+  } else {
+    for (const one of results) {
+      const rec = one.payload.record || {};
+      const got = one.payload.receipt || {};
+      rows.push([one.payload.operation.replace('console.', ''),
+                 rec.grant_id || rec.channel_id || rec.thread_id
+                 || rec.session_id || rec.post_id || 'committed']);
+      if (got.authority_grant_ids && got.authority_grant_ids.length) {
+        rows.push(['under grant', got.authority_grant_ids[0]]);
+      }
+    }
+    rows.push(['effect', receipt.effect_class || 'RECORD_LOCAL']);
+    rows.push(['standing', 'RECORDED']);
+  }
+  if (receipt.entry_id) rows.push(['entry', receipt.entry_id]);
+  if (receipt.digest) rows.push(['digest', receipt.digest]);
+
+  const lead = box.querySelector('h3').firstChild.textContent.trim();
+  const dl = el('dl');
+  for (const [k, v] of rows) {
+    dl.append(el('dt', '', k));
+    const dd = el('dd');
+    if (k === 'entry' || k === 'digest') {
+      const chip = el('span', 'pull', v);
+      chip.onclick = () => pull(k === 'entry' ? v : 'sha256:' + v, 'from “' + lead + '”');
+      dd.append(chip);
+    } else { dd.textContent = v; }
+    dl.append(dd);
+  }
+  out.append(dl);
+}
+
+// ---- the spine: the journal actually growing -------------------------------
+
+async function refresh() {
+  const state = await api.json('/api/state?dry=1');
+  S.node = state;
+  document.getElementById('nodeid').textContent = state.node_id;
+  countTo(state.counts.entries);
+  renderLede();
+  const ticks = document.getElementById('ticks');
+  for (const e of state.journal) {
+    if (S.seen.has(e.entry_id)) continue;
+    S.seen.add(e.entry_id);
+    const row = el('div', 'tick ' + e.kind);
+    row.append(el('i', '', String(e.seq).padStart(3, '0')));
+    row.append(el('b', '', (e.operation || e.record_kind || e.kind).replace('console.', '')));
+    row.title = e.entry_id + '  ' + e.digest;
+    row.onclick = () => pull(e.entry_id, 'entry ' + e.seq + ' in the journal');
+    ticks.append(row);
+    requestAnimationFrame(() => row.classList.add('up'));
+  }
+}
+
+// What the top of the page says is read off the journal every time the journal
+// changes. Written once at arrival, it went on claiming an empty node while the
+// spine beside it listed every entry the visitor had just made.
+function renderLede() {
+  const head = document.getElementById('ah2');
+  const said = document.getElementById('ledep');
+  const c = S.node.counts;
+  if (S.arrived && c.entries === 0) {
+    head.innerHTML = 'Nothing has happened here <em>yet</em>.';
+    said.textContent = 'This node\u2019s journal is empty. Not broken, not waiting on a '
+      + 'configuration file — empty the way a ledger is empty before its first line.';
+  } else if (S.arrived) {
+    head.innerHTML = 'This node has <em>started</em>.';
+    said.textContent = c.entries + ' entries, written by the acts below. The spine on the '
+      + 'left is that journal as it actually stands, newest last, and every tick on it '
+      + 'opens the entry behind it.';
+  }
+  // Refilling from the repository starts a different journal. Once this one has
+  // entries in it, that stops being an alternative and becomes a way to lose them.
+  document.getElementById('instead').style.display = c.entries ? 'none' : '';
+}
+
+// The tally has mass: it counts up rather than snapping, so a landed act reads as
+// something that happened instead of a number that changed.
+let tallyRaf = null;
+function countTo(target) {
+  const node = document.getElementById('tally');
+  const from = S.entries;
+  S.entries = target;
+  if (from === target) { node.textContent = String(target); return; }
+  const start = performance.now();
+  cancelAnimationFrame(tallyRaf);
+  const step = now => {
+    const t = Math.min(1, Math.max(0, now - start) / 700);
+    const eased = 1 - Math.pow(1 - t, 3);
+    node.textContent = String(Math.round(from + (target - from) * eased));
+    if (t < 1) tallyRaf = requestAnimationFrame(step);
+  };
+  tallyRaf = requestAnimationFrame(step);
+}
+
+function finish() {
+  const box = document.getElementById('founded');
+  box.classList.add('on');
+  const c = S.node.counts;
+  document.getElementById('foundedp').textContent =
+    c.entries + ' entries, ' + c.channels + ' channel, ' + c.threads + ' thread, '
+    + c.posts + ' post, ' + c.grants + ' live grants — every one of them at RECORDED, '
+    + 'which is as high as anything on this surface goes.';
+  box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// ---- fill from the repository ----------------------------------------------
+
+async function fill() {
+  const button = document.getElementById('fill');
+  button.disabled = true;
+  button.textContent = 'reading the repository…';
+  const r = await api.call('console.fill', {});
+  if (r.ok) { location.href = '/'; return; }
+  button.disabled = false;
+  button.textContent = 'could not fill it: ' + (r.payload.reason_code || 'failed');
+}
+
+// ---- pull a digest back to the entry behind it ------------------------------
+
+async function pull(reference, lead) {
+  const panel = document.getElementById('pull');
+  document.getElementById('pulltitle').textContent = 'Where this came from';
+  document.getElementById('pulllead').textContent = lead;
+  document.getElementById('pullchain').replaceChildren();
+  document.getElementById('pullbody').textContent = 'reading the journal…';
+  panel.classList.add('shown');
+  const key = reference.startsWith('entry_') ? 'id' : 'digest';
+  const found = await api.json('/api/entry?' + key + '=' + encodeURIComponent(reference));
+  if (found.error) {
+    document.getElementById('pullbody').textContent = 'not in the journal: ' + reference;
+    return;
+  }
+  const chain = document.getElementById('pullchain');
+  const rows = [['entry', found.entry.entry_id], ['kind', found.entry.kind],
+    ['subject', found.entry.subject], ['actor', found.entry.actor],
+    ['position', found.position], ['follows', found.follows],
+    ['digest', found.entry.entry_digest]];
+  for (const [k, v] of rows) {
+    const line = el('div');
+    line.append(el('b', '', k.padEnd(9)), document.createTextNode(' ' + v));
+    chain.append(line);
+  }
+  document.getElementById('pullbody').textContent = JSON.stringify(found.payload, null, 2);
+}
+function closePull() { document.getElementById('pull').classList.remove('shown'); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closePull(); });
+
+// ---- arrival ---------------------------------------------------------------
+// Counts real work and never fakes the wait. The world assembles after, not during.
+
+async function arrive() {
+  const count = document.getElementById('acount');
+  const bar = document.getElementById('abar');
+  const steps = [
+    ['LOADING TYPE', () => document.fonts.ready],
+    ['ASKING THE NODE WHAT IT HOLDS', () => refresh()],
+    ['ASKING THE DOOR WHAT IT DOES', async () => { S.ops = await api.json('/api/operations'); }],
+  ];
+  for (let i = 0; i < steps.length; i++) {
+    count.textContent = steps[i][0];
+    await steps[i][1]();
+    bar.style.width = Math.round(((i + 1) / steps.length) * 240) + 'px';
+  }
+  const c = S.node.counts;
+  count.textContent = c.entries + ' ENTRIES · ' + c.channels + ' CHANNELS · '
+    + c.grants + ' GRANTS';
+  // A node that already holds entries was founded before this visit. Say that
+  // rather than presenting a founding sequence over somebody else's journal.
+  if (c.entries > 0) {
+    document.getElementById('ah').innerHTML = 'This node is <em>already</em> founded';
+    document.getElementById('ah2').innerHTML = 'This node is <em>already</em> founded.';
+    document.getElementById('ledep').textContent =
+      'It already holds ' + c.entries + ' entries. The acts below still work — they '
+      + 'append rather than replace — but the founding you are about to read was done '
+      + 'before you got here.';
+    document.getElementById('instead').style.display = 'none';
+  } else {
+    S.arrived = true;
+  }
+  await new Promise(r => setTimeout(r, 640));
+  document.getElementById('arrival').classList.add('gone');
+  renderActs();
+}
+
+document.getElementById('fill').onclick = fill;
+
+// The drive handle: the API surface of the piece.
+window.__fresh = {
+  get node() { return S.node; },
+  get ops() { return S.ops; },
+  get state() { return S; },
+  get acts() { return ACTS.map((a, i) => ({ id: a.id, op: a.op, done: !!S.done[a.id],
+                                            live: liveAt(i) })); },
+  get founded() { return ACTS.every(a => S.done[a.id]); },
+  async run(id, values) {
+    const act = ACTS.find(a => a.id === id);
+    const box = document.getElementById('act-' + id);
+    const inputs = box.querySelectorAll('input, textarea');
+    const map = {};
+    act.fields.forEach((f, i) => {
+      if (values && values[f.name] !== undefined) inputs[i].value = values[f.name];
+      map[f.name] = inputs[i];
+    });
+    return runAct(act, map, box.querySelector('.go'));
+  },
+  async probe(id) {
+    const act = ACTS.find(a => a.id === id);
+    const box = document.getElementById('act-' + id);
+    const map = {};
+    act.fields.forEach((f, i) => { map[f.name] = box.querySelectorAll('input, textarea')[i]; });
+    const r = await act.probe.run(read(map));
+    show(box, [r]);
+    await refresh();
+    return r;
+  },
+  pull, refresh, fill,
+  call: api.call,
+};
+
+arrive();
+</script>

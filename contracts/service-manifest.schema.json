@@ -68,6 +68,26 @@
         ]
       }
     },
+    "undeclared_events": {
+      "description": "Receipt event names this service emits that realize no declared operation, each with the reason no operation declares it. Every emitted event must be either a capability identifier or listed here; scripts/sovkernel/receipt_events.py reads the service's own source and refuses an event that is neither, and refuses an entry the service no longer emits. This records a gap where a reader will find it rather than inventing an operation to close it - the shape bindings/mcp/manifest.json already uses for a tool that realizes nothing declared.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["event", "because"],
+        "properties": {
+          "event": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*[.][a-z][a-z0-9-]*$"
+          },
+          "because": {
+            "type": "string",
+            "minLength": 20
+          }
+        }
+      }
+    },
     "ports": {
       "type": "array",
       "uniqueItems": true,

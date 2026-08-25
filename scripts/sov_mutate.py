@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Score how much the test suite actually asserts, by mutating what it tests.
 
-Deliberately not part of `scripts/verify.py`: verify holds a three-second
+Deliberately not part of `scripts/verify.py`: verify holds a fifteen-second
 budget and mutation scoring runs the suite once per mutant. This is a separate
 command with its own budget, run as its own gate.
 
@@ -42,6 +42,8 @@ SUITES = (
     (str(Path("services/asset")), ("-m", "unittest", "discover", "-s", "tests", "-q"), ROOT / "services" / "asset"),
     (str(Path("services/registry")),
      ("-m", "unittest", "scripts.tests.test_registry_horizontal", "-q"), ROOT),
+    (str(Path("services/console")),
+     ("-m", "unittest", "discover", "-s", "tests", "-q"), ROOT / "services" / "console"),
     ("scripts", ("-m", "unittest", "discover", "-s", "scripts/tests", "-q"), ROOT),
 )
 
@@ -104,6 +106,40 @@ def _changed_files(base: str) -> list[Path]:
     return files
 
 
+def _budgeted_targets(
+    targets: list[Path], per_file_limit: int | None, total_limit: int | None,
+) -> tuple[list[tuple[Path, int | None]], list[Path]]:
+    """Bound a run while sampling across the complete ordered target set.
+
+    A per-file cap alone multiplies with the size of a reconciliation diff.  If
+    the whole-run cap cannot reach every file, evenly spaced paths are selected
+    so the result does not silently become a prefix-of-the-tree score.
+    """
+    if per_file_limit is not None and per_file_limit < 1:
+        raise ValueError("--limit must be at least 1")
+    if total_limit is None:
+        return [(path, per_file_limit) for path in targets], []
+    if total_limit < 1:
+        raise ValueError("--total-limit must be at least 1")
+    if not targets:
+        return [], []
+
+    selected_count = min(len(targets), total_limit)
+    if selected_count == len(targets):
+        indices = list(range(len(targets)))
+    elif selected_count == 1:
+        indices = [len(targets) // 2]
+    else:
+        indices = [round(index * (len(targets) - 1) / (selected_count - 1))
+                   for index in range(selected_count)]
+    selected = set(indices)
+    share = max(1, total_limit // selected_count)
+    file_limit = min(per_file_limit, share) if per_file_limit is not None else share
+    planned = [(path, file_limit) for index, path in enumerate(targets) if index in selected]
+    omitted = [path for index, path in enumerate(targets) if index not in selected]
+    return planned, omitted
+
+
 def command_run(args: argparse.Namespace) -> int:
     """Score one target, or every Python file the branch changed."""
     if args.changed:
@@ -118,19 +154,32 @@ def command_run(args: argparse.Namespace) -> int:
         print("REFUSED: name --target or pass --changed", file=sys.stderr)
         return 2
 
+    unclaimed = [path for path in targets if suite_for(path) is None]
+    claimed = [path for path in targets if suite_for(path) is not None]
+    try:
+        planned, budget_omitted = _budgeted_targets(
+            claimed, args.limit, args.total_limit)
+    except ValueError as exc:
+        print(f"REFUSED: {exc}", file=sys.stderr)
+        return 2
+
+    if args.total_limit is not None:
+        per_file = planned[0][1] if planned else 0
+        print(f"WHOLE-RUN CAP: at most {args.total_limit} mutants; "
+              f"{len(planned)}/{len(claimed)} claimed files sampled; "
+              f"at most {per_file} mutant(s) per sampled file")
+        print()
+
     total_killed = 0
     total_generated = 0
-    unclaimed = []
-    for path in targets:
+    for path, file_limit in planned:
         if not path.is_file():
             print(f"REFUSED: {path} is not a file", file=sys.stderr)
             return 2
         suite = suite_for(path)
-        if suite is None:
-            unclaimed.append(path)
-            continue
+        assert suite is not None
         command, cwd = suite
-        score = harness.score_file(path, cwd, command=command, limit=args.limit)
+        score = harness.score_file(path, cwd, command=command, limit=file_limit)
         print(harness.render(score))
         print()
         total_killed += score.killed
@@ -138,6 +187,8 @@ def command_run(args: argparse.Namespace) -> int:
 
     for path in unclaimed:
         print(f"UNSCORED: no suite in SUITES claims {path}; not counted in the channel")
+    for path in budget_omitted:
+        print(f"UNSCORED: whole-run cap sampled out {path}; not counted in the channel")
 
     if total_generated == 0:
         print("NOTHING TO SCORE: the selected files admit no mutants")
@@ -207,6 +258,8 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--changed", action="store_true", help="score every production Python file changed against --base")
     run.add_argument("--base", default="origin/main", help="comparison point for --changed")
     run.add_argument("--limit", type=int, default=None, help="cap mutants per file")
+    run.add_argument("--total-limit", type=int, default=None,
+                     help="cap mutants across the run and sample files evenly")
     run.add_argument("--threshold", type=float, default=None, help="fail below this kill percentage")
     run.set_defaults(handler=command_run)
 

@@ -33,6 +33,7 @@ import json
 MAP_SCHEMA = "soveraeign-capability-map/v1"
 BUILT_STANDINGS = ("BUILT", "WITNESSED", "RATIFIED")
 IN_PROCESS = "IN_PROCESS"
+MCP = "MCP"
 ACTIVE = "ACTIVE"
 DECLARED = "DECLARED_NOT_ACTIVATED"
 REFUSED = "REFUSED_UNCONFIGURED"
@@ -55,9 +56,17 @@ def _endpoints(service_id: str, capability_id: str, standing: str,
     A CLI endpoint goes ``ACTIVE`` only for a capability some command actually
     implements. A service owning a CLI does not put every one of its operations
     behind it, and claiming otherwise would be the map advertising a shut door.
+
+    An MCP endpoint is the same rule for the model-facing transport, and it reads
+    ``mcp_tools`` rather than the binding directly: the table is the map's only
+    policy input, and ``scripts/tests/test_capability_map.py`` makes the table and
+    ``bindings/mcp/manifest.json`` agree by check rather than by coincidence.
+    Observed 2026-08-24: six MCP tools were live and the map read
+    ``DECLARED_NOT_ACTIVATED`` on all 102 rows, because no input could carry them.
     """
     refused = set(table.get("external_transports_refused_in_phase", []))
     cli_command = (table.get("cli_commands") or {}).get(capability_id)
+    mcp_tool = (table.get("mcp_tools") or {}).get(capability_id)
     endpoints: list[dict[str, Any]] = []
     for transport in table.get("transport_policy", {}):
         endpoint: dict[str, Any] = {"transport": transport}
@@ -70,6 +79,9 @@ def _endpoints(service_id: str, capability_id: str, standing: str,
         elif transport == "CLI" and built and cli_command:
             endpoint["activation"] = ACTIVE
             endpoint["address"] = cli_command
+        elif transport == MCP and built and mcp_tool:
+            endpoint["activation"] = ACTIVE
+            endpoint["address"] = mcp_tool
         else:
             endpoint["activation"] = DECLARED
         endpoints.append(endpoint)
@@ -89,12 +101,14 @@ def build(manifests: dict[str, dict[str, Any]], table: dict[str, Any], *,
     for service_id in sorted(manifests):
         manifest = manifests[service_id]
         standings = operation_standings(manifest)
+        declarations = {entry["operation"]: entry for entry in manifest["operations"]}
         for operation in sorted(standings):
             capability_id = f"{service_id}.{operation}"
             standing = standings[operation]
             built = standing in BUILT_STANDINGS
             endpoints = _endpoints(service_id, capability_id, standing, table, built)
             seat = assignments.get(capability_id, {})
+            declared = declarations.get(operation, {})
             capabilities.append({
                 "capability_id": capability_id,
                 "service_id": service_id,
@@ -106,6 +120,7 @@ def build(manifests: dict[str, dict[str, Any]], table: dict[str, Any], *,
                 "required_authority": seat.get("required_authority", "UNASSIGNED"),
                 "actor_kinds": list(seat.get("actor_kinds", ["SYSTEM"])),
                 "endpoints": [dict(endpoint) for endpoint in endpoints],
+                "shape": _shape(declared),
             })
     return {
         "map_schema": MAP_SCHEMA,
@@ -115,6 +130,25 @@ def build(manifests: dict[str, dict[str, Any]], table: dict[str, Any], *,
         "input_state_digest": input_state_digest(manifests, table),
         "capabilities": capabilities,
     }
+
+
+#: What a caller needs from an operation beyond where it is and what it costs: what it
+#: acts on, what must already be true, what it commits, and how it refuses. Carried in the
+#: map so a participant asking what it can do gets one answer from one projection instead
+#: of reading the manifests itself and building a second list.
+SHAPE_FIELDS = ("logical_endpoint", "subject", "crud", "requirement", "kernel_transition",
+                "preconditions", "commit", "refusals")
+
+
+def _shape(declared: dict[str, Any]) -> dict[str, Any]:
+    """The declared shape of one operation, in manifest order, absent fields omitted."""
+    shape: dict[str, Any] = {}
+    for field in SHAPE_FIELDS:
+        value = declared.get(field)
+        if value is None:
+            continue
+        shape[field] = list(value) if isinstance(value, list) else value
+    return shape
 
 
 def operation_standings(manifest: dict[str, Any]) -> dict[str, str]:
@@ -140,6 +174,7 @@ def _declared_defects(document: dict[str, Any],
             defects.append(f"UNDECLARED_OPERATION: {label} names no service manifest")
             continue
         standings = operation_standings(manifest)
+        declarations = {entry["operation"]: entry for entry in manifest["operations"]}
         if capability.get("operation") not in standings:
             defects.append(f"UNDECLARED_OPERATION: {label} is not an operation "
                            f"{service_id} declares")

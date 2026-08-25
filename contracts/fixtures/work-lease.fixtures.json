@@ -1,0 +1,505 @@
+[
+  {
+    "id": "CONTRACT-LEASE-POS",
+    "contract": "work-lease.schema.json",
+    "status": "PROPOSED",
+    "polarity": "positive",
+    "expected_validity": "VALID",
+    "note": "The lease this repository could have written for the work that produced it: one interactive session holding one concern, joined to the live-session registry by name, with no grant and therefore no reach past the local record.",
+    "record": {
+      "lease_schema": "soveraeign-work-lease/v1",
+      "status": "PROPOSED",
+      "lease_id": "lease:participation-substrate",
+      "concern": {
+        "kind": "concern",
+        "reference": "decisions/0056-participation-substrate-leases-and-budgets.md",
+        "capability": "governance.decide"
+      },
+      "holder": {
+        "principal_id": "urn:soveraeign:principal:instance:session-b7b8d4",
+        "relation": "PARENT",
+        "parent_lease": null,
+        "controller_principal": "urn:soveraeign:principal:human:bdo",
+        "session": "session-b7b8d4",
+        "definition": {
+          "definition_id": "claude-code-interactive",
+          "definition_kind": "agent",
+          "provenance": "SYSTEM_AUTHORED",
+          "version": "claude-opus-5[1m]",
+          "derives_from": null,
+          "source": "CLAUDE.md"
+        }
+      },
+      "grant": {
+        "grant_id": null,
+        "authority_type": null,
+        "capabilities": [],
+        "effect_ceiling": "RECORD_LOCAL"
+      },
+      "budget": {
+        "consumption": [
+          {"dimension": "wallclock_seconds", "limit": 7200},
+          {"dimension": "tool_calls", "limit": 400},
+          {"dimension": "turns", "limit": 60}
+        ],
+        "emission": [
+          {"counter": "helper_leases", "limit": 4},
+          {"counter": "branches", "limit": 1},
+          {"counter": "pull_requests", "limit": 1},
+          {"counter": "external_effects", "limit": 0}
+        ]
+      },
+      "closure": {
+        "condition": "the lease contract, its evaluator, its fixtures and its session join exist and verify.py passes against them",
+        "defeating_evidence": "a fixture declared defeating that the evaluator admits, or a check that passes without reading the record it claims to check"
+      },
+      "fence": 1,
+      "granted_at": "2026-08-24T00:00:00Z",
+      "expires_at": "2026-08-24T04:00:00Z",
+      "state": "HELD"
+    }
+  },
+  {
+    "id": "CONTRACT-LEASE-HELPER-POS",
+    "contract": "work-lease.schema.json",
+    "status": "PROPOSED",
+    "polarity": "positive",
+    "expected_validity": "VALID",
+    "note": "A helper recruited by the lease above: its own principal, its own envelope, no capability the parent lacks, and an expiry inside the parent's. Recruiting help does not move responsibility for closure.",
+    "record": {
+      "lease_schema": "soveraeign-work-lease/v1",
+      "status": "PROPOSED",
+      "lease_id": "lease:participation-substrate-fixtures",
+      "concern": {
+        "kind": "operation",
+        "reference": "contracts/fixtures/work-lease.fixtures.json",
+        "capability": "governance.decide"
+      },
+      "holder": {
+        "principal_id": "urn:soveraeign:principal:instance:helper-4f21ac",
+        "relation": "HELPER",
+        "parent_lease": "lease:participation-substrate",
+        "controller_principal": "urn:soveraeign:principal:instance:session-b7b8d4",
+        "session": "session-b7b8d4",
+        "definition": {
+          "definition_id": "sov-worker",
+          "definition_kind": "agent",
+          "provenance": "SYSTEM_AUTHORED",
+          "version": "1",
+          "derives_from": null,
+          "source": ".claude/agents/sov-worker.md"
+        }
+      },
+      "grant": {
+        "grant_id": null,
+        "authority_type": null,
+        "capabilities": [],
+        "effect_ceiling": "RECORD_LOCAL"
+      },
+      "budget": {
+        "consumption": [{"dimension": "tool_calls", "limit": 40}],
+        "emission": [{"counter": "helper_leases", "limit": 0}]
+      },
+      "closure": {
+        "condition": "one positive and one defeating entry exist for every constraint the evaluator checks",
+        "defeating_evidence": "a constraint in work_lease.py with no fixture that trips it"
+      },
+      "fence": 1,
+      "granted_at": "2026-08-24T00:30:00Z",
+      "expires_at": "2026-08-24T02:00:00Z",
+      "state": "COMPLETED",
+      "closure_evidence": {
+        "receipt_id": "receipt:lease-fixtures-1",
+        "standing_reached": "BUILT",
+        "evidence_addresses": ["contracts/fixtures/work-lease.fixtures.json"],
+        "witnessed_by": null
+      }
+    }
+  },
+  {
+    "id": "CONTRACT-LEASE-NEG-PARENT-NAMES-A-PARENT",
+    "contract": "work-lease.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "defeats": "A lease that both holds the concern and answers to another lease for it. Exactly one of those is true at a time, and the ambiguity is what makes closure ownership unreadable.",
+    "record": {
+      "lease_schema": "soveraeign-work-lease/v1",
+      "status": "PROPOSED",
+      "lease_id": "lease:ambiguous-parent",
+      "concern": {"kind": "ticket", "reference": "#101"},
+      "holder": {
+        "principal_id": "urn:soveraeign:principal:instance:session-aaaaaa",
+        "relation": "PARENT",
+        "parent_lease": "lease:somebody-else",
+        "controller_principal": "urn:soveraeign:principal:human:bdo",
+        "session": "session-aaaaaa",
+        "definition": {
+          "definition_id": "claude-code-interactive",
+          "definition_kind": "agent",
+          "provenance": "SYSTEM_AUTHORED",
+          "version": "1"
+        }
+      },
+      "grant": {"grant_id": null, "authority_type": null, "capabilities": [],
+                "effect_ceiling": "RECORD_LOCAL"},
+      "budget": {"consumption": [], "emission": []},
+      "closure": {"condition": "the ticket closes", "defeating_evidence": "it does not"},
+      "fence": 1,
+      "granted_at": "2026-08-24T00:00:00Z",
+      "expires_at": "2026-08-24T01:00:00Z",
+      "state": "HELD"
+    }
+  },
+  {
+    "id": "CONTRACT-LEASE-NEG-GRANTLESS-EXTERNAL-REACH",
+    "contract": "work-lease.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "defeats": "Identity presented as authority: a holder with no grant declaring it may change the outside world. Being registered, running and attributable confers nothing (decisions/0021, ID-8).",
+    "record": {
+      "lease_schema": "soveraeign-work-lease/v1",
+      "status": "PROPOSED",
+      "lease_id": "lease:grantless-reach",
+      "concern": {"kind": "ticket", "reference": "#102"},
+      "holder": {
+        "principal_id": "urn:soveraeign:principal:instance:session-bbbbbb",
+        "relation": "PARENT",
+        "parent_lease": null,
+        "controller_principal": "urn:soveraeign:principal:human:bdo",
+        "session": "session-bbbbbb",
+        "definition": {
+          "definition_id": "imported-autonomous-agent",
+          "definition_kind": "agent",
+          "provenance": "IMPORTED",
+          "version": "0.4.1",
+          "derives_from": "github.com/example/agent"
+        }
+      },
+      "grant": {"grant_id": null, "authority_type": null, "capabilities": [],
+                "effect_ceiling": "EXTERNAL_WORLD"},
+      "budget": {"consumption": [], "emission": []},
+      "closure": {"condition": "the release ships", "defeating_evidence": "it does not ship"},
+      "fence": 1,
+      "granted_at": "2026-08-24T00:00:00Z",
+      "expires_at": "2026-08-24T01:00:00Z",
+      "state": "HELD"
+    }
+  },
+  {
+    "id": "CONTRACT-LEASE-NEG-CLOSED-WITHOUT-EVIDENCE",
+    "contract": "work-lease.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "defeats": "A lease that closes itself on its own say-so. The executor's report is a report; closure without an address anyone else can read is an opinion.",
+    "record": {
+      "lease_schema": "soveraeign-work-lease/v1",
+      "status": "PROPOSED",
+      "lease_id": "lease:self-closed",
+      "concern": {"kind": "ticket", "reference": "#103"},
+      "holder": {
+        "principal_id": "urn:soveraeign:principal:instance:session-cccccc",
+        "relation": "PARENT",
+        "parent_lease": null,
+        "controller_principal": "urn:soveraeign:principal:human:bdo",
+        "session": "session-cccccc",
+        "definition": {
+          "definition_id": "sov-worker",
+          "definition_kind": "agent",
+          "provenance": "SYSTEM_AUTHORED",
+          "version": "1"
+        }
+      },
+      "grant": {"grant_id": null, "authority_type": null, "capabilities": [],
+                "effect_ceiling": "RECORD_LOCAL"},
+      "budget": {"consumption": [], "emission": []},
+      "closure": {"condition": "the module exists", "defeating_evidence": "it does not import"},
+      "fence": 1,
+      "granted_at": "2026-08-24T00:00:00Z",
+      "expires_at": "2026-08-24T01:00:00Z",
+      "state": "COMPLETED"
+    }
+  },
+  {
+    "id": "CONTRACT-LEASE-NEG-INVENTED-DIMENSION",
+    "contract": "work-lease.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "defeats": "A budget dimension minted by writing a new string. A measurement this repository has not declared is a decision record, not a field value (CANON.md, resource words).",
+    "record": {
+      "lease_schema": "soveraeign-work-lease/v1",
+      "status": "PROPOSED",
+      "lease_id": "lease:invented-dimension",
+      "concern": {"kind": "ticket", "reference": "#104"},
+      "holder": {
+        "principal_id": "urn:soveraeign:principal:instance:session-dddddd",
+        "relation": "PARENT",
+        "parent_lease": null,
+        "controller_principal": "urn:soveraeign:principal:human:bdo",
+        "session": "session-dddddd",
+        "definition": {
+          "definition_id": "user-workflow-nightly",
+          "definition_kind": "workflow",
+          "provenance": "USER_AUTHORED",
+          "version": "3"
+        }
+      },
+      "grant": {"grant_id": null, "authority_type": null, "capabilities": [],
+                "effect_ceiling": "RECORD_LOCAL"},
+      "budget": {
+        "consumption": [{"dimension": "context_window", "limit": 200000}],
+        "emission": []
+      },
+      "closure": {"condition": "the sweep finishes", "defeating_evidence": "it does not finish"},
+      "fence": 1,
+      "granted_at": "2026-08-24T00:00:00Z",
+      "expires_at": "2026-08-24T01:00:00Z",
+      "state": "HELD"
+    }
+  },
+  {
+    "id": "CONTRACT-LEASE-SEM-AUTHORITY-WIDENED",
+    "contract": "work-lease.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "expected_refusal": "AUTHORITY_WIDENED",
+    "defeats": "An agent minting authority for a helper it recruited. Both leases are perfectly well-formed on their own; the defect exists only in the relation between them, which is why scripts/sovkernel/work_lease.py has to check it and the schema cannot.",
+    "context": [
+      {
+        "lease_schema": "soveraeign-work-lease/v1",
+        "status": "PROPOSED",
+        "lease_id": "lease:bounded-parent",
+        "concern": {"kind": "ticket", "reference": "#105"},
+        "holder": {
+          "principal_id": "urn:soveraeign:principal:instance:session-eeeeee",
+          "relation": "PARENT",
+          "parent_lease": null,
+          "controller_principal": "urn:soveraeign:principal:human:bdo",
+          "session": "session-eeeeee",
+          "definition": {"definition_id": "sov-orchestrator", "definition_kind": "agent",
+                         "provenance": "SYSTEM_AUTHORED", "version": "1"}
+        },
+        "grant": {"grant_id": "grant:read-asset", "authority_type": "VERIFICATION",
+                  "capabilities": ["asset.read"], "effect_ceiling": "RECORD_LOCAL"},
+        "budget": {"consumption": [], "emission": [{"counter": "helper_leases", "limit": 2}]},
+        "closure": {"condition": "the audit lands", "defeating_evidence": "no audit report"},
+        "fence": 1,
+        "granted_at": "2026-08-24T00:00:00Z",
+        "expires_at": "2026-08-24T02:00:00Z",
+        "state": "HELD"
+      }
+    ],
+    "record": {
+      "lease_schema": "soveraeign-work-lease/v1",
+      "status": "PROPOSED",
+      "lease_id": "lease:overreaching-helper",
+      "concern": {"kind": "operation", "reference": "#105/retract"},
+      "holder": {
+        "principal_id": "urn:soveraeign:principal:instance:helper-ffffff",
+        "relation": "HELPER",
+        "parent_lease": "lease:bounded-parent",
+        "controller_principal": "urn:soveraeign:principal:instance:session-eeeeee",
+        "session": "session-eeeeee",
+        "definition": {"definition_id": "sov-worker", "definition_kind": "agent",
+                       "provenance": "SYSTEM_AUTHORED", "version": "1"}
+      },
+      "grant": {"grant_id": "grant:minted-by-parent", "authority_type": "VERIFICATION",
+                "capabilities": ["asset.read", "asset.retract"],
+                "effect_ceiling": "RECORD_LOCAL"},
+      "budget": {"consumption": [], "emission": []},
+      "closure": {"condition": "the retraction lands",
+                  "defeating_evidence": "the record still stands"},
+      "fence": 1,
+      "granted_at": "2026-08-24T00:10:00Z",
+      "expires_at": "2026-08-24T01:00:00Z",
+      "state": "HELD"
+    }
+  },
+  {
+    "id": "CONTRACT-LEASE-SEM-SELF-WITNESS",
+    "contract": "work-lease.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "expected_refusal": "SELF_WITNESS_REFUSED",
+    "defeats": "A builder recruiting itself as its own witness. The lease is well-formed; the principal on it is the same one that holds the work, and a build cannot witness itself (AGENTS.md, Evidence and standing).",
+    "context": [
+      {
+        "lease_schema": "soveraeign-work-lease/v1",
+        "status": "PROPOSED",
+        "lease_id": "lease:builder",
+        "concern": {"kind": "ticket", "reference": "#106"},
+        "holder": {
+          "principal_id": "urn:soveraeign:principal:instance:session-111111",
+          "relation": "PARENT",
+          "parent_lease": null,
+          "controller_principal": "urn:soveraeign:principal:human:bdo",
+          "session": "session-111111",
+          "definition": {"definition_id": "sov-worker", "definition_kind": "agent",
+                         "provenance": "SYSTEM_AUTHORED", "version": "1"}
+        },
+        "grant": {"grant_id": null, "authority_type": null, "capabilities": [],
+                  "effect_ceiling": "RECORD_LOCAL"},
+        "budget": {"consumption": [], "emission": [{"counter": "witness_leases", "limit": 1}]},
+        "closure": {"condition": "the service is witnessed",
+                    "defeating_evidence": "no independent observation exists"},
+        "fence": 1,
+        "granted_at": "2026-08-24T00:00:00Z",
+        "expires_at": "2026-08-24T02:00:00Z",
+        "state": "HELD"
+      }
+    ],
+    "record": {
+      "lease_schema": "soveraeign-work-lease/v1",
+      "status": "PROPOSED",
+      "lease_id": "lease:builder-as-witness",
+      "concern": {"kind": "operation", "reference": "#106/witness"},
+      "holder": {
+        "principal_id": "urn:soveraeign:principal:instance:session-111111",
+        "relation": "WITNESS",
+        "parent_lease": "lease:builder",
+        "controller_principal": "urn:soveraeign:principal:instance:session-111111",
+        "session": "session-111111",
+        "definition": {"definition_id": "sov-witness", "definition_kind": "agent",
+                       "provenance": "SYSTEM_AUTHORED", "version": "1"}
+      },
+      "grant": {"grant_id": null, "authority_type": null, "capabilities": [],
+                "effect_ceiling": "RECORD_LOCAL"},
+      "budget": {"consumption": [], "emission": []},
+      "closure": {"condition": "an observation is emitted",
+                  "defeating_evidence": "the observation restates the builder's report"},
+      "fence": 1,
+      "granted_at": "2026-08-24T00:20:00Z",
+      "expires_at": "2026-08-24T01:00:00Z",
+      "state": "HELD"
+    }
+  },
+  {
+    "id": "CONTRACT-LEASE-SEM-HELPER-OUTLIVES-PARENT",
+    "contract": "work-lease.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "expected_refusal": "LEASE_OUTLIVES_PARENT",
+    "defeats": "A helper still running after the lease that recruited it has expired. Nothing is wrong with either record; between the two expiries there is a running participant nobody is responsible for.",
+    "context": [
+      {
+        "lease_schema": "soveraeign-work-lease/v1",
+        "status": "PROPOSED",
+        "lease_id": "lease:short-parent",
+        "concern": {"kind": "ticket", "reference": "#107"},
+        "holder": {
+          "principal_id": "urn:soveraeign:principal:instance:session-222222",
+          "relation": "PARENT",
+          "parent_lease": null,
+          "controller_principal": "urn:soveraeign:principal:human:bdo",
+          "session": "session-222222",
+          "definition": {"definition_id": "sov-orchestrator", "definition_kind": "agent",
+                         "provenance": "SYSTEM_AUTHORED", "version": "1"}
+        },
+        "grant": {"grant_id": null, "authority_type": null, "capabilities": [],
+                  "effect_ceiling": "RECORD_LOCAL"},
+        "budget": {"consumption": [], "emission": [{"counter": "helper_leases", "limit": 3}]},
+        "closure": {"condition": "the sweep reports",
+                    "defeating_evidence": "no report is filed"},
+        "fence": 1,
+        "granted_at": "2026-08-24T00:00:00Z",
+        "expires_at": "2026-08-24T01:00:00Z",
+        "state": "HELD"
+      }
+    ],
+    "record": {
+      "lease_schema": "soveraeign-work-lease/v1",
+      "status": "PROPOSED",
+      "lease_id": "lease:orphaned-helper",
+      "concern": {"kind": "operation", "reference": "#107/sweep"},
+      "holder": {
+        "principal_id": "urn:soveraeign:principal:instance:helper-333333",
+        "relation": "HELPER",
+        "parent_lease": "lease:short-parent",
+        "controller_principal": "urn:soveraeign:principal:instance:session-222222",
+        "session": "session-222222",
+        "definition": {"definition_id": "community-sweeper", "definition_kind": "agent",
+                       "provenance": "FORKED", "version": "2.1",
+                       "derives_from": "sov-worker"}
+      },
+      "grant": {"grant_id": null, "authority_type": null, "capabilities": [],
+                "effect_ceiling": "RECORD_LOCAL"},
+      "budget": {"consumption": [{"dimension": "tokens", "limit": 50000}], "emission": []},
+      "closure": {"condition": "every file is read",
+                  "defeating_evidence": "a file is skipped without saying so"},
+      "fence": 1,
+      "granted_at": "2026-08-24T00:10:00Z",
+      "expires_at": "2026-08-24T06:00:00Z",
+      "state": "HELD"
+    }
+  },
+  {
+    "id": "CONTRACT-LEASE-SEM-CLOSED-OVER-A-HELD-HELPER",
+    "contract": "work-lease.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "expected_refusal": "CLOSURE_WITH_HELD_CHILD",
+    "defeats": "A parent declaring the concern closed while a helper it recruited is still holding part of it. This is the failure the whole contract exists for: recruiting help must not be a way to hand off responsibility for closing.",
+    "context": [
+      {
+        "lease_schema": "soveraeign-work-lease/v1",
+        "status": "PROPOSED",
+        "lease_id": "lease:closed-parent-helper",
+        "concern": {"kind": "operation", "reference": "#108/part-two"},
+        "holder": {
+          "principal_id": "urn:soveraeign:principal:instance:helper-555555",
+          "relation": "HELPER",
+          "parent_lease": "lease:closed-parent",
+          "controller_principal": "urn:soveraeign:principal:instance:session-444444",
+          "session": "session-444444",
+          "definition": {"definition_id": "sov-worker", "definition_kind": "agent",
+                         "provenance": "SYSTEM_AUTHORED", "version": "1"}
+        },
+        "grant": {"grant_id": null, "authority_type": null, "capabilities": [],
+                  "effect_ceiling": "RECORD_LOCAL"},
+        "budget": {"consumption": [], "emission": []},
+        "closure": {"condition": "part two lands", "defeating_evidence": "it does not land"},
+        "fence": 1,
+        "granted_at": "2026-08-24T00:10:00Z",
+        "expires_at": "2026-08-24T01:00:00Z",
+        "state": "HELD"
+      }
+    ],
+    "record": {
+      "lease_schema": "soveraeign-work-lease/v1",
+      "status": "PROPOSED",
+      "lease_id": "lease:closed-parent",
+      "concern": {"kind": "ticket", "reference": "#108"},
+      "holder": {
+        "principal_id": "urn:soveraeign:principal:instance:session-444444",
+        "relation": "PARENT",
+        "parent_lease": null,
+        "controller_principal": "urn:soveraeign:principal:human:bdo",
+        "session": "session-444444",
+        "definition": {"definition_id": "sov-orchestrator", "definition_kind": "agent",
+                       "provenance": "SYSTEM_AUTHORED", "version": "1"}
+      },
+      "grant": {"grant_id": null, "authority_type": null, "capabilities": [],
+                "effect_ceiling": "RECORD_LOCAL"},
+      "budget": {"consumption": [], "emission": [{"counter": "helper_leases", "limit": 2}]},
+      "closure": {"condition": "both parts land",
+                  "defeating_evidence": "one part is still being written"},
+      "fence": 1,
+      "granted_at": "2026-08-24T00:00:00Z",
+      "expires_at": "2026-08-24T02:00:00Z",
+      "state": "COMPLETED",
+      "closure_evidence": {
+        "receipt_id": "receipt:premature-1",
+        "standing_reached": "BUILT",
+        "evidence_addresses": ["reports/part-one.md"],
+        "witnessed_by": null
+      }
+    }
+  }
+]

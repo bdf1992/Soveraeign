@@ -85,6 +85,4 @@ bypasses the GitHub write crossing or leaves no attempt receipt.
 
 Bdo, 2026-08-25 interactive session, after observing merged branches accumulating:
 completed and merged feature branches should close automatically, with better automation,
-support, and tooling. The owner then supplied a bounded credential specifically so this
-repository adjustment would not wait on a manual browser step. The credential itself is
-not part of the repository, contract, workflow, receipt, or evidence.
+support, and tooling.

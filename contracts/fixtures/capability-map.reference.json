@@ -6,6 +6,7 @@
     "services/asset/contracts/service.json",
     "services/console/contracts/service.json",
     "services/gateway/contracts/service.json",
+    "services/host/contracts/service.json",
     "services/observation/contracts/service.json",
     "services/projection/contracts/service.json",
     "services/proofing/contracts/service.json",
@@ -13,7 +14,7 @@
     "services/registry/contracts/service.json",
     "contracts/capability-offices.json"
   ],
-  "input_state_digest": "b1b81b03786d86ba08516907e77bc16945204a81cafd7078a206b04c024fda00",
+  "input_state_digest": "0a28f1a582c81f56caa121677fa3febf3db7fa6c188f383be3026050ff1f0549",
   "capabilities": [
     {
       "capability_id": "asset.ingest-asset",
@@ -1463,6 +1464,505 @@
       "required_authority": "route:request",
       "actor_kinds": [
         "SYSTEM"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "host.apply-driver-update",
+      "service_id": "host",
+      "operation": "apply-driver-update",
+      "office": "FRONT",
+      "counter": "job-window",
+      "service_standing": "PROPOSED",
+      "effect_class": "EXTERNAL_WORLD",
+      "required_authority": "operate:host-drivers",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "host.install-utility",
+      "service_id": "host",
+      "operation": "install-utility",
+      "office": "FRONT",
+      "counter": "job-window",
+      "service_standing": "PROPOSED",
+      "effect_class": "EXTERNAL_WORLD",
+      "required_authority": "operate:host-utilities",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "host.list-drivers",
+      "service_id": "host",
+      "operation": "list-drivers",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:host-drivers",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "host.list-utilities",
+      "service_id": "host",
+      "operation": "list-utilities",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:host-utilities",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "host.power-off",
+      "service_id": "host",
+      "operation": "power-off",
+      "office": "FRONT",
+      "counter": "job-window",
+      "service_standing": "PROPOSED",
+      "effect_class": "EXTERNAL_WORLD",
+      "required_authority": "operate:host-power",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "host.propose-driver-update",
+      "service_id": "host",
+      "operation": "propose-driver-update",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "propose:host-driver-update",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "host.read-health",
+      "service_id": "host",
+      "operation": "read-health",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:host-health",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "host:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "host.read-network",
+      "service_id": "host",
+      "operation": "read-network",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:host-network",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "host.read-operation",
+      "service_id": "host",
+      "operation": "read-operation",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:host-operation",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "host.remove-utility",
+      "service_id": "host",
+      "operation": "remove-utility",
+      "office": "FRONT",
+      "counter": "job-window",
+      "service_standing": "PROPOSED",
+      "effect_class": "EXTERNAL_WORLD",
+      "required_authority": "operate:host-utilities",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "host.request-restart",
+      "service_id": "host",
+      "operation": "request-restart",
+      "office": "FRONT",
+      "counter": "job-window",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "request:host-restart",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL",
+        "SYSTEM"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "host.request-scan",
+      "service_id": "host",
+      "operation": "request-scan",
+      "office": "FRONT",
+      "counter": "job-window",
+      "service_standing": "PROPOSED",
+      "effect_class": "RESOURCE_CONSUMPTION",
+      "required_authority": "request:host-scan",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL",
+        "SYSTEM"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "host.restart",
+      "service_id": "host",
+      "operation": "restart",
+      "office": "FRONT",
+      "counter": "job-window",
+      "service_standing": "PROPOSED",
+      "effect_class": "EXTERNAL_WORLD",
+      "required_authority": "operate:host-power",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL",
+        "SYSTEM"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "host.suspend",
+      "service_id": "host",
+      "operation": "suspend",
+      "office": "FRONT",
+      "counter": "job-window",
+      "service_standing": "PROPOSED",
+      "effect_class": "EXTERNAL_WORLD",
+      "required_authority": "operate:host-power",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ]
+    },
+    {
+      "capability_id": "host.update-utility",
+      "service_id": "host",
+      "operation": "update-utility",
+      "office": "FRONT",
+      "counter": "job-window",
+      "service_standing": "PROPOSED",
+      "effect_class": "EXTERNAL_WORLD",
+      "required_authority": "operate:host-utilities",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
       ],
       "endpoints": [
         {

@@ -10,6 +10,7 @@ Initial declared adapter boundaries:
 | --- | --- | --- |
 | Model provider | addressed source or declared projection within its data boundary | proposal, recording, usage/cost receipt, refusal |
 | GitHub | repository, commit, and path address | captured source with exact revision provenance |
+| Local host | process execution environment | normalized read-only host snapshot or refusal |
 | Graph | canonical relationship records | rebuildable projection and traversal results |
 | Media tool | exact asset version + declared operation | derivative recording and worker report |
 
@@ -29,3 +30,8 @@ than reading a declared one (PROD-I-9). Standing: `BUILT`, self-tested, not
 witnessed with dissent: an independent observer found the custody refusal defeasible
 (`reports/2026-08-23-local-model-adapter-witness.md`). Standing of the pattern:
 `decisions/0027-local-model-adapter.md` (proposed).
+
+`adapters/host/` implements the read-only Local host row for
+`sov://host/read-health`. It reports the process execution boundary without a shell,
+mutation, elevation, or hostname disclosure. Its success supplies data to the Host
+Service; it grants no authority and does not independently observe its own reading.

@@ -39,8 +39,8 @@ class ProjectionFacts(unittest.TestCase):
 
     def test_evidence_layers_remain_independent(self) -> None:
         self.assertEqual(self.document["counts"], {
-            "declared": 102, "bound": 102, "policy_active": 33,
-            "reachable": 4, "observed": 0,
+            "declared": 117, "bound": 117, "policy_active": 34,
+            "reachable": 5, "observed": 0,
         })
         self.assertEqual(self.operation("asset.ingest-asset")["facts"], {
             "declared": True, "bound": True, "policy_active": True,
@@ -72,11 +72,12 @@ class ProjectionFacts(unittest.TestCase):
             {"name": "sov://asset/ingest-asset"})
         self.assertEqual(request["logical_endpoint"], "sov://registry/resolve")
 
-    def test_route_affordances_are_actor_neutral_across_three_services(self) -> None:
+    def test_route_affordances_are_actor_neutral_across_four_services(self) -> None:
         ingest = self.operation("asset.ingest-asset")
         read_version = self.operation("asset.read-version")
         read_thread = self.operation("console.read-thread")
         resolve_registry = self.operation("registry.resolve")
+        read_health = self.operation("host.read-health")
         unavailable_read = self.operation("asset.read-asset")
         self.assertEqual(ingest["route_affordance"], {
             "kind": "ACTION",
@@ -90,6 +91,8 @@ class ProjectionFacts(unittest.TestCase):
         self.assertEqual(resolve_registry["route_affordance"]["kind"], "READ")
         self.assertEqual(resolve_registry["route_affordance"]["reason_code"],
                          "EXACT_READ_ROUTE_ACTIVE")
+        self.assertEqual(read_health["route_affordance"]["kind"], "READ")
+        self.assertEqual(read_health["required_authority"], "read:host-health")
         self.assertEqual(unavailable_read["route_affordance"]["kind"], "INSPECT")
         self.assertEqual(unavailable_read["route_affordance"]["reason_code"],
                          "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE")
@@ -238,6 +241,19 @@ class HumanModelParity(unittest.TestCase):
             self.assertEqual(result["terminal_outcome"], "COMMITTED")
             self.assertEqual(result["terminal_event"], "registry.resolve")
             self.assertEqual(result["resolved_capability"], "asset.ingest-asset")
+            self.assertEqual(result["standing_effect"], "NONE")
+
+    def test_human_and_model_read_health_through_same_host_receipt(self) -> None:
+        self.assertTrue(self.proof["same_host_semantics"])
+        record = resolve(self.document, "host.read-health")
+        for binding in (HUMAN, MODEL):
+            result = self.proof["host_reads"][binding]
+            self.assertTrue(result["service_receipt_unchanged"])
+            self.assertEqual(result["operation_digest"], record["record_digest"])
+            self.assertEqual(result["required_authority"], "read:host-health")
+            self.assertEqual(result["terminal_outcome"], "COMMITTED")
+            self.assertEqual(result["terminal_event"], "host.read-health")
+            self.assertEqual(result["boundary"], "PROCESS_EXECUTION_HOST")
             self.assertEqual(result["standing_effect"], "NONE")
 
     def test_governed_no_is_an_actual_refused_receipt(self) -> None:

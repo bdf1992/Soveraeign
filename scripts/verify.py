@@ -183,6 +183,12 @@ CHECKS = (
           "the participant's own tests; these establish BUILT evidence about local mechanics "
           "and are explicitly NOT independent of the code they exercise",
           ("services/asset/tests",)),
+    Check("Host Service reference tests",
+          [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
+          ROOT / "services" / "host",
+          "the participant's own positive and defeating cases; they establish BUILT evidence "
+          "for the read-health mechanics only and never witness the adapter or host effect",
+          ("services/host/tests", "services/host/contracts", "adapters/host")),
     Check("operation surface page",
           [sys.executable, "scripts/sov_surface.py", "check"], ROOT,
           "rebuilds the Node Interface and its human page from current source digests, then "

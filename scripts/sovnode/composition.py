@@ -13,8 +13,9 @@ import json
 import sys
 
 ROOT = Path(__file__).resolve().parents[2]
-for service in ("gateway", "asset", "console", "record", "registry"):
+for service in ("gateway", "asset", "console", "host", "record", "registry"):
     sys.path.insert(0, str(ROOT / "services" / service / "src"))
+sys.path.insert(0, str(ROOT / "adapters" / "host"))
 
 from soveraeign_asset_service import AssetService  # noqa: E402
 from soveraeign_asset_service.routes import AssetRoutes  # noqa: E402
@@ -22,8 +23,10 @@ from soveraeign_console_service import ConsoleRoutes, ConsoleService  # noqa: E4
 from soveraeign_console_service import authority as console_authority  # noqa: E402
 from soveraeign_console_service.refusals import AuthorityRefused  # noqa: E402
 from soveraeign_gateway_service import Gateway, load_surface  # noqa: E402
+from soveraeign_host_service import HostPort, HostRoutes, HostService  # noqa: E402
 from soveraeign_record_service import RecordService  # noqa: E402
 from soveraeign_registry_service import RegistryRoutes, RegistryService  # noqa: E402
+from local_host_adapter import LocalHostAdapter  # noqa: E402
 from sovkernel.closure_inputs import rebuild as rebuild_closure  # noqa: E402
 from sovkernel.kernel_binding import binding_defects  # noqa: E402
 from sovkernel.kernel_sources import load_source_digests  # noqa: E402
@@ -50,6 +53,13 @@ CONSOLE_ROUTE_SOURCES = COMMON_ROUTE_SOURCES + (
     "services/console/src/soveraeign_console_service/core.py",
     "services/console/src/soveraeign_console_service/continuity.py",
     "services/console/src/soveraeign_console_service/routes.py",
+)
+HOST_ROUTE_SOURCES = COMMON_ROUTE_SOURCES + (
+    "services/host/contracts/host-health.schema.json",
+    "services/host/src/soveraeign_host_service/core.py",
+    "services/host/src/soveraeign_host_service/ports.py",
+    "services/host/src/soveraeign_host_service/routes.py",
+    "adapters/host/local_host_adapter.py",
 )
 
 
@@ -89,6 +99,17 @@ def route_census() -> list[dict[str, Any]]:
             "optional_arguments": list(arguments["optional"]),
             "source_addresses": list(CONSOLE_ROUTE_SOURCES),
         })
+    for operation in HostRoutes.operation_ids():
+        arguments = HostRoutes.argument_contract(operation)
+        routes.append({
+            "operation_id": f"host.{operation}",
+            "logical_endpoint": f"sov://host/{operation}",
+            "transport": "IN_PROCESS",
+            "address": "host:in-process",
+            "required_arguments": list(arguments["required"]),
+            "optional_arguments": list(arguments["optional"]),
+            "source_addresses": list(HOST_ROUTE_SOURCES),
+        })
     return routes
 
 
@@ -104,7 +125,7 @@ def _self_identity() -> dict[str, Any]:
 class LocalActionPath:
     """Compose local participants behind one transport-neutral Gateway."""
 
-    def __init__(self, state_root: str | Path) -> None:
+    def __init__(self, state_root: str | Path, *, host_adapter: HostPort | None = None) -> None:
         identity = _self_identity()
         self.node_id = identity["node_id"]
         self.root_seat = identity["root_seat"]
@@ -126,6 +147,8 @@ class LocalActionPath:
         if defects:
             raise RuntimeError("local composition refused: " + "; ".join(defects))
         asset_routes = AssetRoutes(self.asset)
+        self.host = HostService(self.record, host_adapter or LocalHostAdapter())
+        host_routes = HostRoutes(self.host)
         self.registry = RegistryService(
             self.record, ROOT, closure, manifests, table, index_sources)
         registry_routes = RegistryRoutes(self.registry)
@@ -139,7 +162,8 @@ class LocalActionPath:
             self.record, capability_map, manifests, table, authority,
             {"asset:in-process": asset_routes.call,
              "registry:in-process": registry_routes.call,
-             "console:in-process": console_routes.call},
+             "console:in-process": console_routes.call,
+             "host:in-process": host_routes.call},
             authority_denials=(AuthorityRefused,),
         )
 

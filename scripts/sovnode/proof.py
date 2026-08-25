@@ -12,6 +12,26 @@ from sovnode.composition import LocalActionPath
 from sovnode.interface_inputs import rebuild
 
 
+class _ProofHostAdapter:
+    """Deterministic Host Port given for parity; not an observation of the test host."""
+
+    adapter_id = "urn:soveraeign:adapter:node-interface-proof-host:v1"
+
+    def read_health(self) -> dict[str, Any]:
+        return {
+            "schema_version": "soveraeign-host-health/v1",
+            "adapter_id": self.adapter_id,
+            "captured_at": "2026-08-25T12:00:00+00:00",
+            "boundary": "PROCESS_EXECUTION_HOST",
+            "platform": {"system": "ProofOS", "release": "1", "machine": "proof64"},
+            "processor": {"logical_count": 2, "load_average": [0.0, 0.0, 0.0]},
+            "memory": {"total_bytes": 4096, "available_bytes": 2048},
+            "uptime_seconds": 60.0,
+            "boot_id": "proof-boot-1",
+            "limitations": ["deterministic_fixture_not_live_observation"],
+        }
+
+
 def _reason(receipt: dict[str, Any]) -> str | None:
     payload = receipt.get("payload")
     if isinstance(payload, dict):
@@ -28,10 +48,12 @@ def run() -> dict[str, Any]:
         raise RuntimeError("Node Interface refused: " + "; ".join(defects))
     operation = resolve(document, "asset.ingest-asset")
     registry_operation = resolve(document, "registry.resolve")
+    host_operation = resolve(document, "host.read-health")
     human_read, model_read = render_human(operation), render_model(operation)
     payload = b"human and model cross the same node interface\n"
     action_results: dict[str, dict[str, Any]] = {}
     registry_results: dict[str, dict[str, Any]] = {}
+    host_results: dict[str, dict[str, Any]] = {}
 
     with TemporaryDirectory() as work:
         root = Path(work)
@@ -84,6 +106,32 @@ def run() -> dict[str, Any]:
                         returned == node.record.entry(returned["entry_id"])),
                 }
 
+            with LocalActionPath(
+                    root / f"host-{binding_kind.lower()}",
+                    host_adapter=_ProofHostAdapter()) as node:
+                node.console.grant(actor, host_operation["required_authority"],
+                                   "host:local", granted_by="interface-proof-given")
+                request = invocation_request(
+                    document, host_operation["operation_id"], binding_kind,
+                    actor, "host:local", {})
+                returned = node.dispatch(request)
+                detail = returned["payload"]["detail"]
+                snapshot = detail["snapshot"]
+                host_results[binding_kind] = {
+                    "binding_id": request["binding_id"],
+                    "operation_digest": request["interface_operation_digest"],
+                    "required_authority": host_operation["required_authority"],
+                    "terminal_receipt_id": returned["entry_id"],
+                    "terminal_outcome": returned["payload"]["outcome"],
+                    "terminal_event": returned["payload"]["event"],
+                    "boundary": snapshot["boundary"],
+                    "adapter_id": snapshot["adapter_id"],
+                    "snapshot_schema": snapshot["schema_version"],
+                    "standing_effect": detail["standing_effect"],
+                    "service_receipt_unchanged": (
+                        returned == node.record.entry(returned["entry_id"])),
+                }
+
         with LocalActionPath(root / "refused") as node:
             request = invocation_request(
                 document, operation["operation_id"], HUMAN, "interface-refused", "asset:new",
@@ -107,6 +155,11 @@ def run() -> dict[str, Any]:
                if name not in ("binding_id", "terminal_receipt_id")}
         for kind, result in registry_results.items()
     }
+    host_signatures = {
+        kind: {name: value for name, value in result.items()
+               if name not in ("binding_id", "terminal_receipt_id")}
+        for kind, result in host_results.items()
+    }
     return {
         "proof_schema": "soveraeign-node-interface-proof/v1",
         "standing": "BUILT_EVIDENCE_SETTLES_NOTHING",
@@ -121,6 +174,8 @@ def run() -> dict[str, Any]:
         "same_action_semantics": semantic_signatures[HUMAN] == semantic_signatures[MODEL],
         "registry_reads": registry_results,
         "same_registry_semantics": registry_signatures[HUMAN] == registry_signatures[MODEL],
+        "host_reads": host_results,
+        "same_host_semantics": host_signatures[HUMAN] == host_signatures[MODEL],
         "refusal": {
             "outcome": refusal["payload"]["outcome"],
             "reason_code": _reason(refusal),

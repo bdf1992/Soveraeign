@@ -42,14 +42,14 @@ class SurfaceProjection(unittest.TestCase):
         self.assertIn("INSPECT", section)
         self.assertIn("ACTIVE_POLICY_HAS_NO_EXACT_ROUTE", section)
 
-    def test_only_the_four_exact_service_owned_routes_offer_human_gestures(self) -> None:
+    def test_only_the_five_exact_service_owned_routes_offer_human_gestures(self) -> None:
         reachable = [item for item in self.interface["operations"]
                      if item["facts"]["reachable"]]
         self.assertEqual([item["operation_id"] for item in reachable],
                          ["asset.ingest-asset", "asset.read-version",
-                          "console.read-thread", "registry.resolve"])
+                          "console.read-thread", "host.read-health", "registry.resolve"])
         for operation in ("asset.ingest-asset", "asset.read-version",
-                          "console.read-thread", "registry.resolve"):
+                          "console.read-thread", "host.read-health", "registry.resolve"):
             marker = f'<code class="id">{operation}</code>'
             section = self.page.split(marker, 1)[1].split("</details>", 1)[0]
             self.assertIn("sov_surface.py try", section)
@@ -59,6 +59,8 @@ class SurfaceProjection(unittest.TestCase):
             '<code class="id">asset.read-version</code>', 1)[1].split("</details>", 1)[0])
         self.assertIn("READ", self.page.split(
             '<code class="id">console.read-thread</code>', 1)[1].split("</details>", 1)[0])
+        self.assertIn("READ", self.page.split(
+            '<code class="id">host.read-health</code>', 1)[1].split("</details>", 1)[0])
         self.assertIn("READ", self.page.split(
             '<code class="id">registry.resolve</code>', 1)[1].split("</details>", 1)[0])
 

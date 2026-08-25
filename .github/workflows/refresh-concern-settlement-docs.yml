@@ -1,0 +1,35 @@
+name: refresh concern settlement docs
+
+on:
+  push:
+    branches:
+      - policy/concern-source-satisfaction
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: policy/concern-source-satisfaction
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build documentation projection
+        run: python scripts/sov_docs.py build
+      - name: Commit refreshed projection
+        shell: bash
+        run: |
+          if git diff --quiet -- docs/documentation.html; then
+            echo "documentation already current"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/documentation.html
+          git commit -m "docs: refresh documentation projection"
+          git push origin HEAD:policy/concern-source-satisfaction

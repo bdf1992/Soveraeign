@@ -121,7 +121,7 @@ def _operation_record(capability: dict[str, Any], declaration: dict[str, Any],
         },
         "sources": _source_records(source_addresses, digests),
     }
-    record["affordance"] = derive_affordance(record)
+    record["route_affordance"] = derive_affordance(record)
     record["record_digest"] = _digest(record)
     return record
 
@@ -210,6 +210,13 @@ def build(node_registry: dict[str, Any], topology: dict[str, Any],
                 "code": "HARNESS_STATE_NOT_PROJECTED",
                 "explanation": (
                     "Host schedules and workflows are harness plumbing, not governed service state."
+                ),
+            },
+            {
+                "code": "OPERATOR_AUTHORITY_NOT_PROJECTED",
+                "explanation": (
+                    "Bindings expose required authority but do not project a live operator grant; "
+                    "the Gateway rechecks authority for every request."
                 ),
             },
         ],

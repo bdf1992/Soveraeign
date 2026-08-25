@@ -35,6 +35,7 @@ COMMON_ROUTE_SOURCES = (
 )
 ASSET_ROUTE_SOURCES = COMMON_ROUTE_SOURCES + (
     "services/asset/src/soveraeign_asset_service/core.py",
+    "services/asset/src/soveraeign_asset_service/custody.py",
     "services/asset/src/soveraeign_asset_service/routes.py",
 )
 REGISTRY_ROUTE_SOURCES = COMMON_ROUTE_SOURCES + (

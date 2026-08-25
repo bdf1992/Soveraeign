@@ -42,25 +42,27 @@ class SurfaceProjection(unittest.TestCase):
         self.assertIn("INSPECT", section)
         self.assertIn("ACTIVE_POLICY_HAS_NO_EXACT_ROUTE", section)
 
-    def test_only_the_two_exact_service_owned_routes_are_actionable(self) -> None:
+    def test_only_the_three_exact_service_owned_routes_offer_human_gestures(self) -> None:
         reachable = [item for item in self.interface["operations"]
                      if item["facts"]["reachable"]]
         self.assertEqual([item["operation_id"] for item in reachable],
-                         ["asset.ingest-asset", "registry.resolve"])
-        for operation in ("asset.ingest-asset", "registry.resolve"):
+                         ["asset.ingest-asset", "asset.read-version", "registry.resolve"])
+        for operation in ("asset.ingest-asset", "asset.read-version", "registry.resolve"):
             marker = f'<code class="id">{operation}</code>'
             section = self.page.split(marker, 1)[1].split("</details>", 1)[0]
             self.assertIn("sov_surface.py try", section)
         self.assertIn("ACTION", self.page.split(
             '<code class="id">asset.ingest-asset</code>', 1)[1].split("</details>", 1)[0])
         self.assertIn("READ", self.page.split(
+            '<code class="id">asset.read-version</code>', 1)[1].split("</details>", 1)[0])
+        self.assertIn("READ", self.page.split(
             '<code class="id">registry.resolve</code>', 1)[1].split("</details>", 1)[0])
 
     def test_every_operation_has_exactly_one_derived_affordance(self) -> None:
-        kinds = {item["affordance"]["kind"] for item in self.interface["operations"]}
+        kinds = {item["route_affordance"]["kind"] for item in self.interface["operations"]}
         self.assertEqual(kinds, {"ACTION", "READ", "INSPECT"})
         self.assertEqual(
-            sum(item["affordance"]["kind"] in {"ACTION", "READ"}
+            sum(item["route_affordance"]["kind"] in {"ACTION", "READ"}
                 for item in self.interface["operations"]),
             self.interface["counts"]["reachable"],
         )
@@ -72,6 +74,7 @@ class SurfaceProjection(unittest.TestCase):
         self.assertIn("asset.read-asset", self.page)
         self.assertIn("MODEL_BINDINGS_NOT_PROJECTED", self.page)
         self.assertIn("HARNESS_STATE_NOT_PROJECTED", self.page)
+        self.assertIn("OPERATOR_AUTHORITY_NOT_PROJECTED", self.page)
 
     def test_rendering_claims_neither_observation_nor_authority(self) -> None:
         self.assertEqual(self.interface["counts"]["observed"], 0)

@@ -7,6 +7,7 @@ from typing import Any
 import json
 
 from sovnode.affordances import INVOKABLE
+from sovnode.affordances import binding_admission
 from sovnode.affordances import defects as affordance_defects
 
 HUMAN = "HUMAN"
@@ -43,13 +44,15 @@ def resolve(document: dict[str, Any], operation_id: str) -> dict[str, Any]:
         raise BindingRefusal("INTERFACE_RECORD_DRIFT", operation_id)
     defects = affordance_defects(record)
     if defects:
-        raise BindingRefusal("AFFORDANCE_DRIFT", "; ".join(defects))
+        raise BindingRefusal("ROUTE_AFFORDANCE_DRIFT", "; ".join(defects))
     return record
 
 
 def render_model(record: dict[str, Any]) -> str:
-    """Typed JSON for a model; the underlying record is unchanged."""
-    return json.dumps(record, indent=2, sort_keys=True)
+    """Typed Model projection with actor-kind admission kept separate from its route."""
+    projected = dict(record)
+    projected["binding_admission"] = binding_admission(record, MODEL)
+    return json.dumps(projected)
 
 
 def render_human(record: dict[str, Any]) -> str:
@@ -59,6 +62,7 @@ def render_human(record: dict[str, Any]) -> str:
     sources = "\n".join(
         f"  {source['digest'][:12]}  {source['address']}" for source in record["sources"])
     choices = ", ".join(record["legal_choices"]) or "none"
+    admission = binding_admission(record, HUMAN)
     return (
         f"{record['operation_id']}  [{record['record_digest'][:12]}]\n"
         f"{record['logical_endpoint']}\n"
@@ -66,8 +70,10 @@ def render_human(record: dict[str, Any]) -> str:
         f"authority  {record['required_authority']}\n"
         f"effect     {record['effect_class']}\n"
         f"actors     {', '.join(record['actor_kinds'])}\n"
-        f"affordance {record['affordance']['kind']} "
-        f"({record['affordance']['reason_code']})\n"
+        f"route      {record['route_affordance']['kind']} "
+        f"({record['route_affordance']['reason_code']})\n"
+        f"binding    HUMAN {'admitted' if admission['admitted'] else 'not admitted'} "
+        f"({admission['reason_code']})\n"
         f"transition {record['kernel_transition'] or 'unmapped'}\n"
         f"choices    {choices}\n"
         f"sources\n{sources}"
@@ -80,12 +86,10 @@ def invocation_request(document: dict[str, Any], operation_id: str, binding_kind
     if binding_kind not in BINDING_IDS:
         raise BindingRefusal("BINDING_UNKNOWN", binding_kind)
     record = resolve(document, operation_id)
-    if record["affordance"]["kind"] not in INVOKABLE:
-        raise BindingRefusal("OPERATION_NOT_REACHABLE", operation_id)
-    if not record["facts"]["reachable"]:
-        raise BindingRefusal("OPERATION_NOT_REACHABLE", operation_id)
     if binding_kind not in record["actor_kinds"]:
         raise BindingRefusal("ACTOR_KIND_NOT_ADMITTED", operation_id)
+    if record["route_affordance"]["kind"] not in INVOKABLE:
+        raise BindingRefusal("OPERATION_NOT_REACHABLE", operation_id)
     routes = [route for route in record["reachability"] if route["policy_active"]]
     if len(routes) != 1:
         raise BindingRefusal("ROUTE_AMBIGUOUS", operation_id)

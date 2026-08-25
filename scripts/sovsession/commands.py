@@ -16,6 +16,7 @@ import os
 import subprocess
 
 from sovsession import brief as briefmod
+from sovsession import principals
 from sovsession import claims as claimsmod
 from sovsession import guard as guardmod
 from sovsession import store
@@ -54,9 +55,12 @@ def _emit(payload: Any, as_json: bool, text: str = "") -> None:
 def cmd_register(args: argparse.Namespace) -> int:
     """Record that this session is live, and print the briefing it should read."""
     root, directory, name, tree = _context(args.name)
+    claim = principals.resolve(root, name)
     store.append(directory, store.SESSIONS_LOG, {
         "event": "register",
         "session": name,
+        "principal": claim["principal"],
+        "verification": claim["verification"],
         "pid": int(os.environ.get("CLAUDE_PID", 0) or 0),
         "tree": tree,
         "branch": briefmod.branch_of(root),
@@ -65,6 +69,14 @@ def cmd_register(args: argparse.Namespace) -> int:
     data = briefmod.collect(root, directory, name, tree)
     _emit(data, args.as_json, briefmod.render(data))
     return 0
+
+
+def cmd_principal(args: argparse.Namespace) -> int:
+    """Name the principal this session speaks as, and how strongly the registry claims it."""
+    root, _, name, _ = _context(args.name)
+    claim = principals.resolve(root, name)
+    _emit(claim, args.as_json, principals.render(claim))
+    return 0 if claim["principal"] and not claim["defects"] else 1
 
 
 def cmd_heartbeat(args: argparse.Namespace) -> int:

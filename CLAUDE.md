@@ -129,6 +129,13 @@ evidenced result, never permission to begin
 
 ## How we launch things and watch them
 
+- One concern, all the way: Workflow `sov-loop` with `{ objective: "...",
+  domain: "...", plan_only: true }`. It runs control, orchestration, work, an
+  independent witness, then `python scripts/sov_land.py`, the only place in the
+  repository that commits and merges. The gate grades the landing against
+  `contracts/standing-grants.json`; the shipped grant is `PROPOSED`, so it
+  presently refuses every landing until Bdo ratifies it
+  (`decisions/0061-standing-authorization-and-the-landing-loop.md`).
 - Whole stack: Workflow `sov-federation`, optionally
   `{ domains: [...], objective: "...", sequential: true }`.
 - One domain: Workflow `sov-<domain>` with `{ objective: "..." }`; domains

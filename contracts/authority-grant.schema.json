@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/authority-grant.schema.json",
+  "title": "Soveraeign Authority Grant (PROPOSED, decisions/0061)",
+  "description": "The AuthorityGrant object SPEC.md declares at its Authority section, compiled into a machine contract. A grant is typed, scoped, budgeted, time-bounded, and revocable; an authority check evaluates type, capability, scope, budget, time, and revocation at the attempted transition (SPEC.md, PROD-I-5). A grant is the only thing that carries authority: a lease says who is on the hook, a receipt says what happened, and neither confers anything. Semantic constraints a schema cannot express - a path outside scope, an exhausted budget, a witness that was inside the build - are checked by scripts/sovkernel/authority.py and named in the fixtures that defeat them.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "grant_schema",
+    "status",
+    "grant_id",
+    "issuer_id",
+    "actor_id",
+    "authority_type",
+    "capabilities",
+    "scope",
+    "budget",
+    "effect_ceiling",
+    "valid_from",
+    "valid_until",
+    "revoked_at"
+  ],
+  "properties": {
+    "grant_schema": {"const": "soveraeign-authority-grant/v1"},
+    "status": {"enum": ["PROPOSED", "RATIFIED"]},
+    "grant_id": {"type": "string", "pattern": "^grant:[a-z0-9][a-z0-9-]*$"},
+    "issuer_id": {
+      "description": "Who issued it. JUDGEMENT authority may be issued by the owner and by nobody else; the evaluator enforces that, not this schema.",
+      "type": "string",
+      "minLength": 1
+    },
+    "actor_id": {
+      "description": "Who may exercise it. A profile name such as `sov` names any participant loaded under that profile, which is what makes one grant serve both a human-driven session and a launched agent.",
+      "type": "string",
+      "minLength": 1
+    },
+    "authority_type": {"enum": ["VERIFICATION", "JUDGEMENT"]},
+    "capabilities": {
+      "description": "The named transitions this grant covers. `*` is not admitted: a grant that covers everything is not scoped, and PROD-I-5 requires scope.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^[a-z][a-z0-9-]*[.][a-z][a-z0-9-]*$"}
+    },
+    "scope": {"$ref": "#/$defs/scope"},
+    "budget": {"$ref": "#/$defs/budget"},
+    "effect_ceiling": {
+      "description": "The furthest effect class this grant reaches. A request declaring a heavier class than the ceiling is refused even inside scope.",
+      "enum": ["RECORD_LOCAL", "RESOURCE_CONSUMPTION", "EXTERNAL_WORLD"]
+    },
+    "preconditions": {"$ref": "#/$defs/preconditions"},
+    "valid_from": {"type": "string", "format": "date-time"},
+    "valid_until": {
+      "description": "A grant with no end is not a grant. An expiry that has to be renewed is what keeps a standing authorization a decision rather than a habit.",
+      "type": "string",
+      "format": "date-time"
+    },
+    "revoked_at": {
+      "anyOf": [{"type": "string", "format": "date-time"}, {"type": "null"}]
+    },
+    "note": {"type": "string"}
+  },
+  "$defs": {
+    "scope": {
+      "description": "Where the grant reaches in the repository. Prefixes, matched against the paths a request declares it changed. An exclusion always beats an inclusion, so a narrower rule cannot be widened by adding a broader one.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["paths", "excluded_paths"],
+      "properties": {
+        "paths": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "excluded_paths": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "branches": {
+          "description": "Which branches the grant may land on. Absent means the working branch only.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "budget": {
+      "description": "What exercising the grant may spend, in one named unit. A null ceiling is uncapped and is admitted only for a RECORD_LOCAL grant, because an uncapped grant that can consume resources is the case PROD-I-5 names as refusing visibly.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["unit", "ceiling"],
+      "properties": {
+        "unit": {"enum": ["agent_invocations", "landings", "none"]},
+        "ceiling": {
+          "anyOf": [{"type": "integer", "minimum": 1}, {"type": "null"}]
+        }
+      }
+    },
+    "preconditions": {
+      "description": "What must already be true and evidenced before the grant may be exercised. Each named check must be present in the request's evidence and reading PASS; a check that is absent is absent, never satisfied.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "required_checks": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "requires_independent_observation": {"type": "boolean"}
+      }
+    }
+  }
+}

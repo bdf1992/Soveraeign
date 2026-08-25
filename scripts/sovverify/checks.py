@@ -121,6 +121,15 @@ CHECKS = (
           "raising the work-in-progress ceiling is a contract change with a case behind it",
           ("contracts/closure-ownership.json",
            "conformance/fixtures/closure/handoff-cases.json")),
+    Check("standing authority grants", [sys.executable, "scripts/sov_grant.py", "selfcheck"],
+          ROOT,
+          "grades a declared corpus of requests against grants the corpus itself carries, so "
+          "the evaluator is never asked whether the issued registry is correct, only what it "
+          "admits; it also validates every issued grant against the schema and refuses a "
+          "corpus that leaves any reachable refusal code unproven, which is what stops a "
+          "grant sitting in the registry looking authoritative while no case can exercise it",
+          ("contracts/authority-grant.schema.json", "contracts/standing-grants.json",
+           "conformance/fixtures/authority/grant-cases.json")),
     Check("node registry", [sys.executable, "scripts/sov_node.py", "validate"], ROOT,
           "reads the checked-in registry and the seat topology and grades one against the "
           "other; it contacts no peer and opens no socket, so the check cannot pass or fail "

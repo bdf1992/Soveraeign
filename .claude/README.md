@@ -31,11 +31,11 @@ other. **Which layer each occupies is an open judgement item for Bdo**; see
 | Prefix | Standing | Shape |
 | --- | --- | --- |
 | `sdlc-` | decision `0013-domain-mapped-sdlc-loop.md`, merged | tier and domain skills; no executable orchestration |
-| `sov-` | decision `0026-federation-harness.md`, proposed | domain skills, four role agents, seventeen executable workflows |
+| `sov-` | decision `0026-federation-harness.md`, proposed | domain skills, four role agents, eighteen executable workflows |
 
 One tension the merge does not dissolve: this file states that executable
 orchestration scripts are not admitted before their logical specification and
-defeating fixtures exist, and the `sov-` family ships seventeen of them. Either
+defeating fixtures exist, and the `sov-` family ships eighteen of them. Either
 those workflows fall outside the rule because they orchestrate harness agents
 rather than kernel operations, or they are currently inadmissible. That is a
 judgement, not a merge mechanic.
@@ -142,6 +142,17 @@ Bdo.
 - `workflows/sov-<domain>.js` — domain process (Scope -> Build -> Witness):
   Scope runs sov-orchestrator, Build runs sov-worker, Witness runs
   sov-witness.
+- `workflows/sov-loop.js` — one concern from selected to landed: Select
+  (sov-controller names the concern and checks it against the standing grant's
+  scope) -> Plan (sov-orchestrator) -> Build (sov-worker) -> Witness (an
+  independent sov-witness that writes its observation to `reports/observations/`)
+  -> Land. The Land phase runs `python scripts/sov_land.py`, the only place in
+  the repository that commits and merges; it grades the request against
+  `contracts/standing-grants.json` and refuses with the kernel's own refusal
+  code when the grant does not cover it. Every other workflow here stops at an
+  uncommitted tree. Standing: `decisions/0061-standing-authorization-and-the-landing-loop.md`
+  (proposed, and the shipped grant is `PROPOSED`, so the gate presently refuses
+  every landing until Bdo ratifies it).
 - `workflows/sov-qa.js` — cross-domain QA sweep: sov-witness observes the
   current working tree per domain and aggregates residuals; builds nothing.
 - `workflows/sov-baseline.js` — foundational control loop run before a
@@ -174,6 +185,11 @@ Bdo.
 
 ### Invocation
 
+- One concern, all the way: run workflow `sov-loop` with
+  `{ objective: "...", domain: "...", target: "main", plan_only: true }`.
+  `plan_only` rehearses the gate without landing, and the loop falls back to a
+  rehearsal on its own whenever the witness dissents or the concern reaches
+  outside the standing grant.
 - Whole stack: run workflow `sov-federation` (optionally with
   `{ domains: [...], objective: "...", sequential: true }`; sequential keeps
   each domain's verify run attributable at the cost of wall-clock).

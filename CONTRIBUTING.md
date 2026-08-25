@@ -190,6 +190,57 @@ whose transition is requested.
 Prefer a small vertical slice that produces a real receipt over a broad layer of
 framework abstractions.
 
+## Carrying a concern to closure
+
+A contributor who takes a bounded concern carries it to a landed result:
+inspect, implement, test, recruit a helper, repair, verify, then present or
+land. `AGENTS.md`, Closure ownership, is normative; this is the working path
+through it, and `contracts/closure-ownership.json` is the table both read.
+
+The coordination surface above exists to make work legible, not to stand in
+for it. An issue, a branch, a pull request, a review finding, a TODO, or a
+question for Bdo records a concern; none of them advances one. Opening one is
+progress only when it is the shortest remaining path to the result.
+
+- Settle ordinary reversible engineering choices yourself. Which reachable
+  design, what to call a local symbol, what the defeating case should be, when
+  to split an oversized module — these are yours, and asking another tier for
+  one is a defect rather than caution.
+- Recruit a helper model or subagent when a second reading would help, without
+  asking anyone. Point it at the defect you cannot see, the missing test, the
+  scope drift, the abstraction you did not need, and the authority you assumed.
+  Then repair what it finds. A helper that read or edited the change is inside
+  your build and can never witness it.
+- Repair review findings and failing checks inside the concern. A finding
+  turned into a second ticket has moved the defect away from the work that owns
+  it.
+- Keep one bounded concern, one branch, one pull request. Chasing CI, review
+  findings, rebases, and ordinary merge work to completion is part of the
+  concern.
+- Absorb follow-on work that stays inside the same service, the same effect
+  class, and the same authority. Crossing any one of those three mints a
+  separate concern. That is the whole line between absorption and scope creep.
+- Hand off only at one of five seams: `AUTHORITY_SEAM`, `POLICY_SEAM`,
+  `EFFECT_SEAM`, `DEPENDENCY_SEAM`, `ACCEPTANCE_SEAM`. Judgement is asked of
+  Bdo and of no one else.
+
+Write a handoff as a `soveraeign-closure-handoff/v1` claim and grade it before
+you send it:
+
+```bash
+python scripts/sov_closure.py loop
+python scripts/sov_closure.py judge <claim.json>
+```
+
+`loop` prints the declared loop, the work-in-progress ceiling, and the seams.
+`judge` returns `PERMITTED` with the seam it accepted, or `REFUSED` with the
+code and the reason. A refused claim is work you still hold.
+`python scripts/sov_closure.py selfcheck` proves every declared refusal fires,
+and `python scripts/verify.py` runs it for you.
+
+Bdo's gate does not change: acceptance over a finished evidenced result, never
+approval to begin (`decisions/0023-acceptance-not-approval.md`).
+
 ## Development baseline
 
 Phase I proposes Python 3.11+, the standard library, SQLite, a filesystem

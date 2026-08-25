@@ -5,7 +5,7 @@
     "repository": "bdf1992/Soveraeign",
     "root_issue": 1
   },
-  "synced_at": "2026-08-24T15:52:36Z",
+  "synced_at": "2026-08-25T00:18:23Z",
   "issues": {
     "1": {
       "number": 1,
@@ -351,7 +351,7 @@
         "village: ground"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/7",
-      "updated_at": "2026-08-24T15:45:58Z",
+      "updated_at": "2026-08-25T00:18:16Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -365,12 +365,12 @@
         "village": "ground-and-evidence",
         "village_issue": "#4",
         "parent": "#1",
-        "standing": "OPEN",
+        "standing": "BUILT_SELF_TESTED_NOT_WITNESSED",
         "horizon": "NOW",
         "authority": "Bdo/phase-gate; delegated-verification",
         "effect_class": "RECORD_LOCAL",
-        "evidence_pointer": "PENDING",
-        "last_observed_at": null,
+        "evidence_pointer": "services/record/",
+        "last_observed_at": "2026-08-24T00:00:00Z",
         "walker_receipt": "PENDING",
         "demotion_pointer": "#demotion-pointer",
         "dependency_channels": [
@@ -771,7 +771,7 @@
         "village: motion"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/16",
-      "updated_at": "2026-08-24T15:46:09Z",
+      "updated_at": "2026-08-24T16:23:48Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [
@@ -1656,7 +1656,7 @@
         "village: ground"
       ],
       "url": "https://github.com/bdf1992/Soveraeign/issues/32",
-      "updated_at": "2026-08-24T15:46:28Z",
+      "updated_at": "2026-08-24T18:02:54Z",
       "metadata": {
         "issue_schema": "soveraeign-ticket/v1",
         "tags": [

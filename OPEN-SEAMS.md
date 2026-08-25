@@ -190,6 +190,7 @@ a receipt cannot tell which gateway refused.
 
 `NAMING.md` owns the collision screen and Bdo owns naming. Nothing is renamed here.
 
+
 ## S19 · Who publishes: an operator or a seat
 
 `contracts/public-projection.schema.json` requires every published entry to name a
@@ -213,3 +214,52 @@ one of the two contracts is naming it wrongly. `decisions/0020` owns seat topolo
 
 Until it is settled, a public projection built from console records cannot fill
 `published_by` honestly, and the fixtures that exercise it supply the seat by hand.
+
+## S20 · Two ladders named requirement — closed 2026-08-24
+
+`#41` and `#48` name a `Requirement` that is an obligation a skill carries — "QA
+requirements may cover repository verification and independent observation". `PRD.md`
+names a requirement that the phase must prove. The attribution spine uses the second. Both
+were about to be mechanized in typed graphs, where a reader following a `Requirement` edge
+could not have told which ladder it was on.
+
+Caught before either half landed, which is the difference from S18. Bdo ruled 2026-08-24
+(`decisions/0052`): bare `Requirement` is reserved for the product ladder, the `#41`/`#48`
+concept is `CompetenceRequirement`, and `PROD-I-*` is not renamed.
+`CLASSIFICATION.md` owns the distinction.
+
+**Residual.** `#41` and `#48` still carry the unqualified word in their live bodies on
+GitHub. Amending them is an attended external action and has not been taken;
+`decisions/0052` carries the exact wording.
+
+## S21 · The contract names a terminal no harness role can reach
+
+`AGENTS.md`, Closure ownership, requires a participant to carry a bounded concern to a
+landed result, and `contracts/closure-ownership.json` names `present_or_land` as the
+loop's terminal step. Every harness role under `.claude/agents/` is forbidden to run
+`git commit` or `git push` and leaves its changes in the working tree. Observed
+2026-08-24 while writing the section that says so.
+
+So no launched agent can reach the terminal the contract names. The loop's landed half
+is held by the interactive participant and by Bdo, and an unattended run cannot close a
+concern however completely it built one. The contract records this honestly by giving a
+leased worker `present` as its terminal, but that is a description of the gap, not a
+closure of it.
+
+Three readings, and nothing here settles which. The commit boundary is correct and
+`land` simply is not a work-tier transition, so the loop should name two terminals
+permanently. Or the boundary is a Phase-I caution about unattended external effects,
+and a record-local commit on a feature branch is not that effect, so a worker should be
+able to commit what it built. Or the missing piece is a landing capability with its own
+grant — something that takes a presented tree, checks it, and lands it under an
+attributable receipt — in which case neither the worker nor the contract is wrong and
+the capability is simply absent.
+
+Five sessions currently share one working tree (`python scripts/sov_session.py list`),
+which makes the second reading more expensive than it looks: a commit from a launched
+agent would stage another session's uncommitted work. That is a reason the boundary is
+where it is, not an argument that it belongs there.
+
+Until it is settled, `WIP_EXCEEDED` and the work-in-progress ceiling are graded against
+concerns rather than against branches, because nothing in the harness can open or close
+a branch on its own.

@@ -33,3 +33,10 @@ output, or write authoritative state, and your lease bounds your life.
 
 Refuse unleased work, scope creep, self-settlement, weakening any oracle or
 fixture to pass, and any effect beyond the declared class.
+
+Scope creep is crossing a boundary, not finishing a task. Work that stays
+inside the same service, the same effect class, and the same authority as the
+leased task is absorbed into it; crossing any one of the three is the creep
+this refuses. `AGENTS.md`, Closure ownership, owns the rule and
+`contracts/closure-ownership.json` is its table. Filing that absorbable work
+instead of doing it is refused too.

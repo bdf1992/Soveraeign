@@ -79,6 +79,12 @@ skill + workflow, riding the same roles.
   returns early with its judgement items instead of forcing work.
 - Builders and witnesses are always different agents: a build report cannot
   witness itself (`AGENTS.md`, Evidence and standing).
+- A worker carries its operation to closure and recruits its own helpers. A
+  helper subagent that read or edited the change is inside the build and can
+  never be its witness, which is why recruiting one costs nothing and proves
+  nothing (`AGENTS.md`, Closure ownership;
+  `contracts/closure-ownership.json`). Grade any handoff a run produces with
+  `python scripts/sov_closure.py judge <claim.json>` before it reaches Bdo.
 
 ### Domains
 
@@ -205,3 +211,117 @@ Bdo.
 - Runs leave changes uncommitted in the working tree for review; branch and
   commit decisions follow `AGENTS.md`.
 - No external-world effects in Phase I.
+
+## The live-session registry (`sov_session`)
+
+Git answers "what changed" and never "who is changing it right now". On
+2026-08-23 seven concurrent sessions in one working tree produced three lost
+updates to `scripts/verify.py`, a decision-number collision across 0039-0041, a
+blanket commit that swept four sessions' uncommitted work onto one branch, and
+several cycles spent diagnosing a red gate caused by somebody else's in-flight
+edit. Every one of those is invisible to version control by construction.
+
+`scripts/sov_session.py` and `.claude/hooks/session_registry.py` answer the
+question git cannot. Standing: host plumbing, no authority, no standing
+(`AGENTS.md`, Local orchestration harness).
+
+### Where the record lives
+
+Under `git rev-parse --git-common-dir`/`sov-sessions/`, as two append-only logs:
+`sessions.ndjson` and `claims.ndjson`. That directory is shared by every
+worktree of the repository, so a claim taken in `../sov-registry` is visible
+from the shared tree with nothing committed and nothing synced. Current state is
+a projection over the events; nothing is ever edited.
+
+### Commands
+
+| Need | Command |
+| --- | --- |
+| Who else is here, holding what | `python scripts/sov_session.py list` |
+| Who holds one path | `python scripts/sov_session.py who <path>` |
+| The starting-session briefing | `python scripts/sov_session.py brief` |
+| Is this red mine? | `python scripts/sov_session.py contested` |
+| Hold a path or a port | `python scripts/sov_session.py claim <path> --resource port:8787` |
+| A decision number nobody else took | `python scripts/sov_session.py reserve-decision <slug>` |
+| A worktree from a base that builds | `python scripts/sov_session.py worktree new <name>` |
+| Every worktree and its occupant | `python scripts/sov_session.py worktree list` |
+| Prove the logic offline | `python scripts/sov_session.py selfcheck` |
+
+### What the hooks do
+
+Claims are taken automatically on write, so the record stays accurate without
+anyone declaring anything.
+
+- **SessionStart** registers the session and prints who else is live, in which
+  tree, on which branch, holding which paths. This is the only channel that
+  reaches a session which does not exist yet. A freeze announced to five live
+  sessions on 2026-08-23 was broken by three that started afterwards; all five
+  had acknowledged. The failure was arrival, not compliance.
+- **PreToolUse on Edit/Write** refuses a write to a path another live session
+  touched in the last 15 minutes *in the same working tree*. Cross-tree is
+  reported, never refused: those are different files on disk, and the edits meet
+  at merge rather than clobbering.
+- **PreToolUse on Bash/PowerShell** refuses a blanket stage or a destructive
+  reset in a tree shared with another live session, and reports a gate piped
+  into `tail` before `&&`, whose exit status is the pipe's and never the gate's.
+- **PostToolUse on Edit/Write** records the claim and refreshes liveness.
+- **SessionEnd** releases everything.
+
+### Why it cannot wedge the repository
+
+It wedged the repository twice on 2026-08-24 before these held, once by a hook
+path that did not expand and once by a path resolved against a tool's persisted
+working directory. Both times every session lost Bash, Write and Edit at once,
+and no session could edit its way out because the editor was behind the same
+hook.
+
+- The hook command is `python -c <bootstrap> <script> <mode>`. The bootstrap
+  walks up from wherever the tool happens to be until it finds `.claude/hooks/`,
+  so a subdirectory, a worktree, or a persisted `cd` all resolve.
+- It ends in `sys.exit(0)` unconditionally, wrapping the run in
+  `except BaseException`. Python exits 2 when it cannot open the file it was
+  told to run, and 2 is the PreToolUse block code, so a plumbing fault was
+  indistinguishable from a policy refusal. Refusals now travel only through the
+  JSON protocol on stdout.
+- A claim expires on heartbeat age, so a session that dies mid-write releases
+  everything rather than holding a path forever.
+- Every refusal names its escape.
+
+### Known gaps
+
+- A clobber by a session that is no longer live is not caught. A post-write
+  check for unintended removed lines would catch that class and does not exist.
+- Generated artifacts (`docs/documentation.html`, `docs/surface.html`) need a
+  stronger rule than a claim. Rebuilding one sweeps in every other session's
+  uncommitted source, and a claim on the output does not stop that. Both pages
+  are generated downstream of the service manifests, of `scripts/`, and of
+  `.claude/`, so any session editing a manifest, `verify.py`, `lint.py`, or this
+  file must re-render both or the gate fails on staleness. Appending this
+  section staled `docs/documentation.html` within a minute of writing it.
+- Nothing signals that one file is being appended to by several sessions at
+  once. `scripts/verify.py` took 40 uncommitted lines from several sessions on
+  2026-08-23 and crossed the module limit; no session could see that happening.
+  `contested` reports only what a registered session holds, and every session
+  that started before these hooks landed is invisible to it.
+- Nothing reconciles a claim against a filename already taken on another
+  branch, which is the collision `OPEN-SEAMS` S16 records.
+
+### Two defects the first live run exposed
+
+Both were found by reading the store rather than by testing, and both made the
+registry record data it then refused to use.
+
+- **Liveness read dead for every session.** `pid_alive` used `os.kill(pid, 0)`,
+  the POSIX idiom. CPython's Windows implementation opens the process with
+  PROCESS_ALL_ACCESS and calls TerminateProcess with the signal number as the
+  exit code, so that call would have killed the process it asked about. It
+  failed safe only because opening the parent was denied - which also meant
+  every liveness question answered "no", and sessions expired on the 30-minute
+  heartbeat backstop alone. It now asks Windows through
+  OpenProcess/GetExitCodeProcess with the narrowest access right, and a test
+  proves the subject survives being asked.
+- **Six sessions never registered.** SessionStart fires only for sessions that
+  begin after the hook lands. Every session already running got the write hooks
+  and none of the registration, so each one heartbeated and took claims that the
+  projection discarded. Sessions now register on first contact, so the record
+  populates without waiting for a restart.

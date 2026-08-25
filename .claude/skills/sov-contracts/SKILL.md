@@ -77,8 +77,8 @@ still bind (STATUS.yaml, `decisions/0024-open-decision-drain.md`):
 
 ## Verification
 
-- `python scripts/verify.py` — required gate, from repo root, three-second
-  budget; runs lint, bootstrap, oracle controls, oracle tests, asset tests.
+- `python scripts/verify.py` — required gate, from repo root, graded budget (PLATINUM 3 s, GOLD 6 s, SILVER 15 s);
+  runs lint, bootstrap, oracle controls, oracle tests, asset tests.
 - `python scripts/lint.py` — text hygiene, module size, secret shapes.
 - `python scripts/verify_bootstrap.py` — contract file presence and JSON parse.
 - `python conformance/run.py` — executable oracle controls.

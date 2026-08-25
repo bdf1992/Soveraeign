@@ -174,6 +174,26 @@ All four are sibling services inside one local node. All use the shared
 kernel. None is independently a federation, node, platform, or complete
 product.
 
+## Two requirement ladders
+
+Bare `Requirement` means the **product** ladder. Ruled by Bdo, 2026-08-24
+(`decisions/0052`), because the `PROD-I-*` meaning is older, owner-visible, and already
+load-bearing in the attribution spine.
+
+| Term | Means | Identity test |
+| --- | --- | --- |
+| **ProductRequirement** | Something the product or the current phase must prove. `PRD.md`'s `PROD-I-*`. | Would failing it mean the phase is not done? |
+| **CompetenceRequirement** | An obligation a skill, capability or competence relation carries — repository verification, independent observation, and their kin. | Would failing it mean a participant is not qualified to act? |
+
+`PROD-I-*` is **not** renamed and its identity in `PRD.md` is unchanged. In a typed graph
+either term may be written out where disambiguation helps, and `ProductRequirement` is the
+explicit form of the bare word.
+
+The invariant: **no unqualified `Requirement` edge may ambiguously cross those two
+ladders.** A reader following one has to know which ladder it is on before it resolves.
+`OPEN-SEAMS.md` S18 records what happens when two layers share a word; this is that
+failure caught before both halves exist.
+
 ## Naming rules
 
 - whole product: `Soveraeign System`
@@ -185,6 +205,8 @@ product.
 - rebuildable read model: `<Purpose> Projection`
 - scoped executor: `<Purpose> Worker`
 - declared optional boundary: `<Purpose> Port`
+- product obligation: `ProductRequirement`, and bare `Requirement`
+- competence obligation: `CompetenceRequirement`, never bare
 
 Reserve `platform` for the federated product context. Reserve `engine` for a
 specific algorithmic component. Do not create a new architectural class merely

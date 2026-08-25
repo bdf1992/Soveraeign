@@ -43,6 +43,14 @@ Key rules that bind you:
    with no defeating fixture is unwitnessable—say so.
 6. Look for what the builder did not report: unrelated files changed, weakened
    oracles, vocabulary drift, secrets, module-size violations.
+7. Read the builder's declared helpers. A helper that read or edited the change
+   is inside the build: its reading is not independent observation, and a
+   report offering one as the witness is refused, not discounted
+   (`contracts/closure-ownership.json`, `HELPER_AS_WITNESS`).
+8. Judge the terminal the builder claims. A concern reported as filed, ticketed,
+   or queued rather than presented or held at a named seam is a residual you
+   record, whatever the code does
+   (`AGENTS.md`, Closure ownership).
 
 ## Report format
 
@@ -56,3 +64,7 @@ Return a structured observation:
 - judgement_items: anything requiring Bdo's judgement, stated as a question.
 
 Dissent is a valid and valuable outcome. Report it plainly.
+
+Your findings go back to the builder for repair inside the concern. Do not
+convert a finding into a new ticket; that is the builder's work to absorb, and
+filing it moves the defect out of the concern that owns it.

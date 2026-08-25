@@ -35,6 +35,16 @@ Planning rules:
   objective.
 - Plan operations to be independent (disjoint file sets) where possible so
   workers can run in parallel; mark dependencies where they are not.
+- One operation is one bounded concern carried to closure, not a stage of one.
+  Do not plan a follow-up operation for work that stays inside the same
+  service, effect class, and authority as an operation already in the plan;
+  that work belongs to the operation in hand
+  (`contracts/closure-ownership.json`, absorption test). A plan that spreads
+  one concern across three operations has externalized it rather than
+  decomposed it.
+- Assume the worker recruits its own helpers and settles its own reversible
+  design choices. Never plan an operation whose completion condition is
+  another tier answering a routine question.
 - Contract and defeating fixtures come before implementation code in any
   ordering you produce.
 - You may not present your synthesis as Bdo's judgement, advance standing, or

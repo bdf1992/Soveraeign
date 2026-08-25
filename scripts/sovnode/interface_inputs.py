@@ -8,12 +8,10 @@ import json
 
 from sovkernel.capability_map import is_stale as capability_stale
 from sovkernel.capability_map import map_defects
+from sovkernel.closure_inputs import rebuild as rebuild_closure
 from sovkernel.jsonschema import validate
 from sovkernel.kernel_binding import (
     binding_defects,
-    build as build_closure,
-    closure_source_addresses,
-    load_manifests,
     load_source_digests,
 )
 from sovkernel.node_identity import registry_defects
@@ -41,10 +39,9 @@ def _holder_defects(registry: dict[str, Any]) -> list[str]:
 
 def rebuild(root: Path = ROOT) -> tuple[dict[str, Any], list[str]]:
     """Rebuild from current sources; no checked-in projection is trusted as input."""
-    manifests, manifest_sources = load_manifests(root)
-    transitions = _load(root, "contracts/kernel-transitions.json")
-    paradigms = _load(root, "contracts/kernel-paradigms.json")
-    closure_addresses = closure_source_addresses(manifest_sources, paradigms)
+    (closure, manifests, transitions, paradigms,
+     closure_sources, closure_source_defects) = rebuild_closure(root)
+    closure_addresses = [entry["address"] for entry in closure_sources]
     routes = route_census()
     addresses = set(closure_addresses)
     addresses.update({
@@ -57,11 +54,6 @@ def rebuild(root: Path = ROOT) -> tuple[dict[str, Any], list[str]]:
     for route in routes:
         addresses.update(route["source_addresses"])
     source_digests, source_defects = load_source_digests(root, sorted(addresses))
-    closure = build_closure(
-        manifests, transitions, paradigms,
-        source_digests=[entry for entry in source_digests
-                        if entry["address"] in set(closure_addresses)],
-    )
     capability = _load(root, "contracts/fixtures/capability-map.reference.json")
     offices = _load(root, "contracts/capability-offices.json")
     registry = _load(root, "contracts/fixtures/node-registry.reference.json")
@@ -69,7 +61,7 @@ def rebuild(root: Path = ROOT) -> tuple[dict[str, Any], list[str]]:
     human_interface = _load(root, "bindings/console/interface.json")
     observations: dict[str, list[str]] = {}
 
-    defects = list(source_defects)
+    defects = list(closure_source_defects) + list(source_defects)
     defects.extend(binding_defects(manifests, transitions, paradigms))
     defects.extend(validate(closure, _load(root, "contracts/kernel-closure.schema.json")))
     defects.extend(validate(capability, _load(root, "contracts/capability-map.schema.json")))

@@ -26,6 +26,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from sovkernel import kernel_binding as binding_check  # noqa: E402
+from sovkernel.closure_inputs import rebuild as rebuild_closure  # noqa: E402
 from sovkernel import projection  # noqa: E402
 from sovkernel import parity as parity_check  # noqa: E402
 from sovkernel import transitions as kernel  # noqa: E402
@@ -47,12 +48,9 @@ def _binding_inputs() -> tuple[
     dict[str, dict[str, Any]], dict[str, Any], dict[str, Any],
     list[dict[str, str]], list[str]
 ]:
-    manifests, sources = binding_check.load_manifests(ROOT)
-    transitions = kernel.load_table(ROOT)
-    paradigms = json.loads((ROOT / "contracts" / "kernel-paradigms.json").read_text("utf-8"))
-    addresses = binding_check.closure_source_addresses(sources, paradigms)
-    source_digests, source_defects = binding_check.load_source_digests(ROOT, addresses)
-    return manifests, transitions, paradigms, source_digests, source_defects
+    closure, manifests, transitions, paradigms, source_digests, defects = rebuild_closure(ROOT)
+    del closure
+    return manifests, transitions, paradigms, source_digests, defects
 
 
 def command_selfcheck(_: argparse.Namespace) -> int:

@@ -27,9 +27,11 @@ def run() -> dict[str, Any]:
     if defects:
         raise RuntimeError("Node Interface refused: " + "; ".join(defects))
     operation = resolve(document, "asset.ingest-asset")
+    registry_operation = resolve(document, "registry.resolve")
     human_read, model_read = render_human(operation), render_model(operation)
     payload = b"human and model cross the same node interface\n"
     action_results: dict[str, dict[str, Any]] = {}
+    registry_results: dict[str, dict[str, Any]] = {}
 
     with TemporaryDirectory() as work:
         root = Path(work)
@@ -58,6 +60,30 @@ def run() -> dict[str, Any]:
                     "service_receipt_unchanged": returned == durable,
                 }
 
+            with LocalActionPath(root / f"registry-{binding_kind.lower()}") as node:
+                node.console.grant(actor, registry_operation["required_authority"],
+                                   "registry:any", granted_by="interface-proof-given")
+                request = invocation_request(
+                    document, registry_operation["operation_id"], binding_kind,
+                    actor, "registry:any", {"name": "sov://asset/ingest-asset"})
+                returned = node.dispatch(request)
+                detail = returned["payload"]["detail"]
+                resolution = detail["resolution"]
+                registry_results[binding_kind] = {
+                    "binding_id": request["binding_id"],
+                    "operation_digest": request["interface_operation_digest"],
+                    "required_authority": registry_operation["required_authority"],
+                    "terminal_receipt_id": returned["entry_id"],
+                    "terminal_outcome": returned["payload"]["outcome"],
+                    "terminal_event": returned["payload"]["event"],
+                    "resolved_capability": resolution["capability_id"],
+                    "resolved_record_digest": resolution["record_digest"],
+                    "source_digests": resolution["sources"],
+                    "standing_effect": resolution["standing_effect"],
+                    "service_receipt_unchanged": (
+                        returned == node.record.entry(returned["entry_id"])),
+                }
+
         with LocalActionPath(root / "refused") as node:
             request = invocation_request(
                 document, operation["operation_id"], HUMAN, "interface-refused", "asset:new",
@@ -67,14 +93,19 @@ def run() -> dict[str, Any]:
         with LocalActionPath(root / "inactive") as node:
             inactive = node.dispatch({
                 "actor": "interface-human", "actor_kind": "HUMAN",
-                "logical_endpoint": "sov://registry/resolve",
-                "transport": "IN_PROCESS", "scope": "registry:any", "arguments": {},
+                "logical_endpoint": "sov://console/resolve-judgement",
+                "transport": "IN_PROCESS", "scope": "judgement:any", "arguments": {},
             })
 
     semantic_signatures = {
         kind: {name: value for name, value in result.items()
                if name not in ("binding_id", "terminal_receipt_id")}
         for kind, result in action_results.items()
+    }
+    registry_signatures = {
+        kind: {name: value for name, value in result.items()
+               if name not in ("binding_id", "terminal_receipt_id")}
+        for kind, result in registry_results.items()
     }
     return {
         "proof_schema": "soveraeign-node-interface-proof/v1",
@@ -88,16 +119,19 @@ def run() -> dict[str, Any]:
         },
         "actions": action_results,
         "same_action_semantics": semantic_signatures[HUMAN] == semantic_signatures[MODEL],
+        "registry_reads": registry_results,
+        "same_registry_semantics": registry_signatures[HUMAN] == registry_signatures[MODEL],
         "refusal": {
             "outcome": refusal["payload"]["outcome"],
             "reason_code": _reason(refusal),
             "receipt_id": refusal["entry_id"],
         },
         "inactive_operation": {
-            "operation_id": "registry.resolve",
+            "operation_id": "console.resolve-judgement",
             "outcome": inactive["payload"]["outcome"],
             "reason_code": _reason(inactive),
-            "interface_reachable": resolve(document, "registry.resolve")["facts"]["reachable"],
+            "interface_reachable": resolve(
+                document, "console.resolve-judgement")["facts"]["reachable"],
         },
     }
 

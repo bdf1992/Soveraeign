@@ -13,7 +13,7 @@
     "services/registry/contracts/service.json",
     "contracts/capability-offices.json"
   ],
-  "input_state_digest": "8ad6bc71ab473b53866ba9a374de2d492855ef2dc734a01150e4afc31865d2b6",
+  "input_state_digest": "48a24ddff8f7bfd3057aec66a9b9c15eb2305fe2f796ddd2f46852c58df1bff8",
   "capabilities": [
     {
       "capability_id": "asset.ingest-asset",
@@ -3267,7 +3267,7 @@
       "operation": "resolve",
       "office": "BACK",
       "counter": "permits-office",
-      "service_standing": "PROPOSED",
+      "service_standing": "BUILT",
       "effect_class": "RECORD_LOCAL",
       "required_authority": "read:registry",
       "actor_kinds": [
@@ -3277,7 +3277,8 @@
       "endpoints": [
         {
           "transport": "IN_PROCESS",
-          "activation": "DECLARED_NOT_ACTIVATED"
+          "activation": "ACTIVE",
+          "address": "registry:in-process"
         },
         {
           "transport": "CLI",

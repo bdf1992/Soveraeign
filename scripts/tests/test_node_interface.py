@@ -38,8 +38,8 @@ class ProjectionFacts(unittest.TestCase):
 
     def test_evidence_layers_remain_independent(self) -> None:
         self.assertEqual(self.document["counts"], {
-            "declared": 102, "bound": 102, "policy_active": 32,
-            "reachable": 1, "observed": 0,
+            "declared": 102, "bound": 102, "policy_active": 33,
+            "reachable": 2, "observed": 0,
         })
         self.assertEqual(self.operation("asset.ingest-asset")["facts"], {
             "declared": True, "bound": True, "policy_active": True,
@@ -60,14 +60,16 @@ class ProjectionFacts(unittest.TestCase):
         self.assertFalse(record["facts"]["policy_active"])
         self.assertFalse(record["facts"]["reachable"])
 
-    def test_registry_resolve_remains_declared_only(self) -> None:
+    def test_registry_resolve_is_bound_active_and_reachable_but_unobserved(self) -> None:
         record = self.operation("registry.resolve")
         self.assertTrue(record["facts"]["bound"])
-        self.assertFalse(record["facts"]["reachable"])
-        with self.assertRaises(BindingRefusal) as raised:
-            invocation_request(self.document, "registry.resolve", HUMAN,
-                               "reader", "registry:any", {})
-        self.assertEqual(raised.exception.code, "OPERATION_NOT_REACHABLE")
+        self.assertTrue(record["facts"]["policy_active"])
+        self.assertTrue(record["facts"]["reachable"])
+        self.assertFalse(record["facts"]["observed"])
+        request = invocation_request(
+            self.document, "registry.resolve", HUMAN, "reader", "registry:any",
+            {"name": "sov://asset/ingest-asset"})
+        self.assertEqual(request["logical_endpoint"], "sov://registry/resolve")
 
     def test_projection_cannot_promote_its_own_status(self) -> None:
         promoted = deepcopy(self.document)
@@ -82,13 +84,14 @@ class ProjectionFacts(unittest.TestCase):
             self.document["input_state_digest"],
         )
 
-    def test_a_renderer_edit_cannot_activate_registry(self) -> None:
+    def test_a_renderer_edit_cannot_activate_an_inactive_operation(self) -> None:
         edited = deepcopy(self.document)
         record = next(item for item in edited["operations"]
-                      if item["operation_id"] == "registry.resolve")
+                      if item["operation_id"] == "console.resolve-judgement")
         record["facts"]["reachable"] = True
         with self.assertRaises(BindingRefusal) as raised:
-            invocation_request(edited, "registry.resolve", HUMAN, "actor", "scope", {})
+            invocation_request(
+                edited, "console.resolve-judgement", HUMAN, "actor", "scope", {})
         self.assertEqual(raised.exception.code, "INTERFACE_RECORD_DRIFT")
 
 
@@ -119,12 +122,25 @@ class HumanModelParity(unittest.TestCase):
             self.assertEqual(result["terminal_outcome"], "COMMITTED")
             self.assertEqual(result["terminal_event"], "asset.ingest")
 
+    def test_human_and_model_resolve_through_same_registry_receipt(self) -> None:
+        self.assertTrue(self.proof["same_registry_semantics"])
+        record = resolve(self.document, "registry.resolve")
+        for binding in (HUMAN, MODEL):
+            result = self.proof["registry_reads"][binding]
+            self.assertTrue(result["service_receipt_unchanged"])
+            self.assertEqual(result["operation_digest"], record["record_digest"])
+            self.assertEqual(result["required_authority"], "read:registry")
+            self.assertEqual(result["terminal_outcome"], "COMMITTED")
+            self.assertEqual(result["terminal_event"], "registry.resolve")
+            self.assertEqual(result["resolved_capability"], "asset.ingest-asset")
+            self.assertEqual(result["standing_effect"], "NONE")
+
     def test_governed_no_is_an_actual_refused_receipt(self) -> None:
         self.assertEqual(self.proof["refusal"]["outcome"], "REFUSED")
         self.assertEqual(self.proof["refusal"]["reason_code"], "AUTHORITY_REFUSED")
         self.assertTrue(self.proof["refusal"]["receipt_id"].startswith("entry_"))
 
-    def test_policy_inactive_registry_route_is_refused_by_gateway(self) -> None:
+    def test_policy_inactive_console_route_is_refused_by_gateway(self) -> None:
         inactive = self.proof["inactive_operation"]
         self.assertFalse(inactive["interface_reachable"])
         self.assertEqual(inactive["outcome"], "REFUSED")

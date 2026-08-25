@@ -40,14 +40,15 @@ class SurfaceProjection(unittest.TestCase):
         section = self.page.split(marker, 1)[1].split("</details>", 1)[0]
         self.assertNotIn("sov_surface.py try", section)
 
-    def test_only_the_exact_service_owned_route_is_actionable(self) -> None:
+    def test_only_the_two_exact_service_owned_routes_are_actionable(self) -> None:
         reachable = [item for item in self.interface["operations"]
                      if item["facts"]["reachable"]]
         self.assertEqual([item["operation_id"] for item in reachable],
-                         ["asset.ingest-asset"])
-        marker = '<code class="id">asset.ingest-asset</code>'
-        section = self.page.split(marker, 1)[1].split("</details>", 1)[0]
-        self.assertIn("sov_surface.py try", section)
+                         ["asset.ingest-asset", "registry.resolve"])
+        for operation in ("asset.ingest-asset", "registry.resolve"):
+            marker = f'<code class="id">{operation}</code>'
+            section = self.page.split(marker, 1)[1].split("</details>", 1)[0]
+            self.assertIn("sov_surface.py try", section)
 
     def test_node_root_kernel_and_open_seams_are_visible(self) -> None:
         self.assertIn(self.interface["node"]["node_id"], self.page)
@@ -115,7 +116,7 @@ class TryPath(unittest.TestCase):
                          "AUTHORITY_REFUSED")
 
     def test_unreachable_operation_is_not_offered_to_gateway(self) -> None:
-        code, output = self.run_try("registry.resolve")
+        code, output = self.run_try("console.resolve-judgement")
         self.assertEqual(code, 0)
         self.assertIn("REFUSED OPERATION_NOT_REACHABLE", output)
         self.assertFalse((self.root / "human").exists())

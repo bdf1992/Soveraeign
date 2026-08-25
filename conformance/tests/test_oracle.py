@@ -12,10 +12,16 @@ import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
+# run.py imports its sibling requirement predicates by module name. Loading it by
+# file location does not put conformance/ on the path, so the bootstrap does it here
+# rather than making the oracle manipulate sys.path itself.
+sys.path.insert(0, str(ROOT))
 SPEC = importlib.util.spec_from_file_location("conformance_runner", ROOT / "run.py")
 assert SPEC and SPEC.loader
 runner = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(runner)
+
+import requirements as predicates  # noqa: E402
 
 
 class OracleTests(unittest.TestCase):
@@ -23,14 +29,14 @@ class OracleTests(unittest.TestCase):
         self.cases = json.loads((ROOT / "oracle-controls.json").read_text(encoding="utf-8"))
 
     def test_every_requirement_has_positive_and_defeating_case(self):
-        coverage = {requirement: set() for requirement in runner.REQUIREMENTS}
+        coverage = {requirement: set() for requirement in predicates.REQUIREMENTS}
         for case in self.cases:
             coverage[case["requirement"]].add(case["polarity"])
         self.assertTrue(all(value == {"positive", "defeating"} for value in coverage.values()))
 
     def test_embedded_controls_match_expected_oracle(self):
         for case in self.cases:
-            defects = runner.CHECKS[case["requirement"]](case["observed"])
+            defects = predicates.CHECKS[case["requirement"]](case["observed"])
             verdict = "FAIL" if defects else "PASS"
             self.assertEqual(verdict, case["expected_oracle"], case["id"])
 
@@ -38,7 +44,7 @@ class OracleTests(unittest.TestCase):
         case = next(item for item in self.cases if item["id"] == "CONF-I5-DEF")
         observed = dict(case["observed"])
         observed["participant_verdict"] = "PASS"
-        self.assertTrue(runner.check_i5(observed))
+        self.assertTrue(predicates.check_i5(observed))
 
     def test_authority_case_requires_both_claim_types(self):
         observed = {"attempts": [{
@@ -47,7 +53,7 @@ class OracleTests(unittest.TestCase):
             "scope_matches": True, "budget_available": True,
             "outcome": "REFUSED", "receipt_id": "r1",
         }]}
-        defects = runner.check_i5(observed)
+        defects = predicates.check_i5(observed)
         self.assertIn("authority scenario did not exercise both claim types", defects)
         self.assertIn("delegated verification claim did not commit", defects)
 
@@ -57,7 +63,7 @@ class OracleTests(unittest.TestCase):
             "unavailable_model": {"outcome": "COMMITTED", "silent_fallback": True},
             "local_record_operable": False,
         }
-        defects = runner.check_i9(observed)
+        defects = predicates.check_i9(observed)
         self.assertIn("fewer than two model bindings were exercised", defects)
         self.assertIn("unavailable model triggered silent fallback", defects)
         self.assertIn("provider loss removed local record operation", defects)
@@ -80,16 +86,16 @@ class SmuggledVerdictFieldsChangeNothing(unittest.TestCase):
 
     def test_no_check_reads_a_submitted_verdict(self):
         for case in self.cases:
-            check = runner.CHECKS[case["requirement"]]
+            check = predicates.CHECKS[case["requirement"]]
             honest = check(case["observed"])
             smuggled = check({**case["observed"], **SMUGGLED})
             self.assertEqual(smuggled, honest, case["id"])
 
     def test_every_defeating_control_still_fails_when_it_claims_to_pass(self):
         defeating = [case for case in self.cases if case["polarity"] == "defeating"]
-        self.assertEqual({case["requirement"] for case in defeating}, runner.REQUIREMENTS)
+        self.assertEqual({case["requirement"] for case in defeating}, predicates.REQUIREMENTS)
         for case in defeating:
-            check = runner.CHECKS[case["requirement"]]
+            check = predicates.CHECKS[case["requirement"]]
             self.assertTrue(check({**case["observed"], **SMUGGLED}), case["id"])
 
 

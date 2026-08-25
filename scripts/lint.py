@@ -24,22 +24,7 @@ PRODUCTION_ROOTS = ("scripts/", "adapters/", "bindings/", "workers/", "conforman
 # authority.py (grants and sessions), runs.py (leased derivation), and
 # projections.py (rebuildable views). Re-entering a module here records debt; it
 # does not grandfather it.
-KNOWN_MODULE_DEBT: dict[str, str] = {
-    "scripts/verify.py": (
-        "the CHECKS table has grown to 24 entries and is now most of the file; the split is "
-        "the table into its own module, leaving the runner behind. Entered 2026-08-24 while "
-        "the landing branch was frozen, because refactoring the verification harness during "
-        "a landing freeze risks the gate every session depends on. Owed to the verification "
-        "domain, not paid"
-    ),
-    "conformance/run.py": (
-        "the oracle grew past the limit before the budget reached conformance/ at all, so "
-        "this is an overrun the gate had never seen rather than a new one. Observed in "
-        "reports/2026-08-23-stack-certification.md and entered 2026-08-24 when the budget "
-        "was widened to adapters/, bindings/, workers/, and conformance/. Owed to the "
-        "conformance domain, which holds the file, not paid"
-    ),
-}
+KNOWN_MODULE_DEBT: dict[str, str] = {}
 SECRET_PATTERNS = {
     "private key": re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"),
     "OpenAI-style token": re.compile(r"\bsk-[A-Za-z0-9_-]{20,}\b"),

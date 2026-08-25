@@ -15,14 +15,14 @@
     "observe_verify",
     "record_entries"
   ],
-  "capability_revision": "9e56050af5ba53c47cbc9a79a9514d6e88767023ef4089f8d101f603ec171f3c",
+  "capability_revision": "4917d42eaf287b60a0e985c9a10e36d403d4b8cbc8ef1bcc225db0c0567e7a4d",
   "counts": {
-    "declared": 112,
-    "reachable": 37,
+    "declared": 127,
+    "reachable": 39,
     "authority": {
       "NOT_ENFORCED": 9,
       "NOT_HELD": 6,
-      "NOT_KNOWN_HERE": 97
+      "NOT_KNOWN_HERE": 112
     }
   },
   "freshness": {
@@ -34,7 +34,7 @@
     "a row here says the node declares the operation, never that it works",
     "reachability is what the projection recorded, not a call that succeeded",
     "9 capability(s) are built, declare an authority and check none: console.close-session, console.discover-operations, console.grant, console.list-grants, console.list-publications, console.open-session, console.read-thread, console.revoke, console.session-context. Any caller is admitted to those regardless of what they hold",
-    "97 capability(s) are governed by an authority store this service does not read"
+    "112 capability(s) are governed by an authority store this service does not read"
   ],
   "journal_entries_left_by_the_crossing": 2,
   "journal": [
@@ -59,13 +59,13 @@
       "kind": "RECEIPT",
       "subject": "discover-operations",
       "actor": "sov",
-      "entry_digest": "7fafd864dacfe5925af1e073ec5770ebc875c862af5c5b2668d5cd6e4c9443dd",
+      "entry_digest": "69c086bb68e05191250d352164b6a8df296c83044e1f1f7fb81c2012dc7f6164",
       "payload": {
         "detail": {
-          "entry_id": "entry_ca076315755c4eb1b4e64f2a43449a28",
+          "entry_id": "entry_d2f3d4e2a7c842a4a272bc150b9d2912",
           "result": {
             "authoritative": false,
-            "capability_revision": "9e56050af5ba53c47cbc9a79a9514d6e88767023ef4089f8d101f603ec171f3c",
+            "capability_revision": "4917d42eaf287b60a0e985c9a10e36d403d4b8cbc8ef1bcc225db0c0567e7a4d",
             "map_status": "PROPOSED",
             "operator_id": "sov"
           }

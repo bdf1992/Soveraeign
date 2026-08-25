@@ -515,6 +515,159 @@
         "SYSTEM"
       ]
     },
+    "host.apply-driver-update": {
+      "office": "FRONT",
+      "counter": "job-window",
+      "required_authority": "operate:host-drivers",
+      "effect_class": "EXTERNAL_WORLD",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "host.install-utility": {
+      "office": "FRONT",
+      "counter": "job-window",
+      "required_authority": "operate:host-utilities",
+      "effect_class": "EXTERNAL_WORLD",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "host.list-drivers": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "read:host-drivers",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "host.list-utilities": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "read:host-utilities",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "host.power-off": {
+      "office": "FRONT",
+      "counter": "job-window",
+      "required_authority": "operate:host-power",
+      "effect_class": "EXTERNAL_WORLD",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "host.propose-driver-update": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "propose:host-driver-update",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "host.read-health": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "read:host-health",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "host.read-network": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "read:host-network",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "host.read-operation": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "read:host-operation",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "host.remove-utility": {
+      "office": "FRONT",
+      "counter": "job-window",
+      "required_authority": "operate:host-utilities",
+      "effect_class": "EXTERNAL_WORLD",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "host.request-restart": {
+      "office": "FRONT",
+      "counter": "job-window",
+      "required_authority": "request:host-restart",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL",
+        "SYSTEM"
+      ]
+    },
+    "host.request-scan": {
+      "office": "FRONT",
+      "counter": "job-window",
+      "required_authority": "request:host-scan",
+      "effect_class": "RESOURCE_CONSUMPTION",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL",
+        "SYSTEM"
+      ]
+    },
+    "host.restart": {
+      "office": "FRONT",
+      "counter": "job-window",
+      "required_authority": "operate:host-power",
+      "effect_class": "EXTERNAL_WORLD",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL",
+        "SYSTEM"
+      ]
+    },
+    "host.suspend": {
+      "office": "FRONT",
+      "counter": "job-window",
+      "required_authority": "operate:host-power",
+      "effect_class": "EXTERNAL_WORLD",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "host.update-utility": {
+      "office": "FRONT",
+      "counter": "job-window",
+      "required_authority": "operate:host-utilities",
+      "effect_class": "EXTERNAL_WORLD",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
     "observation.attest-observation": {
       "office": "BACK",
       "counter": "inspectorate",

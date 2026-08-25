@@ -141,7 +141,8 @@
         "PAYLOAD_ABSENT",
         "DIGEST_MISMATCH",
         "SOURCE_UNREACHABLE",
-        "SOURCE_CHANGED"
+        "SOURCE_CHANGED",
+        "VERSION_UNKNOWN"
       ]
     },
     {
@@ -215,7 +216,8 @@
   "local_refusals": {
     "GRANT_NOT_COVERED": "AUTHORITY_REFUSED",
     "PAYLOAD_ABSENT": "UNREADABLE",
-    "SOURCE_UNREACHABLE": "UNREADABLE"
+    "SOURCE_UNREACHABLE": "UNREADABLE",
+    "VERSION_UNKNOWN": "MISSING_PRECONDITION"
   },
   "undeclared_events": [
     {

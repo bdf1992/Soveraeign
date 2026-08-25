@@ -1,0 +1,49 @@
+{
+  "registry_schema": "soveraeign-kernel-paradigms/v1",
+  "status": "PROPOSED",
+  "note": "These ids are the existing values already carried by service manifests under uses_kernel_contracts. Calling them paradigms is a proposed reading: each resolves a coherent slice of Kernel grammar to the source files that define it. The source files remain authoritative; this registry is an addressable index for humans, agents, and conformance.",
+  "paradigms": [
+    {
+      "paradigm": "standing",
+      "defines": ["typology", "traversal", "invariant"],
+      "sources": ["SPEC.md", "CLASSIFICATION.md", "contracts/kernel-transitions.json"],
+      "description": "Historical standing and current effectiveness: the named states, the legal progression between them, and the rule that confidence or execution cannot silently promote standing."
+    },
+    {
+      "paradigm": "typed-authority",
+      "defines": ["typology", "topology", "traversal", "invariant"],
+      "sources": ["SPEC.md", "CONTRACT.md"],
+      "description": "Actors, grants, capabilities, scope, budgets, and the invariant that identity or successful execution never becomes authority."
+    },
+    {
+      "paradigm": "operation",
+      "defines": ["typology", "topology", "traversal"],
+      "sources": ["SPEC.md", "contracts/operation-plan.schema.json", "contracts/kernel-transitions.json"],
+      "description": "Declared consequential work: plans, preconditions, effects, named transitions, and the boundary between an attempted operation and its settlement."
+    },
+    {
+      "paradigm": "observation",
+      "defines": ["typology", "topology", "invariant"],
+      "sources": ["SPEC.md", "contracts/observation.schema.json", "contracts/participant-observation.schema.json"],
+      "description": "Independent evidence of what occurred, including the relationship an observer must declare so an executor report cannot witness itself."
+    },
+    {
+      "paradigm": "receipt",
+      "defines": ["typology", "topology", "invariant"],
+      "sources": ["SPEC.md", "contracts/receipt.schema.json", "contracts/event-envelope.schema.json"],
+      "description": "Attributable terminal evidence for crossings and consequential operations, including refusals and failures rather than success-only logging."
+    },
+    {
+      "paradigm": "retraction",
+      "defines": ["typology", "traversal", "invariant"],
+      "sources": ["SPEC.md", "CONTRACT.md", "contracts/kernel-transitions.json"],
+      "description": "Append-preserving counteraction: prior records remain addressable and effects are never rewritten as though they did not occur."
+    },
+    {
+      "paradigm": "attestation",
+      "defines": ["typology", "topology", "traversal", "invariant"],
+      "sources": ["SPEC.md"],
+      "description": "Reproduction or dissent over a claim using declared validators and exact inputs, without allowing verification evidence to acquire judgement authority."
+    }
+  ]
+}

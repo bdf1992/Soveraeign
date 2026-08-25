@@ -1,0 +1,357 @@
+{
+  "service_id": "host",
+  "standing": "BUILT",
+  "owns": [
+    "host-health",
+    "network-state",
+    "driver-inventory",
+    "utility-inventory",
+    "host-operation",
+    "host-receipt"
+  ],
+  "references": [
+    "shared-kernel-contracts",
+    "capability-map"
+  ],
+  "operations": [
+    {
+      "operation": "read-health",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://host/read-health",
+      "subject": "host-health",
+      "crud": "READ",
+      "requirement": "PROD-I-3",
+      "preconditions": [
+        "host_port_configured",
+        "execution_boundary_declared"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "HOST_UNAVAILABLE",
+        "HOST_READ_FAILED",
+        "HOST_BOUNDARY_UNKNOWN",
+        "MALFORMED_HOST_REQUEST"
+      ]
+    },
+    {
+      "operation": "read-network",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://host/read-network",
+      "subject": "network-state",
+      "crud": "READ",
+      "requirement": "PROD-I-3",
+      "preconditions": [
+        "host_port_configured",
+        "network_scope_declared"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "HOST_UNAVAILABLE",
+        "HOST_READ_FAILED"
+      ]
+    },
+    {
+      "operation": "request-scan",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://host/request-scan",
+      "subject": "host-operation",
+      "crud": "CREATE",
+      "requirement": "PROD-I-3",
+      "kernel_transition": "begin_run",
+      "preconditions": [
+        "complete_operation_plan",
+        "scanner_adapter_configured",
+        "resource_budget_available"
+      ],
+      "commit": "RECORDED",
+      "refusals": [
+        "SCAN_UNAVAILABLE",
+        "MISSING_PRECONDITION",
+        "EFFECT_CLASS_REFUSED"
+      ]
+    },
+    {
+      "operation": "request-restart",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://host/request-restart",
+      "subject": "host-operation",
+      "crud": "CREATE",
+      "requirement": "PROD-I-3",
+      "kernel_transition": "submit_proposal",
+      "preconditions": [
+        "declared_reason",
+        "current_boot_id_recorded",
+        "requested_window_declared"
+      ],
+      "commit": "RECORDED",
+      "refusals": [
+        "BOOT_ID_UNAVAILABLE",
+        "INCOMPLETE_PROPOSAL"
+      ]
+    },
+    {
+      "operation": "restart",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://host/restart",
+      "subject": "host-operation",
+      "crud": "CREATE",
+      "requirement": "PROD-I-3",
+      "kernel_transition": "begin_run",
+      "preconditions": [
+        "restart_request_admitted",
+        "live_matching_grant",
+        "current_boot_id_matches_request",
+        "power_adapter_configured"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "AUTHORITY_REFUSED",
+        "STALE_STATE",
+        "BOOT_ID_UNAVAILABLE",
+        "EFFECT_CLASS_REFUSED"
+      ]
+    },
+    {
+      "operation": "power-off",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://host/power-off",
+      "subject": "host-operation",
+      "crud": "CREATE",
+      "requirement": "PROD-I-3",
+      "kernel_transition": "begin_run",
+      "preconditions": [
+        "complete_operation_plan",
+        "live_matching_grant",
+        "power_adapter_configured"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "AUTHORITY_REFUSED",
+        "POLICY_REFUSED",
+        "EFFECT_CLASS_REFUSED"
+      ]
+    },
+    {
+      "operation": "suspend",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://host/suspend",
+      "subject": "host-operation",
+      "crud": "CREATE",
+      "requirement": "PROD-I-3",
+      "kernel_transition": "begin_run",
+      "preconditions": [
+        "complete_operation_plan",
+        "live_matching_grant",
+        "power_adapter_configured"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "AUTHORITY_REFUSED",
+        "POLICY_REFUSED",
+        "EFFECT_CLASS_REFUSED"
+      ]
+    },
+    {
+      "operation": "list-drivers",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://host/list-drivers",
+      "subject": "driver-inventory",
+      "crud": "READ",
+      "requirement": "PROD-I-3",
+      "preconditions": [
+        "driver_inventory_adapter_configured"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "HOST_UNAVAILABLE",
+        "DRIVER_INVENTORY_UNAVAILABLE"
+      ]
+    },
+    {
+      "operation": "propose-driver-update",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://host/propose-driver-update",
+      "subject": "host-operation",
+      "crud": "CREATE",
+      "requirement": "PROD-I-3",
+      "kernel_transition": "submit_proposal",
+      "preconditions": [
+        "driver_identity_declared",
+        "target_version_declared",
+        "source_provenance_declared"
+      ],
+      "commit": "RECORDED",
+      "refusals": [
+        "DRIVER_UNKNOWN",
+        "INCOMPLETE_PROPOSAL"
+      ]
+    },
+    {
+      "operation": "apply-driver-update",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://host/apply-driver-update",
+      "subject": "host-operation",
+      "crud": "SUPERSEDE",
+      "requirement": "PROD-I-3",
+      "kernel_transition": "begin_run",
+      "preconditions": [
+        "driver_update_proposal_admitted",
+        "live_matching_grant",
+        "driver_update_adapter_configured",
+        "source_digest_verified"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "AUTHORITY_REFUSED",
+        "DRIVER_UPDATE_UNAVAILABLE",
+        "STALE_STATE",
+        "EFFECT_CLASS_REFUSED"
+      ]
+    },
+    {
+      "operation": "list-utilities",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://host/list-utilities",
+      "subject": "utility-inventory",
+      "crud": "READ",
+      "requirement": "PROD-I-3",
+      "preconditions": [
+        "utility_inventory_adapter_configured"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "HOST_UNAVAILABLE",
+        "UTILITY_INVENTORY_UNAVAILABLE"
+      ]
+    },
+    {
+      "operation": "install-utility",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://host/install-utility",
+      "subject": "host-operation",
+      "crud": "CREATE",
+      "requirement": "PROD-I-3",
+      "kernel_transition": "begin_run",
+      "preconditions": [
+        "complete_operation_plan",
+        "live_matching_grant",
+        "utility_manager_adapter_configured",
+        "source_provenance_declared"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "AUTHORITY_REFUSED",
+        "UTILITY_MANAGER_UNAVAILABLE",
+        "INCOMPLETE_PROPOSAL",
+        "EFFECT_CLASS_REFUSED"
+      ]
+    },
+    {
+      "operation": "update-utility",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://host/update-utility",
+      "subject": "host-operation",
+      "crud": "SUPERSEDE",
+      "requirement": "PROD-I-3",
+      "kernel_transition": "begin_run",
+      "preconditions": [
+        "utility_installed",
+        "live_matching_grant",
+        "utility_manager_adapter_configured",
+        "source_provenance_declared"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "AUTHORITY_REFUSED",
+        "UTILITY_MANAGER_UNAVAILABLE",
+        "UTILITY_UNKNOWN",
+        "EFFECT_CLASS_REFUSED"
+      ]
+    },
+    {
+      "operation": "remove-utility",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://host/remove-utility",
+      "subject": "host-operation",
+      "crud": "COUNTER",
+      "requirement": "PROD-I-3",
+      "kernel_transition": "begin_run",
+      "preconditions": [
+        "utility_installed",
+        "live_matching_grant",
+        "utility_manager_adapter_configured"
+      ],
+      "commit": "COUNTERED",
+      "refusals": [
+        "AUTHORITY_REFUSED",
+        "UTILITY_MANAGER_UNAVAILABLE",
+        "UTILITY_UNKNOWN",
+        "EFFECT_CLASS_REFUSED"
+      ]
+    },
+    {
+      "operation": "read-operation",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://host/read-operation",
+      "subject": "host-operation",
+      "crud": "READ",
+      "requirement": "PROD-I-3",
+      "also_reads": [
+        "host-receipt"
+      ],
+      "preconditions": [
+        "host_operation_exists"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "OPERATION_UNKNOWN"
+      ]
+    }
+  ],
+  "local_refusals": {
+    "BOOT_ID_UNAVAILABLE": "MISSING_PRECONDITION",
+    "DRIVER_INVENTORY_UNAVAILABLE": "UNREADABLE",
+    "DRIVER_UNKNOWN": "MISSING_PRECONDITION",
+    "DRIVER_UPDATE_UNAVAILABLE": "POLICY_REFUSED",
+    "HOST_BOUNDARY_UNKNOWN": "DATA_BOUNDARY_REFUSED",
+    "HOST_READ_FAILED": "UNREADABLE",
+    "HOST_UNAVAILABLE": "UNREADABLE",
+    "MALFORMED_HOST_REQUEST": "INCOMPLETE_PROPOSAL",
+    "OPERATION_UNKNOWN": "MISSING_PRECONDITION",
+    "SCAN_UNAVAILABLE": "POLICY_REFUSED",
+    "UTILITY_INVENTORY_UNAVAILABLE": "UNREADABLE",
+    "UTILITY_MANAGER_UNAVAILABLE": "POLICY_REFUSED",
+    "UTILITY_UNKNOWN": "MISSING_PRECONDITION"
+  },
+  "uses_kernel_contracts": [
+    "standing",
+    "typed-authority",
+    "operation",
+    "observation",
+    "receipt"
+  ],
+  "ports": [
+    "host-port",
+    "human-binding",
+    "model-binding",
+    "service-activity"
+  ],
+  "depends_on": [
+    "record:append-preserving-journal",
+    "console:authority-grant",
+    "observation:independent-observation",
+    "automation:trigger-time",
+    "runtime:leased-execution"
+  ],
+  "forbids": [
+    "treating-os-credentials-as-soveraeign-authority",
+    "arbitrary-shell-or-command-execution",
+    "adapter-activated-policy",
+    "bypassing-the-gateway-or-live-grant-check",
+    "claiming-a-process-or-container-is-the-physical-host",
+    "settling-an-external-effect-from-the-executor-report",
+    "silent-privilege-escalation",
+    "silent-platform-fallback"
+  ],
+  "note": "The governed operating-system boundary. The service owns host readings and requested host-work records; adapters translate to a named OS mechanism, Automation owns when scheduled work is requested, Runtime owns leased execution, and Observation owns evidence that an effect occurred. Registration and adapter capability grant nothing."
+}

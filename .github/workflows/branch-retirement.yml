@@ -1,0 +1,109 @@
+name: branch retirement
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: write
+  pull-requests: read
+
+concurrency:
+  group: branch-retirement-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  retire:
+    if: >-
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref != github.event.repository.default_branch
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build exact retirement action
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          ACTIONS_PATH: ${{ runner.temp }}/branch-retirement.json
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          action = {
+              "id": f"retire-merged-pr-{os.environ['PR_NUMBER']}",
+              "kind": "BRANCH_DELETE",
+              "target": os.environ["HEAD_REF"],
+              "argument": os.environ["HEAD_REF"],
+              "effect_class": "EXTERNAL_WORLD",
+              "evidence": (
+                  f"GitHub closed PR #{os.environ['PR_NUMBER']} as merged at exact head "
+                  f"{os.environ['HEAD_SHA']}"
+              ),
+              "rule": "AGENTS.md: normal concern branches are short-lived execution state",
+              "recommendation": "retire the merged remote head; the merged history remains recoverable",
+              "extra": {
+                  "authority_basis": "merged-pull-request-retirement",
+                  "pr_number": os.environ["PR_NUMBER"],
+                  "head_sha": os.environ["HEAD_SHA"],
+                  "base_ref": os.environ["BASE_REF"],
+              },
+          }
+          Path(os.environ["ACTIONS_PATH"]).write_text(
+              json.dumps([action], indent=2) + "\n", encoding="utf-8", newline="\n"
+          )
+          PY
+
+      - name: Revalidate and retire through the GitHub write crossing
+        id: apply
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ACTIONS_PATH: ${{ runner.temp }}/branch-retirement.json
+          RECEIPTS_PATH: ${{ runner.temp }}/branch-retirement.receipts.json
+        run: |
+          python adapters/github/apply.py \
+            --repo "$GITHUB_REPOSITORY" \
+            --actions "$ACTIONS_PATH" \
+            --receipts "$RECEIPTS_PATH"
+
+      - name: Publish retirement receipt
+        if: always()
+        env:
+          RECEIPTS_PATH: ${{ runner.temp }}/branch-retirement.receipts.json
+        run: |
+          echo "## Branch retirement" >> "$GITHUB_STEP_SUMMARY"
+          if [ -f "$RECEIPTS_PATH" ]; then
+            echo '```json' >> "$GITHUB_STEP_SUMMARY"
+            cat "$RECEIPTS_PATH" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No receipt was produced." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Enforce unexpected failures
+        if: steps.apply.outcome == 'failure'
+        env:
+          RECEIPTS_PATH: ${{ runner.temp }}/branch-retirement.receipts.json
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          path = Path(os.environ["RECEIPTS_PATH"])
+          if not path.exists():
+              raise SystemExit("branch retirement failed without a receipt")
+          receipts = json.loads(path.read_text(encoding="utf-8"))
+          reasons = {item.get("reason_code") for item in receipts}
+          if reasons and reasons <= {"STACK_BASE_LIVE"}:
+              print("retirement deferred: branch is still the base of an open stacked PR")
+              raise SystemExit(0)
+          raise SystemExit(f"branch retirement failed: {sorted(reasons)}")
+          PY

@@ -2,14 +2,16 @@
 
 The crossing is the only module that can write to GitHub, so these tests cover the two
 things that decide whether a write happens at all: the exact command it builds for each
-admitted action, and the inputs it refuses instead of approximating. Nothing here
-reaches the network; every case runs through ``plan`` or a dry run.
+admitted action, and the inputs it refuses instead of approximating. Network-dependent
+proofs are injected; no case reaches GitHub.
 """
 
 from __future__ import annotations
 
 from pathlib import Path
+from unittest.mock import patch
 import importlib.util
+import json
 import sys
 import unittest
 
@@ -40,6 +42,45 @@ DEFECT = Action(
     evidence="no metadata block", rule="contracts/issue-metadata.schema.json",
     recommendation="author one",
 )
+HEAD_SHA = "a" * 40
+
+
+def automatic_branch() -> dict:
+    """One merge-event-shaped retirement action."""
+    return {
+        "id": "retire-101",
+        "kind": "BRANCH_DELETE",
+        "target": "feat/done",
+        "argument": "feat/done",
+        "evidence": "PR #101 merged this same-repository head",
+        "rule": "AGENTS.md, Branch and commit strategy",
+        "recommendation": "retire the merged head",
+        "extra": {
+            "authority_basis": crossing.AUTOMATIC_BRANCH_AUTHORITY,
+            "pr_number": "101",
+            "head_sha": HEAD_SHA,
+            "base_ref": "main",
+        },
+    }
+
+
+def merged_pull(branch: str = "feat/done", base: str = "main", **overrides) -> dict:
+    """The live GitHub proof an automatic retirement expects."""
+    payload = {
+        "merged": True,
+        "head": {"ref": branch, "sha": HEAD_SHA, "repo": {"full_name": "owner/name"}},
+        "base": {"ref": base},
+    }
+    payload.update(overrides)
+    return payload
+
+
+def repository(default: str = "main") -> dict:
+    return {"default_branch": default}
+
+
+def live_ref(branch: str = "feat/done", sha: str = HEAD_SHA) -> dict:
+    return {"ref": f"refs/heads/{branch}", "object": {"sha": sha}}
 
 
 class CrossingPlanTests(unittest.TestCase):
@@ -104,7 +145,7 @@ class CrossingPlanTests(unittest.TestCase):
 
 
 class CrossingExecuteTests(unittest.TestCase):
-    """Nothing crosses the boundary without an approval, and every attempt leaves a receipt."""
+    """Nothing crosses the boundary without a proved authority basis and a receipt."""
 
     def test_dry_run_plans_without_crossing(self) -> None:
         receipt = crossing.execute(LABEL_ADD.as_dict(), "owner/name", dry_run=True)
@@ -127,6 +168,73 @@ class CrossingExecuteTests(unittest.TestCase):
             [DEFECT.as_dict(), LABEL_ADD.as_dict()], "owner/name", dry_run=True
         )
         self.assertEqual([entry["outcome"] for entry in receipts], ["REFUSED", "PLANNED"])
+
+    def test_automatic_retirement_revalidates_merge_ref_and_stack_state(self) -> None:
+        answers = [
+            (0, json.dumps(merged_pull())),
+            (0, json.dumps(repository())),
+            (0, json.dumps(live_ref())),
+            (0, "[]"),
+        ]
+        with patch.object(crossing, "_run", side_effect=answers) as run:
+            receipt = crossing.execute(automatic_branch(), "owner/name", dry_run=True)
+        self.assertEqual(receipt["outcome"], "PLANNED")
+        self.assertIn("automatic retirement", receipt["authority"])
+        self.assertEqual(run.call_count, 4)
+
+    def test_automatic_retirement_refuses_a_changed_pr_head_sha(self) -> None:
+        changed = merged_pull()
+        changed["head"] = dict(changed["head"], sha="b" * 40)
+        with patch.object(crossing, "_run", return_value=(0, json.dumps(changed))):
+            receipt = crossing.execute(automatic_branch(), "owner/name", dry_run=True)
+        self.assertEqual(receipt["outcome"], "REFUSED")
+        self.assertEqual(receipt["reason_code"], "AUTOMATION_PROOF_MISMATCH")
+
+    def test_automatic_retirement_refuses_a_reused_branch_with_new_commits(self) -> None:
+        answers = [
+            (0, json.dumps(merged_pull())),
+            (0, json.dumps(repository())),
+            (0, json.dumps(live_ref(sha="b" * 40))),
+        ]
+        with patch.object(crossing, "_run", side_effect=answers):
+            receipt = crossing.execute(automatic_branch(), "owner/name", dry_run=True)
+        self.assertEqual(receipt["outcome"], "REFUSED")
+        self.assertEqual(receipt["reason_code"], "BRANCH_HEAD_MOVED")
+        self.assertIn("no longer points", receipt["detail"])
+
+    def test_automatic_retirement_never_deletes_the_default_branch(self) -> None:
+        action = automatic_branch()
+        action["target"] = "main"
+        action["argument"] = "main"
+        action["extra"]["base_ref"] = "release"
+        answers = [
+            (0, json.dumps(merged_pull(branch="main", base="release"))),
+            (0, json.dumps(repository(default="main"))),
+        ]
+        with patch.object(crossing, "_run", side_effect=answers):
+            receipt = crossing.execute(action, "owner/name", dry_run=True)
+        self.assertEqual(receipt["outcome"], "REFUSED")
+        self.assertEqual(receipt["reason_code"], "PROTECTED_BRANCH")
+
+    def test_automatic_retirement_refuses_a_live_stacked_child(self) -> None:
+        answers = [
+            (0, json.dumps(merged_pull())),
+            (0, json.dumps(repository())),
+            (0, json.dumps(live_ref())),
+            (0, json.dumps([{"number": 105}])),
+        ]
+        with patch.object(crossing, "_run", side_effect=answers):
+            receipt = crossing.execute(automatic_branch(), "owner/name", dry_run=True)
+        self.assertEqual(receipt["outcome"], "REFUSED")
+        self.assertEqual(receipt["reason_code"], "STACK_BASE_LIVE")
+        self.assertIn("#105", receipt["detail"])
+
+    def test_unknown_automatic_authority_is_refused(self) -> None:
+        action = automatic_branch()
+        action["extra"]["authority_basis"] = "trust-me"
+        receipt = crossing.execute(action, "owner/name", dry_run=True)
+        self.assertEqual(receipt["outcome"], "REFUSED")
+        self.assertEqual(receipt["reason_code"], "AUTHORITY_BASIS_UNKNOWN")
 
 
 if __name__ == "__main__":

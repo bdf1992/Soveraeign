@@ -15,11 +15,26 @@ from soveraeign_asset_service.core import AssetService
 class AssetRoutes:
     """Map declared operation ids to the already-built Asset Service methods."""
 
+    OPERATIONS = ("ingest-asset",)
+    ARGUMENTS = {
+        "ingest-asset": {"required": ("path", "label"), "optional": ("locator",)},
+    }
+
     def __init__(self, service: AssetService) -> None:
         self.service = service
         self._routes: dict[str, Callable[[dict[str, Any], str], dict[str, Any]]] = {
             "ingest-asset": self._ingest_asset,
         }
+
+    @classmethod
+    def operation_ids(cls) -> tuple[str, ...]:
+        """Exact operation census without constructing a service or opening storage."""
+        return cls.OPERATIONS
+
+    @classmethod
+    def argument_contract(cls, operation: str) -> dict[str, tuple[str, ...]]:
+        """Service-owned argument names; Gateway and renderers do not reinterpret them."""
+        return cls.ARGUMENTS[operation]
 
     def call(self, operation: str, arguments: dict[str, Any], actor: str) -> dict[str, Any]:
         route = self._routes.get(operation)

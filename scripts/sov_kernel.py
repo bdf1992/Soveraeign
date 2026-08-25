@@ -44,16 +44,15 @@ def _corpus() -> dict[str, Any]:
 
 
 def _binding_inputs() -> tuple[
-    dict[str, dict[str, Any]], dict[str, Any], dict[str, Any], list[str]
+    dict[str, dict[str, Any]], dict[str, Any], dict[str, Any],
+    list[dict[str, str]], list[str]
 ]:
     manifests, sources = binding_check.load_manifests(ROOT)
     transitions = kernel.load_table(ROOT)
     paradigms = json.loads((ROOT / "contracts" / "kernel-paradigms.json").read_text("utf-8"))
-    derived_from = sources + [
-        "contracts/kernel-paradigms.json",
-        "contracts/kernel-transitions.json",
-    ]
-    return manifests, transitions, paradigms, derived_from
+    addresses = binding_check.closure_source_addresses(sources, paradigms)
+    source_digests, source_defects = binding_check.load_source_digests(ROOT, addresses)
+    return manifests, transitions, paradigms, source_digests, source_defects
 
 
 def command_selfcheck(_: argparse.Namespace) -> int:
@@ -161,8 +160,8 @@ def command_drift(_: argparse.Namespace) -> int:
 
 def command_binding_check(_: argparse.Namespace) -> int:
     """Check that all authored service manifests compose as Kernel participants."""
-    manifests, transitions, paradigms, _ = _binding_inputs()
-    defects = binding_check.binding_defects(manifests, transitions, paradigms)
+    manifests, transitions, paradigms, _, source_defects = _binding_inputs()
+    defects = source_defects + binding_check.binding_defects(manifests, transitions, paradigms)
     for defect in defects:
         print(f"BINDING {defect}")
     if defects:
@@ -184,9 +183,9 @@ def command_binding_check(_: argparse.Namespace) -> int:
 
 def command_closure(_: argparse.Namespace) -> int:
     """Print the rebuildable service-to-Kernel closure as JSON for humans or agents."""
-    manifests, transitions, paradigms, derived_from = _binding_inputs()
+    manifests, transitions, paradigms, source_digests, source_defects = _binding_inputs()
     closure = binding_check.build(
-        manifests, transitions, paradigms, derived_from=derived_from
+        manifests, transitions, paradigms, source_digests=source_digests
     )
     closure_schema = json.loads(
         (ROOT / "contracts" / "kernel-closure.schema.json").read_text("utf-8")
@@ -195,7 +194,8 @@ def command_closure(_: argparse.Namespace) -> int:
         (ROOT / "contracts" / "kernel-paradigms.schema.json").read_text("utf-8")
     )
     defects = (
-        validate(paradigms, paradigm_schema)
+        source_defects
+        + validate(paradigms, paradigm_schema)
         + validate(closure, closure_schema)
         + binding_check.binding_defects(manifests, transitions, paradigms)
     )

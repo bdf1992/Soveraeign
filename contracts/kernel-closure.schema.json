@@ -9,6 +9,7 @@
     "closure_schema",
     "status",
     "derived_from",
+    "source_digests",
     "input_state_digest",
     "participants",
     "paradigm_usage",
@@ -18,7 +19,10 @@
   ],
   "properties": {
     "closure_schema": {"const": "soveraeign-kernel-closure/v1"},
-    "status": {"enum": ["PROPOSED", "RATIFIED"]},
+    "status": {
+      "const": "PROPOSED",
+      "description": "The current compiler cannot derive a higher standing from an authoritative source, so the projection may not promote itself."
+    },
     "derived_from": {
       "type": "array",
       "minItems": 1,
@@ -28,6 +32,13 @@
     "input_state_digest": {
       "type": "string",
       "pattern": "^[0-9a-f]{64}$"
+    },
+    "source_digests": {
+      "description": "Raw-byte addresses and digests for every authored or governing source conditioning the closure. The aggregate input digest includes this list.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/sourceDigest"}
     },
     "participants": {
       "type": "array",
@@ -57,6 +68,15 @@
     }
   },
   "$defs": {
+    "sourceDigest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["address", "digest"],
+      "properties": {
+        "address": {"type": "string", "minLength": 1},
+        "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
     "participant": {
       "type": "object",
       "additionalProperties": false,

@@ -25,8 +25,10 @@ from sovkernel.kernel_binding import (  # noqa: E402
     binding_defects,
     build,
     closure_defects,
+    closure_source_addresses,
     is_stale,
     load_manifests,
+    load_source_digests,
 )
 
 CONTRACTS = ROOT / "contracts"
@@ -36,10 +38,8 @@ PARADIGMS = json.loads((CONTRACTS / "kernel-paradigms.json").read_text("utf-8"))
 TRANSITIONS = json.loads((CONTRACTS / "kernel-transitions.json").read_text("utf-8"))
 MANIFEST_SCHEMA = json.loads((CONTRACTS / "service-manifest.schema.json").read_text("utf-8"))
 MANIFESTS, MANIFEST_SOURCES = load_manifests(ROOT)
-DERIVED_FROM = MANIFEST_SOURCES + [
-    "contracts/kernel-paradigms.json",
-    "contracts/kernel-transitions.json",
-]
+SOURCE_ADDRESSES = closure_source_addresses(MANIFEST_SOURCES, PARADIGMS)
+SOURCE_DIGESTS, SOURCE_DEFECTS = load_source_digests(ROOT, SOURCE_ADDRESSES)
 
 
 class RepositoryClosure(unittest.TestCase):
@@ -51,6 +51,7 @@ class RepositoryClosure(unittest.TestCase):
 
     def test_paradigm_registry_satisfies_its_contract_and_sources_resolve(self) -> None:
         self.assertEqual(validate(PARADIGMS, PARADIGM_SCHEMA), [])
+        self.assertEqual(SOURCE_DEFECTS, [])
         for paradigm in PARADIGMS["paradigms"]:
             for source in paradigm["sources"]:
                 with self.subTest(paradigm=paradigm["paradigm"], source=source):
@@ -66,17 +67,20 @@ class RepositoryClosure(unittest.TestCase):
         self.assertEqual(binding_defects(MANIFESTS, TRANSITIONS, PARADIGMS), [])
 
     def test_derived_closure_satisfies_its_machine_contract(self) -> None:
-        closure = build(MANIFESTS, TRANSITIONS, PARADIGMS, derived_from=DERIVED_FROM)
+        closure = build(MANIFESTS, TRANSITIONS, PARADIGMS,
+                        source_digests=SOURCE_DIGESTS)
         self.assertEqual(validate(closure, SCHEMA), [])
         self.assertEqual(
             closure_defects(
-                closure, MANIFESTS, TRANSITIONS, PARADIGMS, derived_from=DERIVED_FROM
+                closure, MANIFESTS, TRANSITIONS, PARADIGMS,
+                source_digests=SOURCE_DIGESTS
             ),
             [],
         )
 
     def test_closure_resolves_each_kernel_paradigm_to_sources_and_participants(self) -> None:
-        closure = build(MANIFESTS, TRANSITIONS, PARADIGMS, derived_from=DERIVED_FROM)
+        closure = build(MANIFESTS, TRANSITIONS, PARADIGMS,
+                        source_digests=SOURCE_DIGESTS)
         by_id = {entry["paradigm"]: entry for entry in closure["paradigm_usage"]}
         for definition in PARADIGMS["paradigms"]:
             paradigm = definition["paradigm"]
@@ -88,7 +92,8 @@ class RepositoryClosure(unittest.TestCase):
             self.assertEqual(by_id[paradigm]["sources"], sorted(definition["sources"]))
 
     def test_closure_exposes_unmapped_operations_instead_of_inventing_transitions(self) -> None:
-        closure = build(MANIFESTS, TRANSITIONS, PARADIGMS, derived_from=DERIVED_FROM)
+        closure = build(MANIFESTS, TRANSITIONS, PARADIGMS,
+                        source_digests=SOURCE_DIGESTS)
         declared_without_mapping = sorted(
             f"{manifest['service_id']}.{operation['operation']}"
             for manifest in MANIFESTS.values()
@@ -100,15 +105,32 @@ class RepositoryClosure(unittest.TestCase):
                         "the current closure unexpectedly claims every operation is mapped")
 
     def test_closure_goes_stale_when_any_binding_input_moves(self) -> None:
-        closure = build(MANIFESTS, TRANSITIONS, PARADIGMS, derived_from=DERIVED_FROM)
+        closure = build(MANIFESTS, TRANSITIONS, PARADIGMS,
+                        source_digests=SOURCE_DIGESTS)
         moved = deepcopy(MANIFESTS)
         moved["asset"]["forbids"] = list(moved["asset"]["forbids"]) + ["invented-shortcut"]
-        self.assertFalse(is_stale(closure, MANIFESTS, TRANSITIONS, PARADIGMS))
-        self.assertTrue(is_stale(closure, moved, TRANSITIONS, PARADIGMS))
+        self.assertFalse(is_stale(
+            closure, MANIFESTS, TRANSITIONS, PARADIGMS, SOURCE_DIGESTS))
+        self.assertTrue(is_stale(
+            closure, moved, TRANSITIONS, PARADIGMS, SOURCE_DIGESTS))
 
         moved_paradigms = deepcopy(PARADIGMS)
         moved_paradigms["paradigms"][0]["description"] += " moved"
-        self.assertTrue(is_stale(closure, MANIFESTS, TRANSITIONS, moved_paradigms))
+        self.assertTrue(is_stale(
+            closure, MANIFESTS, TRANSITIONS, moved_paradigms, SOURCE_DIGESTS))
+
+        moved_sources = deepcopy(SOURCE_DIGESTS)
+        moved_sources[0]["digest"] = "0" * 64
+        self.assertTrue(is_stale(
+            closure, MANIFESTS, TRANSITIONS, PARADIGMS, moved_sources))
+
+    def test_closure_binds_every_source_address_to_its_raw_digest(self) -> None:
+        closure = build(MANIFESTS, TRANSITIONS, PARADIGMS,
+                        source_digests=SOURCE_DIGESTS)
+        self.assertEqual(closure["derived_from"], SOURCE_ADDRESSES)
+        self.assertEqual(closure["source_digests"], SOURCE_DIGESTS)
+        self.assertIn("CONTRACT.md", closure["derived_from"])
+        self.assertIn("SPEC.md", closure["derived_from"])
 
 
 class DefeatingBindings(unittest.TestCase):
@@ -158,9 +180,28 @@ class DefeatingBindings(unittest.TestCase):
         operation.pop("kernel_transition", None)
         self.assertNotIn("UNKNOWN_KERNEL_TRANSITION", self.defect_codes())
         closure = build(
-            self.manifests, TRANSITIONS, self.paradigms, derived_from=DERIVED_FROM
+            self.manifests, TRANSITIONS, self.paradigms, source_digests=SOURCE_DIGESTS
         )
         self.assertIn("asset.ingest-asset", closure["unmapped_operations"])
+
+    def test_projection_cannot_promote_its_own_status(self) -> None:
+        closure = build(
+            self.manifests, TRANSITIONS, self.paradigms, source_digests=SOURCE_DIGESTS
+        )
+        closure["status"] = "RATIFIED"
+        defects = closure_defects(
+            closure, self.manifests, TRANSITIONS, self.paradigms,
+            source_digests=SOURCE_DIGESTS,
+        )
+        self.assertIn("PROJECTION_DRIFT: Kernel closure does not rebuild from authored inputs",
+                      defects)
+
+    def test_governing_source_address_cannot_escape_the_repository(self) -> None:
+        escaped = deepcopy(self.paradigms)
+        escaped["paradigms"][0]["sources"] = ["../outside.md"]
+        addresses = closure_source_addresses(MANIFEST_SOURCES, escaped)
+        _, defects = load_source_digests(ROOT, addresses)
+        self.assertTrue(any(defect.startswith("SOURCE_ADDRESS_INVALID") for defect in defects))
 
 
 if __name__ == "__main__":

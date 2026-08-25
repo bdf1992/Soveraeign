@@ -27,6 +27,8 @@ from pathlib import Path
 from typing import Any
 import json
 
+from sovkernel.kernel_sources import closure_source_addresses, load_source_digests
+
 CLOSURE_SCHEMA = "soveraeign-kernel-closure/v1"
 
 
@@ -35,13 +37,14 @@ def _canonical(payload: Any) -> str:
 
 
 def input_state_digest(manifests: dict[str, dict[str, Any]],
-                       transitions: dict[str, Any],
-                       paradigms: dict[str, Any]) -> str:
+                       transitions: dict[str, Any], paradigms: dict[str, Any],
+                       source_digests: list[dict[str, str]]) -> str:
     """Digest exactly the authored/index inputs from which the closure is rebuilt."""
     payload = _canonical({
         "manifests": manifests,
         "transitions": transitions,
         "paradigms": paradigms,
+        "source_digests": source_digests,
     })
     return sha256(payload.encode("utf-8")).hexdigest()
 
@@ -68,8 +71,7 @@ def _paradigm_index(paradigms: dict[str, Any]) -> dict[str, dict[str, Any]]:
 
 
 def build(manifests: dict[str, dict[str, Any]], transitions: dict[str, Any],
-          paradigms: dict[str, Any], *, derived_from: list[str],
-          status: str = "PROPOSED") -> dict[str, Any]:
+          paradigms: dict[str, Any], *, source_digests: list[dict[str, str]]) -> dict[str, Any]:
     """Derive the Node-wide service-to-Kernel closure.
 
     Repetition is intentional only in the derived output. Authored facts remain in
@@ -142,9 +144,11 @@ def build(manifests: dict[str, dict[str, Any]], transitions: dict[str, Any],
 
     return {
         "closure_schema": CLOSURE_SCHEMA,
-        "status": status,
-        "derived_from": list(derived_from),
-        "input_state_digest": input_state_digest(manifests, transitions, paradigms),
+        "status": "PROPOSED",
+        "derived_from": [entry["address"] for entry in source_digests],
+        "source_digests": list(source_digests),
+        "input_state_digest": input_state_digest(
+            manifests, transitions, paradigms, source_digests),
         "participants": participants,
         "paradigm_usage": paradigm_usage,
         "type_ownership": type_ownership,
@@ -257,17 +261,17 @@ def binding_defects(manifests: dict[str, dict[str, Any]], transitions: dict[str,
 
 def closure_defects(document: dict[str, Any], manifests: dict[str, dict[str, Any]],
                     transitions: dict[str, Any], paradigms: dict[str, Any], *,
-                    derived_from: list[str]) -> list[str]:
+                    source_digests: list[dict[str, str]]) -> list[str]:
     """Check both authored binding semantics and projection fidelity."""
     defects = binding_defects(manifests, transitions, paradigms)
-    expected = build(manifests, transitions, paradigms, derived_from=derived_from,
-                     status=document.get("status", "PROPOSED"))
+    expected = build(manifests, transitions, paradigms, source_digests=source_digests)
     if document != expected:
         defects.append("PROJECTION_DRIFT: Kernel closure does not rebuild from authored inputs")
     return defects
 
 
 def is_stale(document: dict[str, Any], manifests: dict[str, dict[str, Any]],
-             transitions: dict[str, Any], paradigms: dict[str, Any]) -> bool:
+             transitions: dict[str, Any], paradigms: dict[str, Any],
+             source_digests: list[dict[str, str]]) -> bool:
     return document.get("input_state_digest") != input_state_digest(
-        manifests, transitions, paradigms)
+        manifests, transitions, paradigms, source_digests)

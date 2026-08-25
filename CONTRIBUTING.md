@@ -131,6 +131,67 @@ whose transition is requested.
 Prefer a small vertical slice that produces a real receipt over a broad layer of
 framework abstractions.
 
+## Own the work to closure
+
+A contributor who accepts a bounded concern owns its path to a landable result.
+Opening an issue, branch, pull request, review, or acceptance packet is not a
+completion event. Those are working surfaces inside the contribution.
+
+The normal contribution loop is:
+
+`inspect -> build -> test -> recruit helper -> repair -> freeze -> witness -> land`
+
+Do not create a new issue merely because you discovered another logical step in the
+same work. If it is required to finish the current concern, remains inside the same
+service and effect boundary, and does not require a new owner-held decision, do it on
+the current branch. Create another issue only for a concern that should survive this
+work independently: a separate service lifecycle, acceptance boundary, deferred
+unresolvable dependency, or durable coordination need.
+
+Keep WIP scarce. A contributor should normally have one active implementation branch
+and one active pull request for the concern it is closing. Parallel branches are for
+independent mergeable work, not for every uncertainty or possible follow-up.
+
+### Bring your own copilot
+
+Model workers are expected to recruit another model participant themselves when the
+host supports it. Do not ask the owner to arrange ordinary review assistance. Give the
+helper a bounded brief: the claim, relevant paths, current diff or revision, and the
+strongest defeating case you want challenged. Use the helper to hunt for defects,
+missing tests, unnecessary abstraction, authority leakage, scope drift, and simpler
+ways to close the concern.
+
+The primary worker owns every repair. A helper does not become the owner of the branch
+and does not turn a finding into another ticket unless the finding is genuinely an
+independent durable concern.
+
+A helper that changed or directed the implementation is not an independent witness.
+When `WITNESSED` standing is needed, freeze the revision and request a fresh non-editing
+model invocation against that exact commit or digest. Preserve the witness report and
+the claim it tested. If the witness defeats the result, repair the same concern, freeze
+a new revision, and request witness again.
+
+A smaller or cheaper model is often appropriate for this bounded counterpart role.
+Model size is not authority. If another model cannot be invoked, record that capability
+as unavailable and use the strongest independent local checks available; do not relabel
+self-review as witness evidence.
+
+### Land ordinary work yourself
+
+For reversible work inside the live grant that does not cross an owner-acceptance
+boundary, the worker is expected to chase CI and review to completion, resolve findings,
+update or rebase, and merge the pull request once required checks pass, the head revision
+is known, no genuine open seam is being silently decided, and the merge itself is
+permitted.
+
+Do not leave an ordinary PR open waiting for Bdo to “approve” engineering choices.
+Owner-held acceptance PRs are different: keep those open until the owner explicitly
+accepts or lands them.
+
+The result we optimize for is not a richly organized queue. It is a short path from one
+bounded concern to one landed result, with helpers and evidence pulled in by the worker
+as needed.
+
 ## Development baseline
 
 Phase I proposes Python 3.11+, the standard library, SQLite, a filesystem

@@ -27,6 +27,8 @@ and improve the system; neither silently occupies one of its operating tiers.
   it governs any agent: authority arrives by grant, a build cannot witness
   itself, and only Bdo ratifies judgement.
 
+Claude Code is one host binding, not Sov's semantic owner.
+
 Claude carries a concern it accepts to a landed result rather than to an
 artifact about the result. `AGENTS.md`, Closure ownership, owns the rule:
 settle ordinary reversible engineering choices; recruit a helper subagent when
@@ -37,10 +39,41 @@ of five named seams. A helper that read or edited a change is inside the build
 and can never witness it. `python scripts/sov_closure.py loop` prints the
 table; `judge` grades a handoff before it is sent.
 
-Host capabilities do not imply authority. Use only the model, tools, and
-permissions visible in the current invocation; never silently substitute
-another model. Launched agents inherit the session model today; no tier is
+Host capabilities do not imply authority. Use only the model, tools, permissions,
+and live grants visible in the current invocation; never infer them from this file
+or silently substitute another model. Launched agents inherit the session model
+today; no tier is
 pinned (a resource-consumption choice still open for Bdo).
+
+## Known traps
+
+Facts about this repository that answer confidently and wrongly. Each cost a
+session a false claim or a wasted hour. `python scripts/sov_traps.py` asserts
+the checkable ones and **fails when a trap stops being true** — a failure there
+means the hazard is gone and the entry below must be deleted, so this list
+cannot outlive what it warns about.
+
+- **T2 · `verify.py` exit 0 does not mean conformance.** The participant's
+  recorded baseline registers failing requirements as expected, so the suite is
+  green while all nine Phase-I requirements fail. Green here means "unchanged",
+  not "correct".
+- **T3 · `NOT_WITNESSED` contains the token `WITNESSED`.** Any standing check
+  written with a substring match reports every unwitnessed subject in the
+  repository as witnessed. Compare whole tokens and treat a preceding `NOT` as
+  denial; `scripts/sov_standing.py` is the worked example.
+- **T4 · `gh api .../branches/main/protection` returns `404` while a ruleset is
+  active.** Protection on `main` comes from ruleset `Gate`, not classic branch
+  protection. Query `.../rulesets`. The 404 has already produced a false claim
+  in a governed document.
+- **T5 · A skipped required check satisfies the ruleset.** Skipped is not
+  blocked. A job gated off by a repository variable still reports as satisfying
+  the check that requires it.
+- **T6 · Several sessions write this tree at once.** Files appear and change
+  mid-read. Freeze a commit before witnessing, measuring, or ratifying, and
+  work in a worktree rather than racing the shared branch.
+
+T4 through T6 need network or live observation, which Phase I refuses, so they
+are recorded rather than asserted. Silence about them is not confirmation.
 
 ## What the system is
 
@@ -63,17 +96,18 @@ scoped, live grant. Phase is `FOUNDING`; the next gate is
 
 ## Repository snapshot (informational)
 
-Observed 2026-08-24 on `feat/federation-harness-and-hardening`, against an
-uncommitted working tree shared by several live sessions. This section is
-orientation, not standing. `STATUS.yaml`, the working tree, and the newest
-relevant report override it whenever they disagree.
+Observed 2026-08-25 on `merge/one-trunk-reconciliation`, the branch that brings
+`main` and `feat/federation-harness-and-hardening` back together after both had
+been receiving merged pull requests. This section is orientation, not standing.
+`STATUS.yaml`, the working tree, and the newest relevant report override it
+whenever they disagree.
 
-- `python scripts/verify.py` runs 29 checks in about 8.4 s and grades itself
-  `SILVER` (PLATINUM 3 s, GOLD 6 s, SILVER 15 s, failing past 15 s;
-  `decisions/0042`, which replaced a bare 3 s ceiling the gate was failing).
-  A slipped grade is a reportable observation, not a failing gate. Nearly all
-  of that wall time is the single `repository tooling tests` check;
-  `python scripts/lint.py` passes with no named debt.
+- `python scripts/verify.py` runs 33 checks in about 8.7 s and grades
+  itself `SILVER` (PLATINUM 3 s, GOLD 6 s, SILVER 15 s, failing past 15 s;
+  `decisions/0050`, which replaced a bare 3 s ceiling the gate was failing).
+  A slipped grade is a reportable observation, not a failing gate.
+  `python scripts/lint.py` passes with one named debt
+  (`scripts/witness_infrastructure.py`, 301 lines).
 - Eight service boundaries under `services/`, 102 declared operations across
   eight manifests. Asset and Record are built and self-tested; Console's
   continuity path is built and its other four surfaces are text; Gateway,

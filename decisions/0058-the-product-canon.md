@@ -1,6 +1,10 @@
-# 0046 · The product canon: who the node is for and what it undertakes
+# 0058 · The product canon: who the node is for and what it undertakes
 
 Status: `PROPOSED · DRAFTED AT OWNER DIRECTION · ACCEPTANCE PENDING`
+
+Numbering note: drafted as 0046 on a working branch that had not yet seen `main`'s
+`0046-decision-queue-drain.md`, which is owner-directed and in force. That record
+stays; this one moved.
 
 Drafted at Bdo's direction, 2026-08-24, answering Q1 of
 `reports/2026-08-24-product-canon-attribution-discovery.md` with `ACCEPT, with a narrow

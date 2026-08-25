@@ -39,6 +39,10 @@ KIND_RULES: tuple[tuple[str, str, str], ...] = (
     (r"\.claude/agents/[^/]+\.md$", "agent", "A stable role an operator can launch."),
     (r"\.claude/workflows/[^/]+\.md$", "workflow", "A launchable multi-step run."),
     (r"\.claude/epic/[^/]+\.md$", "narrative", "The story layer over the epic tree."),
+    (r"\.claude/controllers/[^/]+\.md$", "agent",
+     "A stable role an operator can launch."),
+    (r"\.claude/register/[^/]+\.md$", "register",
+     "How to hand one named participant a result they can act on."),
     (r"diagrams/[^/]+\.md$", "diagram", "A picture of one mechanism, with its source."),
     (r"infrastructure/[^/]+\.md$", "infrastructure", "How the node itself is provisioned and witnessed."),
     (r"\.github/[^/]+\.md$", "template", "A form the coordination surface fills in."),
@@ -67,6 +71,7 @@ BOUNDARIES: tuple[tuple[str, str], ...] = (
     ("adapters/", "adapters"),
     ("workers/", "workers"),
     ("scripts/", "scripts"),
+    ("acceptance/", "acceptance"),
     ("decisions/", "decisions"),
     ("lineage/", "lineage"),
 )

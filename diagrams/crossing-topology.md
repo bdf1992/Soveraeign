@@ -3,7 +3,7 @@
 ```text
 source          SPEC.md · services/console/CHARTER.md · STATUS.yaml ·
                 CONTRACT.md
-source_digest   6a955e9ddf3c8852 · 7dec971f8b6d04d8 · 5f595eece84ad085 · 896e59ba90828ad7
+source_digest   108497d370c0fd8d · 7dec971f8b6d04d8 · c141d6f181709311 · 896e59ba90828ad7
 reader          hand-authored · v1
 fidelity        LOSSY
 omissions       the class definitions and shared obligations, held by

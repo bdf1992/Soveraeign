@@ -2,7 +2,7 @@
 
 ```text
 source          CLASSIFICATION.md · STATUS.yaml · CONTRACT.md · services/README.md
-source_digest   bcb1a15f28ccb530 · 5f595eece84ad085 · 896e59ba90828ad7 · 86ca923ee9dbe14c
+source_digest   e5fc283e55782245 · c141d6f181709311 · 896e59ba90828ad7 · 37334eea4bb44f95
 reader          hand-authored · v2
 fidelity        LOSSY
 omissions       each service's internal components;
@@ -26,12 +26,12 @@ flowchart TB
             A["<b>Asset</b><br/>identity · versions · custody<br/>lineage · discovery<br/>typed collections · membership"]
             R["<b>Record</b><br/>append-preserving journal<br/>receipts · counter-records · digest chain"]
             C["<b>Console</b><br/>sessions · channels · threads · posts<br/><i>continuity path built;<br/>four surfaces still boundary</i>"]
+            G["<b>Gateway</b><br/>the node's door:<br/>admit · resolve · route<br/><i>first IN_PROCESS route<br/>built and self-tested</i>"]
         end
         subgraph boundary["Chartered boundaries, nothing implemented"]
             direction LR
             P["<b>Proofing</b><br/>sessions · rounds<br/>annotations"]
             PJ["<b>Projection</b><br/>text · graph · vector<br/>builds · fidelity"]
-            G["<b>Gateway</b><br/>the node's door:<br/>admit · resolve · route"]
             O["<b>Observation</b><br/>observers · predicates<br/>independence · attestation"]
             RG["<b>Registry</b><br/>what a name is,<br/>who owns it, what standing"]
         end
@@ -94,9 +94,18 @@ operational one cannot quietly merge (`services/record/CHARTER.md`).
 | Console | `BUILT_CONTINUITY_PATH_SELF_TESTED_REMAINDER_BOUNDARY` | pencil |
 | Proofing | `OWNER_ACCEPTED_BOUNDARY_NOT_IMPLEMENTED` | pencil |
 | Projection | `OWNER_ACCEPTED_BOUNDARY_NOT_IMPLEMENTED` | pencil |
-| Gateway | `CHARTERED_BOUNDARY_NOT_IMPLEMENTED` | pencil |
+| Gateway | `CHARTERED_BOUNDARY_NOT_IMPLEMENTED`, which disagrees with the tree | pencil |
 | Observation | `CHARTERED_BOUNDARY_NOT_IMPLEMENTED` | pencil |
 | Registry | no `STATUS.yaml` field; charter reads `PROPOSED` | pencil |
+
+Gateway is the other awkward one, and for a different reason. `services/gateway/src`
+and `services/gateway/tests` exist and `services/README.md` reads "first IN_PROCESS
+route pattern built and self-tested", but `STATUS.yaml` still reads
+`CHARTERED_BOUNDARY_NOT_IMPLEMENTED`. The slice landed without its standing moving
+with it, on `feat/federation-harness-and-hardening` before main and that branch were
+reconciled. The box is drawn where the tree puts it and in pencil, because pencil is
+the reading that cannot mislead either way. Which of the two records is wrong is the
+gateway domain's to settle with its own evidence; `OPEN-SEAMS.md` S23 holds it.
 
 Console is the awkward one and is drawn in pencil deliberately. Its continuity
 path — channels, threads, posts, operator sessions and grants — is implemented

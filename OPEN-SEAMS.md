@@ -59,6 +59,16 @@ Record-local retraction is defined. Irreversible resource consumption and
 external-world mutation need explicit Phase-I refusal/isolation rules. World
 rollback or compensation remains later work.
 
+`STATUS.yaml` states the boundary as `no_external_effects_in_phase_i`, with no
+exception. Bdo granted one on 2026-08-23 for board management: write to the
+GitHub coordination surface, with a confirm on each batch. The capability is
+built and refuses without a per-action approval
+(`decisions/0060-board-management-role.md`), so the grant is honoured in
+practice while the boundary text still reads as absolute. The two must be
+reconciled: either the boundary is restated to admit an owner-approved,
+per-action external effect, or the capability is withdrawn. The restatement is
+Bdo's; it is drafted in `0060-board-management-role.md` and is not applied here.
+
 ## S10 · Product boundary
 
 The system is currently described as an enterprise operating environment. The
@@ -285,3 +295,85 @@ built out further.
 it is settled, every machine surface carries the qualified name - manifest subject
 `asset-collection` against `projection-collection`, authority `declare:asset-collection`
 against `declare:collection` - and prose qualifies the bare word.
+## S23 · The gateway slice landed without its standing
+
+`services/gateway/src` and `services/gateway/tests` exist, `services/README.md` reads
+"first IN_PROCESS route pattern built and self-tested", and `scripts/verify.py` runs an
+`MCP gateway binding` check against it. `STATUS.yaml` reads
+`gateway_service_status: CHARTERED_BOUNDARY_NOT_IMPLEMENTED`.
+
+Observed 2026-08-24 while reconciling `main` with
+`feat/federation-harness-and-hardening`. It is not a merge artifact: the same
+disagreement is present on `feat/federation-harness-and-hardening` alone, where the
+slice landed as PR #87 without the standing field moving with it. `diagrams/service-map.md`
+draws the box where the tree puts it, in pencil, and says so.
+
+Two readings, and this seam does not settle which. Either `STATUS.yaml` is simply stale
+and the field should read a compound value the way Console's does
+(`BUILT_CONTINUITY_PATH_SELF_TESTED_REMAINDER_BOUNDARY` is the precedent for a service
+that is part built and part boundary), or the slice is deliberately not a claim about
+the service's standing — one route pattern proving a vertical is not the Gateway Service
+being implemented — and the field is correct as written while `services/README.md`
+overstates. The first reading is the cheaper one and is probably right; nothing here
+proves it.
+
+Owned by the gateway domain, which holds both the service and the evidence that would
+settle it. `AGENTS.md` gives `STATUS.yaml` the standing question, so the fix lands there
+whichever reading wins.
+
+Numbering note: minted while reconciling the two trunks, which is also where S22 was
+renumbered out of a collision. S16 carries the allocation seam.
+
+## S24 · Durability and custody
+
+`SPEC.md`'s fault model reaches process restart, partial write, and power loss:
+committed records stay reconstructable and recovery distinguishes committed
+from attempted work. It stops at the boundary of the machine. No backup,
+restore, export, or off-node custody provision exists anywhere in the
+repository, so loss of the node is loss of the record, and no identity or
+recovery mechanism changes that — a recovery secret redeems against a journal
+that must still exist. Surfaced while examining root recovery
+(`decisions/0048` ID-11b). `decisions/0049` adds the missing durability concern
+to the proposed baseline and states the finding exactly: the stack passes the
+letter of `AI-NATIVE.md` check 8, which is scoped to integrations, and fails its
+principle, because no durability concept in the system was ever scoped to the
+medium. The seam stays open: declaring the concern is not implementing export
+and restore, and whether an off-node copy is an `EXTERNAL_WORLD` effect under O7
+is undecided.
+
+Numbering note: minted as S11 on `docs/principal-identity`, where that number was free at the time. `main` closed its own S11, Red-lane inputs, on 2026-08-23 and that record is cited as closed, so this seam moved. S16 carries the allocation seam that makes the collision predictable; it is about decision numbers, and this is the second time it has been observed for seam numbers.
+
+
+## S25 · The gate counts its checks and never says which
+
+`scripts/verify.py` reports a check count and `scripts/verify_bootstrap.py` pins
+the files that must exist, but nothing compares the *set* of checks between two
+runs. A check removed and a check added in one edit leaves the count unchanged
+and the gate green, so coverage can move without anything noticing.
+
+Observed 2026-08-23. An uncommitted edit to `scripts/verify.py` removed the
+`node registry` check and added `operation surface page` in the same diff. The
+count went 21 to 21. `python scripts/sov_node.py validate` still passed, the
+script and its fixture both still existed, and nothing in the repository would
+have reported that the node registry had stopped being checked. It was noticed
+because a session reading the diff by hand asked why two hunks were paired, not
+because any gate said so.
+
+Three readings, and this seam does not settle which: the check set is itself a
+projection and should be checked in and diffed like `contracts/kernel-parity.json`
+is; or each check should declare the artifact it defends so a removal is visible
+as an undefended artifact rather than as an absent name; or this is properly a
+review responsibility and a repository that lints its own gate is checking the
+checker without end. `decisions/0025-verification-channels-and-merge-authority.md`
+owns what verification is allowed to claim and is the nearest owner.
+
+Numbering note: minted as S20 on `test/mcp-gateway-observation` off `c296c25`, and
+renumbered to S22 on 2026-08-24 when main and the federation branch were reconciled
+and both were found holding an S20. The concurrent S20 was already cited by number in
+`decisions/0052`, so this seam moved rather than that one. `OPEN-SEAMS.md` S16 carries
+the allocation seam that made the collision predictable; it is about decision numbers,
+and this is the first time it has been observed for seam numbers too. Renumbered again to S25 on 2026-08-25 when the
+collection seam, already cited by number in `CLASSIFICATION.md`, `decisions/0057`, and
+the librarian skill, was found holding S22 too. Same convention: the seam nobody
+cites by number is the one that moves.
+

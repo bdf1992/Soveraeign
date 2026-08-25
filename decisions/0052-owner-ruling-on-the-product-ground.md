@@ -3,7 +3,7 @@
 Status: `OWNER-RULED 2026-08-24 · APPLIED`
 
 Bdo ruled on `reports/2026-08-24-product-ground-acceptance.md`. This records what he
-decided and what changed as a result. `decisions/0051` records the correction pass that
+decided and what changed as a result. `decisions/0059-product-ground-and-canon-2.md` records the correction pass that
 produced the artifacts; this records their acceptance and the four rulings that came with
 it.
 
@@ -120,7 +120,7 @@ by another live session.
 
 ## 5 · Do not expand `SOV` as an acronym
 
-Accepted from the investigation in `decisions/0051` §8 and the acceptance report I2:
+Accepted from the investigation in `decisions/0059-product-ground-and-canon-2.md` §8 and the acceptance report I2:
 
 - Product Ground is the stable semantic vocabulary.
 - Sov is the operating profile that can read it.

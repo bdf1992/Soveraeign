@@ -1,0 +1,35 @@
+{
+  "format": "0.1-experimental",
+  "kind": "skill-competence-contract",
+  "skill": "qa",
+  "source_owner": "SDLC.md",
+  "standing": "PROPOSAL",
+  "coverage": "partial",
+  "omissions": [
+    "BLUE construction capabilities beyond repository verification",
+    "RED generative adversarial execution capabilities",
+    "live authority grants",
+    "live capability receipts",
+    "runtime implementation availability"
+  ],
+  "requirements": [
+    {
+      "id": "repository-verification",
+      "description": "Run the repository-owned verification path over the target artifact.",
+      "governing_source": "AGENTS.md#Testing and verification",
+      "capability": {
+        "id": "repository.verify",
+        "effect_class": "RESOURCE_CONSUMPTION"
+      }
+    },
+    {
+      "id": "independent-observation",
+      "description": "Produce an independent observation record over durable results before settlement.",
+      "governing_source": "AGENTS.md#Change protocol",
+      "capability": {
+        "id": "result.observe-independent",
+        "effect_class": "RECORD_LOCAL"
+      }
+    }
+  ]
+}

@@ -153,7 +153,7 @@ def ticket(root: Path) -> dict[str, str]:
             "actor_kind": "HUMAN",
             "evidence": {"owner_ratification": "pull/62#review"},
         }),
-        "external-world effects are refused in this phase": decide({
+        "an external effect outside every declared scope is refused": decide({
             **base,
             "from": "OPEN",
             "to": "PROPOSED",

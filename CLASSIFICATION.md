@@ -25,6 +25,20 @@ A process, container, function, or microservice is a deployment choice. It does
 not acquire semantic identity, authority, or sovereignty from its deployment
 boundary.
 
+### Root and local settlement
+
+**Root** is not another level in the structural scale. It is the irreducible
+local settlement locus for one Node: the point against which that Node settles
+the judgement and verification rights its topology actually assigns there. A
+Node identity names the root seat that settles for it; Root and Node are not
+synonyms.
+
+A Root does not cross into another Node. A governed crossing relates Node
+surfaces. The receiving Node resolves and admits what crossed under its own
+Kernel and settles its side against its own Root. A peer root's identity or
+evidence may be represented locally, but that never imports the peer root's
+authority.
+
 ## Ownership profiles and model practice
 
 `Personal`, `team`, and `enterprise` are ownership and operating profiles of a
@@ -42,8 +56,13 @@ Neither owns authoritative state or gains authority from provider credentials.
 
 ## Cross-cutting foundations
 
-- **Shared kernel** enforces gates, standing, typed authority, transitions,
-  observation, settlement, receipts, and retraction across services.
+- **Shared Kernel** is the available typology, topology, traversal, and invariant
+  grammar used by every Node, Service, operation, and crossing. It defines what
+  kinds may exist, how those kinds may relate, which transitions are legal, and
+  which distinctions may never collapse. Its executable enforcement includes
+  gates, standing, typed authority, transitions, observation, settlement,
+  receipts, and retraction. It is neither a structural scale nor a deployment
+  unit.
 - **Runtime** is the execution contract that makes computation, operator,
   inputs, configuration, authority, resources, state, time, observation, and
   effects one attributable event. It is not merely a lower architecture box.
@@ -183,7 +202,7 @@ Asset Service through a declared crossing; everything it holds is a
 rebuildable projection and never an authoritative record.
 
 All four are sibling services inside one local node. All use the shared
-kernel. None is independently a federation, node, platform, or complete
+Kernel. None is independently a federation, node, platform, or complete
 product.
 
 ## Two requirement ladders
@@ -232,6 +251,7 @@ and the distinction between authoritative records and projections are grounded
 in `ANCHOR.md`, `SUBSTRATE.md`, `PRODUCT(1).md`, and `PRD-PRODUCT(1).md`.
 
 The concrete `Service`/`Component` normalization, the initial
-Asset/Proofing/Console/Asset Projection split, and the operating-loop role and
-stance vocabulary are new proposed policy. Bdo's ratification is required
-before this file becomes authoritative vocabulary.
+Asset/Proofing/Console/Asset Projection split, the Root/Kernel construction
+vocabulary, and the operating-loop role and stance vocabulary are new proposed
+policy. Bdo's ratification is required before this file becomes authoritative
+vocabulary.

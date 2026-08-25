@@ -32,10 +32,58 @@ class Decision:
         return f"REFUSED [{self.reason_code}]: {self.detail}"
 
 
+def load_authorization(root: Path) -> dict[str, Any]:
+    """Load the declared external-effect authorization."""
+    path = root / "contracts" / "external-effect-authorization.json"
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _check_external_effect(table: dict[str, Any], request: dict[str, Any]) -> Decision | None:
+    """Refuse an external effect that no declared scope admits.
+
+    Phase I once refused ``EXTERNAL_WORLD`` by class, which kept irreversible acts
+    behind an owner and ordinary coordination behind one too. The authorization
+    contract separates them: an effect inside a declared scope, carrying a receipt,
+    proceeds; every refused verb stays refused whatever scope is claimed.
+    """
+    authorization = request.get("authorization")
+    contract = table.get("_authorization")
+    if contract is None:
+        return Decision(
+            False, "EXTERNAL_EFFECT_UNAUTHORIZED",
+            "no external-effect authorization is loaded for this table")
+    if not authorization:
+        return Decision(
+            False, "EXTERNAL_EFFECT_UNAUTHORIZED",
+            "EXTERNAL_WORLD declared with no authorized scope named")
+    verb = authorization.get("verb")
+    if verb in contract.get("refused_verbs", {}):
+        return Decision(
+            False, "EXTERNAL_EFFECT_VERB_REFUSED",
+            f"{verb}: {contract['refused_verbs'][verb]}")
+    scope = contract.get("scopes", {}).get(authorization.get("scope"))
+    if scope is None:
+        return Decision(
+            False, "EXTERNAL_EFFECT_OUT_OF_SCOPE",
+            f"{authorization.get('scope')} is not a declared scope")
+    if verb not in scope.get("verbs", []):
+        return Decision(
+            False, "EXTERNAL_EFFECT_OUT_OF_SCOPE",
+            f"{scope['target']} does not admit {verb}")
+    if not authorization.get("receipt"):
+        return Decision(
+            False, "EXTERNAL_EFFECT_WITHOUT_RECEIPT",
+            "an external effect that leaves no receipt is indistinguishable from one that "
+            "never happened")
+    return None
+
+
 def load_table(root: Path) -> dict[str, Any]:
     """Load the declared transition table from the repository contracts directory."""
     path = root / "contracts" / "ticket-transitions.json"
-    return json.loads(path.read_text(encoding="utf-8"))
+    table = json.loads(path.read_text(encoding="utf-8"))
+    table["_authorization"] = load_authorization(root)
+    return table
 
 
 def _find(table: dict[str, Any], source: str, target: str) -> dict[str, Any] | None:
@@ -104,12 +152,10 @@ def evaluate(request: dict[str, Any], table: dict[str, Any]) -> Decision:
     schema cannot express.
     """
     source, target = request["from"], request["to"]
-    if request.get("effect_class") in table.get("phase_refused_effect_classes", []):
-        return Decision(
-            False,
-            "EFFECT_CLASS_REFUSED",
-            f"{request['effect_class']} is not admitted in the current phase",
-        )
+    if request.get("effect_class") == "EXTERNAL_WORLD":
+        refusal = _check_external_effect(table, request)
+        if refusal is not None:
+            return refusal
     entry = _find(table, source, target)
     if entry is None:
         if _skipped(table, source, target):

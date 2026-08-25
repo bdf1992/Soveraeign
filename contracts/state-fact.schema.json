@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://soveraeign.local/contracts/state-fact.schema.json",
-  "title": "Soveraeign State Fact (PROPOSED, decisions/0051)",
+  "title": "Soveraeign State Fact (PROPOSED, decisions/0059-product-ground-and-canon-2.md)",
   "description": "One proposition about a node, read through the product ground and supported by declared state and observed evidence. A state fact is where the four planes meet: ground supplies the meaning, state supplies what currently claims to exist, evidence supplies what was demonstrated, and this record is the derived proposition with all three addressed. It is deliberately temporal. If a binding disappears the ground, promise and journey references stay exactly as they were, this fact stays historical, and only current reachability becomes false - which is the stability the semantic layer exists to give. Nothing here grants anything, and a fact recorded as OBSERVED is still only what one observation found at one moment.",
   "type": "object",
   "additionalProperties": false,

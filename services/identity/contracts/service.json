@@ -1,0 +1,171 @@
+{
+  "service_id": "identity",
+  "standing": "PROPOSED",
+  "owns": [
+    "challenge",
+    "challenge-token-digest",
+    "verification-basis",
+    "recovery-secret-digest",
+    "recovery-set"
+  ],
+  "references": [
+    "shared-kernel-contracts",
+    "principal-registry"
+  ],
+  "operations": [
+    {
+      "operation": "mint-challenge",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://identity/mint-challenge",
+      "subject": "challenge",
+      "crud": "CREATE",
+      "requirement": "PROD-I-3",
+      "preconditions": [
+        "declared_principal",
+        "declared_channel",
+        "declared_expiry"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "MISSING_PRECONDITION",
+        "CHANNEL_UNDECLARED",
+        "CHANNEL_REFUSED",
+        "PRINCIPAL_REVOKED"
+      ]
+    },
+    {
+      "operation": "deliver-challenge",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://identity/deliver-challenge",
+      "subject": "challenge",
+      "crud": "READ",
+      "requirement": "PROD-I-3",
+      "preconditions": [
+        "challenge_exists",
+        "declared_channel"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "MISSING_PRECONDITION",
+        "CHANNEL_REFUSED"
+      ]
+    },
+    {
+      "operation": "present-challenge",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://identity/present-challenge",
+      "subject": "challenge",
+      "crud": "SUPERSEDE",
+      "requirement": "PROD-I-3",
+      "preconditions": [
+        "challenge_exists",
+        "token_matches",
+        "within_window"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "TOKEN_UNKNOWN",
+        "CHALLENGE_SPENT",
+        "CHALLENGE_EXPIRED",
+        "PRINCIPAL_MISMATCH"
+      ]
+    },
+    {
+      "operation": "enroll-recovery",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://identity/enroll-recovery",
+      "subject": "recovery-set",
+      "crud": "CREATE",
+      "requirement": "PROD-I-3",
+      "preconditions": [
+        "declared_principal",
+        "declared_secret_digest"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "MISSING_PRECONDITION",
+        "PRINCIPAL_REVOKED"
+      ]
+    },
+    {
+      "operation": "redeem-recovery",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://identity/redeem-recovery",
+      "subject": "recovery-set",
+      "crud": "SUPERSEDE",
+      "requirement": "PROD-I-3",
+      "preconditions": [
+        "recovery_set_exists",
+        "secret_digest_matches"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "MISSING_PRECONDITION",
+        "DIGEST_MISMATCH"
+      ]
+    },
+    {
+      "operation": "revoke-recovery",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://identity/revoke-recovery",
+      "subject": "recovery-set",
+      "crud": "COUNTER",
+      "requirement": "PROD-I-3",
+      "preconditions": [
+        "recovery_set_exists",
+        "declared_actor"
+      ],
+      "commit": "COUNTERED",
+      "refusals": [
+        "MISSING_PRECONDITION",
+        "AUTHORITY_REFUSED"
+      ]
+    },
+    {
+      "operation": "report-unenrolled",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://identity/report-unenrolled",
+      "subject": "recovery-set",
+      "crud": "READ",
+      "requirement": "PROD-I-3",
+      "preconditions": [
+        "declared_principal"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "MISSING_PRECONDITION"
+      ]
+    }
+  ],
+  "uses_kernel_contracts": [
+    "standing",
+    "receipt",
+    "operation"
+  ],
+  "ports": [
+    "console-session-channel",
+    "local-file-channel",
+    "os-account-channel"
+  ],
+  "forbids": [
+    "token-in-any-record",
+    "external-channel-delivery-in-phase-i",
+    "challenge-replay",
+    "presentation-after-expiry",
+    "presentation-by-another-principal",
+    "verification-as-authority",
+    "durable-storage-of-its-own",
+    "secret-in-any-record",
+    "silent-replacement-of-a-live-recovery-set",
+    "expiring-recovery-secret"
+  ],
+  "local_refusals": {
+    "CHANNEL_UNDECLARED": "MISSING_PRECONDITION",
+    "CHANNEL_REFUSED": "POLICY_REFUSED",
+    "PRINCIPAL_REVOKED": "ADMISSION_REFUSED",
+    "TOKEN_UNKNOWN": "MISSING_PRECONDITION",
+    "CHALLENGE_SPENT": "STALE_LEASE",
+    "CHALLENGE_EXPIRED": "STALE_LEASE",
+    "PRINCIPAL_MISMATCH": "ADMISSION_REFUSED"
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "packet_schema": "soveraeign-acceptance-packet/v1",
+  "packet_id": "A4",
+  "claim": "External effects are no longer refused by class. One inside a declared scope, using a verb that scope carries and leaving a receipt, proceeds without a further owner act; every refused verb stays refused.",
+  "subject": {
+    "artifact": "SPEC.md",
+    "from_standing": "RATIFIED",
+    "to_standing": "RATIFIED",
+    "supersedes_open_decision": "O7"
+  },
+  "presented_by_seat": "seat:session-control",
+  "accepted_by_seat": "seat:root",
+  "claim_type": "JUDGEMENT",
+  "built_by": {
+    "actor_id": "urn:soveraeign:actor:claude-interactive-session",
+    "actor_kind": "MODEL"
+  },
+  "witnessed_by": null,
+  "visible_result": {
+    "demo": ["python", "scripts/sov_kernel.py", "parity"],
+    "shows": "the kernel and the ticket workflow refusing the same external effects by the same name, after the class refusal was lifted from SPEC.md and recompiled",
+    "expect": "PASS, 5 correspondences. The fact that used to read 'external-world effects are refused in this phase' now reads 'an external effect outside every declared scope is refused', and both sides still agree."
+  },
+  "evidence": [
+    {
+      "address": "SPEC.md",
+      "digest": null,
+      "says": "the amended effect-class clause: admitted inside a declared scope with a receipt, compensated forward, never claimed rolled back"
+    },
+    {
+      "address": "contracts/external-effect-authorization.json",
+      "digest": null,
+      "says": "two scopes (board metadata, branch writes on this repository) and ten verbs refused by name including force-push, merge, visibility, and secrets"
+    },
+    {
+      "address": "conformance/fixtures/kernel/transition-cases.json",
+      "digest": null,
+      "says": "K-013 unauthorized refused, K-017 authorized permitted, K-018 force-push refused inside a scope that exists"
+    },
+    {
+      "address": "conformance/fixtures/tickets/transition-cases.json",
+      "digest": null,
+      "says": "TC-015, TC-018, TC-019, TC-020, TC-021, TC-022: unauthorized, authorized, refused verb, no receipt, merge, invented scope"
+    },
+    {
+      "address": "conformance/oracle-controls.json",
+      "digest": null,
+      "says": "CONF-I5-DEF already fails any receipt claiming an external effect was rolled back; the compensation rule was contracted before this change and is unaltered by it"
+    }
+  ],
+  "why_it_matters": "The class refusal was doing two jobs: keeping irreversible acts behind an owner, and keeping ordinary board work behind one too. The second job is what left 44 issues and 7 pull requests unmanaged while agents were forbidden to touch them.",
+  "what_could_defeat_it": [
+    "A scope whose named inverse verb does not actually undo the effect, which would make 'reversible' a label rather than a property.",
+    "An agent reaching a refused verb through some path the scope check does not cover, which would mean the boundary moved rather than narrowed.",
+    "An external effect whose receipt is written after the attempt rather than before, leaving a window where a failed write is indistinguishable from no write.",
+    "A future scope added without the same fixture discipline, which would let the list grow past what anyone has tested."
+  ],
+  "residuals": [
+    "No adapter actually performs an authorized effect yet. This admits the effect; it does not build the crossing.",
+    "The receipt is named in the request and not yet written by anything, so the pre-write ordering above is unproven.",
+    "Scopes are hand-listed. There is no check that a scope's stated inverse verb is genuinely inverse.",
+    "This packet is presented by the seat that built it and is unwitnessed."
+  ],
+  "on_accept": "STATUS.yaml protected_boundaries drops no_external_effects_in_phase_i for the four narrower boundaries; O7 and O16b move from holds to rulings.",
+  "on_reject": "Revert SPEC.md line 57, the two contracts, and the six fixtures; the class refusal returns and the board stays unmanaged."
+}

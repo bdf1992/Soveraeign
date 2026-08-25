@@ -104,7 +104,15 @@ class Digests(unittest.TestCase):
 
 class BudgetReporting(unittest.TestCase):
     """The budget is graded, so the report says how fast the run was and not
-    only whether it cleared the ceiling (`decisions/0042`)."""
+    only whether it cleared the ceiling (`decisions/0050`)."""
+
+    def test_the_bands_are_the_ones_the_record_declares(self):
+        """Guards the same thing the bare 3.0 assertion did: the budget cannot be
+        loosened quietly. It pins the bands from decisions/0050 rather than a
+        single number, so widening any one of them trips here and has to be argued.
+        """
+        self.assertEqual(verify.BUDGET_GRADES,
+                         (("PLATINUM", 3.0), ("GOLD", 6.0), ("SILVER", 15.0)))
 
     def test_the_budget_is_still_declared(self):
         self.assertEqual(verify.BUDGET_SECONDS, 15.0)

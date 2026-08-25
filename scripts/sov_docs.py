@@ -31,6 +31,7 @@ from typing import Any
 import argparse
 import json
 import os
+import posixpath
 import re
 import sys
 
@@ -40,22 +41,29 @@ sys.path.insert(0, str(ROOT / "services" / "asset" / "src"))
 
 from sovdocs import facets as facet_rules  # noqa: E402
 from sovdocs.markdown import render as render_markdown  # noqa: E402
+from sovdocs.render import NEWLINE, _rendered, _resolver  # noqa: E402
 from sovdocs.site import render as render_site  # noqa: E402
 
 SKIP_PARTS = {".git", ".venv", "__pycache__", ".local", "node_modules", "lineage", "docs"}
 PAGE = ROOT / "docs" / "documentation.html"
 LEDGER = ROOT / "docs" / "ingest.json"
 STORE = ROOT / ".local" / "docs-assets"
-SEARCH_BUDGET = 4000
 ANCHOR = re.compile(r'href="#([a-z0-9-]+)"')
 
 
 
 def sources() -> list[Path]:
     """Every markdown document this node publishes to its own readers, in a stable order."""
-    found = [path for path in ROOT.rglob("*.md")
-             if not (set(path.relative_to(ROOT).parts) & SKIP_PARTS)
-             and not facet_rules.excluded(path.relative_to(ROOT).as_posix())]
+    found: list[Path] = []
+    for raw_root, dirs, files in os.walk(ROOT, topdown=True):
+        # The published-document population excludes these trees. Prune them before
+        # descent so a documentation check never pays to walk Git objects, local
+        # runtime state, generated docs, or dependency trees it will discard anyway.
+        dirs[:] = sorted(name for name in dirs if name not in SKIP_PARTS)
+        root = Path(raw_root)
+        found.extend(root / name for name in sorted(files)
+                     if name.endswith(".md")
+                     and not facet_rules.excluded((root / name).relative_to(ROOT).as_posix()))
     return sorted(found, key=lambda path: path.relative_to(ROOT).as_posix())
 
 
@@ -68,72 +76,19 @@ def _identifier(path: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", path.lower().removesuffix(".md")).strip("-")
 
 
-def _resolver(path: str, known: dict[str, str]):
-    """Turn a link written relative to one document into an anchor inside this page.
-
-    A document links to a sibling the way the repository stores it - `AGENTS.md`,
-    `../SPEC.md`, `decisions/0001-founding-boundary.md`. On one page those targets
-    are anchors, not files, so each is resolved against the linking document's own
-    directory. A target this page does not carry resolves to nothing and renders
-    as text rather than a link that goes nowhere.
-    """
-    base = PurePosixPath(path).parent
-
-    def resolve(target: str) -> str | None:
-        address, _, fragment = target.partition("#")
-        if not address:
-            return "#" + fragment if fragment else None
-        # Relative to the citing document, then from the repository root, then by
-        # a basename only one document answers to. A name two documents share is
-        # ambiguous and stays unresolved rather than guessing at one of them.
-        candidates = [str(PurePosixPath(os.path.normpath(str(base / address)))), address]
-        for candidate in candidates:
-            if candidate in known:
-                return f"#{known[candidate]}"
-        if "/" not in address:
-            matches = [value for key, value in known.items()
-                       if key.rsplit("/", 1)[-1] == address]
-            if len(matches) == 1:
-                return f"#{matches[0]}"
-        return None
-
-    return resolve
-
-
-_RENDERED: dict[tuple[str, str], tuple[str, str, str, str, list]] = {}
-
-
-def _rendered(source: Path, resolve=None) -> tuple[str, str, str, str, list]:
-    """Render one document, keyed by its bytes so a repeat costs a dictionary lookup.
-
-    The check rebuilds the whole page to compare bytes, and the tests build it
-    several times over. Rendering 156 documents each time was the only slow part
-    of either.
-    """
-    raw = source.read_bytes()
-    digest = sha256(raw).hexdigest()
-    key = (digest, source.relative_to(ROOT).as_posix())
-    cached = _RENDERED.get(key)
-    if cached is not None:
-        return cached
-    text = raw.decode("utf-8", errors="replace")
-    body, headings = render_markdown(text, resolve)
-    built = (digest, text, body, re.sub(r"\s+", " ", text.lower())[:SEARCH_BUDGET], headings)
-    _RENDERED[key] = built
-    return built
-
-
 def documents(ledger: dict[str, Any]) -> list[dict[str, Any]]:
     """Render every document once, joined to whatever the Asset Service recorded for it."""
     found = sources()
     known = {source.relative_to(ROOT).as_posix(): _identifier(source.relative_to(ROOT).as_posix())
              for source in found}
+    corpus = sha256(NEWLINE.join(sorted(known)).encode("utf-8")).hexdigest()
     offices = facet_rules.Offices(ROOT)
     declared = facet_rules.service_standings(ROOT)
     built = []
     for source in found:
         path = source.relative_to(ROOT).as_posix()
-        digest, text, body, search, headings = _rendered(source, _resolver(path, known))
+        digest, text, body, search, headings = _rendered(source, _resolver(path, known),
+                                                         corpus)
         built.append({
             "id": known[path],
             "path": path,

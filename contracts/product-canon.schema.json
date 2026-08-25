@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://soveraeign.local/contracts/product-canon.schema.json",
-  "title": "Soveraeign Product Canon (PROPOSED, decisions/0046 and decisions/0051)",
+  "title": "Soveraeign Product Canon (PROPOSED, decisions/0058-the-product-canon.md and decisions/0059-product-ground-and-canon-2.md)",
   "description": "The durable product-level things requirements are for: who the node is for, what they are trying to accomplish, what Soveraeign undertakes to make possible, and the principal journeys by which a promise becomes usable. It sits between the product ground and PRD.md and is neither a second PRD nor architecture. Every promise derives from at least one claim in contracts/product-ground.json, which is what stops the canon becoming a place where product intent is invented. CANON.md owns the wording; this record owns the identifiers and the joins, so ground -> promise -> journey -> capability can be checked rather than asserted. A revision is immutable once accepted: a promise or journey whose meaning changes is retired and a new identifier minted in a new revision, never redefined in place - the shape STATUS.yaml already uses for the retired O1-O22 docket identifiers. Nothing here grants anything, and naming a capability does not make it reachable.",
   "type": "object",
   "additionalProperties": false,

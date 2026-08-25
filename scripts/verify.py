@@ -35,6 +35,11 @@ from sovverify.checks import CHECKS, ROOT, Check
 SKIP_PARTS = {".git", ".venv", "__pycache__", ".local"}
 BUDGET_GRADES = (("PLATINUM", 3.0), ("GOLD", 6.0), ("SILVER", 15.0))
 BUDGET_SECONDS = BUDGET_GRADES[-1][1]
+# Starting every repository check at once became slower as the suite grew: the
+# hosted runner spent its budget context-switching between 20+ Python processes.
+# Keep enough independent work in flight to hide startup/I/O without allowing
+# process count itself to become the critical path.
+MAX_CHECK_WORKERS = 8
 
 
 def digest(address: str) -> str:
@@ -118,7 +123,7 @@ def main(argv: list[str] | None = None, run_id: str | None = None,
     when = now or datetime.now(timezone.utc).isoformat(timespec="seconds")
 
     started = time.perf_counter()
-    with ThreadPoolExecutor(max_workers=len(CHECKS)) as pool:
+    with ThreadPoolExecutor(max_workers=min(MAX_CHECK_WORKERS, len(CHECKS))) as pool:
         results = list(pool.map(run_check, CHECKS))
     wall = time.perf_counter() - started
 
@@ -148,8 +153,9 @@ def main(argv: list[str] | None = None, run_id: str | None = None,
         return 1
     print(f"\nPASS: {len(CHECKS)} checks in {wall:.3f}s wall, {work:.3f}s of work")
     print(budget_line(wall))
-    print("Standing note: self-tests establish BUILT evidence only; no independent witness "
-          "or owner ratification is implied.")
+    print("Standing note: self-tests establish BUILT evidence only. Nothing here is "
+          "accepted; acceptance is an act taken by a seat over a presented result "
+          "(contracts/acceptance-policy.json).")
     return 0
 
 

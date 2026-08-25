@@ -29,6 +29,31 @@ CHECKS = (
           "reads repository bytes directly with read_bytes, never a build report, and never "
           "Path.read_text whose newline translation would hide the defect it looks for",
           (".gitattributes", "scripts/lint.py")),
+    Check("recorded traps still hold", [sys.executable, "scripts/sov_traps.py"], ROOT,
+          "re-derives every recorded trap from the repository at check time, so a trap that "
+          "has stopped being true fails here instead of going stale in prose",
+          ("CLAUDE.md", "scripts/sov_traps.py")),
+    Check("standing claims carry a witness", [sys.executable, "scripts/sov_standing.py"], ROOT,
+          "reads STATUS.yaml and the witness records by separate paths and grades one against "
+          "the other, so a standing claim cannot supply the record that would support it",
+          ("STATUS.yaml", "scripts/sov_standing.py")),
+    Check("owner queue", [sys.executable, "scripts/sov_accept.py", "audit"], ROOT,
+          "fails when anything sits on the owner without a complete packet, reading the "
+          "declared acceptance contract rather than any claim that a result is ready",
+          ("contracts/acceptance-policy.json", "scripts/sov_accept.py")),
+    Check("acceptance routing", [sys.executable, "scripts/sov_docket.py", "check"], ROOT,
+          "reads the decision records and the two declared contracts and proves the crosswalk "
+          "is total, no routing names a record that does not exist, and every claim that "
+          "STATUS.yaml already answers a record is true of the file; it grades no decision as "
+          "right and settles none of them",
+          ("contracts/decision-standing.json", "contracts/acceptance-routing.json",
+           "decisions", "STATUS.yaml")),
+    Check("charting derivation tests",
+          [sys.executable, "-m", "unittest", "discover", "-s", "charting/tests", "-v"], ROOT,
+          "re-derives the whole chart from SDLC.md and the checked-in skill bindings at the "
+          "moment of the check, so a binding that has stopped matching the tier it implements "
+          "fails here rather than going stale in a recorded derivation",
+          ("charting", "SDLC.md")),
     Check("bootstrap and locked evidence", [sys.executable, "scripts/verify_bootstrap.py"], ROOT,
           "re-digests locked evidence from disk rather than trusting a recorded digest",
           ("scripts/verify_bootstrap.py",)),
@@ -148,6 +173,14 @@ CHECKS = (
           "inventory rather than a live daemon, so the result cannot depend on whether a "
           "model server happens to be running on the checking machine",
           ("adapters/ollama", "contracts/model-binding.schema.json")),
+    Check("Identity component tests",
+          [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
+          ROOT / "services" / "identity",
+          "the component's own tests; these establish BUILT evidence about the challenge and "
+          "recovery mechanics and are explicitly NOT independent of the code they exercise. "
+          "The refusal cases are the exception worth naming: they drive the lifecycle against "
+          "the refusal table services/identity/CHARTER.md declared before the code existed",
+          ("services/identity/tests", "services/identity/CHARTER.md")),
     Check("Record Service reference tests",
           [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
           ROOT / "services" / "record",

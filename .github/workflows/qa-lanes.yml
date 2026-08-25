@@ -2,8 +2,9 @@ name: qa lanes
 
 # The verification dyad from SDLC.md, run per pull request.
 #
-#   blue   builds the positive path and its declared cases; a pass establishes BUILT
-#          evidence and nothing further
+#   blue   is the canonical PR root-verification producer; its Python matrix
+#          builds the positive path and its declared cases, and a pass establishes
+#          BUILT evidence and nothing further
 #   red    screens adversarially; its output is PROPOSED findings, never CONFIRMED,
 #          because a finding counts only after independent reproduction
 #   purple gates any standing advance past BUILT on a settled engagement receipt
@@ -23,14 +24,18 @@ concurrency:
 
 jobs:
   blue:
-    name: blue · construction
+    name: blue · construction (${{ matrix.python-version }})
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ["3.11", "3.12"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: ${{ matrix.python-version }}
       - name: Repository verification
         run: python scripts/verify.py
       - name: Record the standing this establishes
@@ -39,12 +44,22 @@ jobs:
           {
             echo '## Blue lane'
             echo
-            echo 'A passing Blue lane establishes `BUILT` evidence only.'
+            echo "Python ${{ matrix.python-version }} is one supported reading of the same root observation."
+            echo 'The Blue matrix establishes `BUILT` evidence only when every supported reading passes.'
             echo 'It is not a witness and it is not a ratification.'
           } >> "$GITHUB_STEP_SUMMARY"
 
-  red:
-    name: red · adversarial screening
+  blue-required:
+    name: blue · construction
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    needs: [blue]
+    steps:
+      - name: Publish the protected-branch check
+        run: echo 'Both supported Python readings completed successfully.'
+
+  generative-red:
+    name: red · generative screening
     runs-on: ubuntu-latest
     timeout-minutes: 20
     # Gated at the job so an unconfigured lane renders as SKIPPED, not as a pass.
@@ -118,7 +133,7 @@ jobs:
 
       - name: Score the mutants this change admits
         run: |
-          python scripts/sov_mutate.py run             --changed             --base "origin/${{ github.base_ref || 'main' }}"             --limit 40
+          python scripts/sov_mutate.py run             --changed             --base "origin/${{ github.base_ref || 'main' }}"             --limit 40             --total-limit 120
 
       - name: Record what the score means
         if: always()
@@ -135,18 +150,33 @@ jobs:
             echo 'than reporting a score.'
             echo
             echo 'Mutants per file are capped at 40 and the cap is reported, never silent.'
+            echo 'A run is capped at 120 mutants. Large diffs sample paths evenly across'
+            echo 'the full ordered target set and report every omitted path.'
             echo 'No threshold is enforced yet - `decisions/0025` leaves the number to Bdo,'
             echo 'because a floor invented before a baseline would be asserted, not measured.'
           } >> "$GITHUB_STEP_SUMMARY"
+
+  red:
+    name: red · adversarial screening
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    needs: [generative-red, mutation]
+    if: ${{ !cancelled() && needs.mutation.result == 'success'
+            && needs.generative-red.result != 'failure' }}
+    steps:
+      - name: Publish the protected-branch check
+        run: |
+          echo 'Mechanical adversarial screening passed.'
+          echo 'Optional generative screening was either successful or not enabled.'
 
   purple:
     name: purple · release gate
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [blue, red, mutation]
+    needs: [blue-required, red, mutation]
     # `red` is opt-in and renders as skipped when unconfigured, which must not
     # skip the gate behind it. A red that is enabled and *fails* still stops here.
-    if: ${{ !cancelled() && needs.blue.result == 'success'
+    if: ${{ !cancelled() && needs.blue-required.result == 'success'
             && needs.mutation.result == 'success' && needs.red.result != 'failure' }}
     steps:
       - uses: actions/checkout@v4

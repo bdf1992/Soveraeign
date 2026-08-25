@@ -16,7 +16,9 @@ from pathlib import Path
 from typing import Any
 import subprocess
 
-from sovsession import claims, guard, store
+from sovsession import claims, guard, principals, store
+
+NEWLINE = chr(10)
 
 MAX_PATHS = 8
 MAX_PEERS = 10
@@ -62,19 +64,22 @@ def collect(root: Path, directory: Path, session: str, tree: str) -> dict[str, A
         "peers": sorted(live, key=lambda item: str(item.get("session", ""))),
         "held": foreign,
         "next_decision": claims.next_decision_number(root, directory),
+        "principal": principals.resolve(root, session),
     }
 
 
 def render(data: dict[str, Any]) -> str:
     """Render the briefing for a human or a model reading it as context."""
     peers = data["peers"]
+    identity = principals.render(data["principal"])
     if not peers and not data["held"]:
         return (f"Session registry: you are the only live session. "
-                f"{data['branch']}, {data['position']}.")
+                f"{data['branch']}, {data['position']}." + NEWLINE + f"  {identity}")
     lines = [f"Session registry - {len(peers)} other live session"
              f"{'' if len(peers) == 1 else 's'} in this repository."]
     lines.append(f"  you: {data['session']} in {data['tree']} "
                  f"on {data['branch']}, {data['position']}")
+    lines.append(f"  {identity}")
     if data["shared_tree"]:
         shared = data["shared_tree"]
         names = ", ".join(str(p.get("session")) for p in shared)

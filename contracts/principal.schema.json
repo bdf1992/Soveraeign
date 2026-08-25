@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/principal.schema.json",
+  "title": "Soveraeign Principal Registry (PROPOSED, decisions/0048)",
+  "description": "Registered identities that can be named as actors. The identity grade is derived, never stored: hop distance has no field here on purpose (ID-3) and is computed by walking controller edges. A rebuildable projection; being registered grants nothing (C3, ID-8).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["registry_schema", "status", "root_principal", "principals"],
+  "properties": {
+    "registry_schema": {"const": "soveraeign-principal-registry/v1"},
+    "status": {"enum": ["PROPOSED", "RATIFIED"]},
+    "root_principal": {"type": "string", "minLength": 1},
+    "principals": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/principal"}
+    }
+  },
+  "$defs": {
+    "principal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["principal_id", "kind", "durability", "controller", "anchor",
+                   "crossing_class", "model", "delegation", "claim",
+                   "verification_channel", "revoked"],
+      "properties": {
+        "principal_id": {"type": "string", "minLength": 1},
+        "kind": {"enum": ["HUMAN", "MODEL", "WORKER", "SYSTEM"]},
+        "durability": {"enum": ["DURABLE", "INSTANCE"]},
+        "controller": {"anyOf": [{"type": "string", "minLength": 1}, {"type": "null"}]},
+        "anchor": {"$ref": "#/$defs/anchor"},
+        "crossing_class": {"enum": ["in-node", "provider-boundary", "federation"]},
+        "model": {"anyOf": [{"$ref": "#/$defs/model"}, {"type": "null"}]},
+        "delegation": {"anyOf": [{"$ref": "#/$defs/delegation"}, {"type": "null"}]},
+        "claim": {"$ref": "#/$defs/claim"},
+        "verification_channel": {"anyOf": [{"$ref": "#/$defs/channel"}, {"type": "null"}]},
+        "revoked": {"anyOf": [{"$ref": "#/$defs/revocation"}, {"type": "null"}]}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"claim": {"properties":
+                 {"verification": {"const": "VERIFIED"}}}}},
+          "then": {"properties": {"verification_channel": {"$ref": "#/$defs/channel"}}}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "MODEL"}}},
+          "then": {"properties": {"model": {"$ref": "#/$defs/model"}}},
+          "else": {"properties": {"model": {"type": "null"}}}
+        },
+        {
+          "if": {"properties": {"durability": {"const": "INSTANCE"}}},
+          "then": {"properties": {"delegation": {"$ref": "#/$defs/delegation"}}},
+          "else": {"properties": {"delegation": {"type": "null"}}}
+        }
+      ]
+    },
+    "channel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "reference"],
+      "properties": {
+        "kind": {"enum": ["console-session", "local-file", "os-account", "external"]},
+        "reference": {"type": "string", "minLength": 1}
+      }
+    },
+    "anchor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "reference"],
+      "properties": {
+        "kind": {"enum": ["decision", "model-binding", "launch-event",
+                           "delegation-record", "charter"]},
+        "reference": {"type": "string", "minLength": 1}
+      }
+    },
+    "model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["model_id", "model_version", "lineage"],
+      "properties": {
+        "model_id": {"type": "string", "minLength": 1},
+        "model_version": {"type": "string", "minLength": 1},
+        "lineage": {"anyOf": [{"type": "string", "minLength": 1}, {"type": "null"}]}
+      }
+    },
+    "delegation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["operator", "launched_by", "launched_at"],
+      "properties": {
+        "operator": {"type": "string", "minLength": 1},
+        "launched_by": {"type": "string", "minLength": 1},
+        "launched_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claimed_at", "claim_basis", "verification"],
+      "properties": {
+        "claimed_at": {"type": "string", "format": "date-time"},
+        "claim_basis": {"type": "string", "minLength": 1},
+        "verification": {"enum": ["UNVERIFIED", "VERIFIED"]},
+        "verification_basis": {"type": "string", "minLength": 1}
+      },
+      "if": {"properties": {"verification": {"const": "VERIFIED"}}},
+      "then": {"required": ["verification_basis"]}
+    },
+    "revocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["revoked_at", "revoked_by", "reason"],
+      "properties": {
+        "revoked_at": {"type": "string", "format": "date-time"},
+        "revoked_by": {"type": "string", "minLength": 1},
+        "reason": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

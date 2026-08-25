@@ -6,6 +6,7 @@
     "services/asset/contracts/service.json",
     "services/console/contracts/service.json",
     "services/gateway/contracts/service.json",
+    "services/identity/contracts/service.json",
     "services/observation/contracts/service.json",
     "services/projection/contracts/service.json",
     "services/proofing/contracts/service.json",
@@ -13,7 +14,7 @@
     "services/registry/contracts/service.json",
     "contracts/capability-offices.json"
   ],
-  "input_state_digest": "8c536c711dbc2cdb4e6467e01710e936b1e47a5d95990ed01cf0754782086b98",
+  "input_state_digest": "4dc73519fe0cec2331513a4973158751a2d16a25b46f75340caae377e1b48940",
   "capabilities": [
     {
       "capability_id": "asset.add-member",
@@ -2555,6 +2556,340 @@
       }
     },
     {
+      "capability_id": "identity.deliver-challenge",
+      "service_id": "identity",
+      "operation": "deliver-challenge",
+      "office": "BACK",
+      "counter": "permits-office",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "deliver:challenge",
+      "actor_kinds": [
+        "SYSTEM"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ],
+      "shape": {
+        "logical_endpoint": "sov://identity/deliver-challenge",
+        "subject": "challenge",
+        "crud": "READ",
+        "requirement": "PROD-I-3",
+        "preconditions": [
+          "challenge_exists",
+          "declared_channel"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "MISSING_PRECONDITION",
+          "CHANNEL_REFUSED"
+        ]
+      }
+    },
+    {
+      "capability_id": "identity.enroll-recovery",
+      "service_id": "identity",
+      "operation": "enroll-recovery",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "enroll:recovery",
+      "actor_kinds": [
+        "HUMAN"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ],
+      "shape": {
+        "logical_endpoint": "sov://identity/enroll-recovery",
+        "subject": "recovery-set",
+        "crud": "CREATE",
+        "requirement": "PROD-I-3",
+        "preconditions": [
+          "declared_principal",
+          "declared_secret_digest"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "MISSING_PRECONDITION",
+          "PRINCIPAL_REVOKED"
+        ]
+      }
+    },
+    {
+      "capability_id": "identity.mint-challenge",
+      "service_id": "identity",
+      "operation": "mint-challenge",
+      "office": "BACK",
+      "counter": "permits-office",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "mint:challenge",
+      "actor_kinds": [
+        "SYSTEM"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ],
+      "shape": {
+        "logical_endpoint": "sov://identity/mint-challenge",
+        "subject": "challenge",
+        "crud": "CREATE",
+        "requirement": "PROD-I-3",
+        "preconditions": [
+          "declared_principal",
+          "declared_channel",
+          "declared_expiry"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "MISSING_PRECONDITION",
+          "CHANNEL_UNDECLARED",
+          "CHANNEL_REFUSED",
+          "PRINCIPAL_REVOKED"
+        ]
+      }
+    },
+    {
+      "capability_id": "identity.present-challenge",
+      "service_id": "identity",
+      "operation": "present-challenge",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "present:challenge",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ],
+      "shape": {
+        "logical_endpoint": "sov://identity/present-challenge",
+        "subject": "challenge",
+        "crud": "SUPERSEDE",
+        "requirement": "PROD-I-3",
+        "preconditions": [
+          "challenge_exists",
+          "token_matches",
+          "within_window"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "TOKEN_UNKNOWN",
+          "CHALLENGE_SPENT",
+          "CHALLENGE_EXPIRED",
+          "PRINCIPAL_MISMATCH"
+        ]
+      }
+    },
+    {
+      "capability_id": "identity.redeem-recovery",
+      "service_id": "identity",
+      "operation": "redeem-recovery",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "redeem:recovery",
+      "actor_kinds": [
+        "HUMAN"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ],
+      "shape": {
+        "logical_endpoint": "sov://identity/redeem-recovery",
+        "subject": "recovery-set",
+        "crud": "SUPERSEDE",
+        "requirement": "PROD-I-3",
+        "preconditions": [
+          "recovery_set_exists",
+          "secret_digest_matches"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "MISSING_PRECONDITION",
+          "DIGEST_MISMATCH"
+        ]
+      }
+    },
+    {
+      "capability_id": "identity.report-unenrolled",
+      "service_id": "identity",
+      "operation": "report-unenrolled",
+      "office": "BACK",
+      "counter": "permits-office",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:recovery",
+      "actor_kinds": [
+        "SYSTEM"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ],
+      "shape": {
+        "logical_endpoint": "sov://identity/report-unenrolled",
+        "subject": "recovery-set",
+        "crud": "READ",
+        "requirement": "PROD-I-3",
+        "preconditions": [
+          "declared_principal"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "MISSING_PRECONDITION"
+        ]
+      }
+    },
+    {
+      "capability_id": "identity.revoke-recovery",
+      "service_id": "identity",
+      "operation": "revoke-recovery",
+      "office": "BACK",
+      "counter": "permits-office",
+      "service_standing": "PROPOSED",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "revoke:recovery",
+      "actor_kinds": [
+        "HUMAN"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ],
+      "shape": {
+        "logical_endpoint": "sov://identity/revoke-recovery",
+        "subject": "recovery-set",
+        "crud": "COUNTER",
+        "requirement": "PROD-I-3",
+        "preconditions": [
+          "recovery_set_exists",
+          "declared_actor"
+        ],
+        "commit": "COUNTERED",
+        "refusals": [
+          "MISSING_PRECONDITION",
+          "AUTHORITY_REFUSED"
+        ]
+      }
+    },
+    {
       "capability_id": "observation.attest-observation",
       "service_id": "observation",
       "operation": "attest-observation",
@@ -4446,6 +4781,53 @@
       }
     },
     {
+      "capability_id": "record.export-journal",
+      "service_id": "record",
+      "operation": "export-journal",
+      "office": "BACK",
+      "counter": "record",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "export:journal",
+      "actor_kinds": [
+        "SYSTEM"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "record:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ],
+      "shape": {
+        "logical_endpoint": "sov://record/export-journal",
+        "subject": "journal-export",
+        "crud": "READ",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "journal_verifies"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "EXPORT_REFUSED",
+          "DIGEST_MISMATCH"
+        ]
+      }
+    },
+    {
       "capability_id": "record.read-entry",
       "service_id": "record",
       "operation": "read-entry",
@@ -4630,6 +5012,103 @@
         "refusals": [
           "UNREADABLE",
           "DIGEST_MISMATCH"
+        ]
+      }
+    },
+    {
+      "capability_id": "record.restore-journal",
+      "service_id": "record",
+      "operation": "restore-journal",
+      "office": "BACK",
+      "counter": "record",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "restore:journal",
+      "actor_kinds": [
+        "SYSTEM"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "record:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ],
+      "shape": {
+        "logical_endpoint": "sov://record/restore-journal",
+        "subject": "journal-entry",
+        "crud": "CREATE",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "export_verifies",
+          "store_empty"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "RESTORE_REFUSED",
+          "DIGEST_MISMATCH",
+          "TRUNCATED_EXPORT"
+        ]
+      }
+    },
+    {
+      "capability_id": "record.verify-export",
+      "service_id": "record",
+      "operation": "verify-export",
+      "office": "BACK",
+      "counter": "record",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "verify:export",
+      "actor_kinds": [
+        "SYSTEM"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "record:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ],
+      "shape": {
+        "logical_endpoint": "sov://record/verify-export",
+        "subject": "journal-export",
+        "crud": "READ",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "export_readable"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "RESTORE_REFUSED",
+          "DIGEST_MISMATCH",
+          "TRUNCATED_EXPORT"
         ]
       }
     },

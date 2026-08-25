@@ -1,11 +1,15 @@
-# 0051 · Product Ground, and the corrections that produced CANON-2
+# 0059 · Product Ground, and the corrections that produced CANON-2
 
 Status: `PROPOSED · DRAFTED AT OWNER DIRECTION · ACCEPTANCE PENDING`
+
+Numbering note: drafted as 0051 on a working branch that had not yet seen
+`0051-root-kernel-and-node-surface.md`, which had already landed on
+`feat/federation-harness-and-hardening`. The landed record stays; this one moved.
 
 Drafted at Bdo's direction, 2026-08-24. He accepted the product-canon layer as the correct
 place between `CONTRACT.md` and `PRD.md` and did not accept `CANON-1` as the final
 semantic revision. This records the correction pass. The acceptance surface is
-`reports/2026-08-24-product-ground-acceptance.md`; `decisions/0046` records the layer
+`reports/2026-08-24-product-ground-acceptance.md`; `decisions/0058-the-product-canon.md` records the layer
 itself and is not reopened.
 
 ## Decision
@@ -102,7 +106,7 @@ it.
 
 This was not only a future concern. `canon.promise_reading` was summing crossing counts
 across a promise's journeys, so a capability crossed by two of them counted twice. Fixed;
-`PROMISE-01` now reads 17 reachable where `decisions/0046` published 18, and 18 was wrong.
+`PROMISE-01` now reads 17 reachable where `decisions/0058-the-product-canon.md` published 18, and 18 was wrong.
 
 No conversion between dimensions exists. Usage carries `wallclock_seconds`, `tokens`,
 `tool_calls` and `usd` and an unknown dimension is refused, so `COST` and `EFFORT` cannot
@@ -132,7 +136,7 @@ this crossing is missing rather than a demonstration that it is not needed.
 - A new product promise now has to be argued at the ground layer first.
 - A promise may never become canonical because something was built that way.
 - An identifier's meaning is fixed for good; changing it retires the identifier.
-- `decisions/0046` remains the record of the layer. Its per-promise table is superseded by
+- `decisions/0058-the-product-canon.md` remains the record of the layer. Its per-promise table is superseded by
   `python scripts/sov_canon.py promises`, and its `PROMISE-01` row was arithmetically wrong.
 - `STATUS.yaml` is unchanged. Recording the layer's standing there is part of accepting it.
 

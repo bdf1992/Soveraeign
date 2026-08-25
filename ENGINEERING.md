@@ -27,6 +27,11 @@ A technology belongs in the baseline only when it is required to prove a
 current operation locally, keeps authority and history inspectable, survives
 loss of optional providers, and can be replaced behind an existing contract.
 
+Surviving provider loss is not surviving medium loss. Every durability concept
+in this baseline was once scoped to a process, a transaction, or an external
+provider, and none to the medium holding the record; `decisions/0049` records
+why that omission mattered and adds the concern rather than the technology.
+
 ## Minimal reference stack
 
 | Concern | Phase-I choice | Boundary |
@@ -34,11 +39,12 @@ loss of optional providers, and can be replaced behind an existing contract.
 | Language | Python 3.11+ | Reference implementation only; logical contracts remain language-neutral |
 | Runtime dependencies | Python standard library first | New dependencies require a decision and named port or adapter |
 | Operational record | Append-preserving events and receipts in transactional SQLite | SQLite does not define service or kernel semantics |
+| Durability and custody | Portable self-verifying journal export; restore by replay with chain verification | An export is custody of the node's own record, not an integration with an external system. Where the copy is kept is the operator's act and the operator's risk (`decisions/0049`) |
 | Immutable payload custody | Filesystem content-addressed store using SHA-256 | Payload address differs from asset and source identity |
 | Machine contracts | JSON Schema Draft 2020-12 | Schema validity is not semantic fitness |
 | Human control files | Markdown and small YAML fixtures | YAML is not a parallel runtime contract |
 | Local surface | Python API and CLI | Human and model bindings use the same kernel operations |
-| Tests and lint | `unittest` and dependency-free repository scripts | Local, deterministic, network-free; wall time graded PLATINUM/GOLD/SILVER at 3/6/15 s, failing past 15 |
+| Tests and lint | `unittest` and dependency-free repository scripts | Local, deterministic, network-free; wall time graded PLATINUM/GOLD/SILVER at 3/6/15 s, failing past 15 (`decisions/0050`) |
 | Search and graph | Rebuildable local projections | External systems integrate through adapters later |
 | Model execution | Declared Model Binding plus Model Adapter | BYOM; no provider-derived authority or silent fallback |
 
@@ -186,6 +192,7 @@ objective starts a fresh task or bounded handoff.
 | Two nodes must exchange governed records | Federation crossing, identity, policy, and receipt contracts |
 | A model provider is required | Model Adapter contained by a Model Binding and data boundary |
 | Concurrent writes defeat a current case | Fencing or compare-and-set at the storage boundary |
+| The record must survive its medium | Journal export plus restore-by-replay, verified against the digest chain |
 
 Do not add generalized infrastructure for imagined scale. Add the smallest
 replaceable boundary resolving an observed failure while preserving the kernel.

@@ -13,6 +13,7 @@ command that deletes whatever it is handed will eventually be handed the trunk.
 from __future__ import annotations
 
 from pathlib import Path
+import os
 import shutil
 import subprocess
 import sys
@@ -65,6 +66,8 @@ def setUpModule() -> None:
     root = Path(holder.name) / "template"
     root.mkdir()
     git(root, "init")
+    git(root, "config", "user.name", "Fixture")
+    git(root, "config", "user.email", "fixture@example.invalid")
     write(root, "a.txt", "one" + NL)
     write(root, "b.txt", "one" + NL)
     base = commit(root, "root")
@@ -373,6 +376,48 @@ class IntegrateRefusalCase(RepoCase):
         with self.assertRaises(ValueError):
             execute.integrate(self.root, "main", plan_for("quiet"), "integration/test",
                               self.target(), verify=False)
+
+
+class NoGitIdentityCase(RepoCase):
+    """A host with no configured git identity, which is what CI is.
+
+    Git refuses to write a commit without one, and it refuses in a way that reads exactly
+    like a failed merge. Before this was separated, the planner reported every branch as
+    unmergeable and the merger reported a conflict, on a repository where everything
+    merged cleanly.
+    """
+
+    def setUp(self) -> None:
+        super().setUp()
+        git(self.root, "config", "--unset-all", "user.name")
+        git(self.root, "config", "--unset-all", "user.email")
+        self._environment = dict(os.environ)
+        os.environ.update(GIT_CONFIG_GLOBAL=os.devnull, GIT_CONFIG_SYSTEM=os.devnull)
+        for name in ("GIT_AUTHOR_NAME", "GIT_AUTHOR_EMAIL",
+                     "GIT_COMMITTER_NAME", "GIT_COMMITTER_EMAIL"):
+            os.environ.pop(name, None)
+
+    def tearDown(self) -> None:
+        os.environ.clear()
+        os.environ.update(self._environment)
+        super().tearDown()
+
+    def test_git_reports_no_committer(self) -> None:
+        self.assertIsNone(gitio.committer(self.root))
+
+    def test_planning_still_works_because_probe_commits_carry_their_own_author(self) -> None:
+        entries = [{"name": "quiet", "local": True, "ahead": 1, "when": 0}]
+        record = mergeplan.build(self.root, "main", entries, how="given")
+        self.assertEqual([step["name"] for step in record["steps"]], ["quiet"])
+        self.assertEqual(record["blocked"], [])
+
+    def test_merging_refuses_up_front_instead_of_reporting_a_conflict(self) -> None:
+        target = Path(self._temp.name) / "integration"
+        with self.assertRaises(RuntimeError) as raised:
+            execute.integrate(self.root, "main", plan_for("quiet"), "integration/test",
+                              target, verify=False)
+        self.assertIn("identity", str(raised.exception))
+        self.assertFalse(target.exists())
 
 
 class RetireCase(RepoCase):

@@ -18,6 +18,16 @@ from __future__ import annotations
 from pathlib import Path
 import subprocess
 
+PROBE_IDENTITY = ["-c", "user.name=sov-branch probe",
+                  "-c", "user.email=probe@sov-branch.invalid"]
+"""Authorship for the throwaway commits `chain` writes.
+
+A simulation commit is never referenced and never becomes history, so it needs an
+author only because `commit-tree` refuses without one. Supplying a fixed one here is
+what lets the planner run on a machine with no configured git identity, where it
+otherwise reported every branch as unmergeable rather than saying it could not commit.
+"""
+
 FIELDS = ("refname:short", "objectname:short", "upstream:short", "upstream:track",
           "committerdate:unix", "contents:subject")
 SEP = "\x1f"
@@ -85,7 +95,8 @@ def probe(root: Path, base: str, ref: str) -> tuple[bool, str | None, list[str]]
         return False, None, [f"merge-tree failed: {stderr or stdout or 'unknown error'}"]
     lines = stdout.split("\n\n")[0].splitlines()
     if not lines:
-        return False, None, [f"merge-tree could not merge {ref}: {stderr or stdout or 'no reason given'}"]
+        reason = stderr or stdout or 'no reason given'
+        return False, None, [f"merge-tree could not merge {ref}: {reason}"]
     tree, paths = lines[0].strip(), sorted(set(name for name in lines[1:] if name))
     return (True, tree, []) if code == 0 else (False, None, paths)
 
@@ -102,5 +113,17 @@ def chain(root: Path, tree: str, first: str, second: str) -> str | None:
         if name is None:
             return None
         parents.extend(["-p", name])
-    code, stdout, _ = git(root, ["commit-tree", tree, *parents, "-m", "sov-branch merge probe"])
+    code, stdout, _ = git(root, [*PROBE_IDENTITY, "commit-tree", tree, *parents,
+                                 "-m", "sov-branch merge probe"])
     return stdout.strip() if code == 0 else None
+
+
+def committer(root: Path) -> str | None:
+    """The identity git would sign a commit with here, or None when it has none.
+
+    Asked before anything that writes a commit. Without it `git merge` fails in a way that
+    looks exactly like a conflict, which turns "this machine has no git identity" into
+    "none of your branches merge".
+    """
+    code, stdout, _ = git(root, ["var", "GIT_COMMITTER_IDENT"])
+    return stdout or None if code == 0 else None

@@ -46,6 +46,9 @@ def integrate(root: Path, base: str, steps: list[dict[str, Any]], branch: str, p
         raise ValueError(f"branch {branch!r} already exists; pick another name")
     if path.exists():
         raise ValueError(f"{path} already exists; pick another path")
+    if gitio.committer(root) is None:
+        raise RuntimeError("git has no configured identity here, so it cannot write a merge "
+                           "commit; set user.name and user.email before merging")
     code, out, err = gitio.git(root, ["worktree", "add", "-b", branch, str(path), base])
     if code != 0:
         raise RuntimeError(f"could not create the integration worktree: {err or out}")
@@ -70,8 +73,10 @@ def _merge_one(root: Path, path: Path, step: dict[str, Any], verify: bool) -> di
     message = f"Merge {ref} into the integration branch"
     code, out, err = gitio.git(path, ["merge", "--no-ff", "--no-edit", "-m", message, ref])
     if code != 0:
+        conflicted = bool(gitio.out(path, ["ls-files", "--unmerged"]))
         gitio.git(path, ["merge", "--abort"])
-        return {"ok": False, "name": step["name"], "ref": ref, "reason": "conflict",
+        return {"ok": False, "name": step["name"], "ref": ref,
+                "reason": "conflict" if conflicted else "error",
                 "detail": (err or out).splitlines()[-6:]}
     result = {"ok": True, "name": step["name"], "ref": ref,
               "head": gitio.out(path, ["rev-parse", "--short", "HEAD"])}

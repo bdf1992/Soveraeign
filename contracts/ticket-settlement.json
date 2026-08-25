@@ -1,0 +1,107 @@
+{
+  "policy_id": "soveraeign-ticket-settlement/v1",
+  "governed_by": [
+    "GROUND.md",
+    "contracts/product-canon.json",
+    "contracts/issue-metadata.schema.json",
+    "contracts/closure-ownership.json",
+    "decisions/0060-merged-branch-retirement.md",
+    "decisions/0061-concern-source-and-settlement.md"
+  ],
+  "principle": "A concern has durable meaning upstream of GitHub. Issues coordinate it, branches execute it, pull requests propose a durable result, and receipts or observations show what happened. Execution artifacts never become the source of product meaning.",
+  "source_projection": {
+    "rule": "Project source from canonical references the ticket already carries. Do not mint a parallel source identity in GitHub when an existing repository identifier already names the meaning.",
+    "product_intent": {
+      "ticket_fields": [
+        "capability"
+      ],
+      "resolution": "Each canonical capability resolves upward through contracts/product-canon.json to its journeys, promises, and Ground claims."
+    },
+    "evidence": {
+      "ticket_fields": [
+        "evidence_pointer",
+        "walker_receipt",
+        "target_pr",
+        "target_head"
+      ],
+      "resolution": "These point at the observation, receipt, or exact target that caused or tested the concern."
+    },
+    "governance": {
+      "ticket_fields": [
+        "governing_rule",
+        "authority"
+      ],
+      "resolution": "These identify a binding rule or authority seam when policy rather than product capability is the immediate source."
+    },
+    "coordination": {
+      "ticket_fields": [
+        "parent",
+        "parent_bits",
+        "village_issue",
+        "requires",
+        "held"
+      ],
+      "resolution": "These connect the concern to other concern records without redefining their semantics."
+    },
+    "fallback": "When no canonical ticket field can name the source, the issue body may carry a Source section with an exact repository address or owner-directed interaction reference. This is an address, not a new semantic definition.",
+    "no_duplicate_registry": true
+  },
+  "relations": {
+    "derived_from": {
+      "terminal": false,
+      "meaning": "This concern exists because the named source is not yet realized, proven, reconciled, or otherwise settled."
+    },
+    "depends_on": {
+      "terminal": false,
+      "meaning": "This concern cannot reach its next transition until the named concern or artifact exists."
+    },
+    "advances": {
+      "terminal": false,
+      "meaning": "The result reduces the unsatisfied concern but does not settle it. The issue remains open with the next unsatisfied state visible."
+    },
+    "satisfies": {
+      "terminal": true,
+      "meaning": "The durable result settles the concern represented by the issue. The issue may close once the result and required evidence exist."
+    },
+    "supersedes": {
+      "terminal": true,
+      "meaning": "A named successor concern or durable result now owns the remaining meaning. The old issue closes only when that successor is explicit."
+    }
+  },
+  "execution_link": {
+    "issue_is_concern_record": true,
+    "branch_is_ephemeral_execution_state": true,
+    "pull_request_is_proposed_settlement": true,
+    "branch_link_rule": "Link a branch to its concern through the pull request that carries the branch and names the issue. Do not maintain a second branch registry or write the branch name back into the issue merely to duplicate GitHub's graph.",
+    "pull_request_rule": "Every pull request names the concern it advances, satisfies, or supersedes. Use GitHub's Closes syntax only when the relation is satisfies; a merely advancing pull request must not close the concern.",
+    "merge_rule": "Merge proves only that a result entered the base. Merge alone does not prove satisfaction."
+  },
+  "landed_terminal": {
+    "requires": [
+      "the durable result exists on the intended base",
+      "the pull request records advances, satisfies, or supersedes for the concern it carries",
+      "the concern's remaining standing is explicit after the merge",
+      "open dependent pull requests and shared branch uses are accounted for",
+      "a merged remote head is retired when contracts/external-effect-authorization.json admits retirement",
+      "local contained branch, worktree, and live claim or session state are retired when the participant controls them",
+      "a satisfied concern is closed; a superseded concern names its successor before closing; an advanced concern remains open"
+    ],
+    "merge_is_terminal": false,
+    "behind_is_terminal": false,
+    "green_ci_is_terminal": false
+  },
+  "adoption": {
+    "prospective": true,
+    "historical_missing_source_is_not_a_defect_by_itself": true,
+    "historical_rule": "Do not mint cleanup tickets merely to retrofit metadata. Enrich an old concern when it is touched for real work or when source/settlement information directly enables absorption or closure.",
+    "new_work_rule": "A newly minted meaningful concern must be traceable to product intent, evidence, governance, or a named parent concern before it justifies new execution inventory."
+  },
+  "defeating_cases": [
+    "a branch or pull request becomes the semantic source of the concern",
+    "the same source meaning is copied into a second GitHub-owned registry",
+    "a merged pull request closes an issue that it only advances",
+    "a branch is retained after satisfaction without a concrete dependency or authority reason",
+    "historical issues are converted into new cleanup work solely to satisfy this policy",
+    "source attribution is treated as authority or evidence of satisfaction"
+  ]
+}

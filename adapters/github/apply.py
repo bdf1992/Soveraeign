@@ -9,7 +9,8 @@ holds the general board read crossing and neither calls the other.
 Every write here is ``EXTERNAL_WORLD``. Labels still require explicit per-action owner
 approval. Branch deletion additionally admits one narrow automatic authority basis:
 GitHub reports that the same-repository pull request for that exact head SHA is merged,
-and no open pull request still uses the branch as its base. The crossing re-reads those
+the live branch ref still points at that exact SHA, the ref is not the repository default
+branch, and no open pull request still uses it as its base. The crossing re-reads those
 facts immediately before deleting the ref; an event payload or caller assertion alone is
 never enough.
 """
@@ -94,7 +95,7 @@ def plan(action: dict[str, Any], repo: str) -> list[str]:
 
 
 def _automatic_branch_basis(action: dict[str, Any], repo: str) -> str:
-    """Re-prove the exact merged PR before automatic branch retirement."""
+    """Re-prove the exact merged PR and unchanged ref before automatic retirement."""
     if action.get("kind") != "BRANCH_DELETE":
         raise CrossingRefusal(
             "AUTOMATION_NOT_ADMITTED", "automatic authority admits BRANCH_DELETE only"
@@ -130,6 +131,31 @@ def _automatic_branch_basis(action: dict[str, Any], repo: str) -> str:
             f"PR #{number} no longer proves this retirement: {observed!r}",
         )
 
+    repository = _json(["gh", "api", f"repos/{repo}"], "read repository default branch")
+    default_branch = repository.get("default_branch")
+    if not isinstance(default_branch, str) or not default_branch:
+        raise CrossingRefusal(
+            "AUTHORITY_PROOF_INVALID", "repository returned no usable default branch"
+        )
+    if branch == default_branch:
+        raise CrossingRefusal(
+            "PROTECTED_BRANCH",
+            f"{branch} is the repository default branch and is never automatically retired",
+        )
+
+    live_ref = _json(
+        ["gh", "api", f"repos/{repo}/git/ref/heads/{branch}"],
+        f"read live ref refs/heads/{branch}",
+    )
+    live_name = live_ref.get("ref")
+    live_sha = (live_ref.get("object") or {}).get("sha")
+    if live_name != f"refs/heads/{branch}" or live_sha != head_sha:
+        raise CrossingRefusal(
+            "BRANCH_HEAD_MOVED",
+            f"refs/heads/{branch} no longer points at merged head {head_sha}; "
+            f"observed {live_name!r} at {live_sha!r}",
+        )
+
     children = _json(
         ["gh", "pr", "list", "--repo", repo, "--state", "open", "--base", branch,
          "--json", "number"],
@@ -141,7 +167,10 @@ def _automatic_branch_basis(action: dict[str, Any], repo: str) -> str:
             "STACK_BASE_LIVE",
             f"{branch} still bases open pull request(s) {numbers}; retarget them before retirement",
         )
-    return f"owner-directed automatic retirement; live PR #{number} merge proof revalidated"
+    return (
+        f"owner-directed automatic retirement; live PR #{number}, default-branch, "
+        "head-ref, and stack proofs revalidated"
+    )
 
 
 def _authority(action: dict[str, Any], repo: str) -> str:

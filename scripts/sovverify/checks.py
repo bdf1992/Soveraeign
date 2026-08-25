@@ -48,6 +48,12 @@ CHECKS = (
           "right and settles none of them",
           ("contracts/decision-standing.json", "contracts/acceptance-routing.json",
            "decisions", "STATUS.yaml")),
+    Check("charting derivation tests",
+          [sys.executable, "-m", "unittest", "discover", "-s", "charting/tests", "-v"], ROOT,
+          "re-derives the whole chart from SDLC.md and the checked-in skill bindings at the "
+          "moment of the check, so a binding that has stopped matching the tier it implements "
+          "fails here rather than going stale in a recorded derivation",
+          ("charting", "SDLC.md")),
     Check("bootstrap and locked evidence", [sys.executable, "scripts/verify_bootstrap.py"], ROOT,
           "re-digests locked evidence from disk rather than trusting a recorded digest",
           ("scripts/verify_bootstrap.py",)),

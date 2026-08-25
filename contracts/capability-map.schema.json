@@ -61,7 +61,8 @@
         "effect_class",
         "required_authority",
         "actor_kinds",
-        "endpoints"
+        "endpoints",
+        "shape"
       ],
       "properties": {
         "capability_id": {
@@ -121,6 +122,51 @@
           "uniqueItems": true,
           "items": {
             "$ref": "#/$defs/endpoint"
+          }
+        },
+        "shape": {
+          "description": "The operation's declared shape, copied from the service manifest the map was derived from: what it acts on, what must already be true, what it commits, and how it refuses. Carried here so a participant asking what it can do gets one answer from one rebuildable projection, rather than reading the manifests and building a second list beside it (decisions/0053).",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "logical_endpoint": {
+              "type": "string",
+              "minLength": 1
+            },
+            "subject": {
+              "type": "string",
+              "minLength": 1
+            },
+            "crud": {
+              "type": "string",
+              "minLength": 1
+            },
+            "requirement": {
+              "type": "string",
+              "minLength": 1
+            },
+            "kernel_transition": {
+              "type": "string",
+              "minLength": 1
+            },
+            "preconditions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "commit": {
+              "type": "string",
+              "minLength": 1
+            },
+            "refusals": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
           }
         }
       }

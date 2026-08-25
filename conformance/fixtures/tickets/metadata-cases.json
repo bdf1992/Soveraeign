@@ -1232,6 +1232,134 @@
         "dependency_channels": [],
         "stub_id": "STUB-PROJECTION-TEXT-LANE"
       }
+    },
+    {
+      "case_id": "MC-029-a-ticket-may-name-the-capabilities-it-serves",
+      "expect": "VALID",
+      "proves": "A work item can carry a product referent: the canonical capability identifiers it serves, so an expenditure can resolve upward to the intention that justified it. The ticket points at what the repository already names and carries no second definition of it.",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:engagement",
+          "village:ground-and-evidence",
+          "horizon:now",
+          "effect:record-local"
+        ],
+        "kind": "verification-engagement",
+        "engagement_id": "RED-CHARTING-001",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#40",
+        "standing": "OPEN",
+        "horizon": "NOW",
+        "authority": "delegated-verification-only",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "topology",
+          "conformance",
+          "registry-capability",
+          "bindings-adapters"
+        ],
+        "requires": [
+          "#40",
+          "#41"
+        ],
+        "target_pr": "#43",
+        "target_head": "b03a0ea9b832b226150a27d6986e69f1b492b22d",
+        "capability": [
+          "console.discover-operations",
+          "gateway.list-endpoints"
+        ]
+      }
+    },
+    {
+      "case_id": "MC-030-a-capability-referent-that-is-not-an-identifier-is-refused",
+      "expect": "INVALID",
+      "proves": "A referent that is not shaped like a capability identifier cannot resolve against the projection, so it is refused at the shape rather than silently failing to join later.",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:engagement",
+          "village:ground-and-evidence",
+          "horizon:now",
+          "effect:record-local"
+        ],
+        "kind": "verification-engagement",
+        "engagement_id": "RED-CHARTING-001",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#40",
+        "standing": "OPEN",
+        "horizon": "NOW",
+        "authority": "delegated-verification-only",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "topology",
+          "conformance",
+          "registry-capability",
+          "bindings-adapters"
+        ],
+        "requires": [
+          "#40",
+          "#41"
+        ],
+        "target_pr": "#43",
+        "target_head": "b03a0ea9b832b226150a27d6986e69f1b492b22d",
+        "capability": [
+          "Console.Discover_Operations"
+        ]
+      }
+    },
+    {
+      "case_id": "MC-031-a-repeated-capability-referent-is-refused",
+      "expect": "INVALID",
+      "proves": "One work item names a capability once. Repeating it would let a naive reader count the same work twice, which is the double-counting the attribution rules exist to refuse.",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:engagement",
+          "village:ground-and-evidence",
+          "horizon:now",
+          "effect:record-local"
+        ],
+        "kind": "verification-engagement",
+        "engagement_id": "RED-CHARTING-001",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#40",
+        "standing": "OPEN",
+        "horizon": "NOW",
+        "authority": "delegated-verification-only",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "PENDING",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "topology",
+          "conformance",
+          "registry-capability",
+          "bindings-adapters"
+        ],
+        "requires": [
+          "#40",
+          "#41"
+        ],
+        "target_pr": "#43",
+        "target_head": "b03a0ea9b832b226150a27d6986e69f1b492b22d",
+        "capability": [
+          "console.discover-operations",
+          "console.discover-operations"
+        ]
+      }
     }
   ]
 }

@@ -134,3 +134,53 @@ violated; Bdo may counter any of them in review.
 - Nothing reconciles this map's office assignments against `.claude/epic/offices.json`.
 - `The Door` and `drafting-window` hold zero capabilities; `permits-office` holds
   three, all from Console. That is the shape of what is not built yet.
+
+## Movement 2026-08-24
+
+Observed while reconciling receipt event names to capability identifiers
+(`reports/2026-08-24-product-canon-attribution-discovery.md`). The ruling stands; these
+lines record what moved under it, and none of them reopens it.
+
+**Residual 1 is closed.** `scripts/verify.py` now runs `scripts/sov_service.py check`,
+and it reports 8 manifests and 102 declared operations with no defect. Both manifests
+named above validate. The check the residual said was absent exists and passes.
+
+**Residual 2 stands.** Nothing reconciles this map's office assignments against
+`.claude/epic/offices.json`. That gap is now the exact edge a work item would need to
+name the operation it serves, and it is unchanged.
+
+**Residual 3 has moved.** The map covers 102 capabilities across eight services rather
+than 57 across five. `The Door` holds 7 and `permits-office` 17. `drafting-window` still
+holds zero, which remains the accurate reading: the counter where a governed artifact is
+composed before it is proposed has no operation behind it.
+
+**The map gained a model-facing transport.** `contracts/capability-offices.json` now
+carries `mcp_tools` beside `cli_commands`, so a capability served by
+`bindings/mcp/manifest.json` reads `ACTIVE` on `MCP` rather than
+`DECLARED_NOT_ACTIVATED`. Before this, six MCP tools were live and no input to the
+derivation could carry them, so the projection that exists to say what is reachable
+could not see the one reachable model surface in the node. The table and the binding are
+held together by check rather than by coincidence in
+`scripts/tests/test_capability_map.py`, the shape `decisions/0037` settled for the two
+ticket readers.
+
+**One capability was withheld rather than served, and the choice is Bdo's to counter.**
+`bindings/mcp/manifest.json` served `record_entries`, realizing `record.read-entry`.
+Activating it fires this decision's own `BACK_OFFICE_EXPOSED` defect: the table places
+`record.read-entry` at `BACK/record` with `actor_kinds: ["SYSTEM"]`, and `MCP` is
+declared operator-facing, so the tool handed a model operator the whole journal under no
+grant. The rule was written for exactly this case and nothing could trigger it until
+`MCP` became representable.
+
+Default taken (`AGENTS.md`, Self-direction is not delegation): the endpoint is withheld
+in the binding, with its reason recorded in `withheld_endpoints`, and the implementation
+stays in `gateway.py`. Policy is older and accepted; the binding is `PROPOSED` plumbing,
+and withholding is reversible in one entry while re-officing a capability is not.
+
+The recorded view of the participant that took it: **the table is more likely the wrong
+side than the binding.** Reading operational history is how an operator inspects why
+something happened, `actor_kinds: ["SYSTEM"]` was applied to all eight `record.*` rows in
+the one-pass assignment this decision records under Defaults taken, and a node whose
+model operators cannot read history is less AI-native, not more. That is a view, not a
+ruling. Bdo settles whether reading the journal is an operator act or back-office
+machinery; either answer is one line.

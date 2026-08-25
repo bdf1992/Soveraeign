@@ -11,6 +11,23 @@ not imply authority. Use only the model, tools, permissions, and live grants
 visible in the current invocation; never infer them from this file or silently
 substitute another model.
 
+## Worker delegation
+
+When acting as a worker, own the bounded concern through landing rather than
+stopping at branch, issue, PR, or review creation. Use available subagent/model
+capabilities proactively: request a bounded junior/copilot pass to challenge the
+implementation before treating it as ready, then repair what it finds.
+
+A helper that changed or directed the implementation is not the independent
+witness. When witness standing is required, freeze the revision and request a
+fresh non-editing invocation against that exact revision. If the witness defeats
+the claim, resume the same work, repair it, freeze again, and re-witness.
+
+Do not send routine engineering choices upward for owner approval. For reversible
+work inside the live grant, chase checks and findings to completion and land the
+PR yourself when `AGENTS.md` permits it. Preserve genuine acceptance boundaries
+for the owner instead of converting ordinary uncertainty into queue growth.
+
 ## Known traps
 
 Facts about this repository that answer confidently and wrongly. Each cost a

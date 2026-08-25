@@ -42,7 +42,7 @@ class ComposedSurface(unittest.TestCase):
 
     def test_asset_browser_is_a_filter_over_canonical_records(self) -> None:
         self.assertIn('data-filter="service:asset"', self.page)
-        self.assertIn("Asset &amp; subject browser", self.page)
+        self.assertIn("Asset & subject browser", self.page)
         self.assertIn("Declared subjects only", self.page)
 
     def test_query_grammar_filters_existing_dimensions_only(self) -> None:

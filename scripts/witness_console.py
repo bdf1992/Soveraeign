@@ -129,7 +129,7 @@ def _authority(observed: Observation, store: Path) -> dict[str, Any]:
                       "--domain", "governance", expect=2)
     observed.note(refused.get("outcome") == "REFUSED", "an ungranted operator is refused",
                   str(refused.get("reason_code")))
-    console(store, "grant", "--operator", "Bdo", "--capability", "open-channel",
+    console(store, "grant", "--operator", "Bdo", "--capability", "open:channel",
             "--scope", "governance")
     channel = console(store, "open-channel", "--operator", "Bdo", "--name", "general",
                       "--domain", "governance")
@@ -177,7 +177,7 @@ def _refusals(observed: Observation, store: Path, thread: dict[str, Any],
     """A revoked grant stops admitting, without reaching back into what it admitted."""
     live = console(store, "grants", "--operator", "Bdo")["live_grants"]
     observed.note(bool(live), "live grants are readable", str(len(live)) + " live")
-    posting = [grant["grant_id"] for grant in live if grant["capability"] == "post"]
+    posting = [grant["grant_id"] for grant in live if grant["capability"] == "post:message"]
     if not posting:
         observed.note(False, "a revoked grant refuses the next post", "no post grant found")
         return
@@ -213,14 +213,14 @@ def observe() -> int:
     with TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
         store = Path(tmp) / "console"
         channel = _authority(observed, store)
-        console(store, "grant", "--operator", "Bdo", "--capability", "open-thread",
+        console(store, "grant", "--operator", "Bdo", "--capability", "open:thread",
                 "--scope", channel["channel_id"])
         thread = console(store, "open-thread", "--operator", "Bdo", "--channel",
                          channel["channel_id"], "--title", "independent observation")
         observed.note(not declared_shape(thread, "thread.schema.json"), "a thread validates",
                       "; ".join(declared_shape(thread, "thread.schema.json")))
         for operator in ("Bdo", "sov"):
-            console(store, "grant", "--operator", operator, "--capability", "post",
+            console(store, "grant", "--operator", operator, "--capability", "post:message",
                     "--scope", thread["thread_id"])
         human = _parity(observed, store, thread)
         model_claim = console(store, "post", "--session", _model_session(store),

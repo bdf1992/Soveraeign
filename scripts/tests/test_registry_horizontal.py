@@ -42,6 +42,10 @@ class RegistryResolution(unittest.TestCase):
         self.tmp = TemporaryDirectory()
         self.record = RecordService(Path(self.tmp.name) / "record")
         closure, manifests, policy, sources = inputs()
+        self.closure = closure
+        self.manifests = manifests
+        self.policy = policy
+        self.sources = sources
         self.current = {item["address"]: item["digest"] for item in sources}
         self.service = RegistryService(
             self.record, ROOT, closure, manifests, policy, sources,
@@ -104,6 +108,33 @@ class RegistryResolution(unittest.TestCase):
             routes.call("resolve", {
                 "name": "asset.ingest-asset", "actor": "spoof",
             }, "checked-actor")
+
+    def test_default_reader_accepts_the_exact_repository_sources(self) -> None:
+        service = RegistryService(
+            self.record, ROOT, self.closure, self.manifests, self.policy, self.sources)
+        receipt = service.resolve("asset.ingest-asset", "reader")
+        self.assertEqual(receipt["payload"]["outcome"], "COMMITTED")
+
+    def test_default_reader_refuses_absolute_and_escaping_source_addresses(self) -> None:
+        for address in ("/outside", "../outside"):
+            with self.subTest(address=address):
+                sources = self.sources + [{"address": address, "digest": "0" * 64}]
+                service = RegistryService(
+                    self.record, ROOT, self.closure, self.manifests, self.policy, sources)
+                receipt = service.resolve("asset.ingest-asset", "reader")
+                drift = receipt["payload"]["detail"]["source_drift"]
+                item = next(item for item in drift if item["address"] == address)
+                self.assertIsNone(item["actual"])
+
+    def test_default_reader_refuses_a_missing_repository_source(self) -> None:
+        address = "contracts/fixtures/definitely-missing.json"
+        sources = self.sources + [{"address": address, "digest": "0" * 64}]
+        service = RegistryService(
+            self.record, ROOT, self.closure, self.manifests, self.policy, sources)
+        receipt = service.resolve("asset.ingest-asset", "reader")
+        drift = receipt["payload"]["detail"]["source_drift"]
+        item = next(item for item in drift if item["address"] == address)
+        self.assertIsNone(item["actual"])
 
 
 class RegistryIndexDefeaters(unittest.TestCase):

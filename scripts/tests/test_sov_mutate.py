@@ -166,6 +166,14 @@ class SuiteRouting(unittest.TestCase):
         self.assertEqual(cwd, ROOT / "services" / "asset")
         self.assertIn("tests", command)
 
+    def test_registry_service_routes_to_its_horizontal_defeating_suite(self):
+        command, cwd = sov_mutate.suite_for(
+            ROOT / "services" / "registry" / "src" /
+            "soveraeign_registry_service" / "core.py"
+        )
+        self.assertEqual(cwd, ROOT)
+        self.assertIn("scripts.tests.test_registry_horizontal", command)
+
     def test_an_unclaimed_file_is_refused_rather_than_scored_zero(self):
         """The defeating case: no suite means no number, not a number of zero."""
         self.assertIsNone(sov_mutate.suite_for(ROOT / "adapters" / "github" / "export.py"))

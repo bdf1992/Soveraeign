@@ -31,7 +31,10 @@ jobs:
           if [ "$rc" -ne 0 ]; then
             actual="$(git diff --name-only --diff-filter=U | sort)"
             expected="$(printf '%s\n' \
+              contracts/README.md \
               contracts/fixtures/capability-map.reference.json \
+              docs/documentation.html \
+              docs/surface.html \
               scripts/sov_mutate.py \
               scripts/verify.py | sort)"
             if [ "$actual" != "$expected" ]; then
@@ -43,19 +46,40 @@ jobs:
               exit 1
             fi
 
-            # These two files have newer repository-wide implementations on main;
-            # the surface stack carries no unique behavior in their contested regions.
+            # The collection stack carries the richer Kernel binding explanation.
+            # Preserve it, then absorb the two contracts that landed on main later.
+            git checkout --ours -- contracts/README.md
+            python - <<'PY'
+          from pathlib import Path
+          p = Path("contracts/README.md")
+          text = p.read_text(encoding="utf-8")
+          work = "| `work-lease.schema.json` | PROPOSED (decisions/0056): one concern actively possessed by one attributable machine principal, under a grant, inside a multidimensional budget, against a stated closure condition; it is the difference between a ticket that has an assignee and work somebody is holding right now, and it grants nothing |\n"
+          principal = "| `principal.schema.json` | PROPOSED (decisions/0048): registered identities with a derived grade - controller, hop distance, crossing class - gating eligibility, never authority |\n"
+          if "`work-lease.schema.json`" not in text:
+              anchor = "| `node-identity.schema.json`"
+              text = text.replace(anchor, work + anchor, 1)
+          if "`principal.schema.json`" not in text:
+              anchor = "\n## Kernel definitions, bindings, and projections"
+              text = text.replace(anchor, "\n" + principal + anchor, 1)
+          p.write_text(text, encoding="utf-8", newline="\n")
+          PY
+
+            # These repository-wide runners are newer on main; the collection stack
+            # has no unique behavior in the contested regions.
             git checkout --theirs -- scripts/sov_mutate.py scripts/verify.py
-            # The capability map is generated. Seed from current main, then rebuild
-            # from the fully merged service manifests and office table below.
-            git checkout --theirs -- contracts/fixtures/capability-map.reference.json
-            git add scripts/sov_mutate.py scripts/verify.py contracts/fixtures/capability-map.reference.json
+
+            # Generated projections are rebuilt below from the merged source tree.
+            git checkout --theirs -- contracts/fixtures/capability-map.reference.json docs/documentation.html docs/surface.html
+            git add contracts/README.md scripts/sov_mutate.py scripts/verify.py \
+              contracts/fixtures/capability-map.reference.json docs/documentation.html docs/surface.html
           fi
 
           python scripts/sov_capability.py build
-          git add contracts/fixtures/capability-map.reference.json
+          python scripts/sov_docs.py build
+          python scripts/sov_surface.py render
+          git add contracts/fixtures/capability-map.reference.json docs/documentation.html docs/surface.html
 
-          # This workflow is temporary reconciliation machinery, not product inventory.
+          # Reconciliation machinery must not survive reconciliation.
           git rm .github/workflows/reconcile-open-work.yml
 
           python scripts/verify.py

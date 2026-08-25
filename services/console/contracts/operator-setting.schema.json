@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/operator-setting.schema.json",
+  "title": "Console Operator Setting",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["setting_id", "holder_id", "holder_kind", "key", "value", "scope", "change_authority_type", "set_by", "set_at", "receipt_id", "standing"],
+  "properties": {
+    "setting_id": {"type": "string", "minLength": 1},
+    "holder_id": {"type": "string", "minLength": 1},
+    "holder_kind": {"enum": ["OPERATOR", "NODE"]},
+    "key": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]*$"},
+    "value": {"description": "Any JSON value; conditions projections and notification routing only and never a capability or authority check."},
+    "scope": {"type": "string", "minLength": 1, "description": "Scope within which the setting conditions presentation and routing."},
+    "change_authority_type": {"enum": ["VERIFICATION", "JUDGEMENT"], "description": "The authority type required to change this setting."},
+    "set_by": {"type": "string", "minLength": 1},
+    "set_at": {"type": "string", "format": "date-time"},
+    "receipt_id": {"type": "string", "minLength": 1, "description": "Receipt of the setting change; a change is a new record, never an in-place rewrite."},
+    "standing": {"enum": ["RECORDED", "ADMITTED", "RATIFIED", "EFFECTIVE"]}
+  }
+}

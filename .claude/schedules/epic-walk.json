@@ -1,0 +1,16 @@
+{
+  "name": "epic-walk",
+  "description": "Daily walk of the epic-of-epics tree: reconcile the checked-in projection against its contracts and select the next bounded operation per village. Observes only.",
+  "enabled": false,
+  "target": {
+    "kind": "workflow",
+    "name": "sov-epic",
+    "args": {"objective": "hold the epic-of-epics tree coherent and name the next legal operation per village"}
+  },
+  "cron": "0 7 * * *",
+  "mode": "observe",
+  "effect_class": "RESOURCE_CONSUMPTION",
+  "isolation": "tree",
+  "preconditions": {"clean_tree": false, "lookback_minutes": 90},
+  "limits": {"max_budget_usd": 5, "timeout_seconds": 3600}
+}

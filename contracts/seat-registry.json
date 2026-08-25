@@ -1,0 +1,53 @@
+{
+  "registry_schema": "soveraeign-seat-registry/v1",
+  "status": "PROPOSED",
+  "root_seat": "seat:root",
+  "seats": [
+    {
+      "seat_id": "seat:root",
+      "seat_type": "root",
+      "owner_seat": null,
+      "settles": ["JUDGEMENT", "VERIFICATION"],
+      "cares_about": "product intent, naming, judgement, phase gates, and anything that leaves the node",
+      "occupant": {
+        "actor_id": "urn:soveraeign:actor:bdo",
+        "actor_kind": "HUMAN",
+        "claimed_at": "2026-08-22T00:00:00Z",
+        "claim_basis": "decisions/0001-founding-boundary.md"
+      },
+      "eligibility": "seated by decisions/0001; succession is a naming and judgement act reserved to this seat"
+    },
+    {
+      "seat_id": "seat:session-control",
+      "seat_type": "control",
+      "owner_seat": "seat:root",
+      "settles": ["VERIFICATION"],
+      "cares_about": "which concern is worked next, and whether a launched orchestration reported honestly",
+      "occupant": {
+        "actor_id": "urn:soveraeign:actor:claude-interactive-session",
+        "actor_kind": "MODEL",
+        "claimed_at": "2026-08-23T00:00:00Z",
+        "claim_basis": "launched and directed by the root occupant in an interactive session"
+      },
+      "eligibility": "any model or human the root seat launches into control duty for one session"
+    },
+    {
+      "seat_id": "seat:orchestrator-1",
+      "seat_type": "orchestration",
+      "owner_seat": "seat:session-control",
+      "settles": ["VERIFICATION"],
+      "cares_about": "decomposition of one named operation and the settlement of its workers' reports",
+      "occupant": null,
+      "eligibility": "launched under a control-seat grant naming the operation and its effect envelope"
+    },
+    {
+      "seat_id": "seat:worker-1",
+      "seat_type": "work",
+      "owner_seat": "seat:orchestrator-1",
+      "settles": [],
+      "cares_about": "executing one leased task and reporting what it observed",
+      "occupant": null,
+      "eligibility": "leased by an orchestration seat for one bounded task"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "invocation_id": "urn:soveraeign:invocation:parity-same-model",
+  "binding_id": "urn:soveraeign:binding:ollama:qwen3-4b",
+  "operation_id": "operation_byom_parity_001",
+  "actor_id": "urn:soveraeign:actor:model:ollama:qwen3:4b",
+  "interface_contract_id": "urn:soveraeign:contract:model-binding:proposed",
+  "required_authority": "grant:propose:asset-description",
+  "requested_capability": "completion",
+  "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+  "input_digest": "sha256:abababababababababababababababababababababababababababababababab",
+  "omissions": [
+    "lineage/evidence",
+    "credentials",
+    "absolute host paths"
+  ],
+  "data_boundary_applied": "LOCAL_ONLY",
+  "executed": {
+    "provider_id": "urn:soveraeign:provider:ollama:local-node",
+    "model_id": "qwen3:4b",
+    "model_version": "sha256:359d7dd4bcdab3d86b87d73ac27966f4dbb9f5efdfcc75d34a8764a09474fae7",
+    "runtime_id": "ollama",
+    "runtime_version": "0.32.9",
+    "host_id": "urn:soveraeign:host:local-node",
+    "remote_host": null
+  },
+  "usage": {
+    "input_tokens": 812,
+    "output_tokens": 240,
+    "wall_clock_seconds": 6.4
+  },
+  "cost": {
+    "unit": "USD",
+    "monetary_charge": 0,
+    "wall_clock_seconds": 6.4
+  },
+  "information_role": "PROPOSAL",
+  "outcome": "COMMITTED"
+}

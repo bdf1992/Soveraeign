@@ -1,0 +1,22 @@
+id: PROJ-004
+title: traversal_bounded_and_resolvable
+status: SEED
+given:
+  - one READY collection C-1 with a graph configuration declaring relationship types T-1 and T-2 and lineage edges VERSION_OF and DERIVED_FROM, direction ANY
+  - an authoritative record set R containing at least four assets linked by effective relationships of types T-1, T-2, and an undeclared type T-3, with one chain at depth 4
+  - one HUMAN actor H-1 holding a live grant scoped to traverse-graph and find-path on C-1
+when:
+  - H-1 runs traverse-graph from asset A-1 with max_depth 3, direction ANY, relationship_types [T-1, T-2]
+  - H-1 runs find-path from A-1 to the asset at depth 4 of the chain
+  - H-1 runs traverse-graph from A-1 with max_depth 21
+then:
+  - the first receipt returns results each carrying node, depth, rank, path, edge_path, readable_path, and graph_score; no result has depth greater than 3; no edge in any edge_path has type T-3
+  - every node resolves to an asset or version record in R and every edge resolves to a relationship or lineage record in R, by address and digest
+  - the second receipt returns one path whose steps each resolve to records in R, or an empty paths list with omissions naming the depth bound that cut it
+  - the third attempt returns a receipt with outcome REFUSED and a non-empty reason_code naming the depth contract
+  - every receipt carries effect class RECORD_LOCAL
+defeating:
+  - a result exceeds max_depth, or an edge of an undeclared type appears in any path
+  - a node or edge names no address or digest, or names one that does not resolve to a record in R
+  - the depth-21 request is served, or is refused without a receipt
+  - a countered relationship in R still appears as an edge after rebuild

@@ -1,0 +1,31 @@
+{
+  "name": "pr-review",
+  "description": "Review the current branch against its owning contracts, standing claims, and protected boundaries each morning; reports only, never edits or posts.",
+  "enabled": false,
+  "target": {
+    "kind": "workflow",
+    "name": "sov-review",
+    "args": {
+      "dimensions": [
+        "contracts",
+        "standing",
+        "boundaries"
+      ],
+      "base": "origin/main",
+      "head": "HEAD",
+      "focus": "claims that outrun their evidence, and any conformance case a change owes but does not carry"
+    }
+  },
+  "cron": "30 7 * * *",
+  "mode": "observe",
+  "effect_class": "RESOURCE_CONSUMPTION",
+  "isolation": "tree",
+  "preconditions": {
+    "clean_tree": false,
+    "lookback_minutes": 720
+  },
+  "limits": {
+    "max_budget_usd": 5,
+    "timeout_seconds": 3600
+  }
+}

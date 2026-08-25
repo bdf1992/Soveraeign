@@ -1,0 +1,33 @@
+[
+  {
+    "id": "CONTRACT-SOURCE-POS",
+    "contract": "source.schema.json",
+    "status": "PROPOSED",
+    "polarity": "positive",
+    "expected_validity": "VALID",
+    "record": {
+      "source_id": "urn:soveraeign:source:src-0001",
+      "source_address": "claude-session:00000000-0000-4000-8000-000000000001",
+      "payload_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "payload_size": 4096,
+      "captured_at": "2026-08-23T00:00:00Z",
+      "captured_by": "urn:soveraeign:actor:worker-capture-0001"
+    }
+  },
+  {
+    "id": "CONTRACT-SOURCE-DEF",
+    "contract": "source.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "defeats": "source_address must be a stable reference, not an absolute host path",
+    "record": {
+      "source_id": "urn:soveraeign:source:src-0001",
+      "source_address": "/var/tmp/session-0001.jsonl",
+      "payload_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "payload_size": 4096,
+      "captured_at": "2026-08-23T00:00:00Z",
+      "captured_by": "urn:soveraeign:actor:worker-capture-0001"
+    }
+  }
+]

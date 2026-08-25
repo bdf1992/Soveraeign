@@ -1,0 +1,22 @@
+id: PROJ-008
+title: context_package_budgeted
+status: SEED
+given:
+  - one READY collection C-1 with build B-1
+  - one retrieval receipt Q-1 over B-1 holding twelve ranked hits whose combined content exceeds 2000 tokens under the declared tokenizer
+  - one MODEL actor M-1 holding a live grant scoped to package-context on C-1
+when:
+  - M-1 runs package-context from Q-1 with token_budget 2000
+  - M-1 runs package-context from Q-1 with token_budget 2000 a second time
+then:
+  - the first package carries an ordered subset of the hits of Q-1, each with source_address and source_digest, whose measured tokens do not exceed 2000
+  - omissions lists every hit from Q-1 that was dropped, by source_address, with the reason BUDGET
+  - the package carries a content_digest, names Q-1 and B-1, and is addressable as input_projection_id on a Model Binding
+  - the second package carries the same content_digest and byte-identical content
+  - every receipt carries effect class RECORD_LOCAL
+defeating:
+  - the package exceeds token_budget
+  - a dropped hit is absent from omissions
+  - a hit in the package names no source address or digest
+  - two packages from the same Q-1 and budget differ in content_digest
+  - the package is cited as an authoritative record or as a grant in a later authority check

@@ -1,0 +1,93 @@
+{
+  "corpus_id": "soveraeign-lineage-reader-cases/v1",
+  "note": "Positive and defeating cases for the lineage history reader (history-as-lineage brief, operation 2). Traces at proposal standing to SPEC.md, Requirement predicates, PROD-I-2 Remember (O10 holds spec.ratify open; do not freeze) and to conformance/founding-scenarios/001-source-reading-recording.yaml (FOUND-001). Binding contract for the consuming tests, which live beside the asset-domain reader and are the only code that joins these parts: join a case's input_parts with the empty string to form the reader input; join each contaminant's parts the same way to form its forbidden string; configure the pii-v1 definition with the synthetic identities this fixture carries (username example, the joined example.com address), never with a real identity. For expect EXACT: run the reader under the named omission_definitions and require output byte-identical to the input, every expected_recording.required_fields member present in the recording manifest, fidelity EXACT, omissions empty, and source_digest equal to payload_digest. For expect LOSSY: first require every joined contaminant to occur in the joined input (drift guard: a fixture that no longer plants its contaminant fails as a fixture defect), then run the reader and FAIL if any joined contaminant survives in the output; require fidelity LOSSY and one recoverable omission per contaminant naming its kind and its versioned definition. A contaminant's lint_class names the scripts/lint.py shape its joined form must match where one exists; the email contaminant has none and is owned by pii-v1. Contaminants are committed only as split parts so that no committed byte matches a scripts/lint.py secret or local-path shape; a consuming test must never write a joined contaminant into a committed file, and the real session location reaches the reader as an argument or environment variable, never as committed text. The required manifest field list mirrors conformance/run.py check_i2; this corpus modifies no oracle check, imports no participant code, and the oracle never imports the consuming tests.",
+  "cases": [
+    {
+      "case_id": "RC-001-clean-source-rereads-byte-identical",
+      "expect": "EXACT",
+      "proves": "A source containing no contaminant passes the reader byte-identical under sanitize-v1 and pii-v1, and its recording resolves source, reader version, configuration, and payload with fidelity EXACT and no omissions (PROD-I-2: a source rereads byte-identical; FOUND-001: exact_or_lossy is declared).",
+      "source_id": "session:synthetic-0001",
+      "omission_definitions": ["sanitize-v1", "pii-v1"],
+      "input_parts": [
+        "Synthetic session excerpt. The walk completed within budget, the projection rebuilt from canonical receipts, and the report landed at proposal standing. No credential, no host path, and no address appear in this source.\n"
+      ],
+      "contaminants": [],
+      "expected_recording": {
+        "required_fields": [
+          "source_id",
+          "source_digest",
+          "reader_id",
+          "reader_version",
+          "configuration_digest",
+          "payload_digest",
+          "fidelity",
+          "omissions"
+        ],
+        "fidelity": "EXACT",
+        "omissions": [],
+        "source_digest_equals_payload_digest": true
+      }
+    },
+    {
+      "case_id": "RC-002-planted-contaminants-must-not-survive",
+      "expect": "LOSSY",
+      "proves": "A reader that lets a planted fake secret, synthetic absolute user path, or synthetic email survive is defeated, as is a recording that removes them without declaring fidelity LOSSY and one recoverable omission per removal naming its kind and versioned definition (PROD-I-2: recoverable omissions; FOUND-001 defeating: mark lossy without recoverable omissions).",
+      "source_id": "session:synthetic-0002",
+      "omission_definitions": ["sanitize-v1", "pii-v1"],
+      "input_parts": [
+        "Synthetic session excerpt. The operator pasted a credential ",
+        "AKIA",
+        "IOSFODNN7",
+        "EXAMPLE",
+        " into the transcript, read the session file at ",
+        "C:",
+        "\\Users",
+        "\\example",
+        "\\.claude\\projects\\session-0002.jsonl",
+        ", and asked for the report to reach ",
+        "owner",
+        "@example",
+        ".com",
+        ". The reader must remove all three and record each removal.\n"
+      ],
+      "contaminants": [
+        {
+          "contaminant_id": "fake-aws-access-key",
+          "kind": "secret-shape",
+          "definition": "sanitize-v1",
+          "lint_class": "AWS access key",
+          "parts": ["AKIA", "IOSFODNN7", "EXAMPLE"]
+        },
+        {
+          "contaminant_id": "synthetic-user-path",
+          "kind": "local-absolute-user-path",
+          "definition": "sanitize-v1",
+          "lint_class": "local absolute user path",
+          "parts": ["C:", "\\Users", "\\example", "\\.claude\\projects\\session-0002.jsonl"]
+        },
+        {
+          "contaminant_id": "synthetic-owner-email",
+          "kind": "email-address",
+          "definition": "pii-v1",
+          "lint_class": null,
+          "parts": ["owner", "@example", ".com"]
+        }
+      ],
+      "expected_recording": {
+        "required_fields": [
+          "source_id",
+          "source_digest",
+          "reader_id",
+          "reader_version",
+          "configuration_digest",
+          "payload_digest",
+          "fidelity",
+          "omissions"
+        ],
+        "fidelity": "LOSSY",
+        "one_omission_per_contaminant": true,
+        "omission_must_name": ["kind", "definition"]
+      }
+    }
+  ]
+}

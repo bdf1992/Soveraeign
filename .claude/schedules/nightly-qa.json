@@ -1,0 +1,16 @@
+{
+  "name": "nightly-qa",
+  "description": "Independent QA sweep of the working tree every night; witnesses, builds nothing.",
+  "enabled": false,
+  "target": {
+    "kind": "workflow",
+    "name": "sov-qa",
+    "args": {"focus": "the current working tree, uncommitted changes first"}
+  },
+  "cron": "0 2 * * *",
+  "mode": "observe",
+  "effect_class": "RESOURCE_CONSUMPTION",
+  "isolation": "tree",
+  "preconditions": {"clean_tree": false, "lookback_minutes": 60},
+  "limits": {"max_budget_usd": 5, "timeout_seconds": 3600}
+}

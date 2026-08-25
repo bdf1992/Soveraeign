@@ -1,0 +1,43 @@
+{
+  "binding_id": "urn:soveraeign:binding:ollama:defeating-remote-declared-for-local",
+  "adapter_id": "urn:soveraeign:adapter:ollama",
+  "provider_id": "urn:soveraeign:provider:ollama:local-node",
+  "provider_kind": "REMOTE",
+  "model_id": "qwen3:4b",
+  "model_version": "sha256:359d7dd4bcdab3d86b87d73ac27966f4dbb9f5efdfcc75d34a8764a09474fae7",
+  "runtime_id": "ollama",
+  "runtime_version": "0.32.9",
+  "host_id": "urn:soveraeign:host:local-node",
+  "interface_contract_id": "urn:soveraeign:contract:model-binding:proposed",
+  "capabilities": [
+    "completion"
+  ],
+  "data_boundary": "REMOTE_ALLOWED",
+  "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+  "omissions": [
+    "lineage/evidence",
+    "credentials",
+    "absolute host paths"
+  ],
+  "usage_meter": {
+    "unit": "tokens",
+    "fields": [
+      "input_tokens",
+      "output_tokens",
+      "wall_clock_seconds"
+    ],
+    "source": "runtime response body"
+  },
+  "cost_meter": {
+    "unit": "USD",
+    "monetary_rate": 0,
+    "basis": "OWNER_OWNED_HARDWARE",
+    "also_metered": [
+      "wall_clock_seconds"
+    ],
+    "note": "no monetary charge accrues; consumption is still recorded, so a local run is cheap rather than free"
+  },
+  "fallback_policy": "NONE",
+  "authority_source": "SOVERAEIGN_KERNEL",
+  "created_at": "2026-08-23T20:41:53Z"
+}

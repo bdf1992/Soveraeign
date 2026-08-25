@@ -1,0 +1,178 @@
+{
+  "narrative_schema": "soveraeign-epic-narrative/v1",
+  "note": "Proposed narrative projection over .claude/epic/tree.json. It regroups the same issues by where an actor meets the system (front office) and what holds that meeting up (back office). It owns no issue, no standing, and no routing; villages.json still routes dispatch. Office assignment is a proposal for Bdo.",
+  "cast_note": "Tellers are named by the kernel's actor_kind and a CLASSIFICATION.md role; no new vocabulary. Owner is not a role: it is the context that sets Bdo's Binding and Projection and travels in a ticket's authority field.",
+  "cast": {
+    "human-operator": {
+      "actor_kind": "HUMAN",
+      "role": "operator",
+      "who": "A person working inside the node through a Human Binding."
+    },
+    "model-operator": {
+      "actor_kind": "MODEL",
+      "role": "operator",
+      "who": "A model working inside the node through a Model Binding; Sov when the profile is loaded, Claude in an interactive session."
+    },
+    "agent": {
+      "actor_kind": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "role": "agent",
+      "who": "An operator selecting or requesting actions within granted authority."
+    },
+    "worker": {
+      "actor_kind": "WORKER",
+      "role": "worker",
+      "who": "Leased hands. One job per lease. Reports; never settles its own work."
+    },
+    "witness": {
+      "actor_kind": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "role": "witness",
+      "who": "Independent eyes. Observes through a path the builder did not control."
+    },
+    "external-system": {
+      "actor_kind": "SYSTEM",
+      "role": "operator",
+      "who": "An enterprise system or remote provider reached through a declared adapter; its story is told on its behalf by the operator who integrated it."
+    },
+    "peer-node": {
+      "actor_kind": "SYSTEM",
+      "role": "node",
+      "who": "A second Soveraeign Node on the far side of a federation crossing. Horizon, not Phase I."
+    }
+  },
+  "front_office": {
+    "operator-desk": {
+      "title": "The Operator Desk",
+      "issues": [
+        30,
+        45
+      ],
+      "chartered_in": "services/console/CHARTER.md, SOV.md",
+      "stories": [
+        67
+      ]
+    },
+    "door": {
+      "title": "The Door",
+      "issues": [
+        16,
+        17
+      ],
+      "chartered_in": null
+    },
+    "model-counter": {
+      "title": "The Model Counter",
+      "issues": [
+        19,
+        29
+      ],
+      "chartered_in": "BYOM.md, bindings/README.md, adapters/README.md"
+    },
+    "job-window": {
+      "title": "The Job Window",
+      "issues": [
+        18,
+        20,
+        21,
+        31
+      ],
+      "chartered_in": "SDLC.md, .claude/README.md"
+    },
+    "review-desk": {
+      "title": "The Review Desk",
+      "issues": [
+        22,
+        28
+      ],
+      "chartered_in": "services/proofing/CHARTER.md"
+    },
+    "drafting-window": {
+      "title": "The Drafting Window",
+      "issues": [
+        42,
+        50
+      ],
+      "chartered_in": null
+    }
+  },
+  "back_office": {
+    "record": {
+      "title": "The Record",
+      "issues": [
+        6,
+        7,
+        8,
+        10,
+        25,
+        27
+      ]
+    },
+    "permits-office": {
+      "title": "The Permits Office",
+      "issues": [
+        11,
+        12,
+        13,
+        14,
+        15
+      ]
+    },
+    "inspectorate": {
+      "title": "The Inspectorate",
+      "issues": [
+        9,
+        23,
+        26,
+        32,
+        49,
+        57
+      ]
+    },
+    "ground": {
+      "title": "The Ground",
+      "issues": [
+        37,
+        39
+      ]
+    },
+    "pattern-room": {
+      "title": "The Pattern Room",
+      "issues": [
+        40,
+        41,
+        47,
+        48
+      ]
+    },
+    "beyond-the-node": {
+      "title": "Beyond the Node",
+      "issues": [
+        24
+      ]
+    }
+  },
+  "outside_both": {
+    "structure": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "housekeeping": [
+      52
+    ],
+    "closed_noise": [
+      51,
+      53,
+      54,
+      55,
+      56
+    ]
+  }
+}

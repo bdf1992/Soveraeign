@@ -1,0 +1,74 @@
+[
+  {
+    "id": "CONSOLE-JUDGEMENT-RESOLUTION-POS",
+    "contract": "judgement-resolution.schema.json",
+    "status": "PROPOSED",
+    "polarity": "positive",
+    "expected_validity": "VALID",
+    "description": "Shape example only. This fixture records no owner decision; O18 and every other open decision in STATUS.yaml remain open until Bdo rules through a kernel transition with a receipt. Answers the neutral sample request JR-SAMPLE-001, not O18.",
+    "record": {
+      "resolution_id": "urn:soveraeign:console:judgement-resolution:JR-SAMPLE-001-R1",
+      "request_id": "urn:soveraeign:console:judgement-request:JR-SAMPLE-001",
+      "proposal_id": "urn:soveraeign:proposal:PR-SAMPLE-001",
+      "resolver_id": "urn:soveraeign:actor:human-bdo",
+      "resolver_kind": "HUMAN",
+      "resolver_grant_id": "urn:soveraeign:grant:g-judgement-0001",
+      "decision": "ACCEPTED",
+      "rationale_address": "sha256:rationale-0001",
+      "rationale_digest": "sha256:rationale-0001",
+      "interface_id": "urn:soveraeign:interface:console-owner-cli-v1",
+      "receipt_id": "urn:soveraeign:receipt:r-console-0002",
+      "unresolved_receipt_id": "urn:soveraeign:receipt:r-console-0001",
+      "created_at": "2026-08-23T00:00:00Z",
+      "standing": "RATIFIED"
+    }
+  },
+  {
+    "id": "CONSOLE-JUDGEMENT-RESOLUTION-DEF-MODEL-RESOLVER",
+    "contract": "judgement-resolution.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "defeats": "const: resolver_kind MODEL; a model resolution attempt is REFUSED and records no resolution",
+    "record": {
+      "resolution_id": "urn:soveraeign:console:judgement-resolution:JR-SAMPLE-001-R1",
+      "request_id": "urn:soveraeign:console:judgement-request:JR-SAMPLE-001",
+      "proposal_id": "urn:soveraeign:proposal:PR-SAMPLE-001",
+      "resolver_id": "urn:soveraeign:actor:model-claude-code",
+      "resolver_kind": "MODEL",
+      "resolver_grant_id": "urn:soveraeign:grant:g-judgement-0001",
+      "decision": "ACCEPTED",
+      "rationale_address": "sha256:rationale-0001",
+      "rationale_digest": "sha256:rationale-0001",
+      "interface_id": "urn:soveraeign:interface:console-owner-cli-v1",
+      "receipt_id": "urn:soveraeign:receipt:r-console-0002",
+      "unresolved_receipt_id": "urn:soveraeign:receipt:r-console-0001",
+      "created_at": "2026-08-23T00:00:00Z",
+      "standing": "RATIFIED"
+    }
+  },
+  {
+    "id": "CONSOLE-JUDGEMENT-RESOLUTION-DEF-RATIFIED-WITHOUT-GRANT",
+    "contract": "judgement-resolution.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "defeats": "allOf conditional: standing RATIFIED with resolver_grant_id null; a resolution reaches RATIFIED without the grant checked at the transition",
+    "record": {
+      "resolution_id": "urn:soveraeign:console:judgement-resolution:JR-SAMPLE-001-R1",
+      "request_id": "urn:soveraeign:console:judgement-request:JR-SAMPLE-001",
+      "proposal_id": "urn:soveraeign:proposal:PR-SAMPLE-001",
+      "resolver_id": "urn:soveraeign:actor:human-bdo",
+      "resolver_kind": "HUMAN",
+      "resolver_grant_id": null,
+      "decision": "ACCEPTED",
+      "rationale_address": "sha256:rationale-0001",
+      "rationale_digest": "sha256:rationale-0001",
+      "interface_id": "urn:soveraeign:interface:console-owner-cli-v1",
+      "receipt_id": "urn:soveraeign:receipt:r-console-0002",
+      "unresolved_receipt_id": "urn:soveraeign:receipt:r-console-0001",
+      "created_at": "2026-08-23T00:00:00Z",
+      "standing": "RATIFIED"
+    }
+  }
+]

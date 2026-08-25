@@ -1,0 +1,510 @@
+{
+  "service_id": "console",
+  "standing": "BUILT",
+  "owns": [
+    "authority-grant",
+    "channel",
+    "console-receipt",
+    "judgement-request",
+    "judgement-resolution",
+    "notification",
+    "operator-session",
+    "operator-setting",
+    "post",
+    "projection-view",
+    "publication",
+    "thread"
+  ],
+  "references": [
+    "shared-kernel-contracts"
+  ],
+  "operations": [
+    {
+      "operation": "acknowledge-notification",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://console/acknowledge-notification",
+      "subject": "notification",
+      "crud": "SUPERSEDE",
+      "requirement": "PROD-I-6",
+      "preconditions": [
+        "notification_exists",
+        "session_live"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "SESSION_NOT_LIVE",
+        "STALE_STATE"
+      ]
+    },
+    {
+      "operation": "archive-thread",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://console/archive-thread",
+      "subject": "thread",
+      "crud": "SUPERSEDE",
+      "requirement": "PROD-I-6",
+      "preconditions": [
+        "thread_exists",
+        "session_live"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "SESSION_NOT_LIVE",
+        "STALE_STATE"
+      ]
+    },
+    {
+      "operation": "close-session",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://console/close-session",
+      "subject": "operator-session",
+      "crud": "SUPERSEDE",
+      "requirement": "PROD-I-6",
+      "preconditions": [
+        "session_live",
+        "declared_actor"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "SESSION_NOT_LIVE",
+        "STALE_STATE"
+      ]
+    },
+    {
+      "operation": "discover-operations",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://console/discover-operations",
+      "subject": "operator-session",
+      "crud": "READ",
+      "requirement": "PROD-I-6",
+      "preconditions": [
+        "session_live",
+        "capability_map_fresh"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "SESSION_NOT_LIVE",
+        "MISSING_PRECONDITION"
+      ]
+    },
+    {
+      "operation": "grant",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://console/grant",
+      "subject": "authority-grant",
+      "crud": "CREATE",
+      "requirement": "PROD-I-5",
+      "preconditions": [
+        "session_live",
+        "declared_capability",
+        "declared_scope",
+        "issuer_holds_authority"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "AUTHORITY_REFUSED",
+        "SESSION_NOT_LIVE"
+      ]
+    },
+    {
+      "operation": "list-channels",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://console/list-channels",
+      "subject": "channel",
+      "crud": "READ",
+      "requirement": "PROD-I-6",
+      "preconditions": [
+        "session_live"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "SESSION_NOT_LIVE"
+      ]
+    },
+    {
+      "operation": "list-grants",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://console/list-grants",
+      "subject": "authority-grant",
+      "crud": "READ",
+      "requirement": "PROD-I-5",
+      "preconditions": [
+        "session_live"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "SESSION_NOT_LIVE"
+      ]
+    },
+    {
+      "operation": "list-notifications",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://console/list-notifications",
+      "subject": "notification",
+      "crud": "READ",
+      "requirement": "PROD-I-6",
+      "preconditions": [
+        "session_live"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "SESSION_NOT_LIVE"
+      ]
+    },
+    {
+      "operation": "list-pending-judgement-requests",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://console/list-pending-judgement-requests",
+      "subject": "judgement-request",
+      "crud": "READ",
+      "requirement": "PROD-I-6",
+      "preconditions": [
+        "session_live"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "SESSION_NOT_LIVE"
+      ]
+    },
+    {
+      "operation": "list-publications",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://console/list-publications",
+      "subject": "publication",
+      "crud": "READ",
+      "requirement": "PROD-I-6",
+      "also_reads": [
+        "thread"
+      ],
+      "preconditions": [
+        "local_node_record"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "SESSION_NOT_LIVE"
+      ]
+    },
+    {
+      "operation": "notify",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://console/notify",
+      "subject": "notification",
+      "crud": "CREATE",
+      "requirement": "PROD-I-6",
+      "preconditions": [
+        "declared_recipient",
+        "declared_subject"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "INCOMPLETE_PROPOSAL"
+      ]
+    },
+    {
+      "operation": "open-channel",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://console/open-channel",
+      "subject": "channel",
+      "crud": "CREATE",
+      "requirement": "PROD-I-6",
+      "preconditions": [
+        "session_live",
+        "declared_channel_name"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "SESSION_NOT_LIVE",
+        "INCOMPLETE_PROPOSAL"
+      ]
+    },
+    {
+      "operation": "open-session",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://console/open-session",
+      "subject": "operator-session",
+      "crud": "CREATE",
+      "requirement": "PROD-I-6",
+      "preconditions": [
+        "declared_participant",
+        "declared_actor_kind"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "INCOMPLETE_PROPOSAL",
+        "SESSION_NOT_LIVE"
+      ]
+    },
+    {
+      "operation": "open-thread",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://console/open-thread",
+      "subject": "thread",
+      "crud": "CREATE",
+      "requirement": "PROD-I-6",
+      "preconditions": [
+        "channel_exists",
+        "session_live",
+        "declared_subject"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "SESSION_NOT_LIVE",
+        "INCOMPLETE_PROPOSAL"
+      ]
+    },
+    {
+      "operation": "post",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://console/post",
+      "subject": "post",
+      "crud": "CREATE",
+      "requirement": "PROD-I-6",
+      "preconditions": [
+        "thread_exists",
+        "session_live",
+        "declared_body"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "SESSION_NOT_LIVE",
+        "INCOMPLETE_PROPOSAL"
+      ]
+    },
+    {
+      "operation": "publish-thread",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://console/publish-thread",
+      "subject": "publication",
+      "crud": "CREATE",
+      "requirement": "PROD-I-6",
+      "preconditions": [
+        "thread_exists",
+        "local_node_record",
+        "live_publish_grant"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "NO_LIVE_GRANT",
+        "FOREIGN_NODE_RECORD"
+      ]
+    },
+    {
+      "operation": "read-thread",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://console/read-thread",
+      "subject": "thread",
+      "crud": "READ",
+      "requirement": "PROD-I-6",
+      "also_reads": [
+        "post"
+      ],
+      "preconditions": [
+        "declared_thread_identity",
+        "declared_session_identity",
+        "thread_exists",
+        "session_live",
+        "session_actor_matches_checked_actor"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "ACTOR_ATTRIBUTION_MISMATCH",
+        "MALFORMED_IDENTITY",
+        "SESSION_NOT_LIVE",
+        "THREAD_UNKNOWN"
+      ]
+    },
+    {
+      "operation": "rebuild-projection",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://console/rebuild-projection",
+      "subject": "projection-view",
+      "crud": "REBUILD",
+      "requirement": "PROD-I-2",
+      "preconditions": [
+        "journal_readable"
+      ],
+      "commit": "REBUILT",
+      "refusals": [
+        "UNREADABLE"
+      ]
+    },
+    {
+      "operation": "request-judgement",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://console/request-judgement",
+      "subject": "judgement-request",
+      "crud": "CREATE",
+      "requirement": "PROD-I-6",
+      "kernel_transition": "submit_proposal",
+      "preconditions": [
+        "declared_question",
+        "declared_evidence",
+        "session_live"
+      ],
+      "commit": "RECORDED",
+      "refusals": [
+        "INCOMPLETE_PROPOSAL",
+        "SESSION_NOT_LIVE"
+      ]
+    },
+    {
+      "operation": "resolve-judgement",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://console/resolve-judgement",
+      "subject": "judgement-resolution",
+      "crud": "CREATE",
+      "requirement": "PROD-I-6",
+      "kernel_transition": "ratify",
+      "preconditions": [
+        "judgement_request_recorded",
+        "human_actor",
+        "live_matching_grant"
+      ],
+      "commit": "EFFECTIVE",
+      "refusals": [
+        "AUTHORITY_REFUSED",
+        "STALE_STATE"
+      ]
+    },
+    {
+      "operation": "revoke",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://console/revoke",
+      "subject": "authority-grant",
+      "crud": "COUNTER",
+      "requirement": "PROD-I-5",
+      "preconditions": [
+        "grant_exists",
+        "session_live",
+        "issuer_holds_authority"
+      ],
+      "commit": "COUNTERED",
+      "refusals": [
+        "AUTHORITY_REFUSED",
+        "SESSION_NOT_LIVE",
+        "STALE_STATE"
+      ]
+    },
+    {
+      "operation": "session-context",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://console/session-context",
+      "subject": "operator-session",
+      "crud": "READ",
+      "requirement": "PROD-I-6",
+      "also_reads": [
+        "operator-setting"
+      ],
+      "preconditions": [
+        "session_live"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "SESSION_NOT_LIVE"
+      ]
+    },
+    {
+      "operation": "set-setting",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://console/set-setting",
+      "subject": "operator-setting",
+      "crud": "SUPERSEDE",
+      "preconditions": [
+        "session_live",
+        "declared_key",
+        "declared_value"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "SESSION_NOT_LIVE",
+        "INCOMPLETE_PROPOSAL"
+      ]
+    },
+    {
+      "operation": "show-judgement-request",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://console/show-judgement-request",
+      "subject": "judgement-request",
+      "crud": "READ",
+      "requirement": "PROD-I-6",
+      "also_reads": [
+        "judgement-resolution"
+      ],
+      "preconditions": [
+        "judgement_request_exists",
+        "session_live"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "SESSION_NOT_LIVE"
+      ]
+    },
+    {
+      "operation": "show-receipt",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://console/show-receipt",
+      "subject": "console-receipt",
+      "crud": "READ",
+      "requirement": "PROD-I-4",
+      "preconditions": [
+        "receipt_exists",
+        "session_live"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "SESSION_NOT_LIVE"
+      ]
+    },
+    {
+      "operation": "withdraw-publication",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://console/withdraw-publication",
+      "subject": "publication",
+      "crud": "SUPERSEDE",
+      "requirement": "PROD-I-6",
+      "preconditions": [
+        "publication_exists",
+        "live_publish_grant"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "NO_LIVE_GRANT",
+        "STALE_STATE"
+      ]
+    }
+  ],
+  "local_refusals": {
+    "ACTOR_ATTRIBUTION_MISMATCH": "AUTHORITY_REFUSED",
+    "FOREIGN_NODE_RECORD": "AUTHORITY_REFUSED",
+    "MALFORMED_IDENTITY": "MISSING_PRECONDITION",
+    "NO_LIVE_GRANT": "AUTHORITY_REFUSED",
+    "SESSION_NOT_LIVE": "AUTHORITY_REFUSED",
+    "THREAD_UNKNOWN": "MISSING_PRECONDITION"
+  },
+  "uses_kernel_contracts": [
+    "standing",
+    "typed-authority",
+    "operation",
+    "observation",
+    "receipt",
+    "retraction"
+  ],
+  "ports": [
+    "human-binding",
+    "model-binding",
+    "service-activity",
+    "delivery",
+    "federation"
+  ],
+  "depends_on": [
+    "record:append-preserving-journal"
+  ],
+  "forbids": [
+    "ratifying-on-behalf-of-the-owner",
+    "presenting-a-projection-as-authoritative",
+    "granting-authority-it-was-not-issued",
+    "silent-notification-drop",
+    "history-erasure"
+  ],
+  "note": "Twelve operations are BUILT; the continuity path remainder stays PROPOSED. Per-operation standing replaces the former built_operations list."
+}

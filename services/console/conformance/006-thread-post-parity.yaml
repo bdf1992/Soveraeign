@@ -1,0 +1,34 @@
+id: CONS-006
+title: thread_post_parity
+status: SEED
+given:
+  - one channel for the asset domain and one thread T-1 with lifecycle OPEN pinned to an exact asset version address and digest
+  - one HUMAN operator H-1 with an open session through a human binding HB
+  - one MODEL operator M-1 with an open session through a declared ModelBinding MB with data_boundary LOCAL_ONLY
+  - H-1 and M-1 each hold a live grant with capability post scoped to T-1
+  - the content of H-1's intended post P-H is a plain statement that makes no claim; the content of M-1's intended post P-M makes a claim
+  - the post store is observable through the Console Service record read path independently of either binding
+when:
+  - H-1 posts P-H in T-1 through HB
+  - M-1 posts P-M in T-1 through MB
+  - each binding is asked to discover the legal operations and required inputs for T-1
+  - H-1 reads T-1 through HB and M-1 reads T-1 through MB
+then:
+  - both attempts invoke the console post operation with an OperationPlan of the same operation_type; the plans differ in interface_id, HB for P-H and MB for P-M
+  - both authority checks evaluate a live grant with capability post scoped to T-1, and each receipt's authority_grant_ids name the respective actor's grant
+  - both receipts have outcome COMMITTED, a null reason_code, the same event_type, different interface_id values, and name their own post in emitted_record_addresses
+  - P-H is recorded with actor_kind HUMAN and P-M with actor_kind MODEL; each has a content address and digest and names T-1
+  - P-M carries a proposal_id that resolves to a Proposal with standing RECORDED; P-M claims no standing beyond RECORDED
+  - both bindings discover the same legal operations and the same required inputs for T-1
+  - T-1 read through HB and T-1 read through MB list P-H and P-M in the same order with the same addresses and digests
+  - P-M as read through HB shows its origin as M-1, its binding as MB, and MB's declared omissions; P-H as read through MB shows its origin as H-1 and its binding as HB
+  - no post record in the store lacks a console receipt, and no receipt names HB or MB as the actor that wrote the record
+  - every receipt carries effect class RECORD_LOCAL
+defeating:
+  - P-H and P-M are recorded through different operation_type values or different authority checks
+  - the two receipts differ in event_type, or carry reason codes that cannot be reconciled to the same transition
+  - P-M is recorded with standing ADMITTED, RATIFIED, or EFFECTIVE, or without a proposal_id
+  - either binding writes a post record that has no console receipt, or a receipt whose interface_id is null
+  - T-1 read through one binding omits a post visible through the other without declaring the omission
+  - one binding discovers an operation or required input for T-1 that the other cannot discover
+  - P-H or P-M is rewritten in place or erased after recording instead of being countered by a new record or counter-record that leaves the original visible

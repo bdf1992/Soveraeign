@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/projection-view.schema.json",
+  "title": "Console Projection View",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["view_id", "kind", "declared_for", "source_addresses", "omissions", "rebuild_operation_id", "rebuilt_at", "content_address", "content_digest", "authoritative", "standing"],
+  "properties": {
+    "view_id": {"type": "string", "minLength": 1},
+    "kind": {"enum": ["DASHBOARD", "ACTIVITY"]},
+    "declared_for": {"type": "string", "minLength": 1, "description": "Scope the view is declared for; reading an administrative dashboard requires a grant covering this scope, and holding it grants no right to change what it shows."},
+    "source_addresses": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/addressedValue"},
+      "description": "Authoritative records the view was rebuilt from; every rendered value must resolve to one of them."
+    },
+    "omissions": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "description": "Sources deliberately left out of this rebuild; may be empty but must be declared."
+    },
+    "rebuild_operation_id": {"type": "string", "minLength": 1, "description": "Operation that produced this rebuild; a second rebuild from the same records must yield the same content_digest."},
+    "rebuilt_at": {"type": "string", "format": "date-time"},
+    "content_address": {"type": "string", "minLength": 1},
+    "content_digest": {"type": "string", "minLength": 1},
+    "authoritative": {"const": false, "description": "A projection never becomes authoritative by convenience; a projection-originated edit returns as a proposal through the transition contract."},
+    "standing": {"enum": ["RECORDED", "ADMITTED", "RATIFIED", "EFFECTIVE"]}
+  },
+  "$defs": {
+    "addressedValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["address", "digest"],
+      "properties": {
+        "address": {"type": "string", "minLength": 1},
+        "digest": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/services/host/contracts/host-health.schema.json",
+  "title": "Soveraeign Host Health Snapshot",
+  "description": "A normalized read-only adapter reading of the process execution host. It is not independent observation and it does not identify a physical machine.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "adapter_id",
+    "captured_at",
+    "boundary",
+    "platform",
+    "processor",
+    "memory",
+    "uptime_seconds",
+    "boot_id",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "soveraeign-host-health/v1"
+    },
+    "adapter_id": {
+      "type": "string",
+      "pattern": "^urn:soveraeign:adapter:[a-z0-9][a-z0-9:-]*$"
+    },
+    "captured_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "boundary": {
+      "const": "PROCESS_EXECUTION_HOST"
+    },
+    "platform": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["system", "release", "machine"],
+      "properties": {
+        "system": {"type": "string"},
+        "release": {"type": "string"},
+        "machine": {"type": "string"}
+      }
+    },
+    "processor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["logical_count", "load_average"],
+      "properties": {
+        "logical_count": {
+          "anyOf": [
+            {"type": "integer", "minimum": 1},
+            {"type": "null"}
+          ]
+        },
+        "load_average": {
+          "anyOf": [
+            {
+              "type": "array",
+              "minItems": 3,
+              "items": {"type": "number", "minimum": 0}
+            },
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "memory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["total_bytes", "available_bytes"],
+      "properties": {
+        "total_bytes": {
+          "anyOf": [
+            {"type": "integer", "minimum": 0},
+            {"type": "null"}
+          ]
+        },
+        "available_bytes": {
+          "anyOf": [
+            {"type": "integer", "minimum": 0},
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "uptime_seconds": {
+      "anyOf": [
+        {"type": "number", "minimum": 0},
+        {"type": "null"}
+      ]
+    },
+    "boot_id": {
+      "anyOf": [
+        {"type": "string", "minLength": 1},
+        {"type": "null"}
+      ]
+    },
+    "limitations": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    }
+  }
+}

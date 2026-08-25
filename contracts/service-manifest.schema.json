@@ -2,17 +2,218 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://soveraeign.local/contracts/service-manifest.schema.json",
   "title": "Soveraeign Service Manifest",
+  "description": "One bounded service's declared surface. Each operation states the record it acts on, the append-preserving CRUD verb it realizes, its logical endpoint, the preconditions it checks, what a commit produces, and every refusal it may return. Office placement, required authority, effect class, and actor kinds are NOT declared here; contracts/capability-offices.json owns those and the capability map joins the two. A manifest grants nothing: it describes a surface, it does not open one.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["service_id", "standing", "owns", "operations", "uses_kernel_contracts", "forbids"],
+  "required": [
+    "service_id",
+    "standing",
+    "owns",
+    "operations",
+    "uses_kernel_contracts",
+    "forbids"
+  ],
   "properties": {
-    "service_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
-    "standing": {"enum": ["PROPOSED", "BUILT", "WITNESSED", "RATIFIED"]},
-    "owns": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
-    "references": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
-    "operations": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
-    "uses_kernel_contracts": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["standing", "typed-authority", "operation", "observation", "receipt", "retraction", "attestation"]}},
-    "ports": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
-    "forbids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}}
+    "service_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$"
+    },
+    "standing": {
+      "$ref": "#/$defs/standing"
+    },
+    "owns": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]*$"
+      }
+    },
+    "references": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "operations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/operation"
+      }
+    },
+    "local_refusals": {
+      "description": "Refusal codes this service emits that are not kernel codes, each mapped to the kernel refusal it realizes. A local code used by an operation and absent here is a defect.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[A-Z][A-Z_]*$"
+      }
+    },
+    "uses_kernel_contracts": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "standing",
+          "typed-authority",
+          "operation",
+          "observation",
+          "receipt",
+          "retraction",
+          "attestation"
+        ]
+      }
+    },
+    "undeclared_events": {
+      "description": "Receipt event names this service emits that realize no declared operation, each with the reason no operation declares it. Every emitted event must be either a capability identifier or listed here; scripts/sovkernel/receipt_events.py reads the service's own source and refuses an event that is neither, and refuses an entry the service no longer emits. This records a gap where a reader will find it rather than inventing an operation to close it - the shape bindings/mcp/manifest.json already uses for a tool that realizes nothing declared.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["event", "because"],
+        "properties": {
+          "event": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*[.][a-z][a-z0-9-]*$"
+          },
+          "because": {
+            "type": "string",
+            "minLength": 20
+          }
+        }
+      }
+    },
+    "ports": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "depends_on": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "forbids": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "note": {
+      "type": "string"
+    }
+  },
+  "$defs": {
+    "standing": {
+      "enum": [
+        "PROPOSED",
+        "BUILT",
+        "WITNESSED",
+        "RATIFIED"
+      ]
+    },
+    "operation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operation",
+        "standing",
+        "logical_endpoint",
+        "subject",
+        "crud",
+        "preconditions",
+        "commit",
+        "refusals"
+      ],
+      "properties": {
+        "operation": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "standing": {
+          "$ref": "#/$defs/standing"
+        },
+        "logical_endpoint": {
+          "description": "Transport-neutral address of this operation. Always sov://<service_id>/<operation>; a transport is bound to it in contracts/capability-offices.json, never here.",
+          "type": "string",
+          "pattern": "^sov://[a-z][a-z0-9-]*/[a-z][a-z0-9-]*$"
+        },
+        "subject": {
+          "description": "The record in this service's `owns` list that the operation acts on.",
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "crud": {
+          "description": "The append-preserving CRUD verb. CREATE appends a new record. READ derives without writing. SUPERSEDE adds a later version and preserves the earlier one; it never overwrites. COUNTER adds a counter-record and never erases. REBUILD discards and recomputes a projection only.",
+          "enum": [
+            "CREATE",
+            "READ",
+            "SUPERSEDE",
+            "COUNTER",
+            "REBUILD"
+          ]
+        },
+        "requirement": {
+          "description": "The PRD requirement this operation serves, when it serves one directly. The id must appear in PRD.md; a later-phase id is well formed but not yet carried, and fails the check rather than passing quietly.",
+          "type": "string",
+          "pattern": "^PROD-[IVX]+-[1-9][0-9]*$"
+        },
+        "kernel_transition": {
+          "description": "The transition in contracts/kernel-transitions.json this operation realizes, when it realizes one.",
+          "type": "string",
+          "pattern": "^[a-z][a-z_]+$"
+        },
+        "preconditions": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z_]*$"
+          }
+        },
+        "commit": {
+          "description": "What a satisfied operation produces. A READ commits DERIVED and writes no authoritative record.",
+          "enum": [
+            "COMMITTED",
+            "RECORDED",
+            "EFFECTIVE",
+            "COUNTERED",
+            "DERIVED",
+            "REBUILT"
+          ]
+        },
+        "refusals": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z_]*$"
+          }
+        },
+        "also_reads": {
+          "description": "Further records this READ returns alongside its subject. A record read through its parent is declared here rather than assumed; only a READ may declare it, and every entry must be a record the service owns.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*$"
+          }
+        }
+      }
+    }
   }
 }

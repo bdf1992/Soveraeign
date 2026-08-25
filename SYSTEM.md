@@ -104,8 +104,9 @@ Phase I is local-only and refuses uncontained external effects. It must prove:
 - non-blocking founder judgement accounting;
 - fresh-witness reconstruction;
 - runtime attestation after ratification;
-- and parity across two bindings.
-- model portability across two materially different model bindings.
+- same-world parity between human and model bindings; and
+- model portability across two materially different model bindings, including
+  one owner-supplied through BYOM.
 
 Phase I does not prove distributed consensus, world rollback, autonomous
 external action, enterprise-wide integration, or federation.

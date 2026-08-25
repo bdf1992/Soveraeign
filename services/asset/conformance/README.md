@@ -14,7 +14,7 @@ python conformance/run.py \
 
 The Phase-I participant suite is expected to fail overall while open
 requirements remain. Individual repairs may move one requirement to participant
-`PASS` without changing the frozen scenarios or oracle. `BASELINE.md` preserves
-the initial observed defects; later bounded build records sit beside it.
+`PASS` without changing the frozen scenarios or oracle. `BASELINE.md` records
+the current grading; bounded build records preserve the evidence for each move.
 
 - `PROD-I-2-BUILD.md` records the self-tested reconstruction repair.

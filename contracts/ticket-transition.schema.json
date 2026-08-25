@@ -38,16 +38,27 @@
     },
     "actor_kind": {
       "description": "Actor vocabulary shared with contracts/event-envelope.schema.json.",
-      "enum": ["HUMAN", "MODEL", "WORKER", "SYSTEM"]
+      "enum": [
+        "HUMAN",
+        "MODEL",
+        "WORKER",
+        "SYSTEM"
+      ]
     },
     "builder_actor_id": {
       "description": "Actor that produced the artifact under review. Required for a witness transition so self-witnessing can be refused.",
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "minLength": 1
     },
     "red_operator_actor_id": {
       "description": "Actor that held the RED stance for the engagement backing a purple receipt.",
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "minLength": 1
     },
     "reason": {
@@ -55,10 +66,17 @@
       "minLength": 1
     },
     "effect_class": {
-      "enum": ["RECORD_LOCAL", "RESOURCE_CONSUMPTION", "EXTERNAL_WORLD"]
+      "enum": [
+        "RECORD_LOCAL",
+        "RESOURCE_CONSUMPTION",
+        "EXTERNAL_WORLD"
+      ]
     },
     "requested_at": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "format": "date-time"
     },
     "evidence": {
@@ -72,6 +90,42 @@
     },
     "purple_receipt": {
       "$ref": "#/$defs/engagementReceipt"
+    },
+    "authorization": {
+      "description": "Required when effect_class is EXTERNAL_WORLD. Names the scope in contracts/external-effect-authorization.json that admits this effect, the verb, the target, and the receipt the attempt will leave.",
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "scope",
+        "verb",
+        "target",
+        "receipt"
+      ],
+      "properties": {
+        "scope": {
+          "type": "string",
+          "minLength": 1
+        },
+        "verb": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target": {
+          "type": "string",
+          "minLength": 1
+        },
+        "receipt": {
+          "description": "Address the attempt's receipt will occupy. Required explicitly and nullable, so a request that intends to leave no record is legal in shape and refused by policy: shape is the schema's, admission is the guard's.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        }
+      }
     }
   },
   "$defs": {
@@ -144,7 +198,13 @@
           "pattern": "^RED-[0-9]+-[0-9]{3}$"
         },
         "status": {
-          "enum": ["PROPOSED", "REPRODUCED", "CONFIRMED", "DISMISSED", "ACCEPTED_AS_DEBT"]
+          "enum": [
+            "PROPOSED",
+            "REPRODUCED",
+            "CONFIRMED",
+            "DISMISSED",
+            "ACCEPTED_AS_DEBT"
+          ]
         },
         "summary": {
           "type": "string",
@@ -152,17 +212,26 @@
         },
         "fixture_pointer": {
           "description": "Permanent defeating fixture in the conformance corpus. Required once a finding is CONFIRMED.",
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "minLength": 1
         },
         "reproduced_by_actor_id": {
           "description": "Actor that reproduced the finding. Must differ from red_operator_actor_id.",
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "minLength": 1
         },
         "debt_decision_pointer": {
           "description": "Decision record accepting the residual as named debt, when status is ACCEPTED_AS_DEBT.",
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "minLength": 1
         }
       }

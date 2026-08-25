@@ -1,0 +1,60 @@
+{
+  "corpus_id": "soveraeign-lineage-lesson-cases/v1",
+  "note": "Positive and defeating cases for the lessons inbox proposed by .claude/drafts/history-lineage-and-lessons-brief.md. A lesson is a Proposal: it names its claim, its evidence_addresses (lineage SOURCES.lock source ids in stable reference form - commit SHA, PR number, session id - never an absolute host path), its intended landing (fixture, lint, decision, known-gap, seam, or drop), and its standing. VALID means the entry is admissible into the inbox at RECORDED standing. REFUSED means the attempted write must be refused with a refusal whose text contains the case's refuses substring, so a case cannot pass by raising some unrelated defect. A lesson enters at RECORDED and climbs only RECORDED -> ADMITTED -> RATIFIED -> EFFECTIVE; only Bdo ratifies, and LC-004 guards that entry boundary mechanically without resolving any open decision. This corpus stands at proposal standing ahead of its consumer: no inbox implementation reads it yet, and the landing vocabulary is fixed to the brief's six values as a reversible default.",
+  "cases": [
+    {
+      "case_id": "LC-001-complete-lesson-enters-recorded",
+      "expect": "VALID",
+      "proves": "A complete lesson - claim, evidence addresses in SOURCES.lock stable reference form, a declared landing, standing RECORDED - is admissible into the inbox.",
+      "lesson": {
+        "claim": "The CLAUDE.md repository snapshot drifted from the recorded history within one day of being written; orientation text decays faster than the record it summarises.",
+        "evidence_addresses": [
+          "git-commit:f14e81cad60aeed61a740867d08cc7095f63f15f",
+          "github-pr:43",
+          "claude-session:18749f60-9c00-4053-88e5-1d9ccd5f005c"
+        ],
+        "landing": "lint",
+        "standing": "RECORDED"
+      }
+    },
+    {
+      "case_id": "LC-002-lesson-without-evidence-addresses",
+      "expect": "REFUSED",
+      "proves": "A lesson that cites no source is a memory, not a record; unattributed learning is refused at the inbox door.",
+      "refuses": "evidence_addresses",
+      "lesson": {
+        "claim": "Write and Edit on this host emit CRLF unless the file is rewritten; run lint after every repository text edit.",
+        "landing": "fixture",
+        "standing": "RECORDED"
+      }
+    },
+    {
+      "case_id": "LC-003-lesson-without-a-landing",
+      "expect": "REFUSED",
+      "proves": "A lesson that declares no landing can never drain; the inbox is a queue toward fixture, lint, decision, known-gap, seam, or drop, not a rulebook.",
+      "refuses": "landing",
+      "lesson": {
+        "claim": "The verify budget held at three seconds only because the oracle controls run in-process; every out-of-process addition must be measured before it lands.",
+        "evidence_addresses": [
+          "git-commit:3b62bb114c265b676e4765a3d5a82f424d2d59b0"
+        ],
+        "standing": "RECORDED"
+      }
+    },
+    {
+      "case_id": "LC-004-lesson-may-not-enter-ratified",
+      "expect": "REFUSED",
+      "proves": "A lesson begins RECORDED and climbs the ladder only through separate transitions; only Bdo ratifies. Writing standing RATIFIED at entry would let the author self-ratify, so the write is refused before it lands.",
+      "refuses": "RECORDED",
+      "lesson": {
+        "claim": "Session transcripts hold corrections and abandoned paths that git never sees; retire them into sanitized recordings before they age out.",
+        "evidence_addresses": [
+          "claude-session:18749f60-9c00-4053-88e5-1d9ccd5f005c",
+          "git-commit:5673508bb155a1f950427088321350df8650f6f0"
+        ],
+        "landing": "decision",
+        "standing": "RATIFIED"
+      }
+    }
+  ]
+}

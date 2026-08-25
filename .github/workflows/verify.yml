@@ -1,9 +1,13 @@
 name: verify
 
+# Pull-request root verification also lives in qa-lanes.yml's Blue matrix. The
+# protected branch still names this workflow's two matrix checks explicitly, so
+# keep this compatibility observation until that ruleset is migrated.
 on:
+  pull_request:
   push:
     branches: [main]
-  pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -15,6 +19,7 @@ concurrency:
 jobs:
   repository:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     strategy:
       fail-fast: true
       matrix:

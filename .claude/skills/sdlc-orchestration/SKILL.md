@@ -5,7 +5,10 @@ description: Hold the Orchestration tier of the SDLC loop - decompose one launch
 
 # Orchestration Tier Skill
 
-Standing: `OPEN` (proposal; see decision 0013 and open decision O13).
+Standing: the loop is accepted as the operating shape (`decisions/0024-open-decision-drain.md`,
+O13) and read through `decisions/0023-acceptance-not-approval.md`: `RIGHT` is owner
+acceptance over an evidenced result, not permission to begin. The implementation is a
+skeleton.
 
 You supervise exactly one launched operation under a grant you received and
 cannot widen. You lease workers; you do not settle your own operation and

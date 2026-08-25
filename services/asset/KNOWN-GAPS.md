@@ -12,29 +12,15 @@ the full Phase-I logical contract.
 | Authority envelope | Grants carry actor, capability, and scope only | Type, issuer authority, budget, validity, and revocation must be enforced | C3; PROD-I-5 |
 | Observer independence | Any named actor can call `observe`, including the worker | Observer relation must prevent executor-only settlement | C7; SPEC `Observation` |
 | Receipt completeness | Receipts omit exact input state, authority grants, preconditions, effect class, and digest | Required receipt fields must be present for every terminal outcome | C6-C8 |
+| Reader execution evidence | A declared recording verifies the exact reader artifact, configuration, source, and output, but not that the worker semantically executed that reader | Model binding and observation must attest execution without promoting worker self-report | C2, C7; PROD-I-2 |
 | Atomic commit | Blob writes and ledger commits are not one recoverable protocol | Partial-write recovery must distinguish committed from attempted state | SPEC fault model |
 | Two bindings | Only a Python API/CLI participant exists | Human and model bindings must use the same transition contract | C1; PROD-I-3 |
 | Attestation | Byte observation exists, but general claim attestation does not | `REPRODUCED`, `DISSENTED`, and `UNATTESTABLE` must be recorded | C5; PROD-I-8 |
 | Judgement queue | Missing authority refuses synchronously | Judgement-dependent work must remain visible and non-blocking | PROD-I-6 |
 | Model portability | No Model Binding or Model Adapter participant exists | Two materially different models must use one kernel contract with exact identity, data-boundary, usage, cost, and provider-loss receipts | PROD-I-9; BYOM.md |
 | Operational journal | Mutable lifecycle tables and partial receipts do not yet implement the complete append-preserving Event Envelope | Every consequential decision and state transition must remain reconstructable independently of current projections | C15; SPEC `EventEnvelope` |
+| Module boundary | `core.py` combines storage, authority/receipts, execution, observation, projections, and Asset lifecycle in more than 300 lines | Split by owned responsibility before adding behavior; preserve the public participant contract | ENGINEERING `Context and module budget` |
+| Search and graph projections | `CHARTER.md` names an SQLite FTS projection and lineage traversal; the build is a `LIKE` substring scan with no ranking and a one-hop `neighbors()` | Ranked text search, bounded multi-hop traversal, and per-hit source resolution belong to the chartered Asset Projection Service (`services/projection/`, `decisions/0021`); these two tables are a compatibility path | SPEC Projection rule; PROD-I-3; OPEN-SEAMS S14 |
 
 These are participant defects or unimplemented requirements, not reasons to
 relax the logical oracle.
-
-## Repairs at `BUILT` standing
-
-The following prior defects now have self-tested implementation evidence. They
-remain below `WITNESSED` until an independent engagement reproduces them.
-
-**Derivation reconstruction.** Every derivative declares and persists its exact
-source version and digest, CAS-addressed supplied reader artifact and replay
-configuration, fidelity, recoverable omissions, output address, and recorded
-standing. Source, reader, configuration, and output drift refuse. Settlement
-reconstructs the full path instead of checking only the output bytes. Evidence:
-`conformance/PROD-I-2-BUILD.md`, C2, and PROD-I-2.
-
-**Module boundary.** Storage, authority/receipts, derivative execution,
-observation, projections, reader declarations, and the Asset facade are
-separate modules below 300 lines. Evidence: `scripts/lint.py` and ENGINEERING's
-`Context and module budget` section.

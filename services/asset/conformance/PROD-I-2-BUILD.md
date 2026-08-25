@@ -1,6 +1,6 @@
 # PROD-I-2 Derivative Reconstruction Build Record
 
-Observed: `2026-08-22`
+Observed: `2026-08-22`; reconciled with current `main` on `2026-08-25`
 
 Participant: `asset-service-reference@feat/asset-recording-reconstruction`
 
@@ -23,16 +23,17 @@ Standing: `BUILT_SELF_TESTED_NOT_WITNESSED`
 
 ## Built observation
 
-- The former 341-line core is split into storage, control, recording,
-  derivative, observation, projection, and facade modules, all below 300 lines.
+- Current main's newer storage, authority, identity, run, projection, route,
+  and facade split remains canonical; recording and reconstruction are added to
+  that architecture without restoring the superseded branch-local split.
 - `ReaderDeclaration` requires supplied versioned reader bytes, a secret-free
   replay configuration, and an output role. Both materials receive immutable
   CAS addresses and digests before work is leased.
 - `LOSSY` output requires stored, non-empty omission identifiers; `EXACT` output
   refuses any omission.
-- Compatibility is fail-closed: the prior undeclared-reader call shape remains
-  callable but returns a `READER_UNDECLARED` refusal instead of producing an
-  incomplete derivative.
+- Compatibility output created without a reader remains an Asset Version and
+  produces no `Recording`; reconstruction refuses it rather than inventing
+  provenance. A supplied but incomplete reader is receipted and refused.
 - A recording resolves its derivative operation and run, immediate source
   version and digest, output CAS address and digest, reader identity,
   configuration digest, fidelity, omissions, producer, and `RECORDED` standing.
@@ -45,14 +46,15 @@ Standing: `BUILT_SELF_TESTED_NOT_WITNESSED`
 
 ## Checks
 
-- Asset unit tests: `11` passed, including incomplete-reader, post-report source
-  corruption, changed reader/configuration materials, and tampered-output
-  address defeating cases.
+- Asset unit tests: `96` passed after current-main reconciliation, including
+  incomplete-reader, legacy-non-recording, post-report source corruption,
+  changed reader/configuration materials, and tampered-output address cases.
 - Participant oracle: `RUN-I2-REMEMBER PROD-I-2` returned `PASS` with zero
   defects; the complete nine-requirement participant suite correctly remains
   `FAIL` on eight unrelated open requirements.
-- Repository hygiene: `PASS`, 0 named module-size debts.
-- Root `python scripts/verify.py`: `PASS` in `0.651s` on the observed host.
+- Repository hygiene and root verification are rerun on the exact merge
+  candidate before landing; the original branch observation was `PASS` in
+  `0.651s` with zero named module-size debts.
 
 ## Residuals and next gate
 

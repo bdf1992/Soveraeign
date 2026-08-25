@@ -1,0 +1,161 @@
+{
+  "gateway_id": "soveraeign-mcp-gateway/v1",
+  "standing": "PROPOSED",
+  "protocol_version": "2024-11-05",
+  "note": "The exposed surface of this node. The gateway builds its tool list from this file and refuses to start when a declared endpoint has no reachable implementation, so a written-but-unbuilt operation cannot become a tool. Services standing PROPOSED are absent on purpose. Each endpoint names the service manifest operation it realizes, or states that no manifest declares it yet - the gap is recorded rather than papered over.",
+  "participant_default": "operator",
+  "tiers": {
+    "read": "No grant, no writes. Answers what the state is.",
+    "observe": "Runs a check and appends an OBSERVATION entry. Changes no service state.",
+    "act": "Requires a live session. The gate is either the gateway's own capability check or the service's, and every act endpoint declares which. Appends an EVENT, then a RECEIPT carrying the outcome."
+  },
+  "endpoints": [
+    {
+      "tool": "authority_open_session",
+      "tier": "act",
+      "service": "asset",
+      "operation": "open_session",
+      "effect_class": "RECORD_LOCAL",
+      "description": "Open a bounded session for this participant and model identity. Every later act-tier call carries the returned session id, and closing the session withdraws every grant issued under it.",
+      "arguments": {
+        "participant": {
+          "type": "string",
+          "required": true
+        },
+        "model_identity": {
+          "type": "string",
+          "required": true
+        },
+        "ttl_seconds": {
+          "type": "number",
+          "required": false
+        }
+      },
+      "authority": "bootstrap",
+      "requires_session": false,
+      "realizes": null,
+      "undeclared_because": "The asset service implements sessions; no service manifest declares them as an operation."
+    },
+    {
+      "tool": "authority_grant",
+      "tier": "act",
+      "service": "asset",
+      "operation": "grant",
+      "effect_class": "RECORD_LOCAL",
+      "description": "Issue a live, expiring grant bound to the current session. The Authority layer owns the check: the store's recorded root may issue, and anyone else may only issue what one of their own live grants already covers, so a delegated grant narrows and never widens.",
+      "arguments": {
+        "issuer": {
+          "type": "string",
+          "required": true
+        },
+        "actor": {
+          "type": "string",
+          "required": true
+        },
+        "capability": {
+          "type": "string",
+          "required": true
+        },
+        "scope": {
+          "type": "string",
+          "required": false
+        },
+        "ttl_seconds": {
+          "type": "number",
+          "required": false
+        }
+      },
+      "authority": "service-enforced",
+      "realizes": null,
+      "undeclared_because": "The asset service implements grants; no service manifest declares them as an operation."
+    },
+    {
+      "tool": "asset_ingest",
+      "tier": "act",
+      "service": "asset",
+      "operation": "ingest",
+      "capability": "operate:ingest",
+      "effect_class": "RECORD_LOCAL",
+      "description": "Capture a local file as an addressed source and its original version. Returns the asset, source, version, digest, and receipt identifiers.",
+      "arguments": {
+        "path": {
+          "type": "string",
+          "required": true
+        },
+        "label": {
+          "type": "string",
+          "required": true
+        },
+        "actor": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "authority": "gateway",
+      "realizes": "asset.ingest-asset"
+    },
+    {
+      "tool": "asset_search",
+      "tier": "read",
+      "service": "asset",
+      "operation": "search",
+      "effect_class": "NONE",
+      "description": "Assets whose projected text contains the query. Reads a rebuildable projection, never the canonical record.",
+      "arguments": {
+        "query": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "realizes": null,
+      "undeclared_because": "Reads the search projection. The asset manifest declares read-asset, which is not the same operation."
+    },
+    {
+      "tool": "observe_verify",
+      "tier": "observe",
+      "service": "repository",
+      "operation": "verify",
+      "effect_class": "RECORD_LOCAL",
+      "description": "Run scripts/verify.py and append the result as an OBSERVATION. Establishes BUILT evidence only; it witnesses and ratifies nothing.",
+      "arguments": {},
+      "realizes": null,
+      "undeclared_because": "A repository check, not a service operation. No manifest declares it and none should."
+    },
+    {
+      "tool": "record_entries",
+      "tier": "read",
+      "service": "record",
+      "operation": "entries",
+      "effect_class": "NONE",
+      "description": "Every entry in the operational journal, in append order, with its digest chain.",
+      "arguments": {},
+      "realizes": "record.read-entry",
+      "authority": "read:journal",
+      "requires_session": false,
+      "note": "Withheld on 2026-08-24 as the reversible default when the build fired BACK_OFFICE_EXPOSED, and restored the same day: Bdo ruled that reading authorized operational history is an operator act, and the office table was the wrong side. decisions/0052."
+    },
+    {
+      "tool": "console_operations",
+      "tier": "observe",
+      "service": "console",
+      "operation": "discover-operations",
+      "effect_class": "RECORD_LOCAL",
+      "description": "What can be asked of this node, and what one operator may currently ask. Every declared operation with where it is reachable, what authority it costs, what it acts on, what must already be true, what it commits and how it refuses - read from the capability projection the repository rebuilds and checks, never from a list beside it.",
+      "arguments": {
+        "operator_id": {
+          "type": "string",
+          "required": false
+        }
+      },
+      "realizes": "console.discover-operations",
+      "requires_session": false,
+      "note": "observe rather than read, so the crossing is journalled. A participant asking what it may do is an act the node should be able to account for afterwards (GROUND-007)."
+    }
+  ],
+  "withheld_endpoints": [],
+  "authority_modes": {
+    "gateway": "The gateway requires the caller to hold the declared capability.",
+    "service-enforced": "The service owns the check. The gateway adds no second, stricter rule it has no bootstrap for.",
+    "bootstrap": "Establishes the session the other endpoints require, so it cannot itself require one."
+  }
+}

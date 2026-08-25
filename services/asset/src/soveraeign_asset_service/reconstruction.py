@@ -11,13 +11,13 @@ from .recording import (
     RecordingChanged,
     SourceChanged,
 )
-from .storage import AssetStore, PayloadIntegrityError
+from .store import PayloadIntegrityError, Store
 
 
 class RecordingReconstructor:
     """Resolve and verify every material named by a derivative recording."""
 
-    def __init__(self, store: AssetStore, readers: ReaderMaterials):
+    def __init__(self, store: Store, readers: ReaderMaterials):
         self.store = store
         self.db = store.db
         self.readers = readers
@@ -78,10 +78,24 @@ class RecordingReconstructor:
     @staticmethod
     def _verify_links(recording: Any, run: Any, plan: Any) -> None:
         if (
-            run["input_version_id"] != recording["source_id"]
+            RecordingReconstructor._run_source(run) != recording["source_id"]
             or run["output_version_id"] != recording["output_version_id"]
         ):
             raise RecordingChanged(recording["id"])
+
+    @staticmethod
+    def _run_source(run: Any) -> str:
+        """Resolve the one source of a reconstructable recording."""
+        stored = run["input_version_id"]
+        if stored.startswith("["):
+            try:
+                inputs = json.loads(stored)
+            except json.JSONDecodeError as error:
+                raise RecordingChanged(run["id"]) from error
+            if not isinstance(inputs, list) or len(inputs) != 1:
+                raise RecordingChanged(run["id"])
+            return inputs[0]
+        return stored
         recorded_plan_fields = (
             "source_id",
             "source_digest",

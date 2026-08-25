@@ -1,6 +1,6 @@
 # Product Requirements — Founding and Phase I
 
-Status: `FREEZE CANDIDATE, NOT OWNER-RATIFIED IN THIS REPOSITORY`
+Status: `FREEZE CANDIDATE · NOT OWNER-RATIFIED IN THIS REPOSITORY`
 
 ## Product outcome
 
@@ -24,14 +24,15 @@ OPEN → BUILT → WITNESSED → RATIFIED
 
 `BUILT` is an implementation claim. `WITNESSED` requires independent evidence.
 `RATIFIED` requires the declared right. No agent may advance a requirement on
-its own report.
+its own report. This artifact lifecycle is distinct from the operational record
+standing defined in `SPEC.md`.
 
 ## Phase-I requirements
 
 ### PROD-I-1 · Propose
 
 A fresh model session can submit a proposal at a recorded cost. The result is
-an attributed, addressed, left-signed candidate that claims no authority.
+an attributed, addressed, `LEFT`-signed candidate that claims no authority.
 
 Defeating case: a proposal missing author, cost, source, or proposal standing is
 admitted.
@@ -72,11 +73,12 @@ Defeating case: a machine right ratifies judgement-typed truth.
 
 ### PROD-I-6 · Founder judgement budget
 
-Judgement requests queue without blocking operation. The system reports where
-human judgement was spent and which unresolved rights remain pending without
-inventing a target quota.
+Judgement requests queue without blocking unrelated operation. The affected
+operation settles as unresolved rather than remaining open indefinitely. The
+system reports where human judgement was spent and which unresolved rights
+remain pending without inventing a target quota.
 
-Defeating case: an operation blocks indefinitely awaiting owner judgement or
+Defeating case: a run remains open indefinitely awaiting owner judgement or
 hides the pending right.
 
 ### PROD-I-7 · Independent qualification
@@ -119,8 +121,9 @@ local record inoperable.
 
 At least one human-facing binding and two materially different model bindings
 must execute the same authoritative transitions and yield compatible receipts.
-One model must be supplied through the BYOM contract. A surface that bypasses
-the kernel fails Phase I.
+One model must be supplied through the BYOM contract. This combines same-world
+human/model parity with two-model substitutability; it is three bindings in
+total. A surface that bypasses the kernel fails Phase I.
 
 ## Non-goals for Phase I
 
@@ -137,6 +140,7 @@ the kernel fails Phase I.
 ## Phase-I exit
 
 Phase I exits only when every normative predicate has a positive and defeating
-fixture, the fixtures run against two bindings, independent observation can
-reconstruct the receipts, open judgement calls are visible, and the owner
-ratifies Phase-I operational acceptance.
+fixture, the applicable fixtures run through one human-facing binding and two
+materially different model bindings, independent observation can reconstruct
+the receipts, open judgement calls are visible, and the owner ratifies Phase-I
+operational acceptance.

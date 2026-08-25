@@ -1,0 +1,16 @@
+{
+  "name": "weekly-baseline",
+  "description": "Monday-morning baseline: readiness, conflicts, and the judgement queue before the week's federation runs.",
+  "enabled": false,
+  "target": {
+    "kind": "workflow",
+    "name": "sov-baseline",
+    "args": {"horizon": "the coming week of federation runs", "max_rounds": 2}
+  },
+  "cron": "0 6 * * 1",
+  "mode": "observe",
+  "effect_class": "RESOURCE_CONSUMPTION",
+  "isolation": "tree",
+  "preconditions": {"clean_tree": false, "lookback_minutes": 60},
+  "limits": {"max_budget_usd": 8, "timeout_seconds": 5400}
+}

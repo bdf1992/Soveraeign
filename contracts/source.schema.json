@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/source.schema.json",
+  "title": "Soveraeign Source",
+  "description": "PROPOSED ahead of O10 (SPEC.md owner freeze pending). Compiles the SPEC.md Source information object: an immutable captured input identified by a stable address, bound to the digest and size of the bytes that address resolves to, and attributed to the actor that captured it. The bytes resolved by source_address must match payload_digest before a reading begins; a Source carries no payload itself. lineage/SOURCES.lock entries are Source records under this shape.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "source_id",
+    "source_address",
+    "payload_digest",
+    "payload_size",
+    "captured_at",
+    "captured_by"
+  ],
+  "properties": {
+    "source_id": {
+      "description": "Identity of this source. Distinct from its address and its digest; coincidental equality never merges the roles.",
+      "type": "string",
+      "minLength": 1
+    },
+    "source_address": {
+      "description": "Stable reference the bytes resolve from, for example git:<sha>, github:pr/<n>, claude-session:<id>, or a repository-relative path such as SPEC.md#Recording. An absolute host path (drive letter, leading slash or backslash, or UNC) is refused because it is neither portable nor stable across checkouts. Evaluated with Python re.search semantics.",
+      "type": "string",
+      "pattern": "^(?![A-Za-z]:[\\\\/])(?![\\\\/])\\S"
+    },
+    "payload_digest": {
+      "description": "Digest of the bytes resolved by source_address. A mismatch at capture is the DIGEST_MISMATCH refusal of capture_source; at reading it is the SOURCE_CHANGED refusal of read_source.",
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "payload_size": {
+      "description": "Size in bytes of the resolved payload.",
+      "type": "integer",
+      "minimum": 0
+    },
+    "captured_at": {
+      "description": "When the source was captured, RFC 3339 with an explicit offset.",
+      "type": "string",
+      "format": "date-time"
+    },
+    "captured_by": {
+      "description": "Attributable identity of the actor that captured the source. Never a credential.",
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

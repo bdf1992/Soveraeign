@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/recording.schema.json",
+  "title": "Soveraeign Recording",
+  "description": "PROPOSED ahead of O10 (SPEC.md owner freeze pending). Compiles the SPEC.md Recording object: the output of read_source, which resolves its exact source, reader version, configuration, fidelity, and recoverable omissions. A recording never replaces or mutates its source. The Reader declaration is embedded (reader_id, reader_version, configuration_digest, fidelity, omissions) rather than referenced, so no separate Reader schema is required.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "recording_id",
+    "source_id",
+    "source_digest",
+    "reader_id",
+    "reader_version",
+    "configuration_digest",
+    "payload_address",
+    "payload_digest",
+    "fidelity",
+    "omissions",
+    "produced_at",
+    "produced_by",
+    "standing"
+  ],
+  "properties": {
+    "recording_id": {
+      "description": "Identity of this recording. Distinct from its payload address and digest.",
+      "type": "string",
+      "minLength": 1
+    },
+    "source_id": {
+      "description": "Identity of the Source that was read.",
+      "type": "string",
+      "minLength": 1
+    },
+    "source_digest": {
+      "description": "Digest of the source bytes at the moment of reading. Must equal the Source payload_digest; a mismatch is the SOURCE_CHANGED refusal of read_source.",
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "reader_id": {
+      "description": "Identity of the declared Reader. An undeclared reader is the READER_UNDECLARED refusal of read_source.",
+      "type": "string",
+      "minLength": 1
+    },
+    "reader_version": {
+      "description": "Exact version of the reader that produced this recording.",
+      "type": "string",
+      "minLength": 1
+    },
+    "configuration_digest": {
+      "description": "Digest of the reader configuration in force for this reading.",
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "payload_address": {
+      "description": "Address where the recording bytes resolve. An address is an identity role distinct from a digest, so no digest pattern is imposed.",
+      "type": "string",
+      "minLength": 1
+    },
+    "payload_digest": {
+      "description": "Digest of the recording bytes resolved by payload_address.",
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "fidelity": {
+      "description": "EXACT readers declare no omissions; LOSSY readers must declare at least one versioned omission definition.",
+      "type": "string",
+      "enum": ["EXACT", "LOSSY"]
+    },
+    "omissions": {
+      "description": "Versioned omission definitions from which the omitted content is deterministically recoverable. Empty for EXACT fidelity.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["definition_id", "definition_digest"],
+        "properties": {
+          "definition_id": {
+            "description": "Versioned omission definition identifier, for example body-text-only-v1.",
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*-v[0-9]+$"
+          },
+          "definition_digest": {
+            "description": "Digest of the omission definition content at that version.",
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "produced_at": {
+      "description": "When the recording was produced, RFC 3339 with an explicit offset.",
+      "type": "string",
+      "format": "date-time"
+    },
+    "produced_by": {
+      "description": "Attributable identity of the actor that ran read_source. Never a credential.",
+      "type": "string",
+      "minLength": 1
+    },
+    "standing": {
+      "description": "Record standing per CLASSIFICATION.md, not the artifact lifecycle.",
+      "type": "string",
+      "enum": ["RECORDED", "ADMITTED", "RATIFIED", "EFFECTIVE"]
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "fidelity": { "const": "EXACT" } } },
+      "then": { "properties": { "omissions": { "const": [] } } }
+    },
+    {
+      "if": { "properties": { "fidelity": { "const": "LOSSY" } } },
+      "then": { "properties": { "omissions": { "minItems": 1 } } }
+    }
+  ]
+}

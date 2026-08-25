@@ -1,0 +1,40 @@
+id: CONS-007
+title: activity_view_declares_omissions
+status: SEED
+given:
+  - one ACTIVITY projection-view A-1 declared over the service-activity port with two sources, the Asset Service event-and-receipt stream and the Proofing Service event-and-receipt stream
+  - the Asset Service stream holds N event envelopes, each with an event_id, an address, a digest, and a receipt_id
+  - the Proofing Service stream is unavailable for the whole scenario
+  - one record E-1 in the Asset Service stream with standing EFFECTIVE and outcome COMMITTED
+  - one HUMAN actor H-1 holding a live grant scoped to read A-1 and to request rebuild-projection for A-1
+  - H-1 holds a live AuthorityGrant with capability retract whose scope covers E-1
+  - a federation port declared in the Console Service manifest with no second node configured
+  - a rebuild worker that reports its own completion
+when:
+  - H-1 requests rebuild-projection for A-1
+  - H-1 attempts to include a second node NODE-2 in A-1 through the federation port
+  - H-1 counters E-1 through the kernel retract transition
+  - H-1 requests rebuild-projection for A-1 again
+then:
+  - the first rebuild returns a receipt with outcome COMMITTED and a null reason_code, and A-1 lists exactly the N Asset Service envelopes, each entry naming event_id, address, digest, receipt_id, actor_kind, and outcome
+  - A-1's omissions name the Proofing Service stream with a reason stating it was unavailable, and no Proofing Service entry appears
+  - A-1 carries authoritative false and names the rebuild operation that produced it
+  - the federation attempt is REFUSED with a receipt whose outcome is REFUSED and whose reason_code is non-null; the proposed reason_code name is UNCONFIGURED and its use as a receipt reason_code is not yet defined by SPEC.md
+  - no entry attributed to NODE-2 appears in A-1 and A-1's declared sources do not include NODE-2
+  - the retract is checked against H-1's live grant and returns a receipt with outcome COUNTERED whose authority_grant_ids name that grant
+  - the authority_type required for a retraction grant is not fixed by SPEC.md and is a proposal
+  - a counter-record exists naming E-1 as target_record_id and E-1's receipt as target_receipt_id, and the counter-record's receipt claims no reversal of resource consumption or external effect
+  - E-1's original envelope remains byte-identical and addressable, its standing history still shows EFFECTIVE, and E-1 no longer conditions current operation
+  - the second rebuild returns a receipt with outcome COMMITTED and lists both E-1's original entry and the counter-record entry, each with its own address and digest, the counter-record entry with outcome COUNTERED
+  - the second rebuild's content differs from the first only by the counter-record entry; the omissions still name the Proofing Service stream
+  - each rebuild receipt reaches outcome COMMITTED only after an observation whose observer_relation is independent of the rebuild worker; the worker's report alone leaves the rebuild without a COMMITTED receipt
+  - every receipt carries effect class RECORD_LOCAL
+defeating:
+  - an A-1 entry has no envelope address or digest, or names an address that does not resolve to an Asset Service or Proofing Service envelope
+  - an entry attributed to NODE-2 or to any node or service not declared as a source appears in A-1
+  - the first rebuild shows no Proofing Service entries and no omission naming the Proofing Service stream
+  - the federation attempt returns a receipt with outcome COMMITTED, or no receipt
+  - the retraction removes E-1's original entry from A-1, changes E-1's bytes, or rewrites E-1's standing history
+  - the second rebuild shows the counter-record without E-1, or E-1 without the counter-record
+  - the retraction receipt or counter-record claims reversal of resource consumption or of an external effect
+  - A-1's rebuild receipt reaches COMMITTED on the rebuild worker's report alone, with no observation independent of that worker

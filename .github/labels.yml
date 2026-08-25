@@ -1,5 +1,14 @@
 # Canonical GitHub label catalogue for Soveraeign.
 # Labels are projections of issue metadata. See CONTRIBUTING.md.
+#
+# Two sections. `- name:` entries are the governed catalogue: every label the
+# projection in contracts/ticket-label-projection.json may derive. `- retire:`
+# entries name labels that must not exist on the surface, so removing one is a
+# declared act rather than an unrecorded tidy-up.
+#
+# Colour is not decoration. Within an axis the hue family is constant; within
+# the standing axis the ramp is monotone in how much evidence exists, so the
+# board reads as a lifecycle rather than a palette.
 
 - name: "type: epic"
   color: "6F42C1"
@@ -16,6 +25,44 @@
 - name: "type: engagement"
   color: "B60205"
   description: "Verification engagement against a pinned target; produces findings, builds nothing."
+- name: "type: story"
+  color: "E16F24"
+  description: "One participant crossing one counter and finding the substrate short; asks, never builds."
+- name: "type: unblock"
+  color: "D73A4A"
+  description: "A proven block filed as work: one held ticket, one blocked transition, one provision asked."
+
+- name: "provision: grant"
+  color: "8250DF"
+  description: "Unblock request for a typed, scoped, live grant."
+- name: "provision: judgement"
+  color: "8250DF"
+  description: "Unblock request for an owner-held judgement; always served by the owner."
+- name: "provision: contract"
+  color: "8250DF"
+  description: "Unblock request for a schema, charter, or declared interface."
+- name: "provision: fixture"
+  color: "8250DF"
+  description: "Unblock request for a positive or defeating case."
+- name: "provision: capability"
+  color: "8250DF"
+  description: "Unblock request for a tool, adapter, binding, or runtime the tier does not have."
+- name: "provision: observation"
+  color: "8250DF"
+  description: "Unblock request for an independent observation of something already built."
+
+- name: "serve: worker"
+  color: "0E8A16"
+  description: "Served at the Work tier."
+- name: "serve: orchestrator"
+  color: "0E8A16"
+  description: "Served at the Orchestration tier."
+- name: "serve: controller"
+  color: "0E8A16"
+  description: "Served at the Control tier."
+- name: "serve: owner"
+  color: "0E8A16"
+  description: "Served only by the owner."
 
 - name: "scope: system"
   color: "5319E7"
@@ -66,6 +113,9 @@
   color: "CF222E"
   description: "Translates across a declared external-system boundary."
 
+# The standing ramp. One axis for the whole artifact lifecycle, ordered by how
+# much evidence stands behind the claim. OPEN is the default and carries no
+# label. DEMOTED is red because it is a fall off the ramp, not a rung on it.
 - name: "standing: proposed"
   color: "D4C5F9"
   description: "Defined as a proposal; no built evidence exists."
@@ -76,15 +126,33 @@
   color: "54AEFF"
   description: "Contract or charter exists; implementation is incomplete."
 - name: "standing: self-tested"
-  color: "2DA44E"
-  description: "Built and self-tested; independent witness remains outstanding."
-
-- name: "witness: pending"
   color: "D29922"
-  description: "Independent witness receipt is outstanding; normally held in project metadata."
-- name: "witness: witnessed"
+  description: "Built and self-tested; independent witness remains outstanding."
+- name: "standing: witnessed"
   color: "2DA44E"
-  description: "Independent witness receipt is current and resolvable."
-- name: "witness: demoted"
+  description: "An independent witness receipt is current and resolvable."
+- name: "standing: ratified"
+  color: "116329"
+  description: "Bdo accepted the evidenced result; the terminal rung of the lifecycle."
+- name: "standing: demoted"
   color: "CF222E"
-  description: "Prior witness standing was demoted by a defeating observation."
+  description: "Prior standing was demoted by a defeating observation."
+
+# Retired. The `witness:` axis encoded the same lifecycle a second time, so a
+# ticket needed two labels to say one thing; the standing ramp above absorbs it
+# whole (decisions/0044). The rest are GitHub's stock labels, which no
+# Soveraeign ticket has ever carried and which name a triage vocabulary this
+# repository does not use.
+- retire: "witness: pending"
+- retire: "witness: witnessed"
+- retire: "witness: demoted"
+- retire: "accessibility"
+- retire: "bug"
+- retire: "documentation"
+- retire: "duplicate"
+- retire: "enhancement"
+- retire: "good first issue"
+- retire: "help wanted"
+- retire: "invalid"
+- retire: "question"
+- retire: "wontfix"

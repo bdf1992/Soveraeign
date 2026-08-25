@@ -1,0 +1,29 @@
+id: PROOF-001
+title: implicit_latest_version_refused
+status: SEED
+given:
+  - one asset held by the Asset Service with two immutable versions V1 and V2
+  - each version is addressed by asset_id, version_id, and version_digest
+  - one actor holding a live authority grant scoped to the proofing open-session operation
+  - no proofing-session record exists for the asset
+when:
+  - the actor attempts open-session naming the asset_id, version_id, and version_digest of V1
+  - the actor attempts open-session naming the asset_id only
+  - the actor attempts open-session naming the asset_id and a version selector of 'latest'
+then:
+  - the exact-version attempt records a proofing-session with lifecycle OPEN and standing RECORDED
+  - the recorded proofing-session pins asset_id, version_id, and version_digest exactly as named
+  - the exact-version attempt returns a receipt whose emitted_record_addresses name that proofing-session
+  - the attempt naming the asset_id only is REFUSED
+  - the attempt naming 'latest' is REFUSED
+  - each refusal returns a receipt with outcome REFUSED and a non-null reason_code
+  - the reason_code name for this refusal is a proposal and is not yet defined by SPEC.md
+  - no proofing-session record exists for either refused attempt
+  - no Asset Service state changes under any of the three attempts
+defeating:
+  - open-session resolves 'latest' to V2 and records a session the actor never named
+  - open-session fills in a missing version_id or version_digest from current Asset Service state
+  - open-session accepts a version_id without the matching version_digest
+  - a refusal leaves no receipt
+  - a refused attempt leaves a proofing-session record in any lifecycle or standing
+  - the refusal is receipted as FAILED or UNRESOLVED instead of REFUSED

@@ -1,0 +1,990 @@
+[
+  {
+    "id": "PRINCIPAL-POS",
+    "contract": "principal.schema.json",
+    "status": "PROPOSED",
+    "polarity": "positive",
+    "expected_validity": "VALID",
+    "expected_chain_sound": true,
+    "expected_channels_sound": true,
+    "note": "The real current registry. Hop distance is derived, never stored (ID-3). Every claim is UNVERIFIED because no challenge mechanism is implemented yet; channels are declared and ready (ID-13).",
+    "observed_actor_ids": [
+      "principal:bdo",
+      "principal:session-2026-08-23",
+      "principal:witness-a34f27a"
+    ],
+    "expected_hops": {
+      "principal:bdo": 0,
+      "principal:claude-fable-5": 1,
+      "principal:session-2026-08-23": 1,
+      "principal:witness-a34f27a": 2
+    },
+    "record": {
+      "registry_schema": "soveraeign-principal-registry/v1",
+      "status": "PROPOSED",
+      "root_principal": "principal:bdo",
+      "principals": [
+        {
+          "principal_id": "principal:bdo",
+          "kind": "HUMAN",
+          "durability": "DURABLE",
+          "controller": null,
+          "anchor": {
+            "kind": "decision",
+            "reference": "decisions/0001-founding-boundary.md"
+          },
+          "crossing_class": "in-node",
+          "model": null,
+          "delegation": null,
+          "claim": {
+            "claimed_at": "2026-08-23T00:00:00Z",
+            "claim_basis": "seated by decisions/0001; occupies the root seat (decisions/0020)",
+            "verification": "UNVERIFIED"
+          },
+          "verification_channel": {
+            "kind": "console-session",
+            "reference": "the interactive session Bdo operates"
+          },
+          "revoked": null
+        },
+        {
+          "principal_id": "principal:claude-fable-5",
+          "kind": "MODEL",
+          "durability": "DURABLE",
+          "controller": "principal:bdo",
+          "anchor": {
+            "kind": "model-binding",
+            "reference": "BYOM.md; bindings/README.md (declared, no adapter)"
+          },
+          "crossing_class": "provider-boundary",
+          "model": {
+            "model_id": "claude",
+            "model_version": "fable-5",
+            "lineage": null
+          },
+          "delegation": null,
+          "claim": {
+            "claimed_at": "2026-08-23T00:00:00Z",
+            "claim_basis": "owner-selected model per BYOM.md",
+            "verification": "UNVERIFIED"
+          },
+          "verification_channel": {
+            "kind": "local-file",
+            "reference": ".local/challenges/ (gitignored runtime state)"
+          },
+          "revoked": null
+        },
+        {
+          "principal_id": "principal:session-2026-08-23",
+          "kind": "MODEL",
+          "durability": "INSTANCE",
+          "controller": "principal:bdo",
+          "anchor": {
+            "kind": "launch-event",
+            "reference": "reports/2026-08-23-seat-adoption.md"
+          },
+          "crossing_class": "provider-boundary",
+          "model": {
+            "model_id": "claude",
+            "model_version": "fable-5",
+            "lineage": null
+          },
+          "delegation": {
+            "operator": "principal:claude-fable-5",
+            "launched_by": "principal:bdo",
+            "launched_at": "2026-08-23T00:00:00Z"
+          },
+          "claim": {
+            "claimed_at": "2026-08-23T00:00:00Z",
+            "claim_basis": "interactive session launched and directed by Bdo",
+            "verification": "UNVERIFIED"
+          },
+          "verification_channel": {
+            "kind": "console-session",
+            "reference": "the interactive session Bdo operates"
+          },
+          "revoked": null
+        },
+        {
+          "principal_id": "principal:witness-a34f27a",
+          "kind": "MODEL",
+          "durability": "INSTANCE",
+          "controller": "principal:session-2026-08-23",
+          "anchor": {
+            "kind": "delegation-record",
+            "reference": "reports/2026-08-23-seat-adoption.md rows A2-A5"
+          },
+          "crossing_class": "provider-boundary",
+          "model": {
+            "model_id": "claude",
+            "model_version": "fable-5",
+            "lineage": null
+          },
+          "delegation": {
+            "operator": "principal:claude-fable-5",
+            "launched_by": "principal:session-2026-08-23",
+            "launched_at": "2026-08-23T00:00:00Z"
+          },
+          "claim": {
+            "claimed_at": "2026-08-23T00:00:00Z",
+            "claim_basis": "sov-witness agent launched by the session",
+            "verification": "UNVERIFIED"
+          },
+          "verification_channel": {
+            "kind": "local-file",
+            "reference": ".local/challenges/ (gitignored runtime state)"
+          },
+          "revoked": null
+        }
+      ]
+    }
+  },
+  {
+    "id": "PRINCIPAL-POS-VERIFIED-SHAPE",
+    "contract": "principal.schema.json",
+    "status": "PROPOSED",
+    "polarity": "positive",
+    "expected_validity": "VALID",
+    "expected_chain_sound": true,
+    "expected_channels_sound": true,
+    "note": "Shape demonstration only: what a VERIFIED claim must look like once challenges exist - a receipt as verification_basis over a declared local channel. This records no verification that has occurred.",
+    "record": {
+      "registry_schema": "soveraeign-principal-registry/v1",
+      "status": "PROPOSED",
+      "root_principal": "principal:bdo",
+      "principals": [
+        {
+          "principal_id": "principal:bdo",
+          "kind": "HUMAN",
+          "durability": "DURABLE",
+          "controller": null,
+          "anchor": {
+            "kind": "decision",
+            "reference": "decisions/0001-founding-boundary.md"
+          },
+          "crossing_class": "in-node",
+          "model": null,
+          "delegation": null,
+          "claim": {
+            "claimed_at": "2026-08-23T00:00:00Z",
+            "claim_basis": "seated by decisions/0001",
+            "verification": "VERIFIED",
+            "verification_basis": "urn:soveraeign:receipt:challenge-0001"
+          },
+          "verification_channel": {
+            "kind": "console-session",
+            "reference": "the interactive session Bdo operates"
+          },
+          "revoked": null
+        }
+      ]
+    }
+  },
+  {
+    "id": "PRINCIPAL-DEF-ASSERTED-HOP",
+    "contract": "principal.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "defeats": "ID-3: a principal asserting its own hop distance instead of deriving it",
+    "record": {
+      "registry_schema": "soveraeign-principal-registry/v1",
+      "status": "PROPOSED",
+      "root_principal": "principal:bdo",
+      "principals": [
+        {
+          "principal_id": "principal:bdo",
+          "kind": "HUMAN",
+          "durability": "DURABLE",
+          "controller": null,
+          "anchor": {
+            "kind": "decision",
+            "reference": "decisions/0001-founding-boundary.md"
+          },
+          "crossing_class": "in-node",
+          "model": null,
+          "delegation": null,
+          "claim": {
+            "claimed_at": "2026-08-23T00:00:00Z",
+            "claim_basis": "seated by decisions/0001; occupies the root seat (decisions/0020)",
+            "verification": "UNVERIFIED"
+          },
+          "verification_channel": {
+            "kind": "console-session",
+            "reference": "the interactive session Bdo operates"
+          },
+          "revoked": null,
+          "hop": 0
+        }
+      ]
+    }
+  },
+  {
+    "id": "PRINCIPAL-DEF-NO-ANCHOR",
+    "contract": "principal.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "defeats": "ID-2: a free-floating principal with no in-system anchor",
+    "record": {
+      "registry_schema": "soveraeign-principal-registry/v1",
+      "status": "PROPOSED",
+      "root_principal": "principal:bdo",
+      "principals": [
+        {
+          "principal_id": "principal:bdo",
+          "kind": "HUMAN",
+          "durability": "DURABLE",
+          "controller": null,
+          "crossing_class": "in-node",
+          "model": null,
+          "delegation": null,
+          "claim": {
+            "claimed_at": "2026-08-23T00:00:00Z",
+            "claim_basis": "seated by decisions/0001; occupies the root seat (decisions/0020)",
+            "verification": "UNVERIFIED"
+          },
+          "verification_channel": {
+            "kind": "console-session",
+            "reference": "the interactive session Bdo operates"
+          },
+          "revoked": null
+        }
+      ]
+    }
+  },
+  {
+    "id": "PRINCIPAL-DEF-VERIFIED-WITHOUT-BASIS",
+    "contract": "principal.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "defeats": "ID-7: an unverified claim presented as verified with nothing behind it",
+    "record": {
+      "registry_schema": "soveraeign-principal-registry/v1",
+      "status": "PROPOSED",
+      "root_principal": "principal:bdo",
+      "principals": [
+        {
+          "principal_id": "principal:bdo",
+          "kind": "HUMAN",
+          "durability": "DURABLE",
+          "controller": null,
+          "anchor": {
+            "kind": "decision",
+            "reference": "decisions/0001-founding-boundary.md"
+          },
+          "crossing_class": "in-node",
+          "model": null,
+          "delegation": null,
+          "claim": {
+            "claimed_at": "2026-08-23T00:00:00Z",
+            "claim_basis": "says so",
+            "verification": "VERIFIED"
+          },
+          "verification_channel": {
+            "kind": "console-session",
+            "reference": "the interactive session Bdo operates"
+          },
+          "revoked": null
+        }
+      ]
+    }
+  },
+  {
+    "id": "PRINCIPAL-DEF-VERIFIED-WITHOUT-CHANNEL",
+    "contract": "principal.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "defeats": "ID-13: a VERIFIED claim naming no channel the challenge could have travelled over",
+    "record": {
+      "registry_schema": "soveraeign-principal-registry/v1",
+      "status": "PROPOSED",
+      "root_principal": "principal:bdo",
+      "principals": [
+        {
+          "principal_id": "principal:bdo",
+          "kind": "HUMAN",
+          "durability": "DURABLE",
+          "controller": null,
+          "anchor": {
+            "kind": "decision",
+            "reference": "decisions/0001-founding-boundary.md"
+          },
+          "crossing_class": "in-node",
+          "model": null,
+          "delegation": null,
+          "claim": {
+            "claimed_at": "2026-08-23T00:00:00Z",
+            "claim_basis": "seated by decisions/0001",
+            "verification": "VERIFIED",
+            "verification_basis": "urn:soveraeign:receipt:challenge-0001"
+          },
+          "verification_channel": null,
+          "revoked": null
+        }
+      ]
+    }
+  },
+  {
+    "id": "PRINCIPAL-DEF-EXTERNAL-CHANNEL",
+    "contract": "principal.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "expected_chain_sound": true,
+    "expected_channels_sound": false,
+    "defeats": "ID-13: verification over an external channel while Phase I refuses EXTERNAL_WORLD effects (O7)",
+    "record": {
+      "registry_schema": "soveraeign-principal-registry/v1",
+      "status": "PROPOSED",
+      "root_principal": "principal:bdo",
+      "principals": [
+        {
+          "principal_id": "principal:bdo",
+          "kind": "HUMAN",
+          "durability": "DURABLE",
+          "controller": null,
+          "anchor": {
+            "kind": "decision",
+            "reference": "decisions/0001-founding-boundary.md"
+          },
+          "crossing_class": "in-node",
+          "model": null,
+          "delegation": null,
+          "claim": {
+            "claimed_at": "2026-08-23T00:00:00Z",
+            "claim_basis": "seated by decisions/0001",
+            "verification": "VERIFIED",
+            "verification_basis": "urn:soveraeign:receipt:challenge-0001"
+          },
+          "verification_channel": {
+            "kind": "external",
+            "reference": "mailto: an address outside the node"
+          },
+          "revoked": null
+        }
+      ]
+    }
+  },
+  {
+    "id": "PRINCIPAL-DEF-INSTANCE-NO-DELEGATION",
+    "contract": "principal.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "defeats": "ID-5: an instance with no delegation record to a durable operator",
+    "record": {
+      "registry_schema": "soveraeign-principal-registry/v1",
+      "status": "PROPOSED",
+      "root_principal": "principal:bdo",
+      "principals": [
+        {
+          "principal_id": "principal:bdo",
+          "kind": "HUMAN",
+          "durability": "DURABLE",
+          "controller": null,
+          "anchor": {
+            "kind": "decision",
+            "reference": "decisions/0001-founding-boundary.md"
+          },
+          "crossing_class": "in-node",
+          "model": null,
+          "delegation": null,
+          "claim": {
+            "claimed_at": "2026-08-23T00:00:00Z",
+            "claim_basis": "seated by decisions/0001; occupies the root seat (decisions/0020)",
+            "verification": "UNVERIFIED"
+          },
+          "verification_channel": {
+            "kind": "console-session",
+            "reference": "the interactive session Bdo operates"
+          },
+          "revoked": null
+        },
+        {
+          "principal_id": "principal:session-2026-08-23",
+          "kind": "MODEL",
+          "durability": "INSTANCE",
+          "controller": "principal:bdo",
+          "anchor": {
+            "kind": "launch-event",
+            "reference": "reports/2026-08-23-seat-adoption.md"
+          },
+          "crossing_class": "provider-boundary",
+          "model": {
+            "model_id": "claude",
+            "model_version": "fable-5",
+            "lineage": null
+          },
+          "delegation": null,
+          "claim": {
+            "claimed_at": "2026-08-23T00:00:00Z",
+            "claim_basis": "interactive session launched and directed by Bdo",
+            "verification": "UNVERIFIED"
+          },
+          "verification_channel": {
+            "kind": "console-session",
+            "reference": "the interactive session Bdo operates"
+          },
+          "revoked": null
+        }
+      ]
+    }
+  },
+  {
+    "id": "PRINCIPAL-DEF-MODEL-NO-VERSION",
+    "contract": "principal.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "defeats": "ID-6: a model principal without an exact model identity and version",
+    "record": {
+      "registry_schema": "soveraeign-principal-registry/v1",
+      "status": "PROPOSED",
+      "root_principal": "principal:bdo",
+      "principals": [
+        {
+          "principal_id": "principal:bdo",
+          "kind": "HUMAN",
+          "durability": "DURABLE",
+          "controller": null,
+          "anchor": {
+            "kind": "decision",
+            "reference": "decisions/0001-founding-boundary.md"
+          },
+          "crossing_class": "in-node",
+          "model": null,
+          "delegation": null,
+          "claim": {
+            "claimed_at": "2026-08-23T00:00:00Z",
+            "claim_basis": "seated by decisions/0001; occupies the root seat (decisions/0020)",
+            "verification": "UNVERIFIED"
+          },
+          "verification_channel": {
+            "kind": "console-session",
+            "reference": "the interactive session Bdo operates"
+          },
+          "revoked": null
+        },
+        {
+          "principal_id": "principal:claude-fable-5",
+          "kind": "MODEL",
+          "durability": "DURABLE",
+          "controller": "principal:bdo",
+          "anchor": {
+            "kind": "model-binding",
+            "reference": "BYOM.md; bindings/README.md (declared, no adapter)"
+          },
+          "crossing_class": "provider-boundary",
+          "model": null,
+          "delegation": null,
+          "claim": {
+            "claimed_at": "2026-08-23T00:00:00Z",
+            "claim_basis": "owner-selected model per BYOM.md",
+            "verification": "UNVERIFIED"
+          },
+          "verification_channel": {
+            "kind": "local-file",
+            "reference": ".local/challenges/ (gitignored runtime state)"
+          },
+          "revoked": null
+        }
+      ]
+    }
+  },
+  {
+    "id": "PRINCIPAL-DEF-CONTROL-CYCLE",
+    "contract": "principal.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "expected_chain_sound": false,
+    "defeats": "ID-4: two principals controlling each other; no chain reaches the root",
+    "record": {
+      "registry_schema": "soveraeign-principal-registry/v1",
+      "status": "PROPOSED",
+      "root_principal": "principal:bdo",
+      "principals": [
+        {
+          "principal_id": "principal:bdo",
+          "kind": "HUMAN",
+          "durability": "DURABLE",
+          "controller": null,
+          "anchor": {
+            "kind": "decision",
+            "reference": "decisions/0001-founding-boundary.md"
+          },
+          "crossing_class": "in-node",
+          "model": null,
+          "delegation": null,
+          "claim": {
+            "claimed_at": "2026-08-23T00:00:00Z",
+            "claim_basis": "seated by decisions/0001; occupies the root seat (decisions/0020)",
+            "verification": "UNVERIFIED"
+          },
+          "verification_channel": {
+            "kind": "console-session",
+            "reference": "the interactive session Bdo operates"
+          },
+          "revoked": null
+        },
+        {
+          "principal_id": "principal:claude-fable-5",
+          "kind": "MODEL",
+          "durability": "DURABLE",
+          "controller": "principal:session-2026-08-23",
+          "anchor": {
+            "kind": "model-binding",
+            "reference": "BYOM.md; bindings/README.md (declared, no adapter)"
+          },
+          "crossing_class": "provider-boundary",
+          "model": {
+            "model_id": "claude",
+            "model_version": "fable-5",
+            "lineage": null
+          },
+          "delegation": null,
+          "claim": {
+            "claimed_at": "2026-08-23T00:00:00Z",
+            "claim_basis": "owner-selected model per BYOM.md",
+            "verification": "UNVERIFIED"
+          },
+          "verification_channel": {
+            "kind": "local-file",
+            "reference": ".local/challenges/ (gitignored runtime state)"
+          },
+          "revoked": null
+        },
+        {
+          "principal_id": "principal:session-2026-08-23",
+          "kind": "MODEL",
+          "durability": "INSTANCE",
+          "controller": "principal:claude-fable-5",
+          "anchor": {
+            "kind": "launch-event",
+            "reference": "reports/2026-08-23-seat-adoption.md"
+          },
+          "crossing_class": "provider-boundary",
+          "model": {
+            "model_id": "claude",
+            "model_version": "fable-5",
+            "lineage": null
+          },
+          "delegation": {
+            "operator": "principal:claude-fable-5",
+            "launched_by": "principal:bdo",
+            "launched_at": "2026-08-23T00:00:00Z"
+          },
+          "claim": {
+            "claimed_at": "2026-08-23T00:00:00Z",
+            "claim_basis": "interactive session launched and directed by Bdo",
+            "verification": "UNVERIFIED"
+          },
+          "verification_channel": {
+            "kind": "console-session",
+            "reference": "the interactive session Bdo operates"
+          },
+          "revoked": null
+        }
+      ]
+    }
+  },
+  {
+    "id": "PRINCIPAL-DEF-TWO-ROOTS",
+    "contract": "principal.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "expected_chain_sound": false,
+    "defeats": "ID-4: a second uncontrolled principal beside the root",
+    "record": {
+      "registry_schema": "soveraeign-principal-registry/v1",
+      "status": "PROPOSED",
+      "root_principal": "principal:bdo",
+      "principals": [
+        {
+          "principal_id": "principal:bdo",
+          "kind": "HUMAN",
+          "durability": "DURABLE",
+          "controller": null,
+          "anchor": {
+            "kind": "decision",
+            "reference": "decisions/0001-founding-boundary.md"
+          },
+          "crossing_class": "in-node",
+          "model": null,
+          "delegation": null,
+          "claim": {
+            "claimed_at": "2026-08-23T00:00:00Z",
+            "claim_basis": "seated by decisions/0001; occupies the root seat (decisions/0020)",
+            "verification": "UNVERIFIED"
+          },
+          "verification_channel": {
+            "kind": "console-session",
+            "reference": "the interactive session Bdo operates"
+          },
+          "revoked": null
+        },
+        {
+          "principal_id": "principal:claude-fable-5",
+          "kind": "MODEL",
+          "durability": "DURABLE",
+          "controller": null,
+          "anchor": {
+            "kind": "model-binding",
+            "reference": "BYOM.md; bindings/README.md (declared, no adapter)"
+          },
+          "crossing_class": "provider-boundary",
+          "model": {
+            "model_id": "claude",
+            "model_version": "fable-5",
+            "lineage": null
+          },
+          "delegation": null,
+          "claim": {
+            "claimed_at": "2026-08-23T00:00:00Z",
+            "claim_basis": "owner-selected model per BYOM.md",
+            "verification": "UNVERIFIED"
+          },
+          "verification_channel": {
+            "kind": "local-file",
+            "reference": ".local/challenges/ (gitignored runtime state)"
+          },
+          "revoked": null
+        }
+      ]
+    }
+  },
+  {
+    "id": "PRINCIPAL-DEF-REVOKED-CONTROLLER",
+    "contract": "principal.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "expected_chain_sound": false,
+    "defeats": "ID-4: a live principal whose control chain passes through a revoked one",
+    "record": {
+      "registry_schema": "soveraeign-principal-registry/v1",
+      "status": "PROPOSED",
+      "root_principal": "principal:bdo",
+      "principals": [
+        {
+          "principal_id": "principal:bdo",
+          "kind": "HUMAN",
+          "durability": "DURABLE",
+          "controller": null,
+          "anchor": {
+            "kind": "decision",
+            "reference": "decisions/0001-founding-boundary.md"
+          },
+          "crossing_class": "in-node",
+          "model": null,
+          "delegation": null,
+          "claim": {
+            "claimed_at": "2026-08-23T00:00:00Z",
+            "claim_basis": "seated by decisions/0001; occupies the root seat (decisions/0020)",
+            "verification": "UNVERIFIED"
+          },
+          "verification_channel": {
+            "kind": "console-session",
+            "reference": "the interactive session Bdo operates"
+          },
+          "revoked": null
+        },
+        {
+          "principal_id": "principal:claude-fable-5",
+          "kind": "MODEL",
+          "durability": "DURABLE",
+          "controller": "principal:bdo",
+          "anchor": {
+            "kind": "model-binding",
+            "reference": "BYOM.md; bindings/README.md (declared, no adapter)"
+          },
+          "crossing_class": "provider-boundary",
+          "model": {
+            "model_id": "claude",
+            "model_version": "fable-5",
+            "lineage": null
+          },
+          "delegation": null,
+          "claim": {
+            "claimed_at": "2026-08-23T00:00:00Z",
+            "claim_basis": "owner-selected model per BYOM.md",
+            "verification": "UNVERIFIED"
+          },
+          "verification_channel": {
+            "kind": "local-file",
+            "reference": ".local/challenges/ (gitignored runtime state)"
+          },
+          "revoked": {
+            "revoked_at": "2026-08-23T00:00:00Z",
+            "revoked_by": "principal:bdo",
+            "reason": "rotated"
+          }
+        },
+        {
+          "principal_id": "principal:session-2026-08-23",
+          "kind": "MODEL",
+          "durability": "INSTANCE",
+          "controller": "principal:bdo",
+          "anchor": {
+            "kind": "launch-event",
+            "reference": "reports/2026-08-23-seat-adoption.md"
+          },
+          "crossing_class": "provider-boundary",
+          "model": {
+            "model_id": "claude",
+            "model_version": "fable-5",
+            "lineage": null
+          },
+          "delegation": {
+            "operator": "principal:claude-fable-5",
+            "launched_by": "principal:bdo",
+            "launched_at": "2026-08-23T00:00:00Z"
+          },
+          "claim": {
+            "claimed_at": "2026-08-23T00:00:00Z",
+            "claim_basis": "interactive session launched and directed by Bdo",
+            "verification": "UNVERIFIED"
+          },
+          "verification_channel": {
+            "kind": "console-session",
+            "reference": "the interactive session Bdo operates"
+          },
+          "revoked": null
+        },
+        {
+          "principal_id": "principal:witness-a34f27a",
+          "kind": "MODEL",
+          "durability": "INSTANCE",
+          "controller": "principal:claude-fable-5",
+          "anchor": {
+            "kind": "delegation-record",
+            "reference": "reports/2026-08-23-seat-adoption.md rows A2-A5"
+          },
+          "crossing_class": "provider-boundary",
+          "model": {
+            "model_id": "claude",
+            "model_version": "fable-5",
+            "lineage": null
+          },
+          "delegation": {
+            "operator": "principal:claude-fable-5",
+            "launched_by": "principal:session-2026-08-23",
+            "launched_at": "2026-08-23T00:00:00Z"
+          },
+          "claim": {
+            "claimed_at": "2026-08-23T00:00:00Z",
+            "claim_basis": "sov-witness agent launched by the session",
+            "verification": "UNVERIFIED"
+          },
+          "verification_channel": {
+            "kind": "local-file",
+            "reference": ".local/challenges/ (gitignored runtime state)"
+          },
+          "revoked": null
+        }
+      ]
+    }
+  },
+  {
+    "id": "PRINCIPAL-DEF-UNREGISTERED-ACTOR",
+    "contract": "principal.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "expected_chain_sound": true,
+    "defeats": "ID-1: a receipt names an actor no principal record resolves",
+    "observed_actor_ids": [
+      "principal:bdo",
+      "urn:soveraeign:actor:nobody"
+    ],
+    "record": {
+      "registry_schema": "soveraeign-principal-registry/v1",
+      "status": "PROPOSED",
+      "root_principal": "principal:bdo",
+      "principals": [
+        {
+          "principal_id": "principal:bdo",
+          "kind": "HUMAN",
+          "durability": "DURABLE",
+          "controller": null,
+          "anchor": {
+            "kind": "decision",
+            "reference": "decisions/0001-founding-boundary.md"
+          },
+          "crossing_class": "in-node",
+          "model": null,
+          "delegation": null,
+          "claim": {
+            "claimed_at": "2026-08-23T00:00:00Z",
+            "claim_basis": "seated by decisions/0001; occupies the root seat (decisions/0020)",
+            "verification": "UNVERIFIED"
+          },
+          "verification_channel": {
+            "kind": "console-session",
+            "reference": "the interactive session Bdo operates"
+          },
+          "revoked": null
+        },
+        {
+          "principal_id": "principal:claude-fable-5",
+          "kind": "MODEL",
+          "durability": "DURABLE",
+          "controller": "principal:bdo",
+          "anchor": {
+            "kind": "model-binding",
+            "reference": "BYOM.md; bindings/README.md (declared, no adapter)"
+          },
+          "crossing_class": "provider-boundary",
+          "model": {
+            "model_id": "claude",
+            "model_version": "fable-5",
+            "lineage": null
+          },
+          "delegation": null,
+          "claim": {
+            "claimed_at": "2026-08-23T00:00:00Z",
+            "claim_basis": "owner-selected model per BYOM.md",
+            "verification": "UNVERIFIED"
+          },
+          "verification_channel": {
+            "kind": "local-file",
+            "reference": ".local/challenges/ (gitignored runtime state)"
+          },
+          "revoked": null
+        },
+        {
+          "principal_id": "principal:session-2026-08-23",
+          "kind": "MODEL",
+          "durability": "INSTANCE",
+          "controller": "principal:bdo",
+          "anchor": {
+            "kind": "launch-event",
+            "reference": "reports/2026-08-23-seat-adoption.md"
+          },
+          "crossing_class": "provider-boundary",
+          "model": {
+            "model_id": "claude",
+            "model_version": "fable-5",
+            "lineage": null
+          },
+          "delegation": {
+            "operator": "principal:claude-fable-5",
+            "launched_by": "principal:bdo",
+            "launched_at": "2026-08-23T00:00:00Z"
+          },
+          "claim": {
+            "claimed_at": "2026-08-23T00:00:00Z",
+            "claim_basis": "interactive session launched and directed by Bdo",
+            "verification": "UNVERIFIED"
+          },
+          "verification_channel": {
+            "kind": "console-session",
+            "reference": "the interactive session Bdo operates"
+          },
+          "revoked": null
+        },
+        {
+          "principal_id": "principal:witness-a34f27a",
+          "kind": "MODEL",
+          "durability": "INSTANCE",
+          "controller": "principal:session-2026-08-23",
+          "anchor": {
+            "kind": "delegation-record",
+            "reference": "reports/2026-08-23-seat-adoption.md rows A2-A5"
+          },
+          "crossing_class": "provider-boundary",
+          "model": {
+            "model_id": "claude",
+            "model_version": "fable-5",
+            "lineage": null
+          },
+          "delegation": {
+            "operator": "principal:claude-fable-5",
+            "launched_by": "principal:session-2026-08-23",
+            "launched_at": "2026-08-23T00:00:00Z"
+          },
+          "claim": {
+            "claimed_at": "2026-08-23T00:00:00Z",
+            "claim_basis": "sov-witness agent launched by the session",
+            "verification": "UNVERIFIED"
+          },
+          "verification_channel": {
+            "kind": "local-file",
+            "reference": ".local/challenges/ (gitignored runtime state)"
+          },
+          "revoked": null
+        }
+      ]
+    }
+  },
+  {
+    "id": "PRINCIPAL-DEF-BROKEN-LINEAGE",
+    "contract": "principal.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "expected_chain_sound": false,
+    "defeats": "ID-6: a lineage link naming a principal that is not on record",
+    "record": {
+      "registry_schema": "soveraeign-principal-registry/v1",
+      "status": "PROPOSED",
+      "root_principal": "principal:bdo",
+      "principals": [
+        {
+          "principal_id": "principal:bdo",
+          "kind": "HUMAN",
+          "durability": "DURABLE",
+          "controller": null,
+          "anchor": {
+            "kind": "decision",
+            "reference": "decisions/0001-founding-boundary.md"
+          },
+          "crossing_class": "in-node",
+          "model": null,
+          "delegation": null,
+          "claim": {
+            "claimed_at": "2026-08-23T00:00:00Z",
+            "claim_basis": "seated by decisions/0001; occupies the root seat (decisions/0020)",
+            "verification": "UNVERIFIED"
+          },
+          "verification_channel": {
+            "kind": "console-session",
+            "reference": "the interactive session Bdo operates"
+          },
+          "revoked": null
+        },
+        {
+          "principal_id": "principal:claude-fable-5",
+          "kind": "MODEL",
+          "durability": "DURABLE",
+          "controller": "principal:bdo",
+          "anchor": {
+            "kind": "model-binding",
+            "reference": "BYOM.md; bindings/README.md (declared, no adapter)"
+          },
+          "crossing_class": "provider-boundary",
+          "model": {
+            "model_id": "claude",
+            "model_version": "fable-5",
+            "lineage": "principal:claude-opus-4"
+          },
+          "delegation": null,
+          "claim": {
+            "claimed_at": "2026-08-23T00:00:00Z",
+            "claim_basis": "owner-selected model per BYOM.md",
+            "verification": "UNVERIFIED"
+          },
+          "verification_channel": {
+            "kind": "local-file",
+            "reference": ".local/challenges/ (gitignored runtime state)"
+          },
+          "revoked": null
+        }
+      ]
+    }
+  }
+]

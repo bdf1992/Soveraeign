@@ -2,8 +2,9 @@ name: qa lanes
 
 # The verification dyad from SDLC.md, run per pull request.
 #
-#   blue   builds the positive path and its declared cases; a pass establishes BUILT
-#          evidence and nothing further
+#   blue   is the canonical PR root-verification producer; its Python matrix
+#          builds the positive path and its declared cases, and a pass establishes
+#          BUILT evidence and nothing further
 #   red    screens adversarially; its output is PROPOSED findings, never CONFIRMED,
 #          because a finding counts only after independent reproduction
 #   purple gates any standing advance past BUILT on a settled engagement receipt
@@ -13,7 +14,6 @@ name: qa lanes
 
 on:
   pull_request:
-  workflow_dispatch:
 
 permissions:
   contents: read
@@ -24,13 +24,18 @@ concurrency:
 
 jobs:
   blue:
-    name: blue · construction
+    name: blue · construction (${{ matrix.python-version }})
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ["3.11", "3.12"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: ${{ matrix.python-version }}
       - name: Repository verification
         run: python scripts/verify.py
       - name: Record the standing this establishes
@@ -39,13 +44,30 @@ jobs:
           {
             echo '## Blue lane'
             echo
-            echo 'A passing Blue lane establishes `BUILT` evidence only.'
+            echo "Python ${{ matrix.python-version }} is one supported reading of the same root observation."
+            echo 'The Blue matrix establishes `BUILT` evidence only when every supported reading passes.'
             echo 'It is not a witness and it is not a ratification.'
           } >> "$GITHUB_STEP_SUMMARY"
 
-  red:
-    name: red · adversarial screening
+  blue-required:
+    name: blue · construction
     runs-on: ubuntu-latest
+    timeout-minutes: 1
+    needs: [blue]
+    steps:
+      - name: Publish the protected-branch check
+        run: echo 'Both supported Python readings completed successfully.'
+
+  generative-red:
+    name: red · generative screening
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Gated at the job so an unconfigured lane renders as SKIPPED, not as a pass.
+    # It previously exited zero after writing a refusal to the step summary, which
+    # made a refusal and a real screening indistinguishable in the check list -
+    # the defect named in decisions/0025. Generative screening stays optional; the
+    # blocking adversarial gate is `mutation`, which needs no key.
+    if: vars.SOV_RED_LANE_ENABLED == 'true'
     permissions:
       contents: read
       pull-requests: write
@@ -54,20 +76,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Resolve the lane state
-        id: lane
+      - name: Refuse an enabled lane with no key
         env:
           RED_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          RED_ENABLED: ${{ vars.SOV_RED_LANE_ENABLED }}
         run: |
-          if [ -n "$RED_KEY" ] && [ "$RED_ENABLED" = "true" ]; then
-            echo "configured=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "configured=false" >> "$GITHUB_OUTPUT"
+          if [ -z "$RED_KEY" ]; then
+            echo 'RED_LANE_MISCONFIGURED - SOV_RED_LANE_ENABLED is true but ANTHROPIC_API_KEY is absent.' >&2
+            echo 'Failing rather than reporting a pass for screening that never ran.' >&2
+            exit 1
           fi
 
       - name: Adversarial screening pass
-        if: steps.lane.outputs.configured == 'true'
         uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -76,7 +95,7 @@ jobs:
 
             You receive the contract, the claimed invariants, and the built artifact.
             Do not read the author's tests, plan, or assumptions as evidence that the
-            behaviour is correct, and do not import participant implementation code
+            behavior is correct, and do not import participant implementation code
             into your reasoning about the oracle.
 
             Attempt to defeat the change. Look specifically for refusal bypasses,
@@ -93,26 +112,72 @@ jobs:
             Do not claim a finding is confirmed. Do not claim the change is witnessed.
             Do not approve the pull request.
 
-      - name: Declare an unconfigured lane
-        if: steps.lane.outputs.configured != 'true'
+  mutation:
+    name: red · mutation score
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch the comparison point
+        run: git fetch --no-tags origin "${{ github.base_ref || 'main' }}"
+
+      - name: Prove the scorer discriminates before trusting its number
+        run: python scripts/sov_mutate.py selfcheck
+
+      - name: Score the mutants this change admits
+        run: |
+          python scripts/sov_mutate.py run             --changed             --base "origin/${{ github.base_ref || 'main' }}"             --limit 40             --total-limit 120
+
+      - name: Record what the score means
+        if: always()
         run: |
           {
-            echo '## Red lane'
+            echo '## Red lane, mechanical'
             echo
-            echo '`RED_LANE_UNCONFIGURED` — no adversarial screening ran.'
+            echo 'A mutation score is evidence about the *tests*, not about the code.'
+            echo 'A surviving mutant names a behaviour the suite does not assert.'
             echo
-            echo 'The lane is opt-in: it needs the `ANTHROPIC_API_KEY` secret and the'
-            echo '`SOV_RED_LANE_ENABLED` repository variable set to `true`.'
+            echo 'This gate needs no key and cannot fail open: the scorer must first'
+            echo 'demonstrate that it kills an asserted mutant and spares an unasserted'
+            echo 'one, and a run that cannot prove it restored the tree refuses rather'
+            echo 'than reporting a score.'
             echo
-            echo 'This is a visible refusal, not a silent skip. A pull request may still'
-            echo 'establish `BUILT` evidence; nothing may advance past it without a'
-            echo 'settled engagement receipt, which the purple gate enforces.'
+            echo 'Mutants per file are capped at 40 and the cap is reported, never silent.'
+            echo 'A run is capped at 120 mutants. Large diffs sample paths evenly across'
+            echo 'the full ordered target set and report every omitted path.'
+            echo 'No threshold is enforced yet - `decisions/0025` leaves the number to Bdo,'
+            echo 'because a floor invented before a baseline would be asserted, not measured.'
           } >> "$GITHUB_STEP_SUMMARY"
+
+  red:
+    name: red · adversarial screening
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    needs: [generative-red, mutation]
+    if: ${{ !cancelled() && needs.mutation.result == 'success'
+            && needs.generative-red.result != 'failure' }}
+    steps:
+      - name: Publish the protected-branch check
+        run: |
+          echo 'Mechanical adversarial screening passed.'
+          echo 'Optional generative screening was either successful or not enabled.'
 
   purple:
     name: purple · release gate
     runs-on: ubuntu-latest
-    needs: [blue, red]
+    timeout-minutes: 5
+    needs: [blue-required, red, mutation]
+    # `red` is opt-in and renders as skipped when unconfigured, which must not
+    # skip the gate behind it. A red that is enabled and *fails* still stops here.
+    if: ${{ !cancelled() && needs.blue-required.result == 'success'
+            && needs.mutation.result == 'success' && needs.red.result != 'failure' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

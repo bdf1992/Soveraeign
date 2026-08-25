@@ -1,0 +1,33 @@
+id: CONS-005
+title: dashboard_rebuild_identical
+status: SEED
+given:
+  - one DASHBOARD projection-view D-1 declared over console receipts, Asset Service receipts, judgement-request records, and retraction counter-records on the node
+  - a fixed authoritative record set R whose addresses and digests are known and unchanged for the whole scenario
+  - R contains at least one judgement-request JR-1 with lifecycle QUEUED and at least one receipt with outcome UNRESOLVED
+  - one HUMAN actor H-1 holding a live grant scoped to read D-1 and to request rebuild-projection for D-1
+  - H-1 holds no grant for any transition on the records that D-1 projects
+when:
+  - H-1 requests rebuild-projection for D-1
+  - H-1 requests rebuild-projection for D-1 a second time with R unchanged
+  - H-1 attempts, from D-1, to change a projected value by marking JR-1 as resolved
+then:
+  - each rebuild returns a receipt with outcome COMMITTED and a null reason_code, naming the rebuilt D-1 in emitted_record_addresses and R's addresses in input_addresses with R's digest as input_state_digest
+  - the two rebuilt views carry the same content_digest and byte-identical content; only the rebuild time differs
+  - every value shown in D-1, including counts of spent judgement, pending rights, and receipt outcomes, names at least one source address and digest, and each source resolves to a record in R
+  - D-1 declares omissions as a list, and with every declared source available the list is empty
+  - D-1 carries authoritative false
+  - the edit attempt returns a receipt with outcome COMMITTED and a null reason_code whose emitted_record_addresses name exactly one new Proposal
+  - that Proposal has actor_kind HUMAN, actor_id H-1, standing RECORDED, required_authority_type JUDGEMENT, and source_addresses naming the D-1 value that was edited and JR-1
+  - JR-1 remains lifecycle QUEUED and its UNRESOLVED receipt is unchanged; no console, Asset Service, or kernel record changes except the new Proposal and its receipt
+  - a third rebuild after the edit attempt shows the Proposal with standing RECORDED and JR-1 still pending
+  - the fields content_digest, rebuild time, and authoritative on a projection-view are Console Service proposals from CHARTER.md and are not yet defined by SPEC.md
+  - every receipt carries effect class RECORD_LOCAL
+defeating:
+  - the two rebuilds from unchanged R yield different content_digest or different values
+  - a value in D-1 names no source address or digest, or names one that does not resolve to a record in R
+  - the edit attempt changes JR-1's lifecycle, any receipt, or any other authoritative record directly, or returns COMMITTED with no Proposal record
+  - D-1 is marked authoritative true, or a later authority check cites D-1 or a value in it as a grant or as a precondition result
+  - a rebuild leaves no receipt, or leaves a receipt whose input_addresses do not name R
+  - an unavailable declared source is dropped from D-1 without appearing in omissions
+  - a rebuild worker's or renderer's success report settles D-1 without an independent observation of its content_digest against R

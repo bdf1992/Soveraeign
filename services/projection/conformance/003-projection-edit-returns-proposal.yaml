@@ -1,0 +1,19 @@
+id: PROJ-003
+title: projection_edit_returns_proposal
+status: SEED
+given:
+  - one READY collection C-1 over Asset Service versions
+  - one hit K-1 in a retrieval receipt, resolving to asset A-1 with label L-1 in the Asset Service
+  - one MODEL actor M-1 holding a live grant scoped to search-text and propose-from-projection on C-1 and no grant for any Asset Service transition
+when:
+  - M-1 attempts, from K-1, to change the projected label of A-1 to L-2
+then:
+  - the attempt returns a receipt with outcome COMMITTED and a null reason_code whose emitted_record_addresses name exactly one new Asset Service Proposal
+  - that Proposal has actor_kind MODEL, actor_id M-1, standing RECORDED, and source_addresses naming K-1, the retrieval receipt, and A-1
+  - the label of A-1 in the Asset Service is still L-1; no projection row, build, or asset record changed except the new Proposal and its receipt
+  - a rebuild of C-1 after the attempt still shows L-1 and shows the Proposal standing RECORDED
+defeating:
+  - the attempt changes A-1, any projection row, or any build directly, or returns COMMITTED with no Proposal record
+  - the Proposal has a standing other than RECORDED, or omits the hit and receipt it came from
+  - the service writes to the Asset Service database directly
+  - a projection value is cited as a grant or as a precondition result in a later authority check

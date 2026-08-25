@@ -53,6 +53,66 @@
             "description": "Verification engagement against a pinned target; produces findings, builds nothing."
           },
           {
+            "name": "type: story",
+            "color": "E16F24",
+            "description": "One participant crossing one counter and finding the substrate short; asks, never builds."
+          },
+          {
+            "name": "type: unblock",
+            "color": "D73A4A",
+            "description": "A proven block filed as work: one held ticket, one blocked transition, one provision asked."
+          },
+          {
+            "name": "provision: grant",
+            "color": "8250DF",
+            "description": "Unblock request for a typed, scoped, live grant."
+          },
+          {
+            "name": "provision: judgement",
+            "color": "8250DF",
+            "description": "Unblock request for an owner-held judgement; always served by the owner."
+          },
+          {
+            "name": "provision: contract",
+            "color": "8250DF",
+            "description": "Unblock request for a schema, charter, or declared interface."
+          },
+          {
+            "name": "provision: fixture",
+            "color": "8250DF",
+            "description": "Unblock request for a positive or defeating case."
+          },
+          {
+            "name": "provision: capability",
+            "color": "8250DF",
+            "description": "Unblock request for a tool, adapter, binding, or runtime the tier does not have."
+          },
+          {
+            "name": "provision: observation",
+            "color": "8250DF",
+            "description": "Unblock request for an independent observation of something already built."
+          },
+          {
+            "name": "serve: worker",
+            "color": "0E8A16",
+            "description": "Served at the Work tier."
+          },
+          {
+            "name": "serve: orchestrator",
+            "color": "0E8A16",
+            "description": "Served at the Orchestration tier."
+          },
+          {
+            "name": "serve: controller",
+            "color": "0E8A16",
+            "description": "Served at the Control tier."
+          },
+          {
+            "name": "serve: owner",
+            "color": "0E8A16",
+            "description": "Served only by the owner."
+          },
+          {
             "name": "scope: system",
             "color": "5319E7",
             "description": "Applies to the complete Soveraeign node."
@@ -144,23 +204,23 @@
           },
           {
             "name": "standing: self-tested",
-            "color": "2DA44E",
+            "color": "D29922",
             "description": "Built and self-tested; independent witness remains outstanding."
           },
           {
-            "name": "witness: pending",
-            "color": "D29922",
-            "description": "Independent witness receipt is outstanding; normally held in project metadata."
-          },
-          {
-            "name": "witness: witnessed",
+            "name": "standing: witnessed",
             "color": "2DA44E",
-            "description": "Independent witness receipt is current and resolvable."
+            "description": "An independent witness receipt is current and resolvable."
           },
           {
-            "name": "witness: demoted",
+            "name": "standing: ratified",
+            "color": "116329",
+            "description": "Bdo accepted the evidenced result; the terminal rung of the lifecycle."
+          },
+          {
+            "name": "standing: demoted",
             "color": "CF222E",
-            "description": "Prior witness standing was demoted by a defeating observation."
+            "description": "Prior standing was demoted by a defeating observation."
           }
         ]
       },
@@ -226,6 +286,66 @@
             "description": "Verification engagement against a pinned target; produces findings, builds nothing."
           },
           {
+            "name": "type: story",
+            "color": "E16F24",
+            "description": "One participant crossing one counter and finding the substrate short; asks, never builds."
+          },
+          {
+            "name": "type: unblock",
+            "color": "D73A4A",
+            "description": "A proven block filed as work: one held ticket, one blocked transition, one provision asked."
+          },
+          {
+            "name": "provision: grant",
+            "color": "8250DF",
+            "description": "Unblock request for a typed, scoped, live grant."
+          },
+          {
+            "name": "provision: judgement",
+            "color": "8250DF",
+            "description": "Unblock request for an owner-held judgement; always served by the owner."
+          },
+          {
+            "name": "provision: contract",
+            "color": "8250DF",
+            "description": "Unblock request for a schema, charter, or declared interface."
+          },
+          {
+            "name": "provision: fixture",
+            "color": "8250DF",
+            "description": "Unblock request for a positive or defeating case."
+          },
+          {
+            "name": "provision: capability",
+            "color": "8250DF",
+            "description": "Unblock request for a tool, adapter, binding, or runtime the tier does not have."
+          },
+          {
+            "name": "provision: observation",
+            "color": "8250DF",
+            "description": "Unblock request for an independent observation of something already built."
+          },
+          {
+            "name": "serve: worker",
+            "color": "0E8A16",
+            "description": "Served at the Work tier."
+          },
+          {
+            "name": "serve: orchestrator",
+            "color": "0E8A16",
+            "description": "Served at the Orchestration tier."
+          },
+          {
+            "name": "serve: controller",
+            "color": "0E8A16",
+            "description": "Served at the Control tier."
+          },
+          {
+            "name": "serve: owner",
+            "color": "0E8A16",
+            "description": "Served only by the owner."
+          },
+          {
             "name": "scope: system",
             "color": "5319E7",
             "description": "Applies to the complete Soveraeign node."
@@ -317,23 +437,23 @@
           },
           {
             "name": "standing: self-tested",
-            "color": "2DA44E",
+            "color": "D29922",
             "description": "Built and self-tested; independent witness remains outstanding."
           },
           {
-            "name": "witness: pending",
-            "color": "D29922",
-            "description": "Independent witness receipt is outstanding; normally held in project metadata."
-          },
-          {
-            "name": "witness: witnessed",
+            "name": "standing: witnessed",
             "color": "2DA44E",
-            "description": "Independent witness receipt is current and resolvable."
+            "description": "An independent witness receipt is current and resolvable."
           },
           {
-            "name": "witness: demoted",
+            "name": "standing: ratified",
+            "color": "116329",
+            "description": "Bdo accepted the evidenced result; the terminal rung of the lifecycle."
+          },
+          {
+            "name": "standing: demoted",
             "color": "CF222E",
-            "description": "Prior witness standing was demoted by a defeating observation."
+            "description": "Prior standing was demoted by a defeating observation."
           }
         ]
       },
@@ -399,6 +519,66 @@
             "description": "Verification engagement against a pinned target; produces findings, builds nothing."
           },
           {
+            "name": "type: story",
+            "color": "E16F24",
+            "description": "One participant crossing one counter and finding the substrate short; asks, never builds."
+          },
+          {
+            "name": "type: unblock",
+            "color": "D73A4A",
+            "description": "A proven block filed as work: one held ticket, one blocked transition, one provision asked."
+          },
+          {
+            "name": "provision: grant",
+            "color": "8250DF",
+            "description": "Unblock request for a typed, scoped, live grant."
+          },
+          {
+            "name": "provision: judgement",
+            "color": "8250DF",
+            "description": "Unblock request for an owner-held judgement; always served by the owner."
+          },
+          {
+            "name": "provision: contract",
+            "color": "8250DF",
+            "description": "Unblock request for a schema, charter, or declared interface."
+          },
+          {
+            "name": "provision: fixture",
+            "color": "8250DF",
+            "description": "Unblock request for a positive or defeating case."
+          },
+          {
+            "name": "provision: capability",
+            "color": "8250DF",
+            "description": "Unblock request for a tool, adapter, binding, or runtime the tier does not have."
+          },
+          {
+            "name": "provision: observation",
+            "color": "8250DF",
+            "description": "Unblock request for an independent observation of something already built."
+          },
+          {
+            "name": "serve: worker",
+            "color": "0E8A16",
+            "description": "Served at the Work tier."
+          },
+          {
+            "name": "serve: orchestrator",
+            "color": "0E8A16",
+            "description": "Served at the Orchestration tier."
+          },
+          {
+            "name": "serve: controller",
+            "color": "0E8A16",
+            "description": "Served at the Control tier."
+          },
+          {
+            "name": "serve: owner",
+            "color": "0E8A16",
+            "description": "Served only by the owner."
+          },
+          {
             "name": "scope: system",
             "color": "5319E7",
             "description": "Applies to the complete Soveraeign node."
@@ -490,23 +670,23 @@
           },
           {
             "name": "standing: self-tested",
-            "color": "2DA44E",
+            "color": "D29922",
             "description": "Built and self-tested; independent witness remains outstanding."
           },
           {
-            "name": "witness: pending",
-            "color": "D29922",
-            "description": "Independent witness receipt is outstanding; normally held in project metadata."
-          },
-          {
-            "name": "witness: witnessed",
+            "name": "standing: witnessed",
             "color": "2DA44E",
-            "description": "Independent witness receipt is current and resolvable."
+            "description": "An independent witness receipt is current and resolvable."
           },
           {
-            "name": "witness: demoted",
+            "name": "standing: ratified",
+            "color": "116329",
+            "description": "Bdo accepted the evidenced result; the terminal rung of the lifecycle."
+          },
+          {
+            "name": "standing: demoted",
             "color": "CF222E",
-            "description": "Prior witness standing was demoted by a defeating observation."
+            "description": "Prior standing was demoted by a defeating observation."
           }
         ]
       },
@@ -562,6 +742,66 @@
             "description": "Verification engagement against a pinned target; produces findings, builds nothing."
           },
           {
+            "name": "type: story",
+            "color": "E16F24",
+            "description": "One participant crossing one counter and finding the substrate short; asks, never builds."
+          },
+          {
+            "name": "type: unblock",
+            "color": "D73A4A",
+            "description": "A proven block filed as work: one held ticket, one blocked transition, one provision asked."
+          },
+          {
+            "name": "provision: grant",
+            "color": "8250DF",
+            "description": "Unblock request for a typed, scoped, live grant."
+          },
+          {
+            "name": "provision: judgement",
+            "color": "8250DF",
+            "description": "Unblock request for an owner-held judgement; always served by the owner."
+          },
+          {
+            "name": "provision: contract",
+            "color": "8250DF",
+            "description": "Unblock request for a schema, charter, or declared interface."
+          },
+          {
+            "name": "provision: fixture",
+            "color": "8250DF",
+            "description": "Unblock request for a positive or defeating case."
+          },
+          {
+            "name": "provision: capability",
+            "color": "8250DF",
+            "description": "Unblock request for a tool, adapter, binding, or runtime the tier does not have."
+          },
+          {
+            "name": "provision: observation",
+            "color": "8250DF",
+            "description": "Unblock request for an independent observation of something already built."
+          },
+          {
+            "name": "serve: worker",
+            "color": "0E8A16",
+            "description": "Served at the Work tier."
+          },
+          {
+            "name": "serve: orchestrator",
+            "color": "0E8A16",
+            "description": "Served at the Orchestration tier."
+          },
+          {
+            "name": "serve: controller",
+            "color": "0E8A16",
+            "description": "Served at the Control tier."
+          },
+          {
+            "name": "serve: owner",
+            "color": "0E8A16",
+            "description": "Served only by the owner."
+          },
+          {
             "name": "scope: system",
             "color": "5319E7",
             "description": "Applies to the complete Soveraeign node."
@@ -653,23 +893,23 @@
           },
           {
             "name": "standing: self-tested",
-            "color": "2DA44E",
+            "color": "D29922",
             "description": "Built and self-tested; independent witness remains outstanding."
           },
           {
-            "name": "witness: pending",
-            "color": "D29922",
-            "description": "Independent witness receipt is outstanding; normally held in project metadata."
-          },
-          {
-            "name": "witness: witnessed",
+            "name": "standing: witnessed",
             "color": "2DA44E",
-            "description": "Independent witness receipt is current and resolvable."
+            "description": "An independent witness receipt is current and resolvable."
           },
           {
-            "name": "witness: demoted",
+            "name": "standing: ratified",
+            "color": "116329",
+            "description": "Bdo accepted the evidenced result; the terminal rung of the lifecycle."
+          },
+          {
+            "name": "standing: demoted",
             "color": "CF222E",
-            "description": "Prior witness standing was demoted by a defeating observation."
+            "description": "Prior standing was demoted by a defeating observation."
           }
         ]
       },
@@ -725,6 +965,66 @@
             "description": "Verification engagement against a pinned target; produces findings, builds nothing."
           },
           {
+            "name": "type: story",
+            "color": "E16F24",
+            "description": "One participant crossing one counter and finding the substrate short; asks, never builds."
+          },
+          {
+            "name": "type: unblock",
+            "color": "D73A4A",
+            "description": "A proven block filed as work: one held ticket, one blocked transition, one provision asked."
+          },
+          {
+            "name": "provision: grant",
+            "color": "8250DF",
+            "description": "Unblock request for a typed, scoped, live grant."
+          },
+          {
+            "name": "provision: judgement",
+            "color": "8250DF",
+            "description": "Unblock request for an owner-held judgement; always served by the owner."
+          },
+          {
+            "name": "provision: contract",
+            "color": "8250DF",
+            "description": "Unblock request for a schema, charter, or declared interface."
+          },
+          {
+            "name": "provision: fixture",
+            "color": "8250DF",
+            "description": "Unblock request for a positive or defeating case."
+          },
+          {
+            "name": "provision: capability",
+            "color": "8250DF",
+            "description": "Unblock request for a tool, adapter, binding, or runtime the tier does not have."
+          },
+          {
+            "name": "provision: observation",
+            "color": "8250DF",
+            "description": "Unblock request for an independent observation of something already built."
+          },
+          {
+            "name": "serve: worker",
+            "color": "0E8A16",
+            "description": "Served at the Work tier."
+          },
+          {
+            "name": "serve: orchestrator",
+            "color": "0E8A16",
+            "description": "Served at the Orchestration tier."
+          },
+          {
+            "name": "serve: controller",
+            "color": "0E8A16",
+            "description": "Served at the Control tier."
+          },
+          {
+            "name": "serve: owner",
+            "color": "0E8A16",
+            "description": "Served only by the owner."
+          },
+          {
             "name": "scope: system",
             "color": "5319E7",
             "description": "Applies to the complete Soveraeign node."
@@ -816,23 +1116,23 @@
           },
           {
             "name": "standing: self-tested",
-            "color": "2DA44E",
+            "color": "D29922",
             "description": "Built and self-tested; independent witness remains outstanding."
           },
           {
-            "name": "witness: pending",
-            "color": "D29922",
-            "description": "Independent witness receipt is outstanding; normally held in project metadata."
-          },
-          {
-            "name": "witness: witnessed",
+            "name": "standing: witnessed",
             "color": "2DA44E",
-            "description": "Independent witness receipt is current and resolvable."
+            "description": "An independent witness receipt is current and resolvable."
           },
           {
-            "name": "witness: demoted",
+            "name": "standing: ratified",
+            "color": "116329",
+            "description": "Bdo accepted the evidenced result; the terminal rung of the lifecycle."
+          },
+          {
+            "name": "standing: demoted",
             "color": "CF222E",
-            "description": "Prior witness standing was demoted by a defeating observation."
+            "description": "Prior standing was demoted by a defeating observation."
           }
         ]
       },
@@ -888,6 +1188,66 @@
             "description": "Verification engagement against a pinned target; produces findings, builds nothing."
           },
           {
+            "name": "type: story",
+            "color": "E16F24",
+            "description": "One participant crossing one counter and finding the substrate short; asks, never builds."
+          },
+          {
+            "name": "type: unblock",
+            "color": "D73A4A",
+            "description": "A proven block filed as work: one held ticket, one blocked transition, one provision asked."
+          },
+          {
+            "name": "provision: grant",
+            "color": "8250DF",
+            "description": "Unblock request for a typed, scoped, live grant."
+          },
+          {
+            "name": "provision: judgement",
+            "color": "8250DF",
+            "description": "Unblock request for an owner-held judgement; always served by the owner."
+          },
+          {
+            "name": "provision: contract",
+            "color": "8250DF",
+            "description": "Unblock request for a schema, charter, or declared interface."
+          },
+          {
+            "name": "provision: fixture",
+            "color": "8250DF",
+            "description": "Unblock request for a positive or defeating case."
+          },
+          {
+            "name": "provision: capability",
+            "color": "8250DF",
+            "description": "Unblock request for a tool, adapter, binding, or runtime the tier does not have."
+          },
+          {
+            "name": "provision: observation",
+            "color": "8250DF",
+            "description": "Unblock request for an independent observation of something already built."
+          },
+          {
+            "name": "serve: worker",
+            "color": "0E8A16",
+            "description": "Served at the Work tier."
+          },
+          {
+            "name": "serve: orchestrator",
+            "color": "0E8A16",
+            "description": "Served at the Orchestration tier."
+          },
+          {
+            "name": "serve: controller",
+            "color": "0E8A16",
+            "description": "Served at the Control tier."
+          },
+          {
+            "name": "serve: owner",
+            "color": "0E8A16",
+            "description": "Served only by the owner."
+          },
+          {
             "name": "scope: system",
             "color": "5319E7",
             "description": "Applies to the complete Soveraeign node."
@@ -979,23 +1339,23 @@
           },
           {
             "name": "standing: self-tested",
-            "color": "2DA44E",
+            "color": "D29922",
             "description": "Built and self-tested; independent witness remains outstanding."
           },
           {
-            "name": "witness: pending",
-            "color": "D29922",
-            "description": "Independent witness receipt is outstanding; normally held in project metadata."
-          },
-          {
-            "name": "witness: witnessed",
+            "name": "standing: witnessed",
             "color": "2DA44E",
-            "description": "Independent witness receipt is current and resolvable."
+            "description": "An independent witness receipt is current and resolvable."
           },
           {
-            "name": "witness: demoted",
+            "name": "standing: ratified",
+            "color": "116329",
+            "description": "Bdo accepted the evidenced result; the terminal rung of the lifecycle."
+          },
+          {
+            "name": "standing: demoted",
             "color": "CF222E",
-            "description": "Prior witness standing was demoted by a defeating observation."
+            "description": "Prior standing was demoted by a defeating observation."
           }
         ]
       },
@@ -1074,6 +1434,66 @@
             "description": "Verification engagement against a pinned target; produces findings, builds nothing."
           },
           {
+            "name": "type: story",
+            "color": "E16F24",
+            "description": "One participant crossing one counter and finding the substrate short; asks, never builds."
+          },
+          {
+            "name": "type: unblock",
+            "color": "D73A4A",
+            "description": "A proven block filed as work: one held ticket, one blocked transition, one provision asked."
+          },
+          {
+            "name": "provision: grant",
+            "color": "8250DF",
+            "description": "Unblock request for a typed, scoped, live grant."
+          },
+          {
+            "name": "provision: judgement",
+            "color": "8250DF",
+            "description": "Unblock request for an owner-held judgement; always served by the owner."
+          },
+          {
+            "name": "provision: contract",
+            "color": "8250DF",
+            "description": "Unblock request for a schema, charter, or declared interface."
+          },
+          {
+            "name": "provision: fixture",
+            "color": "8250DF",
+            "description": "Unblock request for a positive or defeating case."
+          },
+          {
+            "name": "provision: capability",
+            "color": "8250DF",
+            "description": "Unblock request for a tool, adapter, binding, or runtime the tier does not have."
+          },
+          {
+            "name": "provision: observation",
+            "color": "8250DF",
+            "description": "Unblock request for an independent observation of something already built."
+          },
+          {
+            "name": "serve: worker",
+            "color": "0E8A16",
+            "description": "Served at the Work tier."
+          },
+          {
+            "name": "serve: orchestrator",
+            "color": "0E8A16",
+            "description": "Served at the Orchestration tier."
+          },
+          {
+            "name": "serve: controller",
+            "color": "0E8A16",
+            "description": "Served at the Control tier."
+          },
+          {
+            "name": "serve: owner",
+            "color": "0E8A16",
+            "description": "Served only by the owner."
+          },
+          {
             "name": "scope: system",
             "color": "5319E7",
             "description": "Applies to the complete Soveraeign node."
@@ -1165,23 +1585,23 @@
           },
           {
             "name": "standing: self-tested",
-            "color": "2DA44E",
+            "color": "D29922",
             "description": "Built and self-tested; independent witness remains outstanding."
           },
           {
-            "name": "witness: pending",
-            "color": "D29922",
-            "description": "Independent witness receipt is outstanding; normally held in project metadata."
-          },
-          {
-            "name": "witness: witnessed",
+            "name": "standing: witnessed",
             "color": "2DA44E",
-            "description": "Independent witness receipt is current and resolvable."
+            "description": "An independent witness receipt is current and resolvable."
           },
           {
-            "name": "witness: demoted",
+            "name": "standing: ratified",
+            "color": "116329",
+            "description": "Bdo accepted the evidenced result; the terminal rung of the lifecycle."
+          },
+          {
+            "name": "standing: demoted",
             "color": "CF222E",
-            "description": "Prior witness standing was demoted by a defeating observation."
+            "description": "Prior standing was demoted by a defeating observation."
           }
         ]
       },
@@ -1260,6 +1680,66 @@
             "description": "Verification engagement against a pinned target; produces findings, builds nothing."
           },
           {
+            "name": "type: story",
+            "color": "E16F24",
+            "description": "One participant crossing one counter and finding the substrate short; asks, never builds."
+          },
+          {
+            "name": "type: unblock",
+            "color": "D73A4A",
+            "description": "A proven block filed as work: one held ticket, one blocked transition, one provision asked."
+          },
+          {
+            "name": "provision: grant",
+            "color": "8250DF",
+            "description": "Unblock request for a typed, scoped, live grant."
+          },
+          {
+            "name": "provision: judgement",
+            "color": "8250DF",
+            "description": "Unblock request for an owner-held judgement; always served by the owner."
+          },
+          {
+            "name": "provision: contract",
+            "color": "8250DF",
+            "description": "Unblock request for a schema, charter, or declared interface."
+          },
+          {
+            "name": "provision: fixture",
+            "color": "8250DF",
+            "description": "Unblock request for a positive or defeating case."
+          },
+          {
+            "name": "provision: capability",
+            "color": "8250DF",
+            "description": "Unblock request for a tool, adapter, binding, or runtime the tier does not have."
+          },
+          {
+            "name": "provision: observation",
+            "color": "8250DF",
+            "description": "Unblock request for an independent observation of something already built."
+          },
+          {
+            "name": "serve: worker",
+            "color": "0E8A16",
+            "description": "Served at the Work tier."
+          },
+          {
+            "name": "serve: orchestrator",
+            "color": "0E8A16",
+            "description": "Served at the Orchestration tier."
+          },
+          {
+            "name": "serve: controller",
+            "color": "0E8A16",
+            "description": "Served at the Control tier."
+          },
+          {
+            "name": "serve: owner",
+            "color": "0E8A16",
+            "description": "Served only by the owner."
+          },
+          {
             "name": "scope: system",
             "color": "5319E7",
             "description": "Applies to the complete Soveraeign node."
@@ -1351,23 +1831,23 @@
           },
           {
             "name": "standing: self-tested",
-            "color": "2DA44E",
+            "color": "D29922",
             "description": "Built and self-tested; independent witness remains outstanding."
           },
           {
-            "name": "witness: pending",
-            "color": "D29922",
-            "description": "Independent witness receipt is outstanding; normally held in project metadata."
-          },
-          {
-            "name": "witness: witnessed",
+            "name": "standing: witnessed",
             "color": "2DA44E",
-            "description": "Independent witness receipt is current and resolvable."
+            "description": "An independent witness receipt is current and resolvable."
           },
           {
-            "name": "witness: demoted",
+            "name": "standing: ratified",
+            "color": "116329",
+            "description": "Bdo accepted the evidenced result; the terminal rung of the lifecycle."
+          },
+          {
+            "name": "standing: demoted",
             "color": "CF222E",
-            "description": "Prior witness standing was demoted by a defeating observation."
+            "description": "Prior standing was demoted by a defeating observation."
           }
         ]
       },
@@ -1446,6 +1926,66 @@
             "description": "Verification engagement against a pinned target; produces findings, builds nothing."
           },
           {
+            "name": "type: story",
+            "color": "E16F24",
+            "description": "One participant crossing one counter and finding the substrate short; asks, never builds."
+          },
+          {
+            "name": "type: unblock",
+            "color": "D73A4A",
+            "description": "A proven block filed as work: one held ticket, one blocked transition, one provision asked."
+          },
+          {
+            "name": "provision: grant",
+            "color": "8250DF",
+            "description": "Unblock request for a typed, scoped, live grant."
+          },
+          {
+            "name": "provision: judgement",
+            "color": "8250DF",
+            "description": "Unblock request for an owner-held judgement; always served by the owner."
+          },
+          {
+            "name": "provision: contract",
+            "color": "8250DF",
+            "description": "Unblock request for a schema, charter, or declared interface."
+          },
+          {
+            "name": "provision: fixture",
+            "color": "8250DF",
+            "description": "Unblock request for a positive or defeating case."
+          },
+          {
+            "name": "provision: capability",
+            "color": "8250DF",
+            "description": "Unblock request for a tool, adapter, binding, or runtime the tier does not have."
+          },
+          {
+            "name": "provision: observation",
+            "color": "8250DF",
+            "description": "Unblock request for an independent observation of something already built."
+          },
+          {
+            "name": "serve: worker",
+            "color": "0E8A16",
+            "description": "Served at the Work tier."
+          },
+          {
+            "name": "serve: orchestrator",
+            "color": "0E8A16",
+            "description": "Served at the Orchestration tier."
+          },
+          {
+            "name": "serve: controller",
+            "color": "0E8A16",
+            "description": "Served at the Control tier."
+          },
+          {
+            "name": "serve: owner",
+            "color": "0E8A16",
+            "description": "Served only by the owner."
+          },
+          {
             "name": "scope: system",
             "color": "5319E7",
             "description": "Applies to the complete Soveraeign node."
@@ -1537,23 +2077,23 @@
           },
           {
             "name": "standing: self-tested",
-            "color": "2DA44E",
+            "color": "D29922",
             "description": "Built and self-tested; independent witness remains outstanding."
           },
           {
-            "name": "witness: pending",
-            "color": "D29922",
-            "description": "Independent witness receipt is outstanding; normally held in project metadata."
-          },
-          {
-            "name": "witness: witnessed",
+            "name": "standing: witnessed",
             "color": "2DA44E",
-            "description": "Independent witness receipt is current and resolvable."
+            "description": "An independent witness receipt is current and resolvable."
           },
           {
-            "name": "witness: demoted",
+            "name": "standing: ratified",
+            "color": "116329",
+            "description": "Bdo accepted the evidenced result; the terminal rung of the lifecycle."
+          },
+          {
+            "name": "standing: demoted",
             "color": "CF222E",
-            "description": "Prior witness standing was demoted by a defeating observation."
+            "description": "Prior standing was demoted by a defeating observation."
           }
         ]
       },
@@ -1635,6 +2175,66 @@
             "description": "Verification engagement against a pinned target; produces findings, builds nothing."
           },
           {
+            "name": "type: story",
+            "color": "E16F24",
+            "description": "One participant crossing one counter and finding the substrate short; asks, never builds."
+          },
+          {
+            "name": "type: unblock",
+            "color": "D73A4A",
+            "description": "A proven block filed as work: one held ticket, one blocked transition, one provision asked."
+          },
+          {
+            "name": "provision: grant",
+            "color": "8250DF",
+            "description": "Unblock request for a typed, scoped, live grant."
+          },
+          {
+            "name": "provision: judgement",
+            "color": "8250DF",
+            "description": "Unblock request for an owner-held judgement; always served by the owner."
+          },
+          {
+            "name": "provision: contract",
+            "color": "8250DF",
+            "description": "Unblock request for a schema, charter, or declared interface."
+          },
+          {
+            "name": "provision: fixture",
+            "color": "8250DF",
+            "description": "Unblock request for a positive or defeating case."
+          },
+          {
+            "name": "provision: capability",
+            "color": "8250DF",
+            "description": "Unblock request for a tool, adapter, binding, or runtime the tier does not have."
+          },
+          {
+            "name": "provision: observation",
+            "color": "8250DF",
+            "description": "Unblock request for an independent observation of something already built."
+          },
+          {
+            "name": "serve: worker",
+            "color": "0E8A16",
+            "description": "Served at the Work tier."
+          },
+          {
+            "name": "serve: orchestrator",
+            "color": "0E8A16",
+            "description": "Served at the Orchestration tier."
+          },
+          {
+            "name": "serve: controller",
+            "color": "0E8A16",
+            "description": "Served at the Control tier."
+          },
+          {
+            "name": "serve: owner",
+            "color": "0E8A16",
+            "description": "Served only by the owner."
+          },
+          {
             "name": "scope: system",
             "color": "5319E7",
             "description": "Applies to the complete Soveraeign node."
@@ -1726,23 +2326,23 @@
           },
           {
             "name": "standing: self-tested",
-            "color": "2DA44E",
+            "color": "D29922",
             "description": "Built and self-tested; independent witness remains outstanding."
           },
           {
-            "name": "witness: pending",
-            "color": "D29922",
-            "description": "Independent witness receipt is outstanding; normally held in project metadata."
-          },
-          {
-            "name": "witness: witnessed",
+            "name": "standing: witnessed",
             "color": "2DA44E",
-            "description": "Independent witness receipt is current and resolvable."
+            "description": "An independent witness receipt is current and resolvable."
           },
           {
-            "name": "witness: demoted",
+            "name": "standing: ratified",
+            "color": "116329",
+            "description": "Bdo accepted the evidenced result; the terminal rung of the lifecycle."
+          },
+          {
+            "name": "standing: demoted",
             "color": "CF222E",
-            "description": "Prior witness standing was demoted by a defeating observation."
+            "description": "Prior standing was demoted by a defeating observation."
           }
         ]
       },
@@ -1795,6 +2395,66 @@
             "description": "Repository implementation surface closing one or more bits."
           },
           {
+            "name": "type: story",
+            "color": "E16F24",
+            "description": "One participant crossing one counter and finding the substrate short; asks, never builds."
+          },
+          {
+            "name": "type: unblock",
+            "color": "D73A4A",
+            "description": "A proven block filed as work: one held ticket, one blocked transition, one provision asked."
+          },
+          {
+            "name": "provision: grant",
+            "color": "8250DF",
+            "description": "Unblock request for a typed, scoped, live grant."
+          },
+          {
+            "name": "provision: judgement",
+            "color": "8250DF",
+            "description": "Unblock request for an owner-held judgement; always served by the owner."
+          },
+          {
+            "name": "provision: contract",
+            "color": "8250DF",
+            "description": "Unblock request for a schema, charter, or declared interface."
+          },
+          {
+            "name": "provision: fixture",
+            "color": "8250DF",
+            "description": "Unblock request for a positive or defeating case."
+          },
+          {
+            "name": "provision: capability",
+            "color": "8250DF",
+            "description": "Unblock request for a tool, adapter, binding, or runtime the tier does not have."
+          },
+          {
+            "name": "provision: observation",
+            "color": "8250DF",
+            "description": "Unblock request for an independent observation of something already built."
+          },
+          {
+            "name": "serve: worker",
+            "color": "0E8A16",
+            "description": "Served at the Work tier."
+          },
+          {
+            "name": "serve: orchestrator",
+            "color": "0E8A16",
+            "description": "Served at the Orchestration tier."
+          },
+          {
+            "name": "serve: controller",
+            "color": "0E8A16",
+            "description": "Served at the Control tier."
+          },
+          {
+            "name": "serve: owner",
+            "color": "0E8A16",
+            "description": "Served only by the owner."
+          },
+          {
             "name": "scope: system",
             "color": "5319E7",
             "description": "Applies to the complete Soveraeign node."
@@ -1886,23 +2546,23 @@
           },
           {
             "name": "standing: self-tested",
-            "color": "2DA44E",
+            "color": "D29922",
             "description": "Built and self-tested; independent witness remains outstanding."
           },
           {
-            "name": "witness: pending",
-            "color": "D29922",
-            "description": "Independent witness receipt is outstanding; normally held in project metadata."
-          },
-          {
-            "name": "witness: witnessed",
+            "name": "standing: witnessed",
             "color": "2DA44E",
-            "description": "Independent witness receipt is current and resolvable."
+            "description": "An independent witness receipt is current and resolvable."
           },
           {
-            "name": "witness: demoted",
+            "name": "standing: ratified",
+            "color": "116329",
+            "description": "Bdo accepted the evidenced result; the terminal rung of the lifecycle."
+          },
+          {
+            "name": "standing: demoted",
             "color": "CF222E",
-            "description": "Prior witness standing was demoted by a defeating observation."
+            "description": "Prior standing was demoted by a defeating observation."
           }
         ],
         "receipt": {
@@ -1967,6 +2627,66 @@
             "description": "Verification engagement against a pinned target; produces findings, builds nothing."
           },
           {
+            "name": "type: story",
+            "color": "E16F24",
+            "description": "One participant crossing one counter and finding the substrate short; asks, never builds."
+          },
+          {
+            "name": "type: unblock",
+            "color": "D73A4A",
+            "description": "A proven block filed as work: one held ticket, one blocked transition, one provision asked."
+          },
+          {
+            "name": "provision: grant",
+            "color": "8250DF",
+            "description": "Unblock request for a typed, scoped, live grant."
+          },
+          {
+            "name": "provision: judgement",
+            "color": "8250DF",
+            "description": "Unblock request for an owner-held judgement; always served by the owner."
+          },
+          {
+            "name": "provision: contract",
+            "color": "8250DF",
+            "description": "Unblock request for a schema, charter, or declared interface."
+          },
+          {
+            "name": "provision: fixture",
+            "color": "8250DF",
+            "description": "Unblock request for a positive or defeating case."
+          },
+          {
+            "name": "provision: capability",
+            "color": "8250DF",
+            "description": "Unblock request for a tool, adapter, binding, or runtime the tier does not have."
+          },
+          {
+            "name": "provision: observation",
+            "color": "8250DF",
+            "description": "Unblock request for an independent observation of something already built."
+          },
+          {
+            "name": "serve: worker",
+            "color": "0E8A16",
+            "description": "Served at the Work tier."
+          },
+          {
+            "name": "serve: orchestrator",
+            "color": "0E8A16",
+            "description": "Served at the Orchestration tier."
+          },
+          {
+            "name": "serve: controller",
+            "color": "0E8A16",
+            "description": "Served at the Control tier."
+          },
+          {
+            "name": "serve: owner",
+            "color": "0E8A16",
+            "description": "Served only by the owner."
+          },
+          {
             "name": "scope: system",
             "color": "5319E7",
             "description": "Applies to the complete Soveraeign node."
@@ -2058,26 +2778,26 @@
           },
           {
             "name": "standing: self-tested",
-            "color": "2DA44E",
+            "color": "D29922",
             "description": "Built and self-tested; independent witness remains outstanding."
           },
           {
-            "name": "witness: pending",
-            "color": "D29922",
-            "description": "Independent witness receipt is outstanding; normally held in project metadata."
-          },
-          {
-            "name": "witness: witnessed",
+            "name": "standing: witnessed",
             "color": "2DA44E",
-            "description": "Independent witness receipt is current and resolvable."
+            "description": "An independent witness receipt is current and resolvable."
           },
           {
-            "name": "witness: demoted",
+            "name": "standing: ratified",
+            "color": "116329",
+            "description": "Bdo accepted the evidenced result; the terminal rung of the lifecycle."
+          },
+          {
+            "name": "standing: demoted",
             "color": "CF222E",
-            "description": "Prior witness standing was demoted by a defeating observation."
+            "description": "Prior standing was demoted by a defeating observation."
           },
           {
-            "name": "type: story",
+            "name": "type: saga",
             "color": "E16F24",
             "description": "d"
           }
@@ -2089,7 +2809,7 @@
         }
       },
       "expect_actions": [
-        "CATALOGUE_UNDECLARED:repository:type: story"
+        "CATALOGUE_UNDECLARED:repository:type: saga"
       ]
     },
     {
@@ -2145,6 +2865,66 @@
             "description": "Verification engagement against a pinned target; produces findings, builds nothing."
           },
           {
+            "name": "type: story",
+            "color": "E16F24",
+            "description": "One participant crossing one counter and finding the substrate short; asks, never builds."
+          },
+          {
+            "name": "type: unblock",
+            "color": "D73A4A",
+            "description": "A proven block filed as work: one held ticket, one blocked transition, one provision asked."
+          },
+          {
+            "name": "provision: grant",
+            "color": "8250DF",
+            "description": "Unblock request for a typed, scoped, live grant."
+          },
+          {
+            "name": "provision: judgement",
+            "color": "8250DF",
+            "description": "Unblock request for an owner-held judgement; always served by the owner."
+          },
+          {
+            "name": "provision: contract",
+            "color": "8250DF",
+            "description": "Unblock request for a schema, charter, or declared interface."
+          },
+          {
+            "name": "provision: fixture",
+            "color": "8250DF",
+            "description": "Unblock request for a positive or defeating case."
+          },
+          {
+            "name": "provision: capability",
+            "color": "8250DF",
+            "description": "Unblock request for a tool, adapter, binding, or runtime the tier does not have."
+          },
+          {
+            "name": "provision: observation",
+            "color": "8250DF",
+            "description": "Unblock request for an independent observation of something already built."
+          },
+          {
+            "name": "serve: worker",
+            "color": "0E8A16",
+            "description": "Served at the Work tier."
+          },
+          {
+            "name": "serve: orchestrator",
+            "color": "0E8A16",
+            "description": "Served at the Orchestration tier."
+          },
+          {
+            "name": "serve: controller",
+            "color": "0E8A16",
+            "description": "Served at the Control tier."
+          },
+          {
+            "name": "serve: owner",
+            "color": "0E8A16",
+            "description": "Served only by the owner."
+          },
+          {
             "name": "scope: system",
             "color": "5319E7",
             "description": "Applies to the complete Soveraeign node."
@@ -2236,23 +3016,23 @@
           },
           {
             "name": "standing: self-tested",
-            "color": "2DA44E",
+            "color": "D29922",
             "description": "Built and self-tested; independent witness remains outstanding."
           },
           {
-            "name": "witness: pending",
-            "color": "D29922",
-            "description": "Independent witness receipt is outstanding; normally held in project metadata."
-          },
-          {
-            "name": "witness: witnessed",
+            "name": "standing: witnessed",
             "color": "2DA44E",
-            "description": "Independent witness receipt is current and resolvable."
+            "description": "An independent witness receipt is current and resolvable."
           },
           {
-            "name": "witness: demoted",
+            "name": "standing: ratified",
+            "color": "116329",
+            "description": "Bdo accepted the evidenced result; the terminal rung of the lifecycle."
+          },
+          {
+            "name": "standing: demoted",
             "color": "CF222E",
-            "description": "Prior witness standing was demoted by a defeating observation."
+            "description": "Prior standing was demoted by a defeating observation."
           },
           {
             "name": "bug",

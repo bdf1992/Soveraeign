@@ -1,0 +1,56 @@
+[
+  {
+    "id": "CONTRACT-RECORDING-POS",
+    "contract": "recording.schema.json",
+    "status": "PROPOSED",
+    "polarity": "positive",
+    "expected_validity": "VALID",
+    "record": {
+      "recording_id": "urn:soveraeign:recording:rec-0001",
+      "source_id": "urn:soveraeign:source:src-0001",
+      "source_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "reader_id": "urn:soveraeign:reader:session-reader-v1",
+      "reader_version": "1.0.0",
+      "configuration_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "payload_address": "cas:sha256:3333333333333333333333333333333333333333333333333333333333333333",
+      "payload_digest": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+      "fidelity": "LOSSY",
+      "omissions": [
+        {
+          "definition_id": "sanitize-v1",
+          "definition_digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
+        },
+        {
+          "definition_id": "pii-v1",
+          "definition_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555"
+        }
+      ],
+      "produced_at": "2026-08-23T00:00:00Z",
+      "produced_by": "urn:soveraeign:actor:worker-reader-0001",
+      "standing": "RECORDED"
+    }
+  },
+  {
+    "id": "CONTRACT-RECORDING-DEF",
+    "contract": "recording.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "defeats": "SPEC.md Reader: a LOSSY reader declares omissions; fidelity LOSSY with omissions [] must be refused",
+    "record": {
+      "recording_id": "urn:soveraeign:recording:rec-0001",
+      "source_id": "urn:soveraeign:source:src-0001",
+      "source_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "reader_id": "urn:soveraeign:reader:session-reader-v1",
+      "reader_version": "1.0.0",
+      "configuration_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "payload_address": "cas:sha256:3333333333333333333333333333333333333333333333333333333333333333",
+      "payload_digest": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+      "fidelity": "LOSSY",
+      "omissions": [],
+      "produced_at": "2026-08-23T00:00:00Z",
+      "produced_by": "urn:soveraeign:actor:worker-reader-0001",
+      "standing": "RECORDED"
+    }
+  }
+]

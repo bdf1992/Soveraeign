@@ -117,12 +117,15 @@ projection, omissions, usage, and cost remain visible through the applicable
 Model Binding contract. Switching models creates a new attributed invocation;
 fallback is never silent.
 
-Dynamic Chart compilation is not claimed here. Until issues #40 and #42 provide
-that boundary, Sov loads explicit governed sources and declares what it omitted.
+Dynamic Chart compilation is not claimed here. Until the boundary currently
+tracked by issues #40 and #42 is ratified and implemented, Sov loads explicit
+governed sources and declares what it omitted.
 
-## Present standing
+## Profile standing
 
 The profile is owner-accepted as the operating shape under decisions 0023 and
-0024. The implementation remains built and self-tested, not independently
-witnessed. It does not by itself establish a live controller, Gateway operation,
-binding parity, independent witness, or Phase-I qualification.
+0024. The profile artifact includes an inspectable context declaration and
+machine-checked positive and defeating declarations for issue #45. The
+implementation remains built and self-tested, not independently witnessed. It
+does not by itself establish a live controller, Gateway operation, binding
+parity, independent witness, or Phase-I qualification.

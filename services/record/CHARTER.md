@@ -49,15 +49,71 @@ It does not carry identity. Every actor is a string until Identity (#11) exists,
 which is the same limitation the rest of the system currently has.
 
 It does not durably guarantee media beyond detectable corruption. `SPEC.md`
-places that outside the logical specification.
+places that outside the logical specification — correctly, for a *logical*
+specification, which is why `decisions/0049` puts the concern in the technical
+baseline instead and `custody.py` realizes it. The service still guarantees no
+medium; it now gives an operator the means to stop depending on one.
+
+## Export and restore
+
+`custody.py` renders the whole journal as a portable document and replays one
+into an empty store. Neither adds technology: every entry already carries the
+digest of the one before it, so a copy either replays into the same chain or
+visibly does not. An unverifiable journal is never exported — a copy of a broken
+chain is a broken chain that now exists twice — and a restore refuses a store
+that already holds entries, since interleaving two histories yields one chain
+that verifies as neither.
+
+What self-verification reaches, and what it cannot, is worth stating exactly.
+An export detects an edited field, a reordered pair, and an entry cut from the
+middle: each breaks a link. It cannot detect **truncation**. Drop the last
+entries and the remainder is a perfectly valid shorter journal — every link
+holds, and nothing inside the document knows how long it was meant to be.
+Rewriting the declared head is as easy as dropping the entries.
+
+So `verify_export` accepts a head digest held *outside* the document, and only
+that catches a truncation. This is not a defect of the chain; it is what a chain
+is. A record cannot certify its own completeness from the inside — the same
+shape as `decisions/0048` ID-11, where the root cannot recover itself from
+inside the node. The practical consequence is small and worth saying plainly:
+write the head digest down next to the recovery secrets.
+
+## Reaching it
+
+`src/soveraeign_record_service/cli.py` is the declared invocation surface. Every
+command reads JSON arguments and prints one JSON object, refusals included, and
+`operations` answers what may be done out of `contracts/service.json` rather than
+out of the CLI, so the declared surface and the reachable surface cannot drift
+apart quietly.
+
+Before it existed, everything that needed the journal imported `core.py`. That
+put every reader inside the participant, and it meant the witness procedure could
+only be performed by the code being witnessed.
+
+## The digest chain
+
+Every entry's digest is `sha256` over `prev_digest`, `kind`, `subject`, `actor`,
+and the entry payload as canonical JSON, joined by `|`. The first entry chains
+from a genesis digest of sixty-four zeroes. It is stated here because an outside
+observer has to be able to recompute the chain without reading `core.py`;
+`scripts/witness_record.py` does exactly that.
 
 ## Proving operation
 
-The witness procedure declared on issue #7, performed end to end in
-`tests/test_journal.py::test_witness_walk`: commit, interrupt, restart,
-reconstruct, retract, drop every projection, rebuild them, and compare the
-resulting record addresses and terminal receipts.
+Two paths, and the difference between them is the whole point.
 
-Eight tests cover the five acceptance criteria and all five declared defeating
-cases. Passing them establishes `BUILT` only; an independent run is required for
-`WITNESSED` and Bdo's recorded decision for `RATIFIED`.
+`tests/test_journal.py` is the participant's own: eight tests covering the five
+acceptance criteria and all five declared defeating cases, driving the Python API
+directly. It establishes `BUILT` and nothing further.
+
+`scripts/witness_record.py` performs the witness procedure declared on issue #7 -
+commit, interrupt, restart, reconstruct, retract, drop every projection, rebuild
+them, compare the resulting record addresses and terminal receipts - without
+importing this service. It reaches the service only as a subprocess through the
+CLI, recomputes every digest from the chain rule stated above, and stages the
+interrupt against the SQLite file from outside. Twenty-one observations hold.
+`scripts/tests/test_witness_record.py` proves the walk can fail: a rewritten
+payload, actor, or removed entry all stop verifying.
+
+An independent observation proposes at most `BUILT -> WITNESSED`. It does not
+settle it, and Bdo's recorded decision is what makes anything `RATIFIED`.

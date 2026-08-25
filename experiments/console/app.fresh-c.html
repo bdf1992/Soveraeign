@@ -1,0 +1,397 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Soveraeign — the door</title>
+<link rel="icon" href="data:,">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&family=Space+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0e11;
+    --main: #17171c;
+    --sunk: #101014;
+    --line: #26262e;
+    --hair: #1e1e25;
+    --ink: #ececef;   /* 12.8:1 */
+    --dim: #adadb8;   /* 7.4:1  */
+    --faint: #82828e; /* 4.7:1  — floor */
+    --accent: #86c6b1;
+    --warn: #dd8570;
+    --serif: "Fraunces", ui-serif, Georgia, "Times New Roman", serif;
+    --sans: "Space Grotesk", ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font: 400 15px/1.65 var(--sans); -webkit-font-smoothing: antialiased;
+         display: grid; place-items: center; overflow-x: hidden; }
+  .micro { font: 500 9.5px/1 var(--mono); letter-spacing: .22em; text-transform: uppercase;
+           color: var(--faint); }
+
+  #grain { position: fixed; inset: 0; pointer-events: none; z-index: 40;
+           opacity: .045; mix-blend-mode: screen; }
+  /* A vignette gives the plate a room to stand in rather than a flat fill. */
+  #vig { position: fixed; inset: 0; pointer-events: none; z-index: 5;
+         background: radial-gradient(ellipse 90% 70% at 50% 42%,
+                     transparent 40%, rgba(0,0,0,.55) 100%); }
+
+  /* ---- arrival ---------------------------------------------------------- */
+  #arrival { position: fixed; inset: 0; z-index: 60; background: var(--bg);
+             display: grid; place-items: center; transition: opacity .8s ease; }
+  #arrival.gone { opacity: 0; pointer-events: none; }
+  #arrival .plate { text-align: center; }
+  #arrival .count { font: 500 11px/1 var(--mono); letter-spacing: .3em; color: var(--dim); }
+  #arrival .bar { width: 200px; height: 1px; background: var(--hair); margin: 16px auto 0; }
+  #arrival .bar i { display: block; height: 1px; width: 0; background: var(--accent);
+                    transition: width .4s cubic-bezier(.22,1,.36,1); }
+
+  /* ---- the plate -------------------------------------------------------- */
+  #door { position: relative; z-index: 10; width: min(760px, calc(100vw - 48px));
+          padding: 40px 0; }
+  .born { opacity: 0; transform: translateY(10px); }
+  .born.up { opacity: 1; transform: none;
+             transition: opacity .7s ease, transform .8s cubic-bezier(.22,1,.36,1); }
+
+  #mark { display: flex; align-items: baseline; gap: 12px; margin-bottom: 34px; }
+  #mark .w { font: 300 19px/1 var(--serif); font-variation-settings: "opsz" 40;
+             letter-spacing: .01em; }
+  #mark .r { flex: 1; height: 1px; background: var(--hair); }
+
+  h1 { margin: 0 0 18px; font: 300 clamp(38px, 5.4vw, 62px)/1.06 var(--serif);
+       font-variation-settings: "opsz" 120; letter-spacing: -.025em; }
+  h1 em { font-style: italic; color: var(--accent); }
+  #says { max-width: 60ch; color: var(--dim); font-size: 16px; margin: 0 0 34px; }
+  #says b { font-weight: 400; color: var(--ink); }
+
+  /* ---- what it holds ---------------------------------------------------- */
+  #holds { display: flex; gap: 0; border-top: 1px solid var(--hair);
+           border-bottom: 1px solid var(--hair); margin-bottom: 36px; }
+  #holds .cell { flex: 1; padding: 16px 18px 14px; border-left: 1px solid var(--hair); }
+  #holds .cell:first-child { border-left: 0; padding-left: 0; }
+  #holds .v { font: 300 34px/1 var(--serif); font-feature-settings: "tnum";
+              font-variation-settings: "opsz" 60; color: var(--ink); }
+  #holds .k { margin-top: 7px; }
+  #holds .cell.zero .v { color: var(--faint); }
+
+  /* ---- the two gestures ------------------------------------------------- */
+  #gestures { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 30px; }
+  .gesture { text-align: left; background: var(--main); border: 1px solid var(--line);
+             border-radius: 4px; padding: 20px 20px 18px; cursor: pointer; color: var(--ink);
+             font: inherit; transition: border-color .3s, background .3s, transform .3s; }
+  .gesture:hover:not(:disabled) { border-color: var(--accent); background: #1c1c22;
+                                  transform: translateY(-2px); }
+  .gesture:disabled { cursor: progress; opacity: .75; }
+  .gesture .t { font: 300 22px/1.2 var(--serif); font-variation-settings: "opsz" 40;
+                margin-bottom: 7px; }
+  .gesture .d { color: var(--dim); font-size: 13.5px; line-height: 1.5; }
+  .gesture .n { margin-top: 12px; }
+
+  /* ---- the run readout -------------------------------------------------- */
+  #run { display: none; margin-bottom: 30px; border-left: 2px solid var(--accent);
+         padding: 4px 0 4px 15px; }
+  #run.on { display: block; }
+  #run.refused { border-color: var(--warn); }
+  #run .line { display: grid; grid-template-columns: 30px 150px 1fr; gap: 12px;
+               align-items: baseline; padding: 5px 0;
+               font: 400 12.5px/1.5 var(--mono); color: var(--dim);
+               opacity: 0; transform: translateX(-8px); }
+  #run .line.up { opacity: 1; transform: none;
+                  transition: opacity .45s ease, transform .5s cubic-bezier(.22,1,.36,1); }
+  #run .line i { font-style: normal; color: var(--accent); }
+  #run .line b { font-weight: 400; color: var(--ink); }
+  #run .line s { text-decoration: none; color: var(--faint); overflow-wrap: anywhere; }
+  #run .done { margin-top: 12px; }
+  #run .enter { display: inline-block; margin-top: 12px; text-decoration: none;
+                border: 1px solid var(--accent); color: var(--ink); border-radius: 3px;
+                padding: 12px 22px; font: 500 10.5px/1 var(--mono);
+                letter-spacing: .2em; text-transform: uppercase;
+                transition: background .25s, transform .25s; }
+  #run .enter:hover { background: #1b241f; transform: translateY(-1px); }
+
+  /* ---- what can be done here -------------------------------------------- */
+  #can summary { cursor: pointer; list-style: none; display: flex; align-items: baseline;
+                 gap: 12px; padding: 12px 0; border-top: 1px solid var(--hair);
+                 color: var(--dim); font-size: 13.5px; }
+  #can summary::-webkit-details-marker { display: none; }
+  #can summary .r { flex: 1; height: 1px; background: var(--hair); }
+  #can summary:hover { color: var(--ink); }
+  #ops { padding: 6px 0 4px; }
+  #ops .op { display: grid; grid-template-columns: 220px 1fr; gap: 16px; padding: 7px 0;
+             border-top: 1px solid var(--hair); align-items: baseline; }
+  #ops .op:first-child { border-top: 0; }
+  #ops .op b { font: 400 12.5px/1.5 var(--mono); font-weight: 400; color: var(--dim); }
+  #ops .op span { font-size: 13px; color: var(--faint); }
+
+  @media (max-width: 700px) {
+    #gestures { grid-template-columns: 1fr; }
+    #holds { flex-wrap: wrap; }
+    #holds .cell { flex: 1 1 40%; }
+    #ops .op { grid-template-columns: 1fr; gap: 2px; }
+    #run .line { grid-template-columns: 26px 1fr; }
+    #run .line s { grid-column: 1 / -1; }
+  }
+</style>
+
+<div id="arrival"><div class="plate">
+  <div class="count" id="acount">LOADING TYPE</div>
+  <div class="bar"><i id="abar"></i></div>
+</div></div>
+
+<svg id="grain" width="100%" height="100%" preserveAspectRatio="none"><filter id="g" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3"/></filter><rect width="100%" height="100%" filter="url(#g)"/></svg>
+<div id="vig"></div>
+
+<main id="door">
+  <div id="mark" class="born">
+    <span class="w">Soveraeign</span>
+    <span class="micro" id="nodeid">—</span>
+    <span class="r"></span>
+    <span class="micro">console</span>
+  </div>
+
+  <h1 class="born" id="head">This node holds <em>nothing</em>.</h1>
+  <p id="says" class="born">Every operator here — person or model — writes to one
+    append-preserving journal, under a grant scoped to the exact thing being touched,
+    and gets back a receipt. <b>None of that has happened yet.</b> Two ways in.</p>
+
+  <div id="holds" class="born"></div>
+
+  <div id="gestures" class="born">
+    <button class="gesture" id="found">
+      <div class="t">Found it</div>
+      <div class="d">Open your session, take a grant, open the first channel and the first
+        thread. Four real calls, four entries, about a second.</div>
+      <div class="n micro">open-session · grant · open-channel · open-thread</div>
+    </button>
+    <button class="gesture" id="fill">
+      <div class="t">Fill it</div>
+      <div class="d">Build the node from this repository's actual state — its channels,
+        its open threads, and the decisions genuinely waiting on you.</div>
+      <div class="n micro">console.fill</div>
+    </button>
+  </div>
+
+  <div id="run"></div>
+
+  <details id="can" class="born">
+    <summary><span>What can be done here</span><span class="r"></span>
+      <span class="micro" id="opcount">—</span></summary>
+    <div id="ops"></div>
+  </details>
+</main>
+
+<script>
+// State and actions first; the DOM binds to them. window.__door is the same
+// surface a person clicks — a model driving this page takes the identical calls.
+
+const S = { node: null, ops: null, ran: [] };
+
+const api = {
+  json: async path => (await fetch(path)).json(),
+  async call(operation, inputs) {
+    const r = await fetch('/api/call', { method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ operation, inputs: inputs || {} }) });
+    return { ok: r.ok, status: r.status, payload: await r.json() };
+  },
+};
+
+const el = (tag, cls, text) => {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text !== undefined) n.textContent = text;
+  return n;
+};
+
+const OPERATOR = 'operator:bdo';
+const BINDING = 'binding:console-surface';
+const DOMAIN = 'founding';
+
+// What each declared operation is for, in plain words. The list itself is folded
+// from the door's own answer — this only supplies the gloss, and an operation
+// with no gloss still shows, labelled as such, rather than being hidden.
+const GLOSS = {
+  'console.open-channel': 'make a place where one domain of work happens',
+  'console.open-thread': 'ask one bounded question, optionally pinned to a file',
+  'console.archive-thread': 'close a thread; its posts stay readable',
+  'console.publish-thread': 'mark a thread readable outside this node',
+  'console.withdraw-publication': 'take that back, by appending, not erasing',
+  'console.list-publications': 'read what has been published',
+  'console.open-session': 'put a name and a binding on what you do next',
+  'console.close-session': 'close it, leaving a read position behind',
+  'console.post': 'say something, addressed by the digest of its bytes',
+  'console.grant': 'give an operator one capability over one exact scope',
+  'console.fill': 'rebuild this node from the repository’s real state',
+  'console.empty': 'drop it and start a new, empty journal',
+};
+
+// ---- render ----------------------------------------------------------------
+
+function renderHolds() {
+  const c = S.node.counts;
+  const host = document.getElementById('holds');
+  host.replaceChildren();
+  for (const [k, label] of [['entries', 'journal entries'], ['channels', 'channels'],
+                            ['threads', 'threads'], ['posts', 'posts'],
+                            ['grants', 'live grants']]) {
+    const cell = el('div', 'cell' + (c[k] ? '' : ' zero'));
+    cell.append(el('div', 'v', String(c[k])));
+    cell.append(el('div', 'k micro', label));
+    host.append(cell);
+  }
+}
+
+function renderOps() {
+  const host = document.getElementById('ops');
+  host.replaceChildren();
+  const list = S.ops.operations.filter(op => op.callable_here);
+  document.getElementById('opcount').textContent = list.length + ' operations';
+  for (const op of list) {
+    const row = el('div', 'op');
+    row.append(el('b', '', op.operation));
+    row.append(el('span', '', GLOSS[op.operation] || 'declared, no gloss written yet'));
+    host.append(row);
+  }
+}
+
+// ---- the two gestures ------------------------------------------------------
+
+function line(index, label, detail, bad) {
+  const box = document.getElementById('run');
+  const row = el('div', 'line');
+  row.append(el('i', '', bad ? '✕' : String(index).padStart(2, '0')));
+  row.append(el('b', '', label));
+  row.append(el('s', '', detail));
+  box.append(row);
+  requestAnimationFrame(() => row.classList.add('up'));
+  return row;
+}
+
+async function found(button) {
+  const box = document.getElementById('run');
+  box.className = 'on';
+  box.replaceChildren();
+  button.disabled = true;
+  document.getElementById('fill').disabled = true;
+
+  const plan = [
+    ['open-session', () => api.call('console.open-session',
+      { operator_id: OPERATOR, actor_kind: 'HUMAN', binding_id: BINDING })],
+    ['grant open-channel', () => api.call('console.grant',
+      { operator_id: OPERATOR, capability: 'open-channel', scope: DOMAIN })],
+    ['open-channel', () => api.call('console.open-channel',
+      { operator_id: OPERATOR, name: DOMAIN, domain: DOMAIN })],
+    ['grant open-thread', ctx => api.call('console.grant',
+      { operator_id: OPERATOR, capability: 'open-thread', scope: ctx.channel })],
+    ['open-thread', ctx => api.call('console.open-thread',
+      { operator_id: OPERATOR, channel_id: ctx.channel, title: 'What is this node for?' })],
+  ];
+
+  const ctx = {};
+  for (let i = 0; i < plan.length; i++) {
+    const [label, run] = plan[i];
+    const r = await run(ctx);
+    S.ran.push(r);
+    if (!r.ok) {
+      box.className = 'on refused';
+      line(i + 1, label, (r.payload.reason_code || 'REFUSED') + ' — '
+        + (r.payload.message || ''), true);
+      box.append(el('div', 'done micro', 'the refusal is on the record too'));
+      button.disabled = false;
+      document.getElementById('fill').disabled = false;
+      return;
+    }
+    const rec = r.payload.record || {};
+    if (rec.channel_id) ctx.channel = rec.channel_id;
+    line(i + 1, label, (r.payload.receipt || {}).entry_id || 'committed');
+    await new Promise(res => setTimeout(res, 140));
+  }
+  await load();
+  renderHolds();
+  const done = el('div');
+  done.append(el('div', 'done micro',
+    S.node.counts.entries + ' entries · everything at RECORDED'));
+  const enter = el('a', 'enter', 'Enter the console');
+  enter.href = '/';
+  done.append(enter);
+  box.append(done);
+  requestAnimationFrame(() => done.classList.add('up'));
+}
+
+async function fill(button) {
+  const box = document.getElementById('run');
+  box.className = 'on';
+  box.replaceChildren();
+  button.disabled = true;
+  document.getElementById('found').disabled = true;
+  line(1, 'console.fill', 'reading the repository’s real state…');
+  const r = await api.call('console.fill', {});
+  if (!r.ok) {
+    box.className = 'on refused';
+    line(2, 'console.fill', r.payload.reason_code + ' — ' + (r.payload.message || ''), true);
+    button.disabled = false;
+    document.getElementById('found').disabled = false;
+    return;
+  }
+  const rec = r.payload.record;
+  line(2, 'built', rec.channels + ' channels, ' + rec.threads + ' threads, '
+    + rec.posts + ' posts');
+  await load();
+  renderHolds();
+  location.href = '/';
+}
+
+// ---- read ------------------------------------------------------------------
+
+async function load() {
+  // The dry read does not open a session. Looking at an empty node should not put
+  // two entries in it before the visitor has chosen anything.
+  S.node = await api.json('/api/state?dry=1');
+  document.getElementById('nodeid').textContent = S.node.node_id;
+}
+
+async function arrive() {
+  const count = document.getElementById('acount');
+  const bar = document.getElementById('abar');
+  const steps = [
+    ['LOADING TYPE', () => document.fonts.ready],
+    ['ASKING THE NODE WHAT IT HOLDS', () => load()],
+    ['ASKING THE DOOR WHAT IT DOES', async () => { S.ops = await api.json('/api/operations'); }],
+  ];
+  for (let i = 0; i < steps.length; i++) {
+    count.textContent = steps[i][0];
+    await steps[i][1]();
+    bar.style.width = Math.round(((i + 1) / steps.length) * 200) + 'px';
+  }
+  renderHolds();
+  renderOps();
+  // A node that already holds entries is not empty; the plate says what is true.
+  if (S.node.counts.entries > 0) {
+    document.getElementById('head').innerHTML = 'This node is <em>already</em> running.';
+    document.getElementById('says').innerHTML =
+      'It holds <b>' + S.node.counts.entries + ' entries</b> across '
+      + S.node.counts.channels + ' channels. Founding it again would append a second '
+      + 'founding rather than replace the first; filling it starts a new journal.';
+  }
+  count.textContent = S.node.counts.entries + ' ENTRIES';
+  await new Promise(r => setTimeout(r, 520));
+  document.getElementById('arrival').classList.add('gone');
+  document.querySelectorAll('.born').forEach((n, i) =>
+    setTimeout(() => n.classList.add('up'), 90 * i));
+}
+
+document.getElementById('found').onclick = e => found(e.currentTarget);
+document.getElementById('fill').onclick = e => fill(e.currentTarget);
+
+window.__door = {
+  get node() { return S.node; },
+  get ops() { return S.ops; },
+  get ran() { return S.ran; },
+  found: () => found(document.getElementById('found')),
+  fill: () => fill(document.getElementById('fill')),
+  load, call: api.call,
+};
+
+arrive();
+</script>

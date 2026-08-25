@@ -1,249 +1,282 @@
-"""Dependency-free Asset Service lifecycle over replaceable local mechanisms."""
+"""Dependency-free reference binding for the Soveraeign asset service.
+
+This module owns the asset lifecycle only. Payload custody and receipts live in
+`store.py`, grants and sessions in `authority.py`, and the rebuildable views in
+`projections.py`. The SQLite database is the canonical reference ledger for this
+slice; the search and graph tables are disposable projections.
+"""
 
 from __future__ import annotations
 
+from pathlib import Path
+from typing import Any, Callable
 import json
 import mimetypes
-from pathlib import Path
-from typing import Any
+import time
 
-from .control import ControlLedger
-from .derivatives import DerivativeLifecycle
-from .observations import RunObservations
-from .projections import AssetProjections
-from .recording import ReaderDeclaration, ReaderMaterials
-from .storage import AssetStore, new_id, now
+from soveraeign_asset_service import authority as authority_module
+from soveraeign_asset_service import projections as projections_module
+from soveraeign_asset_service import runs as runs_module
+from soveraeign_asset_service.authority import (
+    DEFAULT_GRANT_TTL_SECONDS,
+    Authority,
+    AuthorityRefused,
+)
+from soveraeign_asset_service.identity import ORIGINAL, REVISION, Identity
+from soveraeign_asset_service.projections import Projections
+from soveraeign_asset_service.recording import ReaderDeclaration
+from soveraeign_asset_service.runs import DEFAULT_LEASE_TTL_SECONDS, Runs, StaleLease
+from soveraeign_asset_service.store import Store, new_id
+
+
+def _id(prefix: str) -> str:
+    return new_id(prefix)
+
+
+def _now() -> float:
+    return time.time()
+
+
+SCHEMA = """
+CREATE TABLE IF NOT EXISTS sources(
+  id TEXT PRIMARY KEY, locator TEXT NOT NULL, digest TEXT NOT NULL,
+  captured_at REAL NOT NULL);
+CREATE TABLE IF NOT EXISTS assets(
+  id TEXT PRIMARY KEY, label TEXT NOT NULL, created_at REAL NOT NULL);
+CREATE TABLE IF NOT EXISTS versions(
+  id TEXT PRIMARY KEY, asset_id TEXT NOT NULL REFERENCES assets(id),
+  source_id TEXT REFERENCES sources(id), digest TEXT NOT NULL,
+  mime TEXT NOT NULL, size INTEGER NOT NULL, blob_path TEXT NOT NULL,
+  role TEXT NOT NULL, derivation_json TEXT, created_at REAL NOT NULL);
+CREATE TABLE IF NOT EXISTS proposals(
+  id TEXT PRIMARY KEY, asset_id TEXT NOT NULL REFERENCES assets(id),
+  actor TEXT NOT NULL, payload_json TEXT NOT NULL,
+  standing TEXT NOT NULL, required_authority TEXT NOT NULL,
+  created_at REAL NOT NULL);
+CREATE TABLE IF NOT EXISTS relationships(
+  id TEXT PRIMARY KEY, src_asset TEXT NOT NULL, predicate TEXT NOT NULL,
+  dst_asset TEXT NOT NULL, proposal_id TEXT NOT NULL,
+  standing TEXT NOT NULL, created_at REAL NOT NULL);
+CREATE TABLE IF NOT EXISTS retractions(
+  id TEXT PRIMARY KEY, target_type TEXT NOT NULL, target_id TEXT NOT NULL,
+  actor TEXT NOT NULL, reason TEXT NOT NULL, created_at REAL NOT NULL);
+"""
 
 
 class AssetService:
-    """Reference participant preserving the existing public lifecycle surface."""
+    """The asset lifecycle: capture, propose, ratify, derive, observe, retract."""
 
-    def __init__(self, root: str | Path):
-        self._store = AssetStore(root)
-        self.db = self._store.db
-        self._control = ControlLedger(self.db)
-        self._readers = ReaderMaterials(self._store)
-        self._derivatives = DerivativeLifecycle(
-            self._store, self._control, self._readers
-        )
-        self._observations = RunObservations(
-            self._store, self._control, self._derivatives
-        )
-        self._projections = AssetProjections(self._store, self._control)
+    def __init__(self, root: str | Path, clock: Callable[[], float] = time.time):
+        self.store = Store(root, clock)
+        self.root = self.store.root
+        self.blobs = self.store.blobs
+        self.db = self.store.db
+        self.store.apply_schema(SCHEMA, authority_module.SCHEMA,
+                                projections_module.SCHEMA, runs_module.SCHEMA)
+        self.authority = Authority(self.store)
+        self.identity = Identity(self.db)
+        self.projections = Projections(self.store)
+        self.runs = Runs(self.store, self.authority)
 
     def close(self) -> None:
-        self._store.close()
+        self.store.close()
 
-    def grant(self, issuer: str, actor: str, capability: str, scope: str = "*") -> str:
-        return self._control.grant(issuer, actor, capability, scope)
+    def _receipt(self, outcome: str, event: str, subject_type: str,
+                 subject_id: str, actor: str, payload: dict[str, Any]) -> str:
+        return self.store.receipt(outcome, event, subject_type, subject_id, actor, payload)
 
-    def ingest(
-        self,
-        path: str | Path,
-        label: str,
-        actor: str,
-        locator: str | None = None,
-    ) -> dict[str, str]:
-        """Capture one immutable source and its first asset version."""
+    def _store_blob(self, data: bytes) -> tuple[str, Path]:
+        return self.store.store_blob(data)
+
+    # -- authority --------------------------------------------------------
+
+    def open_session(self, participant: str, model_identity: str,
+                     ttl_seconds: float | None = None) -> str:
+        """Start a bounded session; grants bound to it die when it closes."""
+        if ttl_seconds is None:
+            return self.authority.open_session(participant, model_identity)
+        return self.authority.open_session(participant, model_identity, ttl_seconds)
+
+    def close_session(self, session_id: str, actor: str) -> str:
+        """End a session and stop every grant bound to it."""
+        return self.authority.close_session(session_id, actor)
+
+    def grant(self, issuer: str, actor: str, capability: str, scope: str = "*",
+              ttl_seconds: float = DEFAULT_GRANT_TTL_SECONDS,
+              session_id: str | None = None) -> str:
+        """Issue a live, expiring grant, attenuated to what the issuer holds."""
+        return self.authority.grant(issuer, actor, capability, scope, ttl_seconds, session_id)
+
+    def revoke(self, grant_id: str, actor: str) -> str:
+        """Revoke a grant ahead of its expiry."""
+        return self.authority.revoke(grant_id, actor)
+
+    def _authorized(self, actor: str, capability: str, scope: str) -> bool:
+        return self.authority.authorized(actor, capability, scope)
+
+    def _require(self, actor: str, capability: str, scope: str,
+                 subject_type: str, subject_id: str) -> None:
+        self.authority.require(actor, capability, scope, subject_type, subject_id)
+
+    # -- lifecycle --------------------------------------------------------
+
+    def ingest(self, path: str | Path, label: str, actor: str,
+               locator: str | None = None) -> dict[str, str]:
+        """Capture a payload as a version of the asset its locator identifies.
+
+        An asset is an identity with a version history (`CLASSIFICATION.md`), so
+        capturing the same locator again adds a version rather than a second
+        identity. Unchanged bytes add nothing: that is not a new state of the
+        asset, so no version follows.
+        """
         source_path = Path(path)
         data = source_path.read_bytes()
-        digest, blob = self._store.store_blob(data)
-        source_id = new_id("source")
-        asset_id = new_id("asset")
-        version_id = new_id("version")
-        self.db.execute(
-            "INSERT INTO sources VALUES(?,?,?,?)",
-            (source_id, locator or source_path.resolve().as_uri(), digest, now()),
-        )
-        self.db.execute("INSERT INTO assets VALUES(?,?,?)", (asset_id, label, now()))
+        digest, blob = self._store_blob(data)
+        address = locator or source_path.resolve().as_uri()
+        held = self.identity.by_locator(address)
+        if held is not None and held["digest"] == digest:
+            receipt = self._receipt("ATTEMPTED", "asset.ingest-asset", "asset", held["asset_id"],
+                                    actor, {"version_id": held["version_id"],
+                                            "digest": digest, "locator": address,
+                                            "reason": "NO_NEW_STATE"})
+            self.db.commit()
+            return {"asset_id": held["asset_id"], "source_id": held["source_id"],
+                    "version_id": held["version_id"], "digest": digest,
+                    "receipt_id": receipt, "role": held["role"], "unchanged": True}
+        source = _id("source")
+        asset = held["asset_id"] if held is not None else _id("asset")
+        role = REVISION if held is not None else ORIGINAL
+        version = _id("version")
+        self.db.execute("INSERT INTO sources VALUES(?,?,?,?)",
+                        (source, address, digest, _now()))
+        if held is None:
+            self.db.execute("INSERT INTO assets VALUES(?,?,?)", (asset, label, _now()))
         mime = mimetypes.guess_type(source_path.name)[0] or "application/octet-stream"
-        self.db.execute(
-            "INSERT INTO versions VALUES(?,?,?,?,?,?,?,?,?,?)",
-            (
-                version_id,
-                asset_id,
-                source_id,
-                digest,
-                mime,
-                len(data),
-                str(blob),
-                "ORIGINAL",
-                None,
-                now(),
-            ),
-        )
-        receipt_id = self._control.receipt(
-            "COMMITTED",
-            "asset.ingest",
-            "asset",
-            asset_id,
-            actor,
-            {"source_id": source_id, "version_id": version_id, "digest": digest},
-        )
+        self.db.execute("INSERT INTO versions VALUES(?,?,?,?,?,?,?,?,?,?)",
+                        (version, asset, source, digest, mime, len(data), str(blob),
+                         role, None, _now()))
+        receipt = self._receipt("COMMITTED", "asset.ingest-asset", "asset", asset, actor,
+                                {"source_id": source, "version_id": version,
+                                 "digest": digest, "role": role,
+                                 "supersedes": held["version_id"] if held else None})
         self.db.commit()
-        return {
-            "asset_id": asset_id,
-            "source_id": source_id,
-            "version_id": version_id,
-            "digest": digest,
-            "receipt_id": receipt_id,
-        }
+        return {"asset_id": asset, "source_id": source, "version_id": version, "role": role,
+                "digest": digest, "receipt_id": receipt}
 
-    def propose(
-        self,
-        asset_id: str,
-        actor: str,
-        payload: dict[str, Any],
-        required_authority: str = "ratify:judgement",
-    ) -> str:
-        proposal_id = new_id("proposal")
-        self.db.execute(
-            "INSERT INTO proposals VALUES(?,?,?,?,?,?,?)",
-            (
-                proposal_id,
-                asset_id,
-                actor,
-                json.dumps(payload, sort_keys=True),
-                "RECORDED",
-                required_authority,
-                now(),
-            ),
-        )
-        self._control.receipt(
-            "COMMITTED",
-            "proposal.record",
-            "proposal",
-            proposal_id,
-            actor,
-            {"asset_id": asset_id, "standing": "RECORDED"},
-        )
+    def propose(self, asset_id: str, actor: str, payload: dict[str, Any],
+                required_authority: str = "ratify:judgement") -> str:
+        """Record a proposal. Recording claims nothing; ratification is separate."""
+        proposal = _id("proposal")
+        self.db.execute("INSERT INTO proposals VALUES(?,?,?,?,?,?,?)",
+                        (proposal, asset_id, actor, json.dumps(payload, sort_keys=True),
+                         "RECORDED", required_authority, _now()))
+        self._receipt("COMMITTED", "asset.propose-description", "proposal", proposal, actor,
+                      {"asset_id": asset_id, "standing": "RECORDED"})
         self.db.commit()
-        return proposal_id
+        return proposal
 
     def ratify(self, proposal_id: str, actor: str) -> str:
-        proposal = self.db.execute(
-            "SELECT * FROM proposals WHERE id=?", (proposal_id,)
-        ).fetchone()
+        """Ratify a recorded proposal under the authority it declared it needs."""
+        proposal = self.db.execute("SELECT * FROM proposals WHERE id=?", (proposal_id,)).fetchone()
         if proposal is None:
             raise KeyError(proposal_id)
-        self._control.require(
-            actor,
-            proposal["required_authority"],
-            proposal["asset_id"],
-            "proposal",
-            proposal_id,
-        )
+        self._require(actor, proposal["required_authority"], proposal["asset_id"],
+                      "proposal", proposal_id)
         payload = json.loads(proposal["payload_json"])
         self.db.execute("UPDATE proposals SET standing='RATIFIED' WHERE id=?", (proposal_id,))
         relation = payload.get("relationship")
         if relation:
-            relationship_id = new_id("rel")
-            self.db.execute(
-                "INSERT INTO relationships VALUES(?,?,?,?,?,?,?)",
-                (
-                    relationship_id,
-                    proposal["asset_id"],
-                    relation["predicate"],
-                    relation["dst_asset"],
-                    proposal_id,
-                    "EFFECTIVE",
-                    now(),
-                ),
-            )
-        receipt_id = self._control.receipt(
-            "COMMITTED",
-            "proposal.ratify",
-            "proposal",
-            proposal_id,
-            actor,
-            {"asset_id": proposal["asset_id"]},
-        )
+            relationship = _id("rel")
+            self.db.execute("INSERT INTO relationships VALUES(?,?,?,?,?,?,?)",
+                            (relationship, proposal["asset_id"], relation["predicate"],
+                             relation["dst_asset"], proposal_id, "EFFECTIVE", _now()))
+        receipt = self._receipt("COMMITTED", "asset.ratify-proposal", "proposal",
+                                proposal_id, actor, {"asset_id": proposal["asset_id"]})
         self.db.commit()
-        return receipt_id
+        return receipt
 
-    def request_derivative(
-        self,
-        asset_id: str,
-        version_id: str,
-        actor: str,
-        *,
-        reader: ReaderDeclaration | None = None,
-        kind: str = "metadata-card",
-    ) -> str:
-        return self._derivatives.request(asset_id, version_id, actor, reader, kind)
+    def request_derivative(self, asset_id: str, version_id: str | list[str],
+                           actor: str, kind: str = "metadata-card", *,
+                           reader: ReaderDeclaration | None = None) -> str:
+        """Request a derived version. The request is an attempt, not a result."""
+        return self.runs.request(asset_id, version_id, actor, kind, reader)
 
-    def claim(self, run_id: str, worker: str, ttl_seconds: float = 60) -> int:
-        return self._derivatives.claim(run_id, worker, ttl_seconds)
+    def claim(self, run_id: str, worker: str,
+              ttl_seconds: float = DEFAULT_LEASE_TTL_SECONDS) -> int:
+        """Lease a run to one worker and return its fencing token."""
+        return self.runs.claim(run_id, worker, ttl_seconds)
 
-    def report_derivative(
-        self,
-        run_id: str,
-        worker: str,
-        fence: int,
-        output: bytes,
-        mime: str = "application/json",
-    ) -> str:
-        return self._derivatives.report(run_id, worker, fence, output, mime)
+    def report_derivative(self, run_id: str, worker: str, fence: int,
+                          output: bytes, mime: str = "application/json") -> str:
+        """Accept a worker's report. A report settles nothing."""
+        return self.runs.report(run_id, worker, fence, output, mime)
 
     def reconstruct_recording(self, recording_or_version_id: str) -> dict[str, Any]:
-        return self._derivatives.reconstruct(recording_or_version_id)
+        """Resolve every addressed material of a declared derivative recording."""
+        return self.runs.reconstruct(recording_or_version_id)
 
     def observe(self, run_id: str, observer: str) -> str:
-        return self._observations.observe(run_id, observer)
+        """Check a reported run against its durable output."""
+        return self.runs.observe(run_id, observer)
 
     def retract(self, target_type: str, target_id: str, actor: str, reason: str) -> str:
+        """Add a counter-record. The original event is never erased."""
         scope = target_id
         if target_type == "relationship":
-            row = self.db.execute(
-                "SELECT src_asset FROM relationships WHERE id=?", (target_id,)
-            ).fetchone()
+            row = self.db.execute("SELECT src_asset FROM relationships WHERE id=?",
+                                  (target_id,)).fetchone()
             if row is None:
                 raise KeyError(target_id)
             scope = row["src_asset"]
-        self._control.require(actor, "retract:record", scope, target_type, target_id)
-        retraction_id = new_id("retract")
-        self.db.execute(
-            "INSERT INTO retractions VALUES(?,?,?,?,?,?)",
-            (retraction_id, target_type, target_id, actor, reason, now()),
-        )
+        self._require(actor, "retract:record", scope, target_type, target_id)
+        retraction = _id("retract")
+        self.db.execute("INSERT INTO retractions VALUES(?,?,?,?,?,?)",
+                        (retraction, target_type, target_id, actor, reason, _now()))
         if target_type == "relationship":
-            self.db.execute(
-                "UPDATE relationships SET standing='COUNTERED' WHERE id=?", (target_id,)
-            )
-        receipt_id = self._control.receipt(
-            "COUNTERED",
-            "record.retract",
-            target_type,
-            target_id,
-            actor,
-            {"retraction_id": retraction_id, "reason": reason},
-        )
+            self.db.execute("UPDATE relationships SET standing='COUNTERED' WHERE id=?",
+                            (target_id,))
+        receipt = self._receipt("COUNTERED", "asset.retract-record", target_type,
+                                target_id, actor, {"retraction_id": retraction,
+                                                   "reason": reason})
         self.db.commit()
-        return receipt_id
+        return receipt
+
+    # -- projections and reads --------------------------------------------
 
     def rebuild_projections(self, actor: str = "projector") -> dict[str, int]:
-        return self._projections.rebuild(actor)
+        """Derive both views again from ratified records."""
+        return self.projections.rebuild(actor)
+
+    def history(self, asset_id: str) -> list[dict[str, Any]]:
+        """Every version of one asset, oldest first."""
+        return self.identity.history(asset_id)
+
+    def duplicates(self) -> list[dict[str, Any]]:
+        """Distinct assets whose newest versions share one payload digest."""
+        return self.identity.duplicates()
+
+    def relationships(self, asset_id: str) -> list[dict[str, Any]]:
+        """Asserted relations touching this asset, in either direction."""
+        return self.identity.relationships(asset_id)
 
     def search(self, query: str) -> list[str]:
-        return self._projections.search(query)
+        """Assets whose projected text contains the query."""
+        return self.projections.search(query)
 
-    def neighbors(self, asset_id: str) -> list[dict[str, str]]:
-        return self._projections.neighbors(asset_id)
+    def neighbors(self, asset_id: str) -> list[dict[str, Any]]:
+        """Projected edges touching an asset."""
+        return self.projections.neighbors(asset_id)
 
     def federation_cross(self, actor: str, asset_id: str) -> str:
-        receipt_id = self._control.receipt(
-            "REFUSED",
-            "federation.cross",
-            "asset",
-            asset_id,
-            actor,
-            {"reason": "UNCONFIGURED", "node_two": None},
-        )
+        """Refuse a federation crossing while no second node is configured."""
+        receipt = self._receipt("REFUSED", "federation.cross", "asset", asset_id,
+                                actor, {"reason": "UNCONFIGURED", "node_two": None})
         self.db.commit()
-        return receipt_id
+        return receipt
 
     def receipts(self) -> list[dict[str, Any]]:
-        return [
-            dict(row)
-            for row in self.db.execute("SELECT * FROM receipts ORDER BY created_at,id")
-        ]
+        """Every receipt in write order."""
+        return self.store.receipts()
+
+
+__all__ = ["AssetService", "AuthorityRefused", "StaleLease"]

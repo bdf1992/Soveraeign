@@ -6,10 +6,18 @@ from __future__ import annotations
 from hashlib import sha256
 from pathlib import Path
 import json
+import re
 import sys
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
+# Shapes that must never be committed inside lineage/SOURCES.lock. Built
+# without literal user-path substrings so lint never matches this file itself.
+_BACKSLASH = chr(92)
+EMAIL_SHAPE = re.compile("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+[.][A-Za-z]{2,}")
+HOST_PATH_SHAPE = re.compile(
+    "[/" + _BACKSLASH * 2 + "](?:Users|home)[/" + _BACKSLASH * 2 + "]")
 
 REQUIRED = (
     "README.md",
@@ -23,11 +31,15 @@ REQUIRED = (
     "ENGINEERING.md",
     "services/asset/CHARTER.md",
     "services/proofing/CHARTER.md",
+    "services/console/CHARTER.md",
+    "services/projection/CHARTER.md",
+    "services/projection/PARITY.md",
     "ROADMAP.md",
     "STATUS.yaml",
     "AGENTS.md",
     "CONTRIBUTING.md",
     ".cursorrules",
+    ".gitattributes",
     ".gitignore",
     ".env.example",
     ".github/workflows/verify.yml",
@@ -45,16 +57,25 @@ REQUIRED = (
     "contracts/kernel-parity.json",
     "services/README.md",
     "services/asset/contracts/service.json",
+    "services/gateway/contracts/service.json",
+    "services/record/contracts/service.json",
     "services/proofing/contracts/service.json",
+    "services/console/contracts/service.json",
+    "services/projection/contracts/service.json",
     "decisions/0001-founding-boundary.md",
     "decisions/0002-naming-process.md",
     "decisions/0003-evidence-boundary.md",
+    "decisions/0004-soveraeign-name.md",
+    "decisions/0005-operational-qualification-language.md",
+    "decisions/0006-ai-native-standard.md",
     "decisions/0007-asset-service-boundary.md",
     "decisions/0008-classification-contract.md",
     "decisions/0009-phase-i-logical-spec.md",
     "decisions/0010-proofing-service-boundary.md",
     "decisions/0011-local-personal-byom.md",
     "decisions/0012-engineering-baseline.md",
+    "decisions/0014-console-service-boundary.md",
+    "decisions/0030-asset-projection-service-boundary.md",
 )
 
 
@@ -101,6 +122,7 @@ def verify_engineering_framework() -> int:
             "Two Systems of Record", "Minimal reference stack",
             "Kernel primitives", "Composing larger motion", "Growth triggers",
         ),
+        ".gitattributes": ("* text=auto eol=lf", "lineage/** -text"),
         ".gitignore": (".env", "*.sqlite3", "prompt-dumps/"),
         ".env.example": ("SOVERAEIGN_STATE_DIR", "SOVERAEIGN_CREDENTIAL_REF"),
         ".github/workflows/verify.yml": ("python scripts/verify.py", "contents: read"),
@@ -115,13 +137,42 @@ def verify_engineering_framework() -> int:
     return count
 
 
+def verify_json_source_lock(text: str) -> int:
+    """Structural check of the JSON source lock (soveraeign-sources-lock/1):
+    every entry carries the SPEC `Source` fields and a sha256 address, and no
+    email address or absolute host path is committed. lint.py skips lineage/,
+    so the sensitive-shape check lives here, independent of the reader that
+    wrote the lock."""
+    try:
+        document = json.loads(text)
+    except json.JSONDecodeError as error:
+        fail(f"source lock is not valid JSON: {error}")
+    sources = document.get("sources")
+    if not isinstance(sources, list) or not sources:
+        fail("source lock contains no entries")
+    required = ("source_id", "source_address", "payload_digest", "payload_size",
+                "captured_at", "captured_by")
+    for entry in sources:
+        for field in required:
+            if entry.get(field) in (None, ""):
+                fail(f"source lock entry lacks {field}")
+        if not str(entry["payload_digest"]).startswith("sha256:"):
+            fail(f"source {entry['source_id']} is not sha256-addressed")
+    if EMAIL_SHAPE.search(text) or HOST_PATH_SHAPE.search(text):
+        fail("source lock leaks an email address or absolute host path")
+    return len(sources)
+
+
 def verify_sources() -> int:
     lock = ROOT / "lineage" / "SOURCES.lock"
     if not lock.is_file():
         print("SKIP: historical evidence archive is not present in this checkout")
         return 0
+    text = lock.read_text(encoding="utf-8")
+    if text.lstrip().startswith("{"):
+        return verify_json_source_lock(text)
     count = 0
-    for number, raw in enumerate(lock.read_text(encoding="utf-8").splitlines(), 1):
+    for number, raw in enumerate(text.splitlines(), 1):
         line = raw.strip()
         if not line or line.startswith("#"):
             continue
@@ -176,7 +227,7 @@ def verify_json_documents() -> int:
             json.loads(path.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError) as error:
             fail(f"invalid JSON document {path.relative_to(ROOT)}: {error}")
-    for service in ("asset", "proofing"):
+    for service in ("asset", "console", "gateway", "projection", "proofing", "record"):
         manifest = json.loads((ROOT / "services" / service / "contracts" / "service.json").read_text(encoding="utf-8"))
         for field in ("service_id", "standing", "owns", "operations", "uses_kernel_contracts", "forbids"):
             if not manifest.get(field):

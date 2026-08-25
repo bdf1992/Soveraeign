@@ -26,3 +26,14 @@ owner-directed provisional context profile: a provider-neutral entry point,
 machine-readable profile, bounded session declaration, and positive/defeating
 checks. It grants no authority and does not claim that live binding parity or
 the operator Gateway exists.
+
+## Console
+
+[`services/console/CHARTER.md`](../services/console/CHARTER.md) charters the
+Console Service. `bindings/console/` declares the Human Binding interface for
+its first slice, the owner's judgement surface: `interface.json` names the
+operations the binding invokes, maps `resolve-judgement` to the `SPEC.md`
+`ratify` transition, and states what the binding must expose under the five
+requirements above. It is a declaration only, standing `PROPOSED`: it holds no
+code, grants no authority, and is not admitted for implementation until O10
+freezes the transition contract or O18 authorizes a provisional target.

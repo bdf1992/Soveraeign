@@ -1,0 +1,217 @@
+{
+  "service_id": "gateway",
+  "standing": "PROPOSED",
+  "owns": [
+    "gateway-request",
+    "capability-resolution",
+    "authority-check",
+    "routing-record",
+    "gateway-receipt",
+    "transport-binding"
+  ],
+  "references": [
+    "shared-kernel-contracts",
+    "capability-map"
+  ],
+  "operations": [
+    {
+      "operation": "accept-request",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://gateway/accept-request",
+      "subject": "gateway-request",
+      "crud": "CREATE",
+      "requirement": "PROD-I-3",
+      "preconditions": [
+        "declared_transport",
+        "declared_actor",
+        "declared_logical_endpoint",
+        "well_formed_envelope"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "MALFORMED_REQUEST",
+        "TRANSPORT_NOT_ACTIVATED"
+      ]
+    },
+    {
+      "operation": "resolve-capability",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://gateway/resolve-capability",
+      "subject": "capability-resolution",
+      "crud": "READ",
+      "requirement": "PROD-I-3",
+      "preconditions": [
+        "gateway_request_exists",
+        "capability_map_fresh"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "ENDPOINT_UNKNOWN",
+        "MISSING_PRECONDITION"
+      ]
+    },
+    {
+      "operation": "check-authority",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://gateway/check-authority",
+      "subject": "authority-check",
+      "crud": "READ",
+      "requirement": "PROD-I-5",
+      "preconditions": [
+        "capability_resolved",
+        "declared_actor",
+        "required_authority_named"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "AUTHORITY_REFUSED",
+        "GRANT_NOT_COVERED"
+      ]
+    },
+    {
+      "operation": "route-request",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://gateway/route-request",
+      "subject": "routing-record",
+      "crud": "CREATE",
+      "requirement": "PROD-I-3",
+      "kernel_transition": "cross",
+      "preconditions": [
+        "capability_resolved",
+        "authority_check_passed",
+        "owning_service_reachable",
+        "effect_class_admissible"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "SERVICE_UNREACHABLE",
+        "AUTHORITY_REFUSED",
+        "EFFECT_CLASS_REFUSED"
+      ]
+    },
+    {
+      "operation": "return-receipt",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://gateway/return-receipt",
+      "subject": "gateway-receipt",
+      "crud": "CREATE",
+      "requirement": "PROD-I-4",
+      "preconditions": [
+        "routing_record_exists",
+        "owning_service_returned_terminal_receipt"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "RECEIPT_MISSING",
+        "STALE_STATE"
+      ]
+    },
+    {
+      "operation": "refuse-request",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://gateway/refuse-request",
+      "subject": "gateway-receipt",
+      "crud": "CREATE",
+      "requirement": "PROD-I-4",
+      "preconditions": [
+        "gateway_request_exists",
+        "declared_refusal_code"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "MALFORMED_REQUEST"
+      ]
+    },
+    {
+      "operation": "bind-transport",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://gateway/bind-transport",
+      "subject": "transport-binding",
+      "crud": "CREATE",
+      "requirement": "PROD-I-3",
+      "preconditions": [
+        "transport_declared_admissible",
+        "phase_permits_transport",
+        "live_matching_grant"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "TRANSPORT_REFUSED_IN_PHASE",
+        "POLICY_REFUSED",
+        "AUTHORITY_REFUSED"
+      ]
+    },
+    {
+      "operation": "list-endpoints",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://gateway/list-endpoints",
+      "subject": "capability-resolution",
+      "crud": "READ",
+      "requirement": "PROD-I-3",
+      "also_reads": [
+        "transport-binding"
+      ],
+      "preconditions": [
+        "capability_map_fresh"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "MISSING_PRECONDITION"
+      ]
+    },
+    {
+      "operation": "read-receipt",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://gateway/read-receipt",
+      "subject": "gateway-receipt",
+      "crud": "READ",
+      "requirement": "PROD-I-4",
+      "also_reads": [
+        "gateway-request",
+        "routing-record"
+      ],
+      "preconditions": [
+        "gateway_receipt_exists"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "MISSING_PRECONDITION"
+      ]
+    }
+  ],
+  "local_refusals": {
+    "ENDPOINT_UNKNOWN": "MISSING_PRECONDITION",
+    "GRANT_NOT_COVERED": "AUTHORITY_REFUSED",
+    "MALFORMED_REQUEST": "INCOMPLETE_PROPOSAL",
+    "RECEIPT_MISSING": "OBSERVATION_MISSING",
+    "SERVICE_UNREACHABLE": "UNREADABLE",
+    "TRANSPORT_NOT_ACTIVATED": "POLICY_REFUSED",
+    "TRANSPORT_REFUSED_IN_PHASE": "POLICY_REFUSED"
+  },
+  "uses_kernel_contracts": [
+    "standing",
+    "typed-authority",
+    "operation",
+    "receipt"
+  ],
+  "ports": [
+    "human-binding",
+    "model-binding",
+    "transport-binding",
+    "federation"
+  ],
+  "depends_on": [
+    "record:append-preserving-journal",
+    "console:authority-grant"
+  ],
+  "forbids": [
+    "settling-a-routed-operation",
+    "observing-what-it-routed",
+    "holding-authoritative-service-state",
+    "issuing-authority",
+    "silent-transport-fallback",
+    "external-transport-in-phase-one",
+    "reaching-a-service-except-through-its-logical-endpoint"
+  ],
+  "note": "The door. It resolves a logical endpoint to the owning service, checks the grant, routes, and returns the owning service's receipt unchanged. It never settles, witnesses, or holds the state it routed."
+}

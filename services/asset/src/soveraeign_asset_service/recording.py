@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 from hashlib import sha256
 from typing import Any, Mapping
 
-from .storage import AssetStore, PayloadIntegrityError
+from .store import PayloadIntegrityError, Store
 
 
 _SHA256 = re.compile(r"^sha256:[0-9a-f]{64}$")
@@ -48,10 +48,6 @@ class ConfigurationChanged(ReconstructionError):
     """Raised when a recording's addressed configuration no longer verifies."""
 
     reason_code = "CONFIGURATION_CHANGED"
-
-
-class StaleLease(RuntimeError):
-    """Raised after stale or expired worker settlement is refused."""
 
 
 def digest_configuration(configuration: Mapping[str, Any]) -> str:
@@ -155,7 +151,7 @@ class ReaderDeclaration:
 class ReaderMaterials:
     """Materialize and resolve immutable reader and configuration artifacts."""
 
-    def __init__(self, store: AssetStore):
+    def __init__(self, store: Store):
         self.store = store
 
     def materialize(self, declaration: ReaderDeclaration) -> dict[str, str]:

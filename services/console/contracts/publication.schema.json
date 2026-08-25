@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/publication.schema.json",
+  "title": "Console Publication",
+  "description": "One operator's mark that a thread may be read outside the node. This is the authoritative record the outward surface is derived from; contracts/public-projection.schema.json renders it and never decides it. Withdrawal appends a lifecycle entry rather than deleting the mark, so the history of what was public and for how long stays reconstructable - a projection can stop rendering a thread, and nothing can claim it was never rendered (decisions/0039).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "node_id",
+    "publication_id",
+    "thread_id",
+    "visibility",
+    "lifecycle",
+    "published_by",
+    "published_at",
+    "withdrawn_at",
+    "standing"
+  ],
+  "properties": {
+    "node_id": {
+      "type": "string",
+      "pattern": "^node:[a-z0-9][a-z0-9-]*$",
+      "description": "The node publishing the thread. A console refuses to publish a thread belonging to another node; that would be republishing a peer's record under this node's name."
+    },
+    "publication_id": {"type": "string", "minLength": 1},
+    "thread_id": {"type": "string", "minLength": 1},
+    "visibility": {
+      "enum": ["PUBLIC"],
+      "description": "The one visibility this record grants. The enum has a single member on purpose: a thread is either marked for the outward surface or has no publication record at all. Degrees of visibility would be an access-control system, and this node's access control is grants."
+    },
+    "lifecycle": {"enum": ["PUBLISHED", "WITHDRAWN"]},
+    "published_by": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The operator who marked the thread public, under a live grant with capability publish scoped to the thread. Publishing is an outward effect and stays attributable to whoever caused it."
+    },
+    "published_at": {"type": "string", "format": "date-time"},
+    "withdrawn_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "When publication was withdrawn; null while the thread is still published. Present together with lifecycle WITHDRAWN."
+    },
+    "standing": {"enum": ["RECORDED", "ADMITTED", "RATIFIED", "EFFECTIVE"]}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"lifecycle": {"const": "WITHDRAWN"}}},
+      "then": {"properties": {"withdrawn_at": {"type": "string", "minLength": 1}}},
+      "else": {"properties": {"withdrawn_at": {"type": "null"}}}
+    }
+  ]
+}

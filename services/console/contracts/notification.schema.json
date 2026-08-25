@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/notification.schema.json",
+  "title": "Console Notification",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["notification_id", "recipient_id", "kind", "source_address", "source_digest", "issued_at", "lifecycle", "acknowledged_at", "delivery", "receipt_id", "standing"],
+  "properties": {
+    "notification_id": {"type": "string", "minLength": 1},
+    "recipient_id": {"type": "string", "minLength": 1},
+    "kind": {"enum": ["MENTION", "ASSIGNMENT", "JUDGEMENT_REQUESTED", "JUDGEMENT_RESOLVED", "RECEIPT_OUTCOME", "COUNTERED"]},
+    "source_address": {"type": "string", "minLength": 1, "description": "Address of the post, receipt, request, or counter-record that concerns the recipient."},
+    "source_digest": {"type": "string", "minLength": 1, "description": "The authoritative record this notification points to; the notification is never that record."},
+    "issued_at": {"type": "string", "format": "date-time"},
+    "lifecycle": {"enum": ["ISSUED", "ACKNOWLEDGED"]},
+    "acknowledged_at": {"type": ["string", "null"], "format": "date-time"},
+    "delivery": {"enum": ["LOCAL"], "description": "Phase I admits local delivery only; external delivery refuses UNCONFIGURED."},
+    "receipt_id": {"type": "string", "minLength": 1, "description": "Receipt of the SYSTEM actor emission that issued this notification."},
+    "standing": {"enum": ["RECORDED", "ADMITTED", "RATIFIED", "EFFECTIVE"]}
+  }
+}

@@ -54,8 +54,13 @@ Every consequential operation declares exactly one effect class:
 - `RECORD_LOCAL` — changes only governed record state; countering is supported.
 - `RESOURCE_CONSUMPTION` — consumes time, compute, storage, money, or another
   resource; the record can be countered but consumption is not reversed.
-- `EXTERNAL_WORLD` — mutates a system outside the local record; refused in
-  Phase I unless an isolated test double makes the observed effect record-local.
+- `EXTERNAL_WORLD` — mutates a system outside the local record. Admitted only
+  inside a scope `contracts/external-effect-authorization.json` declares, using
+  a verb that scope carries, leaving a receipt for the attempt. Every other
+  external effect is refused, including every verb the authorization refuses by
+  name. An isolated test double whose observed effect is record-local is not an
+  external effect. Consumption and external change are never claimed to be
+  rolled back, only compensated forward.
 
 ## Logical roles
 
@@ -211,7 +216,8 @@ visible when current effectiveness is evaluated.
 
 #### `Receipt`
 
-Every attempted crossing or consequential transition returns:
+Every attempted crossing and every consequential operation eventually returns
+one terminal receipt:
 
 ```text
 receipt_id, event_id, event_type, actor_id, interface_id,
@@ -266,22 +272,24 @@ conditioning current operation while preserving its history.
 
 ## Transition contract
 
-Every transition checks the declared pre-state and emits exactly one terminal
-receipt. A stale pre-state cannot settle.
+Every transition checks the declared pre-state. Each attempted operation emits
+exactly one terminal receipt; intermediate run transitions append attributable
+events but do not create extra terminal outcomes. A stale pre-state cannot
+settle.
 
 | Transition | Preconditions | Commit | Refusal |
 | --- | --- | --- | --- |
 | `capture_source` | readable bytes; address and digest available | create immutable `Source` | `UNREADABLE` or `DIGEST_MISMATCH` |
 | `read_source` | source digest verifies; reader fully declared | emit `Recording`; source unchanged | `SOURCE_CHANGED` or `READER_UNDECLARED` |
 | `submit_proposal` | actor, cost, source, scope, and required authority declared | record proposal as `RECORDED` | `INCOMPLETE_PROPOSAL` |
-| `admit` | admission predicates pass against exact proposal state | preserve `RECORDED`; add `ADMITTED` event | `ADMISSION_REFUSED` |
+| `admit` | admission predicates pass against exact proposal state | preserve `RECORDED`; add `ADMITTED` event | `ADMISSION_REFUSED` or `STALE_STATE` |
 | `ratify` | proposal admitted; live matching authority grant | preserve history; add `RATIFIED` event | `AUTHORITY_REFUSED` or `STALE_STATE` |
 | `attest` | ratified executable claim; declared validator and exact inputs | emit one attestation outcome | `VALIDATOR_UNDECLARED` |
 | `make_effective` | ratified; required attestation policy satisfied; no current counter | add `EFFECTIVE` event | `DISSENTED`, `UNATTESTABLE`, or `POLICY_REFUSED` |
 | `begin_run` | complete plan; capability, budget, input, and effect gates pass | emit `ATTEMPTED`; issue lease if delegated | reasoned refusal |
 | `report_run` | current lease and fence; declared output records | store executor report; do not settle | `STALE_LEASE` |
 | `observe_run` | independent observer relation; expected predicates declared | emit observation | `OBSERVER_NOT_INDEPENDENT` |
-| `settle_run` | current input state; satisfactory observation | `COMMITTED`, `FAILED`, or `UNRESOLVED` receipt | `STALE_STATE` |
+| `settle_run` | current input state; satisfactory observation | `COMMITTED`, `FAILED`, or `UNRESOLVED` receipt | `STALE_STATE` or `OBSERVATION_MISSING` |
 | `retract` | live matching retraction authority; target and effect known | emit counter-record and `COUNTERED` receipt | `AUTHORITY_REFUSED` |
 | `cross` | declared source, reader/projection, omissions, authority, destination | destination record and receipt | reasoned refusal |
 | `invoke_model` | declared binding, operation plan, authority, input projection, data boundary, usage and cost meters | proposal, recording, report, or observation plus receipt | `MODEL_UNAVAILABLE`, `MODEL_INCOMPATIBLE`, `DATA_BOUNDARY_REFUSED`, or reasoned refusal |

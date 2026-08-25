@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/judgement-resolution.schema.json",
+  "title": "Console Judgement Resolution",
+  "description": "Proposal (Console Service, CHARTER.md first slice): the answer record for one judgement request. It is written by the resolve-judgement operation, realized as the SPEC.md ratify transition with the request's question as the Proposal, and it is the only console record expected to reach RATIFIED. This schema describes the record, not the mutation: standing advances only by an appended event, never by overwrite, and a resolution that reaches RATIFIED without the grant checked at the transition or its receipt is a defeating case. A resolution entering through any surface that is not a kernel transition with a receipt is not the owner's judgement.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["resolution_id", "request_id", "proposal_id", "resolver_id", "resolver_kind", "resolver_grant_id", "decision", "rationale_address", "rationale_digest", "interface_id", "receipt_id", "unresolved_receipt_id", "created_at", "standing"],
+  "properties": {
+    "resolution_id": {"type": "string", "minLength": 1},
+    "request_id": {"type": "string", "minLength": 1, "description": "The judgement-request this record answers; that request carries resolution_id back to this record."},
+    "proposal_id": {"type": "string", "minLength": 1, "description": "The Proposal ratified by this resolution; it must equal the request's proposal_id."},
+    "resolver_id": {"type": "string", "minLength": 1, "description": "Human actor whose live JUDGEMENT grant resolved the request."},
+    "resolver_kind": {"const": "HUMAN", "description": "Only a human resolves a judgement request; a MODEL attempt is REFUSED and records no resolution. VERIFICATION authority cannot ratify a JUDGEMENT claim (SPEC.md)."},
+    "resolver_grant_id": {"type": ["string", "null"], "minLength": 1, "description": "The typed, scoped, live JUDGEMENT grant checked at the ratify transition (SPEC.md AuthorityGrant); the resolution never holds the right itself. Null is admissible only before the record reaches RATIFIED."},
+    "decision": {"enum": ["ACCEPTED", "STRUCK", "DEFERRED"], "description": "Proposal vocabulary: ACCEPTED and STRUCK are borrowed from SPEC.md QualificationRecord.owner_acceptance; DEFERRED records that the owner declined to rule now and the request stays pending. Not yet defined by SPEC.md."},
+    "rationale_address": {"type": ["string", "null"], "minLength": 1, "description": "Address of the owner's immutable rationale payload; null when the owner gave none."},
+    "rationale_digest": {"type": ["string", "null"], "minLength": 1, "description": "Digest of the rationale bytes; null exactly when rationale_address is null."},
+    "interface_id": {"type": "string", "minLength": 1, "description": "The Human Binding interface through which resolve-judgement was invoked; a code-owner review click, a chat reply, or an edited file is not an interface here."},
+    "receipt_id": {"type": ["string", "null"], "minLength": 1, "description": "Receipt of the resolve-judgement transition. Null is admissible only before the record reaches RATIFIED."},
+    "unresolved_receipt_id": {"type": ["string", "null"], "minLength": 1, "description": "The UNRESOLVED receipt of the conditioned operation that this resolution answers; the operation's successor Receipt names the same id in its own prior-receipt field (SPEC.md Receipt). Null when the request conditioned no receipted operation."},
+    "created_at": {"type": "string", "format": "date-time"},
+    "standing": {"enum": ["RECORDED", "ADMITTED", "RATIFIED", "EFFECTIVE"], "description": "Shared record standing (SPEC.md); RATIFIED requires the appended RATIFIED event, the grant checked, and the receipt."}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"standing": {"enum": ["RATIFIED", "EFFECTIVE"]}}, "required": ["standing"]},
+      "then": {"properties": {"resolver_grant_id": {"type": "string", "minLength": 1}, "receipt_id": {"type": "string", "minLength": 1}}, "required": ["resolver_grant_id", "receipt_id"]}
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "receipt_id": "receipt_69c086bb68e05191",
+  "event_id": "entry_d2f3d4e2a7c842a4a272bc150b9d2912",
+  "event_type": "console.discover-operations",
+  "actor_id": "sov",
+  "interface_id": "bindings/mcp:console_operations",
+  "input_addresses": [
+    "contracts/fixtures/capability-map.reference.json"
+  ],
+  "input_state_digest": "4917d42eaf287b60a0e985c9a10e36d403d4b8cbc8ef1bcc225db0c0567e7a4d",
+  "authority_grant_ids": [],
+  "precondition_results": [
+    {
+      "precondition": "session_live",
+      "required": false,
+      "note": "the manifest declares this endpoint requires_session false"
+    },
+    {
+      "precondition": "capability_map_fresh",
+      "result": "UNVERIFIED",
+      "note": "the gateway read the projection and did not rebuild it"
+    }
+  ],
+  "effect_class": "RECORD_LOCAL",
+  "outcome": "COMMITTED",
+  "emitted_record_addresses": [
+    "d3d7b9dece99b3a2d1ae141a2ffefbb3927ee42fe6411c55f8d605b4e7a54c42",
+    "69c086bb68e05191250d352164b6a8df296c83044e1f1f7fb81c2012dc7f6164"
+  ],
+  "observed_evidence_addresses": [
+    "bindings/mcp/observations/journey-02-discovery.json"
+  ],
+  "created_at": "2026-08-25T18:11:10Z",
+  "serves_capability": "console.discover-operations",
+  "consumed": [
+    {
+      "dimension": "wallclock_seconds",
+      "amount": 0.0038,
+      "measured_by": "time.perf_counter around gateway.call",
+      "note": "the crossing alone. Opening the store is setup, not this operation"
+    },
+    {
+      "dimension": "tool_calls",
+      "amount": 1,
+      "measured_by": "bindings/mcp/observe_journey_02.py"
+    },
+    {
+      "dimension": "usd",
+      "amount": 0,
+      "measured_by": "bindings/mcp/observe_journey_02.py",
+      "note": "a valuation of this usage at zero, not an absence of usage. RECORD_LOCAL and no monetary charge; the seconds were still spent"
+    }
+  ],
+  "receipt_digest": "c53617645d082d5d04e3ac75a054c9f466b8f0dad7406e33b526485e63b28d39"
+}

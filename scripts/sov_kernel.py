@@ -1,10 +1,18 @@
 #!/usr/bin/env python3
-"""Kernel transition contract command line.
+"""Shared Kernel projections and conformance command line.
 
-Reads `contracts/kernel-transitions.json`, the table compiled from the SPEC.md
-Transition contract, and judges requests against it. It contacts no network,
-touches no service, and records nothing: it answers whether a transition is
-legal, never whether it happened.
+The Shared Kernel is broader than any executable table: SPEC.md supplies its logical
+typology, topology, traversal, and invariants. This command exposes machine-readable
+projections of that grammar without turning the Kernel into a runtime service.
+
+The transition commands read ``contracts/kernel-transitions.json``, the authored
+executable projection of the SPEC.md Transition contract. The binding commands read
+every service manifest plus ``contracts/kernel-paradigms.json`` and derive how those
+participants compose against the same Kernel grammar.
+
+Nothing here grants authority, touches a service, or settles an operation. These are
+read/check/compiler surfaces: they answer what is declared and whether declarations
+compose, never whether an effect happened.
 """
 
 from __future__ import annotations
@@ -17,6 +25,9 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from sovkernel import kernel_binding as binding_check  # noqa: E402
+from sovkernel.closure_inputs import rebuild as rebuild_closure  # noqa: E402
+from sovkernel import projection  # noqa: E402
 from sovkernel import parity as parity_check  # noqa: E402
 from sovkernel import transitions as kernel  # noqa: E402
 from sovkernel.jsonschema import validate  # noqa: E402
@@ -33,14 +44,17 @@ def _corpus() -> dict[str, Any]:
     return json.loads((FIXTURES / "transition-cases.json").read_text(encoding="utf-8"))
 
 
-def command_selfcheck(_: argparse.Namespace) -> int:
-    """Run the declared positive and defeating kernel corpus without a network.
+def _binding_inputs() -> tuple[
+    dict[str, dict[str, Any]], dict[str, Any], dict[str, Any],
+    list[dict[str, str]], list[str]
+]:
+    closure, manifests, transitions, paradigms, source_digests, defects = rebuild_closure(ROOT)
+    del closure
+    return manifests, transitions, paradigms, source_digests, defects
 
-    Each case is judged twice: the request must satisfy the transition schema, and
-    the evaluator's decision must match the case's declared expectation. A case
-    that raises the wrong refusal fails as loudly as one that raises none, because
-    a kernel that refuses for the wrong reason has not enforced the contract.
-    """
+
+def command_selfcheck(_: argparse.Namespace) -> int:
+    """Run the declared positive and defeating transition corpus without a network."""
     schema, corpus, table = _schema(), _corpus(), kernel.load_table(ROOT)
     failures: list[str] = []
     for case in corpus["cases"]:
@@ -72,7 +86,7 @@ def command_selfcheck(_: argparse.Namespace) -> int:
 
 
 def command_parity(_: argparse.Namespace) -> int:
-    """Prove each participant already decides the way the kernel decides."""
+    """Prove each participant already decides the way the transition projection decides."""
     failures, checked = parity_check.run(ROOT)
     for failure in failures:
         print(f"FAIL: {failure}")
@@ -124,15 +138,82 @@ def command_table(_: argparse.Namespace) -> int:
     return 0
 
 
+def command_drift(_: argparse.Namespace) -> int:
+    """Refuse when the transition projection and SPEC.md disagree about traversal."""
+    spec = (ROOT / "SPEC.md").read_bytes().decode("utf-8")
+    derived = projection.derive(spec)
+    defects = projection.invariants(derived) + projection.conflicts(
+        derived, kernel.load_table(ROOT))
+    for defect in defects:
+        print(f"DRIFT   {defect}")
+    if defects:
+        print(f"FAIL: {len(defects)} disagreements between SPEC.md and "
+              "contracts/kernel-transitions.json")
+        return 1
+    codes = sorted({code for row in derived.values() for code in row["refusals"]})
+    print(f"PASS: {len(derived)} transitions and {len(codes)} named refusal codes stated "
+          "by SPEC.md agree with the authored kernel table")
+    return 0
+
+
+def command_binding_check(_: argparse.Namespace) -> int:
+    """Check that all authored service manifests compose as Kernel participants."""
+    manifests, transitions, paradigms, _, source_defects = _binding_inputs()
+    defects = source_defects + binding_check.binding_defects(manifests, transitions, paradigms)
+    for defect in defects:
+        print(f"BINDING {defect}")
+    if defects:
+        print(f"FAIL: {len(defects)} service-to-Kernel binding defect(s)")
+        return 1
+
+    operations = sum(len(manifest.get("operations", [])) for manifest in manifests.values())
+    mapped = sum(1 for manifest in manifests.values()
+                 for operation in manifest.get("operations", [])
+                 if operation.get("kernel_transition"))
+    print(
+        f"PASS: {len(manifests)} service manifests compose as Kernel participants; "
+        f"{len(paradigms.get('paradigms', []))} indexed paradigms; "
+        f"{operations} operations, {mapped} mapped to named Kernel transitions, "
+        f"{operations - mapped} explicitly unmapped"
+    )
+    return 0
+
+
+def command_closure(_: argparse.Namespace) -> int:
+    """Print the rebuildable service-to-Kernel closure as JSON for humans or agents."""
+    manifests, transitions, paradigms, source_digests, source_defects = _binding_inputs()
+    closure = binding_check.build(
+        manifests, transitions, paradigms, source_digests=source_digests
+    )
+    closure_schema = json.loads(
+        (ROOT / "contracts" / "kernel-closure.schema.json").read_text("utf-8")
+    )
+    paradigm_schema = json.loads(
+        (ROOT / "contracts" / "kernel-paradigms.schema.json").read_text("utf-8")
+    )
+    defects = (
+        source_defects
+        + validate(paradigms, paradigm_schema)
+        + validate(closure, closure_schema)
+        + binding_check.binding_defects(manifests, transitions, paradigms)
+    )
+    print(json.dumps(closure, indent=2, sort_keys=True))
+    if defects:
+        for defect in defects:
+            print(f"BINDING {defect}", file=sys.stderr)
+        return 1
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
-    """Return the argument parser for every kernel subcommand."""
+    """Return the argument parser for every Kernel projection subcommand."""
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     sub = parser.add_subparsers(dest="command", required=True)
 
-    selfcheck = sub.add_parser("selfcheck", help="run the declared fixture corpus")
+    selfcheck = sub.add_parser("selfcheck", help="run the declared transition fixture corpus")
     selfcheck.set_defaults(handler=command_selfcheck)
 
-    parity = sub.add_parser("parity", help="check participants against the kernel")
+    parity = sub.add_parser("parity", help="check participants against transition semantics")
     parity.set_defaults(handler=command_parity)
 
     check = sub.add_parser("check", help="judge one transition request")
@@ -140,13 +221,28 @@ def build_parser() -> argparse.ArgumentParser:
     check.add_argument("--current", help="path to the observed current state")
     check.set_defaults(handler=command_check)
 
+    drift = sub.add_parser("drift", help="compare the traversal projection against SPEC.md")
+    drift.set_defaults(handler=command_drift)
+
     table = sub.add_parser("table", help="print the declared transition table")
     table.set_defaults(handler=command_table)
+
+    binding = sub.add_parser(
+        "binding-check",
+        help="check all service manifests as equal participants in the Kernel grammar",
+    )
+    binding.set_defaults(handler=command_binding_check)
+
+    closure = sub.add_parser(
+        "closure",
+        help="print the derived Node-wide service-to-Kernel closure as JSON",
+    )
+    closure.set_defaults(handler=command_closure)
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Run one kernel subcommand."""
+    """Run one Kernel projection command."""
     args = build_parser().parse_args(argv)
     return int(args.handler(args))
 

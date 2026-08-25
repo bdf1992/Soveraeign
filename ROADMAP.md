@@ -67,6 +67,32 @@ Exit: a fresh witness reconstructs, operates, audits, dissents, retracts, and
 reports the system; the owner makes the Phase-I operational acceptance
 determination.
 
+## Name crosswalk
+
+One job carries a different name in each document that mentions it. The names
+are not synonyms by accident; each document names the job in its own
+vocabulary, and a reader who knows one name cannot find the others. This table
+is the only place the identity is asserted. `scripts/sov_next.py` checks that
+every row still resolves, so a rename breaks the check instead of the reader.
+
+| Phase | Epic ticket | Governing debt or objective | Drawn as |
+| --- | --- | --- | --- |
+| `F3` Minimal local kernel | `#25` Shared contracts, carrying `#6` Shared Kernel (closed before its standing settled) | `SPEC.md` transition contract, projected to `contracts/kernel-transitions.json` | `K` in `diagrams/crossing-topology.md` |
+| — service-internal | `#27` Asset reference participant | `ENGINEERING.md` named module debt: split `core.py` by owned responsibility | — |
+| `F2` Conformance corpus | `#26` Conformance harness | `SPEC.md` Conformance boundary | control pairs in `conformance/` |
+| `F4` Binding and model-portability proof | `#30` Operator bindings | `PRD.md` two-binding proof | `C1` in `diagrams/crossing-typology.md` |
+
+The kernel row names contracts, not a module. `CLASSIFICATION.md` files the
+shared kernel under cross-cutting foundations rather than the
+System/Node/Service/Component ladder, and `contracts/README.md` disclaims
+programming-language classes. The kernel is implemented once per service and
+its sameness is proven behaviourally by the conformance oracle — which is why
+splitting `core.py` is a separate, service-internal row.
+
+A row is added when a job acquires its second name, not when it acquires its
+first. Rows are removed only when the job is `RATIFIED` and the names retire
+together.
+
 ## Deferred until earned
 
 Federation, autonomous external effects, world-effect compensation, public

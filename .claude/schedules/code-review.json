@@ -1,0 +1,29 @@
+{
+  "name": "code-review",
+  "description": "Review the current branch for defects and duplication every two hours; reports only, never edits or posts.",
+  "enabled": false,
+  "target": {
+    "kind": "workflow",
+    "name": "sov-review",
+    "args": {
+      "dimensions": [
+        "correctness",
+        "reuse"
+      ],
+      "base": "origin/main",
+      "head": "HEAD"
+    }
+  },
+  "cron": "0 */2 * * *",
+  "mode": "observe",
+  "effect_class": "RESOURCE_CONSUMPTION",
+  "isolation": "tree",
+  "preconditions": {
+    "clean_tree": false,
+    "lookback_minutes": 90
+  },
+  "limits": {
+    "max_budget_usd": 3,
+    "timeout_seconds": 2700
+  }
+}

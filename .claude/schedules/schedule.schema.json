@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/harness/schedule.schema.json",
+  "title": "Soveraeign Scheduled Run Declaration",
+  "description": "Harness-owned declaration of a scheduled run of one workflow or skill. It is the schedule analogue of an operation plan: target, cadence, mode, effect class, preconditions, and limits are declared before anything fires. It grants no authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "enabled", "target", "cron", "mode", "effect_class", "limits"],
+  "properties": {
+    "name": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,62}$"},
+    "description": {"type": "string"},
+    "enabled": {"type": "boolean"},
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "name"],
+      "properties": {
+        "kind": {"enum": ["workflow", "skill"]},
+        "name": {"type": "string", "minLength": 1},
+        "args": {"type": "object"}
+      }
+    },
+    "cron": {"type": "string", "minLength": 9},
+    "mode": {"enum": ["observe", "build"]},
+    "effect_class": {"enum": ["RECORD_LOCAL", "RESOURCE_CONSUMPTION", "EXTERNAL_WORLD"]},
+    "isolation": {"enum": ["tree", "worktree"]},
+    "preconditions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "clean_tree": {"type": "boolean"},
+        "lookback_minutes": {"type": "integer", "minimum": 1}
+      }
+    },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["max_budget_usd", "timeout_seconds"],
+      "properties": {
+        "max_budget_usd": {"type": "number", "minimum": 0},
+        "timeout_seconds": {"type": "integer", "minimum": 60}
+      }
+    }
+  }
+}

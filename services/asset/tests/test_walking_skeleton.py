@@ -190,22 +190,34 @@ class WalkingSkeleton(unittest.TestCase):
             ReaderDeclaration(
                 "asset.pencil", "1", configuration_digest, "LOSSY", ("color",)
             ),
-            None,
         )
         for reader in invalid_readers:
             with self.subTest(reader=reader), self.assertRaises(ReaderUndeclared):
                 self.service.request_derivative(
                     asset["asset_id"], asset["version_id"], "Bdo", reader=reader
                 )
-        with self.assertRaises(ReaderUndeclared):
-            self.service.request_derivative(
-                asset["asset_id"], asset["version_id"], "Bdo"
-            )
         refusal = self.service.db.execute(
-            "SELECT payload_json FROM receipts WHERE event='operation.request' "
+            "SELECT payload_json FROM receipts WHERE event='asset.request-derivative' "
             "AND outcome='REFUSED' ORDER BY created_at DESC LIMIT 1"
         ).fetchone()
         self.assertEqual(json.loads(refusal["payload_json"])["reason"], "READER_UNDECLARED")
+
+    def test_undeclared_legacy_derivative_is_not_a_recording(self):
+        """Compatibility output remains a version and earns no recording claim."""
+        path = self.source("asset.txt", b"asset")
+        asset = self.service.ingest(path, "Asset", "Bdo")
+        run = self.service.request_derivative(
+            asset["asset_id"], asset["version_id"], "Bdo"
+        )
+        fence = self.service.claim(run, "local-worker")
+        output = self.service.report_derivative(run, "local-worker", fence, b"output")
+        self.assertIsNone(
+            self.service.db.execute(
+                "SELECT id FROM recordings WHERE output_version_id=?", (output,)
+            ).fetchone()
+        )
+        with self.assertRaises(KeyError):
+            self.service.reconstruct_recording(output)
 
     def test_source_change_after_request_refuses_derivative_report(self):
         path = self.source("asset.txt", b"asset")
@@ -218,8 +230,15 @@ class WalkingSkeleton(unittest.TestCase):
             "SELECT blob_path FROM versions WHERE id=?", (asset["version_id"],)
         ).fetchone()[0]
         Path(blob_path).write_bytes(b"changed")
+        blob_root = self.root / "state" / "blobs" / "sha256"
+        blobs_before = {path for path in blob_root.rglob("*") if path.is_file()}
         with self.assertRaises(SourceChanged):
-            self.service.report_derivative(run, "local-worker", fence, b"output")
+            self.service.report_derivative(
+                run, "local-worker", fence, b"unique refused output"
+            )
+        self.assertEqual(
+            {path for path in blob_root.rglob("*") if path.is_file()}, blobs_before
+        )
         self.assertEqual(
             self.service.db.execute("SELECT status FROM runs WHERE id=?", (run,)).fetchone()[0],
             "REFUSED",
@@ -358,12 +377,40 @@ class WalkingSkeleton(unittest.TestCase):
             self.service.reconstruct_recording(output_version)
 
     def test_same_bytes_do_not_collapse_asset_identity(self):
-        path = self.source("same.bin", b"same")
-        first = self.service.ingest(path, "First use", "Bdo")
-        second = self.service.ingest(path, "Second use", "Bdo")
+        """Two sources holding identical bytes are two identities sharing one blob.
+
+        The fixture uses two paths deliberately. Capturing one path twice is the
+        same source again, which is a version of one asset rather than a second
+        asset (`test_recapturing_one_source_versions_it`), so it cannot test this
+        claim.
+        """
+        first = self.service.ingest(self.source("same.bin", b"same"), "First use", "Bdo")
+        second = self.service.ingest(self.source("copy.bin", b"same"), "Second use", "Bdo")
         self.assertEqual(first["digest"], second["digest"])
         self.assertNotEqual(first["asset_id"], second["asset_id"])
         self.assertEqual(len(list((self.root / "state" / "blobs" / "sha256").glob("*/*"))), 1)
+        self.assertEqual([entry["holders"] for entry in self.service.duplicates()], [2])
+
+    def test_recapturing_one_source_versions_it(self):
+        """`CLASSIFICATION.md`: an asset is an identity with a version history."""
+        path = self.source("brief.md", b"first draft\n")
+        first = self.service.ingest(path, "Brief", "Bdo", locator="repo:brief.md")
+        path.write_bytes(b"second draft\n")
+        second = self.service.ingest(path, "Brief", "Bdo", locator="repo:brief.md")
+        self.assertEqual(first["asset_id"], second["asset_id"])
+        self.assertEqual([first["role"], second["role"]], ["ORIGINAL", "REVISION"])
+        self.assertEqual(len(self.service.history(first["asset_id"])), 2)
+
+    def test_recapturing_unchanged_bytes_adds_no_version(self):
+        """The defeating case: a re-read is not a new state, so it earns no version."""
+        path = self.source("brief.md", b"first draft\n")
+        first = self.service.ingest(path, "Brief", "Bdo", locator="repo:brief.md")
+        again = self.service.ingest(path, "Brief", "Bdo", locator="repo:brief.md")
+        self.assertTrue(again["unchanged"])
+        self.assertEqual(again["version_id"], first["version_id"])
+        self.assertEqual(len(self.service.history(first["asset_id"])), 1)
+        outcomes = [r["outcome"] for r in self.service.receipts() if r["event"] == "asset.ingest-asset"]
+        self.assertEqual(outcomes, ["COMMITTED", "ATTEMPTED"])
 
 
 if __name__ == "__main__":

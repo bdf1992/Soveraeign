@@ -49,7 +49,34 @@ It does not carry identity. Every actor is a string until Identity (#11) exists,
 which is the same limitation the rest of the system currently has.
 
 It does not durably guarantee media beyond detectable corruption. `SPEC.md`
-places that outside the logical specification.
+places that outside the logical specification — correctly, for a *logical*
+specification, which is why `decisions/0049` puts the concern in the technical
+baseline instead and `custody.py` realizes it. The service still guarantees no
+medium; it now gives an operator the means to stop depending on one.
+
+## Export and restore
+
+`custody.py` renders the whole journal as a portable document and replays one
+into an empty store. Neither adds technology: every entry already carries the
+digest of the one before it, so a copy either replays into the same chain or
+visibly does not. An unverifiable journal is never exported — a copy of a broken
+chain is a broken chain that now exists twice — and a restore refuses a store
+that already holds entries, since interleaving two histories yields one chain
+that verifies as neither.
+
+What self-verification reaches, and what it cannot, is worth stating exactly.
+An export detects an edited field, a reordered pair, and an entry cut from the
+middle: each breaks a link. It cannot detect **truncation**. Drop the last
+entries and the remainder is a perfectly valid shorter journal — every link
+holds, and nothing inside the document knows how long it was meant to be.
+Rewriting the declared head is as easy as dropping the entries.
+
+So `verify_export` accepts a head digest held *outside* the document, and only
+that catches a truncation. This is not a defect of the chain; it is what a chain
+is. A record cannot certify its own completeness from the inside — the same
+shape as `decisions/0048` ID-11, where the root cannot recover itself from
+inside the node. The practical consequence is small and worth saying plainly:
+write the head digest down next to the recovery secrets.
 
 ## Reaching it
 

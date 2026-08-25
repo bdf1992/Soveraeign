@@ -164,6 +164,14 @@ CHECKS = (
           "inventory rather than a live daemon, so the result cannot depend on whether a "
           "model server happens to be running on the checking machine",
           ("adapters/ollama", "contracts/model-binding.schema.json")),
+    Check("Identity component tests",
+          [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
+          ROOT / "services" / "identity",
+          "the component's own tests; these establish BUILT evidence about the challenge and "
+          "recovery mechanics and are explicitly NOT independent of the code they exercise. "
+          "The refusal cases are the exception worth naming: they drive the lifecycle against "
+          "the refusal table services/identity/CHARTER.md declared before the code existed",
+          ("services/identity/tests", "services/identity/CHARTER.md")),
     Check("Record Service reference tests",
           [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
           ROOT / "services" / "record",

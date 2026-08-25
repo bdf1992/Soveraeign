@@ -1062,6 +1062,97 @@
       "actor_kinds": [
         "HUMAN"
       ]
+    },
+    "identity.mint-challenge": {
+      "office": "BACK",
+      "counter": "permits-office",
+      "required_authority": "mint:challenge",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "SYSTEM"
+      ]
+    },
+    "identity.deliver-challenge": {
+      "office": "BACK",
+      "counter": "permits-office",
+      "required_authority": "deliver:challenge",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "SYSTEM"
+      ]
+    },
+    "identity.present-challenge": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "present:challenge",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "identity.enroll-recovery": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "enroll:recovery",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN"
+      ]
+    },
+    "identity.redeem-recovery": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "redeem:recovery",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN"
+      ]
+    },
+    "identity.revoke-recovery": {
+      "office": "BACK",
+      "counter": "permits-office",
+      "required_authority": "revoke:recovery",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN"
+      ]
+    },
+    "identity.report-unenrolled": {
+      "office": "BACK",
+      "counter": "permits-office",
+      "required_authority": "read:recovery",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "SYSTEM"
+      ]
+    },
+    "record.export-journal": {
+      "office": "BACK",
+      "counter": "record",
+      "required_authority": "export:journal",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "SYSTEM"
+      ]
+    },
+    "record.verify-export": {
+      "office": "BACK",
+      "counter": "record",
+      "required_authority": "verify:export",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "SYSTEM"
+      ]
+    },
+    "record.restore-journal": {
+      "office": "BACK",
+      "counter": "record",
+      "required_authority": "restore:journal",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "SYSTEM"
+      ]
     }
   },
   "cli_note": "A capability appears here only when a command actually implements it. The asset CLI also carries `search` and `receipts`, which read the compatibility projections and are not declared operations (OPEN-SEAMS S14)."

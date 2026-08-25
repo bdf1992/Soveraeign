@@ -39,10 +39,12 @@
         "the pull request head SHA exactly equals the merge event head SHA",
         "the pull request head repository is bdf1992/Soveraeign",
         "the pull request base ref exactly equals the merge event base ref",
+        "the repository default branch is not the branch being deleted",
+        "the live branch ref still points exactly at the merged pull request head SHA",
         "no open pull request currently uses the head branch as its base"
       ],
       "reversible_by": "recreating the ref at the recorded merged head SHA; merged commits and the pull-request record remain addressable",
-      "note": "Retires completed execution inventory only. Behindness, age, silence, containment guesses, and caller assertions do not authorize deletion. An open stacked child makes the branch shared and retirement refuses."
+      "note": "Retires completed execution inventory only. Behindness, age, silence, containment guesses, and caller assertions do not authorize deletion. A reused or advanced ref, protected default branch, or open stacked child makes retirement refuse."
     }
   },
   "refused_verbs": {

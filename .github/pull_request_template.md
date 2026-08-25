@@ -13,6 +13,20 @@
 - Effect class: `RECORD_LOCAL` | `RESOURCE_CONSUMPTION` | `EXTERNAL_WORLD`
 - Rollback, counteraction, or refusal boundary:
 
+## Concern and settlement
+
+<!-- Name the durable concern this execution branch carries. Product meaning stays on
+     the concern's canonical source references; do not copy product semantics into the
+     branch or PR. See contracts/ticket-settlement.json. -->
+
+- Concern: #
+- Relation: `advances` | `satisfies` | `supersedes`
+- Remaining unsatisfied state or named successor:
+
+<!-- Use GitHub's `Closes #N` syntax only when Relation is `satisfies`. A PR that merely
+     advances a concern must leave it open. A superseded concern must name its successor
+     before closure. -->
+
 ## Tickets
 
 <!-- Implementation stubs this change closes. A branch or pull request may close a

@@ -107,16 +107,14 @@ class HostService:
         """Read the configured execution boundary and append one terminal receipt."""
         try:
             snapshot = self.adapter.read_health()
-        except HostAdapterUnavailable as error:
+        except HostAdapterUnavailable:
             return self._receipt("REFUSED", actor, {
                 "reason_code": "HOST_UNAVAILABLE",
-                "diagnostic": str(error),
             })
         except Exception as error:
             return self._receipt("FAILED", actor, {
                 "reason_code": "HOST_READ_FAILED",
                 "error_type": type(error).__name__,
-                "diagnostic": str(error),
             })
 
         defect = snapshot_defect(snapshot, self.adapter.adapter_id)

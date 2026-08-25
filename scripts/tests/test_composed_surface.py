@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 import copy
+import json
 import sys
 import unittest
 
@@ -82,8 +83,8 @@ class ComposedSurface(unittest.TestCase):
     def test_declared_facet_keys_reach_the_query_script_as_data(self) -> None:
         built = collections(self.interface, UNAVAILABLE)
         declared = {key for item in built for key in item.facets}
-        for key in declared:
-            self.assertIn(f'"{key}"', self.page.split("data-facet-keys>", 1)[1])
+        manifest = self.page.split("data-facet-keys>", 1)[1].split("</script>", 1)[0]
+        self.assertEqual(json.loads(manifest), sorted(declared))
 
     def test_exact_routes_are_the_only_cards_with_invoke_commands(self) -> None:
         self.assertIn("sov_surface.py try", self.card("asset.ingest-asset"))
@@ -98,10 +99,22 @@ class ComposedSurface(unittest.TestCase):
         self.assertIn("unavailable", read_asset)
         self.assertIn("does not widen it", read_asset)
 
+    def test_a_query_matching_nothing_reaches_its_own_empty_state(self) -> None:
+        script = self.page.split("<script>", 1)[1].rsplit("</script>", 1)[0]
+        self.assertIn("data-no-results", script)
+        self.assertIn("none.hidden = shown > 0", script)
+        self.assertIn("data-no-results hidden", self.page)
+
     def test_query_and_selection_never_reach_a_source(self) -> None:
         script = self.page.split("<script>", 1)[1].rsplit("</script>", 1)[0]
         for forbidden in ("fetch(", "XMLHttpRequest", "location", "<form", "localStorage"):
             self.assertNotIn(forbidden, script)
+
+    def test_an_unread_session_source_is_never_counted_as_zero(self) -> None:
+        self.assertIn("harness sessions not read", self.page)
+        self.assertNotIn("0 harness sessions", self.page)
+        nav = self.page.split('data-filter="kind:session"', 1)[1].split("</button>", 1)[0]
+        self.assertNotIn('<span class="count">0</span>', nav)
 
     def test_footer_keeps_projection_boundary_visible(self) -> None:
         self.assertIn(self.interface["input_state_digest"], self.page)

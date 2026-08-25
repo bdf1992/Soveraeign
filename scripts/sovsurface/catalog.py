@@ -72,7 +72,9 @@ def service_record(service: str, operations: list[dict[str, Any]]) -> Record:
                     ("Observed", code(observed)),
                     (
                         "Affordances",
-                        ", ".join(f"{count} {kind}" for kind, count in sorted(kinds.items())),
+                        ", ".join(
+                            f"{count} {e(kind)}" for kind, count in sorted(kinds.items())
+                        ),
                     ),
                 ),
                 note=(

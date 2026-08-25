@@ -63,6 +63,16 @@ def _claims(snapshot: dict[str, Any], session: str) -> list[str]:
     return sorted(paths)
 
 
+def queryable(claims: Sequence[str]) -> tuple[str, ...]:
+    """The claims a query can actually address.
+
+    A path carrying whitespace cannot be one query token, so it is shown in the
+    inspector and left out of the facet. An affordance built from the unfiltered
+    list would offer a filter that matches nothing and blank the workspace.
+    """
+    return tuple(filter(None, (_token(path) for path in claims)))
+
+
 def _facets(item: dict[str, Any], claims: Sequence[str]) -> dict[str, tuple[str, ...]]:
     live = bool(item.get("live"))
     principal, verification = _text(item.get("principal")), _text(item.get("verification"))
@@ -75,7 +85,7 @@ def _facets(item: dict[str, Any], claims: Sequence[str]) -> dict[str, tuple[str,
         ("branch", _text(item.get("branch"))),
         ("principal", principal),
         ("verification", verification),
-        ("tree", _text(item.get("tree")).rstrip("/").rsplit("/", 1)[-1]),
+        ("tree", _text(item.get("tree")).rstrip("/\\")),
     ):
         token = _token(value)
         if token:
@@ -88,7 +98,7 @@ def _facets(item: dict[str, Any], claims: Sequence[str]) -> dict[str, tuple[str,
     ) if present]
     if has:
         facets["has"] = tuple(has)
-    resources = tuple(filter(None, (_token(path) for path in claims)))
+    resources = queryable(claims)
     if resources:
         facets["resource"] = resources
     return facets
@@ -105,6 +115,8 @@ def record(
     claims = _claims(snapshot, session)
     branch = _text(item.get("branch"))
     intent = _text(item.get("intent"))
+    addressable = queryable(claims)
+    tree = _token(_text(item.get("tree")).rstrip("/\\"))
     badges: list[tuple[str, str]] = [
         ("HARNESS", "warning"),
         ("live", "positive") if live else ("not live", "muted"),
@@ -142,9 +154,19 @@ def record(
         affordances=(
             Affordance(
                 "Filter to this session's claims",
-                filter_value=f"resource:{claims[0]}" if claims else "",
-                detail="Query narrows what is shown. It changes no claim.",
-                available=bool(claims),
+                filter_value=f"resource:{addressable[0]}" if addressable else "",
+                detail=(
+                    "Query narrows what is shown. It changes no claim."
+                    if addressable
+                    else "This session holds no claim a single query token can address."
+                ),
+                available=bool(addressable),
+            ),
+            Affordance(
+                "Filter to sessions in this working tree",
+                filter_value=f"tree:{tree}" if tree else "",
+                detail="Query narrows what is shown.",
+                available=bool(tree),
             ),
             Affordance(
                 "Act as this session",

@@ -13,7 +13,6 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
-from typing import Any
 import json
 import re
 
@@ -67,7 +66,13 @@ class Affordance:
 
 @dataclass(frozen=True)
 class Record:
-    """One normalized row: identity, kind, search text, facets, card, inspector."""
+    """One normalized row: identity, kind, search text, facets, card, inspector.
+
+    ``identity``, ``title``, ``eyebrow``, ``search``, ``omissions``, and every
+    facet value are escaped by the renderer. ``summary`` and every ``Section``
+    row value are inserted as HTML: an adapter composes them with ``code()`` and
+    ``e()`` and owns their escaping. Never pass a raw source string to either.
+    """
 
     identity: str
     kind: str
@@ -247,9 +252,14 @@ def facet_manifest(collections: Sequence[Collection]) -> str:
     )
 
 
-def counts(collections: Sequence[Collection]) -> dict[str, Any]:
-    """Card totals per collection, for a status line that cannot overstate them."""
+def counts(collections: Sequence[Collection]) -> dict[str, int | None]:
+    """Card totals per collection, or None where the source was never read.
+
+    Zero is a claim: it says the source was read and reported nothing. A source
+    that could not be read has no count, so an unavailable collection returns
+    None and every caller has to decide how to say "not read" out loud.
+    """
     return {
-        item.collection_id: (len(item.records) if item.available else 0)
+        item.collection_id: (len(item.records) if item.available else None)
         for item in collections
     }

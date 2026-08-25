@@ -56,7 +56,9 @@ def _nav(
     session_collection: Collection,
 ) -> str:
     kinds = Counter(item["affordance"]["kind"] for item in interface["operations"])
-    live = session_collection.facet_values("live").get("true", 0)
+    read = session_collection.available
+    live = session_collection.facet_values("live").get("true", 0) if read else None
+    known = len(session_collection.records) if read else None
     rows = [
         nav_item("Everything", icon="⌂", active=True, count=len(interface["operations"])),
         nav_item("Actions", icon="▶", count=kinds["ACTION"], filter_value="affordance:ACTION"),
@@ -80,12 +82,7 @@ def _nav(
         + nav_item("Asset service", icon="▣", filter_value="service:asset")
         + nav_item("Declared subjects", icon="◆", filter_value="kind:subject")
         + '<div class="section-label">Host harness</div>'
-        + nav_item(
-            "Sessions",
-            icon="◉",
-            count=len(session_collection.records),
-            filter_value="kind:session",
-        )
+        + nav_item("Sessions", icon="◉", count=known, filter_value="kind:session")
         + nav_item("Live now", icon="●", count=live, filter_value="live:true")
         + nav_item("Holding paths", icon="⛨", filter_value="has:claim")
         + "</aside>"
@@ -125,9 +122,12 @@ def _utility(interface: dict[str, Any], session_collection: Collection) -> str:
 
 def _hero(interface: dict[str, Any], session_collection: Collection) -> str:
     figures = interface["counts"]
-    live = session_collection.facet_values("live").get("true", 0)
     presence = (
-        metric(live, "live host sessions", "HARNESS state, not Node standing")
+        metric(
+            session_collection.facet_values("live").get("true", 0),
+            "live host sessions",
+            "HARNESS state, not Node standing",
+        )
         if session_collection.available
         else metric("—", "live host sessions", "session source unavailable")
     )
@@ -146,6 +146,11 @@ def _hero(interface: dict[str, Any], session_collection: Collection) -> str:
         + presence
         + "</div></div>"
     )
+
+
+def _said(count: int | None, noun: str) -> str:
+    """State a count, or state that the source was never read. Never zero for both."""
+    return f"{count} {noun}" if count is not None else f"{noun} not read"
 
 
 def _toolbar() -> str:
@@ -210,7 +215,8 @@ def render(interface: dict[str, Any], presence: dict[str, Any] | None = None) ->
     status = (
         '<footer class="status">NODE INTERFACE · '
         f'{e(interface["input_state_digest"])} · '
-        f'{totals["operations"]} operations · {totals["sessions"]} harness sessions · '
+        f'{totals["operations"]} operations · '
+        f'{_said(totals["sessions"], "harness sessions")} · '
         "rendering grants nothing · not an observation</footer>"
     )
     return (

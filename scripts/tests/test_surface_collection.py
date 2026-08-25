@@ -137,9 +137,13 @@ class CollectionMechanism(unittest.TestCase):
         self.assertNotIn("<a href", html)
         self.assertNotIn("<form", html)
 
-    def test_counts_never_credit_an_unavailable_collection_with_cards(self) -> None:
-        built = [collection(), collection(collection_id="gone", available=False)]
-        self.assertEqual(counts(built), {"things": 1, "gone": 0})
+    def test_an_unread_collection_has_no_count_rather_than_a_count_of_zero(self) -> None:
+        built = [
+            collection(),
+            collection(collection_id="empty", records=()),
+            collection(collection_id="gone", available=False),
+        ]
+        self.assertEqual(counts(built), {"things": 1, "empty": 0, "gone": None})
 
     def test_facet_values_count_records_not_values(self) -> None:
         built = collection(

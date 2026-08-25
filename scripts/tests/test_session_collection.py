@@ -154,6 +154,42 @@ class SessionCollection(unittest.TestCase):
         self.assertNotIn("resource", card.facets)
         self.assertIn("scripts/a file.py", render(built))
 
+    def test_an_unaddressable_claim_never_offers_a_filter_that_matches_nothing(self) -> None:
+        held = {"scripts/a file.py": [{"session": "session-a75dfb"}]}
+        html = render(sessions.collection(snapshot(held=held)))
+        self.assertNotIn('data-filter="resource:scripts/a file.py"', html)
+        self.assertIn("claims unavailable", html)
+        self.assertIn("no claim a single query token can address", html)
+
+    def test_an_addressable_claim_does_offer_its_filter(self) -> None:
+        held = {"scripts/sovsurface": [{"session": "session-a75dfb"}]}
+        html = render(sessions.collection(snapshot(held=held)))
+        self.assertIn('data-filter="resource:scripts/sovsurface"', html)
+
+    def test_the_tree_facet_never_collapses_two_different_trees(self) -> None:
+        here = dict(LIVE, session="s-here", tree="C:/work/a/Soveraeign")
+        there = dict(LIVE, session="s-there", tree="C:/work/b/Soveraeign")
+        built = sessions.collection(snapshot((here, there)))
+        values = [item.facets["tree"] for item in built.records]
+        self.assertEqual(
+            sorted(values), [("C:/work/a/Soveraeign",), ("C:/work/b/Soveraeign",)]
+        )
+        self.assertNotEqual(values[0], values[1])
+
+    def test_a_session_alone_on_its_tree_is_not_told_the_field_was_withheld(self) -> None:
+        html = render(sessions.collection(snapshot()))
+        card = html.split('data-identity="session-a75dfb"', 1)[1].split("</details>", 1)[0]
+        relations = card.split(">Relations</div>", 1)[1].split("</div>", 1)[0]
+        self.assertIn("no other session", relations)
+        self.assertNotIn("not reported by this source", relations)
+
+    def test_a_session_with_no_tree_reported_says_so(self) -> None:
+        nowhere = {k: v for k, v in LIVE.items() if k not in ("tree", "branch")}
+        html = render(sessions.collection(snapshot((nowhere,))))
+        relations = html.split(">Relations</div>", 1)[1].split("</dl>", 1)[0]
+        self.assertIn("not reported by this source", relations)
+        self.assertNotIn("no other session", relations)
+
     def test_an_unavailable_source_renders_unavailable_not_empty(self) -> None:
         built = sessions.collection(
             {
@@ -170,7 +206,8 @@ class SessionCollection(unittest.TestCase):
         html = render(built)
         self.assertIn("Sessions unavailable", html)
         self.assertIn("not present in this working tree", html)
-        self.assertNotIn("No live sessions", html)
+        self.assertNotIn("empty source", html)
+        self.assertNotIn("No sessions", html)
 
     def test_building_the_collection_never_mutates_the_snapshot(self) -> None:
         data = snapshot((LIVE, ENDED), held={"a": [{"session": "session-a75dfb"}]})

@@ -49,15 +49,14 @@ padding:5px 9px;border-radius:999px;cursor:pointer;font-size:11px}.pill:hover,.p
 background:#303349}.surface-section{margin:22px 0}.surface-section>header{display:flex;align-items:end;gap:8px;margin-bottom:8px}
 .surface-section h2{font-size:15px;margin:0}.surface-section header p{font-size:11px;color:var(--muted);margin:0}
 .card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:9px}.card{border:1px solid var(--line);
-background:var(--card);border-radius:8px}.browse-card{padding:12px;min-height:124px}.browse-card h3{font-size:14px;margin:3px 0 7px}
-.browse-card p{margin:7px 0}.card-statline{color:var(--muted);font-size:12px}.text-action{border:0;background:none;
+background:var(--card);border-radius:8px}
+.card-statline{color:var(--muted);font-size:12px}.text-action{border:0;background:none;
 color:#9da4ff;padding:4px 0;cursor:pointer;font-weight:650}.badges{display:flex;gap:4px;flex-wrap:wrap}.badge{font-size:9px;
 letter-spacing:.04em;text-transform:uppercase;border:1px solid var(--line);border-radius:4px;padding:2px 5px;color:var(--muted)}
 .badge.positive{color:var(--positive);border-color:#40715f}.badge.warning{color:var(--warning);border-color:#805939}
-.op{margin:7px 0;overflow:hidden}.op>summary{list-style:none;display:flex;align-items:center;gap:10px;padding:10px 12px;
-cursor:pointer}.op>summary::-webkit-details-marker{display:none}.op[open]>summary{background:#2a2c31}.card-leading{display:flex;
-flex-direction:column;gap:2px;min-width:0;margin-right:auto}.op code.id{font-weight:750;color:var(--fg);background:none;border:0;padding:0}
-.operation-subject{font-size:11px;color:var(--muted)}.op-body{border-top:1px solid var(--line);padding:12px}
+.card-leading{display:flex;
+flex-direction:column;gap:2px;min-width:0;margin-right:auto}
+
 .facts{display:grid;grid-template-columns:132px minmax(0,1fr);gap:7px 10px;margin:0}.facts dt{color:var(--quiet);
 font-size:11px}.facts dd{margin:0;min-width:0;overflow-wrap:anywhere}.facts code,.source-row code{font:11px/1.4 ui-monospace,
 SFMono-Regular,Menlo,monospace;background:#17181b;border:1px solid var(--line);padding:1px 4px;border-radius:4px}
@@ -79,7 +78,7 @@ font:10px/27px ui-monospace,SFMono-Regular,Menlo,monospace;padding:0 10px;white-
 """
 
 EXTRA = r"""
-.card-rows{display:grid;gap:6px}.grid-card{padding:0}.card>summary{list-style:none;display:flex;
+.card-rows{display:grid;gap:6px}.grid-card,.row-card{padding:0}.card>summary{list-style:none;display:flex;
 align-items:center;gap:10px;padding:10px 12px;cursor:pointer;min-height:52px}
 .card>summary::-webkit-details-marker{display:none}.card[open]>summary{background:#2a2c31}
 .card-title{font-weight:750;overflow-wrap:anywhere}.card-body{border-top:1px solid var(--line);padding:12px}
@@ -129,6 +128,8 @@ SCRIPT = r"""
       const owned = [...section.querySelectorAll('[data-card]')];
       section.hidden = owned.length > 0 && owned.every(card => card.hidden);
     });
+    const none = document.querySelector('[data-no-results]');
+    if (none) none.hidden = shown > 0;
     if (count) count.textContent = `${shown} / ${cards.length} cards`;
     document.querySelectorAll('[data-filter]').forEach(button => {
       button.classList.toggle('active', button.dataset.filter === value);

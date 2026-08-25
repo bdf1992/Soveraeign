@@ -44,19 +44,23 @@ def _relations(item: dict[str, Any], peers: Sequence[dict[str, Any]]) -> list[tu
         and _text(peer.get("branch")) == branch
     )
     return [
-        (
-            "Shares this working tree",
-            ", ".join(code(name) for name in same_tree) or NOT_REPORTED
-            if tree
-            else NOT_REPORTED,
-        ),
-        (
-            "Shares this branch",
-            ", ".join(code(name) for name in same_branch) or NOT_REPORTED
-            if branch
-            else NOT_REPORTED,
-        ),
+        ("Shares this working tree", _peers(tree, same_tree)),
+        ("Shares this branch", _peers(branch, same_branch)),
     ]
+
+
+def _peers(field: str, names: Sequence[str]) -> str:
+    """Three different answers, told apart.
+
+    The source did not report the field; the source reported it and no other
+    session matches; or these sessions match. Collapsing the middle case into
+    ``not reported`` tells the reader the harness withheld what it supplied.
+    """
+    if not field:
+        return NOT_REPORTED
+    if not names:
+        return '<span class="muted">no other session</span>'
+    return ", ".join(code(name) for name in names)
 
 
 def sections(

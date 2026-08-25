@@ -221,7 +221,7 @@
     },
     {
       "address": "services/host/src/soveraeign_host_service/core.py",
-      "digest": "24fff8a6b5885ca34a622669a42f882b6c757877f9f0d4062ca2ec66b001026b"
+      "digest": "aa9c34db73cb91982d1894818c185a82716110849de47ef2a25d15a5fa2f3773"
     },
     {
       "address": "services/host/src/soveraeign_host_service/ports.py",
@@ -268,7 +268,7 @@
       "digest": "150834886995a8e0c32334beb5ef53dbc69cbb244172b510a06b056e608bf4b0"
     }
   ],
-  "input_state_digest": "9f666e73a366e3fb64aa4294d7aee291216af155a0e29346ceaf62827a9be60f",
+  "input_state_digest": "f7275fb1a5f77da8c74a14fd234da2d338a31452f2722f817034c646be9acadc",
   "counts": {
     "declared": 117,
     "bound": 117,
@@ -7503,7 +7503,7 @@
         },
         {
           "address": "services/host/src/soveraeign_host_service/core.py",
-          "digest": "24fff8a6b5885ca34a622669a42f882b6c757877f9f0d4062ca2ec66b001026b"
+          "digest": "aa9c34db73cb91982d1894818c185a82716110849de47ef2a25d15a5fa2f3773"
         },
         {
           "address": "services/host/src/soveraeign_host_service/ports.py",
@@ -7519,7 +7519,7 @@
         "reason_code": "EXACT_READ_ROUTE_ACTIVE",
         "explanation": "An exact policy-active service route exists for this read."
       },
-      "record_digest": "7a32b7d5053599b5c2f7bfdd5255371b497d149ec4bc18002f540044d7c1a5c6"
+      "record_digest": "b7d75febbf6e644d62a8bdb2a77f2d8483bfe571c68396de85f76af705745e6c"
     },
     {
       "operation_id": "host.read-network",

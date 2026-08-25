@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
-"""Kernel traversal-projection command line.
+"""Shared Kernel projections and conformance command line.
 
-The Shared Kernel is broader than this table: SPEC.md supplies its logical typology,
-topology, traversal, and invariants. This command reads
-`contracts/kernel-transitions.json`, the authored executable projection of the
-SPEC.md Transition contract, and judges transition requests against that traversal
-projection.
+The Shared Kernel is broader than any executable table: SPEC.md supplies its logical
+typology, topology, traversal, and invariants. This command exposes machine-readable
+projections of that grammar without turning the Kernel into a runtime service.
 
-It contacts no network, touches no service, and records nothing: it answers whether
-a declared transition path is legal, never whether it happened. Passing this command
-therefore proves correspondence with one Kernel projection, not completeness of the
-Kernel itself.
+The transition commands read ``contracts/kernel-transitions.json``, the authored
+executable projection of the SPEC.md Transition contract. The binding commands read
+every service manifest and derive how those participants compose against the same
+Kernel grammar.
+
+Nothing here grants authority, touches a service, or settles an operation. These are
+read/check/compiler surfaces: they answer what is declared and whether declarations
+compose, never whether an effect happened.
 """
 
 from __future__ import annotations
@@ -23,6 +25,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from sovkernel import kernel_binding as binding_check  # noqa: E402
 from sovkernel import projection  # noqa: E402
 from sovkernel import parity as parity_check  # noqa: E402
 from sovkernel import transitions as kernel  # noqa: E402
@@ -40,14 +43,14 @@ def _corpus() -> dict[str, Any]:
     return json.loads((FIXTURES / "transition-cases.json").read_text(encoding="utf-8"))
 
 
-def command_selfcheck(_: argparse.Namespace) -> int:
-    """Run the declared positive and defeating kernel corpus without a network.
+def _binding_inputs() -> tuple[dict[str, dict[str, Any]], dict[str, Any], list[str]]:
+    manifests, sources = binding_check.load_manifests(ROOT)
+    transitions = kernel.load_table(ROOT)
+    return manifests, transitions, sources + ["contracts/kernel-transitions.json"]
 
-    Each case is judged twice: the request must satisfy the transition schema, and
-    the evaluator's decision must match the case's declared expectation. A case
-    that raises the wrong refusal fails as loudly as one that raises none, because
-    a kernel that refuses for the wrong reason has not enforced the contract.
-    """
+
+def command_selfcheck(_: argparse.Namespace) -> int:
+    """Run the declared positive and defeating transition corpus without a network."""
     schema, corpus, table = _schema(), _corpus(), kernel.load_table(ROOT)
     failures: list[str] = []
     for case in corpus["cases"]:
@@ -79,7 +82,7 @@ def command_selfcheck(_: argparse.Namespace) -> int:
 
 
 def command_parity(_: argparse.Namespace) -> int:
-    """Prove each participant already decides the way the kernel decides."""
+    """Prove each participant already decides the way the transition projection decides."""
     failures, checked = parity_check.run(ROOT)
     for failure in failures:
         print(f"FAIL: {failure}")
@@ -132,14 +135,7 @@ def command_table(_: argparse.Namespace) -> int:
 
 
 def command_drift(_: argparse.Namespace) -> int:
-    """Refuse when the transition projection and SPEC.md disagree about traversal.
-
-    `contracts/kernel-transitions.json` is authored, not generated, so nothing but
-    this check stops an edit to one file from silently changing what the other
-    admits. Only the traversal facts SPEC.md actually states are compared here:
-    which transitions exist and which refusal codes each names. Typology, topology,
-    and other Kernel invariants remain governed by their own contracts and checks.
-    """
+    """Refuse when the transition projection and SPEC.md disagree about traversal."""
     spec = (ROOT / "SPEC.md").read_bytes().decode("utf-8")
     derived = projection.derive(spec)
     defects = projection.invariants(derived) + projection.conflicts(
@@ -156,15 +152,51 @@ def command_drift(_: argparse.Namespace) -> int:
     return 0
 
 
+def command_binding_check(_: argparse.Namespace) -> int:
+    """Check that all authored service manifests compose as Kernel participants."""
+    manifests, transitions, _ = _binding_inputs()
+    defects = binding_check.binding_defects(manifests, transitions)
+    for defect in defects:
+        print(f"BINDING {defect}")
+    if defects:
+        print(f"FAIL: {len(defects)} service-to-Kernel binding defect(s)")
+        return 1
+
+    operations = sum(len(manifest.get("operations", [])) for manifest in manifests.values())
+    mapped = sum(1 for manifest in manifests.values()
+                 for operation in manifest.get("operations", [])
+                 if operation.get("kernel_transition"))
+    print(
+        f"PASS: {len(manifests)} service manifests compose as Kernel participants; "
+        f"{operations} operations, {mapped} mapped to named Kernel transitions, "
+        f"{operations - mapped} explicitly unmapped"
+    )
+    return 0
+
+
+def command_closure(_: argparse.Namespace) -> int:
+    """Print the rebuildable service-to-Kernel closure as JSON for humans or agents."""
+    manifests, transitions, derived_from = _binding_inputs()
+    closure = binding_check.build(manifests, transitions, derived_from=derived_from)
+    schema = json.loads((ROOT / "contracts" / "kernel-closure.schema.json").read_text("utf-8"))
+    defects = validate(closure, schema) + binding_check.binding_defects(manifests, transitions)
+    print(json.dumps(closure, indent=2, sort_keys=True))
+    if defects:
+        for defect in defects:
+            print(f"BINDING {defect}", file=sys.stderr)
+        return 1
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
-    """Return the argument parser for every kernel subcommand."""
+    """Return the argument parser for every Kernel projection subcommand."""
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     sub = parser.add_subparsers(dest="command", required=True)
 
-    selfcheck = sub.add_parser("selfcheck", help="run the declared fixture corpus")
+    selfcheck = sub.add_parser("selfcheck", help="run the declared transition fixture corpus")
     selfcheck.set_defaults(handler=command_selfcheck)
 
-    parity = sub.add_parser("parity", help="check participants against the kernel")
+    parity = sub.add_parser("parity", help="check participants against transition semantics")
     parity.set_defaults(handler=command_parity)
 
     check = sub.add_parser("check", help="judge one transition request")
@@ -172,16 +204,28 @@ def build_parser() -> argparse.ArgumentParser:
     check.add_argument("--current", help="path to the observed current state")
     check.set_defaults(handler=command_check)
 
-    drift = sub.add_parser("drift", help="compare the compiled contract against SPEC.md")
+    drift = sub.add_parser("drift", help="compare the traversal projection against SPEC.md")
     drift.set_defaults(handler=command_drift)
 
     table = sub.add_parser("table", help="print the declared transition table")
     table.set_defaults(handler=command_table)
+
+    binding = sub.add_parser(
+        "binding-check",
+        help="check all service manifests as equal participants in the Kernel grammar",
+    )
+    binding.set_defaults(handler=command_binding_check)
+
+    closure = sub.add_parser(
+        "closure",
+        help="print the derived Node-wide service-to-Kernel closure as JSON",
+    )
+    closure.set_defaults(handler=command_closure)
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Run one kernel subcommand."""
+    """Run one Kernel projection command."""
     args = build_parser().parse_args(argv)
     return int(args.handler(args))
 

@@ -5,10 +5,15 @@ participates in the Shared Kernel: record kinds it owns, Kernel contracts it use
 operations it exposes, named Kernel transitions it realizes, ports it crosses, and
 behaviors it forbids. This module does not add a second authored binding file.
 
-Instead it derives a closure over every service manifest plus the authored Kernel
-transition table. The closure is useful for discovery, AI context, and conformance:
-it answers which service owns a type, which operations realize a transition, and
-which declared operations are not yet mapped to a named Kernel traversal.
+``contracts/kernel-paradigms.json`` resolves the stable Kernel contract names already
+used by manifests to the governing source addresses that define each semantic slice.
+The registry is an index, not a replacement source. Calling those slices paradigms is
+itself PROPOSED vocabulary.
+
+The closure is useful for discovery, AI context, and conformance: it answers which
+service owns a type, which services bind a Kernel paradigm, which operations realize a
+transition, and which declared operations are not yet mapped to a named Kernel
+traversal.
 
 Nothing here grants authority, promotes standing, settles an operation, or makes the
 Kernel a service. ``SPEC.md`` and the governing contracts remain authoritative; this
@@ -30,9 +35,14 @@ def _canonical(payload: Any) -> str:
 
 
 def input_state_digest(manifests: dict[str, dict[str, Any]],
-                       transitions: dict[str, Any]) -> str:
-    """Digest exactly the authored inputs from which the closure is rebuilt."""
-    payload = _canonical({"manifests": manifests, "transitions": transitions})
+                       transitions: dict[str, Any],
+                       paradigms: dict[str, Any]) -> str:
+    """Digest exactly the authored/index inputs from which the closure is rebuilt."""
+    payload = _canonical({
+        "manifests": manifests,
+        "transitions": transitions,
+        "paradigms": paradigms,
+    })
     return sha256(payload.encode("utf-8")).hexdigest()
 
 
@@ -48,23 +58,28 @@ def load_manifests(root: Path) -> tuple[dict[str, dict[str, Any]], list[str]]:
     for path in sorted((root / "services").glob("*/contracts/service.json")):
         manifest = json.loads(path.read_text(encoding="utf-8"))
         directory_id = path.parents[1].name
-        key = directory_id
-        manifests[key] = manifest
+        manifests[directory_id] = manifest
         sources.append(path.relative_to(root).as_posix())
     return manifests, sources
 
 
-def build(manifests: dict[str, dict[str, Any]], transitions: dict[str, Any], *,
-          derived_from: list[str], status: str = "PROPOSED") -> dict[str, Any]:
+def _paradigm_index(paradigms: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    return {entry.get("paradigm", ""): entry for entry in paradigms.get("paradigms", [])}
+
+
+def build(manifests: dict[str, dict[str, Any]], transitions: dict[str, Any],
+          paradigms: dict[str, Any], *, derived_from: list[str],
+          status: str = "PROPOSED") -> dict[str, Any]:
     """Derive the Node-wide service-to-Kernel closure.
 
     Repetition is intentional only in the derived output. Authored facts remain in
-    service manifests; the closure normalizes them for machines and can always be
-    discarded and rebuilt.
+    service manifests and governing Kernel sources; the closure normalizes them for
+    machines and can always be discarded and rebuilt.
     """
     participants: list[dict[str, Any]] = []
     owners: dict[str, set[str]] = {}
     transition_users: dict[str, list[str]] = {}
+    paradigm_users: dict[str, set[str]] = {}
     unmapped: list[str] = []
 
     for directory_id in sorted(manifests):
@@ -74,6 +89,8 @@ def build(manifests: dict[str, dict[str, Any]], transitions: dict[str, Any], *,
 
         for owned_type in manifest.get("owns", []):
             owners.setdefault(owned_type, set()).add(service_id)
+        for paradigm in manifest.get("uses_kernel_contracts", []):
+            paradigm_users.setdefault(paradigm, set()).add(service_id)
 
         for operation in sorted(manifest.get("operations", []),
                                 key=lambda entry: entry.get("operation", "")):
@@ -105,6 +122,15 @@ def build(manifests: dict[str, dict[str, Any]], transitions: dict[str, Any], *,
             "forbids": sorted(manifest.get("forbids", [])),
         })
 
+    paradigm_usage = []
+    for paradigm_id, definition in sorted(_paradigm_index(paradigms).items()):
+        paradigm_usage.append({
+            "paradigm": paradigm_id,
+            "defines": sorted(definition.get("defines", [])),
+            "sources": sorted(definition.get("sources", [])),
+            "participants": sorted(paradigm_users.get(paradigm_id, set())),
+        })
+
     type_ownership = [
         {"type": kind, "owners": sorted(service_ids)}
         for kind, service_ids in sorted(owners.items())
@@ -118,16 +144,17 @@ def build(manifests: dict[str, dict[str, Any]], transitions: dict[str, Any], *,
         "closure_schema": CLOSURE_SCHEMA,
         "status": status,
         "derived_from": list(derived_from),
-        "input_state_digest": input_state_digest(manifests, transitions),
+        "input_state_digest": input_state_digest(manifests, transitions, paradigms),
         "participants": participants,
+        "paradigm_usage": paradigm_usage,
         "type_ownership": type_ownership,
         "transition_usage": transition_usage,
         "unmapped_operations": sorted(unmapped),
     }
 
 
-def binding_defects(manifests: dict[str, dict[str, Any]],
-                    transitions: dict[str, Any]) -> list[str]:
+def binding_defects(manifests: dict[str, dict[str, Any]], transitions: dict[str, Any],
+                    paradigms: dict[str, Any]) -> list[str]:
     """Cross-manifest contradictions a per-file schema cannot express.
 
     An empty result means the declared service bindings compose under the checks we
@@ -137,8 +164,15 @@ def binding_defects(manifests: dict[str, dict[str, Any]],
     defects: list[str] = []
     known_transitions = {entry.get("transition")
                          for entry in transitions.get("transitions", [])}
+    paradigm_entries = paradigms.get("paradigms", [])
+    paradigm_ids = [entry.get("paradigm") for entry in paradigm_entries]
+    known_paradigms = set(paradigm_ids)
     type_owners: dict[str, list[str]] = {}
     endpoints: dict[str, list[str]] = {}
+
+    for paradigm_id in sorted(set(paradigm_ids)):
+        if paradigm_ids.count(paradigm_id) > 1:
+            defects.append(f"DUPLICATE_KERNEL_PARADIGM: {paradigm_id} is indexed more than once")
 
     for directory_id in sorted(manifests):
         manifest = manifests[directory_id]
@@ -151,12 +185,18 @@ def binding_defects(manifests: dict[str, dict[str, Any]],
                 f"{service_id!r}"
             )
 
+        declared_paradigms = set(manifest.get("uses_kernel_contracts", []))
+        for paradigm in sorted(declared_paradigms - known_paradigms):
+            defects.append(
+                f"UNKNOWN_KERNEL_PARADIGM: {label} binds {paradigm!r}, which the "
+                "Kernel paradigm registry does not index"
+            )
+
         for owned_type in manifest.get("owns", []):
             type_owners.setdefault(owned_type, []).append(label)
 
         operation_names: set[str] = set()
         owns = set(manifest.get("owns", []))
-        kernel_contracts = set(manifest.get("uses_kernel_contracts", []))
         for operation in manifest.get("operations", []):
             operation_id = operation.get("operation", "")
             capability_id = f"{label}.{operation_id}"
@@ -192,10 +232,10 @@ def binding_defects(manifests: dict[str, dict[str, Any]],
                 defects.append(
                     f"UNKNOWN_KERNEL_TRANSITION: {capability_id} names {transition!r}"
                 )
-            if transition and "operation" not in kernel_contracts:
+            if transition and "operation" not in declared_paradigms:
                 defects.append(
                     f"TRANSITION_WITHOUT_OPERATION_CONTRACT: {capability_id} maps to "
-                    f"{transition!r} but {label} does not bind the operation contract"
+                    f"{transition!r} but {label} does not bind the operation paradigm"
                 )
 
     for owned_type, service_ids in sorted(type_owners.items()):
@@ -216,10 +256,11 @@ def binding_defects(manifests: dict[str, dict[str, Any]],
 
 
 def closure_defects(document: dict[str, Any], manifests: dict[str, dict[str, Any]],
-                    transitions: dict[str, Any], *, derived_from: list[str]) -> list[str]:
+                    transitions: dict[str, Any], paradigms: dict[str, Any], *,
+                    derived_from: list[str]) -> list[str]:
     """Check both authored binding semantics and projection fidelity."""
-    defects = binding_defects(manifests, transitions)
-    expected = build(manifests, transitions, derived_from=derived_from,
+    defects = binding_defects(manifests, transitions, paradigms)
+    expected = build(manifests, transitions, paradigms, derived_from=derived_from,
                      status=document.get("status", "PROPOSED"))
     if document != expected:
         defects.append("PROJECTION_DRIFT: Kernel closure does not rebuild from authored inputs")
@@ -227,5 +268,6 @@ def closure_defects(document: dict[str, Any], manifests: dict[str, dict[str, Any
 
 
 def is_stale(document: dict[str, Any], manifests: dict[str, dict[str, Any]],
-             transitions: dict[str, Any]) -> bool:
-    return document.get("input_state_digest") != input_state_digest(manifests, transitions)
+             transitions: dict[str, Any], paradigms: dict[str, Any]) -> bool:
+    return document.get("input_state_digest") != input_state_digest(
+        manifests, transitions, paradigms)

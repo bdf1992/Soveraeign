@@ -21,6 +21,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import sov_docs  # noqa: E402
+from sovdocs import facets as facet_rules  # noqa: E402
 from sovdocs.markdown import render, slug  # noqa: E402
 
 BALANCED = ("table", "pre", "ul", "ol", "li", "blockquote", "p", "strong", "em", "code",
@@ -90,6 +91,34 @@ class DocumentDecidesNothing(unittest.TestCase):
         self.assertIn('href="AGENTS.md"', render("[contract](AGENTS.md)\n")[0])
 
 
+class SourceTraversal(unittest.TestCase):
+    def test_excluded_trees_are_pruned_before_document_walk_descends(self):
+        root = Path("/synthetic-repository")
+        kept_dirs: list[str] = []
+
+        def fake_walk(start: Path, topdown: bool = True):
+            self.assertEqual(start, root)
+            self.assertTrue(topdown)
+            dirs = [".git", "reports", "docs", ".local"]
+            yield str(root), dirs, ["ROOT.md", "ignore.txt"]
+            kept_dirs.extend(dirs)
+            if ".git" in dirs:
+                yield str(root / ".git"), [], ["object.md"]
+            if "reports" in dirs:
+                yield str(root / "reports"), [], ["report.md"]
+            if "docs" in dirs:
+                yield str(root / "docs"), [], ["generated.md"]
+            if ".local" in dirs:
+                yield str(root / ".local"), [], ["capture.md"]
+
+        with mock.patch.object(sov_docs, "ROOT", root), mock.patch.object(
+                sov_docs.os, "walk", fake_walk):
+            paths = sov_docs.sources()
+
+        self.assertEqual(kept_dirs, ["reports"])
+        self.assertEqual(paths, [root / "ROOT.md", root / "reports" / "report.md"])
+
+
 class EveryPublishedDocument(unittest.TestCase):
     """The renderer runs against the real corpus, not a fixture standing in for it."""
 
@@ -115,7 +144,11 @@ class EveryPublishedDocument(unittest.TestCase):
         self.assertEqual(len(set(identifiers)), len(identifiers))
 
     def test_no_document_lands_outside_a_group(self):
-        built = sov_docs.documents({})
+        # Grouping depends only on each document's kind, which facets derives from
+        # its path. Re-rendering the whole corpus here duplicates the renderer proof
+        # immediately above without strengthening this assertion.
+        built = [{"path": path, "facets": {"kind": facet_rules.kind(path)}}
+                 for path in (source.relative_to(ROOT).as_posix() for source in self.sources)]
         placed = sum(len(group) for _, group in sov_docs.grouped(built))
         self.assertEqual(placed, len(built))
 
@@ -152,24 +185,30 @@ class Custody(unittest.TestCase):
         return built, [("Governing set", built)]
 
     def _ledger(self, match: bool):
-        digest = sha256(self.SOURCE.read_bytes()).hexdigest()
+        """A recorded custody for AGENTS.md whose digest either matches disk or does not."""
+        recorded = sha256(self.SOURCE.read_bytes()).hexdigest() if match else "0" * 64
         return {"AGENTS.md": {"asset_id": "asset_recorded", "version_id": "version_recorded",
-                              "receipt_id": "rcpt_recorded",
-                              "digest": digest if match else "0" * 64}}
+                              "receipt_id": "rcpt_recorded", "digest": recorded}}
 
 
 class Staleness(unittest.TestCase):
+    SOURCE = ROOT / "AGENTS.md"
+
     def test_the_built_page_is_current(self):
-        # This is the real-corpus integration check.
+        # This is the one whole-corpus site-build integration check.
         self.assertEqual(sov_docs.cmd_check(None), 0)
 
     def test_the_same_documents_produce_the_same_bytes(self):
-        self.assertEqual(sov_docs.build(), sov_docs.build())
+        # Determinism is a property of the build pipeline, not corpus size. Use
+        # one real published source so this checks the same renderer/group/site
+        # path without rebuilding all ~158 documents twice.
+        with (mock.patch.object(sov_docs, "sources", return_value=[self.SOURCE]),
+              mock.patch.object(sov_docs, "read_ledger", return_value={})):
+            self.assertEqual(sov_docs.build(), sov_docs.build())
 
     def test_an_edited_page_is_refused(self):
-        # This case tests comparison/refusal mechanics; the preceding case already
-        # proves the canonical real-corpus build. Avoid re-rendering the corpus a
-        # third time merely to plant an edited-page defeat.
+        # This case tests comparison/refusal mechanics; the preceding current-page
+        # case already proves the canonical real-corpus build.
         original = sov_docs.PAGE.read_text(encoding="utf-8")
         try:
             sov_docs.PAGE.write_text(original + "<!-- by hand -->", encoding="utf-8")

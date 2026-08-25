@@ -57,7 +57,7 @@ def read_version(service: Any, version_id: str, actor: str) -> dict[str, Any]:
 
     blob = Path(row["blob_path"])
     if not blob.is_file():
-        service._receipt("REFUSED", "version.read", "version", version_id, actor,
+        service._receipt("REFUSED", "asset.read-version", "version", version_id, actor,
                          {"reason": "PAYLOAD_ABSENT"})
         service.db.commit()
         raise DigestMismatch(f"{version_id}: payload absent from custody")
@@ -65,13 +65,13 @@ def read_version(service: Any, version_id: str, actor: str) -> dict[str, Any]:
     data = blob.read_bytes()
     digest = sha256(data).hexdigest()
     if digest != row["digest"]:
-        service._receipt("REFUSED", "version.read", "version", version_id, actor,
+        service._receipt("REFUSED", "asset.read-version", "version", version_id, actor,
                          {"reason": "DIGEST_MISMATCH", "recorded": row["digest"],
                           "observed": digest})
         service.db.commit()
         raise DigestMismatch(f"{version_id}: recorded {row['digest']}, read {digest}")
 
-    service._receipt("COMMITTED", "version.read", "version", version_id, actor,
+    service._receipt("COMMITTED", "asset.read-version", "version", version_id, actor,
                      {"digest": digest, "size": len(data)})
     service.db.commit()
     return {

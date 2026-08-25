@@ -54,8 +54,13 @@ Every consequential operation declares exactly one effect class:
 - `RECORD_LOCAL` — changes only governed record state; countering is supported.
 - `RESOURCE_CONSUMPTION` — consumes time, compute, storage, money, or another
   resource; the record can be countered but consumption is not reversed.
-- `EXTERNAL_WORLD` — mutates a system outside the local record; refused in
-  Phase I unless an isolated test double makes the observed effect record-local.
+- `EXTERNAL_WORLD` — mutates a system outside the local record. Admitted only
+  inside a scope `contracts/external-effect-authorization.json` declares, using
+  a verb that scope carries, leaving a receipt for the attempt. Every other
+  external effect is refused, including every verb the authorization refuses by
+  name. An isolated test double whose observed effect is record-local is not an
+  external effect. Consumption and external change are never claimed to be
+  rolled back, only compensated forward.
 
 ## Logical roles
 

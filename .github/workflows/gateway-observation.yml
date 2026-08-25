@@ -1,0 +1,40 @@
+name: gateway independent observation candidate
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gateway-observation-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  observe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      EXPECTED_COMMIT: ${{ github.event.pull_request.head.sha }}
+      WITNESS_ID: ci/github-actions/${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Observe the exact Gateway crossing
+        run: >-
+          python scripts/witness_gateway.py
+          --witness-id "$WITNESS_ID"
+          --expected-commit "$EXPECTED_COMMIT"
+          --output "$RUNNER_TEMP/soveraeign-gateway-observation.json"
+      - name: Retain the candidate receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: gateway-observation-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/soveraeign-gateway-observation.json
+          if-no-files-found: error
+          retention-days: 30

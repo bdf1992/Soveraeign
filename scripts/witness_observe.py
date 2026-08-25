@@ -8,6 +8,8 @@ from pathlib import Path
 import stat
 from typing import Any
 
+import custody_posix
+
 
 LOCAL_PATHS = {"record", "payloads", "projections", "receipts", "work"}
 RUNTIME_PATHS = {
@@ -27,7 +29,7 @@ def independent_local_defects(node: Path, manifest: dict[str, Any]) -> list[str]
     receipt_path = node / ".soveraeign-infrastructure.json"
     if not node.is_dir() or node.is_symlink():
         return ["ROOT_UNSAFE"]
-    if stat.S_IMODE(node.stat().st_mode) != 0o700:
+    if custody_posix.available and stat.S_IMODE(node.stat().st_mode) != 0o700:
         defects.append("ROOT_MODE")
     try:
         receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
@@ -53,7 +55,8 @@ def independent_local_defects(node: Path, manifest: dict[str, Any]) -> list[str]
         resolved = path.resolve(strict=False)
         if path.is_symlink() or not path.is_dir():
             defects.append(f"PATH_UNSAFE:{name}")
-        elif root not in resolved.parents or stat.S_IMODE(path.stat().st_mode) != 0o700:
+        elif root not in resolved.parents or (
+                custody_posix.available and stat.S_IMODE(path.stat().st_mode) != 0o700):
             defects.append(f"PATH_BOUNDARY:{name}")
     return defects
 

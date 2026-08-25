@@ -72,7 +72,7 @@ Deliberately unchanged:
 - `.github/workflows/verify.yml` keeps its job timeout.
 - `acceptance/accepted/A1.json` keeps the three-second figure. It is a record of
   what was accepted at the time; editing it would make a true record false.
-- `decisions/0027-board-management-role.md` keeps it for the same reason: it
+- `decisions/0057-board-management-role.md` keeps it for the same reason: it
   states a measurement taken under the old rule.
 - `decisions/0012` is not edited. This record amends its verification term.
 

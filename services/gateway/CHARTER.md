@@ -1,20 +1,25 @@
 # Gateway Service Charter
 
-Standing: `PROPOSED`. Chartered and contracted; nothing here is implemented.
+Standing: `PROPOSED SERVICE BOUNDARY · FIRST IN_PROCESS SLICE BUILT AND SELF-TESTED`.
+
+A reference participant now exists under `src/` and proves one complete
+`IN_PROCESS -> sov://asset/ingest-asset -> Asset Service -> terminal receipt` path.
+That implementation is evidence; it does not promote this service or its operations out of
+their declared standing by itself.
 
 ## Role in Soveraeign
 
 The Gateway Service is the node's door. It is the one place a request from outside a service
 turns into a call on that service, and the one place a refusal to let it through is recorded.
 
-Today a caller reaches a service by importing its Python package, or by running the two asset
-CLI commands. There is no single place that answers "what can be asked of this node, by whom,
-over what". `contracts/fixtures/capability-map.reference.json` already computes that answer as
-a projection; the Gateway is the participant that would serve it and act on it.
+The first route pattern is now executable in process. A caller presents one transport-neutral
+`sov://` operation, Gateway resolves the authored service manifest against the capability
+projection, revalidates the selected projection row against its authored inputs, checks exact
+actor kind and authority/scope, records the crossing, invokes a service-owned route, and returns
+the owning service's terminal receipt unchanged.
 
-It exists so that adding a transport later — an operator-facing tool surface, or HTTP once the
-phase permits it — is one service learning a new way to be spoken to, not every service growing
-its own front door and its own idea of what a grant means.
+That path does not make Gateway the owner of service state or settlement. Direct service Python
+APIs and CLIs still exist as participant/testing surfaces; they are not a second Gateway contract.
 
 ## What a logical endpoint is
 
@@ -24,87 +29,96 @@ for, never how the bytes arrive. `contracts/capability-offices.json` binds trans
 in-process, CLI, a local tool surface, HTTP — and records which of those are open, declared but
 not activated, or refused in this phase.
 
-The Gateway resolves an address to the owning service and nothing else. It cannot invent an
-address, and it cannot reach a service except through one.
+The Gateway resolves an address to the owning service and declared route. It cannot invent an
+address, infer a missing route, or treat a stale/tampered capability projection as authority.
 
 ## The route
 
-A request crosses the door in a fixed order, and each step can refuse:
+A request crosses the door in a fixed order, and each step can refuse or fail:
 
-1. `accept-request` — the envelope is well formed, the transport is activated, the actor and the
-   logical endpoint are declared. Otherwise `MALFORMED_REQUEST` or `TRANSPORT_NOT_ACTIVATED`.
-2. `resolve-capability` — the address names a declared operation and the capability map is not
-   stale. Otherwise `ENDPOINT_UNKNOWN`.
-3. `check-authority` — the actor holds a live grant covering the authority the operation
-   requires. Otherwise `AUTHORITY_REFUSED` or `GRANT_NOT_COVERED`.
-4. `route-request` — the owning service is reachable and the effect class is admissible in this
-   phase. Otherwise `SERVICE_UNREACHABLE` or `EFFECT_CLASS_REFUSED`.
-5. `return-receipt` — the owning service's terminal receipt is returned unchanged. A route with
-   no receipt behind it is `RECEIPT_MISSING`, not a success.
+1. **accept request** — record the received envelope, validate shape, transport-independent
+   attribution, and reject actor smuggling in domain arguments;
+2. **resolve capability** — resolve the exact logical endpoint against both authored service
+   manifests and the capability projection, verify the projection's input digest, and rederive
+   the selected row from authored inputs before trusting it;
+3. **check authority** — require the declared actor kind and an exact live grant covering the
+   operation's authority and request scope; typed denials are refusals, while reader corruption
+   or infrastructure errors are operational failures rather than counterfeit denials;
+4. **route request** — require an activated transport, an admitted Phase-I effect class, and a
+   bound service-owned route;
+5. **return receipt** — require a recognizable terminal service receipt attributed to the checked
+   actor, record that Gateway carried it, and return that receipt object unchanged.
 
-A refusal at any step is itself recorded through `refuse-request`. A request that was turned
-away leaves a record; it does not vanish. This is the one thing the gateway does that the
-product category does not: an edge gateway logs a refusal, and a log line is not a record with
-a digest, an attributable actor, and a counter-record path
-(`reports/2026-08-23-gateway-research-and-controller-plan.md`).
-
-Two rules the route needs and does not yet have:
-
-- **Deny is the default and an explicit deny wins.** When no grant covers the call, the answer
-  is refusal; when two grants disagree, the narrower one decides. A system built on attenuating
-  authority cannot let the widest grant win. Not yet in any contract
-  (`KNOWN-GAPS.md`, conflicting grants).
-- **Staleness refuses rather than degrades.** `capability_map_fresh` is a hard precondition.
-  Distributed gateways cannot afford this and run eventually consistent instead; we can afford
-  it because the map is a checked-in file rebuilt on one machine. The first federated crossing
-  turns that free choice into a real one.
+Governed refusal is distinct from operational failure. A missing grant, inactive transport, or
+unreachable declared route is a refusal. A corrupt capability row, authority-reader exception,
+service exception, or receipt attribution mismatch is `FAILED` evidence. Gateway does not turn
+an infrastructure defect into a claim that the actor lacked authority.
 
 ## Authoritative versus derived
 
-The Gateway holds no service state. Its own records — the request, the resolution, the authority
-check, the routing record, the receipt it returned — are the authoritative account of what
-crossed the door. Everything it says about a service's records is derived from that service.
+The Gateway holds no sibling-service domain state. Its crossing records — received request,
+resolution evidence, authority decision, routing evidence, refusal/failure evidence, and the
+fact that a service receipt was returned — are the authoritative account of what crossed the
+door.
 
-It reads the capability map, which is a projection and rebuildable. It never writes it.
+Everything it says about a service's operation, standing, effect class, required authority, and
+transport activation is derived from authored service/capability inputs. The capability map is a
+rebuildable projection and is checked for staleness and selected-row drift before routing.
+
+The owning service's terminal receipt remains settlement for the service operation. Gateway does
+not manufacture a second successful settlement receipt.
 
 ## What it does not do
 
-- It does not settle. The owning service decides whether its operation committed; the Gateway
-  carries that receipt back without editing it.
-- It does not witness. A request it routed cannot be observed by the thing that routed it.
-- It does not issue authority. It checks a grant the Console Service issued; it cannot widen one,
-  and it cannot grant on an actor's behalf.
-- It does not fall back. If a transport is not activated, the request is refused by name. There
-  is no quieter path that still works.
-- It does not open an external transport in Phase I. HTTP is refused for every capability while
-  the phase stands, and the refusal is recorded rather than assumed.
+- It does not settle a sibling service's operation.
+- It does not witness an operation it routed.
+- It does not issue or widen authority.
+- It does not own capability definitions or repair the capability projection in place.
+- It does not fall back to an undeclared transport or route.
+- It does not open an external transport in Phase I. HTTP remains refused while the phase stands.
+- It does not become the Node. Gateway is one service inside the locally sovereign Node.
 
 ## Proving operation
 
-The first slice worth building is the refusal, not the success: drive a request at
-`sov://asset/ingest-asset` from an actor holding no grant, and prove the door returns
-`AUTHORITY_REFUSED` with a recorded gateway receipt, while the Asset Service never sees the
-call. Then the same request with a live grant, proving the asset receipt comes back unaltered
-and the routing record names both.
+The first proving pair is implemented in `tests/test_gateway_slice.py`:
 
-That pair is the whole service in miniature: a door that refuses is worth more than a door that
-opens, because only the first one proves the door is there.
+- without a covering grant, `sov://asset/ingest-asset` leaves durable Gateway refusal evidence
+  and the Asset Service does not execute;
+- with a live exact grant, the same logical endpoint reaches the Asset-owned route and the
+  Asset Service's terminal receipt comes back unchanged and attributed to the checked actor.
 
-## Gaps and standing
+The suite also defeats malformed attribution, stale and tampered capability state, inactive HTTP,
+undeclared/unbound operations, disallowed effect classes, authority-reader failure, service
+execution failure, missing terminal receipts, receipt-actor mismatch, and attempted client actor
+overrides.
 
-`KNOWN-GAPS.md` records every observed difference from this charter.
-`contracts/ai-native-gateway-service.yaml` scores the surface against `AI-NATIVE.md`:
-reachability `PARTIAL` on declaration alone, everything else `NONE`, `earn_it` `OPEN`,
-derived `NOT_QUALIFIED`. The operation sequence a controller would run is in
-`reports/2026-08-23-gateway-research-and-controller-plan.md`.
+This establishes the reusable vertical. The next same-class operation should be boring: add a
+service-owned route binding, preserve the checked actor separately from domain arguments, and
+return that service's existing terminal receipt.
 
-## Open before this can be built
+## Relationship to node composition
 
-- Whether the Console Service or a separate permits surface owns `authority-grant`. The Console
-  manifest claims it today because `grant`, `revoke`, and `list-grants` are built there; the
-  Gateway depends on that and does not resolve the question
-  (`services/console/KNOWN-GAPS.md`).
-- The in-process calling convention each service exposes. There is no declared adapter shape yet,
-  so `route-request` names a precondition it cannot currently check.
-- Whether a gateway receipt is a kernel receipt or a distinct record. The manifest treats it as
-  its own owned record; `contracts/receipt.schema.json` may absorb it instead.
+Gateway is the vertical carrier, not the horizontal composition root.
+
+A local Node contains multiple service-owned verticals that share kernel, Registry, Record,
+authority, and routing semantics. Growing horizontally therefore means binding additional
+service-owned routes behind the same Gateway rather than adding domain logic to Gateway.
+`services/README.md` records the working construction vocabulary:
+`Kernel -> Vertical -> Horizontal -> Node surface`.
+
+## Remaining seams
+
+`KNOWN-GAPS.md` records the live differences between this participant and the full charter.
+The important remaining seams are:
+
+- the canonical contract form, if any, for a distinct `gateway-receipt` versus the current
+  crossing evidence plus owning-service terminal receipt;
+- explicit conflict semantics if the authority model later gains positive and negative grants;
+- replacing the older MCP binding's private ingress behavior with this service path before MCP
+  is treated as an activated Gateway transport;
+- a genuine independent observation/witness path;
+- a two-binding proof over this same door;
+- broader service route coverage and any effect/transport class beyond the current
+  `RECORD_LOCAL + IN_PROCESS` slice.
+
+None of those seams is resolved by passing participant tests, and none widens Phase-I effects.

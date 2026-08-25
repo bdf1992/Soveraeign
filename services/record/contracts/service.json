@@ -28,7 +28,8 @@
       "commit": "COMMITTED",
       "refusals": [
         "STALE_STATE",
-        "MISSING_PRECONDITION"
+        "MISSING_PRECONDITION",
+        "DESIGN_RECORD_REFUSED"
       ]
     },
     {
@@ -148,6 +149,9 @@
       ]
     }
   ],
+  "local_refusals": {
+    "DESIGN_RECORD_REFUSED": "ADMISSION_REFUSED"
+  },
   "uses_kernel_contracts": [
     "standing",
     "operation",

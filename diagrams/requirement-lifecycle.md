@@ -2,7 +2,7 @@
 
 ```text
 source          PRD.md · SPEC.md · CONTRACT.md · STATUS.yaml
-source_digest   641281625d74b53a · 274a3669df8144cf · 896e59ba90828ad7 · e701388223866b3d
+source_digest   f1157f2f1ebad6aa · 108497d370c0fd8d · 896e59ba90828ad7 · c141d6f181709311
 reader          hand-authored · v1
 fidelity        LOSSY
 omissions       the nine PROD-I requirement texts and their defeating cases;
@@ -44,12 +44,15 @@ witnesses are never the same agent.
 
 ## Where the work actually sits
 
-`STATUS.yaml` records `asset_service_status: BUILT_SELF_TESTED_NOT_WITNESSED`
-and `engineering_framework_status: BUILT_SELF_TESTED_NOT_WITNESSED_BASELINE_PROPOSED`.
-Both are parked at exactly the `BUILT → WITNESSED` seam, which is the seam this
-diagram exists to make unmissable.
+`STATUS.yaml` records `asset_service_status`, `record_service_status`,
+`local_model_adapter_status`, `service_manifest_contract_status`,
+`coordination_registrar_status`, and `lineage_corpus_status` all as
+`BUILT_SELF_TESTED_NOT_WITNESSED`. Six claims parked at exactly the
+`BUILT → WITNESSED` seam, which is the seam this diagram exists to make
+unmissable. Nothing in this repository has reached `WITNESSED`.
 
 Phase I exits only when every normative predicate has both fixtures, the
-fixtures run against two bindings, independent observation can reconstruct the
-receipts, open judgement calls are visible, and Bdo ratifies operational
-acceptance.
+applicable fixtures run through **one human-facing binding and two materially
+different model bindings** — three in total, not two — independent observation
+can reconstruct the receipts, open judgement calls are visible, and Bdo ratifies
+operational acceptance (`PRD.md`, Phase-I exit).

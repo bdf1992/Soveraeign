@@ -1,0 +1,112 @@
+[
+  {
+    "id": "OBS-REQUEST-POS-EXECUTOR-ASKS",
+    "contract": "observation-request.schema.json",
+    "status": "PROPOSED",
+    "polarity": "positive",
+    "expected_validity": "VALID",
+    "description": "The executor asks for its own run to be observed and names durable outputs a reader could check without its report. Asking is not observing.",
+    "record": {
+      "request_id": "urn:soveraeign:observation:request:asset-ingest-1",
+      "run_id": "urn:soveraeign:run:asset-ingest-1",
+      "subject": "urn:soveraeign:asset:campaign-brief",
+      "requester_id": "urn:soveraeign:actor:asset-worker",
+      "requester_kind": "WORKER",
+      "run_outcome": "COMMITTED",
+      "durable_output_addresses": [
+        "payloads/3f/asset-ingest-1",
+        "record/receipts/asset-ingest-1"
+      ],
+      "standing": "RECORDED",
+      "requested_at": "2026-08-24T02:05:00Z"
+    }
+  },
+  {
+    "id": "OBS-REQUEST-NEG-RUN-IN-FLIGHT",
+    "contract": "observation-request.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "description": "A run outcome outside the terminal set. request-observation refuses RUN_NOT_TERMINAL; a run still moving has nothing settled to observe.",
+    "record": {
+      "request_id": "urn:soveraeign:observation:request:asset-ingest-1",
+      "run_id": "urn:soveraeign:run:asset-ingest-1",
+      "subject": "urn:soveraeign:asset:campaign-brief",
+      "requester_id": "urn:soveraeign:actor:asset-worker",
+      "requester_kind": "WORKER",
+      "run_outcome": "ATTEMPTED",
+      "durable_output_addresses": [
+        "payloads/3f/asset-ingest-1",
+        "record/receipts/asset-ingest-1"
+      ],
+      "standing": "RECORDED",
+      "requested_at": "2026-08-24T02:05:00Z"
+    }
+  },
+  {
+    "id": "OBS-REQUEST-NEG-NO-DURABLE-OUTPUT",
+    "contract": "observation-request.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "description": "A request naming no durable output. It leaves an observer nothing to read but the executor's word, which is the substitution being refused.",
+    "record": {
+      "request_id": "urn:soveraeign:observation:request:asset-ingest-1",
+      "run_id": "urn:soveraeign:run:asset-ingest-1",
+      "subject": "urn:soveraeign:asset:campaign-brief",
+      "requester_id": "urn:soveraeign:actor:asset-worker",
+      "requester_kind": "WORKER",
+      "run_outcome": "COMMITTED",
+      "durable_output_addresses": [],
+      "standing": "RECORDED",
+      "requested_at": "2026-08-24T02:05:00Z"
+    }
+  },
+  {
+    "id": "OBS-REQUEST-NEG-LIFTED-STANDING",
+    "contract": "observation-request.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "description": "A request that lifted its own standing past RECORDED. A question does not answer itself.",
+    "record": {
+      "request_id": "urn:soveraeign:observation:request:asset-ingest-1",
+      "run_id": "urn:soveraeign:run:asset-ingest-1",
+      "subject": "urn:soveraeign:asset:campaign-brief",
+      "requester_id": "urn:soveraeign:actor:asset-worker",
+      "requester_kind": "WORKER",
+      "run_outcome": "COMMITTED",
+      "durable_output_addresses": [
+        "payloads/3f/asset-ingest-1",
+        "record/receipts/asset-ingest-1"
+      ],
+      "standing": "EFFECTIVE",
+      "requested_at": "2026-08-24T02:05:00Z"
+    }
+  },
+  {
+    "id": "OBS-REQUEST-SEM-NOMINATES-ITSELF",
+    "contract": "observation-request.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "description": "proposed_observer_id equals requester_id. Well formed, and it is an executor nominating itself. The field is a suggestion the inference overrules, so the record is harmless only if something checks it.",
+    "expected_inference_check": "proposed_observer_id != requester_id",
+    "defeats": "an executor naming itself as the observer of its own run",
+    "record": {
+      "request_id": "urn:soveraeign:observation:request:asset-ingest-1",
+      "run_id": "urn:soveraeign:run:asset-ingest-1",
+      "subject": "urn:soveraeign:asset:campaign-brief",
+      "requester_id": "urn:soveraeign:actor:asset-worker",
+      "requester_kind": "WORKER",
+      "run_outcome": "COMMITTED",
+      "durable_output_addresses": [
+        "payloads/3f/asset-ingest-1",
+        "record/receipts/asset-ingest-1"
+      ],
+      "standing": "RECORDED",
+      "requested_at": "2026-08-24T02:05:00Z",
+      "proposed_observer_id": "urn:soveraeign:actor:asset-worker"
+    }
+  }
+]

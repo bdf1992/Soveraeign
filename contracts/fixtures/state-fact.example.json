@@ -1,0 +1,107 @@
+{
+  "note": "Three worked examples of contracts/state-fact.schema.json, and a live demonstration of why a fact pins the state it was read from. All three were true when recorded; one of them is no longer current, and it was not rewritten. Nothing writes a state fact yet - these are illustrations of the shape. Read with `python scripts/sov_canon.py facts`.",
+  "facts": [
+    {
+      "fact_id": "FACT-mcp-ingest-declared",
+      "claim": "A fresh model can reach asset.ingest-asset through the MCP binding on this node.",
+      "ground": [
+        "GROUND-004",
+        "GROUND-006"
+      ],
+      "promise": [
+        "PROMISE-01",
+        "PROMISE-03"
+      ],
+      "journey": [
+        "JOURNEY-02"
+      ],
+      "capability": [
+        "asset.ingest-asset"
+      ],
+      "evidential_status": "DECLARED",
+      "state_inputs": {
+        "capability_revision": "e375081c8a19a4985688a13c4675cc3515cf89af9981b9984b7f996c393862cc",
+        "binding_revision": "bindings/mcp/manifest.json",
+        "authority_state": "requires ingest:asset",
+        "canon_rendering": "CANON-3.0",
+        "ground_rendering": "GROUND-1.1"
+      },
+      "observations": [],
+      "valid_at": {
+        "observed_at": "2026-08-24T00:00:00Z",
+        "observed_by": "scripts/sov_capability.py"
+      },
+      "note": "DECLARED and not OBSERVED on purpose. The capability map reads MCP: ACTIVE and the gateway declares the tool, which is what state says. Nobody has called it through a real MCP client, so nothing has reached the world and found it. Reading this row as OBSERVED would be exactly the collapse GROUND-010 refuses."
+    },
+    {
+      "fact_id": "FACT-mcp-journal-withheld",
+      "claim": "A model operator can read the operational journal through the MCP binding.",
+      "ground": [
+        "GROUND-002",
+        "GROUND-007"
+      ],
+      "promise": [
+        "PROMISE-05",
+        "PROMISE-04"
+      ],
+      "journey": [
+        "JOURNEY-06"
+      ],
+      "capability": [
+        "record.read-entry"
+      ],
+      "evidential_status": "REFUTED",
+      "state_inputs": {
+        "capability_revision": "3aab7102e5d569ce4a4d1100516cb4f58e595b642077852f93093c980a92878b",
+        "binding_revision": "bindings/mcp/manifest.json",
+        "authority_state": "read tier, no grant required",
+        "canon_rendering": "CANON-2.0",
+        "ground_rendering": "GROUND-1.0"
+      },
+      "observations": [
+        "bindings/mcp/manifest.json withheld_endpoints[record_entries]",
+        "decisions/0038-capability-map-front-and-back-office.md Movement 2026-08-24",
+        "bindings/mcp/tests/test_gateway.py"
+      ],
+      "valid_at": {
+        "observed_at": "2026-08-24T00:00:00Z",
+        "observed_by": "scripts/sov_capability.py build"
+      },
+      "note": "Left exactly as recorded on 2026-08-24 against capability revision 3aab7102, and no longer current. The endpoint was served, the office table placed record.read-entry at BACK/record with actor_kinds SYSTEM only, and the build refused it as BACK_OFFICE_EXPOSED. Bdo ruled the same day that the table was the wrong side. A historical fact is not corrected by editing it - correction is a new record, which is GROUND-009 applied to facts rather than to the journal.",
+      "superseded_by": "FACT-mcp-journal-served"
+    },
+    {
+      "fact_id": "FACT-mcp-journal-served",
+      "claim": "A model operator can read the operational journal through the MCP binding.",
+      "ground": [
+        "GROUND-002",
+        "GROUND-007"
+      ],
+      "promise": [
+        "PROMISE-05",
+        "PROMISE-04"
+      ],
+      "journey": [
+        "JOURNEY-06"
+      ],
+      "capability": [
+        "record.read-entry"
+      ],
+      "evidential_status": "DECLARED",
+      "state_inputs": {
+        "capability_revision": "e375081c8a19a4985688a13c4675cc3515cf89af9981b9984b7f996c393862cc",
+        "binding_revision": "bindings/mcp/manifest.json",
+        "authority_state": "requires read:journal",
+        "canon_rendering": "CANON-3.0",
+        "ground_rendering": "GROUND-1.1"
+      },
+      "observations": [],
+      "valid_at": {
+        "observed_at": "2026-08-24T00:00:00Z",
+        "observed_by": "scripts/sov_capability.py build"
+      },
+      "note": "Supersedes FACT-mcp-journal-withheld. record.read-entry now sits at FRONT/operator-desk admitting HUMAN and MODEL, and the MCP binding withholds nothing. DECLARED, not OBSERVED: state says so and nobody has called it through a real client."
+    }
+  ],
+  "why_these_three": "FACT-mcp-journal-withheld was recorded against capability revision 3aab7102 and REFUTED: a model operator could not read the journal through MCP. Bdo then ruled that reading authorized operational history is an operator act, the office table moved, and the map rebuilt to e375081c. The old fact is left exactly as it was and now reads STALE because the state it rested on moved; FACT-mcp-journal-served records the new reading at the new revision. Neither GROUND-002, nor PROMISE-05, nor JOURNEY-06 changed at any point, which is the stability the layer exists to give."
+}

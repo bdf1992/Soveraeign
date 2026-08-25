@@ -43,7 +43,8 @@
               "activation": "REFUSED_UNCONFIGURED",
               "refusal_code": "UNCONFIGURED"
             }
-          ]
+          ],
+          "shape": {}
         },
         {
           "capability_id": "record.append-entry",
@@ -72,7 +73,8 @@
               "activation": "REFUSED_UNCONFIGURED",
               "refusal_code": "UNCONFIGURED"
             }
-          ]
+          ],
+          "shape": {}
         }
       ]
     }
@@ -111,7 +113,8 @@
               "transport": "IN_PROCESS",
               "activation": "ACTIVE"
             }
-          ]
+          ],
+          "shape": {}
         }
       ]
     }
@@ -150,7 +153,8 @@
               "transport": "HTTP",
               "activation": "REFUSED_UNCONFIGURED"
             }
-          ]
+          ],
+          "shape": {}
         }
       ]
     }
@@ -191,7 +195,8 @@
               "address": "mcp://asset/ingest",
               "required_authority": "ingest:asset"
             }
-          ]
+          ],
+          "shape": {}
         }
       ]
     }
@@ -240,7 +245,8 @@
               "activation": "REFUSED_UNCONFIGURED",
               "refusal_code": "UNCONFIGURED"
             }
-          ]
+          ],
+          "shape": {}
         }
       ]
     }
@@ -289,7 +295,8 @@
               "activation": "REFUSED_UNCONFIGURED",
               "refusal_code": "UNCONFIGURED"
             }
-          ]
+          ],
+          "shape": {}
         }
       ]
     },
@@ -393,7 +400,8 @@
               "activation": "ACTIVE",
               "address": "http://0.0.0.0:8080/ingest"
             }
-          ]
+          ],
+          "shape": {}
         }
       ]
     },
@@ -496,7 +504,8 @@
               "activation": "ACTIVE",
               "address": "mcp://record/append"
             }
-          ]
+          ],
+          "shape": {}
         }
       ]
     },
@@ -609,7 +618,8 @@
               "activation": "REFUSED_UNCONFIGURED",
               "refusal_code": "UNCONFIGURED"
             }
-          ]
+          ],
+          "shape": {}
         }
       ]
     },
@@ -733,7 +743,8 @@
               "activation": "REFUSED_UNCONFIGURED",
               "refusal_code": "UNCONFIGURED"
             }
-          ]
+          ],
+          "shape": {}
         }
       ]
     },

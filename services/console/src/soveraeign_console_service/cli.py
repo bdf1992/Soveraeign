@@ -22,16 +22,20 @@ import json
 import sys
 
 from soveraeign_console_service.continuity import (
-    OPERATIONS,
     published_threads,
     read_thread,
     session_context,
 )
 from soveraeign_console_service.core import ConsoleService
+from soveraeign_console_service.discovery import discover
 from soveraeign_console_service.refusals import ConsoleRefusal, UnknownRecord
 from soveraeign_record_service import RecordService
 
 DEFAULT_ROOT = Path(".local") / "console"
+# The projection discovery answers from. Repository-relative rather than
+# package-relative: the map is a shared contract, not console state.
+DEFAULT_CAPABILITY_MAP = (Path("contracts") / "fixtures"
+                         / "capability-map.reference.json")
 # decisions/0039 takes the default that a node address is an opaque local identifier.
 # This is that default made concrete for a console nobody has named yet; --node
 # overrides it, and a crossing will require it to be named rather than defaulted.
@@ -57,9 +61,9 @@ def _body(args: argparse.Namespace) -> bytes:
 
 def _commands() -> dict[str, Callable[[ConsoleService, argparse.Namespace], dict[str, Any]]]:
     return {
-        "operations": lambda _c, _a: {"operations": list(OPERATIONS),
-                                      "entry_standing": "RECORDED",
-                                      "note": "a console record never enters above RECORDED"},
+        "operations": lambda c, a: discover(
+            c, json.loads(Path(a.capability_map).read_text(encoding="utf-8")),
+            operator_id=a.operator, fresh=a.fresh),
         "grant": lambda c, a: c.grant(a.operator, a.capability, a.scope, a.granted_by),
         "revoke": lambda c, a: c.revoke(a.grant, a.revoked_by),
         "grants": lambda c, a: {"live_grants": c.grants(a.operator), "authoritative": True},
@@ -88,7 +92,18 @@ def build_parser() -> argparse.ArgumentParser:
                         help=f"the node this console serves (default {DEFAULT_NODE})")
     sub = parser.add_subparsers(dest="command", required=True)
 
-    sub.add_parser("operations", help="discover legal operations and their required inputs")
+    operations = sub.add_parser(
+        "operations", help="discover legal operations and their required inputs")
+    operations.add_argument("--capability-map", dest="capability_map",
+                            default=str(DEFAULT_CAPABILITY_MAP),
+                            help=f"the capability projection to answer from "
+                                 f"(default {DEFAULT_CAPABILITY_MAP})")
+    operations.add_argument("--operator", default=None,
+                            help="answer the permitted reading for this operator too; "
+                                 "without it only the available reading is returned")
+    operations.add_argument("--stale", dest="fresh", action="store_false", default=None,
+                            help="declare the projection stale, which refuses the answer "
+                                 "rather than reporting from a map behind its sources")
 
     grant = sub.add_parser("grant", help="record a live grant for an operator")
     grant.add_argument("--operator", required=True)

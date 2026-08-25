@@ -1,0 +1,199 @@
+{
+  "ground_schema": "soveraeign-product-ground/v1",
+  "epoch": "EPOCH-1",
+  "revision": "GROUND-1",
+  "rendering": "GROUND-1.1",
+  "status": "ACCEPTED",
+  "wording_owned_by": "GROUND.md",
+  "amendment_rule": "Three levels, deliberately separate. A RENDERING is a new immutable copy of the artifact with no change of meaning - a typo, a citation repair, a formatting fix - and increments only the fractional part. A REVISION is a change of meaning: a claim added, retired, or reworded so that it says something different, and it mints the next whole revision. A PRODUCT EPOCH changes what product is being made, which happens when a ground claim is retired or replaced rather than added to, and it mints the next epoch. A rendering must never be used to change meaning, and an epoch must never be implied by a rendering. Historical revisions stay addressable, and an identifier whose meaning changes is retired rather than repointed.",
+  "grounded_in": [
+    "CONTRACT.md",
+    "SYSTEM.md",
+    "CLASSIFICATION.md",
+    "AI-NATIVE.md",
+    "PRD.md",
+    "SPEC.md",
+    "BYOM.md"
+  ],
+  "claims": [
+    {
+      "ground_id": "GROUND-001",
+      "statement": "An enterprise keeps custody of its memory, its authority, its operation and its continuity. Compute may be borrowed from anywhere; none of those four may quietly move with it.",
+      "grounded_in": [
+        "SYSTEM.md Scope",
+        "SYSTEM.md Ownership and model portability",
+        "SPEC.md"
+      ],
+      "if_false": "Soveraeign would be a hosted platform that runs an enterprise's work, rather than a node an enterprise owns. Every promise about swapping providers, standing up your own node, or losing a provider without losing the enterprise would go with it."
+    },
+    {
+      "ground_id": "GROUND-002",
+      "statement": "People and models are native operators of one governed world. They resolve to the same state, the same transitions, the same authority checks, the same evidence and the same history. Neither gets a private door.",
+      "grounded_in": [
+        "CONTRACT.md C1",
+        "SYSTEM.md Scope",
+        "PRD.md",
+        "AI-NATIVE.md"
+      ],
+      "if_false": "Soveraeign would be an ordinary enterprise application with a model integration beside it, or a model framework with a human dashboard. The AI-native claim rests entirely here."
+    },
+    {
+      "ground_id": "GROUND-003",
+      "statement": "Authority is granted, typed, scoped, revocable and recorded. Nothing acquires it by operating successfully, by being fluent, by being recent, by being the provider, or by being trusted.",
+      "grounded_in": [
+        "CONTRACT.md C3",
+        "CONTRACT.md C11",
+        "AGENTS.md Authority",
+        "SPEC.md"
+      ],
+      "if_false": "Soveraeign would be an automation environment in which capability implies permission. Refusal, delegation, and the whole notion of a participant that can build what it cannot ratify would lose their basis."
+    },
+    {
+      "ground_id": "GROUND-004",
+      "statement": "A participant acts by crossing a declared operation, not by having access. The operation declares its inputs, its required authority, its preconditions, its expected observable result, its effect class and its refusal behaviour before it runs.",
+      "grounded_in": [
+        "CONTRACT.md C6",
+        "SPEC.md",
+        "AGENTS.md State and execution"
+      ],
+      "if_false": "Soveraeign would be a permissions layer over arbitrary action. There would be no unit to discover, to attribute effort to, or to refuse."
+    },
+    {
+      "ground_id": "GROUND-005",
+      "statement": "A consequential act binds to exact state. What it read, at what version, with what digest, and what it produced, stay recoverable after the fact, and coincidence of value is never treated as identity.",
+      "grounded_in": [
+        "CONTRACT.md C2",
+        "CONTRACT.md C10",
+        "CONTRACT.md C15",
+        "SPEC.md"
+      ],
+      "if_false": "Soveraeign would record that something happened without being able to say what it happened to. Evidence, reproduction, version-pinned decisions and staleness refusal all rest here."
+    },
+    {
+      "ground_id": "GROUND-006",
+      "statement": "What may be asked of a node is discoverable from the artifact alone. A participant arriving with no briefing can determine what it may do, over what, under whose authority, and how success or failure will be observed.",
+      "grounded_in": [
+        "CONTRACT.md C12",
+        "AI-NATIVE.md",
+        "PRD.md PROD-I-7"
+      ],
+      "if_false": "Soveraeign would require a person who already knows in order to be usable. Model participation would degrade to whatever a human remembered to explain, and the product would be normal enterprise software."
+    },
+    {
+      "ground_id": "GROUND-007",
+      "statement": "Every crossing leaves a durable attributable record: who, what operation, on what, under what authority, with what effect class, and what came of it. Refusals, failures and unresolved judgements leave one too.",
+      "grounded_in": [
+        "CONTRACT.md C8",
+        "CONTRACT.md C15",
+        "SPEC.md"
+      ],
+      "if_false": "Soveraeign would be unable to answer why anything is what it is. Attribution, audit, correction and independent observation would have nothing to stand on."
+    },
+    {
+      "ground_id": "GROUND-008",
+      "statement": "Refusal is an outcome, not an error. A participant that may not do something is told so legibly, with a reason, and the refusal is as much a result as a success.",
+      "grounded_in": [
+        "CONTRACT.md C6",
+        "CONTRACT.md C8",
+        "SPEC.md refusals",
+        "AI-NATIVE.md"
+      ],
+      "if_false": "Soveraeign would be permissive by default with exceptions bolted on. A model operator could not tell the difference between not allowed, not built, and broken."
+    },
+    {
+      "ground_id": "GROUND-009",
+      "statement": "Correction never erases occurrence. A wrong record stops conditioning what happens next by being countered, and the counter never claims that consumed resources or external effects came back.",
+      "grounded_in": [
+        "CONTRACT.md C4",
+        "CONTRACT.md C9",
+        "PRD.md PROD-I-4"
+      ],
+      "if_false": "The record would be rewritable, and every historical attribution would be provisional. Soveraeign would be a database with an undo button."
+    },
+    {
+      "ground_id": "GROUND-010",
+      "statement": "A report is not an observation. Whether something actually happened is settled by a path the executor did not control, and a build never witnesses itself.",
+      "grounded_in": [
+        "CONTRACT.md C7",
+        "CONTRACT.md C5",
+        "SDLC.md",
+        "AGENTS.md Evidence and standing"
+      ],
+      "if_false": "Soveraeign would take an agent's word for its own work. Delegation at any scale, and the entire claim to govern model work rather than merely run it, would collapse."
+    },
+    {
+      "ground_id": "GROUND-011",
+      "statement": "Standing does not collapse. Proposed, recorded, admitted, ratified and effective are distinct, and nothing enters as authoritative merely by being written, being confident, or being agreed with.",
+      "grounded_in": [
+        "CONTRACT.md C4",
+        "CONTRACT.md C11",
+        "CONTRACT.md C14",
+        "CLASSIFICATION.md"
+      ],
+      "if_false": "Soveraeign would be a wiki with permissions. The difference between a draft, an accepted rule and a currently applicable rule would stop being machine-readable."
+    },
+    {
+      "ground_id": "GROUND-012",
+      "statement": "Human judgement is a reserved and scarce input, not a gap waiting to be automated. Some transitions require a person, that requirement is declared, and waiting on one does not stop unrelated work.",
+      "grounded_in": [
+        "CONTRACT.md C5",
+        "PRD.md PROD-I-6",
+        "AGENTS.md Authority",
+        "decisions/0023"
+      ],
+      "if_false": "Soveraeign would be an autonomous agent runtime. The owner would be an operator of last resort rather than the holder of a declared kind of decision."
+    },
+    {
+      "ground_id": "GROUND-013",
+      "statement": "The model is substitutable. Changing which model runs changes quality, latency and cost, and changes nothing about state, standing, authority, receipts or contracts. A model that is unavailable is refused visibly, never substituted silently.",
+      "grounded_in": [
+        "SYSTEM.md Ownership and model portability",
+        "BYOM.md",
+        "PRD.md PROD-I-9",
+        "AGENTS.md Secrets and local boundaries"
+      ],
+      "if_false": "Soveraeign would be a wrapper around one provider. Bring-your-own-model, the local-first posture and the custody argument would all be marketing rather than structure."
+    },
+    {
+      "ground_id": "GROUND-014",
+      "statement": "Effort resolves to intention. Any meaningful expenditure of time, tokens, tools or money can be traced up to the product intention that justified it, and any product intention can be traced down to what has actually been spent realizing it.",
+      "grounded_in": [
+        "CONTRACT.md C15",
+        "PRD.md PROD-I-1",
+        "AGENTS.md Change protocol",
+        "reports/2026-08-24-product-canon-attribution-discovery.md"
+      ],
+      "if_false": "Soveraeign would record that resources were consumed without being able to say what for. A node could run agents all night and produce a ledger nobody could read as a decision about priorities."
+    },
+    {
+      "ground_id": "GROUND-015",
+      "statement": "Work survives the loss of a participant's context. A new session, a different operator, a different model or the next day does not lose what was under way, because what mattered was written down rather than held in someone's head.",
+      "grounded_in": [
+        "CONTRACT.md C12",
+        "SYSTEM.md Ownership and model portability",
+        "AGENTS.md Context hygiene"
+      ],
+      "if_false": "Soveraeign would be usable only within one continuous conversation. Model participation would be capped at whatever fits in one context window, which is the constraint the product exists to remove."
+    },
+    {
+      "ground_id": "GROUND-016",
+      "statement": "A node is whole at any size. One person's node is a first-class node, not a reduced edition, and growing to more participants or federating with another node does not migrate its authority or its record somewhere else.",
+      "grounded_in": [
+        "SYSTEM.md Ownership and model portability",
+        "CLASSIFICATION.md",
+        "decisions/0039"
+      ],
+      "if_false": "Soveraeign would be enterprise software with a hobby tier, and federation would be a migration path into someone else's system rather than a crossing between two sovereign ones."
+    }
+  ],
+  "retired": [],
+  "accepted": {
+    "revision": "GROUND-1",
+    "epoch": "EPOCH-1",
+    "by": "Bdo",
+    "on": "2026-08-24",
+    "recorded_in": "STATUS.yaml",
+    "decision": "decisions/0052-owner-ruling-on-the-product-ground.md",
+    "note": "Accepting the ground is not a claim that the node currently keeps any of it. Bdo said so in the ruling: 'I am accepting the semantic ground, not asserting that the implementation currently keeps every Ground claim.'"
+  }
+}

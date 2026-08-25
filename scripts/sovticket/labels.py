@@ -15,6 +15,7 @@ import json
 import re
 
 LABEL_LINE = re.compile(r'^- name:\s*"(?P<name>[^"]+)"\s*$')
+LABEL_FIELD = re.compile(r'^(?P<key>color|description):\s*"(?P<value>[^"]*)"\s*$')
 
 
 @dataclass(frozen=True)
@@ -49,15 +50,31 @@ def load_projection(root: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def load_catalogue_entries(root: Path) -> list[dict[str, str]]:
+    """Read the declared label catalogue as name, colour, and description entries.
+
+    The colour and description are what a label has to be created with, so a caller that
+    only knows a name can report a missing label but cannot propose creating one.
+    """
+    path = root / ".github" / "labels.yml"
+    entries: list[dict[str, str]] = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        stripped = line.strip()
+        match = LABEL_LINE.match(stripped)
+        if match:
+            entries.append({"name": match.group("name"), "color": "", "description": ""})
+            continue
+        if not entries:
+            continue
+        field = LABEL_FIELD.match(stripped)
+        if field and not entries[-1][field.group("key")]:
+            entries[-1][field.group("key")] = field.group("value")
+    return entries
+
+
 def load_catalogue(root: Path) -> set[str]:
     """Read the canonical label names declared in ``.github/labels.yml``."""
-    path = root / ".github" / "labels.yml"
-    names = set()
-    for line in path.read_text(encoding="utf-8").splitlines():
-        match = LABEL_LINE.match(line.strip())
-        if match:
-            names.add(match.group("name"))
-    return names
+    return {entry["name"] for entry in load_catalogue_entries(root)}
 
 
 def project(metadata: dict[str, Any], projection: dict[str, Any]) -> tuple[set[str], list[str]]:

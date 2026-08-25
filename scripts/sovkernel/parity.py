@@ -121,7 +121,7 @@ KERNEL_FACTS = {
         },
         {"state_digest": DIGEST},
     ),
-    "external-world effects are refused in this phase": (
+    "an external effect outside every declared scope is refused": (
         {
             "request_schema": "soveraeign-kernel-transition/v1",
             "transition": "cross",

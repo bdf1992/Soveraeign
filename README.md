@@ -185,9 +185,9 @@ or reviewed implementation adoption.
 1. Read `AGENTS.md`, `SOV.md`, `CONTRIBUTING.md`, and `STATUS.yaml`.
 2. Read `SYSTEM.md`, `CONTRACT.md`, `PRD.md`, and `SPEC.md` as one governing set.
 3. Read `ENGINEERING.md` and inspect `OPEN-SEAMS.md` before implementation.
-4. Run `python scripts/verify.py`. The dependency-free local and CI loop
-   grades its own wall time — `PLATINUM` under three seconds, `GOLD` under
-   six, `SILVER` under fifteen — and fails past fifteen.
+4. Run `python scripts/verify.py`; the dependency-free local and CI loop grades
+   its wall time - `PLATINUM` at three seconds, `GOLD` at six, `SILVER` at
+   fifteen - and fails only past fifteen (`decisions/0050`).
 5. Run `python scripts/sov_next.py`. It reconciles every signpost that claims
    to say what happens next and prints one answer with each alias the job
    travels under. Where the declared gate and the reachable work name different

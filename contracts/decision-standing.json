@@ -4,7 +4,7 @@
   "decision": "decisions/0042-the-decision-queue-is-not-a-queue.md",
   "summary": "The standing a decision record carries, as a small closed set, plus a crosswalk from every status line the forty existing records already use. The crosswalk exists so this contract can be adopted without rewriting a single decision record: a reader keeps its own prose, and this file says what that prose means.",
   "governed_by": [
-    "decisions/0023-acceptance-not-approval.md",
+    "decisions/0045-acceptance-not-approval.md",
     "decisions/0033-close-the-founding-docket.md"
   ],
   "not_in_scope": [
@@ -50,7 +50,7 @@
     "irreversible_external_effect": "An effect that cannot be counter-recorded away.",
     "acceptance_standing": "A change to something the owner already accepted, or to the acceptance rule itself."
   },
-  "crosswalk_note": "Every status string observed across decisions/ on 2026-08-23, mapped to a standing. Twenty-two distinct strings for forty records is the condition this contract exists to end; the crosswalk is the bridge, not the destination. A status string absent from here is a defect the checker reports rather than guessing at.",
+  "crosswalk_note": "Every status string observed across decisions/ on 2026-08-23, mapped to a standing, plus the six strings records 0052-0059 minted afterwards and which were added on 2026-08-24 while main and feat/federation-harness-and-hardening were reconciled. Twenty-two distinct strings for forty records is the condition this contract exists to end; the crosswalk is the bridge, not the destination. A status string absent from here is a defect the checker reports rather than guessing at.",
   "crosswalk": {
     "PROPOSED FOR BDO RATIFICATION": "PROPOSED",
     "PROPOSED · OWNER RATIFICATION PENDING": "PROPOSED",
@@ -73,7 +73,16 @@
     "OWNER-DIRECTED · ACCEPTED WORDING": "OWNER_ACCEPTED",
     "OWNER-SELECTED": "OWNER_ACCEPTED",
     "OWNER-ACCEPTED 2026-08-23 · BUILT AND SELF-TESTED · NOT WITNESSED": "OWNER_ACCEPTED",
-    "SUPERSEDED BY 0004": "SUPERSEDED"
+    "SUPERSEDED BY 0004": "SUPERSEDED",
+    "OWNER-DIRECTED · ACCEPTED AS acceptance/accepted/A3.json": "OWNER_ACCEPTED",
+    "OWNER-DIRECTED · ACCEPTED AS acceptance/accepted/A4.json": "OWNER_ACCEPTED",
+    "OWNER-DIRECTED · RULINGS IN FORCE, REVERSIBLE ON THE EVIDENCE EACH NAMES": "OWNER_DIRECTED",
+    "OWNER-RULED 2026-08-24 · APPLIED": "OWNER_DIRECTED",
+    "BUILT · SELF-TESTED · NOT WITNESSED": "PROPOSED",
+    "OWNER-RULED · BUILT · SELF-TESTED · NOT WITNESSED": "OWNER_DIRECTED",
+    "OWNER-DIRECTED · PROPOSED": "OWNER_DIRECTED",
+    "PROPOSED · SLICES 1-4 BUILT, SELF-TESTED, NOT WITNESSED": "PROPOSED",
+    "PROPOSED · DRAFTED AT OWNER DIRECTION · ACCEPTANCE PENDING": "OWNER_DIRECTED"
   },
   "owner_questions_section": {
     "heading": "What still waits on Bdo",

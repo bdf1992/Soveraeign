@@ -103,16 +103,49 @@ class Digests(unittest.TestCase):
 
 
 class BudgetReporting(unittest.TestCase):
+    """The budget is graded, so the report says how fast the run was and not
+    only whether it cleared the ceiling (`decisions/0050`)."""
+
     def test_the_bands_are_the_ones_the_record_declares(self):
         """Guards the same thing the bare 3.0 assertion did: the budget cannot be
-        loosened quietly. It now pins the bands from decisions/0050 rather than a
+        loosened quietly. It pins the bands from decisions/0050 rather than a
         single number, so widening any one of them trips here and has to be argued.
         """
         self.assertEqual(verify.BUDGET_GRADES,
                          (("PLATINUM", 3.0), ("GOLD", 6.0), ("SILVER", 15.0)))
 
-    def test_the_ceiling_is_derived_from_the_slowest_band(self):
-        self.assertEqual(verify.BUDGET_SECONDS, verify.BUDGET_GRADES[-1][1])
+    def test_the_budget_is_still_declared(self):
+        self.assertEqual(verify.BUDGET_SECONDS, 15.0)
+
+    def test_the_slowest_band_ceiling_is_the_budget(self):
+        """The two cannot drift apart: the budget is derived from the bands."""
+        self.assertEqual(verify.BUDGET_GRADES[-1][1], verify.BUDGET_SECONDS)
+
+    def test_bands_run_fastest_first_with_no_repeated_ceiling(self):
+        ceilings = [ceiling for _, ceiling in verify.BUDGET_GRADES]
+        self.assertEqual(ceilings, sorted(ceilings))
+        self.assertEqual(len(set(ceilings)), len(ceilings))
+
+    def test_a_ceiling_belongs_to_its_own_band(self):
+        for name, ceiling in verify.BUDGET_GRADES:
+            with self.subTest(band=name):
+                self.assertEqual(verify.grade(ceiling), name)
+
+    def test_a_hair_over_a_ceiling_drops_to_the_next_band(self):
+        self.assertEqual(verify.grade(3.001), "GOLD")
+        self.assertEqual(verify.grade(6.001), "SILVER")
+
+    def test_past_the_last_ceiling_there_is_no_band(self):
+        """The defeating case. Grading must not turn the budget into advice:
+        over the slowest ceiling nothing is earned and the run still fails."""
+        self.assertIsNone(verify.grade(verify.BUDGET_SECONDS + 0.001))
+        self.assertIn("verification budget", verify.budget_line(15.001))
+
+    def test_a_graded_run_is_told_what_the_next_band_costs(self):
+        self.assertIn("PLATINUM needs 3.000s", verify.budget_line(4.0))
+
+    def test_the_fastest_band_is_not_told_to_go_faster(self):
+        self.assertNotIn("needs", verify.budget_line(1.0))
 
     def test_checks_are_unique_by_name(self):
         names = [check.name for check in verify.CHECKS]

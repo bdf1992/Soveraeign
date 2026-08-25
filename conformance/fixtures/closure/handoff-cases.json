@@ -1,0 +1,707 @@
+{
+  "corpus_id": "soveraeign-closure-handoff-cases/v1",
+  "note": "Positive and defeating cases for contracts/closure-ownership.json. Eight cases prove a genuine seam is admitted; eleven prove a refusal, and every refusal code in the contract has at least one case proving it actually fires. A case declares the whole claim, so a field omitted is absent rather than satisfied.",
+  "cases": [
+    {
+      "case_id": "C-001-acceptance-of-an-evidenced-result",
+      "expect": "PERMITTED",
+      "proves": "The owner gate is acceptance over a finished evidenced result. The loop ran to the end before the question was asked, which is what makes this a packet and not a request for permission.",
+      "claim": {
+        "claim_schema": "soveraeign-closure-handoff/v1",
+        "concern": "asset-core-split",
+        "handoff_kind": "owner_question",
+        "asks": "acceptance of the split Asset Service core",
+        "seam": "ACCEPTANCE_SEAM",
+        "provision": "judgement",
+        "requested_by": "worker",
+        "requested_from": "owner",
+        "tools_available": [
+          "read",
+          "edit",
+          "run_tests",
+          "run_verify",
+          "report",
+          "recruit_helper"
+        ],
+        "loop_steps_taken": [
+          "inspect",
+          "implement",
+          "test",
+          "verify",
+          "present_or_land"
+        ],
+        "helper": {
+          "recruited": true,
+          "role": "editing",
+          "offered_as_witness": false
+        },
+        "reachable_alternative": "NONE"
+      }
+    },
+    {
+      "case_id": "C-002-an-external-world-effect-the-phase-does-not-admit",
+      "expect": "PERMITTED",
+      "proves": "Publishing crosses the effect envelope, so the grant is genuinely owner-held. The participant still built and verified the record-local half first.",
+      "claim": {
+        "claim_schema": "soveraeign-closure-handoff/v1",
+        "concern": "publish-the-surface-page",
+        "handoff_kind": "owner_question",
+        "asks": "a grant to publish the rendered page outside this machine",
+        "seam": "EFFECT_SEAM",
+        "provision": "grant",
+        "requested_by": "worker",
+        "requested_from": "owner",
+        "tools_available": [
+          "read",
+          "edit",
+          "run_tests",
+          "run_verify",
+          "report",
+          "recruit_helper"
+        ],
+        "loop_steps_taken": [
+          "inspect",
+          "implement",
+          "test",
+          "verify",
+          "present_or_land"
+        ],
+        "helper": {
+          "recruited": true,
+          "role": "editing",
+          "offered_as_witness": false
+        },
+        "reachable_alternative": "NONE"
+      }
+    },
+    {
+      "case_id": "C-003-a-grant-the-worker-cannot-mint",
+      "expect": "PERMITTED",
+      "proves": "A typed grant the participant does not hold is an authority seam and is asked of the tier that holds it, not of the owner.",
+      "claim": {
+        "claim_schema": "soveraeign-closure-handoff/v1",
+        "concern": "red-lane-engagement",
+        "handoff_kind": "unblock_request",
+        "asks": "a scoped Red engagement grant",
+        "seam": "AUTHORITY_SEAM",
+        "provision": "grant",
+        "requested_by": "worker",
+        "requested_from": "orchestrator",
+        "tools_available": [
+          "read",
+          "edit",
+          "run_tests",
+          "run_verify",
+          "report",
+          "recruit_helper"
+        ],
+        "loop_steps_taken": [
+          "inspect",
+          "implement",
+          "test",
+          "verify",
+          "present_or_land"
+        ],
+        "helper": {
+          "recruited": true,
+          "role": "editing",
+          "offered_as_witness": false
+        },
+        "reachable_alternative": "NONE"
+      }
+    },
+    {
+      "case_id": "C-004-an-independent-observation-the-builder-cannot-produce",
+      "expect": "PERMITTED",
+      "proves": "A build report cannot witness itself, so the observation is a real dependency on another participant. The helper that edited the change is declared and is not offered as the witness.",
+      "claim": {
+        "claim_schema": "soveraeign-closure-handoff/v1",
+        "concern": "record-service-witness",
+        "handoff_kind": "issue",
+        "asks": "an independent observation of the record service walk",
+        "seam": "DEPENDENCY_SEAM",
+        "provision": "observation",
+        "requested_by": "worker",
+        "requested_from": "controller",
+        "tools_available": [
+          "read",
+          "edit",
+          "run_tests",
+          "run_verify",
+          "report",
+          "recruit_helper"
+        ],
+        "loop_steps_taken": [
+          "inspect",
+          "implement",
+          "test",
+          "verify",
+          "present_or_land"
+        ],
+        "helper": {
+          "recruited": true,
+          "role": "editing",
+          "offered_as_witness": false
+        },
+        "reachable_alternative": "NONE"
+      }
+    },
+    {
+      "case_id": "C-005-two-settled-constraints-that-conflict",
+      "expect": "PERMITTED",
+      "proves": "A genuine policy seam: the participant cannot defeat either side with evidence it can produce, so the judgement is owner-held.",
+      "claim": {
+        "claim_schema": "soveraeign-closure-handoff/v1",
+        "concern": "published-by-seat-or-operator",
+        "handoff_kind": "seam",
+        "asks": "which of two contracts names the publisher correctly",
+        "seam": "POLICY_SEAM",
+        "provision": "judgement",
+        "requested_by": "worker",
+        "requested_from": "owner",
+        "tools_available": [
+          "read",
+          "edit",
+          "run_tests",
+          "run_verify",
+          "report",
+          "recruit_helper"
+        ],
+        "loop_steps_taken": [
+          "inspect",
+          "implement",
+          "test",
+          "verify",
+          "present_or_land"
+        ],
+        "helper": {
+          "recruited": true,
+          "role": "editing",
+          "offered_as_witness": false
+        },
+        "reachable_alternative": "NONE"
+      }
+    },
+    {
+      "case_id": "C-006-a-loop-step-whose-tool-the-participant-lacks",
+      "expect": "PERMITTED",
+      "proves": "A required step is excused only when the tool it needs is genuinely absent from the invocation. This participant has no test runner, so the omitted step is a missing capability rather than a skipped one.",
+      "claim": {
+        "claim_schema": "soveraeign-closure-handoff/v1",
+        "concern": "charter-only-domain",
+        "handoff_kind": "owner_question",
+        "asks": "acceptance of the split Asset Service core",
+        "seam": "ACCEPTANCE_SEAM",
+        "provision": "judgement",
+        "requested_by": "worker",
+        "requested_from": "owner",
+        "tools_available": [
+          "read",
+          "edit",
+          "report",
+          "recruit_helper"
+        ],
+        "loop_steps_taken": [
+          "inspect",
+          "implement",
+          "present_or_land"
+        ],
+        "helper": {
+          "recruited": true,
+          "role": "editing",
+          "offered_as_witness": false
+        },
+        "reachable_alternative": "NONE"
+      }
+    },
+    {
+      "case_id": "C-007-follow-on-work-that-crosses-a-service-boundary",
+      "expect": "PERMITTED",
+      "proves": "Absorption stops at the boundary. Work in another service is a separate concern and filing it is correct, not avoidance.",
+      "claim": {
+        "claim_schema": "soveraeign-closure-handoff/v1",
+        "concern": "console-continuity",
+        "handoff_kind": "issue",
+        "asks": "a contract for the projection service read path",
+        "seam": "DEPENDENCY_SEAM",
+        "provision": "contract",
+        "requested_by": "worker",
+        "requested_from": "controller",
+        "tools_available": [
+          "read",
+          "edit",
+          "run_tests",
+          "run_verify",
+          "report",
+          "recruit_helper"
+        ],
+        "loop_steps_taken": [
+          "inspect",
+          "implement",
+          "test",
+          "verify",
+          "present_or_land"
+        ],
+        "helper": {
+          "recruited": true,
+          "role": "editing",
+          "offered_as_witness": false
+        },
+        "reachable_alternative": "NONE",
+        "follow_on": {
+          "same_service": false,
+          "same_effect_class": true,
+          "same_authority": true
+        }
+      }
+    },
+    {
+      "case_id": "C-008-one-unlanded-concern-is-within-the-policy",
+      "expect": "PERMITTED",
+      "proves": "The policy is one active concern, not zero. Opening the branch for the concern in hand is the normal case.",
+      "claim": {
+        "claim_schema": "soveraeign-closure-handoff/v1",
+        "concern": "asset-core-split",
+        "handoff_kind": "branch",
+        "asks": "a branch for the concern in hand",
+        "seam": "DEPENDENCY_SEAM",
+        "provision": "capability",
+        "requested_by": "worker",
+        "requested_from": "worker",
+        "tools_available": [
+          "read",
+          "edit",
+          "run_tests",
+          "run_verify",
+          "report",
+          "recruit_helper"
+        ],
+        "loop_steps_taken": [
+          "inspect",
+          "implement",
+          "test",
+          "verify",
+          "present_or_land"
+        ],
+        "helper": {
+          "recruited": true,
+          "role": "editing",
+          "offered_as_witness": false
+        },
+        "reachable_alternative": "NONE",
+        "open_unlanded_concerns": 1
+      }
+    },
+    {
+      "case_id": "C-101-a-second-concern-opened-before-the-first-landed",
+      "expect": "REFUSED",
+      "refusal": "WIP_EXCEEDED",
+      "proves": "Starting new work is not progress on old work. A participant carrying an unlanded concern lands it before opening another.",
+      "claim": {
+        "claim_schema": "soveraeign-closure-handoff/v1",
+        "concern": "asset-core-split",
+        "handoff_kind": "branch",
+        "asks": "a second branch",
+        "seam": "DEPENDENCY_SEAM",
+        "provision": "capability",
+        "requested_by": "worker",
+        "requested_from": "worker",
+        "tools_available": [
+          "read",
+          "edit",
+          "run_tests",
+          "run_verify",
+          "report",
+          "recruit_helper"
+        ],
+        "loop_steps_taken": [
+          "inspect",
+          "implement",
+          "test",
+          "verify",
+          "present_or_land"
+        ],
+        "helper": {
+          "recruited": true,
+          "role": "editing",
+          "offered_as_witness": false
+        },
+        "reachable_alternative": "NONE",
+        "open_unlanded_concerns": 2
+      }
+    },
+    {
+      "case_id": "C-102-a-ticket-for-work-inside-the-concern",
+      "expect": "REFUSED",
+      "refusal": "ABSORBABLE_FOLLOW_ON",
+      "proves": "Same service, same effect class, same authority. This is the concern discovered more fully, and filing it externalizes work the participant is already holding.",
+      "claim": {
+        "claim_schema": "soveraeign-closure-handoff/v1",
+        "concern": "asset-core-split",
+        "handoff_kind": "issue",
+        "asks": "a follow-up ticket for the missing refusal test",
+        "seam": "DEPENDENCY_SEAM",
+        "provision": "fixture",
+        "requested_by": "worker",
+        "requested_from": "worker",
+        "tools_available": [
+          "read",
+          "edit",
+          "run_tests",
+          "run_verify",
+          "report",
+          "recruit_helper"
+        ],
+        "loop_steps_taken": [
+          "inspect",
+          "implement",
+          "test",
+          "verify",
+          "present_or_land"
+        ],
+        "helper": {
+          "recruited": true,
+          "role": "editing",
+          "offered_as_witness": false
+        },
+        "reachable_alternative": "NONE",
+        "follow_on": {
+          "same_service": true,
+          "same_effect_class": true,
+          "same_authority": true
+        }
+      }
+    },
+    {
+      "case_id": "C-103-the-helper-that-edited-offered-as-the-witness",
+      "expect": "REFUSED",
+      "refusal": "HELPER_AS_WITNESS",
+      "proves": "A helper inside the build is not an independent path to the claim. Recruiting one is encouraged; presenting it as the observation is the self-witnessing failure.",
+      "claim": {
+        "claim_schema": "soveraeign-closure-handoff/v1",
+        "concern": "asset-core-split",
+        "handoff_kind": "pull_request",
+        "asks": "acceptance of a witnessed standing",
+        "seam": "ACCEPTANCE_SEAM",
+        "provision": "judgement",
+        "requested_by": "worker",
+        "requested_from": "owner",
+        "tools_available": [
+          "read",
+          "edit",
+          "run_tests",
+          "run_verify",
+          "report",
+          "recruit_helper"
+        ],
+        "loop_steps_taken": [
+          "inspect",
+          "implement",
+          "test",
+          "verify",
+          "present_or_land"
+        ],
+        "helper": {
+          "recruited": true,
+          "role": "editing",
+          "offered_as_witness": true
+        },
+        "reachable_alternative": "NONE"
+      }
+    },
+    {
+      "case_id": "C-104-a-rebase-asked-of-another-tier",
+      "expect": "REFUSED",
+      "refusal": "ROUTINE_DECISION",
+      "proves": "Ordinary merge work belongs to whoever holds the branch. Asking for it is the externalizing this table exists to refuse.",
+      "claim": {
+        "claim_schema": "soveraeign-closure-handoff/v1",
+        "concern": "asset-core-split",
+        "handoff_kind": "owner_question",
+        "asks": "rebasing onto the base branch",
+        "seam": "AUTHORITY_SEAM",
+        "provision": "grant",
+        "requested_by": "worker",
+        "requested_from": "controller",
+        "tools_available": [
+          "read",
+          "edit",
+          "run_tests",
+          "run_verify",
+          "report",
+          "recruit_helper"
+        ],
+        "loop_steps_taken": [
+          "inspect",
+          "implement",
+          "test",
+          "verify",
+          "present_or_land"
+        ],
+        "helper": {
+          "recruited": true,
+          "role": "editing",
+          "offered_as_witness": false
+        },
+        "reachable_alternative": "NONE"
+      }
+    },
+    {
+      "case_id": "C-105-a-question-with-no-seam",
+      "expect": "REFUSED",
+      "refusal": "SEAM_UNDECLARED",
+      "proves": "A handoff that names no seam is a participant stopping without proving it had to.",
+      "claim": {
+        "claim_schema": "soveraeign-closure-handoff/v1",
+        "concern": "asset-core-split",
+        "handoff_kind": "owner_question",
+        "asks": "which of these two designs do you prefer",
+        "seam": null,
+        "provision": "judgement",
+        "requested_by": "worker",
+        "requested_from": "owner",
+        "tools_available": [
+          "read",
+          "edit",
+          "run_tests",
+          "run_verify",
+          "report",
+          "recruit_helper"
+        ],
+        "loop_steps_taken": [
+          "inspect",
+          "implement",
+          "test",
+          "verify",
+          "present_or_land"
+        ],
+        "helper": {
+          "recruited": true,
+          "role": "editing",
+          "offered_as_witness": false
+        },
+        "reachable_alternative": "NONE"
+      }
+    },
+    {
+      "case_id": "C-106-an-unknown-seam-name",
+      "expect": "REFUSED",
+      "refusal": "SEAM_UNDECLARED",
+      "proves": "The admissible set is closed. A new seam name is not minted by using it.",
+      "claim": {
+        "claim_schema": "soveraeign-closure-handoff/v1",
+        "concern": "asset-core-split",
+        "handoff_kind": "owner_question",
+        "asks": "acceptance of the split Asset Service core",
+        "seam": "PREFERENCE_SEAM",
+        "provision": "judgement",
+        "requested_by": "worker",
+        "requested_from": "owner",
+        "tools_available": [
+          "read",
+          "edit",
+          "run_tests",
+          "run_verify",
+          "report",
+          "recruit_helper"
+        ],
+        "loop_steps_taken": [
+          "inspect",
+          "implement",
+          "test",
+          "verify",
+          "present_or_land"
+        ],
+        "helper": {
+          "recruited": true,
+          "role": "editing",
+          "offered_as_witness": false
+        },
+        "reachable_alternative": "NONE"
+      }
+    },
+    {
+      "case_id": "C-107-judgement-asked-of-a-tier-that-is-not-the-owner",
+      "expect": "REFUSED",
+      "refusal": "JUDGEMENT_NOT_OWNER",
+      "proves": "Judgement is owner-held and may be asked of no other tier, matching the same rule in contracts/issue-metadata.schema.json for an unblock request.",
+      "claim": {
+        "claim_schema": "soveraeign-closure-handoff/v1",
+        "concern": "asset-core-split",
+        "handoff_kind": "owner_question",
+        "asks": "acceptance of the split Asset Service core",
+        "seam": "POLICY_SEAM",
+        "provision": "judgement",
+        "requested_by": "worker",
+        "requested_from": "controller",
+        "tools_available": [
+          "read",
+          "edit",
+          "run_tests",
+          "run_verify",
+          "report",
+          "recruit_helper"
+        ],
+        "loop_steps_taken": [
+          "inspect",
+          "implement",
+          "test",
+          "verify",
+          "present_or_land"
+        ],
+        "helper": {
+          "recruited": true,
+          "role": "editing",
+          "offered_as_witness": false
+        },
+        "reachable_alternative": "NONE"
+      }
+    },
+    {
+      "case_id": "C-108-an-acceptance-seam-asking-for-a-fixture",
+      "expect": "REFUSED",
+      "refusal": "PROVISION_UNROUTED",
+      "proves": "Only judgement remains at an acceptance seam. Asking the owner for a fixture is a participant handing over work rather than a result.",
+      "claim": {
+        "claim_schema": "soveraeign-closure-handoff/v1",
+        "concern": "asset-core-split",
+        "handoff_kind": "owner_question",
+        "asks": "acceptance of the split Asset Service core",
+        "seam": "ACCEPTANCE_SEAM",
+        "provision": "fixture",
+        "requested_by": "worker",
+        "requested_from": "owner",
+        "tools_available": [
+          "read",
+          "edit",
+          "run_tests",
+          "run_verify",
+          "report",
+          "recruit_helper"
+        ],
+        "loop_steps_taken": [
+          "inspect",
+          "implement",
+          "test",
+          "verify",
+          "present_or_land"
+        ],
+        "helper": {
+          "recruited": true,
+          "role": "editing",
+          "offered_as_witness": false
+        },
+        "reachable_alternative": "NONE"
+      }
+    },
+    {
+      "case_id": "C-109-a-handoff-with-a-reachable-precursor",
+      "expect": "REFUSED",
+      "refusal": "REACHABLE_ALTERNATIVE",
+      "proves": "A gated end state with a reachable precursor is a plan, not a handoff. AGENTS.md, Blocked edge is not blocked frontier.",
+      "claim": {
+        "claim_schema": "soveraeign-closure-handoff/v1",
+        "concern": "asset-core-split",
+        "handoff_kind": "owner_question",
+        "asks": "acceptance of the split Asset Service core",
+        "seam": "EFFECT_SEAM",
+        "provision": "grant",
+        "requested_by": "worker",
+        "requested_from": "owner",
+        "tools_available": [
+          "read",
+          "edit",
+          "run_tests",
+          "run_verify",
+          "report",
+          "recruit_helper"
+        ],
+        "loop_steps_taken": [
+          "inspect",
+          "implement",
+          "test",
+          "verify",
+          "present_or_land"
+        ],
+        "helper": {
+          "recruited": true,
+          "role": "editing",
+          "offered_as_witness": false
+        },
+        "reachable_alternative": "build the record-local half and its defeating fixture"
+      }
+    },
+    {
+      "case_id": "C-110-a-second-reading-asked-of-another-tier",
+      "expect": "REFUSED",
+      "refusal": "HELPER_NOT_RECRUITED",
+      "proves": "A recruitable helper was available and was not recruited. Arranging ordinary model assistance is the participant's own move, not a request.",
+      "claim": {
+        "claim_schema": "soveraeign-closure-handoff/v1",
+        "concern": "asset-core-split",
+        "handoff_kind": "issue",
+        "asks": "someone to look over this change",
+        "seam": "DEPENDENCY_SEAM",
+        "provision": "observation",
+        "requested_by": "worker",
+        "requested_from": "controller",
+        "tools_available": [
+          "read",
+          "edit",
+          "run_tests",
+          "run_verify",
+          "report",
+          "recruit_helper"
+        ],
+        "loop_steps_taken": [
+          "inspect",
+          "implement",
+          "test",
+          "verify",
+          "present_or_land"
+        ],
+        "helper": {
+          "recruited": false,
+          "role": null,
+          "offered_as_witness": false
+        },
+        "reachable_alternative": "NONE"
+      }
+    },
+    {
+      "case_id": "C-111-a-handoff-before-the-tests-were-written",
+      "expect": "REFUSED",
+      "refusal": "LOOP_INCOMPLETE",
+      "proves": "The test runner was available and the step was skipped. A handoff does not stand in for the part of the loop the participant could have run.",
+      "claim": {
+        "claim_schema": "soveraeign-closure-handoff/v1",
+        "concern": "asset-core-split",
+        "handoff_kind": "owner_question",
+        "asks": "acceptance of the split Asset Service core",
+        "seam": "ACCEPTANCE_SEAM",
+        "provision": "judgement",
+        "requested_by": "worker",
+        "requested_from": "owner",
+        "tools_available": [
+          "read",
+          "edit",
+          "run_tests",
+          "run_verify",
+          "report",
+          "recruit_helper"
+        ],
+        "loop_steps_taken": [
+          "inspect",
+          "implement",
+          "present_or_land"
+        ],
+        "helper": {
+          "recruited": true,
+          "role": "editing",
+          "offered_as_witness": false
+        },
+        "reachable_alternative": "NONE"
+      }
+    }
+  ]
+}

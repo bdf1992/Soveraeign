@@ -1,0 +1,207 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/acceptance-packet.schema.json",
+  "title": "soveraeign-acceptance-packet/v1",
+  "description": "One finished result presented upward for acceptance. The packet names the seat that presents it and the seat one edge up that accepts it (decisions/0020): acceptance happens at the height the work reached, not at the root by default. There is no field for asking permission to begin.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "packet_schema",
+    "packet_id",
+    "claim",
+    "subject",
+    "presented_by_seat",
+    "accepted_by_seat",
+    "claim_type",
+    "built_by",
+    "witnessed_by",
+    "visible_result",
+    "evidence",
+    "why_it_matters",
+    "what_could_defeat_it",
+    "residuals",
+    "on_accept",
+    "on_reject"
+  ],
+  "properties": {
+    "packet_schema": {
+      "const": "soveraeign-acceptance-packet/v1"
+    },
+    "packet_id": {
+      "type": "string",
+      "pattern": "^A[0-9]+$",
+      "description": "Stable id of this presentation. Reused across revisions of the same claim."
+    },
+    "claim": {
+      "type": "string",
+      "minLength": 12,
+      "description": "The single thing the owner is being asked to accept, in one sentence."
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact",
+        "from_standing",
+        "to_standing"
+      ],
+      "properties": {
+        "artifact": {
+          "type": "string",
+          "minLength": 1
+        },
+        "from_standing": {
+          "type": "string",
+          "minLength": 1
+        },
+        "to_standing": {
+          "type": "string",
+          "minLength": 1
+        },
+        "supersedes_open_decision": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "built_by": {
+      "$ref": "#/$defs/actor"
+    },
+    "witnessed_by": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/actor"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "The independent observer, or null. Null caps the reachable standing below WITNESSED; a build cannot witness itself (AGENTS.md, Evidence and standing)."
+    },
+    "visible_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "demo",
+        "shows",
+        "expect"
+      ],
+      "properties": {
+        "demo": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          },
+          "description": "An exact command the owner can run to see the result for themselves."
+        },
+        "shows": {
+          "type": "string",
+          "minLength": 1
+        },
+        "expect": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "address",
+          "says"
+        ],
+        "properties": {
+          "address": {
+            "type": "string",
+            "minLength": 1
+          },
+          "digest": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "says": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "why_it_matters": {
+      "type": "string",
+      "minLength": 12
+    },
+    "what_could_defeat_it": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 8
+      },
+      "description": "The strongest known failures. An empty list is refused by PACKET_WITHOUT_DEFEATER: a result with no stated defeater has not been examined."
+    },
+    "residuals": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "What is known to be unfinished. May be empty, but omitting a known residual to look finished is a defect against contracts/acceptance-policy.json."
+    },
+    "on_accept": {
+      "type": "string",
+      "minLength": 8
+    },
+    "on_reject": {
+      "type": "string",
+      "minLength": 8
+    },
+    "presented_by_seat": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The seat presenting this result. Its own bounded execution choices never appear here."
+    },
+    "accepted_by_seat": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The seat one edge up in contracts/seat-registry.json. Must equal owner_seat of presented_by_seat."
+    },
+    "claim_type": {
+      "enum": [
+        "JUDGEMENT",
+        "VERIFICATION"
+      ],
+      "description": "JUDGEMENT binds product intent, naming, a boundary, or a phase gate; VERIFICATION claims a declared check held. The accepting seat must settle this type."
+    }
+  },
+  "$defs": {
+    "actor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "actor_id",
+        "actor_kind"
+      ],
+      "properties": {
+        "actor_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "actor_kind": {
+          "enum": [
+            "HUMAN",
+            "MODEL",
+            "WORKER"
+          ]
+        }
+      }
+    }
+  }
+}

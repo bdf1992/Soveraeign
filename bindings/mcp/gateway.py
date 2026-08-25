@@ -26,10 +26,19 @@ MANIFEST = Path(__file__).with_name("manifest.json")
 # the way scripts/sov_witness.py reaches them (`AGENTS.md`, Python style: a test
 # bootstrap may do this until the workspace is packaged).
 sys.path.insert(0, str(ROOT / "services" / "asset" / "src"))
+sys.path.insert(0, str(ROOT / "services" / "console" / "src"))
 sys.path.insert(0, str(ROOT / "services" / "record" / "src"))
 
 from soveraeign_asset_service import AssetService, AuthorityRefused  # noqa: E402
+from soveraeign_console_service import ConsoleService, discover  # noqa: E402
 from soveraeign_record_service import RecordService  # noqa: E402
+
+#: The projection discovery answers from. One rebuildable source, checked by
+#: `scripts/sov_capability.py check`, rather than a second list held here.
+CAPABILITY_MAP = ROOT / "contracts" / "fixtures" / "capability-map.reference.json"
+#: The node this gateway's console serves. A console that could run without naming its
+#: node would emit records that do not say where they came from.
+NODE_ID = "node:local"
 
 TIERS = ("read", "observe", "act")
 AUTHORITY_MODES = ("gateway", "service-enforced", "bootstrap")
@@ -43,6 +52,7 @@ IMPLEMENTED = (
     "asset_ingest",
     "asset_search",
     "record_entries",
+    "console_operations",
     "observe_verify",
 )
 
@@ -69,10 +79,13 @@ class Gateway:
     def __init__(self, state_root: str | Path, manifest_path: Path = MANIFEST) -> None:
         self.manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         self.endpoints = {entry["tool"]: entry for entry in self.manifest["endpoints"]}
-        _validate(self.endpoints)
+        self.withheld = {entry["tool"]: entry
+                         for entry in self.manifest.get("withheld_endpoints", [])}
+        _validate(self.endpoints, self.withheld)
         self.state_root = Path(state_root)
         self.asset = AssetService(self.state_root / "asset")
         self.record = RecordService(self.state_root / "record")
+        self.console = ConsoleService(self.record, self.state_root / "console", NODE_ID)
         self.session_id: str | None = None
         self._handlers = self._bind()
 
@@ -90,6 +103,7 @@ class Gateway:
             "asset_ingest": self._ingest,
             "asset_search": self.asset.search,
             "record_entries": self.record.entries,
+            "console_operations": self._operations,
             "observe_verify": self._verify,
         }
 
@@ -181,6 +195,16 @@ class Gateway:
     def _ingest(self, path: str, label: str, actor: str) -> dict[str, str]:
         return self.asset.ingest(path, label, actor)
 
+    def _operations(self, operator_id: str | None = None) -> dict[str, Any]:
+        """What this node declares, and what one operator holds, from the projection.
+
+        The gateway supplies the map and says nothing about whether it is fresh: it
+        reads the checked-in projection and has not rebuilt it, so `fresh` stays unset
+        and the answer says nobody checked rather than implying somebody did.
+        """
+        capability_map = json.loads(CAPABILITY_MAP.read_text(encoding="utf-8"))
+        return discover(self.console, capability_map, operator_id=operator_id)
+
     def _verify(self) -> dict[str, Any]:
         """Run the repository gate in a separate process and record what it returned."""
         completed = subprocess.run(
@@ -193,21 +217,34 @@ class Gateway:
         return observation
 
 
-def _validate(endpoints: dict[str, dict[str, Any]]) -> None:
+def _validate(endpoints: dict[str, dict[str, Any]],
+              withheld: dict[str, dict[str, Any]] | None = None) -> None:
     """Judge the manifest before any store opens.
 
     A declared operation with nothing behind it is the failure this exists for:
     it keeps a written-but-unbuilt service visibly unbuilt instead of letting it
     become a tool that errors at call time.
+
+    The reverse - an implementation the manifest does not declare - is normally the
+    same defect read from the other side, and is admitted only when the manifest
+    withholds that tool and says why. Withholding is how a built endpoint stops
+    being served without the code that serves it being deleted, and a withheld
+    entry with no stated reason is refused so a capability cannot quietly vanish.
     """
+    withheld = withheld or {}
     missing = sorted(set(endpoints) - set(IMPLEMENTED))
     if missing:
         raise UnbuiltEndpoint(
             "manifest declares endpoints with no implementation: " + ", ".join(missing))
-    undeclared = sorted(set(IMPLEMENTED) - set(endpoints))
+    for tool, entry in sorted(withheld.items()):
+        if tool in endpoints:
+            raise UnbuiltEndpoint(f"{tool} is both declared and withheld")
+        if not entry.get("withheld_because"):
+            raise UnbuiltEndpoint(f"{tool} is withheld without a stated reason")
+    undeclared = sorted(set(IMPLEMENTED) - set(endpoints) - set(withheld))
     if undeclared:
         raise UnbuiltEndpoint(
-            "gateway implements endpoints the manifest does not declare: "
+            "gateway implements endpoints the manifest neither declares nor withholds: "
             + ", ".join(undeclared))
     for tool, entry in endpoints.items():
         if entry["tier"] not in TIERS:

@@ -1,14 +1,19 @@
 """Check federation crossings against the node registry and seat topology (decisions/0039).
 
 ``contracts/federation-crossing.schema.json`` owns one crossing. This module owns the
-rules that need the node holding it: which direction the crossing runs, whether this
-node may settle it at all, and whose seat produced the offer.
+rules that need the Node holding it: which direction the crossing runs, whether this
+Node may settle its side at all, and whose seat produced the offer.
 
-The rule the design rests on is direction. A node may settle a crossing addressed to
-it and may not settle one it sent, because the receiving node's judgement is that
-node's record. Holding a peer's admission here as settled would be this node claiming
-to know how another sovereign node ruled, which is the merge that ``decisions/0039``
-says federation avoids by giving every node a root seat that settles its own copy.
+The structural rule is surface-to-surface crossing with local settlement. Crossing
+endpoints are Nodes. Roots do not cross: the offering seat is carried only for
+attribution, and the receiving Node applies its own Kernel and settles any local
+admission against its own Root.
+
+Direction therefore matters. A Node may settle a crossing addressed to it and may not
+settle one it sent, because the receiving Node's judgement is that Node's record.
+Holding a peer's admission here as settled would be this Node claiming to know how
+another sovereign Node ruled, which is the merge that ``decisions/0039`` avoids by
+giving every Node its own root seat and record.
 
 Nothing here transports anything, reaches a network, or admits an offer. It reads
 records that already exist and reports how they contradict each other.
@@ -38,7 +43,7 @@ def _seat_ids(topology: dict[str, Any]) -> set[str]:
 
 def _direction_defects(crossing: dict[str, Any], holder: str, known: set[str],
                        label: str) -> list[str]:
-    """A crossing joins two distinct known nodes, one of which is the holder."""
+    """A crossing joins two distinct known Node surfaces, one of which is the holder."""
     origin, target = crossing["from_node"], crossing["to_node"]
     defects: list[str] = []
     if origin == target:
@@ -56,7 +61,7 @@ def _direction_defects(crossing: dict[str, Any], holder: str, known: set[str],
 
 def _settlement_defects(crossing: dict[str, Any], holder: str, topology: dict[str, Any],
                         label: str) -> list[str]:
-    """Only the receiving node settles, and only its root seat does the settling."""
+    """Only the receiving Node settles its side, against its own local Root."""
     admission = crossing.get("admission")
     inbound = crossing["to_node"] == holder
     if not inbound:
@@ -75,7 +80,7 @@ def _settlement_defects(crossing: dict[str, Any], holder: str, topology: dict[st
 
 def _origin_seat_defects(crossing: dict[str, Any], holder: str, seats: set[str],
                          label: str) -> list[str]:
-    """An inbound offer was produced somewhere else, by a seat that is not ours."""
+    """The offering seat is attribution on the crossing, never a transported local seat."""
     origin_seat = crossing["origin_seat"]
     if crossing["from_node"] == holder:
         if origin_seat not in seats:
@@ -112,5 +117,5 @@ def crossing_defects(crossings: list[dict[str, Any]], registry: list[dict[str, A
 
 
 def peers(registry: list[dict[str, Any]]) -> list[str]:
-    """Every peer node this registry has admitted, in identifier order."""
+    """Every peer Node this registry has admitted, in identifier order."""
     return sorted(node["node_id"] for node in registry if node.get("relation") == PEER)

@@ -28,6 +28,7 @@ or deployment topology.
 | `kernel-transitions.json` | the transitions compiled from the SPEC.md transition contract, with their preconditions and refusals |
 | `transition.schema.json` | a request to perform one declared transition, with the pre-state, lease, observation, and authority it is checked against |
 | `kernel-parity.json` | the declared correspondence between each participant's own refusal vocabulary and the kernel refusal it realizes |
+| `principal.schema.json` | PROPOSED (decisions/0048): registered identities with a derived grade - controller, hop distance, crossing class - gating eligibility, never authority |
 
 ## Named gap and reuse
 

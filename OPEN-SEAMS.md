@@ -332,3 +332,22 @@ whichever reading wins.
 
 Numbering note: minted while reconciling the two trunks, which is also where S22 was
 renumbered out of a collision. S16 carries the allocation seam.
+
+## S24 · Durability and custody
+
+`SPEC.md`'s fault model reaches process restart, partial write, and power loss:
+committed records stay reconstructable and recovery distinguishes committed
+from attempted work. It stops at the boundary of the machine. No backup,
+restore, export, or off-node custody provision exists anywhere in the
+repository, so loss of the node is loss of the record, and no identity or
+recovery mechanism changes that — a recovery secret redeems against a journal
+that must still exist. Surfaced while examining root recovery
+(`decisions/0048` ID-11b). `decisions/0049` adds the missing durability concern
+to the proposed baseline and states the finding exactly: the stack passes the
+letter of `AI-NATIVE.md` check 8, which is scoped to integrations, and fails its
+principle, because no durability concept in the system was ever scoped to the
+medium. The seam stays open: declaring the concern is not implementing export
+and restore, and whether an off-node copy is an `EXTERNAL_WORLD` effect under O7
+is undecided.
+
+Numbering note: minted as S11 on `docs/principal-identity`, where that number was free at the time. `main` closed its own S11, Red-lane inputs, on 2026-08-23 and that record is cited as closed, so this seam moved. S16 carries the allocation seam that makes the collision predictable; it is about decision numbers, and this is the second time it has been observed for seam numbers.

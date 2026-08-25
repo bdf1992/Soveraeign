@@ -25,6 +25,7 @@ import argparse
 import json
 import sys
 
+from soveraeign_record_service import custody
 from soveraeign_record_service.core import (
     BrokenChain,
     DesignRecordRefused,
@@ -113,7 +114,29 @@ def _commands() -> dict[str, Callable[[RecordService, argparse.Namespace], dict[
         "rebuild-projections": lambda s, _: {"subjects": s.rebuild_projections(),
                                              "authoritative": False,
                                              "rebuilt_from": "record-service-journal"},
+        "export-journal": export_journal,
+        "verify-export": verify_export_file,
+        "restore-journal": restore_journal,
     }
+
+
+def export_journal(service: RecordService, args: argparse.Namespace) -> dict[str, Any]:
+    """Write a self-verifying export, or refuse if the journal does not verify first."""
+    if args.out:
+        return custody.write_export(service, args.out)
+    return custody.export_document(service)
+
+
+def verify_export_file(service: RecordService, args: argparse.Namespace) -> dict[str, Any]:
+    """Replay an export's chain without touching this store."""
+    document = json.loads(Path(args.export).read_text(encoding="utf-8"))
+    return {"head": custody.verify_export(document, expected_head=args.expect_head),
+            "entries": len(document.get("entries", [])), "verified": True}
+
+
+def restore_journal(service: RecordService, args: argparse.Namespace) -> dict[str, Any]:
+    """Replay an export into an empty store; a store holding a journal is refused."""
+    return custody.restore_file(service, args.export)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -159,6 +182,21 @@ def build_parser() -> argparse.ArgumentParser:
 
     sub.add_parser("drop-projections", help="delete every projection; the journal is untouched")
     sub.add_parser("rebuild-projections", help="rebuild every projection from the journal alone")
+
+    export = sub.add_parser("export-journal",
+                            help="write a self-verifying export of the whole journal")
+    export.add_argument("--out", type=Path,
+                        help="write the export here; omitted, it is printed")
+
+    verify = sub.add_parser("verify-export",
+                            help="replay an export's chain without touching this store")
+    verify.add_argument("--export", type=Path, required=True)
+    verify.add_argument("--expect-head", dest="expect_head",
+                        help="fail unless the replayed head is this digest")
+
+    restore = sub.add_parser("restore-journal",
+                             help="replay an export into an empty store")
+    restore.add_argument("--export", type=Path, required=True)
     return parser
 
 
@@ -182,6 +220,12 @@ def main(argv: list[str] | None = None) -> int:
     except UnknownEntry as missing:
         return _emit({"outcome": "REFUSED", "reason_code": "MISSING_PRECONDITION",
                       "message": f"no such record: {missing}"}, 3)
+    except (custody.ExportRefused, custody.RestoreRefused) as refused:
+        return _emit({"outcome": "REFUSED", "reason_code": "MISSING_PRECONDITION",
+                      "message": str(refused)}, 2)
+    except custody.TruncatedExport as truncated:
+        return _emit({"outcome": "REFUSED", "reason_code": "DIGEST_MISMATCH",
+                      "message": str(truncated)}, 2)
     except ValueError as invalid:
         return _emit({"outcome": "REFUSED", "reason_code": "MISSING_PRECONDITION",
                       "message": str(invalid)}, 2)

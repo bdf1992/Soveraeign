@@ -27,10 +27,41 @@ and improve the system; neither silently occupies one of its operating tiers.
   it governs any agent: authority arrives by grant, a build cannot witness
   itself, and only Bdo ratifies judgement.
 
-Host capabilities do not imply authority. Use only the model, tools, and
-permissions visible in the current invocation; never silently substitute
-another model. Launched agents inherit the session model today; no tier is
+Claude Code is one host binding, not Sov's semantic owner. Host capabilities do
+not imply authority. Use only the model, tools, permissions, and live grants
+visible in the current invocation; never infer them from this file or silently
+substitute another model. Launched agents inherit the session model today; no tier is
 pinned (a resource-consumption choice still open for Bdo).
+
+## Known traps
+
+Facts about this repository that answer confidently and wrongly. Each cost a
+session a false claim or a wasted hour. `python scripts/sov_traps.py` asserts
+the checkable ones and **fails when a trap stops being true** — a failure there
+means the hazard is gone and the entry below must be deleted, so this list
+cannot outlive what it warns about.
+
+- **T2 · `verify.py` exit 0 does not mean conformance.** The participant's
+  recorded baseline registers failing requirements as expected, so the suite is
+  green while all nine Phase-I requirements fail. Green here means "unchanged",
+  not "correct".
+- **T3 · `NOT_WITNESSED` contains the token `WITNESSED`.** Any standing check
+  written with a substring match reports every unwitnessed subject in the
+  repository as witnessed. Compare whole tokens and treat a preceding `NOT` as
+  denial; `scripts/sov_standing.py` is the worked example.
+- **T4 · `gh api .../branches/main/protection` returns `404` while a ruleset is
+  active.** Protection on `main` comes from ruleset `Gate`, not classic branch
+  protection. Query `.../rulesets`. The 404 has already produced a false claim
+  in a governed document.
+- **T5 · A skipped required check satisfies the ruleset.** Skipped is not
+  blocked. A job gated off by a repository variable still reports as satisfying
+  the check that requires it.
+- **T6 · Several sessions write this tree at once.** Files appear and change
+  mid-read. Freeze a commit before witnessing, measuring, or ratifying, and
+  work in a worktree rather than racing the shared branch.
+
+T4 through T6 need network or live observation, which Phase I refuses, so they
+are recorded rather than asserted. Silence about them is not confirmation.
 
 ## What the system is
 
@@ -57,7 +88,8 @@ Observed 2026-08-23 on `feat/federation-harness-and-hardening`. This section is
 orientation, not standing. `STATUS.yaml`, the working tree, and the newest
 relevant report override it whenever they disagree.
 
-- `python scripts/verify.py` passes in about 1.3 s against a 3 s budget;
+- `python scripts/verify.py` grades its wall time PLATINUM/GOLD/SILVER at
+  3/6/15 s and fails past 15 (`decisions/0050`);
   `python scripts/lint.py` passes with one named debt (`core.py`, 341 lines).
 - Asset Service (`services/asset/`): one executable reference participant
   with a CLI, content-addressed bytes, leases, receipts, retraction, and

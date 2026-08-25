@@ -76,6 +76,18 @@ CHECKS = (
           "reads repository bytes directly with read_bytes, never a build report, and never "
           "Path.read_text whose newline translation would hide the defect it looks for",
           (".gitattributes", "scripts/lint.py")),
+    Check("recorded traps still hold", [sys.executable, "scripts/sov_traps.py"], ROOT,
+          "re-derives every recorded trap from the repository at check time, so a trap that "
+          "has stopped being true fails here instead of going stale in prose",
+          ("CLAUDE.md", "scripts/sov_traps.py")),
+    Check("standing claims carry a witness", [sys.executable, "scripts/sov_standing.py"], ROOT,
+          "reads STATUS.yaml and the witness records by separate paths and grades one against "
+          "the other, so a standing claim cannot supply the record that would support it",
+          ("STATUS.yaml", "scripts/sov_standing.py")),
+    Check("owner queue", [sys.executable, "scripts/sov_accept.py", "audit"], ROOT,
+          "fails when anything sits on the owner without a complete packet, reading the "
+          "declared acceptance contract rather than any claim that a result is ready",
+          ("contracts/acceptance-policy.json", "scripts/sov_accept.py")),
     Check("bootstrap and locked evidence", [sys.executable, "scripts/verify_bootstrap.py"], ROOT,
           "re-digests locked evidence from disk rather than trusting a recorded digest",
           ("scripts/verify_bootstrap.py",)),
@@ -292,8 +304,9 @@ def main(argv: list[str] | None = None, run_id: str | None = None,
         return 1
     print(f"\nPASS: {len(CHECKS)} checks in {wall:.3f}s wall, {work:.3f}s of work")
     print(budget_line(wall))
-    print("Standing note: self-tests establish BUILT evidence only; no independent witness "
-          "or owner ratification is implied.")
+    print("Standing note: self-tests establish BUILT evidence only. Nothing here is "
+          "accepted; acceptance is an act taken by a seat over a presented result "
+          "(contracts/acceptance-policy.json).")
     return 0
 
 

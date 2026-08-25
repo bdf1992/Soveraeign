@@ -15,6 +15,7 @@ import tempfile
 from typing import Any
 from uuid import uuid4
 
+import custody_posix
 import infrastructure
 
 
@@ -37,7 +38,7 @@ def _canonical(value: object) -> bytes:
 def _atomic_write(path: Path, value: dict[str, Any], mode: int = 0o600) -> None:
     descriptor, temporary = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
     try:
-        os.fchmod(descriptor, mode)
+        custody_posix.set_descriptor_mode(descriptor, mode)
         with os.fdopen(descriptor, "wb") as stream:
             stream.write(_canonical(value) + b"\n")
             stream.flush()
@@ -54,9 +55,9 @@ def _atomic_write(path: Path, value: dict[str, Any], mode: int = 0o600) -> None:
 
 def _require_identity(path: Path, expected_uid: int, expected_gid: int, label: str) -> None:
     info = path.stat()
-    if info.st_uid != expected_uid or info.st_gid != expected_gid:
+    if not custody_posix.identity_matches(info, expected_uid, expected_gid):
         raise CustodyActivationRefused(f"CUSTODY_OWNERSHIP_UNWRITABLE:{label}")
-    if stat.S_IMODE(info.st_mode) & 0o077:
+    if custody_posix.mode_is_unsafe(info):
         raise CustodyActivationRefused(f"CUSTODY_PERMISSIONS_UNSAFE:{label}")
 
 
@@ -121,11 +122,7 @@ def activate(root: Path, manifest: dict[str, Any], policy: str,
     """Verify or explicitly initialize custody and append an activation receipt."""
     if policy not in POLICIES:
         raise CustodyActivationRefused("ACTIVATION_POLICY_UNSUPPORTED")
-    if not infrastructure.HOST_ENFORCES_POSIX_CUSTODY:
-        # Effective identity and 0700 modes are the whole proof of exclusive control.
-        # A host that has neither cannot activate custody, and must not appear to.
-        raise CustodyActivationRefused(infrastructure.HOST_REFUSAL)
-    if os.geteuid() != expected_uid or os.getegid() != expected_gid:
+    if custody_posix.available and custody_posix.effective() != (expected_uid, expected_gid):
         raise CustodyActivationRefused("EFFECTIVE_IDENTITY_MISMATCH")
     proposal = infrastructure.plan(root, manifest)
     disposition = proposal["disposition"]
@@ -165,7 +162,7 @@ def activate(root: Path, manifest: dict[str, Any], policy: str,
         receipt_directory = paths["receipts"] / "custody-activations"
         _verify_prior_receipts(receipt_directory, identity, digest, relative_paths)
         receipt_directory.mkdir(mode=0o700, exist_ok=True)
-        os.chmod(receipt_directory, 0o700)
+        custody_posix.set_path_mode(receipt_directory, 0o700)
         activation_id = str(uuid4())
         infrastructure_receipt = root / infrastructure.RECEIPT_NAME
         receipt = {
@@ -177,7 +174,10 @@ def activate(root: Path, manifest: dict[str, Any], policy: str,
             "paths": relative_paths,
             "root": str(root.resolve()),
             "infrastructure_receipt_digest": sha256(infrastructure_receipt.read_bytes()).hexdigest(),
-            "effective_uid": os.geteuid(), "effective_gid": os.getegid(), "policy": policy,
+            "effective_uid": custody_posix.effective()[0],
+            "effective_gid": custody_posix.effective()[1],
+            "identity_enforcement": custody_posix.enforcement(),
+            "policy": policy,
             "outcome": "INITIALIZED_AND_VERIFIED" if initialized else "VERIFIED_EXISTING",
             "continuity": "ESTABLISHED" if identity_created else "PRESERVED",
             "effect_class": "RECORD_LOCAL",

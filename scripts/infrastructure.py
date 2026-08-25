@@ -13,21 +13,13 @@ import sys
 import tempfile
 from typing import Any
 
+import custody_posix
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_MANIFEST = ROOT / "infrastructure" / "phase-i.local.json"
 RECEIPT_NAME = ".soveraeign-infrastructure.json"
 LOCK_NAME = ".soveraeign-infrastructure.lock"
 REQUIRED_PATHS = {"record", "payloads", "projections", "receipts", "work"}
-
-# POSIX ownership and mode bits are the mechanism this custody model uses to prove
-# exclusive control of a volume. Windows has neither: os.fchmod and os.geteuid do not
-# exist there and the mode bits stat() returns carry no meaning. The node this custody
-# serves is a Linux container, so the enforcement is not portable. Simulating it would
-# report a custody claim as satisfied that was never checked, so an unenforcing host
-# refuses instead.
-HOST_ENFORCES_POSIX_CUSTODY = hasattr(os, "fchmod") and hasattr(os, "geteuid")
-HOST_REFUSAL = "HOST_CANNOT_ENFORCE_CUSTODY"
 
 
 class InfrastructureRefused(RuntimeError):
@@ -60,11 +52,18 @@ def _valid_relative_path(value: object) -> bool:
     absolute on Windows - so an escape the node would honour validated clean whenever the
     manifest was checked from a Windows machine. A drive letter is rejected outright: it
     can only be a Windows path smuggled into a POSIX declaration.
+
+    Three escapes, and this branch and main each refused two of them. Main admitted
+    `C:escape`, which is drive-relative on Windows and leaves the node root when joined.
+    This branch admitted `.`, whose POSIX parts are empty, so it collapsed onto the root
+    past a parts check that never ran. Both refusals are kept.
     """
     if not isinstance(value, str) or not value or "\\" in value or ":" in value:
         return False
     path = PurePosixPath(value)
-    return not path.is_absolute() and all(part not in {"", ".", ".."} for part in path.parts)
+    if path.is_absolute() or not path.parts:
+        return False
+    return all(part not in {"", ".", ".."} for part in path.parts)
 
 
 def validate_manifest(manifest: dict[str, Any]) -> list[str]:
@@ -153,7 +152,7 @@ def plan(root: Path, manifest: dict[str, Any]) -> dict[str, Any]:
 def _atomic_write(path: Path, payload: bytes, mode: int) -> None:
     descriptor, temporary = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
     try:
-        os.fchmod(descriptor, mode)
+        custody_posix.set_descriptor_mode(descriptor, mode)
         with os.fdopen(descriptor, "wb") as stream:
             stream.write(payload)
             stream.flush()
@@ -178,13 +177,9 @@ def apply(root: Path, manifest: dict[str, Any]) -> dict[str, Any]:
         raise InfrastructureRefused("MANIFEST_DRIFT")
     if root.is_symlink():
         raise InfrastructureRefused("ROOT_IS_SYMLINK")
-    # Last read-only step. Everything below mutates the volume, and this host may have no
-    # way to lock it down afterwards; the refusal belongs before the first mkdir, not after.
-    if not HOST_ENFORCES_POSIX_CUSTODY:
-        raise InfrastructureRefused(HOST_REFUSAL)
 
     root.mkdir(parents=True, exist_ok=True, mode=0o700)
-    os.chmod(root, 0o700)
+    custody_posix.set_path_mode(root, 0o700)
     lock = root / LOCK_NAME
     try:
         descriptor = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
@@ -196,7 +191,7 @@ def apply(root: Path, manifest: dict[str, Any]) -> dict[str, Any]:
             if path.exists() and (path.is_symlink() or not path.is_dir()):
                 raise InfrastructureRefused(f"CUSTODY_PATH_INVALID:{path.name}")
             path.mkdir(parents=True, exist_ok=True, mode=0o700)
-            os.chmod(path, 0o700)
+            custody_posix.set_path_mode(path, 0o700)
 
         receipt = {
             "schema": "soveraeign-infrastructure-receipt/v1",
@@ -213,15 +208,12 @@ def apply(root: Path, manifest: dict[str, Any]) -> dict[str, Any]:
 
 
 def verify(root: Path, manifest: dict[str, Any]) -> list[str]:
-    if not HOST_ENFORCES_POSIX_CUSTODY:
-        # An empty defect list reads as "custody is sound". This host cannot look.
-        return [HOST_REFUSAL]
     defects: list[str] = []
     digest = manifest_digest(manifest)
     receipt_path = root / RECEIPT_NAME
     if root.is_symlink() or not root.is_dir():
         return ["ROOT_MISSING_OR_UNSAFE"]
-    if stat.S_IMODE(root.stat().st_mode) & 0o077:
+    if custody_posix.mode_is_unsafe(root.stat()):
         defects.append("ROOT_PERMISSIONS_UNSAFE")
     if (root / LOCK_NAME).exists():
         defects.append("INCOMPLETE_APPLY_LOCK_PRESENT")
@@ -244,13 +236,13 @@ def verify(root: Path, manifest: dict[str, Any]) -> list[str]:
                 defects.append("RECEIPT_PATH_BINDING_MISMATCH")
             if receipt.get("outcome") not in {"COMMITTED", "NOOP"}:
                 defects.append("RECEIPT_OUTCOME_INVALID")
-        if stat.S_IMODE(receipt_path.stat().st_mode) & 0o077:
+        if custody_posix.mode_is_unsafe(receipt_path.stat()):
             defects.append("RECEIPT_PERMISSIONS_UNSAFE")
 
     for name, path in resolved_paths(root, manifest).items():
         if path.is_symlink() or not path.is_dir():
             defects.append(f"CUSTODY_PATH_MISSING_OR_UNSAFE:{name}")
-        elif stat.S_IMODE(path.stat().st_mode) & 0o077:
+        elif custody_posix.mode_is_unsafe(path.stat()):
             defects.append(f"CUSTODY_PERMISSIONS_UNSAFE:{name}")
     return defects
 

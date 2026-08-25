@@ -39,7 +39,10 @@ class Decision:
 def load_table(root: Path) -> dict[str, Any]:
     """Load the declared kernel transition table."""
     path = root / "contracts" / "kernel-transitions.json"
-    return json.loads(path.read_text(encoding="utf-8"))
+    table = json.loads(path.read_text(encoding="utf-8"))
+    authorization = root / "contracts" / "external-effect-authorization.json"
+    table["_authorization"] = json.loads(authorization.read_text(encoding="utf-8"))
+    return table
 
 
 def _entry(table: dict[str, Any], transition: str) -> dict[str, Any] | None:
@@ -146,6 +149,26 @@ def _check_authority(request: dict[str, Any], entry: dict[str, Any]) -> Decision
 SETTLING_OUTCOMES = ("COMMITTED", "FAILED", "UNRESOLVED", "COUNTERED")
 
 
+
+def _authorized(table: dict, request: dict) -> bool:
+    """Whether a declared scope admits this external effect, with a receipt.
+
+    SPEC.md no longer refuses ``EXTERNAL_WORLD`` by class. The question is
+    whether ``contracts/external-effect-authorization.json`` carries the scope,
+    whether that scope carries the verb, whether the verb is refused by name,
+    and whether the attempt will leave a record.
+    """
+    contract = table.get("_authorization") or {}
+    authorization = request.get("authorization") or {}
+    verb = authorization.get("verb")
+    if not verb or verb in contract.get("refused_verbs", {}):
+        return False
+    scope = contract.get("scopes", {}).get(authorization.get("scope"))
+    if scope is None or verb not in scope.get("verbs", []):
+        return False
+    return bool(authorization.get("receipt"))
+
+
 def evaluate(
     request: dict[str, Any],
     table: dict[str, Any],
@@ -164,10 +187,11 @@ def evaluate(
     if entry is None:
         return _refuse("UNKNOWN_TRANSITION", f"{transition!r} is not declared in this table")
 
-    if request.get("effect_class") in table.get("phase_refused_effect_classes", []):
+    if request.get("effect_class") == "EXTERNAL_WORLD" and not _authorized(table, request):
         return _refuse(
-            "EFFECT_CLASS_REFUSED",
-            f"{request['effect_class']} is refused in the current phase",
+            "EXTERNAL_EFFECT_UNAUTHORIZED",
+            "an external effect outside every declared scope, using a verb refused by name, "
+            "or leaving no receipt (contracts/external-effect-authorization.json)",
         )
 
     outcome = request.get("requested_outcome")

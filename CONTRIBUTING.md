@@ -233,11 +233,11 @@ Required local gate:
 python scripts/verify.py
 ```
 
-The gate is dependency-free, network-free, and graded on wall time after
-Python starts: `PLATINUM` at three seconds or less, `GOLD` at six, `SILVER`
-at fifteen, failing past fifteen. The grade prints on every passing run.
-Losing a grade does not fail the gate; it is worth reporting anyway. CI runs
-the same command.
+The gate is dependency-free and network-free. Its wall time is graded rather
+than pass/fail: `PLATINUM` at three seconds or less, `GOLD` at six, `SILVER`
+at fifteen, failing past fifteen (`decisions/0050`). The grade prints on every
+passing run. Losing a grade does not fail the gate; it is worth reporting
+anyway. CI runs the same command.
 
 ## Tests and evidence
 

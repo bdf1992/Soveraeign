@@ -141,6 +141,41 @@
           ]
         }
       }
+    },
+    "authorization": {
+      "description": "Required when effect_class is EXTERNAL_WORLD. Names the scope in contracts/external-effect-authorization.json that admits this effect, the verb, the target, and the receipt the attempt will leave. Receipt is explicit and nullable so a request intending to leave no record is legal in shape and refused by the guard.",
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "scope",
+        "verb",
+        "target",
+        "receipt"
+      ],
+      "properties": {
+        "scope": {
+          "type": "string",
+          "minLength": 1
+        },
+        "verb": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target": {
+          "type": "string",
+          "minLength": 1
+        },
+        "receipt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        }
+      }
     }
   }
 }

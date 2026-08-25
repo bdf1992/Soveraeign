@@ -4,11 +4,9 @@ product_name: Soveraeign
 repository_name: Soveraeign
 category: locally-sovereign-algorithmic-ai-native-enterprise-environment
 phase: FOUNDING
-naming_status: OWNER_SELECTED_WORKING_NAME_PUBLIC_CLEARANCE_EXTERNAL
+naming_status: OWNER_SELECTED_WORKING_NAME_PUBLIC_CLEARANCE_HELD_O1
 implementation_status: EXPERIMENTAL_REFERENCE_PARTICIPANT
-specification_status: OWNER_ACCEPTED_PHASE_I_LOGICAL_SPEC_WITH_SOVEREIGNTY_CLARIFICATION
 conformance_status: EXECUTABLE_ORACLE_CONTROLS_PARTICIPANT_BINDING_OPEN
-classification_status: OWNER_ACCEPTED_CANONICAL_VOCABULARY
 asset_service_status: BUILT_SELF_TESTED_NOT_WITNESSED
 record_service_status: BUILT_SELF_TESTED_NOT_WITNESSED
 proofing_service_status: OWNER_ACCEPTED_BOUNDARY_NOT_IMPLEMENTED
@@ -64,25 +62,50 @@ verification_channels_status: OWNER_ACCEPTED_PROJECTION_GREEN_RENAMED
 lineage_corpus_status: BUILT_SELF_TESTED_NOT_WITNESSED
 lessons_loop_status: OWNER_ACCEPTED_LOOP_OPEN
 
+# OWNER_ACCEPTED_A* names the packet the root seat acted on; the record is
+# .local/acceptance/ledger.ndjson and the packet is under acceptance/accepted/.
+specification_status: OWNER_ACCEPTED_A2_PHASE_I_LOGICAL_SPEC
+engineering_framework_status: OWNER_ACCEPTED_A1_PHASE_I_REFERENCE_BASELINE
+sdlc_loop_status: OWNER_ACCEPTED_A3_ACCEPTANCE_NOT_APPROVAL
+external_effect_status: OWNER_ACCEPTED_A4_SCOPED_NOT_REFUSED
+
+# RULED_ values are reversible defaults taken under decisions/0046. They are not
+# owner acceptance and do not claim to be; each names what would overturn it.
+classification_status: RULED_CANONICAL_FOR_PHASE_O9
+proofing_service_status: RULED_SECOND_BOUNDARY_O11_CHARTERED_NOT_IMPLEMENTED
+byom_status: RULED_CONTRACT_STANDS_O12
+sov_operating_agent_status: RULED_ENVELOPE_STANDS_O17_BUILT_SELF_TESTED
+ticket_kind_vocabulary_status: RULED_O19
+kernel_transition_contract_status: RULED_O20
+semantic_cold_start_status: RULED_O8_TASK_EXECUTED
+
+# Owner is a seat, not a person: owner(X) is the seat one edge up, the seat that
+# issued X's grant and settles its receipts (decisions/0020, applied). The live
+# view is contracts/seat-registry.json.
 authority:
   product_intent:
-    holder: Bdo
+    seat: seat:root
+    occupied_by: Bdo
     type: human_judgement
     gate: acceptance
   product_name:
-    holder: Bdo
+    seat: seat:root
+    occupied_by: Bdo
     type: human_judgement
     gate: acceptance
   phase_acceptance:
-    holder: Bdo
+    seat: seat:root
+    occupied_by: Bdo
     type: human_judgement
     gate: acceptance
   bounded_execution:
-    holder: eligible_agent
-    type: self_directed_within_declared_task_capability_and_effect_envelope
-    gate: evidence
+    seat: any
+    occupied_by: the seat doing the work
+    type: self_directed_within_declared_effect_envelope
+    gate: none
   verification:
-    holder: delegated_machine_or_human
+    seat: owner_seat_of_the_presenter
+    occupied_by: delegated_machine_or_human
     type: scoped_verification
     gate: evidence
 
@@ -98,6 +121,7 @@ settled_source_claims:
   - growth_from_evidence_not_preloaded_wisdom
   - owner_gate_is_acceptance_not_preapproval
   - participant_may_decide_for_its_own_bounded_participation
+  - owner_is_the_seat_one_edge_up_and_does_not_chain
 
 accepted_repository_claims:
   - founding_contract_c1_through_c15
@@ -128,42 +152,131 @@ accepted_repository_claims:
   - history_carried_forward_as_attributed_lineage
   - one_ticket_contract_read_by_two_parsers_under_a_parity_check
 
-# The founding decision docket is closed. O1-O22 no longer exist as identifiers:
-# decisions/0024-open-decision-drain.md ruled O1-O13, O16, O17, O19, O20, and
-# decisions/0033-close-the-founding-docket.md ruled the remainder that stood on
-# concurrent branches. Standing now moves by evidence, not by asking.
+  - seat_relative_owner_topology
+  - external_effects_scoped_not_refused
+
+# The owner gate is acceptance of a finished result, not permission to begin
+# (decisions/0045, which supersedes the prose in 0023 and 0024). A transition
+# waits on an owner seat only for a reason contracts/acceptance-policy.json
+# names. Everything else is drained below into a standing default the evidence
+# under `counter` overturns, or presented as a finished result with a packet.
+#
+#   python scripts/sov_accept.py queue     what is waiting on which seat
+#   python scripts/sov_accept.py audit     fails the build if anything waits without a reason
+#
+# The O-numbers are kept so the documents that cite them still resolve.
 open_decisions: []
 
-external_acceptance_holds:
-  - id: PUBLIC-CLEARANCE
-    question: Does public commercial release have sufficient legal/domain/package/product collision clearance?
-    blocks: public_release_only
-    does_not_block: phase_i_engineering
+owner_acceptance_queue: []
 
+owner_accepted:
+  - id: A1
+    packet: acceptance/accepted/A1.json
+    action: ACCEPT
+    by_seat: seat:root
+    at: 2026-08-23T21:31:30Z
+    claim: The Phase-I engineering baseline (was O2)
+  - id: A2
+    packet: acceptance/accepted/A2.json
+    action: ACCEPT
+    by_seat: seat:root
+    at: 2026-08-23T21:31:30Z
+    claim: SPEC.md as the Phase-I logical specification (was O10)
+  - id: A3
+    packet: acceptance/accepted/A3.json
+    action: ACCEPT
+    by_seat: seat:root
+    at: 2026-08-23T21:31:30Z
+    claim: The acceptance gate itself (decisions 0045 and 0046)
+  - id: A4
+    packet: acceptance/accepted/A4.json
+    action: ACCEPT
+    by_seat: seat:root
+    at: 2026-08-23T21:31:30Z
+    claim: External effects admitted inside declared scopes (was O7 and O16b)
+
+owner_holds:
+  - id: O1
+    reason: PUBLICATION
+    blocks: repository.publish_public
+    question: Does public release have sufficient legal, domain, package, and product collision clearance?
+    reachable_alternative: Every Phase-I engineering task proceeds under the working name; no agent claims clearance.
+
+# O1-O22 were founding-docket identifiers, retired rather than reserved: a ruling is
+# demoted by a defeating observation recorded in a new decision, never by reopening an
+# identifier. Status values elsewhere in this file still carry O-numbers so the documents
+# citing them resolve; that spelling is Bdo's to settle.
 retired_decision_ids:
-  note: >-
-    O1-O22 were founding-docket identifiers. They are retired, not reserved.
-    A ruling is demoted by a defeating observation recorded in a new decision,
-    never by reopening an identifier.
-  ruled_by:
-    decisions/0024-open-decision-drain.md: [O1, O2, O3, O4, O5, O6, O7, O8, O9, O10, O11, O12, O13, O16, O17, O19, O20]
-    decisions/0033-close-the-founding-docket.md: [O14, O15, O18, O21, O22]
+  - "decisions/0024-open-decision-drain.md: O1 O2 O3 O4 O5 O6 O7 O8 O9 O10 O11 O12 O13 O16 O17 O19 O20"
+  - "decisions/0033-close-the-founding-docket.md: O14 O15 O18 O21 O22"
+
+
+rulings:
+  - id: O7
+    ruling: External effects are no longer refused by class. One is admitted inside a scope contracts/external-effect-authorization.json declares, using a verb that scope carries, leaving a receipt. Every refused verb stays refused. Compensation is forward only, and no receipt ever claims world rollback.
+    counter: An effect admitted by a scope that turns out not to be reversible by the inverse it names, or a receipt claiming a rollback that did not occur.
+  - id: O16b
+    ruling: Label, project-field, state, and comment writes on this repository's own tickets, and pushing branches and opening pull requests, are authorised under coordination.issue_metadata and coordination.branch_write. Force-push, shared-branch deletion, branch-protection changes, visibility changes, secret writes, merging, and acting on any other repository are refused by name.
+    counter: A coordination write that cannot be undone by the inverse verb its scope names, or an agent reaching a refused verb through a scope that admits it.
+  - id: O3
+    ruling: Bootstrap trust is explicit, local, and finite. A founding BootstrapGrant pins one attestor identity, validator version, capability, scope, validity window, and artifact revision, and may attest verification-typed claims only. Every later attestor resolves through ordinary authority lineage.
+    counter: A fixture in which a bootstrap grant attests a judgement-typed claim, or in which a second attestor is admitted without lineage.
+  - id: O4
+    ruling: Historical reproduction and present applicability are separate objects. An Attestation is immutable evidence about an exact claim, input, and run. CurrentEffectiveness is a rebuildable projection over the ratified claim, applicable attestations, supersession, expiry, retraction, and policy. A recorded REPRODUCED result is never rewritten.
+    counter: A case in which changed applicability rewrites a historical attestation, or in which effectiveness cannot be rebuilt from the record.
+  - id: O5
+    ruling: Gauge measures and projects governance state, authority pressure, unresolved rights, coverage, and evidence strength, and owns none of them. A Gauge score grants no authority, standing, or admission.
+    counter: A case in which a Gauge score is read as a right to act, or in which evidence strength alone advances standing.
+  - id: O6
+    ruling: When a claim effectiveness policy requires runtime attestation, UNATTESTABLE keeps that claim out of EFFECTIVE while preserving its historical RATIFIED standing. A claim whose policy does not require attestation may stay effective, and the absence stays visible. No silent degrade from required to optional.
+    counter: A case in which a required attestation quietly becomes optional, or in which UNATTESTABLE erases prior standing.
+  - id: O8
+    ruling: Semantic cold-start is observed as a named domain task performed by a fresh participant against exact held data, producing attributable outputs and receipts. Schema validity alone does not complete it. The FOUND-010 execution is admissible evidence.
+    counter: A participant that passes the task while demonstrably missing the semantics, or a task that can be completed by schema conformance alone.
+  - id: O9
+    ruling: CLASSIFICATION.md is the canonical vocabulary contract for this phase, subject to versioned change.
+    counter: A defeating fixture showing one term carrying two meanings across the governing set, or a term in use that the contract does not define.
+  - id: O11
+    ruling: Proofing Service is the second service boundary after Asset Service, at chartered standing.
+    counter: A conformance case showing the proofing lifecycle is the asset lifecycle under another name.
+  - id: O12
+    ruling: The BYOM binding fields, data-boundary modes, and the two-model Phase-I fixture in contracts/model-binding.schema.json stand as declared.
+    counter: A second adapter that cannot be described by the declared fields, or a data-boundary mode that admits a silent provider fallback.
+  - id: O13
+    ruling: The SDLC.md tiers, stance dyads, concern-registry derivation, and Red-gated release requirement stand as the operating loop, amended by decision 0045 so that ordinary work needs no pre-approval.
+    counter: A run in which the declared loop cannot describe what actually happened, or in which Red gating blocks a release that carries no external effect.
+  - id: O16
+    ruling: contracts/ticket-transitions.json is the typed ticket workflow. Its outward-facing coordination steps stay held under O16b.
+    counter: A ticket whose real lifecycle the table cannot express, or a declared transition with no positive and defeating case.
+  - id: O17
+    ruling: The Sov agency envelope, context declaration, and activation gates stand as declared in bindings/sov/. Loading Sov still grants no authority.
+    counter: A fixture in which Sov widens its own grant, keeps private standing, or changes model silently and the declaration does not refuse it.
+  - id: O19
+    ruling: verification-engagement is a ticket kind, carrying engagement_id, a pinned target_pr and full-length target_head, and refusing construction identity on itself.
+    counter: An engagement that must build to converge, or a target that cannot be pinned to an exact head.
+  - id: O20
+    ruling: contracts/kernel-transitions.json is the compiled statement of the SPEC.md transition contract. The ticket workflow and the Asset Service migrate onto it rather than keeping private transition rules.
+    counter: A participant whose real transitions diverge from the compiled table, which scripts/sov_kernel.py parity would report.
+  - id: O2b
+    ruling: The baseline in ENGINEERING.md is a mechanism choice, not semantic authority, and may be replaced behind a proved contract without a new owner act.
+    counter: A replacement that changes an observable contract rather than only the mechanism behind it.
 
 acceptance_policy:
-  decision: decisions/0023-acceptance-not-approval.md
-  drained_queue: decisions/0024-open-decision-drain.md
-  docket_closure: decisions/0033-close-the-founding-docket.md
-  unruled_proposals:
-    - decisions/0034-spec-transition-refusal-codes.md
+  contract: contracts/acceptance-policy.json
+  seats: contracts/seat-registry.json
+  external_effects: contracts/external-effect-authorization.json
+  decision: decisions/0045-acceptance-not-approval.md
+  drain: decisions/0046-decision-queue-drain.md
+  external_effects_decision: decisions/0047-external-effects-authorized.md
+  superseded_prose: decisions/0023-acceptance-not-approval.md, decisions/0024-open-decision-drain.md
+  gate: acceptance
+  unruled_proposals: decisions/0034-spec-transition-refusal-codes.md
   ordinary_work_requires_preapproval: false
   owner_acceptance_requires_evidence: true
   owner_acceptance_requires_presentation: true
   presentation_goal: engaging_legible_nearly_self_evident_from_output
-  resolution_rule: >-
-    A decision is settled at the lowest tier that can produce evidence defeating
-    the alternatives. Control rules boundary and sequencing questions, Work rules
-    implementation questions, and only owner-held product intent, public naming,
-    external commitment, and irreversible external-world effect reach Bdo.
+  audit: python scripts/sov_accept.py audit
+  resolution_rule: "A decision is settled at the lowest tier that can produce evidence defeating the alternatives. Control rules boundary and sequencing questions, Work rules implementation questions, and only owner-held product intent, public naming, external commitment, and irreversible external-world effect reach Bdo."
   owner_actions:
     - ACCEPT
     - REJECT
@@ -175,10 +288,13 @@ protected_boundaries:
   - product_name_changes_require_owner_acceptance
   - no_runtime_code_before_logical_spec_and_defeating_fixtures
   - no_whole_repository_imports
-  - no_real_external_world_effects_in_phase_i
   - no_owner_impersonation
   - no_self_witnessing
   - no_self_acceptance_of_owner_judgement
   - no_secret_exposure
+  - no_external_effect_outside_a_declared_authorized_scope
+  - no_external_effect_without_a_receipt
+  - no_refused_verb_reachable_through_any_scope
+  - no_claim_that_an_external_effect_was_rolled_back
 
 next_gate: EVIDENCE_PRODUCING_EXECUTION

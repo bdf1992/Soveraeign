@@ -21,6 +21,7 @@ SCRIPTS = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(SCRIPTS))
 
 import verify  # noqa: E402
+from sovverify.checks import CHECKS  # noqa: E402
 
 
 class Bands(unittest.TestCase):
@@ -76,6 +77,17 @@ class PastTheCeiling(unittest.TestCase):
         """Pins the wording main() puts in the failure list, so a rename is caught."""
         self.assertEqual(verify.budget_line(20.0),
                          f"verification budget (20.000s > {verify.BUDGET_SECONDS:.3f}s)")
+
+
+class Scheduling(unittest.TestCase):
+    """Keep the verified repair for the tooling critical path in the root table."""
+
+    def test_repository_tooling_uses_the_sharded_runner(self):
+        tooling = [check for check in CHECKS if check.name == "repository tooling tests"]
+        self.assertEqual(len(tooling), 1)
+        self.assertEqual(tooling[0].command,
+                         [sys.executable, "scripts/run_tooling_tests.py"])
+        self.assertIn("scripts/run_tooling_tests.py", tooling[0].observes)
 
 
 if __name__ == "__main__":

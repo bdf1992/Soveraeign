@@ -31,6 +31,7 @@ import re
 KIND_RULES: tuple[tuple[str, str, str], ...] = (
     (r"decisions/\d{4}-[a-z0-9-]+\.md$", "decision", "A consequential choice, its rationale and consequences."),
     (r"reports/\d{4}-\d{2}-\d{2}-[a-z0-9-]+\.md$", "report", "What one run or pass observed. Never policy."),
+    (r"(^|/)PROD-[A-Z0-9-]+-BUILD\.md$", "report", "What one run or pass observed. Never policy."),
     (r"(^|/)CHARTER\.md$", "charter", "What a service boundary owns and refuses."),
     (r"(^|/)KNOWN-GAPS\.md$", "known-gaps", "What a service has not built yet, stated by the service."),
     (r"(^|/)PARITY\.md$", "known-gaps", "A parity ledger: what a boundary has not reached yet."),

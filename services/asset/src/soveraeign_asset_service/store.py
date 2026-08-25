@@ -8,13 +8,13 @@ lifecycle module carries no storage mechanics.
 
 from __future__ import annotations
 
-from hashlib import sha256
-from pathlib import Path
-from typing import Any, Callable
 import json
 import sqlite3
 import time
 import uuid
+from hashlib import sha256
+from pathlib import Path
+from typing import Any, Callable
 
 
 SCHEMA = """
@@ -23,6 +23,10 @@ CREATE TABLE IF NOT EXISTS receipts(
   subject_type TEXT NOT NULL, subject_id TEXT NOT NULL,
   actor TEXT NOT NULL, payload_json TEXT NOT NULL, created_at REAL NOT NULL);
 """
+
+
+class PayloadIntegrityError(RuntimeError):
+    """Addressed bytes no longer match their recorded identity."""
 
 
 def new_id(prefix: str) -> str:
@@ -84,8 +88,47 @@ class Store:
         if not path.exists():
             path.write_bytes(data)
         elif path.read_bytes() != data:
-            raise RuntimeError("digest collision or corrupt blob")
+            raise PayloadIntegrityError("digest collision or corrupt blob")
         return digest, path
+
+    def store_addressed_blob(self, data: bytes) -> tuple[str, str]:
+        """Store bytes and return a portable CAS address plus digest."""
+        digest, _ = self.store_blob(data)
+        return f"cas:sha256:{digest}", f"sha256:{digest}"
+
+    def verified_address(self, address: str, digest: str) -> bytes:
+        """Resolve a local CAS address only when it agrees with its digest."""
+        if not isinstance(digest, str) or not digest.startswith("sha256:"):
+            raise PayloadIntegrityError("unsupported payload digest")
+        hex_digest = digest.removeprefix("sha256:")
+        if (
+            len(hex_digest) != 64
+            or any(character not in "0123456789abcdef" for character in hex_digest)
+            or address != f"cas:{digest}"
+        ):
+            raise PayloadIntegrityError("payload address and digest disagree")
+        path = self.blobs / hex_digest[:2] / hex_digest
+        if not path.is_file():
+            raise PayloadIntegrityError(f"missing addressed payload {address}")
+        data = path.read_bytes()
+        if sha256(data).hexdigest() != hex_digest:
+            raise PayloadIntegrityError(f"addressed payload changed {address}")
+        return data
+
+    def verified_version(self, version_id: str) -> tuple[sqlite3.Row, bytes]:
+        """Resolve an exact version and refuse bytes that no longer match it."""
+        version = self.db.execute(
+            "SELECT * FROM versions WHERE id=?", (version_id,)
+        ).fetchone()
+        if version is None:
+            raise KeyError(version_id)
+        expected_path = self.blobs / version["digest"][:2] / version["digest"]
+        if Path(version["blob_path"]) != expected_path or not expected_path.is_file():
+            raise PayloadIntegrityError(f"missing or displaced payload for {version_id}")
+        data = expected_path.read_bytes()
+        if sha256(data).hexdigest() != version["digest"] or len(data) != version["size"]:
+            raise PayloadIntegrityError(f"payload identity changed for {version_id}")
+        return version, data
 
     def receipts(self) -> list[dict[str, Any]]:
         """Every receipt in write order."""

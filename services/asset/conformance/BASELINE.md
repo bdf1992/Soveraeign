@@ -2,6 +2,8 @@
 
 Observed: `2026-08-22`
 
+Reconciled: `2026-08-25`
+
 Participant: `asset-service-reference@WORKTREE`
 
 Oracle and scenarios: `conformance/run.py` + `conformance/scenarios.json`
@@ -13,7 +15,7 @@ Oracle and scenarios: `conformance/run.py` + `conformance/scenarios.json`
 | Requirement | Verdict | Observed defects |
 | --- | --- | --- |
 | PROD-I-1 · Propose | FAIL | proposal lacks content address, source addresses, and cost record |
-| PROD-I-2 · Remember | FAIL | derivative lacks direct source, reader version, configuration digest, and recoverable lossy omissions |
+| PROD-I-2 · Remember | PASS | declared derivative recordings reconstruct exact source, reader artifact/version, replay configuration, output, fidelity, and recoverable omissions |
 | PROD-I-3 · Cross | FAIL | no second binding or fully declared crossing exists |
 | PROD-I-4 · Gate and retract | FAIL | original and counter-record survive, but the counter receipt does not link the prior receipt |
 | PROD-I-5 · Typed authority | FAIL | judgement refusal exists, but the participant cannot demonstrate the paired typed verification grant and commit |
@@ -24,10 +26,9 @@ Oracle and scenarios: `conformance/run.py` + `conformance/scenarios.json`
 
 ## Standing
 
-This baseline binds the reference participant to the logical scenarios. It does
-not mean the implementation is unusable: its narrower asset walk and stale
-lease tests pass. It means no Phase-I requirement is yet demonstrated by the
-complete scenario contract, including the owner-directed BYOM addition.
+This baseline binds the reference participant to the logical scenarios. The
+participant now demonstrates `PROD-I-2`; the overall suite remains `FAIL` while
+the other eight Phase-I requirements fail their complete scenario contracts.
 
 The scenarios and oracle remain frozen during participant repair unless an
 independent regression proves a scenario or oracle defect. The typed-authority

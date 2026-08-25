@@ -228,3 +228,49 @@ class Slugs(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class LinkResolutionIsHostIndependent(unittest.TestCase):
+    """The page must render the same bytes on every host.
+
+    `os.path.normpath` returns backslashes on Windows, and a backslash path never
+    matches a corpus key built with `as_posix()`. The effect was silent: links
+    simply stopped resolving, the page rendered 23 fewer citations on Windows than
+    on Linux for identical sources, and the staleness check could only pass on
+    whichever host built the checked-in page last.
+    """
+
+    KNOWN = {
+        "services/asset/CHARTER.md": "services-asset-charter",
+        "services/asset/README.md": "services-asset-readme",
+        "AGENTS.md": "agents",
+        "decisions/0001-founding-boundary.md": "decisions-0001-founding-boundary",
+    }
+
+    def resolve(self, citing, target):
+        return sov_docs._resolver(citing, self.KNOWN)(target)
+
+    def test_a_sibling_resolves(self):
+        self.assertEqual(self.resolve("services/asset/README.md", "CHARTER.md"),
+                         "#services-asset-charter")
+
+    def test_a_parent_relative_target_resolves(self):
+        self.assertEqual(self.resolve("services/asset/README.md", "../../AGENTS.md"), "#agents")
+
+    def test_a_root_relative_target_resolves(self):
+        self.assertEqual(self.resolve("AGENTS.md", "decisions/0001-founding-boundary.md"),
+                         "#decisions-0001-founding-boundary")
+
+    def test_no_resolved_candidate_ever_contains_a_backslash(self):
+        """The defeating case. This is what os.path.normpath produced on Windows."""
+        for citing, target in (("services/asset/README.md", "CHARTER.md"),
+                               ("services/asset/README.md", "../../AGENTS.md"),
+                               ("services/asset/README.md", "./CHARTER.md"),
+                               ("decisions/0001-founding-boundary.md", "../AGENTS.md")):
+            with self.subTest(citing=citing, target=target):
+                resolved = self.resolve(citing, target)
+                self.assertIsNotNone(resolved, f"{target} from {citing} did not resolve")
+                self.assertNotIn("\\", resolved)
+
+    def test_a_target_the_page_does_not_carry_stays_unresolved(self):
+        self.assertIsNone(self.resolve("AGENTS.md", "nowhere/absent.md"))

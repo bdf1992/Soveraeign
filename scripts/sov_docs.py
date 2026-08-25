@@ -31,6 +31,7 @@ from typing import Any
 import argparse
 import json
 import os
+import posixpath
 import re
 import sys
 
@@ -40,13 +41,13 @@ sys.path.insert(0, str(ROOT / "services" / "asset" / "src"))
 
 from sovdocs import facets as facet_rules  # noqa: E402
 from sovdocs.markdown import render as render_markdown  # noqa: E402
+from sovdocs.render import NEWLINE, _rendered, _resolver  # noqa: E402
 from sovdocs.site import render as render_site  # noqa: E402
 
 SKIP_PARTS = {".git", ".venv", "__pycache__", ".local", "node_modules", "lineage", "docs"}
 PAGE = ROOT / "docs" / "documentation.html"
 LEDGER = ROOT / "docs" / "ingest.json"
 STORE = ROOT / ".local" / "docs-assets"
-SEARCH_BUDGET = 4000
 ANCHOR = re.compile(r'href="#([a-z0-9-]+)"')
 
 
@@ -73,69 +74,6 @@ def _title(text: str, path: str) -> str:
 
 def _identifier(path: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", path.lower().removesuffix(".md")).strip("-")
-
-
-def _resolver(path: str, known: dict[str, str]):
-    """Turn a link written relative to one document into an anchor inside this page.
-
-    A document links to a sibling the way the repository stores it - `AGENTS.md`,
-    `../SPEC.md`, `decisions/0001-founding-boundary.md`. On one page those targets
-    are anchors, not files, so each is resolved against the linking document's own
-    directory. A target this page does not carry resolves to nothing and renders
-    as text rather than a link that goes nowhere.
-    """
-    base = PurePosixPath(path).parent
-
-    def resolve(target: str) -> str | None:
-        address, _, fragment = target.partition("#")
-        if not address:
-            return "#" + fragment if fragment else None
-        # Relative to the citing document, then from the repository root, then by
-        # a basename only one document answers to. A name two documents share is
-        # ambiguous and stays unresolved rather than guessing at one of them.
-        candidates = [str(PurePosixPath(os.path.normpath(str(base / address)))), address]
-        for candidate in candidates:
-            if candidate in known:
-                return f"#{known[candidate]}"
-        if "/" not in address:
-            matches = [value for key, value in known.items()
-                       if key.rsplit("/", 1)[-1] == address]
-            if len(matches) == 1:
-                return f"#{matches[0]}"
-        return None
-
-    return resolve
-
-
-# Joined with a newline only so the corpus key is stable and readable in a digest.
-NEWLINE = chr(10)
-_RENDERED: dict[tuple[str, str, str], tuple[str, str, str, str, list]] = {}
-
-
-def _rendered(source: Path, resolve=None, corpus: str = "") -> tuple[str, str, str, str, list]:
-    """Render one document, keyed by its bytes so a repeat costs a dictionary lookup.
-
-    The check rebuilds the whole page to compare bytes, and the tests build it
-    several times over. Rendering 156 documents each time was the only slow part
-    of either.
-
-    `corpus` is part of the key because the rendered body is not a function of the
-    document alone: a link resolves to an anchor only when this page carries its
-    target, so the same bytes render differently against a different corpus. Keyed
-    on the document alone, one build over a subset served its body back to the next
-    build over the whole set, and the page went stale against itself.
-    """
-    raw = source.read_bytes()
-    digest = sha256(raw).hexdigest()
-    key = (digest, source.relative_to(ROOT).as_posix(), corpus)
-    cached = _RENDERED.get(key)
-    if cached is not None:
-        return cached
-    text = raw.decode("utf-8", errors="replace")
-    body, headings = render_markdown(text, resolve)
-    built = (digest, text, body, re.sub(r"\s+", " ", text.lower())[:SEARCH_BUDGET], headings)
-    _RENDERED[key] = built
-    return built
 
 
 def documents(ledger: dict[str, Any]) -> list[dict[str, Any]]:

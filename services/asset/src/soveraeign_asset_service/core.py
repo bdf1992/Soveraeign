@@ -1,9 +1,16 @@
 """Dependency-free reference binding for the Soveraeign asset service.
 
 This module owns the asset lifecycle only. Payload custody and receipts live in
-`store.py`, grants and sessions in `authority.py`, and the rebuildable views in
-`projections.py`. The SQLite database is the canonical reference ledger for this
-slice; the search and graph tables are disposable projections.
+`store.py`, grants and sessions in `authority.py`, the rebuildable views in
+`projections.py`, typed collections and membership in `organization.py`, and the
+conformance read over them in `librarian.py`. The SQLite database is the
+canonical reference ledger for this slice; the search and graph tables are
+disposable projections.
+
+The organizational lifecycle is reached at `service.organization` and
+`service.librarian` rather than wrapped method by method here: those two objects
+are its public surface, the way `service.authority` is authority's, and copying
+every signature into this module would buy nothing but length.
 """
 
 from __future__ import annotations
@@ -15,6 +22,7 @@ import mimetypes
 import time
 
 from soveraeign_asset_service import authority as authority_module
+from soveraeign_asset_service import organization as organization_module
 from soveraeign_asset_service import projections as projections_module
 from soveraeign_asset_service import runs as runs_module
 from soveraeign_asset_service.authority import (
@@ -23,6 +31,8 @@ from soveraeign_asset_service.authority import (
     AuthorityRefused,
 )
 from soveraeign_asset_service.identity import ORIGINAL, REVISION, Identity
+from soveraeign_asset_service.librarian import Librarian
+from soveraeign_asset_service.organization import Organization, OrganizationRefused
 from soveraeign_asset_service.projections import Projections
 from soveraeign_asset_service.runs import DEFAULT_LEASE_TTL_SECONDS, Runs, StaleLease
 from soveraeign_asset_service.store import Store, new_id
@@ -71,11 +81,14 @@ class AssetService:
         self.blobs = self.store.blobs
         self.db = self.store.db
         self.store.apply_schema(SCHEMA, authority_module.SCHEMA,
-                                projections_module.SCHEMA, runs_module.SCHEMA)
+                                projections_module.SCHEMA, runs_module.SCHEMA,
+                                organization_module.SCHEMA)
         self.authority = Authority(self.store)
         self.identity = Identity(self.db)
         self.projections = Projections(self.store)
         self.runs = Runs(self.store, self.authority)
+        self.organization = Organization(self.store, self.authority)
+        self.librarian = Librarian(self.store, self.organization)
 
     def close(self) -> None:
         self.store.close()
@@ -272,5 +285,9 @@ class AssetService:
         """Every receipt in write order."""
         return self.store.receipts()
 
+    def library_report(self) -> dict[str, Any]:
+        """Every collection judged against its type, plus the assets nobody filed."""
+        return self.librarian.report()
 
-__all__ = ["AssetService", "AuthorityRefused", "StaleLease"]
+
+__all__ = ["AssetService", "AuthorityRefused", "OrganizationRefused", "StaleLease"]

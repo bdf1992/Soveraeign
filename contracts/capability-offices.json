@@ -54,8 +54,14 @@
     "HTTP"
   ],
   "cli_commands": {
+    "asset.add-member": "python -m soveraeign_asset_service.cli add-member",
+    "asset.declare-collection": "python -m soveraeign_asset_service.cli declare-collection",
+    "asset.declare-collection-type": "python -m soveraeign_asset_service.cli declare-type",
     "asset.ingest-asset": "python -m soveraeign_asset_service.cli ingest",
+    "asset.read-collection": "python -m soveraeign_asset_service.cli collection",
+    "asset.read-library-conformance": "python -m soveraeign_asset_service.cli conformance",
     "asset.rebuild-projection": "python -m soveraeign_asset_service.cli rebuild",
+    "asset.remove-member": "python -m soveraeign_asset_service.cli remove-member",
     "console.discover-operations": "python -m soveraeign_console_service.cli operations",
     "console.list-publications": "python -m soveraeign_console_service.cli list-publications",
     "console.publish-thread": "python -m soveraeign_console_service.cli publish-thread",
@@ -67,6 +73,36 @@
     "record.read-entry": "record_entries"
   },
   "assignments": {
+    "asset.add-member": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "organize:asset",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "asset.declare-collection": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "declare:asset-collection",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "asset.declare-collection-type": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "declare:collection-type",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
     "asset.ingest-asset": {
       "office": "FRONT",
       "counter": "operator-desk",
@@ -100,6 +136,26 @@
       "office": "FRONT",
       "counter": "operator-desk",
       "required_authority": "read:version",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "asset.read-collection": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "read:asset-collection",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "asset.read-library-conformance": {
+      "office": "BACK",
+      "counter": "inspectorate",
+      "required_authority": "read:asset-collection",
       "effect_class": "RECORD_LOCAL",
       "actor_kinds": [
         "HUMAN",
@@ -153,6 +209,16 @@
       "effect_class": "RECORD_LOCAL",
       "actor_kinds": [
         "SYSTEM"
+      ]
+    },
+    "asset.remove-member": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "retract:record",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
       ]
     },
     "asset.request-derivative": {
@@ -1064,5 +1130,5 @@
       ]
     }
   },
-  "cli_note": "A capability appears here only when a command actually implements it. The asset CLI also carries `search` and `receipts`, which read the compatibility projections and are not declared operations (OPEN-SEAMS S14)."
+  "cli_note": "A capability appears here only when a command actually implements it. The asset CLI also carries `search`, `receipts`, `types`, `collections`, and `grant`, which read the compatibility projections or bootstrap authority and are not declared operations (OPEN-SEAMS S14)."
 }

@@ -263,3 +263,25 @@ where it is, not an argument that it belongs there.
 Until it is settled, `WIP_EXCEEDED` and the work-in-progress ceiling are graded against
 concerns rather than against branches, because nothing in the harness can open or close
 a branch on its own.
+
+## S22 · Two records named collection
+
+`CLASSIFICATION.md` gives the Asset Projection Service a *projection collection*: a
+declared retrieval scope with text, graph, and vector configuration, which is an index.
+`decisions/0057-asset-collections-and-the-librarian.md` gives the Asset Service an
+*asset collection*: a typed, curated set an operator files assets into. Observed
+2026-08-24 while declaring the second one, with `projection.declare-collection` already
+in `contracts/capability-offices.json`.
+
+The two are not the same thing. One is derived and rebuildable and exists so a query can
+be answered; the other records that somebody decided an asset belongs somewhere, and is
+undone only by a counter-record. Read one way the qualifier is enough and the shared noun
+is ordinary English doing ordinary work. Read another way an operator holding
+`declare:collection` and `declare:asset-collection` has to keep two meanings straight to
+know what either grant lets them do, and one of them should be renamed before either is
+built out further.
+
+`NAMING.md` owns the collision screen and Bdo owns naming. Nothing is renamed here. Until
+it is settled, every machine surface carries the qualified name - manifest subject
+`asset-collection` against `projection-collection`, authority `declare:asset-collection`
+against `declare:collection` - and prose qualifies the bare word.

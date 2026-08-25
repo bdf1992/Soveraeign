@@ -2,7 +2,7 @@
 
 ```text
 source          CLASSIFICATION.md · STATUS.yaml · CONTRACT.md · services/README.md
-source_digest   ff6dfb8b1254318b · 5f595eece84ad085 · 896e59ba90828ad7 · de83ba2d87f0e342
+source_digest   bcb1a15f28ccb530 · 5f595eece84ad085 · 896e59ba90828ad7 · 86ca923ee9dbe14c
 reader          hand-authored · v2
 fidelity        LOSSY
 omissions       each service's internal components;
@@ -23,7 +23,7 @@ flowchart TB
         direction TB
         subgraph built["Services with an implementation"]
             direction LR
-            A["<b>Asset</b><br/>identity · versions · custody<br/>lineage · discovery"]
+            A["<b>Asset</b><br/>identity · versions · custody<br/>lineage · discovery<br/>typed collections · membership"]
             R["<b>Record</b><br/>append-preserving journal<br/>receipts · counter-records · digest chain"]
             C["<b>Console</b><br/>sessions · channels · threads · posts<br/><i>continuity path built;<br/>four surfaces still boundary</i>"]
         end

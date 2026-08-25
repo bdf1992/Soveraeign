@@ -1,13 +1,13 @@
 {
-  "receipt_id": "receipt_c200ca263de07489",
-  "event_id": "entry_c9a84b4c255744d6a0f8513526319e6b",
+  "receipt_id": "receipt_7ea2ed777ce4f6ad",
+  "event_id": "entry_99a88c93d612418b812d755b99ca0ec9",
   "event_type": "console.discover-operations",
   "actor_id": "sov",
   "interface_id": "bindings/mcp:console_operations",
   "input_addresses": [
     "contracts/fixtures/capability-map.reference.json"
   ],
-  "input_state_digest": "ea809805e1bc278a65f17c54f7b96f14af809139a05de40390d6916bf6e53527",
+  "input_state_digest": "8c536c711dbc2cdb4e6467e01710e936b1e47a5d95990ed01cf0754782086b98",
   "authority_grant_ids": [],
   "precondition_results": [
     {
@@ -25,17 +25,17 @@
   "outcome": "COMMITTED",
   "emitted_record_addresses": [
     "d3d7b9dece99b3a2d1ae141a2ffefbb3927ee42fe6411c55f8d605b4e7a54c42",
-    "c200ca263de0748962c712ffa9166a19ad886fe489de13d105bfdc5c5297e1c1"
+    "7ea2ed777ce4f6ad646549b0736d4dcd636ded60238ec5d39510d7ac76221233"
   ],
   "observed_evidence_addresses": [
     "bindings/mcp/observations/journey-02-discovery.json"
   ],
-  "created_at": "2026-08-25T02:40:55Z",
+  "created_at": "2026-08-25T04:53:54Z",
   "serves_capability": "console.discover-operations",
   "consumed": [
     {
       "dimension": "wallclock_seconds",
-      "amount": 0.0067,
+      "amount": 0.0071,
       "measured_by": "time.perf_counter around gateway.call",
       "note": "the crossing alone. Opening the store is setup, not this operation"
     },
@@ -51,5 +51,5 @@
       "note": "a valuation of this usage at zero, not an absence of usage. RECORD_LOCAL and no monetary charge; the seconds were still spent"
     }
   ],
-  "receipt_digest": "7b5b13718f2627195afc78593d124442b103172d701bc02f8c676de0c3b3a42c"
+  "receipt_digest": "757e021d947084d7b0044beab35a27b971fe05227a7d7424e3d218cde06cbf29"
 }

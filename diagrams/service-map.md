@@ -2,7 +2,7 @@
 
 ```text
 source          CLASSIFICATION.md · STATUS.yaml · CONTRACT.md · services/README.md
-source_digest   db432f7d9556286b · c141d6f181709311 · 896e59ba90828ad7 · f25f80b027353e51
+source_digest   db432f7d9556286b · c141d6f181709311 · 896e59ba90828ad7 · 2e5406ff4a4abfaa
 reader          hand-authored · v2
 fidelity        LOSSY
 omissions       each service's internal components;

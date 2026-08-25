@@ -9,7 +9,8 @@ and retraction semantics; no service creates a private authority system.
 | Service | Standing | Owns |
 | --- | --- | --- |
 | `asset/` | experimental reference participant | asset identity, payload custody, versions, derivation lineage, discovery, and asset-use records |
-| `record/` | experimental reference participant | the append-preserving journal, terminal receipts, counter-records, the digest chain, and subject projections |
+| `record/` | experimental reference participant | the append-preserving journal, terminal receipts, counter-records, the digest chain, subject projections, and journal export and restore (`decisions/0049`) |
+| `identity/` | placement provisional; challenge component built | the challenge lifecycle: mint, deliver, present, expire (`decisions/0048` ID-12..14). Whether identity is a service at all is open at judgement 3 |
 | `console/` | built in part, remainder chartered | operator sessions, channels, threads, posts, notifications, judgement requests, authority grants, operator settings, and dashboard and activity projections |
 | `gateway/` | proposed boundary; first IN_PROCESS route pattern built and self-tested | the node's door: requests admitted, capabilities resolved, authority checked, routes recorded, receipts returned, transports bound |
 | `registry/` | chartered and contracted; implementation not yet present | the node's lookup: what a name is, which document owns it, what standing it holds, and what it relates to - for participants, operations, vocabulary, documents, external systems, and accountable owners |

@@ -40,7 +40,7 @@ class ProjectionFacts(unittest.TestCase):
     def test_evidence_layers_remain_independent(self) -> None:
         self.assertEqual(self.document["counts"], {
             "declared": 102, "bound": 102, "policy_active": 33,
-            "reachable": 3, "observed": 0,
+            "reachable": 4, "observed": 0,
         })
         self.assertEqual(self.operation("asset.ingest-asset")["facts"], {
             "declared": True, "bound": True, "policy_active": True,
@@ -72,9 +72,10 @@ class ProjectionFacts(unittest.TestCase):
             {"name": "sov://asset/ingest-asset"})
         self.assertEqual(request["logical_endpoint"], "sov://registry/resolve")
 
-    def test_route_affordances_are_actor_neutral_across_two_services(self) -> None:
+    def test_route_affordances_are_actor_neutral_across_three_services(self) -> None:
         ingest = self.operation("asset.ingest-asset")
         read_version = self.operation("asset.read-version")
+        read_thread = self.operation("console.read-thread")
         resolve_registry = self.operation("registry.resolve")
         unavailable_read = self.operation("asset.read-asset")
         self.assertEqual(ingest["route_affordance"], {
@@ -83,6 +84,9 @@ class ProjectionFacts(unittest.TestCase):
             "explanation": "An exact policy-active service route exists for this operation.",
         })
         self.assertEqual(read_version["route_affordance"]["kind"], "READ")
+        self.assertEqual(read_thread["route_affordance"]["kind"], "READ")
+        self.assertEqual(read_thread["route_affordance"]["reason_code"],
+                         "EXACT_READ_ROUTE_ACTIVE")
         self.assertEqual(resolve_registry["route_affordance"]["kind"], "READ")
         self.assertEqual(resolve_registry["route_affordance"]["reason_code"],
                          "EXACT_READ_ROUTE_ACTIVE")

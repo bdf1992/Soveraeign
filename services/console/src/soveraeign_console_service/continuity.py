@@ -57,7 +57,8 @@ _FOLDS = (
 class Projection:
     """A rebuilt console read model. Derived, never authoritative."""
 
-    def __init__(self, console: ConsoleService):
+    def __init__(self, console: ConsoleService,
+                 entries: list[dict[str, Any]] | None = None):
         self.channel: dict[str, dict[str, Any]] = {}
         self.thread: dict[str, dict[str, Any]] = {}
         self.session: dict[str, dict[str, Any]] = {}
@@ -65,7 +66,7 @@ class Projection:
         self.posts: list[dict[str, Any]] = []
         # `reconstruct` verifies every digest link before yielding, so a rewritten
         # history fails here instead of producing a plausible projection.
-        for entry in console.record.reconstruct():
+        for entry in entries if entries is not None else console.record.reconstruct():
             payload = entry["payload"]
             kind = payload.get("record_kind")
             for name, kinds, key in _FOLDS:
@@ -80,14 +81,15 @@ class Projection:
 
 
 def read_thread(console: ConsoleService, thread_id: str,
-                binding_id: str | None = None) -> dict[str, Any]:
+                binding_id: str | None = None, *,
+                projection: Projection | None = None) -> dict[str, Any]:
     """Read one thread's posts in append order.
 
     The reading binding conditions presentation only. Two bindings asking for the
     same thread receive the same posts, in the same order, with the same addresses
     and digests; `read_through` records which surface asked.
     """
-    projection = Projection(console)
+    projection = projection or Projection(console)
     if thread_id not in projection.thread:
         raise KeyError(thread_id)
     thread = projection.thread[thread_id]

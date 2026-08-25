@@ -18,7 +18,7 @@ for service in ("gateway", "asset", "console", "record", "registry"):
 
 from soveraeign_asset_service import AssetService  # noqa: E402
 from soveraeign_asset_service.routes import AssetRoutes  # noqa: E402
-from soveraeign_console_service import ConsoleService  # noqa: E402
+from soveraeign_console_service import ConsoleRoutes, ConsoleService  # noqa: E402
 from soveraeign_console_service import authority as console_authority  # noqa: E402
 from soveraeign_console_service.refusals import AuthorityRefused  # noqa: E402
 from soveraeign_gateway_service import Gateway, load_surface  # noqa: E402
@@ -43,6 +43,13 @@ REGISTRY_ROUTE_SOURCES = COMMON_ROUTE_SOURCES + (
     "services/registry/src/soveraeign_registry_service/core.py",
     "services/registry/src/soveraeign_registry_service/index.py",
     "services/registry/src/soveraeign_registry_service/routes.py",
+)
+CONSOLE_ROUTE_SOURCES = COMMON_ROUTE_SOURCES + (
+    "contracts/node-object-record.schema.json",
+    "services/record/src/soveraeign_record_service/core.py",
+    "services/console/src/soveraeign_console_service/core.py",
+    "services/console/src/soveraeign_console_service/continuity.py",
+    "services/console/src/soveraeign_console_service/routes.py",
 )
 
 
@@ -70,6 +77,17 @@ def route_census() -> list[dict[str, Any]]:
             "required_arguments": list(arguments["required"]),
             "optional_arguments": list(arguments["optional"]),
             "source_addresses": list(REGISTRY_ROUTE_SOURCES),
+        })
+    for operation in ConsoleRoutes.operation_ids():
+        arguments = ConsoleRoutes.argument_contract(operation)
+        routes.append({
+            "operation_id": f"console.{operation}",
+            "logical_endpoint": f"sov://console/{operation}",
+            "transport": "IN_PROCESS",
+            "address": "console:in-process",
+            "required_arguments": list(arguments["required"]),
+            "optional_arguments": list(arguments["optional"]),
+            "source_addresses": list(CONSOLE_ROUTE_SOURCES),
         })
     return routes
 
@@ -111,6 +129,7 @@ class LocalActionPath:
         self.registry = RegistryService(
             self.record, ROOT, closure, manifests, table, index_sources)
         registry_routes = RegistryRoutes(self.registry)
+        console_routes = ConsoleRoutes(self.console)
 
         def authority(actor: str, capability: str, scope: str) -> str:
             return console_authority.check(
@@ -119,7 +138,8 @@ class LocalActionPath:
         self.gateway = Gateway(
             self.record, capability_map, manifests, table, authority,
             {"asset:in-process": asset_routes.call,
-             "registry:in-process": registry_routes.call},
+             "registry:in-process": registry_routes.call,
+             "console:in-process": console_routes.call},
             authority_denials=(AuthorityRefused,),
         )
 

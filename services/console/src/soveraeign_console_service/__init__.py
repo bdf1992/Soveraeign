@@ -9,6 +9,7 @@ from soveraeign_console_service.continuity import (
     session_context,
 )
 from soveraeign_console_service.core import ConsoleService
+from soveraeign_console_service.routes import ConsoleRoutes
 from soveraeign_console_service.refusals import (
     AuthorityRefused,
     ConsoleRefusal,
@@ -24,6 +25,7 @@ __all__ = [
     "OPERATIONS",
     "AuthorityRefused",
     "ConsoleRefusal",
+    "ConsoleRoutes",
     "ConsoleService",
     "ModelClaimWithoutProposal",
     "PinIncomplete",

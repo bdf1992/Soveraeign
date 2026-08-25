@@ -1,0 +1,391 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/product-canon.schema.json",
+  "title": "Soveraeign Product Canon (PROPOSED, decisions/0046 and decisions/0051)",
+  "description": "The durable product-level things requirements are for: who the node is for, what they are trying to accomplish, what Soveraeign undertakes to make possible, and the principal journeys by which a promise becomes usable. It sits between the product ground and PRD.md and is neither a second PRD nor architecture. Every promise derives from at least one claim in contracts/product-ground.json, which is what stops the canon becoming a place where product intent is invented. CANON.md owns the wording; this record owns the identifiers and the joins, so ground -> promise -> journey -> capability can be checked rather than asserted. A revision is immutable once accepted: a promise or journey whose meaning changes is retired and a new identifier minted in a new revision, never redefined in place - the shape STATUS.yaml already uses for the retired O1-O22 docket identifiers. Nothing here grants anything, and naming a capability does not make it reachable.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "canon_schema",
+    "epoch",
+    "revision",
+    "rendering",
+    "status",
+    "ground_revision",
+    "amendment_rule",
+    "wording_owned_by",
+    "grounded_in",
+    "participants",
+    "promises",
+    "journeys",
+    "retired"
+  ],
+  "properties": {
+    "canon_schema": {
+      "const": "soveraeign-product-canon/v1"
+    },
+    "epoch": {
+      "description": "The product epoch this canon was written under, set by the product ground rather than here. Carried so a reader can tell whether a historical attribution was made in the same product.",
+      "type": "string",
+      "pattern": "^EPOCH-[1-9][0-9]*$"
+    },
+    "revision": {
+      "description": "The semantic revision. It increments when meaning changes: a promise or journey added, retired, or reworded to say something different. Immutable once accepted.",
+      "type": "string",
+      "pattern": "^CANON-[1-9][0-9]*$"
+    },
+    "rendering": {
+      "description": "The artifact revision: this exact immutable copy. Its whole part must equal `revision`; its fractional part increments for an amendment carrying no change of meaning. A rendering must never be used to change meaning.",
+      "type": "string",
+      "pattern": "^CANON-[1-9][0-9]*[.][0-9]+$"
+    },
+    "supersedes": {
+      "description": "The revision this one replaces, present from the second revision onward.",
+      "type": "string",
+      "pattern": "^CANON-[1-9][0-9]*$"
+    },
+    "status": {
+      "enum": [
+        "PROPOSED",
+        "ACCEPTED",
+        "SUPERSEDED"
+      ]
+    },
+    "ground_revision": {
+      "description": "The product-ground revision every promise here derives from. A canon pinned to a ground revision cannot silently start meaning something else when the ground moves.",
+      "type": "string",
+      "pattern": "^GROUND-[1-9][0-9]*$"
+    },
+    "amendment_rule": {
+      "type": "string",
+      "minLength": 120
+    },
+    "wording_owned_by": {
+      "description": "The document that owns the prose. This record carries identifiers and joins, never a second copy of the meaning.",
+      "type": "string",
+      "minLength": 1
+    },
+    "grounded_in": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "participants": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/participant"
+      }
+    },
+    "promises": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/promise"
+      }
+    },
+    "journeys": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/journey"
+      }
+    },
+    "retired": {
+      "description": "Identifiers withdrawn by a later revision. They are retired, not reserved: a retired identifier is never reused for a different meaning.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "retired_in",
+          "because"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "retired_in": {
+            "type": "string",
+            "pattern": "^CANON-[1-9][0-9]*$"
+          },
+          "because": {
+            "type": "string",
+            "minLength": 20
+          }
+        }
+      }
+    },
+    "accepted": {
+      "description": "Owner acceptance of this exact revision, recorded here and in STATUS.yaml. Accepting a revision is not a claim that the node keeps any of it; it fixes the meaning that later work is attributed against.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "epoch",
+        "by",
+        "on",
+        "recorded_in"
+      ],
+      "properties": {
+        "revision": {
+          "type": "string",
+          "minLength": 5
+        },
+        "epoch": {
+          "type": "string",
+          "pattern": "^EPOCH-[1-9][0-9]*$"
+        },
+        "by": {
+          "type": "string",
+          "minLength": 1
+        },
+        "on": {
+          "type": "string",
+          "minLength": 8
+        },
+        "recorded_in": {
+          "type": "string",
+          "minLength": 1
+        },
+        "decision": {
+          "type": "string",
+          "minLength": 1
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "participant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "participant_id",
+        "actor_kind",
+        "role",
+        "who",
+        "needs",
+        "evidence"
+      ],
+      "properties": {
+        "participant_id": {
+          "description": "Reuses the cast keys in .claude/epic/offices.json where one exists, so the canon adds no second name for a participant the repository already names.",
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "actor_kind": {
+          "description": "SPEC.md actor_kind. A participant that may show up as more than one kind lists each.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "HUMAN",
+              "MODEL",
+              "WORKER",
+              "SYSTEM"
+            ]
+          }
+        },
+        "role": {
+          "description": "CLASSIFICATION.md participation or boundary role. Owner is deliberately absent: it is a context that sets Binding and Projection over a role, not a role (decisions/0020).",
+          "enum": [
+            "operator",
+            "agent",
+            "worker",
+            "witness",
+            "node"
+          ]
+        },
+        "who": {
+          "type": "string",
+          "minLength": 20
+        },
+        "needs": {
+          "description": "What this participant is trying to accomplish, in plain words. Needs carry no identifier of their own: they are not a join in the chain promise -> journey -> capability, and an unnamed need is cheaper to correct than a wrong one made canonical.",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 10
+          }
+        },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "promise": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "promise_id",
+        "statement",
+        "phase",
+        "source",
+        "derives_from",
+        "grounded_in"
+      ],
+      "properties": {
+        "promise_id": {
+          "type": "string",
+          "pattern": "^PROMISE-[0-9]{2}$"
+        },
+        "statement": {
+          "description": "What Soveraeign undertakes to make possible, said to the participant rather than about the system.",
+          "type": "string",
+          "minLength": 30
+        },
+        "phase": {
+          "description": "PHASE_I means the promise is in scope for the current phase. LATER means the canon names it so the product world is whole, and PRD.md deliberately does not require it yet.",
+          "enum": [
+            "PHASE_I",
+            "LATER"
+          ]
+        },
+        "source": {
+          "description": "Where this promise's authority to exist comes from. Not `standing`, which is a governed word for the artifact lifecycle and the record lifecycle; this is a different dimension and must not borrow that name. OWNER_DIRECTED came from Bdo and is refined against evidence rather than invented. GOVERNINGLY_GROUNDED restates language the governing set already carries. STRONGLY_DERIVED is read out of several governing sources that do not state it as a promise in one place. IMPLEMENTATION_DERIVED means the promise exists primarily because something was built that way, which is never sufficient: an implementation is evidence about product intent, never authority for creating it, so a promise carrying this value must be grounded independently, moved below canon altitude, or marked OWNER_CONFIRMATION_REQUIRED. OWNER_CONFIRMATION_REQUIRED means it stays proposed until Bdo confirms it.",
+          "enum": [
+            "OWNER_DIRECTED",
+            "GOVERNINGLY_GROUNDED",
+            "STRONGLY_DERIVED",
+            "IMPLEMENTATION_DERIVED",
+            "OWNER_CONFIRMATION_REQUIRED"
+          ]
+        },
+        "derives_from": {
+          "description": "Product-ground claims this promise realizes. At least one: a promise deriving from no ground claim would mean the canon invented product intent above the layer that is supposed to hold it.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^GROUND-[0-9]{3}$"
+          }
+        },
+        "composes": {
+          "description": "Promises this one is made of. A compound promise is honest about its parts rather than hiding them.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^PROMISE-[0-9]{2}$"
+          }
+        },
+        "grounded_in": {
+          "description": "Addresses in the governing set where this promise's language already lives. A promise grounded in nothing is an invention.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "journey": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "journey_id",
+        "title",
+        "participant",
+        "need",
+        "serves",
+        "capabilities",
+        "missing_capabilities",
+        "evidence"
+      ],
+      "properties": {
+        "journey_id": {
+          "type": "string",
+          "pattern": "^JOURNEY-[0-9]{2}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 5
+        },
+        "participant": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "need": {
+          "type": "string",
+          "minLength": 20
+        },
+        "serves": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^PROMISE-[0-9]{2}$"
+          }
+        },
+        "capabilities": {
+          "description": "Declared capability identifiers this journey crosses, in the order it crosses them. Every one must exist in the capability map; naming it here says nothing about whether it is reachable, which the map already answers.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*[.][a-z][a-z0-9-]*$"
+          }
+        },
+        "missing_capabilities": {
+          "description": "Crossings this journey needs that no service declares at all. This is the column a capability map cannot hold, because the map is total over what exists and silent about what does not.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "because"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 3
+              },
+              "because": {
+                "type": "string",
+                "minLength": 20
+              }
+            }
+          }
+        },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

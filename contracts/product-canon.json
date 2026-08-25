@@ -1,0 +1,810 @@
+{
+  "canon_schema": "soveraeign-product-canon/v1",
+  "epoch": "EPOCH-1",
+  "revision": "CANON-3",
+  "rendering": "CANON-3.0",
+  "supersedes": "CANON-2",
+  "status": "ACCEPTED",
+  "ground_revision": "GROUND-1",
+  "amendment_rule": "Three levels, matching GROUND.md. A RENDERING re-issues the artifact with no change of meaning and increments only the fractional part. A REVISION is a change of meaning - a promise or journey added, retired, or reworded to say something different - and mints the next whole revision. A PRODUCT EPOCH is set by the product ground, not here: the canon carries the epoch it was written under so a reader can tell whether a historical attribution was made in the same product. A rendering must never be used to change meaning. An identifier whose meaning changes is retired and a new one minted; retired identifiers are never reused, because work attributed under an identifier has to keep meaning what it meant when the work was done.",
+  "wording_owned_by": "CANON.md",
+  "grounded_in": [
+    "GROUND.md",
+    "CONTRACT.md",
+    "SYSTEM.md",
+    "PRD.md",
+    "SPEC.md",
+    "AI-NATIVE.md",
+    "BYOM.md",
+    "CLASSIFICATION.md",
+    "services/gateway/CHARTER.md",
+    "services/console/CHARTER.md",
+    "services/proofing/CHARTER.md",
+    "services/registry/CHARTER.md",
+    "reports/2026-08-24-product-canon-attribution-discovery.md"
+  ],
+  "participants": [
+    {
+      "participant_id": "human-operator",
+      "actor_kind": [
+        "HUMAN"
+      ],
+      "role": "operator",
+      "who": "A person working inside a node through a Human Binding. Bdo arrives here too, in Owner context: Owner sets which Binding and Projection they come through, over whatever role they are holding.",
+      "needs": [
+        "do domain work without learning the node's internals first",
+        "see what happened while they were away",
+        "be told what concerns them rather than having to hunt for it",
+        "decide the things only a person can decide, where the answer becomes a record"
+      ],
+      "evidence": [
+        "CLASSIFICATION.md",
+        ".claude/epic/offices.json",
+        "decisions/0020",
+        "services/console/CHARTER.md"
+      ]
+    },
+    {
+      "participant_id": "model-operator",
+      "actor_kind": [
+        "MODEL"
+      ],
+      "role": "operator",
+      "who": "A model working inside a node through a Model Binding. Sov when the portable profile is loaded; Claude in an interactive session. Same world, same record.",
+      "needs": [
+        "discover the legal operations from the artifact alone, with no oral explanation",
+        "act inside a live grant and be refused legibly outside one",
+        "hand off what it did without keeping private state"
+      ],
+      "evidence": [
+        "AI-NATIVE.md",
+        "SOV.md",
+        "CONTRACT.md",
+        ".claude/epic/offices.json"
+      ]
+    },
+    {
+      "participant_id": "model-bringer",
+      "actor_kind": [
+        "HUMAN"
+      ],
+      "role": "operator",
+      "who": "A person bringing an existing model or agent into a node they own or are authorized to use, and expecting it to become an operator there without the node becoming the provider's.",
+      "needs": [
+        "keep custody of the record while changing which model runs",
+        "know what each model actually consumed",
+        "get a visible refusal when a model is unavailable, never a silent substitution"
+      ],
+      "evidence": [
+        "BYOM.md",
+        "SYSTEM.md",
+        "adapters/ollama/README.md"
+      ]
+    },
+    {
+      "participant_id": "agent",
+      "actor_kind": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "role": "agent",
+      "who": "An operator selecting or requesting actions within granted authority, rather than performing them directly.",
+      "needs": [
+        "choose among reachable operations without widening its own authority",
+        "escalate a decision it does not hold without stalling everything else"
+      ],
+      "evidence": [
+        "CLASSIFICATION.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "participant_id": "worker",
+      "actor_kind": [
+        "WORKER"
+      ],
+      "role": "worker",
+      "who": "Leased hands. One job per lease, a fencing token, and a report that settles nothing.",
+      "needs": [
+        "one bounded task with an unambiguous input state",
+        "a lease that fences it against a newer holder"
+      ],
+      "evidence": [
+        "SDLC.md",
+        "SPEC.md",
+        "services/asset/src/soveraeign_asset_service/runs.py"
+      ]
+    },
+    {
+      "participant_id": "witness",
+      "actor_kind": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "role": "witness",
+      "who": "Independent eyes. Observes through a path the builder did not control, and deposits evidence rather than a verdict.",
+      "needs": [
+        "reach the durable output without relying on the executor's account of it",
+        "record a dissent that stays visible"
+      ],
+      "evidence": [
+        "CONTRACT.md",
+        "services/observation/CHARTER.md",
+        "decisions/0041"
+      ]
+    },
+    {
+      "participant_id": "domain-owner",
+      "actor_kind": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "role": "operator",
+      "who": "The participant accountable for one domain: what they were asked to do, what they may spend, by when, and who checks it.",
+      "needs": [
+        "a mandate narrow enough to finish",
+        "a resource envelope they can spend inside and see the remainder of",
+        "a witness who is not themselves"
+      ],
+      "evidence": [
+        "services/registry/CHARTER.md",
+        "contracts/domain-owners.json"
+      ]
+    },
+    {
+      "participant_id": "node-owner",
+      "actor_kind": [
+        "HUMAN"
+      ],
+      "role": "operator",
+      "who": "The person or organization that owns and administers a node. A personal node is a first-class node, not a reduced edition.",
+      "needs": [
+        "stand a node up and know it is theirs",
+        "grow to more participants or federate without migrating authority elsewhere"
+      ],
+      "evidence": [
+        "SYSTEM.md",
+        "BYOM.md",
+        "CLASSIFICATION.md"
+      ]
+    },
+    {
+      "participant_id": "external-system",
+      "actor_kind": [
+        "SYSTEM"
+      ],
+      "role": "operator",
+      "who": "An enterprise system or remote provider reached through a declared adapter. It has no expectations of its own; its story is told on its behalf by the operator who integrated it.",
+      "needs": [
+        "be reached only through a declared crossing that leaves a receipt"
+      ],
+      "evidence": [
+        "adapters/README.md",
+        ".claude/epic/offices.json"
+      ]
+    },
+    {
+      "participant_id": "peer-node",
+      "actor_kind": [
+        "SYSTEM"
+      ],
+      "role": "node",
+      "who": "A second sovereign node on the far side of a governed crossing. The horizon, not Phase I.",
+      "needs": [
+        "cross into another node without either node absorbing the other"
+      ],
+      "evidence": [
+        "SYSTEM.md",
+        "decisions/0039",
+        "contracts/federation-crossing.schema.json"
+      ]
+    }
+  ],
+  "promises": [
+    {
+      "promise_id": "PROMISE-01",
+      "statement": "You can bring your own agent or model into a sovereign node you control or are authorized to use, discover what that participant can do under its actual authority, perform substantive governed work through the same operational world as a human, and inspect the resulting history, evidence and receipts without surrendering custody to the model or its provider.",
+      "phase": "PHASE_I",
+      "composes": [
+        "PROMISE-02",
+        "PROMISE-03",
+        "PROMISE-04",
+        "PROMISE-05",
+        "PROMISE-06"
+      ],
+      "grounded_in": [
+        "SYSTEM.md",
+        "BYOM.md",
+        "AI-NATIVE.md",
+        "CONTRACT.md"
+      ],
+      "note": "Bdo's wording, 2026-08-24, given as approximate and to be refined against evidence rather than adopted as final prose. It is compound on purpose: the parts it composes are separately testable, and it is the first promise the canon is meant to test.",
+      "source": "OWNER_DIRECTED",
+      "derives_from": [
+        "GROUND-001",
+        "GROUND-002",
+        "GROUND-006",
+        "GROUND-013"
+      ]
+    },
+    {
+      "promise_id": "PROMISE-02",
+      "statement": "Custody of your record, your authority and your continuity stays with your node. Losing a provider costs you that provider, not your enterprise.",
+      "phase": "PHASE_I",
+      "grounded_in": [
+        "SYSTEM.md",
+        "BYOM.md",
+        "PRD.md",
+        "AI-NATIVE.md"
+      ],
+      "source": "GOVERNINGLY_GROUNDED",
+      "derives_from": [
+        "GROUND-001",
+        "GROUND-013"
+      ]
+    },
+    {
+      "promise_id": "PROMISE-03",
+      "statement": "You can find out what can be asked of this node, by whom, and over what, without being told by a person who already knows.",
+      "phase": "PHASE_I",
+      "grounded_in": [
+        "AI-NATIVE.md",
+        "services/gateway/CHARTER.md",
+        "CONTRACT.md"
+      ],
+      "note": "The reachability gate in AI-NATIVE.md is this promise stated as a test. The gateway charter states the need in as many words and records that no single place answers it.",
+      "source": "GOVERNINGLY_GROUNDED",
+      "derives_from": [
+        "GROUND-004",
+        "GROUND-006"
+      ]
+    },
+    {
+      "promise_id": "PROMISE-04",
+      "statement": "People and models act through the same records, permissions, transitions, evidence and history. Neither gets a private door.",
+      "phase": "PHASE_I",
+      "grounded_in": [
+        "CONTRACT.md",
+        "SYSTEM.md",
+        "PRD.md",
+        "SPEC.md"
+      ],
+      "source": "GOVERNINGLY_GROUNDED",
+      "derives_from": [
+        "GROUND-002"
+      ]
+    },
+    {
+      "promise_id": "PROMISE-05",
+      "statement": "You can find out why anything is what it is: its source, its version, who read it, what was left out, and what it cost.",
+      "phase": "PHASE_I",
+      "grounded_in": [
+        "CONTRACT.md",
+        "PRD.md",
+        "AI-NATIVE.md"
+      ],
+      "note": "The cost clause is the part the repository does not yet keep. PRD.md PROD-I-1 requires a recorded cost and services/asset/conformance/BASELINE.md records it failing.",
+      "source": "GOVERNINGLY_GROUNDED",
+      "derives_from": [
+        "GROUND-005",
+        "GROUND-007",
+        "GROUND-014"
+      ]
+    },
+    {
+      "promise_id": "PROMISE-06",
+      "statement": "You can swap the model without changing your state, standing, authority, receipts or contracts. What changes is quality, latency and cost, and those are recorded rather than normalized away.",
+      "phase": "PHASE_I",
+      "grounded_in": [
+        "BYOM.md",
+        "PRD.md",
+        "SPEC.md"
+      ],
+      "source": "GOVERNINGLY_GROUNDED",
+      "derives_from": [
+        "GROUND-001",
+        "GROUND-013"
+      ]
+    },
+    {
+      "promise_id": "PROMISE-07",
+      "statement": "Every crossing returns a receipt, including the ones that refuse, fail, or leave a judgement unresolved.",
+      "phase": "PHASE_I",
+      "grounded_in": [
+        "CONTRACT.md",
+        "SPEC.md"
+      ],
+      "source": "GOVERNINGLY_GROUNDED",
+      "derives_from": [
+        "GROUND-007",
+        "GROUND-008"
+      ]
+    },
+    {
+      "promise_id": "PROMISE-08",
+      "statement": "You can correct what the node did without pretending it never happened, and without a false claim that consumed resources came back.",
+      "phase": "PHASE_I",
+      "grounded_in": [
+        "CONTRACT.md",
+        "PRD.md",
+        "AI-NATIVE.md"
+      ],
+      "source": "GOVERNINGLY_GROUNDED",
+      "derives_from": [
+        "GROUND-009",
+        "GROUND-011"
+      ]
+    },
+    {
+      "promise_id": "PROMISE-09",
+      "statement": "Your judgement is treated as the scarce thing. Requests for it queue without stopping unrelated work, and where it was spent is visible.",
+      "phase": "PHASE_I",
+      "grounded_in": [
+        "PRD.md",
+        "README.md",
+        "services/console/CHARTER.md"
+      ],
+      "source": "STRONGLY_DERIVED",
+      "derives_from": [
+        "GROUND-012"
+      ]
+    },
+    {
+      "promise_id": "PROMISE-10",
+      "statement": "A person or model arriving fresh can become safely useful from the artifact alone, and how long that took is measured rather than assumed.",
+      "phase": "PHASE_I",
+      "grounded_in": [
+        "CONTRACT.md",
+        "PRD.md",
+        "AI-NATIVE.md"
+      ],
+      "source": "GOVERNINGLY_GROUNDED",
+      "derives_from": [
+        "GROUND-006"
+      ]
+    },
+    {
+      "promise_id": "PROMISE-11",
+      "statement": "You can hand bounded work to someone or something else and check the result through a path they did not control.",
+      "phase": "PHASE_I",
+      "grounded_in": [
+        "CONTRACT.md",
+        "SDLC.md",
+        "SPEC.md"
+      ],
+      "source": "GOVERNINGLY_GROUNDED",
+      "derives_from": [
+        "GROUND-003",
+        "GROUND-010"
+      ]
+    },
+    {
+      "promise_id": "PROMISE-12",
+      "statement": "Work carries across a boundary where context is lost: a new session, a new operator, a new model, tomorrow.",
+      "phase": "PHASE_I",
+      "grounded_in": [
+        "CONTRACT.md",
+        "SYSTEM.md",
+        "AGENTS.md"
+      ],
+      "note": "Corrected in CANON-2. CANON-1 said this promise arrived because continuity was implemented, which had the direction of authority backwards: an implementation is evidence about product intent and never authority for creating it. The promise stands on CONTRACT.md C12, on SYSTEM.md giving Sov bounded agency over its own handoff, and on AGENTS.md requiring a handoff that names standing, changes, observations, residuals and next action. decisions/0036 and the console continuity path are evidence that the promise is keepable, not the reason it exists.",
+      "source": "STRONGLY_DERIVED",
+      "derives_from": [
+        "GROUND-015"
+      ]
+    },
+    {
+      "promise_id": "PROMISE-15",
+      "statement": "You can cross to another authorized node without either node absorbing the other.",
+      "phase": "LATER",
+      "grounded_in": [
+        "SYSTEM.md",
+        "decisions/0039",
+        "PRD.md"
+      ],
+      "note": "Named so the product world is whole. PRD.md lists federation as a Phase-I non-goal, and the canon does not move that.",
+      "source": "GOVERNINGLY_GROUNDED",
+      "derives_from": [
+        "GROUND-016"
+      ]
+    },
+    {
+      "promise_id": "PROMISE-16",
+      "statement": "You can do consequential work over governed, versioned domain state: decide against an exact version rather than against the thing in general, have the decision attached to that version, and have someone who was not you inspect it or counter it.",
+      "phase": "PHASE_I",
+      "source": "STRONGLY_DERIVED",
+      "derives_from": [
+        "GROUND-005",
+        "GROUND-009",
+        "GROUND-011"
+      ],
+      "grounded_in": [
+        "CONTRACT.md",
+        "SPEC.md",
+        "CLASSIFICATION.md",
+        "services/asset/CHARTER.md"
+      ],
+      "note": "Replaces the retired PROMISE-13. PROMISE-13 said proofing: open a review session, annotate a version, land a decision. Bdo's test on 2026-08-24 was whether Soveraeign would still be Soveraeign if it stopped shipping proofing as a first-class domain while keeping its foundational promises. It would, so the proofing wording was domain altitude wearing canon clothes. This is the durable claim underneath it, and JOURNEY-11 remains the first concrete workflow that demonstrates it."
+    }
+  ],
+  "journeys": [
+    {
+      "journey_id": "JOURNEY-01",
+      "title": "Bring my model and put it to work here",
+      "participant": "model-bringer",
+      "need": "Use the model I already have, inside my node, without the node becoming the provider's and without losing track of what the model consumed.",
+      "serves": [
+        "PROMISE-01",
+        "PROMISE-02",
+        "PROMISE-06"
+      ],
+      "capabilities": [
+        "projection.package-context",
+        "projection.read-context-package",
+        "asset.propose-description",
+        "console.grant"
+      ],
+      "missing_capabilities": [
+        {
+          "name": "model.invoke",
+          "because": "SPEC.md declares the invoke_model transition and no service manifest declares an operation that realizes it; adapters/ollama/ executes one outside the capability map entirely"
+        },
+        {
+          "name": "model.declare-binding",
+          "because": "a Model Binding is authored as a file under adapters/ollama/bindings/ and no operation admits one, so bringing a model is a filesystem act rather than a governed transition"
+        }
+      ],
+      "evidence": [
+        "BYOM.md",
+        "adapters/ollama/observations/parity-live.json",
+        "contracts/model-binding.schema.json"
+      ]
+    },
+    {
+      "journey_id": "JOURNEY-02",
+      "title": "Find out what I can do here",
+      "participant": "model-operator",
+      "need": "Learn the operations, their required inputs and their authority cost from the node itself, before asking a person.",
+      "serves": [
+        "PROMISE-01",
+        "PROMISE-03",
+        "PROMISE-04"
+      ],
+      "capabilities": [
+        "console.discover-operations",
+        "gateway.list-endpoints",
+        "gateway.resolve-capability",
+        "registry.resolve",
+        "registry.read-index"
+      ],
+      "missing_capabilities": [],
+      "evidence": [
+        "contracts/fixtures/capability-map.reference.json",
+        "services/gateway/CHARTER.md",
+        "AI-NATIVE.md"
+      ],
+      "note": "The answer exists as a checked-in projection and nothing serves it. A model reads the file; it cannot ask."
+    },
+    {
+      "journey_id": "JOURNEY-03",
+      "title": "Pick up work I left in another session",
+      "participant": "model-operator",
+      "need": "Start a session already knowing what landed while I was away, without being told.",
+      "serves": [
+        "PROMISE-12",
+        "PROMISE-04"
+      ],
+      "capabilities": [
+        "console.open-session",
+        "console.session-context",
+        "console.read-thread",
+        "console.post",
+        "console.close-session"
+      ],
+      "missing_capabilities": [],
+      "evidence": [
+        "decisions/0036",
+        "services/console/src/",
+        ".claude/hooks/console_session.py"
+      ]
+    },
+    {
+      "journey_id": "JOURNEY-04",
+      "title": "Put something under governed custody",
+      "participant": "human-operator",
+      "need": "Hand the node a file and get back an identity, a version and a receipt I can come back to.",
+      "serves": [
+        "PROMISE-05",
+        "PROMISE-07"
+      ],
+      "capabilities": [
+        "asset.ingest-asset",
+        "asset.read-version",
+        "asset.read-asset",
+        "asset.read-version-history",
+        "record.append-entry",
+        "record.append-receipt"
+      ],
+      "missing_capabilities": [],
+      "evidence": [
+        "services/asset/CHARTER.md",
+        "services/asset/tests/"
+      ]
+    },
+    {
+      "journey_id": "JOURNEY-05",
+      "title": "Hand off bounded work and check the result",
+      "participant": "agent",
+      "need": "Ask for work to be done, and find out whether it was done from something other than the doer's account of it.",
+      "serves": [
+        "PROMISE-11",
+        "PROMISE-07"
+      ],
+      "capabilities": [
+        "asset.request-derivative",
+        "observation.request-observation",
+        "observation.observe-run",
+        "observation.read-observation"
+      ],
+      "missing_capabilities": [
+        {
+          "name": "run.report",
+          "because": "the SPEC.md report_run transition is emitted as a receipt event and no operation declares it, so a worker's report is reachable in process and nowhere else"
+        }
+      ],
+      "evidence": [
+        "SDLC.md",
+        "services/asset/src/soveraeign_asset_service/runs.py",
+        "decisions/0041"
+      ]
+    },
+    {
+      "journey_id": "JOURNEY-06",
+      "title": "Find out why something happened",
+      "participant": "human-operator",
+      "need": "Walk back from a result to the act that caused it, who was authorized, and what it was derived from.",
+      "serves": [
+        "PROMISE-05",
+        "PROMISE-07"
+      ],
+      "capabilities": [
+        "record.read-entry",
+        "record.reconstruct-journal",
+        "console.show-receipt",
+        "asset.read-use-record",
+        "registry.read-receipt",
+        "gateway.read-receipt"
+      ],
+      "missing_capabilities": [],
+      "evidence": [
+        "services/record/CHARTER.md",
+        "CONTRACT.md"
+      ],
+      "note": "record.read-entry is the operation this journey turns on and the office table admits only SYSTEM at it; decisions/0038 Movement 2026-08-24 carries the question of whether reading history is an operator act."
+    },
+    {
+      "journey_id": "JOURNEY-07",
+      "title": "Correct something without erasing it",
+      "participant": "human-operator",
+      "need": "Stop a record from conditioning what happens next, while the fact that it happened survives.",
+      "serves": [
+        "PROMISE-08",
+        "PROMISE-07"
+      ],
+      "capabilities": [
+        "asset.retract-record",
+        "record.counter-entry",
+        "observation.counter-observation",
+        "console.withdraw-publication"
+      ],
+      "missing_capabilities": [],
+      "evidence": [
+        "CONTRACT.md",
+        "PRD.md",
+        "services/asset/tests/"
+      ]
+    },
+    {
+      "journey_id": "JOURNEY-08",
+      "title": "Get a decision only a person can make",
+      "participant": "human-operator",
+      "need": "Receive the question where I already work, answer it once, and have the answer be the record rather than a message about the record.",
+      "serves": [
+        "PROMISE-09",
+        "PROMISE-07"
+      ],
+      "capabilities": [
+        "console.request-judgement",
+        "console.list-pending-judgement-requests",
+        "console.show-judgement-request",
+        "console.resolve-judgement",
+        "console.notify"
+      ],
+      "missing_capabilities": [],
+      "evidence": [
+        "services/console/CHARTER.md",
+        "OPEN-SEAMS.md",
+        "PRD.md"
+      ],
+      "note": "OPEN-SEAMS.md S12 records Bdo saying a code-owner review click cannot be the ratification surface. This journey is the replacement and none of it runs."
+    },
+    {
+      "journey_id": "JOURNEY-09",
+      "title": "Establish that an operation actually succeeded",
+      "participant": "witness",
+      "need": "Reach the durable result through a path the executor did not control, and leave evidence that says how.",
+      "serves": [
+        "PROMISE-11",
+        "PROMISE-10"
+      ],
+      "capabilities": [
+        "observation.declare-predicates",
+        "observation.observe-run",
+        "observation.infer-relation",
+        "observation.attest-observation",
+        "observation.list-pending-observations"
+      ],
+      "missing_capabilities": [],
+      "evidence": [
+        "decisions/0041",
+        "services/observation/CHARTER.md",
+        "AI-NATIVE.md"
+      ],
+      "note": "AI-NATIVE.md check 3, independent observation, reads UNATTESTABLE on every surface assessed so far, and this journey is why."
+    },
+    {
+      "journey_id": "JOURNEY-10",
+      "title": "Find something the node already holds",
+      "participant": "model-operator",
+      "need": "Retrieve what is relevant to the work in front of me without reading everything the node holds.",
+      "serves": [
+        "PROMISE-05",
+        "PROMISE-03"
+      ],
+      "capabilities": [
+        "projection.search-text",
+        "projection.search-hybrid",
+        "projection.traverse-graph",
+        "projection.find-path",
+        "projection.declare-collection",
+        "projection.build-projection"
+      ],
+      "missing_capabilities": [],
+      "evidence": [
+        "services/projection/CHARTER.md",
+        "OPEN-SEAMS.md"
+      ],
+      "note": "OPEN-SEAMS.md S14 carries two owners for this: the Asset Service also ships search and neighbors as a compatibility path."
+    },
+    {
+      "journey_id": "JOURNEY-11",
+      "title": "Review a pinned version and land a decision",
+      "participant": "human-operator",
+      "need": "Look at an exact version of a work product with someone else, disagree in writing, and end with a decision that is attached to that version.",
+      "serves": [
+        "PROMISE-16",
+        "PROMISE-04",
+        "PROMISE-08"
+      ],
+      "capabilities": [
+        "proofing.open-session",
+        "proofing.assign-reviewer",
+        "proofing.add-annotation",
+        "proofing.request-comparison",
+        "proofing.request-revision",
+        "proofing.propose-decision",
+        "proofing.ratify-decision",
+        "proofing.close-session",
+        "asset.read-version"
+      ],
+      "missing_capabilities": [],
+      "evidence": [
+        "services/proofing/CHARTER.md",
+        "CLASSIFICATION.md"
+      ],
+      "note": "The first substantive enterprise proving workflow, and the concrete demonstration of PROMISE-16 in domain work rather than in the node's own governance. Proofing being first does not make proofing fundamental (Bdo, Q3 redirect 2026-08-24)."
+    },
+    {
+      "journey_id": "JOURNEY-12",
+      "title": "Stand up a node of my own",
+      "participant": "node-owner",
+      "need": "Go from nothing to a node that holds my record, under my authority, on my hardware.",
+      "serves": [
+        "PROMISE-02"
+      ],
+      "capabilities": [
+        "gateway.bind-transport",
+        "registry.declare-owner"
+      ],
+      "missing_capabilities": [
+        {
+          "name": "node.establish",
+          "because": "node identity is contracted and STATUS.yaml records that it has no admission transition, so nothing turns a directory into a node"
+        },
+        {
+          "name": "node.read-identity",
+          "because": "contracts/node-identity.schema.json declares the record and no service manifest declares an operation that reads or writes one"
+        }
+      ],
+      "evidence": [
+        "decisions/0039",
+        "contracts/node-identity.schema.json",
+        "infrastructure/"
+      ],
+      "note": "Kept in CANON-3 after PROMISE-14 was struck. A journey does not need to be eternal product identity to be a legitimate gap: someone still has to go from nothing to a node, and node.establish and node.read-identity are still MISSING. It now serves PROMISE-02, custody, which is what standing up your own node is for."
+    },
+    {
+      "journey_id": "JOURNEY-13",
+      "title": "Cross to another authorized node",
+      "participant": "peer-node",
+      "need": "Move a declared thing between two nodes without either becoming the other's system of record.",
+      "serves": [
+        "PROMISE-15"
+      ],
+      "capabilities": [
+        "console.publish-thread",
+        "console.list-publications"
+      ],
+      "missing_capabilities": [
+        {
+          "name": "federation.cross",
+          "because": "the Asset Service emits a refusal receipt under this name and no operation declares it; contracts/federation-crossing.schema.json contracts the record and no transport moves a byte"
+        }
+      ],
+      "evidence": [
+        "decisions/0039",
+        "contracts/federation-crossing.schema.json",
+        "PRD.md"
+      ],
+      "note": "Phase LATER. Named so the product world is whole; PRD.md keeps federation a Phase-I non-goal and this canon does not move it."
+    },
+    {
+      "journey_id": "JOURNEY-14",
+      "title": "Read this node from where I stand",
+      "participant": "human-operator",
+      "need": "Understand what this node is, what it can do and what it has done, from my own position - buying it, securing it, building on it, arriving at it - without each position inventing its own account of the product.",
+      "serves": [
+        "PROMISE-10",
+        "PROMISE-05"
+      ],
+      "capabilities": [
+        "console.discover-operations",
+        "registry.read-index",
+        "record.read-entry",
+        "observation.read-observation"
+      ],
+      "missing_capabilities": [
+        {
+          "name": "projection.read-perspective",
+          "because": "no operation takes a perspective and a purpose and returns a bounded reading with its source ground, its state references, its evidence references and its declared omissions; the Projection Service declares package-context, which packages material for a consumer without adopting a position, so every perspectival reading today is written by hand and attributed to nobody"
+        }
+      ],
+      "evidence": [
+        "SOV.md",
+        "services/projection/CHARTER.md",
+        "reports/2026-08-24-product-ground-acceptance.md"
+      ],
+      "note": "Added in CANON-2. The five readings in the 2026-08-24 acceptance report were produced by hand, which is the evidence that this crossing is missing rather than a demonstration that it is not needed."
+    }
+  ],
+  "retired": [
+    {
+      "id": "PROMISE-13",
+      "retired_in": "CANON-2",
+      "because": "Named proofing specifically - open a session, annotate, ratify - which is one domain workflow rather than a product-level undertaking. Superseded by PROMISE-16, which states the durable meaning: consequential work over governed versioned state. Retired rather than reworded so that nothing attributed to PROMISE-13 silently comes to mean something wider."
+    },
+    {
+      "id": "PROMISE-14",
+      "retired_in": "CANON-3",
+      "because": "Struck by Bdo on 2026-08-24. Standing a node up is not a durable product promise merely because a node has to come into existence somehow. GROUND-016 is the durable claim - a node is whole at any size - and installation, establishment, bootstrapping, first run, deployment and onboarding are product experiences beneath it. They may become important journeys and requirements without becoming permanent canon promises. JOURNEY-12 is kept as a real product gap. The identifier is retired, never repointed."
+    }
+  ],
+  "accepted": {
+    "revision": "CANON-3",
+    "epoch": "EPOCH-1",
+    "by": "Bdo",
+    "on": "2026-08-24",
+    "recorded_in": "STATUS.yaml",
+    "decision": "decisions/0052-owner-ruling-on-the-product-ground.md"
+  }
+}

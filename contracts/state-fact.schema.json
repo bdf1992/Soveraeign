@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/state-fact.schema.json",
+  "title": "Soveraeign State Fact (PROPOSED, decisions/0051)",
+  "description": "One proposition about a node, read through the product ground and supported by declared state and observed evidence. A state fact is where the four planes meet: ground supplies the meaning, state supplies what currently claims to exist, evidence supplies what was demonstrated, and this record is the derived proposition with all three addressed. It is deliberately temporal. If a binding disappears the ground, promise and journey references stay exactly as they were, this fact stays historical, and only current reachability becomes false - which is the stability the semantic layer exists to give. Nothing here grants anything, and a fact recorded as OBSERVED is still only what one observation found at one moment.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "fact_id",
+    "claim",
+    "ground",
+    "evidential_status",
+    "state_inputs",
+    "valid_at"
+  ],
+  "properties": {
+    "fact_id": {
+      "type": "string",
+      "pattern": "^FACT-[0-9a-z-]+$"
+    },
+    "claim": {
+      "description": "One proposition, in plain words, that could be false.",
+      "type": "string",
+      "minLength": 20
+    },
+    "ground": {
+      "description": "The product-ground claims that give this fact its meaning. At least one: a fact nothing means is a log line. These references are what make the fact cheap to carry - a receipt does not restate what Soveraeign is, it names GROUND-006 and a reader resolves it.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^GROUND-[0-9]{3}$"
+      }
+    },
+    "promise": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^PROMISE-[0-9]{2}$"
+      }
+    },
+    "journey": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^JOURNEY-[0-9]{2}$"
+      }
+    },
+    "capability": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]*[.][a-z][a-z0-9-]*$"
+      }
+    },
+    "evidential_status": {
+      "description": "How well supported this fact is. Not called `standing`: that word already means the artifact lifecycle (OPEN/BUILT/WITNESSED/RATIFIED) and the record lifecycle (RECORDED/ADMITTED/RATIFIED/EFFECTIVE), and a third meaning must not borrow it. DECLARED means state says so and nobody has looked. OBSERVED means something reached the world and found it. REFUTED means something looked and found it false. STALE means the state inputs this rested on have moved.",
+      "enum": [
+        "DECLARED",
+        "OBSERVED",
+        "REFUTED",
+        "STALE"
+      ]
+    },
+    "state_inputs": {
+      "description": "Exactly what declared state this fact was read from. Without these a fact cannot go STALE, because nothing says what it depended on.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "capability_revision"
+      ],
+      "properties": {
+        "capability_revision": {
+          "description": "The capability map's input_state_digest at the time of reading.",
+          "type": "string",
+          "minLength": 8
+        },
+        "binding_revision": {
+          "type": "string",
+          "minLength": 1
+        },
+        "authority_state": {
+          "type": "string",
+          "minLength": 1
+        },
+        "canon_rendering": {
+          "type": "string",
+          "pattern": "^CANON-[1-9][0-9]*[.][0-9]+$"
+        },
+        "ground_rendering": {
+          "type": "string",
+          "pattern": "^GROUND-[1-9][0-9]*[.][0-9]+$"
+        }
+      }
+    },
+    "observations": {
+      "description": "Addresses of what was actually reached. Required in substance for OBSERVED and REFUTED: a fact claiming either with nothing here is a report, and a report is not an observation (CONTRACT.md C7).",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "valid_at": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "observed_at"
+      ],
+      "properties": {
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "observed_by": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "note": {
+      "type": "string"
+    },
+    "superseded_by": {
+      "description": "The fact that replaced this one. A historical fact is never corrected by editing it: correction is a new record, which is GROUND-009 applied to facts rather than to the journal.",
+      "type": "string",
+      "pattern": "^FACT-[0-9a-z-]+$"
+    }
+  }
+}

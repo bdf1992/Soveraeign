@@ -89,11 +89,11 @@ def console(root: Path) -> dict[str, str]:
         record = RecordService(store / "journal")
         service = ConsoleService(record, store, "node:parity")
         try:
-            service.grant("Bdo", "open-channel", "governance")
+            service.grant("Bdo", "open:channel", "governance")
             channel = service.open_channel("Bdo", "governance", "governance")
-            service.grant("Bdo", "open-thread", channel["channel_id"])
+            service.grant("Bdo", "open:thread", channel["channel_id"])
             thread = service.open_thread("Bdo", channel["channel_id"], "parity")
-            service.grant("model/sov", "post", thread["thread_id"])
+            service.grant("model/sov", "post:message", thread["thread_id"])
 
             model = service.open_session("model/sov", "MODEL", "model-binding")
             try:

@@ -1,0 +1,1068 @@
+{
+  "table_id": "soveraeign-capability-offices/v1",
+  "governed_by": [
+    "SYSTEM.md",
+    "CLASSIFICATION.md",
+    "SPEC.md",
+    "AGENTS.md",
+    "STATUS.yaml",
+    ".claude/epic/offices.json"
+  ],
+  "note": "Where each declared service operation is met and what it costs. Office and counter names are the ones .claude/epic/offices.json already uses; no new vocabulary. This table is policy input to the capability map projection. It grants nothing: required_authority names the grant an operation needs, never one it holds.",
+  "phase": "FOUNDING",
+  "counters": {
+    "FRONT": {
+      "operator-desk": "A human or model operator working inside the node.",
+      "door": "Ingress and egress for anything outside the node.",
+      "model-counter": "Bringing a model or an enterprise system in as an operator.",
+      "job-window": "Asking for work to be done and collecting the result.",
+      "review-desk": "Version-pinned review, annotation, and decision.",
+      "drafting-window": "Composing a governed artifact before it is proposed."
+    },
+    "BACK": {
+      "record": "The append-preserving journal and the projections rebuilt from it.",
+      "permits-office": "Identity, authority, gates, registry, and the capability broker.",
+      "inspectorate": "Independent observation, conformance, and fidelity.",
+      "ground": "Local infrastructure and deployment custody.",
+      "pattern-room": "Retrieval machinery: collections, indexes, and builds.",
+      "beyond-the-node": "The federation horizon. Locked in Phase I."
+    }
+  },
+  "transport_policy": {
+    "IN_PROCESS": {
+      "operator_facing": false,
+      "external": false,
+      "note": "A direct call inside one process. No transport of its own."
+    },
+    "CLI": {
+      "operator_facing": false,
+      "external": false,
+      "note": "A local command on the same machine and the same filesystem."
+    },
+    "MCP": {
+      "operator_facing": true,
+      "external": false,
+      "note": "Local stdio tool surface for a model operator. A transport, never a second authority path (adapters/github/README.md)."
+    },
+    "HTTP": {
+      "operator_facing": true,
+      "external": true,
+      "note": "Network ingress. Refused while no_external_effects_in_phase_i stands."
+    }
+  },
+  "external_transports_refused_in_phase": [
+    "HTTP"
+  ],
+  "cli_commands": {
+    "asset.ingest-asset": "python -m soveraeign_asset_service.cli ingest",
+    "asset.rebuild-projection": "python -m soveraeign_asset_service.cli rebuild",
+    "console.discover-operations": "python -m soveraeign_console_service.cli operations",
+    "console.list-publications": "python -m soveraeign_console_service.cli list-publications",
+    "console.publish-thread": "python -m soveraeign_console_service.cli publish-thread",
+    "console.withdraw-publication": "python -m soveraeign_console_service.cli withdraw-publication"
+  },
+  "mcp_tools": {
+    "asset.ingest-asset": "asset_ingest",
+    "console.discover-operations": "console_operations",
+    "record.read-entry": "record_entries"
+  },
+  "assignments": {
+    "asset.ingest-asset": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "ingest:asset",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "asset.propose-description": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "propose:description",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "asset.ratify-proposal": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "ratify:judgement",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN"
+      ]
+    },
+    "asset.read-asset": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "read:version",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "asset.read-shared-custody": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "read:version",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "asset.read-use-record": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "read:receipt",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "asset.read-version": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "read:version",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "asset.read-version-history": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "read:version",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "asset.rebuild-projection": {
+      "office": "BACK",
+      "counter": "record",
+      "required_authority": "rebuild:projection",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "SYSTEM"
+      ]
+    },
+    "asset.request-derivative": {
+      "office": "FRONT",
+      "counter": "job-window",
+      "required_authority": "request:derivative",
+      "effect_class": "RESOURCE_CONSUMPTION",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "asset.retract-record": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "retract:record",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "console.acknowledge-notification": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "acknowledge:notification",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "console.archive-thread": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "archive:thread",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "console.close-session": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "close:session",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "console.discover-operations": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "read:session",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "console.grant": {
+      "office": "BACK",
+      "counter": "permits-office",
+      "required_authority": "grant:authority",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN"
+      ]
+    },
+    "console.list-channels": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "read:thread",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "console.list-grants": {
+      "office": "BACK",
+      "counter": "permits-office",
+      "required_authority": "read:authority",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "console.list-notifications": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "acknowledge:notification",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "console.list-pending-judgement-requests": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "read:judgement",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "console.list-publications": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "read:thread",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "console.notify": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "notify:operator",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "SYSTEM"
+      ]
+    },
+    "console.open-channel": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "open:channel",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "console.open-session": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "open:session",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "console.open-thread": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "open:thread",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "console.post": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "post:message",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "console.publish-thread": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "publish:thread",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "console.read-thread": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "read:thread",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "console.rebuild-projection": {
+      "office": "BACK",
+      "counter": "record",
+      "required_authority": "rebuild:projection",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "SYSTEM"
+      ]
+    },
+    "console.request-judgement": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "request:judgement",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "console.resolve-judgement": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "ratify:judgement",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN"
+      ]
+    },
+    "console.revoke": {
+      "office": "BACK",
+      "counter": "permits-office",
+      "required_authority": "revoke:authority",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN"
+      ]
+    },
+    "console.session-context": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "read:session",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "console.set-setting": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "set:setting",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "console.show-judgement-request": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "read:judgement",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "console.show-receipt": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "read:receipt",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "console.withdraw-publication": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "publish:thread",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "gateway.accept-request": {
+      "office": "FRONT",
+      "counter": "door",
+      "required_authority": "open:session",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "gateway.bind-transport": {
+      "office": "BACK",
+      "counter": "ground",
+      "required_authority": "bind:transport",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN"
+      ]
+    },
+    "gateway.check-authority": {
+      "office": "BACK",
+      "counter": "permits-office",
+      "required_authority": "read:authority",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "SYSTEM"
+      ]
+    },
+    "gateway.list-endpoints": {
+      "office": "FRONT",
+      "counter": "door",
+      "required_authority": "read:capability",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "gateway.read-receipt": {
+      "office": "FRONT",
+      "counter": "door",
+      "required_authority": "read:receipt",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "gateway.refuse-request": {
+      "office": "FRONT",
+      "counter": "door",
+      "required_authority": "route:request",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "SYSTEM"
+      ]
+    },
+    "gateway.resolve-capability": {
+      "office": "FRONT",
+      "counter": "door",
+      "required_authority": "read:capability",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "gateway.return-receipt": {
+      "office": "FRONT",
+      "counter": "door",
+      "required_authority": "read:receipt",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "SYSTEM"
+      ]
+    },
+    "gateway.route-request": {
+      "office": "FRONT",
+      "counter": "door",
+      "required_authority": "route:request",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "SYSTEM"
+      ]
+    },
+    "observation.attest-observation": {
+      "office": "BACK",
+      "counter": "inspectorate",
+      "required_authority": "attest:observation",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "observation.counter-observation": {
+      "office": "BACK",
+      "counter": "inspectorate",
+      "required_authority": "counter:entry",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN"
+      ]
+    },
+    "observation.declare-predicates": {
+      "office": "BACK",
+      "counter": "inspectorate",
+      "required_authority": "declare:predicates",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "observation.infer-relation": {
+      "office": "BACK",
+      "counter": "inspectorate",
+      "required_authority": "observe:run",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "SYSTEM"
+      ]
+    },
+    "observation.list-pending-observations": {
+      "office": "BACK",
+      "counter": "inspectorate",
+      "required_authority": "read:observation",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "observation.observe-run": {
+      "office": "BACK",
+      "counter": "inspectorate",
+      "required_authority": "observe:run",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "observation.read-observation": {
+      "office": "BACK",
+      "counter": "inspectorate",
+      "required_authority": "read:observation",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "observation.request-observation": {
+      "office": "BACK",
+      "counter": "inspectorate",
+      "required_authority": "request:observation",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL",
+        "SYSTEM"
+      ]
+    },
+    "projection.build-projection": {
+      "office": "BACK",
+      "counter": "pattern-room",
+      "required_authority": "rebuild:projection",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "SYSTEM"
+      ]
+    },
+    "projection.configure-graph": {
+      "office": "BACK",
+      "counter": "pattern-room",
+      "required_authority": "configure:collection",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "projection.configure-text": {
+      "office": "BACK",
+      "counter": "pattern-room",
+      "required_authority": "configure:collection",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "projection.declare-collection": {
+      "office": "BACK",
+      "counter": "pattern-room",
+      "required_authority": "declare:collection",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "projection.describe-collection": {
+      "office": "BACK",
+      "counter": "pattern-room",
+      "required_authority": "read:projection",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "projection.find-path": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "read:projection",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "projection.observe-fidelity": {
+      "office": "BACK",
+      "counter": "inspectorate",
+      "required_authority": "observe:fidelity",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "projection.package-context": {
+      "office": "FRONT",
+      "counter": "model-counter",
+      "required_authority": "read:projection",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "projection.propose-from-projection": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "propose:record",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "projection.read-context-package": {
+      "office": "FRONT",
+      "counter": "model-counter",
+      "required_authority": "read:projection",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "projection.register-vectors": {
+      "office": "BACK",
+      "counter": "pattern-room",
+      "required_authority": "register:vectors",
+      "effect_class": "RESOURCE_CONSUMPTION",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "projection.search-dense": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "read:projection",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "projection.search-hybrid": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "read:projection",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "projection.search-sparse": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "read:projection",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "projection.search-text": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "read:projection",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "projection.traverse-graph": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "read:projection",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "proofing.add-annotation": {
+      "office": "FRONT",
+      "counter": "review-desk",
+      "required_authority": "annotate:version",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "proofing.assign-reviewer": {
+      "office": "FRONT",
+      "counter": "review-desk",
+      "required_authority": "assign:reviewer",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "proofing.close-session": {
+      "office": "FRONT",
+      "counter": "review-desk",
+      "required_authority": "close:session",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "proofing.open-session": {
+      "office": "FRONT",
+      "counter": "review-desk",
+      "required_authority": "open:session",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "proofing.propose-decision": {
+      "office": "FRONT",
+      "counter": "review-desk",
+      "required_authority": "propose:decision",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "proofing.ratify-decision": {
+      "office": "FRONT",
+      "counter": "review-desk",
+      "required_authority": "ratify:judgement",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN"
+      ]
+    },
+    "proofing.read-annotations": {
+      "office": "FRONT",
+      "counter": "review-desk",
+      "required_authority": "read:version",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "proofing.read-decision": {
+      "office": "FRONT",
+      "counter": "review-desk",
+      "required_authority": "read:judgement",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "proofing.read-session": {
+      "office": "FRONT",
+      "counter": "review-desk",
+      "required_authority": "read:session",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "proofing.request-comparison": {
+      "office": "FRONT",
+      "counter": "review-desk",
+      "required_authority": "request:comparison",
+      "effect_class": "RESOURCE_CONSUMPTION",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "proofing.request-revision": {
+      "office": "FRONT",
+      "counter": "review-desk",
+      "required_authority": "request:revision",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "record.append-entry": {
+      "office": "BACK",
+      "counter": "record",
+      "required_authority": "append:entry",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "SYSTEM"
+      ]
+    },
+    "record.append-receipt": {
+      "office": "BACK",
+      "counter": "record",
+      "required_authority": "append:receipt",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "SYSTEM"
+      ]
+    },
+    "record.counter-entry": {
+      "office": "BACK",
+      "counter": "record",
+      "required_authority": "counter:entry",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "SYSTEM"
+      ]
+    },
+    "record.drop-projections": {
+      "office": "BACK",
+      "counter": "record",
+      "required_authority": "rebuild:projection",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "SYSTEM"
+      ]
+    },
+    "record.read-entry": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "read:journal",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "note": "Reading authorized operational history is an operator act, not back-office machinery (Bdo, 2026-08-24). GROUND-002 says people and models resolve through the same history, so an operator must be able to inspect what it is authorized to see. Storage, chaining, indexes, maintenance and internal projection mechanics stay at BACK/record: append-entry, append-receipt, counter-entry, reconstruct-journal (subject digest-chain), read-projection, rebuild-projections and drop-projections are unchanged. The read still costs the read:journal grant; moving the counter widens who may ask, never what they hold."
+    },
+    "record.read-projection": {
+      "office": "BACK",
+      "counter": "record",
+      "required_authority": "read:projection",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "SYSTEM"
+      ]
+    },
+    "record.rebuild-projections": {
+      "office": "BACK",
+      "counter": "record",
+      "required_authority": "rebuild:projection",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "SYSTEM"
+      ]
+    },
+    "record.reconstruct-journal": {
+      "office": "BACK",
+      "counter": "record",
+      "required_authority": "read:journal",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "SYSTEM"
+      ]
+    },
+    "registry.declare-owner": {
+      "office": "BACK",
+      "counter": "permits-office",
+      "required_authority": "declare:owner",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN"
+      ]
+    },
+    "registry.read-entry": {
+      "office": "BACK",
+      "counter": "permits-office",
+      "required_authority": "read:registry",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "registry.read-index": {
+      "office": "BACK",
+      "counter": "permits-office",
+      "required_authority": "read:registry",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "registry.read-owner": {
+      "office": "BACK",
+      "counter": "permits-office",
+      "required_authority": "read:registry",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "registry.read-receipt": {
+      "office": "BACK",
+      "counter": "permits-office",
+      "required_authority": "read:registry",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "registry.rebuild-index": {
+      "office": "BACK",
+      "counter": "permits-office",
+      "required_authority": "rebuild:projection",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "registry.register-entry": {
+      "office": "BACK",
+      "counter": "permits-office",
+      "required_authority": "register:entry",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "registry.relate-entries": {
+      "office": "BACK",
+      "counter": "permits-office",
+      "required_authority": "register:relation",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "registry.report-drift": {
+      "office": "BACK",
+      "counter": "permits-office",
+      "required_authority": "record:observation",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "registry.resolve": {
+      "office": "BACK",
+      "counter": "permits-office",
+      "required_authority": "read:registry",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "registry.retire-owner": {
+      "office": "BACK",
+      "counter": "permits-office",
+      "required_authority": "ratify:judgement",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN"
+      ]
+    },
+    "registry.supersede-entry": {
+      "office": "BACK",
+      "counter": "permits-office",
+      "required_authority": "register:entry",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "registry.supersede-owner": {
+      "office": "BACK",
+      "counter": "permits-office",
+      "required_authority": "declare:owner",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN"
+      ]
+    }
+  },
+  "cli_note": "A capability appears here only when a command actually implements it. The asset CLI also carries `search` and `receipts`, which read the compatibility projections and are not declared operations (OPEN-SEAMS S14)."
+}

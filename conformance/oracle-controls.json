@@ -107,6 +107,35 @@
     }
   },
   {
+    "id": "CONF-I5-GRANT-POS",
+    "requirement": "PROD-I-5",
+    "polarity": "positive",
+    "expected_oracle": "PASS",
+    "observed": {
+      "attempts": [
+        {"actor_kind": "MODEL", "authority_type": "VERIFICATION", "claim_type": "VERIFICATION", "grant_live": true, "scope_matches": true, "budget_available": true, "outcome": "COMMITTED", "receipt_id": "r-live"},
+        {"actor_kind": "MODEL", "authority_type": "VERIFICATION", "claim_type": "JUDGEMENT", "grant_live": true, "scope_matches": true, "budget_available": true, "outcome": "REFUSED", "receipt_id": "r-judgement"},
+        {"actor_kind": "MODEL", "authority_type": "VERIFICATION", "claim_type": "VERIFICATION", "grant_live": false, "scope_matches": true, "budget_available": true, "outcome": "REFUSED", "receipt_id": "r-revoked"},
+        {"actor_kind": "MODEL", "authority_type": "VERIFICATION", "claim_type": "VERIFICATION", "grant_live": true, "scope_matches": false, "budget_available": true, "outcome": "REFUSED", "receipt_id": "r-out-of-scope"},
+        {"actor_kind": "MODEL", "authority_type": "VERIFICATION", "claim_type": "VERIFICATION", "grant_live": true, "scope_matches": true, "budget_available": false, "outcome": "REFUSED", "receipt_id": "r-over-budget"}
+      ]
+    }
+  },
+  {
+    "id": "CONF-I5-GRANT-DEF",
+    "requirement": "PROD-I-5",
+    "polarity": "defeating",
+    "expected_oracle": "FAIL",
+    "observed": {
+      "attempts": [
+        {"actor_kind": "MODEL", "authority_type": "VERIFICATION", "claim_type": "VERIFICATION", "grant_live": true, "scope_matches": true, "budget_available": true, "outcome": "COMMITTED", "receipt_id": "r-live"},
+        {"actor_kind": "MODEL", "authority_type": "VERIFICATION", "claim_type": "JUDGEMENT", "grant_live": true, "scope_matches": true, "budget_available": true, "outcome": "REFUSED", "receipt_id": "r-judgement"},
+        {"actor_kind": "MODEL", "authority_type": "VERIFICATION", "claim_type": "VERIFICATION", "grant_live": false, "scope_matches": true, "budget_available": true, "outcome": "COMMITTED", "receipt_id": "r-revoked-committed"},
+        {"actor_kind": "MODEL", "authority_type": "VERIFICATION", "claim_type": "VERIFICATION", "grant_live": true, "scope_matches": false, "budget_available": true, "outcome": "REFUSED", "receipt_id": null}
+      ]
+    }
+  },
+  {
     "id": "CONF-I6-POS",
     "requirement": "PROD-I-6",
     "polarity": "positive",

@@ -15,8 +15,10 @@ governing set has explicit ownership:
 - `CONTRACT.md`: invariants;
 - `PRD.md`: Phase-I requirements;
 - `SPEC.md`: logical model, transitions, predicates, and refusals;
+- `AI-NATIVE.md`: surface evaluation and qualification criteria;
 - `STATUS.yaml`: current standing, authority, and open decisions;
-- `ENGINEERING.md`: proposed reference stack and composition rules.
+- `ENGINEERING.md`: proposed reference stack and composition rules;
+- `SDLC.md`: operating tiers, verification dyad, and release gate.
 
 The operational System of Record preserves events and receipts with their
 standing. It can record disagreement, failure, and retraction without converting
@@ -46,10 +48,17 @@ the subject.
 Every issue receives exactly one `type:` label and, except the system epic,
 exactly one `village:` label. It receives exactly one `horizon:` label.
 `effect: record-local` is the default and is omitted from the visible label set;
-non-default effects remain visible. `witness: pending` is carried by body
-metadata or the project and is omitted from the list view until witness state
-changes. Implementation stubs retain a `standing:` label when that standing
-changes how the work may be treated.
+non-default effects remain visible.
+
+`standing:` is one axis for the whole artifact lifecycle, and its colours ramp
+with how much evidence stands behind the claim: `proposed`, `declared`,
+`chartered`, `self-tested` (amber, because the witness is still outstanding),
+`witnessed` (green), `ratified`, and `demoted` (red, a fall off the ramp rather
+than a rung on it). `OPEN` is the default and carries no label, like
+`effect: record-local`. Every standing projects to at most one label. The
+separate `witness:` axis said the same thing a second time and is retired; a
+surviving `witness:` label now reads as drift
+(`decisions/0044-github-coordination-write-crossing.md`).
 
 The canonical names, descriptions, and accessible colors live in
 `.github/labels.yml`. The YAML block at the top of an issue is an instance of
@@ -57,11 +66,44 @@ The canonical names, descriptions, and accessible colors live in
 `contracts/issue-metadata.schema.json`. Display labels are projections of that
 metadata, not a second authority.
 
-Use native relationships only for the containment tree. Cross-village
+Use native relationships only for the containment tree: `child_issues` on the
+epic and `village_issue` on each bit or stub, not `parent`, which a bit may
+point at the epic while its village is the node that contains it. Cross-village
 dependencies, multiple parent bits, dependency channels, and proof obligations
-remain explicit in issue metadata and prose. A branch or pull request may close
+remain explicit in issue metadata, and are rendered into the body as plain
+issue links inside the `sov:relations` delimiters so a reader sees them without
+parsing YAML. The metadata stays authoritative; the rendered block is a
+projection of it and never a second place to declare an edge. A branch or pull request may close
 an implementation stub; it cannot by itself close its bit, promote a village,
 satisfy independent witness, or ratify the epic.
+
+A **story** (`kind: story`, `type: story`) is one participant crossing one
+counter and finding the substrate short. It names its teller by the kernel's
+`actor_kind` and a `CLASSIFICATION.md` participation `role`, the bit it walks
+up to as `parent`, what the actor `expected`, what they `found`, the supports
+the crossing `leans_on`, and the `asks` it addresses to the issues that own
+the substrate. A story is told, then bound to a `scenario` in
+`conformance/scenarios.json`, then walked. It is never taken as work: it
+carries no `requires`, enters no queue, blocks nothing, and closes no
+repository surface. Only an independent observation of its scenario moves a
+story past `BUILT_SELF_TESTED_NOT_WITNESSED`; a pull request cannot close it.
+Owner is not a role a story can name: it is the context that sets an
+operator's Binding and Projection and travels in `authority`
+(`decisions/0022-story-ticket-kind.md`).
+
+An **unblock request** (`kind: unblock`, `type: unblock`) is a proven block
+filed as work. Blocked is never a ticket status. A ticket that cannot advance
+names the exact `blocked_transition`, the `missing_precondition`, the
+`governing_rule`, the `requested_provision` (grant, judgement, contract,
+fixture, capability, or observation), the tier it was `requested_by`, the tier
+it is `requested_from`, the `unblock_condition` a receipt will settle, and
+`reachable_alternative: NONE`. The held ticket lists the unblock request in
+its `requires`, so it shows as held-by, like any dependency. A request with a
+reachable alternative is refused: that ticket is dependency-mapped, not
+blocked. A request whose provision is already some ticket's work is refused
+for the same reason; link that ticket instead. A judgement is always asked of
+the owner. The queue serves an unblock request at the tier it names and sorts
+it by what it holds (`decisions/0032-unblock-ticket-kind.md`).
 
 Changing the issue schema, label axes, color meanings, containment rule, or
 milestone semantics is a reviewed contract change. Update this section, the JSON
@@ -69,8 +111,8 @@ Schema, and the label catalogue together.
 
 ## Checking the coordination surface
 
-The board is checked the same way the repository is: capture it through the declared
-registrar, then judge the capture offline.
+The board is checked the same way as the repository: capture it through the
+declared registrar, then judge the capture offline.
 
 ```bash
 python adapters/github/export.py --repo bdf1992/Soveraeign --out .local/registrar/tickets.json
@@ -79,23 +121,38 @@ python scripts/sov_ticket.py labels   --export .local/registrar/tickets.json --s
 python scripts/sov_ticket.py queue    --export .local/registrar/tickets.json --limit 20
 ```
 
-`validate` checks every issue body against `contracts/issue-metadata.schema.json`.
-`labels` reports drift between the live labels and the projection declared in
-`contracts/ticket-label-projection.json`. `queue` orders open tickets by the policy in
-`contracts/ticket-queue-policy.json` and reports what is takeable, what is blocked and
-by what, and what unblocks the most. The queue is a projection; position in it grants
-nothing.
+`validate` checks every issue body against
+`contracts/issue-metadata.schema.json`. `labels` reports drift between the live
+labels and the projection declared in
+`contracts/ticket-label-projection.json`. `queue` orders open tickets by the
+policy in `contracts/ticket-queue-policy.json` and reports what is takeable,
+what is blocked and by what, and what unblocks the most. The queue is a
+projection; position in it grants nothing.
 
-`adapters/github/export.py` is the only module permitted to call the GitHub API. Every
-other check reads its export from disk, so all of them run offline, inside the day-zero
-budget, and in a sealed CI job.
+A declaration reaches the surface through the registrar's write half, which
+plans offline and performs only what a local declaration already determined:
+
+```bash
+python adapters/github/apply.py --repo bdf1992/Soveraeign --export .local/registrar/tickets.json
+python adapters/github/apply.py --repo bdf1992/Soveraeign --export .local/registrar/tickets.json --apply
+```
+
+Without `--apply` it prints the plan and stops. It writes the label catalogue,
+containment edges, and the rendered relations block, and nothing else; it never
+opens, closes, comments on, assigns, or milestones an issue, and it writes no
+standing. See `adapters/github/README.md` for both crossings' declarations.
+
+`adapters/github/` is the only directory permitted to call the GitHub API.
+Every other check reads its export from disk, so all of them run offline,
+inside the day-zero budget, and in a sealed CI job.
 
 ## Proposing a standing change
 
-A pull request that only implements something proposes no standing change and needs no
-transition block; it establishes `BUILT` evidence and nothing further. A pull request
-that advances a ticket's standing carries a `soveraeign-ticket-transition/v1` request in
-its body, and the purple gate evaluates it against
+A pull request that only implements something proposes no ticket-standing
+change and needs no transition block; it establishes `BUILT` evidence and
+nothing further. A pull request that advances a ticket's standing carries a
+`soveraeign-ticket-transition/v1` request in its body, and the purple gate
+evaluates it against
 `contracts/ticket-transitions.json`.
 
 ```bash
@@ -103,14 +160,16 @@ python scripts/sov_ticket.py transition <request.json>
 python scripts/sov_ticket.py transition --body <pull-request-body.md>
 ```
 
-The table refuses what the contract forbids: skipped standings, a builder witnessing its
-own work, an unconverged Red engagement, a confirmed finding with no permanent defeating
-fixture, a finding the Red operator reproduced itself, and any machine claiming
-`RATIFIED`. Run `python scripts/sov_ticket.py selfcheck` to exercise every declared
-refusal; `python scripts/verify.py` runs it for you.
+The table refuses what the contract forbids: skipped standings, a builder
+witnessing its own work, an unconverged Red engagement, a confirmed finding
+with no permanent defeating fixture, a finding the Red operator reproduced
+itself, and any machine claiming `RATIFIED`. Run
+`python scripts/sov_ticket.py selfcheck` to exercise every declared refusal;
+`python scripts/verify.py` runs it for you.
 
-Ratification is not reachable from a check. It enters the repository through owner
-review on `STATUS.yaml`, `decisions/`, and the governing set, per `.github/CODEOWNERS`.
+Ratification is not reachable from a check. It enters the repository through
+owner review on `STATUS.yaml`, `decisions/`, and the governing set, per
+`.github/CODEOWNERS`.
 
 ## Before you change code
 
@@ -131,6 +190,57 @@ whose transition is requested.
 Prefer a small vertical slice that produces a real receipt over a broad layer of
 framework abstractions.
 
+## Carrying a concern to closure
+
+A contributor who takes a bounded concern carries it to a landed result:
+inspect, implement, test, recruit a helper, repair, verify, then present or
+land. `AGENTS.md`, Closure ownership, is normative; this is the working path
+through it, and `contracts/closure-ownership.json` is the table both read.
+
+The coordination surface above exists to make work legible, not to stand in
+for it. An issue, a branch, a pull request, a review finding, a TODO, or a
+question for Bdo records a concern; none of them advances one. Opening one is
+progress only when it is the shortest remaining path to the result.
+
+- Settle ordinary reversible engineering choices yourself. Which reachable
+  design, what to call a local symbol, what the defeating case should be, when
+  to split an oversized module — these are yours, and asking another tier for
+  one is a defect rather than caution.
+- Recruit a helper model or subagent when a second reading would help, without
+  asking anyone. Point it at the defect you cannot see, the missing test, the
+  scope drift, the abstraction you did not need, and the authority you assumed.
+  Then repair what it finds. A helper that read or edited the change is inside
+  your build and can never witness it.
+- Repair review findings and failing checks inside the concern. A finding
+  turned into a second ticket has moved the defect away from the work that owns
+  it.
+- Keep one bounded concern, one branch, one pull request. Chasing CI, review
+  findings, rebases, and ordinary merge work to completion is part of the
+  concern.
+- Absorb follow-on work that stays inside the same service, the same effect
+  class, and the same authority. Crossing any one of those three mints a
+  separate concern. That is the whole line between absorption and scope creep.
+- Hand off only at one of five seams: `AUTHORITY_SEAM`, `POLICY_SEAM`,
+  `EFFECT_SEAM`, `DEPENDENCY_SEAM`, `ACCEPTANCE_SEAM`. Judgement is asked of
+  Bdo and of no one else.
+
+Write a handoff as a `soveraeign-closure-handoff/v1` claim and grade it before
+you send it:
+
+```bash
+python scripts/sov_closure.py loop
+python scripts/sov_closure.py judge <claim.json>
+```
+
+`loop` prints the declared loop, the work-in-progress ceiling, and the seams.
+`judge` returns `PERMITTED` with the seam it accepted, or `REFUSED` with the
+code and the reason. A refused claim is work you still hold.
+`python scripts/sov_closure.py selfcheck` proves every declared refusal fires,
+and `python scripts/verify.py` runs it for you.
+
+Bdo's gate does not change: acceptance over a finished evidenced result, never
+approval to begin (`decisions/0023-acceptance-not-approval.md`).
+
 ## Development baseline
 
 Phase I proposes Python 3.11+, the standard library, SQLite, a filesystem
@@ -149,6 +259,12 @@ Follow `AGENTS.md`: UTF-8, LF, four-space indentation, a 100-character target,
 modules below 300 lines, future annotations, grouped and sorted imports, typed
 boundaries, `pathlib`, explicit encodings, parameterized SQL, and injectable
 nondeterminism.
+
+`.gitattributes` pins `* text=auto eol=lf` so checkout produces LF on every
+platform regardless of your `core.autocrlf` setting, and exempts `lineage/`
+whose evidence digests must stay byte-exact. `scripts/lint.py` reads file bytes
+and fails on any CR it finds; do not work around either by normalizing at commit
+time only.
 
 Execution never owns authoritative state. Every consequential decision records
 who acted, what operation was attempted, why, when, exact input/output addresses
@@ -170,7 +286,9 @@ python scripts/verify.py
 
 The gate is dependency-free and network-free. Its wall time is graded rather
 than pass/fail: `PLATINUM` at three seconds or less, `GOLD` at six, `SILVER`
-at fifteen, failing past fifteen (`decisions/0050`). CI runs the same command.
+at fifteen, failing past fifteen (`decisions/0050`). The grade prints on every
+passing run. Losing a grade does not fail the gate; it is worth reporting
+anyway. CI runs the same command.
 
 ## Tests and evidence
 
@@ -210,8 +328,9 @@ databases, payload stores, logs, or prompt dumps. Copy `.env.example` to `.env`
 for local configuration and keep values out of output. Receipts refer to an
 opaque credential identifier, never credential material.
 
-Run `python scripts/lint.py` to check syntax, repository text, module-size debt,
-and common secret shapes locally without transmitting repository content.
+Run `python scripts/lint.py` to check syntax, repository text encoding and line
+endings, module-size debt, and common secret shapes locally without transmitting
+repository content.
 
 ## Directory ownership
 

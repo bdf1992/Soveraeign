@@ -1,6 +1,14 @@
-# 0027 · Board management role and the GitHub write crossing
+# 0057 · Board management role and the GitHub write crossing
 
 Status: `PROPOSED · OWNER RATIFICATION PENDING`
+
+Numbering note: drafted as 0027 on `main`, where `feat/federation-harness-and-hardening` had already
+taken 0027 for `0027-local-model-adapter.md`. That record is ruled and anchors the
+0028-0044 sequence on that branch (`decisions/0028`, opening line), so this one moved,
+following the precedent `caf6629` set for the acceptance records. 0057 is the first
+number free against both trunks and against the open branches that hold 0043 and
+0048-0049. `decisions/0044` §Which coordination surface survives records the
+substantive conflict between the two records; renumbering does not settle it.
 
 Numbering note: `0022` through `0026` are reserved by records that exist on
 `feat/federation-harness-and-hardening` and are not yet on `main`.

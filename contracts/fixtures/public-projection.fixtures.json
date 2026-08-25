@@ -1,0 +1,294 @@
+[
+  {
+    "id": "PUB-POS-LOCAL-THREADS",
+    "contract": "public-projection.schema.json",
+    "status": "PROPOSED",
+    "polarity": "positive",
+    "expected_projection": true,
+    "expected_validity": "VALID",
+    "note": "Two local threads a root-seat operator marked public, both resolving to declared sources at matching digests, with the one filtered source declared as an omission.",
+    "record": {
+      "projection_schema": "soveraeign-public-projection/v1",
+      "projection_id": "pub:1",
+      "node_id": "node:home",
+      "entries": [
+        {
+          "thread_address": "thread/local-1",
+          "thread_digest": "sha256:1111",
+          "origin_node": "node:home",
+          "published_by": "seat:root",
+          "published_at": "2026-08-23T12:00:00Z",
+          "post_count": 4
+        },
+        {
+          "thread_address": "thread/local-2",
+          "thread_digest": "sha256:2222",
+          "origin_node": "node:home",
+          "published_by": "seat:root",
+          "published_at": "2026-08-23T12:05:00Z",
+          "post_count": 9
+        }
+      ],
+      "source_addresses": [
+        {"address": "thread/local-1", "digest": "sha256:1111"},
+        {"address": "thread/local-2", "digest": "sha256:2222"},
+        {"address": "thread/local-3", "digest": "sha256:3333"}
+      ],
+      "omissions": ["thread/local-3: publication withdrawn 2026-08-23T11:00:00Z"],
+      "inbound": "QUEUED_AS_ADDRESSED_INPUT",
+      "rebuild_operation_id": "op:rebuild-public-1",
+      "rebuilt_at": "2026-08-23T12:30:00Z",
+      "content_address": "public/render-1",
+      "content_digest": "sha256:beef",
+      "authoritative": false,
+      "standing": "RECORDED"
+    }
+  },
+  {
+    "id": "PUB-POS-NOTHING-PUBLISHED",
+    "contract": "public-projection.schema.json",
+    "status": "PROPOSED",
+    "polarity": "positive",
+    "expected_projection": true,
+    "expected_validity": "VALID",
+    "note": "A node that has published nothing still declares a projection. An undefined public surface and an empty one are different states, and only one of them is honest.",
+    "record": {
+      "projection_schema": "soveraeign-public-projection/v1",
+      "projection_id": "pub:2",
+      "node_id": "node:home",
+      "entries": [],
+      "source_addresses": [],
+      "omissions": [],
+      "inbound": "QUEUED_AS_ADDRESSED_INPUT",
+      "rebuild_operation_id": "op:rebuild-public-2",
+      "rebuilt_at": "2026-08-23T12:31:00Z",
+      "content_address": "public/render-2",
+      "content_digest": "sha256:0000",
+      "authoritative": false,
+      "standing": "RECORDED"
+    }
+  },
+  {
+    "id": "PUB-POS-ADMITTED-PEER-THREAD",
+    "contract": "public-projection.schema.json",
+    "status": "PROPOSED",
+    "polarity": "positive",
+    "expected_projection": true,
+    "expected_validity": "VALID",
+    "note": "A peer's thread may be published, but only because a settled inbound crossing admitted it. The local seat that published it is still the one accountable for the outward effect.",
+    "record": {
+      "projection_schema": "soveraeign-public-projection/v1",
+      "projection_id": "pub:3",
+      "node_id": "node:home",
+      "entries": [
+        {
+          "thread_address": "thread/local-3",
+          "thread_digest": "sha256:3333",
+          "origin_node": "node:peer-one",
+          "published_by": "seat:root",
+          "published_at": "2026-08-23T12:40:00Z",
+          "post_count": 2
+        }
+      ],
+      "source_addresses": [
+        {"address": "thread/local-3", "digest": "sha256:3333"}
+      ],
+      "omissions": [],
+      "inbound": "QUEUED_AS_ADDRESSED_INPUT",
+      "rebuild_operation_id": "op:rebuild-public-3",
+      "rebuilt_at": "2026-08-23T12:41:00Z",
+      "content_address": "public/render-3",
+      "content_digest": "sha256:cafe",
+      "authoritative": false,
+      "standing": "RECORDED"
+    }
+  },
+  {
+    "id": "PUB-NEG-CLAIMS-AUTHORITY",
+    "contract": "public-projection.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "note": "A projection that could be authoritative would let the outward surface become the record, which is the second authority system the Console charter refuses.",
+    "record": {
+      "projection_schema": "soveraeign-public-projection/v1",
+      "projection_id": "pub:4",
+      "node_id": "node:home",
+      "entries": [],
+      "source_addresses": [],
+      "omissions": [],
+      "inbound": "QUEUED_AS_ADDRESSED_INPUT",
+      "rebuild_operation_id": "op:rebuild-public-4",
+      "rebuilt_at": "2026-08-23T12:50:00Z",
+      "content_address": "public/render-4",
+      "content_digest": "sha256:dead",
+      "authoritative": true,
+      "standing": "RECORDED"
+    }
+  },
+  {
+    "id": "PUB-NEG-INBOUND-BECOMES-A-RECORD",
+    "contract": "public-projection.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "note": "The asymmetry the contract exists to hold. A projection that admitted inbound replies directly would make a stranger's post a record of this node by the act of writing it, and moderation would become a kernel problem the same day.",
+    "record": {
+      "projection_schema": "soveraeign-public-projection/v1",
+      "projection_id": "pub:5",
+      "node_id": "node:home",
+      "entries": [],
+      "source_addresses": [],
+      "omissions": [],
+      "inbound": "ADMITTED_AS_POST",
+      "rebuild_operation_id": "op:rebuild-public-5",
+      "rebuilt_at": "2026-08-23T12:55:00Z",
+      "content_address": "public/render-5",
+      "content_digest": "sha256:feed",
+      "authoritative": false,
+      "standing": "RECORDED"
+    }
+  },
+  {
+    "id": "PUB-SEM-RENDERS-AN-UNDECLARED-SOURCE",
+    "contract": "public-projection.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "expected_projection": false,
+    "defeats": "the SPEC.md projection rule that every rendered value resolves to an authoritative record; this entry resolves to nothing the projection declared, so a reader cannot check it against anything",
+    "record": {
+      "projection_schema": "soveraeign-public-projection/v1",
+      "projection_id": "pub:6",
+      "node_id": "node:home",
+      "entries": [
+        {
+          "thread_address": "thread/ghost",
+          "thread_digest": "sha256:9999",
+          "origin_node": "node:home",
+          "published_by": "seat:root",
+          "published_at": "2026-08-23T13:00:00Z",
+          "post_count": 1
+        }
+      ],
+      "source_addresses": [
+        {"address": "thread/local-1", "digest": "sha256:1111"}
+      ],
+      "omissions": ["thread/local-1: withheld"],
+      "inbound": "QUEUED_AS_ADDRESSED_INPUT",
+      "rebuild_operation_id": "op:rebuild-public-6",
+      "rebuilt_at": "2026-08-23T13:01:00Z",
+      "content_address": "public/render-6",
+      "content_digest": "sha256:1234",
+      "authoritative": false,
+      "standing": "RECORDED"
+    }
+  },
+  {
+    "id": "PUB-SEM-SILENT-FILTER",
+    "contract": "public-projection.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "expected_projection": false,
+    "defeats": "the requirement that a projection declare what it left out; two of three declared sources are missing from the render and the omissions list is empty, which presents a filtered view as a complete one",
+    "record": {
+      "projection_schema": "soveraeign-public-projection/v1",
+      "projection_id": "pub:7",
+      "node_id": "node:home",
+      "entries": [
+        {
+          "thread_address": "thread/local-1",
+          "thread_digest": "sha256:1111",
+          "origin_node": "node:home",
+          "published_by": "seat:root",
+          "published_at": "2026-08-23T13:10:00Z",
+          "post_count": 3
+        }
+      ],
+      "source_addresses": [
+        {"address": "thread/local-1", "digest": "sha256:1111"},
+        {"address": "thread/local-2", "digest": "sha256:2222"},
+        {"address": "thread/local-3", "digest": "sha256:3333"}
+      ],
+      "omissions": [],
+      "inbound": "QUEUED_AS_ADDRESSED_INPUT",
+      "rebuild_operation_id": "op:rebuild-public-7",
+      "rebuilt_at": "2026-08-23T13:11:00Z",
+      "content_address": "public/render-7",
+      "content_digest": "sha256:5678",
+      "authoritative": false,
+      "standing": "RECORDED"
+    }
+  },
+  {
+    "id": "PUB-SEM-PUBLISHES-AN-UNADMITTED-NODE",
+    "contract": "public-projection.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "expected_projection": false,
+    "defeats": "the boundary claim that nothing reaches the public surface except records this node holds; a thread from a node no settled crossing admitted is a stranger's content republished under this node's name",
+    "record": {
+      "projection_schema": "soveraeign-public-projection/v1",
+      "projection_id": "pub:8",
+      "node_id": "node:home",
+      "entries": [
+        {
+          "thread_address": "thread/local-4",
+          "thread_digest": "sha256:4444",
+          "origin_node": "node:stranger",
+          "published_by": "seat:root",
+          "published_at": "2026-08-23T13:20:00Z",
+          "post_count": 6
+        }
+      ],
+      "source_addresses": [
+        {"address": "thread/local-4", "digest": "sha256:4444"}
+      ],
+      "omissions": [],
+      "inbound": "QUEUED_AS_ADDRESSED_INPUT",
+      "rebuild_operation_id": "op:rebuild-public-8",
+      "rebuilt_at": "2026-08-23T13:21:00Z",
+      "content_address": "public/render-8",
+      "content_digest": "sha256:9abc",
+      "authoritative": false,
+      "standing": "RECORDED"
+    }
+  },
+  {
+    "id": "PUB-SEM-PUBLISHED-BY-A-SEAT-WE-DO-NOT-HOLD",
+    "contract": "public-projection.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "expected_projection": false,
+    "defeats": "the rule that publishing is an outward effect attributable to a seat this node holds; an entry published by a peer's seat leaves nobody here accountable for what went out",
+    "record": {
+      "projection_schema": "soveraeign-public-projection/v1",
+      "projection_id": "pub:9",
+      "node_id": "node:home",
+      "entries": [
+        {
+          "thread_address": "thread/local-1",
+          "thread_digest": "sha256:1111",
+          "origin_node": "node:home",
+          "published_by": "seat:peer-one-root",
+          "published_at": "2026-08-23T13:30:00Z",
+          "post_count": 3
+        }
+      ],
+      "source_addresses": [
+        {"address": "thread/local-1", "digest": "sha256:1111"}
+      ],
+      "omissions": [],
+      "inbound": "QUEUED_AS_ADDRESSED_INPUT",
+      "rebuild_operation_id": "op:rebuild-public-9",
+      "rebuilt_at": "2026-08-23T13:31:00Z",
+      "content_address": "public/render-9",
+      "content_digest": "sha256:def0",
+      "authoritative": false,
+      "standing": "RECORDED"
+    }
+  }
+]

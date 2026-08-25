@@ -40,11 +40,32 @@ logical evidence summaries and addresses; they are not prescribed storage
 schemas. A participant may attach richer telemetry, but the oracle considers
 only contract fields.
 
+## How a report is read
+
+The runner indexes observations by `case_id` before evaluating any of them, and refuses
+a report it cannot read exactly as submitted rather than resolving the ambiguity itself:
+
+- the report must be a JSON array of observation objects;
+- every entry must carry a non-empty string `case_id`;
+- every entry must carry an `observed` object;
+- no `case_id` may appear twice.
+
+The duplicate rule is the load-bearing one. Indexing used to be last-wins, so an honest
+failing observation followed by a fabricated passing one under the same `case_id`
+produced `SUITE PASS` with no signal that a choice had been made. A repeated `case_id`
+now refuses the whole run: which observation counts is not the submitter's to decide.
+
+The same reading applies to the case file, so a duplicated control id is refused too.
+
+These are runner mechanics — the shape a report must have to be read at all. They do not
+settle which document owns the observation crossing's fields; that question is open.
+
 ## Result meanings
 
 - `PASS` — the observation contains no detected contract violation.
 - `FAIL` — one or more semantic defects were observed.
-- `INVALID` — the case or participant report cannot be evaluated.
+- `INVALID` — the case or participant report cannot be evaluated. A whole run reports
+  `SUITE INVALID` with the reason and exits non-zero when the report cannot be read.
 
 Passing the bundled controls proves that the oracle distinguishes the included
 positive and defeating narratives. It does not witness an implementation.

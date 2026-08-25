@@ -1,10 +1,239 @@
 {
   "service_id": "proofing",
   "standing": "PROPOSED",
-  "owns": ["proofing-session", "review-round", "participant-assignment", "version-pinned-annotation", "comparison-recording", "decision-proposal", "authorized-decision", "proofing-receipt"],
-  "references": ["asset:asset", "asset:asset-version", "asset:source-and-derivation-provenance"],
-  "operations": ["open-session", "assign-reviewer", "add-annotation", "request-comparison", "propose-decision", "ratify-decision", "request-revision", "close-session"],
-  "uses_kernel_contracts": ["standing", "typed-authority", "operation", "observation", "receipt", "retraction"],
-  "ports": ["asset-service", "comparison-worker", "human-binding", "model-binding", "notification"],
-  "forbids": ["direct-asset-storage-write", "implicit-latest-version", "model-ratifies-judgement", "executor-report-as-observation", "history-erasure", "projection-as-authority"]
+  "owns": [
+    "proofing-session",
+    "review-round",
+    "participant-assignment",
+    "version-pinned-annotation",
+    "comparison-recording",
+    "decision-proposal",
+    "authorized-decision",
+    "proofing-receipt"
+  ],
+  "references": [
+    "shared-kernel-contracts"
+  ],
+  "operations": [
+    {
+      "operation": "open-session",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://proofing/open-session",
+      "subject": "proofing-session",
+      "crud": "CREATE",
+      "requirement": "PROD-I-1",
+      "preconditions": [
+        "declared_subject_version",
+        "declared_actor"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "INCOMPLETE_PROPOSAL"
+      ]
+    },
+    {
+      "operation": "assign-reviewer",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://proofing/assign-reviewer",
+      "subject": "participant-assignment",
+      "crud": "CREATE",
+      "requirement": "PROD-I-8",
+      "preconditions": [
+        "session_open",
+        "declared_reviewer",
+        "declared_actor_kind"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "INCOMPLETE_PROPOSAL",
+        "STALE_STATE"
+      ]
+    },
+    {
+      "operation": "add-annotation",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://proofing/add-annotation",
+      "subject": "version-pinned-annotation",
+      "crud": "CREATE",
+      "requirement": "PROD-I-2",
+      "kernel_transition": "read_source",
+      "preconditions": [
+        "session_open",
+        "pinned_version_digest_verifies",
+        "declared_body"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "DIGEST_MISMATCH",
+        "SOURCE_CHANGED",
+        "INCOMPLETE_PROPOSAL"
+      ]
+    },
+    {
+      "operation": "request-comparison",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://proofing/request-comparison",
+      "subject": "comparison-recording",
+      "crud": "CREATE",
+      "requirement": "PROD-I-2",
+      "kernel_transition": "begin_run",
+      "preconditions": [
+        "session_open",
+        "two_pinned_versions",
+        "declared_plan"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "INCOMPLETE_PROPOSAL",
+        "SOURCE_CHANGED"
+      ]
+    },
+    {
+      "operation": "propose-decision",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://proofing/propose-decision",
+      "subject": "decision-proposal",
+      "crud": "CREATE",
+      "requirement": "PROD-I-1",
+      "kernel_transition": "submit_proposal",
+      "preconditions": [
+        "session_open",
+        "declared_actor",
+        "declared_scope",
+        "required_authority_named"
+      ],
+      "commit": "RECORDED",
+      "refusals": [
+        "INCOMPLETE_PROPOSAL"
+      ]
+    },
+    {
+      "operation": "ratify-decision",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://proofing/ratify-decision",
+      "subject": "authorized-decision",
+      "crud": "CREATE",
+      "requirement": "PROD-I-5",
+      "kernel_transition": "ratify",
+      "preconditions": [
+        "decision_proposal_recorded",
+        "human_actor",
+        "live_matching_grant"
+      ],
+      "commit": "EFFECTIVE",
+      "refusals": [
+        "AUTHORITY_REFUSED",
+        "STALE_STATE"
+      ]
+    },
+    {
+      "operation": "request-revision",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://proofing/request-revision",
+      "subject": "review-round",
+      "crud": "CREATE",
+      "requirement": "PROD-I-1",
+      "preconditions": [
+        "session_open",
+        "declared_reason"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "INCOMPLETE_PROPOSAL",
+        "STALE_STATE"
+      ]
+    },
+    {
+      "operation": "close-session",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://proofing/close-session",
+      "subject": "proofing-session",
+      "crud": "SUPERSEDE",
+      "requirement": "PROD-I-4",
+      "preconditions": [
+        "session_open",
+        "every_round_terminal"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "STALE_STATE"
+      ]
+    },
+    {
+      "operation": "read-session",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://proofing/read-session",
+      "subject": "proofing-session",
+      "crud": "READ",
+      "requirement": "PROD-I-1",
+      "also_reads": [
+        "review-round",
+        "participant-assignment"
+      ],
+      "preconditions": [
+        "session_exists"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "MISSING_PRECONDITION"
+      ]
+    },
+    {
+      "operation": "read-annotations",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://proofing/read-annotations",
+      "subject": "version-pinned-annotation",
+      "crud": "READ",
+      "requirement": "PROD-I-2",
+      "also_reads": [
+        "comparison-recording"
+      ],
+      "preconditions": [
+        "session_exists"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "MISSING_PRECONDITION"
+      ]
+    },
+    {
+      "operation": "read-decision",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://proofing/read-decision",
+      "subject": "decision-proposal",
+      "crud": "READ",
+      "requirement": "PROD-I-1",
+      "also_reads": [
+        "authorized-decision"
+      ],
+      "preconditions": [
+        "decision_proposal_exists"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "MISSING_PRECONDITION"
+      ]
+    }
+  ],
+  "uses_kernel_contracts": [
+    "standing",
+    "typed-authority",
+    "operation",
+    "observation",
+    "receipt",
+    "retraction"
+  ],
+  "ports": [
+    "asset-service",
+    "comparison-worker",
+    "human-binding",
+    "model-binding",
+    "notification"
+  ],
+  "forbids": [
+    "annotation-against-an-unpinned-version",
+    "self-ratified-decision",
+    "silent-round-close",
+    "history-erasure"
+  ]
 }

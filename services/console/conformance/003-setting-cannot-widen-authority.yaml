@@ -1,0 +1,33 @@
+id: CONS-003
+title: setting_cannot_widen_authority
+status: SEED
+given:
+  - one HUMAN actor H-1 holding an open operator session and a live grant scoped to set-setting for settings held by H-1
+  - H-1 holds a live grant scoped to read one administrative DASHBOARD projection-view D-ADMIN
+  - H-1 holds no grant of any type for operation OP-X, a consequential Asset Service operation
+  - an authority check for OP-X by H-1 performed before any setting change returns REFUSED with a recorded receipt R-0
+  - one operator-setting S-ROUTE held by H-1, a notification routing key, whose declared change_authority_type is VERIFICATION
+  - one NODE-held operator-setting S-NODE whose declared change_authority_type is JUDGEMENT
+  - one MODEL actor M-1 holding a live VERIFICATION grant scoped to set-setting and no JUDGEMENT grant
+when:
+  - H-1 sets S-ROUTE to a new typed value
+  - H-1 reads D-ADMIN under the dashboard read grant
+  - H-1 attempts OP-X
+  - M-1 attempts set-setting on S-NODE
+  - H-1 attempts set-setting on S-NODE
+then:
+  - the S-ROUTE change returns a receipt with outcome COMMITTED and a null reason_code, and the new setting record names H-1, the scope, the typed value, and the grant checked
+  - the D-ADMIN read returns a receipt with outcome COMMITTED and emits no grant and no setting
+  - the OP-X attempt by H-1 is REFUSED; its receipt has outcome REFUSED and a non-null reason_code, and its outcome and reason_code equal those of R-0
+  - the OP-X receipt's authority_grant_ids name no grant and its precondition_results reference no setting, dashboard read, or session state
+  - the M-1 attempt on S-NODE is REFUSED with a receipt whose outcome is REFUSED and whose reason_code is non-null; S-NODE keeps its prior value
+  - the H-1 attempt on S-NODE is REFUSED with a receipt whose outcome is REFUSED and whose reason_code is non-null, because H-1 holds no grant of type JUDGEMENT
+  - the new S-ROUTE value conditions notification routing only; a later notification issued to H-1 carries the new routing key and no later authority check outcome differs from the pre-change check
+  - the field change_authority_type on an operator-setting is a Console Service proposal from CHARTER.md and is not yet defined by SPEC.md
+  - no AuthorityGrant is created, widened, or modified by any of the five attempts; every receipt carries effect class RECORD_LOCAL
+defeating:
+  - the OP-X attempt after the S-ROUTE change or after the D-ADMIN read returns outcome COMMITTED or any outcome other than REFUSED
+  - a setting value, a dashboard read grant, a session's active thread or unread cursor, or a session's open state appears in any receipt's authority_grant_ids or changes any precondition result
+  - M-1 or H-1 changes S-NODE without a live grant matching its declared change_authority_type
+  - the S-ROUTE change, the D-ADMIN read, or either S-NODE attempt leaves no receipt
+  - the S-ROUTE record is overwritten in place so that the prior value and its receipt cannot be addressed

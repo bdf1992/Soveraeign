@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/bdf1992/Soveraeign/blob/main/contracts/observation.schema.json",
+  "title": "Soveraeign Observation",
+  "description": "Independent evidence of what occurred, per the SPEC.md Observation object. An observation records what an observer looked at, how it avoided relying solely on the executor's report, and which predicates held. It settles nothing: executor output alone cannot establish success, and an observation is not a receipt, a ratification, or a witness.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "observation_id",
+    "run_id",
+    "observer_id",
+    "observer_relation",
+    "observed_state_addresses",
+    "observed_state_digests",
+    "predicate_results",
+    "observed_at"
+  ],
+  "properties": {
+    "observation_id": {
+      "description": "Address of this observation. Deterministic for a given run and subject so the same run does not mint new identities.",
+      "type": "string",
+      "minLength": 1
+    },
+    "run_id": {
+      "description": "The attempt this observation concerns. Observations sharing a run_id were taken of the same attempt.",
+      "type": "string",
+      "minLength": 1
+    },
+    "observer_id": {
+      "description": "Attributable identity of the observer, including its version. Never a credential.",
+      "type": "string",
+      "minLength": 1
+    },
+    "observer_relation": {
+      "description": "How this observer avoids relying solely on the executor's report. SPEC.md requires this to be stated, not assumed; an observer that only reads the executor's own output must say so here rather than imply independence.",
+      "type": "string",
+      "minLength": 1
+    },
+    "observed_state_addresses": {
+      "description": "Addresses whose bytes the observer read. A directory address means the observer read the files beneath it.",
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "observed_state_digests": {
+      "description": "Digest per entry in observed_state_addresses, positionally aligned. A directory digest covers a sorted manifest of the files beneath it.",
+      "type": "array",
+      "items": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+    },
+    "predicate_results": {
+      "description": "The predicates this observation tested and what each returned. An empty object means nothing was tested, which is itself a reportable state.",
+      "type": "object",
+      "additionalProperties": true
+    },
+    "observed_at": {
+      "description": "When the observation was taken, RFC 3339 with an explicit offset.",
+      "type": "string",
+      "format": "date-time"
+    },
+    "subject": {
+      "description": "Optional human-readable name of what was observed.",
+      "type": "string"
+    }
+  }
+}

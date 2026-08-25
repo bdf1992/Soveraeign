@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/domain-owners.schema.json",
+  "title": "Soveraeign Domain Owners",
+  "description": "Who is accountable for each domain, what they were asked to do, what they may spend, by when, and who checks it. Policy input authored by the owner; the Registry Service reads it and would later hold it as owner-record. This table grants nothing: required_authority names the grant an owner would need, never one it holds. An owner and its witness may never be the same participant.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["table_id", "status", "governed_by", "owners"],
+  "properties": {
+    "table_id": {"const": "soveraeign-domain-owners/v1"},
+    "status": {"enum": ["PROPOSED", "RATIFIED"]},
+    "governed_by": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "note": {"type": "string"},
+    "owners": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/owner"}
+    }
+  },
+  "$defs": {
+    "owner": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "domain",
+        "subject_kind",
+        "owner",
+        "witness",
+        "mandate",
+        "requirements",
+        "budget",
+        "deadline",
+        "standing"
+      ],
+      "properties": {
+        "domain": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
+        "subject_kind": {
+          "description": "service means services/<domain>/contracts/service.json must exist; concern means the domain owns repository artifacts without being a declared service.",
+          "enum": ["service", "concern"]
+        },
+        "owner": {"$ref": "#/$defs/participant"},
+        "witness": {
+          "description": "The participant that checks this owner's work. Never the owner itself: a build report cannot witness itself.",
+          "$ref": "#/$defs/participant"
+        },
+        "mandate": {
+          "description": "What the owner was asked to produce, in one sentence, in the owner's own words.",
+          "type": "string",
+          "minLength": 1
+        },
+        "requirements": {
+          "description": "The PRD requirements this domain answers. Each id must appear in PRD.md.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^PROD-[IVX]+-[1-9][0-9]*$"}
+        },
+        "budget": {"$ref": "#/$defs/budget"},
+        "deadline": {
+          "description": "The date the mandate is due, as YYYY-MM-DD. A deadline is required: an owner without one cannot be declared.",
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "schedule": {
+          "description": "The .claude/schedules declaration that fires this owner's work, or null while nothing fires it.",
+          "anyOf": [{"type": "string", "pattern": "^[a-z][a-z0-9-]*$"}, {"type": "null"}]
+        },
+        "required_authority": {
+          "description": "The grant this owner would need to do consequential work. Naming it here does not hold it.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "standing": {"enum": ["PROPOSED", "BUILT", "WITNESSED", "RATIFIED"]},
+        "note": {"type": "string"}
+      }
+    },
+    "participant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["actor_id", "actor_kind"],
+      "properties": {
+        "actor_id": {"type": "string", "minLength": 1},
+        "actor_kind": {"enum": ["HUMAN", "MODEL"]},
+        "seat_id": {"type": "string", "minLength": 1}
+      }
+    },
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["max_usd_per_run", "runs_per_period", "period"],
+      "properties": {
+        "max_usd_per_run": {"type": "number", "minimum": 0},
+        "runs_per_period": {"type": "integer", "minimum": 1},
+        "period": {"enum": ["DAY", "WEEK", "MONTH"]}
+      }
+    }
+  }
+}

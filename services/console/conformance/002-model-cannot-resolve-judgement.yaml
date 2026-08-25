@@ -1,0 +1,33 @@
+id: CONS-002
+title: model_cannot_resolve_judgement
+status: SEED
+given:
+  - one judgement-request JR-1 with lifecycle QUEUED and loop_mode IN_LOOP, requested authority type JUDGEMENT, conditioning operation OP-J, requested by a MODEL actor M-1
+  - M-1 holds an open operator session and a live AuthorityGrant with authority_type VERIFICATION whose capability is resolve-judgement and whose scope covers JR-1
+  - one HUMAN actor H-1 holds a live AuthorityGrant with authority_type JUDGEMENT, capability resolve-judgement, scope covering JR-1, valid_from before and valid_until after the attempt time, and revoked_at null
+  - one HUMAN actor H-2 holds a JUDGEMENT grant for the same capability and scope whose valid_until has already passed
+  - one HUMAN actor H-3 holds a JUDGEMENT grant for the same capability and scope whose revoked_at is set before the attempt time
+when:
+  - M-1 attempts resolve-judgement on JR-1 under its VERIFICATION grant
+  - H-2 attempts resolve-judgement on JR-1 under the expired grant
+  - H-3 attempts resolve-judgement on JR-1 under the revoked grant
+  - H-1 attempts resolve-judgement on JR-1 under the live grant
+then:
+  - the M-1 attempt is checked against authority_type and is REFUSED; its receipt has outcome REFUSED, a non-null reason_code, and authority_grant_ids naming no grant of type JUDGEMENT
+  - the H-2 attempt and the H-3 attempt are each REFUSED with a receipt whose outcome is REFUSED and whose reason_code is non-null
+  - whether the refusal reason_code is AUTHORITY_REFUSED from the SPEC.md transition contract or a console-specific name is a proposal and is not yet decided
+  - JR-1 remains lifecycle QUEUED after each of the three refused attempts
+  - the H-1 attempt returns a receipt with outcome COMMITTED, a null reason_code, and authority_grant_ids naming H-1's live JUDGEMENT grant
+  - JR-1 is now lifecycle RESOLVED and carries resolution_id naming a judgement-resolution record RES-1 whose resolver_grant_id equals H-1's grant_id and whose receipt_id equals the receipt_id of that receipt
+  - the QUEUED record of JR-1 remains addressable; the RESOLVED state is reached by an appended transition event whose pre-state is QUEUED
+  - a notification of kind JUDGEMENT_RESOLVED with recipient_id M-1 is issued whose source_address and source_digest equal RES-1's address and digest, and the issue carries its own receipt with outcome COMMITTED
+  - the lifecycle RESOLVED, the field resolution_id on the judgement request, the record judgement-resolution with its fields resolver_grant_id and receipt_id, and the notification kind JUDGEMENT_RESOLVED are Console Service proposals from CHARTER.md and are not yet defined by SPEC.md
+  - no Asset Service or Proofing Service state changes under any of the four attempts; every receipt carries effect class RECORD_LOCAL
+defeating:
+  - the M-1 attempt returns a receipt with outcome COMMITTED, or leaves JR-1 in lifecycle RESOLVED
+  - a VERIFICATION grant held by any actor, human or model, resolves JR-1
+  - the expired-grant attempt or the revoked-grant attempt returns outcome COMMITTED or changes JR-1's lifecycle
+  - JR-1 reaches RESOLVED with no receipt, or with a receipt whose authority_grant_ids name no live JUDGEMENT grant
+  - the QUEUED record of JR-1 is overwritten or deleted rather than succeeded by a transition event
+  - JR-1 resolves with resolution_id null, or RES-1 carries resolver_grant_id or receipt_id null, or a resolver_grant_id naming a grant other than the one the authority check evaluated
+  - M-1 receives no JUDGEMENT_RESOLVED notification, or the notification cannot name RES-1's address and digest

@@ -141,7 +141,10 @@ class SurveyScopeTests(unittest.TestCase):
         self.assertEqual(surveymod.survey_catalogue(ROOT, live), [])
 
     def test_a_governed_label_the_catalogue_omits_is_reported_not_deleted(self) -> None:
-        live = self.catalogue + [{"name": "type: story", "color": "E16F24", "description": "d"}]
+        # Not "type: story": this branch declares that one, so the merged catalogue
+        # would have nothing to report. Any governed-namespace name the catalogue
+        # omits proves the same rule.
+        live = self.catalogue + [{"name": "type: saga", "color": "E16F24", "description": "d"}]
         actions = surveymod.survey_catalogue(ROOT, live)
         self.assertEqual([action.kind for action in actions], ["CATALOGUE_UNDECLARED"])
         self.assertEqual(actions[0].disposition, "REPORT")

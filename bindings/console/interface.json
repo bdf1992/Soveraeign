@@ -1,0 +1,192 @@
+{
+  "interface_id": "urn:soveraeign:interface:console-owner-cli-v1",
+  "schema_version": 1,
+  "status": "PROPOSED",
+  "description": "Declaration of the Human Binding interface for the Console Service first slice (services/console/CHARTER.md, 'First slice: the owner's judgement surface'). A declaration only: it names the operations the binding invokes, the manifest operation and SPEC.md transition each resolves to, and what the binding must expose under bindings/README.md. No schema exists for this declaration yet; keys are lower_snake_case like the console record contracts. It contains no implementation and realizes nothing.",
+  "binding_kind": "HUMAN",
+  "binding_name": "Console Human Binding",
+  "fixture_alias": "HB-CLI",
+  "fixture_alias_sources": [
+    "services/console/conformance/008-judgement-request-reaches-owner.yaml",
+    "services/console/conformance/009-owner-resolution-lands-ratified.yaml"
+  ],
+  "realizes": {
+    "service_id": "console",
+    "service_manifest": "services/console/contracts/service.json",
+    "port": "human-binding",
+    "transition_contract": "SPEC.md, Transition contract",
+    "transition_contract_projection": "contracts/kernel-transitions.json (rebuildable projection of the SPEC.md table; SPEC.md is authoritative)"
+  },
+  "realization_target": {
+    "kind": "LOCAL_CLI_OVER_PYTHON_API",
+    "source": "ENGINEERING.md, Minimal reference stack, row 'Local surface' (Python API and CLI; human and model bindings use the same kernel operations)",
+    "http": false,
+    "ui_framework": false,
+    "gui_claim": false,
+    "effect_class_ceiling": "RECORD_LOCAL",
+    "note": "The smallest Human Binding the owner can actually use. It is not a graphical interface claim and it adds no transport."
+  },
+  "operations": [
+    {
+      "operation": "open-session",
+      "manifest_operation": "open-session",
+      "spec_transition": null,
+      "kind": "WRITE",
+      "record": "operator-session",
+      "record_contract": "services/console/contracts/operator-session.schema.json",
+      "inputs": ["operator_id"],
+      "result": "operator-session with actor_kind HUMAN, binding_id equal to this interface_id, lifecycle OPEN; one receipt",
+      "refusals": ["reasoned refusal"],
+      "note": "Console proposal; no SPEC.md transition row names session opening. Opening a session grants nothing."
+    },
+    {
+      "operation": "list-pending-judgement-requests",
+      "manifest_operation": "list-pending-judgement-requests",
+      "spec_transition": null,
+      "kind": "READ",
+      "record": "judgement-request",
+      "record_contract": "services/console/contracts/judgement-request.schema.json",
+      "inputs": ["session_id"],
+      "result": "judgement-request records with lifecycle QUEUED whose addressed_to is the session's operator_id, read from the record path and not from notification records or any projection-view; one receipt with effect_class RECORD_LOCAL",
+      "refusals": ["reasoned refusal"],
+      "note": "CONS-008 read. The pending list is a manifest read operation of the human-binding and model-binding ports, a CHARTER.md proposal not yet defined by SPEC.md. A setting, session state, unread cursor, or dashboard role never changes the membership of the list."
+    },
+    {
+      "operation": "show-judgement-request",
+      "manifest_operation": "show-judgement-request",
+      "spec_transition": null,
+      "kind": "READ",
+      "record": "judgement-request",
+      "record_contract": "services/console/contracts/judgement-request.schema.json",
+      "inputs": ["request_id"],
+      "result": "one judgement-request record with its address and digest, question resolved from question_address and checked against question_digest, evidence_addresses, decision_ref, operation_id, loop_mode, required_authority_type, capability, scope, lifecycle, standing, and resolution_id; one receipt",
+      "refusals": ["reasoned refusal"],
+      "note": "Read only. The rendered question must reproduce the bytes at question_address."
+    },
+    {
+      "operation": "resolve-judgement",
+      "manifest_operation": "resolve-judgement",
+      "spec_transition": "ratify",
+      "spec_transition_source": "SPEC.md, Transition contract, row 'ratify'",
+      "spec_transition_projection": "contracts/kernel-transitions.json, transitions.ratify",
+      "kind": "WRITE",
+      "record": "judgement-resolution",
+      "record_contract": "services/console/contracts/judgement-resolution.schema.json",
+      "inputs": ["request_id", "decision", "rationale_address"],
+      "decision_vocabulary": ["ACCEPTED", "STRUCK", "DEFERRED"],
+      "preconditions": ["proposal admitted", "live matching authority grant"],
+      "authority_checked": {
+        "authority_type": "JUDGEMENT",
+        "capability": "resolve-judgement (judgement-request.capability)",
+        "scope": "the request's request_id (judgement-request.scope)",
+        "proposal": "judgement-request.proposal_id"
+      },
+      "commit": "preserve history; add RATIFIED event. The judgement-resolution record is written with resolver_kind HUMAN, resolver_grant_id naming the grant checked, interface_id equal to this interface_id, and receipt_id; the judgement-request reaches lifecycle RESOLVED with resolution_id by an appended event; the conditioned operation receives a successor receipt whose prior_receipt_id names its UNRESOLVED receipt, the same id the judgement-resolution records as unresolved_receipt_id",
+      "refusals": ["AUTHORITY_REFUSED", "STALE_STATE"],
+      "model_actor": "REFUSED",
+      "note": "CONS-009 and CONS-002. The binding presents the decision and rationale; the kernel performs the ratify transition and the authority check. The binding holds, infers, and widens no grant. Whether the refusal reason_code for a MODEL attempt is AUTHORITY_REFUSED or a console-specific name is undecided (CONS-002)."
+    },
+    {
+      "operation": "acknowledge-notification",
+      "manifest_operation": "acknowledge-notification",
+      "spec_transition": null,
+      "kind": "WRITE",
+      "record": "notification",
+      "record_contract": "services/console/contracts/notification.schema.json",
+      "inputs": ["notification_id"],
+      "result": "notification lifecycle ISSUED to ACKNOWLEDGED by an appended event; acknowledged_at set; one receipt",
+      "refusals": ["reasoned refusal"],
+      "note": "Console proposal. Acknowledging a notification changes nothing about the record its source_address names."
+    },
+    {
+      "operation": "show-receipt",
+      "manifest_operation": "show-receipt",
+      "spec_transition": null,
+      "kind": "READ",
+      "record": "receipt",
+      "record_contract": "contracts/receipt.schema.json",
+      "inputs": ["receipt_id"],
+      "result": "one Receipt in the SPEC.md Receipt shape: receipt_id, event_id, event_type, actor_id, interface_id, authority_grant_ids, precondition_results, effect_class, outcome, reason_code, emitted_record_addresses, observed_evidence_addresses, prior_receipt_id, created_at, receipt_digest; one receipt for the read",
+      "refusals": ["reasoned refusal"],
+      "note": "Read only. A refusal is shown as its receipt, never as an error string alone."
+    },
+    {
+      "operation": "close-session",
+      "manifest_operation": "close-session",
+      "spec_transition": null,
+      "kind": "WRITE",
+      "record": "operator-session",
+      "record_contract": "services/console/contracts/operator-session.schema.json",
+      "inputs": ["session_id"],
+      "result": "operator-session lifecycle OPEN to CLOSED by an appended event; closed_at set; one receipt",
+      "refusals": ["reasoned refusal"],
+      "note": "Console proposal. Closing a session withdraws no pending judgement request and resolves none."
+    }
+  ],
+  "obligations": {
+    "source": "bindings/README.md, human-facing binding requirements",
+    "state": {
+      "must_expose": "the operator session lifecycle; each pending judgement request's lifecycle, loop_mode, and standing; the outcome of the conditioned operation's current receipt (UNRESOLVED while QUEUED); each notification's lifecycle",
+      "resolves_to": ["operator-session", "judgement-request", "judgement-resolution", "notification", "receipt"],
+      "never": "a projection-view, a notification standing in for its source record, or the binding's own memory"
+    },
+    "choices": {
+      "must_expose": "the legal operations for the current actor and the required inputs of each (SPEC.md Interface parity); for resolve-judgement, the decision vocabulary ACCEPTED, STRUCK, DEFERRED and the optional rationale",
+      "resolves_to": ["bindings/console/interface.json operations", "services/console/contracts/service.json operations", "judgement-resolution.decision"],
+      "never": "an operation the manifest does not declare, or a decision value the record contract does not admit"
+    },
+    "authority": {
+      "must_expose": "before an attempt, the authority the resolution will check: required_authority_type JUDGEMENT, capability resolve-judgement, and scope the request's request_id, read from the request; after an attempt, the grant named in the receipt's authority_grant_ids and the resolution's resolver_grant_id",
+      "resolves_to": ["judgement-request.required_authority_type", "judgement-request.capability", "judgement-request.scope", "receipt.authority_grant_ids", "judgement-resolution.resolver_grant_id", "SPEC.md AuthorityGrant"],
+      "never": "a grant held, inferred, cached, or widened by the binding, a session, a setting, or a dashboard role"
+    },
+    "provenance": {
+      "must_expose": "the request's address and digest, question_address and question_digest with the rendered question checked against them, evidence_addresses, decision_ref, requester_id and requester_kind; a notification's source_address and source_digest; the rationale_address and rationale_digest of a resolution",
+      "resolves_to": ["judgement-request.question_address", "judgement-request.question_digest", "judgement-request.evidence_addresses", "judgement-request.decision_ref", "notification.source_address", "notification.source_digest", "judgement-resolution.rationale_address"],
+      "never": "a paraphrase presented as the question, or evidence summarized without its addresses"
+    },
+    "receipts": {
+      "must_expose": "for every invocation, the receipt by receipt_id with outcome, reason_code, interface_id equal to this interface_id, authority_grant_ids, effect_class, and prior_receipt_id; a refusal as its REFUSED receipt and reason_code",
+      "resolves_to": ["SPEC.md Receipt", "contracts/receipt.schema.json", "judgement-resolution.receipt_id", "notification.receipt_id"],
+      "never": "a success message without a receipt, or a receipt the binding composed itself"
+    }
+  },
+  "parity": {
+    "model_binding": "A Model Binding over the model-binding port reads the same records as typed JSON structure: the same judgement-request with the same address and digest (CONS-008), the same receipts and reason codes. Lists differ in rendering only and are compared by digest.",
+    "model_resolve_judgement": "REFUSED",
+    "source": "SPEC.md Interface parity; bindings/README.md parity proof; services/console/conformance/002-model-cannot-resolve-judgement.yaml"
+  },
+  "forbids": [
+    "private standing",
+    "private authority",
+    "private transitions",
+    "direct storage writes",
+    "holding, inferring, or widening a grant",
+    "deriving the pending list from notifications or a projection-view",
+    "treating the binding's own report as observation",
+    "any effect class other than RECORD_LOCAL"
+  ],
+  "admission": {
+    "statement": "This file declares an interface; it does not realize one. No implementation of this binding is admitted until the shared transition contract is frozen (STATUS.yaml O10) or Bdo explicitly authorizes a provisional Human Binding target for the Console Service (STATUS.yaml O18), per the admission rule in bindings/README.md and the protected boundary no_runtime_code_before_logical_spec_and_defeating_fixtures. This declaration contains no code, and bindings/console/ holds no Python module.",
+    "gated_by": ["STATUS.yaml O18", "STATUS.yaml O10"],
+    "contains_code": false
+  },
+  "sources": [
+    "services/console/CHARTER.md",
+    "services/console/contracts/service.json",
+    "services/console/contracts/judgement-request.schema.json",
+    "services/console/contracts/judgement-resolution.schema.json",
+    "services/console/contracts/notification.schema.json",
+    "services/console/contracts/operator-session.schema.json",
+    "services/console/conformance/002-model-cannot-resolve-judgement.yaml",
+    "services/console/conformance/008-judgement-request-reaches-owner.yaml",
+    "services/console/conformance/009-owner-resolution-lands-ratified.yaml",
+    "bindings/README.md",
+    "ENGINEERING.md",
+    "SPEC.md",
+    "contracts/kernel-transitions.json",
+    "contracts/receipt.schema.json",
+    "decisions/0014-console-service-boundary.md",
+    "STATUS.yaml"
+  ]
+}

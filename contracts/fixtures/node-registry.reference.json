@@ -1,0 +1,19 @@
+{
+  "registry_schema": "soveraeign-node-registry/v1",
+  "status": "PROPOSED",
+  "note": "This node and every peer a local seat has admitted. The peer list is empty and that is the accurate state, not a gap: federation is at proposal standing, no transport is chosen, and nobody has been admitted. A second node appearing here is the observable event that makes federation real (decisions/0039).",
+  "self_node": "node:local",
+  "nodes": [
+    {
+      "node_schema": "soveraeign-node-identity/v1",
+      "node_id": "node:local",
+      "display_name": "Bdo's founding node",
+      "relation": "SELF",
+      "root_seat": "seat:root",
+      "founded_at": "2026-08-22T00:00:00Z",
+      "known_since": null,
+      "admitted_by": null,
+      "standing": "RECORDED"
+    }
+  ]
+}

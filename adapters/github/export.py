@@ -77,14 +77,47 @@ def capture(repo: str, limit: int) -> dict[str, Any]:
         _run(["gh", "pr", "list", "--repo", repo, "--state", "all",
               "--limit", str(limit), "--json", PULL_FIELDS])
     )
+    labels = capture_labels(repo)
     if not issues:
         raise RegistrarRefusal("REGISTRAR_EMPTY", f"{repo} returned no issues")
+    parents = capture_parents(repo)
+    for issue in issues:
+        issue["parent"] = parents.get(int(issue["number"]))
     return {
         "issues": issues,
         "pulls": pulls,
         "branches": capture_branches(repo),
-        "labels": capture_labels(repo),
+        "labels": labels,
     }
+
+
+def capture_parents(repo: str) -> dict[int, int]:
+    """Capture GitHub's native containment graph: child issue number to parent number.
+
+    Sub-issue edges are not on the ``gh issue list`` projection, so they need GraphQL.
+    Without them the containment tree the repository declares cannot be compared against
+    the one the surface actually holds.
+    """
+    owner, name = repo.split("/", 1)
+    query = (
+        "query($owner:String!,$name:String!,$cursor:String){repository(owner:$owner,name:$name)"
+        "{issues(first:100,after:$cursor,states:[OPEN,CLOSED]){pageInfo{hasNextPage endCursor}"
+        "nodes{number parent{number}}}}}"
+    )
+    parents: dict[int, int] = {}
+    cursor: str | None = None
+    while True:
+        args = ["gh", "api", "graphql", "-f", f"query={query}",
+                "-F", f"owner={owner}", "-F", f"name={name}"]
+        if cursor:
+            args += ["-F", f"cursor={cursor}"]
+        page = json.loads(_run(args))["data"]["repository"]["issues"]
+        for node in page["nodes"]:
+            if node.get("parent"):
+                parents[int(node["number"])] = int(node["parent"]["number"])
+        if not page["pageInfo"]["hasNextPage"]:
+            return parents
+        cursor = page["pageInfo"]["endCursor"]
 
 
 def _digest(payload: Any) -> str:
@@ -121,6 +154,7 @@ def write_export(captured: dict[str, Any], repo: str, out: Path) -> dict[str, An
     branches = captured.get("branches", [])
     branches_path.write_text(json.dumps(branches, indent=2) + "\n", encoding="utf-8", newline="\n")
     labels_path = out.with_name(out.stem + ".labels.json")
+    # capture_labels sorts at capture time, so nothing re-sorts here.
     labels = captured.get("labels", [])
     labels_path.write_text(json.dumps(labels, indent=2) + "\n", encoding="utf-8", newline="\n")
     return receipt

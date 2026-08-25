@@ -1,0 +1,1079 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Soveraeign Console — v5</title>
+<link rel="icon" href="data:,">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&family=Space+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0e11;
+    --rail: #0a0a0c;
+    --col: #131317;
+    --main: #17171c;
+    --sunk: #101014;
+    --line: #26262e;
+    --hair: #1e1e25;
+    /* Measured against --main. The identity lives in the ground, not the ink. */
+    --ink: #ececef;   /* 12.8:1 */
+    --dim: #adadb8;   /* 7.4:1  */
+    --faint: #82828e; /* 4.7:1  — floor */
+    --accent: #86c6b1;
+    --human: #dda468;
+    --model: #85abda;
+    --warn: #dd8570;
+    --ok: #86c6b1;
+    --serif: "Fraunces", ui-serif, Georgia, "Times New Roman", serif;
+    --sans: "Space Grotesk", ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 400 14.5px/1.6 var(--sans); overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  .mono { font-family: var(--mono); font-feature-settings: "tnum"; }
+  .micro { font: 500 9.5px/1 var(--mono); letter-spacing: .22em; text-transform: uppercase;
+           color: var(--faint); }
+
+  /* film grain over the whole ground, screen-blended, barely there */
+  #grain { position: fixed; inset: 0; pointer-events: none; z-index: 40;
+           opacity: .045; mix-blend-mode: screen; }
+
+  /* ---- arrival ---- */
+  #arrival { position: fixed; inset: 0; z-index: 60; background: var(--bg);
+             display: grid; place-items: center; transition: opacity .7s ease; }
+  #arrival.gone { opacity: 0; pointer-events: none; }
+  #arrival .plate { text-align: center; }
+  #arrival h1 { font: 300 46px/1.05 var(--serif); font-variation-settings: "opsz" 120;
+                margin: 0 0 6px; letter-spacing: -.02em; }
+  #arrival h1 em { font-style: italic; color: var(--accent); }
+  #arrival .sub { color: var(--faint); margin-bottom: 26px; }
+  #arrival .count { font: 500 11px/1 var(--mono); letter-spacing: .3em; color: var(--dim); }
+  #arrival .bar { width: 220px; height: 1px; background: var(--hair); margin: 14px auto 0; }
+  #arrival .bar i { display: block; height: 1px; width: 0; background: var(--accent);
+                    transition: width .35s cubic-bezier(.22,1,.36,1); }
+
+  /* ---- frame ---- */
+  #app { display: grid; grid-template-columns: 72px 280px 1fr 292px;
+         grid-template-rows: 1fr 26px; height: 100vh; opacity: 0; }
+  #app.in { opacity: 1; transition: opacity .5s ease .1s; }
+  .born { opacity: 0; transform: translateY(6px); }
+  .born.up { opacity: 1; transform: none;
+             transition: opacity .5s ease, transform .6s cubic-bezier(.22,1,.36,1); }
+
+  /* ---- rail ---- */
+  #rail { grid-row: 1 / 3; background: var(--rail); border-right: 1px solid var(--hair);
+          display: flex; flex-direction: column; align-items: center; padding: 14px 0 10px;
+          gap: 6px; overflow-y: auto; }
+  #rail::-webkit-scrollbar { width: 0; }
+  .node { width: 46px; height: 46px; display: grid; place-items: center; margin-bottom: 10px;
+          font: 300 22px/1 var(--serif); color: var(--accent);
+          border: 1px solid var(--line); border-radius: 15px; }
+  .dom { position: relative; width: 44px; height: 44px; display: grid; place-items: center;
+         cursor: pointer; border-radius: 50%; border: 1px solid transparent;
+         background: #16161b; transition: border-radius .3s cubic-bezier(.22,1,.36,1),
+                     background .25s, transform .25s cubic-bezier(.22,1,.36,1); }
+  .dom .code { font: 500 12px/1 var(--mono); letter-spacing: .06em; color: var(--faint);
+               transition: color .25s; }
+  .dom:hover .code { color: var(--dim); }
+  .dom.on .code { color: var(--ink); }
+  .dom:hover { border-radius: 15px; background: #1e1e25; transform: translateY(-1px); }
+  .dom.on { border-radius: 15px; background: #23232c; border-color: var(--line); }
+  .dom .badge { position: absolute; top: -1px; right: -1px; min-width: 16px; height: 16px;
+                border-radius: 8px; background: var(--human); color: #17110a;
+                font: 600 10px/16px var(--mono); text-align: center; padding: 0 4px;
+                border: 2px solid var(--rail); }
+  .dom.on .badge { border-color: var(--rail); }
+
+  /* ---- channel column ---- */
+  #col { background: var(--col); border-right: 1px solid var(--hair);
+         display: flex; flex-direction: column; overflow: hidden; }
+  #colhead { padding: 20px 20px 14px; border-bottom: 1px solid var(--hair); }
+  #colhead h2 { margin: 0 0 5px; font: 300 21px/1.15 var(--serif);
+                font-variation-settings: "opsz" 40; letter-spacing: -.01em; }
+  #colhead p { margin: 0; font-size: 12.5px; color: var(--dim); line-height: 1.45; }
+  #threads { overflow-y: auto; padding: 10px 10px 20px; flex: 1; }
+
+  /* Standing is weight. An unanswered decision is hollow and thin; a settled one
+     is solid and sits heavier. Hide every word and the two still read apart. */
+  .th { position: relative; padding: 11px 12px 11px 15px; margin-bottom: 3px; cursor: pointer;
+        border-radius: 3px; transition: background .22s; }
+  .th::before { content: ""; position: absolute; left: 0; top: 8px; bottom: 8px; width: 2px;
+                background: var(--faint); transition: all .3s cubic-bezier(.22,1,.36,1); }
+  .th.open::before { top: 4px; bottom: 4px; width: 3px; background: var(--human);
+                     box-shadow: 0 0 12px -2px var(--human); }
+  .th.settled::before { background: var(--hair); }
+  .th:hover { background: #1b1b22; }
+  .th.on { background: #22222b; }
+  .th .t { font-size: 13.5px; line-height: 1.4; color: var(--dim); }
+  .th.on .t, .th.open .t { color: var(--ink); }
+  .th .m { margin-top: 5px; display: flex; gap: 9px; align-items: center; }
+  /* A settled decision keeps its verdict. Losing it after answering would make
+     the queue forget the only thing the owner actually contributed. */
+  .th.settled::before { background: var(--accent); width: 2px; }
+  .verdict { font: 500 9px/1 var(--mono); letter-spacing: .16em; padding: 3px 5px;
+             border-radius: 2px; border: 1px solid currentColor; }
+  .v-ACCEPT { color: var(--accent); }
+  .v-REJECT { color: var(--warn); }
+  .v-STRIKE { color: #b48ad4; }
+  .v-REDIRECT { color: var(--model); }
+  #qverdict { display: inline-flex; align-items: center; gap: 8px; }
+
+  /* the provenance pull-out */
+  .prov span.pull { cursor: pointer; }
+  .prov span.pull:hover { color: var(--accent); border-color: var(--accent); }
+  #pull { position: fixed; right: 0; top: 0; bottom: 26px; width: 460px; z-index: 50;
+          background: #101014; border-left: 1px solid var(--line); padding: 26px 26px 30px;
+          overflow-y: auto; transform: translateX(100%);
+          transition: transform .42s cubic-bezier(.22,1,.36,1);
+          box-shadow: -30px 0 60px -30px #000; }
+  #pull.out { transform: none; }
+  #pull h4 { margin: 0 0 4px; font: 300 22px/1.2 var(--serif); }
+  #pull .lead { color: var(--faint); font-size: 12px; margin-bottom: 22px; }
+  #pull .close { position: absolute; top: 20px; right: 22px; cursor: pointer;
+                 color: var(--faint); font: 400 18px/1 var(--mono); }
+  #pull .close:hover { color: var(--ink); }
+  #pull pre { font: 400 11px/1.7 var(--mono); color: var(--dim); white-space: pre-wrap;
+              word-break: break-all; margin: 0 0 18px; }
+  #pull .chain { border-left: 2px solid var(--hair); padding-left: 14px; margin-bottom: 20px; }
+  #pull .chain div { font: 400 10.5px/1.8 var(--mono); color: var(--faint); }
+  #pull .chain b { color: var(--accent); font-weight: 500; }
+
+  /* ---- the decision ---- */
+  #main { background: var(--main); display: flex; flex-direction: column; overflow: hidden;
+          position: relative; }
+  #main::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+                 background: radial-gradient(120% 90% at 50% 0%, transparent 55%, #00000055); }
+  #scroll { flex: 1; overflow-y: auto; padding: 46px 0 30px; }
+  /* With nothing open the pane is otherwise a large black rectangle, and the
+     one thing to do would sit against its top edge. */
+  #scroll.void-only { display: flex; flex-direction: column; justify-content: center;
+                      padding: 0 0 26px; }
+  .measure { max-width: 68ch; margin: 0 auto; padding: 0 40px; }
+  #q { margin: 0 0 8px; font: 300 34px/1.18 var(--serif); font-variation-settings: "opsz" 96;
+       letter-spacing: -.018em; }
+  #qmeta { display: flex; gap: 14px; align-items: center; flex-wrap: wrap;
+           padding-bottom: 26px; margin-bottom: 30px; border-bottom: 1px solid var(--hair); }
+  #qmeta a { color: var(--faint); text-decoration: none; border-bottom: 1px solid var(--hair); }
+
+  .post { margin-bottom: 34px; }
+  .who { display: flex; align-items: center; gap: 9px; margin-bottom: 9px; }
+  .av { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center;
+        font: 600 9px/1 var(--mono); color: #14141a; }
+  .av.HUMAN { background: var(--human); } .av.MODEL { background: var(--model); }
+  .who b { font: 500 13px/1 var(--sans); letter-spacing: .01em; }
+  .who .role { color: var(--faint); font-size: 11.5px; }
+  .who .when { margin-left: auto; font: 400 10.5px/1 var(--mono); color: var(--faint); }
+  .body { font-size: 15px; line-height: 1.72; color: #dedee6; white-space: pre-wrap; }
+  .post.mine .body { color: var(--ink); }
+  .prov { margin-top: 11px; display: flex; gap: 7px; flex-wrap: wrap; }
+  .prov span { font: 400 10px/1 var(--mono); letter-spacing: .04em; color: var(--faint);
+               border: 1px solid var(--hair); border-radius: 2px; padding: 4px 6px;
+               transition: color .2s, border-color .2s; }
+  .prov span:hover { color: var(--dim); border-color: var(--line); }
+
+  /* ---- the act ---- */
+  /* An empty region is a state with a first move in it, not a blank pane. The
+     plate carries the same editorial weight as a thread, because on a fresh node
+     it is the only thing on screen. */
+  .void { padding: 8px 40px 0; }
+  .void h2 { margin: 0 0 12px; font: 300 34px/1.15 var(--serif);
+             font-variation-settings: "opsz" 72; letter-spacing: -.02em; }
+  .void h2 em { font-style: italic; color: var(--accent); }
+  .void p { margin: 0 0 16px; color: var(--dim); font-size: 15px; max-width: 60ch; }
+  .void .fields { display: flex; gap: 10px; flex-wrap: wrap; margin: 22px 0 12px;
+                  max-width: 60ch; }
+  .void .fields .f { flex: 1 1 180px; }
+  .void label { display: block; margin-bottom: 5px; }
+  .void input { width: 100%; background: var(--sunk); border: 1px solid var(--line);
+                color: var(--ink); border-radius: 3px; padding: 10px 12px;
+                font: 400 14px/1.5 var(--sans); outline: none; transition: border-color .2s; }
+  .void input:focus { border-color: var(--accent); }
+  .void .go { display: inline-flex; background: transparent; border: 1px solid var(--line);
+              color: var(--ink); border-radius: 3px; padding: 11px 20px; cursor: pointer;
+              font: 500 10.5px/1 var(--mono); letter-spacing: .2em; text-transform: uppercase;
+              transition: border-color .25s, background .25s, transform .25s; }
+  .void .go:hover:not(:disabled) { border-color: var(--accent); background: #1e1e25;
+                                   transform: translateY(-1px); }
+  .void .go:disabled { color: var(--faint); cursor: progress; }
+  .void .alt { background: none; border: 0; border-bottom: 1px solid var(--line);
+               color: var(--dim); font: 400 13.5px/1.4 var(--sans); cursor: pointer;
+               padding: 0 0 2px; margin-left: 16px; transition: color .2s, border-color .2s; }
+  .void .alt:hover:not(:disabled) { color: var(--ink); border-color: var(--accent); }
+  .void .out { margin-top: 18px; border-left: 2px solid var(--accent); padding: 8px 0 8px 14px;
+               font: 400 12.5px/1.6 var(--mono); color: var(--dim); white-space: pre-wrap;
+               display: none; }
+  .void .out.on { display: block; }
+  .void .out.refused { border-color: var(--warn); color: var(--warn); }
+  .void .counts { display: flex; gap: 26px; margin: 24px 0 4px; flex-wrap: wrap; }
+  .void .counts .c .v { font: 300 26px/1 var(--serif); font-feature-settings: "tnum"; }
+  .void .counts .c .k { margin-top: 5px; }
+
+  /* The empty channel column and the empty side queue get the quiet treatment:
+     size and placement carry it, never dimmed-to-unreadable text. */
+  .nothing { padding: 18px 14px; color: var(--faint); font-size: 13px; line-height: 1.5; }
+  .nothing b { display: block; color: var(--dim); font-weight: 400; margin-bottom: 4px; }
+
+  /* The rail's open slot: dashed until the node has a channel in it. */
+  .dom.add { border: 1px dashed var(--line); background: transparent; }
+  .dom.add .code { color: var(--faint); font-size: 17px; letter-spacing: 0; }
+  .dom.add:hover { border-color: var(--accent); background: #1b1b21; }
+  .dom.add.only { border-color: var(--accent); }
+  .dom.add.only .code { color: var(--accent); }
+
+  #act { border-top: 1px solid var(--hair); background: var(--sunk); padding: 20px 0 18px; }
+  #act .measure { padding: 0 40px; }
+  #verbs { display: flex; gap: 8px; margin: 10px 0 12px; flex-wrap: wrap; }
+  .verb { font: 500 11px/1 var(--mono); letter-spacing: .14em; padding: 9px 14px;
+          border: 1px solid var(--line); background: transparent; color: var(--dim);
+          border-radius: 3px; cursor: pointer; transition: all .22s cubic-bezier(.22,1,.36,1); }
+  .verb:hover { color: var(--ink); border-color: #3a3a46; transform: translateY(-1px); }
+  .verb.on { background: var(--accent); border-color: var(--accent); color: #0d1a16; }
+  #row { display: flex; gap: 10px; align-items: stretch; }
+  textarea { flex: 1; resize: none; background: #1b1b22; color: var(--ink);
+             border: 1px solid var(--line); border-radius: 4px; padding: 12px 14px;
+             font: 400 14px/1.6 var(--sans); min-height: 46px; max-height: 150px; }
+  textarea::placeholder { color: var(--faint); }
+  textarea:focus { outline: none; border-color: #3e3e4c; background: #1e1e26; }
+  #send { background: var(--accent); color: #0d1a16; border: 0; border-radius: 4px;
+          padding: 0 22px; font: 600 12px/1 var(--mono); letter-spacing: .12em; cursor: pointer;
+          transition: filter .2s, transform .2s; }
+  #send:hover { filter: brightness(1.07); transform: translateY(-1px); }
+  #send:disabled { opacity: .4; transform: none; filter: none; cursor: default; }
+  #note { margin-top: 10px; font-size: 11.5px; color: var(--faint); line-height: 1.5; }
+  #receipt { margin-top: 12px; border-left: 2px solid var(--ok); background: #16161c;
+             padding: 11px 14px; display: none; }
+  #receipt.on { display: block; animation: land .5s cubic-bezier(.22,1,.36,1); }
+  #receipt.refused { border-left-color: var(--warn); }
+  #receipt b { font: 500 10px/1 var(--mono); letter-spacing: .2em; color: var(--ok); }
+  #receipt.refused b { color: var(--warn); }
+  #receipt div { margin-top: 7px; font: 400 11px/1.6 var(--mono); color: var(--faint); }
+  @keyframes land { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; } }
+
+  /* ---- provenance rail ---- */
+  #side { background: var(--col); border-left: 1px solid var(--hair); overflow-y: auto;
+          padding: 22px 20px 30px; }
+  .grp { margin-bottom: 30px; }
+  .grp > .micro { display: block; margin-bottom: 12px; }
+  .kv { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; align-items: baseline; }
+  .kv dt { font-size: 11.5px; color: var(--faint); }
+  .kv dd { margin: 0; font: 400 11.5px/1.5 var(--mono); color: var(--dim);
+           text-align: right; word-break: break-all; }
+  .member { display: flex; align-items: center; gap: 10px; padding: 5px 0; }
+  .member .av { width: 20px; height: 20px; }
+  .member b { font: 500 12.5px/1 var(--sans); }
+  .member i { font-style: normal; margin-left: auto; font-size: 10.5px; color: var(--faint); }
+  .op { border-bottom: 1px solid var(--hair); }
+  .op > summary { padding: 8px 0; cursor: pointer; list-style: none;
+                  display: flex; align-items: baseline; gap: 8px; }
+  .op > summary::-webkit-details-marker { display: none; }
+  .op > summary::before { content: "+"; font: 400 11px/1 var(--mono); color: var(--faint); }
+  .op[open] > summary::before { content: "\2212"; color: var(--accent); }
+  .op b { font: 500 11.5px/1.4 var(--mono); color: var(--dim); }
+  .op[open] b { color: var(--ink); }
+  .op .arity { margin-left: auto; font: 400 9.5px/1 var(--mono); color: var(--faint); }
+  .form { padding: 4px 0 12px; }
+  .field { margin-bottom: 7px; }
+  .field label { display: block; font: 400 9.5px/1 var(--mono); letter-spacing: .12em;
+                 text-transform: uppercase; color: var(--faint); margin-bottom: 4px; }
+  .field input { width: 100%; background: #1b1b22; border: 1px solid var(--line);
+                 border-radius: 3px; color: var(--ink); padding: 7px 9px;
+                 font: 400 11px/1.4 var(--mono); }
+  .field input:focus { outline: none; border-color: #3e3e4c; }
+  .field input::placeholder { color: #55555f; }
+  .field.filled label { color: var(--accent); }
+  .run { width: 100%; margin-top: 8px; background: transparent; color: var(--dim);
+         border: 1px solid var(--line); border-radius: 3px; padding: 8px;
+         font: 500 10px/1 var(--mono); letter-spacing: .18em; cursor: pointer;
+         transition: all .2s; }
+  .run:hover { color: var(--ink); border-color: var(--accent); }
+  .run:disabled { opacity: .4; cursor: default; }
+  .out { margin-top: 8px; padding: 8px 10px; border-left: 2px solid var(--ok);
+         background: #16161c; font: 400 10px/1.6 var(--mono); color: var(--faint);
+         white-space: pre-wrap; word-break: break-all; }
+  .out.refused { border-left-color: var(--warn); }
+  .out b { color: var(--ok); font-weight: 500; letter-spacing: .16em; }
+  .out.refused b { color: var(--warn); }
+
+  /* ---- the tape ---- */
+  #tape { grid-column: 2 / 5; background: var(--rail); border-top: 1px solid var(--hair);
+          display: flex; align-items: stretch; overflow: hidden; }
+  #tape .lbl { flex: none; z-index: 2; background: var(--rail); padding: 0 14px;
+               border-right: 1px solid var(--hair); line-height: 25px; }
+  #tape .lane { flex: 1; overflow: hidden; position: relative; }
+  #tape .strip { position: absolute; display: flex; gap: 26px; white-space: nowrap;
+                 padding-left: 18px; animation: slide 90s linear infinite; }
+  #tape:hover .strip { animation-play-state: paused; }
+  #tape .e { font: 400 10px/25px var(--mono); color: var(--faint); }
+  #tape .e b { font-weight: 500; color: var(--dim); }
+  #tape .e.RECEIPT b { color: var(--accent); }
+  @keyframes slide { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+</style>
+
+<div id="arrival"><div class="plate">
+  <h1>Soveraeign <em>console</em></h1>
+  <div class="sub">the node's operator surface</div>
+  <div class="count" id="acount">READING THE JOURNAL</div>
+  <div class="bar"><i id="abar"></i></div>
+</div></div>
+
+<svg id="grain" width="100%" height="100%" preserveAspectRatio="none"><filter id="g" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3"/></filter><rect width="100%" height="100%" filter="url(#g)"/></svg>
+
+<div id="app">
+  <nav id="rail"></nav>
+  <section id="col">
+    <div id="colhead"><h2>—</h2><p></p></div>
+    <div id="threads"></div>
+  </section>
+  <section id="main">
+    <div id="scroll">
+      <div class="measure" id="qhead">
+        <h1 id="q">—</h1>
+        <div id="qmeta"></div>
+      </div>
+      <div class="measure" id="posts"></div>
+      <div class="measure void" id="void"></div>
+    </div>
+    <div id="act"><div class="measure">
+      <span class="micro" id="actlabel">Record your answer</span>
+      <div id="verbs"></div>
+      <div id="row">
+        <textarea id="text" placeholder="Why. This becomes the rationale on the record."></textarea>
+        <button id="send">RECORD</button>
+      </div>
+      <div id="note"></div>
+      <div id="receipt"></div>
+    </div></div>
+  </section>
+  <aside id="side"></aside>
+  <div id="pull"><span class="close" onclick="closePull()">&times;</span>
+    <h4 id="pulltitle">—</h4><div class="lead" id="pulllead"></div>
+    <div class="chain" id="pullchain"></div><pre id="pullbody"></pre></div>
+  <div id="tape"><span class="lbl micro">journal</span>
+    <div class="lane"><div class="strip" id="strip"></div></div></div>
+</div>
+
+<script>
+// Nothing on this page is true because the page says so. Every value came from
+// /api/state, a projection rebuilt from the journal on each call, and every act
+// goes back out through /api/call. A reload loses nothing.
+const S = { state: null, ops: null, channel: null, thread: null, verb: null,
+            opening: null, said: null };
+
+const api = {
+  json: async path => (await fetch(path)).json(),
+  async call(operation, inputs) {
+    const r = await fetch('/api/call', { method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ operation, inputs }) });
+    return { ok: r.ok, status: r.status, payload: await r.json() };
+  }
+};
+
+const el = (tag, cls, text) => {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text != null) n.textContent = text;
+  return n;
+};
+const who = id => S.state.operators.find(o => o.operator_id === id)
+                  || { display: id, actor_kind: 'MODEL', role: '' };
+const chan = id => S.state.channels.find(c => c.channel_id === id);
+const threadsIn = id => S.state.threads.filter(t => t.channel_id === id);
+const postsIn = id => S.state.posts.filter(p => p.thread_id === id);
+const initials = n => n.replace(/^sov-/, '').slice(0, 2).toUpperCase();
+const clock = ts => (ts || '').replace('T', ' ').replace('Z', ' UTC');
+
+// A judgement thread is open until the owner has posted in it. That is the only
+// state this queue needs, and it is read off the records rather than stored.
+const answered = t => postsIn(t.thread_id).some(p => p.actor_kind === 'HUMAN');
+// The owner's verb is the first line of the post they recorded. Read back off the
+// record rather than kept beside it, so it survives a reload and a rebuild.
+function verdict(t) {
+  const mine = postsIn(t.thread_id).filter(p => p.actor_kind === 'HUMAN');
+  for (let i = mine.length - 1; i >= 0; i--) {
+    const head = (mine[i].body.split('\n')[0] || '').trim();
+    if (S.state.owner_actions.includes(head)) return head;
+  }
+  return null;
+}
+const isQueue = c => c && c.domain === 'judgement';
+const waiting = () => S.state.channels.filter(isQueue)
+  .flatMap(c => threadsIn(c.channel_id)).filter(t => !answered(t));
+
+// v2 drew a generated mark per domain. At 44px the strokes arrived as hairlines
+// and three domains read as the same smudge, so the band that ships is the band
+// that was wrong. A two-letter code is legible at this size, and it is made
+// unique by construction rather than by hoping: the first letter, then the first
+// later letter no earlier channel has already claimed.
+function codes(names) {
+  const taken = new Set(), out = {};
+  for (const name of names) {
+    const first = name[0].toUpperCase();
+    let code = null;
+    for (const ch of name.slice(1)) {
+      const candidate = first + ch.toUpperCase();
+      if (!taken.has(candidate)) { code = candidate; break; }
+    }
+    code = code || first + String(Object.keys(out).length);
+    taken.add(code); out[name] = code;
+  }
+  return out;
+}
+
+function renderRail() {
+  S.codes = codes(S.state.channels.map(c => c.domain));
+  const rail = document.getElementById('rail');
+  rail.replaceChildren();
+  const node = el('div', 'node', 'S');
+  node.title = S.state.node_id;
+  rail.append(node);
+  for (const c of S.state.channels) {
+    const b = el('div', 'dom' + (c.channel_id === S.channel ? ' on' : ''));
+    b.append(el('span', 'code', S.codes[c.domain]));
+    const open = threadsIn(c.channel_id).filter(t => isQueue(c) && !answered(t)).length;
+    if (open) b.append(el('span', 'badge', String(open)));
+    b.title = c.name + ' — ' + c.purpose;
+    b.onclick = () => selectChannel(c.channel_id);
+    rail.append(b);
+  }
+  // The slot for the next channel is always here, and on an empty node it is the
+  // only thing to press. A rail with nothing in it would read as a broken pane.
+  const add = el('div', 'dom add' + (S.state.channels.length ? '' : ' only'));
+  add.append(el('span', 'code', '+'));
+  add.title = S.state.channels.length ? 'open another channel' : 'open the first channel';
+  add.onclick = () => { S.channel = null; S.thread = null; S.opening = 'channel';
+                        S.said = null; renderAll(); };
+  rail.append(add);
+}
+
+function renderColumn() {
+  const c = chan(S.channel);
+  const list = document.getElementById('threads');
+  list.replaceChildren();
+  if (!c) {
+    const empty = !S.state.channels.length;
+    document.querySelector('#colhead h2').textContent = empty ? 'no channels' : 'no channel open';
+    document.querySelector('#colhead p').textContent = empty
+      ? 'A channel is the scope a grant can name. Nothing can be opened until one exists.'
+      : 'Pick one on the left, or open another.';
+    const row = el('div', 'nothing');
+    row.append(el('b', '', empty ? 'Threads live in a channel.' : 'No channel selected.'));
+    row.append(document.createTextNode(empty
+      ? 'This column fills in as soon as the first one is open.'
+      : 'Pick one on the rail and its threads appear here.'));
+    list.append(row);
+    return;
+  }
+  document.querySelector('#colhead h2').textContent = c.name;
+  document.querySelector('#colhead p').textContent = c.purpose;
+  if (!threadsIn(S.channel).length) {
+    const row = el('div', 'nothing');
+    row.append(el('b', '', 'No threads here yet.'));
+    row.append(document.createTextNode(
+      'A thread is one bounded question. The pane on the right opens the first one.'));
+    list.append(row);
+  }
+  threadsIn(S.channel).forEach((t, i) => {
+    const open = isQueue(c) && !answered(t);
+    const row = el('div', 'th born ' + (open ? 'open' : 'settled')
+      + (t.thread_id === S.thread ? ' on' : ''));
+    row.append(el('div', 't', t.title));
+    const meta = el('div', 'm micro');
+    const v = isQueue(c) ? verdict(t) : null;
+    if (v) meta.append(el('span', 'verdict v-' + v, v));
+    meta.append(el('span', '', t.post_count + (t.post_count === 1 ? ' post' : ' posts')));
+    if (open) meta.append(el('span', '', '· unanswered'));
+    row.append(meta);
+    row.onclick = () => selectThread(t.thread_id);
+    list.append(row);
+    setTimeout(() => row.classList.add('up'), 20 + i * 26);
+  });
+}
+
+function renderThread() {
+  const t = S.state.threads.find(x => x.thread_id === S.thread);
+  const posts = document.getElementById('posts');
+  const meta = document.getElementById('qmeta');
+  posts.replaceChildren(); meta.replaceChildren();
+  if (!t) {
+    renderVoid();
+    return;
+  }
+  document.getElementById('act').style.display = '';
+  document.getElementById('qhead').style.display = '';
+  document.getElementById('void').style.display = 'none';
+  document.getElementById('scroll').classList.remove('void-only');
+  document.getElementById('q').textContent = t.title;
+  const v = isQueue(chan(t.channel_id)) ? verdict(t) : null;
+  if (v) {
+    const held = el('span', 'micro', 'you answered');
+    const chip = el('span', 'verdict v-' + v, v);
+    const pair = el('span', 'qverdict');
+    pair.id = 'qverdict';
+    pair.append(held, chip);
+    meta.append(pair);
+  }
+  meta.append(el('span', 'micro', chan(t.channel_id).name));
+  if (t.pinned_address) {
+    const a = el('a', 'mono', t.pinned_address);
+    a.title = 'the record this thread is pinned to';
+    meta.append(el('span', 'micro', 'pinned to'), a);
+  } else {
+    meta.append(el('span', 'micro', 'not pinned to a record'));
+  }
+  if (!postsIn(S.thread).length) {
+    const row = el('div', 'nothing');
+    row.append(el('b', '', 'No posts in this thread yet.'));
+    row.append(document.createTextNode('Yours would be the first. It writes an EVENT and a '
+      + 'RECEIPT under a post grant scoped to this thread.'));
+    posts.append(row);
+  }
+  postsIn(S.thread).forEach((p, i) => {
+    const person = who(p.actor_id);
+    const wrap = el('div', 'post born' + (p.actor_kind === 'HUMAN' ? ' mine' : ''));
+    const line = el('div', 'who');
+    line.append(el('div', 'av ' + p.actor_kind, initials(person.display)),
+                el('b', '', person.display),
+                el('span', 'role', person.role),
+                el('span', 'when', clock(p.posted_at)));
+    wrap.append(line, el('div', 'body', p.body));
+    const prov = el('div', 'prov');
+    prov.append(el('span', '', p.standing));
+    const digest = el('span', 'pull', p.content_digest.slice(0, 20));
+    digest.title = 'pull this back to the journal entry that carries it';
+    digest.onclick = () => pull(p.content_digest.replace('sha256:', ''), person.display
+      + "'s post, by its content digest");
+    prov.append(digest);
+    const entry = el('span', 'pull', 'entry ' + p.entry_id.slice(6, 18));
+    entry.title = 'pull this back to its place in the chain';
+    entry.onclick = () => pull(p.entry_id, 'the journal entry for this post');
+    prov.append(entry);
+    if (p.proposal_id) prov.append(el('span', '', 'entered as a proposal'));
+    prov.append(el('span', '', 'via ' + p.binding_id.replace('binding:', '')));
+    wrap.append(prov);
+    posts.append(wrap);
+    setTimeout(() => wrap.classList.add('up'), 60 + i * 70);
+  });
+  renderAct(t);
+}
+
+// Nothing is open. That is a state with a first move in it, and the move happens
+// here: the same calls the operation console makes, with the fields already
+// answered by what the surface knows.
+function renderVoid() {
+  const box = document.getElementById('void');
+  document.getElementById('qhead').style.display = 'none';
+  document.getElementById('act').style.display = 'none';
+  document.getElementById('scroll').classList.add('void-only');
+  box.style.display = '';
+  box.replaceChildren();
+
+  const c = chan(S.channel);
+  const bare = !S.state.channels.length;
+  const mode = bare || S.opening === 'channel' || !c ? 'channel' : 'thread';
+
+  const h = el('h2');
+  if (bare) {
+    h.append(document.createTextNode('Nothing has happened here '),
+             el('em', '', 'yet'), document.createTextNode('.'));
+  } else if (mode === 'channel') {
+    h.textContent = 'Open another channel';
+  } else {
+    h.textContent = 'Open the first thread in ' + c.name;
+  }
+  box.append(h);
+
+  box.append(el('p', '', bare
+    ? 'The journal on this node is empty \u2014 not broken, not unconfigured. Every act '
+      + 'here is checked against a grant scoped to its exact target, and the first '
+      + 'thing that can be scoped is a channel. Opening one takes the grant and the '
+      + 'channel together, and shows you both entries.'
+    : mode === 'channel'
+      ? 'A channel holds one domain of work. It is the scope a grant can name, which '
+        + 'is why the grant is taken in the same act.'
+      : 'A thread is one bounded question. It needs its own grant, scoped to this '
+        + 'channel, so this takes that grant first.'));
+
+  if (bare) {
+    const counts = el('div', 'counts');
+    for (const [k, label] of [['entries', 'journal entries'], ['channels', 'channels'],
+                              ['posts', 'posts'], ['grants', 'live grants']]) {
+      const cell = el('div', 'c');
+      cell.append(el('div', 'v', String(S.state.counts[k])), el('div', 'k micro', label));
+      counts.append(cell);
+    }
+    box.append(counts);
+  }
+
+  const fields = el('div', 'fields');
+  const inputs = {};
+  const spec = mode === 'channel'
+    ? [['name', 'what to call it', 'founding'], ['domain', 'domain it covers', 'founding']]
+    : [['title', 'the question', 'What is this node for?']];
+  for (const [name, label, value] of spec) {
+    const f = el('div', 'f');
+    f.append(el('label', 'micro', label));
+    const input = el('input');
+    input.value = value;
+    input.id = 'void-' + name;
+    f.append(input);
+    inputs[name] = input;
+    fields.append(f);
+  }
+  box.append(fields);
+
+  const row = el('div');
+  const go = el('button', 'go', mode === 'channel' ? 'open the channel' : 'open the thread');
+  const out = el('div', 'out');
+  // A landed act re-renders this pane, and the re-render used to take with it the
+  // receipt of the act that caused it - the one thing the operator was reading.
+  // The readout is state, so it survives the rebuild.
+  if (S.said) {
+    out.className = 'out on' + (S.said.refused ? ' refused' : '');
+    out.textContent = S.said.text;
+  }
+  go.onclick = async () => {
+    go.disabled = true;
+    const said = Object.fromEntries(
+      Object.entries(inputs).map(([k, v]) => [k, v.value.trim()]));
+    const results = mode === 'channel'
+      ? await openChannel(said.name, said.domain)
+      : await openThread(c.channel_id, said.title);
+    const bad = results.find(r => !r.ok);
+    if (bad) {
+      S.said = { refused: true, text: 'REFUSED \u00b7 '
+        + (bad.payload.reason_code || bad.status) + '\n' + (bad.payload.message || '') + '\n'
+        + (bad.payload.recorded
+           ? 'The refusal is on the record too.'
+           : 'Not written: the authority check refuses before the append path.') };
+      out.className = 'out on refused';
+      out.textContent = S.said.text;
+      go.disabled = false;
+      return;
+    }
+    S.said = { refused: false, text: 'RECORDED \u00b7 ' + results.length + ' entries\n'
+      + results.map(r => '  ' + r.payload.operation.replace('console.', '')
+        + '  ' + ((r.payload.receipt || {}).entry_id || '')).join('\n') };
+    out.className = 'out on';
+    out.textContent = S.said.text;
+    S.opening = null;
+    const made = Object.assign({}, ...results.map(r => r.payload.record || {}));
+    await load();
+    if (made.channel_id) { S.channel = made.channel_id; S.thread = null; }
+    if (made.thread_id) { S.thread = made.thread_id; }
+    renderAll();
+  };
+  row.append(go);
+
+  if (bare) {
+    const alt = el('button', 'alt', 'Fill it with the repository\u2019s real state instead');
+    alt.onclick = async () => {
+      alt.disabled = true;
+      alt.textContent = 'reading the repository\u2026';
+      const r = await api.call('console.fill', {});
+      if (!r.ok) {
+        alt.textContent = 'could not: ' + (r.payload.reason_code || 'failed');
+        alt.disabled = false;
+        return;
+      }
+      location.reload();
+    };
+    row.append(alt);
+  }
+  box.append(row, out);
+}
+
+// The two composed acts the empty states need. Both take the grant their
+// transition requires and hand back every result, so a refusal at either step is
+// the one that gets shown.
+async function openChannel(name, domain) {
+  const g = await api.call('console.grant',
+    { operator_id: 'operator:bdo', capability: 'open-channel', scope: domain });
+  if (!g.ok) return [g];
+  return [g, await api.call('console.open-channel',
+    { operator_id: 'operator:bdo', name: name, domain: domain })];
+}
+
+async function openThread(channelId, title) {
+  const g = await api.call('console.grant',
+    { operator_id: 'operator:bdo', capability: 'open-thread', scope: channelId });
+  if (!g.ok) return [g];
+  const t = await api.call('console.open-thread',
+    { operator_id: 'operator:bdo', channel_id: channelId, title: title });
+  if (!t.ok) return [g, t];
+  // A thread nobody may post in is a dead end on a fresh node, so the post grant
+  // is part of opening it - as its own entry, not a hidden one.
+  const post = await api.call('console.grant',
+    { operator_id: 'operator:bdo', capability: 'post', scope: t.payload.record.thread_id });
+  return [g, t, post];
+}
+
+function renderAct(t) {
+  const queue = isQueue(chan(t.channel_id));
+  const verbs = document.getElementById('verbs');
+  verbs.replaceChildren();
+  document.getElementById('actlabel').textContent = queue
+    ? 'Record your answer' : 'Add to this thread';
+  if (queue) {
+    for (const action of S.state.owner_actions) {
+      const b = el('button', 'verb' + (S.verb === action ? ' on' : ''), action);
+      b.onclick = () => { S.verb = S.verb === action ? null : action; renderAct(t); };
+      verbs.append(b);
+    }
+  }
+  document.getElementById('text').placeholder = queue
+    ? 'Why. This becomes the rationale on the record.'
+    : 'Write into this thread.';
+  document.getElementById('note').textContent = queue
+    ? 'Recording writes an EVENT and a RECEIPT to the journal as Bdo, under a live '
+      + 'post grant scoped to this thread. A console record enters at RECORDED. '
+      + 'The judgement-request record does not exist yet, so this is your answer on '
+      + 'the record — it is not a ratification.'
+    : 'This writes an EVENT and a RECEIPT to the journal as Bdo. Nothing here ratifies.';
+}
+
+function renderSide() {
+  const side = document.getElementById('side');
+  side.replaceChildren();
+  const t = S.state.threads.find(x => x.thread_id === S.thread);
+
+  if (t) {
+    const g = el('div', 'grp');
+    g.append(el('span', 'micro', 'this thread'));
+    const kv = el('dl', 'kv');
+    const rows = [['standing', 'RECORDED'], ['lifecycle', t.lifecycle],
+      ['posts', String(t.post_count)], ['opened by', who(t.opened_by).display],
+      ['answered', answered(t) ? 'yes' : 'not yet']];
+    if (t.pinned_digest) rows.push(['pin digest', t.pinned_digest.slice(7, 27)]);
+    for (const [k, v] of rows) { kv.append(el('dt', '', k), el('dd', '', v)); }
+    g.append(kv);
+    side.append(g);
+  }
+
+  const q = el('div', 'grp');
+  q.append(el('span', 'micro', 'waiting on you'));
+  const open = waiting();
+  if (!open.length) q.append(el('div', '', 'Nothing unanswered.'));
+  for (const w of open) {
+    const row = el('div', 'th open');
+    row.style.padding = '8px 10px 8px 13px';
+    row.append(el('div', 't', w.title));
+    row.onclick = () => { S.channel = w.channel_id; S.thread = w.thread_id; renderAll(); };
+    q.append(row);
+  }
+  side.append(q);
+
+  const m = el('div', 'grp');
+  m.append(el('span', 'micro', 'operators'));
+  for (const o of S.state.operators) {
+    const row = el('div', 'member');
+    row.append(el('div', 'av ' + o.actor_kind, initials(o.display)),
+               el('b', '', o.display),
+               el('i', '', o.acted === false ? 'not seen here yet' : o.role));
+    m.append(row);
+  }
+  side.append(m);
+
+  side.append(operationConsole());
+}
+
+// Built once and kept. Rebuilding it on every reload threw away the receipt of
+// the operation that caused the reload, which is the one thing the operator was
+// looking at. Prefilled fields still follow what is open, but only where the
+// operator has not typed over them.
+function operationConsole() {
+  if (!S.opConsole) {
+    S.opConsole = el('div', 'grp');
+    S.opConsole.append(el('span', 'micro', 'what this door does'));
+    const hint = el('div');
+    hint.style.cssText = 'font-size:11px;color:var(--faint);margin:-4px 0 10px;line-height:1.5';
+    hint.textContent = 'Declared at /api/operations and callable here. '
+      + 'A field named in green was filled from what you have open.';
+    S.opConsole.append(hint);
+    S.opFields = [];
+    for (const op of S.ops.operations) {
+      if (op.callable_here === false) continue;
+      S.opConsole.append(operationRow(op));
+    }
+  }
+  refreshPrefills();
+  return S.opConsole;
+}
+
+// Follow the selection without overwriting anything the operator typed.
+function refreshPrefills() {
+  const known = context();
+  for (const f of S.opFields || []) {
+    const next = known[f.name];
+    if (next === undefined) continue;
+    if (f.input.value === f.prefill || f.input.value === '') {
+      f.input.value = next;
+      f.prefill = next;
+      f.input.parentElement.classList.add('filled');
+    }
+  }
+}
+
+// What the surface already knows, so an operation never asks twice.
+// What the surface already knows, offered to the operation forms as prefills. On
+// a node with no session yet these are simply absent rather than invented.
+const context = () => ({
+  operator_id: (S.state.surface_session || {}).operator_id || 'operator:bdo',
+  session_id: (S.state.surface_session || {}).session_id,
+  thread_id: S.thread,
+  channel_id: S.channel,
+  actor_kind: 'HUMAN',
+  binding_id: (S.state.surface_session || {}).binding_id || 'binding:console-surface',
+});
+
+function operationRow(op) {
+  const row = el('details', 'op');
+  const head = el('summary');
+  head.append(el('b', '', op.operation.replace('console.', '')));
+  head.append(el('span', 'arity', op.inputs.length
+    ? op.inputs.length + (op.inputs.length === 1 ? ' input' : ' inputs') : 'no inputs'));
+  row.append(head);
+
+  const form = el('div', 'form');
+  const known = context();
+  const fields = {};
+  for (const raw of op.inputs) {
+    const name = raw.replace(/\?$/, '');
+    const optional = raw.endsWith('?');
+    const prefill = known[name];
+    const field = el('div', 'field' + (prefill ? ' filled' : ''));
+    field.append(el('label', '', name + (optional ? '  optional' : '')));
+    const input = el('input');
+    input.value = prefill || '';
+    input.placeholder = optional ? 'leave empty to omit' : name;
+    field.append(input);
+    fields[name] = { input, optional };
+    (S.opFields = S.opFields || []).push({ name, input, prefill: prefill || '' });
+    form.append(field);
+  }
+  const run = el('button', 'run', 'RUN');
+  const out = el('div', 'out');
+  out.style.display = 'none';
+  run.onclick = async () => {
+    const inputs = {};
+    for (const [name, f] of Object.entries(fields)) {
+      const value = f.input.value.trim();
+      if (value) inputs[name] = value;
+      else if (!f.optional) {
+        out.style.display = ''; out.className = 'out refused';
+        out.replaceChildren(el('b', '', 'MISSING'),
+          document.createTextNode('\n' + name + ' is required by the declaration.'));
+        return;
+      }
+    }
+    run.disabled = true;
+    const result = await api.call(op.operation, inputs);
+    run.disabled = false;
+    out.style.display = '';
+    out.className = 'out' + (result.ok ? '' : ' refused');
+    const receipt = result.payload.receipt || {};
+    out.replaceChildren(
+      el('b', '', result.ok
+        ? 'COMMITTED'
+        : 'REFUSED  ' + (result.payload.reason_code || result.status)),
+      document.createTextNode('\n' + (result.ok
+        ? (receipt.operation_type || op.operation) + '  ' + (receipt.effect_class || '')
+          + '\nentry ' + (receipt.entry_id || '')
+        : (result.payload.message || '') + '\nthe refusal was recorded too')));
+    if (result.ok) await load();   // the console survives; only the data behind it moves
+  };
+  form.append(run, out);
+  row.append(form);
+  return row;
+}
+
+function renderTape() {
+  const strip = document.getElementById('strip');
+  strip.replaceChildren();
+  const recent = S.state.journal.slice(-60).reverse();
+  // Doubled so the marquee wraps without a seam.
+  for (const pass of [0, 1]) {
+    for (const e of recent) {
+      const n = el('span', 'e ' + e.kind);
+      n.append(el('b', '', e.kind), document.createTextNode(
+        ' ' + (e.record_kind || e.event || e.operation || e.outcome || '') + ' · ' + e.subject));
+      strip.append(n);
+    }
+  }
+}
+
+function renderAll() { renderRail(); renderColumn(); renderThread(); renderSide(); renderTape(); }
+function selectChannel(id) {
+  S.channel = id; S.verb = null; S.opening = null; S.said = null;
+  const list = threadsIn(id);
+  S.thread = list.length ? list[0].thread_id : null;
+  renderAll();
+}
+function selectThread(id) { S.thread = id; S.verb = null; renderAll(); }
+
+async function send() {
+  const text = document.getElementById('text');
+  const button = document.getElementById('send');
+  const reason = text.value.trim();
+  const t = S.state.threads.find(x => x.thread_id === S.thread);
+  const queue = isQueue(chan(t.channel_id));
+  if (queue && !S.verb) { flashVerbs(); return; }
+  if (!reason) { text.focus(); return; }
+  // The verb is part of the record, not a UI state: the body carries the owner
+  // action so a later reader sees the decision, not just a comment.
+  const body = queue ? S.verb + '\n\n' + reason : reason;
+  button.disabled = true;
+  const result = await api.call('console.post', {
+    session_id: await sessionId(), thread_id: S.thread, body });
+  showReceipt(result);
+  if (result.ok) { text.value = ''; S.verb = null; await load(); }
+  button.disabled = false;
+}
+
+// The session this surface writes through, opened on first use. A page that
+// opened one per visit filled the journal with arrivals nobody made.
+async function sessionId() {
+  if (S.state.surface_session) return S.state.surface_session.session_id;
+  const r = await api.call('console.open-session', { operator_id: 'operator:bdo',
+    actor_kind: 'HUMAN', binding_id: 'binding:console-surface' });
+  if (r.ok) S.state.surface_session = r.payload.record;
+  return r.ok ? r.payload.record.session_id : null;
+}
+
+function flashVerbs() {
+  const verbs = document.getElementById('verbs');
+  verbs.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-4px)' },
+                 { transform: 'translateX(4px)' }, { transform: 'translateX(0)' }],
+                { duration: 260, easing: 'ease-out' });
+}
+
+function showReceipt(result) {
+  const box = document.getElementById('receipt');
+  const r = result.payload.receipt || {};
+  box.className = 'on' + (result.ok ? '' : ' refused');
+  box.replaceChildren();
+  if (result.ok) {
+    box.append(el('b', '', 'COMMITTED'));
+    box.append(el('div', '', r.operation_type + '   ' + r.effect_class
+      + '\nunder grant ' + (r.authority_grant_ids || ['none'])[0]
+      + '\nentry ' + (r.entry_id || '') + '\ndigest ' + (r.digest || '').slice(0, 32)));
+  } else {
+    box.append(el('b', '', 'REFUSED · ' + (result.payload.reason_code || result.status)));
+    box.append(el('div', '', (result.payload.message || '')
+      + '\nThe refusal is on the record too: ' + (r.entry_id || 'no receipt')));
+  }
+}
+
+// Pull a provenance chip back to the record behind it. Nothing here is retyped
+// from the page: the entry is fetched, re-verified against its chain, and shown
+// with the entry it follows, so the claim and its proof are the same object.
+async function pull(reference, lead) {
+  const panel = document.getElementById('pull');
+  document.getElementById('pulltitle').textContent = 'Where this came from';
+  document.getElementById('pulllead').textContent = lead;
+  document.getElementById('pullchain').replaceChildren();
+  document.getElementById('pullbody').textContent = 'reading the journal...';
+  panel.classList.add('out');
+  const key = reference.startsWith('entry_') ? 'id' : 'digest';
+  const found = await api.json('/api/entry?' + key + '=' + encodeURIComponent(reference));
+  const chain = document.getElementById('pullchain');
+  if (found.error) {
+    document.getElementById('pullbody').textContent = 'not in the journal: ' + reference;
+    return;
+  }
+  const rows = [['entry', found.entry.entry_id], ['kind', found.entry.kind],
+    ['subject', found.entry.subject], ['actor', found.entry.actor],
+    ['position', found.position], ['follows', found.follows],
+    ['digest', found.entry.entry_digest]];
+  for (const [k, v] of rows) {
+    const line = el('div');
+    line.append(el('b', '', k.padEnd(9)), document.createTextNode(' ' + v));
+    chain.append(line);
+  }
+  document.getElementById('pullbody').textContent =
+    JSON.stringify(found.payload, null, 2);
+}
+function closePull() { document.getElementById('pull').classList.remove('out'); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closePull(); });
+
+async function load() {
+  // Looking is not acting. The surface session is opened by the first act that
+  // needs one, so an untouched node reads as untouched instead of reporting the
+  // two entries that merely opening this page used to write.
+  S.state = await api.json('/api/state?dry=1');
+  if (!S.ops) S.ops = await api.json('/api/operations');
+  if (S.channel && !chan(S.channel)) S.channel = null;
+  if (!S.channel && S.state.channels.length) S.channel = S.state.channels[0].channel_id;
+  if (!S.thread || !S.state.threads.some(t => t.thread_id === S.thread)) {
+    const list = threadsIn(S.channel);
+    S.thread = list.length ? list[0].thread_id : null;
+  }
+  renderAll();
+}
+
+// The arrival counts real work — fonts, the journal replay, the operation list —
+// and never fakes the wait. The world assembles after, not during.
+async function arrive() {
+  const count = document.getElementById('acount');
+  const bar = document.getElementById('abar');
+  const steps = [
+    ['LOADING TYPE', () => document.fonts.ready],
+    ['READING THE JOURNAL', async () => { S.state = await api.json('/api/state?dry=1'); }],
+    ['ASKING WHAT THE DOOR DOES', async () => { S.ops = await api.json('/api/operations'); }],
+  ];
+  for (let i = 0; i < steps.length; i++) {
+    count.textContent = steps[i][0];
+    await steps[i][1]();
+    bar.style.width = Math.round(((i + 1) / steps.length) * 220) + 'px';
+  }
+  count.textContent = S.state.counts.entries
+    ? S.state.counts.entries + ' ENTRIES · ' + waitingCountAtBoot() + ' WAITING ON YOU'
+    : 'NOTHING HAS HAPPENED HERE YET';
+  await new Promise(r => setTimeout(r, 520));
+  document.getElementById('arrival').classList.add('gone');
+  S.channel = S.state.channels.length ? S.state.channels[0].channel_id : null;
+  const list = S.channel ? threadsIn(S.channel) : [];
+  S.thread = list.length ? list[0].thread_id : null;
+  renderAll();
+  document.getElementById('app').classList.add('in');
+}
+function waitingCountAtBoot() {
+  try { return waiting().length; } catch (e) { return 0; }
+}
+
+document.getElementById('send').onclick = send;
+document.getElementById('text').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) send();
+});
+
+// The drive handle: the API surface of the piece. A model reads and acts here
+// through exactly the calls the buttons use.
+window.__sov = {
+  get state() { return S.state; },
+  get ops() { return S.ops; },
+  get thread() { return S.thread; },
+  get waiting() { return waiting().map(t => t.title); },
+  get verb() { return S.verb; },
+  choose: v => { S.verb = v; renderThread(); },
+  open: id => selectThread(id),
+  pull,
+  get verdicts() {
+    return Object.fromEntries(S.state.channels.filter(isQueue)
+      .flatMap(c => threadsIn(c.channel_id)).map(t => [t.title, verdict(t)]));
+  },
+  call: api.call,
+  post: async body => {
+    const r = await api.call('console.post', {
+      session_id: S.state.surface_session.session_id, thread_id: S.thread, body });
+    await load(); return r;
+  },
+  reload: load
+};
+
+arrive();
+</script>

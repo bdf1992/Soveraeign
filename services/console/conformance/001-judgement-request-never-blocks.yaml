@@ -1,0 +1,35 @@
+id: CONS-001
+title: judgement_request_never_blocks
+status: SEED
+given:
+  - one local node with the Console Service, the Asset Service, and the kernel available
+  - one MODEL actor holding an open operator session through a model binding
+  - one operation OP-J whose declared required_authority_type is JUDGEMENT
+  - no live AuthorityGrant with authority_type JUDGEMENT covers OP-J for any actor at the attempt time
+  - one unrelated operation OP-U whose required capability the same MODEL actor holds through a live scoped grant
+  - one HUMAN actor holding a live grant scoped to read and rebuild one DASHBOARD projection-view D-1
+  - no judgement-request record exists on the node
+when:
+  - the MODEL actor attempts OP-J through the model binding
+  - the MODEL actor then attempts OP-U through the same binding while no human has acted
+  - the HUMAN actor requests rebuild-projection for D-1
+then:
+  - the authority check for OP-J finds no live JUDGEMENT grant and OP-J does not commit
+  - the OP-J attempt returns a receipt with outcome UNRESOLVED and a non-null reason_code
+  - the reason_code name for an unresolved judgement is a proposal and is not yet defined by SPEC.md
+  - a judgement-request JR-1 exists naming OP-J as the conditioned operation, JUDGEMENT as the requested authority type, the MODEL actor as requester, lifecycle QUEUED, and loop_mode IN_LOOP
+  - the lifecycle QUEUED and the loop_mode IN_LOOP are Console Service proposals from CHARTER.md and are not yet defined by SPEC.md
+  - the OP-J receipt names JR-1 in emitted_record_addresses
+  - the OP-U attempt is checked against the MODEL actor's live grant and returns a receipt with outcome COMMITTED and a null reason_code
+  - the OP-U receipt is created while JR-1 is still lifecycle QUEUED and its authority_grant_ids name only the MODEL actor's own grant
+  - the rebuilt D-1 lists JR-1 as a pending right with JR-1's address and digest and names the OP-J receipt as its source
+  - no record of OP-J's intended effect exists on the Asset Service or the kernel; every receipt carries effect class RECORD_LOCAL
+  - no AuthorityGrant is created, widened, or inferred by any of the three attempts
+defeating:
+  - the OP-U attempt after OP-J returns no receipt, returns outcome UNRESOLVED, or does not settle until JR-1 leaves QUEUED
+  - the node accepts no operation from any actor while JR-1 is lifecycle QUEUED
+  - JR-1 is absent from the rebuilt D-1, or appears without an address and digest
+  - the OP-J attempt is receipted as FAILED or REFUSED instead of UNRESOLVED
+  - the OP-J attempt is receipted as COMMITTED with the judgement supplied by the model, the binding, or the service itself
+  - JR-1 leaves lifecycle QUEUED without a resolution receipt whose authority_grant_ids name a live JUDGEMENT grant
+  - the OP-J receipt names no judgement-request in emitted_record_addresses

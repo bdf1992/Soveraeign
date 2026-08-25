@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/judgement-request.schema.json",
+  "title": "Console Judgement Request",
+  "description": "Proposal (Console Service, CHARTER.md first slice): a queued request for a judgement-typed right. The request carries the question as the kernel Proposal to be ratified and the evidence a ruling needs; that Proposal must be ADMITTED before the ratify transition (SPEC.md ratify row), and whether admission occurs inside request-judgement or through a separate admit transition is open (CONS-009). The answer is a separate owned record, judgement-resolution, referenced back through resolution_id. The request never holds, infers, or delegates the right it asks for.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["request_id", "operation_id", "proposal_id", "requester_id", "requester_kind", "required_authority_type", "capability", "scope", "loop_mode", "question", "question_address", "question_digest", "decision_ref", "evidence_addresses", "addressed_to", "notification_id", "thread_id", "lifecycle", "queued_at", "resolved_at", "resolution_id", "standing"],
+  "properties": {
+    "request_id": {"type": "string", "minLength": 1},
+    "operation_id": {"type": "string", "minLength": 1, "description": "The operation this request conditions; it receives an UNRESOLVED receipt while the request is QUEUED and unrelated operation continues."},
+    "proposal_id": {"type": "string", "minLength": 1, "description": "The kernel Proposal that resolve-judgement ratifies: the request's question entered as a Proposal. It must be ADMITTED before ratify (SPEC.md ratify row); where admission occurs is open (CONS-009)."},
+    "requester_id": {"type": "string", "minLength": 1},
+    "requester_kind": {"enum": ["HUMAN", "MODEL", "WORKER", "SYSTEM"]},
+    "required_authority_type": {"const": "JUDGEMENT", "description": "A judgement request exists only because no live JUDGEMENT grant covered the operation; VERIFICATION authority is settled by the kernel without a request."},
+    "capability": {"type": "string", "minLength": 1, "description": "Capability the resolving grant must carry, checked at the resolution transition; for resolve-judgement it is resolve-judgement (CONS-002, CONS-008)."},
+    "scope": {"type": "string", "minLength": 1, "description": "Scope the resolving grant must cover, checked at the resolution transition; for resolve-judgement it is this request's request_id (CONS-002, CONS-008)."},
+    "loop_mode": {"enum": ["IN_LOOP", "ON_LOOP"], "description": "IN_LOOP keeps the conditioned operation UNRESOLVED until a human right resolves it; ON_LOOP lets it proceed while a human watches and may counter through retraction."},
+    "question": {"type": "string", "minLength": 1, "description": "The question put to the owner, rendered inline for the pending list; it must reproduce the bytes at question_address, which question_digest pins."},
+    "question_address": {"type": "string", "minLength": 1, "description": "Address of the immutable question payload; the request is never rewritten, a changed question is a new request."},
+    "question_digest": {"type": "string", "minLength": 1, "description": "Digest of the question bytes so a rendered question can be checked against the record."},
+    "decision_ref": {"type": ["string", "null"], "minLength": 1, "description": "Governing-document reference the question instantiates, for example STATUS.yaml#O18 or decisions/0014; null when the request is not yet an open decision."},
+    "evidence_addresses": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1, "uniqueItems": true, "description": "Addresses of the evidence a ruling needs; a request with no evidence is refused because the owner would be asked to judge on the requester's word."},
+    "addressed_to": {"type": "string", "minLength": 1, "description": "Operator (actor id) the request is addressed to, the holder of the right it asks for, and the recipient_id of the JUDGEMENT_REQUESTED notification (notification.schema.json). A request is addressed to an operator, never to a session; the request must appear on that operator's pending list, which the operator pulls from any open session."},
+    "notification_id": {"type": ["string", "null"], "minLength": 1, "description": "The JUDGEMENT_REQUESTED notification issued with delivery LOCAL and recipient_id equal to addressed_to; a notification is addressed to a recipient, not to a session. Null until emitted. Phase I has no push."},
+    "thread_id": {"type": ["string", "null"], "minLength": 1, "description": "Thread where the request surfaces for discussion and recommendation; null when raised outside any thread."},
+    "lifecycle": {"enum": ["QUEUED", "RESOLVED", "WITHDRAWN", "EXPIRED"]},
+    "queued_at": {"type": "string", "format": "date-time"},
+    "resolved_at": {"type": ["string", "null"], "format": "date-time"},
+    "resolution_id": {"type": ["string", "null"], "minLength": 1, "description": "Back-reference to the judgement-resolution record that answered this request; null while QUEUED. The resolver, the grant checked, and the resolution receipt live on that record, not here."},
+    "standing": {"enum": ["RECORDED", "ADMITTED", "RATIFIED", "EFFECTIVE"]}
+  }
+}

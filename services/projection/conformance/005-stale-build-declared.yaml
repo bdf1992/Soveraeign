@@ -1,0 +1,22 @@
+id: PROJ-005
+title: stale_build_declared
+status: SEED
+given:
+  - one READY collection C-1 with build B-1 whose input_state_digest equals the digest of record set R-1
+  - one HUMAN actor H-1 holding a live grant scoped to search-text and build-projection on C-1
+when:
+  - the Asset Service commits a new version, advancing the stream to record set R-2
+  - H-1 runs search-text on C-1 before any rebuild
+  - H-1 requests build-projection for C-1
+  - H-1 runs search-text on C-1 again
+then:
+  - after the stream advances, the collection lifecycle is STALE
+  - the first retrieval receipt has outcome COMMITTED, names B-1 and the digest of R-1, and carries an omission declaring that the stream has advanced to R-2 since B-1
+  - the build receipt names the digest of R-2 as input_state_digest and the collection returns to READY
+  - the second retrieval receipt names the new build and the digest of R-2 and carries no staleness omission
+  - B-1 remains in history
+defeating:
+  - the collection reads READY after the stream advances and before a rebuild
+  - a retrieval from a stale build carries no staleness omission, or names R-2 as its input state
+  - the rebuild erases B-1
+  - the service detects staleness by opening the Asset Service database directly rather than through the declared stream crossing

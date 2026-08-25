@@ -1,0 +1,20 @@
+{
+  "configuration_digest": "sha256:14beaf73530bd610e0ce452c80a2d1227d5efafd80bedee3642a81b9c85e1835",
+  "fidelity": "LOSSY",
+  "omissions": [
+    {
+      "definition_digest": "sha256:ef8dbe2fed339fc64d9d4af324546af4e419d9528d65f86aa232ddf9d4c06584",
+      "definition_id": "pii-v1"
+    }
+  ],
+  "payload_address": "cas:sha256/76890e3f6a46f85b21a5fecf9117a6252ff4a9da2624fec946255b64018edc27",
+  "payload_digest": "sha256:76890e3f6a46f85b21a5fecf9117a6252ff4a9da2624fec946255b64018edc27",
+  "produced_at": "2026-08-23T20:19:44+00:00",
+  "produced_by": "asset-history-driver",
+  "reader_id": "soveraeign-asset-history-reader",
+  "reader_version": "1",
+  "recording_id": "rec-5df319ed5d5b166b",
+  "source_digest": "sha256:3fe968b1baaa0d7ea633d67ff21c009e2a3ad0b020d17c445522e2965543c747",
+  "source_id": "session-file:ded6e4f2-c490-43c1-a57c-ffd0abe2630b",
+  "standing": "RECORDED"
+}

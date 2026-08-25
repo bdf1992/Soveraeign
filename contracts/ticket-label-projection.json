@@ -1,13 +1,19 @@
 {
   "projection_id": "soveraeign-ticket-labels/v1",
-  "governed_by": ["CONTRIBUTING.md", ".github/labels.yml", "contracts/issue-metadata.schema.json"],
-  "note": "Declared derivation of the visible GitHub label set from soveraeign-ticket/v1 metadata. Labels are a projection of the metadata and never a second authority; a label that cannot be derived here is drift, and a metadata value with no declared label is an unmapped gap rather than a silently omitted one.",
+  "governed_by": [
+    "CONTRIBUTING.md",
+    ".github/labels.yml",
+    "contracts/issue-metadata.schema.json"
+  ],
+  "note": "Declared derivation of the visible GitHub label set from soveraeign-ticket/v1 metadata. Labels are a projection of the metadata and never a second authority; a label that cannot be derived here is drift, and a metadata value with no declared label is an unmapped gap rather than a silently omitted one. One standing value projects to at most one label: the retired witness: axis said the same thing twice (decisions/0044). Its prefix stays governed below so a surviving witness: label reads as drift instead of going unseen.",
   "kind_to_type": {
     "epic-of-epics": "type: epic",
     "village": "type: village",
     "bit": "type: bit",
     "implementation-stub": "type: stub",
-    "verification-engagement": "type: engagement"
+    "verification-engagement": "type: engagement",
+    "story": "type: story",
+    "unblock": "type: unblock"
   },
   "village_to_label": {
     "ground-and-evidence": "village: ground",
@@ -37,18 +43,43 @@
     "DECLARED_NOT_IMPLEMENTED": "standing: declared",
     "CHARTERED_NOT_IMPLEMENTED": "standing: chartered",
     "BUILT_SELF_TESTED_NOT_WITNESSED": "standing: self-tested",
-    "WITNESSED": null,
-    "RATIFIED": null,
-    "DEMOTED": null
-  },
-  "standing_to_witness_label": {
-    "WITNESSED": "witness: witnessed",
-    "DEMOTED": "witness: demoted"
+    "WITNESSED": "standing: witnessed",
+    "RATIFIED": "standing: ratified",
+    "DEMOTED": "standing: demoted"
   },
   "kind_to_scope": {
     "epic-of-epics": "scope: system"
   },
-  "kinds_without_village_label": ["epic-of-epics"],
+  "kinds_without_village_label": [
+    "epic-of-epics"
+  ],
   "default_effect_class": "RECORD_LOCAL",
-  "unprojected_label_prefixes": ["type:", "village:", "horizon:", "effect:", "standing:", "witness:", "scope:"]
+  "unprojected_label_prefixes": [
+    "type:",
+    "village:",
+    "horizon:",
+    "effect:",
+    "standing:",
+    "witness:",
+    "scope:",
+    "provision:",
+    "serve:"
+  ],
+  "provision_to_label": {
+    "grant": "provision: grant",
+    "judgement": "provision: judgement",
+    "contract": "provision: contract",
+    "fixture": "provision: fixture",
+    "capability": "provision: capability",
+    "observation": "provision: observation"
+  },
+  "serve_to_label": {
+    "worker": "serve: worker",
+    "orchestrator": "serve: orchestrator",
+    "controller": "serve: controller",
+    "owner": "serve: owner"
+  },
+  "retired_label_prefixes": [
+    "witness:"
+  ]
 }

@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/node-identity.schema.json",
+  "title": "Soveraeign Node Identity",
+  "description": "Who a node is, and which seat settles for it. One record per node a local node knows about: itself, and every peer it has admitted. Identity only. This contract deliberately cannot express a grant, a capability, a scope, or any other authority, so a peer's identity record can never be mistaken for permission inside the node that holds it (decisions/0039).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "node_schema",
+    "node_id",
+    "display_name",
+    "relation",
+    "root_seat",
+    "founded_at",
+    "known_since",
+    "admitted_by",
+    "standing"
+  ],
+  "properties": {
+    "node_schema": {
+      "const": "soveraeign-node-identity/v1"
+    },
+    "node_id": {
+      "type": "string",
+      "pattern": "^node:[a-z0-9][a-z0-9-]*$",
+      "description": "Opaque local identifier. decisions/0039 takes the default that no DNS name, key, or discovery address is chosen in this phase; a node_id resolves to a peer only through a crossing a local seat admitted."
+    },
+    "display_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "relation": {
+      "enum": ["SELF", "PEER"],
+      "description": "SELF is the node holding this registry. PEER is another sovereign node this one has admitted. Exactly one SELF is a registry rule, not a record rule; scripts/sovkernel/node_identity.py checks it."
+    },
+    "root_seat": {
+      "type": "string",
+      "pattern": "^seat:[a-z0-9][a-z0-9-]*$",
+      "description": "The seat that settles for this node. For SELF it must be a root-type seat in the local topology. For PEER it names the peer's own root seat, which must NOT appear in the local topology: identity travels across a crossing, authority does not."
+    },
+    "founded_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "known_since": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "When this node learned of the peer. Null for SELF, which did not learn of itself."
+    },
+    "admitted_by": {
+      "type": ["string", "null"],
+      "pattern": "^seat:[a-z0-9][a-z0-9-]*$",
+      "description": "The local seat that admitted this peer. Null for SELF. A peer that no local seat admitted is not in the registry at all."
+    },
+    "standing": {
+      "enum": ["RECORDED", "ADMITTED", "RATIFIED", "EFFECTIVE"]
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"relation": {"const": "SELF"}}},
+      "then": {
+        "properties": {
+          "known_since": {"type": "null"},
+          "admitted_by": {"type": "null"}
+        }
+      },
+      "else": {
+        "properties": {
+          "known_since": {"type": "string", "minLength": 1},
+          "admitted_by": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  ]
+}

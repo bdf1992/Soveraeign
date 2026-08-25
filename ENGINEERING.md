@@ -38,7 +38,7 @@ loss of optional providers, and can be replaced behind an existing contract.
 | Machine contracts | JSON Schema Draft 2020-12 | Schema validity is not semantic fitness |
 | Human control files | Markdown and small YAML fixtures | YAML is not a parallel runtime contract |
 | Local surface | Python API and CLI | Human and model bindings use the same kernel operations |
-| Tests and lint | `unittest` and dependency-free repository scripts | Local, deterministic, network-free; wall time graded PLATINUM/GOLD/SILVER to a fifteen-second ceiling |
+| Tests and lint | `unittest` and dependency-free repository scripts | Local, deterministic, network-free; wall time graded PLATINUM/GOLD/SILVER at 3/6/15 s, failing past 15 (`decisions/0050`) |
 | Search and graph | Rebuildable local projections | External systems integrate through adapters later |
 | Model execution | Declared Model Binding plus Model Adapter | BYOM; no provider-derived authority or silent fallback |
 
@@ -61,7 +61,7 @@ microservices.
 | Operation plan | Declare inputs, configuration, preconditions, observations, limits, and effects | Required before consequential execution |
 | Run and lease | Attribute an attempt and fence delegated execution | Worker reports; stale or expired lease cannot settle |
 | Observation | Test expected predicates independently against durable results | Executor output alone cannot establish success |
-| Receipt | Record one terminal outcome for every crossing or transition | Failure, refusal, unresolved work, and counteraction are first-class |
+| Receipt | Record one terminal outcome for every attempted crossing or operation | Failure, refusal, unresolved work, and counteraction are first-class |
 | Counter-record | Stop prior state conditioning current operation without erasure | State what was not undone or refunded |
 | Binding | Present one declared interface to a human or model | Different surfaces resolve to the same operation and receipt |
 | Adapter | Translate a named external runtime or enterprise system | Translation stops at boundary; no authoritative writes |
@@ -90,6 +90,65 @@ attributable operation identity; idempotency is explicit; judgement remains a
 visible pending right; workers are replaceable; provider changes do not change
 authority; partial failure is reconstructable; and compensation does not
 pretend consumed resources or external effects vanished.
+
+## Realization map
+
+`SPEC.md` fixes fourteen transitions without choosing a mechanism. This section
+records which mechanism currently realizes each one, so that "the stack" is a
+checkable claim rather than a list of technologies. It adds no normative rule:
+where this table and `SPEC.md` disagree, `SPEC.md` wins and this table is stale.
+
+Record column values are SQLite tables in the Asset Service store, except the
+content-addressed payload path, which is filesystem.
+
+| `SPEC.md` transition | Realized by | Record | Kernel contract | Control fixture | State |
+| --- | --- | --- | --- | --- | --- |
+| `capture_source` | `AssetService.ingest` | `sources`, `versions`, CAS `blobs/sha256/` | — | `CONF-I2` | partial |
+| `read_source` | none | — | — | `CONF-I2` | **absent** — no `Reader` object exists |
+| `submit_proposal` | `AssetService.propose` | `proposals` | — | `CONF-I1` | partial |
+| `admit` | none | — | — | `CONF-I1` | **absent** — declared gap |
+| `ratify` | `AssetService.ratify` | `proposals`, `receipts` | — | `CONF-I5`, `CONF-I5-GRANT` | partial |
+| `attest` | none | — | — | `CONF-I8` | **absent** — declared gap |
+| `make_effective` | none; `ratify` writes `EFFECTIVE` directly | `relationships` | — | — | **collapsed** — declared gap |
+| `begin_run` | `request_derivative`, `claim` | `runs` | `operation-plan` | — | partial |
+| `report_run` | `report_derivative` | `runs` | — | — | partial |
+| `observe_run` | `observe` | `observations` | `participant-observation` | — | partial — observer independence gap |
+| `settle_run` | folded into `observe` and receipt emission | `receipts` | `receipt` | — | partial |
+| `retract` | `AssetService.retract` | `retractions`, `receipts` | — | `CONF-I4` | partial |
+| `cross` | `federation_cross` | `receipts` | `event-envelope` | `CONF-I3` | refuses `UNCONFIGURED` with a receipt |
+| `invoke_model` | none | — | — | `CONF-I9` | **absent** — declared gap |
+
+Four transitions have no implementation, one is collapsed, eight are partial,
+and one refuses correctly. Every one of those divergences is already recorded in
+`services/asset/KNOWN-GAPS.md` against its governing clause; none is a newly
+discovered defect. The two projections, `search_projection` and
+`graph_projection`, are rebuilt by `rebuild_projections` and hold no
+authoritative state, per the `SPEC.md` Projection rule.
+
+`federation_cross` is worth naming as correct rather than missing. It returns a
+`REFUSED` receipt carrying reason `UNCONFIGURED` instead of attempting the
+crossing, which is exactly what the `SPEC.md` local-operation rule requires of
+an optional integration.
+
+## Crossing realization
+
+`diagrams/crossing-typology.md` fixes four crossing classes and the four
+obligations every class owes identically. `diagrams/crossing-topology.md`
+places them. This table binds those classes to the current mechanism.
+
+| Class | Passage | Mechanism today | State |
+| --- | --- | --- | --- |
+| `C1` Operator | human ↔ model through one record | Python API and CLI only | one binding of the three the two-binding proof needs |
+| `C2` Service | sibling ↔ sibling in one node | none; Proofing and Console are charters | no live reader or writer |
+| `C3` Boundary | surface ↔ kernel, node ↔ provider | `bindings/`, `adapters/` hold no executing adapter | egress never exercised |
+| `C4` Federation | node ↔ node | `federation_cross` refusal stub | refuses visibly, as required |
+
+`C3` is the only class whose far side is a third party, so it is the only class
+carrying a `data_boundary` — `LOCAL_ONLY`, `REDACTED_REMOTE`, or
+`REMOTE_ALLOWED`. Two obligations land there and nowhere else: provider loss
+must leave authoritative custody and non-model local operation intact, and any
+fallback must be a separately attributed invocation with its own receipt.
+Neither obligation has been exercised, because no adapter executes.
 
 ## Service construction rule
 

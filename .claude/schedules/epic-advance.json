@@ -1,0 +1,16 @@
+{
+  "name": "epic-advance",
+  "description": "Weekly advance of the epic-of-epics tree: builds one selected bounded operation and has it independently witnessed. Disabled until a walk run has been witnessed.",
+  "enabled": false,
+  "target": {
+    "kind": "workflow",
+    "name": "sov-epic",
+    "args": {"advance": true, "max_operations": 1, "objective": "close the smallest legal operation on the reachable frontier of the epic tree"}
+  },
+  "cron": "0 8 * * 3",
+  "mode": "build",
+  "effect_class": "RESOURCE_CONSUMPTION",
+  "isolation": "tree",
+  "preconditions": {"clean_tree": true, "lookback_minutes": 90},
+  "limits": {"max_budget_usd": 12, "timeout_seconds": 5400}
+}

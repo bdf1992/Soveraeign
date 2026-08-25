@@ -27,7 +27,7 @@ into competing authorities.
 - Tests are local, deterministic, network-free, and inspect durable results.
   Run `python scripts/verify.py`; its wall time is graded, not pass/fail -
   `PLATINUM` at three seconds, `GOLD` at six, `SILVER` at fifteen, failing past
-  fifteen (`decisions/0050`).
+  fifteen (`decisions/0050`). Do not loosen a band to earn a grade.
 - Treat `lineage/evidence/` as immutable and do not publish `lineage/` without
   separate explicit owner instruction.
 - Use short-lived typed branches and reviewed PRs into `main`; direct main

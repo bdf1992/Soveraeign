@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "soveraeign-console-service"
+version = "0.1.0"
+description = "Operator continuity record path for Soveraeign"
+requires-python = ">=3.11"
+
+[project.scripts]
+soveraeign-console = "soveraeign_console_service.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

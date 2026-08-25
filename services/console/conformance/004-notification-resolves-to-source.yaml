@@ -1,0 +1,33 @@
+id: CONS-004
+title: notification_resolves_to_source
+status: SEED
+given:
+  - one thread T-1 with lifecycle OPEN in a channel for the asset domain, pinned to an exact asset version address and digest
+  - one HUMAN operator H-1 with an open session through a human binding
+  - one MODEL operator M-1 with an open session through a model binding and a live grant scoped to post in T-1
+  - H-1 holds a live grant scoped to acknowledge-notification for notifications addressed to H-1
+  - a delivery port declared in the Console Service manifest with no adapter configured and no external effect admitted
+  - no notification record addressed to H-1 exists
+when:
+  - M-1 posts P-1 in T-1 and P-1 mentions H-1
+  - H-1 attempts acknowledge-notification on the notification issued for the mention
+  - H-1 attempts to deliver that notification to an external channel through the delivery port
+then:
+  - P-1 is recorded with actor_kind MODEL, a content address and digest, a proposal_id, and standing RECORDED; the post receipt has outcome COMMITTED and a null reason_code
+  - a notification N-1 of kind MENTION addressed to H-1 is issued by an event with actor_kind SYSTEM, and the issue returns its own receipt with outcome COMMITTED and a null reason_code
+  - N-1's source_address and source_digest equal P-1's content address and digest, and resolving them returns P-1 byte-identical
+  - N-1 has its own address distinct from P-1's address, and reading or acknowledging N-1 changes neither P-1's content nor P-1's standing
+  - N-1 is lifecycle ISSUED before acknowledgement
+  - the acknowledgement returns a receipt with outcome COMMITTED and a null reason_code whose prior_receipt_id names N-1's issue receipt, and N-1 transitions ISSUED -> ACKNOWLEDGED
+  - the ISSUED record of N-1 and its issue receipt remain addressable after acknowledgement
+  - the external delivery attempt is REFUSED with a receipt whose outcome is REFUSED and whose reason_code is non-null; the proposed reason_code name is UNCONFIGURED
+  - SPEC.md names UNCONFIGURED as the refusal for optional integrations but does not define it as a receipt reason_code; that use is a proposal
+  - the delivery receipt carries effect class RECORD_LOCAL and no record claims that an external system received N-1
+  - the notification kind MENTION, the lifecycle ISSUED -> ACKNOWLEDGED, and the fields source_address and source_digest are Console Service proposals from CHARTER.md and are not yet defined by SPEC.md
+defeating:
+  - N-1 is issued with a null source_address or source_digest, or with a digest that does not resolve to P-1
+  - resolving P-1's address returns N-1, or acknowledging N-1 alters P-1's content, digest, or standing
+  - the delivery attempt returns a receipt with outcome COMMITTED, or a receipt with effect class EXTERNAL_WORLD, or no receipt
+  - the delivery attempt falls back to another channel without a separately attributed invocation and receipt
+  - acknowledgement deletes N-1 or overwrites its ISSUED record so that the issue time and issue receipt cannot be reconstructed
+  - N-1 is issued without a receipt, or by an event whose actor_kind is not SYSTEM

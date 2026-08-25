@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/operator-session.schema.json",
+  "title": "Console Operator Session",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["session_id", "operator_id", "actor_kind", "binding_id", "opened_at", "closed_at", "lifecycle", "active_thread_id", "unread_cursor", "standing"],
+  "properties": {
+    "session_id": {"type": "string", "minLength": 1},
+    "operator_id": {"type": "string", "minLength": 1},
+    "actor_kind": {"enum": ["HUMAN", "MODEL"]},
+    "binding_id": {"type": "string", "minLength": 1, "description": "The Human Binding or Model Binding through which this operator reaches the console; a binding realizes an interface and grants no authority."},
+    "opened_at": {"type": "string", "format": "date-time"},
+    "closed_at": {"type": ["string", "null"], "format": "date-time"},
+    "lifecycle": {"enum": ["OPEN", "CLOSED"]},
+    "active_thread_id": {"type": ["string", "null"], "minLength": 1},
+    "unread_cursor": {"type": ["string", "null"], "description": "Opaque read-position marker for this operator; it conditions presentation only and is never an authority or standing input."},
+    "standing": {"enum": ["RECORDED", "ADMITTED", "RATIFIED", "EFFECTIVE"]}
+  }
+}

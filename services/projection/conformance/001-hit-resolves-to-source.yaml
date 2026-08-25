@@ -1,0 +1,22 @@
+id: PROJ-001
+title: hit_resolves_to_source
+status: SEED
+given:
+  - one projection collection C-1 declared over Asset Service versions with text and filter fields
+  - a fixed authoritative record set R in the Asset Service whose addresses and digests are known and unchanged for the whole scenario
+  - one build B-1 of C-1 whose input_state_digest equals the digest of R
+  - one HUMAN actor H-1 holding a live grant scoped to search-text on C-1
+when:
+  - H-1 runs search-text on C-1 with a query matching at least two versions in R
+then:
+  - the retrieval receipt has outcome COMMITTED and a null reason_code, names B-1 and the digest of R as input_state_digest, and carries effect class RECORD_LOCAL
+  - every hit carries a source_address and source_digest, and each resolves to a version record in R
+  - every hit carries a rank and a score breakdown naming the text lane
+  - omissions is a list and, with every declared source available, it is empty
+  - the receipt carries authoritative false
+defeating:
+  - a hit carries no source_address or source_digest, or names one that does not resolve to a record in R
+  - a hit resolves to a record whose digest differs from source_digest
+  - the receipt names no build or an input_state_digest other than that of R
+  - a retrieval leaves no receipt, or a refused retrieval leaves no receipt
+  - a later authority check cites a hit or the receipt as a grant or precondition result

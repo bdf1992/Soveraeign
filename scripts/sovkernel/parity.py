@@ -17,10 +17,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 import json
-import sys
-import tempfile
 
-from sovkernel import transitions as kernel
+from sovkernel import participants, transitions as kernel
 
 DIGEST = "a1" * 32
 
@@ -33,106 +31,6 @@ def load_contract(root: Path) -> dict[str, Any]:
 def _kernel_refusal(root: Path, request: dict[str, Any], current: dict[str, Any]) -> str:
     decision = kernel.evaluate(request, kernel.load_table(root), current)
     return "PERMITTED" if decision.permitted else str(decision.reason_code)
-
-
-def _asset_service(root: Path):
-    """Import the Asset Service the way its own tests do."""
-    src = root / "services" / "asset" / "src"
-    if str(src) not in sys.path:
-        sys.path.insert(0, str(src))
-    from soveraeign_asset_service.core import AssetService, StaleLease  # noqa: E402
-
-    return AssetService, StaleLease
-
-
-def _asset_observations(root: Path) -> dict[str, str]:
-    """Drive the real Asset Service and record what it refused."""
-    AssetService, StaleLease = _asset_service(root)
-    observed: dict[str, str] = {}
-    # ignore_cleanup_errors: SQLite on Windows holds the file until the handle is
-    # released, and a temp directory that will not delete must not fail a check
-    # about transition semantics.
-    with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
-        store = Path(tmp)
-        service = AssetService(store / "state")
-        try:
-            service.grant("Bdo", "Bdo", "operate:derive")
-            source = store / "parity.txt"
-            source.write_bytes(b"parity")
-            asset = service.ingest(source, "Parity source", "Bdo")
-            run = service.request_derivative(asset["asset_id"], asset["version_id"], "Bdo")
-
-            superseded = service.claim(run, "worker-a", ttl_seconds=0)
-            service.claim(run, "worker-b")
-            try:
-                service.report_derivative(run, "worker-a", superseded, b"stale")
-                observed["a superseded fence may not report"] = "PERMITTED"
-            except StaleLease:
-                observed["a superseded fence may not report"] = "StaleLease"
-
-            unreported = service.request_derivative(
-                asset["asset_id"], asset["version_id"], "Bdo"
-            )
-            try:
-                service.observe(unreported, "witness-b")
-                observed["an executor report is not settlement"] = "PERMITTED"
-            except RuntimeError as error:
-                observed["an executor report is not settlement"] = f"RuntimeError:{error}"
-        finally:
-            service.close()
-    return observed
-
-
-def _ticket_observations(root: Path) -> dict[str, str]:
-    """Evaluate the ticket workflow's own requests against its own table."""
-    sys.path.insert(0, str(root / "scripts"))
-    from sovticket import transitions as ticket  # noqa: E402
-
-    table = ticket.load_table(root)
-
-    def decide(request: dict[str, Any]) -> str:
-        decision = ticket.evaluate(request, table)
-        return "PERMITTED" if decision.allowed else str(decision.reason_code)
-
-    base = {
-        "request_schema": "soveraeign-ticket-transition/v1",
-        "ticket": "#6",
-        "effect_class": "RECORD_LOCAL",
-        "reason": "parity fact",
-    }
-    return {
-        "the actor that built an artifact may not witness it": decide({
-            **base,
-            "from": "BUILT_SELF_TESTED_NOT_WITNESSED",
-            "to": "WITNESSED",
-            "actor_id": "model/worker-a",
-            "actor_kind": "MODEL",
-            "builder_actor_id": "model/worker-a",
-            "evidence": {"witness_receipt": "obs-1", "purple_receipt": "purple-1"},
-        }),
-        # A HUMAN who is not the owner, so the request reaches the authority check
-        # rather than being refused earlier at the actor-kind gate. The fact under
-        # test is about authority, not about what kind of thing the actor is.
-        "an actor without judgement authority may not ratify": decide({
-            **base,
-            "from": "WITNESSED",
-            "to": "RATIFIED",
-            "actor_id": "someone-else",
-            "actor_kind": "HUMAN",
-            "evidence": {"owner_ratification": "pull/62#review"},
-        }),
-        "an external effect outside every declared scope is refused": decide({
-            **base,
-            "from": "OPEN",
-            "to": "PROPOSED",
-            "actor_id": "model/orchestrator",
-            "actor_kind": "MODEL",
-            "effect_class": "EXTERNAL_WORLD",
-            "evidence": {"obligation": "#6", "priors": "SPEC.md",
-                         "closure_contract": "#6#closure"},
-            "authorization": None,
-        }),
-    }
 
 
 KERNEL_FACTS = {
@@ -196,6 +94,33 @@ KERNEL_FACTS = {
         },
         {"state_digest": DIGEST},
     ),
+    "a model claim without a proposal is incomplete": (
+        {
+            "request_schema": "soveraeign-kernel-transition/v1",
+            "transition": "submit_proposal",
+            "actor_id": "model/sov",
+            "actor_kind": "MODEL",
+            "effect_class": "RECORD_LOCAL",
+            "reason": "parity fact",
+            # No `source_address`: the claim names nothing the kernel can read back.
+            "declared": {"actor_id": "model/sov", "cost": 0, "scope": "thread-1",
+                         "required_authority": "JUDGEMENT"},
+        },
+        {},
+    ),
+    "no live grant covers this transition": (
+        {
+            "request_schema": "soveraeign-kernel-transition/v1",
+            "transition": "retract",
+            "actor_id": "model/stranger",
+            "actor_kind": "MODEL",
+            "effect_class": "RECORD_LOCAL",
+            "reason": "parity fact",
+            "declared": {"target_record_address": "record-1", "known_effect": "RECORD_LOCAL",
+                         "authority_grant_id": "grant-absent"},
+        },
+        {"state_digest": DIGEST},
+    ),
     "an external effect outside every declared scope is refused": (
         {
             "request_schema": "soveraeign-kernel-transition/v1",
@@ -216,7 +141,8 @@ KERNEL_FACTS = {
 def run(root: Path) -> tuple[list[str], int]:
     """Check every declared correspondence and return failures and the count."""
     contract = load_contract(root)
-    observed = {**_asset_observations(root), **_ticket_observations(root)}
+    observed = {**participants.asset(root), **participants.console(root),
+                **participants.ticket(root)}
     failures: list[str] = []
     checked = 0
 

@@ -1,0 +1,41 @@
+surface: gateway-service.the-door
+operation: accept-resolve-check-route-return-or-refuse
+artifact_revision: WORKTREE
+model_and_host: not evaluated; no operation executes
+scores:
+  # A model can discover every declared operation, its subject, its preconditions,
+  # its commit, and its refusals through `python scripts/sov_service.py endpoints
+  # --service gateway`, and can invoke none of them. A declared path exists; the
+  # operation behind it is entirely absent.
+  reachability: PARTIAL
+  # Nothing executes, so nothing distinguishes a proposal from accepted state.
+  commitment: NONE
+  provenance: NONE
+  retraction: NONE
+earn_it:
+  value: OPEN
+  reviewer: Bdo
+assessment_state: OPEN
+minimum_verdict: UNSET
+soveraeign_checks:
+  same_world_parity: UNATTESTABLE
+  typed_authority: UNATTESTABLE
+  independent_observation: UNATTESTABLE
+  receipt_completeness: UNATTESTABLE
+  effect_honesty: UNATTESTABLE
+  cold_start_competence: UNATTESTABLE
+  two_binding_proof: UNATTESTABLE
+  local_sovereignty: UNATTESTABLE
+  model_substitutability: UNATTESTABLE
+qualification: NOT_QUALIFIED
+evidence:
+  - CHARTER.md
+  - contracts/service.json
+  - KNOWN-GAPS.md
+  - ../../reports/2026-08-23-gateway-research-and-controller-plan.md
+defeating_cases: []
+note: >-
+  Every check is UNATTESTABLE rather than FAIL: there is no implementation to
+  attest against, and recording FAIL would claim an observation nobody made.
+  The empty defeating_cases list is the accurate state, not an omission - the
+  contracts that would carry them are operation G1 in the controller plan.

@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/services/observation/contracts/relation-inference.schema.json",
+  "title": "Relation Inference",
+  "description": "The derived finding that a candidate observer is, or is not, independent of a run. Independence is inferred from the run's own record and is never declared by the observer: a declared relation would be the observer vouching for itself, which is the same substitution as an executor's report standing in for an observation. The inference walks a closed set of direct edges. One edge found is DIRECT. None found, over a complete record, is INDEPENDENT. A record too thin to answer is UNDETERMINED and refuses, because absence of a recorded edge is not absence of a relation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "inference_id",
+    "run_id",
+    "candidate_observer_id",
+    "candidate_observer_kind",
+    "executor_id",
+    "edges_examined",
+    "edges_found",
+    "record_completeness",
+    "outcome",
+    "evidence_addresses",
+    "evidence_digests",
+    "inferred_at"
+  ],
+  "properties": {
+    "inference_id": {"type": "string", "pattern": "^urn:soveraeign:observation:relation-inference:[a-z0-9-]+$"},
+    "run_id": {"type": "string", "minLength": 1},
+    "candidate_observer_id": {
+      "description": "The actor proposed as observer. Proposing is not declaring independence.",
+      "type": "string",
+      "minLength": 1
+    },
+    "candidate_observer_kind": {"enum": ["HUMAN", "MODEL", "WORKER", "SYSTEM"]},
+    "executor_id": {
+      "description": "The actor the run's record attributes the execution to, read from that record rather than supplied by the candidate.",
+      "type": "string",
+      "minLength": 1
+    },
+    "edges_examined": {
+      "description": "Every direct edge this inference looked for. The set is closed: an edge outside it cannot be examined, and a candidate connected by an unlisted route reads as independent. That is the enforcement surface of the whole service.",
+      "type": "array",
+      "minItems": 5,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/edge"}
+    },
+    "edges_found": {
+      "description": "The examined edges that held. Non-empty means DIRECT.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/finding"}
+    },
+    "record_completeness": {
+      "description": "Whether the run's record carried enough to answer every examined edge. INCOMPLETE forces UNDETERMINED; it never reads as independence.",
+      "enum": ["COMPLETE", "INCOMPLETE"]
+    },
+    "unanswerable_edges": {
+      "description": "Edges the record could not answer. Required to be non-empty when record_completeness is INCOMPLETE, so an incomplete verdict names what it could not see.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/edge"}
+    },
+    "outcome": {"enum": ["DIRECT", "INDEPENDENT", "UNDETERMINED"]},
+    "evidence_addresses": {
+      "description": "What the inference read to reach its finding. An inference that read nothing has not inferred.",
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "evidence_digests": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+    },
+    "inferred_at": {"type": "string", "format": "date-time"}
+  },
+  "$defs": {
+    "edge": {
+      "description": "A direct relation between a candidate observer and a run.",
+      "enum": [
+        "SAME_ACTOR",
+        "HOLDS_RUN_LEASE",
+        "GRANT_DESCENDS_FROM_RUN",
+        "PRODUCED_THE_OUTPUT",
+        "ONLY_EXECUTOR_REPORT"
+      ]
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["edge", "evidence_address"],
+      "properties": {
+        "edge": {"$ref": "#/$defs/edge"},
+        "evidence_address": {
+          "description": "Where in the run's record this edge was seen. A found edge with no address is an assertion, not a finding.",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  },
+  "oneOf": [
+    {
+      "description": "DIRECT: at least one edge held. The candidate may not observe this run.",
+      "properties": {
+        "outcome": {"const": "DIRECT"},
+        "record_completeness": {"const": "COMPLETE"},
+        "edges_found": {"type": "array", "minItems": 1}
+      },
+      "required": ["outcome", "edges_found"]
+    },
+    {
+      "description": "INDEPENDENT: no edge held and the record answered every one of them.",
+      "properties": {
+        "outcome": {"const": "INDEPENDENT"},
+        "record_completeness": {"const": "COMPLETE"},
+        "edges_found": {"const": []}
+      },
+      "required": ["outcome", "edges_found"]
+    },
+    {
+      "description": "UNDETERMINED: the record could not answer. Refuses; never reads as independence.",
+      "properties": {
+        "outcome": {"const": "UNDETERMINED"},
+        "record_completeness": {"const": "INCOMPLETE"},
+        "unanswerable_edges": {"type": "array", "minItems": 1}
+      },
+      "required": ["outcome", "record_completeness", "unanswerable_edges"]
+    }
+  ]
+}

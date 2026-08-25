@@ -48,14 +48,6 @@ def _git(*args: str) -> str:
     return result.stdout if result.returncode == 0 else ""
 
 
-def _lineage_absent() -> tuple[bool, str]:
-    """The evidence root every traceability claim grounds in is not in the tree."""
-    tracked = [line for line in _git("ls-files", "lineage").split("\n") if line.strip()]
-    present = (ROOT / "lineage").is_dir()
-    still = not tracked and not present
-    return still, f"git ls-files lineage -> {len(tracked)} file(s); lineage/ present={present}"
-
-
 def _green_is_not_conformance() -> tuple[bool, str]:
     """A passing verification does not mean the specification is met.
 
@@ -90,12 +82,6 @@ def _negated_standing_tokens() -> tuple[bool, str]:
 
 
 TRAPS = (
-    Trap(
-        id="T1",
-        summary="lineage/ is absent, and verification reports the missing evidence as PASS",
-        check=_lineage_absent,
-        fixed_hint="lineage/ is now present or tracked - delete this trap from CLAUDE.md",
-    ),
     Trap(
         id="T2",
         summary="verify.py exit 0 does not mean conformance; the baseline records failing requirements",

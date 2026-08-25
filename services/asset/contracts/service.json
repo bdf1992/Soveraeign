@@ -1,10 +1,284 @@
 {
   "service_id": "asset",
   "standing": "BUILT",
-  "owns": ["asset", "asset-version", "payload-custody", "source", "derivation-lineage", "asset-relationship", "asset-use-record"],
-  "references": ["shared-kernel-contracts"],
-  "operations": ["ingest-asset", "read-version", "request-derivative", "propose-description", "ratify-proposal", "retract-record", "rebuild-projection"],
-  "uses_kernel_contracts": ["standing", "typed-authority", "operation", "observation", "receipt", "retraction"],
-  "ports": ["model-analysis", "github-source", "graph-projection", "media-worker", "federation"],
-  "forbids": ["direct-projection-authority", "source-mutation-during-reading", "executor-report-as-observation", "unconfigured-federation-success", "history-erasure"]
+  "owns": [
+    "asset",
+    "asset-version",
+    "payload-custody",
+    "source",
+    "derivation-lineage",
+    "asset-relationship",
+    "asset-use-record"
+  ],
+  "references": [
+    "shared-kernel-contracts"
+  ],
+  "operations": [
+    {
+      "operation": "ingest-asset",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://asset/ingest-asset",
+      "subject": "asset",
+      "crud": "CREATE",
+      "requirement": "PROD-I-2",
+      "kernel_transition": "capture_source",
+      "preconditions": [
+        "payload_bytes_readable",
+        "declared_label",
+        "declared_locator",
+        "live_grant"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "DIGEST_MISMATCH",
+        "GRANT_NOT_COVERED",
+        "MISSING_PRECONDITION",
+        "PAYLOAD_ABSENT"
+      ]
+    },
+    {
+      "operation": "propose-description",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://asset/propose-description",
+      "subject": "asset",
+      "crud": "CREATE",
+      "requirement": "PROD-I-1",
+      "kernel_transition": "submit_proposal",
+      "preconditions": [
+        "asset_exists",
+        "declared_actor",
+        "declared_payload"
+      ],
+      "commit": "RECORDED",
+      "refusals": [
+        "INCOMPLETE_PROPOSAL",
+        "GRANT_NOT_COVERED"
+      ]
+    },
+    {
+      "operation": "ratify-proposal",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://asset/ratify-proposal",
+      "subject": "asset",
+      "crud": "SUPERSEDE",
+      "requirement": "PROD-I-5",
+      "kernel_transition": "ratify",
+      "preconditions": [
+        "proposal_recorded",
+        "live_matching_grant",
+        "human_actor"
+      ],
+      "commit": "EFFECTIVE",
+      "refusals": [
+        "AUTHORITY_REFUSED",
+        "GRANT_NOT_COVERED",
+        "STALE_STATE"
+      ]
+    },
+    {
+      "operation": "read-asset",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://asset/read-asset",
+      "subject": "asset",
+      "crud": "READ",
+      "requirement": "PROD-I-2",
+      "also_reads": [
+        "asset-relationship",
+        "derivation-lineage"
+      ],
+      "preconditions": [
+        "asset_exists"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "MISSING_PRECONDITION"
+      ]
+    },
+    {
+      "operation": "read-shared-custody",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://asset/read-shared-custody",
+      "subject": "payload-custody",
+      "crud": "READ",
+      "requirement": "PROD-I-2",
+      "preconditions": [
+        "payload_store_readable"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "MISSING_PRECONDITION"
+      ]
+    },
+    {
+      "operation": "read-use-record",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://asset/read-use-record",
+      "subject": "asset-use-record",
+      "crud": "READ",
+      "requirement": "PROD-I-4",
+      "preconditions": [
+        "use_record_exists"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "MISSING_PRECONDITION"
+      ]
+    },
+    {
+      "operation": "read-version",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://asset/read-version",
+      "subject": "asset-version",
+      "crud": "READ",
+      "requirement": "PROD-I-2",
+      "kernel_transition": "read_source",
+      "preconditions": [
+        "version_exists",
+        "stored_digest_verifies"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "PAYLOAD_ABSENT",
+        "DIGEST_MISMATCH",
+        "SOURCE_UNREACHABLE",
+        "SOURCE_CHANGED"
+      ]
+    },
+    {
+      "operation": "read-version-history",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://asset/read-version-history",
+      "subject": "asset-version",
+      "crud": "READ",
+      "requirement": "PROD-I-2",
+      "preconditions": [
+        "asset_exists"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "MISSING_PRECONDITION"
+      ]
+    },
+    {
+      "operation": "rebuild-projection",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://asset/rebuild-projection",
+      "subject": "asset-relationship",
+      "crud": "REBUILD",
+      "requirement": "PROD-I-2",
+      "preconditions": [
+        "authoritative_records_readable"
+      ],
+      "commit": "REBUILT",
+      "refusals": [
+        "UNREADABLE"
+      ]
+    },
+    {
+      "operation": "request-derivative",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://asset/request-derivative",
+      "subject": "asset-use-record",
+      "crud": "CREATE",
+      "kernel_transition": "begin_run",
+      "preconditions": [
+        "source_version_exists",
+        "declared_plan",
+        "live_grant"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "GRANT_NOT_COVERED",
+        "STALE_LEASE"
+      ]
+    },
+    {
+      "operation": "retract-record",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://asset/retract-record",
+      "subject": "asset-use-record",
+      "crud": "COUNTER",
+      "requirement": "PROD-I-4",
+      "kernel_transition": "retract",
+      "preconditions": [
+        "target_exists",
+        "live_retraction_grant",
+        "declared_reason"
+      ],
+      "commit": "COUNTERED",
+      "refusals": [
+        "AUTHORITY_REFUSED",
+        "GRANT_NOT_COVERED"
+      ]
+    }
+  ],
+  "local_refusals": {
+    "GRANT_NOT_COVERED": "AUTHORITY_REFUSED",
+    "PAYLOAD_ABSENT": "UNREADABLE",
+    "SOURCE_UNREACHABLE": "UNREADABLE"
+  },
+  "undeclared_events": [
+    {
+      "event": "authority.check",
+      "because": "the grant check every consequential operation runs before it acts; a gate inside an operation, never an operation an actor asks for"
+    },
+    {
+      "event": "authority.grant",
+      "because": "the service issues grants and no manifest declares that as an operation; whether the Console or a separate permits surface owns authority-grant is open (services/gateway/CHARTER.md, services/console/KNOWN-GAPS.md), and declaring it here would settle that seam by implementation"
+    },
+    {
+      "event": "authority.revoke",
+      "because": "the counter-record half of authority.grant, held open by the same seam"
+    },
+    {
+      "event": "federation.cross",
+      "because": "the refusal path of the declared federation port; Phase I refuses the crossing and no operation exists to declare, so only the refusal is recorded"
+    },
+    {
+      "event": "lease.claim",
+      "because": "a phase of the run request-derivative begins - SPEC.md begin_run issues the lease - and not a separate operation a caller may ask for"
+    },
+    {
+      "event": "operation.observe",
+      "because": "the SPEC.md observe_run phase; decisions/0041 charters the Observation Service to own independent observation, so the Asset Service declares no operation for it"
+    },
+    {
+      "event": "operation.report",
+      "because": "the SPEC.md report_run phase - the worker's own claim about a run, which settles nothing and is not an operation"
+    },
+    {
+      "event": "session.close",
+      "because": "the service implements operator sessions and no manifest declares them; bindings/mcp/manifest.json records the same gap for authority_open_session"
+    },
+    {
+      "event": "session.open",
+      "because": "the service implements operator sessions and no manifest declares them; bindings/mcp/manifest.json records the same gap for authority_open_session"
+    },
+    {
+      "event": "source.reread",
+      "because": "re-reads an external source to prove it has not moved since capture; the manifest declares read-version over an asset version, which is a different subject, and declares no operation over a source"
+    }
+  ],
+  "uses_kernel_contracts": [
+    "standing",
+    "typed-authority",
+    "operation",
+    "observation",
+    "receipt",
+    "retraction"
+  ],
+  "ports": [
+    "model-analysis",
+    "github-source",
+    "graph-projection",
+    "media-worker",
+    "federation"
+  ],
+  "forbids": [
+    "direct-projection-authority",
+    "source-mutation-during-reading",
+    "executor-report-as-observation",
+    "unconfigured-federation-success",
+    "history-erasure"
+  ]
 }

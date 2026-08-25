@@ -1,0 +1,2369 @@
+[
+  {
+    "id": "SVCMAN-POS-ADMISSIBLE",
+    "contract": "service-manifest.schema.json",
+    "status": "PROPOSED",
+    "polarity": "positive",
+    "expected_validity": "VALID",
+    "note": "A service declaring every append-preserving verb: a create, a read that also returns the records written beside it, a supersede, and a counter.",
+    "record": {
+      "service_id": "example",
+      "standing": "BUILT",
+      "owns": [
+        "widget",
+        "widget-version",
+        "widget-receipt"
+      ],
+      "references": [
+        "shared-kernel-contracts"
+      ],
+      "operations": [
+        {
+          "operation": "make-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/make-widget",
+          "subject": "widget",
+          "crud": "CREATE",
+          "requirement": "PROD-I-1",
+          "kernel_transition": "submit_proposal",
+          "preconditions": [
+            "declared_actor",
+            "declared_label"
+          ],
+          "commit": "RECORDED",
+          "refusals": [
+            "INCOMPLETE_PROPOSAL",
+            "WIDGET_JAMMED"
+          ]
+        },
+        {
+          "operation": "read-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/read-widget",
+          "subject": "widget",
+          "crud": "READ",
+          "also_reads": [
+            "widget-version",
+            "widget-receipt"
+          ],
+          "requirement": "PROD-I-2",
+          "preconditions": [
+            "widget_exists"
+          ],
+          "commit": "DERIVED",
+          "refusals": [
+            "MISSING_PRECONDITION"
+          ]
+        },
+        {
+          "operation": "revise-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/revise-widget",
+          "subject": "widget-version",
+          "crud": "SUPERSEDE",
+          "preconditions": [
+            "widget_exists",
+            "live_matching_grant"
+          ],
+          "commit": "COMMITTED",
+          "refusals": [
+            "AUTHORITY_REFUSED",
+            "STALE_STATE"
+          ]
+        },
+        {
+          "operation": "retract-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/retract-widget",
+          "subject": "widget-receipt",
+          "crud": "COUNTER",
+          "requirement": "PROD-I-4",
+          "kernel_transition": "retract",
+          "preconditions": [
+            "target_exists",
+            "declared_reason"
+          ],
+          "commit": "COUNTERED",
+          "refusals": [
+            "AUTHORITY_REFUSED"
+          ]
+        }
+      ],
+      "local_refusals": {
+        "WIDGET_JAMMED": "POLICY_REFUSED"
+      },
+      "uses_kernel_contracts": [
+        "standing",
+        "typed-authority",
+        "operation",
+        "receipt",
+        "retraction"
+      ],
+      "ports": [
+        "human-binding"
+      ],
+      "forbids": [
+        "history-erasure"
+      ]
+    }
+  },
+  {
+    "id": "SVCMAN-SEM-ENDPOINT-OTHER-SERVICE",
+    "contract": "service-manifest.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "note": "An address inside another service's namespace.",
+    "record": {
+      "service_id": "example",
+      "standing": "BUILT",
+      "owns": [
+        "widget",
+        "widget-version",
+        "widget-receipt"
+      ],
+      "references": [
+        "shared-kernel-contracts"
+      ],
+      "operations": [
+        {
+          "operation": "make-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://other/make-widget",
+          "subject": "widget",
+          "crud": "CREATE",
+          "requirement": "PROD-I-1",
+          "kernel_transition": "submit_proposal",
+          "preconditions": [
+            "declared_actor",
+            "declared_label"
+          ],
+          "commit": "RECORDED",
+          "refusals": [
+            "INCOMPLETE_PROPOSAL",
+            "WIDGET_JAMMED"
+          ]
+        },
+        {
+          "operation": "read-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/read-widget",
+          "subject": "widget",
+          "crud": "READ",
+          "also_reads": [
+            "widget-version",
+            "widget-receipt"
+          ],
+          "requirement": "PROD-I-2",
+          "preconditions": [
+            "widget_exists"
+          ],
+          "commit": "DERIVED",
+          "refusals": [
+            "MISSING_PRECONDITION"
+          ]
+        },
+        {
+          "operation": "revise-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/revise-widget",
+          "subject": "widget-version",
+          "crud": "SUPERSEDE",
+          "preconditions": [
+            "widget_exists",
+            "live_matching_grant"
+          ],
+          "commit": "COMMITTED",
+          "refusals": [
+            "AUTHORITY_REFUSED",
+            "STALE_STATE"
+          ]
+        },
+        {
+          "operation": "retract-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/retract-widget",
+          "subject": "widget-receipt",
+          "crud": "COUNTER",
+          "requirement": "PROD-I-4",
+          "kernel_transition": "retract",
+          "preconditions": [
+            "target_exists",
+            "declared_reason"
+          ],
+          "commit": "COUNTERED",
+          "refusals": [
+            "AUTHORITY_REFUSED"
+          ]
+        }
+      ],
+      "local_refusals": {
+        "WIDGET_JAMMED": "POLICY_REFUSED"
+      },
+      "uses_kernel_contracts": [
+        "standing",
+        "typed-authority",
+        "operation",
+        "receipt",
+        "retraction"
+      ],
+      "ports": [
+        "human-binding"
+      ],
+      "forbids": [
+        "history-erasure"
+      ]
+    },
+    "expected_manifest_defects": [
+      "logical endpoint is"
+    ],
+    "defeats": "an endpoint that would route callers past the owning boundary"
+  },
+  {
+    "id": "SVCMAN-SEM-ENDPOINT-DRIFT",
+    "contract": "service-manifest.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "note": "An address left behind by a rename.",
+    "record": {
+      "service_id": "example",
+      "standing": "BUILT",
+      "owns": [
+        "widget",
+        "widget-version",
+        "widget-receipt"
+      ],
+      "references": [
+        "shared-kernel-contracts"
+      ],
+      "operations": [
+        {
+          "operation": "make-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/build-widget",
+          "subject": "widget",
+          "crud": "CREATE",
+          "requirement": "PROD-I-1",
+          "kernel_transition": "submit_proposal",
+          "preconditions": [
+            "declared_actor",
+            "declared_label"
+          ],
+          "commit": "RECORDED",
+          "refusals": [
+            "INCOMPLETE_PROPOSAL",
+            "WIDGET_JAMMED"
+          ]
+        },
+        {
+          "operation": "read-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/read-widget",
+          "subject": "widget",
+          "crud": "READ",
+          "also_reads": [
+            "widget-version",
+            "widget-receipt"
+          ],
+          "requirement": "PROD-I-2",
+          "preconditions": [
+            "widget_exists"
+          ],
+          "commit": "DERIVED",
+          "refusals": [
+            "MISSING_PRECONDITION"
+          ]
+        },
+        {
+          "operation": "revise-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/revise-widget",
+          "subject": "widget-version",
+          "crud": "SUPERSEDE",
+          "preconditions": [
+            "widget_exists",
+            "live_matching_grant"
+          ],
+          "commit": "COMMITTED",
+          "refusals": [
+            "AUTHORITY_REFUSED",
+            "STALE_STATE"
+          ]
+        },
+        {
+          "operation": "retract-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/retract-widget",
+          "subject": "widget-receipt",
+          "crud": "COUNTER",
+          "requirement": "PROD-I-4",
+          "kernel_transition": "retract",
+          "preconditions": [
+            "target_exists",
+            "declared_reason"
+          ],
+          "commit": "COUNTERED",
+          "refusals": [
+            "AUTHORITY_REFUSED"
+          ]
+        }
+      ],
+      "local_refusals": {
+        "WIDGET_JAMMED": "POLICY_REFUSED"
+      },
+      "uses_kernel_contracts": [
+        "standing",
+        "typed-authority",
+        "operation",
+        "receipt",
+        "retraction"
+      ],
+      "ports": [
+        "human-binding"
+      ],
+      "forbids": [
+        "history-erasure"
+      ]
+    },
+    "expected_manifest_defects": [
+      "logical endpoint is"
+    ],
+    "defeats": "an address that no longer names its operation"
+  },
+  {
+    "id": "SVCMAN-SEM-ENDPOINT-DUPLICATE",
+    "contract": "service-manifest.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "note": "Two operations answering at one address.",
+    "record": {
+      "service_id": "example",
+      "standing": "BUILT",
+      "owns": [
+        "widget",
+        "widget-version",
+        "widget-receipt"
+      ],
+      "references": [
+        "shared-kernel-contracts"
+      ],
+      "operations": [
+        {
+          "operation": "make-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/make-widget",
+          "subject": "widget",
+          "crud": "CREATE",
+          "requirement": "PROD-I-1",
+          "kernel_transition": "submit_proposal",
+          "preconditions": [
+            "declared_actor",
+            "declared_label"
+          ],
+          "commit": "RECORDED",
+          "refusals": [
+            "INCOMPLETE_PROPOSAL",
+            "WIDGET_JAMMED"
+          ]
+        },
+        {
+          "operation": "read-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/read-widget",
+          "subject": "widget",
+          "crud": "READ",
+          "also_reads": [
+            "widget-version",
+            "widget-receipt"
+          ],
+          "requirement": "PROD-I-2",
+          "preconditions": [
+            "widget_exists"
+          ],
+          "commit": "DERIVED",
+          "refusals": [
+            "MISSING_PRECONDITION"
+          ]
+        },
+        {
+          "operation": "revise-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/read-widget",
+          "subject": "widget-version",
+          "crud": "SUPERSEDE",
+          "preconditions": [
+            "widget_exists",
+            "live_matching_grant"
+          ],
+          "commit": "COMMITTED",
+          "refusals": [
+            "AUTHORITY_REFUSED",
+            "STALE_STATE"
+          ]
+        },
+        {
+          "operation": "retract-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/retract-widget",
+          "subject": "widget-receipt",
+          "crud": "COUNTER",
+          "requirement": "PROD-I-4",
+          "kernel_transition": "retract",
+          "preconditions": [
+            "target_exists",
+            "declared_reason"
+          ],
+          "commit": "COUNTERED",
+          "refusals": [
+            "AUTHORITY_REFUSED"
+          ]
+        }
+      ],
+      "local_refusals": {
+        "WIDGET_JAMMED": "POLICY_REFUSED"
+      },
+      "uses_kernel_contracts": [
+        "standing",
+        "typed-authority",
+        "operation",
+        "receipt",
+        "retraction"
+      ],
+      "ports": [
+        "human-binding"
+      ],
+      "forbids": [
+        "history-erasure"
+      ]
+    },
+    "expected_manifest_defects": [
+      "is declared twice"
+    ],
+    "defeats": "an ambiguous address whose receipt cannot be attributed"
+  },
+  {
+    "id": "SVCMAN-SEM-SUBJECT-NOT-OWNED",
+    "contract": "service-manifest.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "note": "An operation writing a record the service does not own.",
+    "record": {
+      "service_id": "example",
+      "standing": "BUILT",
+      "owns": [
+        "widget",
+        "widget-version",
+        "widget-receipt"
+      ],
+      "references": [
+        "shared-kernel-contracts"
+      ],
+      "operations": [
+        {
+          "operation": "make-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/make-widget",
+          "subject": "invoice",
+          "crud": "CREATE",
+          "requirement": "PROD-I-1",
+          "kernel_transition": "submit_proposal",
+          "preconditions": [
+            "declared_actor",
+            "declared_label"
+          ],
+          "commit": "RECORDED",
+          "refusals": [
+            "INCOMPLETE_PROPOSAL",
+            "WIDGET_JAMMED"
+          ]
+        },
+        {
+          "operation": "read-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/read-widget",
+          "subject": "widget",
+          "crud": "READ",
+          "also_reads": [
+            "widget-version",
+            "widget-receipt"
+          ],
+          "requirement": "PROD-I-2",
+          "preconditions": [
+            "widget_exists"
+          ],
+          "commit": "DERIVED",
+          "refusals": [
+            "MISSING_PRECONDITION"
+          ]
+        },
+        {
+          "operation": "revise-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/revise-widget",
+          "subject": "widget-version",
+          "crud": "SUPERSEDE",
+          "preconditions": [
+            "widget_exists",
+            "live_matching_grant"
+          ],
+          "commit": "COMMITTED",
+          "refusals": [
+            "AUTHORITY_REFUSED",
+            "STALE_STATE"
+          ]
+        },
+        {
+          "operation": "retract-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/retract-widget",
+          "subject": "widget-receipt",
+          "crud": "COUNTER",
+          "requirement": "PROD-I-4",
+          "kernel_transition": "retract",
+          "preconditions": [
+            "target_exists",
+            "declared_reason"
+          ],
+          "commit": "COUNTERED",
+          "refusals": [
+            "AUTHORITY_REFUSED"
+          ]
+        }
+      ],
+      "local_refusals": {
+        "WIDGET_JAMMED": "POLICY_REFUSED"
+      },
+      "uses_kernel_contracts": [
+        "standing",
+        "typed-authority",
+        "operation",
+        "receipt",
+        "retraction"
+      ],
+      "ports": [
+        "human-binding"
+      ],
+      "forbids": [
+        "history-erasure"
+      ]
+    },
+    "expected_manifest_defects": [
+      "is not a record this service owns"
+    ],
+    "defeats": "a cross-service write with no crossing declared"
+  },
+  {
+    "id": "SVCMAN-SEM-ALSO-READS-NOT-OWNED",
+    "contract": "service-manifest.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "note": "A read returning another service's record.",
+    "record": {
+      "service_id": "example",
+      "standing": "BUILT",
+      "owns": [
+        "widget",
+        "widget-version",
+        "widget-receipt"
+      ],
+      "references": [
+        "shared-kernel-contracts"
+      ],
+      "operations": [
+        {
+          "operation": "make-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/make-widget",
+          "subject": "widget",
+          "crud": "CREATE",
+          "requirement": "PROD-I-1",
+          "kernel_transition": "submit_proposal",
+          "preconditions": [
+            "declared_actor",
+            "declared_label"
+          ],
+          "commit": "RECORDED",
+          "refusals": [
+            "INCOMPLETE_PROPOSAL",
+            "WIDGET_JAMMED"
+          ]
+        },
+        {
+          "operation": "read-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/read-widget",
+          "subject": "widget",
+          "crud": "READ",
+          "also_reads": [
+            "invoice"
+          ],
+          "requirement": "PROD-I-2",
+          "preconditions": [
+            "widget_exists"
+          ],
+          "commit": "DERIVED",
+          "refusals": [
+            "MISSING_PRECONDITION"
+          ]
+        },
+        {
+          "operation": "revise-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/revise-widget",
+          "subject": "widget-version",
+          "crud": "SUPERSEDE",
+          "preconditions": [
+            "widget_exists",
+            "live_matching_grant"
+          ],
+          "commit": "COMMITTED",
+          "refusals": [
+            "AUTHORITY_REFUSED",
+            "STALE_STATE"
+          ]
+        },
+        {
+          "operation": "retract-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/retract-widget",
+          "subject": "widget-receipt",
+          "crud": "COUNTER",
+          "requirement": "PROD-I-4",
+          "kernel_transition": "retract",
+          "preconditions": [
+            "target_exists",
+            "declared_reason"
+          ],
+          "commit": "COUNTERED",
+          "refusals": [
+            "AUTHORITY_REFUSED"
+          ]
+        }
+      ],
+      "local_refusals": {
+        "WIDGET_JAMMED": "POLICY_REFUSED"
+      },
+      "uses_kernel_contracts": [
+        "standing",
+        "typed-authority",
+        "operation",
+        "receipt",
+        "retraction"
+      ],
+      "ports": [
+        "human-binding"
+      ],
+      "forbids": [
+        "history-erasure"
+      ]
+    },
+    "expected_manifest_defects": [
+      "also_reads 'invoice' is not a record this service owns"
+    ],
+    "defeats": "a read reaching outside its boundary with no crossing declared"
+  },
+  {
+    "id": "SVCMAN-SEM-ALSO-READS-ON-A-WRITE",
+    "contract": "service-manifest.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "note": "A CREATE claiming the reach of a read.",
+    "record": {
+      "service_id": "example",
+      "standing": "BUILT",
+      "owns": [
+        "widget",
+        "widget-version",
+        "widget-receipt"
+      ],
+      "references": [
+        "shared-kernel-contracts"
+      ],
+      "operations": [
+        {
+          "operation": "make-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/make-widget",
+          "subject": "widget",
+          "crud": "CREATE",
+          "requirement": "PROD-I-1",
+          "kernel_transition": "submit_proposal",
+          "preconditions": [
+            "declared_actor",
+            "declared_label"
+          ],
+          "commit": "RECORDED",
+          "refusals": [
+            "INCOMPLETE_PROPOSAL",
+            "WIDGET_JAMMED"
+          ],
+          "also_reads": [
+            "widget-version"
+          ]
+        },
+        {
+          "operation": "read-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/read-widget",
+          "subject": "widget",
+          "crud": "READ",
+          "also_reads": [
+            "widget-version",
+            "widget-receipt"
+          ],
+          "requirement": "PROD-I-2",
+          "preconditions": [
+            "widget_exists"
+          ],
+          "commit": "DERIVED",
+          "refusals": [
+            "MISSING_PRECONDITION"
+          ]
+        },
+        {
+          "operation": "revise-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/revise-widget",
+          "subject": "widget-version",
+          "crud": "SUPERSEDE",
+          "preconditions": [
+            "widget_exists",
+            "live_matching_grant"
+          ],
+          "commit": "COMMITTED",
+          "refusals": [
+            "AUTHORITY_REFUSED",
+            "STALE_STATE"
+          ]
+        },
+        {
+          "operation": "retract-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/retract-widget",
+          "subject": "widget-receipt",
+          "crud": "COUNTER",
+          "requirement": "PROD-I-4",
+          "kernel_transition": "retract",
+          "preconditions": [
+            "target_exists",
+            "declared_reason"
+          ],
+          "commit": "COUNTERED",
+          "refusals": [
+            "AUTHORITY_REFUSED"
+          ]
+        }
+      ],
+      "local_refusals": {
+        "WIDGET_JAMMED": "POLICY_REFUSED"
+      },
+      "uses_kernel_contracts": [
+        "standing",
+        "typed-authority",
+        "operation",
+        "receipt",
+        "retraction"
+      ],
+      "ports": [
+        "human-binding"
+      ],
+      "forbids": [
+        "history-erasure"
+      ]
+    },
+    "expected_manifest_defects": [
+      "only a READ may declare also_reads"
+    ],
+    "defeats": "a write describing reach it never had"
+  },
+  {
+    "id": "SVCMAN-SEM-REFUSAL-UNDECLARED",
+    "contract": "service-manifest.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "note": "A refusal code neither the kernel nor the manifest declares.",
+    "record": {
+      "service_id": "example",
+      "standing": "BUILT",
+      "owns": [
+        "widget",
+        "widget-version",
+        "widget-receipt"
+      ],
+      "references": [
+        "shared-kernel-contracts"
+      ],
+      "operations": [
+        {
+          "operation": "make-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/make-widget",
+          "subject": "widget",
+          "crud": "CREATE",
+          "requirement": "PROD-I-1",
+          "kernel_transition": "submit_proposal",
+          "preconditions": [
+            "declared_actor",
+            "declared_label"
+          ],
+          "commit": "RECORDED",
+          "refusals": [
+            "INCOMPLETE_PROPOSAL",
+            "WIDGET_ON_FIRE"
+          ]
+        },
+        {
+          "operation": "read-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/read-widget",
+          "subject": "widget",
+          "crud": "READ",
+          "also_reads": [
+            "widget-version",
+            "widget-receipt"
+          ],
+          "requirement": "PROD-I-2",
+          "preconditions": [
+            "widget_exists"
+          ],
+          "commit": "DERIVED",
+          "refusals": [
+            "MISSING_PRECONDITION"
+          ]
+        },
+        {
+          "operation": "revise-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/revise-widget",
+          "subject": "widget-version",
+          "crud": "SUPERSEDE",
+          "preconditions": [
+            "widget_exists",
+            "live_matching_grant"
+          ],
+          "commit": "COMMITTED",
+          "refusals": [
+            "AUTHORITY_REFUSED",
+            "STALE_STATE"
+          ]
+        },
+        {
+          "operation": "retract-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/retract-widget",
+          "subject": "widget-receipt",
+          "crud": "COUNTER",
+          "requirement": "PROD-I-4",
+          "kernel_transition": "retract",
+          "preconditions": [
+            "target_exists",
+            "declared_reason"
+          ],
+          "commit": "COUNTERED",
+          "refusals": [
+            "AUTHORITY_REFUSED"
+          ]
+        }
+      ],
+      "local_refusals": {
+        "WIDGET_JAMMED": "POLICY_REFUSED"
+      },
+      "uses_kernel_contracts": [
+        "standing",
+        "typed-authority",
+        "operation",
+        "receipt",
+        "retraction"
+      ],
+      "ports": [
+        "human-binding"
+      ],
+      "forbids": [
+        "history-erasure"
+      ]
+    },
+    "expected_manifest_defects": [
+      "is neither a kernel refusal nor declared in local_refusals"
+    ],
+    "defeats": "a refusal nothing outside the implementation can test"
+  },
+  {
+    "id": "SVCMAN-SEM-LOCAL-REFUSAL-UNKNOWN-KERNEL",
+    "contract": "service-manifest.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "note": "A local refusal mapped to a kernel code that does not exist.",
+    "record": {
+      "service_id": "example",
+      "standing": "BUILT",
+      "owns": [
+        "widget",
+        "widget-version",
+        "widget-receipt"
+      ],
+      "references": [
+        "shared-kernel-contracts"
+      ],
+      "operations": [
+        {
+          "operation": "make-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/make-widget",
+          "subject": "widget",
+          "crud": "CREATE",
+          "requirement": "PROD-I-1",
+          "kernel_transition": "submit_proposal",
+          "preconditions": [
+            "declared_actor",
+            "declared_label"
+          ],
+          "commit": "RECORDED",
+          "refusals": [
+            "INCOMPLETE_PROPOSAL",
+            "WIDGET_JAMMED"
+          ]
+        },
+        {
+          "operation": "read-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/read-widget",
+          "subject": "widget",
+          "crud": "READ",
+          "also_reads": [
+            "widget-version",
+            "widget-receipt"
+          ],
+          "requirement": "PROD-I-2",
+          "preconditions": [
+            "widget_exists"
+          ],
+          "commit": "DERIVED",
+          "refusals": [
+            "MISSING_PRECONDITION"
+          ]
+        },
+        {
+          "operation": "revise-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/revise-widget",
+          "subject": "widget-version",
+          "crud": "SUPERSEDE",
+          "preconditions": [
+            "widget_exists",
+            "live_matching_grant"
+          ],
+          "commit": "COMMITTED",
+          "refusals": [
+            "AUTHORITY_REFUSED",
+            "STALE_STATE"
+          ]
+        },
+        {
+          "operation": "retract-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/retract-widget",
+          "subject": "widget-receipt",
+          "crud": "COUNTER",
+          "requirement": "PROD-I-4",
+          "kernel_transition": "retract",
+          "preconditions": [
+            "target_exists",
+            "declared_reason"
+          ],
+          "commit": "COUNTERED",
+          "refusals": [
+            "AUTHORITY_REFUSED"
+          ]
+        }
+      ],
+      "local_refusals": {
+        "WIDGET_JAMMED": "WIDGET_TROUBLE"
+      },
+      "uses_kernel_contracts": [
+        "standing",
+        "typed-authority",
+        "operation",
+        "receipt",
+        "retraction"
+      ],
+      "ports": [
+        "human-binding"
+      ],
+      "forbids": [
+        "history-erasure"
+      ]
+    },
+    "expected_manifest_defects": [
+      "which the kernel does not declare"
+    ],
+    "defeats": "a parity claim against a refusal the kernel never declared"
+  },
+  {
+    "id": "SVCMAN-SEM-LOCAL-REFUSAL-SHADOWS-KERNEL",
+    "contract": "service-manifest.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "note": "A local entry remapping a kernel refusal.",
+    "record": {
+      "service_id": "example",
+      "standing": "BUILT",
+      "owns": [
+        "widget",
+        "widget-version",
+        "widget-receipt"
+      ],
+      "references": [
+        "shared-kernel-contracts"
+      ],
+      "operations": [
+        {
+          "operation": "make-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/make-widget",
+          "subject": "widget",
+          "crud": "CREATE",
+          "requirement": "PROD-I-1",
+          "kernel_transition": "submit_proposal",
+          "preconditions": [
+            "declared_actor",
+            "declared_label"
+          ],
+          "commit": "RECORDED",
+          "refusals": [
+            "INCOMPLETE_PROPOSAL",
+            "WIDGET_JAMMED"
+          ]
+        },
+        {
+          "operation": "read-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/read-widget",
+          "subject": "widget",
+          "crud": "READ",
+          "also_reads": [
+            "widget-version",
+            "widget-receipt"
+          ],
+          "requirement": "PROD-I-2",
+          "preconditions": [
+            "widget_exists"
+          ],
+          "commit": "DERIVED",
+          "refusals": [
+            "MISSING_PRECONDITION"
+          ]
+        },
+        {
+          "operation": "revise-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/revise-widget",
+          "subject": "widget-version",
+          "crud": "SUPERSEDE",
+          "preconditions": [
+            "widget_exists",
+            "live_matching_grant"
+          ],
+          "commit": "COMMITTED",
+          "refusals": [
+            "AUTHORITY_REFUSED",
+            "STALE_STATE"
+          ]
+        },
+        {
+          "operation": "retract-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/retract-widget",
+          "subject": "widget-receipt",
+          "crud": "COUNTER",
+          "requirement": "PROD-I-4",
+          "kernel_transition": "retract",
+          "preconditions": [
+            "target_exists",
+            "declared_reason"
+          ],
+          "commit": "COUNTERED",
+          "refusals": [
+            "AUTHORITY_REFUSED"
+          ]
+        }
+      ],
+      "local_refusals": {
+        "WIDGET_JAMMED": "POLICY_REFUSED",
+        "STALE_STATE": "POLICY_REFUSED"
+      },
+      "uses_kernel_contracts": [
+        "standing",
+        "typed-authority",
+        "operation",
+        "receipt",
+        "retraction"
+      ],
+      "ports": [
+        "human-binding"
+      ],
+      "forbids": [
+        "history-erasure"
+      ]
+    },
+    "expected_manifest_defects": [
+      "is already a kernel refusal and must not be remapped"
+    ],
+    "defeats": "one refusal name carrying two meanings across participants"
+  },
+  {
+    "id": "SVCMAN-SEM-LOCAL-REFUSAL-DEAD",
+    "contract": "service-manifest.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "note": "Refusal vocabulary no operation returns.",
+    "record": {
+      "service_id": "example",
+      "standing": "BUILT",
+      "owns": [
+        "widget",
+        "widget-version",
+        "widget-receipt"
+      ],
+      "references": [
+        "shared-kernel-contracts"
+      ],
+      "operations": [
+        {
+          "operation": "make-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/make-widget",
+          "subject": "widget",
+          "crud": "CREATE",
+          "requirement": "PROD-I-1",
+          "kernel_transition": "submit_proposal",
+          "preconditions": [
+            "declared_actor",
+            "declared_label"
+          ],
+          "commit": "RECORDED",
+          "refusals": [
+            "INCOMPLETE_PROPOSAL",
+            "WIDGET_JAMMED"
+          ]
+        },
+        {
+          "operation": "read-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/read-widget",
+          "subject": "widget",
+          "crud": "READ",
+          "also_reads": [
+            "widget-version",
+            "widget-receipt"
+          ],
+          "requirement": "PROD-I-2",
+          "preconditions": [
+            "widget_exists"
+          ],
+          "commit": "DERIVED",
+          "refusals": [
+            "MISSING_PRECONDITION"
+          ]
+        },
+        {
+          "operation": "revise-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/revise-widget",
+          "subject": "widget-version",
+          "crud": "SUPERSEDE",
+          "preconditions": [
+            "widget_exists",
+            "live_matching_grant"
+          ],
+          "commit": "COMMITTED",
+          "refusals": [
+            "AUTHORITY_REFUSED",
+            "STALE_STATE"
+          ]
+        },
+        {
+          "operation": "retract-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/retract-widget",
+          "subject": "widget-receipt",
+          "crud": "COUNTER",
+          "requirement": "PROD-I-4",
+          "kernel_transition": "retract",
+          "preconditions": [
+            "target_exists",
+            "declared_reason"
+          ],
+          "commit": "COUNTERED",
+          "refusals": [
+            "AUTHORITY_REFUSED"
+          ]
+        }
+      ],
+      "local_refusals": {
+        "WIDGET_JAMMED": "POLICY_REFUSED",
+        "WIDGET_MISSING": "UNREADABLE"
+      },
+      "uses_kernel_contracts": [
+        "standing",
+        "typed-authority",
+        "operation",
+        "receipt",
+        "retraction"
+      ],
+      "ports": [
+        "human-binding"
+      ],
+      "forbids": [
+        "history-erasure"
+      ]
+    },
+    "expected_manifest_defects": [
+      "is declared but no operation returns it"
+    ],
+    "defeats": "declared coverage the service does not have"
+  },
+  {
+    "id": "SVCMAN-SEM-READ-COMMITS",
+    "contract": "service-manifest.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "note": "A read that commits an authoritative record.",
+    "record": {
+      "service_id": "example",
+      "standing": "BUILT",
+      "owns": [
+        "widget",
+        "widget-version",
+        "widget-receipt"
+      ],
+      "references": [
+        "shared-kernel-contracts"
+      ],
+      "operations": [
+        {
+          "operation": "make-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/make-widget",
+          "subject": "widget",
+          "crud": "CREATE",
+          "requirement": "PROD-I-1",
+          "kernel_transition": "submit_proposal",
+          "preconditions": [
+            "declared_actor",
+            "declared_label"
+          ],
+          "commit": "RECORDED",
+          "refusals": [
+            "INCOMPLETE_PROPOSAL",
+            "WIDGET_JAMMED"
+          ]
+        },
+        {
+          "operation": "read-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/read-widget",
+          "subject": "widget",
+          "crud": "READ",
+          "also_reads": [
+            "widget-version",
+            "widget-receipt"
+          ],
+          "requirement": "PROD-I-2",
+          "preconditions": [
+            "widget_exists"
+          ],
+          "commit": "COMMITTED",
+          "refusals": [
+            "MISSING_PRECONDITION"
+          ]
+        },
+        {
+          "operation": "revise-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/revise-widget",
+          "subject": "widget-version",
+          "crud": "SUPERSEDE",
+          "preconditions": [
+            "widget_exists",
+            "live_matching_grant"
+          ],
+          "commit": "COMMITTED",
+          "refusals": [
+            "AUTHORITY_REFUSED",
+            "STALE_STATE"
+          ]
+        },
+        {
+          "operation": "retract-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/retract-widget",
+          "subject": "widget-receipt",
+          "crud": "COUNTER",
+          "requirement": "PROD-I-4",
+          "kernel_transition": "retract",
+          "preconditions": [
+            "target_exists",
+            "declared_reason"
+          ],
+          "commit": "COUNTERED",
+          "refusals": [
+            "AUTHORITY_REFUSED"
+          ]
+        }
+      ],
+      "local_refusals": {
+        "WIDGET_JAMMED": "POLICY_REFUSED"
+      },
+      "uses_kernel_contracts": [
+        "standing",
+        "typed-authority",
+        "operation",
+        "receipt",
+        "retraction"
+      ],
+      "ports": [
+        "human-binding"
+      ],
+      "forbids": [
+        "history-erasure"
+      ]
+    },
+    "expected_manifest_defects": [
+      "a READ operation may not commit COMMITTED"
+    ],
+    "defeats": "a write wearing a read's name, escaping every check that gates writes"
+  },
+  {
+    "id": "SVCMAN-SEM-COUNTER-COMMITS-EFFECTIVE",
+    "contract": "service-manifest.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "note": "A retraction claiming the original was undone.",
+    "record": {
+      "service_id": "example",
+      "standing": "BUILT",
+      "owns": [
+        "widget",
+        "widget-version",
+        "widget-receipt"
+      ],
+      "references": [
+        "shared-kernel-contracts"
+      ],
+      "operations": [
+        {
+          "operation": "make-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/make-widget",
+          "subject": "widget",
+          "crud": "CREATE",
+          "requirement": "PROD-I-1",
+          "kernel_transition": "submit_proposal",
+          "preconditions": [
+            "declared_actor",
+            "declared_label"
+          ],
+          "commit": "RECORDED",
+          "refusals": [
+            "INCOMPLETE_PROPOSAL",
+            "WIDGET_JAMMED"
+          ]
+        },
+        {
+          "operation": "read-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/read-widget",
+          "subject": "widget",
+          "crud": "READ",
+          "also_reads": [
+            "widget-version",
+            "widget-receipt"
+          ],
+          "requirement": "PROD-I-2",
+          "preconditions": [
+            "widget_exists"
+          ],
+          "commit": "DERIVED",
+          "refusals": [
+            "MISSING_PRECONDITION"
+          ]
+        },
+        {
+          "operation": "revise-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/revise-widget",
+          "subject": "widget-version",
+          "crud": "SUPERSEDE",
+          "preconditions": [
+            "widget_exists",
+            "live_matching_grant"
+          ],
+          "commit": "COMMITTED",
+          "refusals": [
+            "AUTHORITY_REFUSED",
+            "STALE_STATE"
+          ]
+        },
+        {
+          "operation": "retract-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/retract-widget",
+          "subject": "widget-receipt",
+          "crud": "COUNTER",
+          "requirement": "PROD-I-4",
+          "kernel_transition": "retract",
+          "preconditions": [
+            "target_exists",
+            "declared_reason"
+          ],
+          "commit": "EFFECTIVE",
+          "refusals": [
+            "AUTHORITY_REFUSED"
+          ]
+        }
+      ],
+      "local_refusals": {
+        "WIDGET_JAMMED": "POLICY_REFUSED"
+      },
+      "uses_kernel_contracts": [
+        "standing",
+        "typed-authority",
+        "operation",
+        "receipt",
+        "retraction"
+      ],
+      "ports": [
+        "human-binding"
+      ],
+      "forbids": [
+        "history-erasure"
+      ]
+    },
+    "expected_manifest_defects": [
+      "a COUNTER operation may not commit EFFECTIVE"
+    ],
+    "defeats": "a counter-record presented as erasure"
+  },
+  {
+    "id": "SVCMAN-SEM-STANDING-AHEAD-OF-SERVICE",
+    "contract": "service-manifest.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "note": "An operation witnessed inside a service that is only built.",
+    "record": {
+      "service_id": "example",
+      "standing": "BUILT",
+      "owns": [
+        "widget",
+        "widget-version",
+        "widget-receipt"
+      ],
+      "references": [
+        "shared-kernel-contracts"
+      ],
+      "operations": [
+        {
+          "operation": "make-widget",
+          "standing": "WITNESSED",
+          "logical_endpoint": "sov://example/make-widget",
+          "subject": "widget",
+          "crud": "CREATE",
+          "requirement": "PROD-I-1",
+          "kernel_transition": "submit_proposal",
+          "preconditions": [
+            "declared_actor",
+            "declared_label"
+          ],
+          "commit": "RECORDED",
+          "refusals": [
+            "INCOMPLETE_PROPOSAL",
+            "WIDGET_JAMMED"
+          ]
+        },
+        {
+          "operation": "read-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/read-widget",
+          "subject": "widget",
+          "crud": "READ",
+          "also_reads": [
+            "widget-version",
+            "widget-receipt"
+          ],
+          "requirement": "PROD-I-2",
+          "preconditions": [
+            "widget_exists"
+          ],
+          "commit": "DERIVED",
+          "refusals": [
+            "MISSING_PRECONDITION"
+          ]
+        },
+        {
+          "operation": "revise-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/revise-widget",
+          "subject": "widget-version",
+          "crud": "SUPERSEDE",
+          "preconditions": [
+            "widget_exists",
+            "live_matching_grant"
+          ],
+          "commit": "COMMITTED",
+          "refusals": [
+            "AUTHORITY_REFUSED",
+            "STALE_STATE"
+          ]
+        },
+        {
+          "operation": "retract-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/retract-widget",
+          "subject": "widget-receipt",
+          "crud": "COUNTER",
+          "requirement": "PROD-I-4",
+          "kernel_transition": "retract",
+          "preconditions": [
+            "target_exists",
+            "declared_reason"
+          ],
+          "commit": "COUNTERED",
+          "refusals": [
+            "AUTHORITY_REFUSED"
+          ]
+        }
+      ],
+      "local_refusals": {
+        "WIDGET_JAMMED": "POLICY_REFUSED"
+      },
+      "uses_kernel_contracts": [
+        "standing",
+        "typed-authority",
+        "operation",
+        "receipt",
+        "retraction"
+      ],
+      "ports": [
+        "human-binding"
+      ],
+      "forbids": [
+        "history-erasure"
+      ]
+    },
+    "expected_manifest_defects": [
+      "is ahead of the service's own"
+    ],
+    "defeats": "standing claimed bottom-up rather than earned"
+  },
+  {
+    "id": "SVCMAN-SEM-TRANSITION-NOT-IN-KERNEL",
+    "contract": "service-manifest.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "note": "A correspondence to a kernel transition that does not exist.",
+    "record": {
+      "service_id": "example",
+      "standing": "BUILT",
+      "owns": [
+        "widget",
+        "widget-version",
+        "widget-receipt"
+      ],
+      "references": [
+        "shared-kernel-contracts"
+      ],
+      "operations": [
+        {
+          "operation": "make-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/make-widget",
+          "subject": "widget",
+          "crud": "CREATE",
+          "requirement": "PROD-I-1",
+          "kernel_transition": "conjure_source",
+          "preconditions": [
+            "declared_actor",
+            "declared_label"
+          ],
+          "commit": "RECORDED",
+          "refusals": [
+            "INCOMPLETE_PROPOSAL",
+            "WIDGET_JAMMED"
+          ]
+        },
+        {
+          "operation": "read-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/read-widget",
+          "subject": "widget",
+          "crud": "READ",
+          "also_reads": [
+            "widget-version",
+            "widget-receipt"
+          ],
+          "requirement": "PROD-I-2",
+          "preconditions": [
+            "widget_exists"
+          ],
+          "commit": "DERIVED",
+          "refusals": [
+            "MISSING_PRECONDITION"
+          ]
+        },
+        {
+          "operation": "revise-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/revise-widget",
+          "subject": "widget-version",
+          "crud": "SUPERSEDE",
+          "preconditions": [
+            "widget_exists",
+            "live_matching_grant"
+          ],
+          "commit": "COMMITTED",
+          "refusals": [
+            "AUTHORITY_REFUSED",
+            "STALE_STATE"
+          ]
+        },
+        {
+          "operation": "retract-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/retract-widget",
+          "subject": "widget-receipt",
+          "crud": "COUNTER",
+          "requirement": "PROD-I-4",
+          "kernel_transition": "retract",
+          "preconditions": [
+            "target_exists",
+            "declared_reason"
+          ],
+          "commit": "COUNTERED",
+          "refusals": [
+            "AUTHORITY_REFUSED"
+          ]
+        }
+      ],
+      "local_refusals": {
+        "WIDGET_JAMMED": "POLICY_REFUSED"
+      },
+      "uses_kernel_contracts": [
+        "standing",
+        "typed-authority",
+        "operation",
+        "receipt",
+        "retraction"
+      ],
+      "ports": [
+        "human-binding"
+      ],
+      "forbids": [
+        "history-erasure"
+      ]
+    },
+    "expected_manifest_defects": [
+      "is not in the kernel table"
+    ],
+    "defeats": "an unearned parity claim against the kernel table"
+  },
+  {
+    "id": "SVCMAN-SEM-REQUIREMENT-NOT-IN-PRD",
+    "contract": "service-manifest.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "note": "A well-formed requirement id PRD.md does not carry.",
+    "record": {
+      "service_id": "example",
+      "standing": "BUILT",
+      "owns": [
+        "widget",
+        "widget-version",
+        "widget-receipt"
+      ],
+      "references": [
+        "shared-kernel-contracts"
+      ],
+      "operations": [
+        {
+          "operation": "make-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/make-widget",
+          "subject": "widget",
+          "crud": "CREATE",
+          "requirement": "PROD-II-1",
+          "kernel_transition": "submit_proposal",
+          "preconditions": [
+            "declared_actor",
+            "declared_label"
+          ],
+          "commit": "RECORDED",
+          "refusals": [
+            "INCOMPLETE_PROPOSAL",
+            "WIDGET_JAMMED"
+          ]
+        },
+        {
+          "operation": "read-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/read-widget",
+          "subject": "widget",
+          "crud": "READ",
+          "also_reads": [
+            "widget-version",
+            "widget-receipt"
+          ],
+          "requirement": "PROD-I-2",
+          "preconditions": [
+            "widget_exists"
+          ],
+          "commit": "DERIVED",
+          "refusals": [
+            "MISSING_PRECONDITION"
+          ]
+        },
+        {
+          "operation": "revise-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/revise-widget",
+          "subject": "widget-version",
+          "crud": "SUPERSEDE",
+          "preconditions": [
+            "widget_exists",
+            "live_matching_grant"
+          ],
+          "commit": "COMMITTED",
+          "refusals": [
+            "AUTHORITY_REFUSED",
+            "STALE_STATE"
+          ]
+        },
+        {
+          "operation": "retract-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/retract-widget",
+          "subject": "widget-receipt",
+          "crud": "COUNTER",
+          "requirement": "PROD-I-4",
+          "kernel_transition": "retract",
+          "preconditions": [
+            "target_exists",
+            "declared_reason"
+          ],
+          "commit": "COUNTERED",
+          "refusals": [
+            "AUTHORITY_REFUSED"
+          ]
+        }
+      ],
+      "local_refusals": {
+        "WIDGET_JAMMED": "POLICY_REFUSED"
+      },
+      "uses_kernel_contracts": [
+        "standing",
+        "typed-authority",
+        "operation",
+        "receipt",
+        "retraction"
+      ],
+      "ports": [
+        "human-binding"
+      ],
+      "forbids": [
+        "history-erasure"
+      ]
+    },
+    "expected_manifest_defects": [
+      "does not appear in PRD.md"
+    ],
+    "defeats": "traceability that reports coverage which cannot be followed"
+  },
+  {
+    "id": "SVCMAN-SEM-WRITTEN-BUT-UNREADABLE",
+    "contract": "service-manifest.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "VALID",
+    "note": "A record created by one operation and readable by none.",
+    "record": {
+      "service_id": "example",
+      "standing": "BUILT",
+      "owns": [
+        "widget",
+        "widget-version",
+        "widget-receipt"
+      ],
+      "references": [
+        "shared-kernel-contracts"
+      ],
+      "operations": [
+        {
+          "operation": "make-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/make-widget",
+          "subject": "widget",
+          "crud": "CREATE",
+          "requirement": "PROD-I-1",
+          "kernel_transition": "submit_proposal",
+          "preconditions": [
+            "declared_actor",
+            "declared_label"
+          ],
+          "commit": "RECORDED",
+          "refusals": [
+            "INCOMPLETE_PROPOSAL",
+            "WIDGET_JAMMED"
+          ]
+        },
+        {
+          "operation": "read-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/read-widget",
+          "subject": "widget",
+          "crud": "READ",
+          "also_reads": [
+            "widget-version"
+          ],
+          "requirement": "PROD-I-2",
+          "preconditions": [
+            "widget_exists"
+          ],
+          "commit": "DERIVED",
+          "refusals": [
+            "MISSING_PRECONDITION"
+          ]
+        },
+        {
+          "operation": "revise-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/revise-widget",
+          "subject": "widget-version",
+          "crud": "SUPERSEDE",
+          "preconditions": [
+            "widget_exists",
+            "live_matching_grant"
+          ],
+          "commit": "COMMITTED",
+          "refusals": [
+            "AUTHORITY_REFUSED",
+            "STALE_STATE"
+          ]
+        },
+        {
+          "operation": "retract-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/retract-widget",
+          "subject": "widget-receipt",
+          "crud": "COUNTER",
+          "requirement": "PROD-I-4",
+          "kernel_transition": "retract",
+          "preconditions": [
+            "target_exists",
+            "declared_reason"
+          ],
+          "commit": "COUNTERED",
+          "refusals": [
+            "AUTHORITY_REFUSED"
+          ]
+        }
+      ],
+      "local_refusals": {
+        "WIDGET_JAMMED": "POLICY_REFUSED"
+      },
+      "uses_kernel_contracts": [
+        "standing",
+        "typed-authority",
+        "operation",
+        "receipt",
+        "retraction"
+      ],
+      "ports": [
+        "human-binding"
+      ],
+      "forbids": [
+        "history-erasure"
+      ]
+    },
+    "expected_manifest_defects": [
+      "widget-receipt: written by"
+    ],
+    "defeats": "a hole in the surface that also hides whether the write committed"
+  },
+  {
+    "id": "SVCMAN-NEG-NO-OPERATIONS",
+    "contract": "service-manifest.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "note": "A service declaring no surface at all.",
+    "record": {
+      "service_id": "example",
+      "standing": "BUILT",
+      "owns": [
+        "widget",
+        "widget-version",
+        "widget-receipt"
+      ],
+      "references": [
+        "shared-kernel-contracts"
+      ],
+      "operations": [],
+      "local_refusals": {
+        "WIDGET_JAMMED": "POLICY_REFUSED"
+      },
+      "uses_kernel_contracts": [
+        "standing",
+        "typed-authority",
+        "operation",
+        "receipt",
+        "retraction"
+      ],
+      "ports": [
+        "human-binding"
+      ],
+      "forbids": [
+        "history-erasure"
+      ]
+    }
+  },
+  {
+    "id": "SVCMAN-NEG-NO-REFUSALS",
+    "contract": "service-manifest.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "note": "An operation that claims it can never refuse.",
+    "record": {
+      "service_id": "example",
+      "standing": "BUILT",
+      "owns": [
+        "widget",
+        "widget-version",
+        "widget-receipt"
+      ],
+      "references": [
+        "shared-kernel-contracts"
+      ],
+      "operations": [
+        {
+          "operation": "make-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/make-widget",
+          "subject": "widget",
+          "crud": "CREATE",
+          "requirement": "PROD-I-1",
+          "kernel_transition": "submit_proposal",
+          "preconditions": [
+            "declared_actor",
+            "declared_label"
+          ],
+          "commit": "RECORDED",
+          "refusals": []
+        },
+        {
+          "operation": "read-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/read-widget",
+          "subject": "widget",
+          "crud": "READ",
+          "also_reads": [
+            "widget-version",
+            "widget-receipt"
+          ],
+          "requirement": "PROD-I-2",
+          "preconditions": [
+            "widget_exists"
+          ],
+          "commit": "DERIVED",
+          "refusals": [
+            "MISSING_PRECONDITION"
+          ]
+        },
+        {
+          "operation": "revise-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/revise-widget",
+          "subject": "widget-version",
+          "crud": "SUPERSEDE",
+          "preconditions": [
+            "widget_exists",
+            "live_matching_grant"
+          ],
+          "commit": "COMMITTED",
+          "refusals": [
+            "AUTHORITY_REFUSED",
+            "STALE_STATE"
+          ]
+        },
+        {
+          "operation": "retract-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/retract-widget",
+          "subject": "widget-receipt",
+          "crud": "COUNTER",
+          "requirement": "PROD-I-4",
+          "kernel_transition": "retract",
+          "preconditions": [
+            "target_exists",
+            "declared_reason"
+          ],
+          "commit": "COUNTERED",
+          "refusals": [
+            "AUTHORITY_REFUSED"
+          ]
+        }
+      ],
+      "local_refusals": {
+        "WIDGET_JAMMED": "POLICY_REFUSED"
+      },
+      "uses_kernel_contracts": [
+        "standing",
+        "typed-authority",
+        "operation",
+        "receipt",
+        "retraction"
+      ],
+      "ports": [
+        "human-binding"
+      ],
+      "forbids": [
+        "history-erasure"
+      ]
+    }
+  },
+  {
+    "id": "SVCMAN-NEG-NO-PRECONDITIONS",
+    "contract": "service-manifest.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "note": "A transition with no declared pre-state.",
+    "record": {
+      "service_id": "example",
+      "standing": "BUILT",
+      "owns": [
+        "widget",
+        "widget-version",
+        "widget-receipt"
+      ],
+      "references": [
+        "shared-kernel-contracts"
+      ],
+      "operations": [
+        {
+          "operation": "make-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/make-widget",
+          "subject": "widget",
+          "crud": "CREATE",
+          "requirement": "PROD-I-1",
+          "kernel_transition": "submit_proposal",
+          "preconditions": [],
+          "commit": "RECORDED",
+          "refusals": [
+            "INCOMPLETE_PROPOSAL",
+            "WIDGET_JAMMED"
+          ]
+        },
+        {
+          "operation": "read-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/read-widget",
+          "subject": "widget",
+          "crud": "READ",
+          "also_reads": [
+            "widget-version",
+            "widget-receipt"
+          ],
+          "requirement": "PROD-I-2",
+          "preconditions": [
+            "widget_exists"
+          ],
+          "commit": "DERIVED",
+          "refusals": [
+            "MISSING_PRECONDITION"
+          ]
+        },
+        {
+          "operation": "revise-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/revise-widget",
+          "subject": "widget-version",
+          "crud": "SUPERSEDE",
+          "preconditions": [
+            "widget_exists",
+            "live_matching_grant"
+          ],
+          "commit": "COMMITTED",
+          "refusals": [
+            "AUTHORITY_REFUSED",
+            "STALE_STATE"
+          ]
+        },
+        {
+          "operation": "retract-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/retract-widget",
+          "subject": "widget-receipt",
+          "crud": "COUNTER",
+          "requirement": "PROD-I-4",
+          "kernel_transition": "retract",
+          "preconditions": [
+            "target_exists",
+            "declared_reason"
+          ],
+          "commit": "COUNTERED",
+          "refusals": [
+            "AUTHORITY_REFUSED"
+          ]
+        }
+      ],
+      "local_refusals": {
+        "WIDGET_JAMMED": "POLICY_REFUSED"
+      },
+      "uses_kernel_contracts": [
+        "standing",
+        "typed-authority",
+        "operation",
+        "receipt",
+        "retraction"
+      ],
+      "ports": [
+        "human-binding"
+      ],
+      "forbids": [
+        "history-erasure"
+      ]
+    }
+  },
+  {
+    "id": "SVCMAN-NEG-ERASURE-VERB",
+    "contract": "service-manifest.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "note": "An erasing verb in an append-preserving system.",
+    "record": {
+      "service_id": "example",
+      "standing": "BUILT",
+      "owns": [
+        "widget",
+        "widget-version",
+        "widget-receipt"
+      ],
+      "references": [
+        "shared-kernel-contracts"
+      ],
+      "operations": [
+        {
+          "operation": "make-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/make-widget",
+          "subject": "widget",
+          "crud": "DELETE",
+          "requirement": "PROD-I-1",
+          "kernel_transition": "submit_proposal",
+          "preconditions": [
+            "declared_actor",
+            "declared_label"
+          ],
+          "commit": "RECORDED",
+          "refusals": [
+            "INCOMPLETE_PROPOSAL",
+            "WIDGET_JAMMED"
+          ]
+        },
+        {
+          "operation": "read-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/read-widget",
+          "subject": "widget",
+          "crud": "READ",
+          "also_reads": [
+            "widget-version",
+            "widget-receipt"
+          ],
+          "requirement": "PROD-I-2",
+          "preconditions": [
+            "widget_exists"
+          ],
+          "commit": "DERIVED",
+          "refusals": [
+            "MISSING_PRECONDITION"
+          ]
+        },
+        {
+          "operation": "revise-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/revise-widget",
+          "subject": "widget-version",
+          "crud": "SUPERSEDE",
+          "preconditions": [
+            "widget_exists",
+            "live_matching_grant"
+          ],
+          "commit": "COMMITTED",
+          "refusals": [
+            "AUTHORITY_REFUSED",
+            "STALE_STATE"
+          ]
+        },
+        {
+          "operation": "retract-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/retract-widget",
+          "subject": "widget-receipt",
+          "crud": "COUNTER",
+          "requirement": "PROD-I-4",
+          "kernel_transition": "retract",
+          "preconditions": [
+            "target_exists",
+            "declared_reason"
+          ],
+          "commit": "COUNTERED",
+          "refusals": [
+            "AUTHORITY_REFUSED"
+          ]
+        }
+      ],
+      "local_refusals": {
+        "WIDGET_JAMMED": "POLICY_REFUSED"
+      },
+      "uses_kernel_contracts": [
+        "standing",
+        "typed-authority",
+        "operation",
+        "receipt",
+        "retraction"
+      ],
+      "ports": [
+        "human-binding"
+      ],
+      "forbids": [
+        "history-erasure"
+      ]
+    }
+  },
+  {
+    "id": "SVCMAN-NEG-UNDECLARED-PROPERTY",
+    "contract": "service-manifest.schema.json",
+    "status": "PROPOSED",
+    "polarity": "defeating",
+    "expected_validity": "INVALID",
+    "note": "A field no reader of this contract consumes.",
+    "record": {
+      "service_id": "example",
+      "standing": "BUILT",
+      "owns": [
+        "widget",
+        "widget-version",
+        "widget-receipt"
+      ],
+      "references": [
+        "shared-kernel-contracts"
+      ],
+      "operations": [
+        {
+          "operation": "make-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/make-widget",
+          "subject": "widget",
+          "crud": "CREATE",
+          "requirement": "PROD-I-1",
+          "kernel_transition": "submit_proposal",
+          "preconditions": [
+            "declared_actor",
+            "declared_label"
+          ],
+          "commit": "RECORDED",
+          "refusals": [
+            "INCOMPLETE_PROPOSAL",
+            "WIDGET_JAMMED"
+          ],
+          "effect_class": "EXTERNAL_WORLD"
+        },
+        {
+          "operation": "read-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/read-widget",
+          "subject": "widget",
+          "crud": "READ",
+          "also_reads": [
+            "widget-version",
+            "widget-receipt"
+          ],
+          "requirement": "PROD-I-2",
+          "preconditions": [
+            "widget_exists"
+          ],
+          "commit": "DERIVED",
+          "refusals": [
+            "MISSING_PRECONDITION"
+          ]
+        },
+        {
+          "operation": "revise-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/revise-widget",
+          "subject": "widget-version",
+          "crud": "SUPERSEDE",
+          "preconditions": [
+            "widget_exists",
+            "live_matching_grant"
+          ],
+          "commit": "COMMITTED",
+          "refusals": [
+            "AUTHORITY_REFUSED",
+            "STALE_STATE"
+          ]
+        },
+        {
+          "operation": "retract-widget",
+          "standing": "BUILT",
+          "logical_endpoint": "sov://example/retract-widget",
+          "subject": "widget-receipt",
+          "crud": "COUNTER",
+          "requirement": "PROD-I-4",
+          "kernel_transition": "retract",
+          "preconditions": [
+            "target_exists",
+            "declared_reason"
+          ],
+          "commit": "COUNTERED",
+          "refusals": [
+            "AUTHORITY_REFUSED"
+          ]
+        }
+      ],
+      "local_refusals": {
+        "WIDGET_JAMMED": "POLICY_REFUSED"
+      },
+      "uses_kernel_contracts": [
+        "standing",
+        "typed-authority",
+        "operation",
+        "receipt",
+        "retraction"
+      ],
+      "ports": [
+        "human-binding"
+      ],
+      "forbids": [
+        "history-erasure"
+      ]
+    }
+  }
+]

@@ -1,0 +1,11 @@
+# Line endings are part of the engineering baseline. AGENTS.md requires UTF-8,
+# LF endings, four spaces, and a final newline for repository text, but that
+# rule was unenforceable while checkout depended on each contributor's
+# core.autocrlf setting. Declaring it here makes the working tree deterministic
+# on every platform, so scripts/lint.py can check working-tree bytes honestly.
+* text=auto eol=lf
+
+# lineage/ holds immutable attributed evidence whose sha256 digests are
+# verified byte-for-byte against lineage/SOURCES.lock by
+# scripts/verify_bootstrap.py. No end-of-line conversion may touch it.
+lineage/** -text

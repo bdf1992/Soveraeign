@@ -20,3 +20,13 @@ Loss or absence of an adapter must produce a visible refusal or
 Claude, a local Ollama-compatible runtime, or another owner-selected provider is
 an implementation of the same Model Adapter role. Provider-specific features
 may be declared capabilities; they cannot create a second authority path.
+
+`adapters/ollama/` is the first implementation of the Model provider row: two
+declared bindings over locally hosted models, positive and defeating fixtures,
+and a check suite in `scripts/verify.py`. It checks declarations and records
+against a captured runtime inventory, and it executes `invoke_model` against the
+local runtime through `adapters/ollama/invoke.py`, producing the record rather
+than reading a declared one (PROD-I-9). Standing: `BUILT`, self-tested, not
+witnessed with dissent: an independent observer found the custody refusal defeasible
+(`reports/2026-08-23-local-model-adapter-witness.md`). Standing of the pattern:
+`decisions/0027-local-model-adapter.md` (proposed).

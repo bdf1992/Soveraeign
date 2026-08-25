@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/thread.schema.json",
+  "title": "Console Thread",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "node_id",
+    "thread_id",
+    "channel_id",
+    "title",
+    "opened_by",
+    "opened_at",
+    "lifecycle",
+    "pinned_address",
+    "pinned_digest",
+    "standing"
+  ],
+  "properties": {
+    "node_id": {
+      "type": "string",
+      "pattern": "^node:[a-z0-9][a-z0-9-]*$",
+      "description": "The node this record belongs to, as contracts/node-identity.schema.json names it. Required so a record read on its own says which node it is from; a console that holds a peer's records through a crossing must never present them as its own (decisions/0039)."
+    },
+    "thread_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "channel_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "opened_by": {
+      "type": "string",
+      "minLength": 1
+    },
+    "opened_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "lifecycle": {
+      "enum": [
+        "OPEN",
+        "ARCHIVED"
+      ]
+    },
+    "pinned_address": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "description": "Exact operation, record, or asset version address the thread is pinned to; null when unpinned. Present together with pinned_digest or both null."
+    },
+    "pinned_digest": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "description": "Digest of the pinned record so the thread cannot silently follow a moved or rewritten target."
+    },
+    "standing": {
+      "enum": [
+        "RECORDED",
+        "ADMITTED",
+        "RATIFIED",
+        "EFFECTIVE"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "pinned_address": {
+            "type": "null"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "pinned_digest": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "pinned_digest": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  ]
+}

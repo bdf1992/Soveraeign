@@ -5,18 +5,35 @@ from __future__ import annotations
 
 from pathlib import Path
 import ast
+import os
 import re
 import sys
 
 
 ROOT = Path(__file__).resolve().parents[1]
 TEXT_SUFFIXES = {".md", ".py", ".json", ".yaml", ".yml", ".toml"}
-TEXT_NAMES = {".cursorrules", ".env.example", ".gitignore"}
-SKIP_PARTS = {".git", ".venv", "__pycache__", "lineage"}
+TEXT_NAMES = {".cursorrules", ".env.example", ".gitattributes", ".gitignore"}
+# .local/ is gitignored runtime state (scheduled-run ledger and captures); it is never
+# repository text and may legitimately contain local paths from captured tool output.
+SKIP_PARTS = {".git", ".venv", "__pycache__", "lineage", ".local"}
 MAX_PRODUCTION_LINES = 300
-KNOWN_MODULE_DEBT = {
-    "services/asset/src/soveraeign_asset_service/core.py":
-        "split storage, receipts/authority, and asset lifecycle before adding behavior",
+# The module budget reached only `scripts/` and packaged `src/` trees, so an adapter,
+# binding, worker, or the oracle itself could grow past the limit unseen. Adding a root
+# here surfaces existing overruns; each is entered as named debt below, never grandfathered.
+PRODUCTION_ROOTS = ("scripts/", "adapters/", "bindings/", "workers/", "conformance/")
+# Retired 2026-08-23: core.py was split into store.py (custody and receipts),
+# authority.py (grants and sessions), runs.py (leased derivation), and
+# projections.py (rebuildable views). Re-entering a module here records debt; it
+# does not grandfather it.
+KNOWN_MODULE_DEBT: dict[str, str] = {
+    "scripts/witness_infrastructure.py": (
+        "301 lines, one over. The overrun is main's host-portable custody lookup, which "
+        "replaced a direct os.geteuid() call that cannot run on Windows; the correct "
+        "behaviour costs one line. The split is the four _exercise_* stages into their own "
+        "module. Entered 2026-08-24 while reconciling main with the federation branch, where "
+        "splitting a witness harness would put the merge's own evidence in doubt. Owed to "
+        "the verification domain, not paid"
+    ),
 }
 SECRET_PATTERNS = {
     "private key": re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"),
@@ -33,12 +50,19 @@ LOCAL_PATH_PATTERNS = (
 
 
 def repository_text_files() -> list[Path]:
-    paths = []
-    for path in ROOT.rglob("*"):
-        if not path.is_file() or any(part in SKIP_PARTS for part in path.parts):
-            continue
-        if path.suffix in TEXT_SUFFIXES or path.name in TEXT_NAMES:
-            paths.append(path)
+    """Return lintable repository text without descending into excluded trees."""
+    paths: list[Path] = []
+    for raw_root, dirs, files in os.walk(ROOT, topdown=True):
+        # Pruning here matters: filtering paths after Path.rglob() still traverses
+        # .git object storage, virtualenvs and local runtime captures before throwing
+        # their entries away. The hygiene population is unchanged; the excluded trees
+        # simply never become I/O work.
+        dirs[:] = sorted(name for name in dirs if name not in SKIP_PARTS)
+        root = Path(raw_root)
+        for name in sorted(files):
+            path = root / name
+            if path.suffix in TEXT_SUFFIXES or path.name in TEXT_NAMES:
+                paths.append(path)
     return sorted(paths)
 
 
@@ -112,7 +136,10 @@ def check_python(path: Path, text: str) -> tuple[list[str], list[str]]:
         if not has_future:
             defects.append(f"{relative}: missing future annotations import")
     lines = len(text.splitlines())
-    is_production = "/src/" in f"/{relative}" or relative.startswith("scripts/")
+    is_production = (
+        "/src/" in f"/{relative}"
+        or relative.startswith(PRODUCTION_ROOTS)
+    ) and "/tests/" not in f"/{relative}"
     if is_production and lines > MAX_PRODUCTION_LINES:
         if relative in KNOWN_MODULE_DEBT:
             warnings.append(
@@ -125,16 +152,42 @@ def check_python(path: Path, text: str) -> tuple[list[str], list[str]]:
     return defects, warnings
 
 
+def check_decision_numbers(directory: Path) -> list[str]:
+    """Report every decision number carried by more than one record.
+
+    Two branches that each mint the next free number produce two records with one
+    identifier, and every citation of that number becomes ambiguous. Four such pairs
+    reached the tree before this check existed. It reads filenames rather than any
+    index, so a record cannot be counted by the thing that lists it.
+    """
+    by_number: dict[str, list[str]] = {}
+    for path in sorted(directory.glob("[0-9][0-9][0-9][0-9]-*.md")):
+        by_number.setdefault(path.name[:4], []).append(path.name)
+    return [f"decisions/: number {number} is carried by {len(names)} records: "
+            + ", ".join(names)
+            for number, names in sorted(by_number.items()) if len(names) > 1]
+
+
 def main() -> int:
     defects = []
     warnings = []
+    defects.extend(check_decision_numbers(ROOT / "decisions"))
     paths = repository_text_files()
     if not paths:
         print("FAIL: repository text population is empty")
         return 1
     python_count = 0
     for path in paths:
-        text = path.read_text(encoding="utf-8")
+        # Read bytes, never Path.read_text: universal-newline translation silently
+        # rewrites CR and CRLF to LF, which made the check_text CRLF rule unreachable
+        # on every platform. Decoding here keeps the line endings the file really has.
+        data = path.read_bytes()
+        try:
+            text = data.decode("utf-8")
+        except UnicodeDecodeError as error:
+            relative = path.relative_to(ROOT).as_posix()
+            defects.append(f"{relative}: not valid UTF-8 at byte {error.start}")
+            continue
         defects.extend(check_text(path, text))
         if path.suffix == ".py":
             python_count += 1

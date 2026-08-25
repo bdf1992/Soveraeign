@@ -1,0 +1,200 @@
+{
+  "service_id": "observation",
+  "standing": "PROPOSED",
+  "owns": [
+    "observation",
+    "observation-request",
+    "predicate-declaration",
+    "relation-inference",
+    "observation-receipt"
+  ],
+  "references": [
+    "shared-kernel-contracts"
+  ],
+  "operations": [
+    {
+      "operation": "declare-predicates",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://observation/declare-predicates",
+      "subject": "predicate-declaration",
+      "crud": "CREATE",
+      "requirement": "PROD-I-7",
+      "preconditions": [
+        "declared_subject",
+        "declared_predicates",
+        "predicates_evaluable_without_executor_report"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "INCOMPLETE_PROPOSAL",
+        "MISSING_PRECONDITION"
+      ]
+    },
+    {
+      "operation": "request-observation",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://observation/request-observation",
+      "subject": "observation-request",
+      "crud": "CREATE",
+      "requirement": "PROD-I-7",
+      "preconditions": [
+        "run_terminal",
+        "declared_subject",
+        "declared_requester"
+      ],
+      "commit": "RECORDED",
+      "refusals": [
+        "RUN_NOT_TERMINAL",
+        "INCOMPLETE_PROPOSAL"
+      ]
+    },
+    {
+      "operation": "list-pending-observations",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://observation/list-pending-observations",
+      "subject": "observation-request",
+      "crud": "READ",
+      "requirement": "PROD-I-7",
+      "preconditions": [
+        "journal_readable"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "UNREADABLE"
+      ]
+    },
+    {
+      "operation": "infer-relation",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://observation/infer-relation",
+      "subject": "relation-inference",
+      "crud": "CREATE",
+      "requirement": "PROD-I-8",
+      "preconditions": [
+        "run_terminal",
+        "run_record_complete",
+        "candidate_observer_named"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "RELATION_UNDETERMINED",
+        "RUN_NOT_TERMINAL",
+        "UNREADABLE"
+      ]
+    },
+    {
+      "operation": "observe-run",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://observation/observe-run",
+      "subject": "observation",
+      "crud": "CREATE",
+      "requirement": "PROD-I-7",
+      "kernel_transition": "observe_run",
+      "preconditions": [
+        "relation_inferred_independent",
+        "predicates_declared",
+        "durable_outputs_readable"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "OBSERVER_NOT_INDEPENDENT",
+        "RELATION_UNDETERMINED",
+        "PREDICATES_UNDECLARED",
+        "UNREADABLE",
+        "DIGEST_MISMATCH"
+      ]
+    },
+    {
+      "operation": "read-observation",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://observation/read-observation",
+      "subject": "observation",
+      "crud": "READ",
+      "requirement": "PROD-I-7",
+      "also_reads": [
+        "predicate-declaration",
+        "relation-inference",
+        "observation-receipt"
+      ],
+      "preconditions": [
+        "observation_exists"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "OBSERVATION_MISSING"
+      ]
+    },
+    {
+      "operation": "counter-observation",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://observation/counter-observation",
+      "subject": "observation",
+      "crud": "COUNTER",
+      "requirement": "PROD-I-4",
+      "kernel_transition": "retract",
+      "preconditions": [
+        "observation_exists",
+        "declared_reason",
+        "live_matching_grant"
+      ],
+      "commit": "COUNTERED",
+      "refusals": [
+        "AUTHORITY_REFUSED",
+        "OBSERVATION_MISSING"
+      ]
+    },
+    {
+      "operation": "attest-observation",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://observation/attest-observation",
+      "subject": "observation-receipt",
+      "crud": "CREATE",
+      "requirement": "PROD-I-8",
+      "kernel_transition": "attest",
+      "preconditions": [
+        "observation_exists",
+        "declared_validator",
+        "validator_inputs_addressed"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "VALIDATOR_UNDECLARED",
+        "UNATTESTABLE"
+      ]
+    }
+  ],
+  "local_refusals": {
+    "PREDICATES_UNDECLARED": "MISSING_PRECONDITION",
+    "RELATION_UNDETERMINED": "MISSING_PRECONDITION",
+    "RUN_NOT_TERMINAL": "STALE_STATE"
+  },
+  "uses_kernel_contracts": [
+    "standing",
+    "typed-authority",
+    "operation",
+    "observation",
+    "attestation",
+    "receipt",
+    "retraction"
+  ],
+  "ports": [
+    "record-journal",
+    "service-activity",
+    "human-binding",
+    "model-binding",
+    "federation"
+  ],
+  "depends_on": [
+    "record:append-preserving-journal"
+  ],
+  "forbids": [
+    "observing-what-it-executed",
+    "settling-a-run",
+    "ratifying-judgement",
+    "accepting-an-executor-report-as-an-observation",
+    "accepting-a-declared-relation-in-place-of-an-inferred-one",
+    "reading-an-incomplete-record-as-independence",
+    "history-erasure"
+  ],
+  "note": "Owns independent observation, not logging. The journal is the Record Service's and the operator's view of it is the Console Service's. Independence here is inferred from the run's own record - an observer is independent when no direct relation to the execution is found - and is never declared by the observer. A record too incomplete to infer from refuses RELATION_UNDETERMINED rather than reading absence as independence."
+}

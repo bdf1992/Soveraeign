@@ -55,6 +55,28 @@
           "note": "Both sides read the same authorization contract, so both name the refusal the same way. What changed is that the refusal is now over a scope rather than over an effect class."
         }
       ]
+    },
+    {
+      "participant": "console-service",
+      "surface": "services/console/src/soveraeign_console_service/core.py",
+      "kind": "executable",
+      "note": "Enforces the proposal requirement on model claims and the live-grant check on every transition. Driven for real by the parity check against a temporary journal.",
+      "correspondences": [
+        {
+          "fact": "a model claim without a proposal is incomplete",
+          "participant_refusal": "ModelClaimWithoutProposal",
+          "kernel_refusal": "MISSING_PRECONDITION",
+          "kernel_transition": "submit_proposal",
+          "note": "The participant refuses a MODEL post that claims while carrying no proposal_id; the kernel refuses a submit_proposal whose required fields are absent. Both refuse the same move: a model assertion entering the record with nothing behind it that can be read back. Declared against MISSING_PRECONDITION rather than INCOMPLETE_PROPOSAL because that is what the kernel actually decides here - contracts/kernel-transitions.json lists INCOMPLETE_PROPOSAL under submit_proposal, but scripts/sovkernel/transitions.py emits MISSING_PRECONDITION for every absent precondition and emits INCOMPLETE_PROPOSAL nowhere. Recorded as OPEN-SEAMS rather than papered over; a parity correspondence must name the refusal the kernel produces, not the one it advertises."
+        },
+        {
+          "fact": "no live grant covers this transition",
+          "participant_refusal": "AuthorityRefused",
+          "kernel_refusal": "AUTHORITY_REFUSED",
+          "kernel_transition": "retract",
+          "note": "The participant checks a typed, scoped, live grant at every console transition; the kernel checks the same thing at retract. The transitions differ, the fact does not, and a participant that admitted an ungranted actor would diverge here."
+        }
+      ]
     }
   ]
 }

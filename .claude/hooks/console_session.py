@@ -1,0 +1,158 @@
+#!/usr/bin/env python3
+"""Bind a Claude Code session to a Console Service operator session.
+
+This is host plumbing. `.claude/` holds no standing and grants no authority
+(`AGENTS.md`, Local orchestration harness); everything consequential this script
+does, it does by calling the Console Service through its declared machine path,
+the same path any other binding uses. It writes no console state itself.
+
+Two hook events drive it:
+
+  start  a SessionStart hook. Opens (or resumes) this operator's console session
+         and prints what landed while they were away. Whatever it prints becomes
+         context for the session that is starting - that is the automatic
+         metadata half of this.
+  end    a SessionEnd hook. Closes the console session, which pins the read
+         position the next session reads forward from. Without this the cursor
+         never advances and every post reads as unseen forever.
+
+It must never break a session. Any failure prints a short note and exits 0: a
+console that cannot be reached is a missing convenience, not a reason to refuse
+to start work.
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+from typing import Any
+import json
+import os
+import subprocess
+import sys
+
+ROOT = Path(__file__).resolve().parents[2]
+STORE = ROOT / ".local" / "console"
+BINDINGS = STORE / "host-sessions.json"
+OPERATOR = os.environ.get("SOVERAEIGN_OPERATOR", "sov")
+BINDING_ID = "claude-code"
+TIMEOUT_SECONDS = 20
+
+
+def _console(*args: str) -> dict[str, Any]:
+    """Call the Console Service CLI and return its JSON result."""
+    env = dict(os.environ)
+    env["PYTHONPATH"] = os.pathsep.join([
+        str(ROOT / "services" / "console" / "src"),
+        str(ROOT / "services" / "record" / "src"),
+        env.get("PYTHONPATH", ""),
+    ]).rstrip(os.pathsep)
+    result = subprocess.run(
+        [sys.executable, "-m", "soveraeign_console_service.cli", "--root", str(STORE), *args],
+        cwd=ROOT, env=env, capture_output=True, text=True, timeout=TIMEOUT_SECONDS)
+    if not result.stdout.strip():
+        raise RuntimeError(result.stderr.strip() or "the console returned nothing")
+    return json.loads(result.stdout)
+
+
+def _bindings() -> dict[str, str]:
+    """Map Claude Code session ids to console session ids.
+
+    This is a host convenience, not a record. Losing it costs a resumed session
+    its continuity for one turn; it cannot lose or alter anything in the journal.
+    """
+    try:
+        return json.loads(BINDINGS.read_text("utf-8"))
+    except (OSError, ValueError):
+        return {}
+
+
+def _remember(host_session: str, console_session: str) -> None:
+    BINDINGS.parent.mkdir(parents=True, exist_ok=True)
+    BINDINGS.write_text(json.dumps({**_bindings(), host_session: console_session},
+                                   indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def _render(context: dict[str, Any], console_session: str) -> str:
+    """Write the continuity briefing that becomes the starting session's context."""
+    lines = [
+        "# Console continuity",
+        "",
+        f"Operator `{OPERATOR}` through binding `{BINDING_ID}`. "
+        f"Console session `{console_session}`.",
+        "",
+        "This is a rebuilt projection over the Record Service journal. It is not "
+        "authoritative and settles nothing.",
+        "",
+    ]
+    unseen = context["unseen_posts"]
+    if unseen:
+        lines.append(f"## Landed since this operator last closed a session ({len(unseen)})")
+        lines.append("")
+        for post in unseen:
+            mention = " (mentions you)" if post["mentions_you"] else ""
+            lines.append(f"- `{post['thread_id']}` - {post['actor_id']} "
+                         f"({post['actor_kind']}) at {post['posted_at']}{mention}: "
+                         f"`{post['content_address']}`")
+        lines.append("")
+    else:
+        lines.append("Nothing landed since this operator last closed a session.\n")
+
+    if context["open_threads"]:
+        lines.append("## Open threads")
+        lines.append("")
+        for thread in context["open_threads"]:
+            pin = f", pinned to {thread['pinned_address']}" if thread["pinned_address"] else ""
+            lines.append(f"- `{thread['thread_id']}` {thread['title']} "
+                         f"({thread['post_count']} posts{pin})")
+        lines.append("")
+
+    for omission in context["omissions"]:
+        lines.append(f"Omission - {omission['source']}: {omission['reason']}")
+    lines.append("")
+    lines.append("Read a thread or post into one with the `sov-continuity` skill. "
+                 "A post that makes a claim needs a proposal id; the console refuses it "
+                 "otherwise.")
+    return "\n".join(lines)
+
+
+def start(event: dict[str, Any]) -> str:
+    """Open or resume the console session for this host session, and brief it."""
+    host_session = event.get("session_id", "unknown")
+    bindings = _bindings()
+    console_session = bindings.get(host_session)
+    if console_session is None:
+        console_session = _console("open-session", "--operator", OPERATOR,
+                                   "--actor-kind", "MODEL",
+                                   "--binding", BINDING_ID)["session_id"]
+        _remember(host_session, console_session)
+    return _render(_console("session-context", "--operator", OPERATOR), console_session)
+
+
+def end(event: dict[str, Any]) -> str:
+    """Close the console session so the next one has a read position to start from."""
+    console_session = _bindings().get(event.get("session_id", ""))
+    if console_session is None:
+        return ""
+    closed = _console("close-session", "--session", console_session)
+    return f"Console session {console_session} closed at cursor {closed['unread_cursor'][:16]}."
+
+
+def main(argv: list[str]) -> int:
+    action = argv[1] if len(argv) > 1 else "start"
+    try:
+        event = json.loads(sys.stdin.read() or "{}")
+    except ValueError:
+        event = {}
+    try:
+        output = {"start": start, "end": end}[action](event)
+    except Exception as failure:  # never break a session over a missing convenience
+        print(f"Console continuity unavailable ({type(failure).__name__}: {failure}). "
+              "Nothing was recorded.")
+        return 0
+    if output:
+        print(output)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv))

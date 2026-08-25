@@ -29,6 +29,7 @@ SUPPORTED_KEYWORDS = frozenset(
         "format",
         "if",
         "items",
+        "maxItems",
         "minItems",
         "minLength",
         "minProperties",
@@ -114,6 +115,8 @@ def _check_array(instance: list[Any], schema: dict[str, Any], root: Any, path: s
     defects: list[str] = []
     if "minItems" in schema and len(instance) < schema["minItems"]:
         defects.append(f"{path}: fewer than {schema['minItems']} items")
+    if "maxItems" in schema and len(instance) > schema["maxItems"]:
+        defects.append(f"{path}: more than {schema['maxItems']} items")
     if schema.get("uniqueItems") and len(instance) != len({repr(item) for item in instance}):
         defects.append(f"{path}: items are not unique")
     if "items" in schema:

@@ -183,6 +183,39 @@ def _metadata_case_failures() -> tuple[list[str], list[dict[str, Any]]]:
     return failures, corpus["cases"]
 
 
+def _body_case_failures() -> tuple[list[str], list[dict[str, Any]]]:
+    """Judge the end-to-end corpus that starts from a complete issue body.
+
+    The metadata corpus feeds already-parsed instances, so it can only judge the schema.
+    These cases cross ``sovticket.yamlblock`` first, which is where a shape the schema
+    admits but no real ticket body can express would otherwise stay invisible.
+    """
+    schema = json.loads((ROOT / "contracts" / "issue-metadata.schema.json").read_text("utf-8"))
+    corpus = json.loads((FIXTURES / "body-cases.json").read_text(encoding="utf-8"))
+    failures: list[str] = []
+    for case in corpus["cases"]:
+        case_id = case["case_id"]
+        try:
+            metadata = load_ticket(case["body"])
+        except TicketBlockError as error:
+            if case["expect"] == "VALID":
+                failures.append(f"{case_id}: expected a parse, observed refusal {error}")
+                continue
+            if case["refuses"] not in str(error):
+                failures.append(f"{case_id}: expected a refusal naming {case['refuses']!r}, observed {error}")
+            continue
+        if case["expect"] == "REFUSED":
+            failures.append(f"{case_id}: expected a refusal naming {case['refuses']!r}, none raised")
+            continue
+        if metadata != case["metadata"]:
+            failures.append(f"{case_id}: parsed metadata does not match the declared result")
+            continue
+        defects = validate(metadata, schema)
+        if defects:
+            failures.append(f"{case_id}: parsed body does not satisfy the schema: {defects[0]}")
+    return failures, corpus["cases"]
+
+
 def command_selfcheck(_: argparse.Namespace) -> int:
     """Run the declared positive and defeating fixture corpora without a network."""
     schema = json.loads((ROOT / "contracts" / "ticket-transition.schema.json").read_text("utf-8"))
@@ -205,7 +238,9 @@ def command_selfcheck(_: argparse.Namespace) -> int:
             failures.append(f"{case['case_id']}: expected {case['expect']}, observed {actual}")
     metadata_failures, metadata_cases = _metadata_case_failures()
     failures.extend(metadata_failures)
-    total = len(cases["cases"]) + len(metadata_cases)
+    body_failures, body_cases = _body_case_failures()
+    failures.extend(body_failures)
+    total = len(cases["cases"]) + len(metadata_cases) + len(body_cases)
     for failure in failures:
         print(f"FAIL: {failure}")
     if failures:
@@ -213,9 +248,11 @@ def command_selfcheck(_: argparse.Namespace) -> int:
         return 1
     positive = sum(1 for case in cases["cases"] if case["expect"] == "ALLOWED")
     positive += sum(1 for case in metadata_cases if case["expect"] == "VALID")
+    positive += sum(1 for case in body_cases if case["expect"] == "VALID")
     print(
-        f"PASS: {len(cases['cases'])} transition cases and "
-        f"{len(metadata_cases)} metadata cases "
+        f"PASS: {len(cases['cases'])} transition cases, "
+        f"{len(metadata_cases)} metadata cases and "
+        f"{len(body_cases)} issue-body cases "
         f"({positive} positive, {total - positive} defeating)"
     )
     return 0

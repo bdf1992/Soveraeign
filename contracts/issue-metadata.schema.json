@@ -20,73 +20,61 @@
     "dependency_channels"
   ],
   "properties": {
-    "issue_schema": {
-      "const": "soveraeign-ticket/v1"
-    },
-    "tags": {
-      "type": "array",
-      "items": {
-        "type": "string",
-        "pattern": "^[a-z]+:[a-z0-9-]+$"
-      },
-      "uniqueItems": true,
-      "minItems": 3
-    },
-    "kind": {
+    "actor_kind": {
+      "description": "Who tells the story, in the kernel's own attribution terms (SPEC.md actor_kind). A story is told by an actor, never by a system that has no expectations; a SYSTEM story is told on its behalf by the operator who integrated it.",
       "enum": [
-        "epic-of-epics",
-        "village",
-        "bit",
-        "implementation-stub",
-        "verification-engagement"
+        "HUMAN",
+        "MODEL",
+        "WORKER",
+        "SYSTEM"
       ]
     },
-    "epic_id": {
-      "type": "string",
-      "pattern": "^EPIC-[A-Z0-9-]+$"
+    "asks": {
+      "description": "Extensions or adjustments the participant asks of the substrate, each addressed to the issue that owns it. A story with nothing to ask is a walked scenario, not a story.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "of",
+          "adjustment"
+        ],
+        "properties": {
+          "of": {
+            "$ref": "#/$defs/issueRef"
+          },
+          "adjustment": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
     },
-    "village_id": {
+    "attention": {
+      "type": "string"
+    },
+    "authority": {
       "type": "string",
-      "pattern": "^VILLAGE-[A-Z0-9-]+$"
+      "minLength": 1
     },
     "bit_id": {
       "type": "string",
       "pattern": "^BIT-[A-Z0-9-]+$"
     },
-    "stub_id": {
-      "type": "string",
-      "pattern": "^STUB-[A-Z0-9-]+$"
-    },
-    "engagement_id": {
-      "description": "Identity of a verification engagement. A Red engagement is named for what it attacks, not for what it builds.",
-      "type": "string",
-      "pattern": "^RED-[A-Z0-9-]+$"
-    },
-    "path": {
+    "blocked_transition": {
+      "description": "The exact transition that is unavailable: a STATUS.yaml gate, a SPEC.md kernel transition, or a ticket transition. A whole ticket, service, or session is never the value.",
       "type": "string",
       "minLength": 1
     },
-    "village": {
-      "enum": [
-        "ground-and-evidence",
-        "trust-and-control",
-        "reach-and-motion",
-        "domain-and-qualification"
-      ]
-    },
-    "village_issue": {
-      "$ref": "#/$defs/issueRef"
-    },
-    "parent": {
-      "$ref": "#/$defs/issueRef"
-    },
-    "parent_bits": {
+    "capability": {
+      "description": "Canonical capability identifiers this work item serves, from contracts/fixtures/capability-map.reference.json. A referent, never an identity: the ticket points at what the repository already names and never carries a second definition of it. Validated offline against the projection, because GitHub is a coordination surface and owns no product semantics (Bdo, Q6 2026-08-24; decisions/0053).",
       "type": "array",
-      "items": {
-        "$ref": "#/$defs/issueRef"
-      },
       "uniqueItems": true,
-      "minItems": 1
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]*[.][a-z][a-z0-9-]*$"
+      }
     },
     "child_issues": {
       "type": "array",
@@ -96,70 +84,8 @@
       "uniqueItems": true,
       "minItems": 1
     },
-    "villages": {
-      "type": "array",
-      "items": {
-        "enum": [
-          "ground-and-evidence",
-          "trust-and-control",
-          "reach-and-motion",
-          "domain-and-qualification"
-        ]
-      },
-      "uniqueItems": true
-    },
-    "standing": {
-      "enum": [
-        "OPEN",
-        "PROPOSED",
-        "DECLARED_NOT_IMPLEMENTED",
-        "CHARTERED_NOT_IMPLEMENTED",
-        "BUILT_SELF_TESTED_NOT_WITNESSED",
-        "WITNESSED",
-        "RATIFIED",
-        "DEMOTED"
-      ]
-    },
-    "horizon": {
-      "enum": [
-        "NOW",
-        "NEXT",
-        "NOW_TO_NEXT",
-        "NEXT_TO_SCALE_TRUST",
-        "NOW_TO_SCALE_TRUST",
-        "ON_SCALE_TRUST"
-      ]
-    },
-    "authority": {
-      "type": "string",
-      "minLength": 1
-    },
-    "effect_class": {
-      "enum": [
-        "RECORD_LOCAL",
-        "OBSERVE_ONLY",
-        "REQUEST_ONLY",
-        "BOUNDED_EXECUTION",
-        "CONTROL",
-        "EXTERNAL_BOUNDARY",
-        "RESOURCE_CONSUMPTION",
-        "EXTERNAL_WORLD"
-      ]
-    },
-    "evidence_pointer": {
-      "type": "string",
-      "minLength": 1
-    },
-    "last_observed_at": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "format": "date-time"
-    },
-    "walker_receipt": {
-      "type": "string",
-      "minLength": 1
+    "custody": {
+      "type": "string"
     },
     "demotion_pointer": {
       "type": "string",
@@ -203,6 +129,146 @@
         }
       ]
     },
+    "effect_class": {
+      "enum": [
+        "RECORD_LOCAL",
+        "OBSERVE_ONLY",
+        "REQUEST_ONLY",
+        "BOUNDED_EXECUTION",
+        "CONTROL",
+        "EXTERNAL_BOUNDARY",
+        "RESOURCE_CONSUMPTION",
+        "EXTERNAL_WORLD"
+      ]
+    },
+    "engagement_id": {
+      "description": "Identity of a verification engagement. A Red engagement is named for what it attacks, not for what it builds.",
+      "type": "string",
+      "pattern": "^RED-[A-Z0-9-]+$"
+    },
+    "epic_id": {
+      "type": "string",
+      "pattern": "^EPIC-[A-Z0-9-]+$"
+    },
+    "evidence_pointer": {
+      "type": "string",
+      "minLength": 1
+    },
+    "expected": {
+      "description": "What the participant expected to be able to do, in their words.",
+      "type": "string",
+      "minLength": 1
+    },
+    "found": {
+      "description": "Where the realization fell short of that expectation.",
+      "type": "string",
+      "minLength": 1
+    },
+    "governing_rule": {
+      "description": "The document and section that makes the precondition binding.",
+      "type": "string",
+      "minLength": 1
+    },
+    "held": {
+      "description": "The ticket that cannot advance. It lists this unblock ticket in its own requires; blocked is never a status on it, only a held-by edge to here.",
+      "$ref": "#/$defs/issueRef"
+    },
+    "horizon": {
+      "enum": [
+        "NOW",
+        "NEXT",
+        "NOW_TO_NEXT",
+        "NEXT_TO_SCALE_TRUST",
+        "NOW_TO_SCALE_TRUST",
+        "ON_SCALE_TRUST"
+      ]
+    },
+    "issue_schema": {
+      "const": "soveraeign-ticket/v1"
+    },
+    "kind": {
+      "enum": [
+        "epic-of-epics",
+        "village",
+        "bit",
+        "implementation-stub",
+        "verification-engagement",
+        "story",
+        "unblock"
+      ]
+    },
+    "last_observed_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "leans_on": {
+      "description": "Back-office supports the crossing cannot work without. Not a dispatch dependency: a story is never taken, so it never blocks and is never blocked.",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/issueRef"
+      },
+      "uniqueItems": true,
+      "minItems": 1
+    },
+    "membership": {
+      "type": "string"
+    },
+    "missing_precondition": {
+      "description": "What the transition checks for and does not find.",
+      "type": "string",
+      "minLength": 1
+    },
+    "parent": {
+      "$ref": "#/$defs/issueRef"
+    },
+    "parent_bits": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/issueRef"
+      },
+      "uniqueItems": true,
+      "minItems": 1
+    },
+    "path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reachable_alternative": {
+      "description": "The claim that no admissible path exists without the provision. Only the literal NONE is admitted: if an alternative exists, the held ticket is dependency-mapped, not blocked, and this ticket is refused (AGENTS.md, Blocked edge is not blocked frontier).",
+      "const": "NONE"
+    },
+    "requested_by": {
+      "description": "The tier that found the transition unavailable.",
+      "enum": [
+        "worker",
+        "orchestrator",
+        "controller",
+        "owner"
+      ]
+    },
+    "requested_from": {
+      "description": "The tier asked to serve the provision. A judgement is always asked of the owner; nothing else may be.",
+      "enum": [
+        "worker",
+        "orchestrator",
+        "controller",
+        "owner"
+      ]
+    },
+    "requested_provision": {
+      "description": "What would satisfy the precondition. The type routes the ticket: a grant or judgement to the tier that holds it, a contract, fixture, capability, or observation to the tier that can produce it.",
+      "enum": [
+        "grant",
+        "judgement",
+        "contract",
+        "fixture",
+        "capability",
+        "observation"
+      ]
+    },
     "requires": {
       "type": "array",
       "items": {
@@ -210,26 +276,106 @@
       },
       "uniqueItems": true
     },
-    "target_pr": {
-      "description": "The pull request this engagement attempts to defeat.",
-      "$ref": "#/$defs/issueRef"
+    "role": {
+      "description": "The participation or boundary role the actor holds while crossing (CLASSIFICATION.md). Owner is not a role: it is the context that sets an operator's Binding and Projection, and it travels in the ticket's authority field.",
+      "enum": [
+        "operator",
+        "agent",
+        "worker",
+        "witness",
+        "node"
+      ]
+    },
+    "scenario": {
+      "description": "The conformance/scenarios.json id that walks this story. Null while the story is only told; required before standing may rise above PROPOSED.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Z0-9-]+$"
+    },
+    "standing": {
+      "enum": [
+        "OPEN",
+        "PROPOSED",
+        "DECLARED_NOT_IMPLEMENTED",
+        "CHARTERED_NOT_IMPLEMENTED",
+        "BUILT_SELF_TESTED_NOT_WITNESSED",
+        "WITNESSED",
+        "RATIFIED",
+        "DEMOTED"
+      ]
+    },
+    "story_id": {
+      "description": "Identity of a story: one participant crossing one counter and finding the substrate short.",
+      "type": "string",
+      "pattern": "^STORY-[A-Z0-9-]+$"
+    },
+    "stub_id": {
+      "type": "string",
+      "pattern": "^STUB-[A-Z0-9-]+$"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z]+:[a-z0-9-]+$"
+      },
+      "uniqueItems": true,
+      "minItems": 3
     },
     "target_head": {
       "description": "The exact commit the engagement was run against. An engagement that does not pin its target cannot be reproduced.",
       "type": "string",
       "pattern": "^[0-9a-f]{40}$"
     },
-    "membership": {
-      "type": "string"
+    "target_pr": {
+      "description": "The pull request this engagement attempts to defeat.",
+      "$ref": "#/$defs/issueRef"
+    },
+    "unblock_condition": {
+      "description": "The observable condition that closes this ticket and makes the held ticket reachable again. A receipt, not a report, settles it.",
+      "type": "string",
+      "minLength": 1
+    },
+    "unblock_id": {
+      "description": "Identity of an unblock request: one held ticket, one unavailable transition, one provision asked of a named tier.",
+      "type": "string",
+      "pattern": "^UNBLOCK-[A-Z0-9-]+$"
+    },
+    "village": {
+      "enum": [
+        "ground-and-evidence",
+        "trust-and-control",
+        "reach-and-motion",
+        "domain-and-qualification"
+      ]
+    },
+    "village_id": {
+      "type": "string",
+      "pattern": "^VILLAGE-[A-Z0-9-]+$"
+    },
+    "village_issue": {
+      "$ref": "#/$defs/issueRef"
+    },
+    "villages": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "ground-and-evidence",
+          "trust-and-control",
+          "reach-and-motion",
+          "domain-and-qualification"
+        ]
+      },
+      "uniqueItems": true
     },
     "visibility": {
       "type": "string"
     },
-    "custody": {
-      "type": "string"
-    },
-    "attention": {
-      "type": "string"
+    "walker_receipt": {
+      "type": "string",
+      "minLength": 1
     }
   },
   "$defs": {
@@ -347,6 +493,156 @@
           "stub_id": {
             "description": "A verification engagement constructs nothing, so it carries no construction identity. An empty enum refuses the key outright rather than admitting it unchecked.",
             "enum": []
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "story"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "then": {
+        "required": [
+          "story_id",
+          "actor_kind",
+          "role",
+          "village",
+          "village_issue",
+          "parent",
+          "expected",
+          "found",
+          "leans_on",
+          "asks",
+          "scenario"
+        ],
+        "properties": {
+          "stub_id": {
+            "description": "A story closes no repository surface, so it carries no construction identity.",
+            "enum": []
+          },
+          "bit_id": {
+            "description": "A story obliges nothing to exist; the counter it walks up to is the bit.",
+            "enum": []
+          },
+          "engagement_id": {
+            "description": "A story attacks nothing; it reports what a participant found.",
+            "enum": []
+          },
+          "requires": {
+            "description": "A story leans on supports; it is never dispatched, so it never requires. Refused outright so the dispatch DAG stays clean.",
+            "enum": []
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "story"
+          },
+          "standing": {
+            "enum": [
+              "DECLARED_NOT_IMPLEMENTED",
+              "CHARTERED_NOT_IMPLEMENTED",
+              "BUILT_SELF_TESTED_NOT_WITNESSED",
+              "WITNESSED",
+              "RATIFIED"
+            ]
+          }
+        },
+        "required": [
+          "kind",
+          "standing"
+        ]
+      },
+      "then": {
+        "properties": {
+          "scenario": {
+            "description": "A story above PROPOSED must name the scenario that walks it; a told story cannot be bound, walked, or witnessed without one.",
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "unblock"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "then": {
+        "required": [
+          "unblock_id",
+          "held",
+          "village",
+          "village_issue",
+          "parent",
+          "blocked_transition",
+          "missing_precondition",
+          "governing_rule",
+          "requested_provision",
+          "requested_by",
+          "requested_from",
+          "unblock_condition",
+          "reachable_alternative"
+        ],
+        "properties": {
+          "stub_id": {
+            "description": "An unblock request closes no repository surface; the provision it asks for may, under its own ticket.",
+            "enum": []
+          },
+          "bit_id": {
+            "description": "An unblock request obliges nothing to exist; it asks for what an existing obligation is missing.",
+            "enum": []
+          },
+          "engagement_id": {
+            "description": "An unblock request attacks nothing.",
+            "enum": []
+          },
+          "story_id": {
+            "description": "An unblock request is not told from a counter; it is filed at a gate.",
+            "enum": []
+          },
+          "requires": {
+            "description": "If the provision is already some ticket's work, the held ticket requires that ticket directly and is dependency-mapped, not blocked. An unblock request exists only when no ticket will produce the provision, so it never requires.",
+            "enum": []
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "unblock"
+          },
+          "requested_provision": {
+            "const": "judgement"
+          }
+        },
+        "required": [
+          "kind",
+          "requested_provision"
+        ]
+      },
+      "then": {
+        "properties": {
+          "requested_from": {
+            "description": "Judgement is owner-held; an unblock request for a judgement is addressed to the owner and to no one else.",
+            "const": "owner"
           }
         }
       }

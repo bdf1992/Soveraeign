@@ -1,33 +1,62 @@
-# Owner review as the ratification gate.
+# Review routing only — never architecture, standing, or authority.
+#
+# CODEOWNERS asks a human to look at a path. It does not define what a Node is,
+# create a root seat, grant a capability, admit a peer, or settle a crossing.
+# Semantic ownership lives in the governing contracts and decisions; domain
+# accountability is projected separately through contracts/domain-owners.json.
 #
 # STATUS.yaml standing, decisions/, and the governing document set carry judgement-
 # typed claims. No check, label, bot, or green build reaches RATIFIED; owner review on
-# these paths is how ratification actually enters the repository.
-#
-# This file only requests a reviewer. It becomes a gate when branch protection on main
-# requires code owner review — see decisions/0016-github-coordination-registrar.md.
+# these paths is how ratification can be presented to the owner when branch protection
+# requires it. See decisions/0016-github-coordination-registrar.md.
 
 # Standing, authority, and open decisions
-/STATUS.yaml                       @bdf1992
-/decisions/                        @bdf1992
+/STATUS.yaml                                      @bdf1992
+/decisions/                                       @bdf1992
 
 # The design System of Record
-/SYSTEM.md                         @bdf1992
-/CONTRACT.md                       @bdf1992
-/CLASSIFICATION.md                 @bdf1992
-/PRD.md                            @bdf1992
-/SPEC.md                           @bdf1992
-/SDLC.md                           @bdf1992
-/AGENTS.md                         @bdf1992
-/ENGINEERING.md                    @bdf1992
-/OPEN-SEAMS.md                     @bdf1992
-/NAMING.md                         @bdf1992
-/PUBLICATION.md                    @bdf1992
+/SYSTEM.md                                        @bdf1992
+/CONTRACT.md                                      @bdf1992
+/CLASSIFICATION.md                                @bdf1992
+/PRD.md                                           @bdf1992
+/SPEC.md                                          @bdf1992
+/AI-NATIVE.md                                     @bdf1992
+/SDLC.md                                          @bdf1992
+/AGENTS.md                                        @bdf1992
+/ENGINEERING.md                                   @bdf1992
+/OPEN-SEAMS.md                                    @bdf1992
+/NAMING.md                                        @bdf1992
+/PUBLICATION.md                                   @bdf1992
 
-# Machine boundaries and the oracle
-/contracts/                        @bdf1992
-/conformance/                      @bdf1992
+# Shared Kernel and machine boundary contracts.
+# Kernel is the available typology/topology/traversal/invariant grammar, not a structural level.
+/contracts/                                       @bdf1992
+/conformance/                                     @bdf1992
 
-# The coordination surface and its crossing
-/.github/                          @bdf1992
-/adapters/                         @bdf1992
+# Root / seat settlement: who may settle inside one Node.
+# These paths do not define Node identity or federation membership.
+/contracts/seat-registry.schema.json              @bdf1992
+/contracts/fixtures/seat-topology.reference.json  @bdf1992
+
+# Node identity: who this locally sovereign instance is and which Root settles for it.
+# Identity deliberately carries no capability or grant.
+/contracts/node-identity.schema.json               @bdf1992
+/contracts/fixtures/node-registry.reference.json  @bdf1992
+/scripts/sovkernel/node_identity.py                @bdf1992
+/scripts/sov_node.py                               @bdf1992
+
+# Cross-node semantics: how independently sovereign Node surfaces relate without merging Roots.
+# A crossing may carry identity/evidence; sender authority never becomes receiver authority.
+/contracts/federation-crossing.schema.json         @bdf1992
+/scripts/sovkernel/federation.py                   @bdf1992
+
+# Service boundaries inside one Node.
+/services/                                         @bdf1992
+
+# Deployment is a rendering of a Node, never the definition of one.
+/infrastructure/                                   @bdf1992
+/scripts/node_runtime.py                           @bdf1992
+
+# Coordination surfaces and external translations.
+/.github/                                          @bdf1992
+/adapters/                                         @bdf1992

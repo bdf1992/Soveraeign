@@ -1,0 +1,56 @@
+{
+  "table_id": "soveraeign-domain-owners/v1",
+  "status": "PROPOSED",
+  "governed_by": [
+    "AGENTS.md",
+    "STATUS.yaml",
+    "PRD.md",
+    "services/registry/CHARTER.md",
+    "contracts/seat-registry.schema.json"
+  ],
+  "note": "Who is accountable for each domain, what they were asked to do, what they may spend, by when, and who checks it. Mandates, budgets and deadlines are drafts until Bdo sets them; the table's status stays PROPOSED until he does. A domain absent from this table has no owner, which `python scripts/sov_owners.py status` reports as UNOWNED rather than hiding. Declaring an owner grants nothing.",
+  "owners": [
+    {
+      "domain": "registry",
+      "subject_kind": "service",
+      "owner": {"actor_id": "owner-registry@1", "actor_kind": "MODEL", "seat_id": "seat:owner-registry"},
+      "witness": {"actor_id": "sov-witness@1", "actor_kind": "MODEL", "seat_id": "seat:witness-1"},
+      "mandate": "Build the index and its rebuild path so a name resolves to the document that owns it, and every source it reads is digest-checked at answer time.",
+      "requirements": ["PROD-I-2", "PROD-I-5"],
+      "budget": {"max_usd_per_run": 5, "runs_per_period": 5, "period": "WEEK"},
+      "deadline": "2026-09-20",
+      "schedule": null,
+      "required_authority": ["register:entry", "rebuild:projection"],
+      "standing": "PROPOSED",
+      "note": "Eighteen open issues declare requires:#14. The capability map is already this service's first projection, built before the service was named."
+    },
+    {
+      "domain": "record",
+      "subject_kind": "service",
+      "owner": {"actor_id": "owner-record@1", "actor_kind": "MODEL", "seat_id": "seat:owner-record"},
+      "witness": {"actor_id": "sov-witness@1", "actor_kind": "MODEL", "seat_id": "seat:witness-1"},
+      "mandate": "Close the gap between the built journal and PROD-I-8 in services/record, and give the service a README a fresh reader can start from.",
+      "requirements": ["PROD-I-2", "PROD-I-4"],
+      "budget": {"max_usd_per_run": 5, "runs_per_period": 5, "period": "WEEK"},
+      "deadline": "2026-09-06",
+      "schedule": null,
+      "required_authority": ["record:event"],
+      "standing": "PROPOSED",
+      "note": "Has src and tests and no README; the only built service with no owner before this table."
+    },
+    {
+      "domain": "gateway",
+      "subject_kind": "service",
+      "owner": {"actor_id": "owner-gateway@1", "actor_kind": "MODEL", "seat_id": "seat:owner-gateway"},
+      "witness": {"actor_id": "sov-witness@1", "actor_kind": "MODEL", "seat_id": "seat:witness-1"},
+      "mandate": "Take the chartered door to a first implementation that resolves a logical endpoint, checks the grant, routes, and returns the owning service's receipt unchanged.",
+      "requirements": ["PROD-I-3", "PROD-I-5"],
+      "budget": {"max_usd_per_run": 5, "runs_per_period": 5, "period": "WEEK"},
+      "deadline": "2026-09-13",
+      "schedule": null,
+      "required_authority": ["route:request", "bind:transport"],
+      "standing": "PROPOSED",
+      "note": "External transports stay refused while no_external_effects_in_phase_i stands; this mandate is in-process and CLI only."
+    }
+  ]
+}

@@ -174,6 +174,8 @@ def _exercise_deployment() -> list[dict[str, Any]]:
 
 
 def _exercise_activation(temporary: Path) -> list[dict[str, Any]]:
+    if not hasattr(os, "geteuid"):  # no mechanism here for the claim it would observe
+        raise WitnessRefused("HOST_CANNOT_ENFORCE_CUSTODY")
     manifest = json.loads((ROOT / "infrastructure" / "phase-i.local.json").read_text(
         encoding="utf-8"))
     node = temporary / "activation"

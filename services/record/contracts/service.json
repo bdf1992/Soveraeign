@@ -1,10 +1,173 @@
 {
   "service_id": "record",
   "standing": "BUILT",
-  "owns": ["journal-entry", "terminal-receipt", "counter-record", "digest-chain", "subject-projection"],
-  "references": ["shared-kernel-contracts"],
-  "operations": ["append-entry", "append-receipt", "counter-entry", "reconstruct-journal", "drop-projections", "rebuild-projections", "read-projection"],
-  "uses_kernel_contracts": ["event-envelope", "receipt", "retraction", "standing"],
-  "ports": ["asset-service", "conformance-oracle", "console-projection"],
-  "forbids": ["journal-row-update", "journal-row-deletion", "history-erasure-on-retraction", "projection-as-authoritative-record", "design-documents-as-event-storage", "unverified-history-replay"]
+  "owns": [
+    "journal-entry",
+    "terminal-receipt",
+    "counter-record",
+    "digest-chain",
+    "subject-projection"
+  ],
+  "references": [
+    "shared-kernel-contracts"
+  ],
+  "operations": [
+    {
+      "operation": "append-entry",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://record/append-entry",
+      "subject": "journal-entry",
+      "crud": "CREATE",
+      "requirement": "PROD-I-2",
+      "preconditions": [
+        "declared_kind",
+        "declared_subject",
+        "declared_actor",
+        "current_head"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "STALE_STATE",
+        "MISSING_PRECONDITION",
+        "DESIGN_RECORD_REFUSED"
+      ]
+    },
+    {
+      "operation": "append-receipt",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://record/append-receipt",
+      "subject": "terminal-receipt",
+      "crud": "CREATE",
+      "requirement": "PROD-I-4",
+      "preconditions": [
+        "entry_exists",
+        "declared_outcome"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "STALE_STATE",
+        "MISSING_PRECONDITION"
+      ]
+    },
+    {
+      "operation": "counter-entry",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://record/counter-entry",
+      "subject": "counter-record",
+      "crud": "COUNTER",
+      "requirement": "PROD-I-4",
+      "kernel_transition": "retract",
+      "preconditions": [
+        "entry_exists",
+        "declared_reason",
+        "declared_actor"
+      ],
+      "commit": "COUNTERED",
+      "refusals": [
+        "STALE_STATE",
+        "MISSING_PRECONDITION"
+      ]
+    },
+    {
+      "operation": "reconstruct-journal",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://record/reconstruct-journal",
+      "subject": "digest-chain",
+      "crud": "READ",
+      "requirement": "PROD-I-2",
+      "preconditions": [
+        "journal_readable"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "UNREADABLE",
+        "DIGEST_MISMATCH"
+      ]
+    },
+    {
+      "operation": "read-projection",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://record/read-projection",
+      "subject": "subject-projection",
+      "crud": "READ",
+      "requirement": "PROD-I-2",
+      "preconditions": [
+        "projection_built"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "MISSING_PRECONDITION"
+      ]
+    },
+    {
+      "operation": "drop-projections",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://record/drop-projections",
+      "subject": "subject-projection",
+      "crud": "REBUILD",
+      "preconditions": [
+        "projection_store_writable"
+      ],
+      "commit": "REBUILT",
+      "refusals": [
+        "MISSING_PRECONDITION"
+      ]
+    },
+    {
+      "operation": "rebuild-projections",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://record/rebuild-projections",
+      "subject": "subject-projection",
+      "crud": "REBUILD",
+      "requirement": "PROD-I-2",
+      "preconditions": [
+        "journal_readable"
+      ],
+      "commit": "REBUILT",
+      "refusals": [
+        "UNREADABLE",
+        "DIGEST_MISMATCH"
+      ]
+    },
+    {
+      "operation": "read-entry",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://record/read-entry",
+      "subject": "journal-entry",
+      "crud": "READ",
+      "requirement": "PROD-I-2",
+      "also_reads": [
+        "terminal-receipt",
+        "counter-record"
+      ],
+      "preconditions": [
+        "entry_exists"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "MISSING_PRECONDITION"
+      ]
+    }
+  ],
+  "local_refusals": {
+    "DESIGN_RECORD_REFUSED": "ADMISSION_REFUSED"
+  },
+  "uses_kernel_contracts": [
+    "standing",
+    "operation",
+    "receipt",
+    "retraction"
+  ],
+  "ports": [
+    "asset-service",
+    "conformance-oracle",
+    "console-projection"
+  ],
+  "forbids": [
+    "entry-mutation",
+    "entry-deletion",
+    "projection-as-authority",
+    "digest-chain-rewrite",
+    "history-erasure"
+  ]
 }

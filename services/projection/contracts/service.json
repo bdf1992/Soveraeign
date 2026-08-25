@@ -1,0 +1,333 @@
+{
+  "service_id": "projection",
+  "standing": "PROPOSED",
+  "owns": [
+    "projection-collection",
+    "text-configuration",
+    "vector-registration",
+    "graph-configuration",
+    "index-declaration",
+    "projection-build",
+    "retrieval-receipt",
+    "context-package",
+    "fidelity-observation",
+    "projection-receipt"
+  ],
+  "references": [
+    "shared-kernel-contracts"
+  ],
+  "operations": [
+    {
+      "operation": "declare-collection",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://projection/declare-collection",
+      "subject": "projection-collection",
+      "crud": "CREATE",
+      "requirement": "PROD-I-2",
+      "preconditions": [
+        "declared_name",
+        "declared_record_stream"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "INCOMPLETE_PROPOSAL"
+      ]
+    },
+    {
+      "operation": "configure-text",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://projection/configure-text",
+      "subject": "text-configuration",
+      "crud": "CREATE",
+      "requirement": "PROD-I-2",
+      "preconditions": [
+        "collection_exists",
+        "declared_analyzer"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "INCOMPLETE_PROPOSAL",
+        "STALE_STATE"
+      ]
+    },
+    {
+      "operation": "configure-graph",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://projection/configure-graph",
+      "subject": "graph-configuration",
+      "crud": "CREATE",
+      "requirement": "PROD-I-2",
+      "preconditions": [
+        "collection_exists",
+        "declared_edge_rules"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "INCOMPLETE_PROPOSAL",
+        "STALE_STATE"
+      ]
+    },
+    {
+      "operation": "register-vectors",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://projection/register-vectors",
+      "subject": "vector-registration",
+      "crud": "CREATE",
+      "requirement": "PROD-I-9",
+      "kernel_transition": "invoke_model",
+      "preconditions": [
+        "collection_exists",
+        "declared_model_binding",
+        "declared_dimension"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "INCOMPLETE_PROPOSAL",
+        "MODEL_UNAVAILABLE",
+        "MODEL_INCOMPATIBLE"
+      ]
+    },
+    {
+      "operation": "build-projection",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://projection/build-projection",
+      "subject": "projection-build",
+      "crud": "REBUILD",
+      "requirement": "PROD-I-2",
+      "preconditions": [
+        "collection_exists",
+        "authoritative_records_readable"
+      ],
+      "commit": "REBUILT",
+      "refusals": [
+        "UNREADABLE",
+        "STALE_STATE"
+      ]
+    },
+    {
+      "operation": "search-text",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://projection/search-text",
+      "subject": "retrieval-receipt",
+      "crud": "READ",
+      "requirement": "PROD-I-2",
+      "preconditions": [
+        "build_current",
+        "declared_query"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "MISSING_PRECONDITION",
+        "STALE_STATE"
+      ]
+    },
+    {
+      "operation": "search-dense",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://projection/search-dense",
+      "subject": "retrieval-receipt",
+      "crud": "READ",
+      "requirement": "PROD-I-9",
+      "preconditions": [
+        "build_current",
+        "declared_query",
+        "vectors_registered"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "MISSING_PRECONDITION",
+        "MODEL_UNAVAILABLE"
+      ]
+    },
+    {
+      "operation": "search-sparse",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://projection/search-sparse",
+      "subject": "retrieval-receipt",
+      "crud": "READ",
+      "requirement": "PROD-I-2",
+      "preconditions": [
+        "build_current",
+        "declared_query"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "MISSING_PRECONDITION",
+        "STALE_STATE"
+      ]
+    },
+    {
+      "operation": "search-hybrid",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://projection/search-hybrid",
+      "subject": "retrieval-receipt",
+      "crud": "READ",
+      "requirement": "PROD-I-9",
+      "preconditions": [
+        "build_current",
+        "declared_query",
+        "vectors_registered"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "MISSING_PRECONDITION",
+        "MODEL_UNAVAILABLE"
+      ]
+    },
+    {
+      "operation": "traverse-graph",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://projection/traverse-graph",
+      "subject": "retrieval-receipt",
+      "crud": "READ",
+      "requirement": "PROD-I-2",
+      "preconditions": [
+        "build_current",
+        "graph_configured",
+        "declared_start"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "MISSING_PRECONDITION",
+        "STALE_STATE"
+      ]
+    },
+    {
+      "operation": "find-path",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://projection/find-path",
+      "subject": "retrieval-receipt",
+      "crud": "READ",
+      "requirement": "PROD-I-2",
+      "preconditions": [
+        "build_current",
+        "graph_configured",
+        "declared_start",
+        "declared_end"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "MISSING_PRECONDITION",
+        "STALE_STATE"
+      ]
+    },
+    {
+      "operation": "package-context",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://projection/package-context",
+      "subject": "context-package",
+      "crud": "CREATE",
+      "requirement": "PROD-I-3",
+      "kernel_transition": "cross",
+      "preconditions": [
+        "build_current",
+        "declared_projection",
+        "declared_omissions"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "INCOMPLETE_PROPOSAL",
+        "DATA_BOUNDARY_REFUSED"
+      ]
+    },
+    {
+      "operation": "observe-fidelity",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://projection/observe-fidelity",
+      "subject": "fidelity-observation",
+      "crud": "CREATE",
+      "requirement": "PROD-I-7",
+      "kernel_transition": "observe_run",
+      "preconditions": [
+        "build_exists",
+        "observer_independent",
+        "declared_predicates"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "OBSERVER_NOT_INDEPENDENT",
+        "OBSERVATION_MISSING"
+      ]
+    },
+    {
+      "operation": "propose-from-projection",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://projection/propose-from-projection",
+      "subject": "projection-receipt",
+      "crud": "CREATE",
+      "requirement": "PROD-I-1",
+      "kernel_transition": "submit_proposal",
+      "preconditions": [
+        "build_current",
+        "declared_actor",
+        "declared_source_records"
+      ],
+      "commit": "RECORDED",
+      "refusals": [
+        "INCOMPLETE_PROPOSAL",
+        "STALE_STATE"
+      ]
+    },
+    {
+      "operation": "describe-collection",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://projection/describe-collection",
+      "subject": "projection-collection",
+      "crud": "READ",
+      "requirement": "PROD-I-2",
+      "also_reads": [
+        "text-configuration",
+        "graph-configuration",
+        "vector-registration",
+        "index-declaration"
+      ],
+      "preconditions": [
+        "collection_exists"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "MISSING_PRECONDITION"
+      ]
+    },
+    {
+      "operation": "read-context-package",
+      "standing": "PROPOSED",
+      "logical_endpoint": "sov://projection/read-context-package",
+      "subject": "context-package",
+      "crud": "READ",
+      "requirement": "PROD-I-3",
+      "also_reads": [
+        "projection-receipt",
+        "fidelity-observation"
+      ],
+      "preconditions": [
+        "package_exists"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "MISSING_PRECONDITION"
+      ]
+    }
+  ],
+  "uses_kernel_contracts": [
+    "standing",
+    "typed-authority",
+    "operation",
+    "observation",
+    "receipt"
+  ],
+  "ports": [
+    "asset-record-stream",
+    "model-binding",
+    "external-index",
+    "http-binding",
+    "federation"
+  ],
+  "forbids": [
+    "authoritative-write",
+    "retrieval-without-receipt",
+    "silent-index-substitution",
+    "presenting-a-projection-as-a-source",
+    "history-erasure"
+  ]
+}

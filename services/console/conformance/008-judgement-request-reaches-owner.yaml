@@ -1,0 +1,40 @@
+id: CONS-008
+title: judgement_request_reaches_owner
+status: SEED
+given:
+  - one local node with the Console Service and the kernel available; the Console Service has no runtime implementation, and these payloads are what a future participant must satisfy
+  - one HUMAN operator BDO, the owner, holding an open operator session S-H through a human binding HB-CLI, a local CLI over the Python API (the Local surface row of ENGINEERING.md)
+  - one MODEL operator M-1 holding an open operator session S-M through a model binding MB-1
+  - one operation OP-J whose declared required_authority_type is JUDGEMENT; no live AuthorityGrant with authority_type JUDGEMENT covers OP-J for any actor at the attempt time
+  - OP-J's operation plan names a question address Q-1 with its digest, evidence addresses E-1..E-n with their digests, and a decision_ref naming the decision the judgement concerns
+  - BDO and M-1 each hold a live grant scoped to read judgement-request records through their own binding; neither grant has authority_type JUDGEMENT
+  - one operator setting ST-1 held by BDO that suppresses presentation of notifications of kind JUDGEMENT_REQUESTED in S-H; it conditions presentation only
+  - a delivery port declared in the Console Service manifest with no adapter configured and no external effect admitted; its state is UNCONFIGURED
+  - a record read path R over judgement-request records that passes through no notification record and no projection-view
+  - no judgement-request record and no notification addressed to BDO exists on the node
+when:
+  - M-1 attempts OP-J through MB-1 and request-judgement fires
+  - BDO lists pending judgement requests through HB-CLI
+  - M-1 lists pending judgement requests through MB-1
+  - an observer that is neither binding counts judgement-request records with lifecycle QUEUED addressed to BDO on R
+then:
+  - OP-J returns a receipt with outcome UNRESOLVED, and a judgement-request JR-1 exists with lifecycle QUEUED, loop_mode IN_LOOP, requester M-1, conditioned operation OP-J, and standing RECORDED, as CONS-001 requires
+  - a notification N-1 of kind JUDGEMENT_REQUESTED with recipient_id BDO, the request's addressed_to, is issued by an event whose actor_kind is SYSTEM, and the issue returns its own receipt with outcome COMMITTED and a null reason_code; a notification is addressed to a recipient, never to a session, and S-H is only where BDO pulls the list
+  - N-1's delivery is LOCAL, and N-1's source_address and source_digest equal JR-1's address and digest; resolving them returns JR-1 byte-identical
+  - no push is attempted; the delivery port remains UNCONFIGURED, and no receipt on the node records outcome COMMITTED for an external delivery of N-1
+  - BDO's list through HB-CLI contains JR-1 with JR-1's address and digest, Q-1's address and digest, the evidence addresses and digests, the decision_ref, the conditioned operation OP-J, loop_mode IN_LOOP, and the authority the resolution will check - required_authority_type JUDGEMENT, capability resolve-judgement, scope JR-1
+  - M-1's list through MB-1 contains the same JR-1 with the same address, digest, and fields as typed structure; the two lists differ in rendering only, and JR-1's digest is equal in both
+  - both lists are read from judgement-request records on R; the count of BDO's list equals the count the observer took on R, and both equal one
+  - JR-1 appears on BDO's list although ST-1 suppresses presentation of N-1 in S-H; a setting conditions notification routing and presentation only and never the membership of the pending list
+  - neither listing creates, widens, or infers an AuthorityGrant, changes JR-1's lifecycle, or returns a receipt with an effect class other than RECORD_LOCAL
+  - the question address, evidence addresses, and decision_ref carried by a judgement request, the addressee of a judgement request, and the pending list as a read operation of the human-binding and model-binding ports are Console Service proposals from CHARTER.md and are not yet defined by SPEC.md
+  - the lifecycle QUEUED, the loop_mode IN_LOOP, the notification kind JUDGEMENT_REQUESTED, the delivery LOCAL, the fields source_address and source_digest, and the port state UNCONFIGURED are Console Service proposals from CHARTER.md and are not yet defined by SPEC.md
+defeating:
+  - JR-1 is absent from BDO's list through HB-CLI, or appears without JR-1's address and digest
+  - BDO's list is derived from notification records or from a projection-view instead of from judgement-request records on R, or its count differs from the observer's count on R
+  - ST-1, the state of S-H, the unread cursor, or a dashboard role removes JR-1 from BDO's list
+  - an external delivery of N-1 is receipted with outcome COMMITTED while the delivery port is UNCONFIGURED
+  - N-1 is issued without a receipt, by an event whose actor_kind is not SYSTEM, with a delivery other than LOCAL, or with a source_address and source_digest that do not resolve to JR-1
+  - N-1's recipient_id is not JR-1's addressed_to, or N-1 is addressed to a session S-H instead of to the recipient BDO
+  - M-1's list shows a JR-1 whose digest or fields differ from the JR-1 on BDO's list
+  - a listing by BDO or M-1 creates, widens, or infers an AuthorityGrant, changes JR-1's lifecycle, or returns a receipt with an effect class other than RECORD_LOCAL

@@ -5,7 +5,10 @@ description: Development domain competence for the SDLC loop - implement changes
 
 # Development Domain Skill
 
-Standing: `OPEN` (proposal; see decision 0013 and open decision O13).
+Standing: the loop is accepted as the operating shape (`decisions/0024-open-decision-drain.md`,
+O13) and read through `decisions/0023-acceptance-not-approval.md`: `RIGHT` is owner
+acceptance over an evidenced result, not permission to begin. The implementation is a
+skeleton.
 
 The rules are owned elsewhere; this skill sequences them. `AGENTS.md` owns
 the implementation order, style, and testing rules; `ENGINEERING.md` owns

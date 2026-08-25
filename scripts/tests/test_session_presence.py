@@ -89,47 +89,42 @@ class SessionPresence(unittest.TestCase):
         self.assertIn("--intent", command)
         self.assertIn("surface integration", command)
 
-    def test_session_cards_are_harness_not_node_presence(self) -> None:
-        data = {
-            "available": True,
-            "source": "scripts/sov_session.py list --json",
-            "reason": "",
-            "sessions": [{
-                "session": "session-2628a1",
-                "live": True,
-                "branch": "feat/session-principal",
-                "intent": "name the principal",
-                "principal": "principal:claude-code",
-                "verification": "UNVERIFIED",
-            }],
-            "held": {"scripts/x.py": [{"session": "session-2628a1"}]},
-        }
-        fragment = session_presence.fragment(data)
-        self.assertIn("HARNESS", fragment)
-        self.assertIn("session-2628a1", fragment)
-        self.assertIn("principal:claude-code", fragment)
-        self.assertIn("UNVERIFIED", fragment)
-        self.assertIn("Presence grants no authority", fragment)
-        self.assertNotIn("ACTION", fragment)
-
-    def test_decorating_presence_does_not_rewrite_node_interface_digest(self) -> None:
-        page = (
-            '<aside class="utility"><h3>No live presence implied</h3>'
-            '<p>This shell does not fake an Active Now list.</p>'
-            '</aside><footer class="status">NODE INTERFACE · abc123 · not an observation</footer>'
-        )
-        data = {
-            "available": True,
-            "source": "scripts/sov_session.py list --json",
-            "reason": "",
-            "sessions": [{"session": "session-a", "live": True}],
+    def test_the_snapshot_keeps_ended_sessions_the_source_reported(self) -> None:
+        payload = {
+            "sessions": [
+                {"session": "session-live", "live": True, "branch": "feat/live"},
+                {"session": "session-ended", "live": False, "branch": "feat/old"},
+            ],
             "held": {},
         }
-        decorated = session_presence.decorate(page, data)
-        self.assertIn("session-a", decorated)
-        self.assertIn("Harness presence is explicit", decorated)
-        self.assertIn("NODE INTERFACE · abc123 · not an observation", decorated)
-        self.assertIn("host harness state, not governed Node state", decorated)
+        data = session_presence.snapshot(self.root, runner=lambda a, **k: self.result(payload))
+        self.assertEqual([item["session"] for item in data["sessions"]], ["session-live"])
+        self.assertEqual(
+            [item["session"] for item in data["records"]],
+            ["session-live", "session-ended"],
+        )
+
+    def test_a_refusing_cli_is_an_unavailable_source_not_an_empty_one(self) -> None:
+        def runner(args, **kwargs):
+            return self.result("", code=2, stderr="not a git repository")
+
+        data = session_presence.snapshot(self.root, runner=runner)
+        self.assertFalse(data["available"])
+        self.assertIn("not a git repository", data["reason"])
+        self.assertEqual(data["records"], [])
+
+    def test_non_json_output_is_refused_rather_than_guessed(self) -> None:
+        def runner(args, **kwargs):
+            return self.result("three sessions are live")
+
+        data = session_presence.snapshot(self.root, runner=runner)
+        self.assertFalse(data["available"])
+        self.assertIn("non-JSON", data["reason"])
+        self.assertEqual(data["records"], [])
+
+    def test_the_adapter_reads_and_renders_nothing(self) -> None:
+        self.assertFalse(hasattr(session_presence, "fragment"))
+        self.assertFalse(hasattr(session_presence, "decorate"))
 
 
 if __name__ == "__main__":

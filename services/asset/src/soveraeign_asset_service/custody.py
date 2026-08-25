@@ -20,10 +20,15 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import unquote, urlparse
 from urllib.request import url2pathname
+import json
 
 
 class DigestMismatch(RuntimeError):
     """Stored custody no longer matches the digest recorded for it."""
+
+    def __init__(self, message: str, receipt_id: str | None = None) -> None:
+        super().__init__(message)
+        self.receipt_id = receipt_id
 
 
 class SourceChanged(RuntimeError):
@@ -32,6 +37,22 @@ class SourceChanged(RuntimeError):
 
 class UnknownRecord(KeyError):
     """The named version or source is not held."""
+
+    def __init__(self, record_id: str, receipt_id: str | None = None) -> None:
+        super().__init__(record_id)
+        self.receipt_id = receipt_id
+
+
+def _version_metadata(row: Any) -> dict[str, Any]:
+    derivation = row["derivation_json"]
+    return {
+        "source_id": row["source_id"],
+        "mime": row["mime"],
+        "role": row["role"],
+        "size": row["size"],
+        "created_at": row["created_at"],
+        "derivation": json.loads(derivation) if derivation else None,
+    }
 
 
 def _path_from_locator(locator: str) -> Path | None:
@@ -53,26 +74,43 @@ def read_version(service: Any, version_id: str, actor: str) -> dict[str, Any]:
         "SELECT * FROM versions WHERE id=?", (version_id,)
     ).fetchone()
     if row is None:
-        raise UnknownRecord(version_id)
+        receipt = service._receipt(
+            "REFUSED", "version.read", "version", version_id, actor,
+            {"reason": "VERSION_UNKNOWN", "version_id": version_id},
+        )
+        service.db.commit()
+        raise UnknownRecord(version_id, receipt)
 
     blob = Path(row["blob_path"])
     if not blob.is_file():
-        service._receipt("REFUSED", "version.read", "version", version_id, actor,
-                         {"reason": "PAYLOAD_ABSENT"})
+        receipt = service._receipt(
+            "REFUSED", "version.read", "version", version_id, actor,
+            {"reason": "PAYLOAD_ABSENT", "version_id": version_id,
+             "asset_id": row["asset_id"], "digest": row["digest"]},
+        )
         service.db.commit()
-        raise DigestMismatch(f"{version_id}: payload absent from custody")
+        raise DigestMismatch(f"{version_id}: payload absent from custody", receipt)
 
     data = blob.read_bytes()
     digest = sha256(data).hexdigest()
     if digest != row["digest"]:
-        service._receipt("REFUSED", "version.read", "version", version_id, actor,
-                         {"reason": "DIGEST_MISMATCH", "recorded": row["digest"],
-                          "observed": digest})
+        receipt = service._receipt(
+            "REFUSED", "version.read", "version", version_id, actor,
+            {"reason": "DIGEST_MISMATCH", "version_id": version_id,
+             "asset_id": row["asset_id"], "recorded": row["digest"],
+             "observed": digest},
+        )
         service.db.commit()
-        raise DigestMismatch(f"{version_id}: recorded {row['digest']}, read {digest}")
+        raise DigestMismatch(
+            f"{version_id}: recorded {row['digest']}, read {digest}", receipt)
 
-    service._receipt("COMMITTED", "version.read", "version", version_id, actor,
-                     {"digest": digest, "size": len(data)})
+    metadata = _version_metadata(row)
+    payload_address = f"urn:sha256:{digest}"
+    receipt = service._receipt(
+        "COMMITTED", "version.read", "version", version_id, actor,
+        {"version_id": version_id, "asset_id": row["asset_id"], "digest": digest,
+         "metadata": metadata, "payload_address": payload_address},
+    )
     service.db.commit()
     return {
         "version_id": version_id,
@@ -83,6 +121,9 @@ def read_version(service: Any, version_id: str, actor: str) -> dict[str, Any]:
         "role": row["role"],
         "size": len(data),
         "bytes": data,
+        "metadata": metadata,
+        "payload_address": payload_address,
+        "receipt_id": receipt,
     }
 
 

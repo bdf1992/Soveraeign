@@ -65,7 +65,8 @@ def command_show(args: argparse.Namespace) -> int:
     document = _current()
     if not args.operation:
         print(json.dumps({key: document[key] for key in
-                          ("interface_schema", "status", "node", "kernel", "counts", "seams")},
+                          ("interface_schema", "status", "node", "kernel", "counts", "seams",
+                           "omissions")},
                          indent=2, sort_keys=True))
         return 0
     record = resolve(document, args.operation)

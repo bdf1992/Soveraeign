@@ -4,6 +4,7 @@ from copy import deepcopy
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Callable
+import json
 import sys
 import unittest
 
@@ -90,6 +91,21 @@ class GatewayVerticalSlice(unittest.TestCase):
         scope = scope or f"asset:new:{actor}"
         self.console.grant(actor, "ingest:asset", scope)
         return scope
+
+    def grant_read_version(self, version_id: str, actor: str = "operator") -> str:
+        self.console.grant(actor, "read:version", version_id)
+        return version_id
+
+    def read_version_request(self, version_id: str, actor: str = "operator",
+                             actor_kind: str = "HUMAN") -> dict:
+        return {
+            "actor": actor,
+            "actor_kind": actor_kind,
+            "logical_endpoint": "sov://asset/read-version",
+            "transport": "IN_PROCESS",
+            "scope": version_id,
+            "arguments": {"version_id": version_id},
+        }
 
     def test_authority_refusal_is_durable_and_asset_never_sees_the_call(self) -> None:
         before = list(self.asset.receipts())
@@ -302,6 +318,92 @@ class GatewayVerticalSlice(unittest.TestCase):
         self.assertEqual(returned["outcome"], "REFUSED")
         self.assertEqual(self.gateway_events("gateway-returned-receipt")[-1]["payload"]
                          ["terminal_outcome"], "REFUSED")
+
+    def test_read_version_success_returns_asset_receipt_with_safe_address(self) -> None:
+        ingested = self.asset.ingest(
+            self.source("read-success.bin", b"exact version bytes\x00"),
+            "Readable version", "ingester")
+        version_id = ingested["version_id"]
+        self.grant_read_version(version_id)
+
+        returned = self.gateway.dispatch(self.read_version_request(version_id))
+        durable = self.asset.receipts()[-1]
+        detail = json.loads(returned["payload_json"])
+
+        self.assertEqual(returned, durable)
+        self.assertEqual(returned["outcome"], "COMMITTED")
+        self.assertEqual(returned["event"], "version.read")
+        self.assertEqual(returned["actor"], "operator")
+        self.assertEqual(detail["version_id"], version_id)
+        self.assertEqual(detail["asset_id"], ingested["asset_id"])
+        self.assertEqual(detail["digest"], ingested["digest"])
+        self.assertEqual(detail["payload_address"], f"urn:sha256:{ingested['digest']}")
+        self.assertEqual(detail["metadata"]["size"], len(b"exact version bytes\x00"))
+        self.assertEqual(detail["metadata"]["role"], "ORIGINAL")
+        self.assertNotIn("blob_path", returned["payload_json"])
+
+    def test_read_version_unknown_returns_asset_refusal_unchanged(self) -> None:
+        version_id = "version_unknown"
+        self.grant_read_version(version_id)
+
+        returned = self.gateway.dispatch(self.read_version_request(version_id))
+        detail = json.loads(returned["payload_json"])
+
+        self.assertEqual(returned, self.asset.receipts()[-1])
+        self.assertEqual(returned["outcome"], "REFUSED")
+        self.assertEqual(detail, {"reason": "VERSION_UNKNOWN", "version_id": version_id})
+        self.assertEqual(self.gateway_events("gateway-returned-receipt")[-1]["payload"]
+                         ["terminal_outcome"], "REFUSED")
+
+    def test_read_version_missing_payload_returns_asset_refusal_unchanged(self) -> None:
+        ingested = self.asset.ingest(
+            self.source("read-missing.bin", b"payload will disappear"),
+            "Missing payload", "ingester")
+        version_id = ingested["version_id"]
+        blob = Path(self.asset.db.execute(
+            "SELECT blob_path FROM versions WHERE id=?", (version_id,)).fetchone()["blob_path"])
+        blob.unlink()
+        self.grant_read_version(version_id)
+
+        returned = self.gateway.dispatch(self.read_version_request(version_id))
+        detail = json.loads(returned["payload_json"])
+
+        self.assertEqual(returned, self.asset.receipts()[-1])
+        self.assertEqual(returned["outcome"], "REFUSED")
+        self.assertEqual(detail["reason"], "PAYLOAD_ABSENT")
+        self.assertEqual(detail["version_id"], version_id)
+
+    def test_read_version_corrupt_payload_returns_asset_refusal_unchanged(self) -> None:
+        ingested = self.asset.ingest(
+            self.source("read-corrupt.bin", b"payload before corruption"),
+            "Corrupt payload", "ingester")
+        version_id = ingested["version_id"]
+        blob = Path(self.asset.db.execute(
+            "SELECT blob_path FROM versions WHERE id=?", (version_id,)).fetchone()["blob_path"])
+        blob.write_bytes(b"corrupted under custody")
+        self.grant_read_version(version_id)
+
+        returned = self.gateway.dispatch(self.read_version_request(version_id))
+        detail = json.loads(returned["payload_json"])
+
+        self.assertEqual(returned, self.asset.receipts()[-1])
+        self.assertEqual(returned["outcome"], "REFUSED")
+        self.assertEqual(detail["reason"], "DIGEST_MISMATCH")
+        self.assertEqual(detail["recorded"], ingested["digest"])
+        self.assertNotEqual(detail["observed"], ingested["digest"])
+
+    def test_read_version_absent_authority_never_reaches_asset(self) -> None:
+        ingested = self.asset.ingest(
+            self.source("read-denied.bin", b"authority remains external"),
+            "Denied read", "ingester")
+        before = list(self.asset.receipts())
+
+        returned = self.gateway.dispatch(
+            self.read_version_request(ingested["version_id"], actor="mallory"))
+
+        self.assertEqual(returned["payload"]["outcome"], "REFUSED")
+        self.assertEqual(self.reason(returned), "AUTHORITY_REFUSED")
+        self.assertEqual(self.asset.receipts(), before)
 
 
 if __name__ == "__main__":

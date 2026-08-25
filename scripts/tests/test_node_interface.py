@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
+from hashlib import sha256
 from pathlib import Path
 import json
 import sys
@@ -39,7 +40,7 @@ class ProjectionFacts(unittest.TestCase):
     def test_evidence_layers_remain_independent(self) -> None:
         self.assertEqual(self.document["counts"], {
             "declared": 102, "bound": 102, "policy_active": 33,
-            "reachable": 3, "observed": 0,
+            "reachable": 4, "observed": 0,
         })
         self.assertEqual(self.operation("asset.ingest-asset")["facts"], {
             "declared": True, "bound": True, "policy_active": True,
@@ -70,6 +71,96 @@ class ProjectionFacts(unittest.TestCase):
             self.document, "registry.resolve", HUMAN, "reader", "registry:any",
             {"name": "sov://asset/ingest-asset"})
         self.assertEqual(request["logical_endpoint"], "sov://registry/resolve")
+
+    def test_route_affordances_are_actor_neutral_across_three_services(self) -> None:
+        ingest = self.operation("asset.ingest-asset")
+        read_version = self.operation("asset.read-version")
+        read_thread = self.operation("console.read-thread")
+        resolve_registry = self.operation("registry.resolve")
+        unavailable_read = self.operation("asset.read-asset")
+        self.assertEqual(ingest["route_affordance"], {
+            "kind": "ACTION",
+            "reason_code": "EXACT_ROUTE_ACTIVE",
+            "explanation": "An exact policy-active service route exists for this operation.",
+        })
+        self.assertEqual(read_version["route_affordance"]["kind"], "READ")
+        self.assertEqual(read_thread["route_affordance"]["kind"], "READ")
+        self.assertEqual(read_thread["route_affordance"]["reason_code"],
+                         "EXACT_READ_ROUTE_ACTIVE")
+        self.assertEqual(resolve_registry["route_affordance"]["kind"], "READ")
+        self.assertEqual(resolve_registry["route_affordance"]["reason_code"],
+                         "EXACT_READ_ROUTE_ACTIVE")
+        self.assertEqual(unavailable_read["route_affordance"]["kind"], "INSPECT")
+        self.assertEqual(unavailable_read["route_affordance"]["reason_code"],
+                         "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE")
+        self.assertIn(
+            "scripts/sovnode/affordances.py",
+            {source["address"] for source in ingest["sources"]},
+        )
+
+    def test_route_affordance_edit_cannot_make_topology_invokable(self) -> None:
+        edited = deepcopy(self.document)
+        record = next(item for item in edited["operations"]
+                      if item["operation_id"] == "asset.read-asset")
+        record["route_affordance"] = {
+            "kind": "ACTION", "reason_code": "EXACT_ROUTE_ACTIVE",
+            "explanation": "renderer says yes",
+        }
+        material = dict(record)
+        material.pop("record_digest")
+        record["record_digest"] = sha256(json.dumps(
+            material, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
+        with self.assertRaises(BindingRefusal) as raised:
+            invocation_request(edited, "asset.read-asset", HUMAN, "actor", "scope", {})
+        self.assertEqual(raised.exception.code, "ROUTE_AFFORDANCE_DRIFT")
+
+    def test_human_only_reachable_route_is_not_a_model_gesture(self) -> None:
+        synthetic = deepcopy(self.document)
+        record = next(item for item in synthetic["operations"]
+                      if item["operation_id"] == "asset.ingest-asset")
+        record["actor_kinds"] = [HUMAN]
+        material = dict(record)
+        material.pop("record_digest")
+        record["record_digest"] = sha256(json.dumps(
+            material, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
+
+        projected = json.loads(render_model(resolve(synthetic, "asset.ingest-asset")))
+        self.assertEqual(projected["route_affordance"]["kind"], "ACTION")
+        self.assertEqual(projected["binding_admission"], {
+            "actor_kind": "MODEL",
+            "admitted": False,
+            "reason_code": "ACTOR_KIND_NOT_ADMITTED",
+            "explanation": "MODEL is not admitted by this operation's capability policy.",
+        })
+        with self.assertRaises(BindingRefusal) as raised:
+            invocation_request(
+                synthetic, "asset.ingest-asset", MODEL, "model", "asset:new", {})
+        self.assertEqual(raised.exception.code, "ACTOR_KIND_NOT_ADMITTED")
+
+    def test_model_inventory_and_harness_are_declared_omissions_not_capabilities(self) -> None:
+        inventory = json.loads(
+            (ROOT / "adapters" / "ollama" / "inventory.json").read_text("utf-8"))
+        binding = json.loads((ROOT / "adapters" / "ollama" / "bindings" /
+                              "qwen3-4b.json").read_text("utf-8"))
+        self.assertTrue(any(
+            model["model_id"] == binding["model_id"]
+            and model["model_version"] == binding["model_version"]
+            for model in inventory["models"]
+        ))
+        self.assertNotIn(
+            "invoke_model", {item["operation"] for item in self.document["operations"]})
+        self.assertEqual(
+            {item["code"] for item in self.document["omissions"]},
+            {
+                "OBJECT_INSTANCES_NOT_PROJECTED",
+                "MODEL_BINDINGS_NOT_PROJECTED",
+                "HARNESS_STATE_NOT_PROJECTED",
+                "OPERATOR_AUTHORITY_NOT_PROJECTED",
+            },
+        )
+        self.assertNotIn("HARNESS", {
+            item["route_affordance"]["kind"] for item in self.document["operations"]
+        })
 
     def test_projection_cannot_promote_its_own_status(self) -> None:
         promoted = deepcopy(self.document)
@@ -107,9 +198,23 @@ class HumanModelParity(unittest.TestCase):
     def test_read_renderings_resolve_same_identity_authority_and_sources(self) -> None:
         human = render_human(self.record)
         model = json.loads(render_model(self.record))
-        self.assertIn(self.record["record_digest"][:12], human)
+        self.assertIn(
+            f"{self.record['operation_id']}  [{self.record['record_digest'][:12]}]\n",
+            human,
+        )
         self.assertEqual(model["record_digest"], self.record["record_digest"])
         self.assertEqual(model["required_authority"], self.record["required_authority"])
+        self.assertEqual(model["route_affordance"], self.record["route_affordance"])
+        self.assertTrue(model["binding_admission"]["admitted"])
+        self.assertIn("route      ACTION", human)
+        self.assertIn("binding    HUMAN admitted", human)
+        self.assertIn("transition capture_source", human)
+        self.assertIn("choices    none", human)
+        first_source = self.record["sources"][0]
+        self.assertIn(
+            f"  {first_source['digest'][:12]}  {first_source['address']}",
+            human,
+        )
         self.assertEqual(model["sources"], self.record["sources"])
 
     def test_human_and_model_cross_same_governed_action_semantics(self) -> None:

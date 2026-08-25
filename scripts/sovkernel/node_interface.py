@@ -6,6 +6,9 @@ from hashlib import sha256
 from typing import Any
 import json
 
+from sovnode.affordances import defects as affordance_defects
+from sovnode.affordances import derive as derive_affordance
+
 INTERFACE_SCHEMA = "soveraeign-node-interface/v1"
 ACTIVE = "ACTIVE"
 
@@ -79,6 +82,9 @@ def _operation_record(capability: dict[str, Any], declaration: dict[str, Any],
         "contracts/capability-offices.json",
         "contracts/kernel-paradigms.json",
         "contracts/kernel-transitions.json",
+        "contracts/node-interface.schema.json",
+        "scripts/sovkernel/node_interface.py",
+        "scripts/sovnode/affordances.py",
         *kernel_sources,
     }
     for route in routes:
@@ -115,6 +121,7 @@ def _operation_record(capability: dict[str, Any], declaration: dict[str, Any],
         },
         "sources": _source_records(source_addresses, digests),
     }
+    record["route_affordance"] = derive_affordance(record)
     record["record_digest"] = _digest(record)
     return record
 
@@ -184,6 +191,35 @@ def build(node_registry: dict[str, Any], topology: dict[str, Any],
         "input_state_digest": input_state_digest(source_digests, routes, observations),
         "counts": counts,
         "seams": seams,
+        "omissions": [
+            {
+                "code": "OBJECT_INSTANCES_NOT_PROJECTED",
+                "explanation": (
+                    "Service-owned types and operations are visible; live object instances "
+                    "and their current relations are not yet Node Interface inputs."
+                ),
+            },
+            {
+                "code": "MODEL_BINDINGS_NOT_PROJECTED",
+                "explanation": (
+                    "Adapter declarations and recorded model inventories are not Node routes; "
+                    "an inventory match cannot expose model invocation here."
+                ),
+            },
+            {
+                "code": "HARNESS_STATE_NOT_PROJECTED",
+                "explanation": (
+                    "Host schedules and workflows are harness plumbing, not governed service state."
+                ),
+            },
+            {
+                "code": "OPERATOR_AUTHORITY_NOT_PROJECTED",
+                "explanation": (
+                    "Bindings expose required authority but do not project a live operator grant; "
+                    "the Gateway rechecks authority for every request."
+                ),
+            },
+        ],
         "operations": operations,
     }
 
@@ -207,6 +243,8 @@ def interface_defects(document: dict[str, Any], closure: dict[str, Any],
             defects.append(f"ROUTE_IDENTITY_DRIFT: {operation_id} changes its endpoint")
     unknown_observations = sorted(set(observations) - set(declared))
     defects.extend(f"OBSERVATION_SUBJECT_UNKNOWN: {item}" for item in unknown_observations)
+    for record in document.get("operations", []):
+        defects.extend(affordance_defects(record))
     return defects
 
 

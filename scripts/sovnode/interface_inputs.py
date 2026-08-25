@@ -49,7 +49,11 @@ def rebuild(root: Path = ROOT) -> tuple[dict[str, Any], list[str]]:
         "contracts/fixtures/capability-map.reference.json",
         "contracts/fixtures/node-registry.reference.json",
         "contracts/fixtures/seat-topology.reference.json",
+        "contracts/node-interface.schema.json",
         "bindings/console/interface.json",
+        "scripts/sovkernel/node_interface.py",
+        "scripts/sovnode/affordances.py",
+        "scripts/sovnode/interface_inputs.py",
     })
     for route in routes:
         addresses.update(route["source_addresses"])

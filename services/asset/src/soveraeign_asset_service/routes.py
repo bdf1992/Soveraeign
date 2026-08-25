@@ -10,20 +10,23 @@ from __future__ import annotations
 from typing import Any, Callable
 
 from soveraeign_asset_service.core import AssetService
+from soveraeign_asset_service.custody import DigestMismatch, UnknownRecord, read_version
 
 
 class AssetRoutes:
     """Map declared operation ids to the already-built Asset Service methods."""
 
-    OPERATIONS = ("ingest-asset",)
+    OPERATIONS = ("ingest-asset", "read-version")
     ARGUMENTS = {
         "ingest-asset": {"required": ("path", "label"), "optional": ("locator",)},
+        "read-version": {"required": ("version_id",), "optional": ()},
     }
 
     def __init__(self, service: AssetService) -> None:
         self.service = service
         self._routes: dict[str, Callable[[dict[str, Any], str], dict[str, Any]]] = {
             "ingest-asset": self._ingest_asset,
+            "read-version": self._read_version,
         }
 
     @classmethod
@@ -50,10 +53,27 @@ class AssetRoutes:
         result = self.service.ingest(arguments["path"], arguments["label"], actor,
                                      arguments.get("locator"))
         receipt_id = result["receipt_id"]
+        return self._receipt(receipt_id)
+
+    def _read_version(self, arguments: dict[str, Any], actor: str) -> dict[str, Any]:
+        allowed = {"version_id"}
+        unknown = set(arguments) - allowed
+        if unknown or "version_id" not in arguments:
+            raise ValueError(f"invalid read-version arguments: {sorted(unknown)}")
+        try:
+            result = read_version(self.service, arguments["version_id"], actor)
+            receipt_id = result["receipt_id"]
+        except (DigestMismatch, UnknownRecord) as refusal:
+            receipt_id = refusal.receipt_id
+            if receipt_id is None:
+                raise
+        return self._receipt(receipt_id)
+
+    def _receipt(self, receipt_id: str) -> dict[str, Any]:
         for receipt in reversed(self.service.receipts()):
             if receipt["id"] == receipt_id:
                 return receipt
-        raise RuntimeError(f"asset receipt {receipt_id} was not durable after ingest")
+        raise RuntimeError(f"asset receipt {receipt_id} was not durable after operation")
 
 
 __all__ = ["AssetRoutes"]

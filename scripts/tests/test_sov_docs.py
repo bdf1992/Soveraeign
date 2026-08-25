@@ -115,7 +115,10 @@ class EveryPublishedDocument(unittest.TestCase):
         self.assertEqual(len(set(identifiers)), len(identifiers))
 
     def test_no_document_lands_outside_a_group(self):
-        built = sov_docs.documents({})
+        # Grouping depends only on each document's path. Re-rendering the whole
+        # corpus here duplicates the renderer proof immediately above without
+        # strengthening this assertion.
+        built = [{"path": source.relative_to(ROOT).as_posix()} for source in self.sources]
         placed = sum(len(group) for _, group in sov_docs.grouped(built))
         self.assertEqual(placed, len(built))
 
@@ -159,17 +162,23 @@ class Custody(unittest.TestCase):
 
 
 class Staleness(unittest.TestCase):
+    SOURCE = ROOT / "AGENTS.md"
+
     def test_the_built_page_is_current(self):
-        # This is the real-corpus integration check.
+        # This is the one whole-corpus site-build integration check.
         self.assertEqual(sov_docs.cmd_check(None), 0)
 
     def test_the_same_documents_produce_the_same_bytes(self):
-        self.assertEqual(sov_docs.build(), sov_docs.build())
+        # Determinism is a property of the build pipeline, not corpus size. Use
+        # one real published source so this checks the same renderer/group/site
+        # path without rebuilding all ~158 documents twice.
+        with (mock.patch.object(sov_docs, "sources", return_value=[self.SOURCE]),
+              mock.patch.object(sov_docs, "read_ledger", return_value={})):
+            self.assertEqual(sov_docs.build(), sov_docs.build())
 
     def test_an_edited_page_is_refused(self):
-        # This case tests comparison/refusal mechanics; the preceding case already
-        # proves the canonical real-corpus build. Avoid re-rendering the corpus a
-        # third time merely to plant an edited-page defeat.
+        # This case tests comparison/refusal mechanics; the preceding current-page
+        # case already proves the canonical real-corpus build.
         original = sov_docs.PAGE.read_text(encoding="utf-8")
         try:
             sov_docs.PAGE.write_text(original + "<!-- by hand -->", encoding="utf-8")

@@ -12,7 +12,7 @@
   },
   "kernel": {
     "closure_schema": "soveraeign-kernel-closure/v1",
-    "closure_input_state_digest": "0def2b367b13b254bca1c9c3014cbfcefc3736d62f3e2b241f0621d5cbe220a9",
+    "closure_input_state_digest": "7911c1e9f436efcd9332ecf9426205299cbf076b785809c2e314f168a4c2a028",
     "paradigms": [
       "attestation",
       "observation",
@@ -36,6 +36,7 @@
     "contracts/fixtures/seat-topology.reference.json",
     "contracts/kernel-paradigms.json",
     "contracts/kernel-transitions.json",
+    "contracts/node-object-record.schema.json",
     "contracts/observation.schema.json",
     "contracts/operation-plan.schema.json",
     "contracts/participant-observation.schema.json",
@@ -46,6 +47,9 @@
     "services/asset/src/soveraeign_asset_service/core.py",
     "services/asset/src/soveraeign_asset_service/routes.py",
     "services/console/contracts/service.json",
+    "services/console/src/soveraeign_console_service/continuity.py",
+    "services/console/src/soveraeign_console_service/core.py",
+    "services/console/src/soveraeign_console_service/routes.py",
     "services/gateway/contracts/service.json",
     "services/gateway/src/soveraeign_gateway_service/contract.py",
     "services/gateway/src/soveraeign_gateway_service/core.py",
@@ -53,6 +57,7 @@
     "services/projection/contracts/service.json",
     "services/proofing/contracts/service.json",
     "services/record/contracts/service.json",
+    "services/record/src/soveraeign_record_service/core.py",
     "services/registry/contracts/service.json",
     "services/registry/src/soveraeign_registry_service/core.py",
     "services/registry/src/soveraeign_registry_service/index.py",
@@ -85,7 +90,7 @@
     },
     {
       "address": "contracts/fixtures/capability-map.reference.json",
-      "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+      "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
     },
     {
       "address": "contracts/fixtures/node-registry.reference.json",
@@ -102,6 +107,10 @@
     {
       "address": "contracts/kernel-transitions.json",
       "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
+    },
+    {
+      "address": "contracts/node-object-record.schema.json",
+      "digest": "bdfee167c051d5a2bbd604a98aaf4fffc88efb83ac3a24590c6a2f9e3469abb1"
     },
     {
       "address": "contracts/observation.schema.json",
@@ -125,7 +134,7 @@
     },
     {
       "address": "scripts/sovnode/composition.py",
-      "digest": "387877026329db94a79760706917bc5ac6d8062653c261582d8f375088bc6fdb"
+      "digest": "c79de20f47a951f4ea1a6770a3fb64e0102928bf2876274177cfa323b531dc0f"
     },
     {
       "address": "services/asset/contracts/service.json",
@@ -141,7 +150,19 @@
     },
     {
       "address": "services/console/contracts/service.json",
-      "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
+      "digest": "483d56e5114a2ed2d4a1c8adfd5296d82e52f7aabac4654dd73c2fb0a3c38054"
+    },
+    {
+      "address": "services/console/src/soveraeign_console_service/continuity.py",
+      "digest": "eb2b469a60323eaa3359973c5b72468d67fd4470fe7709f0058fc1487a9b2389"
+    },
+    {
+      "address": "services/console/src/soveraeign_console_service/core.py",
+      "digest": "9a0bc3c3e65b387e67fa51dd1245beb3aea80dd2f6d207dd3b2146410711e265"
+    },
+    {
+      "address": "services/console/src/soveraeign_console_service/routes.py",
+      "digest": "92c071c54882f04fa951eaf665b7f0945ebd485944c928408d1f6a27604fc8d6"
     },
     {
       "address": "services/gateway/contracts/service.json",
@@ -172,6 +193,10 @@
       "digest": "0376f91719461a9d1f2c43dd5d625602a011b01c655a4e650628e9f9e7ede998"
     },
     {
+      "address": "services/record/src/soveraeign_record_service/core.py",
+      "digest": "6feca745def4f54d6db96e9a43208ae24169887ff2889e42df48de5f37fc8cb4"
+    },
+    {
       "address": "services/registry/contracts/service.json",
       "digest": "9c6fafd93db96f62074aa8d7efc146253a06f6128492af3f74c22db805c49b01"
     },
@@ -188,12 +213,12 @@
       "digest": "150834886995a8e0c32334beb5ef53dbc69cbb244172b510a06b056e608bf4b0"
     }
   ],
-  "input_state_digest": "42b08f4e6c4e63b479a0c949aac74548737fd4eb9c12ca6171ff11e211a9451a",
+  "input_state_digest": "f995bf9f2761bfcc9e08b185cbcdb76dbe7d13fb741035351947757c823c6ea9",
   "counts": {
     "declared": 102,
     "bound": 102,
     "policy_active": 33,
-    "reachable": 2,
+    "reachable": 3,
     "observed": 0
   },
   "seams": {
@@ -217,7 +242,6 @@
       "console.open-thread",
       "console.post",
       "console.publish-thread",
-      "console.read-thread",
       "console.revoke",
       "console.session-context",
       "console.withdraw-publication",
@@ -250,7 +274,6 @@
       "console.open-thread",
       "console.post",
       "console.publish-thread",
-      "console.read-thread",
       "console.revoke",
       "console.session-context",
       "console.withdraw-publication",
@@ -265,6 +288,7 @@
     ],
     "reachable_not_observed": [
       "asset.ingest-asset",
+      "console.read-thread",
       "registry.resolve"
     ],
     "unmapped_kernel_transition": [
@@ -458,7 +482,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -486,7 +510,7 @@
         },
         {
           "address": "scripts/sovnode/composition.py",
-          "digest": "387877026329db94a79760706917bc5ac6d8062653c261582d8f375088bc6fdb"
+          "digest": "c79de20f47a951f4ea1a6770a3fb64e0102928bf2876274177cfa323b531dc0f"
         },
         {
           "address": "services/asset/contracts/service.json",
@@ -509,7 +533,7 @@
           "digest": "a175f55a47256414fda78f75b0c7e5acc877b93b6f0abc984930fa6a0306147d"
         }
       ],
-      "record_digest": "83cda6823ac6da740e50ffa90f65a57e48994e819a00756f82fc0f92abcf4a64"
+      "record_digest": "748c6339eba0c39c718fabc857c8acd4ff2b9a88c73ca6a2838f9534a36fd485"
     },
     {
       "operation_id": "asset.propose-description",
@@ -597,7 +621,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -628,7 +652,7 @@
           "digest": "d74f9b396b05cb43d8b51f45cee99b30f72a2f5c7d06ace9b335b54fb0b22790"
         }
       ],
-      "record_digest": "71bfc003399f1bff3eefcff77683bbf851fd4b006a5114426e3bd4def3547bf5"
+      "record_digest": "b0637fda0bd2e46743c3578975ca43298f8b5411cdee23a8a64bc01ace2df65a"
     },
     {
       "operation_id": "asset.ratify-proposal",
@@ -716,7 +740,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -747,7 +771,7 @@
           "digest": "d74f9b396b05cb43d8b51f45cee99b30f72a2f5c7d06ace9b335b54fb0b22790"
         }
       ],
-      "record_digest": "039edf76a797a1378425a745a7d19319493a3fc884c664f9025b94a77bf95f4b"
+      "record_digest": "7ae96176ad067a1eb00f00bced4f1a107c390ad52416f5ee21f98f09d6c8e2bc"
     },
     {
       "operation_id": "asset.read-asset",
@@ -832,7 +856,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -863,7 +887,7 @@
           "digest": "d74f9b396b05cb43d8b51f45cee99b30f72a2f5c7d06ace9b335b54fb0b22790"
         }
       ],
-      "record_digest": "b6b5a845101cbe0c84d410e104a2b6c787d8f7d74041e889f2c3fe5de20a978b"
+      "record_digest": "9ab9d7f5ec60d10e2129ed3e566d80e7c6dc7144a91b0668f8c2c09145c368d7"
     },
     {
       "operation_id": "asset.read-use-record",
@@ -948,7 +972,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -979,7 +1003,7 @@
           "digest": "d74f9b396b05cb43d8b51f45cee99b30f72a2f5c7d06ace9b335b54fb0b22790"
         }
       ],
-      "record_digest": "077a8cb9bb76c24dd4f9a33571efa293e28728c2cdebca26215244f017496a0b"
+      "record_digest": "89be15c7ceac7f571a775eee8dd7321c92c16489d53dd8b02bc3c24cd3129c68"
     },
     {
       "operation_id": "asset.read-version",
@@ -1068,7 +1092,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -1099,7 +1123,7 @@
           "digest": "d74f9b396b05cb43d8b51f45cee99b30f72a2f5c7d06ace9b335b54fb0b22790"
         }
       ],
-      "record_digest": "25afa32711a11fe4d97c37d7c92ba13cd85bca79258d47540fab8f4ed2efb357"
+      "record_digest": "9e561cef5ccd75cf34502682dc27be7c4e443e03592316885b4ae61dbe2b12c4"
     },
     {
       "operation_id": "asset.rebuild-projection",
@@ -1184,7 +1208,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -1215,7 +1239,7 @@
           "digest": "d74f9b396b05cb43d8b51f45cee99b30f72a2f5c7d06ace9b335b54fb0b22790"
         }
       ],
-      "record_digest": "38657f01854feefe508c96dc7d5a574f5cda9e71fffa6297fecc7794364f927f"
+      "record_digest": "9f1aba9480fc5bc9abbd2755f2417b8438dc3a7b3f4e9343cf77852a0709057e"
     },
     {
       "operation_id": "asset.request-derivative",
@@ -1303,7 +1327,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -1334,7 +1358,7 @@
           "digest": "d74f9b396b05cb43d8b51f45cee99b30f72a2f5c7d06ace9b335b54fb0b22790"
         }
       ],
-      "record_digest": "6228edcfaedd7be2622ee674e4e7da12763340a818bab24fe04089f3a4f13884"
+      "record_digest": "81a623f811aaf1e1b1d4fca41c017461507aa3d0c68682c03a81c63ba33d7de6"
     },
     {
       "operation_id": "asset.retract-record",
@@ -1422,7 +1446,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -1453,7 +1477,7 @@
           "digest": "d74f9b396b05cb43d8b51f45cee99b30f72a2f5c7d06ace9b335b54fb0b22790"
         }
       ],
-      "record_digest": "1af90e348ed681bd6d454c38b2c377120c7536d432da4442f7c0cafb075b3de1"
+      "record_digest": "6e9f40979e6303c4495bcaaf409d3bd0e791df72fc3cb7c6596ca772100ec0a3"
     },
     {
       "operation_id": "console.acknowledge-notification",
@@ -1543,7 +1567,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -1571,10 +1595,10 @@
         },
         {
           "address": "services/console/contracts/service.json",
-          "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
+          "digest": "483d56e5114a2ed2d4a1c8adfd5296d82e52f7aabac4654dd73c2fb0a3c38054"
         }
       ],
-      "record_digest": "8b50f16c8640596a03033d46cd4efd759d5561cad12f1e17a8bfce00b3fdd32c"
+      "record_digest": "71e0646dfdf4eb0358629ad3fa75a412911f5aa6894c4d7d96b1090a781dfd28"
     },
     {
       "operation_id": "console.archive-thread",
@@ -1665,7 +1689,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -1693,10 +1717,10 @@
         },
         {
           "address": "services/console/contracts/service.json",
-          "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
+          "digest": "483d56e5114a2ed2d4a1c8adfd5296d82e52f7aabac4654dd73c2fb0a3c38054"
         }
       ],
-      "record_digest": "e906ca409071cfebe6564e26c079203a76353f942a17ea5aee21a446c72aab25"
+      "record_digest": "3d9e1effa9f076752a49bf6a1e805bd8e301ec5a681b43df54a5a9709f88ee8b"
     },
     {
       "operation_id": "console.close-session",
@@ -1787,7 +1811,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -1815,10 +1839,10 @@
         },
         {
           "address": "services/console/contracts/service.json",
-          "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
+          "digest": "483d56e5114a2ed2d4a1c8adfd5296d82e52f7aabac4654dd73c2fb0a3c38054"
         }
       ],
-      "record_digest": "0a25016a6d2fa5c2071e56e1cd940be8670510cedae6addbf0dc70fda2a39426"
+      "record_digest": "dcfaa153183b05f2e1d9e07a44421202efa63570d9d53c3ee00a6aa192c81672"
     },
     {
       "operation_id": "console.discover-operations",
@@ -1909,7 +1933,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -1937,10 +1961,10 @@
         },
         {
           "address": "services/console/contracts/service.json",
-          "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
+          "digest": "483d56e5114a2ed2d4a1c8adfd5296d82e52f7aabac4654dd73c2fb0a3c38054"
         }
       ],
-      "record_digest": "f08af2018a14e8c8303f45ef3a907a29c52fa73b6901e1de4e7fb3956d0c9a19"
+      "record_digest": "9c9c1fafda73958d7109690295354f719886d35fd537bfc9726a946fb0bbdce8"
     },
     {
       "operation_id": "console.grant",
@@ -2032,7 +2056,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -2060,10 +2084,10 @@
         },
         {
           "address": "services/console/contracts/service.json",
-          "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
+          "digest": "483d56e5114a2ed2d4a1c8adfd5296d82e52f7aabac4654dd73c2fb0a3c38054"
         }
       ],
-      "record_digest": "6bb2b08dbbf4206d151258726956adfe3dd67db4cc43ce8c8ae2f59fd0dd18cf"
+      "record_digest": "3a47cda7be7da064a18780b0d64b8338f41330f7c5c0c96c0ce2872bf85f7b8e"
     },
     {
       "operation_id": "console.list-channels",
@@ -2151,7 +2175,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -2179,10 +2203,10 @@
         },
         {
           "address": "services/console/contracts/service.json",
-          "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
+          "digest": "483d56e5114a2ed2d4a1c8adfd5296d82e52f7aabac4654dd73c2fb0a3c38054"
         }
       ],
-      "record_digest": "cc408fe88d0f71ee2d6a869c5b0e4adf82ee0583c9686292455a673076593527"
+      "record_digest": "33f847665ace57ef0dee7b2fa87ce481b9c10b5aeb6181c42bfd979949396bcc"
     },
     {
       "operation_id": "console.list-grants",
@@ -2271,7 +2295,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -2299,10 +2323,10 @@
         },
         {
           "address": "services/console/contracts/service.json",
-          "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
+          "digest": "483d56e5114a2ed2d4a1c8adfd5296d82e52f7aabac4654dd73c2fb0a3c38054"
         }
       ],
-      "record_digest": "4366f52bf4c1c19ef639c7c99057dcc639f2c6d1164dc478203082818b4d2905"
+      "record_digest": "8aae9fae5bfc98a5153b31c88a6c9b2a454c00ac9a7181422b054eba163da542"
     },
     {
       "operation_id": "console.list-notifications",
@@ -2390,7 +2414,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -2418,10 +2442,10 @@
         },
         {
           "address": "services/console/contracts/service.json",
-          "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
+          "digest": "483d56e5114a2ed2d4a1c8adfd5296d82e52f7aabac4654dd73c2fb0a3c38054"
         }
       ],
-      "record_digest": "72246f222240bcd279796345ca3777d248e13dbfddeb277168d5ef5e27c42b4d"
+      "record_digest": "16b9050299e780fb9c738a950c177dbf96cda80c6d206199ffea45c43316eec7"
     },
     {
       "operation_id": "console.list-pending-judgement-requests",
@@ -2509,7 +2533,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -2537,10 +2561,10 @@
         },
         {
           "address": "services/console/contracts/service.json",
-          "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
+          "digest": "483d56e5114a2ed2d4a1c8adfd5296d82e52f7aabac4654dd73c2fb0a3c38054"
         }
       ],
-      "record_digest": "71074f9eff19a87743c4cd09c2eace6048e669bc8b0c15c96b56055de1fef984"
+      "record_digest": "1f9737ae0477ebde2db76205c63976b904caaccd4250312fb278685f5e48af00"
     },
     {
       "operation_id": "console.list-publications",
@@ -2630,7 +2654,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -2658,10 +2682,10 @@
         },
         {
           "address": "services/console/contracts/service.json",
-          "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
+          "digest": "483d56e5114a2ed2d4a1c8adfd5296d82e52f7aabac4654dd73c2fb0a3c38054"
         }
       ],
-      "record_digest": "9fb221f8d35c128d7aedd00b31d121f56141e2ae7596ecd4a102b40d3bf803d5"
+      "record_digest": "3b7b02101ac336a366ee92a72070c411a59e2b82d1e128f4026ca209231d73ce"
     },
     {
       "operation_id": "console.notify",
@@ -2749,7 +2773,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -2777,10 +2801,10 @@
         },
         {
           "address": "services/console/contracts/service.json",
-          "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
+          "digest": "483d56e5114a2ed2d4a1c8adfd5296d82e52f7aabac4654dd73c2fb0a3c38054"
         }
       ],
-      "record_digest": "f9e0aec91826e07f313c2a6777dfa61129343e885264c04b0d8fa5e62011504d"
+      "record_digest": "2d877adc5ae2bf4d92e21b17c64cb37abcee1fa82b4b4192a9d058b8d069449b"
     },
     {
       "operation_id": "console.open-channel",
@@ -2871,7 +2895,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -2899,10 +2923,10 @@
         },
         {
           "address": "services/console/contracts/service.json",
-          "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
+          "digest": "483d56e5114a2ed2d4a1c8adfd5296d82e52f7aabac4654dd73c2fb0a3c38054"
         }
       ],
-      "record_digest": "7cb391877e51a4c7536494b633cef9b4031b2dd1ea30ebdedf8267db1ce2692f"
+      "record_digest": "82320d187fec52b3e1155a691e6bad1d4283807fe1848aeceb860bc1829ccfe3"
     },
     {
       "operation_id": "console.open-session",
@@ -2993,7 +3017,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -3021,10 +3045,10 @@
         },
         {
           "address": "services/console/contracts/service.json",
-          "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
+          "digest": "483d56e5114a2ed2d4a1c8adfd5296d82e52f7aabac4654dd73c2fb0a3c38054"
         }
       ],
-      "record_digest": "c0fe115a1ef61eb30ee1f0e3ee83180c30a487d6c0c3772c7771ef9cb661af49"
+      "record_digest": "d3753b61dda2a89e82afc4a5f22dfa60abf56e354e8a70a9211632be156fc21b"
     },
     {
       "operation_id": "console.open-thread",
@@ -3116,7 +3140,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -3144,10 +3168,10 @@
         },
         {
           "address": "services/console/contracts/service.json",
-          "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
+          "digest": "483d56e5114a2ed2d4a1c8adfd5296d82e52f7aabac4654dd73c2fb0a3c38054"
         }
       ],
-      "record_digest": "d5deb4b083c90b1bf90a35c5680599420ba0f5b37c3afa3eb70da52cfc1bbba3"
+      "record_digest": "fb7525941af292b7927ce5a93ae3fe02b628c1c5a1bdeb4bb81c858064ef0aa4"
     },
     {
       "operation_id": "console.post",
@@ -3239,7 +3263,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -3267,10 +3291,10 @@
         },
         {
           "address": "services/console/contracts/service.json",
-          "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
+          "digest": "483d56e5114a2ed2d4a1c8adfd5296d82e52f7aabac4654dd73c2fb0a3c38054"
         }
       ],
-      "record_digest": "433e6848119fc64e9047f2462f5921b7d928590db762c228e45d8d4cb7c67941"
+      "record_digest": "681281e94f564eb51ae21b396c7ca9f094f80aadf99353ed8568dd026974a106"
     },
     {
       "operation_id": "console.publish-thread",
@@ -3363,7 +3387,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -3391,10 +3415,10 @@
         },
         {
           "address": "services/console/contracts/service.json",
-          "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
+          "digest": "483d56e5114a2ed2d4a1c8adfd5296d82e52f7aabac4654dd73c2fb0a3c38054"
         }
       ],
-      "record_digest": "394544fc62317cd1567da510e44f2419354f0f4914a53fcb4db633d6b5d43b89"
+      "record_digest": "6911cff55fd272b694ba80314851812beb70e9c01c3b1060ced0dfcf1dc8e4c3"
     },
     {
       "operation_id": "console.read-thread",
@@ -3421,11 +3445,17 @@
         "MODEL"
       ],
       "preconditions": [
+        "declared_thread_identity",
+        "declared_session_identity",
         "thread_exists",
-        "session_live"
+        "session_live",
+        "session_actor_matches_checked_actor"
       ],
       "refusals": [
-        "SESSION_NOT_LIVE"
+        "ACTOR_ATTRIBUTION_MISMATCH",
+        "MALFORMED_IDENTITY",
+        "SESSION_NOT_LIVE",
+        "THREAD_UNKNOWN"
       ],
       "legal_choices": [],
       "policy_endpoints": [
@@ -3448,13 +3478,34 @@
           "refusal_code": "UNCONFIGURED"
         }
       ],
-      "reachability": [],
+      "reachability": [
+        {
+          "transport": "IN_PROCESS",
+          "address": "console:in-process",
+          "policy_active": true,
+          "required_arguments": [
+            "thread_id",
+            "session_id"
+          ],
+          "optional_arguments": [],
+          "source_addresses": [
+            "scripts/sovnode/composition.py",
+            "services/gateway/src/soveraeign_gateway_service/contract.py",
+            "services/gateway/src/soveraeign_gateway_service/core.py",
+            "contracts/node-object-record.schema.json",
+            "services/record/src/soveraeign_record_service/core.py",
+            "services/console/src/soveraeign_console_service/core.py",
+            "services/console/src/soveraeign_console_service/continuity.py",
+            "services/console/src/soveraeign_console_service/routes.py"
+          ]
+        }
+      ],
       "observation_ids": [],
       "facts": {
         "declared": true,
         "bound": true,
         "policy_active": true,
-        "reachable": false,
+        "reachable": true,
         "observed": false
       },
       "sources": [
@@ -3484,7 +3535,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -3493,6 +3544,10 @@
         {
           "address": "contracts/kernel-transitions.json",
           "digest": "3215522afcb7f8dd944f6c644849f8884e67f5a96d8ee0d1a581a113ccf951a3"
+        },
+        {
+          "address": "contracts/node-object-record.schema.json",
+          "digest": "bdfee167c051d5a2bbd604a98aaf4fffc88efb83ac3a24590c6a2f9e3469abb1"
         },
         {
           "address": "contracts/observation.schema.json",
@@ -3511,11 +3566,39 @@
           "digest": "51abbdc1551b77ff0b3244b66f107591bbe415b4dd26c12c49db0c6cb5ef04fb"
         },
         {
+          "address": "scripts/sovnode/composition.py",
+          "digest": "c79de20f47a951f4ea1a6770a3fb64e0102928bf2876274177cfa323b531dc0f"
+        },
+        {
           "address": "services/console/contracts/service.json",
-          "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
+          "digest": "483d56e5114a2ed2d4a1c8adfd5296d82e52f7aabac4654dd73c2fb0a3c38054"
+        },
+        {
+          "address": "services/console/src/soveraeign_console_service/continuity.py",
+          "digest": "eb2b469a60323eaa3359973c5b72468d67fd4470fe7709f0058fc1487a9b2389"
+        },
+        {
+          "address": "services/console/src/soveraeign_console_service/core.py",
+          "digest": "9a0bc3c3e65b387e67fa51dd1245beb3aea80dd2f6d207dd3b2146410711e265"
+        },
+        {
+          "address": "services/console/src/soveraeign_console_service/routes.py",
+          "digest": "92c071c54882f04fa951eaf665b7f0945ebd485944c928408d1f6a27604fc8d6"
+        },
+        {
+          "address": "services/gateway/src/soveraeign_gateway_service/contract.py",
+          "digest": "73eeb45a9e8174bdf7ab4e3729ac0e90f232e04c087a8222292dcb4bfc7a3d35"
+        },
+        {
+          "address": "services/gateway/src/soveraeign_gateway_service/core.py",
+          "digest": "a175f55a47256414fda78f75b0c7e5acc877b93b6f0abc984930fa6a0306147d"
+        },
+        {
+          "address": "services/record/src/soveraeign_record_service/core.py",
+          "digest": "6feca745def4f54d6db96e9a43208ae24169887ff2889e42df48de5f37fc8cb4"
         }
       ],
-      "record_digest": "29cf5857e872eb69add7eca24a9b117e49fdbb917202b7d3fdbc8c170d1bb39e"
+      "record_digest": "f9326d303d341c2983ed4e7558846fde0644bae5f5cdc29e3abde9c6626f7bcb"
     },
     {
       "operation_id": "console.rebuild-projection",
@@ -3602,7 +3685,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -3630,10 +3713,10 @@
         },
         {
           "address": "services/console/contracts/service.json",
-          "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
+          "digest": "483d56e5114a2ed2d4a1c8adfd5296d82e52f7aabac4654dd73c2fb0a3c38054"
         }
       ],
-      "record_digest": "ff2baa76df0e69ed8c38a2cdbfcb8c55931d98a082f7cafcd5f7188256703e3e"
+      "record_digest": "0aae7b874b9ce4f01c0bcf282a4ca4f8d58d303930b85eae1ba52d7f1ca65d44"
     },
     {
       "operation_id": "console.request-judgement",
@@ -3724,7 +3807,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -3752,10 +3835,10 @@
         },
         {
           "address": "services/console/contracts/service.json",
-          "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
+          "digest": "483d56e5114a2ed2d4a1c8adfd5296d82e52f7aabac4654dd73c2fb0a3c38054"
         }
       ],
-      "record_digest": "bc0d1fbcac987befd73580f1dc2876fc37174a6317eda40ea065242c17eeccf2"
+      "record_digest": "849139cb9b72df6d37a813fe55fc7dde904aa388ea5a74ff596bd160b5260dc2"
     },
     {
       "operation_id": "console.resolve-judgement",
@@ -3849,7 +3932,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -3877,10 +3960,10 @@
         },
         {
           "address": "services/console/contracts/service.json",
-          "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
+          "digest": "483d56e5114a2ed2d4a1c8adfd5296d82e52f7aabac4654dd73c2fb0a3c38054"
         }
       ],
-      "record_digest": "e8c4beeafdba62e36d3490408e9ae7e718175fb308c1cba62f36c21ce154a930"
+      "record_digest": "0ecce739eedbf2ecb8895350ebfe3837df67bb2e4c01a13044ab66f99a450333"
     },
     {
       "operation_id": "console.revoke",
@@ -3972,7 +4055,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -4000,10 +4083,10 @@
         },
         {
           "address": "services/console/contracts/service.json",
-          "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
+          "digest": "483d56e5114a2ed2d4a1c8adfd5296d82e52f7aabac4654dd73c2fb0a3c38054"
         }
       ],
-      "record_digest": "03e3980273ca36241f1632a8dc4250d5f545308fc7a98f08875017dbac32a5ae"
+      "record_digest": "2a453b84c9fb172f8964621a6f8a361c570091aa99f1aaf6d15a10477f295358"
     },
     {
       "operation_id": "console.session-context",
@@ -4092,7 +4175,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -4120,10 +4203,10 @@
         },
         {
           "address": "services/console/contracts/service.json",
-          "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
+          "digest": "483d56e5114a2ed2d4a1c8adfd5296d82e52f7aabac4654dd73c2fb0a3c38054"
         }
       ],
-      "record_digest": "5a5516c9af2291e1cb42553f888eec2c9d2b1a0305c5684b501af35e274be276"
+      "record_digest": "92a241a14d1eaa18b08974f93f49c57ea8e893bb22ae3a64d5a0db232c9cb7e5"
     },
     {
       "operation_id": "console.set-setting",
@@ -4214,7 +4297,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -4242,10 +4325,10 @@
         },
         {
           "address": "services/console/contracts/service.json",
-          "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
+          "digest": "483d56e5114a2ed2d4a1c8adfd5296d82e52f7aabac4654dd73c2fb0a3c38054"
         }
       ],
-      "record_digest": "9330c42ff509a0b39689d4c23540d8bd92e16fe876d7935bbe9e7e265bd9472b"
+      "record_digest": "f793afadeb200dfbc025b5a292b4c7351686a6599c9646aca96fc5a15c8728b3"
     },
     {
       "operation_id": "console.show-judgement-request",
@@ -4334,7 +4417,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -4362,10 +4445,10 @@
         },
         {
           "address": "services/console/contracts/service.json",
-          "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
+          "digest": "483d56e5114a2ed2d4a1c8adfd5296d82e52f7aabac4654dd73c2fb0a3c38054"
         }
       ],
-      "record_digest": "26a27832882443b7f514d78fcd87b56605428a6412d601abd4e255014729749b"
+      "record_digest": "3311775053445a02d2dcf037b8e01fff7a0b89c70ff69b83b34495e5bc966cd3"
     },
     {
       "operation_id": "console.show-receipt",
@@ -4454,7 +4537,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -4482,10 +4565,10 @@
         },
         {
           "address": "services/console/contracts/service.json",
-          "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
+          "digest": "483d56e5114a2ed2d4a1c8adfd5296d82e52f7aabac4654dd73c2fb0a3c38054"
         }
       ],
-      "record_digest": "ff2d96e873f59e72fe97528fa7b98d2a533c582e525b76e41e73c6e05aa9b6e6"
+      "record_digest": "be3dfb963fd46fffee1dd393bc23d702148df36a40dfa0ca90e8b8eb1605e90d"
     },
     {
       "operation_id": "console.withdraw-publication",
@@ -4577,7 +4660,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -4605,10 +4688,10 @@
         },
         {
           "address": "services/console/contracts/service.json",
-          "digest": "2673f56dae7ab3aa9b8340d37223f1f961cb09370def6e12ed8a2fc4337e3c81"
+          "digest": "483d56e5114a2ed2d4a1c8adfd5296d82e52f7aabac4654dd73c2fb0a3c38054"
         }
       ],
-      "record_digest": "214b5d4bf4909378ed704a73ccd404453a1664cfd984626c5fae89c8fa46d348"
+      "record_digest": "a999b8f372fa929f85820460903fdf3d3845386b0184b9fa21f35d8e1caf974f"
     },
     {
       "operation_id": "gateway.accept-request",
@@ -4694,7 +4777,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -4717,7 +4800,7 @@
           "digest": "3840877cc3ccde29a7e4c6662f09f36e8a6c1403f33fd8ab59e7d849164812a6"
         }
       ],
-      "record_digest": "5238832b4daf2cdd525ef9e09289d7691bcde5385c9b248bd65abf5b5bab6410"
+      "record_digest": "ef71bca84ec1119da51ebfebb7571fc2f4153c6cfef49f2b0d63bc3c49d506ad"
     },
     {
       "operation_id": "gateway.bind-transport",
@@ -4802,7 +4885,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -4825,7 +4908,7 @@
           "digest": "3840877cc3ccde29a7e4c6662f09f36e8a6c1403f33fd8ab59e7d849164812a6"
         }
       ],
-      "record_digest": "114a28180e9f1b3d9b71ed9c548f3e257847e5b965c24c9e8e9bf7c67dd79b67"
+      "record_digest": "190fbb6c0686861bea4f06f292d5c34da89309807121e2c9a302cb079cdef081"
     },
     {
       "operation_id": "gateway.check-authority",
@@ -4909,7 +4992,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -4932,7 +5015,7 @@
           "digest": "3840877cc3ccde29a7e4c6662f09f36e8a6c1403f33fd8ab59e7d849164812a6"
         }
       ],
-      "record_digest": "1d21127e2859998860fb5d846d1ab03be7064ff3df17276ef925b37d2312aebe"
+      "record_digest": "3389846fcc4ce726544e93b482c86f27dfbaf0a1b5bfa20d91cd33d881cf9513"
     },
     {
       "operation_id": "gateway.list-endpoints",
@@ -5014,7 +5097,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -5037,7 +5120,7 @@
           "digest": "3840877cc3ccde29a7e4c6662f09f36e8a6c1403f33fd8ab59e7d849164812a6"
         }
       ],
-      "record_digest": "a6de61f8ff807f9ee5b39ea7476339e5cd1fbebe1222735f809eb6a441027225"
+      "record_digest": "0cffd0b5f82a730d340d3f06b7d646a009e864c3edd4a4bb47601432bbe4547a"
     },
     {
       "operation_id": "gateway.read-receipt",
@@ -5119,7 +5202,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -5142,7 +5225,7 @@
           "digest": "3840877cc3ccde29a7e4c6662f09f36e8a6c1403f33fd8ab59e7d849164812a6"
         }
       ],
-      "record_digest": "7db3f92a1f373dbdf081db25863936b4d9b2b200a7dfc20c8deb882a948edb18"
+      "record_digest": "1df0b9f5b8dbcc87985324e0430f82feb4a83a1e673487a5a99f9dae5e2c8e07"
     },
     {
       "operation_id": "gateway.refuse-request",
@@ -5224,7 +5307,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -5247,7 +5330,7 @@
           "digest": "3840877cc3ccde29a7e4c6662f09f36e8a6c1403f33fd8ab59e7d849164812a6"
         }
       ],
-      "record_digest": "aa573fe7c6391578b48f4f6bb963f0cd5dac4378ed996da9853f71343473b0d7"
+      "record_digest": "6236efaad64d2273f9dc9f0c29e30232957f990992844713725ce617077851d7"
     },
     {
       "operation_id": "gateway.resolve-capability",
@@ -5331,7 +5414,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -5354,7 +5437,7 @@
           "digest": "3840877cc3ccde29a7e4c6662f09f36e8a6c1403f33fd8ab59e7d849164812a6"
         }
       ],
-      "record_digest": "3f2142eb8063cab939658f42c434679b8c99fdad0c4f77d9d2774eec6203d69f"
+      "record_digest": "83689f143c1f204e06adae686a5a1bae801583e532527aa0e6b2b893de2c7b76"
     },
     {
       "operation_id": "gateway.return-receipt",
@@ -5437,7 +5520,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -5460,7 +5543,7 @@
           "digest": "3840877cc3ccde29a7e4c6662f09f36e8a6c1403f33fd8ab59e7d849164812a6"
         }
       ],
-      "record_digest": "f646b76d23b2bcd4a9c01eb960a2ae4c37fbe9f47dd1ef25378bc890478f08ef"
+      "record_digest": "2e4626b6c4ea57c594ef32373d45178e22b39946aa6d407a72cb2519468babf8"
     },
     {
       "operation_id": "gateway.route-request",
@@ -5546,7 +5629,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -5569,7 +5652,7 @@
           "digest": "3840877cc3ccde29a7e4c6662f09f36e8a6c1403f33fd8ab59e7d849164812a6"
         }
       ],
-      "record_digest": "1d58e5a7989de7501f9464b8a8161daf04d4742471f8008a0d980c6e93f383d8"
+      "record_digest": "da77b344535668452e11aa029bd7d6187941c88b9af8b64e9ea6983b5b5d4ace"
     },
     {
       "operation_id": "observation.attest-observation",
@@ -5657,7 +5740,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -5688,7 +5771,7 @@
           "digest": "9d93676590b47bdbde987989d332fec52a158922c7c1e4ff7416e276265437c1"
         }
       ],
-      "record_digest": "4d6f3de77394d1f3c41da3c287b75bc222fe0d2a6382a35f61bab46a28fe2683"
+      "record_digest": "51ce6ba08a2f6fce26bdd489f94cc2e0084824c271c3a372c8fb063fd0e617f5"
     },
     {
       "operation_id": "observation.check-independence",
@@ -5774,7 +5857,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -5805,7 +5888,7 @@
           "digest": "9d93676590b47bdbde987989d332fec52a158922c7c1e4ff7416e276265437c1"
         }
       ],
-      "record_digest": "6c71b8c6eec3de1c43da6d1c1d32816cc4424a4cf8cde18a46ede0835604253b"
+      "record_digest": "116219fca512ebc935cadbbdfe541c80ce5e6ffebef2724a89f8b3320c61033e"
     },
     {
       "operation_id": "observation.counter-observation",
@@ -5892,7 +5975,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -5923,7 +6006,7 @@
           "digest": "9d93676590b47bdbde987989d332fec52a158922c7c1e4ff7416e276265437c1"
         }
       ],
-      "record_digest": "695e43799b9ab87adcf5ef78252c44d8d768681b6f443386e7559210f205e5ec"
+      "record_digest": "edec8d706e31ae6e98cedbf434d16245d915d9667eafaa914823a41936fd0833"
     },
     {
       "operation_id": "observation.declare-predicates",
@@ -6011,7 +6094,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -6042,7 +6125,7 @@
           "digest": "9d93676590b47bdbde987989d332fec52a158922c7c1e4ff7416e276265437c1"
         }
       ],
-      "record_digest": "998be451385ec803352687316ad18994b4e21f665aa5b056eec4ee8cefb47f91"
+      "record_digest": "f4ab74d272a5a2d8fd4e3f6364784a9c90672472e761b1a994249bc0ad165c77"
     },
     {
       "operation_id": "observation.list-pending-observations",
@@ -6127,7 +6210,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -6158,7 +6241,7 @@
           "digest": "9d93676590b47bdbde987989d332fec52a158922c7c1e4ff7416e276265437c1"
         }
       ],
-      "record_digest": "0051431919fac1356e3271f4f62bbc05b89a7530601dce32a05c6ddc83c0c8c2"
+      "record_digest": "e64d1957fc7fb9c60b0608a1cbd3d1309cd7103d8e7ea21849f9715d0511503b"
     },
     {
       "operation_id": "observation.observe-run",
@@ -6248,7 +6331,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -6279,7 +6362,7 @@
           "digest": "9d93676590b47bdbde987989d332fec52a158922c7c1e4ff7416e276265437c1"
         }
       ],
-      "record_digest": "7ebd1b34464e34046bb527275509e914b2bb39360e9f9882e9457d1e9b46543b"
+      "record_digest": "27eaba8ee73056cbabcddc6e948683881721f6fe8ba79b2f7975f7692cce9b13"
     },
     {
       "operation_id": "observation.read-observation",
@@ -6364,7 +6447,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -6395,7 +6478,7 @@
           "digest": "9d93676590b47bdbde987989d332fec52a158922c7c1e4ff7416e276265437c1"
         }
       ],
-      "record_digest": "5fb6e609f6b380766e76f30a94e93a89793b239af890dd26f60965ea789feebc"
+      "record_digest": "95a70233ae0d759beb4739bf041b602196644fab641f382570c6549ce9258aaa"
     },
     {
       "operation_id": "observation.read-observer",
@@ -6480,7 +6563,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -6511,7 +6594,7 @@
           "digest": "9d93676590b47bdbde987989d332fec52a158922c7c1e4ff7416e276265437c1"
         }
       ],
-      "record_digest": "c4d30ad73495b3d75360ca377b847338ba5be635dddfb1752712daea48978fc9"
+      "record_digest": "eb7437c33caa1cc1f2536a7b2e37225699cb063c460663e07d112184a96943f3"
     },
     {
       "operation_id": "observation.register-observer",
@@ -6598,7 +6681,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -6629,7 +6712,7 @@
           "digest": "9d93676590b47bdbde987989d332fec52a158922c7c1e4ff7416e276265437c1"
         }
       ],
-      "record_digest": "bb6d21e94773ac8441707d3bd9b41ef36036aabb65cf4f856ccf00eff9a2b729"
+      "record_digest": "7aeefd526e73f77cb4c6eda20cc42da6bbc1a2fece89b794645a11240e7da1e7"
     },
     {
       "operation_id": "observation.request-observation",
@@ -6718,7 +6801,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -6749,7 +6832,7 @@
           "digest": "9d93676590b47bdbde987989d332fec52a158922c7c1e4ff7416e276265437c1"
         }
       ],
-      "record_digest": "d089f4f876764a53396f5d398c4833fb395edaaca8be2f39d47be1378b5ce198"
+      "record_digest": "e25fb943b60350a71c01cfc375b41753995cf19082c7406f0de3efc77b6e3743"
     },
     {
       "operation_id": "projection.build-projection",
@@ -6833,7 +6916,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -6864,7 +6947,7 @@
           "digest": "3f14fc3c68604024b2ba0ce03b0b22c1dd7e92882e393d63a0b927cb2bb8dda3"
         }
       ],
-      "record_digest": "3b97fb8a1319cd3cd0157e73561d1d7ef999df9f3373cbc2cb398040b81a3216"
+      "record_digest": "2ba43757f7f58926680de4b783b30bf12b2c9296468727bb5220107d0ded3893"
     },
     {
       "operation_id": "projection.configure-graph",
@@ -6949,7 +7032,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -6980,7 +7063,7 @@
           "digest": "3f14fc3c68604024b2ba0ce03b0b22c1dd7e92882e393d63a0b927cb2bb8dda3"
         }
       ],
-      "record_digest": "62acb360130999ac5d7c9123681e579f21f546aff6961bf6cd09eb97cecb7760"
+      "record_digest": "cd93d7c30103f3328882e3c8d8649138a6af258a8686149ac2759af4caceddd1"
     },
     {
       "operation_id": "projection.configure-text",
@@ -7065,7 +7148,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -7096,7 +7179,7 @@
           "digest": "3f14fc3c68604024b2ba0ce03b0b22c1dd7e92882e393d63a0b927cb2bb8dda3"
         }
       ],
-      "record_digest": "f73ff35a34d13ee2c251f6d95257aae5ac488e36831d5ff4b6cea6be081662c1"
+      "record_digest": "f85f833c9e7545590500edd28d3b6f9ce96cd1f2b99befff10e01c9e1cbc7571"
     },
     {
       "operation_id": "projection.declare-collection",
@@ -7180,7 +7263,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -7211,7 +7294,7 @@
           "digest": "3f14fc3c68604024b2ba0ce03b0b22c1dd7e92882e393d63a0b927cb2bb8dda3"
         }
       ],
-      "record_digest": "00a527ae583238ec5508858b54d9266cb9853c7a72b28932cafb322e18f936b0"
+      "record_digest": "8afa00b10363251539ea07422fbd5a08b6c7115f9cb6152c5765d76cbfc21c3d"
     },
     {
       "operation_id": "projection.describe-collection",
@@ -7294,7 +7377,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -7325,7 +7408,7 @@
           "digest": "3f14fc3c68604024b2ba0ce03b0b22c1dd7e92882e393d63a0b927cb2bb8dda3"
         }
       ],
-      "record_digest": "fd72a1504908a32c56a1fe0e15b8ca24f932f26c662c4d5395d3a2e578b834b1"
+      "record_digest": "4ee14afe53bb14e57ac0e12d21ae788a938aa2f1cca38d3825e017047f5a4a41"
     },
     {
       "operation_id": "projection.find-path",
@@ -7412,7 +7495,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -7443,7 +7526,7 @@
           "digest": "3f14fc3c68604024b2ba0ce03b0b22c1dd7e92882e393d63a0b927cb2bb8dda3"
         }
       ],
-      "record_digest": "baa3cec6466b8bf2b93062c7f92f72059ab61e40ff8c15fb9beac5359bc95991"
+      "record_digest": "e81d233641588219aea02846cb6cf81a8fa7f83efe43f4040348c8ee77032e89"
     },
     {
       "operation_id": "projection.observe-fidelity",
@@ -7529,7 +7612,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -7560,7 +7643,7 @@
           "digest": "3f14fc3c68604024b2ba0ce03b0b22c1dd7e92882e393d63a0b927cb2bb8dda3"
         }
       ],
-      "record_digest": "e1b4eb1da0fd5ccee72ac37520391f12241fa5d2ec625fce7fc9e5f2b061ed2d"
+      "record_digest": "853e3dedf44cd84ad0971a03a14c93328bb345ad8c8efd402722f7ff9448b0f5"
     },
     {
       "operation_id": "projection.package-context",
@@ -7646,7 +7729,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -7677,7 +7760,7 @@
           "digest": "3f14fc3c68604024b2ba0ce03b0b22c1dd7e92882e393d63a0b927cb2bb8dda3"
         }
       ],
-      "record_digest": "c4b54433e392f5a7adf94c6afbc488186ccbb48e6d6a83c54c2a169e75675731"
+      "record_digest": "6bd7e795a5bd108dbb1b72bd9da4b9b5b5a6b893be8c330228d7f57e25796f99"
     },
     {
       "operation_id": "projection.propose-from-projection",
@@ -7763,7 +7846,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -7794,7 +7877,7 @@
           "digest": "3f14fc3c68604024b2ba0ce03b0b22c1dd7e92882e393d63a0b927cb2bb8dda3"
         }
       ],
-      "record_digest": "3aad0dc25cb984e394a7d0a3270dc3e2f939faf12d8d89aac30cf916a2a95f36"
+      "record_digest": "64e9730a69b210849449a8b217cedd3b45ec3430158dee4c355adb6fef9d5080"
     },
     {
       "operation_id": "projection.read-context-package",
@@ -7877,7 +7960,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -7908,7 +7991,7 @@
           "digest": "3f14fc3c68604024b2ba0ce03b0b22c1dd7e92882e393d63a0b927cb2bb8dda3"
         }
       ],
-      "record_digest": "d811fecf2219dd329f9ccbe37654fdf643aabcdf6c210746b3263d7fca1856fb"
+      "record_digest": "740c997d9b91c5d4a8eb014d2acdd9c2300925b2ffcab11d62f5e83824b21c10"
     },
     {
       "operation_id": "projection.register-vectors",
@@ -7995,7 +8078,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -8026,7 +8109,7 @@
           "digest": "3f14fc3c68604024b2ba0ce03b0b22c1dd7e92882e393d63a0b927cb2bb8dda3"
         }
       ],
-      "record_digest": "b44e4128a0c71bb2b49a4a886fc2b4c26fdacce23989d60356298839627c341c"
+      "record_digest": "32488c240afad8a284fb91a479e0e84885f43353ba4ad645ea10706de5b10e33"
     },
     {
       "operation_id": "projection.search-dense",
@@ -8112,7 +8195,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -8143,7 +8226,7 @@
           "digest": "3f14fc3c68604024b2ba0ce03b0b22c1dd7e92882e393d63a0b927cb2bb8dda3"
         }
       ],
-      "record_digest": "1fd22b5816309d6e142bb7083511655c11c12e226c4d23540413c994f74c3791"
+      "record_digest": "d889fc0e6cba9a8e28840a31855a0af22c8382a15a2745687ed16f313ec0e058"
     },
     {
       "operation_id": "projection.search-hybrid",
@@ -8229,7 +8312,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -8260,7 +8343,7 @@
           "digest": "3f14fc3c68604024b2ba0ce03b0b22c1dd7e92882e393d63a0b927cb2bb8dda3"
         }
       ],
-      "record_digest": "9a3475b28075fa60873a77c9f988a3cb0dcb878e9028ee13ed52f12826284afc"
+      "record_digest": "8f7d6ac94df29a68d8c9fd6f5fbefc3566b2a0735f6eeab6515016e1c5abe8c2"
     },
     {
       "operation_id": "projection.search-sparse",
@@ -8345,7 +8428,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -8376,7 +8459,7 @@
           "digest": "3f14fc3c68604024b2ba0ce03b0b22c1dd7e92882e393d63a0b927cb2bb8dda3"
         }
       ],
-      "record_digest": "6515605d7869fd100288bfd090fb2680465da27dab348008a63fad7184966a6c"
+      "record_digest": "a737fca598f49f468156c803834fb8cbde78e4adf390355e982be94e644a91d6"
     },
     {
       "operation_id": "projection.search-text",
@@ -8461,7 +8544,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -8492,7 +8575,7 @@
           "digest": "3f14fc3c68604024b2ba0ce03b0b22c1dd7e92882e393d63a0b927cb2bb8dda3"
         }
       ],
-      "record_digest": "f172222189e4138af006ad7fc6a072629f48f2a3d29005a061d957d308c96c27"
+      "record_digest": "8576523a188b2588c0a80b74cb6e974f9ccd23dff572ef9d3242367e126bcdd0"
     },
     {
       "operation_id": "projection.traverse-graph",
@@ -8578,7 +8661,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -8609,7 +8692,7 @@
           "digest": "3f14fc3c68604024b2ba0ce03b0b22c1dd7e92882e393d63a0b927cb2bb8dda3"
         }
       ],
-      "record_digest": "0d361f193bb03c23409748fbb893c665a93cddb085966ecae29def5a352e35ef"
+      "record_digest": "bdc827d151a6db5a32992084e00dd7a2918935df80bbccd26719a3ea19c3d416"
     },
     {
       "operation_id": "proofing.add-annotation",
@@ -8697,7 +8780,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -8728,7 +8811,7 @@
           "digest": "f4e4e082557a8bd3196f09046e7113048fed0dc49b0f0eb3ad6bc6c55aad1e22"
         }
       ],
-      "record_digest": "43531630ec818157fe67018ca70279659a6c3cbe3757b713694508ea41db74c9"
+      "record_digest": "cc0287da3c3d2e9487f7f899e6fd6b252b7a0941dce12df8c47a226f96196e01"
     },
     {
       "operation_id": "proofing.assign-reviewer",
@@ -8815,7 +8898,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -8846,7 +8929,7 @@
           "digest": "f4e4e082557a8bd3196f09046e7113048fed0dc49b0f0eb3ad6bc6c55aad1e22"
         }
       ],
-      "record_digest": "38e4aa8d7e2b9142ac27cca3d3b71586f773bc8796197addf898f78d7dd12bfe"
+      "record_digest": "e1570648b4deaa3927878987cde9593aff087fa0fbece8d29ee7e65df9c67092"
     },
     {
       "operation_id": "proofing.close-session",
@@ -8931,7 +9014,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -8962,7 +9045,7 @@
           "digest": "f4e4e082557a8bd3196f09046e7113048fed0dc49b0f0eb3ad6bc6c55aad1e22"
         }
       ],
-      "record_digest": "870bb905b4f8827da7212c9ec68c6b4d6f98eba9cecb0e499f6718d76b396ded"
+      "record_digest": "d1551fcbbcb5473c2fd83d4c12118f903ea99c0bb6d67016ef65e241e7065ced"
     },
     {
       "operation_id": "proofing.open-session",
@@ -9047,7 +9130,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -9078,7 +9161,7 @@
           "digest": "f4e4e082557a8bd3196f09046e7113048fed0dc49b0f0eb3ad6bc6c55aad1e22"
         }
       ],
-      "record_digest": "9ab77c23c3966541d662e797a0e0a60b3641717bfa1e3696ae709b415d304725"
+      "record_digest": "432720e9d802d99e99aa72a6ebb0806458aaac158e5789711df7cdb9503df229"
     },
     {
       "operation_id": "proofing.propose-decision",
@@ -9165,7 +9248,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -9196,7 +9279,7 @@
           "digest": "f4e4e082557a8bd3196f09046e7113048fed0dc49b0f0eb3ad6bc6c55aad1e22"
         }
       ],
-      "record_digest": "fd5ee46a2b3f3370509a868997029a398c72e86f7dbe4e90f195f672b25f8382"
+      "record_digest": "c6504b7da721b6e3d9e908f4e40cc23134853aec88f33dd0cfd2d29e2223eba8"
     },
     {
       "operation_id": "proofing.ratify-decision",
@@ -9282,7 +9365,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -9313,7 +9396,7 @@
           "digest": "f4e4e082557a8bd3196f09046e7113048fed0dc49b0f0eb3ad6bc6c55aad1e22"
         }
       ],
-      "record_digest": "df1314bb3a643bf60516a51645c302e028e28ab45f9ecbeac0e87ace3d135ebe"
+      "record_digest": "a0fee23fa9eedfd5d7b5fdaf1bcdf10b073b855ec1db6b310e9eed49248e1bdc"
     },
     {
       "operation_id": "proofing.read-annotations",
@@ -9397,7 +9480,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -9428,7 +9511,7 @@
           "digest": "f4e4e082557a8bd3196f09046e7113048fed0dc49b0f0eb3ad6bc6c55aad1e22"
         }
       ],
-      "record_digest": "34a8b805b0a875cb47206dc9a767f3d8c6ca6157ea8ff79526fc09c15e5013c3"
+      "record_digest": "d1236ccb0daee9d36eee10dc4851f2067fad936787f6e69b68e68c5d344c66c2"
     },
     {
       "operation_id": "proofing.read-decision",
@@ -9512,7 +9595,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -9543,7 +9626,7 @@
           "digest": "f4e4e082557a8bd3196f09046e7113048fed0dc49b0f0eb3ad6bc6c55aad1e22"
         }
       ],
-      "record_digest": "ec080db314677f7d8bdafcd20ff776fea4bb765744668e45cc1c9c74866a8b1b"
+      "record_digest": "9f79c764c8d3027b298fd987fa709836325ae8b18d0ac534de67f99813cbb499"
     },
     {
       "operation_id": "proofing.read-session",
@@ -9627,7 +9710,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -9658,7 +9741,7 @@
           "digest": "f4e4e082557a8bd3196f09046e7113048fed0dc49b0f0eb3ad6bc6c55aad1e22"
         }
       ],
-      "record_digest": "81017caf2f6eb710340bf272b3d831ddccdd4c0561d0ca67b6a8319cb1401d91"
+      "record_digest": "5a0edcc86cfa14badce4f70e679c07f92a7ea321dd91e148fc952cc735a4d5c3"
     },
     {
       "operation_id": "proofing.request-comparison",
@@ -9745,7 +9828,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -9776,7 +9859,7 @@
           "digest": "f4e4e082557a8bd3196f09046e7113048fed0dc49b0f0eb3ad6bc6c55aad1e22"
         }
       ],
-      "record_digest": "fdb6d53a50c0516f51d651e05fcecba92a5c7492a73e4c45edd8e4888ea9b72f"
+      "record_digest": "5ffc8c5bbd9d190e6d187859f2bafc20cb8fec42a7aab13641dc67d0821486cf"
     },
     {
       "operation_id": "proofing.request-revision",
@@ -9862,7 +9945,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -9893,7 +9976,7 @@
           "digest": "f4e4e082557a8bd3196f09046e7113048fed0dc49b0f0eb3ad6bc6c55aad1e22"
         }
       ],
-      "record_digest": "2aaa9f051827ac7ebf44a54d5b880d6245de3c5d20aa9713ab01b8e7f3506c8e"
+      "record_digest": "012e84fe6cea4a8af82334cad43ffbce95cf67013697a7c2cee0c661612ac691"
     },
     {
       "operation_id": "record.append-entry",
@@ -9979,7 +10062,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -10002,7 +10085,7 @@
           "digest": "0376f91719461a9d1f2c43dd5d625602a011b01c655a4e650628e9f9e7ede998"
         }
       ],
-      "record_digest": "85bcbaaec9b31168ce1106323659d2d6479f2ad00c3e2ad078b371735d2093f2"
+      "record_digest": "5f0728d77fad2d4468fe8e75d14a122127a02739344af4af1cfb4c1d68b8f79f"
     },
     {
       "operation_id": "record.append-receipt",
@@ -10086,7 +10169,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -10109,7 +10192,7 @@
           "digest": "0376f91719461a9d1f2c43dd5d625602a011b01c655a4e650628e9f9e7ede998"
         }
       ],
-      "record_digest": "a5a03d2fad2a0f3eab1079ad442055de13fdf7fd61526dc86bae8dbcc45eafb0"
+      "record_digest": "513bb3c69812efd84c8a367604bbb197bc7fd6dd2c2c3d0d55923c2f05c8f1d7"
     },
     {
       "operation_id": "record.counter-entry",
@@ -10194,7 +10277,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -10217,7 +10300,7 @@
           "digest": "0376f91719461a9d1f2c43dd5d625602a011b01c655a4e650628e9f9e7ede998"
         }
       ],
-      "record_digest": "5bc86ae6b1941ffba3a76254fe7575d758cd36d0785f134d1a1c200b2a4cb7b4"
+      "record_digest": "a29e96246f892bbcc122eac310080446da02751168077932c4906ee922acf667"
     },
     {
       "operation_id": "record.drop-projections",
@@ -10299,7 +10382,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -10322,7 +10405,7 @@
           "digest": "0376f91719461a9d1f2c43dd5d625602a011b01c655a4e650628e9f9e7ede998"
         }
       ],
-      "record_digest": "8d3a8f2083b23c9ae79d4ea99f923a4118d7f15286ec22df5765fdc032349161"
+      "record_digest": "f75e73f0c9da13d23babdd5f4f3121cce25d7108795c9f27c9564b439b5c2dc6"
     },
     {
       "operation_id": "record.read-entry",
@@ -10404,7 +10487,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -10427,7 +10510,7 @@
           "digest": "0376f91719461a9d1f2c43dd5d625602a011b01c655a4e650628e9f9e7ede998"
         }
       ],
-      "record_digest": "07a6217ccdbb3ccf2121a5d3f68e7928641b225d873063d993aa7ad69d749618"
+      "record_digest": "dac4ebc3f4375c5902d97e522d567d8ac765c00845e15f026d6b5649203fd6c8"
     },
     {
       "operation_id": "record.read-projection",
@@ -10509,7 +10592,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -10532,7 +10615,7 @@
           "digest": "0376f91719461a9d1f2c43dd5d625602a011b01c655a4e650628e9f9e7ede998"
         }
       ],
-      "record_digest": "211cdb10da21f12046663f80aff4f1dd1a39ce204aefc159ef7cbc8a257fe758"
+      "record_digest": "b67bbdf1c066546f3a9891aabfc6477ab2d55c7370772bc3ef0103e9ab9a7f8d"
     },
     {
       "operation_id": "record.rebuild-projections",
@@ -10615,7 +10698,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -10638,7 +10721,7 @@
           "digest": "0376f91719461a9d1f2c43dd5d625602a011b01c655a4e650628e9f9e7ede998"
         }
       ],
-      "record_digest": "68971ff6208681e7d4e6d1ba700e3dd2ce019772ebc03cb03aaac73d70f878f4"
+      "record_digest": "9d55bbe081fcf1186f7d311e5fe9ba02a2e3aa8716da86ea13edd1bcb819c588"
     },
     {
       "operation_id": "record.reconstruct-journal",
@@ -10721,7 +10804,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -10744,7 +10827,7 @@
           "digest": "0376f91719461a9d1f2c43dd5d625602a011b01c655a4e650628e9f9e7ede998"
         }
       ],
-      "record_digest": "a26e74b0e624be1958070831d2d741ab2580935761d09e689412a67626415890"
+      "record_digest": "77f2ec727d6929ac1b726ff2268df59357f7fb8039154904d6236c91669f2296"
     },
     {
       "operation_id": "registry.declare-owner",
@@ -10833,7 +10916,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -10856,7 +10939,7 @@
           "digest": "9c6fafd93db96f62074aa8d7efc146253a06f6128492af3f74c22db805c49b01"
         }
       ],
-      "record_digest": "fd3894cd256ae898019507ff8c47d92e883c1c50479d74aeba39cc15a0178bf4"
+      "record_digest": "aa2774223dcd22bc3766ee7263e5beda1496a2b904a9da31dedecb8ceddf3394"
     },
     {
       "operation_id": "registry.read-entry",
@@ -10939,7 +11022,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -10962,7 +11045,7 @@
           "digest": "9c6fafd93db96f62074aa8d7efc146253a06f6128492af3f74c22db805c49b01"
         }
       ],
-      "record_digest": "d9257f75a8a53262d04d796f05c7b05d21aa6c12d688b0cef22199de3b5ec93c"
+      "record_digest": "0a907975678ac90a1965f176ce35ef5912990a32cd4eb4e93c04408e389ef19f"
     },
     {
       "operation_id": "registry.read-index",
@@ -11045,7 +11128,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -11068,7 +11151,7 @@
           "digest": "9c6fafd93db96f62074aa8d7efc146253a06f6128492af3f74c22db805c49b01"
         }
       ],
-      "record_digest": "e79a3063fce4501fa2c1f75cc292d7425bc6031c365ea5c18b43cfb39f9b79d6"
+      "record_digest": "43ee30ee400f872b685f639bcd2ba185316a89602c95f89537cdb583034dd91b"
     },
     {
       "operation_id": "registry.read-owner",
@@ -11151,7 +11234,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -11174,7 +11257,7 @@
           "digest": "9c6fafd93db96f62074aa8d7efc146253a06f6128492af3f74c22db805c49b01"
         }
       ],
-      "record_digest": "afd3ab959d32cd0186b49891ed8d91cd54fed479f9bdeb39cfbb9c0bfed3b802"
+      "record_digest": "10259d289507b7f920f108e2dfa11275fed9656094284938ec27e763aabb9bdc"
     },
     {
       "operation_id": "registry.read-receipt",
@@ -11257,7 +11340,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -11280,7 +11363,7 @@
           "digest": "9c6fafd93db96f62074aa8d7efc146253a06f6128492af3f74c22db805c49b01"
         }
       ],
-      "record_digest": "0c05d7469ab1e649a834391936c6ba2b8b1744a227c833a1c8557962121bb0a1"
+      "record_digest": "860af4603b332a3c39e4a78f9e7b152b2e8e76433c507427a9fda826492ffbfd"
     },
     {
       "operation_id": "registry.rebuild-index",
@@ -11365,7 +11448,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -11388,7 +11471,7 @@
           "digest": "9c6fafd93db96f62074aa8d7efc146253a06f6128492af3f74c22db805c49b01"
         }
       ],
-      "record_digest": "52670ee3a6010662ebc42f6da905e9f2f20d2fb6b5e451a0332a2dbf2a591c2f"
+      "record_digest": "c19a6a379982fb23f47697dc80e51bb4cf3c7fe775db4cfc639c5586ef8a6939"
     },
     {
       "operation_id": "registry.register-entry",
@@ -11477,7 +11560,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -11500,7 +11583,7 @@
           "digest": "9c6fafd93db96f62074aa8d7efc146253a06f6128492af3f74c22db805c49b01"
         }
       ],
-      "record_digest": "b135c743d5a20c9ce66f6a52b74a1a4faa14943e979cd272c46048b34ad72e0b"
+      "record_digest": "697e6ed5bd5581ef46e8119fd679d2852a7f862caed169f868990288fed3de31"
     },
     {
       "operation_id": "registry.relate-entries",
@@ -11587,7 +11670,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -11610,7 +11693,7 @@
           "digest": "9c6fafd93db96f62074aa8d7efc146253a06f6128492af3f74c22db805c49b01"
         }
       ],
-      "record_digest": "9f585b34f61dcd0dcc846386d0e9e0298ffcb7256dbf3d4e44a791d709f20581"
+      "record_digest": "4083e1f28f09427fb3ec3e39d4d0468329af6c5d72d40972c5cdec2b0275f000"
     },
     {
       "operation_id": "registry.report-drift",
@@ -11695,7 +11778,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -11718,7 +11801,7 @@
           "digest": "9c6fafd93db96f62074aa8d7efc146253a06f6128492af3f74c22db805c49b01"
         }
       ],
-      "record_digest": "0eacd580b4fa78b524b4d6bbc7b3c05d065f887229c0a46c7a167360b5cfa4f1"
+      "record_digest": "7b0f10f08d0e0c197d93269dcf9edd2c7493fbe8ba3ac244ed63e5b89530cdbd"
     },
     {
       "operation_id": "registry.resolve",
@@ -11823,7 +11906,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -11847,7 +11930,7 @@
         },
         {
           "address": "scripts/sovnode/composition.py",
-          "digest": "387877026329db94a79760706917bc5ac6d8062653c261582d8f375088bc6fdb"
+          "digest": "c79de20f47a951f4ea1a6770a3fb64e0102928bf2876274177cfa323b531dc0f"
         },
         {
           "address": "services/gateway/src/soveraeign_gateway_service/contract.py",
@@ -11874,7 +11957,7 @@
           "digest": "150834886995a8e0c32334beb5ef53dbc69cbb244172b510a06b056e608bf4b0"
         }
       ],
-      "record_digest": "52f34870a364157cbdfcb54c60055dc0fd6ff6e801d3d9ab2d254ec3d74e151b"
+      "record_digest": "60a5862301f697051643335a15d2d3391febe008e560991d125a6c7069730cc2"
     },
     {
       "operation_id": "registry.retire-owner",
@@ -11959,7 +12042,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -11982,7 +12065,7 @@
           "digest": "9c6fafd93db96f62074aa8d7efc146253a06f6128492af3f74c22db805c49b01"
         }
       ],
-      "record_digest": "1f4fcf368163dfca2ad1ac374a4d6babf3c83cbc7ce82d6048b0cd666da6d6d3"
+      "record_digest": "0ea8651fc59cd643a716aa8e19bcffe523fa18f6bc387a06785d1026b040c800"
     },
     {
       "operation_id": "registry.supersede-entry",
@@ -12069,7 +12152,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -12092,7 +12175,7 @@
           "digest": "9c6fafd93db96f62074aa8d7efc146253a06f6128492af3f74c22db805c49b01"
         }
       ],
-      "record_digest": "0518d91274008c458c3951b575c7b8202122f4078c074c50e1587f47baa3fc29"
+      "record_digest": "1fa77e99467a8608c325bd6d8af9353822c7dd811c738283ccd11c4abd22fc68"
     },
     {
       "operation_id": "registry.supersede-owner",
@@ -12179,7 +12262,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "083521c0afa6026f05457606883053621f242bdd810ea57a119acb624bfdc36f"
+          "digest": "5bc5a69619897df5a719356a850d7078ae11a3b5bda1245f8dd1db2b3a27f67d"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -12202,7 +12285,7 @@
           "digest": "9c6fafd93db96f62074aa8d7efc146253a06f6128492af3f74c22db805c49b01"
         }
       ],
-      "record_digest": "dca0e2f13a28136214624e9b6f825e7c0dccb4b2172d6c01c0f04b7065ca44ff"
+      "record_digest": "c5ca98d4b2a0ab36fdf23c54b42e319e92e178ec087b9d237b785ae267fdf970"
     }
   ]
 }

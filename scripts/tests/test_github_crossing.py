@@ -64,15 +64,23 @@ def automatic_branch() -> dict:
     }
 
 
-def merged_pull(**overrides) -> dict:
+def merged_pull(branch: str = "feat/done", base: str = "main", **overrides) -> dict:
     """The live GitHub proof an automatic retirement expects."""
     payload = {
         "merged": True,
-        "head": {"ref": "feat/done", "sha": HEAD_SHA, "repo": {"full_name": "owner/name"}},
-        "base": {"ref": "main"},
+        "head": {"ref": branch, "sha": HEAD_SHA, "repo": {"full_name": "owner/name"}},
+        "base": {"ref": base},
     }
     payload.update(overrides)
     return payload
+
+
+def repository(default: str = "main") -> dict:
+    return {"default_branch": default}
+
+
+def live_ref(branch: str = "feat/done", sha: str = HEAD_SHA) -> dict:
+    return {"ref": f"refs/heads/{branch}", "object": {"sha": sha}}
 
 
 class CrossingPlanTests(unittest.TestCase):
@@ -161,18 +169,20 @@ class CrossingExecuteTests(unittest.TestCase):
         )
         self.assertEqual([entry["outcome"] for entry in receipts], ["REFUSED", "PLANNED"])
 
-    def test_automatic_retirement_revalidates_merge_and_stack_state(self) -> None:
+    def test_automatic_retirement_revalidates_merge_ref_and_stack_state(self) -> None:
         answers = [
             (0, json.dumps(merged_pull())),
+            (0, json.dumps(repository())),
+            (0, json.dumps(live_ref())),
             (0, "[]"),
         ]
         with patch.object(crossing, "_run", side_effect=answers) as run:
             receipt = crossing.execute(automatic_branch(), "owner/name", dry_run=True)
         self.assertEqual(receipt["outcome"], "PLANNED")
         self.assertIn("automatic retirement", receipt["authority"])
-        self.assertEqual(run.call_count, 2)
+        self.assertEqual(run.call_count, 4)
 
-    def test_automatic_retirement_refuses_a_changed_head_sha(self) -> None:
+    def test_automatic_retirement_refuses_a_changed_pr_head_sha(self) -> None:
         changed = merged_pull()
         changed["head"] = dict(changed["head"], sha="b" * 40)
         with patch.object(crossing, "_run", return_value=(0, json.dumps(changed))):
@@ -180,9 +190,37 @@ class CrossingExecuteTests(unittest.TestCase):
         self.assertEqual(receipt["outcome"], "REFUSED")
         self.assertEqual(receipt["reason_code"], "AUTOMATION_PROOF_MISMATCH")
 
+    def test_automatic_retirement_refuses_a_reused_branch_with_new_commits(self) -> None:
+        answers = [
+            (0, json.dumps(merged_pull())),
+            (0, json.dumps(repository())),
+            (0, json.dumps(live_ref(sha="b" * 40))),
+        ]
+        with patch.object(crossing, "_run", side_effect=answers):
+            receipt = crossing.execute(automatic_branch(), "owner/name", dry_run=True)
+        self.assertEqual(receipt["outcome"], "REFUSED")
+        self.assertEqual(receipt["reason_code"], "BRANCH_HEAD_MOVED")
+        self.assertIn("no longer points", receipt["detail"])
+
+    def test_automatic_retirement_never_deletes_the_default_branch(self) -> None:
+        action = automatic_branch()
+        action["target"] = "main"
+        action["argument"] = "main"
+        action["extra"]["base_ref"] = "release"
+        answers = [
+            (0, json.dumps(merged_pull(branch="main", base="release"))),
+            (0, json.dumps(repository(default="main"))),
+        ]
+        with patch.object(crossing, "_run", side_effect=answers):
+            receipt = crossing.execute(action, "owner/name", dry_run=True)
+        self.assertEqual(receipt["outcome"], "REFUSED")
+        self.assertEqual(receipt["reason_code"], "PROTECTED_BRANCH")
+
     def test_automatic_retirement_refuses_a_live_stacked_child(self) -> None:
         answers = [
             (0, json.dumps(merged_pull())),
+            (0, json.dumps(repository())),
+            (0, json.dumps(live_ref())),
             (0, json.dumps([{"number": 105}])),
         ]
         with patch.object(crossing, "_run", side_effect=answers):

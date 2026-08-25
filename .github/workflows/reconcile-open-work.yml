@@ -1,34 +1,66 @@
-name: reconcile open work probe
+name: reconcile surface stack
 
 on:
   push:
     branches: [feat/human-collection-substrate]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  probe:
+  reconcile:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Probe merge against main
+      - name: Reconcile current main, verify, and remove this helper
         shell: bash
         run: |
-          set +e
-          git config user.name "Soveraeign reconciliation probe"
+          set -euo pipefail
+          git config user.name "Soveraeign reconciliation"
           git config user.email "reconcile@localhost"
           git fetch origin main
+
+          set +e
           git merge --no-commit --no-ff origin/main
           rc=$?
-          echo "MERGE_RC=$rc"
-          echo "=== UNMERGED PATHS ==="
-          git diff --name-only --diff-filter=U
-          echo "=== STAGE BLOBS (base ours theirs) ==="
-          git ls-files -u
-          echo "=== COMBINED CONFLICT DIFF ==="
-          git diff --cc --no-ext-diff
-          exit 0
+          set -e
+
+          if [ "$rc" -ne 0 ]; then
+            actual="$(git diff --name-only --diff-filter=U | sort)"
+            expected="$(printf '%s\n' \
+              contracts/fixtures/capability-map.reference.json \
+              scripts/sov_mutate.py \
+              scripts/verify.py | sort)"
+            if [ "$actual" != "$expected" ]; then
+              echo "REFUSED: reconciliation conflict set changed"
+              echo "Expected:"
+              printf '%s\n' "$expected"
+              echo "Actual:"
+              printf '%s\n' "$actual"
+              exit 1
+            fi
+
+            # These two files have newer repository-wide implementations on main;
+            # the surface stack carries no unique behavior in their contested regions.
+            git checkout --theirs -- scripts/sov_mutate.py scripts/verify.py
+            # The capability map is generated. Seed from current main, then rebuild
+            # from the fully merged service manifests and office table below.
+            git checkout --theirs -- contracts/fixtures/capability-map.reference.json
+            git add scripts/sov_mutate.py scripts/verify.py contracts/fixtures/capability-map.reference.json
+          fi
+
+          python scripts/sov_capability.py build
+          git add contracts/fixtures/capability-map.reference.json
+
+          # This workflow is temporary reconciliation machinery, not product inventory.
+          git rm .github/workflows/reconcile-open-work.yml
+
+          python scripts/verify.py
+          python scripts/lint.py
+
+          git add -A
+          git commit -m "chore: reconcile collection surface with main"
+          git push origin HEAD:feat/human-collection-substrate

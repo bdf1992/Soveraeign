@@ -51,13 +51,42 @@ which is the same limitation the rest of the system currently has.
 It does not durably guarantee media beyond detectable corruption. `SPEC.md`
 places that outside the logical specification.
 
+## Reaching it
+
+`src/soveraeign_record_service/cli.py` is the declared invocation surface. Every
+command reads JSON arguments and prints one JSON object, refusals included, and
+`operations` answers what may be done out of `contracts/service.json` rather than
+out of the CLI, so the declared surface and the reachable surface cannot drift
+apart quietly.
+
+Before it existed, everything that needed the journal imported `core.py`. That
+put every reader inside the participant, and it meant the witness procedure could
+only be performed by the code being witnessed.
+
+## The digest chain
+
+Every entry's digest is `sha256` over `prev_digest`, `kind`, `subject`, `actor`,
+and the entry payload as canonical JSON, joined by `|`. The first entry chains
+from a genesis digest of sixty-four zeroes. It is stated here because an outside
+observer has to be able to recompute the chain without reading `core.py`;
+`scripts/witness_record.py` does exactly that.
+
 ## Proving operation
 
-The witness procedure declared on issue #7, performed end to end in
-`tests/test_journal.py::test_witness_walk`: commit, interrupt, restart,
-reconstruct, retract, drop every projection, rebuild them, and compare the
-resulting record addresses and terminal receipts.
+Two paths, and the difference between them is the whole point.
 
-Eight tests cover the five acceptance criteria and all five declared defeating
-cases. Passing them establishes `BUILT` only; an independent run is required for
-`WITNESSED` and Bdo's recorded decision for `RATIFIED`.
+`tests/test_journal.py` is the participant's own: eight tests covering the five
+acceptance criteria and all five declared defeating cases, driving the Python API
+directly. It establishes `BUILT` and nothing further.
+
+`scripts/witness_record.py` performs the witness procedure declared on issue #7 -
+commit, interrupt, restart, reconstruct, retract, drop every projection, rebuild
+them, compare the resulting record addresses and terminal receipts - without
+importing this service. It reaches the service only as a subprocess through the
+CLI, recomputes every digest from the chain rule stated above, and stages the
+interrupt against the SQLite file from outside. Twenty-one observations hold.
+`scripts/tests/test_witness_record.py` proves the walk can fail: a rewritten
+payload, actor, or removed entry all stop verifying.
+
+An independent observation proposes at most `BUILT -> WITNESSED`. It does not
+settle it, and Bdo's recorded decision is what makes anything `RATIFIED`.

@@ -2,8 +2,7 @@
 
 ```text
 source          SPEC.md · CLASSIFICATION.md · PRD.md · CONTRACT.md
-source_digest   274a3669df8144cf · 69f361e837dceebe ·
-                641281625d74b53a · 896e59ba90828ad7
+source_digest   6a955e9ddf3c8852 · ff6dfb8b1254318b · f1157f2f1ebad6aa · 896e59ba90828ad7
 reader          hand-authored · v1
 fidelity        LOSSY
 omissions       the receipt and event-envelope field lists, held by SPEC.md and
@@ -61,10 +60,10 @@ destination — and exactly one commit: a destination record **and** a receipt.
 
 | Class | Traverses | Far side | Phase-I standing |
 | --- | --- | --- | --- |
-| **C1 · Operator** | one record, two actor kinds | a `HUMAN` or `MODEL` operator | required — `PRD.md` PROD-I-3 |
-| **C2 · Service** | a declared service contract | a sibling service in the same node | one direction chartered |
-| **C3 · Boundary** | a binding, adapter, worker, or projection | the kernel, or a named external runtime | partly built |
-| **C4 · Federation** | a governed node-to-node crossing | a second sovereign node | deferred, non-goal |
+| **C1 · Operator** | one record, two actor kinds | a `HUMAN` or `MODEL` operator | required — `PRD.md` PROD-I-3; no second binding exists |
+| **C2 · Service** | a declared service contract | a sibling service in the same node | executes as a package import, not as a declared crossing |
+| **C3 · Boundary** | a binding, adapter, worker, or projection | the kernel, or a named external runtime | executes against a local runtime only |
+| **C4 · Federation** | a governed node-to-node crossing | a second sovereign node | contracted, no transport, Phase-I non-goal |
 
 `Subsystem` is the generic architectural class and is not a level between
 service and component (`CLASSIFICATION.md`). None of these classes creates a
@@ -103,11 +102,30 @@ lose — both are inside one node, and losing the node is not a crossing failure
 
 ## Pencil, and why
 
-Every class is dashed. C1 depends on `SPEC.md`, which is `PROPOSED` and pending
-O10. C2 has one chartered direction and no implementation on either end of it.
-C3 exists as `bindings/` and `adapters/` directories that hold README files and
-a profile skeleton — no adapter executes. C4 is a Phase-I non-goal and a
-`ROADMAP.md` deferral.
+Every class is still dashed, but not for the reasons it was when this view was
+first drawn. Each class now has code on at least one end, and none of them is a
+declared crossing end to end.
+
+C1 has a model binding and no human-facing binding: `bindings/console/interface.json`
+declares one and holds no code, so the two actor kinds have never met in one
+record. `services/asset/conformance/BASELINE.md` records `PROD-I-3` failing for
+exactly that reason.
+
+C2 executes. `services/console/` imports `soveraeign_record_service` directly and
+reads the journal through it. That is a Python import, not a passage through a
+declared service contract — which is the gap `services/gateway/CHARTER.md` was
+chartered to close. A crossing that works by importing the far side has no place
+to check authority and no place to leave a receipt.
+
+C3 executes too. `adapters/ollama/invoke.py` runs a model against the local
+runtime, applies the binding's declared omissions before sending, and grades the
+outcome from the runtime's own `done_reason`. Its data boundary is `LOCAL_ONLY`;
+no bytes have ever gone in front of a third party, so the class's distinguishing
+risk is contracted and untested.
+
+C4 is contracted with no transport (`STATUS.yaml`,
+`federation_crossing_status: PROPOSED_CONTRACT_BUILT_SELF_TESTED_NO_TRANSPORT`),
+a Phase-I non-goal, and a `ROADMAP.md` deferral.
 
 The four obligations are drawn in pen. They are downstream of settled source
 claims — `receipts_for_crossings`, `typed_scoped_revocable_authority`,

@@ -15,6 +15,7 @@ and retraction semantics; no service creates a private authority system.
 | `observation/` | chartered, not implemented | independent observation: observer registrations, declared predicates, observation requests, independence checks, observations, and attestations. Not the log - the journal is the Record Service's |
 | `proofing/` | chartered, not implemented | version-pinned review sessions, annotations, rounds, and decision history |
 | `projection/` | chartered, not implemented | projection collections, text, graph, and vector configurations, builds, retrieval receipts, context packages, and fidelity observations over asset records; parity target in `PARITY.md` |
+| `registry/` | chartered, not implemented | the node's lookup: what a name is, which document owns it, what standing it holds, and what it relates to - for participants, operations, vocabulary, documents, external systems, and accountable owners |
 
 ## The declared surface
 

@@ -10,6 +10,7 @@ BUILT evidence only. Rendering a document witnesses nothing about it.
 
 from __future__ import annotations
 
+from hashlib import sha256
 from pathlib import Path
 import re
 import sys
@@ -145,12 +146,10 @@ class Custody(unittest.TestCase):
         return built, [("Governing set", built)]
 
     def _ledger(self, match: bool):
-        actual = sov_docs.documents({})[0]
-        digest = next(d["digest"] for d in sov_docs.documents({}) if d["path"] == "AGENTS.md")
-        del actual
+        """A recorded custody for AGENTS.md whose digest either matches disk or does not."""
+        recorded = sha256((ROOT / "AGENTS.md").read_bytes()).hexdigest() if match else "0" * 64
         return {"AGENTS.md": {"asset_id": "asset_recorded", "version_id": "version_recorded",
-                              "receipt_id": "rcpt_recorded",
-                              "digest": digest if match else "0" * 64}}
+                              "receipt_id": "rcpt_recorded", "digest": recorded}}
 
 
 class Staleness(unittest.TestCase):

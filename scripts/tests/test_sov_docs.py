@@ -90,6 +90,34 @@ class DocumentDecidesNothing(unittest.TestCase):
         self.assertIn('href="AGENTS.md"', render("[contract](AGENTS.md)\n")[0])
 
 
+class SourceTraversal(unittest.TestCase):
+    def test_excluded_trees_are_pruned_before_document_walk_descends(self):
+        root = Path("/synthetic-repository")
+        kept_dirs: list[str] = []
+
+        def fake_walk(start: Path, topdown: bool = True):
+            self.assertEqual(start, root)
+            self.assertTrue(topdown)
+            dirs = [".git", "reports", "docs", ".local"]
+            yield str(root), dirs, ["ROOT.md", "ignore.txt"]
+            kept_dirs.extend(dirs)
+            if ".git" in dirs:
+                yield str(root / ".git"), [], ["object.md"]
+            if "reports" in dirs:
+                yield str(root / "reports"), [], ["report.md"]
+            if "docs" in dirs:
+                yield str(root / "docs"), [], ["generated.md"]
+            if ".local" in dirs:
+                yield str(root / ".local"), [], ["capture.md"]
+
+        with mock.patch.object(sov_docs, "ROOT", root), mock.patch.object(
+                sov_docs.os, "walk", fake_walk):
+            paths = sov_docs.sources()
+
+        self.assertEqual(kept_dirs, ["reports"])
+        self.assertEqual(paths, [root / "ROOT.md", root / "reports" / "report.md"])
+
+
 class EveryPublishedDocument(unittest.TestCase):
     """The renderer runs against the real corpus, not a fixture standing in for it."""
 

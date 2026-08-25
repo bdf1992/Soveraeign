@@ -5,6 +5,7 @@ from __future__ import annotations
 
 from pathlib import Path
 import ast
+import os
 import re
 import sys
 
@@ -54,12 +55,19 @@ LOCAL_PATH_PATTERNS = (
 
 
 def repository_text_files() -> list[Path]:
-    paths = []
-    for path in ROOT.rglob("*"):
-        if not path.is_file() or any(part in SKIP_PARTS for part in path.parts):
-            continue
-        if path.suffix in TEXT_SUFFIXES or path.name in TEXT_NAMES:
-            paths.append(path)
+    """Return lintable repository text without descending into excluded trees."""
+    paths: list[Path] = []
+    for raw_root, dirs, files in os.walk(ROOT, topdown=True):
+        # Pruning here matters: filtering paths after Path.rglob() still traverses
+        # .git object storage, virtualenvs and local runtime captures before throwing
+        # their entries away. The hygiene population is unchanged; the excluded trees
+        # simply never become I/O work.
+        dirs[:] = sorted(name for name in dirs if name not in SKIP_PARTS)
+        root = Path(raw_root)
+        for name in sorted(files):
+            path = root / name
+            if path.suffix in TEXT_SUFFIXES or path.name in TEXT_NAMES:
+                paths.append(path)
     return sorted(paths)
 
 

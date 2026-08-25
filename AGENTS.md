@@ -64,13 +64,77 @@ A seat decides its own work. What to inspect, which legal operation to attempt,
 how to sequence reversible changes, when to abandon a failed line: that is the
 seat's own, needs no packet, and is refused if presented upward.
 
+### Worker closure ownership
+
+A worker owns closure of the bounded concern it accepts. Its default lifecycle is:
+
+`inspect -> build -> test -> recruit helper -> repair -> freeze -> witness -> land`
+
+The worker does not finish by opening an issue, branch, pull request, review request,
+or owner question. Those are coordination surfaces inside the work. Unless an
+acceptance-policy boundary is actually reached, the same worker is expected to
+carry its concern through CI, review findings, repairs, rebases, and merge.
+
+Do not externalize ordinary engineering judgement into repository WIP. If a newly
+discovered task is a logical consequence of the concern already being worked, is
+inside the same effect envelope, and can be completed without changing owner-held
+intent, finish it in the current work. Open a separate issue only when the concern
+is independently durable: it has a different owner-held decision, effect boundary,
+service lifecycle, deferred dependency that cannot be resolved in the current task,
+or coordination need that should survive the current branch. A TODO, uncertainty,
+or useful follow-up is not by itself a reason to create another ticket.
+
+Each worker should normally have one active implementation branch and one active
+pull request for its current concern. Parallel branches are justified only by
+independent mergeable concerns or an explicitly recorded need for isolation. Do
+not create integration branches to hold unfinished work, and do not split a
+single vertical slice into multiple PRs merely to make each diff smaller.
+
+Every worker is expected to obtain another model participant as a copilot or
+counterpart when the host can provide one. The worker initiates that contact; the
+owner does not broker it. Give the helper a bounded question, relevant paths, the
+current diff or revision, and the defeating case to look for. The helper should
+be used to find defects, missing cases, simpler implementations, hidden authority
+assumptions, and incomplete closure. The primary worker owns every resulting
+repair and remains accountable for the final branch.
+
+Helper evidence and witness evidence are different. A participant that wrote,
+edited, or directed the implementation may critique it but may not independently
+witness that same result. To claim `WITNESSED`, request a fresh invocation against
+a frozen commit or digest, keep that invocation non-editing, identify the exact
+claim and defeating observation, and preserve its attributable report. The
+witness may reproduce, inspect, and challenge the result; it does not repair it.
+If it finds a defect, the primary worker resumes work, repairs the branch, freezes
+a new revision, and requests a new witness pass.
+
+A smaller or cheaper model is suitable for the helper or witness role when it can
+understand the bounded contract and observation. Model size does not grant or
+remove standing. Independence comes from role separation, frozen input, and an
+attributable invocation, not from prestige or confidence.
+
+If the host cannot invoke another model, record that capability as unavailable and
+continue with the strongest independent local checks available. The work may still
+reach `BUILT`; it may not claim model-independent `WITNESSED` merely by renaming a
+self-review.
+
+For ordinary reversible work that does not cross an owner-acceptance boundary, a
+worker may land its own pull request after all required checks pass, review or
+witness findings are resolved, the head revision is known, no genuine open seam is
+being silently decided, and the merge itself is within the live grant. Owner-held
+acceptance PRs remain open until the owner explicitly accepts or lands them.
+
+The desired repository shape is therefore fewer, shorter-lived work objects: one
+bounded concern enters, the worker uses its tools and helpers to close it, and one
+landed result or genuine residual comes out. Organization is evidence of work only
+when it reduces uncertainty needed for closure.
+
 ## Sov operating profile
 
 `Sov` is the owner-selected name of Soveraeign's main operating agent. It is a
 portable context profile loaded by a compatible underlying model, not a model,
 provider, runtime, host, credential, authority slot, durable memory, or second
-kernel. Read `SOV.md` for the entry point and `bindings/sov/profile.json` for
-the machine target.
+kernel. Read `SOV.md` for the entry point and `bindings/sov/profile.json` for the
+machine target.
 
 Host bindings may make Sov selectable without redefining it. Claude Code uses
 `CLAUDE.md` as its repository entry point and `.claude/agents/sov.md` as the

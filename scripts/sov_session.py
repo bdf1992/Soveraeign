@@ -57,6 +57,10 @@ def build_parser() -> argparse.ArgumentParser:
     register.add_argument("--intent", help="what this session is building")
     register.set_defaults(handler=commands.cmd_register)
 
+    principal = subparsers.add_parser("principal",
+                                      help="name the principal this session speaks as")
+    principal.set_defaults(handler=commands.cmd_principal)
+
     subparsers.add_parser(
         "heartbeat", help="refresh liveness").set_defaults(handler=commands.cmd_heartbeat)
     subparsers.add_parser("end", help="close this session").set_defaults(handler=commands.cmd_end)

@@ -7,8 +7,8 @@ projections of that grammar without turning the Kernel into a runtime service.
 
 The transition commands read ``contracts/kernel-transitions.json``, the authored
 executable projection of the SPEC.md Transition contract. The binding commands read
-every service manifest and derive how those participants compose against the same
-Kernel grammar.
+every service manifest plus ``contracts/kernel-paradigms.json`` and derive how those
+participants compose against the same Kernel grammar.
 
 Nothing here grants authority, touches a service, or settles an operation. These are
 read/check/compiler surfaces: they answer what is declared and whether declarations
@@ -43,10 +43,17 @@ def _corpus() -> dict[str, Any]:
     return json.loads((FIXTURES / "transition-cases.json").read_text(encoding="utf-8"))
 
 
-def _binding_inputs() -> tuple[dict[str, dict[str, Any]], dict[str, Any], list[str]]:
+def _binding_inputs() -> tuple[
+    dict[str, dict[str, Any]], dict[str, Any], dict[str, Any], list[str]
+]:
     manifests, sources = binding_check.load_manifests(ROOT)
     transitions = kernel.load_table(ROOT)
-    return manifests, transitions, sources + ["contracts/kernel-transitions.json"]
+    paradigms = json.loads((ROOT / "contracts" / "kernel-paradigms.json").read_text("utf-8"))
+    derived_from = sources + [
+        "contracts/kernel-paradigms.json",
+        "contracts/kernel-transitions.json",
+    ]
+    return manifests, transitions, paradigms, derived_from
 
 
 def command_selfcheck(_: argparse.Namespace) -> int:
@@ -154,8 +161,8 @@ def command_drift(_: argparse.Namespace) -> int:
 
 def command_binding_check(_: argparse.Namespace) -> int:
     """Check that all authored service manifests compose as Kernel participants."""
-    manifests, transitions, _ = _binding_inputs()
-    defects = binding_check.binding_defects(manifests, transitions)
+    manifests, transitions, paradigms, _ = _binding_inputs()
+    defects = binding_check.binding_defects(manifests, transitions, paradigms)
     for defect in defects:
         print(f"BINDING {defect}")
     if defects:
@@ -168,6 +175,7 @@ def command_binding_check(_: argparse.Namespace) -> int:
                  if operation.get("kernel_transition"))
     print(
         f"PASS: {len(manifests)} service manifests compose as Kernel participants; "
+        f"{len(paradigms.get('paradigms', []))} indexed paradigms; "
         f"{operations} operations, {mapped} mapped to named Kernel transitions, "
         f"{operations - mapped} explicitly unmapped"
     )
@@ -176,10 +184,21 @@ def command_binding_check(_: argparse.Namespace) -> int:
 
 def command_closure(_: argparse.Namespace) -> int:
     """Print the rebuildable service-to-Kernel closure as JSON for humans or agents."""
-    manifests, transitions, derived_from = _binding_inputs()
-    closure = binding_check.build(manifests, transitions, derived_from=derived_from)
-    schema = json.loads((ROOT / "contracts" / "kernel-closure.schema.json").read_text("utf-8"))
-    defects = validate(closure, schema) + binding_check.binding_defects(manifests, transitions)
+    manifests, transitions, paradigms, derived_from = _binding_inputs()
+    closure = binding_check.build(
+        manifests, transitions, paradigms, derived_from=derived_from
+    )
+    closure_schema = json.loads(
+        (ROOT / "contracts" / "kernel-closure.schema.json").read_text("utf-8")
+    )
+    paradigm_schema = json.loads(
+        (ROOT / "contracts" / "kernel-paradigms.schema.json").read_text("utf-8")
+    )
+    defects = (
+        validate(paradigms, paradigm_schema)
+        + validate(closure, closure_schema)
+        + binding_check.binding_defects(manifests, transitions, paradigms)
+    )
     print(json.dumps(closure, indent=2, sort_keys=True))
     if defects:
         for defect in defects:

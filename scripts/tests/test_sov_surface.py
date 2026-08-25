@@ -40,12 +40,12 @@ class SurfaceProjection(unittest.TestCase):
         section = self.page.split(marker, 1)[1].split("</details>", 1)[0]
         self.assertNotIn("sov_surface.py try", section)
 
-    def test_only_the_two_exact_service_owned_routes_are_actionable(self) -> None:
+    def test_only_the_three_exact_service_owned_routes_are_actionable(self) -> None:
         reachable = [item for item in self.interface["operations"]
                      if item["facts"]["reachable"]]
         self.assertEqual([item["operation_id"] for item in reachable],
-                         ["asset.ingest-asset", "registry.resolve"])
-        for operation in ("asset.ingest-asset", "registry.resolve"):
+                         ["asset.ingest-asset", "console.read-thread", "registry.resolve"])
+        for operation in ("asset.ingest-asset", "console.read-thread", "registry.resolve"):
             marker = f'<code class="id">{operation}</code>'
             section = self.page.split(marker, 1)[1].split("</details>", 1)[0]
             self.assertIn("sov_surface.py try", section)

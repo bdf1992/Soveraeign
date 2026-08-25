@@ -41,6 +41,7 @@ SNAPSHOT = {
     "boot_id": "boot-test-1",
     "limitations": ["adapter_reading_is_not_independent_observation"],
 }
+SENSITIVE_DIAGNOSTIC = "credential=s3cr3t-token /private/host/path"
 
 
 class FixedAdapter:
@@ -57,13 +58,13 @@ class FixedAdapter:
 class UnavailableAdapter(FixedAdapter):
     def read_health(self) -> dict[str, Any]:
         self.calls += 1
-        raise HostAdapterUnavailable("host port is not configured")
+        raise HostAdapterUnavailable(SENSITIVE_DIAGNOSTIC)
 
 
 class BrokenAdapter(FixedAdapter):
     def read_health(self) -> dict[str, Any]:
         self.calls += 1
-        raise RuntimeError("operating system reader failed")
+        raise RuntimeError(SENSITIVE_DIAGNOSTIC)
 
 
 class HostServiceReading(unittest.TestCase):
@@ -98,18 +99,26 @@ class HostServiceReading(unittest.TestCase):
     def test_adapter_unavailable_is_a_refusal_not_fabricated_health(self) -> None:
         service = HostService(self.record, UnavailableAdapter())
         receipt = service.read_health("operator")
+        serialized = json.dumps(receipt, sort_keys=True)
 
         self.assertEqual(receipt["payload"]["outcome"], "REFUSED")
         self.assertEqual(self.detail(receipt)["reason_code"], "HOST_UNAVAILABLE")
         self.assertNotIn("snapshot", self.detail(receipt))
+        self.assertNotIn("diagnostic", self.detail(receipt))
+        self.assertNotIn("s3cr3t-token", serialized)
+        self.assertNotIn("/private/host/path", serialized)
 
     def test_unexpected_adapter_fault_is_a_failed_host_receipt(self) -> None:
         service = HostService(self.record, BrokenAdapter())
         receipt = service.read_health("operator")
+        serialized = json.dumps(receipt, sort_keys=True)
 
         self.assertEqual(receipt["payload"]["outcome"], "FAILED")
         self.assertEqual(self.detail(receipt)["reason_code"], "HOST_READ_FAILED")
         self.assertEqual(self.detail(receipt)["error_type"], "RuntimeError")
+        self.assertNotIn("diagnostic", self.detail(receipt))
+        self.assertNotIn("s3cr3t-token", serialized)
+        self.assertNotIn("/private/host/path", serialized)
 
     def test_adapter_cannot_change_boundary_or_smuggle_extra_fields(self) -> None:
         for label, mutate, reason in (

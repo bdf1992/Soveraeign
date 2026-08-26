@@ -2,6 +2,7 @@
 
 from .authority import AuthorityRefused
 from .core import AssetService
+from .organization import OrganizationRefused
 from .recording import (
     ConfigurationChanged,
     ReaderDeclaration,
@@ -17,6 +18,7 @@ __all__ = [
     "AssetService",
     "AuthorityRefused",
     "ConfigurationChanged",
+    "OrganizationRefused",
     "ReaderDeclaration",
     "ReaderChanged",
     "ReaderUndeclared",

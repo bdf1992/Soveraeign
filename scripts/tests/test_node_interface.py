@@ -39,7 +39,7 @@ class ProjectionFacts(unittest.TestCase):
 
     def test_evidence_layers_remain_independent(self) -> None:
         self.assertEqual(self.document["counts"], {
-            "declared": 127, "bound": 127, "policy_active": 39,
+            "declared": 133, "bound": 133, "policy_active": 45,
             "reachable": 5, "observed": 0,
         })
         self.assertEqual(self.operation("asset.ingest-asset")["facts"], {

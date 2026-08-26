@@ -136,9 +136,18 @@ remains the standing term.
 | **Receipt** | The record returned by an attempted crossing or operation |
 | **Observation** | Independent evidence of what occurred |
 | **Retraction** | A counter-record that changes effective standing without erasing history |
+| **Collection type** | A declared schema a collection holds its members to |
+| **Asset collection** | A named, typed, curated set of assets |
+| **Collection membership** | One asset filed into one collection by one actor |
 
 An asset is not its payload. Distinct assets may intentionally reference the
 same bytes while preserving distinct identity, use, permissions, and history.
+
+An **asset collection** is not a **projection collection**. The first is curated:
+somebody decided each member belongs, and only a counter-record undoes it. The
+second, owned by the Asset Projection Service below, is a declared retrieval
+scope that is rebuilt rather than decided. Machine surfaces always carry the
+qualified name; seam S22 holds the collision open.
 
 ## Record standing, artifact lifecycle, and outcomes
 
@@ -171,7 +180,10 @@ and counter-record. It is not a fifth authority standing.
 
 The **Asset Service** owns asset identity, immutable versions, payload custody,
 source and derivation lineage, technical metadata, relationships, derivatives,
-discovery, and asset-use records.
+discovery, asset-use records, and the organizational layer over them: collection
+types, asset collections, membership, and the conformance read that judges each
+member against the schema its type declares
+(`decisions/0063-asset-collections-and-the-librarian.md`).
 
 The **Proofing Service** owns proofing sessions, review rounds, annotations,
 version comparisons, reviewer assignments, requested changes, approval or

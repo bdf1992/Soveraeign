@@ -1,0 +1,86 @@
+{
+  "registry_id": "soveraeign-standing-grants/v1",
+  "governed_by": [
+    "SPEC.md",
+    "AGENTS.md",
+    "STATUS.yaml",
+    "decisions/0023-acceptance-not-approval.md",
+    "decisions/0055-closure-ownership.md",
+    "decisions/0064-standing-authorization-and-the-landing-loop.md",
+    "decisions/0065-standing-grant-ratified.md"
+  ],
+  "note": "Grants Bdo has issued that outlive one task. A standing grant is not a wider authority than a task grant; it is the same typed, scoped, budgeted, expiring grant, decided once instead of asked for each time. Every grant here is graded against contracts/authority-grant.schema.json and exercised only through scripts/sovkernel/authority.py. A grant at PROPOSED standing is inert: the evaluator refuses it, so writing a grant is never the same act as switching it on.",
+  "issue_rules": {
+    "judgement_authority_issuer": "bdo",
+    "judgement_authority_note": "JUDGEMENT authority may be issued by the owner alone. A grant claiming it from any other issuer is refused, which is what stops a participant minting its own right to ratify.",
+    "ratification_note": "A grant moves PROPOSED -> RATIFIED only by Bdo's recorded acceptance of its decision record. Nothing in the loop may perform that edit for him. grant:standing-landing-loop was ratified on 2026-08-25 by Bdo's recorded instruction; decisions/0065-standing-grant-ratified.md quotes it and names what would revoke it."
+  },
+  "grants": [
+    {
+      "grant_schema": "soveraeign-authority-grant/v1",
+      "status": "RATIFIED",
+      "grant_id": "grant:standing-landing-loop",
+      "issuer_id": "bdo",
+      "actor_id": "sov",
+      "authority_type": "VERIFICATION",
+      "capabilities": [
+        "repository.commit",
+        "repository.land"
+      ],
+      "scope": {
+        "paths": [
+          "services/",
+          "contracts/",
+          "conformance/",
+          "scripts/",
+          ".claude/",
+          "adapters/",
+          "bindings/",
+          "workers/",
+          "diagrams/",
+          "docs/"
+        ],
+        "excluded_paths": [
+          "contracts/authority-grant.schema.json",
+          "contracts/standing-grants.json",
+          "decisions/",
+          "lineage/",
+          "STATUS.yaml",
+          "SYSTEM.md",
+          "CLASSIFICATION.md",
+          "CONTRACT.md",
+          "PRD.md",
+          "SPEC.md",
+          "AI-NATIVE.md",
+          "ENGINEERING.md",
+          "SDLC.md",
+          "AGENTS.md",
+          "CLAUDE.md",
+          "SOV.md",
+          "OPEN-SEAMS.md",
+          ".github/",
+          ".gitattributes"
+        ],
+        "branches": [
+          "main"
+        ]
+      },
+      "budget": {
+        "unit": "agent_invocations",
+        "ceiling": 60
+      },
+      "preconditions": {
+        "required_checks": [
+          "verify",
+          "lint"
+        ],
+        "requires_independent_observation": true
+      },
+      "effect_ceiling": "RESOURCE_CONSUMPTION",
+      "valid_from": "2026-08-25T00:00:00Z",
+      "valid_until": "2026-11-23T00:00:00Z",
+      "revoked_at": null,
+      "note": "The standing authorization decided with Bdo on 2026-08-25. It lets a witnessed, green, in-scope change reach main without a fresh conversation, and it reaches no further. The grant excludes its own registry and its own schema, so an exercise of the grant cannot widen the grant it is being exercised under. Three further mechanisms keep it away from standing: the excluded paths keep it out of decisions/ and STATUS.yaml, the VERIFICATION type cannot ratify a JUDGEMENT claim (SPEC.md, PROD-I-5), and the independent-observation precondition means a build can still never close itself. The budget is per exercise, not cumulative: sixty agent invocations is roughly one controller, one orchestrator, a handful of workers, and a witness. Ninety days, because a standing grant that never has to be renewed stops being a decision. docs/ is inside the scope because docs/documentation.html is a generated projection that goes stale whenever repository text changes; without it every loop run would leave verify.py red and then be refused for the failing check it was not permitted to repair."
+    }
+  ]
+}

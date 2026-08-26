@@ -8,7 +8,7 @@ and retraction semantics; no service creates a private authority system.
 
 | Service | Standing | Owns |
 | --- | --- | --- |
-| `asset/` | experimental reference participant | asset identity, payload custody, versions, derivation lineage, discovery, and asset-use records |
+| `asset/` | experimental reference participant | asset identity, payload custody, versions, derivation lineage, discovery, asset-use records, and the organizational layer: collection types, asset collections, membership, and library conformance |
 | `record/` | experimental reference participant | the append-preserving journal, terminal receipts, counter-records, the digest chain, subject projections, and journal export and restore (`decisions/0049`) |
 | `identity/` | placement provisional; challenge component built | the challenge lifecycle: mint, deliver, present, expire (`decisions/0048` ID-12..14). Whether identity is a service at all is open at judgement 3 |
 | `console/` | built in part, remainder chartered | operator sessions, channels, threads, posts, notifications, judgement requests, authority grants, operator settings, and dashboard and activity projections |

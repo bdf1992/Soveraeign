@@ -15,8 +15,166 @@
     "services/registry/contracts/service.json",
     "contracts/capability-offices.json"
   ],
-  "input_state_digest": "4917d42eaf287b60a0e985c9a10e36d403d4b8cbc8ef1bcc225db0c0567e7a4d",
+  "input_state_digest": "0065fbe6d83768a79cbf410acf38476106b4161de4d3473e7dd1e71ff83f16d9",
   "capabilities": [
+    {
+      "capability_id": "asset.add-member",
+      "service_id": "asset",
+      "operation": "add-member",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "organize:asset",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "asset:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "ACTIVE",
+          "address": "python -m soveraeign_asset_service.cli add-member"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ],
+      "shape": {
+        "logical_endpoint": "sov://asset/add-member",
+        "subject": "collection-membership",
+        "crud": "CREATE",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "collection_exists",
+          "asset_exists",
+          "role_admitted",
+          "live_grant"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "GRANT_NOT_COVERED",
+          "MISSING_PRECONDITION",
+          "DUPLICATE_MEMBERSHIP",
+          "MEMBER_KIND_REFUSED"
+        ]
+      }
+    },
+    {
+      "capability_id": "asset.declare-collection",
+      "service_id": "asset",
+      "operation": "declare-collection",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "declare:asset-collection",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "asset:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "ACTIVE",
+          "address": "python -m soveraeign_asset_service.cli declare-collection"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ],
+      "shape": {
+        "logical_endpoint": "sov://asset/declare-collection",
+        "subject": "asset-collection",
+        "crud": "CREATE",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "type_declared",
+          "declared_label",
+          "live_grant"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "GRANT_NOT_COVERED",
+          "TYPE_UNDECLARED"
+        ]
+      }
+    },
+    {
+      "capability_id": "asset.declare-collection-type",
+      "service_id": "asset",
+      "operation": "declare-collection-type",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "declare:collection-type",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "asset:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "ACTIVE",
+          "address": "python -m soveraeign_asset_service.cli declare-type"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ],
+      "shape": {
+        "logical_endpoint": "sov://asset/declare-collection-type",
+        "subject": "collection-type",
+        "crud": "CREATE",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "declared_spec",
+          "type_undeclared",
+          "live_grant"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "GRANT_NOT_COVERED",
+          "INCOMPLETE_PROPOSAL",
+          "POLICY_REFUSED",
+          "STALE_STATE"
+        ]
+      }
+    },
     {
       "capability_id": "asset.ingest-asset",
       "service_id": "asset",
@@ -219,6 +377,102 @@
         "commit": "DERIVED",
         "refusals": [
           "MISSING_PRECONDITION"
+        ]
+      }
+    },
+    {
+      "capability_id": "asset.read-collection",
+      "service_id": "asset",
+      "operation": "read-collection",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:asset-collection",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "asset:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "ACTIVE",
+          "address": "python -m soveraeign_asset_service.cli collection"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ],
+      "shape": {
+        "logical_endpoint": "sov://asset/read-collection",
+        "subject": "asset-collection",
+        "crud": "READ",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "collection_exists"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "MISSING_PRECONDITION"
+        ]
+      }
+    },
+    {
+      "capability_id": "asset.read-library-conformance",
+      "service_id": "asset",
+      "operation": "read-library-conformance",
+      "office": "BACK",
+      "counter": "inspectorate",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:asset-collection",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "asset:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "ACTIVE",
+          "address": "python -m soveraeign_asset_service.cli conformance"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ],
+      "shape": {
+        "logical_endpoint": "sov://asset/read-library-conformance",
+        "subject": "library-conformance",
+        "crud": "READ",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "authoritative_records_readable"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "UNREADABLE"
         ]
       }
     },
@@ -460,6 +714,58 @@
         "commit": "REBUILT",
         "refusals": [
           "UNREADABLE"
+        ]
+      }
+    },
+    {
+      "capability_id": "asset.remove-member",
+      "service_id": "asset",
+      "operation": "remove-member",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "retract:record",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "asset:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "ACTIVE",
+          "address": "python -m soveraeign_asset_service.cli remove-member"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ],
+      "shape": {
+        "logical_endpoint": "sov://asset/remove-member",
+        "subject": "collection-membership",
+        "crud": "COUNTER",
+        "requirement": "PROD-I-4",
+        "kernel_transition": "retract",
+        "preconditions": [
+          "membership_exists",
+          "live_retraction_grant",
+          "declared_reason"
+        ],
+        "commit": "COUNTERED",
+        "refusals": [
+          "AUTHORITY_REFUSED",
+          "GRANT_NOT_COVERED"
         ]
       }
     },

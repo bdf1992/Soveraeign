@@ -274,36 +274,27 @@ Until it is settled, `WIP_EXCEEDED` and the work-in-progress ceiling are graded 
 concerns rather than against branches, because nothing in the harness can open or close
 a branch on its own.
 
-## S22 · The gate counts its checks and never says which
+## S22 · Two records named collection
 
-`scripts/verify.py` reports a check count and `scripts/verify_bootstrap.py` pins
-the files that must exist, but nothing compares the *set* of checks between two
-runs. A check removed and a check added in one edit leaves the count unchanged
-and the gate green, so coverage can move without anything noticing.
+`CLASSIFICATION.md` gives the Asset Projection Service a *projection collection*: a
+declared retrieval scope with text, graph, and vector configuration, which is an index.
+`decisions/0063-asset-collections-and-the-librarian.md` gives the Asset Service an
+*asset collection*: a typed, curated set an operator files assets into. Observed
+2026-08-24 while declaring the second one, with `projection.declare-collection` already
+in `contracts/capability-offices.json`.
 
-Observed 2026-08-23. An uncommitted edit to `scripts/verify.py` removed the
-`node registry` check and added `operation surface page` in the same diff. The
-count went 21 to 21. `python scripts/sov_node.py validate` still passed, the
-script and its fixture both still existed, and nothing in the repository would
-have reported that the node registry had stopped being checked. It was noticed
-because a session reading the diff by hand asked why two hunks were paired, not
-because any gate said so.
+The two are not the same thing. One is derived and rebuildable and exists so a query can
+be answered; the other records that somebody decided an asset belongs somewhere, and is
+undone only by a counter-record. Read one way the qualifier is enough and the shared noun
+is ordinary English doing ordinary work. Read another way an operator holding
+`declare:collection` and `declare:asset-collection` has to keep two meanings straight to
+know what either grant lets them do, and one of them should be renamed before either is
+built out further.
 
-Three readings, and this seam does not settle which: the check set is itself a
-projection and should be checked in and diffed like `contracts/kernel-parity.json`
-is; or each check should declare the artifact it defends so a removal is visible
-as an undefended artifact rather than as an absent name; or this is properly a
-review responsibility and a repository that lints its own gate is checking the
-checker without end. `decisions/0025-verification-channels-and-merge-authority.md`
-owns what verification is allowed to claim and is the nearest owner.
-
-Numbering note: minted as S20 on `test/mcp-gateway-observation` off `c296c25`, and
-renumbered to S22 on 2026-08-24 when main and the federation branch were reconciled
-and both were found holding an S20. The concurrent S20 was already cited by number in
-`decisions/0052`, so this seam moved rather than that one. `OPEN-SEAMS.md` S16 carries
-the allocation seam that made the collision predictable; it is about decision numbers,
-and this is the first time it has been observed for seam numbers too.
-
+`NAMING.md` owns the collision screen and Bdo owns naming. Nothing is renamed here. Until
+it is settled, every machine surface carries the qualified name - manifest subject
+`asset-collection` against `projection-collection`, authority `declare:asset-collection`
+against `declare:collection` - and prose qualifies the bare word.
 ## S23 · The gateway slice landed without its standing
 
 `services/gateway/src` and `services/gateway/tests` exist, `services/README.md` reads
@@ -351,3 +342,38 @@ and restore, and whether an off-node copy is an `EXTERNAL_WORLD` effect under O7
 is undecided.
 
 Numbering note: minted as S11 on `docs/principal-identity`, where that number was free at the time. `main` closed its own S11, Red-lane inputs, on 2026-08-23 and that record is cited as closed, so this seam moved. S16 carries the allocation seam that makes the collision predictable; it is about decision numbers, and this is the second time it has been observed for seam numbers.
+
+
+## S25 · The gate counts its checks and never says which
+
+`scripts/verify.py` reports a check count and `scripts/verify_bootstrap.py` pins
+the files that must exist, but nothing compares the *set* of checks between two
+runs. A check removed and a check added in one edit leaves the count unchanged
+and the gate green, so coverage can move without anything noticing.
+
+Observed 2026-08-23. An uncommitted edit to `scripts/verify.py` removed the
+`node registry` check and added `operation surface page` in the same diff. The
+count went 21 to 21. `python scripts/sov_node.py validate` still passed, the
+script and its fixture both still existed, and nothing in the repository would
+have reported that the node registry had stopped being checked. It was noticed
+because a session reading the diff by hand asked why two hunks were paired, not
+because any gate said so.
+
+Three readings, and this seam does not settle which: the check set is itself a
+projection and should be checked in and diffed like `contracts/kernel-parity.json`
+is; or each check should declare the artifact it defends so a removal is visible
+as an undefended artifact rather than as an absent name; or this is properly a
+review responsibility and a repository that lints its own gate is checking the
+checker without end. `decisions/0025-verification-channels-and-merge-authority.md`
+owns what verification is allowed to claim and is the nearest owner.
+
+Numbering note: minted as S20 on `test/mcp-gateway-observation` off `c296c25`, and
+renumbered to S22 on 2026-08-24 when main and the federation branch were reconciled
+and both were found holding an S20. The concurrent S20 was already cited by number in
+`decisions/0052`, so this seam moved rather than that one. `OPEN-SEAMS.md` S16 carries
+the allocation seam that made the collision predictable; it is about decision numbers,
+and this is the first time it has been observed for seam numbers too. Renumbered again to S25 on 2026-08-25 when the
+collection seam, already cited by number in `CLASSIFICATION.md`, `decisions/0057`, and
+the librarian skill, was found holding S22 too. Same convention: the seam nobody
+cites by number is the one that moves.
+

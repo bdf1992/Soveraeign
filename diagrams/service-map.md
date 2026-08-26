@@ -2,7 +2,7 @@
 
 ```text
 source          CLASSIFICATION.md · STATUS.yaml · CONTRACT.md · services/README.md
-source_digest   db432f7d9556286b · 8d31be110661b00b · 896e59ba90828ad7 · e53f37feee2cf05d
+source_digest   3894f43509913975 · 8d31be110661b00b · 896e59ba90828ad7 · d5a11f10339de0c2
 reader          hand-authored · v3
 fidelity        LOSSY
 omissions       each service's internal components and full operation list;
@@ -22,7 +22,7 @@ flowchart TB
 
         subgraph live["Implementation exists — standing remains evidence-specific"]
             direction LR
-            A["<b>Asset</b><br/>identity · versions · custody"]
+            A["<b>Asset</b><br/>identity · versions · custody<br/>typed collections · membership"]
             R["<b>Record</b><br/>journal · receipts · reconstruction"]
             C["<b>Console</b><br/>continuity + read-thread slice"]
             RG["<b>Registry</b><br/>read-only resolve slice"]

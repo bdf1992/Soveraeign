@@ -44,11 +44,13 @@
       "crud": "SUPERSEDE",
       "requirement": "PROD-I-6",
       "preconditions": [
-        "thread_exists",
-        "session_live"
+        "local_node_record",
+        "session_live",
+        "thread_exists"
       ],
       "commit": "COMMITTED",
       "refusals": [
+        "NO_LIVE_GRANT",
         "SESSION_NOT_LIVE",
         "STALE_STATE"
       ]
@@ -61,11 +63,14 @@
       "crud": "SUPERSEDE",
       "requirement": "PROD-I-6",
       "preconditions": [
-        "session_live",
-        "declared_actor"
+        "declared_actor",
+        "live_matching_grant",
+        "local_node_record",
+        "session_live"
       ],
       "commit": "COMMITTED",
       "refusals": [
+        "NO_LIVE_GRANT",
         "SESSION_NOT_LIVE",
         "STALE_STATE"
       ]
@@ -78,13 +83,15 @@
       "crud": "READ",
       "requirement": "PROD-I-6",
       "preconditions": [
-        "session_live",
-        "capability_map_fresh"
+        "capability_map_fresh",
+        "live_matching_grant",
+        "session_live"
       ],
       "commit": "DERIVED",
       "refusals": [
-        "SESSION_NOT_LIVE",
-        "MISSING_PRECONDITION"
+        "MISSING_PRECONDITION",
+        "NO_LIVE_GRANT",
+        "SESSION_NOT_LIVE"
       ]
     },
     {
@@ -95,14 +102,15 @@
       "crud": "CREATE",
       "requirement": "PROD-I-5",
       "preconditions": [
-        "session_live",
         "declared_capability",
         "declared_scope",
-        "issuer_holds_authority"
+        "issuer_holds_authority",
+        "live_matching_grant",
+        "session_live"
       ],
       "commit": "COMMITTED",
       "refusals": [
-        "AUTHORITY_REFUSED",
+        "NO_LIVE_GRANT",
         "SESSION_NOT_LIVE"
       ]
     },
@@ -129,10 +137,12 @@
       "crud": "READ",
       "requirement": "PROD-I-5",
       "preconditions": [
+        "live_matching_grant",
         "session_live"
       ],
       "commit": "DERIVED",
       "refusals": [
+        "NO_LIVE_GRANT",
         "SESSION_NOT_LIVE"
       ]
     },
@@ -177,10 +187,12 @@
         "thread"
       ],
       "preconditions": [
+        "live_matching_grant",
         "local_node_record"
       ],
       "commit": "DERIVED",
       "refusals": [
+        "NO_LIVE_GRANT",
         "SESSION_NOT_LIVE"
       ]
     },
@@ -213,8 +225,9 @@
       ],
       "commit": "COMMITTED",
       "refusals": [
-        "SESSION_NOT_LIVE",
-        "INCOMPLETE_PROPOSAL"
+        "INCOMPLETE_PROPOSAL",
+        "NO_LIVE_GRANT",
+        "SESSION_NOT_LIVE"
       ]
     },
     {
@@ -225,12 +238,14 @@
       "crud": "CREATE",
       "requirement": "PROD-I-6",
       "preconditions": [
+        "declared_actor_kind",
         "declared_participant",
-        "declared_actor_kind"
+        "live_matching_grant"
       ],
       "commit": "COMMITTED",
       "refusals": [
         "INCOMPLETE_PROPOSAL",
+        "NO_LIVE_GRANT",
         "SESSION_NOT_LIVE"
       ]
     },
@@ -243,13 +258,17 @@
       "requirement": "PROD-I-6",
       "preconditions": [
         "channel_exists",
-        "session_live",
-        "declared_subject"
+        "declared_subject",
+        "local_node_record",
+        "session_live"
       ],
       "commit": "COMMITTED",
       "refusals": [
-        "SESSION_NOT_LIVE",
-        "INCOMPLETE_PROPOSAL"
+        "FOREIGN_NODE_RECORD",
+        "INCOMPLETE_PROPOSAL",
+        "NO_LIVE_GRANT",
+        "PIN_INCOMPLETE",
+        "SESSION_NOT_LIVE"
       ]
     },
     {
@@ -260,14 +279,22 @@
       "crud": "CREATE",
       "requirement": "PROD-I-6",
       "preconditions": [
-        "thread_exists",
+        "declared_body",
+        "local_node_record",
+        "session_actor_matches_checked_actor",
         "session_live",
-        "declared_body"
+        "thread_exists"
       ],
       "commit": "COMMITTED",
       "refusals": [
+        "ACTOR_ATTRIBUTION_MISMATCH",
+        "CLAIM_WITHOUT_PROPOSAL",
+        "FOREIGN_NODE_RECORD",
+        "INCOMPLETE_PROPOSAL",
+        "NO_LIVE_GRANT",
+        "SESSION_CLOSED",
         "SESSION_NOT_LIVE",
-        "INCOMPLETE_PROPOSAL"
+        "THREAD_ARCHIVED"
       ]
     },
     {
@@ -278,14 +305,14 @@
       "crud": "CREATE",
       "requirement": "PROD-I-6",
       "preconditions": [
-        "thread_exists",
+        "live_publish_grant",
         "local_node_record",
-        "live_publish_grant"
+        "thread_exists"
       ],
       "commit": "COMMITTED",
       "refusals": [
-        "NO_LIVE_GRANT",
-        "FOREIGN_NODE_RECORD"
+        "FOREIGN_NODE_RECORD",
+        "NO_LIVE_GRANT"
       ]
     },
     {
@@ -299,16 +326,19 @@
         "post"
       ],
       "preconditions": [
-        "declared_thread_identity",
         "declared_session_identity",
-        "thread_exists",
+        "declared_thread_identity",
+        "live_matching_grant",
+        "local_node_record",
+        "session_actor_matches_checked_actor",
         "session_live",
-        "session_actor_matches_checked_actor"
+        "thread_exists"
       ],
       "commit": "DERIVED",
       "refusals": [
         "ACTOR_ATTRIBUTION_MISMATCH",
         "MALFORMED_IDENTITY",
+        "NO_LIVE_GRANT",
         "SESSION_NOT_LIVE",
         "THREAD_UNKNOWN"
       ]
@@ -374,13 +404,16 @@
       "crud": "COUNTER",
       "requirement": "PROD-I-5",
       "preconditions": [
+        "another_issuer_remains",
         "grant_exists",
-        "session_live",
-        "issuer_holds_authority"
+        "issuer_holds_authority",
+        "live_matching_grant",
+        "session_live"
       ],
       "commit": "COUNTERED",
       "refusals": [
-        "AUTHORITY_REFUSED",
+        "MISSING_PRECONDITION",
+        "NO_LIVE_GRANT",
         "SESSION_NOT_LIVE",
         "STALE_STATE"
       ]
@@ -396,10 +429,13 @@
         "operator-setting"
       ],
       "preconditions": [
+        "live_matching_grant",
+        "local_node_record",
         "session_live"
       ],
       "commit": "DERIVED",
       "refusals": [
+        "NO_LIVE_GRANT",
         "SESSION_NOT_LIVE"
       ]
     },
@@ -463,8 +499,9 @@
       "crud": "SUPERSEDE",
       "requirement": "PROD-I-6",
       "preconditions": [
-        "publication_exists",
-        "live_publish_grant"
+        "live_publish_grant",
+        "local_node_record",
+        "publication_exists"
       ],
       "commit": "COMMITTED",
       "refusals": [
@@ -475,10 +512,14 @@
   ],
   "local_refusals": {
     "ACTOR_ATTRIBUTION_MISMATCH": "AUTHORITY_REFUSED",
+    "CLAIM_WITHOUT_PROPOSAL": "INCOMPLETE_PROPOSAL",
     "FOREIGN_NODE_RECORD": "AUTHORITY_REFUSED",
     "MALFORMED_IDENTITY": "MISSING_PRECONDITION",
     "NO_LIVE_GRANT": "AUTHORITY_REFUSED",
+    "PIN_INCOMPLETE": "INCOMPLETE_PROPOSAL",
+    "SESSION_CLOSED": "AUTHORITY_REFUSED",
     "SESSION_NOT_LIVE": "AUTHORITY_REFUSED",
+    "THREAD_ARCHIVED": "STALE_STATE",
     "THREAD_UNKNOWN": "MISSING_PRECONDITION"
   },
   "uses_kernel_contracts": [
@@ -506,5 +547,5 @@
     "silent-notification-drop",
     "history-erasure"
   ],
-  "note": "Twelve operations are BUILT; the continuity path remainder stays PROPOSED. Per-operation standing replaces the former built_operations list."
+  "note": "Twelve operations are BUILT; the continuity path remainder stays PROPOSED. Per-operation standing replaces the former built_operations list. Every BUILT operation checks the authority contracts/capability-offices.json declares for it: the nine that declared one and checked none were guarded on Bdo's ruling of 2026-08-25, so live_matching_grant and NO_LIVE_GRANT are declared on each. Every operation that names a record also checks the record belongs to this node - a grant bound to its minting node stops a permit crossing, not a node reading another node's records under a permit of its own - so local_node_record is declared wherever a record is named by id. FOREIGN_NODE_RECORD is declared only on the three that check the node after the caller has shown a grant; the rest read the record to find their grant's scope, so they answer a foreign record exactly as they answer a missing one and return UNKNOWN_RECORD, which is not a console refusal code but the absent-record error every by-id read raises. Four operations that have enforced authority since before 2026-08-25 never declared NO_LIVE_GRANT, and PIN_INCOMPLETE, SESSION_CLOSED, THREAD_ARCHIVED and CLAIM_WITHOUT_PROPOSAL were raised without appearing in local_refusals at all, so a caller matching on reason_code had no declared name for refusals it could receive. Declared 2026-08-25. scripts/sovkernel/manifests.py checks that a declared refusal is known and never that a produced one is declared, so nothing catches this class; that gap is reported, not closed here."
 }

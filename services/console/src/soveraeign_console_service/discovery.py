@@ -27,7 +27,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from soveraeign_console_service.authority import ENFORCED_AUTHORITY
+from soveraeign_console_service.authority import ENFORCED_AUTHORITY, held
 from soveraeign_console_service.core import ConsoleService
 from soveraeign_console_service.refusals import StaleCapabilityMap
 
@@ -89,7 +89,10 @@ def _authority(row: dict[str, Any], service_id: str, enforced: dict[str, str],
                 "because": "no participant was named, so no grant was read"}
     scopes = live.get(declared, [])
     if scopes:
-        return {"required": declared, "reading": HELD, "scopes": sorted(scopes)}
+        return {"required": declared, "reading": HELD, "scopes": sorted(scopes),
+                "because": "a live grant names this capability. Whether its scope "
+                           "covers the subject you call it on is decided at the call, "
+                           "against the exact scope listed here"}
     return {"required": declared, "reading": NOT_HELD,
             "because": "no live grant in this journal names that capability"}
 
@@ -158,6 +161,10 @@ def operations(capability_map: dict[str, Any], *, service_id: str = "console",
     omissions = [
         "a row here says the node declares the operation, never that it works",
         "reachability is what the projection recorded, not a call that succeeded",
+        "HELD is read by capability name. A grant admits an exact scope, and one "
+        "capability serves more than one kind of subject - read:thread scopes to a "
+        "thread for read-thread and to the node for list-publications - so a HELD "
+        "row can still refuse. The scopes held are listed on the row",
     ]
     if UNDETERMINABLE in readings:
         omissions.append(
@@ -195,17 +202,31 @@ def operations(capability_map: dict[str, Any], *, service_id: str = "console",
 
 
 def discover(console: ConsoleService, capability_map: dict[str, Any],
-             operator_id: str | None = None,
-             fresh: bool | None = None) -> dict[str, Any]:
+             operator_id: str, fresh: bool | None = None) -> dict[str, Any]:
     """`console.discover-operations`: what this node declares, and what this operator holds.
 
     Takes the console so the permitted reading is computed from live grants in the
-    journal rather than from anything the caller passed in. Naming no operator returns
-    the available reading alone, which is a narrower answer rather than a wrong one.
+    journal rather than from anything the caller passed in.
+
+    `operator_id` is required and the answer costs a `read:session` grant scoped to
+    it. Until 2026-08-25 an unnamed caller got the available reading for nothing,
+    which `decisions/0053` recorded as a participant holding nothing getting an
+    answer through the binding. Bdo ruled on 2026-08-25 to guard this operation with
+    the authority it declares, having been told that is the ability it removes.
+
+    The grants behind the permitted reading are read straight out of the journal
+    rather than through `console.grants`, which is `console.list-grants` and a
+    separate capability with a separate grant. Routing this through it would make
+    one answer cost two permits and put the permits office inside the front desk.
+    They are narrowed to this node, so a grant minted by another console on the same
+    journal is not reported as one this node would honour.
     """
+    entries = console.record.reconstruct()
+    console.authorize(operator_id, ENFORCED_AUTHORITY["console.discover-operations"],
+                      operator_id, "console.discover-operations", operator_id, entries)
     return operations(
         capability_map,
         enforced=ENFORCED_AUTHORITY,
-        grants=console.grants(operator_id) if operator_id is not None else None,
+        grants=held(entries, operator_id, console.node_id),
         operator_id=operator_id,
         fresh=fresh)

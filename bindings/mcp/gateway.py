@@ -31,7 +31,13 @@ sys.path.insert(0, str(ROOT / "services" / "record" / "src"))
 
 from soveraeign_asset_service import AssetService, AuthorityRefused  # noqa: E402
 from soveraeign_console_service import ConsoleService, discover  # noqa: E402
+from soveraeign_console_service import authority as console_authority  # noqa: E402
+from soveraeign_console_service.refusals import (  # noqa: E402
+    AuthorityRefused as ConsoleAuthorityRefused,
+)
 from soveraeign_record_service import RecordService  # noqa: E402
+
+from manifest_gate import UnbuiltEndpoint, validate  # noqa: E402
 
 #: The projection discovery answers from. One rebuildable source, checked by
 #: `scripts/sov_capability.py check`, rather than a second list held here.
@@ -40,33 +46,12 @@ CAPABILITY_MAP = ROOT / "contracts" / "fixtures" / "capability-map.reference.jso
 #: node would emit records that do not say where they came from.
 NODE_ID = "node:local"
 
-TIERS = ("read", "observe", "act")
-AUTHORITY_MODES = ("gateway", "service-enforced", "bootstrap")
-
-# The endpoints this gateway can actually reach. Held as names rather than bound
-# callables so a manifest can be judged before anything opens a store: a refused
-# start costs no file handle and creates no state directory.
-IMPLEMENTED = (
-    "authority_open_session",
-    "authority_grant",
-    "asset_ingest",
-    "asset_search",
-    "record_entries",
-    "console_operations",
-    "observe_verify",
-)
-
-
 class EndpointRefused(RuntimeError):
     """The gateway refused a call before any service saw it."""
 
     def __init__(self, code: str, message: str) -> None:
         super().__init__(message)
         self.code = code
-
-
-class UnbuiltEndpoint(RuntimeError):
-    """A manifest endpoint names an operation with no reachable implementation."""
 
 
 class Gateway:
@@ -81,7 +66,7 @@ class Gateway:
         self.endpoints = {entry["tool"]: entry for entry in self.manifest["endpoints"]}
         self.withheld = {entry["tool"]: entry
                          for entry in self.manifest.get("withheld_endpoints", [])}
-        _validate(self.endpoints, self.withheld)
+        validate(self.endpoints, self.withheld)
         self.state_root = Path(state_root)
         self.asset = AssetService(self.state_root / "asset")
         self.record = RecordService(self.state_root / "record")
@@ -138,9 +123,16 @@ class Gateway:
         if entry is None:
             raise EndpointRefused("UNKNOWN_OPERATION", f"{tool} is not an exposed endpoint")
         handler = self._handlers[tool]
+        if entry.get("actor_is_operator"):
+            # The principal the service checks a grant against is the caller this
+            # gateway was handed, never a name the caller typed into the arguments.
+            # Letting the argument win would let anyone spend anyone's grant, which
+            # is what the endpoint costs since the Console Service began checking
+            # the authority it declares (2026-08-25).
+            arguments = {**arguments, "operator_id": actor}
+        self._precheck(entry, actor)
         if entry["tier"] == "read":
             return handler(**arguments)
-        self._precheck(entry, actor)
         journalled = self.record.append(
             "EVENT", entry["operation"], actor,
             {"tool": tool, "tier": entry["tier"], "effect_class": entry["effect_class"],
@@ -159,6 +151,15 @@ class Gateway:
     def _precheck(self, entry: dict[str, Any], actor: str) -> None:
         """A live session for everything that writes, then whichever gate the endpoint declares.
 
+        Every tier passes through here. The read tier used to return before this ran,
+        so `record_entries` - which declares `read:journal` and realizes
+        `record.read-entry` - checked nothing and handed any caller the whole journal:
+        thread titles, post ids, actor ids, content addresses, and every grant record
+        the other endpoints' guards are read out of. That is not a policy this fixes
+        by inventing one. `decisions/0052` moved the read to `FRONT/operator-desk` and
+        said in the same breath that it still costs the `read:journal` grant; the code
+        simply had not been asked for it.
+
         An endpoint whose authority is `service-enforced` gets no capability
         check here. Adding one would be a second rule with no bootstrap: the
         first grant of a store has nothing that could already cover it, which is
@@ -167,9 +168,28 @@ class Gateway:
         if entry.get("requires_session", True):
             if self.session_id is None or not self.asset.authority.session_live(self.session_id):
                 self._refuse(entry, actor, "SESSION_NOT_LIVE")
+        node_capability = entry.get("node_authority")
+        if node_capability is not None:
+            self._node_precheck(entry, actor, node_capability)
+            return
         if entry["tier"] != "act" or entry.get("authority") != "gateway":
             return
         if not self.asset.authority.authorized(actor, entry["capability"], "*"):
+            self._refuse(entry, actor, "GRANT_NOT_HELD")
+
+    def _node_precheck(self, entry: dict[str, Any], actor: str, capability: str) -> None:
+        """Check a node capability against the node's own authority store.
+
+        The console journal is where this node records who holds what, so a read of
+        that journal is checked against it rather than against the Asset Service's
+        separate store. The scope is the node: `record_entries` returns the journal
+        entire, not one entry, so a grant narrower than the node would not cover what
+        the endpoint actually serves.
+        """
+        try:
+            console_authority.check(self.record.reconstruct(), NODE_ID, actor,
+                                    capability, NODE_ID)
+        except ConsoleAuthorityRefused:
             self._refuse(entry, actor, "GRANT_NOT_HELD")
 
     def _refuse(self, entry: dict[str, Any], actor: str, code: str) -> None:
@@ -195,15 +215,21 @@ class Gateway:
     def _ingest(self, path: str, label: str, actor: str) -> dict[str, str]:
         return self.asset.ingest(path, label, actor)
 
-    def _operations(self, operator_id: str | None = None) -> dict[str, Any]:
+    def _operations(self, operator_id: str) -> dict[str, Any]:  # actor_is_operator
         """What this node declares, and what one operator holds, from the projection.
 
         The gateway supplies the map and says nothing about whether it is fresh: it
         reads the checked-in projection and has not rebuilt it, so `fresh` stays unset
         and the answer says nobody checked rather than implying somebody did.
+
+        `operator_id` is not a tool argument. The manifest marks this endpoint
+        `actor_is_operator`, so the dispatcher supplies the caller it was handed and
+        a caller cannot ask what a different operator may do. The Console Service
+        checks the `read:session` this operation declares as of 2026-08-25, so the
+        name here decides whose grant is spent.
         """
         capability_map = json.loads(CAPABILITY_MAP.read_text(encoding="utf-8"))
-        return discover(self.console, capability_map, operator_id=operator_id)
+        return discover(self.console, capability_map, operator_id)
 
     def _verify(self) -> dict[str, Any]:
         """Run the repository gate in a separate process and record what it returned."""
@@ -215,48 +241,6 @@ class Gateway:
                        "tail": tail}
         self.record.append("OBSERVATION", "repository.verify", "gateway", observation)
         return observation
-
-
-def _validate(endpoints: dict[str, dict[str, Any]],
-              withheld: dict[str, dict[str, Any]] | None = None) -> None:
-    """Judge the manifest before any store opens.
-
-    A declared operation with nothing behind it is the failure this exists for:
-    it keeps a written-but-unbuilt service visibly unbuilt instead of letting it
-    become a tool that errors at call time.
-
-    The reverse - an implementation the manifest does not declare - is normally the
-    same defect read from the other side, and is admitted only when the manifest
-    withholds that tool and says why. Withholding is how a built endpoint stops
-    being served without the code that serves it being deleted, and a withheld
-    entry with no stated reason is refused so a capability cannot quietly vanish.
-    """
-    withheld = withheld or {}
-    missing = sorted(set(endpoints) - set(IMPLEMENTED))
-    if missing:
-        raise UnbuiltEndpoint(
-            "manifest declares endpoints with no implementation: " + ", ".join(missing))
-    for tool, entry in sorted(withheld.items()):
-        if tool in endpoints:
-            raise UnbuiltEndpoint(f"{tool} is both declared and withheld")
-        if not entry.get("withheld_because"):
-            raise UnbuiltEndpoint(f"{tool} is withheld without a stated reason")
-    undeclared = sorted(set(IMPLEMENTED) - set(endpoints) - set(withheld))
-    if undeclared:
-        raise UnbuiltEndpoint(
-            "gateway implements endpoints the manifest neither declares nor withholds: "
-            + ", ".join(undeclared))
-    for tool, entry in endpoints.items():
-        if entry["tier"] not in TIERS:
-            raise UnbuiltEndpoint(f"{tool} declares unknown tier {entry['tier']!r}")
-        if entry["tier"] != "act":
-            continue
-        mode = entry.get("authority")
-        if mode not in AUTHORITY_MODES:
-            raise UnbuiltEndpoint(f"{tool} acts but declares no authority mode")
-        if (mode == "gateway") != ("capability" in entry):
-            raise UnbuiltEndpoint(
-                f"{tool} declares authority {mode!r}, which does not match its capability")
 
 
 def _redact(arguments: dict[str, Any]) -> dict[str, Any]:

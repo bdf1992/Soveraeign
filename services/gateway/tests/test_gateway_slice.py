@@ -47,7 +47,8 @@ class GatewayVerticalSlice(unittest.TestCase):
                     routes: dict | None = None) -> Gateway:
         if authority is None:
             authority = lambda actor, capability, scope: console_authority.check(
-                self.record.reconstruct(), actor, capability, scope)
+                self.record.reconstruct(), self.console.node_id, actor, capability,
+                scope)
         if routes is None:
             routes = {"asset:in-process": AssetRoutes(self.asset).call}
         return Gateway(

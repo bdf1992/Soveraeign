@@ -13,6 +13,7 @@ import re
 from hashlib import sha256
 from typing import Any
 
+from soveraeign_console_service import reads
 from soveraeign_console_service.continuity import Projection, read_thread
 from soveraeign_console_service.core import ConsoleService
 
@@ -83,9 +84,14 @@ class ConsoleRoutes:
             return self._refuse(actor, thread_id, "THREAD_UNKNOWN")
 
         snapshot_digest = self.service.record.head()
+        # The Gateway checked `read:thread` before this route was reached; the read
+        # checks it again. Repeating a check costs one journal fold and removes the
+        # assumption that whoever called this route came through the Gateway.
         reading = read_thread(
-            self.service, thread_id, str(session.get("binding_id")), projection=projection)
-        object_record = _object_record(entries, reading, snapshot_digest)
+            self.service, thread_id, str(session.get("binding_id")),
+            operator_id=actor, projection=projection)
+        object_record = _object_record(
+            reads.local(entries, self.service.node_id), reading, snapshot_digest)
         return self._receipt("COMMITTED", actor, thread_id, {
             "reason_code": None,
             "commit_semantics": "DERIVED",

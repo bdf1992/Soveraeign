@@ -131,6 +131,15 @@ def _authority(observed: Observation, store: Path) -> dict[str, Any]:
                   str(refused.get("reason_code")))
     console(store, "grant", "--operator", "Bdo", "--capability", "open:channel",
             "--scope", "governance")
+    # The session lifecycle and the reads are guarded as of 2026-08-25, so the walk
+    # buys what it is about to spend. Bdo is this store's root issuer by virtue of
+    # the grant above, which is the first one this journal ever carried.
+    for operator in ("Bdo", "sov"):
+        for capability in ("open:session", "read:session"):
+            console(store, "grant", "--operator", operator,
+                    "--capability", capability, "--scope", operator)
+    console(store, "grant", "--operator", "Bdo", "--capability", "read:authority",
+            "--scope", "node:local")
     channel = console(store, "open-channel", "--operator", "Bdo", "--name", "general",
                       "--domain", "governance")
     observed.note(not declared_shape(channel, "channel.schema.json"), "a channel validates",
@@ -150,8 +159,10 @@ def _parity(observed: Observation, store: Path, thread: dict[str, Any]) -> dict[
 
     posts = {}
     for label, session in (("human", human), ("model", model)):
-        posts[label] = console(store, "post", "--session", session["session_id"],
-                               "--thread", thread["thread_id"], "--body", BODY)
+        operator = "Bdo" if label == "human" else "sov"
+        posts[label] = console(store, "post", "--operator", operator, "--session",
+                               session["session_id"], "--thread", thread["thread_id"],
+                               "--body", BODY)
     receipts = committed_receipts(store)
     observed.note(bool(receipts), "the journal reconstructs outside the console",
                   str(len(receipts)) + " committed addresses")
@@ -175,19 +186,23 @@ def _parity(observed: Observation, store: Path, thread: dict[str, Any]) -> dict[
 def _refusals(observed: Observation, store: Path, thread: dict[str, Any],
               human: dict[str, Any]) -> None:
     """A revoked grant stops admitting, without reaching back into what it admitted."""
-    live = console(store, "grants", "--operator", "Bdo")["live_grants"]
+    live = console(store, "grants", "--reader", "Bdo",
+                   "--operator", "Bdo")["live_grants"]
     observed.note(bool(live), "live grants are readable", str(len(live)) + " live")
     posting = [grant["grant_id"] for grant in live if grant["capability"] == "post:message"]
     if not posting:
         observed.note(False, "a revoked grant refuses the next post", "no post grant found")
         return
-    before = console(store, "read-thread", "--thread", thread["thread_id"])
+    before = console(store, "read-thread", "--operator", "Bdo",
+                     "--thread", thread["thread_id"])
     console(store, "revoke", "--grant", posting[0])
-    after = console(store, "post", "--session", human["session_id"], "--thread",
-                    thread["thread_id"], "--body", "after revocation", expect=2)
+    after = console(store, "post", "--operator", "Bdo", "--session",
+                    human["session_id"], "--thread", thread["thread_id"],
+                    "--body", "after revocation", expect=2)
     observed.note(after.get("outcome") == "REFUSED", "a revoked grant refuses the next post",
                   str(after.get("reason_code")))
-    still = console(store, "read-thread", "--thread", thread["thread_id"])
+    still = console(store, "read-thread", "--operator", "Bdo",
+                    "--thread", thread["thread_id"])
     observed.note(len(still["posts"]) == len(before["posts"]),
                   "revocation does not unmake committed posts",
                   str(len(still["posts"])) + " posts remain")
@@ -195,13 +210,15 @@ def _refusals(observed: Observation, store: Path, thread: dict[str, Any],
 
 def _projection(observed: Observation, store: Path, thread: dict[str, Any]) -> None:
     """The read path says it is a projection and rebuilds to the same answer."""
-    view = console(store, "read-thread", "--thread", thread["thread_id"])
+    view = console(store, "read-thread", "--operator", "Bdo",
+                   "--thread", thread["thread_id"])
     observed.note(view.get("authoritative") is False
                   and view.get("rebuilt_from") == "record-service-journal",
                   "the read path declares itself a projection", str(view.get("rebuilt_from")))
-    observed.note(view == console(store, "read-thread", "--thread", thread["thread_id"]),
+    observed.note(view == console(store, "read-thread", "--operator", "Bdo",
+                                  "--thread", thread["thread_id"]),
                   "the projection is stable across rebuilds")
-    context = console(store, "session-context", "--operator", "Bdo")
+    context = console(store, "session-context", "--reader", "Bdo")
     observed.note(set(context) >= {"unseen_posts", "cursor", "omissions", "rebuilt_from"},
                   "session-context carries what landed while away",
                   ", ".join(sorted(context))[:90])
@@ -222,15 +239,18 @@ def observe() -> int:
         for operator in ("Bdo", "sov"):
             console(store, "grant", "--operator", operator, "--capability", "post:message",
                     "--scope", thread["thread_id"])
+        console(store, "grant", "--operator", "Bdo", "--capability", "read:thread",
+                "--scope", thread["thread_id"])
         human = _parity(observed, store, thread)
-        model_claim = console(store, "post", "--session", _model_session(store),
-                              "--thread", thread["thread_id"], "--body", "a model claim",
-                              "--claims", expect=2)
+        model_claim = console(store, "post", "--operator", "sov", "--session",
+                              _model_session(store), "--thread", thread["thread_id"],
+                              "--body", "a model claim", "--claims", expect=2)
         observed.note(model_claim.get("outcome") == "REFUSED",
                       "a model claim without a proposal is refused",
                       str(model_claim.get("reason_code")))
-        admitted = console(store, "post", "--session", human["session_id"], "--thread",
-                           thread["thread_id"], "--body", "a human claim", "--claims")
+        admitted = console(store, "post", "--operator", "Bdo", "--session",
+                           human["session_id"], "--thread", thread["thread_id"],
+                           "--body", "a human claim", "--claims")
         observed.note("post_id" in admitted, "the same claim from a human is admitted")
         _refusals(observed, store, thread, human)
         _projection(observed, store, thread)

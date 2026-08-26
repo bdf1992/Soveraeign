@@ -30,6 +30,7 @@ from soveraeign_console_service import continuity  # noqa: E402
 from soveraeign_console_service.refusals import (  # noqa: E402
     AuthorityRefused,
     ForeignNodeRecord,
+    UnknownRecord,
 )
 from soveraeign_record_service import RecordService  # noqa: E402
 from sovkernel import jsonschema  # noqa: E402
@@ -65,11 +66,15 @@ class DeclaredRecordShapes(unittest.TestCase):
                                      pinned_address="asset/v1", pinned_digest="sha256:ab")
         console.grant("Bdo", "post:message", thread["thread_id"])
         console.grant("sov", "post:message", thread["thread_id"])
+        for operator in ("Bdo", "sov"):
+            console.grant(operator, "open:session", operator)
+            console.grant(operator, "close:session", operator)
+        console.grant("Bdo", "read:thread", NODE)
         human = console.open_session("Bdo", "HUMAN", "human-binding")
         model = console.open_session("sov", "MODEL", "model-binding")
-        console.post(human["session_id"], thread["thread_id"], b"a plain statement",
+        console.post("Bdo", human["session_id"], thread["thread_id"], b"a plain statement",
                      mentions=["sov"])
-        console.post(model["session_id"], thread["thread_id"], b"a claim",
+        console.post("sov", model["session_id"], thread["thread_id"], b"a claim",
                      claims=True, proposal_id="proposal_1")
         console.grant("Bdo", "publish:thread", thread["thread_id"])
         cls.published = console.publish_thread("Bdo", thread["thread_id"])
@@ -79,7 +84,7 @@ class DeclaredRecordShapes(unittest.TestCase):
         withdrawn = console.publish_thread("Bdo", second["thread_id"])
         console.withdraw_publication("Bdo", withdrawn["publication_id"])
         cls.withdrawn_id = withdrawn["publication_id"]
-        console.close_session(human["session_id"])
+        console.close_session("Bdo", human["session_id"])
         cls.records = contract.records(cls.record.reconstruct())
 
     @classmethod
@@ -155,7 +160,7 @@ class DeclaredRecordShapes(unittest.TestCase):
     def test_the_outward_view_separates_never_published_from_taken_down(self):
         """A reader can tell the two apart without being handed the journal."""
         console = ConsoleService(self.record, Path(self.tmp.name) / "console", NODE)
-        view = continuity.published_threads(console)
+        view = continuity.published_threads(console, operator_id="Bdo")
         self.assertFalse(view["authoritative"])
         self.assertEqual(view["node_id"], NODE)
         self.assertEqual([record["thread_id"] for record in view["published"]],
@@ -233,6 +238,50 @@ class DeclaredRecordShapes(unittest.TestCase):
         self.assertTrue(any("claims" in line for line in named), named)
 
 
+    def test_a_post_and_a_session_carry_the_node_that_made_them(self):
+        """The declared shape has to carry it, or the detector below reads nothing.
+
+        The journal record gained `node_id` on 2026-08-25 and the declared projection
+        dropped it, so a foreign post and a foreign session were invisible to the one
+        contradiction detector this service has - and `additionalProperties: false`
+        would have rejected the honest projection had it kept the field.
+        """
+        for record, schema in ((self.records["posts"][0], "post.schema.json"),
+                               (self.records["operator_sessions"][0],
+                                "operator-session.schema.json")):
+            self.assertEqual(record["node_id"], NODE)
+            self.assertValid(record, schema)
+            missing = {k: v for k, v in record.items() if k != "node_id"}
+            self.assertRejected(missing, schema)
+
+    def test_a_post_from_another_node_is_named_as_foreign(self):
+        """The record kind a foreign write actually produces.
+
+        Asserted against the `belongs to` line specifically. A foreign post sitting
+        in a local thread also trips the thread-disagreement branch below, so a test
+        that only looked for the peer's name anywhere passed with this branch removed.
+        """
+        foreign = dict(self.records["posts"][0], node_id="node:peer-one")
+        self.assertValid(foreign, "post.schema.json")
+        named = contract.foreign_records(dict(self.records, posts=[foreign]), NODE)
+        self.assertIn(f"post {foreign['post_id']}: belongs to node:peer-one", named)
+
+    def test_a_session_from_another_node_is_named_as_foreign(self):
+        foreign = dict(self.records["operator_sessions"][0], node_id="node:peer-one")
+        self.assertValid(foreign, "operator-session.schema.json")
+        named = contract.foreign_records(
+            dict(self.records, operator_sessions=[foreign]), NODE)
+        self.assertTrue(any("node:peer-one" in line for line in named), named)
+
+    def test_a_post_disagreeing_with_its_thread_is_named(self):
+        """A post claiming this node inside a thread claiming another, and the reverse."""
+        thread = dict(self.records["threads"][0], node_id="node:peer-one")
+        named = contract.foreign_records(
+            dict(self.records, threads=[thread]), NODE)
+        self.assertTrue(any(line.startswith("post ") and "claims" in line
+                            for line in named), named)
+
+
 class NodeScopeRefusals(unittest.TestCase):
     """A console serves one node and refuses to act on another node's records."""
 
@@ -257,6 +306,9 @@ class NodeScopeRefusals(unittest.TestCase):
         console.grant("Bdo", "open:thread", channel["channel_id"])
         thread = console.open_thread("Bdo", channel["channel_id"], "local work")
 
+        # A peer node keeps its own permits office, so issuing there costs a
+        # `grant:authority` scoped to that node and not to this one.
+        console.grant("Bdo", "grant:authority", "node:peer-one")
         peer = ConsoleService(self.record, self.root, "node:peer-one")
         peer.grant("Bdo", "publish:thread", thread["thread_id"])
         with self.assertRaises(ForeignNodeRecord) as refused:
@@ -299,13 +351,16 @@ class NodeScopeRefusals(unittest.TestCase):
         """One refusal per attempt, naming the transition attempted.
 
         A single refusal path would be easy to fix in one place and leave wrong in
-        five, so each transition that checks a grant is driven without one.
+        five, so each transition that checks a grant is driven without one. The nine
+        guarded on 2026-08-25 are driven the same way in
+        `services/console/tests/test_enforced_authority.py`.
         """
         console = ConsoleService(self.record, self.root, NODE)
         console.grant("Bdo", "open:channel", "governance")
         channel = console.open_channel("Bdo", "governance", "governance")["channel_id"]
         console.grant("Bdo", "open:thread", channel)
         thread = console.open_thread("Bdo", channel, "what a refusal leaves")["thread_id"]
+        console.grant("Ana", "open:session", "Ana")
         session = console.open_session("Ana", "HUMAN", "binding:test")["session_id"]
 
         attempts = {
@@ -313,7 +368,7 @@ class NodeScopeRefusals(unittest.TestCase):
             "console.open-thread": lambda: console.open_thread("Ana", channel, "no"),
             "console.archive-thread": lambda: console.archive_thread("Ana", thread),
             "console.publish-thread": lambda: console.publish_thread("Ana", thread),
-            "console.post": lambda: console.post(session, thread, b"unauthorised"),
+            "console.post": lambda: console.post("Ana", session, thread, b"unauthorised"),
         }
         for event, attempt in attempts.items():
             with self.subTest(event=event):
@@ -341,7 +396,13 @@ class NodeScopeRefusals(unittest.TestCase):
         self.assertEqual(contract.records(self.record.reconstruct())["channels"], [])
 
     def test_archiving_a_thread_from_another_node_is_refused(self):
-        """The refusal a crossing needs: a local seat may not close a peer's thread."""
+        """A local seat may not close a peer's thread, and is not told it exists.
+
+        `archive-thread` reads the thread to find the channel its grant is scoped to,
+        so the read happens before any authority is shown. It therefore answers a
+        foreign thread exactly as it answers a missing one; naming the peer here let
+        a caller holding nothing sweep ids for existence and ownership.
+        """
         console = ConsoleService(self.record, self.root, NODE)
         console.grant("Bdo", "open:channel", "governance")
         channel = console.open_channel("Bdo", "governance", "governance")
@@ -349,9 +410,13 @@ class NodeScopeRefusals(unittest.TestCase):
         thread = console.open_thread("Bdo", channel["channel_id"], "F0 closure")
 
         peer = ConsoleService(self.record, self.root, "node:peer-one")
-        with self.assertRaises(ForeignNodeRecord) as refused:
+        with self.assertRaises(UnknownRecord) as refused:
             peer.archive_thread("Bdo", thread["thread_id"])
-        self.assertEqual(refused.exception.reason_code, "FOREIGN_NODE_RECORD")
+        absent = self.assertRaises(UnknownRecord)
+        with absent:
+            peer.archive_thread("Bdo", "thread_0000000000000000")
+        self.assertEqual(type(refused.exception), type(absent.exception))
+        self.assertNotIn(NODE, str(refused.exception))
 
 
 if __name__ == "__main__":

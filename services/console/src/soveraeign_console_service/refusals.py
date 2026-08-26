@@ -19,9 +19,27 @@ class ConsoleRefusal(Exception):
 
 
 class AuthorityRefused(ConsoleRefusal):
-    """No live grant with the required capability, scoped to the target."""
+    """No live grant with the required capability, scoped to the target.
+
+    The message names the capability and never the scope. A scope is an operator id,
+    a channel or a thread, so saying it handed a caller holding nothing the name of
+    whoever owns the record it just asked about - `close-session` answered "no live
+    close:session grant scoped to Bdo" to anybody. That is a disclosure defect on its
+    own and not part of the identity seam: even a perfectly authenticated caller
+    holding nothing should not learn who owns a session.
+
+    The scope is kept on the exception for a caller that already has it - the tests
+    that must assert precisely, and any future in-process handler - because an
+    attribute is not something the CLI or a receipt ever serialises. `cli.py` prints
+    `reason_code` and `str(...)`; `append.refuse` records the same two.
+    """
 
     reason_code = "NO_LIVE_GRANT"
+
+    def __init__(self, message: str, capability: str = "", scope: str = "") -> None:
+        super().__init__(message)
+        self.capability = capability
+        self.scope = scope
 
 
 class ModelClaimWithoutProposal(ConsoleRefusal):
@@ -73,3 +91,30 @@ class StandingClaim(ConsoleRefusal):
 
 class UnknownRecord(KeyError):
     """The named console record is not in the journal."""
+
+
+class ActorAttributionMismatch(ConsoleRefusal):
+    """The caller does not own the operator session it is acting through.
+
+    A session identifies an operator; holding one does not make you that operator.
+    `routes.py` refused this at the read route from the start and `core.post` did
+    not, so a caller that knew any session id could write a post attributed to its
+    owner. `contracts/capability-offices.json` declares the same actor kinds for
+    both; `services/console/contracts/service.json` declares the precondition.
+    """
+
+    reason_code = "ACTOR_ATTRIBUTION_MISMATCH"
+
+
+class LastIssuerStanding(ConsoleRefusal):
+    """Withdrawing this grant would leave the node's permits office with no issuer.
+
+    Revocation appends and the bootstrap is once-ever, so a node whose last live
+    `grant:authority` is withdrawn can never issue another grant and no console
+    operation can restore it. A legitimate operator could brick the office by
+    accident. Carries `MISSING_PRECONDITION` rather than a new code: the precondition
+    `another_issuer_remains` is what failed, and inventing vocabulary for it would
+    add a refusal the kernel does not know.
+    """
+
+    reason_code = "MISSING_PRECONDITION"

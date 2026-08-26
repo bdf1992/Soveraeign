@@ -25,6 +25,9 @@ from server import Server  # noqa: E402
 
 ACTOR = "Bdo"
 MODEL = "claude-opus-5"
+MALLORY = "Mallory"
+#: The node this gateway's console serves; a node grant is scoped to it.
+NODE = "node:local"
 
 
 class GatewayCase(unittest.TestCase):
@@ -175,6 +178,40 @@ class ExposedSurface(SharedGatewayCase):
 class GovernedCrossing(GatewayCase):
     def test_a_read_needs_no_session_and_no_grant(self):
         self.assertEqual(self.gateway.call("asset_search", {"query": "anything"}, ACTOR), [])
+
+    def test_reading_the_journal_without_the_declared_grant_is_refused(self):
+        """The defeating case for `record_entries`, which checked nothing until 2026-08-25.
+
+        The read tier returned before the precheck ran, so this endpoint declared
+        `read:journal`, realized `record.read-entry`, and handed any caller the whole
+        journal - thread titles, post ids, actor ids, content addresses, and every
+        grant record the other endpoints' guards are read out of. A guard that can be
+        read around is not a guard. `decisions/0052` already said this read costs the
+        grant; nothing here decides a policy that was not already decided.
+        """
+        with self.assertRaises(EndpointRefused) as raised:
+            self.gateway.call("record_entries", {}, MALLORY)
+        self.assertEqual(raised.exception.code, "GRANT_NOT_HELD")
+
+    def test_reading_the_journal_with_the_declared_grant_is_admitted(self):
+        """The positive half: the grant the office table names is enough, and no more."""
+        self.gateway.console.grant(ACTOR, "read:journal", NODE)
+        self.assertIsInstance(self.gateway.call("record_entries", {}, ACTOR), list)
+        with self.assertRaises(EndpointRefused):
+            self.gateway.call("record_entries", {}, MALLORY)
+
+    def test_a_journal_read_grant_is_not_bought_from_the_asset_store(self):
+        """Two authority stores, and the journal is not the asset service's to sell.
+
+        `authority_grant` issues in the Asset Service's store. The console journal is
+        where this node records who holds what, so a grant bought there must not open
+        a read of it.
+        """
+        self.open_session()
+        self.hold("read:journal")
+        with self.assertRaises(EndpointRefused) as raised:
+            self.gateway.call("record_entries", {}, ACTOR)
+        self.assertEqual(raised.exception.code, "GRANT_NOT_HELD")
 
     def test_an_act_without_a_session_is_refused(self):
         """The defeating case: no live session, no act."""

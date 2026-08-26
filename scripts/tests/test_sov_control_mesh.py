@@ -5,13 +5,16 @@ turn model choice into authority, or remove the bounds that keep fan-out
 attributable. These tests inspect the checked-in host binding only; they do not
 claim a Claude session ran or independently witness product behavior.
 
-Two layers. Structural checks pin frontmatter, tool sets, headings at every
-level of every file, the routing table, hook matchers, and the closure
-checklist. The `sov_mesh_prose` scanner then walks every text region of the
-mesh and role files for authority-granting language that carries no denial.
-The scanner is a tripwire for careless drift, not proof against adversarial
-authorship; the authority boundary itself is `AGENTS.md` and the kernel gates.
-Skill and workflow prompts under `.claude/` are outside this suite's subject.
+Two layers. Structural checks compare the files against the pins in
+`sov_mesh_pins` - frontmatter identity, tool sets, section skeletons, guard
+sentences, the routing table, the pipeline diagrams, hook commands and
+matchers, and the character inventory. The `sov_mesh_prose` scanner then walks
+every text region for authority-granting language that carries no denial in
+its own clause. The scanner is a tripwire for careless drift, not proof
+against adversarial authorship - a synonym the deny-list does not name still
+passes, which is an accepted residual; the authority boundary itself is
+`AGENTS.md` and the kernel gates. Skill and workflow prompts under `.claude/`
+are outside this suite's subject.
 """
 
 from __future__ import annotations
@@ -21,6 +24,7 @@ import json
 import re
 import unittest
 
+from scripts.tests import sov_mesh_pins as pins
 from scripts.tests.sov_mesh_prose import DENIAL, authority_findings, sentences
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -28,40 +32,6 @@ AGENTS = ROOT / ".claude" / "agents"
 MESH = ROOT / ".claude" / "CONTROL-MESH.md"
 ROLE_FILES = ("sov.md", "sov-controller.md", "sov-orchestrator.md",
               "sov-worker.md", "sov-witness.md")
-
-TOOL_SETS = {
-    "sov-controller.md": {"Read", "Grep", "Glob", "Bash", "PowerShell", "Write",
-                          "Skill", "Workflow", "Agent", "ListAgents", "SendMessage"},
-    "sov-orchestrator.md": {"Read", "Grep", "Glob", "Bash", "PowerShell", "Skill",
-                            "ListAgents", "SendMessage"},
-    "sov-worker.md": {"Read", "Grep", "Glob", "Bash", "PowerShell", "Edit", "Write",
-                      "Skill", "Agent", "ListAgents", "SendMessage"},
-    "sov-witness.md": {"Read", "Grep", "Glob", "Bash", "PowerShell",
-                       "ListAgents", "SendMessage"},
-}
-
-HEADINGS = {
-    "sov.md": ["Dispatch", "Closure loop", "Alignment", "Completion report"],
-    "sov-controller.md": ["Select the pipeline", "Parallelism and models", "BLUE", "RED",
-                          "Alignment", "Control rules", "Completion report"],
-    "sov-orchestrator.md": ["Planning rules", "Model fit", "Alignment", "Output"],
-    "sov-worker.md": ["BLUE boundary", "Change protocol", "Models", "Checks", "Handoff"],
-    "sov-witness.md": ["Independence", "RED procedure", "Feedback loop", "Standing", "Report"],
-}
-
-# Each anchor is itself the required rule; deleting or inverting it must fail.
-GUARDS = {
-    "sov.md": ("BLUE cannot witness itself. RED cannot ratify.",
-               "Only the owner-held gate may settle owner judgement."),
-    "sov-controller.md": ("Do not create a new ticket or hand the engineering choice to Bdo.",
-                          "Standing forwarded from machine evidence is at most"
-                          " `BUILT -> WITNESSED`."),
-    "sov-worker.md": ("Never witness or ratify your own work.",
-                      "standing proposal at most `OPEN -> BUILT`"),
-    "sov-witness.md": ("A different model name does not by itself create independence.",
-                       "You may never report RATIFIED. Only Bdo settles judgement-typed"
-                       " ratification."),
-}
 
 
 def text(path: str) -> str:
@@ -94,9 +64,8 @@ def frontmatter(name: str) -> dict[str, str]:
     return result
 
 
-def headings(raw: str, level: str = "## ") -> list[str]:
-    return [line[len(level):].strip() for line in raw.splitlines()
-            if line.startswith(level)]
+def headings(raw: str) -> list[str]:
+    return [line[3:].strip() for line in raw.splitlines() if line.startswith("## ")]
 
 
 def mesh_section(title: str) -> str:
@@ -114,6 +83,16 @@ class HostBounds(unittest.TestCase):
         self.assertEqual(env["CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS"], "1")
         self.assertEqual(env["CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH"], "3")
         self.assertEqual(env["CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS"], "12")
+
+    def test_every_hook_can_actually_execute(self) -> None:
+        """The hooks are the only mechanical restraint; a renamed interpreter or a
+        zero timeout disables them with everything else looking intact."""
+        hooks = json.loads(text(".claude/settings.json"))["hooks"]
+        for event, entries in hooks.items():
+            for entry in entries:
+                for hook in entry["hooks"]:
+                    self.assertEqual(hook["command"], "python", event)
+                    self.assertGreaterEqual(hook.get("timeout", 0), 5, event)
 
     def test_session_registry_hooks_still_fire_on_the_tools_they_guard(self) -> None:
         """The matchers are live regexes; a renamed matcher disables the guard."""
@@ -140,24 +119,30 @@ class HostBounds(unittest.TestCase):
 
 
 class RoleShape(unittest.TestCase):
-    def test_models_are_execution_hints_not_one_shared_setting(self) -> None:
+    def test_frontmatter_identity_is_pinned(self) -> None:
+        """Name, model, effort, and description route an agent; none may drift."""
         self.assertEqual(frontmatter("sov.md")["model"], "inherit")
-        for name in TOOL_SETS:
+        for name in pins.TOOL_SETS:
             self.assertEqual(frontmatter(name)["model"], "sonnet", name)
+        for name, effort in pins.EFFORT.items():
+            fm = frontmatter(name)
+            self.assertEqual(fm["name"], name[:-3], name)
+            self.assertEqual(fm["effort"], effort, name)
+            self.assertEqual(compact(fm["description"]), pins.DESCRIPTIONS[name], name)
 
     def test_every_role_tool_set_is_pinned_exactly(self) -> None:
         """Allow-lists: a quietly added capability fails. Bash/PowerShell stay in
-        every set, so read-only and no-edit claims rest on prose, not tooling."""
-        for name, expected in TOOL_SETS.items():
+        every set, so read-only and no-edit claims rest on prose plus the hooks."""
+        for name, expected in pins.TOOL_SETS.items():
             declared = {tool.strip() for tool in frontmatter(name)["tools"].split(",")}
             self.assertEqual(declared, expected, name)
 
     def test_every_role_keeps_its_section_skeleton(self) -> None:
-        for name, expected in HEADINGS.items():
+        for name, expected in pins.HEADINGS.items():
             self.assertEqual(headings(text(f".claude/agents/{name}")), expected, name)
 
     def test_every_role_keeps_its_guard_sentences(self) -> None:
-        for name, guards in GUARDS.items():
+        for name, guards in pins.GUARDS.items():
             flat = compact(text(f".claude/agents/{name}"))
             for guard in guards:
                 self.assertIn(guard, flat, name)
@@ -165,7 +150,7 @@ class RoleShape(unittest.TestCase):
     def test_witness_verdicts_are_exactly_three(self) -> None:
         witness = text(".claude/agents/sov-witness.md")
         self.assertIn("`reproduced`, `dissented`, or `unattestable`", witness)
-        self.assertNotIn("`accepted`", witness)
+        self.assertEqual(set(re.findall(r"`([^`]+)`", witness)), pins.WITNESS_BACKTICKS)
 
     def test_controller_requires_red_after_blue_and_repairs_in_place(self) -> None:
         controller = compact(text(".claude/agents/sov-controller.md"))
@@ -188,6 +173,21 @@ class MeshStructure(unittest.TestCase):
         self.assertEqual(headings(MESH.read_text(encoding="utf-8")), [
             "Purpose", "Fleet, cell, pipeline", "Role counts", "Model routing",
             "Session and channel protocol", "BLUE and RED", "Host capability fallbacks"])
+
+    def test_status_paragraph_is_exactly_the_disclaimer(self) -> None:
+        """assertEqual, not assertIn: an appended exception clause must fail."""
+        paragraph = MESH.read_text(encoding="utf-8").split("\n\n")[1]
+        self.assertEqual(compact(paragraph), pins.STATUS_PARAGRAPH)
+
+    def test_pipeline_diagrams_are_pinned(self) -> None:
+        raw = MESH.read_text(encoding="utf-8")
+        self.assertEqual(re.findall(r"```text\n(.*?)```", raw, re.DOTALL),
+                         pins.MESH_FENCES)
+
+    def test_mesh_keeps_its_guard_sentences(self) -> None:
+        flat = compact(MESH.read_text(encoding="utf-8"))
+        for guard in pins.MESH_GUARDS:
+            self.assertIn(guard, flat)
 
     def test_routing_table_never_downgrades_witness_or_controller(self) -> None:
         rows = {}
@@ -216,12 +216,6 @@ class MeshStructure(unittest.TestCase):
         self.assertIn("blue does not witness itself", section)
         self.assertIn("built -> witnessed", section)
 
-    def test_fallbacks_still_forbid_collapsing_roles(self) -> None:
-        section = compact(mesh_section("Host capability fallbacks"))
-        self.assertIn("state plainly in the report that agent teams or cross-session"
-                      " messaging were unavailable rather than silently collapsing roles",
-                      section)
-
     def test_mesh_names_n_fanout_and_cross_session_alignment(self) -> None:
         mesh = MESH.read_text(encoding="utf-8")
         for term in ("N SOV sessions", "N Controllers", "N Orchestrators",
@@ -230,10 +224,6 @@ class MeshStructure(unittest.TestCase):
         self.assertIn("SendMessage", mesh)
         self.assertIn("Console continuity", mesh)
         self.assertIn("ephemeral Claude message", mesh)
-
-    def test_mesh_disclaims_authority_in_its_status_line(self) -> None:
-        self.assertIn("adds no soveraeign authority, standing",
-                      compact(MESH.read_text(encoding="utf-8")).lower())
 
 
 class AuthorityLanguage(unittest.TestCase):
@@ -251,8 +241,16 @@ class AuthorityLanguage(unittest.TestCase):
         for path in (MESH, AGENTS / "sov-controller.md", AGENTS / "sov-worker.md",
                      AGENTS / "sov-witness.md"):
             for sentence in sentences(path.read_text(encoding="utf-8")):
-                if "ticket" in sentence:
+                if re.search(r"\b(ticket|issue)s?\b", sentence):
                     self.assertTrue(DENIAL.search(sentence), f"{path.name}: {sentence}")
+
+    def test_character_inventory_is_closed(self) -> None:
+        """A homoglyph or zero-width character defeats a lexical rule invisibly."""
+        allowed = {chr(code) for code in range(32, 127)} | {"\n"} | pins.EXTRA_CHARS
+        for name in (".claude/CONTROL-MESH.md",
+                     *(f".claude/agents/{role}" for role in ROLE_FILES)):
+            strange = {ch for ch in text(name) if ch not in allowed}
+            self.assertEqual(strange, set(), name)
 
 
 if __name__ == "__main__":

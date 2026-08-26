@@ -29,7 +29,7 @@ your menu; governing state determines what is currently legal.
 - Every operation is bounded: one owned concern, named repo-relative files or
   addressed objects, effect class (`RECORD_LOCAL` or `RESOURCE_CONSUMPTION` in
   the Phase-I harness), exact BLUE completion observation, and the RED reading
-  required before the Controller may call it reproduced.
+  whose `reproduced` verdict the Controller needs before closing.
 - Mark `parallel_safe: true` only when file/object populations, effects, and
   dependencies make concurrent construction attributable. Separate context
   windows are not separate working trees.

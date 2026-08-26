@@ -18,10 +18,18 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from sovepic import projection, survey  # noqa: E402
+from sovepic import projection, survey, walk  # noqa: E402
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
+LEGEND = (
+    "States: READY routed with every requires satisfied; HELD an unsatisfied requires;\n"
+    "UNROUTED no repository artifact evidences a domain owner; OWNER a judgement asked\n"
+    "of the owner. Routing and readiness are independent readings, so an issue can be\n"
+    "UNROUTED and HELD at once. Only OWNER waits on the owner seat."
+)
+"""Legend printed under ``status``; the three states are never merged into one field."""
 
 
 def _survey(root: Path) -> dict:
@@ -64,7 +72,7 @@ def command_status(args: argparse.Namespace) -> int:
     print(
         f"issues {counts['issues']}  open {counts['open']}  "
         f"ready {counts['ready']}  held {counts['held']}  unrouted {counts['unrouted']}  "
-        f"stories {counts['stories']}"
+        f"owner-held {counts['owner_held']}  stories {counts['stories']}"
     )
     print(
         f"defects: contract {len(result['contract_defects'])}  "
@@ -75,12 +83,17 @@ def command_status(args: argparse.Namespace) -> int:
     for entry in result["held"]:
         held = ",".join(entry["blocked_by"])
         print(f"  HELD    #{entry['issue']:<3} {entry['domain']:<12} blocked by {held}")
+    for entry in result["unrouted"]:
+        print(f"  UNROUTED #{entry['issue']:<3} {entry['readiness']:<9} {entry['title'][:50]}")
+    for entry in result["owner_held"]:
+        print(f"  OWNER   #{entry['issue']:<3} {entry['title'][:56]}")
     for entry in result["stories"]:
         short = ",".join(entry["short"]) or "-"
         print(
             f"  STORY   #{entry['issue']:<3} {entry['reading']:<9} "
             f"{entry['actor_kind']}/{entry['role']} at {entry['counter']}  short {short}"
         )
+    print(LEGEND)
     return 0
 
 
@@ -104,11 +117,41 @@ def command_next(args: argparse.Namespace) -> int:
 
 
 def command_unrouted(args: argparse.Namespace) -> int:
-    """Print open work no harness domain claims; each line is a judgement item."""
+    """Print open work no repository artifact gives a domain owner.
+
+    Unrouted is not owner-held. Writing the charter, contract, implementation, or
+    tests that would evidence a domain is ordinary reversible work at this tier
+    (``AGENTS.md``, Closure ownership), so these lines are a domain backlog and
+    never a queue for Bdo.
+    """
     result = _survey(ROOT)
     for entry in result["unrouted"]:
-        print(f"#{entry['issue']:<3} {entry['village']:<26} {entry['title'][:60]}")
-    print(f"\n{len(result['unrouted'])} open issue(s) unrouted; routing them is Bdo's call")
+        print(
+            f"#{entry['issue']:<3} {entry['readiness']:<9} {entry['village']:<26} "
+            f"{entry['title'][:52]}"
+        )
+    also_held = sum(1 for e in result["unrouted"] if e["readiness"] == walk.HELD)
+    print(f"\n{len(result['unrouted'])} open issue(s) unrouted: no repository artifact")
+    print("evidences a domain owner. Unrouted work needs a domain, which is not Bdo's call")
+    print("to make and is not a judgement item; it is ordinary work at this tier.")
+    print(f"{also_held} of them are HELD as well, by an unsatisfied requires edge.")
+    print("That is a separate state with a separate fix; neither implies the other.")
+    return 0
+
+
+def command_owner_held(args: argparse.Namespace) -> int:
+    """Print the open work that genuinely waits on the owner, and nothing else.
+
+    Membership is decided by ``contracts/issue-metadata.schema.json``: an open
+    ``unblock`` ticket whose ``requested_provision`` is a judgement, addressed to
+    the owner. An unsatisfied dependency and a missing domain owner are other
+    states and are absent from this list by construction.
+    """
+    result = _survey(ROOT)
+    for entry in result["owner_held"]:
+        print(f"#{entry['issue']:<3} {entry['village']:<26} {entry['title'][:52]}")
+    print(f"\n{len(result['owner_held'])} open issue(s) owner-held.")
+    print("Held and unrouted work is elsewhere and does not wait on the owner.")
     return 0
 
 
@@ -124,6 +167,7 @@ COMMANDS = {
     "status": command_status,
     "next": command_next,
     "unrouted": command_unrouted,
+    "owner-held": command_owner_held,
     "report": command_report,
 }
 
@@ -139,7 +183,8 @@ def build_parser() -> argparse.ArgumentParser:
     nxt = subparsers.add_parser("next", help="reachable work")
     nxt.add_argument("--village")
     nxt.add_argument("--domain")
-    subparsers.add_parser("unrouted", help="open work no harness domain claims")
+    subparsers.add_parser("unrouted", help="open work no repository artifact gives a domain")
+    subparsers.add_parser("owner-held", help="open work that genuinely waits on the owner")
     subparsers.add_parser("report", help="the whole survey as JSON")
     return parser
 

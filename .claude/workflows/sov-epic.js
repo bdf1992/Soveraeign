@@ -39,7 +39,7 @@ const RECON_SCHEMA = {
 
 const PLAN_SCHEMA = {
   type: 'object',
-  required: ['village', 'operation', 'issue', 'domain', 'blocked_by', 'rationale', 'judgement_items'],
+  required: ['village', 'operation', 'issue', 'domain', 'blocked_by', 'rationale', 'held_by', 'unrouted_work', 'owner_held_items'],
   properties: {
     village: { type: 'string' },
     operation: { type: 'string' },
@@ -49,7 +49,9 @@ const PLAN_SCHEMA = {
     rationale: { type: 'string' },
     files: STRINGS,
     effect_class: { type: 'string' },
-    judgement_items: STRINGS,
+    held_by: STRINGS,
+    unrouted_work: STRINGS,
+    owner_held_items: STRINGS,
   },
 }
 
@@ -104,7 +106,7 @@ const recon = await agent(
   + 'The projection under .claude/epic/tree.json is a derived and possibly stale view - check its synced_at field and say so if it is old. '
   + 'Independently confirm a sample of at least five reported defects by reading the projected metadata block of the named issue in tree.json against contracts/issue-metadata.schema.json, .github/labels.yml, and CONTRIBUTING.md. Report any defect you could NOT confirm as a residual against the checker, not against the issue. '
   + 'You must not edit, fix, sync, commit, or push anything. '
-  + 'Return: checks (command and exit code), counts (from the report), confirmed_defects, observations, residuals, and judgement_items (questions only Bdo can decide).',
+  + 'Return: checks (command and exit code), counts (from the report), confirmed_defects, observations, residuals, and judgement_items. A judgement item is a genuine owner seam only - one of the reasons contracts/acceptance-policy.json names. An unsatisfied requires edge is HELD and a missing domain owner is UNROUTED; neither is owner-held and neither belongs in judgement_items.',
   { agentType: 'sov-witness', schema: RECON_SCHEMA, phase: 'Reconcile', label: 'reconcile:tree' }
 )
 
@@ -120,9 +122,10 @@ function planPrompt(v) {
     + 'Read .claude/epic/README.md and .claude/epic/villages.json, then run `python scripts/sov_epic.py next --village ' + v + '` and `python scripts/sov_epic.py unrouted` from the repository root. '
     + 'For each candidate issue read its projected metadata in .claude/epic/tree.json, load the .claude/skills/sov-<domain>/SKILL.md of the routed domain, and read the external_acceptance_holds block of STATUS.yaml. '
     + 'Choose ONE issue: prefer horizon NOW, reachable (no unsatisfied requires), and routed to a domain. Do not treat an unsettled question as a blocker: under decisions/0033-close-the-founding-docket.md a decision is settled at the lowest tier that can evidence it, and only external_acceptance_holds genuinely wait on Bdo. If every candidate is truly unreachable, say so and name the unsatisfied requires rather than inventing work. '
-    + 'An unrouted issue is never a valid selection - routing it is a judgement only Bdo makes; report it as a judgement item instead. '
+    + 'Three states are distinct and you must not merge them. HELD is an unsatisfied requires edge; report it in held_by. UNROUTED means no repository artifact evidences a domain owner; report it in unrouted_work, naming the charter, contract, implementation, or test that would evidence one. OWNER_HELD is a judgement asked of the owner under contracts/acceptance-policy.json; report it in owner_held_items and nowhere else. '
+    + 'An unrouted issue is not a valid selection for domain work and is not a question for Bdo: adding the owning artifact is ordinary reversible work at this tier (AGENTS.md, Closure ownership). Never put an unrouted or held issue in owner_held_items. '
     + 'You plan only; edit nothing. '
-    + 'Return: village, operation (one bounded sentence), issue (as "#N" or "none"), domain (or "unrouted"), blocked_by (unsatisfied requires only), rationale, files, effect_class, and rulings_taken (each with the observation that would defeat it).'
+    + 'Return: village, operation (one bounded sentence), issue (as "#N" or "none"), domain (or "unrouted"), blocked_by (unsatisfied requires only), rationale, files, effect_class, held_by, unrouted_work, owner_held_items, and rulings_taken (each with the observation that would defeat it).'
 }
 
 const plans = await parallel(selectedVillages.map(function (v) {
@@ -133,6 +136,7 @@ const plans = await parallel(selectedVillages.map(function (v) {
 
 const selected = []
 const judgementQueue = []
+const unroutedWork = []
 const residuals = []
 
 recon.judgement_items.forEach(function (q) { judgementQueue.push('reconcile: ' + q) })
@@ -144,7 +148,12 @@ selectedVillages.forEach(function (v, i) {
     residuals.push(v + ': orchestrator returned no plan; village unplanned this run')
     return
   }
-  plan.judgement_items.forEach(function (q) { judgementQueue.push(v + ': ' + q) })
+  // Three lists, three states. owner_held_items is the only one that reaches Bdo:
+  // unrouted work needs a domain and held work needs its prerequisite, and neither
+  // is a question for the owner (.claude/README.md; AGENTS.md, Closure ownership).
+  ;(plan.owner_held_items || []).forEach(function (q) { judgementQueue.push(v + ': ' + q) })
+  ;(plan.unrouted_work || []).forEach(function (x) { unroutedWork.push(v + ': ' + x) })
+  ;(plan.held_by || []).forEach(function (x) { residuals.push(v + ': held by ' + x) })
   const legal = plan.issue && plan.issue !== 'none'
     && plan.domain && plan.domain !== 'unrouted'
     && plan.blocked_by.length === 0
@@ -152,10 +161,12 @@ selectedVillages.forEach(function (v, i) {
     selected.push(plan)
   } else if (plan.blocked_by.length > 0) {
     residuals.push(v + ': no legal operation; held by ' + plan.blocked_by.join(', '))
+  } else if (plan.domain === 'unrouted') {
+    unroutedWork.push(v + ': issue ' + plan.issue + ' has no evidenced domain owner')
   }
 })
 
-log(selected.length + ' legal operation(s) selected; ' + judgementQueue.length + ' judgement item(s) queued for Bdo')
+log(selected.length + ' legal operation(s) selected; ' + unroutedWork.length + ' unrouted item(s) needing a domain; ' + judgementQueue.length + ' owner-held item(s) queued for Bdo')
 
 const builds = []
 const witnesses = []
@@ -214,6 +225,7 @@ return {
   builds: builds,
   witnesses: witnesses,
   residuals: residuals,
+  unrouted_work: unroutedWork,
   judgement_queue: judgementQueue,
-  standing_note: 'A walk observes and at most proposes BUILT -> WITNESSED. Only Bdo ratifies.',
+  standing_note: 'A walk observes and at most proposes BUILT -> WITNESSED. Only Bdo ratifies. HELD, UNROUTED and OWNER_HELD are distinct: only judgement_queue waits on Bdo.',
 }

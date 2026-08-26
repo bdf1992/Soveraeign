@@ -28,7 +28,7 @@ interactive-session action, never a scheduled one.
 | File | What it is |
 | --- | --- |
 | `tree.json` | Every issue: number, title, state, labels, and the parsed `soveraeign-ticket/v1` metadata block, or the parse error that stopped it. Regenerated wholesale by `sync`. |
-| `villages.json` | The village-to-domain routing table. Joins the issue tree's four villages to the harness domains in `.claude/README.md` and owns neither side. An issue routes only where a repository artifact evidences the ownership. |
+| `villages.json` | The village-to-domain routing table. Joins the issue tree's four villages to the harness domains in `.claude/README.md` and owns neither side. An issue routes only where a repository artifact evidences the ownership; `unrouted_reason` says what an absent route does and does not mean. |
 | `NARRATIVE.md` | The same issues told by front office (where an actor meets the system) and back office (what holds that meeting up). A second reading for talking about participants and supports; it routes nothing and holds no standing. |
 | `offices.json` | The issue-to-office grouping behind `NARRATIVE.md`, in machine shape. Every issue sits in exactly one office or in `outside_both`. |
 
@@ -44,12 +44,36 @@ interactive-session action, never a scheduled one.
   the epic as its parent while its village issue is the node that must contain
   it.
 
-Selection then splits open bits and stubs three ways: **ready** (routed, and
-every `requires` edge satisfied), **held** (routed, waiting on an unsatisfied
-`requires`), and **unrouted** (no harness domain claims its artifacts).
+## Three states, kept apart
+
+Merging any two of these sends ordinary work upward, so the walk names them
+separately and never lets one imply another.
+
+| State | Means | Who moves it |
+| --- | --- | --- |
+| `HELD` | an unsatisfied `requires` edge | whichever tier can build the prerequisite |
+| `UNROUTED` | no repository artifact evidences a domain owner | whichever tier can write the charter, contract, or tests |
+| `OWNER_HELD` | an open `unblock` ticket asking the owner for a judgement | Bdo, and only here |
+
+Routing and readiness are **independent readings of the same issue**. An issue
+with no domain owner can also be waiting on a prerequisite, so every entry
+carries both `routing` (`ROUTED`/`UNROUTED`) and `readiness`
+(`REACHABLE`/`HELD`). Eighteen of the twenty issues that are unrouted today are
+`HELD` as well, which the old three-way split could not show.
+
+`OWNER_HELD` membership is decided by `contracts/issue-metadata.schema.json`
+rather than by the walk's opinion: an open `unblock` ticket whose
+`requested_provision` is a judgement, which the schema requires to be addressed
+to the owner and to no one else. There are none today, and
+`python scripts/sov_epic.py owner-held` says so.
+
+Selection then puts each open bit and stub in exactly one dispatch bucket, in the
+order that decides who moves it next: **owner-held**, then **unrouted**, then
+**held**, then **ready** (routed with every `requires` edge satisfied).
 Reachability is evidence about the tree, never a grant — an issue being ready
 says nothing about whether an open decision in `STATUS.yaml` admits the work.
-Routing an unrouted issue is Bdo's judgement; the walk queues it and moves on.
+Adding the artifact that would route an unrouted issue is ordinary reversible
+work at this tier (`AGENTS.md`, Closure ownership), not a question for Bdo.
 
 ## Operating it
 
@@ -58,7 +82,8 @@ python scripts/sov_epic.py sync        # attended: refresh from GitHub via gh
 python scripts/sov_epic.py status      # counts, ready work, held work
 python scripts/sov_epic.py validate    # the three readings; --strict to exit non-zero
 python scripts/sov_epic.py next --village ground-and-evidence
-python scripts/sov_epic.py unrouted    # open work no domain claims
+python scripts/sov_epic.py unrouted    # open work no artifact gives a domain owner
+python scripts/sov_epic.py owner-held  # open work that genuinely waits on Bdo
 python scripts/sov_epic.py report      # the whole survey as JSON
 ```
 

@@ -9,7 +9,6 @@ implementation_status: EXPERIMENTAL_REFERENCE_PARTICIPANT
 conformance_status: EXECUTABLE_ORACLE_CONTROLS_PARTICIPANT_BINDING_OPEN
 asset_service_status: BUILT_SELF_TESTED_NOT_WITNESSED
 record_service_status: BUILT_SELF_TESTED_NOT_WITNESSED
-proofing_service_status: OWNER_ACCEPTED_BOUNDARY_NOT_IMPLEMENTED
 # The continuity record path is built and self-tested (decisions/0036); the four
 # other operator surfaces in services/console/CHARTER.md are still boundary only.
 # Bdo has not ruled on whether this slice stands as the console's first.
@@ -43,31 +42,15 @@ observation_service_status: CHARTERED_BOUNDARY_NOT_IMPLEMENTED
 # preconditions, commit, and refusals (decisions/0040). Self-tested against one
 # admissible manifest and twenty-one defeats; not independently witnessed.
 service_manifest_contract_status: BUILT_SELF_TESTED_NOT_WITNESSED
-byom_status: OWNER_ACCEPTED_PHASE_I_CONTRACT
 local_model_adapter_status: BUILT_SELF_TESTED_NOT_WITNESSED
 ai_native_definition_status: FREEZE_CANDIDATE
-# The verify budget the baseline states is now graded on Bdo's direction
-# (decisions/0042): PLATINUM 3s, GOLD 6s, SILVER 15s, failing past 15s.
-# The gate was failing outright on the old 3s ceiling at 4.02s, which now
-# earns GOLD. The twenty-subprocess fan-out behind it is unfixed and
-# PLATINUM is the name of that job. Bdo has not re-accepted the baseline
-# with the new terms.
-engineering_framework_status: OWNER_ACCEPTED_PHASE_I_REFERENCE_BASELINE_BUDGET_GRADED_UNDER_0042
-sdlc_loop_status: OWNER_ACCEPTED_ACCEPTANCE_NOT_APPROVAL
 coordination_registrar_status: BUILT_SELF_TESTED_NOT_WITNESSED
-sov_operating_agent_status: OWNER_ACCEPTED_CONTEXT_PROFILE_BUILT_SELF_TESTED_NOT_WITNESSED
-ticket_kind_vocabulary_status: OWNER_ACCEPTED
 story_ticket_kind_status: OWNER_ACCEPTED
 unblock_ticket_kind_status: OWNER_ACCEPTED
 # Two parsers read soveraeign-ticket/v1. decisions/0037 aligned their admitted
 # subset and made their agreement a check rather than a coincidence. The ruling is
 # accepted; the readers themselves are self-tested only and owe an independent pass.
 ticket_metadata_reader_status: OWNER_ACCEPTED_RULING_READERS_SELF_TESTED_NOT_WITNESSED
-# SPEC.md moved after this acceptance: decisions/0034 adds two refusal codes to the
-# transition contract so the accepted table stops contradicting it. PROPOSED; Bdo
-# has not ruled, so this field describes a SPEC that changed after he accepted it.
-kernel_transition_contract_status: OWNER_ACCEPTED_COMPILED_SPEC_SPEC_MOVED_UNDER_0034
-semantic_cold_start_status: OWNER_ACCEPTED_OBSERVATION_SHAPE_EXECUTED
 federation_harness_status: OWNER_ACCEPTED_HOST_PLUMBING_SCHEDULES_DISABLED
 scheduled_runs_status: OWNER_ACCEPTED_PATTERN_EVERY_SCHEDULE_DISABLED
 verification_channels_status: OWNER_ACCEPTED_PROJECTION_GREEN_RENAMED
@@ -76,19 +59,46 @@ lessons_loop_status: OWNER_ACCEPTED_LOOP_OPEN
 
 # OWNER_ACCEPTED_A* names the packet the root seat acted on; the record is
 # .local/acceptance/ledger.ndjson and the packet is under acceptance/accepted/.
+#
+# Eight of the fields in these two blocks were also spelled, with a different value,
+# in the opening block of this file. A YAML reader keeps the last of a repeated key,
+# so each earlier spelling had been dead text ever since the merge that reintroduced
+# it, and three further merges reintroduced it again. Those eight lines are deleted
+# and no value here changed; what the deleted spellings carried is written into the
+# comments below. scripts/lint.py now fails on a repeated top-level key, so the next
+# merge cannot reinstate them unseen.
 specification_status: OWNER_ACCEPTED_A2_PHASE_I_LOGICAL_SPEC
+# The verify budget this baseline states is graded under decisions/0050: PLATINUM 3s,
+# GOLD 6s, SILVER 15s, failing past 15s. The gate had been failing outright on the old
+# 3s ceiling at 4.02s. The twenty-subprocess fan-out behind it is unfixed and PLATINUM
+# is the name of that job; Bdo has not re-accepted the baseline with the new terms.
+# The deleted spelling cited 0042, the number that record was drafted under on the
+# federation branch before 0042 went to the decision-queue record; 0050 is this one.
 engineering_framework_status: OWNER_ACCEPTED_A1_PHASE_I_REFERENCE_BASELINE
 sdlc_loop_status: OWNER_ACCEPTED_A3_ACCEPTANCE_NOT_APPROVAL
 external_effect_status: OWNER_ACCEPTED_A4_SCOPED_NOT_REFUSED
 
 # RULED_ values are reversible defaults taken under decisions/0046. They are not
-# owner acceptance and do not claim to be; each names what would overturn it.
+# owner acceptance and do not claim to be; each names what would overturn it. Every
+# field below except classification_status carried a second, OWNER_ACCEPTED spelling
+# in the opening block. That spelling is the evidence inflation 0046 demotes: no
+# acceptance packet exists for any of them, owner_accepted below lists only A1 to A4,
+# and 0046 states outright that none of its rulings is an owner acceptance. Each
+# ruling and the evidence that would overturn it are under `rulings` in this file.
 classification_status: RULED_CANONICAL_FOR_PHASE_O9
 proofing_service_status: RULED_SECOND_BOUNDARY_O11_CHARTERED_NOT_IMPLEMENTED
 byom_status: RULED_CONTRACT_STANDS_O12
+# The Sov context profile is built and self-tested and has no independent observation.
+# The deleted spelling said NOT_WITNESSED in the value; this one says it here.
 sov_operating_agent_status: RULED_ENVELOPE_STANDS_O17_BUILT_SELF_TESTED
 ticket_kind_vocabulary_status: RULED_O19
+# SPEC.md moved after O20 was ruled: decisions/0034 adds two refusal codes to the
+# transition contract so the compiled table stops contradicting it. That record is
+# PROPOSED and Bdo has not ruled on it, so this field describes a SPEC that changed
+# after the table was compiled from it.
 kernel_transition_contract_status: RULED_O20
+# O8 rules the observation shape: a named domain task, already executed, and re-checked
+# by scripts/sov_witness.py semantic on every verify run.
 semantic_cold_start_status: RULED_O8_TASK_EXECUTED
 
 # Bdo accepted the product ground on 2026-08-24 (decisions/0052). Sixteen claims say

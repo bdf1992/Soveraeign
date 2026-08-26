@@ -42,6 +42,8 @@ SECRET_PATTERNS = {
     "AWS access key": re.compile(r"\bAKIA[0-9A-Z]{16}\b"),
 }
 FSTRING_PREFIX = re.compile(r"(?<![A-Za-z0-9_])[fF][rR]?[\"']|(?<![A-Za-z0-9_])[rR][fF][\"']")
+TOP_LEVEL_KEY = re.compile(r"^([A-Za-z_][A-Za-z0-9_-]*):(?:\s|$)")
+YAML_SUFFIXES = {".yaml", ".yml"}
 LOCAL_PATH_PATTERNS = (
     re.compile(r"(?:^|[\s'\"])/Users/[^/\s]+/"),
     re.compile(r"(?:^|[\s'\"])/home/[^/\s]+/"),
@@ -152,6 +154,44 @@ def check_python(path: Path, text: str) -> tuple[list[str], list[str]]:
     return defects, warnings
 
 
+def check_duplicate_keys(path: Path, text: str) -> list[str]:
+    """Report every top-level YAML key the file declares more than once.
+
+    A YAML reader keeps the last value of a repeated key and discards the earlier
+    ones without complaining, so a duplicate is a silent deletion rather than a
+    conflict someone sees. `STATUS.yaml` carried eight of them: three successive
+    merges resolved the same conflict by keeping both sides, and half its standing
+    fields were dead text that still read as current to anyone opening the file.
+
+    A defect, not named debt. The population is clean, so anything this reports is
+    new, and the merge that introduces it is the moment to see it.
+
+    Only column-zero keys are read. A nested duplicate is a real defect this does
+    not catch; catching it needs an indentation-aware parse, and `STATUS.yaml`'s
+    own bounded reader in `scripts/sovaccept/statusblock.py` is where that belongs.
+    A `---` document separator starts a new document, whose keys are its own.
+    """
+    seen: dict[str, int] = {}
+    duplicated: dict[str, int] = {}
+    for number, line in enumerate(text.splitlines(), 1):
+        if line.rstrip() == "---":
+            seen.clear()
+            duplicated.clear()
+            continue
+        match = TOP_LEVEL_KEY.match(line)
+        if not match:
+            continue
+        key = match.group(1)
+        if key in seen:
+            duplicated.setdefault(key, seen[key])
+        else:
+            seen[key] = number
+    relative = path.relative_to(ROOT).as_posix()
+    return [f"{relative}:{first}: key {key!r} is declared again later; "
+            "a YAML reader keeps the last value and discards this one"
+            for key, first in sorted(duplicated.items())]
+
+
 def check_decision_numbers(directory: Path) -> list[str]:
     """Report every decision number carried by more than one record.
 
@@ -177,6 +217,7 @@ def main() -> int:
         print("FAIL: repository text population is empty")
         return 1
     python_count = 0
+    yaml_count = 0
     for path in paths:
         # Read bytes, never Path.read_text: universal-newline translation silently
         # rewrites CR and CRLF to LF, which made the check_text CRLF rule unreachable
@@ -189,6 +230,9 @@ def main() -> int:
             defects.append(f"{relative}: not valid UTF-8 at byte {error.start}")
             continue
         defects.extend(check_text(path, text))
+        if path.suffix in YAML_SUFFIXES:
+            yaml_count += 1
+            defects.extend(check_duplicate_keys(path, text))
         if path.suffix == ".py":
             python_count += 1
             python_defects, python_warnings = check_python(path, text)
@@ -200,9 +244,13 @@ def main() -> int:
         for defect in defects:
             print(f"FAIL: {defect}")
         return 1
+    # "named module debt", not "named debt": `warnings` carries KNOWN_MODULE_DEBT
+    # entries and nothing else. The bare label survived a branch that routed a second
+    # kind of warning through the same list, where it reported eight duplicate YAML
+    # keys as module debt while KNOWN_MODULE_DEBT was empty.
     print(
         f"PASS: repository hygiene ({len(paths)} text files, {python_count} Python modules, "
-        f"{len(warnings)} named debt)"
+        f"{yaml_count} YAML documents, {len(warnings)} named module debt)"
     )
     return 0
 

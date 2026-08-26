@@ -46,8 +46,12 @@ observation; run `git commit` or `git push`.
 
 ## Standing and constraints
 
-- `proofing_service_status: OWNER_ACCEPTED_BOUNDARY_NOT_IMPLEMENTED` (STATUS.yaml).
-- Proofing is the accepted second service boundary after Asset
+- `proofing_service_status: RULED_SECOND_BOUNDARY_O11_CHARTERED_NOT_IMPLEMENTED`
+  (STATUS.yaml). Chartered standing under a reversible default, not owner
+  acceptance: `decisions/0046-decision-queue-drain.md` states that none of its
+  rulings is one. The counter is a conformance case showing the proofing
+  lifecycle is the asset lifecycle renamed.
+- Proofing is the second service boundary after Asset
   (`decisions/0024-open-decision-drain.md`, O11). It owns sessions, rounds,
   annotations, comparisons, assignments, requested changes, decision proposals,
   authorized decisions, dissent, and history. It references exact Asset versions

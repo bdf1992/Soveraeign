@@ -44,9 +44,11 @@ authority.
 
 ## Standing and constraints
 
-- `byom_status: OWNER_ACCEPTED_PHASE_I_CONTRACT` (STATUS.yaml). The exact binding
-  fields, the three data-boundary modes, and the two-model shape are accepted
-  (`decisions/0024-open-decision-drain.md`, O12).
+- `byom_status: RULED_CONTRACT_STANDS_O12` (STATUS.yaml). The exact binding
+  fields, the three data-boundary modes, and the two-model shape stand as a
+  reversible default, not as owner acceptance: no packet exists for them and
+  `decisions/0046-decision-queue-drain.md` says so outright. The counter that
+  overturns O12 is a second adapter the declared fields cannot describe.
 - `local_model_adapter_status: BUILT_SELF_TESTED_NOT_WITNESSED`. Accepting the
   adapter boundary (`decisions/0033-close-the-founding-docket.md`) did not witness
   the implementation; that needs an agent other than its builder.

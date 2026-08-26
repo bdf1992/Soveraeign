@@ -27,10 +27,11 @@ another service's state; touch immutable lineage/ evidence.
 - scripts/verify.py - runs all checks. BUDGET_GRADES holds the bands
   (PLATINUM 3.0, GOLD 6.0, SILVER 15.0) and BUDGET_SECONDS is derived from
   the slowest, so the two cannot drift apart. Every passing run prints its
-  grade; only passing 15.0s fails. decisions/0042.
+  grade; only passing 15.0s fails. decisions/0050.
 - scripts/lint.py - hygiene: UTF-8 decodability, CRLF/trailing-whitespace/final-
   newline, Python syntax and future-annotations, 300-line module limit with
-  KNOWN_MODULE_DEBT, secret shapes, local absolute user paths. It reads bytes,
+  KNOWN_MODULE_DEBT, duplicate top-level YAML keys, decision-number collisions,
+  secret shapes, local absolute user paths. It reads bytes,
   never Path.read_text - universal-newline translation once made the CRLF rule
   unreachable; scripts/tests/test_lint.py holds that defeating case.
 - .gitattributes - pins `* text=auto eol=lf` so the working tree is LF on every
@@ -49,7 +50,8 @@ another service's state; touch immutable lineage/ evidence.
 ## Standing and constraints
 
 - STATUS.yaml: `engineering_framework_status:
-  OWNER_ACCEPTED_PHASE_I_REFERENCE_BASELINE_BUDGET_GRADED_UNDER_0042`.
+  OWNER_ACCEPTED_A1_PHASE_I_REFERENCE_BASELINE`, with the graded budget recorded
+  in the comment above it (`decisions/0050`).
   Python 3.11+, SQLite, filesystem content-addressed custody, JSON Schema
   Draft 2020-12, dependency-light unittest, and local-process/CLI-first
   operation are accepted (`decisions/0024-open-decision-drain.md`, O2). They are

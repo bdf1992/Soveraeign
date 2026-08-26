@@ -148,3 +148,76 @@ class DecisionNumbers(unittest.TestCase):
     def test_the_real_decisions_directory_carries_no_duplicate(self):
         """The regression guard: this is the state the reconciliation left behind."""
         self.assertEqual(lint.check_decision_numbers(REPO_ROOT / "decisions"), [])
+
+
+class DuplicateYamlKeys(unittest.TestCase):
+    """One key, one value. A YAML reader keeps the last of a repeated key and drops
+    the rest in silence, so the earlier line still reads as current to a person and
+    means nothing to a program."""
+
+    def _over(self, text: str) -> list[str]:
+        with TemporaryDirectory() as raw:
+            root = Path(raw).resolve()
+            path = root / "STATUS.yaml"
+            path.write_bytes(text.encode("utf-8"))
+            with patch.object(lint, "ROOT", root):
+                return lint.check_duplicate_keys(path, text)
+
+    def test_distinct_keys_pass(self):
+        self.assertEqual(self._over("alpha: one\nbeta: two\n"), [])
+
+    def test_a_repeated_key_is_reported(self):
+        """The defeating case, in the shape that actually reached the tree: a status
+        field spelled once near the top and again in a later block."""
+        defects = self._over("byom_status: OWNER_ACCEPTED\nother: x\nbyom_status: RULED\n")
+        self.assertEqual(len(defects), 1)
+        self.assertIn("'byom_status'", defects[0])
+        self.assertIn("keeps the last value", defects[0])
+
+    def test_the_reported_line_is_the_discarded_one(self):
+        defects = self._over("a: 1\nkey: first\nb: 2\nkey: second\n")
+        self.assertIn("STATUS.yaml:2:", defects[0])
+
+    def test_every_repeated_key_is_reported_not_only_the_first(self):
+        defects = self._over("a: 1\nb: 2\na: 3\nb: 4\n")
+        self.assertEqual(len(defects), 2)
+
+    def test_a_key_repeated_three_times_is_reported_once(self):
+        self.assertEqual(len(self._over("a: 1\na: 2\na: 3\n")), 1)
+
+    def test_nested_keys_are_not_read(self):
+        """The declared limit, kept honest: indented keys repeat legitimately across
+        sibling mappings, and this check does not claim to judge them."""
+        self.assertEqual(self._over("one:\n  seat: root\ntwo:\n  seat: root\n"), [])
+
+    def test_a_document_separator_starts_a_new_key_space(self):
+        self.assertEqual(self._over("name: a\n---\nname: b\n"), [])
+
+    def test_comments_and_sequence_items_are_not_keys(self):
+        self.assertEqual(self._over("# note: here\nlist:\n  - note: here\n  - note: there\n"), [])
+
+    def test_the_real_status_yaml_carries_no_duplicate_key(self):
+        """The regression guard. Three successive merges resolved one conflict by
+        keeping both sides, leaving eight duplicated standing fields behind."""
+        path = REPO_ROOT / "STATUS.yaml"
+        text = path.read_bytes().decode("utf-8")
+        self.assertEqual(lint.check_duplicate_keys(path, text), [])
+
+
+class DuplicateKeysAreDefectsNotModuleDebt(unittest.TestCase):
+    """A branch routed duplicate-key warnings through the same list that carries
+    KNOWN_MODULE_DEBT, and the summary reported eight of them as named debt while
+    KNOWN_MODULE_DEBT was empty. The count and its label have to agree."""
+
+    def test_a_duplicate_key_fails_the_run_and_is_not_counted_as_debt(self):
+        code, report = run_lint_over({"STATUS.yaml": b"a: one\na: two\n"})
+        self.assertEqual(code, 1)
+        self.assertIn("key 'a' is declared again later", report)
+        self.assertNotIn("named module debt", report)
+        self.assertNotIn("KNOWN DEBT", report)
+
+    def test_a_clean_tree_reports_zero_named_module_debt(self):
+        code, report = run_lint_over({"STATUS.yaml": b"a: one\nb: two\n"})
+        self.assertEqual(code, 0)
+        self.assertIn("0 named module debt", report)
+        self.assertIn("1 YAML documents", report)

@@ -1,0 +1,209 @@
+{
+  "artifact_revision": "5228e83",
+  "case_id": "WITNESS-PR-118-CONSOLE-AUTHORITY",
+  "observed": {
+    "artifact": {
+      "branch_head": "5228e83f2af025aab2b981a91036ce88711c4c88",
+      "console_authority_commits": [
+        "da52d30 fix(console): decide which grant admits an operation, and name one fact once",
+        "36f0dc8 docs(console): record what the withdrawal exclusion costs the permits office",
+        "dcf337c fix(console): say only what one writer can be held to about a cited grant",
+        "9fdeea9 fix(console): repair what the adversarial pass confirmed against these claims",
+        "5228e83 fix(console): close what the re-attack defeated, and guard the claims it walked past"
+      ],
+      "merge_base_with_origin_main": "3360a26d7d3c91ea178c40be402606bedfd5a7ba",
+      "scope_note": "The branch is not only those five commits. c3ca974 and f781354 (bindings/mcp principal binding and its witness) are on this branch and not on origin/main, so the pull request's diff against main carries 54 files, of which 28 belong to the five console-authority commits. A reader grading PR #118 by its diff is grading the MCP work as well.",
+      "working_tree": "clean at start and at finish; `git status --porcelain` empty both times",
+      "worktree_branch": "wt/pr118"
+    },
+    "claims": {
+      "1_which_grant_admits": {
+        "defeating_case_driven": "Revoking a revoke:authority grant that was itself the newest live match. The COMMITTED receipt cited the older live revoke:authority, never the target, and the target was absent from the live set afterwards. Separately, a node holding exactly one live revoke:authority is refused MISSING_PRECONDITION rather than being allowed to spend it on its own withdrawal; the same holds for the only grant:authority; and a second revoke:authority recorded at a scope that admits nothing does not satisfy the last-holder rule.",
+        "method": "Built a 36-entry journal through the CLI including two effective revocations, replayed it with RecordService, folded authority-grant and authority-revocation myself in append order, and for each COMMITTED receipt compared its authority_grant_ids against the set I computed live at the position the check ran (strictly before the receipt's own emitted event) and at the receipt's own index.",
+        "not_covered_by_the_claim": "Two COMMITTED receipts on every fresh node carry an empty authority_grant_ids: the bootstrap genesis pair, self-issued by the first caller to name the node. No grant admitted them. The claim's wording is satisfied by an empty citation, so a reader assuming 'every COMMITTED receipt names the grant that admitted it' would be wrong about the first two.",
+        "numbers": {
+          "citations_that_are_the_newest_live_matching_grant": 16,
+          "cited_grants_not_live_at_their_own_receipt": 0,
+          "committed_receipts": 18,
+          "effective_revocations": 2,
+          "grants": 12,
+          "journal_entries": 36,
+          "receipts_carrying_a_citation": 16,
+          "revoke_receipts_citing_their_own_target": 0
+        },
+        "verdict": "REPRODUCED, bounded to a single writer"
+      },
+      "2_one_fact_one_refusal_code": {
+        "collapse_confirmed": "archive-thread, close-session, withdraw-publication, read-thread and revoke answer a peer's record with exactly the code and message shape they give an absent one, differing only in the id the caller itself typed. The REFUSED receipts written to the journal are identical too: same event, same actor, same reason_code, same detail keys, and the only differing field is the subject the caller supplied.",
+        "declared_but_not_measured": "The check behind 'declared on every operation that can return it' is services/console/tests/test_declared_refusals.py, whose ABSENT_ID is a hand-maintained dict of eight operations, and the manifest-coverage case iterates that same dict. So the census is a declaration, not a measurement: a sixteenth BUILT operation that reads a record by id would answer UNKNOWN_RECORD and pass this suite untouched. It is currently correct - my own 19 probes, which include five operations that dict does not name, found no undeclared code - but the check cannot see an operation nobody adds to it.",
+        "method": "19 CLI probes across every BUILT operation that names a record by id, against an absent id and against a record this store carries under node:peer, with the manifest read as bytes and the produced reason_code looked up in it here.",
+        "numbers": {
+          "answers_that_were_not_one_json_object": 0,
+          "operations_declaring_UNKNOWN_RECORD_in_the_manifest": 8,
+          "probes": 19,
+          "probes_leaving_anything_on_stderr": 0,
+          "produced_codes_undeclared_on_their_operation": 0
+        },
+        "two_surfaces_agree": "ConsoleRoutes.call('read-thread', ...) and the CLI both answer an absent thread with UNKNOWN_RECORD. THREAD_UNKNOWN survives nowhere in the repository except as prose explaining its retirement and as a test asserting its absence.",
+        "verdict": "REPRODUCED"
+      },
+      "3_discovery_refuses_readably": {
+        "map_not_read_before_the_grant": "An ungranted caller gets the identical NO_LIVE_GRANT answer for a path that does not exist, a path that is a directory, and the real map. Only after read:session scoped to the caller is minted do those three diverge into UNREADABLE, UNREADABLE and a successful answer. The declared-stale path is also behind the grant: `--stale` from an ungranted caller is NO_LIVE_GRANT, not MISSING_PRECONDITION.",
+        "method": "439 capability-map inputs through the CLI: 3 path shapes (absent, a directory, the real map), 36 hand-built malformed maps covering every field projection.readable names plus wrong types at each, and 400 randomised deep mutations of the real map (seeded, 1-3 edits each, dropping keys and substituting 17 wrong-typed values at every depth).",
+        "numbers": {
+          "answers_that_were_not_one_json_object": 0,
+          "exit_codes_seen": [
+            0,
+            2
+          ],
+          "inputs": 439,
+          "inputs_leaving_anything_on_stderr": 0,
+          "reason_codes_produced": [
+            "UNREADABLE"
+          ],
+          "undeclared_codes": 0
+        },
+        "verdict": "REPRODUCED"
+      },
+      "4_authority_before_the_read": {
+        "method": "Ungranted probes on console.revoke and console.open-thread, comparing a real subject against an invented one and against a peer node's.",
+        "result": "All four answers are identical in exit code (2), outcome, reason_code (NO_LIVE_GRANT) and message text; the message names the capability and never the scope, the subject or its owner. Reading the source confirms the ordering: permits.withdraw calls require() before grant_record(), and threads.open_thread calls console.authorize() before console.channel().",
+        "verdict": "REPRODUCED"
+      }
+    },
+    "commands": {
+      "cd services/console && python -m unittest discover -s tests": {
+        "exit_code": 0,
+        "result": "OK",
+        "seconds": 6.396,
+        "tests": 184
+      },
+      "python scripts/lint.py": {
+        "exit_code": 0,
+        "named_debt": "scripts/witness_infrastructure.py, 301 lines. Pre-existing on this tree and untouched by this branch. CLAUDE.md's snapshot says KNOWN_MODULE_DEBT is empty, which is stale here.",
+        "result": "PASS: repository hygiene (746 text files, 330 Python modules, 1 named debt)"
+      },
+      "python scripts/sov_accept.py audit": {
+        "exit_code": 0,
+        "result": "PASS: 16 ruling(s), 0 presented for acceptance, 1 admissible hold(s), 0 open questions"
+      },
+      "python scripts/sov_service.py check": {
+        "exit_code": 0,
+        "result": "PASS: 10 service manifests, 133 declared operations, no defect"
+      },
+      "python scripts/sov_surface.py check": {
+        "exit_code": 0,
+        "result": "PASS: 133 declared / 5 reachable / 0 observed"
+      },
+      "python scripts/verify.py": {
+        "checks": 39,
+        "exit_code": 0,
+        "gold_threshold_seconds": 6.0,
+        "grade": "SILVER",
+        "note": "Stable across three runs. A slipped grade is a reportable observation, not a failing gate (decisions/0050). CLAUDE.md's snapshot says 40 checks; this tree runs 39.",
+        "runs": 3,
+        "spread_seconds": 0.042,
+        "wall_seconds_measured_including_interpreter_start": [
+          13.75,
+          13.76,
+          13.71
+        ],
+        "wall_seconds_reported": [
+          13.618,
+          13.624,
+          13.582
+        ],
+        "work_seconds": [
+          40.772,
+          40.935,
+          40.654
+        ]
+      },
+      "python scripts/witness_console.py": {
+        "exit_code": 0,
+        "path_note": "Read this harness before trusting it. It does not import soveraeign_console_service, drives the CLI as a subprocess, checks the child's exit code rather than parsing its prose, validates payloads against the schema files' own `properties`, and joins post to receipt by scanning the journal. It is an independent path.",
+        "result": "20/20 independent observations held"
+      }
+    },
+    "findings_the_report_did_not_carry": [
+      {
+        "finding": "The manifest's own `note` opens 'Twelve operations are BUILT' while the same file declares 15 operations at standing BUILT and the note goes on to describe 'nine of the fifteen'. A stale sentence in the artifact the claim is about.",
+        "id": "F1",
+        "severity": "SMALL, INSIDE THE CONCERN",
+        "where": "services/console/contracts/service.json, `note`"
+      },
+      {
+        "finding": "The CLI's stated contract - 'every command writes one JSON object to stdout, including refusals', 'exit codes: 0 committed, 2 refused, 3 unknown record, 1 usage error' - does not hold for an argparse usage error. A missing required flag, an unknown subcommand, no subcommand, and an out-of-choice --actor-kind each exit 2 with zero bytes on stdout and a usage message on stderr. Exit 2 is the code the module reserves for REFUSED, so a machine caller cannot tell a refusal from a malformed invocation by exit code. This is the same class the branch repaired one commit earlier for `--node BAD` (5228e83), which now correctly returns JSON at exit 1; the sibling entry point was left.",
+        "id": "F2",
+        "severity": "MEDIUM, INSIDE THE CONCERN",
+        "where": "services/console/src/soveraeign_console_service/cli.py, module docstring and main()"
+      },
+      {
+        "finding": "test_declared_refusals.py grades a declaration where it could measure. Its ABSENT_ID is a hand-kept dict of eight operations and the manifest-coverage case walks the same dict, so 'declared on every operation that can return it' is enforced against a list somebody maintains rather than against the operation set. Currently correct; blind to a new operation.",
+        "id": "F3",
+        "severity": "SMALL, CHECK-WITNESSING",
+        "where": "services/console/tests/test_declared_refusals.py, ProducedRefusals.ABSENT_ID"
+      },
+      {
+        "finding": "authority.py is exactly 300 lines. AGENTS.md says keep modules below 300; scripts/lint.py enforces `> 300`, so it passes with no margin.",
+        "id": "F4",
+        "severity": "INFORMATIONAL",
+        "where": "services/console/src/soveraeign_console_service/authority.py"
+      },
+      {
+        "finding": "scripts/tests/test_sov_surface.py::test_a_hand_edit_is_refused writes to the tracked file docs/surface.html in the real working tree and restores it in a finally block. That is why `verify.py` prints a FAIL line for a stale surface.html inside a shard that reports OK - the verdict is the exit code, not the printed word. With several sessions writing this tree at once (CLAUDE.md T6), a run that dies between the write and the restore leaves a tracked file corrupted. Not this branch's change; noted because a reader of verify's output will otherwise read that FAIL as real.",
+        "id": "F5",
+        "severity": "INFORMATIONAL, PRE-EXISTING",
+        "where": "scripts/tests/test_sov_surface.py"
+      }
+    ],
+    "helper_and_witness_relation": "The commit messages for 9fdeea9 and 5228e83 declare that a helper ran Red passes over these claims and that every confirmed finding was repaired in place. That is the correct handling: the helper is inside the build, its findings became commits, and no report offers it as the witness. The two artifacts under bindings/mcp/observations/ that this branch touches do not claim independence either - the discovery one records under what_this_does_not_establish that it was taken by calling the gateway it observes.",
+    "known_gaps_checked_by_driving_them": {
+      "guarded_entry_points_unguarded_data": {
+        "verdict": "CONFIRMED. With the CLI read-thread refused to Mallory for want of a grant, an in-process caller holding the service object gets Projection(console).thread_posts -> 1 post record, ConsoleService.body -> the 12 payload bytes 'secret bytes', and authority.held -> all 6 live grants. The row's account matches what I can drive."
+      },
+      "identity": {
+        "correction_to_the_row": "The row's worked example says 'the shipped default for that flag is Bdo'. That is stale: --granted-by is required on the shipped CLI now. The row's conclusion is unaffected, because typing the name explicitly costs nothing, which is what the walk above does.",
+        "row_says": "Every guard in this service is exactly as strong as an identity nothing verifies.",
+        "terminal": "The row names an AUTHORITY_SEAM held for Bdo, not a filed ticket. That is a seam, correctly stated.",
+        "verdict": "CONFIRMED BY DRIVING IT, and not softened.",
+        "walk": "Bdo opens a node, a private channel, a private thread and posts to it. A caller named Mallory is refused read-thread with NO_LIVE_GRANT. Mallory then types `grant --operator Mallory --capability read:thread --scope <Bdo's thread> --granted-by Bdo`, which exits 0 and records granted_by: Bdo. Mallory reads the private thread and its post, then issues itself read:authority and lists all 8 live grants on the node. Declared operations only, no second --node, no malformed input."
+      },
+      "two_writers_on_one_store": {
+        "chain_break": "CONFIRMED. 8 of 60 trials (7 of 20 unstaggered, 1 of 40 staggered) left the journal unreadable with soveraeign_record_service.core.BrokenChain, both child processes exiting 0 and printing a success record.",
+        "citation_of_a_revoked_grant": "NOT REPRODUCED. Across 60 trials of open-channel racing revoke, no COMMITTED receipt cited a grant already revoked at its position. I do not disconfirm the row - the window is between the check's read and the receipt append, and process startup dominates it - but I could not observe the 8-in-20 rate the row reports, and I am not able to attest that half.",
+        "row_says": "Reproduced 2026-08-26 with two ordinary processes; nine of twenty trials broke the chain and eight produced a COMMITTED receipt citing a revoked grant; BrokenChain escapes cli.main uncaught.",
+        "uncaught_traceback": "CONFIRMED. Against a store whose chain is already broken, `soveraeign-console grants --reader root` exits 1 with zero bytes on stdout and a BrokenChain traceback on stderr; `open-channel` does the same. That is the CLI's own contract broken."
+      }
+    },
+    "observer_relation": "SUBPROCESS_ONLY for every console call except one, stated exactly. The Console Service was driven only as `python -m soveraeign_console_service.cli` in a child process with PYTHONPATH covering services/console/src, services/record/src and scripts/. Nothing in this walk imported soveraeign_console_service to make a console call. The journal was replayed with soveraeign_record_service.RecordService directly and never by asking the console what it had committed. Liveness of a grant at a journal position was recomputed here from the authority-grant and authority-revocation payloads, not by calling authority.live_grants or authority.check. The manifest at services/console/contracts/service.json was read as bytes and joined against what the CLI actually printed; the tests' own join was not relied on. Three exceptions, declared: (a) ConsoleRoutes has no CLI surface, so the routed-read comparison was taken in-process; (b) the ENFORCED_AUTHORITY and ENFORCED_SCOPE tables were imported to read the two dicts as data for a join against contracts/capability-offices.json, not to make a call; (c) the KNOWN-GAPS 'unguarded data' row was driven in-process because that row says the paths have no CLI surface. This observer built none of the change and edited no file under services/, contracts/, scripts/, bindings/ or docs/.",
+    "standing_note": "This is an observation independent of the builder. It proposes at most BUILT -> WITNESSED and settles nothing. Only Bdo ratifies.",
+    "subject_claim": {
+      "claim": "Nine BUILT console operations declared a required authority and checked nothing; all nine are now guarded.",
+      "how": "One fresh journal per probe so no earlier grant leaked in. For each of the 15 BUILT operations: call it over the CLI holding nothing, then mint exactly the grant contracts/capability-offices.json declares for that operation, then call it again.",
+      "result": {
+        "all_15_admit_on_the_exact_declared_grant": true,
+        "all_15_refuse_an_ungranted_caller_with_NO_LIVE_GRANT": true,
+        "built_not_enforced": [],
+        "built_operations_in_manifest": 15,
+        "console_rows_reading_NOT_ENFORCED_in_the_discovery_answer": 0,
+        "console_rows_reading_UNDETERMINABLE_in_the_discovery_answer": 0,
+        "enforced_capability_disagrees_with_capability_offices_on": [],
+        "enforced_not_built": [],
+        "entries_in_ENFORCED_AUTHORITY": 15,
+        "scope_defeating_case": "open-session granted at the wrong scope (open:session over 'somebody-else') still refuses with NO_LIVE_GRANT, so the admission is the exact scope and not the capability name."
+      },
+      "verdict": "REPRODUCED"
+    },
+    "what_a_reader_would_assume_the_claims_cover_and_they_do_not": [
+      "That a guarded operation means an authorised caller. It does not. Every principal in this service is a string the caller types, and the walk under known_gaps_checked_by_driving_them.identity takes a private thread with declared operations only.",
+      "That claim 1 holds with more than one process on the store. It is scoped to a single writer and says so; with two writers the digest chain itself breaks, which I reproduced.",
+      "That every COMMITTED receipt names the grant that admitted it. The two bootstrap genesis grants on every fresh node cite nothing.",
+      "That UNKNOWN_RECORD is the uniform answer for 'not carried by this node'. Three operations answer FOREIGN_NODE_RECORD once a grant has been shown, and because node names are unbounded that difference is a working cross-node existence oracle. KNOWN-GAPS records it on the node-identity row; the claims do not.",
+      "That guarding the declared operations guards the data. Three package exports return the same bytes to an in-process caller with no check, confirmed above.",
+      "That the discovery answer being complete means it is current. `freshness.verified` was null on every run here, and the answer says so itself."
+    ]
+  },
+  "participant_claim": "COMPLETED",
+  "participant_id": "console-service-reference"
+}

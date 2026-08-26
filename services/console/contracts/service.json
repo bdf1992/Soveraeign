@@ -299,12 +299,18 @@
         "post"
       ],
       "preconditions": [
+        "declared_thread_identity",
+        "declared_session_identity",
         "thread_exists",
-        "session_live"
+        "session_live",
+        "session_actor_matches_checked_actor"
       ],
       "commit": "DERIVED",
       "refusals": [
-        "SESSION_NOT_LIVE"
+        "ACTOR_ATTRIBUTION_MISMATCH",
+        "MALFORMED_IDENTITY",
+        "SESSION_NOT_LIVE",
+        "THREAD_UNKNOWN"
       ]
     },
     {
@@ -468,9 +474,12 @@
     }
   ],
   "local_refusals": {
+    "ACTOR_ATTRIBUTION_MISMATCH": "AUTHORITY_REFUSED",
     "FOREIGN_NODE_RECORD": "AUTHORITY_REFUSED",
+    "MALFORMED_IDENTITY": "MISSING_PRECONDITION",
     "NO_LIVE_GRANT": "AUTHORITY_REFUSED",
-    "SESSION_NOT_LIVE": "AUTHORITY_REFUSED"
+    "SESSION_NOT_LIVE": "AUTHORITY_REFUSED",
+    "THREAD_UNKNOWN": "MISSING_PRECONDITION"
   },
   "uses_kernel_contracts": [
     "standing",

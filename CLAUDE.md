@@ -170,7 +170,7 @@ evidenced result, never permission to begin
   repository that commits and merges. The gate grades the landing against
   `contracts/standing-grants.json`; the shipped grant is `PROPOSED`, so it
   presently refuses every landing until Bdo ratifies it
-  (`decisions/0061-standing-authorization-and-the-landing-loop.md`).
+  (`decisions/0064-standing-authorization-and-the-landing-loop.md`).
 - Whole stack: Workflow `sov-federation`, optionally
   `{ domains: [...], objective: "...", sequential: true }`.
 - One domain: Workflow `sov-<domain>` with `{ objective: "..." }`; domains

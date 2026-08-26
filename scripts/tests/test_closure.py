@@ -26,6 +26,9 @@ import sov_closure  # noqa: E402
 CONTRACT = json.loads((ROOT / "contracts" / "closure-ownership.json").read_text("utf-8"))
 CORPUS = json.loads(
     (ROOT / "conformance" / "fixtures" / "closure" / "handoff-cases.json").read_text("utf-8"))
+SETTLEMENT = json.loads((ROOT / "contracts" / "ticket-settlement.json").read_text("utf-8"))
+ISSUE_SCHEMA = json.loads((ROOT / "contracts" / "issue-metadata.schema.json").read_text("utf-8"))
+PR_TEMPLATE = (ROOT / ".github" / "pull_request_template.md").read_text("utf-8")
 
 
 def case(case_id: str) -> dict:
@@ -140,6 +143,40 @@ class SeamTable(unittest.TestCase):
                 "owner" if seam["provisions"][0] == "judgement" else seam["requested_from"][0])
             with self.subTest(seam=name):
                 self.assertEqual(sov_closure.judge(claim)["verdict"], sov_closure.PERMITTED)
+
+
+class SettlementPolicy(unittest.TestCase):
+    """Settlement closes concerns; GitHub execution artifacts only carry them."""
+
+    def test_only_satisfies_and_supersedes_are_terminal(self):
+        terminal = {name for name, relation in SETTLEMENT["relations"].items()
+                    if relation["terminal"]}
+        self.assertEqual(terminal, {"satisfies", "supersedes"})
+        self.assertFalse(SETTLEMENT["relations"]["advances"]["terminal"])
+
+    def test_merge_and_green_are_not_terminal(self):
+        terminal = SETTLEMENT["landed_terminal"]
+        self.assertFalse(terminal["merge_is_terminal"])
+        self.assertFalse(terminal["green_ci_is_terminal"])
+        self.assertTrue(CONTRACT["present_or_land_terminal"]["merge_is_not_settlement"])
+
+    def test_source_projection_reuses_existing_ticket_references(self):
+        fields = set(ISSUE_SCHEMA["properties"])
+        projected = set()
+        for group in ("product_intent", "evidence", "governance", "coordination"):
+            projected.update(SETTLEMENT["source_projection"][group]["ticket_fields"])
+        self.assertLessEqual(projected, fields)
+        self.assertTrue(SETTLEMENT["source_projection"]["no_duplicate_registry"])
+
+    def test_pr_template_makes_advances_distinct_from_closes(self):
+        self.assertIn("Relation: `advances` | `satisfies` | `supersedes`", PR_TEMPLATE)
+        self.assertIn("`Closes #N` syntax only when Relation is `satisfies`", PR_TEMPLATE)
+
+    def test_adoption_does_not_mint_retrofit_work(self):
+        adoption = SETTLEMENT["adoption"]
+        self.assertTrue(adoption["prospective"])
+        self.assertTrue(adoption["historical_missing_source_is_not_a_defect_by_itself"])
+        self.assertIn("Do not mint cleanup tickets", adoption["historical_rule"])
 
 
 if __name__ == "__main__":

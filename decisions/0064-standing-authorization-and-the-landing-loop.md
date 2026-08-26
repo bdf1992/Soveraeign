@@ -1,4 +1,4 @@
-# 0061 · A standing authorization, and the loop that spends it
+# 0064 · A standing authorization, and the loop that spends it
 
 Status: `OWNER-DIRECTED · PROPOSED`
 
@@ -115,6 +115,11 @@ exercise cannot sit in the registry looking authoritative. The check runs inside
   deciding again, the grant has become the habit this record says it must not be.
 
 ## Residual
+
+Both paragraphs below were true when this record was written and are superseded by
+`decisions/0065-standing-grant-ratified.md`: Bdo ratified the grant on 2026-08-25, and the
+branch was brought level with `main` the same day. They are kept as written rather than
+edited, because a decision record states what was true when it was made.
 
 The grant ships at `PROPOSED` standing and the evaluator refuses a grant that is not
 `RATIFIED`, which means the loop is presently inert: it will run and the gate will refuse

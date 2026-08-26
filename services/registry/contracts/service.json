@@ -1,6 +1,6 @@
 {
   "service_id": "registry",
-  "standing": "PROPOSED",
+  "standing": "BUILT",
   "owns": [
     "registry-entry",
     "entry-relation",
@@ -139,7 +139,7 @@
     },
     {
       "operation": "resolve",
-      "standing": "PROPOSED",
+      "standing": "BUILT",
       "logical_endpoint": "sov://registry/resolve",
       "subject": "resolution",
       "crud": "READ",

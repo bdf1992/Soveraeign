@@ -105,7 +105,7 @@ records none in the export or the receipt.
 `apply.py` is the only module permitted to write to GitHub. It exists because a drift
 report that nobody can act on is not a control surface, and because handing the owner
 a finding without a recommended action moves the expensive half of the work onto them
-(`decisions/0060-board-management-role.md`).
+(`decisions/0057-board-management-role.md`).
 
 It is deliberately self-contained. The module holding write authority should be
 readable in one file without following an import into shared plumbing, so it repeats

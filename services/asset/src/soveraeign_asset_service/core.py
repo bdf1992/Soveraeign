@@ -34,6 +34,7 @@ from soveraeign_asset_service.identity import ORIGINAL, REVISION, Identity
 from soveraeign_asset_service.librarian import Librarian
 from soveraeign_asset_service.organization import Organization, OrganizationRefused
 from soveraeign_asset_service.projections import Projections
+from soveraeign_asset_service.recording import ReaderDeclaration
 from soveraeign_asset_service.runs import DEFAULT_LEASE_TTL_SECONDS, Runs, StaleLease
 from soveraeign_asset_service.store import Store, new_id
 
@@ -207,10 +208,11 @@ class AssetService:
         self.db.commit()
         return receipt
 
-    def request_derivative(self, asset_id: str, version_id: str,
-                           actor: str, kind: str = "metadata-card") -> str:
+    def request_derivative(self, asset_id: str, version_id: str | list[str],
+                           actor: str, kind: str = "metadata-card", *,
+                           reader: ReaderDeclaration | None = None) -> str:
         """Request a derived version. The request is an attempt, not a result."""
-        return self.runs.request(asset_id, version_id, actor, kind)
+        return self.runs.request(asset_id, version_id, actor, kind, reader)
 
     def claim(self, run_id: str, worker: str,
               ttl_seconds: float = DEFAULT_LEASE_TTL_SECONDS) -> int:
@@ -221,6 +223,10 @@ class AssetService:
                           output: bytes, mime: str = "application/json") -> str:
         """Accept a worker's report. A report settles nothing."""
         return self.runs.report(run_id, worker, fence, output, mime)
+
+    def reconstruct_recording(self, recording_or_version_id: str) -> dict[str, Any]:
+        """Resolve every addressed material of a declared derivative recording."""
+        return self.runs.reconstruct(recording_or_version_id)
 
     def observe(self, run_id: str, observer: str) -> str:
         """Check a reported run against its durable output."""

@@ -183,7 +183,7 @@ source and derivation lineage, technical metadata, relationships, derivatives,
 discovery, asset-use records, and the organizational layer over them: collection
 types, asset collections, membership, and the conformance read that judges each
 member against the schema its type declares
-(`decisions/0057-asset-collections-and-the-librarian.md`).
+(`decisions/0063-asset-collections-and-the-librarian.md`).
 
 The **Proofing Service** owns proofing sessions, review rounds, annotations,
 version comparisons, reviewer assignments, requested changes, approval or

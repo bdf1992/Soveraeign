@@ -203,11 +203,11 @@ the conformance domain's to split.
 - Whether to accept the write half at all. It mutates a public repository, so
   every write is an irreversible external effect however narrowly it is gated,
   and direction to add a crossing type is not acceptance of this shape of it.
-- Which coordination surface survives. `decisions/0060-board-management-role.md`
+- Which coordination surface survives. `decisions/0057-board-management-role.md`
   landed on `main` nineteen hours before this record was written, declaring its
   own write path; the claim above that no lawful path existed was true when the
   branch was cut and false by the time it was committed. Both define
-  `adapters/github/apply.py` and neither is a superset: `0060-board-management-role.md` writes branch-ref
+  `adapters/github/apply.py` and neither is a superset: `0057-board-management-role.md` writes branch-ref
   deletion, this one writes containment relations and issue bodies. The label
   catalogues differ by 120 lines. Accepting both would admit two write paths to
   one surface.

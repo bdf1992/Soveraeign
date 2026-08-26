@@ -48,6 +48,8 @@ class Kind(unittest.TestCase):
     def test_the_specific_rule_wins_over_the_general_one(self):
         self.assertEqual(facets.kind("services/asset/CHARTER.md"), "charter")
         self.assertEqual(facets.kind("services/asset/README.md"), "readme")
+        self.assertEqual(
+            facets.kind("services/asset/conformance/PROD-I-2-BUILD.md"), "report")
         self.assertEqual(facets.kind("decisions/0001-founding-boundary.md"), "decision")
         self.assertEqual(facets.kind("AGENTS.md"), "governing")
 

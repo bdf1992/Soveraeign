@@ -2,27 +2,26 @@
 
 ```text
 source          PRD.md · SPEC.md · CONTRACT.md · STATUS.yaml
-source_digest   f1157f2f1ebad6aa · 108497d370c0fd8d · 896e59ba90828ad7 · c141d6f181709311
-reader          hand-authored · v1
+source_digest   f1157f2f1ebad6aa · 108497d370c0fd8d · 896e59ba90828ad7 · 8d31be110661b00b
+reader          hand-authored · v2
 fidelity        LOSSY
 omissions       the nine PROD-I requirement texts and their defeating cases;
-                per-requirement current standing, which STATUS.yaml does not
-                yet record requirement by requirement
+                per-operation evidence, held by service tests and observation records
 ```
 
 ```mermaid
 flowchart LR
     O["<b>OPEN</b>"]
-    B["<b>BUILT</b><br/>implementation claim"]
-    W["<b>WITNESSED</b><br/>independent evidence"]
-    R["<b>RATIFIED</b><br/>declared right"]
+    B["<b>BUILT</b><br/>implementation + defeating cases"]
+    W["<b>WITNESSED</b><br/>independent observation"]
+    R["<b>RATIFIED / ACCEPTED</b><br/>typed owner-held settlement where required"]
 
-    O -- "positive and defeating<br/>fixture for every<br/>normative predicate" --> B
-    B -- "independent run,<br/>different actor" --> W
-    W -- "Bdo's recorded decision" --> R
+    O --> B
+    B -- "independent run,<br/>not builder report" --> W
+    W -- "declared authority<br/>and acceptance evidence" --> R
 
-    SELF["Builder's own<br/>success report"]
-    SELF -- "cannot advance a requirement — C7" --x W
+    SELF["Builder / service<br/>success receipt"]
+    SELF -- "evidence, never authority" --x W
 
     classDef pen stroke-width:2px
     classDef pencil stroke-dasharray:5 4,stroke-width:1px
@@ -31,28 +30,19 @@ flowchart LR
 
 ## What it shows
 
-`BUILT` is a claim, not a result. Passing self-authored unit tests gets a
-requirement to `BUILT` and no further. `WITNESSED` needs an independent run;
-`RATIFIED` needs the declared right. No agent advances a requirement on its own
-report.
+A passing participant test or terminal service receipt can establish build
+evidence; neither can award itself WITNESSED standing. Independent observation
+must reconstruct the relevant predicate without relying on the executor's
+claim. Where settlement belongs to the owner, the human gate is **acceptance,
+not preapproval**.
 
-The blocked arrow is `CONTRACT.md` C7 — an executor's success report is not
-evidence that the world changed. Settlement uses an observer that can inspect
-world state without relying on the executor's account. In this repository's
-harness that is enforced structurally: the agent that builds and the agent that
-witnesses are never the same agent.
+The current repository makes this distinction concrete. Asset and Record remain
+built/self-tested rather than self-witnessed. Host `read-health` is also built
+and self-tested, while its Node Interface fact is explicitly `observed: false`.
+The engineering framework itself is owner-accepted as the Phase-I reference
+baseline; that acceptance does not convert every implementation beneath it into
+witnessed behavior.
 
-## Where the work actually sits
-
-`STATUS.yaml` records `asset_service_status`, `record_service_status`,
-`local_model_adapter_status`, `service_manifest_contract_status`,
-`coordination_registrar_status`, and `lineage_corpus_status` all as
-`BUILT_SELF_TESTED_NOT_WITNESSED`. Six claims parked at exactly the
-`BUILT → WITNESSED` seam, which is the seam this diagram exists to make
-unmissable. Nothing in this repository has reached `WITNESSED`.
-
-Phase I exits only when every normative predicate has both fixtures, the
-applicable fixtures run through **one human-facing binding and two materially
-different model bindings** — three in total, not two — independent observation
-can reconstruct the receipts, open judgement calls are visible, and Bdo ratifies
-operational acceptance (`PRD.md`, Phase-I exit).
+The derived operation surface currently says 127 declared, 5 reachable, and 0
+observed. That is not a health score. It is three independent layers of fact,
+and the lifecycle must not collapse them into one percentage.

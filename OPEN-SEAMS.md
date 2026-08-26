@@ -63,11 +63,11 @@ rollback or compensation remains later work.
 exception. Bdo granted one on 2026-08-23 for board management: write to the
 GitHub coordination surface, with a confirm on each batch. The capability is
 built and refuses without a per-action approval
-(`decisions/0060-board-management-role.md`), so the grant is honoured in
+(`decisions/0057-board-management-role.md`), so the grant is honoured in
 practice while the boundary text still reads as absolute. The two must be
 reconciled: either the boundary is restated to admit an owner-approved,
 per-action external effect, or the capability is withdrawn. The restatement is
-Bdo's; it is drafted in `0060-board-management-role.md` and is not applied here.
+Bdo's; it is drafted in `0057-board-management-role.md` and is not applied here.
 
 ## S10 · Product boundary
 
@@ -278,7 +278,7 @@ a branch on its own.
 
 `CLASSIFICATION.md` gives the Asset Projection Service a *projection collection*: a
 declared retrieval scope with text, graph, and vector configuration, which is an index.
-`decisions/0057-asset-collections-and-the-librarian.md` gives the Asset Service an
+`decisions/0063-asset-collections-and-the-librarian.md` gives the Asset Service an
 *asset collection*: a typed, curated set an operator files assets into. Observed
 2026-08-24 while declaring the second one, with `projection.declare-collection` already
 in `contracts/capability-offices.json`.

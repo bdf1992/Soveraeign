@@ -5,7 +5,7 @@ description: Board management for the GitHub coordination surface - survey it in
 
 # Coordination Domain Skill
 
-Standing: `BUILT_SELF_TESTED_NOT_WITNESSED` (see `decisions/0060-board-management-role.md`).
+Standing: `BUILT_SELF_TESTED_NOT_WITNESSED` (see `decisions/0057-board-management-role.md`).
 
 The board is a coordination surface, not a System of Record. Nothing here
 settles standing, and an approved action changes what GitHub displays, never

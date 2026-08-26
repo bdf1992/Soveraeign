@@ -1,4 +1,4 @@
-# 0060 · Board management role and the GitHub write crossing
+# 0057 · Board management role and the GitHub write crossing
 
 Status: `PROPOSED · OWNER RATIFICATION PENDING`
 

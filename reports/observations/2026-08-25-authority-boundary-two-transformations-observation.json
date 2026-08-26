@@ -1,0 +1,80 @@
+{
+  "observer_id": "sov-witness (independent observation, Claude Opus 5 1M)",
+  "contributed_to_build": false,
+  "verdict": "DISSENTED",
+  "concern": "authority boundary refuses ungradeable paths (round 5: two-transformation claim)",
+  "checks": [
+    {
+      "command": "git status --porcelain -uall; git rev-parse HEAD; git diff -- scripts/sovkernel/authority.py conformance/fixtures/authority/grant-cases.json",
+      "exit_code": 0
+    },
+    {
+      "command": "THIRD TRANSFORMATION: throwaway repo, 20 structural pathspec forms aimed at transformations rather than spellings, each graded by authority.evaluate against the live RATIFIED grant and handed to git add  # 1 HOLE: bare directory",
+      "exit_code": 0
+    },
+    {
+      "command": "DEFECT: authority.evaluate PERMITS 'contracts' (no trailing separator, no pattern character, no magic, every segment names something); git add -- contracts stages contracts/standing-grants.json and contracts/authority-grant.schema.json - git expands a pathspec naming a directory into every path beneath it, which is neither normalisation nor globbing",
+      "exit_code": 0
+    },
+    {
+      "command": "DEFECT reaches the real CLI: python scripts/sov_grant.py check scratchpad/req_bare_dir.json  # PERMITTED, exit 0, for paths=['contracts'] against the live grant with full preconditions satisfied",
+      "exit_code": 0
+    },
+    {
+      "command": "DEFECT is worsened by the caller: sov_land.repo_relative('contracts/') returns 'contracts', so the trailing-separator spelling D-008h refuses is canonicalised by the caller into the spelling the boundary admits, with identical git behaviour",
+      "exit_code": 0
+    },
+    {
+      "command": "DEFECT arises without an adversary: git status --porcelain emits '?? newdir/' for an untracked directory, dirty_paths() returns 'newdir/', repo_relative makes it 'newdir'  # a single request path can authorise an unbounded subtree",
+      "exit_code": 0
+    },
+    {
+      "command": "python -c \"blast radius unchanged: the only excluded entries inside an admitted prefix are contracts/standing-grants.json and contracts/authority-grant.schema.json; the bare directory 'contracts' reaches both\"",
+      "exit_code": 0
+    },
+    {
+      "command": "SUPPORTING: the magic rule is load-bearing, not merely precautionary - ':/contracts/standing-grants.json', '::contracts/standing-grants.json', ':(literal)contracts/standing-grants.json', ':(icase)contracts/STANDING-GRANTS.json' and ':(glob)contracts/*' each stage the excluded registry and each is REFUSED by the leading-colon rule",
+      "exit_code": 0
+    },
+    {
+      "command": "SUPPORTING: wildmatch escape hypothesis tested and dead - 'contracts/standing-grants\\.json' is PERMITTED but stages nothing",
+      "exit_code": 0
+    },
+    {
+      "command": "item 2: throwaway repo with a real tracked file named contracts/foo[1].json; git add -- 'contracts/foo[1].json' stages BOTH foo[1].json and foo1.json, ':(literal)contracts/foo[1].json' stages exactly one  # refusing [] is correct because the plain spelling is ambiguous, not because such a file cannot exist; the file is landable only via magic, which is also refused",
+      "exit_code": 0
+    },
+    {
+      "command": "git ls-files | filter for * ? [ ] or a leading colon  # none in this repository, so the over-refusal costs nothing today",
+      "exit_code": 0
+    },
+    {
+      "command": "item 3: python -c \"_ungradeable on five paths carrying two faults each; every one returns a reason, so every one is AUTHORITY_REFUSED and only the sentence differs - the check order does not affect any verdict\"",
+      "exit_code": 0
+    },
+    {
+      "command": "item 4: composition - nine legitimate spellings still canonicalise to one string and stay PERMITTED, but 'contracts/' -> 'contracts' is a composition regression, not a rescue",
+      "exit_code": 0
+    },
+    {
+      "command": "purity re-check with three module constants: cp authority.py and grant-cases.json into an empty directory; graded 32 cases, mismatches=0, no non-stdlib module imported; grep for filesystem references returns 0",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/sov_grant.py selfcheck  # PASS: 1 grant(s) valid, 32 authority cases graded",
+      "exit_code": 0
+    },
+    {
+      "command": "python -m unittest discover -s scripts/tests -p \"test_sov_land.py\"  # Ran 11 tests, OK",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/lint.py  # 733 text files, 314 Python modules, 0 named debt",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/verify.py  # PASS: 39 checks in 11.435s wall; GRADE SILVER; corpus gated as 'standing authority grants' at 32 cases; conformance SUITE PASS cases=20 coverage_gaps=0",
+      "exit_code": 0
+    }
+  ]
+}

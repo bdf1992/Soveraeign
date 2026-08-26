@@ -1,0 +1,68 @@
+{
+  "observer_id": "sov-witness (independent observation, Claude Opus 5 1M)",
+  "contributed_to_build": false,
+  "verdict": "DISSENTED",
+  "concern": "authority boundary refuses ungradeable paths (round 4: NON_NAMING_SEGMENTS)",
+  "checks": [
+    {
+      "command": "git status --porcelain -uall; git rev-parse HEAD; git diff -- scripts/sovkernel/authority.py conformance/fixtures/authority/grant-cases.json",
+      "exit_code": 0
+    },
+    {
+      "command": "CLOSURE TEST: throwaway git repo mirroring the grant shape; 42 spellings, each graded by authority.evaluate against the live RATIFIED grant AND handed to git add to see what it stages  # HOLES: none; every spelling git normalises onto an excluded file is REFUSED",
+      "exit_code": 0
+    },
+    {
+      "command": "python -c \"same battery, over-refusal side: scripts/./a.py and scripts//a.py are REFUSED though safe; fail-closed, and repo_relative canonicalises both before the boundary\"",
+      "exit_code": 0
+    },
+    {
+      "command": "DEFECT: same cross-check over 17 git pathspec patterns  # 8 HOLES: contracts/*, contracts/**, contracts/*.json, contracts/s*, contracts/[s]tanding-grants.json, contracts/?tanding-grants.json, contracts/standing-grants.jso?, contracts/standing-grants.js*n each PERMITTED and each stages contracts/standing-grants.json",
+      "exit_code": 0
+    },
+    {
+      "command": "DEFECT reaches the real CLI: python scripts/sov_grant.py check scratchpad/req_glob.json  # PERMITTED, exit 0, for contracts/* and contracts/standing-grants.jso? against the live grant with full preconditions satisfied",
+      "exit_code": 0
+    },
+    {
+      "command": "DEFECT survives the caller: sov_land.repo_relative('contracts/*') returns 'contracts/*' unchanged, so the glob is live end to end through sov_land.py land --path, not only at the raw boundary",
+      "exit_code": 0
+    },
+    {
+      "command": "python -c \"blast radius: the only two excluded entries sitting inside an admitted prefix are contracts/standing-grants.json and contracts/authority-grant.schema.json - the grant registry and its schema. .github/* and decisions/* are REFUSED because those prefixes are not admitted at all.\"",
+      "exit_code": 0
+    },
+    {
+      "command": "python -c \"item 2 composition: nine legitimate spellings (relative, backslash, ./-prefixed, doubled separator, interior ./, .. that stays inside, absolute, and a deep service path) all canonicalise to one string and all PERMITTED\"",
+      "exit_code": 0
+    },
+    {
+      "command": "python -c \"lesser findings re-probed: contracts/Standing-Grants.json, contracts/STANDI~1.JSO, contracts/%2e/..., fullwidth U+FF0E, contracts/.../..., and symlink traversal are each PERMITTED at the evaluator and stage NOTHING in git; git pathspec matching is literal against the index for filesystem aliases\"",
+      "exit_code": 0
+    },
+    {
+      "command": "grep -n '^import|^from' scripts/sovkernel/authority.py; grep -n 'open(|pathlib|os\\.|Path(|__file__|getenv|environ|subprocess|socket' scripts/sovkernel/authority.py  # only datetime and typing; no filesystem reference",
+      "exit_code": 1
+    },
+    {
+      "command": "cp authority.py and grant-cases.json into an empty directory; python -c \"graded 28 cases, mismatches=0, no non-stdlib module imported\"  # the purity claim still holds with the new module constant",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/sov_grant.py selfcheck  # PASS: 1 grant(s) valid, 28 authority cases graded",
+      "exit_code": 0
+    },
+    {
+      "command": "python -m unittest discover -s scripts/tests -p \"test_sov_land.py\"  # Ran 11 tests, OK",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/lint.py  # 732 text files, 314 Python modules, 0 named debt",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/verify.py  # PASS: 39 checks in 11.545s wall; GRADE SILVER; corpus gated as 'standing authority grants' at 28 cases; conformance SUITE PASS cases=20 coverage_gaps=0",
+      "exit_code": 0
+    }
+  ]
+}

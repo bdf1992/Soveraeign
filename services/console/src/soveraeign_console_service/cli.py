@@ -10,7 +10,9 @@ never has to parse prose to learn what happened.
 operation requires, and a human binding and a model binding get the same answer
 from it because there is only one answer to give.
 
-Exit codes: 0 committed, 2 refused, 3 unknown record, 1 usage error.
+Exit codes: 0 committed, 2 refused, 3 unknown record, 1 usage error. `--help` is the
+one invocation that answers in prose rather than JSON, at 0: it is a question about the
+surface and not an operation on the node.
 """
 
 from __future__ import annotations

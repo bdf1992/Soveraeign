@@ -63,6 +63,20 @@ NO_RECORD_BY_ID = {"discover-operations", "grant", "list-grants", "list-publicat
                    "open-channel", "open-session", "session-context"}
 
 
+def subcommands() -> dict[str, Any]:
+    """Every declared subcommand of the shipped parser, by name.
+
+    `argparse` exposes the subparser table only privately, and reading it here is
+    deliberate: the parser is the evidence for which operations take a record id, and
+    a test that asked the table it is checking would prove nothing.
+    """
+    parser = cli.build_parser()
+    for action in parser._actions:  # noqa: SLF001
+        if getattr(action, "choices", None) and action.dest == "command":
+            return dict(action.choices)
+    raise AssertionError("the console parser declares no subcommands")
+
+
 class DeclaredVocabulary(unittest.TestCase):
     """What the manifest says, read on its own before anything is driven."""
 
@@ -104,6 +118,40 @@ class DeclaredVocabulary(unittest.TestCase):
             with self.subTest(operation=operation):
                 self.assertNotIn(UnknownRecord.reason_code, DECLARED[operation],
                                  f"{operation} declares a code it cannot produce")
+
+    def test_the_side_an_operation_is_filed_on_is_read_off_its_arguments(self) -> None:
+        """Naming is not enough: which side an operation belongs on must be measurable.
+
+        The accounting case above forces a new BUILT operation to be *named* in one of
+        the two tables and not to be *driven*. An operation that reads a record by id,
+        filed in `NO_RECORD_BY_ID` and declaring no `UNKNOWN_RECORD`, left this whole
+        module green - a second independent observation demonstrated that on
+        2026-08-26. The parser is the evidence: an operation that takes no id-shaped
+        argument has no id to find absent, and one that takes an id must be driven
+        against an absent one, which `ProducedRefusals` does.
+        """
+        commands = subcommands()
+        # Two operations are spelled differently on the CLI than in the manifest.
+        # Asserted rather than assumed: the mapping has to be onto both sets, so a new
+        # subcommand with no manifest operation fails here too.
+        spelled = {"discover-operations": "operations", "list-grants": "grants"}
+        built = {entry["operation"] for entry in MANIFEST["operations"]
+                 if entry["standing"] == "BUILT"}
+        self.assertEqual({spelled.get(name, name) for name in built}, set(commands),
+                         "the CLI and the manifest disagree on what is callable")
+        #: The flags that name a record by id. A subcommand carrying one belongs in
+        #: `ABSENT_ID`; a subcommand carrying none cannot answer the absent-record fact.
+        by_id = {"thread", "session", "channel", "grant", "publication"}
+        for operation in sorted(set(ProducedRefusals.ABSENT_ID) | NO_RECORD_BY_ID):
+            with self.subTest(operation=operation):
+                command = commands[spelled.get(operation, operation)]
+                names = {action.dest for action in command._actions} & by_id
+                if operation in ProducedRefusals.ABSENT_ID:
+                    self.assertTrue(names, f"{operation} names no record by id")
+                else:
+                    self.assertFalse(
+                        names, f"{operation} takes {sorted(names)} and is filed as "
+                        f"naming no record by id")
 
 
 class ProducedRefusals(unittest.TestCase):

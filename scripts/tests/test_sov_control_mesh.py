@@ -20,6 +20,11 @@ def text(path: str) -> str:
     return (ROOT / path).read_text(encoding="utf-8")
 
 
+def compact(value: str) -> str:
+    """Compare prose semantics without making Markdown line wrapping normative."""
+    return " ".join(value.split())
+
+
 def frontmatter(name: str) -> dict[str, str]:
     """Read the flat scalar fields used by these role files without a YAML dependency."""
     raw = (AGENTS / name).read_text(encoding="utf-8")
@@ -71,9 +76,10 @@ class RoleShape(unittest.TestCase):
 
     def test_worker_is_blue_and_cannot_be_its_witness(self) -> None:
         worker = text(".claude/agents/sov-worker.md")
-        self.assertIn("BLUE construction participant", worker)
-        self.assertIn("can never be its Witness", worker)
-        self.assertIn("never witness or ratify your own work", worker)
+        lowered = worker.lower()
+        self.assertIn("blue construction participant", lowered)
+        self.assertIn("can never be its witness", lowered)
+        self.assertIn("never witness or ratify your own work", lowered)
 
     def test_witness_is_red_and_read_only(self) -> None:
         witness = text(".claude/agents/sov-witness.md")
@@ -82,17 +88,18 @@ class RoleShape(unittest.TestCase):
         self.assertIn("reproduced", witness)
         self.assertIn("dissented", witness)
         self.assertIn("unattestable", witness)
-        tools = fm["tools"]
+        tools = {tool.strip() for tool in fm["tools"].split(",")}
         self.assertNotIn("Edit", tools)
         self.assertNotIn("Write", tools)
         self.assertNotIn("Agent", tools)
 
     def test_controller_requires_red_after_blue_and_repairs_in_place(self) -> None:
-        controller = text(".claude/agents/sov-controller.md")
-        self.assertIn("Worker BLUE -> Witness RED", controller)
+        controller = compact(text(".claude/agents/sov-controller.md"))
+        self.assertIn("sov-worker` performs BLUE construction", controller)
+        self.assertIn("sov-witness` outside that build performs RED independent observation", controller)
         self.assertIn("return it to the same Worker concern", controller)
         self.assertIn("fresh independent RED", controller)
-        self.assertIn("Workflow is unavailable", controller)
+        self.assertIn("Workflow` is unavailable", controller)
 
     def test_orchestrator_must_prove_parallel_safety_and_red_requirement(self) -> None:
         orchestrator = text(".claude/agents/sov-orchestrator.md")
@@ -103,7 +110,7 @@ class RoleShape(unittest.TestCase):
 
 class MeshClosure(unittest.TestCase):
     def test_sov_owns_fleet_shape_not_extra_authority(self) -> None:
-        sov = text(".claude/agents/sov.md")
+        sov = compact(text(".claude/agents/sov.md"))
         self.assertIn("control mesh, not a new authority tier", sov)
         self.assertIn("Prefer fewer completed concerns over a larger active fleet", sov)
         self.assertIn("python scripts/sov_session.py brief", sov)
@@ -119,10 +126,10 @@ class MeshClosure(unittest.TestCase):
         self.assertIn("ephemeral Claude message", mesh)
 
     def test_red_does_not_ratify_and_blue_does_not_self_witness(self) -> None:
-        mesh = text(".claude/CONTROL-MESH.md")
-        self.assertIn("RED does not ratify", mesh)
-        self.assertIn("BLUE does not witness itself", mesh)
-        self.assertIn("no authority or standing", mesh.lower())
+        mesh = compact(text(".claude/CONTROL-MESH.md")).lower()
+        self.assertIn("red does not ratify", mesh)
+        self.assertIn("blue does not witness itself", mesh)
+        self.assertIn("adds no soveraeign authority, standing", mesh)
 
 
 if __name__ == "__main__":

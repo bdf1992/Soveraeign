@@ -29,8 +29,9 @@ files, effects, and authority may have several Controllers.
 
 **Fleet** — independently launched `sov` sessions. Use this for sustained
 parallel writing. Give each writing session its own worktree and a distinct
-session name. The repository session registry prevents accidental overlap and
-Claude cross-session messaging carries live coordination.
+session name. The repository session registry refuses a write to a path another
+live session has claimed and warns when sessions share one tree; Claude
+cross-session messaging carries live coordination.
 
 **Cell** — one `sov` session plus the Controllers/subagents or agent-team
 teammates it recruits. This is best for read-heavy parallel discovery,
@@ -136,7 +137,8 @@ A Controller may call a concern complete only when:
 - landing/merge behavior follows the current repository policy and live grant.
 
 RED does not ratify. BLUE does not witness itself. Controller synthesis does
-not turn either into authority.
+not turn either into authority. A harness run proposes at most
+`BUILT -> WITNESSED` (`AGENTS.md`); ratification stays with Bdo.
 
 ## Host capability fallbacks
 
@@ -147,7 +149,7 @@ features are unavailable:
 - use ordinary `Agent` subagents for Controller/Orchestrator/Worker/Witness;
 - use `scripts/sov_session.py` for live coordination;
 - use Console continuity where reachable;
-- return explicit `HOST_TEAM_UNAVAILABLE` or `HOST_MESSAGING_UNAVAILABLE`
-  omissions rather than silently collapsing roles.
+- state plainly in the report that agent teams or cross-session messaging
+  were unavailable rather than silently collapsing roles.
 
 The same SOV role contract must remain usable on another model or harness.

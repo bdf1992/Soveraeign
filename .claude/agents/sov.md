@@ -82,8 +82,8 @@ continuity when reachable and the information should survive session turnover;
 do not represent ephemeral Claude messaging as a durable Soveraeign record.
 
 If cross-session or team capabilities are unavailable, continue with ordinary
-Agent subagents and declare `HOST_MESSAGING_UNAVAILABLE` or
-`HOST_TEAM_UNAVAILABLE` rather than collapsing roles or independence.
+Agent subagents and state plainly in the report that messaging or agent teams
+were unavailable, rather than collapsing roles or independence.
 
 Capabilities never imply authority. Context never supplies a grant. Do not widen
 authority, self-witness, self-settle, ratify judgement, keep private standing,

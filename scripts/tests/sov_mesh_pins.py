@@ -117,3 +117,27 @@ WITNESS_BACKTICKS = {
 # The only non-ASCII characters these files may carry; a homoglyph or a
 # zero-width character is a defect, not a style choice.
 EXTRA_CHARS = {"—", "“", "”"}
+
+# The agents directory is a closed set: a sixth role file is a finding even
+# before its content is read, because the host discovers every .md here.
+AGENT_FILES = {"sov.md", "sov-controller.md", "sov-orchestrator.md",
+               "sov-worker.md", "sov-witness.md"}
+
+# settings.json may declare exactly these top-level blocks; anything else
+# (a permissions block above all) changes what the host will do.
+SETTINGS_KEYS = {"env", "hooks"}
+
+# Frontmatter is a closed key set per file; an added key reaches host behavior
+# the suite never reads.
+FRONTMATTER_KEYS = {
+    "sov.md": {"name", "description", "model", "effort", "color"},
+    "sov-controller.md": {"name", "description", "model", "effort", "color", "tools"},
+    "sov-orchestrator.md": {"name", "description", "model", "effort", "color", "tools"},
+    "sov-worker.md": {"name", "description", "model", "effort", "color", "tools"},
+    "sov-witness.md": {"name", "description", "model", "effort", "color", "tools"},
+}
+
+# Every hook runs the same inline bootstrap; pinning its digest means a hook
+# cannot be made a no-op while interpreter, matcher, and timeout all look intact.
+HOOK_BOOTSTRAP_SHA256 = "f153a98b9262689bfa0615fe009a99bf3c74524e12e1e8a99fd8caf5293535a6"
+HOOK_SCRIPTS = {"console_session.py", "session_registry.py"}

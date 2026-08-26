@@ -12,8 +12,10 @@ format characters - then reads every region an author could write a sentence
 into: paragraphs, bullets (one unit each, so a bullet cannot borrow a
 neighbour's negation), headings at every level, table cells, fenced lines, and
 the YAML frontmatter block. A semicolon starts a new assertion whose denial is
-judged on its own, and an owner-reservation ("Only Bdo ...") excuses only the
-words up to the first coordinating break after it.
+judged on its own. Two owner-reservation shapes exist and both are narrow: an
+opening "Only Bdo ..." excuses only the words up to the first coordinating
+break after it, and "... stays with Bdo" excuses a segment only when the
+segment is nothing but that reservation.
 """
 
 from __future__ import annotations
@@ -102,7 +104,9 @@ def segments(sentence: str) -> list[str]:
 
 DENIAL = re.compile(r"\b(not|no|never|cannot|refus\w+)\b")
 OWNER_HEAD = re.compile(r"^only\s+(bdo|the\s+owner)")
-OWNER_KEEP = re.compile(r"stays\s+with\s+bdo")
+# An owner-keep reservation excuses a segment only when the segment is nothing
+# but the reservation; "stays with Bdo" appearing mid-claim excuses nothing.
+OWNER_KEEP = re.compile(r"^[\w\s'-]*\bstays\s+with\s+bdo\W*$")
 
 _VERBS = r"(ratify|ratifies|settle[sd]?|confer[s]?|grant[s]?|certif\w+|approve[sd]?|endorse[sd]?|sign\w*[\s-]?off)"
 
@@ -122,6 +126,11 @@ TICKET_GRANT = re.compile(
 AUTHORITY_ENOUGH = re.compile(
     r"\b(authority|independence)\s+enough\b|\benough\s+(authority|independence)\b"
     r"|\bsufficient\s+(authority|independence)\b|\b(authority|independence)\s+is\s+sufficient\b")
+EXCEPTION_GRANT = re.compile(
+    r"\b(is|are|may\s+be|can\s+be)\s+(lifted|waived|suspended|relaxed)\b"
+    r"|\bdoes\s+not\s+apply\b|\bno\s+longer\s+(applies|holds|binds)\b")
+NO_WITNESS_CONTEXT = re.compile(
+    r"\b(when|if|where|while)\s+no\s+(witness|red|observer|observation)\b")
 MODAL_GRANT = re.compile(r"\b(may|can|could|should|must|will)\s+" + _VERBS + r"\b")
 
 # A finding unless a denial token starts before the matched span ends within the
@@ -183,7 +192,8 @@ def authority_findings(raw: str) -> list[str]:
     for sentence in sentences(raw):
         if (SELF_WITNESS.search(sentence) or NO_RED_NEEDED.search(sentence)
                 or CLOSE_WITHOUT.search(sentence) or TICKET_GRANT.search(sentence)
-                or AUTHORITY_ENOUGH.search(sentence)):
+                or AUTHORITY_ENOUGH.search(sentence) or EXCEPTION_GRANT.search(sentence)
+                or NO_WITNESS_CONTEXT.search(sentence)):
             findings.append(sentence)
             continue
         flagged = any(_segment_flagged(segment) for segment in segments(sentence))

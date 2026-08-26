@@ -84,15 +84,26 @@ class HostBounds(unittest.TestCase):
         self.assertEqual(env["CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH"], "3")
         self.assertEqual(env["CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS"], "12")
 
+    def test_settings_declare_only_env_and_hooks(self) -> None:
+        """An added block (permissions above all) changes host behavior unseen."""
+        self.assertEqual(set(json.loads(text(".claude/settings.json"))), pins.SETTINGS_KEYS)
+
     def test_every_hook_can_actually_execute(self) -> None:
-        """The hooks are the only mechanical restraint; a renamed interpreter or a
-        zero timeout disables them with everything else looking intact."""
+        """The hooks are the only mechanical restraint; a renamed interpreter, a
+        zero timeout, or a rewritten bootstrap disables them while everything
+        else looks intact, so the bootstrap is pinned by digest."""
+        import hashlib
         hooks = json.loads(text(".claude/settings.json"))["hooks"]
         for event, entries in hooks.items():
             for entry in entries:
                 for hook in entry["hooks"]:
                     self.assertEqual(hook["command"], "python", event)
                     self.assertGreaterEqual(hook.get("timeout", 0), 5, event)
+                    self.assertEqual(hook["args"][0], "-c", event)
+                    self.assertEqual(
+                        hashlib.sha256(hook["args"][1].encode()).hexdigest(),
+                        pins.HOOK_BOOTSTRAP_SHA256, event)
+                    self.assertIn(hook["args"][2], pins.HOOK_SCRIPTS, event)
 
     def test_session_registry_hooks_still_fire_on_the_tools_they_guard(self) -> None:
         """The matchers are live regexes; a renamed matcher disables the guard."""
@@ -119,6 +130,14 @@ class HostBounds(unittest.TestCase):
 
 
 class RoleShape(unittest.TestCase):
+    def test_agents_directory_is_a_closed_set(self) -> None:
+        """A sixth role file would be discovered by the host but read by no test."""
+        self.assertEqual({path.name for path in AGENTS.glob("*.md")}, pins.AGENT_FILES)
+
+    def test_frontmatter_keys_are_a_closed_set(self) -> None:
+        for name, expected in pins.FRONTMATTER_KEYS.items():
+            self.assertEqual(set(frontmatter(name)), expected, name)
+
     def test_frontmatter_identity_is_pinned(self) -> None:
         """Name, model, effort, and description route an agent; none may drift."""
         self.assertEqual(frontmatter("sov.md")["model"], "inherit")
@@ -245,12 +264,15 @@ class AuthorityLanguage(unittest.TestCase):
                     self.assertTrue(DENIAL.search(sentence), f"{path.name}: {sentence}")
 
     def test_character_inventory_is_closed(self) -> None:
-        """A homoglyph or zero-width character defeats a lexical rule invisibly."""
+        """A homoglyph or zero-width character defeats a lexical rule invisibly,
+        and an HTML entity spells a deny-listed word in pure ASCII."""
         allowed = {chr(code) for code in range(32, 127)} | {"\n"} | pins.EXTRA_CHARS
         for name in (".claude/CONTROL-MESH.md",
                      *(f".claude/agents/{role}" for role in ROLE_FILES)):
-            strange = {ch for ch in text(name) if ch not in allowed}
+            raw = text(name)
+            strange = {ch for ch in raw if ch not in allowed}
             self.assertEqual(strange, set(), name)
+            self.assertNotRegex(raw, r"&#\w+;|&[a-z]+;", name)
 
 
 if __name__ == "__main__":

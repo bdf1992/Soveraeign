@@ -44,6 +44,7 @@ KIND_RULES: tuple[tuple[str, str, str], ...] = (
      "A stable role an operator can launch."),
     (r"\.claude/register/[^/]+\.md$", "register",
      "How to hand one named participant a result they can act on."),
+    (r"\.claude/CONTROL-MESH\.md$", "readme", "Orientation for one directory."),
     (r"diagrams/[^/]+\.md$", "diagram", "A picture of one mechanism, with its source."),
     (r"infrastructure/[^/]+\.md$", "infrastructure", "How the node itself is provisioned and witnessed."),
     (r"\.github/[^/]+\.md$", "template", "A form the coordination surface fills in."),

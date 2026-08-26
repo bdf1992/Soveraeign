@@ -19,43 +19,50 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from sovticket import queue as queuemod  # noqa: E402
 from sovticket import transitions as transmod  # noqa: E402
-from sovkernel.jsonschema import validate  # noqa: E402
+from sovkernel.jsonschema import DIALECT, validate  # noqa: E402
+
+
+def schema(**keywords: object) -> dict[str, object]:
+    """Build a top-level schema in the repository's declared dialect."""
+    return {"$schema": DIALECT, **keywords}
 
 
 class JsonSchemaTests(unittest.TestCase):
     """The bounded validator refuses what it cannot check rather than passing it."""
 
     def test_unsupported_keyword_is_a_defect(self) -> None:
-        self.assertTrue(validate("abc", {"maxLength": 2}))
+        self.assertTrue(validate("abc", schema(maxLength=2)))
 
     def test_unsupported_format_is_a_defect(self) -> None:
-        self.assertTrue(validate("x", {"type": "string", "format": "email"}))
+        self.assertTrue(validate("x", schema(type="string", format="email")))
 
     def test_boolean_is_not_an_integer(self) -> None:
-        self.assertTrue(validate(True, {"type": "integer"}))
+        self.assertTrue(validate(True, schema(type="integer")))
 
     def test_one_of_requires_exactly_one_branch(self) -> None:
-        schema = {"oneOf": [{"type": "string"}, {"type": "string", "minLength": 1}]}
-        self.assertTrue(validate("x", schema))
+        declared = schema(oneOf=[{"type": "string"}, {"type": "string", "minLength": 1}])
+        self.assertTrue(validate("x", declared))
 
     def test_unique_items_and_min_items(self) -> None:
-        schema = {"type": "array", "items": {"type": "string"}, "uniqueItems": True, "minItems": 2}
-        self.assertTrue(validate(["a", "a"], schema))
-        self.assertFalse(validate(["a", "b"], schema))
+        declared = schema(type="array", items={"type": "string"},
+                          uniqueItems=True, minItems=2)
+        self.assertTrue(validate(["a", "a"], declared))
+        self.assertFalse(validate(["a", "b"], declared))
 
     def test_additional_properties_false(self) -> None:
-        schema = {"type": "object", "properties": {"a": {"type": "string"}}, "additionalProperties": False}
-        self.assertTrue(validate({"a": "x", "b": "y"}, schema))
+        declared = schema(type="object", properties={"a": {"type": "string"}},
+                          additionalProperties=False)
+        self.assertTrue(validate({"a": "x", "b": "y"}, declared))
 
     def test_local_ref_resolves_and_remote_ref_is_refused(self) -> None:
-        root = {"$defs": {"n": {"type": "integer"}}, "$ref": "#/$defs/n"}
+        root = schema(**{"$defs": {"n": {"type": "integer"}}, "$ref": "#/$defs/n"})
         self.assertFalse(validate(3, root))
-        self.assertTrue(validate(3, {"$ref": "https://example.invalid/schema.json"}))
+        self.assertTrue(validate(3, schema(**{"$ref": "https://example.invalid/schema.json"})))
 
     def test_date_time_format(self) -> None:
-        schema = {"type": "string", "format": "date-time"}
-        self.assertFalse(validate("2026-08-23T03:25:13Z", schema))
-        self.assertTrue(validate("yesterday", schema))
+        declared = schema(type="string", format="date-time")
+        self.assertFalse(validate("2026-08-23T03:25:13Z", declared))
+        self.assertTrue(validate("yesterday", declared))
 
 
 class TransitionTableTests(unittest.TestCase):

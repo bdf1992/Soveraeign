@@ -32,6 +32,59 @@ in this baseline was once scoped to a process, a transaction, or an external
 provider, and none to the medium holding the record; `decisions/0049` records
 why that omission mattered and adds the concern rather than the technology.
 
+## Precedent and host-language profile
+
+`CONTRACT.md` C16 owns the invariant. At a consequential technical boundary,
+the smallest adequate engineering note or decision names the applicable
+precedent and one disposition: `ADOPT`, `PROFILE`, `DEFER`, `DEVIATE`, or
+`MONITOR`. Routine choices already settled by this baseline need no repeated
+standards essay. An external standard remains evidence; it never supplies a
+grant, standing, product intent, or owner judgement.
+
+This document is normative where it uses uppercase BCP 14 terms, with the
+meanings declared in `CONTRACT.md`. The current Python profile is:
+
+- CPython 3.11 is the minimum reference runtime. Root tooling is workspace-run;
+  independently packaged services own their `pyproject.toml`. Import layout,
+  exception types, SQLite behavior, and library APIs are implementation details
+  unless a governing contract explicitly promotes them.
+- The standard library remains the first choice. A dependency crosses only a
+  named port or adapter and MUST NOT leak a provider type into a service or
+  kernel contract.
+- Text files and protocol text use UTF-8. Opaque payload bytes are never Unicode
+  normalized. Human text, identifiers, paths, and protocol strings remain
+  distinct roles; normalization or case-folding requires a field-level contract.
+- Filesystem paths use `pathlib` and explicit encodings. Atomicity, locking,
+  permissions, case sensitivity, symlinks, process signals, and durability are
+  declared at the owning OS boundary rather than inferred from the development
+  host.
+- Wall-clock instants, monotonic durations, civil time, and display formatting
+  are different types. JSON Schema string instants use the repository's RFC
+  3339 profile below; elapsed-time logic uses a monotonic clock. Persisted
+  numeric timestamps remain boundary-specific legacy representations until a
+  separately versioned migration changes them.
+- Randomness, clocks, subprocesses, environment reads, concurrency, and external
+  I/O are injectable where they affect a receipt or test. Exceptions cross a
+  machine boundary only as declared refusal or failure codes.
+
+Current representation profiles:
+
+| Boundary | Disposition and local profile |
+| --- | --- |
+| Normative words | **ADOPT** BCP 14 (RFC 2119 + RFC 8174); uppercase terms are special only in explicitly normative governing text |
+| JSON Schema | **ADOPT/PROFILE** Draft 2020-12; every `*.schema.json` declares the dialect, unsupported keywords fail closed, and format checks may be stricter than the annotation vocabulary |
+| Machine instants | **PROFILE** RFC 3339 as `SOV-RFC3339-1`: full date, uppercase `T`, seconds, optional fractional seconds, and explicit `Z` or numeric offset; naive time, space separators, basic format, leap-second spelling, and unknown offset `-00:00` are refused |
+| UUID use | **PROFILE** RFC 9562 UUIDv4 for generated randomness. A value such as `entry_<uuid-hex>` is an opaque typed identifier containing UUID entropy, not itself a UUID; domain identities and content addresses are not replaced by UUIDs |
+| Payload digests | **ADOPT** SHA-256 over exact bytes, rendered as lowercase `sha256:<64-hex>` where contracts carry an algorithm label; a digest is not an asset, source, version, or actor identity |
+| Structured hash input | **DEFER** RFC 8785 JCS until a cross-language boundary requires its full number and member-order semantics. Existing persisted forms remain named Soveraeign profiles; new hash inputs MUST name and version their byte representation |
+| Record chain | `soveraeign-record-chain/v1` is the readable legacy delimiter form; new entries use `soveraeign-record-chain/v2`, hashing an unambiguous compact JSON array with its profile identifier and recording the profile per entry |
+| Unicode in structured hash input | **DEVIATE** from implicit normalization: preserve the supplied code points, reject values that cannot encode as UTF-8, and never normalize opaque bytes |
+
+The bounded JSON Schema validator is not a claim of complete Draft 2020-12
+implementation or certification. NIST, OWASP, SLSA, SPDX, OpenTelemetry, OCI,
+Kubernetes, and similar bodies remain applicability lenses until a concrete
+boundary profiles them; naming one MUST NOT imply compliance.
+
 ## Minimal reference stack
 
 | Concern | Phase-I choice | Boundary |

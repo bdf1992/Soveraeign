@@ -13,6 +13,7 @@ from unittest.mock import patch
 import importlib.util
 import json
 import sys
+import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -235,6 +236,137 @@ class CrossingExecuteTests(unittest.TestCase):
         receipt = crossing.execute(action, "owner/name", dry_run=True)
         self.assertEqual(receipt["outcome"], "REFUSED")
         self.assertEqual(receipt["reason_code"], "AUTHORITY_BASIS_UNKNOWN")
+
+
+
+VALID_BODY = """```yaml
+issue_schema: soveraeign-ticket/v1
+tags:
+  - "kind:chore"
+  - "village:ground-and-evidence"
+  - "horizon:now"
+kind: chore
+chore_id: CHORE-FIXTURE
+path: charting/experiments/qa.skill.json
+village: ground-and-evidence
+village_issue: "#4"
+parent: "#40"
+standing: OPEN
+horizon: NOW
+authority: Bdo/phase-gate
+effect_class: RECORD_LOCAL
+evidence_pointer: charting/experiments/qa.skill.json
+last_observed_at: null
+walker_receipt: PENDING
+demotion_pointer: "#demotion-pointer"
+dependency_channels: [topology]
+```
+
+# A chore
+
+Prose.
+"""
+
+
+def body_file(text: str) -> str:
+    """Write a throwaway replacement body and return its path."""
+    directory = Path(tempfile.mkdtemp())
+    path = directory / "body.md"
+    path.write_text(text, encoding="utf-8", newline="\n")
+    return str(path)
+
+
+def body_write(argument: str) -> dict:
+    """One owner-directed body write, shaped as the crossing expects it."""
+    return {
+        "id": "body-52",
+        "kind": "BODY_SET",
+        "target": "#52",
+        "argument": argument,
+        "evidence": "the block drifted from the repository",
+        "rule": "decisions/0067-issue-body-write-scope.md",
+        "recommendation": "write the corrected block",
+        "extra": {"authority_basis": crossing.BODY_WRITE_AUTHORITY},
+    }
+
+
+class BodyWriteTests(unittest.TestCase):
+    """A body write validates what it will land and records what it replaces."""
+
+    def test_it_writes_through_a_file_never_an_argv_body(self) -> None:
+        command = crossing.plan(body_write(body_file(VALID_BODY)), "owner/name")
+        self.assertEqual(command[:5], ["gh", "issue", "edit", "52", "--repo"])
+        self.assertIn("--body-file", command)
+        self.assertNotIn("--body", command)
+
+    def test_a_valid_block_records_the_prior_body_and_both_digests(self) -> None:
+        path = body_file(VALID_BODY)
+        with patch.object(crossing, "_run", return_value=(0, json.dumps({"body": "before"}))):
+            receipt = crossing.execute(body_write(path), "owner/name", dry_run=True)
+        self.assertEqual(receipt["outcome"], "PLANNED")
+        self.assertIn("prior_body_snapshot", receipt)
+        self.assertTrue(receipt["prior_body_digest"].startswith("sha256:"))
+        self.assertNotEqual(receipt["prior_body_digest"], receipt["replacement_digest"])
+        snapshot = ROOT / receipt["prior_body_snapshot"]
+        self.assertEqual(snapshot.read_text(encoding="utf-8"), "before")
+
+    def test_a_block_the_contract_refuses_never_reaches_the_boundary(self) -> None:
+        broken = VALID_BODY.replace("chore_id: CHORE-FIXTURE\n", "")
+        with patch.object(crossing, "_run") as run:
+            receipt = crossing.execute(body_write(body_file(broken)), "owner/name", dry_run=True)
+        self.assertEqual(receipt["outcome"], "REFUSED")
+        self.assertEqual(receipt["reason_code"], "BODY_BLOCK_REFUSED")
+        run.assert_not_called()
+
+    def test_an_empty_replacement_is_refused_rather_than_blanking_a_ticket(self) -> None:
+        receipt = crossing.execute(body_write(body_file("   \n")), "owner/name", dry_run=True)
+        self.assertEqual(receipt["reason_code"], "BODY_SOURCE_EMPTY")
+
+    def test_a_missing_source_is_refused(self) -> None:
+        receipt = crossing.execute(body_write("no/such/body.md"), "owner/name", dry_run=True)
+        self.assertEqual(receipt["reason_code"], "BODY_SOURCE_MISSING")
+
+    def test_a_body_write_may_not_ride_the_unproved_label_approval(self) -> None:
+        """The default basis proves nothing; a body write must name its own."""
+        action = body_write(body_file(VALID_BODY))
+        action.pop("extra")
+        receipt = crossing.execute(action, "owner/name", dry_run=True)
+        self.assertEqual(receipt["reason_code"], "AUTHORITY_BASIS_UNKNOWN")
+
+    def test_the_branch_proof_will_not_serve_a_body_write(self) -> None:
+        action = body_write(body_file(VALID_BODY))
+        action["extra"] = {"authority_basis": crossing.AUTOMATIC_BRANCH_AUTHORITY}
+        receipt = crossing.execute(action, "owner/name", dry_run=True)
+        self.assertEqual(receipt["reason_code"], "AUTOMATION_NOT_ADMITTED")
+
+class CommentTests(unittest.TestCase):
+    """A comment appends through a file and is the one admitted write with no inverse."""
+
+    def _action(self, argument: str) -> dict:
+        return {
+            "id": "comment-8", "kind": "COMMENT_ADD", "target": "#8", "argument": argument,
+            "evidence": "the standing moved", "rule": "decisions/0067-issue-body-write-scope.md",
+            "recommendation": "record what moved it",
+        }
+
+    def test_it_comments_rather_than_replacing_the_body(self) -> None:
+        command = crossing.plan(self._action(body_file("moved to built")), "owner/name")
+        self.assertEqual(command[:4], ["gh", "issue", "comment", "8"])
+        self.assertIn("--body-file", command)
+        self.assertNotIn("edit", command)
+
+    def test_a_missing_comment_file_is_refused(self) -> None:
+        receipt = crossing.execute(self._action("no/such/comment.md"), "owner/name", dry_run=True)
+        self.assertEqual(receipt["reason_code"], "BODY_SOURCE_MISSING")
+
+    def test_a_comment_needs_no_proof_because_it_replaces_nothing(self) -> None:
+        with patch.object(crossing, "_run") as run:
+            receipt = crossing.execute(
+                self._action(body_file("moved to built")), "owner/name", dry_run=True
+            )
+        self.assertEqual(receipt["outcome"], "PLANNED")
+        self.assertNotIn("prior_body_snapshot", receipt)
+        run.assert_not_called()
 
 
 if __name__ == "__main__":

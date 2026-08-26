@@ -29,6 +29,14 @@ CHECKS = (
           "reads repository bytes directly with read_bytes, never a build report, and never "
           "Path.read_text whose newline translation would hide the defect it looks for",
           (".gitattributes", "scripts/lint.py")),
+    Check("orientation snapshot", [sys.executable, "scripts/sov_snapshot.py", "check"],
+          ROOT,
+          "re-derives every number from the record at the moment of the check - the "
+          "declared check table, the decisions directory, git rev-list - and never reads "
+          "the page's own claim about being current; the page is orientation for every "
+          "launched agent, which does not carry the interactive session's context to "
+          "correct it (LESSONS.md L-0001)",
+          ("CLAUDE.md", "scripts/sov_snapshot.py")),
     Check("recorded traps still hold", [sys.executable, "scripts/sov_traps.py"], ROOT,
           "re-derives every recorded trap from the repository at check time, so a trap that "
           "has stopped being true fails here instead of going stale in prose",

@@ -39,7 +39,8 @@ def drive(state: Path, actor: str, actor_kind: str) -> dict[str, object]:
             manifests,
             capability_table,
             lambda checked_actor, capability, checked_scope: console_authority.check(
-                record.reconstruct(), checked_actor, capability, checked_scope
+                record.reconstruct(), console.node_id, checked_actor, capability,
+                checked_scope
             ),
             {"asset:in-process": AssetRoutes(asset).call},
             authority_denials=(AuthorityRefused,),

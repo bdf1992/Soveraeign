@@ -94,11 +94,15 @@ def console(root: Path) -> dict[str, str]:
             service.grant("Bdo", "open:thread", channel["channel_id"])
             thread = service.open_thread("Bdo", channel["channel_id"], "parity")
             service.grant("model/sov", "post:message", thread["thread_id"])
+            # Opening a session is guarded as of 2026-08-25. Both participants hold
+            # it so that the refusal below is still the post's, not the session's.
+            for operator in ("model/sov", "model/stranger"):
+                service.grant(operator, "open:session", operator)
 
             model = service.open_session("model/sov", "MODEL", "model-binding")
             try:
-                service.post(model["session_id"], thread["thread_id"], b"settled",
-                             claims=True)
+                service.post("model/sov", model["session_id"], thread["thread_id"],
+                             b"settled", claims=True)
                 observed["a model claim without a proposal is incomplete"] = "PERMITTED"
             except ModelClaimWithoutProposal:
                 observed["a model claim without a proposal is incomplete"] = (
@@ -106,7 +110,8 @@ def console(root: Path) -> dict[str, str]:
 
             ungranted = service.open_session("model/stranger", "MODEL", "model-binding")
             try:
-                service.post(ungranted["session_id"], thread["thread_id"], b"ungranted")
+                service.post("model/stranger", ungranted["session_id"], thread["thread_id"],
+                             b"ungranted")
                 observed["no live grant covers this transition"] = "PERMITTED"
             except AuthorityRefused:
                 observed["no live grant covers this transition"] = "AuthorityRefused"

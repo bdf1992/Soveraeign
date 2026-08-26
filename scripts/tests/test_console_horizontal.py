@@ -38,12 +38,13 @@ class ConsoleHorizontal(unittest.TestCase):
         self.thread = self.node.console.open_thread(
             "reader", channel["channel_id"], "Horizontal read")
         self.node.console.grant("reader", "post:message", self.thread["thread_id"])
+        self.node.console.grant("reader", "open:session", "reader")
         self.sessions = {
             HUMAN: self.node.console.open_session("reader", HUMAN, "human-binding"),
             MODEL: self.node.console.open_session("reader", MODEL, "model-binding"),
         }
         self.node.console.post(
-            self.sessions[HUMAN]["session_id"], self.thread["thread_id"], b"one object")
+            "reader", self.sessions[HUMAN]["session_id"], self.thread["thread_id"], b"one object")
 
     def tearDown(self) -> None:
         self.node.close()
@@ -110,7 +111,8 @@ class ConsoleHorizontal(unittest.TestCase):
 
         def authority(actor: str, capability: str, scope: str) -> str:
             return console_authority.check(
-                self.node.record.reconstruct(), actor, capability, scope)
+                self.node.record.reconstruct(), self.node.node_id, actor, capability,
+                scope)
 
         gateway = Gateway(
             self.node.record, tampered, manifests, table, authority,

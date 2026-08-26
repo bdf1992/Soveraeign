@@ -63,23 +63,26 @@ def _commands() -> dict[str, Callable[[ConsoleService, argparse.Namespace], dict
     return {
         "operations": lambda c, a: discover(
             c, json.loads(Path(a.capability_map).read_text(encoding="utf-8")),
-            operator_id=a.operator, fresh=a.fresh),
+            a.operator, fresh=a.fresh),
         "grant": lambda c, a: c.grant(a.operator, a.capability, a.scope, a.granted_by),
         "revoke": lambda c, a: c.revoke(a.grant, a.revoked_by),
-        "grants": lambda c, a: {"live_grants": c.grants(a.operator), "authoritative": True},
+        "grants": lambda c, a: {"live_grants": c.grants(reader_id=a.reader,
+                                                       operator_id=a.operator),
+                                "authoritative": True},
         "open-channel": lambda c, a: c.open_channel(a.operator, a.name, a.domain),
         "open-thread": lambda c, a: c.open_thread(a.operator, a.channel, a.title,
                                                   a.pinned_address, a.pinned_digest),
         "archive-thread": lambda c, a: c.archive_thread(a.operator, a.thread),
         "open-session": lambda c, a: c.open_session(a.operator, a.actor_kind, a.binding),
-        "close-session": lambda c, a: c.close_session(a.session),
-        "post": lambda c, a: c.post(a.session, a.thread, _body(a), a.mention or (),
-                                    a.claims, a.proposal_id),
-        "read-thread": lambda c, a: read_thread(c, a.thread, a.binding),
-        "list-publications": lambda c, a: published_threads(c),
+        "close-session": lambda c, a: c.close_session(a.operator, a.session),
+        "post": lambda c, a: c.post(a.operator, a.session, a.thread, _body(a),
+                                    a.mention or (), a.claims, a.proposal_id),
+        "read-thread": lambda c, a: read_thread(c, a.thread, a.binding,
+                                                operator_id=a.operator),
+        "list-publications": lambda c, a: published_threads(c, operator_id=a.operator),
         "publish-thread": lambda c, a: c.publish_thread(a.operator, a.thread),
         "withdraw-publication": lambda c, a: c.withdraw_publication(a.operator, a.publication),
-        "session-context": lambda c, a: session_context(c, a.operator),
+        "session-context": lambda c, a: session_context(c, a.reader, a.operator),
     }
 
 
@@ -98,9 +101,9 @@ def build_parser() -> argparse.ArgumentParser:
                             default=str(DEFAULT_CAPABILITY_MAP),
                             help=f"the capability projection to answer from "
                                  f"(default {DEFAULT_CAPABILITY_MAP})")
-    operations.add_argument("--operator", default=None,
-                            help="answer the permitted reading for this operator too; "
-                                 "without it only the available reading is returned")
+    operations.add_argument("--operator", required=True,
+                            help="the operator asking; the answer costs a read:session "
+                                 "grant scoped to it, so nobody asks anonymously")
     operations.add_argument("--stale", dest="fresh", action="store_false", default=None,
                             help="declare the projection stale, which refuses the answer "
                                  "rather than reporting from a map behind its sources")
@@ -116,7 +119,10 @@ def build_parser() -> argparse.ArgumentParser:
     revoke.add_argument("--revoked-by", dest="revoked_by", default="Bdo")
 
     grants = sub.add_parser("grants", help="list the grants that are live right now")
-    grants.add_argument("--operator")
+    grants.add_argument("--reader", required=True,
+                        help="the operator doing the reading; who holds what is node "
+                             "state, so it costs a read:authority grant over the node")
+    grants.add_argument("--operator", help="narrow the list to one operator")
 
     channel = sub.add_parser("open-channel", help="open a domain channel")
     channel.add_argument("--operator", required=True)
@@ -134,7 +140,11 @@ def build_parser() -> argparse.ArgumentParser:
     archive.add_argument("--operator", required=True)
     archive.add_argument("--thread", required=True)
 
-    sub.add_parser("list-publications", help="threads this node currently renders outwardly")
+    publications = sub.add_parser(
+        "list-publications", help="threads this node currently renders outwardly")
+    publications.add_argument("--operator", required=True,
+                              help="the operator asking; costs a read:thread grant "
+                                   "scoped to the node")
 
     publish = sub.add_parser("publish-thread", help="mark a thread readable outside the node")
     publish.add_argument("--operator", required=True)
@@ -152,9 +162,14 @@ def build_parser() -> argparse.ArgumentParser:
     session.add_argument("--binding", required=True)
 
     close = sub.add_parser("close-session", help="close a session and pin its read position")
+    close.add_argument("--operator", required=True,
+                       help="the operator closing it, which need not be whose session it is")
     close.add_argument("--session", required=True)
 
     post = sub.add_parser("post", help="post one attributed turn in a thread")
+    post.add_argument("--operator", required=True,
+                      help="the operator posting; it must own the session, and holding "
+                           "a session id is not the same as being its operator")
     post.add_argument("--session", required=True)
     post.add_argument("--thread", required=True)
     post.add_argument("--body", help="post content; read from stdin when omitted")
@@ -164,12 +179,18 @@ def build_parser() -> argparse.ArgumentParser:
     post.add_argument("--proposal-id", dest="proposal_id")
 
     read = sub.add_parser("read-thread", help="read a thread through a binding")
+    read.add_argument("--operator", required=True,
+                      help="the operator reading; costs a read:thread grant scoped to "
+                           "the thread")
     read.add_argument("--thread", required=True)
     read.add_argument("--binding")
 
     context = sub.add_parser("session-context",
                              help="what this operator needs to resume across a session boundary")
-    context.add_argument("--operator", required=True)
+    context.add_argument("--reader", required=True,
+                         help="the operator asking; costs a read:session grant scoped "
+                              "to whose continuity is being read")
+    context.add_argument("--operator", help="whose continuity to read (default: the reader)")
     return parser
 
 

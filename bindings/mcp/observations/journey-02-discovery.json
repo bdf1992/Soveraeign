@@ -4,7 +4,11 @@
   "participant": {
     "actor": "sov",
     "session": null,
-    "grants_held": 0
+    "grants_held": 2,
+    "grants": [
+      "read:session scoped to sov",
+      "read:journal scoped to node:local"
+    ]
   },
   "tool_surface": [
     "asset_ingest",
@@ -15,13 +19,13 @@
     "observe_verify",
     "record_entries"
   ],
-  "capability_revision": "0065fbe6d83768a79cbf410acf38476106b4161de4d3473e7dd1e71ff83f16d9",
+  "capability_revision": "563313ffdc7da9c0949c02c6c90fdc3420958be0960b2982cb7c21330a8f148c",
   "counts": {
     "declared": 133,
     "reachable": 45,
     "authority": {
-      "NOT_ENFORCED": 9,
-      "NOT_HELD": 6,
+      "HELD": 2,
+      "NOT_HELD": 13,
       "NOT_KNOWN_HERE": 118
     }
   },
@@ -33,17 +37,17 @@
   "omissions": [
     "a row here says the node declares the operation, never that it works",
     "reachability is what the projection recorded, not a call that succeeded",
-    "9 capability(s) are built, declare an authority and check none: console.close-session, console.discover-operations, console.grant, console.list-grants, console.list-publications, console.open-session, console.read-thread, console.revoke, console.session-context. Any caller is admitted to those regardless of what they hold",
+    "HELD is read by capability name. A grant admits an exact scope, and one capability serves more than one kind of subject - read:thread scopes to a thread for read-thread and to the node for list-publications - so a HELD row can still refuse. The scopes held are listed on the row",
     "118 capability(s) are governed by an authority store this service does not read"
   ],
   "journal_entries_left_by_the_crossing": 2,
   "journal": [
     {
-      "seq": 1,
+      "seq": 9,
       "kind": "EVENT",
       "subject": "discover-operations",
       "actor": "sov",
-      "entry_digest": "d3d7b9dece99b3a2d1ae141a2ffefbb3927ee42fe6411c55f8d605b4e7a54c42",
+      "entry_digest": "bd454ed9b923825526a6fb4de2be5000040ed7d67377d9b7ce993c5629140c4e",
       "payload": {
         "arguments": {
           "operator_id": "<str:3>"
@@ -55,17 +59,17 @@
       }
     },
     {
-      "seq": 2,
+      "seq": 10,
       "kind": "RECEIPT",
       "subject": "discover-operations",
       "actor": "sov",
-      "entry_digest": "cfc09ba1c2da676fec747f90f32364e8b64bdf05c05c7aba04092127f75da2c3",
+      "entry_digest": "4e4934f5d797e25bb51897c72866660b242ae9051f20e054809066d61c9d5992",
       "payload": {
         "detail": {
-          "entry_id": "entry_af6f1af34aea4cb6b58ba51260ca6453",
+          "entry_id": "entry_c54bf7b2b4844e1fa93652b27cea656f",
           "result": {
             "authoritative": false,
-            "capability_revision": "0065fbe6d83768a79cbf410acf38476106b4161de4d3473e7dd1e71ff83f16d9",
+            "capability_revision": "563313ffdc7da9c0949c02c6c90fdc3420958be0960b2982cb7c21330a8f148c",
             "map_status": "PROPOSED",
             "operator_id": "sov"
           }
@@ -112,26 +116,33 @@
     ],
     "authority": {
       "required": "read:session",
-      "reading": "NOT_ENFORCED",
-      "because": "this operation is built and callable, declares 'read:session' and checks nothing; any caller is admitted, so holding a grant makes no difference to whether it runs"
+      "reading": "HELD",
+      "scopes": [
+        "sov"
+      ],
+      "because": "a live grant names this capability. Whether its scope covers the subject you call it on is decided at the call, against the exact scope listed here"
     },
     "acts_on": "operator-session",
     "crud": "READ",
     "requirement": "PROD-I-6",
     "kernel_transition": null,
     "preconditions": [
-      "session_live",
-      "capability_map_fresh"
+      "capability_map_fresh",
+      "live_matching_grant",
+      "session_live"
     ],
     "commits": "DERIVED",
     "refusals": [
-      "SESSION_NOT_LIVE",
-      "MISSING_PRECONDITION"
+      "MISSING_PRECONDITION",
+      "NO_LIVE_GRANT",
+      "SESSION_NOT_LIVE"
     ]
   },
   "what_this_does_not_establish": [
     "that any reachable capability works; only that the node declares it and the projection records a transport",
     "that the capability map is current, which nobody checked on this call",
+    "that a participant holding nothing can get an answer. It cannot any more: the operation checks the read:session it declares, and this walk issued that grant as setup before measuring the crossing",
+    "that reading the journal back is free. It costs read:journal over the node, checked against the node's own authority store since 2026-08-25; the walk holds that grant too and only the discovery crossing is timed",
     "that this observation is independent of the gateway - it was taken by calling the gateway. The journal read is a second endpoint, not a second observer, and settling this needs the Observation Service (GROUND-010)"
   ]
 }

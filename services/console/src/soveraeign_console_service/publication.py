@@ -1,13 +1,14 @@
-"""The outward surface's authoritative half: what marks a thread readable outside.
+"""The publication lifecycle: what marks a thread readable outside, and what ends it.
 
-`core.py` owns the transitions an operator drives inside the node. Publishing points
-the other way, so its record shape and its guard live here rather than growing the
-transition module: this is the only console concern whose effect is visible to people
-who are not members of anything.
+`core.py` owns the threaded record path an operator drives inside the node.
+Publishing points the other way, so the two transitions that move a publication live
+here with the record shapes they append, the way `sessions.py` owns the operator
+session and `permits.py` owns the permits office. This is the only console concern
+whose effect is visible to people who are not members of anything.
 
-Nothing here writes. `ConsoleService.publish_thread` and
-`ConsoleService.withdraw_publication` append what these functions build, so the guard
-runs before the journal is touched rather than after.
+Both transitions refuse a thread another node owns. Publishing a peer's thread would
+republish its record under this node's name; withdrawing a peer's publication would
+take down a mark this node never made.
 
 `contracts/publication.schema.json` owns the shape; `contracts/public-projection.schema.json`
 renders it. A projection never decides what is public - it reads what was recorded here.
@@ -15,24 +16,19 @@ renders it. A projection never decides what is public - it reads what was record
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
+from soveraeign_console_service import append, reads
+from soveraeign_console_service.authority import PUBLISH_CAPABILITY
+
+if TYPE_CHECKING:  # pragma: no cover - broken at runtime; core imports this module
+    from soveraeign_console_service.core import ConsoleService
+
+PUBLISH_EVENT = "console.publish-thread"
+WITHDRAW_EVENT = "console.withdraw-publication"
 VISIBILITY = "PUBLIC"
 PUBLISHED = "PUBLISHED"
 WITHDRAWN = "WITHDRAWN"
-
-
-def foreign_thread(thread: dict[str, Any], node_id: str) -> str | None:
-    """The reason this thread belongs to another node, or None when it is ours.
-
-    Returned rather than raised so a caller names the operation it was refusing. The
-    same fact refuses an archive and a publish for different reasons: one would close
-    a peer's thread, the other would republish a peer's record under this node's name.
-    """
-    owner = thread.get("node_id")
-    if owner == node_id:
-        return None
-    return f"belongs to {owner}; this console serves {node_id}"
 
 
 def publication_payload(node_id: str, publication_id: str, thread_id: str,
@@ -54,3 +50,44 @@ def withdrawal_payload(node_id: str, publication_id: str, thread_id: str,
     """
     return {"node_id": node_id, "publication_id": publication_id, "thread_id": thread_id,
             "lifecycle": WITHDRAWN, "withdrawn_at": withdrawn_at, "standing": standing}
+
+
+def publish_thread(console: "ConsoleService", operator_id: str, thread_id: str,
+                   publication_id: str, standing: str) -> dict[str, Any]:
+    """`console.publish-thread`: mark a thread readable outside the node.
+
+    This is the record `contracts/public-projection.schema.json` renders. The
+    projection decides nothing; it reads what this transition wrote, which is why
+    publishing needs its own capability rather than riding on `open-thread`.
+    """
+    entries = console.record.reconstruct()
+    # Authority first: the scope is the thread id the caller supplied.
+    grant = console.authorize(operator_id, PUBLISH_CAPABILITY, thread_id, PUBLISH_EVENT,
+                              publication_id, entries)
+    console.owned(reads.thread(entries, thread_id), thread_id, PUBLISH_EVENT, operator_id)
+    return append.emit(
+        console.record, "publication", publication_id, operator_id,
+        publication_payload(console.node_id, publication_id, thread_id, operator_id,
+                            console.stamp(), standing),
+        PUBLISH_EVENT, [grant])
+
+
+def withdraw_publication(console: "ConsoleService", operator_id: str,
+                         publication_id: str, standing: str) -> dict[str, Any]:
+    """`console.withdraw-publication`: stop rendering a thread outwardly.
+
+    Withdrawal appends. It never claims the thread was not public, and it never
+    claims nobody read it while it was.
+    """
+    entries = console.record.reconstruct()
+    # The grant's scope is the thread this mark names, which cannot be known without
+    # reading the mark, so an unearned caller gets the missing-record answer.
+    mark = console.held_record(reads.publication(entries, publication_id),
+                               publication_id)
+    grant = console.authorize(operator_id, PUBLISH_CAPABILITY, mark["thread_id"],
+                              WITHDRAW_EVENT, publication_id, entries)
+    return append.emit(
+        console.record, "publication-lifecycle", publication_id, operator_id,
+        withdrawal_payload(console.node_id, publication_id, mark["thread_id"],
+                           console.stamp(), standing),
+        WITHDRAW_EVENT, [grant])

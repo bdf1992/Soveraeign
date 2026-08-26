@@ -108,7 +108,8 @@
         }
       },
       "realizes": null,
-      "undeclared_because": "Reads the search projection. The asset manifest declares read-asset, which is not the same operation."
+      "undeclared_because": "Reads the search projection. The asset manifest declares read-asset, which is not the same operation. requires_session is stated rather than defaulted: the read tier used to return before the precheck ran, so the default never reached it, and making every tier cross the precheck on 2026-08-25 would otherwise have started demanding a session this read has never needed.",
+      "requires_session": false
     },
     {
       "tool": "observe_verify",
@@ -130,9 +131,9 @@
       "description": "Every entry in the operational journal, in append order, with its digest chain.",
       "arguments": {},
       "realizes": "record.read-entry",
-      "authority": "read:journal",
       "requires_session": false,
-      "note": "Withheld on 2026-08-24 as the reversible default when the build fired BACK_OFFICE_EXPOSED, and restored the same day: Bdo ruled that reading authorized operational history is an operator act, and the office table was the wrong side. decisions/0052."
+      "note": "Withheld on 2026-08-24 as the reversible default when the build fired BACK_OFFICE_EXPOSED, and restored the same day: Bdo ruled that reading authorized operational history is an operator act, and the office table was the wrong side. decisions/0052. That ruling said the read still costs the read:journal grant and the gateway did not ask for it until 2026-08-25, because the read tier returned before the precheck ran. node_authority names the capability contracts/capability-offices.json already declares for record.read-entry; the gateway checks it against this node's own authority store, scoped to the node, because the endpoint returns the journal entire.",
+      "node_authority": "read:journal"
     },
     {
       "tool": "console_operations",
@@ -141,21 +142,18 @@
       "operation": "discover-operations",
       "effect_class": "RECORD_LOCAL",
       "description": "What can be asked of this node, and what one operator may currently ask. Every declared operation with where it is reachable, what authority it costs, what it acts on, what must already be true, what it commits and how it refuses - read from the capability projection the repository rebuilds and checks, never from a list beside it.",
-      "arguments": {
-        "operator_id": {
-          "type": "string",
-          "required": false
-        }
-      },
+      "arguments": {},
       "realizes": "console.discover-operations",
       "requires_session": false,
-      "note": "observe rather than read, so the crossing is journalled. A participant asking what it may do is an act the node should be able to account for afterwards (GROUND-007)."
+      "note": "observe rather than read, so the crossing is journalled. A participant asking what it may do is an act the node should be able to account for afterwards (GROUND-007). It takes no arguments: the operator is the caller the gateway was handed, and the answer costs the read:session grant the office table declares. Bdo ruled on 2026-08-25 that this operation checks the authority it declares, which removed the anonymous reading decisions/0053 recorded.",
+      "actor_is_operator": true
     }
   ],
   "withheld_endpoints": [],
   "authority_modes": {
     "gateway": "The gateway requires the caller to hold the declared capability.",
     "service-enforced": "The service owns the check. The gateway adds no second, stricter rule it has no bootstrap for.",
-    "bootstrap": "Establishes the session the other endpoints require, so it cannot itself require one."
+    "bootstrap": "Establishes the session the other endpoints require, so it cannot itself require one.",
+    "node": "The gateway requires the caller to hold the capability the office table declares, checked against this node's authority store rather than the Asset Service's. Named by node_authority on the endpoint."
   }
 }

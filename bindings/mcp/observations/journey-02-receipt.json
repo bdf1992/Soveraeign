@@ -1,19 +1,26 @@
 {
-  "receipt_id": "receipt_cfc09ba1c2da676f",
-  "event_id": "entry_af6f1af34aea4cb6b58ba51260ca6453",
+  "receipt_id": "receipt_4e4934f5d797e25b",
+  "event_id": "entry_c54bf7b2b4844e1fa93652b27cea656f",
   "event_type": "console.discover-operations",
   "actor_id": "sov",
   "interface_id": "bindings/mcp:console_operations",
   "input_addresses": [
     "contracts/fixtures/capability-map.reference.json"
   ],
-  "input_state_digest": "0065fbe6d83768a79cbf410acf38476106b4161de4d3473e7dd1e71ff83f16d9",
-  "authority_grant_ids": [],
+  "input_state_digest": "563313ffdc7da9c0949c02c6c90fdc3420958be0960b2982cb7c21330a8f148c",
+  "authority_grant_ids": [
+    "grant_9d511e3949a44e71"
+  ],
   "precondition_results": [
     {
       "precondition": "session_live",
       "required": false,
       "note": "the manifest declares this endpoint requires_session false"
+    },
+    {
+      "precondition": "live_matching_grant",
+      "result": "SATISFIED",
+      "note": "sov holds read:session scoped to sov"
     },
     {
       "precondition": "capability_map_fresh",
@@ -24,18 +31,18 @@
   "effect_class": "RECORD_LOCAL",
   "outcome": "COMMITTED",
   "emitted_record_addresses": [
-    "d3d7b9dece99b3a2d1ae141a2ffefbb3927ee42fe6411c55f8d605b4e7a54c42",
-    "cfc09ba1c2da676fec747f90f32364e8b64bdf05c05c7aba04092127f75da2c3"
+    "bd454ed9b923825526a6fb4de2be5000040ed7d67377d9b7ce993c5629140c4e",
+    "4e4934f5d797e25bb51897c72866660b242ae9051f20e054809066d61c9d5992"
   ],
   "observed_evidence_addresses": [
     "bindings/mcp/observations/journey-02-discovery.json"
   ],
-  "created_at": "2026-08-26T00:12:41Z",
+  "created_at": "2026-08-26T04:36:30Z",
   "serves_capability": "console.discover-operations",
   "consumed": [
     {
       "dimension": "wallclock_seconds",
-      "amount": 0.0176,
+      "amount": 0.005,
       "measured_by": "time.perf_counter around gateway.call",
       "note": "the crossing alone. Opening the store is setup, not this operation"
     },
@@ -51,5 +58,5 @@
       "note": "a valuation of this usage at zero, not an absence of usage. RECORD_LOCAL and no monetary charge; the seconds were still spent"
     }
   ],
-  "receipt_digest": "922d2aa070b2af2565e476df8e241c528d8cc6c6f1f225eeb8cf644e234544e3"
+  "receipt_digest": "b2e6bec5c8126756abd37e9fbdf4f92db693652b649959d7472b958be19d3b3a"
 }

@@ -48,6 +48,22 @@ fetched back.
 | `feat/f2-control-loop` | `RETIRE` | Content subset of `feat/gate-loop-pattern`, which deletes none of its files. The single file where the two differ, `.claude/workflows/sov-f2-control.js`, is byte-identical between this branch and `origin/main`, so nothing is lost by keeping the superset instead. |
 | `feat/f2-integration` | `RETIRE` | `git diff --name-status feat/f2-control-loop feat/f2-integration` is empty: the two trees are identical. Its tip is a merge commit whose second parent is already on main. It adds no content to any branch. |
 
+## Five more local branches that need no disposition at all
+
+These carry nothing the trunk lacks. `git rev-list --count --left-right
+origin/main...<branch>` puts zero on the branch side for every one of them, so
+each is wholly contained in `origin/main` and deleting it cannot lose a commit.
+They never appeared in the survey because the survey only lists branches with
+outstanding work, which is exactly why they have been sitting here.
+
+| Branch | Behind trunk by |
+| --- | --- |
+| `probe/rebase` | 4 |
+| `chore/reconcile-and-ratify` | 5 (PR #113, merged) |
+| `feat/session-principal` | 204 (PR #101, merged) |
+| `wt/pr36` | 297 (PR #36, merged) |
+| `worktree-agent-aeb007dbe3ae39b96` | 0 — this session's own scratch branch, disposable when its worktree closes |
+
 ## Landing order, against the contested surface
 
 124 files are changed by more than one unlanded branch. The five `LAND` and

@@ -16,6 +16,10 @@ sys.path.insert(0, str(ROOT / "services" / "record" / "src"))
 
 from soveraeign_console_service import ConsoleRoutes, ConsoleService  # noqa: E402
 from soveraeign_record_service import RecordService  # noqa: E402
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from fixtures import empty_journal  # noqa: E402
 from sovkernel.jsonschema import validate  # noqa: E402
 
 
@@ -23,7 +27,7 @@ class ConsoleReadRoute(unittest.TestCase):
     def setUp(self) -> None:
         self.tmp = TemporaryDirectory()
         root = Path(self.tmp.name)
-        self.record = RecordService(root / "record")
+        self.record = RecordService(empty_journal(root / "record"))
         self.console = ConsoleService(self.record, root / "console", "node:test")
         self.console.grant("reader", "open:channel", "work")
         channel = self.console.open_channel("reader", "work", "work")

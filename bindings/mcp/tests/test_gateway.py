@@ -13,8 +13,10 @@ from __future__ import annotations
 
 from pathlib import Path
 from tempfile import TemporaryDirectory
+import atexit
 import io
 import json
+import shutil
 import sys
 import unittest
 
@@ -30,11 +32,42 @@ MALLORY = "Mallory"
 NODE = "node:local"
 
 
+#: An empty store with its three schemas already on disk, built once for the module.
+#:
+#: A `Gateway` stands up an Asset Service, a Record Service and a Console Service,
+#: each creating SQLite schema, and every case below wants a store nothing else has
+#: touched. Building one per test costs 83 ms here and far more on a two-core runner
+#: doing it under contention; copying this template costs 6.5 ms. `scripts/verify.py`
+#: runs 39 checks concurrently, so what a check spends is not its own wall time - it
+#: is taken from every other check in the pool, and the slowest one sets the gate.
+_TEMPLATE: dict[str, Path] = {}
+
+
+def _template() -> Path:
+    """The prepared store, created on first use and removed when the process exits."""
+    if not _TEMPLATE:
+        holder = TemporaryDirectory()
+        atexit.register(holder.cleanup)
+        state = Path(holder.name) / "state"
+        Gateway(state).close()
+        _TEMPLATE["state"] = state
+    return _TEMPLATE["state"]
+
+
+def _fresh_store(root: Path) -> Path:
+    """A private copy of the prepared store, isolated from every other case."""
+    state = root / "state"
+    shutil.copytree(_template(), state)
+    return state
+
+
 class GatewayCase(unittest.TestCase):
+    """A private store per test, because these cases mutate authority."""
+
     def setUp(self):
         self.tmp = TemporaryDirectory()
         self.root = Path(self.tmp.name)
-        self.gateway = Gateway(self.root / "state")
+        self.gateway = Gateway(_fresh_store(self.root))
 
     def tearDown(self):
         self.gateway.close()
@@ -61,7 +94,7 @@ class SharedGatewayCase(unittest.TestCase):
     def setUpClass(cls):
         cls.tmp = TemporaryDirectory()
         cls.root = Path(cls.tmp.name)
-        cls.gateway = Gateway(cls.root / "state")
+        cls.gateway = Gateway(_fresh_store(cls.root))
 
     @classmethod
     def tearDownClass(cls):

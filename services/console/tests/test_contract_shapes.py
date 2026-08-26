@@ -33,6 +33,10 @@ from soveraeign_console_service.refusals import (  # noqa: E402
     UnknownRecord,
 )
 from soveraeign_record_service import RecordService  # noqa: E402
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from fixtures import empty_journal  # noqa: E402
 from sovkernel import jsonschema  # noqa: E402
 
 CONTRACTS = Path(__file__).parents[1] / "contracts"
@@ -288,7 +292,7 @@ class NodeScopeRefusals(unittest.TestCase):
     def setUp(self):
         self.tmp = TemporaryDirectory(ignore_cleanup_errors=True)
         self.root = Path(self.tmp.name) / "console"
-        self.record = RecordService(self.root / "journal")
+        self.record = RecordService(empty_journal(self.root / "journal"))
 
     def tearDown(self):
         self.record.close()

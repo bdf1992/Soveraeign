@@ -51,6 +51,10 @@ from soveraeign_console_service.refusals import (  # noqa: E402
 )
 from soveraeign_record_service import RecordService  # noqa: E402
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from fixtures import empty_journal  # noqa: E402
+
 MAP = json.loads((ROOT / "contracts" / "fixtures"
                   / "capability-map.reference.json").read_text("utf-8"))
 OFFICES = json.loads((ROOT / "contracts"
@@ -304,7 +308,7 @@ class RootIssuerTest(unittest.TestCase):
     def setUp(self) -> None:
         self.tmp = TemporaryDirectory(ignore_cleanup_errors=True)
         root = Path(self.tmp.name)
-        self.record = RecordService(root / "journal")
+        self.record = RecordService(empty_journal(root / "journal"))
         self.addCleanup(self.record.close)
         self.addCleanup(self.tmp.cleanup)
         self.console = ConsoleService(self.record, root / "console", NODE)

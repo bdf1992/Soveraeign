@@ -59,8 +59,10 @@ meanings declared in `CONTRACT.md`. The current Python profile is:
   declared at the owning OS boundary rather than inferred from the development
   host.
 - Wall-clock instants, monotonic durations, civil time, and display formatting
-  are different types. Receipts and machine contracts use the repository's
-  RFC 3339 profile below; elapsed-time logic uses a monotonic clock.
+  are different types. JSON Schema string instants use the repository's RFC
+  3339 profile below; elapsed-time logic uses a monotonic clock. Persisted
+  numeric timestamps remain boundary-specific legacy representations until a
+  separately versioned migration changes them.
 - Randomness, clocks, subprocesses, environment reads, concurrency, and external
   I/O are injectable where they affect a receipt or test. Exceptions cross a
   machine boundary only as declared refusal or failure codes.

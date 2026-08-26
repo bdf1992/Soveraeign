@@ -2,6 +2,8 @@
 
 Status: `PROPOSED FOR OWNER RATIFICATION`
 
+This document is normative.
+
 These invariants constrain specifications and implementations. A change to one
 requires a decision record and the authority declared in `STATUS.yaml`.
 

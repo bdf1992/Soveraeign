@@ -1,6 +1,6 @@
 # 0066 · Precedent before invention
 
-Status: `OWNER-PRE-ACCEPTED CAMPAIGN · BUILT PENDING INDEPENDENT OBSERVATION`
+Status: `OWNER-DIRECTED · PROPOSED`
 
 ## Decision
 

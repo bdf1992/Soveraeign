@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import json
+import math
 import sqlite3
 import sys
 import unittest
@@ -104,6 +105,31 @@ class DigestProfiles(unittest.TestCase):
         self.assertEqual(restore(target, document), 1)
         [entry] = target.reconstruct()
         self.assertEqual(entry["digest_profile"], LEGACY_DIGEST_PROFILE)
+
+    def test_v1_export_with_legacy_nan_remains_restorable(self) -> None:
+        payload = {"legacy_value": float("nan")}
+        digest = _legacy_digest(GENESIS, "EVENT", "subject", "actor", payload)
+        document = {
+            "export_schema": LEGACY_EXPORT_SCHEMA,
+            "entry_count": 1,
+            "head_digest": digest,
+            "entries": [{
+                "entry_id": "entry_legacy_nan",
+                "kind": "EVENT",
+                "subject": "subject",
+                "actor": "actor",
+                "source_address": None,
+                "payload": payload,
+                "recorded_at": 1.0,
+                "prev_digest": GENESIS,
+                "entry_digest": digest,
+            }],
+        }
+        self.assertEqual(verify_export(document), digest)
+        target = self.service("restored-nan")
+        self.assertEqual(restore(target, document), 1)
+        [entry] = target.reconstruct()
+        self.assertTrue(math.isnan(entry["payload"]["legacy_value"]))
 
 
 if __name__ == "__main__":

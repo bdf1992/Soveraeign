@@ -40,7 +40,7 @@ import json
 
 from soveraeign_record_service.core import (
     DIGEST_PROFILE, GENESIS, LEGACY_DIGEST_PROFILE, BrokenChain, RecordService,
-    _canonical, _digest_for_profile,
+    _canonical, _digest_for_profile, _legacy_canonical,
 )
 
 EXPORT_SCHEMA = "soveraeign-record-export/v2"
@@ -144,7 +144,9 @@ def restore(service: RecordService, document: Any, *,
     legacy = document["export_schema"] == LEGACY_EXPORT_SCHEMA
     rows = [
         (entry["entry_id"], entry["kind"], entry["subject"], entry["actor"],
-         entry["source_address"], _canonical(entry["payload"]), entry["recorded_at"],
+         entry["source_address"],
+         (_legacy_canonical(entry["payload"]) if legacy else _canonical(entry["payload"])),
+         entry["recorded_at"],
          entry["prev_digest"], entry["entry_digest"],
          LEGACY_DIGEST_PROFILE if legacy else entry["digest_profile"])
         for entry in document["entries"]

@@ -20,6 +20,20 @@ underscores replaced by hyphens:
 The gate matches on filename, so a record for one subject cannot satisfy a claim
 about another. That is deliberate and it is tested.
 
+## Receipts and probes
+
+Two subdirectories hold the machine-readable half of the same work.
+
+- `witness/observations/` holds one JSON receipt per observation, conforming to
+  `contracts/participant-observation.schema.json`. A receipt is addressed to a
+  reader who wants the exact predicate results rather than the prose.
+- `witness/probes/` holds the code a witness wrote to take an observation. A
+  probe belongs to the witness, never to the subject: it reaches the subject
+  only through a declared surface, and a subject's own test suite is not one.
+
+Neither directory is read by `scripts/sov_standing.py`, which matches on
+`witness/*.md` filenames. A receipt without a record supports no claim.
+
 ## What a record must carry
 
 The gate checks that a record was deposited. It cannot check that the record is

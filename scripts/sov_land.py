@@ -94,6 +94,37 @@ def build_request(args: argparse.Namespace, paths: list[str], checks: dict[str, 
     }
 
 
+def repo_relative(raw: str) -> str:
+    """Express one path the way a grant's scope prefixes are written.
+
+    A grant declares repository-relative prefixes such as `scripts/`, and a
+    worker reporting what it changed may well hand back an absolute path. The
+    first `sov-loop` run did exactly that, and every absolute path would have
+    failed the scope check for the wrong reason - not because the grant refused
+    the file, but because the two were never comparable.
+
+    Every path is resolved, relative ones included, before it is compared. A
+    relative path is not automatically inside the repository: `scripts/../STATUS.yaml`
+    begins with an admitted prefix and names an excluded file, and an earlier
+    version of this function that skipped `resolve()` for relative paths admitted
+    it. So did `scripts/../decisions/`, and `scripts/../contracts/standing-grants.json`,
+    which is the grant rewriting itself. A witness found all three before the
+    grant was live.
+
+    A path that resolves under the repository root comes back relative to it. One
+    that resolves outside comes back absolute, so it fails the scope check rather
+    than being quietly rewritten into scope.
+    """
+    candidate = Path(raw)
+    if not candidate.is_absolute():
+        candidate = ROOT / candidate
+    resolved = candidate.resolve()
+    try:
+        return resolved.relative_to(ROOT).as_posix()
+    except ValueError:
+        return resolved.as_posix()
+
+
 def _held_elsewhere(paths: list[str]) -> list[str]:
     """Of the paths being landed, the ones another live session is holding.
 
@@ -108,11 +139,11 @@ def _held_elsewhere(paths: list[str]) -> list[str]:
         contested = json.loads(done.stdout or "[]")
     except json.JSONDecodeError:
         return ["could not parse the contested-path report"]
-    wanted = {authority._normalise(p) for p in paths}
+    wanted = {repo_relative(p) for p in paths}
     held = []
     for entry in contested:
         path = entry.get("path") if isinstance(entry, dict) else str(entry)
-        if authority._normalise(path or "") in wanted:
+        if repo_relative(path or ".") in wanted:
             holder = entry.get("holder", "another session") if isinstance(entry, dict) else "?"
             held.append(f"{path}: held by {holder}")
     return held
@@ -136,7 +167,7 @@ def _report(request: dict, result: dict, branch: str, ahead: int, behind: int) -
 def _evaluate(args: argparse.Namespace) -> tuple[dict, dict, str, int, int]:
     """Assemble and grade one landing, returning everything the caller reports."""
     branch = current_branch()
-    paths = list(args.path) if args.path else dirty_paths()
+    paths = [repo_relative(p) for p in (args.path if args.path else dirty_paths())]
     checks = gather_checks(args.skip_checks)
     request = build_request(args, paths, checks)
     result = authority.evaluate(sov_grant.load_grants(), request)

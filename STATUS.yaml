@@ -223,7 +223,19 @@ accepted_repository_claims:
 # The O-numbers are kept so the documents that cite them still resolve.
 open_decisions: []
 
-owner_acceptance_queue: []
+owner_acceptance_queue:
+  - id: A5
+    packet: acceptance/A5.json
+    presented: The orientation snapshot check, held because correcting the page needs an excluded path
+    waits_on: seat:root
+    presented_by_seat: seat:session-control
+    at: 2026-08-26T00:00:00Z
+  - id: A6
+    packet: acceptance/A6.json
+    presented: The AI-native standard now has an executable grader, and the substantive-operation judgement it needs is one only Bdo can make
+    waits_on: seat:root
+    presented_by_seat: seat:session-control
+    at: 2026-08-26T00:00:00Z
 
 owner_accepted:
   - id: A1

@@ -207,7 +207,7 @@ engineering baseline. Day two added the SDLC loop, Console, scheduled runs,
 Sov, the federation harness, defeating fixtures for receipts and proofing,
 LF line-ending enforcement, and the stack certification. At the end of day two
 the record held 26 commits, 17 decision records and 8 reports; it now holds
-356 commits, 64 decision records and 24 reports. The
+356 commits, 69 decision records and 24 reports. The
 first independently witnessed work landed on 2026-08-25; nothing is ratified.
 
 Those two sentences are checked. `python scripts/sov_snapshot.py` grades the

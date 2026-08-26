@@ -1,0 +1,94 @@
+{
+ "packet_schema": "soveraeign-acceptance-packet/v1",
+ "packet_id": "A5",
+ "claim": "The orientation snapshot in CLAUDE.md is now checked against the record by an executable gate inside verify.py. What needs your judgement is not the gate but its consequence: nine of its ten claims have zero tolerance and count working-tree files, so every concern that adds a skill, workflow, decision, report, service or check must also edit CLAUDE.md, which grant:standing-landing-loop excludes from the landing loop.",
+ "subject": {
+  "artifact": "CLAUDE.md",
+  "from_standing": "RATIFIED",
+  "to_standing": "RATIFIED"
+ },
+ "presented_by_seat": "seat:session-control",
+ "accepted_by_seat": "seat:root",
+ "claim_type": "JUDGEMENT",
+ "built_by": {
+  "actor_id": "urn:soveraeign:actor:claude-interactive-session",
+  "actor_kind": "MODEL"
+ },
+ "witnessed_by": {
+  "actor_id": "urn:soveraeign:actor:sov-witness",
+  "actor_kind": "MODEL"
+ },
+ "visible_result": {
+  "demo": [
+   "python",
+   "scripts/sov_snapshot.py",
+   "check"
+  ],
+  "shows": "ten numbers on the orientation page derived from the record and graded, with what the check does not read named rather than left silent",
+  "expect": "PASS: 10 of 10 snapshot claim(s) match the record, after three NOT CHECKED lines. This is a live reading of a shared tree and it can legitimately be a failure when you run it: the counts move with any session's ordinary work, which is the point. Against the page as committed on this branch the same command fails all ten: two wrong numbers, 'page says 36, record holds 40' and 'page says 102, record holds 133', and eight claims the committed page states no number for at all."
+ },
+ "evidence": [
+  {
+   "address": "scripts/sov_snapshot.py",
+   "digest": null,
+   "says": "the command line and the verdict; refuses when fewer than half the claims are checkable here, so a run that graded one claim in ten cannot report green"
+  },
+  {
+   "address": "scripts/sovsnapshot/claims.py",
+   "digest": null,
+   "says": "ten claims and their sources; every derivation refuses with Underivable rather than raising or answering zero, including a missing, non-file, or non-UTF-8 page and an unparseable check table"
+  },
+  {
+   "address": "scripts/sovsnapshot/grading.py",
+   "digest": null,
+   "says": "grades a page against derived values and cannot reach a repository, enforced by both arguments being required rather than by the docstring that used to be false"
+  },
+  {
+   "address": "scripts/sovsnapshot/selfcheck.py",
+   "digest": null,
+   "says": "eight cases proving the grader fires and does not over-fire; refuses rather than passing when it derived nothing, and check runs it first every time"
+  },
+  {
+   "address": "scripts/tests/test_sov_snapshot.py",
+   "digest": null,
+   "says": "24 tests, including EveryNumberOnThePageIsClassified, which fails when a number on the page is neither checked by a claim nor classified with a reason in the section it was ruled in. Its coverage is bounded and the bound is stated in the class: a digit group joined by a hyphen reads as a compound identifier and escapes, and a number written as words escapes entirely. An independent witness planted ten spellings of one count against an earlier version and eight walked past; eight of the ten are caught now, and those two are the two that are not"
+  },
+  {
+   "address": "reports/observations/2026-08-25-orientation-snapshot-sources-observation.json",
+   "digest": null,
+   "says": "the witness round that found the page stale at nineteen skills and sixteen workflows against 21 and 19 on disk, while the check reported PASS"
+  },
+  {
+   "address": "contracts/standing-grants.json",
+   "digest": null,
+   "says": "grant:standing-landing-loop scope.excluded_paths lists CLAUDE.md; LESSONS.md and reports/ match none of scope.paths"
+  },
+  {
+   "address": ".claude/skills/sov-backlog/",
+   "digest": null,
+   "says": "the gate catching real drift unprompted, within the hour, while this packet sat waiting. A different session (session-f1043b) added a skill and a workflow; the counts moved to 22 and 20 under a page corrected to 21 and 19 an hour earlier, and the check reported 'FAIL skills: page says 21, record holds 22'. That session then corrected the page and the check passes again. This is L-0001's exact failure mode - the snapshot drifting inside a day, read as current by every launched agent - happening and being stopped. It is stronger evidence than any fixture in this packet because nobody arranged it."
+  }
+ ],
+ "why_it_matters": "LESSONS.md L-0001 recorded that the snapshot drifted inside one day and that every launched agent reads it as current without the interactive session's context to correct it. The gate built for that lesson was itself reporting PASS over a stale page, because the counts a witness found wrong had never been made claims and the list of what the check does not read was written from memory rather than from the page.",
+ "what_could_defeat_it": [
+  "A count on the page that is expensive or ambiguous to derive, where making it a claim would mean a second implementation of a number the repository already computes elsewhere - the failure mode of the draft that counted conformance cases and got 9 against the suite's own 20.",
+  "The classification table is still a list, only a checked one. It fails loudly when the page gains an unclassified number, but a wrong reason in an existing entry is invisible.",
+  "The check reads numbers and nothing else. Every prose claim on the page - which services are built, what is witnessed, what waits on Bdo - can go stale exactly as the counts did, and this gate will still report PASS.",
+  "_section_at reads the nearest preceding heading outside a fenced block. Indented four-space code blocks are not tracked, so a heading indented as code would still shift a section.",
+  "The page correction itself is unwitnessed as to meaning: a witness confirmed 21 skill directories and 19 .js workflows on disk, not that 'skills' and 'workflows' are the right nouns for what a reader of that sentence needs.",
+  "The referent is the finding, and there is now a repair with two sessions agreeing on it, held until you rule. The page is a committed artifact that launched agents read from a checkout; the check should therefore count committed state. Six file-counting claims - decisions, reports, skills, workflows, agent definitions, manifests - move to git ls-tree. Two do not: verification checks derives by importing sovverify.checks and counting CHECKS, and declared operations reads a projection, and parsing those out of HEAD would be a second implementation of a count, which is exactly how an earlier draft got conformance cases wrong at 9 against the suite's own 20. So those two keep reading the working tree and say so in UNCHECKED. Partial and honest about which half is which, rather than total and quietly wrong. Nothing has been edited; it waits on you.",
+  "The check has no single referent for 'the record', and an independent witness called this the finding to act on. Nine claims count working-tree files, untracked ones included; commits counts committed history. So the gate can go red on a clean tree because another session is mid-creation of something unrelated, and the witness reproduced exactly that deterministically. It already happened once for real: a sibling added a skill, the counts moved, and that session's own commit message records that the check 'demanded' the CLAUDE.md edit within a minute of the skill appearing. The gate conscripts an edit to a grant-excluded governing document into every unrelated concern.",
+  "This is the judgement in the packet and it is yours, not a code defect. Nine of the ten claims carry tolerance 0; only commits has 25. Skills, workflows, agent definitions, decision records, reports, service boundaries, manifests and declared operations all move with ordinary work by any session on this branch - the drift caught while this packet waited is the proof. Landing the gate makes CLAUDE.md's counts a build-breaking invariant for every session at once, and contracts/standing-grants.json excludes CLAUDE.md from scope.paths, so the landing loop cannot write the file whose staleness it now fails on. The first session to add a skill turns verify.py red for everyone with no automated path to clear it. The choices are a tolerance on the volatile counts, a narrower claim set, widening the grant, or accepting that the page becomes a file every session must keep current by hand.",
+  "The witness named in witnessed_by is a different agent than the builder, which is what AGENTS.md requires, but it is not independent of this design. Across nine rounds it supplied repair shapes the builder took whole: make derived non-optional and give the repository-reading path its own entry point, which became grade(text, derived) with page_text and derive_all; catch narrowly at each source boundary rather than broadly in derive_all; make a synthetic page and its values inseparable, which became SyntheticPage; track fence state, which became _prose_only. HELPER_AS_WITNESS covers a helper that read or edited the change and this one did neither, so the declared refusal does not fire - but contributed_to_build: false, asserted in eight of its observations, is narrower than what this packet should disclose. The witness reviewed this wording and set contributed_to_build to QUALIFIED in its ninth observation. Its mechanical results are re-derivable by anyone from the artifact; what is compromised is its judgement that the design is now adequate, on the elements it shaped."
+ ],
+ "residuals": [
+  "A budget question I raised and then had to withdraw, recorded because the withdrawal is the useful part. verify.py failed here at 15.960s, 17.987s and 20.576s and passed at 11.832s, and I was about to ask whether 15 s is the right ceiling. A sibling session's CI evidence disproved the premise: on two-core runners, Asset Service reference tests measures 1.5s to 4.7s across five runs on main, and main's whole wall is 6 to 8 seconds, SILVER. There is no budget problem on the trunk. My numbers were a developer box that went from five to fourteen live sessions while I measured, and the quantity that matters is total work in the check pool against the core count, not any single slow check. Nothing here needs your judgement; it is recorded so the earlier framing does not outlive its evidence.",
+  ".claude/README.md carried the same drift and is corrected here, but no check reads it. The residual first said its counts could go stale again tomorrow; it took an hour. Corrected to nineteen workflows, then found already wrong at twenty by an independent witness, and corrected again. Nothing gates it.",
+  "MIN_CHECKABLE and MAX_TOLERANCE had no test of any kind until an independent witness grepped for both and found nothing. Both sides of both boundaries are now in scripts/tests/test_sov_snapshot.py. Neither value changed; what changed is that changing one would now be caught.",
+  "This packet was presented over a working tree still being edited. An independent witness recorded that acceptance/A5.json, CLAUDE.md and test_sov_snapshot.py all changed bytes while it was reading them, and that one of its test runs hit a TypeError from a function whose signature had just changed under it. That makes a witness's pinned digests decorative, and it is a defect in how this was presented rather than in what is presented.",
+  "The eight witness observations for this concern sit untracked under reports/observations/. reports/ matches no path in the grant's scope, so they are evidence that cannot be landed by the loop that produced them.",
+  "The independence remedy is cheap and not done: a fresh witness that has not seen these rounds re-derives the ten claims and runs the defeating fixtures from the artifact alone. That is worth doing whether or not this packet is accepted, and it does not block acceptance - it would replace a qualified attestation with a clean one."
+ ],
+ "on_accept": "The authority blocker this packet was first written around is gone and the packet is corrected rather than withdrawn. At 00:03 a sibling session committed d285cae carrying the CLAUDE.md page correction inside an unrelated concern, so the page on this branch is already current and the in-scope subset - scripts/sov_snapshot.py, scripts/sovsnapshot/, scripts/tests/test_sov_snapshot.py, scripts/sovverify/checks.py, .claude/README.md, docs/documentation.html - now lands green under the existing grant. An independent witness reproduced that on a clean worktree at d285cae: PASS 10 of 10, exit 0. What remains outside the grant is LESSONS.md, STATUS.yaml, acceptance/A5.json and reports/observations/, which is one lesson entry and this packet's own bookkeeping. So accepting this is a ruling on the consequence in what_could_defeat_it item 1, not permission to land code.",
+ "on_reject": "The code is committed on feat/federation-harness-and-hardening as 2ef30c6 and 2a9123d, so rejecting means reverting two commits rather than discarding a working tree. Nothing is pushed and origin/main has neither. What is still uncommitted is CLAUDE.md, LESSONS.md, STATUS.yaml, this packet and the twelve witness observations, all of which are outside this session's scope and held by another session for reconciliation under your direct instruction. Reverting leaves the page ungated and L-0001 recorded but unenforced."
+}

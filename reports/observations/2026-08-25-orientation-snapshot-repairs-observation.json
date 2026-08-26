@@ -1,0 +1,68 @@
+{
+  "observer_id": "sov-witness (independent observation, Claude Opus 5 1M)",
+  "contributed_to_build": false,
+  "verdict": "DISSENTED",
+  "concern": "orientation snapshot check, LESSONS.md L-0001",
+  "checks": [
+    {
+      "command": "SCOPE. Second round, on the repairs rather than the original. HEAD 5c3a8ad22c119055064bd314f84e679ba9efe839. Repaired state pinned at read time: scripts/sov_snapshot.py sha256:c681295b4362c3c2a067a45c (13392 bytes, 298 lines, LF), LESSONS.md sha256:c6da3f25863b79a16bf5a626, CLAUDE.md sha256:cd77184c216b093680ebea84, contracts/fixtures/capability-map.reference.json sha256:f5356168a2ba01609213fce8. The first round is recorded separately in 2026-08-25-orientation-snapshot-observation.json and is not superseded by this one.",
+      "exit_code": 0
+    },
+    {
+      "command": "REPAIR (a) reproduced. python scripts/sov_snapshot.py check now prints the selfcheck result first. Mutation with grade() forced to return an empty list: REFUSED, exit 1, where the same mutation printed PASS and exited 0 in round one. Also confirmed the refusal does not swallow real findings - a genuinely drifted page still reports FAIL commits: snapshot says 900, record holds 9 (tolerance 25), not REFUSED.",
+      "exit_code": 1
+    },
+    {
+      "command": "REPAIR (b) reproduced. declared operations derives 133 from contracts/fixtures/capability-map.reference.json; python scripts/sov_capability.py check prints PASS: 133 capabilities, not stale; my own independent sum of the operations arrays across the ten manifests is also 133. Three sources agree. UNCHECKED is down to two entries and the false reason is gone.",
+      "exit_code": 0
+    },
+    {
+      "command": "REPAIR (c) reproduced, and it is the source of defect 7 below. read_claim uses finditer; the appended stale duplicate is now reported; mutating the disagreement branch to never fire is caught by the selfcheck.",
+      "exit_code": 1
+    },
+    {
+      "command": "REPAIR (d) reproduced with an exact boundary. tolerance 50 passes, tolerance 51 refuses naming the ceiling, tolerance 400 refuses. Residual, low weight: MAX_TOLERANCE is a constant in the same module that the selfcheck reads, so raising it to 1000 makes check PASS with no failure anywhere. It is a tripwire against drift, not a wall against intent, which is all a self-contained check can be.",
+      "exit_code": 0
+    },
+    {
+      "command": "REPAIR (e) reproduced with one interaction defect. In a directory with no git repository both check and selfcheck exit 1 with 'FAIL cannot self-check without git: fatal: not a git repository' and no traceback. But because (a) made check run selfcheck first, the terminal line is 'REFUSED: the check itself is broken', which asserts a cause that has not been established. The carefully worded grade() line - 'this is not a claim about the page' - is never reached from check. Low weight, since both lines print, but it is (a) overriding (e).",
+      "exit_code": 1
+    },
+    {
+      "command": "REPAIR (f) reproduced. L-0001 reads EFFECTIVE with the reason recorded, the header reads 6 RECORDED against 6 RECORDED entries, and nothing claims RATIFIED. The Standing field now carries EFFECTIVE where it carried ADMITTED, and the entry's prose narrates the ADMITTED step, so the two have not been collapsed. No further edit needed.",
+      "exit_code": 0
+    },
+    {
+      "command": "RESIDUAL reproduced. python scripts/verify.py three consecutive times: PASS, 40 checks, exit 0, 13.696s / 13.358s / 13.301s wall, GRADE SILVER each time. documentation reader prints PASS: documentation page matches 195 documents. orientation snapshot passes in 0.269s. python scripts/lint.py PASS, 0 named debt, sov_snapshot.py at 298 lines.",
+      "exit_code": 0
+    },
+    {
+      "command": "DEFECT 7, from repair (c), CI-fatal. The selfcheck duplicate case is truthful + page(7, 1, 2, 3, 4), with the second statement's numbers hard-coded. When a derived value equals its hard-coded counterpart the two statements agree, that claim is not reported, and the case fails for the wrong reason. git clone --depth 1 of this repository, real CLAUDE.md and real sov_snapshot.py copied in: commits derives to 1, collides with the literal 1, read_claim returns [1, 1], grade reports 4 of 5 claims, selfcheck fails with 'a second, disagreeing statement further down the page was not reported on every claim', and check prints REFUSED: the check itself is broken. Nothing is broken. This is the clone-dependence that repair (d) was written to eliminate, reintroduced by repair (c) in the same round",
+      "exit_code": 1
+    },
+    {
+      "command": "DEFECT 7, reach. .github/workflows/verify.yml, qa-lanes.yml and hygiene-repair.yml each run python scripts/verify.py after actions/checkout@v4 with no fetch-depth, and that action defaults to a depth-1 shallow clone. AGENTS.md names verify.py as the required CI command. So this fires on the next CI run, on three workflows, on both Python 3.11 and 3.12, and reports the check as broken",
+      "exit_code": 1
+    },
+    {
+      "command": "DEFECT 8, underneath 7, also CI-fatal and independent of it. _commits is environment-dependent. In the same shallow clone, grade() against the real CLAUDE.md reports 'commits: snapshot says 356, record holds 1 (tolerance 25)'. Fixing the collision does not make the check green in CI; it only changes which wrong message it prints. git rev-parse --is-shallow-repository returns true in that clone and is an available detection, and the GitUnavailable shape from repair (e) is the right one to reuse: a shallow checkout cannot answer this question either",
+      "exit_code": 1
+    },
+    {
+      "command": "DEFECT 9, same class as (e), one repair short. _declared_operations reads the capability fixture with no guard. Fixture deleted: FileNotFoundError traceback from both check and selfcheck. Fixture present but without the capabilities key: KeyError traceback. sov_capability.py build writes that file, so a partial or failed build is exactly the state in which this check should say something intelligible and instead dies. The reasoning recorded in the GitUnavailable comment - that a repair has to reach every reader of the thing it repaired - was not applied to the reader added in the same round",
+      "exit_code": 1
+    },
+    {
+      "command": "DEFECT 9, quieter half. _decision_records and _reports glob directories that may not exist and return 0 rather than raising. With decisions/ removed the check reports the page as drifted, or in a scratch tree passes outright. A missing directory becomes a claim about the page, which is the failure mode repair (e) named",
+      "exit_code": 0
+    },
+    {
+      "command": "Confirmed not defective: adding a sixth Claim without updating the selfcheck page() helper is caught - the truthful page reads as drifted and check REFUSES. The helper is self-protecting, as its docstring says",
+      "exit_code": 1
+    },
+    {
+      "command": "BUDGET, measured rather than attributed. Per-check times across five recorded runs: Asset Service reference tests 10.827s, 11.598s, 13.060s, 12.755s, 12.706s. It is the longest check in every run, and wall time equals it plus about one second (13.301s wall against 12.706s). repository tooling tests is second at 7.1 to 9.4s. orientation snapshot is 0.269s. verify.py runs checks in a thread pool, so the floor is the slowest single check: one unsplittable check is 85 to 95 percent of the 15s ceiling. That is a sharper statement than machine load and it agrees with the builder's counterfactual conclusion that the snapshot check is not the cause",
+      "exit_code": 0
+    }
+  ]
+}

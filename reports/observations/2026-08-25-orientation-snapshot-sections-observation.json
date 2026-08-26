@@ -1,0 +1,44 @@
+{
+  "observer_id": "sov-witness (independent observation, Claude Opus 5 1M)",
+  "contributed_to_build": false,
+  "verdict": "DISSENTED",
+  "concern": "orientation snapshot check, LESSONS.md L-0001",
+  "checks": [
+    {
+      "command": "SCOPE. Eighth round, on the token lookbehind, the section-keyed classification and the whole-page scan. HEAD 5c3a8ad22c119055064bd314f84e679ba9efe839, working tree. Rounds one to seven stand in their own files. The repairs all reproduce; this dissent is one latent defect you invited me to check and two corrections to claims you are about to put in front of Bdo.",
+      "exit_code": 0
+    },
+    {
+      "command": "I WAS WRONG ABOUT L-0007 AND WITHDRAW IT. My evidence was that a third hunk appeared in LESSONS.md between two of my own git diff calls. That establishes timing and not authorship, and I wrote 'the sibling session's uncommitted entry' as though it established both. That is the same unchecked-claim failure I have been reporting in you, made by me, and it went into a witness record. Your registry evidence is better than mine and I accept it: no hunk-level split is needed and no worktree is needed on the ground I gave",
+      "exit_code": 0
+    },
+    {
+      "command": "WHAT THE REGISTRY DOES AND DOES NOT SETTLE. python scripts/sov_session.py who LESSONS.md returns session-386bdb held since 02:55Z, and that is the holder of a path rather than the author of a hunk. It also cannot separate us: 386bdbb6 is this witness process's own session directory, and sov_session.py list prints '<- you' against session-386bdb when I run it. So it establishes that no other registered session holds the file, which is what matters here, and not which agent under that id wrote which hunk",
+      "exit_code": 0
+    },
+    {
+      "command": "THE SMALLER TRUE FORM OF THE CONCERN, yours to settle. L-0007 is a different concern in the same file. Its own evidence line is about the landing gate and the console authority rounds, and says the console observations are held on feat/console-authority-enforced. AGENTS.md asks for one coherent policy or behavior change per commit. Whether a lesson about guard breadth rides in the orientation-snapshot commit is a judgement you hold; it is a second subject in one commit rather than another session's work",
+      "exit_code": 0
+    },
+    {
+      "command": "CONFIRMED, every plant re-run against the repaired test. Baseline PASS. Plant A, a second '8 reports' in the live snapshot section, now fails naming ['Repository snapshot (informational): 8 reports']. Plant B, a decision filename wrapped across a line, PASSES at 55, 72, 95 and 120 columns - the lookbehind removed the whole class rather than teaching two scrubbers about whitespace. Plants C and D, counts planted under ## Known traps and under ## Where to look first, both fail naming their section. 21 tests OK, PASS: 10 of 10, lint PASS 761 text files, 327 modules, 0 named debt",
+      "exit_code": 0
+    },
+    {
+      "command": "DEFECT 28, the section derivation, and it is worse than reading a fence as a heading. CLAUDE.md carries no fenced block today - grep for a line starting with three backticks returns nothing - so this is latent. Planted a fenced markdown example containing '## Historical orientation' immediately before a live 'The queue holds 8 reports awaiting review.' in the snapshot section. The result is not a clean silent pass and not a clean loud failure: the planted count is waved through, because it now reads as Historical orientation where '8 reports' is classified, AND the test fails naming ['Historical orientation: 20 controlled'], an innocent line that lost its own classification to the same shift. A reader who repairs the line the test names, by adding that key, is left with a page where the planted count is silently unchecked. Fail-loud pointing at the wrong thing is the shape that costs a session an hour",
+      "exit_code": 1
+    },
+    {
+      "command": "DEFECT 28, the other direction, for completeness. A fenced '## Known traps' planted before the day-two paragraph fails naming ['Known traps: 26 commits', 'Known traps: 8 reports'] - three legitimate classifications lost at once. Tracking fence state inside _section_at closes both directions",
+      "exit_code": 1
+    },
+    {
+      "command": "THE BUDGET CONTRADICTION IS NOT ONE, and I would not send it to Bdo as written. AGENTS.md lines 301 to 305 are a single paragraph: the wall time is graded, the bands are 3, 6 and 15 seconds, 'Past fifteen seconds nothing is earned and the run fails', and 'A slipped grade is a reportable observation, not a failing gate'. A slipped grade is a move between bands. Past fifteen seconds there is no grade to slip, so nothing slipped and the run fails. verify.py's own grade() docstring states that reading exactly - 'the slowest ceiling is the budget - so every graded run is a passing run' - and the implementation matches the document. The real question is a threshold: whether 15 s is right for a tree the coordination design expects several sessions to share. That is decisions/0050, it is genuinely Bdo's, and it is a cleaner question than a contradiction that is not there",
+      "exit_code": 0
+    },
+    {
+      "command": "THE BUDGET, measured here, and it is green. python scripts/verify.py twice: exit 0 at 11.885s and exit 0 at 12.004s, 40 checks, SILVER both times. Asset Service reference tests 11.441s and 11.533s; orientation snapshot 0.147s and 0.164s. python scripts/sov_session.py list reports 5 live sessions, not 8. Your 17.862s and 17.977s were real and so are these. Refusing to land on a red verify.py is right; the verify.py on this tree is not red at this moment, so re-run it before concluding the landing is blocked by it",
+      "exit_code": 0
+    }
+  ]
+}

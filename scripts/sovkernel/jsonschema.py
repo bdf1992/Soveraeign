@@ -44,6 +44,10 @@ SUPPORTED_KEYWORDS = frozenset(
     }
 )
 SUPPORTED_FORMATS = frozenset({"date-time"})
+DIALECT = "https://json-schema.org/draft/2020-12/schema"
+RFC3339_PROFILE = re.compile(
+    r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$"
+)
 
 
 def _type_matches(instance: Any, name: str) -> bool:
@@ -66,7 +70,13 @@ def _type_matches(instance: Any, name: str) -> bool:
 
 
 def _is_date_time(value: str) -> bool:
-    """Report whether ``value`` parses as an RFC 3339 timestamp."""
+    """Apply SOV-RFC3339-1 before asking datetime to validate calendar values."""
+    if not RFC3339_PROFILE.fullmatch(value) or value.endswith("-00:00"):
+        return False
+    if not value.endswith("Z"):
+        offset = value[-6:]
+        if int(offset[1:3]) > 23 or int(offset[4:6]) > 59:
+            return False
     try:
         datetime.fromisoformat(value.replace("Z", "+00:00"))
     except ValueError:
@@ -173,7 +183,10 @@ def validate(instance: Any, schema: Any, root: Any = None, path: str = "") -> li
         return [f"{path or '/'}: schema refuses every instance"]
     if not isinstance(schema, dict):
         return [f"{path or '/'}: schema is not an object"]
-    root = schema if root is None else root
+    top_level = root is None or (root is schema and path in ("", "/"))
+    if top_level and schema.get("$schema") != DIALECT:
+        return [f"{path or '/'}: schema must declare dialect {DIALECT!r}"]
+    root = schema if top_level else root
     path = path or "/"
 
     unsupported = set(schema) - SUPPORTED_KEYWORDS - ANNOTATION_KEYWORDS
@@ -187,9 +200,10 @@ def validate(instance: Any, schema: Any, root: Any = None, path: str = "") -> li
         target, errors = _resolve(schema["$ref"], root, path)
         if errors:
             return errors
-        return validate(instance, target, root, path)
+        defects = validate(instance, target, root, path)
+    else:
+        defects = []
 
-    defects: list[str] = []
     if "type" in schema:
         names = schema["type"]
         names = [names] if isinstance(names, str) else names

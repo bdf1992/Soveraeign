@@ -23,18 +23,13 @@ MAX_PRODUCTION_LINES = 300
 PRODUCTION_ROOTS = ("scripts/", "adapters/", "bindings/", "workers/", "conformance/")
 # Retired 2026-08-23: core.py was split into store.py (custody and receipts),
 # authority.py (grants and sessions), runs.py (leased derivation), and
-# projections.py (rebuildable views). Re-entering a module here records debt; it
-# does not grandfather it.
-KNOWN_MODULE_DEBT: dict[str, str] = {
-    "scripts/witness_infrastructure.py": (
-        "301 lines, one over. The overrun is main's host-portable custody lookup, which "
-        "replaced a direct os.geteuid() call that cannot run on Windows; the correct "
-        "behaviour costs one line. The split is the four _exercise_* stages into their own "
-        "module. Entered 2026-08-24 while reconciling main with the federation branch, where "
-        "splitting a witness harness would put the merge's own evidence in doubt. Owed to "
-        "the verification domain, not paid"
-    ),
-}
+# projections.py (rebuildable views).
+# Retired 2026-08-25: scripts/witness_infrastructure.py, entered at 301 lines with the
+# four _exercise_* stages named as its split, was actually split into witness_stages.py.
+# Re-entering a module here records debt; it does not grandfather it, and an empty
+# registry is only meaningful while the size rule is still proved to fire
+# (scripts/tests/test_lint.py, ModuleSizeLimitIsEnforced).
+KNOWN_MODULE_DEBT: dict[str, str] = {}
 SECRET_PATTERNS = {
     "private key": re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"),
     "OpenAI-style token": re.compile(r"\bsk-[A-Za-z0-9_-]{20,}\b"),

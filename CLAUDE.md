@@ -102,12 +102,13 @@ been receiving merged pull requests. This section is orientation, not standing.
 `STATUS.yaml`, the working tree, and the newest relevant report override it
 whenever they disagree.
 
-- `python scripts/verify.py` runs 33 checks in about 8.7 s and grades
+- `python scripts/verify.py` runs 36 checks in about 8.7 s and grades
   itself `SILVER` (PLATINUM 3 s, GOLD 6 s, SILVER 15 s, failing past 15 s;
   `decisions/0050`, which replaced a bare 3 s ceiling the gate was failing).
   A slipped grade is a reportable observation, not a failing gate.
-  `python scripts/lint.py` passes with one named debt
-  (`scripts/witness_infrastructure.py`, 301 lines).
+  `python scripts/lint.py` passes with no named debt: the last entry,
+  `scripts/witness_infrastructure.py`, was split into `scripts/witness_stages.py`
+  on 2026-08-25 and `KNOWN_MODULE_DEBT` is now empty.
 - Eight service boundaries under `services/`, 102 declared operations across
   eight manifests. Asset and Record are built and self-tested; Console's
   continuity path is built and its other four surfaces are text; Gateway,

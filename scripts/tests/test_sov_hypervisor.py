@@ -110,6 +110,41 @@ class LanePreconditions(unittest.TestCase):
         self.assertEqual(second["refusal"], planmod.LANE_DUPLICATED)
 
 
+class TerminalRefusal(unittest.TestCase):
+    """`TERMINAL_MISSING` was declared and never raised.
+
+    With no terminal on PATH the launcher reached `Popen` and let
+    `FileNotFoundError` escape, from inside the per-lane loop. Earlier ready
+    lanes in the same batch had already started, so the operator got a
+    traceback and no record of what was now running. A declared refusal is
+    raised, and this one is raised before any lane starts.
+    """
+
+    def test_a_present_terminal_is_available(self) -> None:
+        self.assertTrue(launchmod.terminal_available("powershell"))
+
+    def test_no_terminal_declared_is_not_a_missing_terminal(self) -> None:
+        """A lane launched without a terminal opens its own console; that is legal."""
+        self.assertTrue(launchmod.terminal_available(None))
+        self.assertTrue(launchmod.terminal_available(""))
+
+    def test_an_absent_terminal_is_unavailable(self) -> None:
+        self.assertFalse(launchmod.terminal_available("no-such-terminal-binary.exe"))
+
+    def test_start_raises_the_declared_refusal_not_a_bare_oserror(self) -> None:
+        spec = launchmod.spec(lane(), claude="claude")
+        with tempfile.TemporaryDirectory() as raw:
+            script = launchmod.write_script(spec, Path(raw))
+            with self.assertRaises(launchmod.TerminalMissing) as caught:
+                launchmod.start(spec, script, terminal="no-such-terminal-binary.exe")
+        self.assertEqual(caught.exception.refusal, launchmod.TERMINAL_MISSING)
+
+    def test_the_refusal_names_the_terminal_it_could_not_find(self) -> None:
+        error = launchmod.TerminalMissing("wt.exe")
+        self.assertEqual(error.terminal, "wt.exe")
+        self.assertIn("wt.exe", str(error))
+
+
 class RefusalShape(unittest.TestCase):
     """Every verdict answers the same keys, refusal and `READY` alike.
 

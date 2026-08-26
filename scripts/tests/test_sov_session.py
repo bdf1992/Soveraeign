@@ -183,7 +183,7 @@ class OutsideTheRepository(unittest.TestCase):
         self.assertTrue(claims.within_repo("scripts/verify.py"))
 
     def test_an_absolute_path_is_outside(self) -> None:
-        self.assertFalse(claims.within_repo("C:/Users/x/AppData/Local/Temp/note.md"))
+        self.assertFalse(claims.within_repo("C:/Temp/outside-the-repo/note.md"))
         self.assertFalse(claims.within_repo("/tmp/note.md"))
 
     def test_a_resource_is_always_inside(self) -> None:

@@ -107,8 +107,56 @@ class RepositoryTreeHoldsTheInvariant(unittest.TestCase):
         self.assertIn("lineage/** -text", text)
 
 
-if __name__ == "__main__":
-    unittest.main()
+class LocalAbsolutePaths(unittest.TestCase):
+    """`AGENTS.md` forbids committing a local absolute path; the check must see every
+    spelling of one.
+
+    The backslash form was the only Windows form matched, so `C:/Users/<name>/` —
+    what Git Bash, JSON documents and most tooling on this host actually write —
+    passed the check that exists to forbid it. Two were committed before this case.
+    """
+
+    # Assembled rather than written out: a literal home directory in this file
+    # would be a committed local absolute path, which is the thing under test.
+    HOME = "Users"
+    LINUX_HOME = "home"
+    SEP = chr(92)
+
+    @classmethod
+    def spellings(cls) -> dict[str, str]:
+        """Every shape of a home directory this repository may meet."""
+        return {
+            "macos": '"/' + cls.HOME + '/someone/Desktop/x"',
+            "linux": '"/' + cls.LINUX_HOME + '/someone/Desktop/x"',
+            "windows backslash":
+                '"C:' + cls.SEP + cls.HOME + cls.SEP + 'someone' + cls.SEP + '"',
+            "windows forward slash": '"C:/' + cls.HOME + '/someone/Desktop/x"',
+        }
+
+    def test_every_spelling_of_a_home_directory_is_refused(self) -> None:
+        for label, spelling in self.spellings().items():
+            with self.subTest(spelling=label):
+                code, report = run_lint_over(
+                    {"note.md": f"a path {spelling} in prose\n".encode("utf-8")})
+                self.assertEqual(code, 1, f"{label} passed the check that forbids it")
+                self.assertIn("local absolute user path", report)
+
+    def test_an_ordinary_absolute_path_is_not_a_home_directory(self) -> None:
+        code, report = run_lint_over(
+            {"note.md": b'a path "C:/Temp/outside/x" in prose\n'})
+        self.assertEqual(code, 0, report)
+
+    def test_the_repository_commits_none_of_them(self) -> None:
+        """The rule, read against the real tree rather than a fixture."""
+        offenders = []
+        for path in lint.repository_text_files():
+            try:
+                text = path.read_text(encoding="utf-8")
+            except (OSError, UnicodeDecodeError):
+                continue
+            if any(p.search(text) for p in lint.LOCAL_PATH_PATTERNS):
+                offenders.append(str(path.relative_to(lint.ROOT)))
+        self.assertEqual(offenders, [], f"local absolute paths committed: {offenders}")
 
 
 class DecisionNumbers(unittest.TestCase):
@@ -148,3 +196,7 @@ class DecisionNumbers(unittest.TestCase):
     def test_the_real_decisions_directory_carries_no_duplicate(self):
         """The regression guard: this is the state the reconciliation left behind."""
         self.assertEqual(lint.check_decision_numbers(REPO_ROOT / "decisions"), [])
+
+
+if __name__ == "__main__":
+    unittest.main()

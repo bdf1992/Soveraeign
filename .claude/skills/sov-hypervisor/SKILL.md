@@ -48,7 +48,7 @@ Host configuration, not governed state. Keep it under `.local/`.
   "sessions": [
     {
       "name": "fleet-alpha",
-      "worktree": "C:/Users/bdf19/Desktop/soveraeign-fleet-alpha",
+      "worktree": "<absolute path to the lane's worktree>",
       "expected_ref": "feat/sov-control-mesh",
       "mode": "write",
       "agent": "sov",

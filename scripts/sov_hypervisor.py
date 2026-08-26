@@ -118,6 +118,12 @@ def cmd_launch(args: argparse.Namespace) -> int:
         print("LAUNCH REFUSED: " + ", ".join(v["refusal"] for v in refused))
         return 1
 
+    terminal = args.terminal or None
+    if not args.dry_run and not launchmod.terminal_available(terminal):
+        print(f"LAUNCH REFUSED: {launchmod.TERMINAL_MISSING}"
+              f" ({terminal} is not on PATH)")
+        return 1
+
     into = (Path(args.scripts) if args.scripts
             else store.repo_root() / ".local" / "hypervisor")
     results: list[dict[str, Any]] = []
@@ -131,7 +137,7 @@ def cmd_launch(args: argparse.Namespace) -> int:
             results.append({"lane": lane["name"], "verdict": DRY_RUN,
                             "script": str(script), "argv": spec["argv"]})
             continue
-        launchmod.start(spec, script, terminal=args.terminal or None)
+        launchmod.start(spec, script, terminal=terminal)
         results.append(launchmod.await_registration(
             lane["name"], lane["worktree"], live_sessions, timeout=args.timeout))
 

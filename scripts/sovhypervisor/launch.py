@@ -22,6 +22,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Callable
 import os
+import shutil
 import subprocess
 import sys
 import time
@@ -104,6 +105,27 @@ def write_script(launch: dict[str, Any], into: Path) -> Path:
     return path
 
 
+class TerminalMissing(RuntimeError):
+    """The host has no terminal to open the lane in.
+
+    Declared as a refusal, so it is raised as one. Reaching `Popen` and letting
+    `FileNotFoundError` escape would abandon lanes already started earlier in
+    the same batch, unreported.
+    """
+
+    def __init__(self, terminal: str) -> None:
+        super().__init__(f"{TERMINAL_MISSING}: {terminal} is not on PATH")
+        self.refusal = TERMINAL_MISSING
+        self.terminal = terminal
+
+
+def terminal_available(terminal: str | None) -> bool:
+    """Whether the host can open a window with this terminal, before any lane starts."""
+    if not terminal:
+        return True
+    return shutil.which(terminal) is not None
+
+
 def terminal_argv(launch: dict[str, Any], script: Path,
                   terminal: str | None = "wt.exe") -> list[str]:
     """How the host opens a window for this lane."""
@@ -134,8 +156,11 @@ def start(launch: dict[str, Any], script: Path, terminal: str | None = "wt.exe",
     flags = 0
     if sys.platform == "win32" and not terminal:
         flags = getattr(subprocess, "CREATE_NEW_CONSOLE", 0)
-    return subprocess.Popen(argv, cwd=launch["cwd"],
-                            env=environment(launch, base), creationflags=flags)
+    try:
+        return subprocess.Popen(argv, cwd=launch["cwd"],
+                                env=environment(launch, base), creationflags=flags)
+    except FileNotFoundError as error:
+        raise TerminalMissing(argv[0]) from error
 
 
 def await_registration(name: str, tree: str, read: Callable[[], dict[str, Any]],

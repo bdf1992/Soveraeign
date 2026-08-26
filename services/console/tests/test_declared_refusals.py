@@ -56,6 +56,11 @@ ABSENT_SESSION = "session_0000000000000000"
 ABSENT_CHANNEL = "channel_0000000000000000"
 ABSENT_GRANT = "grant_0000000000000000"
 ABSENT_PUBLICATION = "publication_0000000000000000"
+#: The BUILT operations that name no record by id and therefore cannot answer
+#: `UNKNOWN_RECORD`. Declared beside `ProducedRefusals.ABSENT_ID` so the two together
+#: have to account for every BUILT operation the manifest carries.
+NO_RECORD_BY_ID = {"discover-operations", "grant", "list-grants", "list-publications",
+                   "open-channel", "open-session", "session-context"}
 
 
 class DeclaredVocabulary(unittest.TestCase):
@@ -79,6 +84,26 @@ class DeclaredVocabulary(unittest.TestCase):
         for operation in sorted(ProducedRefusals.ABSENT_ID):
             with self.subTest(operation=operation):
                 self.assertIn(UnknownRecord.reason_code, DECLARED[operation])
+
+    def test_every_built_operation_is_accounted_for_by_name(self) -> None:
+        """The table below is a declaration, so it is measured against the manifest.
+
+        `ABSENT_ID` and `NO_RECORD_BY_ID` are hand-kept, and a case that walked only
+        `ABSENT_ID` would grade the table against itself: a sixteenth BUILT operation
+        nobody added would be invisible to every case in this module. An independent
+        observation named that on 2026-08-26. The manifest is the source of the list,
+        so adding an operation there and nowhere else fails here.
+        """
+        built = {entry["operation"] for entry in MANIFEST["operations"]
+                 if entry["standing"] == "BUILT"}
+        named = set(ProducedRefusals.ABSENT_ID) | NO_RECORD_BY_ID
+        self.assertEqual(named, built,
+                         "the manifest and this module's tables disagree on what is BUILT")
+        self.assertFalse(set(ProducedRefusals.ABSENT_ID) & NO_RECORD_BY_ID)
+        for operation in sorted(NO_RECORD_BY_ID):
+            with self.subTest(operation=operation):
+                self.assertNotIn(UnknownRecord.reason_code, DECLARED[operation],
+                                 f"{operation} declares a code it cannot produce")
 
 
 class ProducedRefusals(unittest.TestCase):
@@ -474,26 +499,60 @@ class AuthorityBeforeTheRead(unittest.TestCase):
 
 
 class AUsageErrorIsStillOneJsonObject(unittest.TestCase):
-    """`--node BAD` left a `ValueError` traceback and no JSON, on every subcommand."""
+    """A malformed invocation is answered, and is not answered as a refusal.
+
+    `--node BAD` left a `ValueError` traceback and no JSON on every subcommand, and
+    argparse's own errors - a missing flag, an unknown subcommand, no subcommand, a
+    value outside `choices` - wrote their usage to stderr and exited 2, which is the
+    code this module reserves for REFUSED. A machine caller could not tell a refused
+    operation from a command it had typed wrongly.
+    """
 
     def setUp(self) -> None:
         holder = TemporaryDirectory(ignore_cleanup_errors=True)
         self.addCleanup(holder.cleanup)
         self.store = Path(holder.name) / "console"
 
+    def answer(self, arguments: list[str]) -> tuple[int, dict[str, Any], str]:
+        out, err = StringIO(), StringIO()
+        try:
+            with contextlib.redirect_stderr(err):
+                with contextlib.redirect_stdout(out):
+                    code = cli.main(arguments)
+        except SystemExit as exited:
+            code = int(exited.code or 0)
+        return code, json.loads(out.getvalue()), err.getvalue()
+
     def test_a_node_that_is_not_a_node_identifier_answers_in_json(self) -> None:
         for node in ("BAD", "", "node:LOCAL", "node:local\n", "node:", "☃"):
             with self.subTest(node=node):
-                out = StringIO()
-                with contextlib.redirect_stdout(out):
-                    code = cli.main(["--root", str(self.store), "--node", node,
-                                     "grants", "--reader", BDO])
-                answer = json.loads(out.getvalue())
+                code, answer, _ = self.answer(
+                    ["--root", str(self.store), "--node", node, "grants",
+                     "--reader", BDO])
                 # A usage error, not a refusal: no console opened, so no operation was
                 # attempted and no receipt carries a reason code for it.
                 self.assertEqual(answer["outcome"], "USAGE_ERROR")
                 self.assertNotIn("reason_code", answer)
                 self.assertEqual(code, 1)
+
+    def test_a_malformed_invocation_answers_in_json_and_not_at_the_refusal_code(self):
+        cases = {
+            "a missing required flag": ["--root", str(self.store), "grants"],
+            "an unknown subcommand": ["--root", str(self.store), "nosuchcommand"],
+            "no subcommand at all": ["--root", str(self.store)],
+            "a value outside choices": ["--root", str(self.store), "open-session",
+                                        "--operator", BDO, "--actor-kind", "ROBOT",
+                                        "--binding", "b"],
+            "an unknown flag": ["--root", str(self.store), "grants", "--reader", BDO,
+                                "--nonsense", "x"],
+        }
+        for name, arguments in cases.items():
+            with self.subTest(name):
+                code, answer, err = self.answer(arguments)
+                self.assertEqual(answer["outcome"], "USAGE_ERROR", name)
+                self.assertNotIn("reason_code", answer)
+                self.assertEqual(code, 1, name)
+                self.assertEqual(err, "", "the usage message went to stderr as well")
 
 
 class RaisedTypesCarryTheCode(unittest.TestCase):

@@ -15,7 +15,7 @@
     "services/registry/contracts/service.json",
     "contracts/capability-offices.json"
   ],
-  "input_state_digest": "7f933133a0c67c9e872ef3d82927a1d97ba5cc94cf45d79fe1802db80e09e1f1",
+  "input_state_digest": "967bfaae9960f22813a868ac91b4a2ad52e7a9b699bf5f2832b3984021f39867",
   "capabilities": [
     {
       "capability_id": "asset.add-member",

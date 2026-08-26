@@ -168,14 +168,24 @@ class ConsoleCLIWalk(unittest.TestCase):
         """
         with TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
             store = Path(tmp) / "console"
-            for args in (("grant", "--operator", "Mallory",
-                          "--capability", "grant:authority", "--scope", NODE),
-                         ("revoke", "--grant", "grant_0000000000000000")):
+            cases = ((("grant", "--operator", "Mallory", "--capability",
+                       "grant:authority", "--scope", NODE), "--granted-by"),
+                     (("revoke", "--grant", "grant_0000000000000000"), "--revoked-by"))
+            for args, omitted in cases:
                 with self.subTest(args[0]):
+                    out, err = StringIO(), StringIO()
                     with self.assertRaises(SystemExit) as exited:
-                        with contextlib.redirect_stderr(StringIO()):
-                            cli.main(["--root", str(store), "--node", NODE, *args])
-                    self.assertEqual(exited.exception.code, 2)
+                        with contextlib.redirect_stderr(err):
+                            with contextlib.redirect_stdout(out):
+                                cli.main(["--root", str(store), "--node", NODE, *args])
+                    # A usage error, at the code this module reserves for one, and in
+                    # JSON: exit 2 is a refusal, and a caller must be able to tell a
+                    # refused operation from a command it typed wrongly.
+                    self.assertEqual(exited.exception.code, 1)
+                    answer = json.loads(out.getvalue())
+                    self.assertEqual(answer["outcome"], "USAGE_ERROR")
+                    self.assertIn(omitted, answer["message"])
+                    self.assertEqual(err.getvalue(), "")
 
     def test_a_refusal_comes_back_as_json_with_its_reason_code(self) -> None:
         """Exit 2 and a machine-readable reason, not a traceback, at the real boundary."""

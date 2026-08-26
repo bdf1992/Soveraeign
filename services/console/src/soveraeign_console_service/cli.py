@@ -112,14 +112,36 @@ def _commands() -> dict[str, Callable[[ConsoleService, argparse.Namespace], dict
     }
 
 
+class _Parser(argparse.ArgumentParser):
+    """An argument parser that answers a malformed invocation the way this CLI answers.
+
+    `argparse` writes its usage message to stderr and exits 2. Two things were wrong
+    with that here: stdout was empty, against this module's promise that every answer
+    is one JSON object; and 2 is the code this module reserves for a refusal, so a
+    machine caller could not tell a refused operation from a command it had typed
+    wrongly. A missing flag, an unknown subcommand, no subcommand at all and an
+    out-of-choice `--actor-kind` all landed there. An independent observation found it
+    on 2026-08-26, in the same class as the `--node` traceback repaired beside it.
+
+    `--help` still prints text and exits 0. Help is not an answer to an operation.
+    """
+
+    def error(self, message: str) -> Any:
+        """One JSON object at exit 1, which is what this CLI calls a usage error."""
+        _emit({"outcome": "USAGE_ERROR", "message": message}, 1)
+        raise SystemExit(1)
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Declare every command and its required inputs."""
-    parser = argparse.ArgumentParser(prog="soveraeign-console", description=__doc__.splitlines()[0])
+    parser = _Parser(prog="soveraeign-console", description=__doc__.splitlines()[0])
     parser.add_argument("--root", type=Path, default=DEFAULT_ROOT,
                         help="console store root (default .local/console)")
     parser.add_argument("--node", default=DEFAULT_NODE,
                         help=f"the node this console serves (default {DEFAULT_NODE})")
-    sub = parser.add_subparsers(dest="command", required=True)
+    # Each subcommand gets the same parser class, so a bad flag on `post` answers the
+    # way a bad flag on the root does rather than falling back to argparse's exit 2.
+    sub = parser.add_subparsers(dest="command", required=True, parser_class=_Parser)
 
     operations = sub.add_parser(
         "operations", help="discover legal operations and their required inputs")

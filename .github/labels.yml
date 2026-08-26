@@ -31,6 +31,9 @@
 - name: "type: unblock"
   color: "D73A4A"
   description: "A proven block filed as work: one held ticket, one blocked transition, one provision asked."
+- name: "type: chore"
+  color: "6E7781"
+  description: "Maintains or retires a repository surface; closes no obligation and builds nothing."
 
 - name: "provision: grant"
   color: "8250DF"
@@ -112,6 +115,12 @@
 - name: "effect: external-boundary"
   color: "CF222E"
   description: "Translates across a declared external-system boundary."
+- name: "effect: resource-consumption"
+  color: "953800"
+  description: "Consumes a metered or rate-limited resource; consumption is never rolled back."
+- name: "effect: external-world"
+  color: "67060C"
+  description: "Acts outside the node inside a declared authorized scope, leaving a receipt."
 
 # The standing ramp. One axis for the whole artifact lifecycle, ordered by how
 # much evidence stands behind the claim. OPEN is the default and carries no

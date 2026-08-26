@@ -45,9 +45,25 @@ def _parse_time(value: str | None) -> datetime | None:
 
 
 def _open_issues(export: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Return the open issues in number order; closed tickets are surveyed for nothing."""
+    """Return the open issues in number order.
+
+    A closed ticket owes no contract repair: authoring a block for work nobody will
+    take is not work. Its labels are a different matter and are surveyed separately.
+    """
     live = [item for item in export if (item.get("state") or "OPEN").upper() == "OPEN"]
     return sorted(live, key=lambda item: item["number"])
+
+
+def _labelled_issues(export: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Return every ticket whose labels are still on the board, open or closed.
+
+    Closed tickets were surveyed for nothing at all, which made their labels the one
+    part of the coordination surface that could drift with nothing watching. A closed
+    ticket keeps its labels, keeps appearing under a standing filter, and keeps being
+    read; #6, #7, and #51 each sat mislabelled and needed a hand-built action, because
+    the survey that exists to catch exactly that could not see them (decisions/0066).
+    """
+    return sorted(export, key=lambda item: item["number"])
 
 
 def survey_catalogue(root: Path, live: list[dict[str, Any]]) -> list[Action]:
@@ -97,16 +113,24 @@ def survey_catalogue(root: Path, live: list[dict[str, Any]]) -> list[Action]:
 
 
 def survey_tickets(root: Path, export: list[dict[str, Any]]) -> list[Action]:
-    """Recommend label reconciliation and report contract defects across open tickets."""
+    """Recommend label reconciliation across every ticket; report contract defects on open ones.
+
+    The two readings have different populations on purpose. A defect is work, and closed
+    work is not taken. A label is a projection that stays visible after closing.
+    """
     schema = json.loads((root / "contracts" / "issue-metadata.schema.json").read_text("utf-8"))
     projection = labelmod.load_projection(root)
     catalogue = labelmod.load_catalogue(root)
     actions: list[Action] = []
-    for issue in _open_issues(export):
+    open_numbers = {item["number"] for item in _open_issues(export)}
+    for issue in _labelled_issues(export):
         ref = f"#{issue['number']}"
+        closed = issue["number"] not in open_numbers
         try:
             metadata = load_ticket(issue.get("body") or "")
         except TicketBlockError as error:
+            if closed:
+                continue  # a closed ticket owes no block; there is no work to make visible
             actions.append(
                 Action(
                     kind="CONTRACT_DEFECT",
@@ -122,6 +146,8 @@ def survey_tickets(root: Path, export: list[dict[str, Any]]) -> list[Action]:
             continue
         defects = validate(metadata, schema)
         if defects:
+            if closed:
+                continue
             actions.append(
                 Action(
                     kind="CONTRACT_DEFECT",

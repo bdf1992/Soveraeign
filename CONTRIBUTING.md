@@ -105,6 +105,17 @@ for the same reason; link that ticket instead. A judgement is always asked of
 the owner. The queue serves an unblock request at the tier it names and sorts
 it by what it holds (`decisions/0032-unblock-ticket-kind.md`).
 
+A **chore** (`kind: chore`, `type: chore`) maintains or retires a repository
+surface. It names the `path` it acts on and carries a `chore_id`; it closes no
+obligation, so `parent_bits`, `stub_id`, `bit_id`, `engagement_id`, and
+`story_id` are refused on it. A chore may carry `requires`, because
+housekeeping often waits on a decision that has not been taken. The test is
+what the surface's absence would leave behind: if removing it leaves a bit
+unclosed, that is a demotion of the stub that closed it and not a chore. It is
+takeable work and enters the queue, sorting last among equally urgent tickets
+because it maintains a surface rather than advancing one
+(`decisions/0066-chore-ticket-kind.md`).
+
 Changing the issue schema, label axes, color meanings, containment rule, or
 milestone semantics is a reviewed contract change. Update this section, the JSON
 Schema, and the label catalogue together.

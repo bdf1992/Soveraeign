@@ -110,6 +110,53 @@ class LanePreconditions(unittest.TestCase):
         self.assertEqual(second["refusal"], planmod.LANE_DUPLICATED)
 
 
+class RefusalShape(unittest.TestCase):
+    """Every verdict answers the same keys, refusal and `READY` alike.
+
+    `--partial` renders ready and refused lanes in one pass, reading one key off
+    each. A refusal that omitted `lane` crashed that render with `KeyError`, so
+    the operator lost every refusal reason at exactly the moment the refusals
+    were the output. The shape is the contract, not the rendering.
+    """
+
+    def test_a_ready_verdict_names_its_lane(self) -> None:
+        verdict = grade(lane())
+        self.assertEqual(verdict["verdict"], planmod.READY)
+        self.assertEqual(verdict["lane"], "fleet-alpha")
+
+    def test_every_refusal_names_its_lane(self) -> None:
+        refusals = {
+            planmod.LANE_NAME_INVALID: grade(lane(name="Fleet Alpha")),
+            planmod.WORKTREE_MISSING: grade(lane(worktree="C:/trees/absent")),
+            planmod.REF_MISMATCH: grade(lane(expected_ref="")),
+            planmod.READ_ONLY_LANE_ON_BRANCH: grade(lane(mode="read-only")),
+            planmod.ORDERS_MISSING: grade(lane(orders="")),
+            planmod.LANE_OCCUPIED: grade(
+                lane(), live={"fleet-alpha": {"live": True, "pid": 1, "tree": TREE}}),
+        }
+        for expected, verdict in refusals.items():
+            with self.subTest(refusal=expected):
+                self.assertEqual(verdict["refusal"], expected)
+                self.assertIn("lane", verdict, f"{expected} dropped its lane name")
+                self.assertTrue(verdict["lane"], f"{expected} named an empty lane")
+
+    def test_a_duplicate_refusal_names_its_lane(self) -> None:
+        seen: set[str] = set()
+        observe = watching()
+        planmod.check(lane(), observe, {}, seen)
+        second = planmod.check(lane(), observe, {}, seen)
+        self.assertEqual(second["refusal"], planmod.LANE_DUPLICATED)
+        self.assertEqual(second["lane"], "fleet-alpha")
+
+    def test_a_mixed_batch_renders_without_reaching_for_a_missing_key(self) -> None:
+        """The exact render `--partial` performs, over one ready and one refused lane."""
+        verdicts = [grade(lane()), grade(lane(name="second-lane", orders=""))]
+        rendered = [f"{v['lane']:<14} {v['verdict']}" for v in verdicts]
+        self.assertIn("fleet-alpha", rendered[0])
+        self.assertIn("second-lane", rendered[1])
+        self.assertIn(planmod.ORDERS_MISSING, rendered[1])
+
+
 class PlanDocument(unittest.TestCase):
     """A plan is read strictly or refused by name."""
 

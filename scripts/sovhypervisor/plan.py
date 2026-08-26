@@ -105,29 +105,29 @@ def check(lane: dict[str, Any], observe: Callable[[str], dict[str, Any]],
     """
     name = lane["name"]
     if not NAME.match(name):
-        return _no(LANE_NAME_INVALID,
+        return _no(name, LANE_NAME_INVALID,
                    f"{name!r} is not a lane name: lowercase, digits and dashes, 3-40 chars")
     if name in seen:
-        return _no(LANE_DUPLICATED, f"{name} is declared twice in this plan")
+        return _no(name, LANE_DUPLICATED, f"{name} is declared twice in this plan")
     seen.add(name)
 
     if not lane["worktree"]:
-        return _no(WORKTREE_MISSING, f"{name} declares no worktree")
+        return _no(name, WORKTREE_MISSING, f"{name} declares no worktree")
     tree = observe(lane["worktree"])
     if not tree.get("is_worktree"):
-        return _no(WORKTREE_MISSING,
+        return _no(name, WORKTREE_MISSING,
                    f"{name}: {lane['worktree']} is not a git working tree")
 
     branch, sha = str(tree.get("branch") or ""), str(tree.get("sha") or "")
     if not lane["expected_ref"]:
-        return _no(REF_MISMATCH, f"{name} declares no expected_ref; a lane names its ref")
+        return _no(name, REF_MISMATCH, f"{name} declares no expected_ref; a lane names its ref")
     if not _ref_matches(lane["expected_ref"], branch, sha):
-        return _no(REF_MISMATCH,
+        return _no(name, REF_MISMATCH,
                    f"{name} expects {lane['expected_ref']}, tree is on "
                    f"{branch or '(detached)'} @ {sha[:7] or '?'}")
 
     if lane["mode"] == "read-only" and branch:
-        return _no(READ_ONLY_LANE_ON_BRANCH,
+        return _no(name, READ_ONLY_LANE_ON_BRANCH,
                    f"{name} is read-only but {lane['worktree']} is on branch {branch}; "
                    "check out a detached commit so nothing it does can land")
 
@@ -136,21 +136,26 @@ def check(lane: dict[str, Any], observe: Callable[[str], dict[str, Any]],
         if not orders.is_absolute():
             orders = Path(lane["worktree"]) / lane["orders_file"]
         if not orders.is_file():
-            return _no(ORDERS_MISSING, f"{name}: no orders at {orders}")
+            return _no(name, ORDERS_MISSING, f"{name}: no orders at {orders}")
     elif not lane["orders"]:
-        return _no(ORDERS_MISSING,
+        return _no(name, ORDERS_MISSING,
                    f"{name} carries no orders; a lane launched without them waits "
                    "for a human to paste one, which is what this refuses")
 
     holder = live.get(name)
     if holder and holder.get("live"):
-        return _no(LANE_OCCUPIED,
+        return _no(name, LANE_OCCUPIED,
                    f"{name} is already live (pid {holder.get('pid')}) in "
                    f"{holder.get('tree')}; end it or choose another name")
 
     return {"lane": name, "verdict": READY, "branch": branch, "sha": sha}
 
 
-def _no(refusal: str, because: str) -> dict[str, Any]:
-    """A refusal in the shape every caller reads."""
-    return {"verdict": refusal, "refusal": refusal, "because": because}
+def _no(lane: str, refusal: str, because: str) -> dict[str, Any]:
+    """A refusal in the shape every caller reads.
+
+    It carries `lane` for the same reason the `READY` verdict does: a caller
+    rendering a mixed batch reads one key off every entry, and a refusal that
+    omitted the name crashed `--partial` instead of reporting the refusal.
+    """
+    return {"lane": lane, "verdict": refusal, "refusal": refusal, "because": because}

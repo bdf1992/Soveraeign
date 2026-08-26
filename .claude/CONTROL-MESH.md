@@ -29,8 +29,9 @@ files, effects, and authority may have several Controllers.
 
 **Fleet** — independently launched `sov` sessions. Use this for sustained
 parallel writing. Give each writing session its own worktree and a distinct
-session name. The repository session registry refuses a write to a path another
-live session has claimed and warns when sessions share one tree; Claude
+session name. The worktree itself is the isolation: the session registry only
+warns about overlapping claims across worktrees, and refuses a write only when
+another live session recently claimed that path in the same tree. Claude
 cross-session messaging carries live coordination.
 
 **Cell** — one `sov` session plus the Controllers/subagents or agent-team

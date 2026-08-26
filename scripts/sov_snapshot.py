@@ -18,29 +18,34 @@ An unanswerable claim never fails. A shallow CI checkout cannot count commits, a
 workflows against a page that was correct - twice, because the first repair
 changed the message and not the exit code.
 
-The record is the commit at HEAD and the page is the working tree. Bdo ruled that
-referent on acceptance packet A5, 2026-08-26: `CLAUDE.md` is a committed artifact
-read out of a checkout, so its counts are counts of committed state. Before the
-ruling every count globbed the tree, and one untracked directory belonging to a
-sibling session turned this gate red for everyone on the branch against an unmoved
-HEAD - while printing an instruction to edit a file the landing loop's grant
-excludes, so no automated participant could clear it.
+For eight of the ten claims the record is the commit at HEAD and the page is the
+working tree. Bdo ruled that referent on acceptance packet A5, 2026-08-26:
+`CLAUDE.md` is a committed artifact read out of a checkout, so its counts are
+counts of committed state. Before the ruling every count globbed the tree, and one
+untracked directory belonging to a sibling session turned this gate red for
+everyone on the branch against an unmoved HEAD - while printing an instruction to
+edit a file the landing loop's grant excludes, so no automated participant could
+clear it. The same ruling left `verification checks` and `declared operations`
+where they were, for the restraint in the paragraph above: both count something
+the repository already computes, and re-reading it out of the commit would be the
+second implementation rather than a change of referent. `claims.UNCHECKED` names
+both, so which half a number belongs to is on the printed output.
 
-Seven modules, split at the 300-line budget as each repair round grew this one,
-and split by what each owns rather than by where the line count fell.
+Six modules, split at the 300-line budget as each repair round grew this one, and
+split by what each owns rather than by where the line count fell.
 `sovsnapshot/committed.py` owns every call that reaches git and answers what the
-commit holds. `sovsnapshot/declared.py` counts a literal in committed source,
-which is how one claim reads a table that is a tuple in a module rather than a
-directory of files. `sovsnapshot/claims.py` declares what the page claims, names
-the source for each, and holds the one deliberate working-tree read: the page
-itself. `sovsnapshot/grading.py` grades a page against derived values and cannot
-reach a repository, because both arguments are required. `sovsnapshot/shape.py`
-grades the declared claim table itself, so that a claim added later cannot quietly
-go back to globbing the tree; what it does not establish is written into its own
-docstring rather than left to be assumed. `sovsnapshot/selfcheck.py` proves the
-grader fires and does not over-fire, consults that shape check, and refuses to
-report success having exercised nothing. This module is the command line, the
-verdict, and the only place the two halves meet.
+commit holds. `sovsnapshot/claims.py` declares what the page claims, names the
+source for each, and holds the three deliberate working-tree reads: the page
+itself, the check table, and the capability map projection.
+`sovsnapshot/grading.py` grades a page against derived values and cannot reach a
+repository, because both arguments are required. `sovsnapshot/shape.py` grades the
+declared claim table itself, so that a claim added later cannot quietly go back to
+globbing the tree and so that the two named exceptions cannot quietly become
+three; what it does not establish is written into its own docstring rather than
+left to be assumed. `sovsnapshot/selfcheck.py` proves the grader fires and does
+not over-fire, consults that shape check, and refuses to report success having
+exercised nothing. This module is the command line, the verdict, and the only
+place the two halves meet.
 """
 
 from __future__ import annotations
@@ -95,9 +100,11 @@ def cmd_check(args: argparse.Namespace | None = None) -> int:
         for finding in drifted:
             print(f"FAIL {finding.claim}: {finding.detail}")
         print("\nThe snapshot is orientation for every launched agent and it disagrees "
-              "with the commit at HEAD. Either correct CLAUDE.md, or land the sources "
-              "the page already describes - every count above is of committed state, "
-              "which is Bdo's ruling on acceptance packet A5. Never widen a tolerance.")
+              "with the record. Either correct CLAUDE.md, or land the sources the page "
+              "already describes - eight of these ten counts are of committed state, "
+              "which is Bdo's ruling on acceptance packet A5, and the NOT CHECKED lines "
+              "above name the two that read the working tree instead. Never widen a "
+              "tolerance.")
         return 1
     total = len(claims.CLAIMS)
     checked = total - len([f for f in findings if f.kind == grading.UNANSWERABLE])

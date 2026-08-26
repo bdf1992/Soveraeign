@@ -9,14 +9,21 @@ required gate red on an unmoved HEAD and printed an instruction to correct
 `CLAUDE.md`, a file `grant:standing-landing-loop` excludes from its scope. The
 gate demanded an edit no automated participant was permitted to make.
 
+The ruling moved the six file-counting derivations and no more. It left
+`verification checks` and `declared operations` where they were, because each
+already reads a number the repository computes and pulling the same bytes out of
+`git show HEAD:...` would be a second implementation of an existing count rather
+than a change of referent. `claims.UNCHECKED` says which half is which.
+
 Every count here is of the commit; no count here is of the working tree. Two
 things in this module do touch the checkout and neither is a count: `ROOT` is
 resolved from this file's own location, and git is run with the checkout as its
-working directory. The one *source* that deliberately stays on disk is the page
-itself, in `claims.page_text`: someone correcting a number has to be graded on
-the number they just wrote, not on the one still in the commit. That asymmetry is
-the whole design - the page is the thing under test, the commit is what it is
-tested against.
+working directory. Three *sources* deliberately stay on disk and none of them is
+read here - the page itself in `claims.page_text`, the check table, and the
+capability map projection. The page is the one that makes the design asymmetric:
+someone correcting a number has to be graded on the number they just wrote, not
+on the one still in the commit. The page is the thing under test, the commit is
+what it is tested against.
 
 The ruling runs the other way too, and this is not softened. A counted source
 added and the page corrected in the same uncommitted change is reported as drift
@@ -75,8 +82,8 @@ class Entry(NamedTuple):
     kind: str
 
 
-#: How long any one git call may take before this stops waiting for it. A `check`
-#: now spawns ten git processes where it spawned two, and a git blocked on an
+#: How long any one git call may take before this stops waiting for it. A pass
+#: now spawns three git processes where it spawned two, and a git blocked on an
 #: index lock or a credential helper would hang the gate whose wall time is graded
 #: - with no refusal, because a process that never returns never fails. Generous
 #: against the measured cost: the slowest call here is a 25 ms full listing.
@@ -98,7 +105,7 @@ def _git(*argv: str) -> subprocess.CompletedProcess[bytes]:
         # git missing from PATH, ROOT not a directory, git not returning, or an
         # argument holding a lone surrogate that Windows cannot pass to a process.
         # Before the referent ruling `commits` was the only caller and let all of
-        # these escape as tracebacks; nine more claims reach git now, so an
+        # these escape as tracebacks; seven more claims reach git now, so an
         # environment that cannot run it has to refuse like any other source that
         # cannot answer.
         raise Underivable(f"git could not be run here: {unavailable}") from unavailable
@@ -235,21 +242,6 @@ def count_paths(directory: str, pattern: str, what: str) -> int:
         raise Underivable(f"{what} cannot be counted: the commit at HEAD tracks "
                           f"nothing under {directory.rstrip('/')}/")
     return len([path for path in under if matches(path, pattern)])
-
-
-def blob_text(path: str, what: str) -> str:
-    """One committed file, decoded as UTF-8.
-
-    Strict decoding here, unlike `tracked_paths`: this text is about to be parsed
-    as JSON or as Python, and a replacement character would be parsed as content.
-    """
-    done = _git("show", f"HEAD:{path}")
-    if done.returncode != 0:
-        raise _refused(done, f"{what} could not be read from the commit at HEAD")
-    try:
-        return done.stdout.decode("utf-8")
-    except UnicodeDecodeError as broken:
-        raise Underivable(f"{what} at HEAD is not UTF-8: {broken}") from broken
 
 
 def commits() -> int:

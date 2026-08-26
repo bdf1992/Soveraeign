@@ -1,18 +1,28 @@
 """The numbers the snapshot states, and the record each one is derived from.
 
 Split out of `scripts/sov_snapshot.py` on 2026-08-25 at the 300-line budget, and
-split again on 2026-08-26 when Bdo's ruling on acceptance packet A5 moved every
-file-derived claim onto the commit at HEAD. This half declares what the page
-claims and names the source for each; `sovsnapshot/committed.py` owns every call
-that reaches git, and the half next door grades a page against the answers and is
-pure string work.
+split again on 2026-08-26 when Bdo's ruling on acceptance packet A5 moved the six
+file-counting derivations onto the commit at HEAD. This half declares what the
+page claims and names the source for each; `sovsnapshot/committed.py` owns every
+call that reaches git, and the half next door grades a page against the answers
+and is pure string work.
 
-The record is the commit, and the page is the working tree. That split is
-deliberate and is the ruling: nine claims count what HEAD holds, so an untracked
-file belonging to a sibling session cannot report a correct page as drifted, while
-`page_text` still reads `CLAUDE.md` off disk so someone correcting a number is
-graded on the number they just wrote. `committed.py` carries the reasoning and the
-consequence in the other direction.
+For eight of the ten claims the record is the commit and the page is the working
+tree. That split is the ruling: the seven counts of committed files and the commit
+count read what HEAD holds, so an untracked file belonging to a sibling session
+cannot report a correct page as drifted, while `page_text` still reads `CLAUDE.md`
+off disk so someone correcting a number is graded on the number they just wrote.
+`committed.py` carries the reasoning and the consequence in the other direction.
+
+Two claims deliberately did not move, and the ruling named them: `verification
+checks` and `declared operations`. Each reads a number the repository already
+computes - the check table `scripts/verify.py` itself imports, and the capability
+map projection `scripts/sov_capability.py` builds and gates for staleness - so
+putting them on the commit would mean parsing `git show HEAD:...` into a second
+implementation of a count that already exists. That is how an earlier draft of
+this check got 9 conformance cases against the suite's own 20. They read the
+working tree, `UNCHECKED` says which half is which, and `sovsnapshot/shape.py`
+holds them as named exceptions so a third one cannot join them quietly.
 
 Every derivation can fail, and failing is not the same as the page being wrong. A
 source that is missing, half-built, or unanswerable in this environment raises
@@ -30,21 +40,16 @@ from typing import Callable, NamedTuple
 import json
 
 from sovsnapshot import committed
-from sovsnapshot import declared
 from sovsnapshot.committed import Underivable
 
-#: The page, bound once at import from the repository this file sits in. It is a
-#: value and not an alias: patching `committed.ROOT` does not move it, and a test
-#: that wants a fixture's page patches this directly. An earlier comment here
-#: claimed the two "name one thing each", which is true of `Underivable` - a shared
-#: object, caught by name in three modules and reached only on a failure path, so a
-#: second definition would be invisible here and would raise in CI where the
-#: sources do fail - and was never true of a copied `Path`.
-SNAPSHOT = committed.ROOT / "CLAUDE.md"
-
-#: Committed sources that are read whole rather than counted as files.
-CAPABILITY_MAP = "contracts/fixtures/capability-map.reference.json"
-CHECK_TABLE = "scripts/sovverify/checks.py"
+#: This repository, resolved from where this file sits rather than from the
+#: process working directory, for the same reason `committed.ROOT` is. Its own
+#: constant and not `committed.ROOT`: an independent reading showed that reaching
+#: the record module's `Path` and globbing it satisfies the structural guard next
+#: door while reading the working tree, so `shape.py` now reports any reach of
+#: `committed.ROOT` here and this module keeps the one line it needs.
+ROOT = Path(__file__).resolve().parents[2]
+SNAPSHOT = ROOT / "CLAUDE.md"
 
 #: Claims the snapshot makes that this check does not verify, listed so silence is
 #: never read as confirmation. Same inversion `scripts/sov_traps.py` uses.
@@ -61,10 +66,16 @@ UNCHECKED = (
     "wall-clock timings - these vary with machine load and sibling sessions",
     "every prose claim on the page - which services are built, which are boundary "
     "only, what is witnessed, what waits on Bdo. Numbers are all this check reads",
-    "anything uncommitted - every count here is of the commit at HEAD, so a source "
-    "added, deleted or edited in the working tree is invisible to this until it "
-    "lands. That is the referent Bdo ruled on in acceptance packet A5, and the "
-    "cost of it is stated rather than left to be discovered",
+    "anything uncommitted, for the eight claims that count committed state - a "
+    "source added, deleted or edited in the working tree is invisible to those "
+    "until it lands. That is the referent Bdo ruled on in acceptance packet A5, "
+    "and the cost of it is stated rather than left to be discovered",
+    "whether `verification checks` and `declared operations` describe the commit - "
+    "they do not. Those two read the working tree, because the repository already "
+    "computes both numbers and reading them out of the commit would be a second "
+    "implementation of a count that exists. So an uncommitted check, or a "
+    "capability map built and not landed, moves them while HEAD stands still, and "
+    "this check will report the page as drifted until that work lands",
 )
 
 #: The widest a tolerance may be. A tolerance absorbs the commits that land
@@ -92,19 +103,27 @@ class Claim:
 def _verification_checks() -> int:
     """The declared check table is the source `scripts/verify.py` itself reads.
 
-    This used to import `sovverify.checks` and take `len(CHECKS)`, which is a
-    working-tree read: an uncommitted check added or removed moved the number
-    while HEAD stood still. It now counts the elements of the same assignment in
-    the committed source, and refuses on any shape it cannot count exactly.
+    Importing the module that holds the table is the whole derivation, which is why
+    Bdo's ruling on acceptance packet A5 left this claim on the working tree:
+    counting the same tuple out of `git show HEAD:...` would be a second
+    implementation of a number `verify.py` already computes, and a second
+    implementation is how a draft of this check got 9 conformance cases against the
+    suite's own 20. What that costs is stated in `UNCHECKED`: a check added or
+    removed and not yet committed moves this number while HEAD stands still.
 
-    Every refusal it can raise opens `the check table could not be read`, because a
-    malformed table is the environment failing to answer and not this module being
-    wrong - a witness once replaced `checks.py` with an unclosed parenthesis,
-    which is what this shared tree looks like while a sibling session is mid-edit,
-    and got a traceback out of the check. That phrase is `literal_length`'s to
-    produce; wrapping it here to be sure of it printed it twice in one sentence.
+    `ImportError` was the only guard, and a witness replaced `checks.py` with an
+    unclosed parenthesis - which is what a shared working tree looks like while a
+    sibling session is mid-edit - and got a `SyntaxError` traceback out of the
+    check. A malformed check table is the environment failing to answer, not this
+    module being wrong, so it refuses like any other unavailable source. The catch
+    stays narrow for the reason the narrow guards exist: `except Exception` here
+    would swallow a genuine defect in this module and report it as a bad checkout.
     """
-    return declared.literal_length(CHECK_TABLE, "CHECKS", "the check table")
+    try:
+        from sovverify.checks import CHECKS
+    except (ImportError, SyntaxError, OSError) as missing:
+        raise Underivable(f"the check table could not be read: {missing}") from missing
+    return len(CHECKS)
 
 
 def _decision_records() -> int:
@@ -154,19 +173,24 @@ def _declared_operations() -> int:
     authoritatively derivable tells a reader the number cannot be reached when it
     can, which is its own kind of stale claim.
 
-    Moving it onto HEAD is not a second implementation either: the same
-    `json.loads(...)["capabilities"]` runs, over committed bytes instead of
-    working-tree bytes. `sov_capability.py build` writes this file, so a build that
-    has run but not landed is exactly when the hint below is worth printing.
+    Where the restraint does hold is the referent, and Bdo's ruling on acceptance
+    packet A5 left this claim on the working tree for it: this file is the count,
+    so running the same `json.loads(...)["capabilities"]` over committed bytes
+    would move the source without removing the second implementation. What that
+    costs is in `UNCHECKED`. `sov_capability.py build` writes this file, so a
+    half-finished build is exactly when the check should say something intelligible
+    rather than raise.
     """
+    reference = ROOT / "contracts" / "fixtures" / "capability-map.reference.json"
+    if not reference.is_file():
+        raise Underivable("the capability map projection is absent; run "
+                          "`python scripts/sov_capability.py build`")
     try:
-        text = committed.blob_text(CAPABILITY_MAP, "the capability map projection")
-    except Underivable as absent:
-        raise Underivable(f"{absent}; run `python scripts/sov_capability.py build` "
-                          "and commit the result") from absent
-    try:
-        return len(json.loads(text)["capabilities"])
-    except (json.JSONDecodeError, KeyError, TypeError) as broken:
+        return len(json.loads(reference.read_text(encoding="utf-8"))["capabilities"])
+    except (json.JSONDecodeError, KeyError, TypeError, OSError, UnicodeDecodeError) as broken:
+        # OSError and UnicodeDecodeError are here because the neighbouring guard on
+        # the page was written for the failure that had been demonstrated and not
+        # for the one next to it. Same file, same read, same class of answer.
         raise Underivable(f"the capability map projection is unreadable: {broken}") from broken
 
 
@@ -203,11 +227,11 @@ class Derived(NamedTuple):
 
 
 def page_text() -> str:
-    """The snapshot page, read from the working tree, which is the one deliberate one.
+    """The snapshot page, read from the working tree, which is the deliberate one.
 
-    Every count above is of the commit at HEAD; this is not, and the asymmetry is
-    the point. Grading the committed page would tell someone who has just
-    corrected a number that it is still wrong, which is the same unactionable
+    Eight of the ten counts are of the commit at HEAD; this is not, and the
+    asymmetry is the point. Grading the committed page would tell someone who has
+    just corrected a number that it is still wrong, which is the same unactionable
     verdict the ruling removed from the other direction.
 
     It is a source like any other and can be missing. Every deriver was taught to

@@ -17,6 +17,7 @@ import builtins
 import contextlib
 import dataclasses
 import importlib
+import json
 import os
 import re
 import subprocess
@@ -32,20 +33,28 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import sov_snapshot  # noqa: E402
 from sovsnapshot import claims  # noqa: E402
 from sovsnapshot import committed  # noqa: E402
-from sovsnapshot import declared  # noqa: E402
 from sovsnapshot import grading  # noqa: E402
 from sovsnapshot import selfcheck  # noqa: E402
 from sovsnapshot import shape  # noqa: E402
 from sovverify import checks  # noqa: E402
 
 
-#: The nine claims that count a source, which is the set Bdo's ruling on acceptance
-#: packet A5 moved onto the commit at HEAD. `commits` is deliberately outside it: it
+#: The seven claims that count a committed source, which is the set Bdo's ruling on
+#: acceptance packet A5 moved onto the commit at HEAD - six derivations, with the
+#: manifest count stated twice on the page. `commits` is deliberately outside it: it
 #: is a claim about history rather than about a source, it already read git before
 #: the ruling, and it carries the only tolerance in the table.
-SOURCE_CLAIMS = ("verification checks", "decision records", "declared operations",
-                 "service boundaries", "manifests", "agent definitions", "skills",
-                 "workflows", "reports")
+SOURCE_CLAIMS = ("decision records", "service boundaries", "manifests",
+                 "agent definitions", "skills", "workflows", "reports")
+
+#: Everything the commit answers, which is those seven plus the history count.
+COMMITTED_CLAIMS = SOURCE_CLAIMS + ("commits",)
+
+#: The two the same ruling left on the working tree, because each counts something
+#: the repository already computes and reading it out of the commit would be a
+#: second implementation rather than a change of referent. Listed here so the cases
+#: below can assert what they cost as well as what they are.
+WORKING_TREE_CLAIMS = ("verification checks", "declared operations")
 
 
 def write_tree(root: Path, files: dict[str, str]) -> None:
@@ -498,10 +507,11 @@ class AMalformedCheckTableIsTheEnvironment(unittest.TestCase):
     tree looks like while a sibling session is mid-edit, and `checks.py` was being
     edited at the time. The traceback escaped `derive_all` entirely.
 
-    The table is read out of the commit since the referent ruling, so the fixture
-    is a repository that committed a broken one. Reading it as source rather than
-    importing it removes the original failure mode and introduces its own, which is
-    why the case moved rather than being deleted.
+    This claim imports the table rather than reading it out of the commit, which is
+    where Bdo's ruling on acceptance packet A5 left it, so the fixture is a working
+    tree holding a broken one. It is a repository as well, so the eight committed
+    claims answer and this refusal is reported beside them rather than being the
+    only thing the run could say.
     """
 
     def test_check_refuses_and_does_not_traceback_on_an_unparseable_table(self):
@@ -615,19 +625,16 @@ class TheRecordIsTheCommitAtHead(unittest.TestCase):
         ".claude/workflows/notes.md": "not a workflow\n",
         "services/alpha/contracts/service.json": "{}\n",
         "services/alpha/README.md": "not a manifest\n",
-        "contracts/fixtures/capability-map.reference.json": '{"capabilities": [1, 2, 3]}\n',
-        "scripts/sovverify/checks.py": "CHECKS = (1, 2)\n",
     }
 
-    FIRST = {"verification checks": 2, "commits": 1, "decision records": 2,
-             "declared operations": 3, "service boundaries": 1, "manifests": 1,
-             "agent definitions": 1, "skills": 2, "workflows": 1, "reports": 1}
+    FIRST = {"commits": 1, "decision records": 2, "service boundaries": 1,
+             "manifests": 1, "agent definitions": 1, "skills": 2, "workflows": 1,
+             "reports": 1}
 
     #: One change per claim, so a claim that quietly kept globbing the tree is named
-    #: individually rather than hidden behind a sibling that did not move. Six are
-    #: untracked additions and two - the capability projection and the check table -
-    #: are edits to tracked files, because those two claims read a file's contents
-    #: rather than counting names and an addition would not exercise them.
+    #: individually rather than hidden behind a sibling that did not move. All of
+    #: them are untracked additions, because that is the shape that turned the gate
+    #: red on an unmoved HEAD.
     PLANT = {
         ".claude/skills/gamma/SKILL.md": "a sibling session mid-create of something else\n",
         "decisions/0003-three.md": "three\n",
@@ -635,13 +642,42 @@ class TheRecordIsTheCommitAtHead(unittest.TestCase):
         ".claude/agents/two.md": "two\n",
         ".claude/workflows/two.js": "// two\n",
         "services/beta/contracts/service.json": "{}\n",
-        "contracts/fixtures/capability-map.reference.json": '{"capabilities": [1, 2, 3, 4]}\n',
-        "scripts/sovverify/checks.py": "CHECKS = (1, 2, 3)\n",
     }
 
-    SECOND = {"verification checks": 3, "commits": 2, "decision records": 3,
-              "declared operations": 4, "service boundaries": 2, "manifests": 2,
-              "agent definitions": 2, "skills": 3, "workflows": 2, "reports": 2}
+    SECOND = {"commits": 2, "decision records": 3, "service boundaries": 2,
+              "manifests": 2, "agent definitions": 2, "skills": 3, "workflows": 2,
+              "reports": 2}
+
+    def _committed_only(self, answered: dict[str, int]) -> dict[str, int]:
+        """The fixture's own counts, with the two working-tree claims set aside.
+
+        Those two read `claims.ROOT`, which the fixture does not move, so they
+        answer about this checkout throughout. Asserted rather than dropped, in
+        `test_the_working_tree_claims_answer_about_this_checkout` below.
+        """
+        return {name: value for name, value in answered.items()
+                if name in COMMITTED_CLAIMS}
+
+    def test_the_working_tree_claims_answer_about_this_checkout(self):
+        """The cost of the ruling's other half, in the fixture that proves its first.
+
+        The fixture repository holds no check table and no capability projection, so
+        a claim reading it would refuse. These two answer, and they answer this
+        repository's numbers - which is the referent Bdo left them on, stated as a
+        case rather than only in `claims.UNCHECKED`.
+        """
+        reference = ROOT / "contracts" / "fixtures" / "capability-map.reference.json"
+        expected = {"verification checks": len(checks.CHECKS),
+                    "declared operations": len(json.loads(
+                        reference.read_text(encoding="utf-8"))["capabilities"])}
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "fixture"
+            write_tree(root, self.SEED)
+            fixture_git(root, "init", "-q")
+            fixture_commit(root, "seed the fixture")
+            with unittest.mock.patch.object(committed, "ROOT", root):
+                answered = claims.derive_all().values
+        self.assertEqual({name: answered[name] for name in WORKING_TREE_CLAIMS}, expected)
 
     def test_uncommitted_work_moves_no_count_and_landing_the_same_work_moves_them_all(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -652,8 +688,9 @@ class TheRecordIsTheCommitAtHead(unittest.TestCase):
             page = selfcheck.page(**self.FIRST).text
 
             with unittest.mock.patch.object(committed, "ROOT", root):
-                with self.subTest("the commit answers every claim"):
-                    self.assertEqual(claims.derive_all().values, self.FIRST)
+                with self.subTest("the commit answers every claim it owns"):
+                    self.assertEqual(self._committed_only(claims.derive_all().values),
+                                     self.FIRST)
 
                 write_tree(root, self.PLANT)
                 self.assertEqual(fixture_git(root, "rev-parse", "HEAD"), head,
@@ -663,7 +700,7 @@ class TheRecordIsTheCommitAtHead(unittest.TestCase):
                                     "the plant left the tree clean, so there is no "
                                     "untracked work for this case to be about")
                 with self.subTest("untracked work moves no count"):
-                    unmoved = claims.derive_all().values
+                    unmoved = self._committed_only(claims.derive_all().values)
                     self.assertEqual(unmoved, self.FIRST)
                 with self.subTest("and the page stating those counts is still not drifted"):
                     # The counts above are the mechanism; this is the verdict, at the
@@ -673,15 +710,17 @@ class TheRecordIsTheCommitAtHead(unittest.TestCase):
                 landed = fixture_commit(root, "land the same work")
                 self.assertNotEqual(landed, head)
                 with self.subTest("landing the same work moves every count"):
-                    moved = claims.derive_all().values
+                    moved = self._committed_only(claims.derive_all().values)
                     self.assertEqual(moved, self.SECOND)
                 with self.subTest("and the same page is now reported as drifted"):
                     # The control. Refusing to see untracked work must not have made
-                    # the check blind to the landed kind. Every source claim moves by
-                    # one and is reported; `commits` moves by one too and is not,
-                    # because its declared tolerance of 25 absorbs it - which is the
-                    # tolerance doing exactly its job and is why it is named here
-                    # rather than counted.
+                    # the check blind to the landed kind. Every committed source claim
+                    # moves by one and is reported; `commits` moves by one too and is
+                    # not, because its declared tolerance of 25 absorbs it - which is
+                    # the tolerance doing exactly its job and is why it is named here
+                    # rather than counted. The two working-tree claims are absent from
+                    # `moved`, so the page's placeholder for them is unanswerable
+                    # rather than drift, which is the split under test.
                     reported = sorted(f.claim for f in grading.drift(
                         grading.grade(page, moved)))
                     self.assertEqual(reported, sorted(SOURCE_CLAIMS))
@@ -839,12 +878,13 @@ class DerivationsRefuseRatherThanRaise(unittest.TestCase):
         """The sources are on disk and invisible to git, so a fallback would show up.
 
         A tree that is not a repository, carrying a populated `decisions/`,
-        `reports/`, `.claude/skills/`, `services/` and both read-whole sources: the
-        pre-ruling code counted exactly these and answered confidently. Every one
-        must refuse instead. `commits` is not in the set - it is a claim about
-        history, and a temporary directory that happened to sit inside some other
-        repository would let it answer, failing this case for a reason that is not
-        its subject.
+        `reports/`, `.claude/skills/` and `services/`: the pre-ruling code counted
+        exactly these and answered confidently. Every one must refuse instead.
+        `commits` is not in the set - it is a claim about history, and a temporary
+        directory that happened to sit inside some other repository would let it
+        answer, failing this case for a reason that is not its subject. Nor are the
+        two claims the ruling left on the working tree, which are supposed to answer
+        from disk and are graded for that a few classes down.
         """
         on_disk = {
             "decisions/0001-a.md": "a\n",
@@ -853,16 +893,14 @@ class DerivationsRefuseRatherThanRaise(unittest.TestCase):
             ".claude/skills/alpha/SKILL.md": "a\n",
             ".claude/workflows/a.js": "// a\n",
             "services/a/contracts/service.json": "{}\n",
-            "contracts/fixtures/capability-map.reference.json": '{"capabilities": [1]}\n',
-            "scripts/sovverify/checks.py": "CHECKS = (1,)\n",
         }
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp) / "notarepo"
             write_tree(root, on_disk)
             # Every one of them, not one of them. Asserting a single file left the
-            # other seven free to be absent, and an absent source refuses for a
-            # reason that has nothing to do with git - which would satisfy every
-            # case below while proving none of them.
+            # others free to be absent, and an absent source refuses for a reason
+            # that has nothing to do with git - which would satisfy every case
+            # below while proving none of them.
             missing = sorted(name for name in on_disk if not (root / name).is_file())
             self.assertEqual(missing, [], "the fixture did not write itself, so a "
                                           "refusal here would be about the fixture")
@@ -924,63 +962,77 @@ class TheGitCallIsRootedAtTheRepository(unittest.TestCase):
         self.assertEqual(elsewhere, here)
 
 
-class TheCommittedCheckCountIsNotASecondImplementation(unittest.TestCase):
-    """`literal_length` over source must give what `len(CHECKS)` gives on the same bytes.
+class TheTwoWorkingTreeClaimsReadTheTree(unittest.TestCase):
+    """The half of the referent ruling that did not move, and what it costs.
 
-    The objection is on the record in `acceptance/accepted/A5.json`: parsing a count
-    out of HEAD would be a second implementation of a number the repository already
-    computes, the failure that made a draft count conformance cases as 9 against the
-    suite's own 20. This is the evidence against it. The reader is graded on the
-    working-tree bytes, which is the one place the imported table is available to
-    disagree with it, and every shape it cannot count exactly is refused rather than
-    guessed.
+    Bdo's ruling on acceptance packet A5 left `verification checks` and `declared
+    operations` where they were: each counts something the repository already
+    computes, so pulling the same bytes out of `git show HEAD:...` would be a
+    second implementation of an existing count rather than a change of referent -
+    the failure that made a draft of this check report 9 conformance cases against
+    the suite's own 20.
+
+    The cost of leaving them is the mirror of the cost of moving the other eight,
+    and it is graded here rather than only stated in `claims.UNCHECKED`: these two
+    see work that has not landed.
     """
 
-    @staticmethod
-    def _reading(source: str):
-        return unittest.mock.patch.object(committed, "blob_text",
-                                          lambda path, what, text=source: text)
+    def test_the_check_count_is_the_table_verify_itself_runs(self):
+        """No parse and no second count: `len` of the tuple `verify.py` imports."""
+        self.assertEqual(claims._verification_checks(), len(checks.CHECKS))
 
-    def test_the_ast_count_matches_the_imported_table(self):
-        source = (ROOT / "scripts" / "sovverify" / "checks.py").read_text(encoding="utf-8")
-        with self._reading(source):
-            self.assertEqual(
-                declared.literal_length("checks.py", "CHECKS", "the check table"),
-                len(checks.CHECKS))
+    def test_both_are_named_in_unchecked(self):
+        """"Say so in UNCHECKED" is half the ruling, and nothing else holds it.
 
-    def test_a_shape_it_cannot_count_is_refused_rather_than_guessed(self):
-        for source in ("CHECKS = [Check(a) for a in x]\n", "CHECKS = OTHER + (1,)\n",
-                       "CHECKS = (1, *OTHER)\n", "CHECKS = OTHER\n", "OTHER = (1, 2)\n",
-                       "def f():\n    CHECKS = (1, 2)\n", "CHECKS = (\n",
-                       # Assigned twice, and added to after assignment. An earlier
-                       # version returned on the first match and answered 2 for a
-                       # table that runs at 3.
-                       "CHECKS = (1, 2)\nCHECKS = (1, 2, 3)\n",
-                       "CHECKS = (1,)\nCHECKS += (2, 3)\n"):
-            with self.subTest(source=source):
-                with self._reading(source):
-                    with self.assertRaises(claims.Underivable):
-                        declared.literal_length("checks.py", "CHECKS", "the check table")
-
-    def test_a_refusal_names_its_source_once(self):
-        """The wrapper that guaranteed the phrase printed the phrase twice.
-
-        `the check table could not be read: the check table could not be read from
-        the commit at HEAD: fatal: ...`. Nothing failed on it - the exit code and
-        the substring assertion were both satisfied - and it was found only by
-        printing the refusals instead of reasoning about them.
+        Deleting that entry was tried against this file and the suite stayed green:
+        the numbers are still right and the check still passes, so which half a
+        reader is looking at would be carried by a paragraph no case pins. The names
+        are matched rather than the sentence, because the sentence should be free to
+        be reworded and the claims should not.
         """
-        with unittest.mock.patch.object(claims, "CHECK_TABLE", "nope/checks.py"):
-            with self.assertRaises(claims.Underivable) as refused:
-                claims._verification_checks()
-        said = str(refused.exception)
-        self.assertIn("the check table could not be read", said)
-        self.assertEqual(said.count("the check table"), 1, said)
+        said = " ".join(claims.UNCHECKED)
+        for name in WORKING_TREE_CLAIMS:
+            with self.subTest(claim=name):
+                self.assertIn(name, said,
+                              f"{name} reads the working tree and UNCHECKED does not "
+                              "name it, so the run reports more than it checked")
 
-    def test_an_annotated_literal_is_still_counted(self):
-        with self._reading("CHECKS: tuple = (1, 2, 3)\n"):
-            self.assertEqual(
-                declared.literal_length("checks.py", "CHECKS", "the check table"), 3)
+    def test_the_capability_projection_moves_before_anything_is_committed(self):
+        """A `sov_capability.py build` that has not landed moves this number.
+
+        HEAD is not even a repository here, which is the point: nothing about this
+        claim consults it. The eight committed claims have the opposite case a few
+        classes up, and between them they are the whole of the ruling.
+        """
+        first = {"contracts/fixtures/capability-map.reference.json":
+                 '{"capabilities": [1, 2, 3]}\n'}
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "tree"
+            write_tree(root, first)
+            with unittest.mock.patch.object(claims, "ROOT", root):
+                self.assertEqual(claims._declared_operations(), 3)
+                write_tree(root, {"contracts/fixtures/capability-map.reference.json":
+                                  '{"capabilities": [1, 2, 3, 4]}\n'})
+                self.assertEqual(claims._declared_operations(), 4)
+
+    def test_an_absent_projection_refuses_and_says_what_builds_it(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            with unittest.mock.patch.object(claims, "ROOT", Path(tmp)):
+                with self.assertRaises(claims.Underivable) as refused:
+                    claims._declared_operations()
+        self.assertIn("sov_capability.py build", str(refused.exception))
+
+    def test_an_unreadable_projection_refuses_rather_than_raising(self):
+        """Half-written JSON is the environment failing to answer, not a wrong page."""
+        for content in ("{not json", '{"nothing here": 1}'):
+            with self.subTest(content=content):
+                with tempfile.TemporaryDirectory() as tmp:
+                    root = Path(tmp) / "tree"
+                    write_tree(root, {
+                        "contracts/fixtures/capability-map.reference.json": content})
+                    with unittest.mock.patch.object(claims, "ROOT", root):
+                        with self.assertRaises(claims.Underivable):
+                            claims._declared_operations()
 
 
 class EveryClaimReadsTheCommit(unittest.TestCase):
@@ -1015,11 +1067,12 @@ CLAIMS = (
 '''
 
     #: Doctored sources for `claims.py`, and the phrase the guard owes each one.
-    #: An independent reading planted all five against an earlier version of the
-    #: guard and every one of them returned None - including the first, which is a
-    #: silent fall back to a working-tree glob wearing the name of the module the
+    #: An independent reading planted the first four against an earlier version of
+    #: the guard and every one of them returned None - including the first, which is
+    #: a silent fall back to a working-tree glob wearing the name of the module the
     #: invariant is about, and which therefore defeated the invariant itself rather
-    #: than merely escaping it.
+    #: than merely escaping it. A second reading planted the three after them, which
+    #: reach the record module for a `Path` and glob it.
     FOOLED = {
         "a local variable named committed": ('''
 from pathlib import Path
@@ -1073,6 +1126,48 @@ def _skills() -> int:
 
 CLAIMS = (Claim("skills", r"(\\d+)\\s+skills", _skills),)
 ''', "is not imported at module level"),
+        # The second reading's shape: `committed.ROOT` is a `Path` the record module
+        # exports, so taking it and globbing satisfied every rule here while reading
+        # the working tree. Three spellings, because closing only the one that was
+        # demonstrated is the narrowness L-0007 names.
+        "a glob through committed.ROOT": ('''
+from sovsnapshot import committed
+
+
+def _skills() -> int:
+    return len(list((committed.ROOT / ".claude" / "skills").glob("*")))
+
+
+CLAIMS = (Claim("skills", r"(\\d+)\\s+skills", _skills),)
+''', "committed.ROOT"),
+        "a pathlib glob built from committed.ROOT": ('''
+from pathlib import Path
+
+from sovsnapshot import committed
+
+
+def _skills() -> int:
+    return len(list(Path(committed.ROOT, ".claude", "skills").glob("*")))
+
+
+CLAIMS = (Claim("skills", r"(\\d+)\\s+skills", _skills),)
+''', "committed.ROOT"),
+        # This one is why the take is looked for across the whole source rather than
+        # inside each derivation: the deriver reaches a real answer and passes the
+        # reach rule, and the glob is built from a module-level binding.
+        "committed.ROOT bound at module level and globbed from a deriver": ('''
+from sovsnapshot import committed
+
+SKILLS = committed.ROOT / ".claude" / "skills"
+
+
+def _skills() -> int:
+    committed.tracked_paths()
+    return len(list(SKILLS.glob("*")))
+
+
+CLAIMS = (Claim("skills", r"(\\d+)\\s+skills", _skills),)
+''', "committed.ROOT"),
     }
 
     #: The keyword spelling is legal Python and must be read, not skipped. Skipping
@@ -1089,41 +1184,49 @@ def _skills() -> int:
 CLAIMS = (Claim("skills", r"(\\d+)\\s+skills", derive=_skills),)
 '''
 
-    #: A claims module routing a claim through an intermediary reader, and an
-    #: intermediary that never reaches the record. Allowing a second name to stand
-    #: for "the commit" is only safe if the second name is established, and a guard
-    #: that establishes it without a case proving it fires is the same trust it was
-    #: written to remove.
-    THIN_READER = {
-        "claims.py": '''
-from sovsnapshot import declared
+    #: A claim that reaches the record and is nonetheless named as reading the tree,
+    #: which is the exception outliving what it was for.
+    STALE_EXCEPTION = '''
+from sovsnapshot import committed
 
 
 def _skills() -> int:
-    return declared.length_of(".claude/skills")
+    return committed.count(".claude/skills", "*", "skills", dirs=True)
 
 
 CLAIMS = (Claim("skills", r"(\\d+)\\s+skills", _skills),)
-''',
-        "declared.py": '''
+'''
+
+    #: The same claim globbing the tree, which is what a working-tree exception is
+    #: supposed to permit - and, with nothing else declared, leaves the guard
+    #: grading nothing.
+    ONLY_EXCEPTIONS = '''
 from pathlib import Path
 
 
-def length_of(where: str) -> int:
-    return len(list(Path(where).glob("*")))
-''',
-    }
+def _skills() -> int:
+    return len(list(Path(".claude/skills").glob("*")))
+
+
+CLAIMS = (Claim("skills", r"(\\d+)\\s+skills", _skills),)
+'''
 
     @staticmethod
     @contextlib.contextmanager
-    def _doctored(source: str, claim_count: int = 1, alongside: dict[str, str] | None = None):
-        """Grade the guard against a planted `claims.py` instead of the real one."""
+    def _doctored(source: str, claim_count: int = 1,
+                  working_tree: tuple[str, ...] = ()):
+        """Grade the guard against a planted `claims.py` instead of the real one.
+
+        `working_tree` is empty by default and not inherited from `shape`: a planted
+        table declares one claim of its own, and leaving the real exception names in
+        place would report them absent from it in every case below, which is a
+        finding about the fixture rather than about the shape under test.
+        """
         with tempfile.TemporaryDirectory() as tmp:
             planted = Path(tmp) / "claims.py"
             planted.write_text(source, encoding="utf-8")
-            for name, text in (alongside or {}).items():
-                (Path(tmp) / name).write_text(text, encoding="utf-8")
             with unittest.mock.patch.object(claims, "__file__", str(planted)), \
+                    unittest.mock.patch.object(shape, "WORKING_TREE", working_tree), \
                     unittest.mock.patch.object(claims, "CLAIMS",
                                                claims.CLAIMS[:claim_count]):
                 yield
@@ -1150,20 +1253,40 @@ def length_of(where: str) -> int:
         with self._doctored(self.KEYWORD):
             self.assertIsNone(selfcheck.derivations_read_the_commit())
 
-    def test_an_intermediary_reader_that_never_reaches_the_record_is_reported(self):
-        """A claim may route through `declared`, and only because `declared` is checked.
+    def test_a_working_tree_exception_that_reaches_the_record_is_reported(self):
+        """An exception is a claim about a derivation, and derivations move.
 
-        `_verification_checks` answers through `sovsnapshot.declared` rather than
-        directly through `sovsnapshot.committed`, which widens "reaches the commit"
-        to two names. The second name is held to the same rule from its own bytes,
-        and this is the case that proves that holding is real and not a comment.
+        Nothing fails when a claim named here quietly starts reading the commit -
+        the number is right either way - so the guard stops grading it and nobody
+        finds out that the exception is now a hole with no reason behind it.
         """
-        with self._doctored(self.THIN_READER["claims.py"],
-                            alongside={"declared.py": self.THIN_READER["declared.py"]}):
+        with self._doctored(self.STALE_EXCEPTION, working_tree=("skills",)):
             said = shape.derivations_read_the_commit()
         self.assertIsNotNone(said)
-        self.assertIn("does not reach the record", said)
-        self.assertIn("length_of", said)
+        self.assertIn("outlived its reason", said)
+
+    def test_an_exception_naming_a_claim_the_table_does_not_declare_is_reported(self):
+        with self._doctored(self.STALE_EXCEPTION, working_tree=("renamed since",)):
+            said = shape.derivations_read_the_commit()
+        self.assertIsNotNone(said)
+        self.assertIn("grades nothing", said)
+
+    def test_a_table_that_is_all_exceptions_is_reported_rather_than_passing(self):
+        """The exceptions' own vacuity, one layer under the empty table's."""
+        with self._doctored(self.ONLY_EXCEPTIONS, working_tree=("skills",)):
+            said = shape.derivations_read_the_commit()
+        self.assertIsNotNone(said)
+        self.assertIn("guard graded nothing", said)
+
+    def test_the_declared_exceptions_are_the_claims_the_ruling_named(self):
+        """The allowlist is the soft spot, so the names are pinned where a diff shows.
+
+        A third name added to `shape.WORKING_TREE` would silently stop grading a
+        third claim, and the guard cannot tell a legitimate exception from a
+        convenient one. This is the pin: widening it means editing this line, which
+        is Bdo's ruling on acceptance packet A5 being changed rather than drifted.
+        """
+        self.assertEqual(shape.WORKING_TREE, WORKING_TREE_CLAIMS)
 
     def test_the_declared_readers_are_the_ones_the_claims_module_imports(self):
         """A reader named here and absent there would widen the invariant silently."""
@@ -1177,12 +1300,16 @@ def length_of(where: str) -> int:
     def test_the_source_claims_named_in_this_file_are_the_ones_the_table_declares(self):
         """A stale list here would quietly shrink every case that iterates it.
 
-        Two cases loop over `SOURCE_CLAIMS`, and a claim renamed or added in
-        `claims.py` and not here would drop out of both while they went on reporting
-        success - the vacuity this file has had to repair three times.
+        Several cases loop over `SOURCE_CLAIMS` and filter on `COMMITTED_CLAIMS`,
+        and a claim renamed or added in `claims.py` and not here would drop out of
+        all of them while they went on reporting success - the vacuity this file has
+        had to repair three times. The two halves are asserted as a partition, so a
+        claim cannot be quietly moved from one to the other either.
         """
-        self.assertEqual(set(SOURCE_CLAIMS) | {"commits"},
+        self.assertEqual(set(COMMITTED_CLAIMS) | set(WORKING_TREE_CLAIMS),
                          {claim.name for claim in claims.CLAIMS})
+        self.assertEqual(set(COMMITTED_CLAIMS) & set(WORKING_TREE_CLAIMS), set())
+        self.assertEqual(set(COMMITTED_CLAIMS) - set(SOURCE_CLAIMS), {"commits"})
 
     def test_a_claim_that_globs_the_tree_and_a_stray_page_read_are_both_reported(self):
         with self._doctored(self.STRAY):

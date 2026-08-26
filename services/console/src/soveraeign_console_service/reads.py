@@ -21,6 +21,7 @@ from typing import Any
 
 from soveraeign_console_service.refusals import UnknownRecord
 
+CHANNEL_KINDS = ("channel",)
 THREAD_KINDS = ("thread", "thread-lifecycle")
 SESSION_KINDS = ("operator-session", "operator-session-lifecycle")
 PUBLICATION_KINDS = ("publication", "publication-lifecycle")
@@ -37,6 +38,46 @@ def latest(entries: list[dict[str, Any]], kinds: tuple[str, ...], key: str,
     if not found:
         raise UnknownRecord(value)
     return found
+
+
+def foreign(record: dict[str, Any], node_id: str) -> str | None:
+    """The reason this record belongs to another node, or None when it is ours.
+
+    Returned rather than raised so a caller names the operation it was refusing:
+    the same fact refuses an archive, a publish, a read and a post, and each says
+    what it would have done. A record written before console records carried a node
+    reads as foreign to every node, which is the safe direction.
+
+    The reason names this node and never the owning one. Saying which peer holds a
+    record tells a caller something about a node it has no standing on, and the
+    caller already knows which node it asked.
+
+    This is the check that makes node-bound authority mean anything. Binding a grant
+    to the node that minted it stops a grant crossing; it does not stop the node that
+    minted it reading and writing another node's records with a grant of its own,
+    because a node identifier is unbounded and anyone refused one office can open
+    another. An independent witness walked exactly that on 2026-08-25.
+    """
+    if record.get("node_id") == node_id:
+        return None
+    return f"is not a record of {node_id}"
+
+
+def local(entries: list[dict[str, Any]], node_id: str) -> list[dict[str, Any]]:
+    """Only the entries this node made, for folds that have no single subject.
+
+    A listing cannot refuse about one record, so it filters instead: another node's
+    channels, threads, posts, sessions and publications are not in the answer at all.
+    Entries the console did not write - a receipt, a peer's record - carry no
+    `record_kind` this service folds, so they are filtered by the same rule.
+    """
+    return [entry for entry in entries
+            if entry["payload"].get("node_id") == node_id]
+
+
+def channel(entries: list[dict[str, Any]], channel_id: str) -> dict[str, Any]:
+    """One channel's current state. Threads open into it, so it has to exist."""
+    return latest(entries, CHANNEL_KINDS, "channel_id", channel_id)
 
 
 def thread(entries: list[dict[str, Any]], thread_id: str) -> dict[str, Any]:

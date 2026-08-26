@@ -15,6 +15,8 @@ from typing import Any
 
 
 GENESIS = "0" * 64
+LEGACY_DIGEST_PROFILE = "soveraeign-record-chain/v1"
+DIGEST_PROFILE = "soveraeign-record-chain/v2"
 EXPECTED_KINDS = (
     "gateway-request",
     "gateway-capability-resolution",
@@ -25,8 +27,24 @@ EXPECTED_KINDS = (
 
 
 def canonical(value: object) -> str:
-    """Encode a value exactly as the Record Service's public contract declares."""
+    """Encode a value for established Gateway input and receipt digests."""
     return json.dumps(value, sort_keys=True, separators=(",", ":"))
+
+
+def _record_digest(profile: str, previous: str, row: dict[str, Any],
+                   payload: object) -> str | None:
+    """Recompute a journal digest without importing the participant."""
+    if profile == LEGACY_DIGEST_PROFILE:
+        material = "|".join((previous, row["kind"], row["subject"], row["actor"],
+                             canonical(payload)))
+    elif profile == DIGEST_PROFILE:
+        material = json.dumps(
+            [profile, previous, row["kind"], row["subject"], row["actor"], payload],
+            sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False,
+        )
+    else:
+        return None
+    return sha256(material.encode("utf-8")).hexdigest()
 
 
 def _input_state_digest(repository: Path) -> tuple[str, str]:
@@ -56,10 +74,9 @@ def _journal(state: Path) -> tuple[list[dict[str, Any]], list[str]]:
     previous = GENESIS
     for row in rows:
         payload = json.loads(row["payload_json"])
-        material = "|".join((previous, row["kind"], row["subject"], row["actor"],
-                             canonical(payload)))
-        expected = sha256(material.encode("utf-8")).hexdigest()
-        if row["prev_digest"] != previous or row["entry_digest"] != expected:
+        profile = row.get("digest_profile", LEGACY_DIGEST_PROFILE)
+        expected = _record_digest(profile, previous, row, payload)
+        if expected is None or row["prev_digest"] != previous or row["entry_digest"] != expected:
             defects.append("JOURNAL_CHAIN_INVALID")
         previous = row["entry_digest"]
         row["payload"] = payload
@@ -149,9 +166,6 @@ def crossing_defects(repository: Path, state: Path, caller_output: dict[str, Any
         if not isinstance(terminal, dict) or terminal not in receipts or len(receipts) != 1:
             defects.append("TERMINAL_RECEIPT_MISMATCH")
             terminal = terminal if isinstance(terminal, dict) else {}
-        # The declared receipt-event vocabulary names this `<service>.<operation>`;
-        # `asset.ingest` was the spelling before that vocabulary landed. The
-        # capability_id checked above already uses the current form.
         if (terminal.get("actor") != actor or terminal.get("event") != "asset.ingest-asset"
                 or terminal.get("outcome") != "COMMITTED"):
             defects.append("TERMINAL_ATTRIBUTION_INVALID")

@@ -32,18 +32,19 @@ class ConsoleHorizontal(unittest.TestCase):
         self.operation = resolve(self.document, "console.read-thread")
         # Use the exact authority capabilities declared by current main. These are
         # setup grants for the object we read; they do not grant the read itself.
-        self.node.console.grant("reader", "open:channel", "work")
+        self.node.console.grant("reader", "open:channel", "work", "Bdo")
         channel = self.node.console.open_channel("reader", "work", "work")
-        self.node.console.grant("reader", "open:thread", channel["channel_id"])
+        self.node.console.grant("reader", "open:thread", channel["channel_id"], "Bdo")
         self.thread = self.node.console.open_thread(
             "reader", channel["channel_id"], "Horizontal read")
-        self.node.console.grant("reader", "post:message", self.thread["thread_id"])
+        self.node.console.grant("reader", "post:message", self.thread["thread_id"], "Bdo")
+        self.node.console.grant("reader", "open:session", "reader", "Bdo")
         self.sessions = {
             HUMAN: self.node.console.open_session("reader", HUMAN, "human-binding"),
             MODEL: self.node.console.open_session("reader", MODEL, "model-binding"),
         }
         self.node.console.post(
-            self.sessions[HUMAN]["session_id"], self.thread["thread_id"], b"one object")
+            "reader", self.sessions[HUMAN]["session_id"], self.thread["thread_id"], b"one object")
 
     def tearDown(self) -> None:
         self.node.close()
@@ -62,7 +63,7 @@ class ConsoleHorizontal(unittest.TestCase):
         return receipt["payload"]["detail"]
 
     def test_human_and_model_read_the_same_persisted_thread_through_node(self) -> None:
-        self.node.console.grant("reader", "read:thread", self.thread["thread_id"])
+        self.node.console.grant("reader", "read:thread", self.thread["thread_id"], "Bdo")
         results = {}
         for binding in (HUMAN, MODEL):
             returned = self.node.dispatch(self.request(binding))
@@ -92,14 +93,14 @@ class ConsoleHorizontal(unittest.TestCase):
 
     def test_unknown_object_refusal_survives_gateway_unchanged(self) -> None:
         unknown = "thread_0000000000000000"
-        self.node.console.grant("reader", "read:thread", unknown)
+        self.node.console.grant("reader", "read:thread", unknown, "Bdo")
         returned = self.node.dispatch(self.request(HUMAN, thread_id=unknown))
         self.assertEqual(returned["payload"]["outcome"], "REFUSED")
-        self.assertEqual(self.detail(returned)["reason_code"], "THREAD_UNKNOWN")
+        self.assertEqual(self.detail(returned)["reason_code"], "UNKNOWN_RECORD")
         self.assertEqual(returned, self.node.record.entry(returned["entry_id"]))
 
     def test_route_projection_drift_fails_before_console_execution(self) -> None:
-        self.node.console.grant("reader", "read:thread", self.thread["thread_id"])
+        self.node.console.grant("reader", "read:thread", self.thread["thread_id"], "Bdo")
         capability_map, manifests, table = load_surface(ROOT)
         tampered = deepcopy(capability_map)
         row = next(item for item in tampered["capabilities"]
@@ -110,7 +111,8 @@ class ConsoleHorizontal(unittest.TestCase):
 
         def authority(actor: str, capability: str, scope: str) -> str:
             return console_authority.check(
-                self.node.record.reconstruct(), actor, capability, scope)
+                self.node.record.reconstruct(), self.node.node_id, actor, capability,
+                scope)
 
         gateway = Gateway(
             self.node.record, tampered, manifests, table, authority,

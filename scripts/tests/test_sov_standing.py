@@ -124,9 +124,21 @@ class LiveRepository(unittest.TestCase):
         """If this ever fails, something advanced standing - and it must carry a record."""
         self.assertEqual(sov_standing.read_claims(), [])
 
-    def test_the_shipped_witness_directory_contributes_no_records(self):
-        """witness/ holds only its README today; nothing has been witnessed."""
-        self.assertEqual(sov_standing.witness_records(), set())
+    def test_a_deposited_record_does_not_advance_standing(self):
+        """Records are what witness/ is for, and depositing one moves no status field.
+
+        This asserted an empty directory when it was written, which was true of
+        that afternoon rather than true in general. The invariant underneath it
+        is the one `witness/README.md` states: a record makes advancing standing
+        possible and never performs it. That is what is checked now, so the
+        first record deposited does not read as a regression.
+        """
+        records = sov_standing.witness_records()
+        self.assertNotIn("readme", records,
+                         "the convention document is not an observation of anything")
+        self.assertEqual(
+            sov_standing.read_claims(), [],
+            f"{len(records)} witness record(s) on file and a status field advanced anyway")
 
 
 if __name__ == "__main__":

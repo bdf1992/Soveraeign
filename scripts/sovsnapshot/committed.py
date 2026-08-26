@@ -9,12 +9,14 @@ required gate red on an unmoved HEAD and printed an instruction to correct
 `CLAUDE.md`, a file `grant:standing-landing-loop` excludes from its scope. The
 gate demanded an edit no automated participant was permitted to make.
 
-Everything in this module reads git and nothing in it reads the working tree. The
-one source that deliberately stays on disk is the page itself, in
-`claims.page_text`: someone correcting a number has to be graded on the number
-they just wrote, not on the one still in the commit. That asymmetry is the whole
-design - the page is the thing under test, the commit is what it is tested
-against.
+Every count here is of the commit; no count here is of the working tree. Two
+things in this module do touch the checkout and neither is a count: `ROOT` is
+resolved from this file's own location, and git is run with the checkout as its
+working directory. The one *source* that deliberately stays on disk is the page
+itself, in `claims.page_text`: someone correcting a number has to be graded on
+the number they just wrote, not on the one still in the commit. That asymmetry is
+the whole design - the page is the thing under test, the commit is what it is
+tested against.
 
 The ruling runs the other way too, and this is not softened. A counted source
 added and the page corrected in the same uncommitted change is reported as drift
@@ -24,17 +26,32 @@ so a reader can tell which of the two is behind.
 
 A source that cannot answer is never an answer of zero. Git absent from PATH, a
 directory that is not a repository, an unborn HEAD, a path with nothing tracked
-under it: each raises `Underivable`, which the grader reports as a fact about this
-environment rather than about the page. There is deliberately no fall back to a
-working-tree read when git is unavailable, because a silent fallback is the defect
-the ruling closes wearing a guard.
+under it, git blocking past its timeout: each raises `Underivable`, which the
+grader reports as a fact about this environment rather than about the page. No
+function here falls back to a working-tree read when git is unavailable, because a
+silent fallback is the defect the ruling closes wearing a guard. That is a
+property of the code as written, checked by reading it and by the cases in
+`scripts/tests/test_sov_snapshot.py`; `selfcheck.derivations_read_the_commit`
+grades the shape of the claim table and does not prove the absence of a fallback,
+and says so.
+
+Two rules about shape are stated here because both are places the new derivation
+can differ from the old glob, and neither has an instance in this repository:
+
+- a leaf of the recursive listing is not a directory. A submodule and a symlink
+  are leaves, so neither is counted by a `dirs=True` claim, where `Path.is_dir()`
+  would have counted a checked-out submodule and would have counted a symlink or
+  junction on a host that materialises one as a directory.
+- a directory prefix is matched by exact case, like every other match here. This
+  repository sets `core.ignorecase=true`, so git will record `Decisions/` if
+  someone commits it, and this module would then see nothing under `decisions/`
+  and refuse rather than miscount.
 """
 
 from __future__ import annotations
 
 from pathlib import Path
 from typing import Iterator, NamedTuple
-import ast
 import contextlib
 import fnmatch
 import subprocess
@@ -58,6 +75,14 @@ class Entry(NamedTuple):
     kind: str
 
 
+#: How long any one git call may take before this stops waiting for it. A `check`
+#: now spawns ten git processes where it spawned two, and a git blocked on an
+#: index lock or a credential helper would hang the gate whose wall time is graded
+#: - with no refusal, because a process that never returns never fails. Generous
+#: against the measured cost: the slowest call here is a 25 ms full listing.
+GIT_TIMEOUT_SECONDS = 30
+
+
 def _git(*argv: str) -> subprocess.CompletedProcess[bytes]:
     """Run git rooted at `ROOT`, capturing bytes.
 
@@ -67,12 +92,15 @@ def _git(*argv: str) -> subprocess.CompletedProcess[bytes]:
     explicitly and says which errors handler it chose.
     """
     try:
-        return subprocess.run(["git", *argv], cwd=ROOT, capture_output=True)
-    except OSError as unavailable:
-        # git missing from PATH, or ROOT not a directory. Before the referent
-        # ruling `commits` was the only caller and let this escape as a traceback;
-        # nine more claims reach git now, so an environment without it has to
-        # refuse like any other source that cannot answer.
+        return subprocess.run(["git", *argv], cwd=ROOT, capture_output=True,
+                              timeout=GIT_TIMEOUT_SECONDS)
+    except (OSError, subprocess.TimeoutExpired, UnicodeEncodeError) as unavailable:
+        # git missing from PATH, ROOT not a directory, git not returning, or an
+        # argument holding a lone surrogate that Windows cannot pass to a process.
+        # Before the referent ruling `commits` was the only caller and let all of
+        # these escape as tracebacks; nine more claims reach git now, so an
+        # environment that cannot run it has to refuse like any other source that
+        # cannot answer.
         raise Underivable(f"git could not be run here: {unavailable}") from unavailable
 
 
@@ -87,29 +115,34 @@ def _refused(done: subprocess.CompletedProcess[bytes], what: str) -> Underivable
     return Underivable(f"{what}: {said[0] if said else 'git failed and said nothing'}")
 
 
-#: The listing held still for the span of one derivation pass, innermost last, and
-#: `None` until that pass first asks for it. Empty outside a pass.
-_HELD: list[list[str] | None] = []
+#: The listing held still for the span of one derivation pass, innermost last, each
+#: entry `None` until that pass first asks or `(repository, paths)` after. Empty
+#: outside a pass. Single-threaded by assumption: `verify.py` runs its checks in a
+#: thread pool but every check is a subprocess, so nothing shares this list today.
+_HELD: list[tuple[str, list[str]] | None] = []
 
 
 @contextlib.contextmanager
 def one_reading() -> Iterator[None]:
     """Read the commit's path list once and give every claim in this pass that answer.
 
-    Seven of the ten claims ask for the same listing, so without this a single pass
-    spawns seven git processes inside a gate whose wall time is graded - and the
-    seven can disagree with each other if HEAD moves between them, which reports the
-    check as broken when the record has simply moved.
+    Seven of the ten claims ask for the same listing, so without this a successful
+    pass spawns seven git processes inside a gate whose wall time is graded - and
+    the seven can disagree with each other if HEAD moves between them, which reports
+    the check as broken when the record has simply moved. A failed listing is not
+    held, so a pass against an unreachable git still makes the seven calls; holding
+    a failure would let one transient error decide nine claims.
 
-    Held for the span of a pass and not for the process. A caller that runs two
-    passes across a commit has to see the second one, and the fixture in
-    `scripts/tests/test_sov_snapshot.py` is exactly that caller: it derives, lands a
-    commit, and derives again expecting different numbers. A cache keyed on the
-    process would pass every other case in this file and fail that one.
+    Held for the span of a pass and not for the process, and keyed on the repository
+    it was read from. A caller that runs two passes across a commit has to see the
+    second one, and the fixture in `scripts/tests/test_sov_snapshot.py` is exactly
+    that caller: it derives, lands a commit, and derives again expecting different
+    numbers. The key is what makes the hold safe rather than merely usually right -
+    without it, `ROOT` moving inside a pass returned the previous repository's
+    listing and answered confidently about the wrong tree.
 
-    The listing is filled lazily rather than on entry, so a git that cannot answer
-    still refuses claim by claim and `derive_all` records a reason for each instead
-    of dying on the way in.
+    One pass, not one command: `sov_snapshot.cmd_check` derives twice, once to prove
+    the grader works and once to grade the page, and those are two readings.
     """
     _HELD.append(None)
     try:
@@ -123,20 +156,22 @@ def tracked_paths() -> list[str]:
 
     `-z` because git C-quotes non-ASCII paths otherwise, which would turn one
     accented filename into a name that matches no pattern. `--full-name` so the
-    answer does not depend on where git was standing. `surrogateescape` so a path
-    that is not valid UTF-8 survives to be matched rather than raising out of a
-    counter - it cannot match an ASCII pattern either way, but refusing to decode
-    it would take the other 981 paths down with it.
+    answer does not depend on where git was standing. `surrogateescape` because a
+    path that is not valid UTF-8 has to survive to be matched: the skills claim
+    matches on `*`, which matches anything, so such a directory is genuinely part
+    of that count - and refusing to decode one would take every other path in the
+    listing down with it.
     """
-    if _HELD and _HELD[-1] is not None:
-        return _HELD[-1]
+    repository = str(ROOT)
+    if _HELD and _HELD[-1] is not None and _HELD[-1][0] == repository:
+        return _HELD[-1][1]
     done = _git("ls-tree", "-r", "-z", "--full-name", "--name-only", "HEAD")
     if done.returncode != 0:
         raise _refused(done, "the commit at HEAD could not be listed")
     paths = [raw.decode("utf-8", "surrogateescape")
              for raw in done.stdout.split(b"\0") if raw]
     if _HELD:
-        _HELD[-1] = paths
+        _HELD[-1] = (repository, paths)
     return paths
 
 
@@ -159,8 +194,11 @@ def entries(directory: str, what: str) -> list[Entry]:
 
     Derived from the recursive path list rather than a second `ls-tree` per
     directory: git records no empty tree, so `d/x` is a tree at HEAD exactly when
-    some tracked path continues past it, and a blob exactly when one ends there.
-    That equivalence is why the derivation is exact and not an approximation.
+    some tracked path continues past it, and a leaf exactly when one ends there.
+    That equivalence is exact for the ordinary file, and the module docstring
+    states where it is a rule rather than an equivalence: a submodule and a symlink
+    are leaves here and are therefore not directories, which is a deliberate answer
+    and not the same one `Path.is_dir()` gave on every host.
 
     Nothing tracked under the directory is `Underivable`, never zero. A missing
     `decisions/` once counted as zero, which turns "I cannot see the record" into
@@ -214,49 +252,6 @@ def blob_text(path: str, what: str) -> str:
         raise Underivable(f"{what} at HEAD is not UTF-8: {broken}") from broken
 
 
-def literal_length(path: str, name: str, what: str) -> int:
-    """How many elements a committed module assigns to a plain tuple or list literal.
-
-    This is the one derivation that reads committed source instead of counting
-    committed files, and the objection it has to answer is on the record: an
-    earlier proposal held that parsing a count out of HEAD would be a second
-    implementation, the failure that made a draft count conformance cases as 9
-    against the suite's own 20. The guard is that this refuses every shape it
-    cannot count exactly - a comprehension, a concatenation, a name, a starred
-    element, an absent assignment - so there is no shape where it can be
-    confidently wrong. `scripts/tests/test_sov_snapshot.py` grades it against
-    `len(CHECKS)` from the import on identical bytes, which is the evidence that
-    it is the same count and not a second one.
-
-    Every refusal below opens with the same `{what} could not be read`, and so does
-    the one `blob_text` raises. An earlier round guaranteed that phrase by wrapping
-    this function's exception at the call site, which produced "the check table
-    could not be read: the check table could not be read from the commit at HEAD" -
-    a stutter that appeared only when the messages were read rather than reasoned
-    about.
-    """
-    unreadable = f"{what} could not be read"
-    try:
-        module = ast.parse(blob_text(path, what), filename=path)
-    except SyntaxError as broken:
-        raise Underivable(f"{unreadable}: {path} at HEAD does not parse: "
-                          f"{broken}") from broken
-    for node in module.body:
-        targets = node.targets if isinstance(node, ast.Assign) else (
-            [node.target] if isinstance(node, ast.AnnAssign) else [])
-        if not any(isinstance(t, ast.Name) and t.id == name for t in targets):
-            continue
-        if not isinstance(node.value, (ast.Tuple, ast.List)):
-            raise Underivable(f"{unreadable}: {name} in {path} is a "
-                              f"{type(node.value).__name__}, which has no length here")
-        if any(isinstance(element, ast.Starred) for element in node.value.elts):
-            raise Underivable(f"{unreadable}: {name} in {path} unpacks another "
-                              "sequence, so its elements cannot be counted without "
-                              "running it")
-        return len(node.value.elts)
-    raise Underivable(f"{unreadable}: {path} at HEAD assigns no module-level {name}")
-
-
 def commits() -> int:
     """How many commits the history holds, when the history is all present.
 
@@ -274,4 +269,13 @@ def commits() -> int:
     done = _git("rev-list", "--count", "HEAD")
     if done.returncode != 0:
         raise _refused(done, "the commit count could not be read")
-    return int(done.stdout.decode("utf-8", "replace").strip())
+    counted = done.stdout.decode("utf-8", "replace").strip()
+    try:
+        return int(counted)
+    except ValueError as unreadable:
+        # git exiting 0 and saying nothing countable. Unguarded this raised
+        # `ValueError` straight through `derive_all`, which catches `Underivable`
+        # only - a traceback out of the check, from the one function the module
+        # docstring uses as its example of refusing properly.
+        raise Underivable(f"the commit count could not be read: git exited 0 and said "
+                          f"{counted!r}") from unreadable

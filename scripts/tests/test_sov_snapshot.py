@@ -14,6 +14,7 @@ from __future__ import annotations
 from pathlib import Path
 import ast
 import builtins
+import contextlib
 import dataclasses
 import importlib
 import os
@@ -31,8 +32,10 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import sov_snapshot  # noqa: E402
 from sovsnapshot import claims  # noqa: E402
 from sovsnapshot import committed  # noqa: E402
+from sovsnapshot import declared  # noqa: E402
 from sovsnapshot import grading  # noqa: E402
 from sovsnapshot import selfcheck  # noqa: E402
+from sovsnapshot import shape  # noqa: E402
 from sovverify import checks  # noqa: E402
 
 
@@ -56,13 +59,17 @@ def write_tree(root: Path, files: dict[str, str]) -> None:
 def fixture_git(root: Path, *argv: str) -> str:
     """Git inside a throwaway fixture repository, with an identity of its own.
 
-    `-c user...` rather than `git config`, so a fixture never reads and never
-    writes the machine's global identity. A non-zero exit is raised here rather
-    than returned: a fixture that half-built itself makes every assertion after it
-    a report on the fixture.
+    `-c` rather than `git config`, so a fixture never reads and never writes the
+    machine's own settings. The identity is its own, and `core.excludesFile` is
+    emptied because a global ignore rule on the host would otherwise decide what
+    this fixture counts as untracked - which is the one thing the fixture is about.
+
+    A non-zero exit is raised here rather than returned: a fixture that half-built
+    itself makes every assertion after it a report on the fixture.
     """
     done = subprocess.run(["git", "-c", "user.name=snapshot fixture",
-                           "-c", "user.email=fixture@example.invalid", *argv],
+                           "-c", "user.email=fixture@example.invalid",
+                           "-c", "core.excludesFile=", *argv],
                           cwd=root, capture_output=True, text=True)
     if done.returncode != 0:
         raise AssertionError(f"fixture git {argv[0]} failed: {done.stderr.strip()}")
@@ -616,8 +623,11 @@ class TheRecordIsTheCommitAtHead(unittest.TestCase):
              "declared operations": 3, "service boundaries": 1, "manifests": 1,
              "agent definitions": 1, "skills": 2, "workflows": 1, "reports": 1}
 
-    #: One addition per claim, so a claim that quietly kept globbing the tree is
-    #: named individually rather than hidden behind a sibling that did not move.
+    #: One change per claim, so a claim that quietly kept globbing the tree is named
+    #: individually rather than hidden behind a sibling that did not move. Six are
+    #: untracked additions and two - the capability projection and the check table -
+    #: are edits to tracked files, because those two claims read a file's contents
+    #: rather than counting names and an addition would not exercise them.
     PLANT = {
         ".claude/skills/gamma/SKILL.md": "a sibling session mid-create of something else\n",
         "decisions/0003-three.md": "three\n",
@@ -633,7 +643,7 @@ class TheRecordIsTheCommitAtHead(unittest.TestCase):
               "declared operations": 4, "service boundaries": 2, "manifests": 2,
               "agent definitions": 2, "skills": 3, "workflows": 2, "reports": 2}
 
-    def test_untracked_work_moves_no_count_and_landing_the_same_work_moves_them_all(self):
+    def test_uncommitted_work_moves_no_count_and_landing_the_same_work_moves_them_all(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp) / "fixture"
             write_tree(root, self.SEED)
@@ -704,6 +714,81 @@ class OneDerivationPassReadsTheCommitOnce(unittest.TestCase):
         self.assertEqual(len(listings), 2, "the hold outlived the pass that opened it")
         self.assertEqual(committed._HELD, [], "a pass left its hold standing")
 
+    def test_the_hold_is_keyed_on_the_repository_it_read(self):
+        """Held for a pass is not enough; it has to be held for a repository.
+
+        Unkeyed, this was demonstrated returning the first repository's 982 paths
+        after `ROOT` moved inside the pass - a confident answer about the wrong
+        tree, which is the same class of failure as a stale count and harder to see.
+        """
+        listings = {"one": b"a/x\0", "two": b"b/y\0"}
+
+        def by_root(*argv):
+            if argv[:1] == ("ls-tree",):
+                return subprocess.CompletedProcess(argv, 0, listings[committed.ROOT.name], b"")
+            return subprocess.CompletedProcess(argv, 1, b"", b"not asked for here")
+
+        with unittest.mock.patch.object(committed, "_git", by_root):
+            with committed.one_reading():
+                with unittest.mock.patch.object(committed, "ROOT", Path("one")):
+                    self.assertEqual(committed.tracked_paths(), ["a/x"])
+                with unittest.mock.patch.object(committed, "ROOT", Path("two")):
+                    self.assertEqual(committed.tracked_paths(), ["b/y"],
+                                     "the hold answered about the previous repository")
+
+
+class GitIsNeverAllowedToAnswerWithSomethingElse(unittest.TestCase):
+    """Every way git can fail to answer has to arrive as `Underivable`.
+
+    A `check` spawns ten git processes where it spawned two, so each of these is
+    ten times likelier to be reached than it was, and each of them escaped
+    `derive_all` - which catches `Underivable` and nothing else - as a traceback.
+    """
+
+    def test_every_git_call_carries_a_timeout(self):
+        """A process that never returns never fails, and this gate's wall time is graded."""
+        seen = {}
+
+        def record(*argv, **keywords):
+            seen.update(keywords)
+            return subprocess.CompletedProcess(argv[0], 0, b"", b"")
+
+        with unittest.mock.patch.object(subprocess, "run", record):
+            committed._git("rev-parse", "HEAD")
+        self.assertEqual(seen.get("timeout"), committed.GIT_TIMEOUT_SECONDS)
+
+    def test_a_git_that_does_not_return_refuses(self):
+        def blocked(*_argv, **keywords):
+            raise subprocess.TimeoutExpired(cmd="git", timeout=keywords.get("timeout", 0))
+
+        with unittest.mock.patch.object(subprocess, "run", blocked):
+            with self.assertRaises(claims.Underivable):
+                committed.tracked_paths()
+
+    def test_a_commit_count_git_will_not_spell_refuses_rather_than_raising(self):
+        """`int("")` is a `ValueError`, which `derive_all` does not catch."""
+        def silent(*argv):
+            if argv[:1] == ("rev-parse",):
+                return subprocess.CompletedProcess(argv, 0, b"false\n", b"")
+            return subprocess.CompletedProcess(argv, 0, b"\n", b"")
+
+        with unittest.mock.patch.object(committed, "_git", silent):
+            with self.assertRaises(claims.Underivable) as refused:
+                committed.commits()
+        self.assertIn("the commit count could not be read", str(refused.exception))
+
+    def test_a_directory_prefix_is_matched_by_exact_case(self):
+        """`core.ignorecase` is true in this repository, so git will record `Decisions/`.
+
+        The old glob matched the prefix case-insensitively on Windows and
+        case-sensitively in CI. This refuses rather than picking one, which is the
+        answer a reader can act on.
+        """
+        with unittest.mock.patch.object(committed, "tracked_paths",
+                                        lambda: ["Decisions/0001-a.md"]):
+            with self.assertRaises(claims.Underivable):
+                claims._decision_records()
+
 
 class MatchingIsBySegmentAndByCase(unittest.TestCase):
     """Two deliberate choices in `committed.matches`, each pinned by the case for it.
@@ -761,27 +846,36 @@ class DerivationsRefuseRatherThanRaise(unittest.TestCase):
         repository would let it answer, failing this case for a reason that is not
         its subject.
         """
+        on_disk = {
+            "decisions/0001-a.md": "a\n",
+            "reports/a.md": "a\n",
+            ".claude/agents/a.md": "a\n",
+            ".claude/skills/alpha/SKILL.md": "a\n",
+            ".claude/workflows/a.js": "// a\n",
+            "services/a/contracts/service.json": "{}\n",
+            "contracts/fixtures/capability-map.reference.json": '{"capabilities": [1]}\n',
+            "scripts/sovverify/checks.py": "CHECKS = (1,)\n",
+        }
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp) / "notarepo"
-            write_tree(root, {
-                "decisions/0001-a.md": "a\n",
-                "reports/a.md": "a\n",
-                ".claude/agents/a.md": "a\n",
-                ".claude/skills/alpha/SKILL.md": "a\n",
-                ".claude/workflows/a.js": "// a\n",
-                "services/a/contracts/service.json": "{}\n",
-                "contracts/fixtures/capability-map.reference.json": '{"capabilities": [1]}\n',
-                "scripts/sovverify/checks.py": "CHECKS = (1,)\n",
-            })
-            self.assertTrue((root / "decisions" / "0001-a.md").is_file(),
-                            "the fixture did not write itself, so refusing proves nothing")
+            write_tree(root, on_disk)
+            # Every one of them, not one of them. Asserting a single file left the
+            # other seven free to be absent, and an absent source refuses for a
+            # reason that has nothing to do with git - which would satisfy every
+            # case below while proving none of them.
+            missing = sorted(name for name in on_disk if not (root / name).is_file())
+            self.assertEqual(missing, [], "the fixture did not write itself, so a "
+                                          "refusal here would be about the fixture")
             with unittest.mock.patch.object(committed, "ROOT", root):
                 for claim in claims.CLAIMS:
                     if claim.name not in SOURCE_CLAIMS:
                         continue
                     with self.subTest(claim=claim.name):
-                        with self.assertRaises(claims.Underivable):
+                        with self.assertRaises(claims.Underivable) as refused:
                             claim.derive()
+                        # And refused for this reason. `assertRaises` alone is
+                        # satisfied by a refusal for any reason at all.
+                        self.assertIn("git", str(refused.exception).lower())
 
     def test_a_directory_the_commit_does_not_hold_is_underivable_not_zero(self):
         """The original case, moved onto the commit: absent is not an answer of zero.
@@ -851,17 +945,22 @@ class TheCommittedCheckCountIsNotASecondImplementation(unittest.TestCase):
         source = (ROOT / "scripts" / "sovverify" / "checks.py").read_text(encoding="utf-8")
         with self._reading(source):
             self.assertEqual(
-                committed.literal_length("checks.py", "CHECKS", "the check table"),
+                declared.literal_length("checks.py", "CHECKS", "the check table"),
                 len(checks.CHECKS))
 
     def test_a_shape_it_cannot_count_is_refused_rather_than_guessed(self):
         for source in ("CHECKS = [Check(a) for a in x]\n", "CHECKS = OTHER + (1,)\n",
                        "CHECKS = (1, *OTHER)\n", "CHECKS = OTHER\n", "OTHER = (1, 2)\n",
-                       "def f():\n    CHECKS = (1, 2)\n", "CHECKS = (\n"):
+                       "def f():\n    CHECKS = (1, 2)\n", "CHECKS = (\n",
+                       # Assigned twice, and added to after assignment. An earlier
+                       # version returned on the first match and answered 2 for a
+                       # table that runs at 3.
+                       "CHECKS = (1, 2)\nCHECKS = (1, 2, 3)\n",
+                       "CHECKS = (1,)\nCHECKS += (2, 3)\n"):
             with self.subTest(source=source):
                 with self._reading(source):
                     with self.assertRaises(claims.Underivable):
-                        committed.literal_length("checks.py", "CHECKS", "the check table")
+                        declared.literal_length("checks.py", "CHECKS", "the check table")
 
     def test_a_refusal_names_its_source_once(self):
         """The wrapper that guaranteed the phrase printed the phrase twice.
@@ -881,7 +980,7 @@ class TheCommittedCheckCountIsNotASecondImplementation(unittest.TestCase):
     def test_an_annotated_literal_is_still_counted(self):
         with self._reading("CHECKS: tuple = (1, 2, 3)\n"):
             self.assertEqual(
-                committed.literal_length("checks.py", "CHECKS", "the check table"), 3)
+                declared.literal_length("checks.py", "CHECKS", "the check table"), 3)
 
 
 class EveryClaimReadsTheCommit(unittest.TestCase):
@@ -895,6 +994,8 @@ class EveryClaimReadsTheCommit(unittest.TestCase):
 
     STRAY = '''
 from pathlib import Path
+
+from sovsnapshot import committed
 
 ROOT = Path(".")
 SNAPSHOT = ROOT / "CLAUDE.md"
@@ -913,8 +1014,165 @@ CLAIMS = (
 )
 '''
 
+    #: Doctored sources for `claims.py`, and the phrase the guard owes each one.
+    #: An independent reading planted all five against an earlier version of the
+    #: guard and every one of them returned None - including the first, which is a
+    #: silent fall back to a working-tree glob wearing the name of the module the
+    #: invariant is about, and which therefore defeated the invariant itself rather
+    #: than merely escaping it.
+    FOOLED = {
+        "a local variable named committed": ('''
+from pathlib import Path
+
+from sovsnapshot import committed
+
+ROOT = Path(".")
+
+
+def _skills() -> int:
+    committed = ROOT / ".claude" / "skills"
+    return len(list(committed.glob("*")))
+
+
+CLAIMS = (Claim("skills", r"(\\d+)\\s+skills", _skills),)
+''', "rebound or shadowed"),
+        "a table that is not read at module level": ('''
+from sovsnapshot import committed
+
+
+def _build():
+    CLAIMS = (1, 2, 3)
+    return CLAIMS
+
+
+def _skills() -> int:
+    return committed.count(".claude/skills", "*", "skills", dirs=True)
+''', "graded nothing"),
+        "the page reached by name rather than through SNAPSHOT": ('''
+from pathlib import Path
+
+from sovsnapshot import committed
+
+ROOT = Path(".")
+
+
+def _skills() -> int:
+    return committed.count(".claude/skills", "*", "skills", dirs=True)
+
+
+def _peek() -> str:
+    return (ROOT / "CLAUDE.md").read_text(encoding="utf-8")
+
+
+CLAIMS = (Claim("skills", r"(\\d+)\\s+skills", _skills),)
+''', "_peek"),
+        "committed named but never imported": ('''
+def _skills() -> int:
+    return committed.count(".claude/skills", "*", "skills", dirs=True)
+
+
+CLAIMS = (Claim("skills", r"(\\d+)\\s+skills", _skills),)
+''', "is not imported at module level"),
+    }
+
+    #: The keyword spelling is legal Python and must be read, not skipped. Skipping
+    #: it reported "the source declares 0 claims", which sends a reader looking for
+    #: a broken table when the table is fine and the reader is not.
+    KEYWORD = '''
+from sovsnapshot import committed
+
+
+def _skills() -> int:
+    return committed.count(".claude/skills", "*", "skills", dirs=True)
+
+
+CLAIMS = (Claim("skills", r"(\\d+)\\s+skills", derive=_skills),)
+'''
+
+    #: A claims module routing a claim through an intermediary reader, and an
+    #: intermediary that never reaches the record. Allowing a second name to stand
+    #: for "the commit" is only safe if the second name is established, and a guard
+    #: that establishes it without a case proving it fires is the same trust it was
+    #: written to remove.
+    THIN_READER = {
+        "claims.py": '''
+from sovsnapshot import declared
+
+
+def _skills() -> int:
+    return declared.length_of(".claude/skills")
+
+
+CLAIMS = (Claim("skills", r"(\\d+)\\s+skills", _skills),)
+''',
+        "declared.py": '''
+from pathlib import Path
+
+
+def length_of(where: str) -> int:
+    return len(list(Path(where).glob("*")))
+''',
+    }
+
+    @staticmethod
+    @contextlib.contextmanager
+    def _doctored(source: str, claim_count: int = 1, alongside: dict[str, str] | None = None):
+        """Grade the guard against a planted `claims.py` instead of the real one."""
+        with tempfile.TemporaryDirectory() as tmp:
+            planted = Path(tmp) / "claims.py"
+            planted.write_text(source, encoding="utf-8")
+            for name, text in (alongside or {}).items():
+                (Path(tmp) / name).write_text(text, encoding="utf-8")
+            with unittest.mock.patch.object(claims, "__file__", str(planted)), \
+                    unittest.mock.patch.object(claims, "CLAIMS",
+                                               claims.CLAIMS[:claim_count]):
+                yield
+
     def test_the_declared_table_reads_the_commit(self):
         self.assertIsNone(selfcheck.derivations_read_the_commit())
+
+    def test_each_shape_that_fooled_the_guard_is_now_reported(self):
+        for label, (source, phrase) in self.FOOLED.items():
+            with self.subTest(shape=label):
+                with self._doctored(source):
+                    said = selfcheck.derivations_read_the_commit()
+                self.assertIsNotNone(said, label)
+                self.assertIn(phrase, said)
+
+    def test_an_empty_table_is_reported_rather_than_satisfying_the_guard(self):
+        """The guard's own vacuity: finding nothing is not finding nothing wrong."""
+        with self._doctored("CLAIMS = ()\n", claim_count=0):
+            said = selfcheck.derivations_read_the_commit()
+        self.assertIsNotNone(said)
+        self.assertIn("graded nothing", said)
+
+    def test_a_derivation_passed_by_keyword_is_read_rather_than_skipped(self):
+        with self._doctored(self.KEYWORD):
+            self.assertIsNone(selfcheck.derivations_read_the_commit())
+
+    def test_an_intermediary_reader_that_never_reaches_the_record_is_reported(self):
+        """A claim may route through `declared`, and only because `declared` is checked.
+
+        `_verification_checks` answers through `sovsnapshot.declared` rather than
+        directly through `sovsnapshot.committed`, which widens "reaches the commit"
+        to two names. The second name is held to the same rule from its own bytes,
+        and this is the case that proves that holding is real and not a comment.
+        """
+        with self._doctored(self.THIN_READER["claims.py"],
+                            alongside={"declared.py": self.THIN_READER["declared.py"]}):
+            said = shape.derivations_read_the_commit()
+        self.assertIsNotNone(said)
+        self.assertIn("does not reach the record", said)
+        self.assertIn("length_of", said)
+
+    def test_the_declared_readers_are_the_ones_the_claims_module_imports(self):
+        """A reader named here and absent there would widen the invariant silently."""
+        source = ast.parse(Path(claims.__file__).read_text(encoding="utf-8"))
+        imported = {(alias.asname or alias.name) for node in source.body
+                    if isinstance(node, ast.ImportFrom) for alias in node.names}
+        self.assertTrue(set(shape.READERS) <= imported,
+                        f"{sorted(set(shape.READERS) - imported)} are declared readers "
+                        "that claims.py does not import")
 
     def test_the_source_claims_named_in_this_file_are_the_ones_the_table_declares(self):
         """A stale list here would quietly shrink every case that iterates it.
@@ -927,14 +1185,10 @@ CLAIMS = (
                          {claim.name for claim in claims.CLAIMS})
 
     def test_a_claim_that_globs_the_tree_and_a_stray_page_read_are_both_reported(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            doctored = Path(tmp) / "claims.py"
-            doctored.write_text(self.STRAY, encoding="utf-8")
-            with unittest.mock.patch.object(claims, "__file__", str(doctored)), \
-                    unittest.mock.patch.object(claims, "CLAIMS", claims.CLAIMS[:1]):
-                said = selfcheck.derivations_read_the_commit()
+        with self._doctored(self.STRAY):
+            said = selfcheck.derivations_read_the_commit()
         self.assertIsNotNone(said)
-        self.assertIn("_skills never reaches sovsnapshot.committed", said)
+        self.assertIn("_skills reaches none of", said)
         self.assertIn("_peek", said)
 
     def test_the_selfcheck_fails_on_it_rather_than_only_computing_it(self):

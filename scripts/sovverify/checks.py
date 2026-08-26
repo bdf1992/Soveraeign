@@ -39,7 +39,11 @@ CHECKS = (
           "correct it (LESSONS.md L-0001). Reading the commit rather than the working "
           "tree is Bdo's ruling on acceptance packet A5, and it is what stops another "
           "session's untracked file from reporting a correct page as drifted",
-          ("CLAUDE.md", "scripts/sov_snapshot.py")),
+          # The derivation moved into scripts/sovsnapshot/ and this tuple did not
+          # follow it, so the emitted observation digested neither the code that
+          # produces the verdict nor the check table one of the claims counts.
+          ("CLAUDE.md", "scripts/sov_snapshot.py", "scripts/sovsnapshot",
+           "scripts/sovverify/checks.py")),
     Check("recorded traps still hold", [sys.executable, "scripts/sov_traps.py"], ROOT,
           "re-derives every recorded trap from the repository at check time, so a trap that "
           "has stopped being true fails here instead of going stale in prose",

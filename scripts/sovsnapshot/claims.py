@@ -30,14 +30,17 @@ from typing import Callable, NamedTuple
 import json
 
 from sovsnapshot import committed
+from sovsnapshot import declared
 from sovsnapshot.committed import Underivable
 
-#: Re-exported so `claims.ROOT` and `claims.Underivable` still name one thing each
-#: after the split. `Underivable` in particular is caught by name in three modules
-#: and is reached only on a failure path, so a second definition of it would be
-#: invisible on this machine and would raise in CI, where the sources do fail.
-ROOT = committed.ROOT
-SNAPSHOT = ROOT / "CLAUDE.md"
+#: The page, bound once at import from the repository this file sits in. It is a
+#: value and not an alias: patching `committed.ROOT` does not move it, and a test
+#: that wants a fixture's page patches this directly. An earlier comment here
+#: claimed the two "name one thing each", which is true of `Underivable` - a shared
+#: object, caught by name in three modules and reached only on a failure path, so a
+#: second definition would be invisible here and would raise in CI where the
+#: sources do fail - and was never true of a copied `Path`.
+SNAPSHOT = committed.ROOT / "CLAUDE.md"
 
 #: Committed sources that are read whole rather than counted as files.
 CAPABILITY_MAP = "contracts/fixtures/capability-map.reference.json"
@@ -101,7 +104,7 @@ def _verification_checks() -> int:
     and got a traceback out of the check. That phrase is `literal_length`'s to
     produce; wrapping it here to be sure of it printed it twice in one sentence.
     """
-    return committed.literal_length(CHECK_TABLE, "CHECKS", "the check table")
+    return declared.literal_length(CHECK_TABLE, "CHECKS", "the check table")
 
 
 def _decision_records() -> int:
@@ -230,7 +233,7 @@ def page_text() -> str:
 
 
 def derive_all() -> Derived:
-    """Answer every claim this environment can, once.
+    """Answer every claim this environment can, once per pass.
 
     Once, not per grading call: several sessions share this working tree, and
     re-deriving inside each call let a sibling writing a report change the answer
@@ -238,7 +241,11 @@ def derive_all() -> Derived:
     simply moved. Reading the commit rather than the tree removes most of that
     race, and `committed.one_reading` removes the rest of it inside a pass: seven
     of the ten claims read the same listing, and they must all read the same one.
-    Nothing is printed here; each caller words its own report.
+
+    A pass, not a command. `sov_snapshot.cmd_check` calls this twice - once so the
+    selfcheck can prove the grader works, once to grade the page - and those are
+    two readings of the commit. Nothing is printed here; each caller words its own
+    report.
     """
     values: dict[str, int] = {}
     reasons: dict[str, str] = {}

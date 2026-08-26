@@ -26,15 +26,21 @@ sibling session turned this gate red for everyone on the branch against an unmov
 HEAD - while printing an instruction to edit a file the landing loop's grant
 excludes, so no automated participant could clear it.
 
-Five modules, split at the 300-line budget as each repair round grew this one.
+Seven modules, split at the 300-line budget as each repair round grew this one,
+and split by what each owns rather than by where the line count fell.
 `sovsnapshot/committed.py` owns every call that reaches git and answers what the
-commit holds. `sovsnapshot/claims.py` declares what the page claims, names the
-source for each, and holds the one deliberate working-tree read: the page itself.
-`sovsnapshot/grading.py` grades a page against derived values and cannot reach a
-repository, because both arguments are required. `sovsnapshot/selfcheck.py` proves
-the grader works, proves every declared claim derives through the commit, and
-refuses to report success having exercised nothing. This module is the command
-line, the verdict, and the only place the two halves meet.
+commit holds. `sovsnapshot/declared.py` counts a literal in committed source,
+which is how one claim reads a table that is a tuple in a module rather than a
+directory of files. `sovsnapshot/claims.py` declares what the page claims, names
+the source for each, and holds the one deliberate working-tree read: the page
+itself. `sovsnapshot/grading.py` grades a page against derived values and cannot
+reach a repository, because both arguments are required. `sovsnapshot/shape.py`
+grades the declared claim table itself, so that a claim added later cannot quietly
+go back to globbing the tree; what it does not establish is written into its own
+docstring rather than left to be assumed. `sovsnapshot/selfcheck.py` proves the
+grader fires and does not over-fire, consults that shape check, and refuses to
+report success having exercised nothing. This module is the command line, the
+verdict, and the only place the two halves meet.
 """
 
 from __future__ import annotations

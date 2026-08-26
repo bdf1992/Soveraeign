@@ -1,6 +1,6 @@
 {
-  "receipt_id": "receipt_22e7f8600ca2b93b",
-  "event_id": "entry_1a4026ab38854ea68dfd144bbaf1b305",
+  "receipt_id": "receipt_cfc09ba1c2da676f",
+  "event_id": "entry_af6f1af34aea4cb6b58ba51260ca6453",
   "event_type": "console.discover-operations",
   "actor_id": "sov",
   "interface_id": "bindings/mcp:console_operations",
@@ -25,17 +25,17 @@
   "outcome": "COMMITTED",
   "emitted_record_addresses": [
     "d3d7b9dece99b3a2d1ae141a2ffefbb3927ee42fe6411c55f8d605b4e7a54c42",
-    "22e7f8600ca2b93bdc33d54c1bac0417ebb393fcf3d7cb001d3a9eb0eec50c63"
+    "cfc09ba1c2da676fec747f90f32364e8b64bdf05c05c7aba04092127f75da2c3"
   ],
   "observed_evidence_addresses": [
     "bindings/mcp/observations/journey-02-discovery.json"
   ],
-  "created_at": "2026-08-26T00:08:09Z",
+  "created_at": "2026-08-26T00:12:41Z",
   "serves_capability": "console.discover-operations",
   "consumed": [
     {
       "dimension": "wallclock_seconds",
-      "amount": 0.0178,
+      "amount": 0.0176,
       "measured_by": "time.perf_counter around gateway.call",
       "note": "the crossing alone. Opening the store is setup, not this operation"
     },
@@ -51,5 +51,5 @@
       "note": "a valuation of this usage at zero, not an absence of usage. RECORD_LOCAL and no monetary charge; the seconds were still spent"
     }
   ],
-  "receipt_digest": "8033583151317d3fd9da30ba45481f73e6dd421c9929594e6c08117277c9bfd1"
+  "receipt_digest": "922d2aa070b2af2565e476df8e241c528d8cc6c6f1f225eeb8cf644e234544e3"
 }

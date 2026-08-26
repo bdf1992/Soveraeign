@@ -59,10 +59,10 @@
       "kind": "RECEIPT",
       "subject": "discover-operations",
       "actor": "sov",
-      "entry_digest": "22e7f8600ca2b93bdc33d54c1bac0417ebb393fcf3d7cb001d3a9eb0eec50c63",
+      "entry_digest": "cfc09ba1c2da676fec747f90f32364e8b64bdf05c05c7aba04092127f75da2c3",
       "payload": {
         "detail": {
-          "entry_id": "entry_1a4026ab38854ea68dfd144bbaf1b305",
+          "entry_id": "entry_af6f1af34aea4cb6b58ba51260ca6453",
           "result": {
             "authoritative": false,
             "capability_revision": "0065fbe6d83768a79cbf410acf38476106b4161de4d3473e7dd1e71ff83f16d9",

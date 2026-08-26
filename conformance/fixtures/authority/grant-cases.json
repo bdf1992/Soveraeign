@@ -1,6 +1,6 @@
 {
   "corpus_id": "soveraeign-authority-grant-cases/v1",
-  "note": "Positive and defeating cases for contracts/authority-grant.schema.json and the evaluator in scripts/sovkernel/authority.py. Three cases prove a live grant covers a request; thirty-one prove a refusal, and every refusal code the evaluator can report has at least one case proving it actually fires. Each case is a patch over base_grant and base_request, so what a case says is exactly what it changes; a field a case does not mention is the base value, and a field neither mentions is absent rather than satisfied.",
+  "note": "Positive and defeating cases for contracts/authority-grant.schema.json and the evaluator in scripts/sovkernel/authority.py. Three cases prove a live grant covers a request; thirty-three prove a refusal, and every refusal code the evaluator can report has at least one case proving it actually fires. Each case is a patch over base_grant and base_request, so what a case says is exactly what it changes; a field a case does not mention is the base value, and a field neither mentions is absent rather than satisfied.",
   "base_grant": {
     "grant_schema": "soveraeign-authority-grant/v1",
     "status": "RATIFIED",
@@ -322,6 +322,24 @@
             "verdict": "CONFIRMED"
           }
         }
+      }
+    },
+    {
+      "case_id": "D-008c-a-backslash-names-two-different-files",
+      "expect": "AUTHORITY_REFUSED",
+      "proves": "A backslash is a path separator on Windows and an ordinary legal filename character on POSIX, so one string names two different files depending on where the check runs, and this module reads no host. Normalising it to `/` before comparing is safe in one direction only: it over-refuses an excluded path, which is harmless, and over-admits an included one, which is not. On POSIX a root-level file literally named scripts\\tests\\x.py normalised to scripts/tests/x.py and was admitted under the prefix scripts/ while sitting nowhere near it. Reached from two Linux CI failures on a Windows-only assertion, reported by a sibling session.",
+      "grant_patch": {},
+      "request_patch": {
+        "paths": ["scripts\\tests\\x.py"]
+      }
+    },
+    {
+      "case_id": "D-008d-a-backslash-inside-an-admitted-prefix-is-still-refused",
+      "expect": "AUTHORITY_REFUSED",
+      "proves": "The refusal is on the character, not on where it sits. A path whose leading segment is admitted and whose tail carries a backslash still names one file on one host and another elsewhere. A caller canonicalises first with sovland.tree.repo_relative; one that does not gets the refusal.",
+      "grant_patch": {},
+      "request_patch": {
+        "paths": ["scripts/tests\\x.py"]
       }
     }
   ]

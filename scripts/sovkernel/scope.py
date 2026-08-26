@@ -79,6 +79,20 @@ def _ungradeable(path: str) -> str | None:
     if cleaned.startswith("/") or (len(cleaned) > 1 and cleaned[1] == ":"):
         return (f"{path} is not repository-relative; a grant's scope is declared in "
                 "repository-relative prefixes")
+    if "\\" in path:
+        # A backslash means a separator on Windows and an ordinary filename
+        # character on POSIX, so the same string names two different files
+        # depending on the host - and this module reads no host. Normalising it to
+        # `/` for comparison is safe in one direction and not the other: it
+        # over-refuses an excluded path, which is harmless, and over-admits an
+        # included one, which is not. On POSIX a root-level file literally named
+        # `scripts\tests\x.py` normalises to `scripts/tests/x.py` and is admitted
+        # under the prefix `scripts/` while sitting nowhere near it. A caller
+        # canonicalises first with `sovland.tree.repo_relative`, which is what this
+        # docstring already required; one that does not gets the refusal.
+        return (f"{path} carries a backslash, which is a separator on one host and a "
+                "filename character on another, so what it names depends on where "
+                "this check runs")
     found = next((c for c in PATTERN_CHARACTERS if c in cleaned), None)
     if found is not None:
         return (f"{path} carries the pattern character `{found}`, so it names a set that is "

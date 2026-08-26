@@ -12,6 +12,7 @@ from __future__ import annotations
 from pathlib import Path
 from unittest import mock
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -25,6 +26,7 @@ import sov_land  # noqa: E402
 from sovland import repo  # noqa: E402
 from sovland import tree  # noqa: E402
 from sovkernel import authority  # noqa: E402
+from sovkernel import scope  # noqa: E402
 
 
 class _RepoTemplate:
@@ -73,9 +75,41 @@ class RepoRelative(unittest.TestCase):
         absolute = str(ROOT / "scripts" / "sov_land.py")
         self.assertEqual(tree.repo_relative(absolute), "scripts/sov_land.py")
 
-    def test_a_relative_path_keeps_its_meaning_and_loses_its_backslashes(self):
-        self.assertEqual(tree.repo_relative(r"scripts\tests\test_sov_land.py"),
-                         "scripts/tests/test_sov_land.py")
+    def test_a_backslash_path_canonicalises_on_windows_and_stands_on_posix(self):
+        """The old assertion here was a property of this machine, not of the function.
+
+        A backslash is a path separator on Windows and an ordinary legal filename
+        character on POSIX, so `Path` splits the string on one host and treats it
+        as a single name on the other. Asserting the forward-slash result
+        unconditionally passed here and failed Linux CI, blocking a pull request.
+        The function is correct on both; the test was wrong.
+        """
+        canonical = tree.repo_relative(r"scripts\tests\test_sov_land.py")
+        if os.sep == "\\":
+            self.assertEqual(canonical, "scripts/tests/test_sov_land.py")
+        else:
+            self.assertEqual(canonical, r"scripts\tests\test_sov_land.py")
+
+    def test_a_backslash_path_is_never_admitted_into_scope_on_any_host(self):
+        """The property worth pinning, and it holds wherever this runs.
+
+        Normalising a backslash to `/` for comparison is safe in one direction and
+        not the other. It over-refuses an excluded path, which is harmless, and
+        over-admits an included one, which is not: on POSIX a root-level file
+        literally named `scripts\\tests\\x.py` normalised to `scripts/tests/x.py`
+        and was admitted under the prefix `scripts/` while sitting nowhere near it.
+        The evaluator refuses the backslash outright now, so a caller that has not
+        canonicalised gets a refusal rather than a boundary that lied.
+        """
+        grant = {"scope": {"paths": ["scripts/"],
+                           "excluded_paths": ["contracts/standing-grants.json"]}}
+        for path in (r"scripts\tests\x.py", "scripts/tests\\x.py", r"contracts\x"):
+            with self.subTest(path=path):
+                refusal = scope.out_of_scope(grant, {"paths": [path]})
+                self.assertIsNotNone(refusal, f"{path} was admitted")
+                self.assertIn("backslash", refusal)
+        self.assertIsNone(scope.out_of_scope(grant, {"paths": ["scripts/tests/x.py"]}),
+                          "the canonical form must still be admitted")
 
     def test_a_dot_dot_segment_does_not_survive_into_the_comparison(self):
         """A relative path is not automatically inside the repository.
@@ -110,7 +144,14 @@ class RepoRelative(unittest.TestCase):
         without an adversary.
         """
         self.assertEqual(tree.repo_relative("contracts/"), "contracts/")
-        self.assertEqual(tree.repo_relative(r"contracts\\"), "contracts/")
+        # The backslash form is host-dependent for the same reason as above: on
+        # POSIX `contracts\` is a filename ending in a backslash, and `Path` keeps
+        # it. Either way the trailing separator survives, which is the property
+        # this test is named for; the exact spelling of the rest is the host's.
+        if os.sep == "\\":
+            self.assertEqual(tree.repo_relative("contracts\\"), "contracts/")
+        else:
+            self.assertTrue(tree.repo_relative("contracts\\").endswith("/"))
         self.assertEqual(tree.repo_relative("contracts"), "contracts")
 
     def test_a_path_outside_the_repository_is_not_rewritten_into_scope(self):

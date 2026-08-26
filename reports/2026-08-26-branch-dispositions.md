@@ -1,6 +1,13 @@
 # Branch dispositions, 2026-08-26
 
-Status: `MEASURED · JUDGED · NOT WITNESSED · NOTHING RATIFIED`
+Status: `MEASURED · JUDGED · OBSERVED INDEPENDENTLY · NOTHING RATIFIED`
+
+An independent witness read this report at `4108185` and dissented: no
+disposition was wrong, but six rows misstated their own evidence and five counts
+did not reproduce. All eleven findings are repaired below, each verified again by
+hand before the edit. The witness's residuals, which are about the method rather
+than any row, are listed at the end under their own heading and are not repaired,
+because naming them is the repair.
 
 Trunk frozen at `origin/main` = `3360a26` (merge of PR #117). Local `main` was
 four commits stale at the time of the survey, so every comparison in this report
@@ -30,23 +37,23 @@ fetched back.
 | Branch | Disposition | Evidence |
 | --- | --- | --- |
 | `docs/qa-witness-sweep-c296c25` | `LAND` | One file, zero merge conflicts. `reports/2026-08-23-qa-witness-sweep-c296c25.md` is absent from `origin/main`, and it carries the six-witness measurement that produced the graded verify budget. |
-| `feat/gate-loop-pattern` | `LAND_AFTER_REPAIR` | Strict superset of both other F2 branches. Eight files absent from main: `.claude/workflows/sov-gate-control.js`, `.claude/schedules/f2-gate-loop.json`, `scripts/sovschedule/patterns.py`, `scripts/sovschedule/preflight.py`, three test modules, and its decision record. Repairs: `decisions/0045-gate-loop-as-a-scheduled-pattern.md` collides with main's `decisions/0045-acceptance-not-approval.md`, and four conflicts — `STATUS.yaml`, `conformance/fixtures/kernel/transition-cases.json`, `conformance/run.py`, `docs/documentation.html`, of which the last is a regenerable projection. One domain, `RECORD_LOCAL`. |
-| `fix/landing-gate-host-independence` | `LAND_AFTER_REPAIR` | Nothing of its own is on main: `scripts/sovkernel/scope.py`, `scripts/sovland/{__init__,repo,tree}.py`, `scripts/witness_stages.py`, `scripts/tests/test_sov_land.py` (576 lines) and eleven `reports/observations/2026-08-25-*.json`. Main's `scripts/sovkernel/authority.py` still grades a path by spelling alone, and main's `scripts/lint.py` still names `scripts/witness_infrastructure.py` in `KNOWN_MODULE_DEBT`, which this branch pays. One conflict, `docs/documentation.html`, a generated projection. |
-| `feat/tier-model-loop` | `LAND_AFTER_REPAIR` | Zero merge conflicts. Twelve files absent from main, including `scripts/sov_loop.py`, `scripts/sovloop/{artifacts,ollama,rules,run}.py`, `scripts/sov_bench.py`, `contracts/tier-bindings.json` and `conformance/fixtures/loop/`. The repair is not a text conflict: `decisions/0033-tier-model-bindings.md` collides with main's `decisions/0033-close-the-founding-docket.md` and must be renumbered past 0066. |
+| `feat/gate-loop-pattern` | `LAND_AFTER_REPAIR` | Strict superset of both other F2 branches. Fourteen of its paths are absent from main, among them `.claude/workflows/sov-gate-control.js`, `.claude/schedules/f2-gate-loop.json`, `scripts/sovschedule/patterns.py`, `scripts/sovschedule/preflight.py`, three test modules, and its decision record. Repairs: `decisions/0045-gate-loop-as-a-scheduled-pattern.md` collides with main's `decisions/0045-acceptance-not-approval.md`, and four conflicts — `STATUS.yaml`, `conformance/fixtures/kernel/transition-cases.json`, `conformance/run.py`, `docs/documentation.html`, of which the last is a regenerable projection. One domain, `RECORD_LOCAL`. |
+| `fix/landing-gate-host-independence` | `LAND_AFTER_REPAIR` | Seventeen of its paths are absent from main, including `scripts/sovkernel/scope.py`, `scripts/sovland/{__init__,repo,tree}.py`, `scripts/witness_stages.py`, `scripts/tests/test_sov_land.py` (617 lines) and eleven `reports/observations/2026-08-25-*.json`. Main's `scripts/sovkernel/authority.py` still grades a path by spelling alone, and main's `scripts/lint.py` still names `scripts/witness_infrastructure.py` in `KNOWN_MODULE_DEBT`, which this branch pays. One conflict, `docs/documentation.html`, a generated projection. |
+| `feat/tier-model-loop` | `LAND_AFTER_REPAIR` | Zero merge conflicts. Fourteen of its paths are absent from main, including `scripts/sov_loop.py`, `scripts/sovloop/{artifacts,ollama,rules,run}.py`, `scripts/sov_bench.py`, `contracts/tier-bindings.json` and `conformance/fixtures/loop/`. The repair is not a text conflict: `decisions/0033-tier-model-bindings.md` collides with main's `decisions/0033-close-the-founding-docket.md` and must be renumbered past 0066. |
 | `feat/registry-owner-gate` | `LAND_AFTER_REPAIR` | Main's `scripts/verify.py` has no `domain owner register` check, main's `scripts/sov_owners.py` has no `--strict` and no `unowned_services`, main's `contracts/domain-owners.json` has no `defaults` block, and `scripts/tests/test_sov_owners.py` (161 lines) does not exist on main. Two conflicts, `.github/CODEOWNERS` and `scripts/verify.py`, both additive: a CODEOWNERS block to append and one `Check` tuple to insert. |
-| `feat/work-coordination-kernel-participant` | `ABSORB` | 71 of its 74 files duplicate PR #118's branch and `fix/landing-gate-host-independence`. Three commits are unique in the whole repository: `46dd4f3`, `24021f8` and `d6a82d4`, adding `reports/2026-08-26-bravo-contract-freeze-v0.md`, `reports/2026-08-26-bravo-kernel-walk.md` and two new gap rows in `services/asset/KNOWN-GAPS.md` (observe/settle split; proposal-to-run path). Absorb those three doc-only commits as their own small records concern; the rest is duplicate. |
+| `feat/work-coordination-kernel-participant` | `ABSORB` | Every path it changes is held by main, by `feat/console-authority-enforced-only` or by `fix/landing-gate-host-independence`; 38 of the 74 differ from both carriers at byte level, so this row is a claim about which concern owns the work and not a claim that the bytes are duplicated. Three commits are unique in the whole repository: `46dd4f3`, `24021f8` and `d6a82d4`, adding `reports/2026-08-26-bravo-contract-freeze-v0.md`, `reports/2026-08-26-bravo-kernel-walk.md` and two new gap rows in `services/asset/KNOWN-GAPS.md` (observe/settle split; proposal-to-run path). Absorb those three doc-only commits as their own small records concern; the rest is duplicate. |
 | `fix/console-grant-attribution` | `ABSORB` into PR #118 | Main's `services/console/.../core.py` still defaults `granted_by: str = "Bdo"` and main's `authority.py` never mentions an issuer. PR #118's branch removes the default but has no empty-issuer check — `git grep "empty issuer"` on it returns nothing. The `_issuer()` guard that refuses `--granted-by ""` exists only here, and all four of its conflicts are with the #118 surface. Rebase the guard onto #118 rather than landing the branch beside it. |
-| `wt/pr43` | `SUPERSEDED` | PR #43 merged at `5e35c62`. Main's `charting/derive.py` is the later version: it scopes the skill walk to `sdlc-*` and carries the `SkillBindingScope` class with its defeating case, both of which this branch lacks. Its `scripts/verify.py` is 180 lines behind. |
-| `wt/principal-identity` | `SUPERSEDED` | PR #71 merged at `464072d`. All 22 of its distinctive paths exist on main; the only two whose bytes differ, `services/identity/contracts/service.json` and `services/record/.../custody.py`, are larger on main. |
+| `wt/pr43` | `SUPERSEDED` | PR #43 merged at `5e35c62`, and none of the branch's eight paths is absent from main. Main's `charting/derive.py` is the later version: it skips a non-`sdlc-` skill directory outright, where the branch walks every directory and raises `ChartingError` on the first `sov-<domain>` skill it meets. Main's `charting/tests/test_model.py` also carries the `SkillBindingScope` class and its defeating case, which the branch lacks. Its `scripts/verify.py` is 98 lines behind, 65 against 163. |
+| `wt/principal-identity` | `SUPERSEDED` | PR #71 merged at `464072d`. All 22 of its distinctive paths exist on main. Nine of them differ in bytes, and main's version is the larger in all nine, so nothing on the branch is content main has not already taken further. |
 | `feat/6-shared-kernel-transitions` | `SUPERSEDED` | The weakest call here; see the red section below. PR #61 was closed, which is a decision and not drift, and the replacement landed in three parts: the legality half as `contracts/kernel-transitions.json` and `scripts/sovkernel/transitions.py` (PR #62) plus `contracts/kernel-parity.json` (PR #63), and the journal half as the Record Service (PR #66), whose `core.py` already has `append`, `receipt`, `counter`, `reconstruct` and `rebuild_projections` beside `digest.py` and `tests/test_journal.py`. A second journal under `kernel/` would deepen PROD-I-8, which asks for one journal and not three. Absorb `reports/2026-08-23-kernel-witness.md` before the branch is dropped: it is an independent observation held nowhere else. |
 | `feat/verification-channels` | `SUPERSEDED` | PR #64 closed. All eleven of its files are on main, including `scripts/sovmutate/`, `.claude/workflows/sov-review.js` and both schedules. Its `decisions/0020-verification-channels-and-merge-authority.md` landed renumbered as `decisions/0025-verification-channels-and-merge-authority.md`; the branch's copies still cite the three-second budget and decision `0019`. |
 | `docs/verification-budget` | `SUPERSEDED` | `decisions/0050-verification-budget-graded.md` is on main and `scripts/verify.py` carries `BUDGET_GRADES = (("PLATINUM", 3.0), ("GOLD", 6.0), ("SILVER", 15.0))`. 0050 names this branch's draft in its own numbering note. Landing it would replace a graded budget with a flat one. |
 | `feat/record-witness-surface` | `SUPERSEDED` | PR #99 closed. Every file it adds is on main, and main is a strict superset: the branch's digest computation is exactly main's `LEGACY_DIGEST_PROFILE` branch, beside which main added `soveraeign-record-chain/v2`. |
-| `fix/custody-tests-declare-posix` | `SUPERSEDED` | PR #80 closed, PR #84 merged. Main's `scripts/infrastructure.py` already judges custody paths with `PurePosixPath`, and `scripts/custody_posix.py` gives the POSIX skip an honest receipt instead of an inline `skipUnless`. The branch also deletes `test_apply_is_idempotent_and_verifiable`, which main keeps. |
+| `fix/custody-tests-declare-posix` | `SUPERSEDED` | PR #80 closed, PR #84 merged. Main's `scripts/infrastructure.py` already judges custody paths with `PurePosixPath`, and `scripts/custody_posix.py` gives the POSIX skip an honest receipt instead of an inline `skipUnless`. None of the branch's three paths is absent from main. |
 | `wt/pr59-merge-main` | `SUPERSEDED` | A WIP savepoint from 2026-08-24 whose own message says it left one conflict unresolved. The reconciliation it was a savepoint for landed twice since: PR #107 at `8d0ba04` and PR #113 at `4b96ba1`. The ruling it deferred is settled — main now carries `scripts/sov_board.py` and `adapters/github/catalogue.py` and `adapters/github/plan.py` — and its `decisions/0027-board-management-role.md` is on main renumbered as `decisions/0057-board-management-role.md`. |
-| `feat/console-authority-enforced` | `RETIRE` | PR #115 closed. Both of its axes are held elsewhere in larger form. Console: PR #118's branch has `services/console/tests/fixtures.py`, `conformance/fixtures/authority/grant-cases.json` and a `permits.py` with node-root issuer logic this branch lacks. Landing gate: `fix/landing-gate-host-independence` carries the identical `sovland`/`scope.py`/`witness_stages.py` stack plus 59 lines this branch does not have. |
+| `feat/console-authority-enforced` | `RETIRE` | PR #115 closed. Both of its axes are held elsewhere in larger form. Console: PR #118's branch has `services/console/tests/fixtures.py`, `conformance/fixtures/authority/grant-cases.json` and a `permits.py` with node-root issuer logic this branch lacks. Landing gate: `fix/landing-gate-host-independence` carries `scripts/sovland/*` and `scripts/witness_stages.py` byte-identical, and carries `scripts/sovkernel/scope.py` at 160 lines against this branch's 146 — the host-dependent-path refusal this branch predates. The decisive check is the defeating corpus rather than the code: all 34 `case_id`s in this branch's `conformance/fixtures/authority/grant-cases.json` are among the 36 on `fix/landing-gate-host-independence`, so retiring it loses no defeating case. |
 | `feat/f2-control-loop` | `RETIRE` | Content subset of `feat/gate-loop-pattern`, which deletes none of its files. The single file where the two differ, `.claude/workflows/sov-f2-control.js`, is byte-identical between this branch and `origin/main`, so nothing is lost by keeping the superset instead. |
-| `feat/f2-integration` | `RETIRE` | `git diff --name-status feat/f2-control-loop feat/f2-integration` is empty: the two trees are identical. Its tip is a merge commit whose second parent is already on main. It adds no content to any branch. |
+| `feat/f2-integration` | `RETIRE` | `git diff --name-status feat/f2-control-loop feat/f2-integration` is empty: the two trees are identical, both `979b559`. Its tip `13dc03c` is a merge commit whose first parent `a8a173e` is already on main and whose second parent `ae069ba` is `feat/f2-control-loop`'s tip, so the branch is that branch plus a merge and nothing else. |
 
 ## Five more local branches that need no disposition at all
 
@@ -66,7 +73,8 @@ outstanding work, which is exactly why they have been sitting here.
 
 ## Landing order, against the contested surface
 
-124 files are changed by more than one unlanded branch. The five `LAND` and
+100 files are changed by more than one of the eighteen branches here, and 139
+counting the ten reserved ones too. The five `LAND` and
 `LAND_AFTER_REPAIR` calls above should go in this order, smallest contested
 surface first, so each landing does not manufacture the next conflict:
 
@@ -131,8 +139,8 @@ Whoever lands one runs `python scripts/verify.py` on the merged tree first.
 
 ## Worktrees
 
-Thirty are open. A worktree is not a branch: removing one leaves its branch and
-the branch's remote copy untouched.
+Thirty-one are open. A worktree is not a branch: removing one leaves its branch
+and the branch's remote copy untouched.
 
 Safe to remove now — the session that opened it is finished, and the branch
 either landed or is dispositioned above with a remote copy standing:
@@ -175,6 +183,48 @@ and neither blocks one:
   fifteen seconds is the right ceiling, and whether a lost grade should ever be
   more than a reportable observation. Retiring `docs/verification-budget` does
   not close them.
+
+## What the independent witness found, and what is left standing
+
+A witness that neither wrote nor read this report while it was being built read it
+at `4108185` and dissented. It reproduced the safety claim for all eighteen
+branches, all five merge-conflict sets, every pull-request state, the whole attack
+section including the count of 22 orphans, and the internal tally of one
+disposition per branch. It found no disposition wrong. It found six rows and five
+counts misstating their own evidence; every one is corrected above, and every
+correction was re-derived by hand before the edit rather than taken on the
+witness's word.
+
+Four residuals it raised are not corrections to any row, and they stand:
+
+- **The probe was path presence; three conclusions were written as byte claims.**
+  This report already named one direction of that gap, that a renumbered decision
+  record produces a false orphan. The other direction matters more: a carrier that
+  holds a path with the branch's content stripped out produces a false clearance.
+  The two `RETIRE` rows that depend on a carrier are now backed by something
+  stronger than path presence — an identical tree for `feat/f2-integration`, and a
+  `case_id` comparison of the defeating corpus for `feat/console-authority-enforced`.
+- **Three destructive calls rest on carriers that are themselves unlanded.**
+  `feat/f2-control-loop` and `feat/f2-integration` are carried only by
+  `feat/gate-loop-pattern`, and `feat/console-authority-enforced` only by
+  `fix/landing-gate-host-independence` and by the reserved
+  `feat/console-authority-enforced-only`. Retire none of the three before its
+  carrier lands. The remote copies mitigate this and do not remove it.
+- **A reserved branch was used as evidence.** `feat/console-authority-enforced-only`
+  is named above as a live branch too unstable to disposition, and then relied on
+  as the carrier for two rows. That is the same false reading this report declines
+  to make elsewhere, and it is the reason the `fix/console-grant-attribution` row
+  says to rebase onto PR #118 rather than to delete anything.
+- **The disposition vocabulary is this report's own.** `LAND` and
+  `LAND_AFTER_REPAIR` are minted here. `SUPERSEDED`, `RETIRE` and `ABSORB` are
+  words `contracts/decision-standing.json`, `scripts/sov_canon.py` and
+  `contracts/closure-ownership.json` already use for other things. Nothing here
+  changes what those contracts mean, and a future version of this survey should
+  either define its terms in `.claude/skills/sov-backlog/SKILL.md`, which already
+  names five of them, or use the contracts' words.
+
+The nineteenth branch ahead of the trunk is this report's own,
+`docs/branch-dispositions`. It carries the report and nothing else.
 
 ## What would defeat this report
 

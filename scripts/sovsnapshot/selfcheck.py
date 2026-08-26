@@ -12,7 +12,9 @@ it derived nothing.
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import NamedTuple
+import ast
 
 from sovsnapshot import claims
 from sovsnapshot import grading
@@ -43,6 +45,83 @@ def slots_match_claims() -> str | None:
         return None
     return (f"the synthetic page has prose for {sorted(PAGE_SLOTS)} and the declared "
             f"claims are {sorted(declared)}; the page addresses its slots by name")
+
+
+def _claim_table(tree: ast.Module) -> list[tuple[str, ast.expr]]:
+    """Each declared claim's name and the expression that derives it, from the source.
+
+    From the source and not from `claims.CLAIMS`, deliberately. The object is what
+    a test patches to plant a refusing derivation; the source is what someone
+    lands. Grading the checked-in declaration is what makes this a guard against
+    regression rather than a report on whichever test is running.
+    """
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Assign):
+            continue
+        if not any(isinstance(t, ast.Name) and t.id == "CLAIMS" for t in node.targets):
+            continue
+        if not isinstance(node.value, (ast.Tuple, ast.List)):
+            return []
+        declared = []
+        for element in node.value.elts:
+            if not isinstance(element, ast.Call) or len(element.args) < 3:
+                continue
+            first = element.args[0]
+            name = first.value if isinstance(first, ast.Constant) else "<unnamed>"
+            declared.append((str(name), element.args[2]))
+        return declared
+    return []
+
+
+def derivations_read_the_commit() -> str | None:
+    """The mismatch, if any declared claim derives from something other than the commit.
+
+    Bdo ruled the snapshot's referent on acceptance packet A5: the counts are
+    counts of committed state. Nothing in the grader can notice a new claim that
+    globs the working tree instead - the number it produces looks exactly like a
+    real count, which is how the defect survived in the first place. So the
+    invariant is structural and is re-read from bytes on every run: every claim in
+    the table reaches `sovsnapshot.committed`, and the one function allowed to read
+    the page off disk is `page_text`.
+
+    The second half is not decoration. `claims.page_text` is the deliberate
+    exception, and an exception nothing pins is an exception that spreads.
+
+    What it does not prove, stated so silence is not read as confirmation: a
+    derivation that reaches `committed` and also globs the working tree passes
+    here. A blocklist of filesystem calls would be the narrowness `LESSONS.md`
+    L-0007 names - it would catch the reach that has been seen and not the next
+    one - so the invariant is the positive one, and the numbers themselves are
+    graded by the cases in `scripts/tests/test_sov_snapshot.py`.
+    """
+    source = Path(claims.__file__).read_text(encoding="utf-8")
+    tree = ast.parse(source)
+    declared = _claim_table(tree)
+    stray = []
+    if len(declared) != len(claims.CLAIMS):
+        stray.append(f"the source declares {len(declared)} claims and the loaded table "
+                     f"holds {len(claims.CLAIMS)}; the table is not a literal this can read")
+    functions = {node.name: node for node in tree.body if isinstance(node, ast.FunctionDef)}
+    for name, expression in declared:
+        if (isinstance(expression, ast.Attribute) and isinstance(expression.value, ast.Name)
+                and expression.value.id == "committed"):
+            continue
+        body = functions.get(expression.id) if isinstance(expression, ast.Name) else None
+        if body is None:
+            stray.append(f"{name}: its derivation is not a function declared in "
+                         f"{Path(claims.__file__).name}, so its source cannot be read here")
+            continue
+        if not any(isinstance(n, ast.Attribute) and isinstance(n.value, ast.Name)
+                   and n.value.id == "committed" for n in ast.walk(body)):
+            stray.append(f"{name}: {expression.id} never reaches sovsnapshot.committed, "
+                         "so it is not counting the commit at HEAD")
+    off_page = sorted(node.name for node in functions.values() if node.name != "page_text"
+                      and any(isinstance(n, ast.Name) and n.id == "SNAPSHOT"
+                              for n in ast.walk(node)))
+    if off_page:
+        stray.append(f"{off_page} read the page off disk; page_text is the only "
+                     "working-tree read this module is allowed")
+    return "; ".join(stray) if stray else None
 
 
 class SyntheticPage(NamedTuple):
@@ -143,6 +222,9 @@ def run() -> int:
     mismatch = slots_match_claims()
     if mismatch:
         failures.append(f"the page cannot state every claim: {mismatch}")
+    referent = derivations_read_the_commit()
+    if referent:
+        failures.append(f"a claim does not read the commit at HEAD: {referent}")
     for claim in claims.CLAIMS:
         if claim.tolerance > claims.MAX_TOLERANCE:
             failures.append(f"{claim.name}: tolerance {claim.tolerance} exceeds the "

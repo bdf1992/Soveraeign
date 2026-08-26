@@ -18,11 +18,21 @@ An unanswerable claim never fails. A shallow CI checkout cannot count commits, a
 workflows against a page that was correct - twice, because the first repair
 changed the message and not the exit code.
 
-Four modules, split at the 300-line budget as each repair round grew this one.
-`sovsnapshot/claims.py` knows where every number comes from and owns everything
-touching git and the filesystem, the page included. `sovsnapshot/grading.py`
-grades a page against derived values and cannot reach a repository, because both
-arguments are required. `sovsnapshot/selfcheck.py` proves the grader works and
+The record is the commit at HEAD and the page is the working tree. Bdo ruled that
+referent on acceptance packet A5, 2026-08-26: `CLAUDE.md` is a committed artifact
+read out of a checkout, so its counts are counts of committed state. Before the
+ruling every count globbed the tree, and one untracked directory belonging to a
+sibling session turned this gate red for everyone on the branch against an unmoved
+HEAD - while printing an instruction to edit a file the landing loop's grant
+excludes, so no automated participant could clear it.
+
+Five modules, split at the 300-line budget as each repair round grew this one.
+`sovsnapshot/committed.py` owns every call that reaches git and answers what the
+commit holds. `sovsnapshot/claims.py` declares what the page claims, names the
+source for each, and holds the one deliberate working-tree read: the page itself.
+`sovsnapshot/grading.py` grades a page against derived values and cannot reach a
+repository, because both arguments are required. `sovsnapshot/selfcheck.py` proves
+the grader works, proves every declared claim derives through the commit, and
 refuses to report success having exercised nothing. This module is the command
 line, the verdict, and the only place the two halves meet.
 """
@@ -78,8 +88,10 @@ def cmd_check(args: argparse.Namespace | None = None) -> int:
     if drifted:
         for finding in drifted:
             print(f"FAIL {finding.claim}: {finding.detail}")
-        print("\nThe snapshot is orientation for every launched agent and it has "
-              "drifted. Correct CLAUDE.md rather than widening a tolerance.")
+        print("\nThe snapshot is orientation for every launched agent and it disagrees "
+              "with the commit at HEAD. Either correct CLAUDE.md, or land the sources "
+              "the page already describes - every count above is of committed state, "
+              "which is Bdo's ruling on acceptance packet A5. Never widen a tolerance.")
         return 1
     total = len(claims.CLAIMS)
     checked = total - len([f for f in findings if f.kind == grading.UNANSWERABLE])

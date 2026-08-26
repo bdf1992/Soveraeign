@@ -31,11 +31,14 @@ CHECKS = (
           (".gitattributes", "scripts/lint.py")),
     Check("orientation snapshot", [sys.executable, "scripts/sov_snapshot.py", "check"],
           ROOT,
-          "re-derives every number from the record at the moment of the check - the "
-          "declared check table, the decisions directory, git rev-list - and never reads "
-          "the page's own claim about being current; the page is orientation for every "
+          "re-derives every number at the moment of the check from the commit at HEAD - "
+          "git ls-tree for the counted directories, git show for the check table and the "
+          "capability projection, git rev-list for the history - and never reads the "
+          "page's own claim about being current; the page is orientation for every "
           "launched agent, which does not carry the interactive session's context to "
-          "correct it (LESSONS.md L-0001)",
+          "correct it (LESSONS.md L-0001). Reading the commit rather than the working "
+          "tree is Bdo's ruling on acceptance packet A5, and it is what stops another "
+          "session's untracked file from reporting a correct page as drifted",
           ("CLAUDE.md", "scripts/sov_snapshot.py")),
     Check("recorded traps still hold", [sys.executable, "scripts/sov_traps.py"], ROOT,
           "re-derives every recorded trap from the repository at check time, so a trap that "

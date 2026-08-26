@@ -16,6 +16,7 @@ import ast
 import builtins
 import dataclasses
 import importlib
+import os
 import re
 import subprocess
 import sys
@@ -29,8 +30,55 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 import sov_snapshot  # noqa: E402
 from sovsnapshot import claims  # noqa: E402
+from sovsnapshot import committed  # noqa: E402
 from sovsnapshot import grading  # noqa: E402
 from sovsnapshot import selfcheck  # noqa: E402
+from sovverify import checks  # noqa: E402
+
+
+#: The nine claims that count a source, which is the set Bdo's ruling on acceptance
+#: packet A5 moved onto the commit at HEAD. `commits` is deliberately outside it: it
+#: is a claim about history rather than about a source, it already read git before
+#: the ruling, and it carries the only tolerance in the table.
+SOURCE_CLAIMS = ("verification checks", "decision records", "declared operations",
+                 "service boundaries", "manifests", "agent definitions", "skills",
+                 "workflows", "reports")
+
+
+def write_tree(root: Path, files: dict[str, str]) -> None:
+    """Lay a fixture tree out on disk, creating whatever parents it needs."""
+    for relative, content in files.items():
+        path = root / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content, encoding="utf-8")
+
+
+def fixture_git(root: Path, *argv: str) -> str:
+    """Git inside a throwaway fixture repository, with an identity of its own.
+
+    `-c user...` rather than `git config`, so a fixture never reads and never
+    writes the machine's global identity. A non-zero exit is raised here rather
+    than returned: a fixture that half-built itself makes every assertion after it
+    a report on the fixture.
+    """
+    done = subprocess.run(["git", "-c", "user.name=snapshot fixture",
+                           "-c", "user.email=fixture@example.invalid", *argv],
+                          cwd=root, capture_output=True, text=True)
+    if done.returncode != 0:
+        raise AssertionError(f"fixture git {argv[0]} failed: {done.stderr.strip()}")
+    return done.stdout.strip()
+
+
+def fixture_commit(root: Path, message: str) -> str:
+    """Land everything the fixture has written, and return the new HEAD.
+
+    `add -A` is the point inside a fixture repository whose entire contents this
+    test wrote a moment ago; AGENTS.md's rule against it is about the shared
+    working tree, where another session's file could be swept in.
+    """
+    fixture_git(root, "add", "-A")
+    fixture_git(root, "commit", "-q", "-m", message)
+    return fixture_git(root, "rev-parse", "HEAD")
 
 
 class EveryReferenceResolves(unittest.TestCase):
@@ -436,27 +484,34 @@ class ThePageIsASourceLikeAnyOther(unittest.TestCase):
 
 
 class AMalformedCheckTableIsTheEnvironment(unittest.TestCase):
-    """A `SyntaxError` out of `sovverify.checks` is a bad checkout, not a bad page.
+    """A `SyntaxError` out of the check table is a bad checkout, not a bad page.
 
     `_verification_checks` caught `ImportError` only, and a witness replaced
     `checks.py` with an unclosed parenthesis - which is what this shared working
     tree looks like while a sibling session is mid-edit, and `checks.py` was being
     edited at the time. The traceback escaped `derive_all` entirely.
+
+    The table is read out of the commit since the referent ruling, so the fixture
+    is a repository that committed a broken one. Reading it as source rather than
+    importing it removes the original failure mode and introduces its own, which is
+    why the case moved rather than being deleted.
     """
 
     def test_check_refuses_and_does_not_traceback_on_an_unparseable_table(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp) / "broken"
+            write_tree(root, {
+                "CLAUDE.md": "runs 40 checks",
+                "scripts/sovverify/__init__.py": "",
+                "scripts/sovverify/checks.py": "CHECKS = (\n",
+            })
             (root / "scripts" / "sovsnapshot").mkdir(parents=True)
-            (root / "scripts" / "sovverify").mkdir(parents=True)
-            (root / "CLAUDE.md").write_text("runs 40 checks", encoding="utf-8")
             (root / "scripts" / "sov_snapshot.py").write_bytes(
                 (ROOT / "scripts" / "sov_snapshot.py").read_bytes())
             for path in (ROOT / "scripts" / "sovsnapshot").glob("*.py"):
                 (root / "scripts" / "sovsnapshot" / path.name).write_bytes(path.read_bytes())
-            (root / "scripts" / "sovverify" / "__init__.py").write_text("", encoding="utf-8")
-            (root / "scripts" / "sovverify" / "checks.py").write_text(
-                "CHECKS = (\n", encoding="utf-8")
+            fixture_git(root, "init", "-q")
+            fixture_commit(root, "commit a check table that does not parse")
             done = subprocess.run([sys.executable, "scripts/sov_snapshot.py", "check"],
                                   cwd=root, capture_output=True, text=True)
         self.assertNotIn("Traceback", done.stderr)
@@ -521,22 +576,379 @@ class TheSelfcheckRefusesToProveNothing(unittest.TestCase):
         self.assertIn("nothing was exercised", done.stdout)
 
 
-class DerivationsRefuseRatherThanRaise(unittest.TestCase):
-    """A missing source is `Underivable`, never a traceback and never a zero.
+class TheRecordIsTheCommitAtHead(unittest.TestCase):
+    """The referent ruling, in both directions, over every claim that counts a source.
 
-    A directory that is not there once counted as zero, which turns "I cannot see
-    the record" into a claim that the page is wrong by the whole count.
+    Bdo accepted acceptance packet A5 on 2026-08-26 and ruled with it that the
+    snapshot's counts are counts of committed state. The defect that closes was
+    reproducible and had already fired for real: one untracked directory under
+    `.claude/skills/`, HEAD unmoved, turned the required gate red for every session
+    on the branch - and printed an instruction to correct `CLAUDE.md`, a file
+    `grant:standing-landing-loop` excludes from its scope, so the landing loop
+    could not make the edit the gate demanded.
+
+    Both directions live in one method and in this order, because the positive case
+    moves HEAD and the defeating case only means something while HEAD stands still.
     """
 
-    def test_a_missing_directory_is_underivable_not_zero(self):
+    #: What the fixture repository holds at its first commit. The three files that
+    #: match no pattern are there on purpose: without them a count that had stopped
+    #: filtering would still agree with the expected numbers below.
+    SEED = {
+        "decisions/0001-one.md": "one\n",
+        "decisions/0002-two.md": "two\n",
+        "decisions/README.md": "not a numbered record\n",
+        "reports/one.md": "one\n",
+        "reports/observations/nested.md": "not a direct child\n",
+        ".claude/agents/one.md": "one\n",
+        ".claude/skills/alpha/SKILL.md": "alpha\n",
+        ".claude/skills/beta/SKILL.md": "beta\n",
+        ".claude/skills/loose.md": "a file, not a skill\n",
+        ".claude/workflows/one.js": "// one\n",
+        ".claude/workflows/notes.md": "not a workflow\n",
+        "services/alpha/contracts/service.json": "{}\n",
+        "services/alpha/README.md": "not a manifest\n",
+        "contracts/fixtures/capability-map.reference.json": '{"capabilities": [1, 2, 3]}\n',
+        "scripts/sovverify/checks.py": "CHECKS = (1, 2)\n",
+    }
+
+    FIRST = {"verification checks": 2, "commits": 1, "decision records": 2,
+             "declared operations": 3, "service boundaries": 1, "manifests": 1,
+             "agent definitions": 1, "skills": 2, "workflows": 1, "reports": 1}
+
+    #: One addition per claim, so a claim that quietly kept globbing the tree is
+    #: named individually rather than hidden behind a sibling that did not move.
+    PLANT = {
+        ".claude/skills/gamma/SKILL.md": "a sibling session mid-create of something else\n",
+        "decisions/0003-three.md": "three\n",
+        "reports/two.md": "two\n",
+        ".claude/agents/two.md": "two\n",
+        ".claude/workflows/two.js": "// two\n",
+        "services/beta/contracts/service.json": "{}\n",
+        "contracts/fixtures/capability-map.reference.json": '{"capabilities": [1, 2, 3, 4]}\n',
+        "scripts/sovverify/checks.py": "CHECKS = (1, 2, 3)\n",
+    }
+
+    SECOND = {"verification checks": 3, "commits": 2, "decision records": 3,
+              "declared operations": 4, "service boundaries": 2, "manifests": 2,
+              "agent definitions": 2, "skills": 3, "workflows": 2, "reports": 2}
+
+    def test_untracked_work_moves_no_count_and_landing_the_same_work_moves_them_all(self):
         with tempfile.TemporaryDirectory() as tmp:
-            with unittest.mock.patch.object(claims, "ROOT", Path(tmp)):
-                with self.assertRaises(claims.Underivable):
-                    claims._decision_records()
-                with self.assertRaises(claims.Underivable):
-                    claims._reports()
-                with self.assertRaises(claims.Underivable):
-                    claims._declared_operations()
+            root = Path(tmp) / "fixture"
+            write_tree(root, self.SEED)
+            fixture_git(root, "init", "-q")
+            head = fixture_commit(root, "seed the fixture")
+            page = selfcheck.page(**self.FIRST).text
+
+            with unittest.mock.patch.object(committed, "ROOT", root):
+                with self.subTest("the commit answers every claim"):
+                    self.assertEqual(claims.derive_all().values, self.FIRST)
+
+                write_tree(root, self.PLANT)
+                self.assertEqual(fixture_git(root, "rev-parse", "HEAD"), head,
+                                 "the plant moved HEAD, so the defeating case below "
+                                 "would prove nothing")
+                self.assertNotEqual(fixture_git(root, "status", "--porcelain"), "",
+                                    "the plant left the tree clean, so there is no "
+                                    "untracked work for this case to be about")
+                with self.subTest("untracked work moves no count"):
+                    unmoved = claims.derive_all().values
+                    self.assertEqual(unmoved, self.FIRST)
+                with self.subTest("and the page stating those counts is still not drifted"):
+                    # The counts above are the mechanism; this is the verdict, at the
+                    # level the gate actually failed on for every session on the branch.
+                    self.assertEqual(grading.drift(grading.grade(page, unmoved)), [])
+
+                landed = fixture_commit(root, "land the same work")
+                self.assertNotEqual(landed, head)
+                with self.subTest("landing the same work moves every count"):
+                    moved = claims.derive_all().values
+                    self.assertEqual(moved, self.SECOND)
+                with self.subTest("and the same page is now reported as drifted"):
+                    # The control. Refusing to see untracked work must not have made
+                    # the check blind to the landed kind. Every source claim moves by
+                    # one and is reported; `commits` moves by one too and is not,
+                    # because its declared tolerance of 25 absorbs it - which is the
+                    # tolerance doing exactly its job and is why it is named here
+                    # rather than counted.
+                    reported = sorted(f.claim for f in grading.drift(
+                        grading.grade(page, moved)))
+                    self.assertEqual(reported, sorted(SOURCE_CLAIMS))
+
+
+class OneDerivationPassReadsTheCommitOnce(unittest.TestCase):
+    """Seven claims read one listing, so a pass has to ask git for it exactly once.
+
+    Not a performance note. Seven separate listings can disagree with each other if
+    HEAD moves between them, which reports the check as broken when the record has
+    simply moved - the same failure `derive_all` was already one-shot to avoid.
+    The hold is scoped to the pass, and the fixture above is the case that fails if
+    it is ever widened to the process: it derives, lands a commit, and derives again
+    expecting different numbers.
+    """
+
+    def test_a_pass_lists_the_commit_once_and_the_hold_does_not_outlive_it(self):
+        listings = []
+        real = committed._git
+
+        def counted(*argv):
+            if argv[:1] == ("ls-tree",):
+                listings.append(argv)
+            return real(*argv)
+
+        with unittest.mock.patch.object(committed, "_git", counted):
+            claims.derive_all()
+            self.assertEqual(len(listings), 1, "one pass listed the commit more than once")
+            committed.tracked_paths()
+        self.assertEqual(len(listings), 2, "the hold outlived the pass that opened it")
+        self.assertEqual(committed._HELD, [], "a pass left its hold standing")
+
+
+class MatchingIsBySegmentAndByCase(unittest.TestCase):
+    """Two deliberate choices in `committed.matches`, each pinned by the case for it.
+
+    Segment-wise, so `*` never crosses a `/`. A flat fnmatch over a whole path would
+    count a manifest nested two directories below
+    `services/*/contracts/service.json`, which `Path.glob` never did.
+
+    Case-sensitive, which is a measured change from the old derivation rather than
+    an accident of it. `Path.glob` is case-insensitive on Windows and case-sensitive
+    on POSIX, so `reports/A.MD` counted on this machine and not in CI - one count
+    with two values depending on which platform ran it. Measured on this tree the
+    nine counts are identical either way, which is exactly why the choice needs a
+    case: nothing else would notice it changing.
+    """
+
+    def test_a_star_does_not_cross_a_separator(self):
+        self.assertTrue(committed.matches("services/a/contracts/service.json",
+                                          "services/*/contracts/service.json"))
+        self.assertFalse(committed.matches("services/a/b/contracts/service.json",
+                                           "services/*/contracts/service.json"))
+
+    def test_the_match_is_case_sensitive_on_every_platform(self):
+        self.assertTrue(committed.matches("a.md", "*.md"))
+        self.assertFalse(committed.matches("A.MD", "*.md"))
+
+    def test_a_dotted_entry_is_matched_the_way_the_old_derivation_matched_it(self):
+        """`Path.glob('*')` yields names beginning with a dot; so must this.
+
+        The `glob` module skips them and `pathlib` does not, and the skills count
+        globs `*`. Reading the wrong one of those two would have silently changed a
+        count while every test in this file went on passing.
+        """
+        self.assertTrue(committed.matches(".hidden", "*"))
+
+
+class DerivationsRefuseRatherThanRaise(unittest.TestCase):
+    """A source that cannot answer is `Underivable`, never a traceback and never a zero.
+
+    A directory that is not there once counted as zero, which turns "I cannot see
+    the record" into a claim that the page is wrong by the whole count. Since the
+    referent ruling that discipline has a second edge: where git cannot answer,
+    nothing may quietly fall back to a working-tree read, because a fallback is the
+    defect the ruling closes wearing a guard.
+    """
+
+    def test_every_source_claim_refuses_where_git_cannot_answer(self):
+        """The sources are on disk and invisible to git, so a fallback would show up.
+
+        A tree that is not a repository, carrying a populated `decisions/`,
+        `reports/`, `.claude/skills/`, `services/` and both read-whole sources: the
+        pre-ruling code counted exactly these and answered confidently. Every one
+        must refuse instead. `commits` is not in the set - it is a claim about
+        history, and a temporary directory that happened to sit inside some other
+        repository would let it answer, failing this case for a reason that is not
+        its subject.
+        """
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "notarepo"
+            write_tree(root, {
+                "decisions/0001-a.md": "a\n",
+                "reports/a.md": "a\n",
+                ".claude/agents/a.md": "a\n",
+                ".claude/skills/alpha/SKILL.md": "a\n",
+                ".claude/workflows/a.js": "// a\n",
+                "services/a/contracts/service.json": "{}\n",
+                "contracts/fixtures/capability-map.reference.json": '{"capabilities": [1]}\n',
+                "scripts/sovverify/checks.py": "CHECKS = (1,)\n",
+            })
+            self.assertTrue((root / "decisions" / "0001-a.md").is_file(),
+                            "the fixture did not write itself, so refusing proves nothing")
+            with unittest.mock.patch.object(committed, "ROOT", root):
+                for claim in claims.CLAIMS:
+                    if claim.name not in SOURCE_CLAIMS:
+                        continue
+                    with self.subTest(claim=claim.name):
+                        with self.assertRaises(claims.Underivable):
+                            claim.derive()
+
+    def test_a_directory_the_commit_does_not_hold_is_underivable_not_zero(self):
+        """The original case, moved onto the commit: absent is not an answer of zero.
+
+        The listing is planted rather than committed, because git answering fine
+        about a commit that simply holds none of these directories is the whole
+        situation. Building a repository for it would spend a second on proving
+        that git works, which the fixture above already proves.
+        """
+        with unittest.mock.patch.object(committed, "tracked_paths", lambda: ["seed.txt"]):
+            for deriver in (claims._decision_records, claims._reports, claims._skills,
+                            claims._agent_definitions, claims._workflows,
+                            claims._service_manifests):
+                with self.subTest(deriver=deriver.__name__):
+                    with self.assertRaises(claims.Underivable):
+                        deriver()
+
+    def test_git_missing_from_the_path_refuses_rather_than_raising_oserror(self):
+        """`commits` was the only git caller once and let this escape as a traceback."""
+        def absent(*_args, **_kwargs):
+            raise FileNotFoundError(2, "No such file or directory", "git")
+
+        with unittest.mock.patch.object(subprocess, "run", absent):
+            with self.assertRaises(claims.Underivable) as refused:
+                committed.tracked_paths()
+            self.assertIn("git could not be run here", str(refused.exception))
+
+
+class TheGitCallIsRootedAtTheRepository(unittest.TestCase):
+    """Not at the process working directory.
+
+    `verify.py` launches its checks from several cwds and several sessions run from
+    their own worktrees. A git call anchored on the caller's cwd would answer about
+    whichever repository the caller happened to be standing in, and would answer
+    confidently, which is worse than failing.
+    """
+
+    def test_the_answer_does_not_depend_on_where_the_process_stands(self):
+        here = claims._skills()
+        was = os.getcwd()
+        try:
+            os.chdir(tempfile.gettempdir())
+            elsewhere = claims._skills()
+        finally:
+            os.chdir(was)
+        self.assertEqual(elsewhere, here)
+
+
+class TheCommittedCheckCountIsNotASecondImplementation(unittest.TestCase):
+    """`literal_length` over source must give what `len(CHECKS)` gives on the same bytes.
+
+    The objection is on the record in `acceptance/accepted/A5.json`: parsing a count
+    out of HEAD would be a second implementation of a number the repository already
+    computes, the failure that made a draft count conformance cases as 9 against the
+    suite's own 20. This is the evidence against it. The reader is graded on the
+    working-tree bytes, which is the one place the imported table is available to
+    disagree with it, and every shape it cannot count exactly is refused rather than
+    guessed.
+    """
+
+    @staticmethod
+    def _reading(source: str):
+        return unittest.mock.patch.object(committed, "blob_text",
+                                          lambda path, what, text=source: text)
+
+    def test_the_ast_count_matches_the_imported_table(self):
+        source = (ROOT / "scripts" / "sovverify" / "checks.py").read_text(encoding="utf-8")
+        with self._reading(source):
+            self.assertEqual(
+                committed.literal_length("checks.py", "CHECKS", "the check table"),
+                len(checks.CHECKS))
+
+    def test_a_shape_it_cannot_count_is_refused_rather_than_guessed(self):
+        for source in ("CHECKS = [Check(a) for a in x]\n", "CHECKS = OTHER + (1,)\n",
+                       "CHECKS = (1, *OTHER)\n", "CHECKS = OTHER\n", "OTHER = (1, 2)\n",
+                       "def f():\n    CHECKS = (1, 2)\n", "CHECKS = (\n"):
+            with self.subTest(source=source):
+                with self._reading(source):
+                    with self.assertRaises(claims.Underivable):
+                        committed.literal_length("checks.py", "CHECKS", "the check table")
+
+    def test_a_refusal_names_its_source_once(self):
+        """The wrapper that guaranteed the phrase printed the phrase twice.
+
+        `the check table could not be read: the check table could not be read from
+        the commit at HEAD: fatal: ...`. Nothing failed on it - the exit code and
+        the substring assertion were both satisfied - and it was found only by
+        printing the refusals instead of reasoning about them.
+        """
+        with unittest.mock.patch.object(claims, "CHECK_TABLE", "nope/checks.py"):
+            with self.assertRaises(claims.Underivable) as refused:
+                claims._verification_checks()
+        said = str(refused.exception)
+        self.assertIn("the check table could not be read", said)
+        self.assertEqual(said.count("the check table"), 1, said)
+
+    def test_an_annotated_literal_is_still_counted(self):
+        with self._reading("CHECKS: tuple = (1, 2, 3)\n"):
+            self.assertEqual(
+                committed.literal_length("checks.py", "CHECKS", "the check table"), 3)
+
+
+class EveryClaimReadsTheCommit(unittest.TestCase):
+    """The structural guard that keeps the referent ruling from being quietly undone.
+
+    Nothing in the grader can tell a committed count from a working-tree one - the
+    number looks identical, which is how the defect survived nine review rounds. So
+    the invariant is structural, re-read from the bytes of `claims.py` on every run,
+    and like every guard here it needs the case that proves it fires.
+    """
+
+    STRAY = '''
+from pathlib import Path
+
+ROOT = Path(".")
+SNAPSHOT = ROOT / "CLAUDE.md"
+
+
+def _skills() -> int:
+    return len(list((ROOT / ".claude" / "skills").glob("*")))
+
+
+def _peek() -> str:
+    return SNAPSHOT.read_text(encoding="utf-8")
+
+
+CLAIMS = (
+    Claim("skills", r"(\\d+)\\s+skills", _skills),
+)
+'''
+
+    def test_the_declared_table_reads_the_commit(self):
+        self.assertIsNone(selfcheck.derivations_read_the_commit())
+
+    def test_the_source_claims_named_in_this_file_are_the_ones_the_table_declares(self):
+        """A stale list here would quietly shrink every case that iterates it.
+
+        Two cases loop over `SOURCE_CLAIMS`, and a claim renamed or added in
+        `claims.py` and not here would drop out of both while they went on reporting
+        success - the vacuity this file has had to repair three times.
+        """
+        self.assertEqual(set(SOURCE_CLAIMS) | {"commits"},
+                         {claim.name for claim in claims.CLAIMS})
+
+    def test_a_claim_that_globs_the_tree_and_a_stray_page_read_are_both_reported(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            doctored = Path(tmp) / "claims.py"
+            doctored.write_text(self.STRAY, encoding="utf-8")
+            with unittest.mock.patch.object(claims, "__file__", str(doctored)), \
+                    unittest.mock.patch.object(claims, "CLAIMS", claims.CLAIMS[:1]):
+                said = selfcheck.derivations_read_the_commit()
+        self.assertIsNotNone(said)
+        self.assertIn("_skills never reaches sovsnapshot.committed", said)
+        self.assertIn("_peek", said)
+
+    def test_the_selfcheck_fails_on_it_rather_than_only_computing_it(self):
+        """A guard computed and never consulted is the failure this module keeps having.
+
+        The derivation is stubbed: what is under test is whether `run` acts on the
+        guard, and reading the real repository to find that out would spend a fifth
+        of a second answering a question the case does not ask.
+        """
+        answered = claims.Derived({claim.name: 1 for claim in claims.CLAIMS}, {})
+        with unittest.mock.patch.object(claims, "derive_all", lambda: answered), \
+                unittest.mock.patch.object(selfcheck, "derivations_read_the_commit",
+                                           lambda: "planted: a claim globs the tree"):
+            self.assertEqual(selfcheck.run(), 1)
 
 
 if __name__ == "__main__":

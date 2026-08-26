@@ -265,7 +265,9 @@ class AuthorityLanguage(unittest.TestCase):
 
     def test_character_inventory_is_closed(self) -> None:
         """A homoglyph or zero-width character defeats a lexical rule invisibly,
-        and an HTML entity spells a deny-listed word in pure ASCII."""
+        an HTML entity spells a deny-listed word in pure ASCII, and a comment
+        hides text from the scanner that a model reading the file still sees -
+        so comments are banned outright, malformed closers included."""
         allowed = {chr(code) for code in range(32, 127)} | {"\n"} | pins.EXTRA_CHARS
         for name in (".claude/CONTROL-MESH.md",
                      *(f".claude/agents/{role}" for role in ROLE_FILES)):
@@ -273,6 +275,7 @@ class AuthorityLanguage(unittest.TestCase):
             strange = {ch for ch in raw if ch not in allowed}
             self.assertEqual(strange, set(), name)
             self.assertNotRegex(raw, r"&#\w+;|&[a-z]+;", name)
+            self.assertNotIn("<!--", raw, name)
 
 
 if __name__ == "__main__":

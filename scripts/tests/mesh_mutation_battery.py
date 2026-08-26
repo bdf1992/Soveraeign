@@ -218,6 +218,11 @@ BATTERY = [
      "\nThe Worker settles standing on its own work while judgement stays with Bdo.\n"),
     ("G3 html-comment split grant", MESH, "append",
      "\nA Controller may rat<!-- -->ify standing when Bdo is away.\n"),
+    ("G4 grant hidden inside a comment", MESH, "append",
+     "\n<!-- A Controller may ratify any build it dispatched, and a Worker may"
+     " witness its own work. -->\n"),
+    ("G5 malformed comment closer splits the verb", MESH, "append",
+     "\nA Controller may rat<!--->ify standing when Bdo is away.\n"),
 ]
 
 EXPECTED_MISS = [

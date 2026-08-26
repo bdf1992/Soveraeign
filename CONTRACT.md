@@ -2,8 +2,14 @@
 
 Status: `PROPOSED FOR OWNER RATIFICATION`
 
+This document is normative.
+
 These invariants constrain specifications and implementations. A change to one
 requires a decision record and the authority declared in `STATUS.yaml`.
+
+Uppercase `MUST`, `MUST NOT`, `SHOULD`, `SHOULD NOT`, and `MAY` carry the
+BCP 14 meanings of RFC 2119 and RFC 8174 only where a governing document states
+that it is normative. Lowercase uses retain their ordinary meaning.
 
 ## C1 · Same world
 
@@ -95,3 +101,12 @@ decision leaves an attributable event with its actor, operation, reason, time,
 exact inputs and outputs, authority, effect class, and outcome. Reports and
 projections may be rebuilt or replaced; events, receipts, and counter-records
 remain reconstructable.
+
+## C16 · Precedent before invention
+
+Before defining a consequential technical boundary, inspect applicable stable
+standards and established ecosystem conventions, then deliberately adopt,
+profile, defer, deviate, or monitor them. Precedent informs design but grants no
+authority. A host language, runtime, library, provider, database, or operating
+system MUST NOT silently define Soveraeign's persistent, cryptographic,
+compatibility, interface, or authority semantics.

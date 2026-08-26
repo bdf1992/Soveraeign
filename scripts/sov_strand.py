@@ -36,10 +36,11 @@ UNLANDED = "UNLANDED"
 
 
 class Branch(NamedTuple):
-    """One local branch measured against the trunk."""
+    """One local branch measured against the trunk and against every remote."""
 
     name: str
     ahead: int
+    unreachable: int
     upstream: str
     verdict: str
 
@@ -82,9 +83,48 @@ def branches(against: str) -> list[Branch]:
         ahead = int(count) if count.isdigit() else 0
         if ahead == 0:
             continue
-        verdict = UNLANDED if upstream else AT_RISK
-        found.append(Branch(name, ahead, upstream, verdict))
-    return sorted(found, key=lambda item: (item.verdict != AT_RISK, -item.ahead))
+        unreachable = _unreachable(against, name)
+        verdict = AT_RISK if unreachable else UNLANDED
+        found.append(Branch(name, ahead, unreachable, upstream, verdict))
+    return sorted(found, key=lambda item: (item.verdict != AT_RISK, -item.unreachable,
+                                           -item.ahead))
+
+
+def _unreachable(against: str, *refs: str) -> int:
+    """Count commits beyond the trunk on these refs that no remote-tracking ref reaches.
+
+    A configured upstream is not the question. A branch may carry commits pushed under
+    a different name, and a branch with an upstream set may never have been pushed at
+    all. What survives losing this directory is exactly what some remote ref already
+    reaches, so that is what is measured.
+
+    The trunk is excluded as well as the remotes. An unpushed trunk is its own concern
+    and would otherwise be charged to every branch built on it.
+    """
+    count = git("rev-list", "--count", *refs, "--not", "--remotes", against)
+    return int(count) if count.isdigit() else 0
+
+
+def trunk_unpushed(against: str) -> int:
+    """Count trunk commits that no remote-tracking ref reaches.
+
+    Excluded from every branch's own count so it is not charged to each of them, which
+    would make one hazard look like several. Reported on its own line instead, because
+    an unpushed trunk is the same loss and would otherwise go unmentioned.
+    """
+    count = git("rev-list", "--count", against, "--not", "--remotes")
+    return int(count) if count.isdigit() else 0
+
+
+def distinct(found: list[Branch], verdict: str, against: str) -> int:
+    """Count commits once across branches that share history, never once per branch."""
+    names = [item.name for item in found if item.verdict == verdict]
+    if not names:
+        return 0
+    if verdict == AT_RISK:
+        return _unreachable(against, *names)
+    count = git("rev-list", "--count", *names, "--not", against)
+    return int(count) if count.isdigit() else 0
 
 
 def worktrees() -> list[Worktree]:
@@ -126,21 +166,24 @@ def brief() -> str:
     found = branches(against)
     at_risk = [item for item in found if item.verdict == AT_RISK]
     unlanded = [item for item in found if item.verdict == UNLANDED]
-    if not at_risk:
+    behind = trunk_unpushed(against)
+    if not at_risk and not behind:
         return ""
-    risked = sum(item.ahead for item in at_risk)
-    named = ", ".join(f"{item.name} ({item.ahead})" for item in at_risk[:4])
+    risked = distinct(found, AT_RISK, against) + behind
+    named = ", ".join(f"{item.name} ({item.unreachable})" for item in at_risk[:4])
     if len(at_risk) > 4:
         named += f", and {len(at_risk) - 4} more"
     lines = [
-        f"Stranded work: {risked} commit(s) on {len(at_risk)} branch(es) exist only on this "
-        "disk, with no copy anywhere else.",
-        f"  {named}",
+        f"Stranded work: {risked} distinct commit(s) exist only on this disk, reachable "
+        f"from no remote ({len(at_risk)} branch(es)"
+        + (f", plus {behind} on {against}" if behind else "") + ").",
     ]
+    if named:
+        lines.append(f"  {named}")
     if unlanded:
-        carried = sum(item.ahead for item in unlanded)
-        lines.append(f"  Separately, {carried} commit(s) on {len(unlanded)} branch(es) are "
-                     "pushed but not merged.")
+        carried = distinct(found, UNLANDED, against)
+        lines.append(f"  Separately, {carried} distinct commit(s) on {len(unlanded)} "
+                     "branch(es) are pushed but not merged.")
     lines.append("  python scripts/sov_strand.py for the full reading.")
     return "\n".join(lines)
 
@@ -149,15 +192,21 @@ def report(against: str, found: list[Branch], trees: list[Worktree], dirty: int)
     """Print the graded reading and return the process exit code."""
     at_risk = [item for item in found if item.verdict == AT_RISK]
     unlanded = [item for item in found if item.verdict == UNLANDED]
-    stranded = sum(item.ahead for item in found)
+    stranded = distinct(found, AT_RISK, against) + distinct(found, UNLANDED, against)
     ephemeral = [tree for tree in trees if tree.ephemeral]
 
-    print(f"Trunk: {against}. {stranded} commit(s) on {len(found)} branch(es) are not on it.")
+    behind = trunk_unpushed(against)
+    print(f"Trunk: {against}. {stranded} distinct commit(s) on {len(found)} branch(es) are "
+          "not on it.")
+    if behind:
+        print()
+        print(f"AT RISK - the trunk itself: {behind} commit(s) on {against} reach no remote.")
     if at_risk:
         print()
         print(f"AT RISK - no copy anywhere but this directory ({len(at_risk)} branch(es)):")
         for item in at_risk:
-            print(f"  {item.ahead:>4} commit(s)  {item.name}")
+            print(f"  {item.unreachable:>4} unpushed, {item.ahead:>3} beyond trunk  "
+                  f"{item.name}")
     if unlanded:
         print()
         print(f"UNLANDED - pushed, not merged ({len(unlanded)} branch(es)):")
@@ -174,12 +223,14 @@ def report(against: str, found: list[Branch], trees: list[Worktree], dirty: int)
         print(f"UNCOMMITTED - {dirty} path(s) changed in this working tree.")
 
     print()
-    if at_risk:
-        risked = sum(item.ahead for item in at_risk)
-        print(f"FAIL: {risked} commit(s) across {len(at_risk)} branch(es) exist only in this "
-              "directory. Push them, merge them, or delete them deliberately.")
+    if at_risk or behind:
+        risked = distinct(found, AT_RISK, against) + behind
+        print(f"FAIL: {risked} distinct commit(s) across {len(at_risk)} branch(es) and the "
+              f"trunk exist only in this directory. Push them, merge them, or delete them "
+              "deliberately.")
         return 1
-    print(f"PASS: no commit exists only in this directory. {stranded} commit(s) await landing.")
+    print(f"PASS: no commit exists only in this directory. {stranded} distinct commit(s) "
+          "await landing.")
     return 0
 
 

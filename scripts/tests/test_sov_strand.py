@@ -26,8 +26,13 @@ def git(cwd: Path, *args: str) -> None:
     subprocess.run(["git", *args], cwd=cwd, check=True, capture_output=True, text=True)
 
 
-def build(root: Path, *, with_remote: bool) -> None:
-    """Create a repository with `main` and one branch carrying a commit beyond it."""
+def build(root: Path, *, with_remote: bool, push_as: str = "") -> None:
+    """Create a repository with `main` and one branch carrying a commit beyond it.
+
+    `push_as` publishes the branch under a different name, which is the case that
+    defeated the first version of this check: an upstream was configured, so the
+    branch read as safe, while its commits had never reached any remote.
+    """
     origin = root / "origin.git"
     work = root / "work"
     work.mkdir()
@@ -41,20 +46,25 @@ def build(root: Path, *, with_remote: bool) -> None:
     (work / "side.txt").write_text("side\n", encoding="utf-8", newline="\n")
     git(work, "add", "side.txt")
     git(work, "commit", "-m", "side")
-    if with_remote:
+    if with_remote or push_as:
         subprocess.run(["git", "init", "--bare", str(origin)], check=True, capture_output=True)
         git(work, "remote", "add", "origin", str(origin))
+    if with_remote:
         git(work, "push", "-u", "origin", "feat/side")
+    elif push_as:
+        git(work, "push", "origin", f"feat/side:{push_as}")
+        git(work, "fetch", "origin")
     git(work, "checkout", "main")
 
 
 class StrandedWorkTest(unittest.TestCase):
     """Grade a branch by whether another copy of it exists, not by whether it is merged."""
 
-    def measure(self, *, with_remote: bool) -> list[sov_strand.Branch]:
+    def measure(self, *, with_remote: bool,
+                push_as: str = "") -> list[sov_strand.Branch]:
         with tempfile.TemporaryDirectory() as raw:
             root = Path(raw)
-            build(root, with_remote=with_remote)
+            build(root, with_remote=with_remote, push_as=push_as)
             original = sov_strand.ROOT
             sov_strand.ROOT = root / "work"
             try:
@@ -74,6 +84,35 @@ class StrandedWorkTest(unittest.TestCase):
         found = self.measure(with_remote=True)
         self.assertEqual([item.name for item in found], ["feat/side"])
         self.assertEqual(found[0].verdict, sov_strand.UNLANDED)
+
+    def test_commits_pushed_under_another_name_are_not_at_risk(self) -> None:
+        """Reachability from any remote ref is the question, never the upstream setting.
+
+        This is the case that defeated the first version: two branches were reported
+        at risk whose commits already sat on the remote under a different name.
+        """
+        found = self.measure(with_remote=False, push_as="feat/renamed-there")
+        self.assertEqual(found[0].verdict, sov_strand.UNLANDED)
+        self.assertEqual(found[0].unreachable, 0)
+
+    def test_shared_history_is_counted_once(self) -> None:
+        """Nested branches must not each contribute the commits they hold in common."""
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            build(root, with_remote=False)
+            work = root / "work"
+            git(work, "branch", "feat/nested", "feat/side")
+            original = sov_strand.ROOT
+            sov_strand.ROOT = work
+            try:
+                against = sov_strand.trunk()
+                found = sov_strand.branches(against)
+                total = sov_strand.distinct(found, sov_strand.AT_RISK, against)
+            finally:
+                sov_strand.ROOT = original
+        self.assertEqual(len(found), 2)
+        self.assertEqual(sum(item.unreachable for item in found), 2)
+        self.assertEqual(total, 1)
 
     def test_brief_is_silent_when_nothing_is_at_risk(self) -> None:
         """Session start hears nothing unless something would actually be lost."""

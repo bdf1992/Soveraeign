@@ -14,8 +14,8 @@ neighbour's negation), headings at every level, table cells, fenced lines, and
 the YAML frontmatter block. A semicolon starts a new assertion whose denial is
 judged on its own. Two owner-reservation shapes exist and both are narrow: an
 opening "Only Bdo ..." excuses only the words up to the first coordinating
-break after it, and "... stays with Bdo" excuses a segment only when the
-segment is nothing but that reservation.
+break after it, and the exact segment "ratification stays with Bdo" is
+excused; any other words around that phrase leave every rule running.
 """
 
 from __future__ import annotations
@@ -28,7 +28,8 @@ _LINK = re.compile(r"\[([^\]]*)\]\([^)]*\)")
 
 def normalize(raw: str) -> str:
     """Strip markup and format characters that split a phrase without changing it."""
-    text = _LINK.sub(r"\1", raw)
+    text = re.sub(r"<!--.*?-->", "", raw, flags=re.DOTALL)
+    text = _LINK.sub(r"\1", text)
     text = "".join(ch for ch in text if unicodedata.category(ch) != "Cf")
     return text.replace("*", "").replace("`", "").replace("_", "")
 
@@ -104,9 +105,10 @@ def segments(sentence: str) -> list[str]:
 
 DENIAL = re.compile(r"\b(not|no|never|cannot|refus\w+)\b")
 OWNER_HEAD = re.compile(r"^only\s+(bdo|the\s+owner)")
-# An owner-keep reservation excuses a segment only when the segment is nothing
-# but the reservation; "stays with Bdo" appearing mid-claim excuses nothing.
-OWNER_KEEP = re.compile(r"^[\w\s'-]*\bstays\s+with\s+bdo\W*$")
+# An owner-keep reservation excuses exactly one segment: "ratification stays
+# with Bdo". Any other words around the phrase - a grant before it above all -
+# leave every rule running; extending the allowance is a conscious pin edit.
+OWNER_KEEP = re.compile(r"^ratification\s+stays\s+with\s+bdo\W*$")
 
 _VERBS = r"(ratify|ratifies|settle[sd]?|confer[s]?|grant[s]?|certif\w+|approve[sd]?|endorse[sd]?|sign\w*[\s-]?off)"
 

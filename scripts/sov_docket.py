@@ -29,6 +29,10 @@ import json
 import re
 import sys
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+import sovdocket  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[1]
 DECISIONS = ROOT / "decisions"
 STANDING = ROOT / "contracts" / "decision-standing.json"
@@ -186,6 +190,12 @@ def unrouted() -> int:
     return 1 if (bare or unknown) else 0
 
 
+def holds() -> int:
+    """List owner-routed questions against the hold reasons the policy admits."""
+    print(sovdocket.render())
+    return 0
+
+
 def check() -> int:
     """The gate: the crosswalk is total, and every routed question is sound."""
     defects: list[str] = []
@@ -256,6 +266,9 @@ def check() -> int:
         print(f"DEBT: {identifier} carries no '{rule['heading']}' section, minted at or after "
               f"{threshold}. Reported, not failed: routing it here would mean inventing its "
               f"author's questions.")
+    routing_debt = sovdocket.debt_line()
+    if routing_debt:
+        print(routing_debt)
     unsettled = _open_rows(rows)
     covered = len([row for row in unsettled if row["questions"]])
     asked = len(open_questions())
@@ -272,9 +285,11 @@ def main(argv: list[str] | None = None) -> int:
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("queue", help="what is open, and for whom")
     sub.add_parser("unrouted", help="proposals no routing entry covers")
+    sub.add_parser("holds", help="owner-routed questions against the admissible hold reasons")
     sub.add_parser("check", help="the gate: crosswalk total, routing sound")
     args = parser.parse_args(argv)
-    return {"queue": queue, "unrouted": unrouted, "check": check}[args.command]()
+    return {"queue": queue, "unrouted": unrouted, "holds": holds,
+            "check": check}[args.command]()
 
 
 if __name__ == "__main__":

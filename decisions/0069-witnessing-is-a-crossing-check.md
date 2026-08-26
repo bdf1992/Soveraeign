@@ -1,8 +1,10 @@
 # Witnessing from inside the builder's lineage is admissible only as a crossing check
 
-Status: PROPOSED · transcribed from a verbal ruling by Bdo, 2026-08-26.
-The ruling is Bdo's; this wording is a transcription by the campaign
-coordination session and is not accepted until Bdo accepts it.
+Status: `PROPOSED · DRAFTED AT OWNER DIRECTION · ACCEPTANCE PENDING`
+
+Transcribed from a verbal ruling by Bdo, 2026-08-26. The ruling is Bdo's; this
+wording is a transcription by the campaign coordination session and is not
+accepted until Bdo accepts it.
 
 ## Question
 

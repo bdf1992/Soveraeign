@@ -39,12 +39,15 @@ from typing import Any
 import json
 
 from soveraeign_record_service.core import (
-    GENESIS, BrokenChain, RecordService, _canonical, _digest,
+    DIGEST_PROFILE, GENESIS, LEGACY_DIGEST_PROFILE, BrokenChain, RecordService,
+    _canonical, _digest_for_profile,
 )
 
-EXPORT_SCHEMA = "soveraeign-record-export/v1"
-ENTRY_FIELDS = ("entry_id", "kind", "subject", "actor", "source_address", "payload",
-                "recorded_at", "prev_digest", "entry_digest")
+EXPORT_SCHEMA = "soveraeign-record-export/v2"
+LEGACY_EXPORT_SCHEMA = "soveraeign-record-export/v1"
+ENTRY_FIELDS_V1 = ("entry_id", "kind", "subject", "actor", "source_address", "payload",
+                   "recorded_at", "prev_digest", "entry_digest")
+ENTRY_FIELDS = ENTRY_FIELDS_V1 + ("digest_profile",)
 
 
 class ExportRefused(RuntimeError):
@@ -93,18 +96,25 @@ def verify_export(document: Any, *, expected_head: str | None = None) -> str:
     Without it, a truncated export verifies, because a shorter journal is a
     valid journal.
     """
-    if not isinstance(document, dict) or document.get("export_schema") != EXPORT_SCHEMA:
+    if not isinstance(document, dict) or document.get("export_schema") not in {
+        EXPORT_SCHEMA, LEGACY_EXPORT_SCHEMA
+    }:
         raise RestoreRefused("not a Soveraeign record export")
+    legacy = document["export_schema"] == LEGACY_EXPORT_SCHEMA
     entries = document.get("entries")
     if not isinstance(entries, list):
         raise RestoreRefused("export carries no entry list")
     previous = GENESIS
     for position, entry in enumerate(entries):
-        missing = [field for field in ENTRY_FIELDS if field not in entry]
+        required_fields = ENTRY_FIELDS_V1 if legacy else ENTRY_FIELDS
+        missing = [field for field in required_fields if field not in entry]
         if missing:
             raise RestoreRefused(f"entry {position} lacks {missing}")
-        expected = _digest(previous, entry["kind"], entry["subject"], entry["actor"],
-                           entry["payload"])
+        profile = LEGACY_DIGEST_PROFILE if legacy else entry["digest_profile"]
+        expected = _digest_for_profile(
+            profile, previous, entry["kind"], entry["subject"], entry["actor"],
+            entry["payload"]
+        )
         if entry["prev_digest"] != previous:
             raise BrokenChain(f"entry {position} does not follow its predecessor")
         if entry["entry_digest"] != expected:
@@ -131,15 +141,18 @@ def restore(service: RecordService, document: Any, *,
     if service.head() != GENESIS:
         raise RestoreRefused("store already holds a journal; restore only into an empty one")
     head = verify_export(document, expected_head=expected_head)
+    legacy = document["export_schema"] == LEGACY_EXPORT_SCHEMA
     rows = [
         (entry["entry_id"], entry["kind"], entry["subject"], entry["actor"],
          entry["source_address"], _canonical(entry["payload"]), entry["recorded_at"],
-         entry["prev_digest"], entry["entry_digest"])
+         entry["prev_digest"], entry["entry_digest"],
+         LEGACY_DIGEST_PROFILE if legacy else entry["digest_profile"])
         for entry in document["entries"]
     ]
     service.db.executemany(
         "INSERT INTO journal(entry_id,kind,subject,actor,source_address,"
-        "payload_json,recorded_at,prev_digest,entry_digest) VALUES(?,?,?,?,?,?,?,?,?)",
+        "payload_json,recorded_at,prev_digest,entry_digest,digest_profile) "
+        "VALUES(?,?,?,?,?,?,?,?,?,?)",
         rows,
     )
     service.db.commit()

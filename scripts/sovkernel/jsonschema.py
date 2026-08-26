@@ -44,6 +44,9 @@ SUPPORTED_KEYWORDS = frozenset(
     }
 )
 SUPPORTED_FORMATS = frozenset({"date-time"})
+RFC3339_PROFILE = re.compile(
+    r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$"
+)
 
 
 def _type_matches(instance: Any, name: str) -> bool:
@@ -66,7 +69,9 @@ def _type_matches(instance: Any, name: str) -> bool:
 
 
 def _is_date_time(value: str) -> bool:
-    """Report whether ``value`` parses as an RFC 3339 timestamp."""
+    """Apply SOV-RFC3339-1 before asking datetime to validate calendar values."""
+    if not RFC3339_PROFILE.fullmatch(value) or value.endswith("-00:00"):
+        return False
     try:
         datetime.fromisoformat(value.replace("Z", "+00:00"))
     except ValueError:

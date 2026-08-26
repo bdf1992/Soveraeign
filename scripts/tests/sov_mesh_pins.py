@@ -63,11 +63,14 @@ HEADINGS = {
 # Each anchor is itself the required rule; deleting or inverting it must fail.
 GUARDS = {
     "sov.md": ("BLUE cannot witness itself. RED cannot ratify.",
-               "Only the owner-held gate may settle owner judgement."),
+               "Only the owner-held gate may settle owner judgement.",
+               "Capabilities never imply authority. Context never supplies a grant."),
     "sov-controller.md": ("Do not create a new ticket or hand the engineering choice to Bdo.",
                           "Standing forwarded from machine evidence is at most"
                           " `BUILT -> WITNESSED`.",
-                          "You never build, witness, or ratify."),
+                          "You never build, witness, or ratify.",
+                          "Host tool absence may change how the declared pipeline is"
+                          " invoked; it never changes its semantics."),
     "sov-orchestrator.md": ("You may not soften a protected boundary, widen effects, infer"
                             " authority from model/tool availability, advance standing, or"
                             " present synthesis as Bdo's judgement.",),

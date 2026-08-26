@@ -63,13 +63,26 @@ carries both `routing` (`ROUTED`/`UNROUTED`) and `readiness`
 
 `OWNER_HELD` membership is decided by `contracts/issue-metadata.schema.json`
 rather than by the walk's opinion: an open `unblock` ticket whose
-`requested_provision` is a judgement, which the schema requires to be addressed
-to the owner and to no one else. There are none today, and
-`python scripts/sov_epic.py owner-held` says so.
+`requested_provision` is a judgement, which the schema then requires to be
+addressed to the owner. The provision is the discriminating key and
+`requested_from` is not, because the schema constrains only one direction: an
+unblock ticket may lawfully ask the owner for a fixture, a contract, an
+observation, a capability, or a grant, and none of those is a judgement. Reading
+`requested_from` instead would file that ordinary work on Bdo's desk.
+
+There are no owner-held tickets in the tree today, and
+`python scripts/sov_epic.py owner-held` says so. That is a reading of the tree
+and nothing wider: `STATUS.yaml` `owner_holds` and the judgement sections under
+`decisions/` are separate records, and an empty list here is no evidence about
+either.
 
 Selection then puts each open bit and stub in exactly one dispatch bucket, in the
 order that decides who moves it next: **owner-held**, then **unrouted**, then
-**held**, then **ready** (routed with every `requires` edge satisfied).
+**held**, then **ready** (routed with every `requires` edge satisfied). The
+bucket counts partition the workable issues, so on their own they understate the
+dependency work by every issue the unrouted bucket won. `status` therefore prints
+the readings as well - `dependency-held` and `no-domain-owner` - which count the
+two states directly and deliberately overlap the buckets.
 Reachability is evidence about the tree, never a grant — an issue being ready
 says nothing about whether an open decision in `STATUS.yaml` admits the work.
 Adding the artifact that would route an unrouted issue is ordinary reversible
@@ -83,7 +96,7 @@ python scripts/sov_epic.py status      # counts, ready work, held work
 python scripts/sov_epic.py validate    # the three readings; --strict to exit non-zero
 python scripts/sov_epic.py next --village ground-and-evidence
 python scripts/sov_epic.py unrouted    # open work no artifact gives a domain owner
-python scripts/sov_epic.py owner-held  # open work that genuinely waits on Bdo
+python scripts/sov_epic.py owner-held  # the tree's own owner-held tickets
 python scripts/sov_epic.py report      # the whole survey as JSON
 ```
 

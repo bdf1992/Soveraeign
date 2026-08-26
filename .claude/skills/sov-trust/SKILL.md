@@ -1,6 +1,6 @@
 ---
 name: sov-trust
-description: Working knowledge for the Soveraeign trust domain — the two built boundaries of the trust-and-control village, services/identity/ and services/registry/. Load when a task mentions "sov-trust", "trust domain", "Identity Service", "Registry Service", "challenge", "recovery secret", "verification basis", "name resolution", "registry entry", "drift finding", "owner record", or names the artifacts CHARTER.md, contracts/service.json, soveraeign_identity_service (challenges.py, recovery.py), or soveraeign_registry_service (core.py, index.py, routes.py). Covers issues #11 and #14 of the epic tree. Not for Authority (#12), Gates (#13), or the Capability Broker (#15) — no repository artifact evidences those yet, so they stay unrouted — and not for kernel contracts, the conformance oracle, or governance work.
+description: Working knowledge for the Soveraeign trust domain — the two boundaries of the trust-and-control village whose components are already built, services/identity/ and services/registry/. Load when a task mentions "sov-trust", "trust domain", "Identity Service", "Registry Service", "challenge", "recovery secret", "verification basis", "name resolution", "registry entry", "drift finding", "owner record", or names the artifacts CHARTER.md, contracts/service.json, soveraeign_identity_service (challenges.py, recovery.py), or soveraeign_registry_service (core.py, index.py, routes.py). Covers issues #11 and #14 of the epic tree. Not for Authority (#12), Gates (#13), or the Capability Broker (#15) — no repository artifact evidences those yet, so they stay unrouted — and not for kernel contracts, the conformance oracle, or governance work.
 ---
 
 # sov-trust
@@ -9,9 +9,12 @@ description: Working knowledge for the Soveraeign trust domain — the two built
 
 Advance the two boundaries of the `trust-and-control` village that already exist
 on disk: the Identity Service's challenge and recovery components, and the
-Registry Service's `resolve` slice. Both are `BUILT` by their own tests and
-neither is independently witnessed. The domain exists because those artifacts
-exist; it claims nothing about the parts of the village that have no artifact.
+Registry Service's `resolve` slice. Those components are `BUILT` by their own
+tests and neither is independently witnessed. The boundaries above them are not
+built: the Identity manifest is `PROPOSED` with its placement provisional, and
+every Registry operation except `resolve` is `PROPOSED`. The domain exists
+because those artifacts exist; it claims nothing about the parts of the village
+that have no artifact.
 
 ## Why one domain and not two
 

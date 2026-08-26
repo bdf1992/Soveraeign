@@ -70,9 +70,14 @@ def command_status(args: argparse.Namespace) -> int:
     counts = result["counts"]
     print(f"epic #{result['root_issue']}  synced {result['synced_at']}")
     print(
-        f"issues {counts['issues']}  open {counts['open']}  "
-        f"ready {counts['ready']}  held {counts['held']}  unrouted {counts['unrouted']}  "
-        f"owner-held {counts['owner_held']}  stories {counts['stories']}"
+        f"buckets: ready {counts['ready']}  held {counts['held']}  "
+        f"unrouted {counts['unrouted']}  owner-held {counts['owner_held']}"
+    )
+    print(
+        f"readings: dependency-held {counts['dependency_held']}  "
+        f"no-domain-owner {counts['no_domain_owner']}  "
+        f"(these overlap the buckets; issues {counts['issues']}  open {counts['open']}  "
+        f"stories {counts['stories']})"
     )
     print(
         f"defects: contract {len(result['contract_defects'])}  "
@@ -140,18 +145,25 @@ def command_unrouted(args: argparse.Namespace) -> int:
 
 
 def command_owner_held(args: argparse.Namespace) -> int:
-    """Print the open work that genuinely waits on the owner, and nothing else.
+    """Print the epic-tree work that genuinely waits on the owner, and nothing else.
 
     Membership is decided by ``contracts/issue-metadata.schema.json``: an open
-    ``unblock`` ticket whose ``requested_provision`` is a judgement, addressed to
-    the owner. An unsatisfied dependency and a missing domain owner are other
-    states and are absent from this list by construction.
+    ``unblock`` ticket whose ``requested_provision`` is a judgement, which the
+    schema then requires to be addressed to the owner. An unsatisfied dependency
+    and a missing domain owner are other states and are absent from this list by
+    construction.
     """
     result = _survey(ROOT)
     for entry in result["owner_held"]:
-        print(f"#{entry['issue']:<3} {entry['village']:<26} {entry['title'][:52]}")
-    print(f"\n{len(result['owner_held'])} open issue(s) owner-held.")
-    print("Held and unrouted work is elsewhere and does not wait on the owner.")
+        print(
+            f"#{entry['issue']:<3} {entry['readiness']:<9} {entry['village']:<26} "
+            f"{entry['title'][:52]}"
+        )
+    print(f"\n{len(result['owner_held'])} open issue(s) owner-held in the epic tree.")
+    print("This reads the tree's own unblock tickets and nothing else. It is not the")
+    print("whole of what the owner seat holds: STATUS.yaml owner_holds and the judgement")
+    print("sections under decisions/ are separate records, and an empty list here is no")
+    print("evidence about either. Dependency-held and undomained work is elsewhere again.")
     return 0
 
 

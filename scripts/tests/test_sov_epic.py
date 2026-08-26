@@ -241,7 +241,19 @@ class ProjectionTests(unittest.TestCase):
         result = survey.survey(REPO_ROOT, document, projection.villages(REPO_ROOT))
         self.assertEqual(
             set(result["counts"]),
-            {"issues", "open", "ready", "held", "unrouted", "owner_held", "stories"},
+            {
+                # dispatch buckets, which partition the workable issues
+                "ready",
+                "held",
+                "unrouted",
+                "owner_held",
+                # the two readings, which deliberately overlap those buckets
+                "dependency_held",
+                "no_domain_owner",
+                "issues",
+                "open",
+                "stories",
+            },
         )
         for entry in result["ready"]:
             self.assertEqual(entry["blocked_by"], [])

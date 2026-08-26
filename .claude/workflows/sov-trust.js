@@ -1,8 +1,8 @@
-export const meta = { name: 'sov-trust', description: 'Advance the Soveraeign trust domain - the built Identity and Registry boundaries of the trust-and-control village - by bounded charter, contract, fixture, or test operations with independent witnessing', whenToUse: 'When services/identity or services/registry needs charter refinement, contract work, defeating fixtures, test placement, or doc coherence. Both are BUILT by their own tests and neither is independently witnessed.', phases: [{ title: 'Scope' }, { title: 'Build' }, { title: 'Witness' }] }
+export const meta = { name: 'sov-trust', description: 'Advance the Soveraeign trust domain - the Identity and Registry boundaries of the trust-and-control village, whose components are built and unwitnessed - by bounded charter, contract, fixture, or test operations with independent witnessing', whenToUse: 'When services/identity or services/registry needs charter refinement, contract work, defeating fixtures, test placement, or doc coherence. The identity challenge and recovery components and the registry resolve slice are built by their own tests; neither boundary is independently witnessed.', phases: [{ title: 'Scope' }, { title: 'Build' }, { title: 'Witness' }] }
 
 const ROOT = '.'
 
-const PLAN_SCHEMA = { type: 'object', required: ['blocked', 'operations', 'owner_held_items'], properties: { blocked: { type: 'boolean' }, blocked_reason: { type: 'string' }, operations: { type: 'array', items: { type: 'object', required: ['id', 'description', 'files', 'effect_class'], properties: { id: { type: 'string' }, description: { type: 'string' }, files: { type: 'array', items: { type: 'string' } }, effect_class: { type: 'string', enum: ['RECORD_LOCAL', 'RESOURCE_CONSUMPTION'] } } } }, owner_held_items: { type: 'array', items: { type: 'string' } } } }
+const PLAN_SCHEMA = { type: 'object', required: ['blocked', 'operations', 'judgement_items'], properties: { blocked: { type: 'boolean' }, blocked_reason: { type: 'string' }, operations: { type: 'array', items: { type: 'object', required: ['id', 'description', 'files', 'effect_class'], properties: { id: { type: 'string' }, description: { type: 'string' }, files: { type: 'array', items: { type: 'string' } }, effect_class: { type: 'string', enum: ['RECORD_LOCAL', 'RESOURCE_CONSUMPTION'] } } } }, judgement_items: { type: 'array', items: { type: 'string' } } } }
 
 const WITNESS_SCHEMA = { type: 'object', required: ['verdicts', 'residuals', 'standing_supported'], properties: { verdicts: { type: 'array', items: { type: 'object', required: ['operation_id', 'verdict'], properties: { operation_id: { type: 'string' }, verdict: { type: 'string', enum: ['reproduced', 'dissented', 'unattestable'] } } } }, residuals: { type: 'array', items: { type: 'string' } }, standing_supported: { type: 'string', enum: ['OPEN->BUILT', 'BUILT->WITNESSED', 'none'] } } }
 
@@ -33,9 +33,9 @@ log('Scope: planning bounded trust-domain work for objective: ' + objective)
 const plan = await agent(
   'You are scoping bounded work in the Soveraeign trust domain. Read ' + ROOT + '/AGENTS.md, ' + ROOT + '/STATUS.yaml, ' + ROOT + '/CLASSIFICATION.md, .claude/skills/sov-trust/SKILL.md, everything under ' + ROOT + '/services/identity/ and ' + ROOT + '/services/registry/, and ' + ROOT + '/decisions/0048-principal-identity.md. ' +
   'The founding docket is closed: open_decisions is empty and the O<n> identifiers are retired (decisions/0033-close-the-founding-docket.md). Settle a decision at the lowest tier that can produce evidence defeating the alternatives, and record what would defeat the ruling. The owner gate is acceptance over an evidenced result, never permission to begin. ' +
-  'Current standing: the Identity challenge and recovery components are BUILT by 32 of their own cases, which scripts/verify.py runs as the check named "Identity component tests"; the Registry has one built resolve slice and a service manifest at standing BUILT. Neither is independently witnessed, and a build report cannot witness itself. Where principal identity ultimately lives is decisions/0048 judgement 3 and belongs to the owner seat; the charter is deliberately built so that ruling moves one file and changes no semantics, so it gates placement and nothing else. ' +
+  'Current standing: the Identity challenge and recovery components are BUILT by 32 of their own cases, which scripts/verify.py runs as the check named "Identity component tests"; the Identity service manifest is still PROPOSED and its placement provisional; the Registry has one built resolve slice on a manifest at standing BUILT, with every other chartered operation PROPOSED. Neither is independently witnessed, and a build report cannot witness itself. Where principal identity ultimately lives is decisions/0048 judgement 3 and belongs to the owner seat; the charter is deliberately built so that ruling moves one file and changes no semantics, so it gates placement and nothing else. ' +
   'Plan only work inside services/identity/, services/registry/, and the owner-record table at contracts/domain-owners.json. Blocked edge is not blocked frontier (AGENTS.md, Self-direction is not delegation): an unresolved owner decision gates only the transition that needs it. Plan the reachable precursors, take reversible defaults for every other choice and name them in the operation descriptions, and set blocked true only when no admissible operation exists for this objective. ' +
-  'owner_held_items carries ONLY a genuine owner seam - an external-world effect, an irreversible one, publication, owner identity or naming, a secret, destructive administration, or a resource commitment (contracts/acceptance-policy.json). An unsatisfied dependency is HELD and a missing domain owner is UNROUTED; neither is owner-held and neither belongs in this list. Each entry names why no evidence at this tier could settle it. ' +
+  'judgement_items carries ONLY a genuine owner seam - an external-world effect, an irreversible one, publication, owner identity or naming, a secret, destructive administration, or a resource commitment (contracts/acceptance-policy.json). An unsatisfied dependency is HELD and a missing domain owner is UNROUTED; neither is owner-held and neither belongs in this list. Each entry names why no evidence at this tier could settle it. ' +
   'Effect classes are limited to RECORD_LOCAL and RESOURCE_CONSUMPTION; no EXTERNAL_WORLD effects in Phase I. Evidence files under lineage/evidence/ are immutable. ' +
   'Produce a bounded operation plan honoring these constraints for: ' + objective,
   { agentType: 'sov-orchestrator', schema: PLAN_SCHEMA, phase: 'Scope', label: 'scope' }
@@ -51,7 +51,7 @@ if (!plan || plan.blocked || plan.operations.length === 0) {
     built: [],
     witness: null,
     residuals: (plan && plan.blocked_reason) ? [plan.blocked_reason] : [],
-    owner_held_items: plan ? plan.owner_held_items : ['scope agent failed; re-run sov-trust Scope'],
+    judgement_items: plan ? plan.judgement_items : ['scope agent failed; re-run sov-trust Scope'],
     standing_proposal: null
   }
 }
@@ -115,6 +115,6 @@ return {
   built: built,
   witness: witness,
   residuals: witness ? witness.residuals : ['witness agent failed; run is unattestable'],
-  owner_held_items: plan.owner_held_items,
+  judgement_items: plan.judgement_items,
   standing_proposal: standingProposal
 }

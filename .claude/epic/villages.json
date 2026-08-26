@@ -4,103 +4,39 @@
   "villages": {
     "ground-and-evidence": {
       "village_issue": 4,
-      "domains": [
-        "contracts",
-        "conformance",
-        "asset",
-        "verification"
-      ]
+      "domains": ["contracts", "conformance", "asset", "verification"]
     },
     "trust-and-control": {
       "village_issue": 3,
-      "domains": [
-        "trust"
-      ]
+      "domains": ["trust"]
     },
     "reach-and-motion": {
       "village_issue": 2,
-      "domains": [
-        "byom",
-        "console"
-      ]
+      "domains": ["byom", "console"]
     },
     "domain-and-qualification": {
       "village_issue": 5,
-      "domains": [
-        "proofing",
-        "conformance"
-      ]
+      "domains": ["proofing", "conformance"]
     }
   },
   "issue_routes": {
-    "6": {
-      "domain": "contracts",
-      "evidence": "contracts/*.schema.json"
-    },
-    "8": {
-      "domain": "asset",
-      "evidence": "services/asset/"
-    },
-    "9": {
-      "domain": "conformance",
-      "evidence": "contracts/participant-observation.schema.json"
-    },
-    "11": {
-      "domain": "trust",
-      "evidence": "services/identity/CHARTER.md, services/identity/contracts/service.json, services/identity/src/soveraeign_identity_service/, and services/identity/tests/, which scripts/verify.py runs as the check named 'Identity component tests'"
-    },
-    "14": {
-      "domain": "trust",
-      "evidence": "services/registry/CHARTER.md, services/registry/contracts/service.json at standing BUILT, services/registry/src/soveraeign_registry_service/, and scripts/tests/test_registry_horizontal.py"
-    },
-    "19": {
-      "domain": "byom",
-      "evidence": "bindings/README.md, adapters/README.md"
-    },
-    "22": {
-      "domain": "proofing",
-      "evidence": "services/proofing/CHARTER.md"
-    },
-    "23": {
-      "domain": "conformance",
-      "evidence": "conformance/scenarios.json"
-    },
-    "25": {
-      "domain": "contracts",
-      "evidence": "contracts/README.md"
-    },
-    "26": {
-      "domain": "conformance",
-      "evidence": "conformance/run.py, conformance/tests/"
-    },
-    "27": {
-      "domain": "asset",
-      "evidence": "services/asset/contracts/service.json"
-    },
-    "28": {
-      "domain": "proofing",
-      "evidence": "services/proofing/contracts/service.json"
-    },
-    "29": {
-      "domain": "byom",
-      "evidence": "adapters/README.md"
-    },
-    "30": {
-      "domain": "console",
-      "evidence": "services/console/CHARTER.md Human Binding"
-    },
-    "32": {
-      "domain": "verification",
-      "evidence": "scripts/verify.py, .github/workflows/verify.yml"
-    },
-    "40": {
-      "domain": "contracts",
-      "evidence": "contracts/issue-metadata.schema.json; vocabulary overlap with governance is unresolved"
-    },
-    "45": {
-      "domain": "byom",
-      "evidence": "bindings/sov/profile.json, SOV.md"
-    }
+    "6": {"domain": "contracts", "evidence": "contracts/*.schema.json"},
+    "8": {"domain": "asset", "evidence": "services/asset/"},
+    "9": {"domain": "conformance", "evidence": "contracts/participant-observation.schema.json"},
+    "11": {"domain": "trust", "evidence": "services/identity/CHARTER.md, services/identity/contracts/service.json, services/identity/src/soveraeign_identity_service/, services/identity/tests/ run by scripts/verify.py as the check named 'Identity component tests'"},
+    "14": {"domain": "trust", "evidence": "services/registry/CHARTER.md, services/registry/contracts/service.json at standing BUILT, services/registry/src/soveraeign_registry_service/, scripts/tests/test_registry_horizontal.py"},
+    "19": {"domain": "byom", "evidence": "bindings/README.md, adapters/README.md"},
+    "22": {"domain": "proofing", "evidence": "services/proofing/CHARTER.md"},
+    "23": {"domain": "conformance", "evidence": "conformance/scenarios.json"},
+    "25": {"domain": "contracts", "evidence": "contracts/README.md"},
+    "26": {"domain": "conformance", "evidence": "conformance/run.py, conformance/tests/"},
+    "27": {"domain": "asset", "evidence": "services/asset/contracts/service.json"},
+    "28": {"domain": "proofing", "evidence": "services/proofing/contracts/service.json"},
+    "29": {"domain": "byom", "evidence": "adapters/README.md"},
+    "30": {"domain": "console", "evidence": "services/console/CHARTER.md Human Binding"},
+    "32": {"domain": "verification", "evidence": "scripts/verify.py, .github/workflows/verify.yml"},
+    "40": {"domain": "contracts", "evidence": "contracts/issue-metadata.schema.json; vocabulary overlap with governance is unresolved"},
+    "45": {"domain": "byom", "evidence": "bindings/sov/profile.json, SOV.md"}
   },
   "unrouted_reason": "No repository artifact evidences a domain owner for this issue: no charter, contract, implementation, or test under a domain any .claude/skills/sov-<domain>/SKILL.md claims. UNROUTED is not OWNER_HELD and it is not Bdo's call. Writing the owning artifact is ordinary reversible work at this tier (AGENTS.md, Closure ownership). An unrouted issue may also be HELD by an unsatisfied requires edge; the two states are independent and each carries its own fix."
 }

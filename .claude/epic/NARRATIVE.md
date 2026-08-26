@@ -223,10 +223,13 @@ every consequential boundary (Security and Gates, `#13`), knows what exists
 and which version (Registry, `#14`), and hands machines short-lived,
 attenuated tokens (Capability Broker, `#15`).
 
-**Today:** nothing exists and nothing is routed. The `trust-and-control`
-village has zero harness domains. This is the widest gap between front and
-back: every counter's "Leans on" line passes through here, and no counter can
-know who is standing at it.
+**Today:** the office is half-built and half-undomained. Identity (`#11`) and
+Registry (`#14`) route to the `trust` domain on the artifacts already in
+`services/identity/` and `services/registry/`, and both are `held` behind the
+Asset Service (`#8`). Authority (`#12`), Security and Gates (`#13`), and the
+Capability Broker (`#15`) have no artifact and stay `unrouted`. This is still
+the widest gap between front and back: every counter's "Leans on" line passes
+through here, and no counter can know who is standing at it.
 
 ### The Inspectorate: `#9`, `#23`, `#26`, `#32`, `#49`, `#57`
 
@@ -281,8 +284,8 @@ Office. Not Phase I.
 
 Read front to back, the queue has one shape: every counter leans on The
 Permits Office, The Permits Office leans on The Record, and The Record
-starts at `#6`. The technical tree says this as "`#6` ready, fourteen held,
-twenty-two unrouted". The narrative says it as: nobody can be told who they
+starts at `#6`. The technical tree says this as "two ready, fourteen held,
+twenty unrouted". The narrative says it as: nobody can be told who they
 are yet, so no counter can open; the ledger has to exist before the permits
 office can, and the ledger's first page is the kernel's list of legal moves.
 
@@ -303,10 +306,13 @@ None of these are decided here.
    `decisions/0033-close-the-founding-docket.md`). It is defeated by a story
    that dispatches work, or by an Owner reading that needs a new role value in
    `CLASSIFICATION.md`.
-4. **The Permits Office routing.** `trust-and-control` has no domain. Routing
-   it is a Control-tier ruling, defeated by a domain skill that cannot state
-   what it owns; until someone takes it, every front-office story stays told,
-   not walkable.
+4. **The rest of the Permits Office.** Identity and Registry now route to the
+   `trust` domain on the artifacts under `services/identity/` and
+   `services/registry/`. Authority (`#12`), Security and Gates (`#13`), and the
+   Capability Broker (`#15`) have no such artifact, so they stay `unrouted`.
+   That is not a decision queued here: writing the charter, contract, or tests
+   that would evidence a domain is ordinary work at this tier, and this item is
+   listed only because the office it describes is half-covered.
 
 ## How to add a story
 

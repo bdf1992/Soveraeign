@@ -89,9 +89,15 @@ def survey(root: Path, document: dict, routing: dict) -> dict:
         )
 
     ready.sort(key=lambda e: (_horizon_rank(by_number[e["issue"]]), e["issue"]))
+    workable = ready + held + unrouted + owner_held
     return {
         "root_issue": root_issue,
         "synced_at": document["synced_at"],
+        # ``ready``/``held``/``unrouted``/``owner_held`` count the dispatch buckets and
+        # partition the workable issues. ``dependency_held`` and ``no_domain_owner``
+        # count the readings instead, and deliberately overlap the buckets: an issue in
+        # the unrouted bucket can still be dependency-held, and the bucket count alone
+        # would understate the dependency work by exactly those issues.
         "counts": {
             "issues": len(by_number),
             "open": sum(1 for i in by_number.values() if i.state == "OPEN"),
@@ -99,6 +105,8 @@ def survey(root: Path, document: dict, routing: dict) -> dict:
             "held": len(held),
             "unrouted": len(unrouted),
             "owner_held": len(owner_held),
+            "dependency_held": sum(1 for e in workable if e["readiness"] == walk.HELD),
+            "no_domain_owner": sum(1 for e in workable if e["routing"] == walk.UNROUTED),
             "stories": len(stories),
         },
         "contract_defects": contract,

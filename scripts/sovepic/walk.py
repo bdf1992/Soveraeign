@@ -203,18 +203,21 @@ def route(issue: Issue, routing: dict) -> str | None:
 def owner_held(issue: Issue) -> bool:
     """True only for an unblock ticket that asks the owner for a judgement.
 
-    ``contracts/issue-metadata.schema.json`` is the authority: an unblock ticket
-    whose ``requested_provision`` is ``judgement`` must name ``owner`` as its
-    ``requested_from``, and judgement is asked of no other tier. Either key alone
-    is taken as owner-held so a malformed ticket is withheld from dispatch rather
-    than handed to a worker. Nothing else in the tree is owner-held: an
-    unsatisfied dependency is HELD and a missing domain owner is UNROUTED, and
-    neither reaches Bdo.
+    ``contracts/issue-metadata.schema.json`` is the authority, and it constrains
+    one direction only: a ``requested_provision`` of ``judgement`` must name
+    ``owner`` as its ``requested_from``. The converse does not hold, so the
+    provision is the discriminating key. An unblock ticket may lawfully ask the
+    owner for a fixture, a contract, an observation, a capability, or a grant;
+    none of those is a judgement and none of them is owner-held, because
+    producing them is work some tier can do. Reading ``requested_from`` instead
+    would file that ordinary work on Bdo's desk, which is the defect this module
+    exists to prevent. An unsatisfied dependency is HELD and a missing domain
+    owner is UNROUTED; neither reaches Bdo either.
     """
     block = issue.metadata or {}
     if block.get("kind") != "unblock":
         return False
-    return block.get("requested_from") == "owner" or block.get("requested_provision") == "judgement"
+    return block.get("requested_provision") == "judgement"
 
 
 def reading(domain: str | None, blockers: list[str]) -> dict[str, str]:

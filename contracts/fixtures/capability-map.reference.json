@@ -15,7 +15,7 @@
     "services/registry/contracts/service.json",
     "contracts/capability-offices.json"
   ],
-  "input_state_digest": "7b96f9884daf301dfc606d54ee29932a6877386f58ffedec9e1a54877ad89964",
+  "input_state_digest": "f278f898de018d053ca09c4583ff6be291fe0e6fbcf21e3c7aaea7e594e074b5",
   "capabilities": [
     {
       "capability_id": "asset.add-member",
@@ -957,6 +957,7 @@
         "crud": "SUPERSEDE",
         "requirement": "PROD-I-6",
         "preconditions": [
+          "live_matching_grant",
           "local_node_record",
           "session_live",
           "thread_exists"
@@ -1451,8 +1452,9 @@
         "crud": "CREATE",
         "requirement": "PROD-I-6",
         "preconditions": [
-          "session_live",
-          "declared_channel_name"
+          "declared_channel_name",
+          "live_matching_grant",
+          "session_live"
         ],
         "commit": "COMMITTED",
         "refusals": [
@@ -1554,6 +1556,7 @@
         "preconditions": [
           "channel_exists",
           "declared_subject",
+          "live_matching_grant",
           "local_node_record",
           "session_live"
         ],
@@ -1608,6 +1611,7 @@
         "requirement": "PROD-I-6",
         "preconditions": [
           "declared_body",
+          "live_matching_grant",
           "local_node_record",
           "session_actor_matches_checked_actor",
           "session_live",

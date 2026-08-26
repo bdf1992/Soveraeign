@@ -61,6 +61,8 @@ ABSENT_PUBLICATION = "publication_0000000000000000"
 #: have to account for every BUILT operation the manifest carries.
 NO_RECORD_BY_ID = {"discover-operations", "grant", "list-grants", "list-publications",
                    "open-channel", "open-session", "session-context"}
+#: The two operations spelled differently on the CLI than in the manifest.
+CLI_SPELLING = {"discover-operations": "operations", "list-grants": "grants"}
 
 
 def subcommands() -> dict[str, Any]:
@@ -119,39 +121,18 @@ class DeclaredVocabulary(unittest.TestCase):
                 self.assertNotIn(UnknownRecord.reason_code, DECLARED[operation],
                                  f"{operation} declares a code it cannot produce")
 
-    def test_the_side_an_operation_is_filed_on_is_read_off_its_arguments(self) -> None:
-        """Naming is not enough: which side an operation belongs on must be measurable.
+    def test_the_cli_and_the_manifest_agree_on_what_is_callable(self) -> None:
+        """A BUILT operation with no subcommand, or the reverse, fails here.
 
-        The accounting case above forces a new BUILT operation to be *named* in one of
-        the two tables and not to be *driven*. An operation that reads a record by id,
-        filed in `NO_RECORD_BY_ID` and declaring no `UNKNOWN_RECORD`, left this whole
-        module green - a second independent observation demonstrated that on
-        2026-08-26. The parser is the evidence: an operation that takes no id-shaped
-        argument has no id to find absent, and one that takes an id must be driven
-        against an absent one, which `ProducedRefusals` does.
+        Two operations are spelled differently on the CLI than in the manifest; the
+        mapping is asserted onto both sets rather than assumed, so a new subcommand
+        with no manifest operation fails too.
         """
-        commands = subcommands()
-        # Two operations are spelled differently on the CLI than in the manifest.
-        # Asserted rather than assumed: the mapping has to be onto both sets, so a new
-        # subcommand with no manifest operation fails here too.
-        spelled = {"discover-operations": "operations", "list-grants": "grants"}
         built = {entry["operation"] for entry in MANIFEST["operations"]
                  if entry["standing"] == "BUILT"}
-        self.assertEqual({spelled.get(name, name) for name in built}, set(commands),
+        self.assertEqual({CLI_SPELLING.get(name, name) for name in built},
+                         set(subcommands()),
                          "the CLI and the manifest disagree on what is callable")
-        #: The flags that name a record by id. A subcommand carrying one belongs in
-        #: `ABSENT_ID`; a subcommand carrying none cannot answer the absent-record fact.
-        by_id = {"thread", "session", "channel", "grant", "publication"}
-        for operation in sorted(set(ProducedRefusals.ABSENT_ID) | NO_RECORD_BY_ID):
-            with self.subTest(operation=operation):
-                command = commands[spelled.get(operation, operation)]
-                names = {action.dest for action in command._actions} & by_id
-                if operation in ProducedRefusals.ABSENT_ID:
-                    self.assertTrue(names, f"{operation} names no record by id")
-                else:
-                    self.assertFalse(
-                        names, f"{operation} takes {sorted(names)} and is filed as "
-                        f"naming no record by id")
 
 
 class ProducedRefusals(unittest.TestCase):
@@ -218,6 +199,50 @@ class ProducedRefusals(unittest.TestCase):
                     and entry["payload"].get("outcome") == "REFUSED"]
         finally:
             record.close()
+
+    #: Every BUILT operation filed as naming no record by id, with the arguments that
+    #: drive it. Held here rather than as a set of id-shaped flag names: such a set was
+    #: defeated by an operation whose id flag was not on it, so which side an operation
+    #: belongs on is decided by running it and reading what it answers.
+    NO_ID: dict[str, list[str]] = {
+        "discover-operations": ["operations", "--operator", BDO],
+        "grant": ["grant", "--operator", "reader", "--capability", "read:thread",
+                  "--scope", "t", "--granted-by", BDO],
+        "list-grants": ["grants", "--reader", BDO],
+        "list-publications": ["list-publications", "--operator", BDO],
+        "open-channel": ["open-channel", "--operator", BDO, "--name", "n",
+                         "--domain", "governance"],
+        "open-session": ["open-session", "--operator", BDO, "--actor-kind", "HUMAN",
+                         "--binding", "b"],
+        "session-context": ["session-context", "--reader", BDO],
+    }
+
+    def test_an_operation_filed_as_naming_no_record_cannot_answer_the_absent_fact(self):
+        """Driven, not declared: the other half of the partition, measured.
+
+        `NO_RECORD_BY_ID` is a claim about which operations cannot produce
+        `UNKNOWN_RECORD`. Reading it off a hand-kept set of id-shaped flag names left
+        this module green against an operation whose id flag was not on that set - an
+        independent observation demonstrated exactly that on 2026-08-26, and the next
+        three operations due to be built all take id flags outside it. So each one is
+        run, holding what it needs, and the answer it gives is what files it.
+        """
+        self.assertEqual(set(self.NO_ID), NO_RECORD_BY_ID,
+                         "every operation filed as naming no record must be driven")
+        record = RecordService(self.store / "journal")
+        console = ConsoleService(record, self.store, NODE)
+        for capability, scope in (("read:session", BDO), ("read:authority", NODE),
+                                  ("read:thread", NODE), ("open:channel", "governance"),
+                                  ("open:session", BDO)):
+            console.grant(BDO, capability, scope, granted_by=BDO)
+        record.close()
+        for operation, arguments in sorted(self.NO_ID.items()):
+            with self.subTest(operation=operation):
+                _, answer = self.run_cli(arguments)
+                self.assertNotEqual(
+                    answer.get("reason_code"), UnknownRecord.reason_code,
+                    f"{operation} answered the absent-record fact and is filed as "
+                    f"naming no record by id")
 
     def test_each_absent_record_refusal_is_written_down(self) -> None:
         """`append.py`: a refusal leaving no trace is not distinguishable from no attempt.

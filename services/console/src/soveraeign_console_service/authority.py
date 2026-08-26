@@ -257,6 +257,16 @@ def check(entries: list[dict[str, Any]], node_id: str, operator_id: str,
     operation committed before it; this is about the one operation that revokes and
     commits at once.
 
+    That second rule closes the case one writer can reach on its own, and no more.
+    Every console operation reads the journal, decides, and appends in three separate
+    `RecordService` transactions, so a *second* writer on the same store can append a
+    revocation of the admitting grant in between, and the receipt then lands after it.
+    Reproduced on 2026-08-26 with two ordinary processes against one `--root`. Nothing
+    in this service closes it: it needs a read-and-append the Record Service performs
+    under one transaction, or a compare-and-append against the head the check read, and
+    `RecordService.append` offers neither. Recorded in `services/console/KNOWN-GAPS.md`
+    rather than narrowed here, because a window made smaller reads as a window closed.
+
     The refusal names the capability and not the scope: a scope is an operator id, a
     channel or a thread, and telling a caller that holds nothing which one it just
     missed discloses who owns the record. It stays on the exception for a caller that

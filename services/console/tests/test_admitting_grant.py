@@ -20,6 +20,14 @@ operation, a grant the same operation had revoked. `RevokedGrantIsNeverCited`
 reads that straight out of the journal rather than out of one call's return
 value, so it catches the claim wherever it is made.
 
+What none of this establishes, said here because the case names could be read as
+saying it: the journal walk below drives one writer. A second process on the same
+store can append a revocation of the admitting grant between the check and the
+append, and the receipt then lands after it - reproduced on 2026-08-26 with two
+ordinary processes against one `--root`, and recorded in
+`services/console/KNOWN-GAPS.md`. Closing it needs a transactional read-and-append
+the Record Service does not offer, so it is not a case that could be added here.
+
 Passing establishes `BUILT`. It witnesses nothing.
 """
 
@@ -180,7 +188,7 @@ class RevokedGrantIsNeverCited(ConsoleCase):
             self.console.revoke(own, revoked_by=FOUNDER)
         self.assertEqual(refused.exception.reason_code, "MISSING_PRECONDITION")
 
-    def test_no_committed_receipt_cites_a_grant_the_journal_had_revoked(self) -> None:
+    def test_one_writer_never_commits_a_receipt_citing_a_grant_it_had_revoked(self):
         """The property, read out of the journal rather than out of one return value.
 
         Every `COMMITTED` receipt names the grants that admitted it. At the position
@@ -188,6 +196,9 @@ class RevokedGrantIsNeverCited(ConsoleCase):
         `authority.live_grants` decides, replayed over exactly the entries that precede
         it. The self-withdrawal above is attempted here so the walk has the record it
         was written to catch.
+
+        One writer. A concurrent second writer on the same store defeats this and the
+        console cannot stop it; the module docstring says where that is recorded.
         """
         self.console.grant("deputy", authority.REVOKE_CAPABILITY, NODE,
                            granted_by=FOUNDER)

@@ -181,6 +181,12 @@ evidenced result, never permission to begin
   reads the checked-in projection; Workflow `sov-epic` walks it.
 - Ad hoc: Agent `sov-orchestrator` to plan, `sov-worker` to build one
   operation, then `sov-witness` to verify. Name the domain in the prompt.
+- Several sessions at once: `python scripts/sov_hypervisor.py plan <plan.json>`
+  grades every lane against the worktree and ref it declares; `launch` starts
+  the ready ones with their orders as the opening prompt, and reports `READY`
+  only once each has registered itself. Nobody opens a terminal and nobody
+  pastes a bootstrap line. `status` joins the plan against the live registry.
+  The skill is `sov-hypervisor`.
 - Unattended: `python scripts/sov_schedule.py validate | due | run <name>
   --dry-run | ledger`.
 

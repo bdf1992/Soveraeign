@@ -29,6 +29,31 @@ class ToolingPartition(unittest.TestCase):
         docs_bucket = next(bucket for bucket in buckets if Path("test_sov_docs.py") in bucket)
         self.assertLess(len(docs_bucket), max(len(bucket) for bucket in buckets))
 
+    def test_the_two_slow_readers_never_share_one_shard(self):
+        """The whole point of the weights: the heavy modules are pulled apart."""
+        modules = tuple(Path(name) for name in sorted(
+            ["test_sov_docs.py", "test_sov_branch.py"]
+            + [f"test_{letter}.py" for letter in "abcdefghijklmnopqrstuvwx"]
+        ))
+        buckets = run_tooling_tests.partition(modules, 4)
+        docs = next(bucket for bucket in buckets if Path("test_sov_docs.py") in bucket)
+        self.assertNotIn(Path("test_sov_branch.py"), docs)
+
+    def test_a_module_with_no_declared_weight_counts_as_one(self):
+        self.assertEqual(run_tooling_tests.module_weight(Path("test_a.py")), 1)
+        self.assertGreater(run_tooling_tests.module_weight(Path("test_sov_branch.py")), 1)
+
+    def test_weighting_never_drops_or_duplicates_a_weighted_module(self):
+        """A weight changes placement only; it may never change the population."""
+        modules = run_tooling_tests.test_modules()
+        buckets = run_tooling_tests.partition(modules, 4)
+        assigned = [module for bucket in buckets for module in bucket]
+        for name in run_tooling_tests.MODULE_WEIGHTS:
+            self.assertEqual(
+                sum(1 for module in assigned if module.name == name),
+                sum(1 for module in modules if module.name == name),
+            )
+
     def test_invalid_worker_count_refuses(self):
         with self.assertRaises(ValueError):
             run_tooling_tests.partition((Path("test_a.py"),), 0)

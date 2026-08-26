@@ -28,7 +28,14 @@ DEFAULT_WORKERS = 4
 # its shard on the critical path even after pre-descent pruning. Weight it as roughly
 # ten bounded modules so the existing four-worker pool nearly isolates that corpus
 # reader without adding a process or dropping evidence.
-MODULE_WEIGHTS = {"test_sov_docs.py": 10}
+# test_sov_branch is the same shape of exception for a different reason: every case
+# builds a throwaway git repository and drives real git subprocesses, so it measured
+# 4.1s against roughly 0.08s for a bounded module. Left at ordinary weight it packs
+# beside the other slow readers whenever the module population changes, and the shard
+# it lands in becomes the whole suite's critical path. Weighted here it stays with one
+# peer instead of four. The weight is a scheduling hint; it changes no check and no
+# budget, which decisions/0050 owns.
+MODULE_WEIGHTS = {"test_sov_docs.py": 10, "test_sov_branch.py": 4}
 
 
 def test_modules() -> tuple[Path, ...]:

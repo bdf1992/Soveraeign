@@ -38,12 +38,12 @@ fetched back.
 | `fix/console-grant-attribution` | `ABSORB` into PR #118 | Main's `services/console/.../core.py` still defaults `granted_by: str = "Bdo"` and main's `authority.py` never mentions an issuer. PR #118's branch removes the default but has no empty-issuer check — `git grep "empty issuer"` on it returns nothing. The `_issuer()` guard that refuses `--granted-by ""` exists only here, and all four of its conflicts are with the #118 surface. Rebase the guard onto #118 rather than landing the branch beside it. |
 | `wt/pr43` | `SUPERSEDED` | PR #43 merged at `5e35c62`. Main's `charting/derive.py` is the later version: it scopes the skill walk to `sdlc-*` and carries the `SkillBindingScope` class with its defeating case, both of which this branch lacks. Its `scripts/verify.py` is 180 lines behind. |
 | `wt/principal-identity` | `SUPERSEDED` | PR #71 merged at `464072d`. All 22 of its distinctive paths exist on main; the only two whose bytes differ, `services/identity/contracts/service.json` and `services/record/.../custody.py`, are larger on main. |
-| `feat/6-shared-kernel-transitions` | `SUPERSEDED` | PR #61 closed. The legality half landed as `contracts/kernel-transitions.json` and `scripts/sovkernel/transitions.py` (PR #62) plus `contracts/kernel-parity.json` (PR #63). The journal half landed as the Record Service (PR #66): `services/record/.../core.py` already has `append`, `receipt`, `counter`, `reconstruct` and `rebuild_projections`, with `digest.py` and `tests/test_journal.py`. Adding a second journal under `kernel/` would deepen PROD-I-8, which asks for one journal, not three. |
+| `feat/6-shared-kernel-transitions` | `SUPERSEDED` | The weakest call here; see the red section below. PR #61 was closed, which is a decision and not drift, and the replacement landed in three parts: the legality half as `contracts/kernel-transitions.json` and `scripts/sovkernel/transitions.py` (PR #62) plus `contracts/kernel-parity.json` (PR #63), and the journal half as the Record Service (PR #66), whose `core.py` already has `append`, `receipt`, `counter`, `reconstruct` and `rebuild_projections` beside `digest.py` and `tests/test_journal.py`. A second journal under `kernel/` would deepen PROD-I-8, which asks for one journal and not three. Absorb `reports/2026-08-23-kernel-witness.md` before the branch is dropped: it is an independent observation held nowhere else. |
 | `feat/verification-channels` | `SUPERSEDED` | PR #64 closed. All eleven of its files are on main, including `scripts/sovmutate/`, `.claude/workflows/sov-review.js` and both schedules. Its `decisions/0020-verification-channels-and-merge-authority.md` landed renumbered as `decisions/0025-verification-channels-and-merge-authority.md`; the branch's copies still cite the three-second budget and decision `0019`. |
 | `docs/verification-budget` | `SUPERSEDED` | `decisions/0050-verification-budget-graded.md` is on main and `scripts/verify.py` carries `BUDGET_GRADES = (("PLATINUM", 3.0), ("GOLD", 6.0), ("SILVER", 15.0))`. 0050 names this branch's draft in its own numbering note. Landing it would replace a graded budget with a flat one. |
 | `feat/record-witness-surface` | `SUPERSEDED` | PR #99 closed. Every file it adds is on main, and main is a strict superset: the branch's digest computation is exactly main's `LEGACY_DIGEST_PROFILE` branch, beside which main added `soveraeign-record-chain/v2`. |
 | `fix/custody-tests-declare-posix` | `SUPERSEDED` | PR #80 closed, PR #84 merged. Main's `scripts/infrastructure.py` already judges custody paths with `PurePosixPath`, and `scripts/custody_posix.py` gives the POSIX skip an honest receipt instead of an inline `skipUnless`. The branch also deletes `test_apply_is_idempotent_and_verifiable`, which main keeps. |
-| `wt/pr59-merge-main` | `SUPERSEDED` | A WIP savepoint from 2026-08-24 whose own message says it left one conflict unresolved. The reconciliation it was a savepoint for landed twice since: PR #107 at `8d0ba04` and PR #113 at `4b96ba1`. The ruling it deferred is settled — main now carries `scripts/sov_board.py` and `adapters/github/catalogue.py` and `adapters/github/plan.py`. |
+| `wt/pr59-merge-main` | `SUPERSEDED` | A WIP savepoint from 2026-08-24 whose own message says it left one conflict unresolved. The reconciliation it was a savepoint for landed twice since: PR #107 at `8d0ba04` and PR #113 at `4b96ba1`. The ruling it deferred is settled — main now carries `scripts/sov_board.py` and `adapters/github/catalogue.py` and `adapters/github/plan.py` — and its `decisions/0027-board-management-role.md` is on main renumbered as `decisions/0057-board-management-role.md`. |
 | `feat/console-authority-enforced` | `RETIRE` | PR #115 closed. Both of its axes are held elsewhere in larger form. Console: PR #118's branch has `services/console/tests/fixtures.py`, `conformance/fixtures/authority/grant-cases.json` and a `permits.py` with node-root issuer logic this branch lacks. Landing gate: `fix/landing-gate-host-independence` carries the identical `sovland`/`scope.py`/`witness_stages.py` stack plus 59 lines this branch does not have. |
 | `feat/f2-control-loop` | `RETIRE` | Content subset of `feat/gate-loop-pattern`, which deletes none of its files. The single file where the two differ, `.claude/workflows/sov-f2-control.js`, is byte-identical between this branch and `origin/main`, so nothing is lost by keeping the superset instead. |
 | `feat/f2-integration` | `RETIRE` | `git diff --name-status feat/f2-control-loop feat/f2-integration` is empty: the two trees are identical. Its tip is a merge commit whose second parent is already on main. It adds no content to any branch. |
@@ -64,6 +64,43 @@ surface first, so each landing does not manufacture the next conflict:
    `feat/work-coordination-kernel-participant` and `fix/console-grant-attribution`.
 5. `feat/gate-loop-pattern` — 36 files and the widest contested surface, so it
    pays the conflicts rather than creating them.
+
+## The attack on the disposable calls
+
+Eleven branches are judged here as carrying nothing worth keeping. Each was then
+attacked directly: for every path the branch changes, does `origin/main` hold it,
+or does any branch named as carrying its work hold it? A path held by none of
+them defeats the disposition.
+
+Seven survived with no orphan at all, including all three `RETIRE` calls.
+`feat/console-authority-enforced` is the one worth stating explicitly: all 72 of
+its paths are held by `feat/console-authority-enforced-only` or by
+`fix/landing-gate-host-independence`, so retiring it is not a judgement about its
+quality but an observation that two other branches already carry every byte.
+
+Four were flagged, and three of those are the probe being wrong rather than the
+disposition:
+
+- `feat/verification-channels` · `decisions/0020-verification-channels-and-merge-authority.md`
+  is on main as `decisions/0025-`, same title, later status.
+- `docs/verification-budget` · `decisions/0043-the-verification-budget-measures-the-wrong-thing.md`
+  is answered by `decisions/0050-verification-budget-graded.md`, which names it.
+- `wt/pr59-merge-main` · `decisions/0027-board-management-role.md` is on main as
+  `decisions/0057-`, same title and same status.
+
+A path-presence probe cannot see a renumbered decision record. That is a real
+limitation of the method used throughout this report, and it cuts the other way
+too: a row above could be wrong because a file landed under a name this survey
+did not think to check.
+
+The fourth flag is not a false positive. `feat/6-shared-kernel-transitions` holds
+22 paths nothing else holds — the whole `kernel/` package, `kernel/tests/`,
+`reports/2026-08-23-kernel-witness.md`, and two records whose numbers collide with
+main. The `SUPERSEDED` call above is a claim about capability, not about bytes,
+and it rests on PR #61 having been closed while PR #62, #63 and #66 landed the
+alternative. Anyone who thinks a stateful kernel reference is still wanted should
+reverse this row; it is the one call in the table that a reasonable reader could
+settle the other way.
 
 ## What this report could not establish
 

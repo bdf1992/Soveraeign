@@ -130,6 +130,15 @@ AGENT_FILES = {"sov.md", "sov-controller.md", "sov-orchestrator.md",
 # (a permissions block above all) changes what the host will do.
 SETTINGS_KEYS = {"env", "hooks"}
 
+# Closing only the top-level keys left `env` open, so a single added
+# `ANTHROPIC_MODEL` silently overrode all four `model:` pins and the routing
+# table. The declared environment is a closed set for the same reason.
+SETTINGS_ENV_KEYS = {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS",
+    "CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH",
+    "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS",
+}
+
 # Frontmatter is a closed key set per file; an added key reaches host behavior
 # the suite never reads.
 FRONTMATTER_KEYS = {
@@ -142,5 +151,33 @@ FRONTMATTER_KEYS = {
 
 # Every hook runs the same inline bootstrap; pinning its digest means a hook
 # cannot be made a no-op while interpreter, matcher, and timeout all look intact.
+# A deny-list of guard sentences cannot see a DELETION, and it cannot see an
+# inversion phrased without a modal and an authority verb. An independent witness
+# mutated these six documents 51 ways and 49 survived with the whole gate green:
+# the witness's "never treat a green build as authority" paragraph could be cut,
+# "you never edit files" could be flipped, and nothing failed. Enumerating more
+# sentences chases that forever. Pinning the bytes inverts it: every edit to a
+# governed document fails until its digest is updated in the same commit, which
+# puts the change in front of a reader instead of past one.
+DOCUMENT_DIGESTS = {
+    ".claude/agents/sov.md":
+        "11d587986909e8e6a2e8c5f2fd59ee22bea7f6632876cdf3f22bc55bdedc0589",
+    ".claude/agents/sov-controller.md":
+        "9543e27e5152f6420c8b0dd09cbab215483dcb6467d01ff273a7e3d44322b47a",
+    ".claude/agents/sov-orchestrator.md":
+        "09fce09f4e0a30ce6a6fbf5f5251af57041a533c7917277c59cfcf45a5725e60",
+    ".claude/agents/sov-worker.md":
+        "6167da1b915f854330b3cb06b956445359bdb9afd152f01ce6b197f0ca795d52",
+    ".claude/agents/sov-witness.md":
+        "500cef0af761f52de885db0f7983b2f442a658db4b3d27ad3382479d6cf6bc54",
+    ".claude/CONTROL-MESH.md":
+        "d99a878b1b0e4eeb11c07964fb47dc4fac09a2c3194ae623393454483a017ed2",
+}
+
+# `settings.json` DECLARES these hooks; declaring one is not having one. Deleting
+# the script from disk left the declaration intact, the inline bootstrap's `if p:`
+# silently no-opped, and the suite passed. Measure the artifact, not its mention.
+HOOK_SCRIPT_FLOOR = 1000
+
 HOOK_BOOTSTRAP_SHA256 = "f153a98b9262689bfa0615fe009a99bf3c74524e12e1e8a99fd8caf5293535a6"
 HOOK_SCRIPTS = {"console_session.py", "session_registry.py"}

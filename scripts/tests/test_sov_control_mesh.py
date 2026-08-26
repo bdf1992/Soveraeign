@@ -20,6 +20,7 @@ are outside this suite's subject.
 from __future__ import annotations
 
 from pathlib import Path
+import hashlib
 import json
 import re
 import unittest
@@ -77,6 +78,64 @@ def mesh_section(title: str) -> str:
     return match.group(1)
 
 
+class GovernedDocumentBytes(unittest.TestCase):
+    """Every byte of the six governed documents is pinned.
+
+    The guard-sentence list is a deny-list: it catches an inversion it happens to
+    enumerate and is blind to a deletion or to a rephrasing that carries no modal.
+    An independent witness ran 51 mutations against this binding and 49 survived
+    with the whole gate green, including cutting the Witness's "never treat a green
+    build as authority" paragraph and flipping "You never edit files."
+
+    A digest cannot be talked around. Editing any of these six files fails here
+    until the digest is updated in the same commit, which is the review surface
+    working as intended rather than a scanner guessing at meaning.
+    """
+
+    def test_every_governed_document_matches_its_pinned_digest(self) -> None:
+        for relative, expected in pins.DOCUMENT_DIGESTS.items():
+            with self.subTest(document=relative):
+                path = ROOT / relative
+                self.assertTrue(path.is_file(), f"{relative} is gone")
+                digest = hashlib.sha256(path.read_bytes()).hexdigest()
+                self.assertEqual(
+                    digest, expected,
+                    f"{relative} changed; update its digest in sov_mesh_pins.py "
+                    "in the same commit as the edit")
+
+    def test_the_pin_table_covers_every_governed_document(self) -> None:
+        """A seventh document must be pinned too, not merely added."""
+        on_disk = {f".claude/agents/{p.name}" for p in (ROOT / ".claude" / "agents").glob("*.md")}
+        on_disk.add(".claude/CONTROL-MESH.md")
+        self.assertEqual(on_disk, set(pins.DOCUMENT_DIGESTS))
+
+
+class HookScriptsExist(unittest.TestCase):
+    """`settings.json` declares the hooks; declaring one is not having one.
+
+    Deleting `session_registry.py` from disk left the declaration intact and the
+    inline bootstrap's `if p:` silently no-opped, so the only mechanical restraint
+    in this binding could be removed with the suite still green. Measure the
+    artifact rather than reading its mention.
+    """
+
+    def test_every_declared_hook_script_is_on_disk_and_not_a_stub(self) -> None:
+        for name in pins.HOOK_SCRIPTS:
+            with self.subTest(hook=name):
+                path = ROOT / ".claude" / "hooks" / name
+                self.assertTrue(path.is_file(), f"{name} is declared and absent")
+                self.assertGreater(
+                    path.stat().st_size, pins.HOOK_SCRIPT_FLOOR,
+                    f"{name} is present but too small to be doing its job")
+
+    def test_every_declared_hook_script_compiles(self) -> None:
+        """A hook that cannot parse is a hook that does not run."""
+        for name in pins.HOOK_SCRIPTS:
+            with self.subTest(hook=name):
+                path = ROOT / ".claude" / "hooks" / name
+                compile(path.read_text(encoding="utf-8"), str(path), "exec")
+
+
 class HostBounds(unittest.TestCase):
     def test_agent_teams_and_subagents_are_bounded(self) -> None:
         env = json.loads(text(".claude/settings.json"))["env"]
@@ -87,6 +146,12 @@ class HostBounds(unittest.TestCase):
     def test_settings_declare_only_env_and_hooks(self) -> None:
         """An added block (permissions above all) changes host behavior unseen."""
         self.assertEqual(set(json.loads(text(".claude/settings.json"))), pins.SETTINGS_KEYS)
+
+    def test_the_declared_environment_is_a_closed_set(self) -> None:
+        """Closing only the top-level keys left `env` open, and one added
+        `ANTHROPIC_MODEL` overrides all four `model:` pins and the routing table."""
+        env = json.loads(text(".claude/settings.json"))["env"]
+        self.assertEqual(set(env), pins.SETTINGS_ENV_KEYS)
 
     def test_every_hook_can_actually_execute(self) -> None:
         """The hooks are the only mechanical restraint; a renamed interpreter, a

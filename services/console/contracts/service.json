@@ -52,7 +52,8 @@
       "refusals": [
         "NO_LIVE_GRANT",
         "SESSION_NOT_LIVE",
-        "STALE_STATE"
+        "STALE_STATE",
+        "UNKNOWN_RECORD"
       ]
     },
     {
@@ -72,7 +73,8 @@
       "refusals": [
         "NO_LIVE_GRANT",
         "SESSION_NOT_LIVE",
-        "STALE_STATE"
+        "STALE_STATE",
+        "UNKNOWN_RECORD"
       ]
     },
     {
@@ -268,7 +270,8 @@
         "INCOMPLETE_PROPOSAL",
         "NO_LIVE_GRANT",
         "PIN_INCOMPLETE",
-        "SESSION_NOT_LIVE"
+        "SESSION_NOT_LIVE",
+        "UNKNOWN_RECORD"
       ]
     },
     {
@@ -294,7 +297,8 @@
         "NO_LIVE_GRANT",
         "SESSION_CLOSED",
         "SESSION_NOT_LIVE",
-        "THREAD_ARCHIVED"
+        "THREAD_ARCHIVED",
+        "UNKNOWN_RECORD"
       ]
     },
     {
@@ -312,7 +316,8 @@
       "commit": "COMMITTED",
       "refusals": [
         "FOREIGN_NODE_RECORD",
-        "NO_LIVE_GRANT"
+        "NO_LIVE_GRANT",
+        "UNKNOWN_RECORD"
       ]
     },
     {
@@ -340,7 +345,7 @@
         "MALFORMED_IDENTITY",
         "NO_LIVE_GRANT",
         "SESSION_NOT_LIVE",
-        "THREAD_UNKNOWN"
+        "UNKNOWN_RECORD"
       ]
     },
     {
@@ -415,7 +420,8 @@
         "MISSING_PRECONDITION",
         "NO_LIVE_GRANT",
         "SESSION_NOT_LIVE",
-        "STALE_STATE"
+        "STALE_STATE",
+        "UNKNOWN_RECORD"
       ]
     },
     {
@@ -452,8 +458,8 @@
       ],
       "commit": "COMMITTED",
       "refusals": [
-        "SESSION_NOT_LIVE",
-        "INCOMPLETE_PROPOSAL"
+        "INCOMPLETE_PROPOSAL",
+        "SESSION_NOT_LIVE"
       ]
     },
     {
@@ -506,7 +512,8 @@
       "commit": "COMMITTED",
       "refusals": [
         "NO_LIVE_GRANT",
-        "STALE_STATE"
+        "STALE_STATE",
+        "UNKNOWN_RECORD"
       ]
     }
   ],
@@ -520,7 +527,7 @@
     "SESSION_CLOSED": "AUTHORITY_REFUSED",
     "SESSION_NOT_LIVE": "AUTHORITY_REFUSED",
     "THREAD_ARCHIVED": "STALE_STATE",
-    "THREAD_UNKNOWN": "MISSING_PRECONDITION"
+    "UNKNOWN_RECORD": "MISSING_PRECONDITION"
   },
   "uses_kernel_contracts": [
     "standing",
@@ -547,5 +554,5 @@
     "silent-notification-drop",
     "history-erasure"
   ],
-  "note": "Twelve operations are BUILT; the continuity path remainder stays PROPOSED. Per-operation standing replaces the former built_operations list. Every BUILT operation checks the authority contracts/capability-offices.json declares for it: the nine that declared one and checked none were guarded on Bdo's ruling of 2026-08-25, so live_matching_grant and NO_LIVE_GRANT are declared on each. Every operation that names a record also checks the record belongs to this node - a grant bound to its minting node stops a permit crossing, not a node reading another node's records under a permit of its own - so local_node_record is declared wherever a record is named by id. FOREIGN_NODE_RECORD is declared only on the three that check the node after the caller has shown a grant; the rest read the record to find their grant's scope, so they answer a foreign record exactly as they answer a missing one and return UNKNOWN_RECORD, which is not a console refusal code but the absent-record error every by-id read raises. Four operations that have enforced authority since before 2026-08-25 never declared NO_LIVE_GRANT, and PIN_INCOMPLETE, SESSION_CLOSED, THREAD_ARCHIVED and CLAIM_WITHOUT_PROPOSAL were raised without appearing in local_refusals at all, so a caller matching on reason_code had no declared name for refusals it could receive. Declared 2026-08-25. scripts/sovkernel/manifests.py checks that a declared refusal is known and never that a produced one is declared, so nothing catches this class; that gap is reported, not closed here."
+  "note": "Twelve operations are BUILT; the continuity path remainder stays PROPOSED. Per-operation standing replaces the former built_operations list. Every BUILT operation checks the authority contracts/capability-offices.json declares for it: the nine that declared one and checked none were guarded on Bdo's ruling of 2026-08-25, so live_matching_grant and NO_LIVE_GRANT are declared on each. Every operation that names a record also checks the record belongs to this node - a grant bound to its minting node stops a permit crossing, not a node reading another node's records under a permit of its own - so local_node_record is declared wherever a record is named by id. FOREIGN_NODE_RECORD is declared only on the three that check the node after the caller has shown a grant; the rest read the record to find their grant's scope, so they answer a foreign record exactly as they answer a missing one. That answer is UNKNOWN_RECORD, which the service produced from eight operations and declared nowhere until 2026-08-26, while the routed read in bindings/mcp answered the same fact about the same thread with THREAD_UNKNOWN. One fact carries one code: THREAD_UNKNOWN is retired, UNKNOWN_RECORD is declared on the eight operations that can return it, and it maps to the kernel's MISSING_PRECONDITION because the *_exists precondition each of them declares is what failed. services/console/tests/test_declared_refusals.py drives every one of those operations against an absent id and fails if a produced code is undeclared. Four operations that have enforced authority since before 2026-08-25 never declared NO_LIVE_GRANT, and PIN_INCOMPLETE, SESSION_CLOSED, THREAD_ARCHIVED and CLAIM_WITHOUT_PROPOSAL were raised without appearing in local_refusals at all. Declared 2026-08-25. scripts/sovkernel/manifests.py checks that a declared refusal is known and never that a produced one is declared, so nothing in the shared gate catches this class repository-wide; that gap belongs to the contracts domain and is reported, not closed here."
 }

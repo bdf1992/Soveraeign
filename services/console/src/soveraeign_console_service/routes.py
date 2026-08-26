@@ -16,6 +16,7 @@ from typing import Any
 from soveraeign_console_service import reads
 from soveraeign_console_service.continuity import Projection, read_thread
 from soveraeign_console_service.core import ConsoleService
+from soveraeign_console_service.refusals import UnknownRecord
 
 EFFECT_CLASS = "RECORD_LOCAL"
 EVENT = "console.read-thread"
@@ -81,7 +82,11 @@ class ConsoleRoutes:
         if session.get("operator_id") != actor:
             return self._refuse(actor, thread_id, "ACTOR_ATTRIBUTION_MISMATCH")
         if thread_id not in projection.thread:
-            return self._refuse(actor, thread_id, "THREAD_UNKNOWN")
+            # The same fact the CLI answers, under the same code. This path said
+            # `THREAD_UNKNOWN` and the CLI said `UNKNOWN_RECORD` about one thread in
+            # one journal, so a caller matching on `reason_code` had to know which
+            # surface it had come through to read the answer.
+            return self._refuse(actor, thread_id, UnknownRecord.reason_code)
 
         snapshot_digest = self.service.record.head()
         # The Gateway checked `read:thread` before this route was reached; the read

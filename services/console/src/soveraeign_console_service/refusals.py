@@ -90,7 +90,28 @@ class StandingClaim(ConsoleRefusal):
 
 
 class UnknownRecord(KeyError):
-    """The named console record is not in the journal."""
+    """The named console record is not one this node's journal carries.
+
+    One fact, one code. Every by-id read in this service answers the same way, and
+    `core.held_record` deliberately gives a record belonging to another node the same
+    answer a missing one gets, so a caller holding nothing cannot sweep ids and learn
+    which existed and whose they were.
+
+    `UNKNOWN_RECORD` was the one code the service produced and never declared. Eight
+    operations returned it over the CLI while `services/console/contracts/service.json`
+    named it nowhere, so a caller matching on `reason_code` had no declared name for
+    a refusal it could receive; `routes.py` answered the same fact about the same
+    thread with `THREAD_UNKNOWN`, so the two paths disagreed. Both are now this code,
+    declared per operation and mapped to the kernel's `MISSING_PRECONDITION` - the
+    `*_exists` precondition each of those operations declares is what failed.
+
+    A `KeyError` rather than a `ConsoleRefusal` because it is raised by the read
+    helpers before any transition has been chosen, and because callers already catch
+    it as one. The code lives here so `cli.py` and `routes.py` name the same constant
+    instead of spelling the string twice.
+    """
+
+    reason_code = "UNKNOWN_RECORD"
 
 
 class ActorAttributionMismatch(ConsoleRefusal):

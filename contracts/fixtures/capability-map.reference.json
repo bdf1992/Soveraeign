@@ -15,7 +15,7 @@
     "services/registry/contracts/service.json",
     "contracts/capability-offices.json"
   ],
-  "input_state_digest": "563313ffdc7da9c0949c02c6c90fdc3420958be0960b2982cb7c21330a8f148c",
+  "input_state_digest": "5b1bc3ec6136376026bd0778973a1893ed24ae1fad453dca7a64146fc1c81362",
   "capabilities": [
     {
       "capability_id": "asset.add-member",
@@ -965,7 +965,8 @@
         "refusals": [
           "NO_LIVE_GRANT",
           "SESSION_NOT_LIVE",
-          "STALE_STATE"
+          "STALE_STATE",
+          "UNKNOWN_RECORD"
         ]
       }
     },
@@ -1017,7 +1018,8 @@
         "refusals": [
           "NO_LIVE_GRANT",
           "SESSION_NOT_LIVE",
-          "STALE_STATE"
+          "STALE_STATE",
+          "UNKNOWN_RECORD"
         ]
       }
     },
@@ -1559,7 +1561,8 @@
           "INCOMPLETE_PROPOSAL",
           "NO_LIVE_GRANT",
           "PIN_INCOMPLETE",
-          "SESSION_NOT_LIVE"
+          "SESSION_NOT_LIVE",
+          "UNKNOWN_RECORD"
         ]
       }
     },
@@ -1617,7 +1620,8 @@
           "NO_LIVE_GRANT",
           "SESSION_CLOSED",
           "SESSION_NOT_LIVE",
-          "THREAD_ARCHIVED"
+          "THREAD_ARCHIVED",
+          "UNKNOWN_RECORD"
         ]
       }
     },
@@ -1668,7 +1672,8 @@
         "commit": "COMMITTED",
         "refusals": [
           "FOREIGN_NODE_RECORD",
-          "NO_LIVE_GRANT"
+          "NO_LIVE_GRANT",
+          "UNKNOWN_RECORD"
         ]
       }
     },
@@ -1725,7 +1730,7 @@
           "MALFORMED_IDENTITY",
           "NO_LIVE_GRANT",
           "SESSION_NOT_LIVE",
-          "THREAD_UNKNOWN"
+          "UNKNOWN_RECORD"
         ]
       }
     },
@@ -1922,7 +1927,8 @@
           "MISSING_PRECONDITION",
           "NO_LIVE_GRANT",
           "SESSION_NOT_LIVE",
-          "STALE_STATE"
+          "STALE_STATE",
+          "UNKNOWN_RECORD"
         ]
       }
     },
@@ -2019,8 +2025,8 @@
         ],
         "commit": "COMMITTED",
         "refusals": [
-          "SESSION_NOT_LIVE",
-          "INCOMPLETE_PROPOSAL"
+          "INCOMPLETE_PROPOSAL",
+          "SESSION_NOT_LIVE"
         ]
       }
     },
@@ -2165,7 +2171,8 @@
         "commit": "COMMITTED",
         "refusals": [
           "NO_LIVE_GRANT",
-          "STALE_STATE"
+          "STALE_STATE",
+          "UNKNOWN_RECORD"
         ]
       }
     },

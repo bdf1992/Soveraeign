@@ -91,7 +91,9 @@ class ConsoleReadRoute(unittest.TestCase):
         malformed = self.routes.call(
             "read-thread", self.arguments(thread_id="not-a-thread"), "reader")
         self.assertEqual(unknown["payload"]["outcome"], "REFUSED")
-        self.assertEqual(self.reason(unknown), "THREAD_UNKNOWN")
+        # The same code the CLI returns for the same fact; `test_declared_refusals.py`
+        # drives both paths against one journal and holds them to it.
+        self.assertEqual(self.reason(unknown), "UNKNOWN_RECORD")
         self.assertEqual(malformed["payload"]["outcome"], "REFUSED")
         self.assertEqual(self.reason(malformed), "MALFORMED_IDENTITY")
 

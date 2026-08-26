@@ -211,7 +211,7 @@ def root_issuer(entries: list[dict[str, Any]], node_id: str) -> str | None:
 
 def require(record: RecordService, entries: list[dict[str, Any]], node_id: str,
             operator_id: str, capability: str, scope: str, event: str,
-            subject: str) -> str:
+            subject: str, excluding: str = "") -> str:
     """The live grant admitting this transition, or a refusal that is written down.
 
     `check` reads and cannot append, so the refusal it raises used to leave no trace -
@@ -223,19 +223,39 @@ def require(record: RecordService, entries: list[dict[str, Any]], node_id: str,
     a participant whose authority check refused silently would diverge from it.
     """
     try:
-        return check(entries, node_id, operator_id, capability, scope)
+        return check(entries, node_id, operator_id, capability, scope, excluding)
     except AuthorityRefused as refused:
         raise append.refuse(record, refused, event, subject, operator_id) from None
 
 
 def check(entries: list[dict[str, Any]], node_id: str, operator_id: str,
-          capability: str, scope: str) -> str:
+          capability: str, scope: str, excluding: str = "") -> str:
     """Return the id of a live grant admitting this operation on this node, or refuse.
 
-    The newest matching grant wins, so re-granting after a revocation restores the
-    capability without rewriting the revocation that came before it. Newest means
-    latest in the journal, not latest timestamp: two grants recorded in the same
-    second are still ordered by the record that carries them.
+    Which of several live matches is returned is a decision, not an accident of how
+    the fold happens to be ordered: the id goes on the receipt as the authority a
+    committed operation was admitted under, so it is a record-integrity claim. Two
+    rules settle it, and `services/console/tests/test_enforced_authority.py` fails if
+    either is dropped.
+
+    *The newest live match admits.* `live_grants` folds the journal in append order,
+    so the last match is the most recently issued grant still standing. Newest rather
+    than oldest because an issuer's latest decision about a capability is the one that
+    describes the node now; citing the earliest would attribute a commit to a decision
+    a later issuance has already spoken over. Newest means latest in the journal, not
+    latest timestamp: two grants recorded in the same second are still ordered by the
+    record that carries them. Reversing this rule to `matches[0]` used to pass every
+    check in the repository.
+
+    *A grant cannot admit the record that withdraws it.* `excluding` names a grant
+    that may not admit this operation, and `console.revoke` passes its target. Without
+    it a revoker whose only live `revoke:authority` was the grant being withdrawn
+    spent that grant on its own withdrawal, and the terminal `COMMITTED` receipt then
+    cited, as the authority admitting the operation, a grant the same operation had
+    just revoked - readable straight out of the journal, and false about the state at
+    the position the receipt lands. Revocation still never reaches back and unmakes an
+    operation committed before it; this is about the one operation that revokes and
+    commits at once.
 
     The refusal names the capability and not the scope: a scope is an operator id, a
     channel or a thread, and telling a caller that holds nothing which one it just
@@ -254,9 +274,11 @@ def check(entries: list[dict[str, Any]], node_id: str, operator_id: str,
                if record.get("node_id") == node_id
                and record["operator_id"] == operator_id
                and record["capability"] == capability
-               and record["scope"] == scope]
+               and record["scope"] == scope
+               and record["grant_id"] != excluding]
     if not matches:
+        withheld = (" other than the one being withdrawn" if excluding else "")
         raise AuthorityRefused(
-            f"{operator_id} holds no live {capability} grant for this operation",
+            f"{operator_id} holds no live {capability} grant{withheld} for this operation",
             capability=capability, scope=scope)
     return matches[-1]["grant_id"]

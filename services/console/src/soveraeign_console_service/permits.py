@@ -129,6 +129,14 @@ def withdraw(console: "ConsoleService", grant_id: str,
     next caller of any name would take it, which is exactly the once-ever rule that
     closed the minting bypass. Refusing only the *last* one keeps both - grant a
     successor, then withdraw the predecessor - and never leaves the office unowned.
+
+    The grant spent here is never the grant withdrawn here. It is checked twice on
+    purpose, over one replay: first that the revoker holds `revoke:authority` at all,
+    which is the authority question and has to precede every precondition so an
+    ungranted caller learns nothing about the office; then, after the last-issuer
+    rule has had its say, that some grant *other than the target* admits the
+    withdrawal. Only the second can cite, and a revoker spending the grant it is
+    withdrawing left a `COMMITTED` receipt naming a grant the same record revoked.
     """
     entries = console.record.reconstruct()
     target = grant_record(entries, grant_id)
@@ -141,8 +149,8 @@ def withdraw(console: "ConsoleService", grant_id: str,
         # check, so a caller holding nothing could otherwise sweep grant ids and learn
         # which existed and which office issued them.
         raise UnknownRecord(grant_id)
-    admitting = require(console.record, entries, console.node_id, revoked_by,
-                        REVOKE_CAPABILITY, console.node_id, "console.revoke", grant_id)
+    require(console.record, entries, console.node_id, revoked_by,
+            REVOKE_CAPABILITY, console.node_id, "console.revoke", grant_id)
     capability = target["capability"]
     if (capability in OFFICE_CAPABILITIES and target["scope"] == console.node_id
             and not _other_holders(entries, console.node_id, capability, grant_id)):
@@ -152,6 +160,9 @@ def withdraw(console: "ConsoleService", grant_id: str,
                 f"grant {grant_id} is this node's only live {capability} at node "
                 f"scope; record another before withdrawing it"),
             "console.revoke", grant_id, revoked_by)
+    admitting = require(console.record, entries, console.node_id, revoked_by,
+                        REVOKE_CAPABILITY, console.node_id, "console.revoke", grant_id,
+                        excluding=grant_id)
     payload = revocation_payload(grant_id, revoked_by, console.stamp(),
                                  console.node_id)
     return append.emit(console.record, REVOCATION_KIND, grant_id, revoked_by,

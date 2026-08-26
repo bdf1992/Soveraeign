@@ -96,7 +96,7 @@ class ConsoleHorizontal(unittest.TestCase):
         self.node.console.grant("reader", "read:thread", unknown, "Bdo")
         returned = self.node.dispatch(self.request(HUMAN, thread_id=unknown))
         self.assertEqual(returned["payload"]["outcome"], "REFUSED")
-        self.assertEqual(self.detail(returned)["reason_code"], "THREAD_UNKNOWN")
+        self.assertEqual(self.detail(returned)["reason_code"], "UNKNOWN_RECORD")
         self.assertEqual(returned, self.node.record.entry(returned["entry_id"]))
 
     def test_route_projection_drift_fails_before_console_execution(self) -> None:

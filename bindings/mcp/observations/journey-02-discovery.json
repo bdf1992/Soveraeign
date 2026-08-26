@@ -19,7 +19,7 @@
     "observe_verify",
     "record_entries"
   ],
-  "capability_revision": "563313ffdc7da9c0949c02c6c90fdc3420958be0960b2982cb7c21330a8f148c",
+  "capability_revision": "5b1bc3ec6136376026bd0778973a1893ed24ae1fad453dca7a64146fc1c81362",
   "counts": {
     "declared": 133,
     "reachable": 45,
@@ -47,7 +47,7 @@
       "kind": "EVENT",
       "subject": "discover-operations",
       "actor": "sov",
-      "entry_digest": "bd454ed9b923825526a6fb4de2be5000040ed7d67377d9b7ce993c5629140c4e",
+      "entry_digest": "6ad7b1fe7161156ba41213fe5c4a42a492c09fc9025d75dc5e236485ab9c5049",
       "payload": {
         "arguments": {
           "operator_id": "<str:3>"
@@ -63,13 +63,13 @@
       "kind": "RECEIPT",
       "subject": "discover-operations",
       "actor": "sov",
-      "entry_digest": "4e4934f5d797e25bb51897c72866660b242ae9051f20e054809066d61c9d5992",
+      "entry_digest": "72b02179688c996d17b0754a66d3fe96ca7b4d082c60363458df9072c4e8c521",
       "payload": {
         "detail": {
-          "entry_id": "entry_c54bf7b2b4844e1fa93652b27cea656f",
+          "entry_id": "entry_0133fa04453a4c07a936cdd3613c925d",
           "result": {
             "authoritative": false,
-            "capability_revision": "563313ffdc7da9c0949c02c6c90fdc3420958be0960b2982cb7c21330a8f148c",
+            "capability_revision": "5b1bc3ec6136376026bd0778973a1893ed24ae1fad453dca7a64146fc1c81362",
             "map_status": "PROPOSED",
             "operator_id": "sov"
           }

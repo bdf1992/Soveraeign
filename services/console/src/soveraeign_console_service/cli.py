@@ -209,7 +209,7 @@ def main(argv: list[str] | None = None) -> int:
         return _emit({"outcome": "REFUSED", "reason_code": refusal.reason_code,
                       "message": str(refusal)}, 2)
     except (UnknownRecord, KeyError) as missing:
-        return _emit({"outcome": "REFUSED", "reason_code": "UNKNOWN_RECORD",
+        return _emit({"outcome": "REFUSED", "reason_code": UnknownRecord.reason_code,
                       "message": str(missing)}, 3)
     finally:
         console.record.close()

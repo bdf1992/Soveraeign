@@ -24,6 +24,7 @@ from typing import Any
 from soveraeign_console_service import contract, reads
 from soveraeign_console_service.authority import ENFORCED_AUTHORITY
 from soveraeign_console_service.core import ConsoleService
+from soveraeign_console_service.refusals import UnknownRecord
 
 # Each console record folds under one identity key. A lifecycle entry updates the
 # record it names rather than replacing it, so `thread` and `thread-lifecycle`
@@ -116,7 +117,7 @@ def read_thread(console: ConsoleService, thread_id: str,
     if thread_id not in projection.thread:
         # Either no such thread, or one this node does not own: `Projection` folds
         # only this node's records, so a peer's thread is absent rather than hidden.
-        raise KeyError(thread_id)
+        raise UnknownRecord(thread_id)
     thread = projection.thread[thread_id]
     posts = [
         {"post_id": post["post_id"], "actor_id": post["actor_id"],

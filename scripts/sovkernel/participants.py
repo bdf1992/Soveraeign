@@ -89,15 +89,15 @@ def console(root: Path) -> dict[str, str]:
         record = RecordService(store / "journal")
         service = ConsoleService(record, store, "node:parity")
         try:
-            service.grant("Bdo", "open:channel", "governance")
+            service.grant("Bdo", "open:channel", "governance", "Bdo")
             channel = service.open_channel("Bdo", "governance", "governance")
-            service.grant("Bdo", "open:thread", channel["channel_id"])
+            service.grant("Bdo", "open:thread", channel["channel_id"], "Bdo")
             thread = service.open_thread("Bdo", channel["channel_id"], "parity")
-            service.grant("model/sov", "post:message", thread["thread_id"])
+            service.grant("model/sov", "post:message", thread["thread_id"], "Bdo")
             # Opening a session is guarded as of 2026-08-25. Both participants hold
             # it so that the refusal below is still the post's, not the session's.
             for operator in ("model/sov", "model/stranger"):
-                service.grant(operator, "open:session", operator)
+                service.grant(operator, "open:session", operator, "Bdo")
 
             model = service.open_session("model/sov", "MODEL", "model-binding")
             try:

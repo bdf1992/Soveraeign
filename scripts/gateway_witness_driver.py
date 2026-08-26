@@ -31,7 +31,7 @@ def drive(state: Path, actor: str, actor_kind: str) -> dict[str, object]:
     asset = AssetService(state / "asset")
     try:
         scope = f"asset:new:{actor}"
-        console.grant(actor, "ingest:asset", scope)
+        console.grant(actor, "ingest:asset", scope, "Bdo")
         capability_map, manifests, capability_table = load_surface(ROOT)
         gateway = Gateway(
             record,

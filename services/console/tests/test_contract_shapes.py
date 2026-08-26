@@ -63,28 +63,28 @@ class DeclaredRecordShapes(unittest.TestCase):
         root = Path(cls.tmp.name) / "console"
         cls.record = RecordService(root / "journal")
         console = ConsoleService(cls.record, root, NODE)
-        console.grant("Bdo", "open:channel", "governance")
+        console.grant("Bdo", "open:channel", "governance", "Bdo")
         channel = console.open_channel("Bdo", "governance", "governance")
-        console.grant("Bdo", "open:thread", channel["channel_id"])
+        console.grant("Bdo", "open:thread", channel["channel_id"], "Bdo")
         thread = console.open_thread("Bdo", channel["channel_id"], "F0 closure",
                                      pinned_address="asset/v1", pinned_digest="sha256:ab")
-        console.grant("Bdo", "post:message", thread["thread_id"])
-        console.grant("sov", "post:message", thread["thread_id"])
+        console.grant("Bdo", "post:message", thread["thread_id"], "Bdo")
+        console.grant("sov", "post:message", thread["thread_id"], "Bdo")
         for operator in ("Bdo", "sov"):
-            console.grant(operator, "open:session", operator)
-            console.grant(operator, "close:session", operator)
-        console.grant("Bdo", "read:thread", NODE)
+            console.grant(operator, "open:session", operator, "Bdo")
+            console.grant(operator, "close:session", operator, "Bdo")
+        console.grant("Bdo", "read:thread", NODE, "Bdo")
         human = console.open_session("Bdo", "HUMAN", "human-binding")
         model = console.open_session("sov", "MODEL", "model-binding")
         console.post("Bdo", human["session_id"], thread["thread_id"], b"a plain statement",
                      mentions=["sov"])
         console.post("sov", model["session_id"], thread["thread_id"], b"a claim",
                      claims=True, proposal_id="proposal_1")
-        console.grant("Bdo", "publish:thread", thread["thread_id"])
+        console.grant("Bdo", "publish:thread", thread["thread_id"], "Bdo")
         cls.published = console.publish_thread("Bdo", thread["thread_id"])
         second = console.open_thread("Bdo", channel["channel_id"], "withdrawn work",
                                      pinned_address="asset/v2", pinned_digest="sha256:cd")
-        console.grant("Bdo", "publish:thread", second["thread_id"])
+        console.grant("Bdo", "publish:thread", second["thread_id"], "Bdo")
         withdrawn = console.publish_thread("Bdo", second["thread_id"])
         console.withdraw_publication("Bdo", withdrawn["publication_id"])
         cls.withdrawn_id = withdrawn["publication_id"]
@@ -305,16 +305,16 @@ class NodeScopeRefusals(unittest.TestCase):
     def test_publishing_a_thread_from_another_node_is_refused(self):
         """Publishing a peer's thread would republish their record under this node's name."""
         console = ConsoleService(self.record, self.root, NODE)
-        console.grant("Bdo", "open:channel", "governance")
+        console.grant("Bdo", "open:channel", "governance", "Bdo")
         channel = console.open_channel("Bdo", "governance", "governance")
-        console.grant("Bdo", "open:thread", channel["channel_id"])
+        console.grant("Bdo", "open:thread", channel["channel_id"], "Bdo")
         thread = console.open_thread("Bdo", channel["channel_id"], "local work")
 
         # A peer node keeps its own permits office, so issuing there costs a
         # `grant:authority` scoped to that node and not to this one.
-        console.grant("Bdo", "grant:authority", "node:peer-one")
+        console.grant("Bdo", "grant:authority", "node:peer-one", "Bdo")
         peer = ConsoleService(self.record, self.root, "node:peer-one")
-        peer.grant("Bdo", "publish:thread", thread["thread_id"])
+        peer.grant("Bdo", "publish:thread", thread["thread_id"], "Bdo")
         with self.assertRaises(ForeignNodeRecord) as refused:
             peer.publish_thread("Bdo", thread["thread_id"])
         self.assertEqual(refused.exception.reason_code, "FOREIGN_NODE_RECORD")
@@ -322,9 +322,9 @@ class NodeScopeRefusals(unittest.TestCase):
     def test_publishing_without_a_grant_is_refused(self):
         """Publishing is an outward effect and takes its own capability, not open-thread's."""
         console = ConsoleService(self.record, self.root, NODE)
-        console.grant("Bdo", "open:channel", "governance")
+        console.grant("Bdo", "open:channel", "governance", "Bdo")
         channel = console.open_channel("Bdo", "governance", "governance")
-        console.grant("Bdo", "open:thread", channel["channel_id"])
+        console.grant("Bdo", "open:thread", channel["channel_id"], "Bdo")
         thread = console.open_thread("Bdo", channel["channel_id"], "unpublishable")
         with self.assertRaises(AuthorityRefused):
             console.publish_thread("Bdo", thread["thread_id"])
@@ -360,11 +360,11 @@ class NodeScopeRefusals(unittest.TestCase):
         `services/console/tests/test_enforced_authority.py`.
         """
         console = ConsoleService(self.record, self.root, NODE)
-        console.grant("Bdo", "open:channel", "governance")
+        console.grant("Bdo", "open:channel", "governance", "Bdo")
         channel = console.open_channel("Bdo", "governance", "governance")["channel_id"]
-        console.grant("Bdo", "open:thread", channel)
+        console.grant("Bdo", "open:thread", channel, "Bdo")
         thread = console.open_thread("Bdo", channel, "what a refusal leaves")["thread_id"]
-        console.grant("Ana", "open:session", "Ana")
+        console.grant("Ana", "open:session", "Ana", "Bdo")
         session = console.open_session("Ana", "HUMAN", "binding:test")["session_id"]
 
         attempts = {
@@ -408,9 +408,9 @@ class NodeScopeRefusals(unittest.TestCase):
         a caller holding nothing sweep ids for existence and ownership.
         """
         console = ConsoleService(self.record, self.root, NODE)
-        console.grant("Bdo", "open:channel", "governance")
+        console.grant("Bdo", "open:channel", "governance", "Bdo")
         channel = console.open_channel("Bdo", "governance", "governance")
-        console.grant("Bdo", "open:thread", channel["channel_id"])
+        console.grant("Bdo", "open:thread", channel["channel_id"], "Bdo")
         thread = console.open_thread("Bdo", channel["channel_id"], "F0 closure")
 
         peer = ConsoleService(self.record, self.root, "node:peer-one")

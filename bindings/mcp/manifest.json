@@ -20,11 +20,13 @@
       "arguments": {
         "model_identity": {
           "type": "string",
-          "required": true
+          "required": true,
+          "principal": false
         },
         "ttl_seconds": {
           "type": "number",
-          "required": false
+          "required": false,
+          "principal": false
         }
       },
       "authority": "bootstrap",
@@ -43,25 +45,32 @@
       "arguments": {
         "actor": {
           "type": "string",
-          "required": true
+          "required": true,
+          "principal": true
         },
         "capability": {
           "type": "string",
-          "required": true
+          "required": true,
+          "principal": false
         },
         "scope": {
           "type": "string",
-          "required": false
+          "required": false,
+          "principal": false
         },
         "ttl_seconds": {
           "type": "number",
-          "required": false
+          "required": false,
+          "principal": false
         }
       },
       "authority": "service-enforced",
       "realizes": null,
       "undeclared_because": "The asset service implements grants; no service manifest declares them as an operation.",
-      "caller_argument": "issuer"
+      "caller_argument": "issuer",
+      "subject_arguments": {
+        "actor": "The grantee, not the principal checked. The caller names who a grant is for; the issuer it is spent from is caller_argument and is supplied by the dispatcher. AssetService.Authority attenuates what an issuer may hand on, so naming a grantee widens nothing."
+      }
     },
     {
       "tool": "asset_ingest",
@@ -74,11 +83,13 @@
       "arguments": {
         "path": {
           "type": "string",
-          "required": true
+          "required": true,
+          "principal": false
         },
         "label": {
           "type": "string",
-          "required": true
+          "required": true,
+          "principal": false
         }
       },
       "authority": "gateway",
@@ -95,7 +106,8 @@
       "arguments": {
         "query": {
           "type": "string",
-          "required": true
+          "required": true,
+          "principal": false
         }
       },
       "realizes": null,
@@ -146,6 +158,7 @@
     "service-enforced": "The service owns the check. The gateway adds no second, stricter rule it has no bootstrap for.",
     "bootstrap": "Establishes the session the other endpoints require, so it cannot itself require one.",
     "node": "The gateway requires the caller to hold the capability the office table declares, checked against this node's authority store rather than the Asset Service's. Named by node_authority on the endpoint.",
-    "note_caller_argument": "caller_argument names the argument that carries the principal a service checks. The dispatcher supplies it from the authenticated caller and it is not a declared input, so a caller cannot name a different principal. Added 2026-08-25 after authority_grant was found taking its issuer from caller arguments."
+    "note_caller_argument": "caller_argument names the argument that carries the principal a service checks. The dispatcher supplies it from the authenticated caller and it is not a declared input, so a caller cannot name a different principal. Added 2026-08-25 after authority_grant was found taking its issuer from caller arguments.",
+    "note_subject_arguments": "subject_arguments names declared arguments that carry a principal the caller is naming rather than claiming to be, each with the reason it is not the caller. Every declared argument states principal true or false, and bindings/mcp/manifest_gate.audit_handlers refuses a manifest whose statement disagrees with the handler's own type annotation, or that omits either."
   }
 }

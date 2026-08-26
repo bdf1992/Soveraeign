@@ -54,21 +54,21 @@ class OperatorContinuity(unittest.TestCase):
         root = Path(cls._template.name) / "console"
         record = RecordService(root / "journal")
         console = ConsoleService(record, root, "node:test")
-        console.grant("Bdo", "open:channel", "governance")
+        console.grant("Bdo", "open:channel", "governance", "Bdo")
         channel = console.open_channel("Bdo", "governance", "governance")
-        console.grant("Bdo", "open:thread", channel["channel_id"])
+        console.grant("Bdo", "open:thread", channel["channel_id"], "Bdo")
         thread = console.open_thread("Bdo", channel["channel_id"], "F0 closure")
         cls.prepared_grants = {operator: console.grant(operator, "post:message",
-                                                       thread["thread_id"])["grant_id"]
+                                                       thread["thread_id"], "Bdo")["grant_id"]
                                for operator in ("Bdo", "sov")}
         # The session lifecycle and the reads are guarded as of 2026-08-25, so the
         # fixture operators hold what those operations cost. These are setup grants
         # for the continuity path; the cases below still prove their own refusals.
         for operator in ("Bdo", "sov"):
             for capability in ("open:session", "close:session", "read:session"):
-                console.grant(operator, capability, operator)
-            console.grant(operator, "read:authority", "node:test")
-            console.grant(operator, "read:thread", thread["thread_id"])
+                console.grant(operator, capability, operator, "Bdo")
+            console.grant(operator, "read:authority", "node:test", "Bdo")
+            console.grant(operator, "read:thread", thread["thread_id"], "Bdo")
         cls.prepared_channel = channel["channel_id"]
         cls.prepared_thread = thread["thread_id"]
         cls.template_root = root
@@ -250,7 +250,7 @@ class OperatorContinuity(unittest.TestCase):
 
     def test_a_post_without_a_live_grant_is_refused(self):
         session = self.console.open_session("Bdo", "HUMAN", "cli")
-        self.console.revoke(self.grants["Bdo"])
+        self.console.revoke(self.grants["Bdo"], "Bdo")
         with self.assertRaises(AuthorityRefused):
             self.console.post("Bdo", session["session_id"], self.thread["thread_id"], b"ungranted")
 
@@ -304,7 +304,7 @@ class OperatorContinuity(unittest.TestCase):
 
     def test_a_post_into_an_archived_thread_is_refused(self):
         session = self.console.open_session("Bdo", "HUMAN", "cli")
-        self.console.grant("Bdo", "archive:thread", self.channel["channel_id"])
+        self.console.grant("Bdo", "archive:thread", self.channel["channel_id"], "Bdo")
         self.console.archive_thread("Bdo", self.thread["thread_id"])
         with self.assertRaises(ThreadArchived):
             self.console.post("Bdo", session["session_id"], self.thread["thread_id"], b"reopened?")
@@ -353,9 +353,9 @@ class OperatorContinuity(unittest.TestCase):
         or the revoked one - while the operation still committed.
         """
         stale = self.grants["Bdo"]
-        self.console.revoke(stale)
+        self.console.revoke(stale, "Bdo")
         fresh = self.console.grant("Bdo", "post:message",
-                                   self.thread["thread_id"])["grant_id"]
+                                   self.thread["thread_id"], "Bdo")["grant_id"]
         session = self.console.open_session("Bdo", "HUMAN", "cli")
         post = self.console.post("Bdo", session["session_id"], self.thread["thread_id"], b"regranted")
         receipt = self.receipts("console.post")[-1]
@@ -366,7 +366,7 @@ class OperatorContinuity(unittest.TestCase):
     def test_a_revocation_leaves_the_operation_it_already_admitted_standing(self):
         session = self.console.open_session("Bdo", "HUMAN", "cli")
         before = self.console.post("Bdo", session["session_id"], self.thread["thread_id"], b"admitted")
-        self.console.revoke(self.grants["Bdo"])
+        self.console.revoke(self.grants["Bdo"], "Bdo")
         with self.assertRaises(AuthorityRefused):
             self.console.post("Bdo", session["session_id"], self.thread["thread_id"], b"refused")
         self.assertEqual(self.console.body(before["content_address"]), b"admitted")

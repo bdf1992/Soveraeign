@@ -90,11 +90,11 @@ class GatewayVerticalSlice(unittest.TestCase):
 
     def grant_ingest(self, actor: str = "operator", scope: str | None = None) -> str:
         scope = scope or f"asset:new:{actor}"
-        self.console.grant(actor, "ingest:asset", scope)
+        self.console.grant(actor, "ingest:asset", scope, "Bdo")
         return scope
 
     def grant_read_version(self, version_id: str, actor: str = "operator") -> str:
-        self.console.grant(actor, "read:version", version_id)
+        self.console.grant(actor, "read:version", version_id, "Bdo")
         return version_id
 
     def read_version_request(self, version_id: str, actor: str = "operator",
@@ -228,7 +228,7 @@ class GatewayVerticalSlice(unittest.TestCase):
 
     def test_resource_consumption_stays_outside_the_slice(self) -> None:
         actor, scope = "operator", "asset:existing"
-        self.console.grant(actor, "request:derivative", scope)
+        self.console.grant(actor, "request:derivative", scope, "Bdo")
         request = {
             "actor": actor,
             "actor_kind": "HUMAN",

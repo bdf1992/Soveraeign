@@ -121,8 +121,8 @@ def main() -> int:
             # Setup, not the crossing: the node's root records the one grant the
             # operation declares. The first grant against an empty journal also
             # records the root issuer (services/console .. authority.py, Bootstrap).
-            grant_id = gateway.console.grant(WALKER, REQUIRED_GRANT, WALKER)["grant_id"]
-            gateway.console.grant(WALKER, JOURNAL_GRANT, NODE)
+            grant_id = gateway.console.grant(WALKER, REQUIRED_GRANT, WALKER, "Bdo")["grant_id"]
+            gateway.console.grant(WALKER, JOURNAL_GRANT, NODE, "Bdo")
             started = time.time()
             mark = time.perf_counter()
             answer = gateway.call("console_operations", {}, WALKER)

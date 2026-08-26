@@ -25,6 +25,7 @@ Passing establishes `BUILT`. It witnesses nothing.
 from __future__ import annotations
 
 from pathlib import Path
+from inspect import Parameter, signature
 from tempfile import TemporaryDirectory
 from typing import Any, Callable, NamedTuple
 import json
@@ -166,13 +167,13 @@ class EnforcedAuthorityTest(unittest.TestCase):
         # issuer, which is what lets it issue the rest (`authority.py`, Bootstrap).
         for capability, scope in (("open:channel", "governance"),
                                   ("open:session", ROOT_SEAT)):
-            console.grant(ROOT_SEAT, capability, scope)
+            console.grant(ROOT_SEAT, capability, scope, ROOT_SEAT)
         channel = console.open_channel(ROOT_SEAT, "governance", "governance")
-        console.grant(ROOT_SEAT, "open:thread", channel["channel_id"])
+        console.grant(ROOT_SEAT, "open:thread", channel["channel_id"], ROOT_SEAT)
         thread = console.open_thread(ROOT_SEAT, channel["channel_id"], "guarded")
         session = console.open_session(ROOT_SEAT, "HUMAN", "cli")
         # Something for `console.revoke` to aim at that no case depends on.
-        spare = console.grant("someone", "post:message", thread["thread_id"])
+        spare = console.grant("someone", "post:message", thread["thread_id"], ROOT_SEAT)
         # A separate thread for `archive-thread` to close, so archiving it does not
         # take the thread `post` and `publish-thread` need out from under them: the
         # cases below share one journal per test method and run in table order.
@@ -180,14 +181,14 @@ class EnforcedAuthorityTest(unittest.TestCase):
         # A mark for `withdraw-publication` to withdraw, and the stranger's own
         # session, because `post` refuses a session it does not own before any grant
         # can help it (`posts.py`, ACTOR_ATTRIBUTION_MISMATCH).
-        console.grant(ROOT_SEAT, "publish:thread", thread["thread_id"])
+        console.grant(ROOT_SEAT, "publish:thread", thread["thread_id"], ROOT_SEAT)
         mark = console.publish_thread(ROOT_SEAT, thread["thread_id"])
-        opening = console.grant(STRANGER, "open:session", STRANGER)
+        opening = console.grant(STRANGER, "open:session", STRANGER, ROOT_SEAT)
         outsider = console.open_session(STRANGER, "MODEL", "cli")
         # Withdrawn again: the stranger must own a session for `post` to reach its
         # attribution check, and must still hold nothing at all when the cases start,
         # or `console.open-session` would have no defeating case left.
-        console.revoke(opening["grant_id"])
+        console.revoke(opening["grant_id"], ROOT_SEAT)
         record.close()
         cls.template_root = root
         cls.prepared_channel = channel["channel_id"]
@@ -233,6 +234,22 @@ class EnforcedAuthorityTest(unittest.TestCase):
     def last_receipt(self) -> dict[str, Any]:
         receipts = [entry for entry in self.record.entries() if entry["kind"] == "RECEIPT"]
         return receipts[-1]["payload"]
+
+    def test_neither_permits_office_transition_defaults_its_issuer(self) -> None:
+        """That the default is gone, which no other case here can tell.
+
+        Every call site names an issuer now, so restoring `granted_by="Bdo"` leaves
+        the whole suite green - the absence of a default is invisible to callers that
+        always supply one. Read off the signature instead. It defaulted to the root
+        seat, and once `granted_by` became the principal whose authority is checked
+        rather than a label on the record, that default meant issuing in Bdo's name
+        by saying nothing.
+        """
+        for name in ("grant", "revoke"):
+            with self.subTest(name):
+                parameters = signature(getattr(ConsoleService, name)).parameters
+                issuer = parameters["granted_by" if name == "grant" else "revoked_by"]
+                self.assertIs(issuer.default, Parameter.empty)
 
     def test_the_table_here_names_every_enforced_capability(self) -> None:
         """A capability enforced but ungraded must land here rather than pass quietly.
@@ -297,7 +314,7 @@ class EnforcedAuthorityTest(unittest.TestCase):
         for case in GUARDED:
             with self.subTest(case.capability_id):
                 required = OFFICES[case.capability_id]["required_authority"]
-                self.console.grant(STRANGER, required, self.scope(case))
+                self.console.grant(STRANGER, required, self.scope(case), ROOT_SEAT)
                 self.assertIsNotNone(case.attempt(self, STRANGER))
 
     def test_a_grant_of_the_right_name_at_the_wrong_scope_does_not_admit(self) -> None:
@@ -305,7 +322,7 @@ class EnforcedAuthorityTest(unittest.TestCase):
         for case in GUARDED:
             with self.subTest(case.capability_id):
                 required = OFFICES[case.capability_id]["required_authority"]
-                self.console.grant(STRANGER, required, "somewhere-else")
+                self.console.grant(STRANGER, required, "somewhere-else", ROOT_SEAT)
                 with self.assertRaises(AuthorityRefused):
                     case.attempt(self, STRANGER)
 
@@ -314,8 +331,8 @@ class EnforcedAuthorityTest(unittest.TestCase):
         for case in GUARDED:
             with self.subTest(case.capability_id):
                 required = OFFICES[case.capability_id]["required_authority"]
-                issued = self.console.grant(STRANGER, required, self.scope(case))
-                self.console.revoke(issued["grant_id"])
+                issued = self.console.grant(STRANGER, required, self.scope(case), ROOT_SEAT)
+                self.console.revoke(issued["grant_id"], ROOT_SEAT)
                 with self.assertRaises(AuthorityRefused):
                     case.attempt(self, STRANGER)
 
@@ -347,7 +364,7 @@ class EnforcedAuthorityTest(unittest.TestCase):
         for the stranger above; here the root seat, which does hold the grant over
         itself, still cannot be used as a stand-in for the caller.
         """
-        self.console.grant(ROOT_SEAT, "read:session", ROOT_SEAT)
+        self.console.grant(ROOT_SEAT, "read:session", ROOT_SEAT, ROOT_SEAT)
         with self.assertRaises(AuthorityRefused):
             session_context(self.console, STRANGER, ROOT_SEAT)
         self.assertIsNotNone(session_context(self.console, ROOT_SEAT))
@@ -359,7 +376,7 @@ class EnforcedAuthorityTest(unittest.TestCase):
         A close carrying the owner's name would put an act in the owner's history
         that the owner did not perform.
         """
-        self.console.grant(STRANGER, "close:session", ROOT_SEAT)
+        self.console.grant(STRANGER, "close:session", ROOT_SEAT, ROOT_SEAT)
         closed = self.console.close_session(STRANGER, self.session)
         self.assertEqual(closed["operator_id"], ROOT_SEAT)
         entries = [entry for entry in self.record.entries()

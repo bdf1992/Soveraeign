@@ -316,12 +316,12 @@ class EntryPointTest(unittest.TestCase):
         root = Path(cls._tmp.name) / "console"
         cls.record = RecordService(root / "journal")
         cls.console = ConsoleService(cls.record, root, "node:test")
-        cls.console.grant("Bdo", "open:channel", "governance")
+        cls.console.grant("Bdo", "open:channel", "governance", "Bdo")
         # Discovery costs a `read:session` grant scoped to the operator asking as of
         # 2026-08-25. "nobody" holds one so the permitted reading can still be driven
         # for a participant that holds nothing else.
-        cls.console.grant("Bdo", "read:session", "Bdo")
-        cls.console.grant("nobody", "read:session", "nobody")
+        cls.console.grant("Bdo", "read:session", "Bdo", "Bdo")
+        cls.console.grant("nobody", "read:session", "nobody", "Bdo")
 
     @classmethod
     def tearDownClass(cls) -> None:

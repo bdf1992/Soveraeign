@@ -16,7 +16,6 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Callable
 import json
-import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -30,18 +29,20 @@ sys.path.insert(0, str(ROOT / "services" / "console" / "src"))
 sys.path.insert(0, str(ROOT / "services" / "record" / "src"))
 
 from soveraeign_asset_service import AssetService, AuthorityRefused  # noqa: E402
-from soveraeign_console_service import ConsoleService, discover  # noqa: E402
+from soveraeign_console_service import ConsoleService  # noqa: E402
 from soveraeign_console_service import authority as console_authority  # noqa: E402
 from soveraeign_console_service.refusals import (  # noqa: E402
     AuthorityRefused as ConsoleAuthorityRefused,
 )
 from soveraeign_record_service import RecordService  # noqa: E402
 
-from manifest_gate import UnbuiltEndpoint, validate  # noqa: E402
+from handlers import Handlers  # noqa: E402
+from manifest_gate import (  # noqa: E402
+    UnbuiltEndpoint,
+    audit_handlers,
+    validate,
+)
 
-#: The projection discovery answers from. One rebuildable source, checked by
-#: `scripts/sov_capability.py check`, rather than a second list held here.
-CAPABILITY_MAP = ROOT / "contracts" / "fixtures" / "capability-map.reference.json"
 #: The node this gateway's console serves. A console that could run without naming its
 #: node would emit records that do not say where they came from.
 NODE_ID = "node:local"
@@ -54,7 +55,7 @@ class EndpointRefused(RuntimeError):
         self.code = code
 
 
-class Gateway:
+class Gateway(Handlers):
     """Bind declared endpoints to built services and dispatch calls through one path.
 
     `state_root` holds both service stores, so a run started twice against the
@@ -73,6 +74,20 @@ class Gateway:
         self.console = ConsoleService(self.record, self.state_root / "console", NODE_ID)
         self.session_id: str | None = None
         self._handlers = self._bind()
+        # Judged after binding, because it reads the handlers' own signatures. A new
+        # endpoint that takes a principal from caller arguments refuses to start.
+        #
+        # `validate` runs before any store opens, so its refusal costs nothing. This
+        # one cannot: the handlers it reads are bound to live services. So it closes
+        # what it opened before raising, and a refused start still leaves no handle.
+        try:
+            audit_handlers(self.endpoints, self._handlers, self.withheld)
+        except BaseException:
+            # Every way out, not only the refusal this expects. A `TypeError` or a
+            # `NameError` raised inside the audit skipped the close and leaked both
+            # stores, so "a refused start leaves no open handle" held on one path.
+            self.close()
+            raise
 
     def close(self) -> None:
         self.asset.close()
@@ -86,8 +101,8 @@ class Gateway:
             "authority_open_session": self._open_session,
             "authority_grant": self._grant,
             "asset_ingest": self._ingest,
-            "asset_search": self.asset.search,
-            "record_entries": self.record.entries,
+            "asset_search": self._search,
+            "record_entries": self._entries,
             "console_operations": self._operations,
             "observe_verify": self._verify,
         }
@@ -203,51 +218,6 @@ class Gateway:
         self.record.receipt("REFUSED", entry["operation"], entry["operation"], actor,
                             {"tool": entry["tool"], "reason": code})
         raise EndpointRefused(code, f"{actor} may not call {entry['tool']}: {code}")
-
-    # -- handlers ---------------------------------------------------------
-
-    def _open_session(self, participant: str, model_identity: str,
-                      ttl_seconds: float | None = None) -> dict[str, Any]:
-        self.session_id = self.asset.open_session(participant, model_identity, ttl_seconds)
-        return {"session_id": self.session_id, "participant": participant,
-                "model_identity": model_identity}
-
-    def _grant(self, issuer: str, actor: str, capability: str, scope: str = "*",
-               ttl_seconds: float | None = None) -> dict[str, Any]:
-        kwargs: dict[str, Any] = {"scope": scope, "session_id": self.session_id}
-        if ttl_seconds is not None:
-            kwargs["ttl_seconds"] = ttl_seconds
-        return {"grant_id": self.asset.grant(issuer, actor, capability, **kwargs)}
-
-    def _ingest(self, path: str, label: str, actor: str) -> dict[str, str]:
-        return self.asset.ingest(path, label, actor)
-
-    def _operations(self, operator_id: str) -> dict[str, Any]:  # caller_argument
-        """What this node declares, and what one operator holds, from the projection.
-
-        The gateway supplies the map and says nothing about whether it is fresh: it
-        reads the checked-in projection and has not rebuilt it, so `fresh` stays unset
-        and the answer says nobody checked rather than implying somebody did.
-
-        `operator_id` is not a tool argument. The manifest names it as this
-        endpoint's `caller_argument`, so the dispatcher supplies the caller it was
-        handed and a caller cannot ask what a different operator may do. The Console Service
-        checks the `read:session` this operation declares as of 2026-08-25, so the
-        name here decides whose grant is spent.
-        """
-        capability_map = json.loads(CAPABILITY_MAP.read_text(encoding="utf-8"))
-        return discover(self.console, capability_map, operator_id)
-
-    def _verify(self) -> dict[str, Any]:
-        """Run the repository gate in a separate process and record what it returned."""
-        completed = subprocess.run(
-            [sys.executable, "scripts/verify.py"], cwd=ROOT, capture_output=True,
-            text=True, timeout=120)
-        tail = completed.stdout.strip().splitlines()[-3:]
-        observation = {"exit_code": completed.returncode, "passed": completed.returncode == 0,
-                       "tail": tail}
-        self.record.append("OBSERVATION", "repository.verify", "gateway", observation)
-        return observation
 
 
 def _redact(arguments: dict[str, Any]) -> dict[str, Any]:

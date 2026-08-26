@@ -79,17 +79,27 @@ class ConsoleService:
     # ---- authority ---------------------------------------------------------
 
     def grant(self, operator_id: str, capability: str, scope: str,
-              granted_by: str = "Bdo") -> dict[str, Any]:
+              granted_by: str) -> dict[str, Any]:
         """Record a live grant in the journal, where it outlives this process.
 
         The issuer must hold `grant:authority` over this node, except on a journal
         where this node's permits office has never been opened, in which case the
         issuer becomes its recorded root. `permits.py` owns both rules.
+
+        `granted_by` has no default. It defaulted to `"Bdo"`, and once it became the
+        principal whose authority is checked rather than a label on the record, that
+        default meant a caller could issue in the root seat's name by saying nothing.
+        Making the CLI flag required left this one layer down, where seven callers
+        depended on it - including one inside a `verify.py` check and the fixture that
+        silently made "Bdo" its own journal's root issuer.
         """
         return permits.issue(self, operator_id, capability, scope, granted_by)
 
-    def revoke(self, grant_id: str, revoked_by: str = "Bdo") -> dict[str, Any]:
-        """Withdraw a grant by appending. It refuses the next operation, not past ones."""
+    def revoke(self, grant_id: str, revoked_by: str) -> dict[str, Any]:
+        """Withdraw a grant by appending. It refuses the next operation, not past ones.
+
+        `revoked_by` has no default, for the same reason `granted_by` has none.
+        """
         return permits.withdraw(self, grant_id, revoked_by)
 
     def grants(self, *, reader_id: str,

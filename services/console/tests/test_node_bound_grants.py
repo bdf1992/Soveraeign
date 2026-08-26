@@ -111,7 +111,7 @@ class NodeNamespacePartition(unittest.TestCase):
         home = ConsoleService(record, root / "home", HOME)
         # The home node's office is opened by its own root, which is what an attacker
         # asserting this name later has to get past.
-        home.grant("Bdo", "read:thread", HOME)
+        home.grant("Bdo", "read:thread", HOME, "Bdo")
         record.close()
         cls.template_root = root
 
@@ -295,7 +295,7 @@ class NodeNamespacePartition(unittest.TestCase):
         # issue, which is the thing revoking its `grant:authority` would have ended.
         self.assertEqual(
             authority.root_issuer(self.record.reconstruct(), HOME), "Bdo")
-        self.assertTrue(self.home.grant("Bdo", "read:thread", "another-thread"))
+        self.assertTrue(self.home.grant("Bdo", "read:thread", "another-thread", "Bdo"))
 
     def test_a_node_revokes_its_own_grants_normally(self) -> None:
         """The positive half of the foreign-record check.
@@ -363,28 +363,28 @@ class RecordsAreBoundToTheirNode(unittest.TestCase):
         record = RecordService(root / "journal")
         home = ConsoleService(record, root / "home", HOME)
         for capability, scope in (("open:channel", "work"), ("open:session", "Bdo")):
-            home.grant("Bdo", capability, scope)
+            home.grant("Bdo", capability, scope, "Bdo")
         channel = home.open_channel("Bdo", "work", "work")
-        home.grant("Bdo", "open:thread", channel["channel_id"])
+        home.grant("Bdo", "open:thread", channel["channel_id"], "Bdo")
         thread = home.open_thread("Bdo", channel["channel_id"], "home work")
         session = home.open_session("Bdo", "HUMAN", "cli")
-        home.grant("Bdo", "post:message", thread["thread_id"])
+        home.grant("Bdo", "post:message", thread["thread_id"], "Bdo")
         home.post("Bdo", session["session_id"], thread["thread_id"],
                   b"the home node's own work")
         # What the home node holds over its own records, so the cases below can tell
         # a refusal about the node from a refusal about the permit.
-        home.grant("Bdo", "read:thread", thread["thread_id"])
-        home.grant("Bdo", "read:thread", HOME)
-        home.grant("Bdo", "read:session", "Bdo")
+        home.grant("Bdo", "read:thread", thread["thread_id"], "Bdo")
+        home.grant("Bdo", "read:thread", HOME, "Bdo")
+        home.grant("Bdo", "read:session", "Bdo", "Bdo")
         # A cursor, and then a turn Bdo has not seen. Without a post somebody else
         # wrote, `unseen_posts` is empty whether or not the node filter is there:
         # the subject's own posts are excluded anyway, so the assertion would pass
         # for the wrong reason and the filter would go untested.
-        home.grant("Bdo", "close:session", "Bdo")
+        home.grant("Bdo", "close:session", "Bdo", "Bdo")
         read_position = home.open_session("Bdo", "HUMAN", "cli")
         home.close_session("Bdo", read_position["session_id"])
-        home.grant("sov", "open:session", "sov")
-        home.grant("sov", "post:message", thread["thread_id"])
+        home.grant("sov", "open:session", "sov", "Bdo")
+        home.grant("sov", "post:message", thread["thread_id"], "Bdo")
         away = home.open_session("sov", "MODEL", "model-binding")
         home.post("sov", away["session_id"], thread["thread_id"],
                   b"landed while Bdo was away")
@@ -418,7 +418,7 @@ class RecordsAreBoundToTheirNode(unittest.TestCase):
 
     def test_the_publication_list_does_not_hand_over_another_nodes_threads(self) -> None:
         """The first step of the chain: this is where the thread id came from."""
-        self.home.grant("Bdo", "publish:thread", self.thread["thread_id"])
+        self.home.grant("Bdo", "publish:thread", self.thread["thread_id"], "Bdo")
         self.home.publish_thread("Bdo", self.thread["thread_id"])
         self.assertEqual(
             [row["thread_id"] for row
@@ -549,7 +549,7 @@ class RecordsAreBoundToTheirNode(unittest.TestCase):
         """The check that stops the cases above passing because everything refuses."""
         self.assertTrue(read_thread(self.home, self.thread["thread_id"],
                                     operator_id="Bdo")["posts"])
-        self.home.grant("Bdo", "close:session", "Bdo")
+        self.home.grant("Bdo", "close:session", "Bdo", "Bdo")
         self.assertEqual(
             self.home.close_session("Bdo", self.session["session_id"])["lifecycle"],
             "CLOSED")

@@ -29,18 +29,18 @@ class ConsoleReadRoute(unittest.TestCase):
         root = Path(self.tmp.name)
         self.record = RecordService(empty_journal(root / "record"))
         self.console = ConsoleService(self.record, root / "console", "node:test")
-        self.console.grant("reader", "open:channel", "work")
+        self.console.grant("reader", "open:channel", "work", "Bdo")
         channel = self.console.open_channel("reader", "work", "work")
-        self.console.grant("reader", "open:thread", channel["channel_id"])
+        self.console.grant("reader", "open:thread", channel["channel_id"], "Bdo")
         self.thread = self.console.open_thread(
             "reader", channel["channel_id"], "Read plane")
-        self.console.grant("reader", "open:session", "reader")
-        self.console.grant("reader", "close:session", "reader")
+        self.console.grant("reader", "open:session", "reader", "Bdo")
+        self.console.grant("reader", "close:session", "reader", "Bdo")
         self.session = self.console.open_session("reader", "HUMAN", "human-binding")
-        self.console.grant("reader", "post:message", self.thread["thread_id"])
+        self.console.grant("reader", "post:message", self.thread["thread_id"], "Bdo")
         # The Gateway checks `read:thread` before this route is reached and the read
         # checks it again as of 2026-08-25, so the route's own cases hold it too.
-        self.console.grant("reader", "read:thread", self.thread["thread_id"])
+        self.console.grant("reader", "read:thread", self.thread["thread_id"], "Bdo")
         self.post = self.console.post(
             "reader", self.session["session_id"], self.thread["thread_id"], b"grounded post")
         self.routes = ConsoleRoutes(self.console)
@@ -96,7 +96,7 @@ class ConsoleReadRoute(unittest.TestCase):
         self.assertEqual(self.reason(malformed), "MALFORMED_IDENTITY")
 
     def test_session_must_be_live_and_belong_to_the_checked_actor(self) -> None:
-        self.console.grant("other", "open:session", "other")
+        self.console.grant("other", "open:session", "other", "Bdo")
         other = self.console.open_session("other", "MODEL", "model-binding")
         mismatch = self.routes.call(
             "read-thread", self.arguments(session_id=other["session_id"]), "reader")

@@ -226,5 +226,65 @@ class RevokedGrantIsNeverCited(ConsoleCase):
         self.assertGreater(checked, 0, "the walk found no cited grant to judge")
 
 
+class TheFoldReadsAGrantOnce(ConsoleCase):
+    """What `live_grants` does with a record `console.grant` would never have written.
+
+    `console.grant` mints a uuid, so nothing here is reachable through it. A record
+    bearing an id somebody else chose arrives by constructing the journal or through a
+    crossing, which is exactly where one would come from, and the fold is what decides
+    what it means. Both cases below are the fold refusing to treat a second record as an
+    amendment: `RecordService` never updates an entry, so the first record bearing an id
+    is the grant, and a later one repeating it is a duplicate or a forgery.
+    """
+
+    def append_grant(self, payload: dict[str, Any]) -> None:
+        """Put a grant record in the journal without going through `console.grant`."""
+        self.record.append("EVENT", payload["grant_id"], "someone",
+                           dict(payload, record_kind=authority.GRANT_KIND))
+
+    def test_a_second_record_reusing_an_id_does_not_rewrite_the_grant(self) -> None:
+        self.console.grant("ana", "open:channel", "governance", granted_by=FOUNDER)
+        held = self.live("ana", "open:channel", "governance")[0]
+        self.append_grant({"grant_id": held, "node_id": NODE, "operator_id": "mallory",
+                           "capability": authority.GRANT_CAPABILITY, "scope": NODE,
+                           "granted_by": "mallory", "granted_at": self.console.stamp(),
+                           "standing": "RECORDED"})
+        record = authority.live_grants(self.record.reconstruct())[held]
+        self.assertEqual(record["operator_id"], "ana")
+        self.assertEqual(record["capability"], "open:channel")
+        with self.assertRaises(AuthorityRefused):
+            self.console.grant("mallory", "post:message", "t", granted_by="mallory")
+
+    def test_a_repeated_id_does_not_move_a_grant_in_the_append_order(self) -> None:
+        """`check` selects on that order, so a record that reorders it decides admissions."""
+        self.console.grant("ana", "open:channel", "governance", granted_by=FOUNDER)
+        self.console.grant("ana", "open:channel", "governance", granted_by=FOUNDER)
+        first, second = self.live("ana", "open:channel", "governance")
+        self.append_grant({"grant_id": first, "node_id": NODE, "operator_id": "ana",
+                           "capability": "open:channel", "scope": "governance",
+                           "granted_by": FOUNDER, "granted_at": self.console.stamp(),
+                           "standing": "RECORDED"})
+        self.console.open_channel("ana", "governance channel", "governance")
+        self.assertEqual(cited(self.record.reconstruct(), "console.open-channel"),
+                         [second])
+
+    def test_a_revocation_naming_no_node_withdraws_nothing(self) -> None:
+        """The mirror of a grant naming no node admitting nothing.
+
+        Both fail in the direction that refuses. A revocation that names no office
+        cannot be attributed to one, so honouring it would let an unattributable record
+        end a grant - and `permits.withdraw` already refuses to withdraw across nodes.
+        """
+        self.console.grant("ana", "open:channel", "governance", granted_by=FOUNDER)
+        held = self.live("ana", "open:channel", "governance")[0]
+        self.record.append("EVENT", held, "nobody", {
+            "record_kind": authority.REVOCATION_KIND, "grant_id": held,
+            "revoked_by": "nobody", "revoked_at": self.console.stamp(),
+            "standing": "RECORDED"})
+        self.assertIn(held, authority.live_grants(self.record.reconstruct()))
+        self.console.open_channel("ana", "governance channel", "governance")
+        self.assertEqual(cited(self.record.reconstruct(), "console.open-channel"), [held])
+
+
 if __name__ == "__main__":
     unittest.main()

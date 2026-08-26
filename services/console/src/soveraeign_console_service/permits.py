@@ -140,15 +140,14 @@ def withdraw(console: "ConsoleService", grant_id: str,
     """
     entries = console.record.reconstruct()
     target = grant_record(entries, grant_id)
-    if target is None:
-        # `grant_exists` is a declared precondition and this branch enforced nothing,
-        # so `revoke --grant ""` appended a revocation naming no grant and exited 0.
-        raise UnknownRecord(grant_id)
-    if target.get("node_id") != console.node_id:
-        # Answered as missing, not as another node's: this runs before the authority
-        # check, so a caller holding nothing could otherwise sweep grant ids and learn
-        # which existed and which office issued them.
-        raise UnknownRecord(grant_id)
+    # `grant_exists` is a declared precondition and this branch enforced nothing, so
+    # `revoke --grant ""` appended a revocation naming no grant and exited 0. A grant
+    # this node's office did not mint is answered as missing rather than as another
+    # node's: this runs before the authority check, so a caller holding nothing could
+    # otherwise sweep grant ids and learn which existed and which office issued them.
+    if target is None or target.get("node_id") != console.node_id:
+        raise console.refusal(UnknownRecord(grant_id), "console.revoke", grant_id,
+                              revoked_by)
     require(console.record, entries, console.node_id, revoked_by,
             REVOKE_CAPABILITY, console.node_id, "console.revoke", grant_id)
     capability = target["capability"]

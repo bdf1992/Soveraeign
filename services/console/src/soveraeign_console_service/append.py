@@ -20,7 +20,11 @@ from __future__ import annotations
 
 from typing import Any, Sequence
 
-from soveraeign_console_service.refusals import ConsoleRefusal, StandingClaim
+from soveraeign_console_service.refusals import (
+    ConsoleRefusal,
+    StandingClaim,
+    UnknownRecord,
+)
 from soveraeign_record_service import RecordService
 
 ENTRY_STANDING = "RECORDED"
@@ -46,8 +50,8 @@ def emit(record: RecordService, kind: str, subject: str, actor: str,
                 entry_digest=entry["entry_digest"])
 
 
-def refuse(record: RecordService, error: ConsoleRefusal, event: str, subject: str,
-           actor: str) -> ConsoleRefusal:
+def refuse(record: RecordService, error: ConsoleRefusal | UnknownRecord, event: str,
+           subject: str, actor: str) -> ConsoleRefusal | UnknownRecord:
     """Record a refusal as a terminal receipt, then return the error to be raised.
 
     The receipt carries the reason code, never the message. A caller matches on a

@@ -19,7 +19,7 @@
     "observe_verify",
     "record_entries"
   ],
-  "capability_revision": "5b1bc3ec6136376026bd0778973a1893ed24ae1fad453dca7a64146fc1c81362",
+  "capability_revision": "7f933133a0c67c9e872ef3d82927a1d97ba5cc94cf45d79fe1802db80e09e1f1",
   "counts": {
     "declared": 133,
     "reachable": 45,
@@ -47,7 +47,7 @@
       "kind": "EVENT",
       "subject": "discover-operations",
       "actor": "sov",
-      "entry_digest": "6ad7b1fe7161156ba41213fe5c4a42a492c09fc9025d75dc5e236485ab9c5049",
+      "entry_digest": "b85198421279e42e5e2d003acb15ee511fae6c538cef603ab1cc5a0abdebe60d",
       "payload": {
         "arguments": {
           "operator_id": "<str:3>"
@@ -63,13 +63,13 @@
       "kind": "RECEIPT",
       "subject": "discover-operations",
       "actor": "sov",
-      "entry_digest": "72b02179688c996d17b0754a66d3fe96ca7b4d082c60363458df9072c4e8c521",
+      "entry_digest": "079e49075c2c03c0f0d3d3d9b5db9d7f9892a78163510a0e88d2c2c4b015a206",
       "payload": {
         "detail": {
-          "entry_id": "entry_0133fa04453a4c07a936cdd3613c925d",
+          "entry_id": "entry_729c00c2cc9544b1ac1c969560418e19",
           "result": {
             "authoritative": false,
-            "capability_revision": "5b1bc3ec6136376026bd0778973a1893ed24ae1fad453dca7a64146fc1c81362",
+            "capability_revision": "7f933133a0c67c9e872ef3d82927a1d97ba5cc94cf45d79fe1802db80e09e1f1",
             "map_status": "PROPOSED",
             "operator_id": "sov"
           }
@@ -128,6 +128,7 @@
     "kernel_transition": null,
     "preconditions": [
       "capability_map_fresh",
+      "capability_map_readable",
       "live_matching_grant",
       "session_live"
     ],
@@ -135,7 +136,8 @@
     "refusals": [
       "MISSING_PRECONDITION",
       "NO_LIVE_GRANT",
-      "SESSION_NOT_LIVE"
+      "SESSION_NOT_LIVE",
+      "UNREADABLE"
     ]
   },
   "what_this_does_not_establish": [

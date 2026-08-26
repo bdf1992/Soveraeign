@@ -64,7 +64,7 @@ def post(console: "ConsoleService", operator_id: str, session_id: str, thread_id
                               post_id, entries)
     # The grant is over the thread, not over this session, so a session belonging to
     # another node is still answered as simply unknown.
-    session = console.held_session(session_id, entries)
+    session = console.held_session(session_id, entries, POST_OPERATION, operator_id)
     if session["operator_id"] != operator_id:
         owner = session["operator_id"]
         raise refuse(ActorAttributionMismatch(f"session {session_id} belongs to {owner}"),

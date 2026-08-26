@@ -136,21 +136,84 @@ class ProducedRefusals(unittest.TestCase):
                               f"{operation} produced a code its manifest does not declare")
                 self.assertEqual(code, 3)
 
-    def test_the_answer_never_says_whose_record_it_would_have_been(self) -> None:
-        """A foreign record is answered exactly as a missing one, message included."""
+    def receipts(self) -> list[dict[str, Any]]:
+        """Every REFUSED receipt in the store's journal, read back independently."""
+        record = RecordService(self.store / "journal")
+        try:
+            return [entry for entry in record.reconstruct()
+                    if entry["kind"] == "RECEIPT"
+                    and entry["payload"].get("outcome") == "REFUSED"]
+        finally:
+            record.close()
+
+    def test_each_absent_record_refusal_is_written_down(self) -> None:
+        """`append.py`: a refusal leaving no trace is not distinguishable from no attempt.
+
+        Declaring `UNKNOWN_RECORD` put it under that rule. It was raised out of the read
+        helpers, which hold no journal handle, so the one code the manifest had just
+        named was the one that left nothing behind - while `ConsoleRoutes` recorded it.
+        """
+        for operation, arguments in sorted(self.ABSENT_ID.items()):
+            with self.subTest(operation=operation):
+                before = len(self.receipts())
+                self.run_cli(arguments)
+                written = self.receipts()[before:]
+                codes = [entry["payload"]["detail"]["reason_code"] for entry in written]
+                self.assertIn(UnknownRecord.reason_code, codes,
+                              f"{operation} refused and left no receipt saying so")
+                events = {entry["payload"]["event"] for entry in written}
+                self.assertIn(f"console.{operation}", events)
+
+    def test_a_foreign_record_reads_as_missing_where_no_grant_was_shown_yet(self) -> None:
+        """The collapse holds for the reads that run before the caller shows anything."""
+        _, thread_id = self.peer_records()
+        _, foreign = self.run_cli(["archive-thread", "--operator", BDO,
+                                   "--thread", thread_id])
+        _, missing = self.run_cli(["archive-thread", "--operator", BDO,
+                                   "--thread", ABSENT_THREAD])
+        self.assertEqual(foreign["reason_code"], missing["reason_code"])
+        self.assertEqual(foreign["reason_code"], UnknownRecord.reason_code)
+        self.assertNotIn("node:peer", json.dumps(foreign))
+
+    def test_a_caller_that_showed_a_grant_first_is_told_the_record_is_elsewhere(self):
+        """And it is told so in a declared code, which is what the manifest must carry.
+
+        `open-thread`, `post` and `publish-thread` check authority before reading,
+        because the grant's scope is an id the caller supplied. `core.owned` holds that
+        a caller which has shown a grant over the subject has earned being told the
+        record belongs to another node, so those do not collapse to the missing answer.
+        Both codes are declared for them, which is the whole requirement: the answer may
+        differ, the vocabulary may not be undeclared.
+        """
+        channel_id, thread_id = self.peer_records()
+        cases = (("publish-thread", ["publish-thread", "--operator", BDO,
+                                     "--thread", thread_id]),
+                 ("open-thread", ["open-thread", "--operator", BDO,
+                                  "--channel", channel_id, "--title", "elsewhere"]))
+        for operation, arguments in cases:
+            with self.subTest(operation=operation):
+                _, foreign = self.run_cli(arguments)
+                self.assertEqual(foreign["reason_code"], "FOREIGN_NODE_RECORD")
+                self.assertIn("FOREIGN_NODE_RECORD", DECLARED[operation])
+                self.assertIn(UnknownRecord.reason_code, DECLARED[operation])
+
+    def peer_records(self) -> tuple[str, str]:
+        """A channel and thread another node opened on this journal, reachable by Bdo.
+
+        Bdo is granted over the peer's exact ids, so what refuses is the record's node
+        and never the authority - which is the distinction the case is testing.
+        """
         record = RecordService(self.store / "journal")
         peer = ConsoleService(record, self.store, "node:peer")
         peer.grant("mallory", "open:channel", "work", granted_by="mallory")
         channel = peer.open_channel("mallory", "work", "work")
         peer.grant("mallory", "open:thread", channel["channel_id"], granted_by="mallory")
         thread = peer.open_thread("mallory", channel["channel_id"], "peer thread")
+        local = ConsoleService(record, self.store, NODE)
+        local.grant(BDO, "publish:thread", thread["thread_id"], granted_by=BDO)
+        local.grant(BDO, "open:thread", channel["channel_id"], granted_by=BDO)
         record.close()
-        _, foreign = self.run_cli(["archive-thread", "--operator", BDO,
-                                   "--thread", thread["thread_id"]])
-        _, missing = self.run_cli(["archive-thread", "--operator", BDO,
-                                   "--thread", ABSENT_THREAD])
-        self.assertEqual(foreign["reason_code"], missing["reason_code"])
-        self.assertNotIn("node:peer", json.dumps(foreign))
+        return str(channel["channel_id"]), str(thread["thread_id"])
 
 
 class OnePathAgreesWithTheOther(unittest.TestCase):
@@ -189,6 +252,77 @@ class OnePathAgreesWithTheOther(unittest.TestCase):
 
     def test_the_shared_code_is_declared_for_the_operation(self) -> None:
         self.assertIn(self.route_reason(), DECLARED["read-thread"])
+
+
+class AnUnreadableProjectionIsNotAMissingRecord(unittest.TestCase):
+    """`console.discover-operations` read the capability map's keys on faith.
+
+    A map that is valid JSON and the wrong shape raised `KeyError`, and the CLI's
+    catch-all labelled every `KeyError` `UNKNOWN_RECORD` - a code this operation does
+    not declare, and the wrong thing to say besides, since nothing was missing from the
+    journal. A file that was absent or unparseable did worse: a traceback on stderr,
+    nothing on stdout, against this CLI's own promise that every answer is one JSON
+    object. `UNREADABLE` is the kernel's code for a source that cannot be read.
+    """
+
+    def setUp(self) -> None:
+        holder = TemporaryDirectory(ignore_cleanup_errors=True)
+        self.addCleanup(holder.cleanup)
+        self.tmp = Path(holder.name)
+        self.store = self.tmp / "console"
+        self.store.mkdir(parents=True)
+        record = RecordService(empty_journal(self.store / "journal"))
+        console = ConsoleService(record, self.store, NODE)
+        console.grant(BDO, "read:session", BDO, granted_by=BDO)
+        record.close()
+        self.good = json.loads((ROOT / "contracts" / "fixtures"
+                                / "capability-map.reference.json").read_text("utf-8"))
+
+    def ask(self, map_path: Path) -> tuple[int, dict[str, Any]]:
+        out = StringIO()
+        with contextlib.redirect_stdout(out):
+            code = cli.main(["--root", str(self.store), "--node", NODE, "operations",
+                             "--operator", BDO, "--capability-map", str(map_path)])
+        return code, json.loads(out.getvalue())
+
+    def write(self, name: str, content: str) -> Path:
+        path = self.tmp / name
+        path.write_text(content, encoding="utf-8")
+        return path
+
+    def test_the_reference_map_still_answers(self) -> None:
+        """The positive half: nothing here refuses a projection that is readable."""
+        path = self.write("good.json", json.dumps(self.good))
+        code, answer = self.ask(path)
+        self.assertEqual(code, 0)
+        self.assertEqual(answer["counts"]["declared"], len(self.good["capabilities"]))
+
+    def test_a_map_short_a_key_refuses_with_a_declared_code(self) -> None:
+        broken = dict(self.good)
+        broken.pop("capabilities")
+        code, answer = self.ask(self.write("no-capabilities.json", json.dumps(broken)))
+        self.assertEqual(answer["reason_code"], "UNREADABLE")
+        self.assertIn("UNREADABLE", DECLARED["discover-operations"])
+        self.assertEqual(code, 2)
+
+    def test_a_row_short_a_key_refuses_the_same_way(self) -> None:
+        broken = dict(self.good)
+        rows = [dict(row) for row in broken["capabilities"]]
+        rows[0].pop("required_authority")
+        broken["capabilities"] = rows
+        code, answer = self.ask(self.write("no-authority.json", json.dumps(broken)))
+        self.assertEqual(answer["reason_code"], "UNREADABLE")
+        self.assertIn("required_authority", answer["message"])
+        self.assertEqual(code, 2)
+
+    def test_a_missing_or_unparseable_file_still_answers_in_json(self) -> None:
+        for name, path in (("absent", self.tmp / "not-here.json"),
+                           ("not JSON", self.write("bad.json", "{not json"))):
+            with self.subTest(name):
+                code, answer = self.ask(path)
+                self.assertEqual(answer["outcome"], "REFUSED")
+                self.assertEqual(answer["reason_code"], "UNREADABLE")
+                self.assertEqual(code, 2)
 
 
 class RaisedTypesCarryTheCode(unittest.TestCase):

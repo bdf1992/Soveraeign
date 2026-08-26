@@ -61,7 +61,7 @@ def close_session(console: "ConsoleService", operator_id: str, session_id: str,
     entries = console.record.reconstruct()
     # The grant's scope is this session's operator, which cannot be known without
     # reading the session, so an unearned caller gets the missing-record answer.
-    session = console.held_session(session_id, entries)
+    session = console.held_session(session_id, entries, CLOSE_EVENT, operator_id)
     grant = console.authorize(operator_id, ENFORCED_AUTHORITY[CLOSE_EVENT],
                               session["operator_id"], CLOSE_EVENT, session_id, entries)
     return append.emit(console.record, "operator-session-lifecycle", session_id,

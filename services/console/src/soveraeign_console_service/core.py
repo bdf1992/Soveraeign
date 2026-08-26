@@ -5,15 +5,15 @@ implements the one the others stand on: the threaded record path through which
 a human operator and a model operator reach the same conversation, in the same
 authoritative state, across separate sessions.
 
-Nothing here stores state of its own except immutable post payloads. Every
-console record is appended to the Record Service journal as an `EVENT` followed
-by a terminal `RECEIPT`; the console read path is a projection rebuilt from that
-journal alone (`continuity.py`). A projection is never authoritative.
+Nothing here stores state of its own except immutable post payloads. Every console
+record is appended to the Record Service journal as an `EVENT` followed by a terminal
+`RECEIPT`; the console read path is a projection rebuilt from that journal alone
+(`continuity.py`), and a projection is never authoritative.
 
-The parity requirement in `conformance/006-thread-post-parity.yaml` is
-structural rather than promised: `post` takes one operation type and checks one
-capability regardless of `actor_kind`, and the binding an operator reached
-through appears only as `interface_id` on the receipt.
+The parity requirement in `conformance/006-thread-post-parity.yaml` is structural
+rather than promised: `post` takes one operation type and checks one capability
+regardless of `actor_kind`, and the binding an operator reached through appears only
+as `interface_id` on the receipt.
 """
 
 from __future__ import annotations
@@ -25,12 +25,10 @@ import time
 import uuid
 
 from soveraeign_console_service import append, authority, permits, posts, publication
-from soveraeign_console_service import reads, sessions
-from soveraeign_console_service.authority import ENFORCED_AUTHORITY
+from soveraeign_console_service import reads, sessions, threads
 from soveraeign_console_service.refusals import (
     ConsoleRefusal,
     ForeignNodeRecord,
-    PinIncomplete,
     UnknownRecord,
 )
 from soveraeign_record_service import RecordService
@@ -42,8 +40,8 @@ ENTRY_STANDING = "RECORDED"
 # here so a malformed node reaches the constructor rather than the journal.
 # `fullmatch`, because `$` also matches before a trailing newline: `.match` admitted a
 # second node whose name printed identically to the first. It reached no other node's
-# grants - `authority.check` compares identifiers byte for byte - but a name nothing
-# can tell apart from another is worth refusing.
+# grants - `authority.check` compares byte for byte - but a name nothing can tell
+# apart from another is worth refusing.
 NODE_ID = re.compile(r"^node:[a-z0-9][a-z0-9-]*$")
 
 
@@ -88,10 +86,10 @@ class ConsoleService:
 
         `granted_by` has no default. It defaulted to `"Bdo"`, and once it became the
         principal whose authority is checked rather than a label on the record, that
-        default meant a caller could issue in the root seat's name by saying nothing.
-        Making the CLI flag required left this one layer down, where seven callers
-        depended on it - including one inside a `verify.py` check and the fixture that
-        silently made "Bdo" its own journal's root issuer.
+        default let a caller issue in the root seat's name by saying nothing. Making
+        the CLI flag required left this one layer down, where seven callers depended on
+        it - one inside a `verify.py` check, and the fixture that silently made "Bdo"
+        its own journal's root issuer.
         """
         return permits.issue(self, operator_id, capability, scope, granted_by)
 
@@ -116,9 +114,8 @@ class ConsoleService:
                   subject: str, entries: list[dict[str, Any]] | None = None) -> str:
         """The live grant admitting this operation on this node, or a written refusal.
 
-        The node comes from this service, never from the caller of the operation: a
-        check that took the node as an argument would let a caller pick the namespace
-        its own grant was matched in.
+        The node comes from this service, never from the operation's caller: a check
+        taking the node as an argument would let a caller pick its own namespace.
         """
         return authority.require(self.record, self._entries(entries), self.node_id,
                                  operator_id, capability, scope, event, subject)
@@ -129,65 +126,27 @@ class ConsoleService:
               event: str, grant_ids: Sequence[str] = ()) -> dict[str, Any]:
         return append.emit(self.record, kind, subject, actor, payload, event, grant_ids)
 
-    def refusal(self, error: ConsoleRefusal, event: str, subject: str,
-                actor: str) -> ConsoleRefusal:
+    def refusal(self, error: ConsoleRefusal | UnknownRecord, event: str, subject: str,
+                actor: str) -> ConsoleRefusal | UnknownRecord:
         return append.refuse(self.record, error, event, subject, actor)
 
     # ---- transitions -------------------------------------------------------
 
     def open_channel(self, operator_id: str, name: str, domain: str) -> dict[str, Any]:
-        """Open a named domain container for threads."""
-        channel_id = _identifier("channel")
-        grant = self.authorize(operator_id, ENFORCED_AUTHORITY["console.open-channel"],
-                               domain, "console.open-channel", channel_id)
-        return self._emit("channel", channel_id, operator_id, {
-            "node_id": self.node_id,
-            "channel_id": channel_id, "name": name, "domain": domain,
-            "opened_by": operator_id, "opened_at": self.stamp(),
-            "standing": ENTRY_STANDING,
-        }, "console.open-channel", [grant])
+        """Open a named domain container for threads. `threads.py` owns it."""
+        return threads.open_channel(self, operator_id, name, domain,
+                                    _identifier("channel"), ENTRY_STANDING)
 
     def open_thread(self, operator_id: str, channel_id: str, title: str,
                     pinned_address: str | None = None,
                     pinned_digest: str | None = None) -> dict[str, Any]:
-        """Open a bounded conversation, optionally pinned to an exact record address."""
-        thread_id = _identifier("thread")
-        if (pinned_address is None) != (pinned_digest is None):
-            raise self.refusal(
-                PinIncomplete("a pinned thread carries both an address and its digest"),
-                "console.open-thread", thread_id, operator_id)
-        entries = self.record.reconstruct()
-        # Authority first: the grant's scope is the channel id the caller supplied, so
-        # nothing has to be read to check it, and an ungranted caller learns nothing
-        # about which channels exist. The manifest declares `channel_exists` and this
-        # took the id on trust, so a thread could open into another node's channel, or
-        # into no channel at all.
-        grant = self.authorize(operator_id, ENFORCED_AUTHORITY["console.open-thread"],
-                               channel_id, "console.open-thread", thread_id, entries)
-        self.channel(channel_id, entries, "console.open-thread", operator_id)
-        return self._emit("thread", thread_id, operator_id, {
-            "node_id": self.node_id,
-            "thread_id": thread_id, "channel_id": channel_id, "title": title,
-            "opened_by": operator_id, "opened_at": self.stamp(), "lifecycle": "OPEN",
-            "pinned_address": pinned_address, "pinned_digest": pinned_digest,
-            "standing": ENTRY_STANDING,
-        }, "console.open-thread", [grant])
+        """Open a bounded conversation, optionally pinned to a record. `threads.py` owns it."""
+        return threads.open_thread(self, operator_id, channel_id, title, pinned_address,
+                                   pinned_digest, _identifier("thread"), ENTRY_STANDING)
 
     def archive_thread(self, operator_id: str, thread_id: str) -> dict[str, Any]:
-        """Archive a thread. Its posts stay readable; no new post may land in it."""
-        entries = self.record.reconstruct()
-        # The grant's scope is this thread's channel, which cannot be known without
-        # reading the thread, so the read comes first and answers an unearned caller
-        # the way a missing record does.
-        thread = self.held_thread(thread_id, entries)
-        channel_id = thread["channel_id"]
-        grant = self.authorize(operator_id, ENFORCED_AUTHORITY["console.archive-thread"],
-                               channel_id, "console.archive-thread", thread_id, entries)
-        return self._emit("thread-lifecycle", thread_id, operator_id, {
-            "node_id": self.node_id,
-            "thread_id": thread_id, "channel_id": channel_id, "lifecycle": "ARCHIVED",
-            "standing": ENTRY_STANDING,
-        }, "console.archive-thread", [grant])
+        """Archive a thread; its posts stay readable. `threads.py` owns it."""
+        return threads.archive_thread(self, operator_id, thread_id, ENTRY_STANDING)
 
     def publish_thread(self, operator_id: str, thread_id: str) -> dict[str, Any]:
         """Mark a thread readable outside the node. `publication.py` owns it."""
@@ -208,8 +167,7 @@ class ConsoleService:
     def close_session(self, operator_id: str, session_id: str) -> dict[str, Any]:
         """Close a session and pin its read position. `sessions.py` owns it.
 
-        `operator_id` is who is closing it, which is not always whose session it is.
-        """
+        `operator_id` is who closes it, which is not always whose session it is."""
         return sessions.close_session(self, operator_id, session_id, ENTRY_STANDING)
 
     def post(self, operator_id: str, session_id: str, thread_id: str, body: bytes,
@@ -234,15 +192,14 @@ class ConsoleService:
               actor: str) -> dict[str, Any]:
         """The record, or a written `FOREIGN_NODE_RECORD` refusal naming why not.
 
-        For a lookup that runs *after* this operation's authority check. The caller
-        has shown a live grant over the subject, so telling it the record exists and
-        is not this node's costs nothing it has not already earned.
+        For a lookup that runs *after* this operation's authority check. The caller has
+        shown a live grant over the subject, so telling it the record exists and is not
+        this node's costs nothing it has not already earned.
 
         Binding a grant to the node that minted it stops a permit crossing between
-        nodes; it does nothing about a node reading and writing another node's
-        records under a permit of its own, and a node identifier is unbounded, so
-        anyone refused one office simply opens another. This is the check that
-        closes that.
+        nodes; it does nothing about a node reading and writing another node's records
+        under a permit of its own, and a node identifier is unbounded, so anyone refused
+        one office simply opens another. This is the check that closes that.
         """
         foreign = reads.foreign(record, self.node_id)
         if foreign is not None:
@@ -250,44 +207,63 @@ class ConsoleService:
                                subject, actor)
         return record
 
-    def held_record(self, record: dict[str, Any], subject: str) -> dict[str, Any]:
+    def by_id(self, lookup: Callable[[list[dict[str, Any]], str], dict[str, Any]],
+              subject: str, entries: list[dict[str, Any]] | None, event: str,
+              actor: str) -> dict[str, Any]:
+        """One console record by id, or an `UNKNOWN_RECORD` refusal that is written down.
+
+        `reads.latest` raises out of a helper holding no journal handle, so until
+        2026-08-26 an absent record left no receipt - the one refusal in this service
+        that did not, and the one the manifest had just declared. Every by-id read comes
+        through here so the record shows the attempt.
+        """
+        try:
+            return lookup(self._entries(entries), subject)
+        except UnknownRecord as missing:
+            raise self.refusal(missing, event, subject, actor) from None
+
+    def held_record(self, record: dict[str, Any], subject: str, event: str,
+                    actor: str) -> dict[str, Any]:
         """The record, or `UnknownRecord` - the same answer a missing one gets.
 
-        For a lookup that runs *before* this operation's authority check, either
-        because the grant's scope is read off the record itself or because the grant
-        is over something else. Two refusals told those callers apart: a record that
-        does not exist answered `UNKNOWN_RECORD` and one belonging to another node
-        answered `FOREIGN_NODE_RECORD`, so anyone holding nothing could sweep ids and
-        learn which existed and whose they were. Collapsed 2026-08-25 because the
-        distinction is not earned until a grant has been shown.
+        For a lookup that runs *before* this operation's authority check, either because
+        the grant's scope is read off the record itself or because the grant is over
+        something else. Two refusals told those callers apart - `UNKNOWN_RECORD` for a
+        record that does not exist, `FOREIGN_NODE_RECORD` for another node's - so anyone
+        holding nothing could sweep ids and learn which existed and whose they were.
+        Collapsed 2026-08-25: the distinction is not earned until a grant is shown. The
+        refusal is recorded identically to the absent-record one, so the journal does
+        not restore by receipt what the answer collapsed.
         """
         if reads.foreign(record, self.node_id) is not None:
-            raise UnknownRecord(subject)
+            raise self.refusal(UnknownRecord(subject), event, subject, actor)
         return record
 
     def channel(self, channel_id: str, entries: list[dict[str, Any]] | None,
                 event: str, actor: str) -> dict[str, Any]:
         """A channel, after the caller has shown its grant over it."""
-        return self.owned(reads.channel(self._entries(entries), channel_id),
+        return self.owned(self.by_id(reads.channel, channel_id, entries, event, actor),
                           channel_id, event, actor)
 
     def thread(self, thread_id: str, entries: list[dict[str, Any]] | None,
                event: str, actor: str) -> dict[str, Any]:
         """A thread, after the caller has shown its grant over it."""
-        return self.owned(reads.thread(self._entries(entries), thread_id),
+        return self.owned(self.by_id(reads.thread, thread_id, entries, event, actor),
                           thread_id, event, actor)
 
-    def held_thread(self, thread_id: str,
-                    entries: list[dict[str, Any]] | None) -> dict[str, Any]:
+    def held_thread(self, thread_id: str, entries: list[dict[str, Any]] | None,
+                    event: str, actor: str) -> dict[str, Any]:
         """A thread, for a caller that has shown nothing yet."""
-        return self.held_record(reads.thread(self._entries(entries), thread_id),
-                                thread_id)
+        return self.held_record(
+            self.by_id(reads.thread, thread_id, entries, event, actor),
+            thread_id, event, actor)
 
-    def held_session(self, session_id: str,
-                     entries: list[dict[str, Any]] | None) -> dict[str, Any]:
+    def held_session(self, session_id: str, entries: list[dict[str, Any]] | None,
+                     event: str, actor: str) -> dict[str, Any]:
         """A session, for a caller that has shown nothing yet."""
-        return self.held_record(reads.session(self._entries(entries), session_id),
-                                session_id)
+        return self.held_record(
+            self.by_id(reads.session, session_id, entries, event, actor),
+            session_id, event, actor)
 
     def _entries(self, entries: list[dict[str, Any]] | None) -> list[dict[str, Any]]:
         """A verified replay, reusing the caller's when it already has one."""

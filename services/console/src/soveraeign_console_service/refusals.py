@@ -59,6 +59,26 @@ class StaleCapabilityMap(ConsoleRefusal):
     reason_code = "MISSING_PRECONDITION"
 
 
+class CapabilityMapUnreadable(ConsoleRefusal):
+    """The capability projection is not a projection this service can read.
+
+    Distinct from `StaleCapabilityMap`, which is a map that is current in shape and
+    behind its sources. This one has the wrong shape: no `capabilities`, no
+    `input_state_digest`, a row missing `required_authority`, a file that is absent or
+    not JSON. `discovery.operations` indexed those keys directly and the CLI's catch-all
+    labelled the resulting `KeyError` `UNKNOWN_RECORD`, so `console.discover-operations`
+    returned a code its manifest does not declare, and a missing or malformed file left
+    a traceback on stderr with nothing on stdout - against this CLI's own promise that
+    every answer, refusals included, is one JSON object.
+
+    `UNREADABLE` is the kernel's own refusal for a source that cannot be read, so this
+    borrows it rather than minting a console synonym; it needs no `local_refusals` entry
+    and is declared on the one operation that returns it.
+    """
+
+    reason_code = "UNREADABLE"
+
+
 class SessionClosed(ConsoleRefusal):
     """The operator session is CLOSED; a closed session is a read position, not a writer."""
 
@@ -92,10 +112,10 @@ class StandingClaim(ConsoleRefusal):
 class UnknownRecord(KeyError):
     """The named console record is not one this node's journal carries.
 
-    One fact, one code. Every by-id read in this service answers the same way, and
-    `core.held_record` deliberately gives a record belonging to another node the same
-    answer a missing one gets, so a caller holding nothing cannot sweep ids and learn
-    which existed and whose they were.
+    One fact, one code. A by-id read that runs before the caller has shown a grant
+    answers the same way whether the record is absent or belongs to another node -
+    `core.held_record` collapses the two on purpose, so a caller holding nothing cannot
+    sweep ids and learn which existed and whose they were.
 
     `UNKNOWN_RECORD` was the one code the service produced and never declared. Eight
     operations returned it over the CLI while `services/console/contracts/service.json`
@@ -103,7 +123,21 @@ class UnknownRecord(KeyError):
     a refusal it could receive; `routes.py` answered the same fact about the same
     thread with `THREAD_UNKNOWN`, so the two paths disagreed. Both are now this code,
     declared per operation and mapped to the kernel's `MISSING_PRECONDITION` - the
-    `*_exists` precondition each of those operations declares is what failed.
+    `*_exists` precondition each of those operations declares is what failed. Declaring
+    it also brought it under `append.py`'s rule that a refusal is written down: it used
+    to be raised out of the read helpers and leave nothing in the journal, so the one
+    code the manifest had just named was the one a reviewer could not see afterwards.
+    `core.by_id` and `core.held_record` record it now.
+
+    "The same answer" is exact about the record and not about the code alone. Three
+    operations - `open-thread`, `post` and `publish-thread` - check authority *first*,
+    because their grant's scope is an id the caller supplied and nothing has to be read
+    to check it. Those answer a record belonging to another node with
+    `FOREIGN_NODE_RECORD`, which `core.owned` explains and the manifest declares for
+    exactly those three: a caller that has shown a grant over the subject has earned
+    being told the record exists elsewhere. The collapse to one answer is the rule for
+    the reads that run *before* a grant has been shown, which is what `core.held_record`
+    owns.
 
     A `KeyError` rather than a `ConsoleRefusal` because it is raised by the read
     helpers before any transition has been chosen, and because callers already catch

@@ -64,7 +64,9 @@ def publish_thread(console: "ConsoleService", operator_id: str, thread_id: str,
     # Authority first: the scope is the thread id the caller supplied.
     grant = console.authorize(operator_id, PUBLISH_CAPABILITY, thread_id, PUBLISH_EVENT,
                               publication_id, entries)
-    console.owned(reads.thread(entries, thread_id), thread_id, PUBLISH_EVENT, operator_id)
+    console.owned(console.by_id(reads.thread, thread_id, entries, PUBLISH_EVENT,
+                                operator_id),
+                  thread_id, PUBLISH_EVENT, operator_id)
     return append.emit(
         console.record, "publication", publication_id, operator_id,
         publication_payload(console.node_id, publication_id, thread_id, operator_id,
@@ -82,8 +84,10 @@ def withdraw_publication(console: "ConsoleService", operator_id: str,
     entries = console.record.reconstruct()
     # The grant's scope is the thread this mark names, which cannot be known without
     # reading the mark, so an unearned caller gets the missing-record answer.
-    mark = console.held_record(reads.publication(entries, publication_id),
-                               publication_id)
+    mark = console.held_record(
+        console.by_id(reads.publication, publication_id, entries, WITHDRAW_EVENT,
+                      operator_id),
+        publication_id, WITHDRAW_EVENT, operator_id)
     grant = console.authorize(operator_id, PUBLISH_CAPABILITY, mark["thread_id"],
                               WITHDRAW_EVENT, publication_id, entries)
     return append.emit(

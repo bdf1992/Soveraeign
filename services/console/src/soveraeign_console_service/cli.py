@@ -28,7 +28,11 @@ from soveraeign_console_service.continuity import (
 )
 from soveraeign_console_service.core import ConsoleService
 from soveraeign_console_service.discovery import discover
-from soveraeign_console_service.refusals import ConsoleRefusal, UnknownRecord
+from soveraeign_console_service.refusals import (
+    CapabilityMapUnreadable,
+    ConsoleRefusal,
+    UnknownRecord,
+)
 from soveraeign_record_service import RecordService
 
 DEFAULT_ROOT = Path(".local") / "console"
@@ -52,6 +56,26 @@ def _emit(payload: dict[str, Any], code: int = 0) -> int:
     return code
 
 
+def _capability_map(path: str) -> dict[str, Any]:
+    """Read the capability projection, or refuse the way every other answer refuses.
+
+    A missing file and an unparseable one used to leave a traceback on stderr and
+    nothing on stdout, at exit 1, against this module's own promise that every answer
+    including a refusal is one JSON object. `UNREADABLE` is the same code
+    `discovery.readable` returns for a file that parses and is the wrong shape, because
+    the caller's problem is the same one either way.
+    """
+    try:
+        return json.loads(Path(path).read_text(encoding="utf-8"))
+    except OSError as unreachable:
+        raise CapabilityMapUnreadable(
+            f"the capability map at {path} cannot be read: "
+            f"{type(unreachable).__name__}") from None
+    except json.JSONDecodeError as malformed:
+        raise CapabilityMapUnreadable(
+            f"the capability map at {path} is not JSON: line {malformed.lineno}") from None
+
+
 def _body(args: argparse.Namespace) -> bytes:
     """Read post content from --body or from stdin, so a caller can pipe a payload."""
     if args.body is not None:
@@ -62,8 +86,7 @@ def _body(args: argparse.Namespace) -> bytes:
 def _commands() -> dict[str, Callable[[ConsoleService, argparse.Namespace], dict[str, Any]]]:
     return {
         "operations": lambda c, a: discover(
-            c, json.loads(Path(a.capability_map).read_text(encoding="utf-8")),
-            a.operator, fresh=a.fresh),
+            c, _capability_map(a.capability_map), a.operator, fresh=a.fresh),
         "grant": lambda c, a: c.grant(a.operator, a.capability, a.scope, a.granted_by),
         "revoke": lambda c, a: c.revoke(a.grant, a.revoked_by),
         "grants": lambda c, a: {"live_grants": c.grants(reader_id=a.reader,

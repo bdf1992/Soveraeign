@@ -15,7 +15,7 @@
     "services/registry/contracts/service.json",
     "contracts/capability-offices.json"
   ],
-  "input_state_digest": "5b1bc3ec6136376026bd0778973a1893ed24ae1fad453dca7a64146fc1c81362",
+  "input_state_digest": "7f933133a0c67c9e872ef3d82927a1d97ba5cc94cf45d79fe1802db80e09e1f1",
   "capabilities": [
     {
       "capability_id": "asset.add-member",
@@ -1065,6 +1065,7 @@
         "requirement": "PROD-I-6",
         "preconditions": [
           "capability_map_fresh",
+          "capability_map_readable",
           "live_matching_grant",
           "session_live"
         ],
@@ -1072,7 +1073,8 @@
         "refusals": [
           "MISSING_PRECONDITION",
           "NO_LIVE_GRANT",
-          "SESSION_NOT_LIVE"
+          "SESSION_NOT_LIVE",
+          "UNREADABLE"
         ]
       }
     },

@@ -139,6 +139,19 @@ def live_grants(entries: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
     office" - but this fold matched on `grant_id` alone, so a revocation appended under
     `node:peer` still killed a `node:local` grant and undid both. Reachable only through
     a crossing, which has no transport in Phase I; the field was already on the record.
+
+    A revocation carrying no node names no office and therefore withdraws nothing. That
+    is the mirror of a grant carrying no node admitting nothing, and both fail in the
+    direction that refuses rather than the direction that admits.
+
+    A grant id is read once. `RecordService` never updates an entry, so the first record
+    bearing an id *is* that grant and a later one repeating it is a duplicate or a
+    forgery, not an amendment. Taking the last instead let a second record rewrite a
+    live grant's operator, capability and scope in place - authority made mutable inside
+    an append-preserving journal - and it broke the append order `check` selects on,
+    because a dict keeps a repeated key at its first position holding the newer value.
+    Not reachable through `console.grant`, which mints a uuid; reachable by constructing
+    the journal or through a crossing, which is where a chosen id would arrive from.
     """
     granted: dict[str, dict[str, Any]] = {}
     revoked: list[dict[str, Any]] = []
@@ -146,11 +159,12 @@ def live_grants(entries: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
         payload = entry["payload"]
         kind = payload.get("record_kind")
         if kind == GRANT_KIND:
-            granted[payload["grant_id"]] = payload
+            granted.setdefault(payload["grant_id"], payload)
         elif kind == REVOCATION_KIND:
             revoked.append(payload)
     withdrawn = {payload["grant_id"] for payload in revoked
                  if payload["grant_id"] in granted
+                 and payload.get("node_id") is not None
                  and payload.get("node_id") == granted[payload["grant_id"]].get("node_id")}
     return {grant_id: record for grant_id, record in granted.items()
             if grant_id not in withdrawn}
@@ -232,53 +246,45 @@ def check(entries: list[dict[str, Any]], node_id: str, operator_id: str,
           capability: str, scope: str, excluding: str = "") -> str:
     """Return the id of a live grant admitting this operation on this node, or refuse.
 
-    Which of several live matches is returned is a decision, not an accident of how
-    the fold happens to be ordered: the id goes on the receipt as the authority a
-    committed operation was admitted under, so it is a record-integrity claim. Two
-    rules settle it, and `services/console/tests/test_enforced_authority.py` fails if
-    either is dropped.
+    Which of several live matches is returned is a decision, not an accident of the
+    fold's order: the id goes on the receipt as the authority a committed operation was
+    admitted under, so it is a record-integrity claim. Two rules settle it, and
+    `services/console/tests/test_admitting_grant.py` fails if either is dropped.
 
-    *The newest live match admits.* `live_grants` folds the journal in append order,
-    so the last match is the most recently issued grant still standing. Newest rather
-    than oldest because an issuer's latest decision about a capability is the one that
-    describes the node now; citing the earliest would attribute a commit to a decision
-    a later issuance has already spoken over. Newest means latest in the journal, not
-    latest timestamp: two grants recorded in the same second are still ordered by the
-    record that carries them. Reversing this rule to `matches[0]` used to pass every
-    check in the repository.
+    *The newest live match admits.* `live_grants` folds in append order, so the last
+    match is the most recently issued grant still standing. Newest rather than oldest
+    because an issuer's latest decision about a capability is the one that describes
+    the node now, and newest by journal position rather than timestamp, because two
+    grants recorded in the same second are still ordered by the record carrying them.
+    Reversing this to `matches[0]` used to pass every check in the repository.
 
-    *A grant cannot admit the record that withdraws it.* `excluding` names a grant
-    that may not admit this operation, and `console.revoke` passes its target. Without
-    it a revoker whose only live `revoke:authority` was the grant being withdrawn
-    spent that grant on its own withdrawal, and the terminal `COMMITTED` receipt then
-    cited, as the authority admitting the operation, a grant the same operation had
-    just revoked - readable straight out of the journal, and false about the state at
-    the position the receipt lands. Revocation still never reaches back and unmakes an
-    operation committed before it; this is about the one operation that revokes and
-    commits at once.
+    *A grant cannot admit the record that withdraws it.* `excluding` names a grant that
+    may not admit this operation; `console.revoke` passes its target. Without it a
+    revoker whose only live `revoke:authority` was the grant being withdrawn spent that
+    grant on its own withdrawal, and the `COMMITTED` receipt then cited a grant the
+    same operation had just revoked - false about the state at the position it lands.
+    Revocation still never reaches back and unmakes an operation committed before it;
+    this is the one operation that revokes and commits at once.
 
-    That second rule closes the case one writer can reach on its own, and no more.
-    Every console operation reads the journal, decides, and appends in three separate
-    `RecordService` transactions, so a *second* writer on the same store can append a
-    revocation of the admitting grant in between, and the receipt then lands after it.
-    Reproduced on 2026-08-26 with two ordinary processes against one `--root`. Nothing
-    in this service closes it: it needs a read-and-append the Record Service performs
-    under one transaction, or a compare-and-append against the head the check read, and
-    `RecordService.append` offers neither. Recorded in `services/console/KNOWN-GAPS.md`
-    rather than narrowed here, because a window made smaller reads as a window closed.
+    That second rule closes what one writer reaches alone, and no more. A console
+    operation reads, decides and appends in three separate `RecordService`
+    transactions, so a second writer on the same store can revoke the admitting grant
+    in between and the receipt lands after it - reproduced 2026-08-26 with two ordinary
+    processes. Closing it needs a read-and-append under one transaction, or a
+    compare-and-append against the head the check read, and `RecordService.append`
+    offers neither. Recorded in `services/console/KNOWN-GAPS.md` rather than narrowed
+    here, because a window made smaller reads as a window closed.
 
     The refusal names the capability and not the scope: a scope is an operator id, a
-    channel or a thread, and telling a caller that holds nothing which one it just
-    missed discloses who owns the record. It stays on the exception for a caller that
-    already knows it.
+    channel or a thread, and telling a caller that holds nothing which one it missed
+    discloses who owns the record. It stays on the exception for a caller that has it.
 
-    Four exact comparisons on `str`, and no other reading of any of them. The node is
-    one of the four because a journal can carry grants minted by more than one node
-    and the other three say nothing about which. Nothing here folds case, strips
-    whitespace, resolves a prefix or expands a pattern, so the set of node identifiers
-    that reach a given node's grants is the one identifier equal to it. A grant whose
-    record predates this field carries no node and matches nothing, which stops an
-    older store's grants being honoured under a name they never named.
+    Four exact comparisons on `str` and no other reading of any of them. The node is
+    one of the four because a journal can carry grants minted by more than one node and
+    the other three say nothing about which. Nothing folds case, strips whitespace,
+    resolves a prefix or expands a pattern, so the identifiers that reach a node's
+    grants are the one identifier equal to it, and a grant whose record predates the
+    field carries no node and matches nothing.
     """
     matches = [record for record in live_grants(entries).values()
                if record.get("node_id") == node_id

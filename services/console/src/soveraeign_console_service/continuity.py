@@ -117,7 +117,8 @@ def read_thread(console: ConsoleService, thread_id: str,
     if thread_id not in projection.thread:
         # Either no such thread, or one this node does not own: `Projection` folds
         # only this node's records, so a peer's thread is absent rather than hidden.
-        raise UnknownRecord(thread_id)
+        raise console.refusal(UnknownRecord(thread_id), "console.read-thread",
+                              thread_id, operator_id)
     thread = projection.thread[thread_id]
     posts = [
         {"post_id": post["post_id"], "actor_id": post["actor_id"],

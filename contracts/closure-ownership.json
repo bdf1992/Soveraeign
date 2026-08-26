@@ -5,7 +5,8 @@
     "CONTRIBUTING.md",
     "decisions/0023-acceptance-not-approval.md",
     "decisions/0033-close-the-founding-docket.md",
-    "decisions/0055-closure-ownership.md"
+    "decisions/0055-closure-ownership.md",
+    "decisions/0061-concern-source-and-settlement.md"
   ],
   "note": "Declared table for judging a handoff: the moment a participant stops carrying a bounded concern and turns it into an artifact for someone else. An issue, a branch, a pull request, a review finding, a TODO, or a question to the owner is a record of work, never a substitute for it. The table admits five seams and refuses everything else as reachable closure. It grants nothing, changes no standing, and is a projection of the rules the governing documents already own.",
   "loop": [
@@ -146,7 +147,7 @@
   },
   "wip_policy": {
     "max_unlanded_concerns_per_participant": 1,
-    "note": "One bounded concern, one branch, one pull request. A second concern opened while the first is unlanded is refused as WIP_EXCEEDED. Landing includes chasing CI, review findings, and rebases to completion."
+    "note": "One bounded concern, one branch, one pull request. A second concern opened while the first is unlanded is refused as WIP_EXCEEDED. Landing includes chasing CI, review findings, and rebases to completion, then settling the concern and retiring execution state according to contracts/ticket-settlement.json."
   },
   "helper_policy": {
     "may_recruit_without_asking": true,
@@ -200,5 +201,18 @@
     "HELPER_NOT_RECRUITED",
     "LOOP_INCOMPLETE"
   ],
-  "evaluation_order_note": "The first refusal in this order is the one reported. Order runs from 'this artifact should not exist' to 'this handoff is shaped wrongly', so a participant reads the most actionable objection first."
+  "evaluation_order_note": "The first refusal in this order is the one reported. Order runs from 'this artifact should not exist' to 'this handoff is shaped wrongly', so a participant reads the most actionable objection first.",
+  "present_or_land_terminal": {
+    "governed_by": "contracts/ticket-settlement.json",
+    "merge_is_not_settlement": true,
+    "required_for_landed": [
+      "a durable result exists on the intended base",
+      "the concern is explicitly dispositioned as advances, satisfies, or supersedes",
+      "open dependent pull requests and shared branch uses are accounted for",
+      "a merged remote head is retired when the branch-retirement contract admits it",
+      "local contained branch, worktree, and live claim or session state are retired when the participant controls them",
+      "a satisfied or superseded issue is closed; an advanced concern remains open with its next unsatisfied state visible"
+    ],
+    "note": "Execution artifacts are temporary. LANDED means the concern's durable result and remaining standing are clear, not merely that GitHub accepted a merge."
+  }
 }

@@ -272,8 +272,8 @@
         "external_commitment"
       ],
       "already_recorded_as": null,
-      "reason": "The read half is already accepted as github_coordination_registrar_and_typed_ticket_workflow. This adds a write half that mutates a public repository, which is an irreversible external effect and owner-held however carefully it is gated. Bdo directed the crossing type; he has not accepted this shape of it. The record is also contested on the facts: it states that no lawful write path existed, and decisions/0060-board-management-role.md on main had declared one nineteen hours earlier. Both define adapters/github/apply.py and neither is a superset.",
-      "action_if_confirmed": "Hold at the owner. Reconcile against decisions/0060-board-management-role.md before presenting, since accepting both would admit two write paths to one surface.",
+      "reason": "The read half is already accepted as github_coordination_registrar_and_typed_ticket_workflow. This adds a write half that mutates a public repository, which is an irreversible external effect and owner-held however carefully it is gated. Bdo directed the crossing type; he has not accepted this shape of it. The record is also contested on the facts: it states that no lawful write path existed, and decisions/0057-board-management-role.md on main had declared one nineteen hours earlier. Both define adapters/github/apply.py and neither is a superset.",
+      "action_if_confirmed": "Hold at the owner. Reconcile against decisions/0057-board-management-role.md before presenting, since accepting both would admit two write paths to one surface.",
       "contested_by": "Open-PR review of 2026-08-24: main and feat/federation-harness-and-hardening each implement the whole coordination surface, written blind."
     },
     "SWEEP-01": {

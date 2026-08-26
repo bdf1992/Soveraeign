@@ -41,6 +41,9 @@ SUITES = (
     (str(Path("bindings/sov")), ("-m", "unittest", "discover", "-s", "bindings/sov/tests", "-q"), ROOT),
     (str(Path("services/asset")), ("-m", "unittest", "discover", "-s", "tests", "-q"), ROOT / "services" / "asset"),
     (str(Path("services/console")), ("-m", "unittest", "discover", "-s", "tests", "-q"), ROOT / "services" / "console"),
+    (str(Path("services/host")), ("-m", "unittest", "discover", "-s", "tests", "-q"), ROOT / "services" / "host"),
+    (str(Path("adapters/host")), ("-m", "unittest", "discover", "-s", "tests", "-q"), ROOT / "services" / "host"),
+    (str(Path("services/registry")), ("-m", "unittest", "scripts.tests.test_registry_horizontal", "-q"), ROOT),
     ("scripts", ("-m", "unittest", "discover", "-s", "scripts/tests", "-q"), ROOT),
 )
 

@@ -17,7 +17,7 @@ const LAW = 'The librarian curates and reports; it settles nothing. Load the sov
   + 'required field with a permitted value; CLAIMED_UNRATIFIED means somebody recorded it and nobody ratified it, '
   + 'which is a claim and not conformance; MISSING_FIELD means nothing carries it. You may record a description '
   + 'under propose:description. You may never ratify one - ratify:judgement is Bdo\'s alone '
-  + '(decisions/0057-asset-collections-and-the-librarian.md, Ruling 3). You may never widen a collection type to '
+  + '(decisions/0063-asset-collections-and-the-librarian.md, Ruling 3). You may never widen a collection type to '
   + 'make members pass, never invent a value outside a declared vocabulary, and never file an asset into a '
   + 'collection merely to clear an UNFILED finding. Effect class is RECORD_LOCAL only. Never run git commit or '
   + 'git push. Never touch the Asset Projection Service, whose declare-collection builds an index and is a '
@@ -28,7 +28,7 @@ log('Survey: reading library conformance before planning anything')
 
 const surveyPrompt = 'You are the sov-librarian surveyor for Soveraeign at ' + ROOT + '. ' + LAW + ' '
   + 'Read ' + ROOT + '/AGENTS.md, ' + ROOT + '/STATUS.yaml, ' + ROOT + '/services/asset/contracts/service.json, '
-  + 'and ' + ROOT + '/decisions/0057-asset-collections-and-the-librarian.md. Then run, from '
+  + 'and ' + ROOT + '/decisions/0063-asset-collections-and-the-librarian.md. Then run, from '
   + ROOT + '/services/asset/src, `' + CLI + ' conformance` and `' + CLI + ' types`, observing the real exit '
   + 'codes yourself. Report the library figures from that output, never from memory. Produce a bounded curation '
   + 'plan for: ' + objective + '. Each operation names the verdict class it addresses. Take reversible defaults '

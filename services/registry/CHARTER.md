@@ -1,6 +1,8 @@
 # Registry Service Charter
 
-Standing: `PROPOSED`. Chartered and contracted; nothing here is implemented.
+Standing: `BUILT` participant with one bounded `resolve` operation. The rest of the
+chartered operation set remains `PROPOSED`; this evidence grants no standing to any
+resolved entry.
 
 ## Role in Soveraeign
 
@@ -18,7 +20,7 @@ seats in `contracts/fixtures/seat-topology.reference.json`, nodes in
 them against the others, so they drift silently and a reader has no single place to start.
 
 One part of the answer is already computed rather than authored:
-`contracts/fixtures/capability-map.reference.json` joins all six service manifests with the
+`contracts/fixtures/capability-map.reference.json` joins all service manifests with the
 offices table into capability, service, operation, office, standing, required authority and
 endpoints, and carries an `input_state_digest` so staleness is detectable. That is the
 Registry's first projection, built before the Registry had a name.
@@ -39,6 +41,24 @@ resolved is refused, not stored.
 The index is a projection and must be rebuildable from its declared sources alone. If the
 index and a source disagree, the source wins and the disagreement is recorded as a drift
 finding rather than repaired in place.
+
+## Built resolve slice
+
+The first in-process participant now derives an operation index from the Kernel closure,
+the existing service manifests, and `contracts/capability-offices.json`. It persists no
+index. Each lookup re-digests every source that conditioned the index before answering.
+
+`sov://registry/resolve` accepts one declared name and returns a Registry-owned terminal
+receipt. A successful receipt carries the derived operation identity, owning manifest
+address and digest, policy source address and digest, office, required authority, and
+Kernel binding. It explicitly records `standing_effect: NONE`. An unknown name returns
+`NAME_UNKNOWN`; moved or missing source bytes return `INDEX_STALE` without a resolution.
+
+The route is reachable only through the existing in-process Gateway path and requires the
+already-authored `read:registry` authority. Human and Model bindings form requests from the
+same Node Interface operation record and receive the same resolution semantics. This is
+BUILT parity evidence, not an independent observation. Registering entries, resolving
+vocabulary or owner records, and every remote transport remain unimplemented.
 
 ## Owned domain records
 
@@ -78,19 +98,19 @@ need; it never holds it.
 
 From a clean local checkout:
 
-1. rebuild the index from the declared sources and record its input state digest;
+1. rebuild the operation index from the declared sources and record its input state digest;
 2. resolve `sov://asset/ingest-asset` and get back the operation, its owning service, its
    manifest address, its office, and its required authority;
-3. resolve the term `Observation` and get back `CLASSIFICATION.md` as its owning document,
+3. later, resolve the term `Observation` and get back `CLASSIFICATION.md` as its owning document,
    not a restatement of the definition;
-4. resolve the domain `record` and get back its owner, mandate, budget, deadline, and
+4. later, resolve the domain `record` and get back its owner, mandate, budget, deadline, and
    witness;
 5. change one service manifest without rebuilding, then observe the index refuse to answer
    as fresh and emit a drift finding naming the source that moved;
 6. rebuild and observe the same lookup answer correctly;
-7. attempt to register an entry whose owning document address does not resolve, and observe
+7. later, attempt to register an entry whose owning document address does not resolve, and observe
    the refusal;
-8. attempt to declare an owner whose witness is itself, and observe the refusal.
+8. later, attempt to declare an owner whose witness is itself, and observe the refusal.
 
 ## Defeating cases
 

@@ -1,4 +1,4 @@
-# 0061 · A standing authorization, and the loop that spends it
+# 0064 · A standing authorization, and the loop that spends it
 
 Status: `OWNER-DIRECTED · PROPOSED`
 

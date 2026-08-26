@@ -1,4 +1,4 @@
-# 0057 · Assets are organized in typed collections, and a librarian reports on them
+# 0063 · Assets are organized in typed collections, and a librarian reports on them
 
 Status: `OWNER-DIRECTED · PROPOSED`
 

@@ -20,7 +20,7 @@ Standing: declaring a type or a collection, and filing an asset into one, are
 curatorial acts under a live grant. They are not judgement, so they do not pass
 through `ratify`. What a member claims about itself still does: conformance
 reads ratified descriptions, and an unratified one is reported as a claim rather
-than counted as a fact (`decisions/0057-asset-collections-and-the-librarian.md`).
+than counted as a fact (`decisions/0063-asset-collections-and-the-librarian.md`).
 """
 
 from __future__ import annotations

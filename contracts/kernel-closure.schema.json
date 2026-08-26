@@ -1,0 +1,224 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/kernel-closure.schema.json",
+  "title": "Soveraeign Kernel Closure (PROPOSED)",
+  "description": "A rebuildable projection over service manifests, the Kernel paradigm registry, and the authored Kernel transition table. It shows how every service binds the shared Kernel grammar without becoming a new authority source. The closure is for discovery, conformance, and AI reading; it grants nothing, settles nothing, and is never a substitute for the manifests or governing Kernel sources.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "closure_schema",
+    "status",
+    "derived_from",
+    "source_digests",
+    "input_state_digest",
+    "participants",
+    "paradigm_usage",
+    "type_ownership",
+    "transition_usage",
+    "unmapped_operations"
+  ],
+  "properties": {
+    "closure_schema": {"const": "soveraeign-kernel-closure/v1"},
+    "status": {
+      "const": "PROPOSED",
+      "description": "The current compiler cannot derive a higher standing from an authoritative source, so the projection may not promote itself."
+    },
+    "derived_from": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "input_state_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "source_digests": {
+      "description": "Raw-byte addresses and digests for every authored or governing source conditioning the closure. The aggregate input digest includes this list.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/sourceDigest"}
+    },
+    "participants": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/participant"}
+    },
+    "paradigm_usage": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/paradigmUsage"}
+    },
+    "type_ownership": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/typeOwnership"}
+    },
+    "transition_usage": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/transitionUsage"}
+    },
+    "unmapped_operations": {
+      "description": "Declared operations with no kernel_transition today. This is a visible gap list, not automatically a defect: the current Kernel contract does not yet claim every service operation is a named transition.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9-]*[.][a-z][a-z0-9-]*$"
+      }
+    }
+  },
+  "$defs": {
+    "sourceDigest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["address", "digest"],
+      "properties": {
+        "address": {"type": "string", "minLength": 1},
+        "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "participant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "service_id",
+        "standing",
+        "owns",
+        "kernel_contracts",
+        "operations",
+        "ports",
+        "depends_on",
+        "forbids"
+      ],
+      "properties": {
+        "service_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "standing": {"type": "string", "minLength": 1},
+        "owns": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "kernel_contracts": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "operations": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/operationBinding"}
+        },
+        "ports": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "depends_on": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "forbids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "operationBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["capability_id", "operation", "logical_endpoint", "subject", "crud"],
+      "properties": {
+        "capability_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*[.][a-z][a-z0-9-]*$"
+        },
+        "operation": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "logical_endpoint": {
+          "type": "string",
+          "pattern": "^sov://[a-z][a-z0-9-]*/[a-z][a-z0-9-]*$"
+        },
+        "subject": {"type": "string", "minLength": 1},
+        "crud": {"type": "string", "minLength": 1},
+        "kernel_transition": {
+          "type": "string",
+          "pattern": "^[a-z][a-z_]+$"
+        }
+      }
+    },
+    "paradigmUsage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["paradigm", "defines", "sources", "participants"],
+      "properties": {
+        "paradigm": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "defines": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"enum": ["typology", "topology", "traversal", "invariant"]}
+        },
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "participants": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*$"
+          }
+        }
+      }
+    },
+    "typeOwnership": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "owners"],
+      "properties": {
+        "type": {"type": "string", "minLength": 1},
+        "owners": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*$"
+          }
+        }
+      }
+    },
+    "transitionUsage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["transition", "operations"],
+      "properties": {
+        "transition": {
+          "type": "string",
+          "pattern": "^[a-z][a-z_]+$"
+        },
+        "operations": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*[.][a-z][a-z0-9-]*$"
+          }
+        }
+      }
+    }
+  }
+}

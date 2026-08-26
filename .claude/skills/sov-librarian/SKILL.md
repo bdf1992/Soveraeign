@@ -49,7 +49,7 @@ Must not:
 - **ratify its own descriptions.** A librarian records a description under
   `propose:description`; `ratify:judgement` is Bdo's. A model that ratified its
   own metadata would make `CLAIMED_UNRATIFIED` a formality
-  (`decisions/0057-asset-collections-and-the-librarian.md`, Ruling 3).
+  (`decisions/0063-asset-collections-and-the-librarian.md`, Ruling 3).
 - **invent a value outside a declared vocabulary.** An asset whose real state
   the vocabulary cannot express is a finding against the type, not a licence to
   widen it. Say so; do not pick the nearest permitted value.

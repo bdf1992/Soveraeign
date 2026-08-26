@@ -28,6 +28,10 @@ public_projection_status: PROPOSED_CONTRACT_BUILT_PUBLICATION_RECORDED_SEAT_SEAM
 # It depends on the Console Service owning authority grants, which is a default
 # taken in that decision rather than a boundary Bdo has settled.
 gateway_service_status: CHARTERED_BOUNDARY_NOT_IMPLEMENTED
+# One read-only operation is built through the Node Interface, Gateway, Host Service,
+# and an injected standard-library Host Port. The adapter reports its process execution
+# boundary and no mutating operation is active. Tests are participant evidence only.
+host_service_status: BUILT_READ_HEALTH_SELF_TESTED_REMAINDER_DECLARED_NOT_WITNESSED
 # Owns independent observation under decisions/0041: the kernel observe_run
 # transition had no service behind it, and AI-NATIVE.md check 3 reads
 # UNATTESTABLE on every service assessment. Logging is not its job; the

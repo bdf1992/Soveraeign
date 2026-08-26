@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/kernel-paradigms.schema.json",
+  "title": "Soveraeign Kernel Paradigm Registry (PROPOSED)",
+  "description": "Resolves the stable Kernel concern names already used by service manifests to the governing source addresses that define them. A paradigm is a coherent slice of Kernel grammar; this registry indexes definitions, it does not replace those sources or ratify their vocabulary.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["registry_schema", "status", "paradigms"],
+  "properties": {
+    "registry_schema": {"const": "soveraeign-kernel-paradigms/v1"},
+    "status": {"enum": ["PROPOSED", "RATIFIED"]},
+    "note": {"type": "string"},
+    "paradigms": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/paradigm"}
+    }
+  },
+  "$defs": {
+    "paradigm": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["paradigm", "defines", "sources", "description"],
+      "properties": {
+        "paradigm": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "defines": {
+          "description": "Which dimensions of Kernel grammar this paradigm contributes. This is indexing metadata, not a claim that the listed source files contain nothing else.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": ["typology", "topology", "traversal", "invariant"]
+          }
+        },
+        "sources": {
+          "description": "Repository-relative governing source addresses. Their contents remain authoritative over this index.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "description": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

@@ -2,13 +2,10 @@
 
 from __future__ import annotations
 
-from soveraeign_console_service.continuity import (
-    Projection,
-    read_thread,
-    session_context,
-)
+from soveraeign_console_service.continuity import Projection, read_thread, session_context
 from soveraeign_console_service.core import ConsoleService
 from soveraeign_console_service.discovery import discover, operations
+from soveraeign_console_service.routes import ConsoleRoutes
 from soveraeign_console_service.refusals import (
     AuthorityRefused,
     ConsoleRefusal,
@@ -22,19 +19,8 @@ from soveraeign_console_service.refusals import (
 )
 
 __all__ = [
-    "AuthorityRefused",
-    "ConsoleRefusal",
-    "ConsoleService",
-    "ModelClaimWithoutProposal",
-    "PinIncomplete",
-    "Projection",
-    "SessionClosed",
-    "StaleCapabilityMap",
-    "StandingClaim",
-    "ThreadArchived",
-    "UnknownRecord",
-    "discover",
-    "operations",
-    "read_thread",
-    "session_context",
+    "AuthorityRefused", "ConsoleRefusal", "ConsoleRoutes", "ConsoleService",
+    "ModelClaimWithoutProposal", "PinIncomplete", "Projection", "SessionClosed",
+    "StaleCapabilityMap", "StandingClaim", "ThreadArchived", "UnknownRecord",
+    "discover", "operations", "read_thread", "session_context",
 ]

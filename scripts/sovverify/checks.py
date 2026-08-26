@@ -218,6 +218,19 @@ CHECKS = (
           "the participant's own tests; these establish BUILT evidence about local mechanics "
           "and are explicitly NOT independent of the code they exercise",
           ("services/asset/tests",)),
+    Check("Kernel binding closure",
+          [sys.executable, "scripts/sov_kernel.py", "binding-check"], ROOT,
+          "rebuilds cross-service binding facts from manifests, paradigms, and Kernel transitions; it does not ask service implementations whether their declarations are coherent",
+          ("services", "contracts/kernel-paradigms.json", "contracts/kernel-transitions.json")),
+    Check("Node Interface projection",
+          [sys.executable, "scripts/sov_interface.py", "check"], ROOT,
+          "rebuilds from current source digests and compares the checked projection byte-for-byte; the projection cannot make itself reachable or observed",
+          ("contracts/fixtures/node-interface.reference.json", "contracts/node-interface.schema.json", "scripts/sovnode")),
+    Check("Host Service reference tests",
+          [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
+          ROOT / "services" / "host",
+          "the participant's own positive and defeating cases; they establish BUILT evidence for read-health mechanics only and never witness the adapter or host effect",
+          ("services/host/tests", "services/host/contracts", "adapters/host")),
     Check("documentation reader",
           [sys.executable, "scripts/sov_docs.py", "check"], ROOT,
           "re-renders every published document from its bytes on disk and compares the page "
@@ -238,9 +251,9 @@ CHECKS = (
           "services behind it, and reads its evidence back out of the Record Service journal "
           "instead of trusting the gateway's return value",
           ("bindings/mcp", "bindings/mcp/manifest.json")),
-    Check("repository tooling tests",
-          [sys.executable, "-m", "unittest", "discover", "-s", "scripts/tests", "-v"], ROOT,
+    Check("repository tooling tests", [sys.executable, "scripts/run_tooling_tests.py"], ROOT,
           "the harness's own tests; independent of the repository content they check, but "
-          "not of the harness itself",
-          ("scripts/tests",)),
+          "not of the harness itself; the runner partitions the complete discovered module "
+          "population and fails if any shard fails",
+          ("scripts/tests", "scripts/run_tooling_tests.py")),
 )

@@ -150,7 +150,7 @@ Bdo.
   the repository that commits and merges; it grades the request against
   `contracts/standing-grants.json` and refuses with the kernel's own refusal
   code when the grant does not cover it. Every other workflow here stops at an
-  uncommitted tree. Standing: `decisions/0061-standing-authorization-and-the-landing-loop.md`
+  uncommitted tree. Standing: `decisions/0064-standing-authorization-and-the-landing-loop.md`
   (proposed, and the shipped grant is `PROPOSED`, so the gate presently refuses
   every landing until Bdo ratifies it).
 - `workflows/sov-qa.js` — cross-domain QA sweep: sov-witness observes the

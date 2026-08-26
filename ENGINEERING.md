@@ -110,7 +110,7 @@ content-addressed payload path, which is filesystem.
 | `SPEC.md` transition | Realized by | Record | Kernel contract | Control fixture | State |
 | --- | --- | --- | --- | --- | --- |
 | `capture_source` | `AssetService.ingest` | `sources`, `versions`, CAS `blobs/sha256/` | — | `CONF-I2` | partial |
-| `read_source` | none | — | — | `CONF-I2` | **absent** — no `Reader` object exists |
+| `read_source` | none; derivative plans carry `ReaderDeclaration` materials | `derivative_plans`, `recordings`, CAS `blobs/sha256/` | — | `CONF-I2` | **absent** — recording reconstruction exists, but no component executes the declared reader |
 | `submit_proposal` | `AssetService.propose` | `proposals` | — | `CONF-I1` | partial |
 | `admit` | none | — | — | `CONF-I1` | **absent** — declared gap |
 | `ratify` | `AssetService.ratify` | `proposals`, `receipts` | — | `CONF-I5`, `CONF-I5-GRANT` | partial |

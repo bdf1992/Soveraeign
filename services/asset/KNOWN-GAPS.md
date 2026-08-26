@@ -12,7 +12,7 @@ the full Phase-I logical contract.
 | Authority envelope | Grants carry actor, capability, and scope only | Type, issuer authority, budget, validity, and revocation must be enforced | C3; PROD-I-5 |
 | Observer independence | Any named actor can call `observe`, including the worker | Observer relation must prevent executor-only settlement | C7; SPEC `Observation` |
 | Receipt completeness | Receipts omit exact input state, authority grants, preconditions, effect class, and digest | Required receipt fields must be present for every terminal outcome | C6-C8 |
-| Derivation reconstruction | Derivative records identify run and input version but omit reader version, configuration digest, fidelity omissions, and direct source resolution | Full reconstruction path must resolve deterministically | C2; PROD-I-2 |
+| Reader execution evidence | A declared recording verifies the exact reader artifact, configuration, source, and output, but not that the worker semantically executed that reader | Model binding and observation must attest execution without promoting worker self-report | C2, C7; PROD-I-2 |
 | Atomic commit | Blob writes and ledger commits are not one recoverable protocol | Partial-write recovery must distinguish committed from attempted state | SPEC fault model |
 | Two bindings | Only a Python API/CLI participant exists | Human and model bindings must use the same transition contract | C1; PROD-I-3 |
 | Attestation | Byte observation exists, but general claim attestation does not | `REPRODUCED`, `DISSENTED`, and `UNATTESTABLE` must be recorded | C5; PROD-I-8 |

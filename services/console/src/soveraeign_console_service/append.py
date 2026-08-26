@@ -54,9 +54,13 @@ def refuse(record: RecordService, error: ConsoleRefusal | UnknownRecord, event: 
            subject: str, actor: str) -> ConsoleRefusal | UnknownRecord:
     """Record a refusal as a terminal receipt, then return the error to be raised.
 
-    The receipt carries the reason code, never the message. A caller matches on a
-    stable value instead of parsing prose, and nothing an exception happens to say
-    reaches the record.
+    The receipt carries the reason code *and* the message, and this docstring said it
+    carried the code alone until 2026-08-26, six lines above the call that writes both.
+    The code is what a caller matches on - a stable value rather than prose - and the
+    message is what an operator reading the journal afterwards has to go on. Whatever an
+    exception says therefore does reach the record, which is a constraint on the
+    messages: `AuthorityRefused` names the capability and never the scope for exactly
+    this reason.
     """
     record.receipt("REFUSED", event, subject, actor,
                    {"reason_code": error.reason_code,

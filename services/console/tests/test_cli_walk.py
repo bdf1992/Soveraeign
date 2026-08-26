@@ -190,9 +190,30 @@ class ConsoleCLIWalk(unittest.TestCase):
             self.assertEqual(json.loads(out.getvalue())["reason_code"], "NO_LIVE_GRANT")
 
     def test_revoking_a_grant_that_does_not_exist_is_refused(self) -> None:
-        """`revoke --grant ""` appended a revocation naming nothing and exited 0."""
+        """`revoke --grant ""` appended a revocation naming nothing and exited 0.
+
+        Two callers, because the answer depends on what the caller holds and that is
+        the point. One holding nothing is told it holds nothing, and learns nothing
+        about whether the id names a grant. One holding `revoke:authority` is told the
+        grant is not there, which is the `grant_exists` precondition the manifest
+        declares.
+        """
         with TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
             store = Path(tmp) / "console"
+            out = StringIO()
+            with contextlib.redirect_stdout(out):
+                code = cli.main(["--root", str(store), "--node", NODE,
+                                 "revoke", "--grant", "",
+                                 "--revoked-by", BDO])
+            self.assertEqual(code, 2)
+            self.assertEqual(json.loads(out.getvalue())["reason_code"], "NO_LIVE_GRANT")
+
+            # Opening the office makes Bdo its root, which is the only way to hold
+            # `revoke:authority` on a journal that has never carried a grant.
+            with contextlib.redirect_stdout(StringIO()):
+                cli.main(["--root", str(store), "--node", NODE, "grant",
+                          "--operator", "reader", "--capability", "read:thread",
+                          "--scope", "t", "--granted-by", BDO])
             out = StringIO()
             with contextlib.redirect_stdout(out):
                 code = cli.main(["--root", str(store), "--node", NODE,

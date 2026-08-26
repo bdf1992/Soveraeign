@@ -25,14 +25,12 @@ for you is what ``authority`` reports.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Callable
 
 from soveraeign_console_service.authority import ENFORCED_AUTHORITY, held
 from soveraeign_console_service.core import ConsoleService
-from soveraeign_console_service.refusals import (
-    CapabilityMapUnreadable,
-    StaleCapabilityMap,
-)
+from soveraeign_console_service.projection import readable
+from soveraeign_console_service.refusals import StaleCapabilityMap
 
 #: What the two readings mean, carried in the response so a caller cannot mistake one for
 #: the other by reading only the numbers.
@@ -127,37 +125,6 @@ def _row(row: dict[str, Any], service_id: str, enforced: dict[str, str],
     }
 
 
-#: What this module reads out of the projection, and out of each row of it. Named rather
-#: than indexed on faith: every one of these was a bare `map[key]`, and a map that is
-#: valid JSON but short a key came back through the CLI's catch-all as `UNKNOWN_RECORD`,
-#: a code `console.discover-operations` does not declare and which says the wrong thing
-#: besides - nothing was missing from the journal, the projection was unreadable.
-MAP_KEYS = ("capabilities", "input_state_digest", "status")
-ROW_KEYS = ("capability_id", "service_id", "operation", "service_standing", "office",
-            "counter", "actor_kinds", "effect_class", "endpoints", "required_authority")
-
-
-def readable(capability_map: Any) -> None:
-    """Refuse a projection this module cannot read, naming the first thing missing."""
-    if not isinstance(capability_map, dict):
-        raise CapabilityMapUnreadable(
-            f"the capability map is a {type(capability_map).__name__}, not an object")
-    for key in MAP_KEYS:
-        if key not in capability_map:
-            raise CapabilityMapUnreadable(f"the capability map carries no {key!r}")
-    rows = capability_map["capabilities"]
-    if not isinstance(rows, list):
-        raise CapabilityMapUnreadable("the capability map's 'capabilities' is not a list")
-    for position, row in enumerate(rows):
-        if not isinstance(row, dict):
-            raise CapabilityMapUnreadable(
-                f"capability row {position} is a {type(row).__name__}, not an object")
-        for key in ROW_KEYS:
-            if key not in row:
-                raise CapabilityMapUnreadable(
-                    f"capability row {position} carries no {key!r}")
-
-
 def _live_grants(grants: list[dict[str, Any]] | None) -> dict[str, list[str]] | None:
     if grants is None:
         return None
@@ -236,7 +203,8 @@ def operations(capability_map: dict[str, Any], *, service_id: str = "console",
     }
 
 
-def discover(console: ConsoleService, capability_map: dict[str, Any],
+def discover(console: ConsoleService,
+             capability_map: dict[str, Any] | Callable[[], dict[str, Any]],
              operator_id: str, fresh: bool | None = None) -> dict[str, Any]:
     """`console.discover-operations`: what this node declares, and what this operator holds.
 
@@ -255,12 +223,18 @@ def discover(console: ConsoleService, capability_map: dict[str, Any],
     one answer cost two permits and put the permits office inside the front desk.
     They are narrowed to this node, so a grant minted by another console on the same
     journal is not reported as one this node would honour.
+
+    `capability_map` may be a projection or a callable returning one, and the callable
+    is not invoked until the grant has been shown. `cli.py` passes one, because reading
+    the file is what tells a caller whether a path exists, parses, or is a directory -
+    three answers an unauthenticated caller was getting for any path on the host, since
+    the file was read to build the argument before this function was entered at all.
     """
     entries = console.record.reconstruct()
     console.authorize(operator_id, ENFORCED_AUTHORITY["console.discover-operations"],
                       operator_id, "console.discover-operations", operator_id, entries)
     return operations(
-        capability_map,
+        capability_map() if callable(capability_map) else capability_map,
         enforced=ENFORCED_AUTHORITY,
         grants=held(entries, operator_id, console.node_id),
         operator_id=operator_id,

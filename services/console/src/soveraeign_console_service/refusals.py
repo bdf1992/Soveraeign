@@ -5,8 +5,10 @@ refusals they realize, by driving both sides on the same fact. That check reads 
 declared vocabulary, so the vocabulary is a module rather than exception classes
 scattered across the transitions that raise them.
 
-Every refusal carries a `reason_code`. A receipt records the code, never the
-message, so a caller matches on a stable value instead of parsing prose.
+Every refusal carries a `reason_code`, and a caller matches on that stable value
+instead of parsing prose. `append.refuse` records the code and the message both, so
+what a refusal says is not private to the caller who received it - which is why the
+messages here are written to name a capability rather than whose record it was.
 """
 
 from __future__ import annotations

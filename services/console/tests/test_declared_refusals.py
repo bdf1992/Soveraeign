@@ -36,7 +36,7 @@ ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "services" / "console" / "src"))
 sys.path.insert(0, str(ROOT / "services" / "record" / "src"))
 
-from soveraeign_console_service import ConsoleRoutes, ConsoleService, cli  # noqa: E402
+from soveraeign_console_service import ConsoleRoutes, ConsoleService, authority, cli  # noqa: E402
 from soveraeign_console_service.refusals import UnknownRecord  # noqa: E402
 from soveraeign_record_service import RecordService  # noqa: E402
 
@@ -174,6 +174,31 @@ class ProducedRefusals(unittest.TestCase):
         self.assertEqual(foreign["reason_code"], missing["reason_code"])
         self.assertEqual(foreign["reason_code"], UnknownRecord.reason_code)
         self.assertNotIn("node:peer", json.dumps(foreign))
+
+    def test_the_journal_does_not_restore_what_the_answer_collapsed(self) -> None:
+        """The receipts have to match too, not only the two answers.
+
+        Collapsing the answer and leaving one of the two silent moves the disclosure
+        into the record instead of closing it: a reader of the journal - or anyone who
+        can count entries - tells a foreign record from a missing one again. Dropping
+        the refusal from `core.held_record` passes every other case in this suite.
+        """
+        _, thread_id = self.peer_records()
+        for operation, subject in (("archive-thread", thread_id),
+                                   ("archive-thread", ABSENT_THREAD)):
+            before = len(self.receipts())
+            self.run_cli([operation, "--operator", BDO, "--thread", subject])
+            written = self.receipts()[before:]
+            self.assertEqual(len(written), 1, f"{subject} wrote {len(written)} receipts")
+            detail = written[0]["payload"]["detail"]
+            self.assertEqual(detail["reason_code"], UnknownRecord.reason_code)
+            self.assertEqual(written[0]["subject"], subject)
+            self.assertEqual(written[0]["payload"]["event"], f"console.{operation}")
+            # Everything except the id the caller itself supplied must be identical.
+            self.assertEqual(
+                {key: value for key, value in detail.items() if key != "message"},
+                {"reason_code": UnknownRecord.reason_code,
+                 "effect_class": "RECORD_LOCAL"})
 
     def test_a_caller_that_showed_a_grant_first_is_told_the_record_is_elsewhere(self):
         """And it is told so in a declared code, which is what the manifest must carry.
@@ -317,12 +342,158 @@ class AnUnreadableProjectionIsNotAMissingRecord(unittest.TestCase):
 
     def test_a_missing_or_unparseable_file_still_answers_in_json(self) -> None:
         for name, path in (("absent", self.tmp / "not-here.json"),
-                           ("not JSON", self.write("bad.json", "{not json"))):
+                           ("not JSON", self.write("bad.json", "{not json")),
+                           ("a directory", self.tmp)):
             with self.subTest(name):
                 code, answer = self.ask(path)
                 self.assertEqual(answer["outcome"], "REFUSED")
                 self.assertEqual(answer["reason_code"], "UNREADABLE")
                 self.assertEqual(code, 2)
+
+    def test_a_row_of_the_wrong_type_refuses_rather_than_raising(self) -> None:
+        """Presence was not enough, and checking only presence was the first repair.
+
+        A row whose `endpoints` was `[{}]` passed a presence check and then died on
+        `endpoint["activation"]`, which the CLI's catch-all labelled `UNKNOWN_RECORD`.
+        Eleven other shapes raised `TypeError` or `AttributeError` and printed no JSON
+        at all. Each case below is valid JSON, an object, with every key present.
+        """
+        cases = {
+            "endpoints as a string": ("endpoints", "sov://x"),
+            "endpoints as an object": ("endpoints", {"activation": "ACTIVE"}),
+            "endpoints as an int": ("endpoints", 3),
+            "an endpoint with no activation": ("endpoints", [{}]),
+            "an endpoint that is a string": ("endpoints", ["ACTIVE"]),
+            "actor_kinds as an int": ("actor_kinds", 2),
+            "actor_kinds as null": ("actor_kinds", None),
+            "shape as a string": ("shape", "READ"),
+            "shape as a list": ("shape", []),
+            "shape as null": ("shape", None),
+            "shape.preconditions as an int": ("shape", {"preconditions": 1}),
+            "shape.refusals as an int": ("shape", {"refusals": 1}),
+        }
+        for name, (key, value) in cases.items():
+            with self.subTest(name):
+                broken = dict(self.good)
+                rows = [dict(row) for row in broken["capabilities"]]
+                rows[0][key] = value
+                broken["capabilities"] = rows
+                code, answer = self.ask(self.write("row.json", json.dumps(broken)))
+                self.assertEqual(answer["outcome"], "REFUSED", name)
+                self.assertEqual(answer["reason_code"], "UNREADABLE", name)
+                self.assertIn(answer["reason_code"], DECLARED["discover-operations"])
+                self.assertEqual(code, 2)
+
+    def test_a_caller_holding_nothing_learns_nothing_about_the_filesystem(self) -> None:
+        """The map is read after the grant is shown, not before.
+
+        `cli` built the map argument by reading the file, so it was read before
+        `discover` was entered and therefore before the authority check. An ungranted
+        caller could hand any path on the host to `--capability-map` and tell an absent
+        file from an unparseable one from a directory, with the exception type in the
+        message. Every one of them now answers the same way: you hold nothing.
+        """
+        answers = set()
+        for path in (self.tmp / "not-here.json", self.tmp,
+                     self.write("bad.json", "{not json"),
+                     self.write("good.json", json.dumps(self.good))):
+            out = StringIO()
+            with contextlib.redirect_stdout(out):
+                code = cli.main(["--root", str(self.store), "--node", NODE,
+                                 "operations", "--operator", "stranger",
+                                 "--capability-map", str(path)])
+            answer = json.loads(out.getvalue())
+            self.assertEqual(answer["reason_code"], "NO_LIVE_GRANT", str(path))
+            self.assertEqual(code, 2)
+            answers.add(json.dumps(answer, sort_keys=True))
+        self.assertEqual(len(answers), 1, "the four paths are told apart")
+
+
+class AuthorityBeforeTheRead(unittest.TestCase):
+    """A caller holding nothing must learn nothing about which records exist.
+
+    Two operations check authority before reading, because their grant's scope is
+    known without a read: `console.revoke` scopes to the node, `console.open-thread`
+    to the channel id the caller supplied. Reordering either one turns its refusal
+    into an existence oracle for a caller with no grant at all, and the reorder
+    otherwise passes every case in this suite.
+    """
+
+    def setUp(self) -> None:
+        holder = TemporaryDirectory(ignore_cleanup_errors=True)
+        self.addCleanup(holder.cleanup)
+        self.store = Path(holder.name) / "console"
+        self.store.mkdir(parents=True)
+        self.record = RecordService(empty_journal(self.store / "journal"))
+        self.addCleanup(self.record.close)
+        console = ConsoleService(self.record, self.store, NODE)
+        console.grant("reader", "open:channel", "work", granted_by=BDO)
+        self.channel = console.open_channel("reader", "work", "work")["channel_id"]
+        self.grant = self.first_grant("reader", NODE)
+        peer = ConsoleService(self.record, self.store, "node:peer")
+        peer.grant("mallory", "open:channel", "work", granted_by="mallory")
+        self.peer_channel = peer.open_channel("mallory", "work", "work")["channel_id"]
+        peer.grant("mallory", "post:message", "t", granted_by="mallory")
+        self.peer_grant = self.first_grant("mallory", "node:peer")
+
+    def first_grant(self, operator_id: str, node_id: str) -> str:
+        """One real grant id, so the probe below names something that exists."""
+        return str(authority.held(self.record.reconstruct(), operator_id,
+                                  node_id)[0]["grant_id"])
+
+    def ask(self, arguments: list[str]) -> str:
+        out = StringIO()
+        with contextlib.redirect_stdout(out):
+            cli.main(["--root", str(self.store), "--node", NODE, *arguments])
+        return str(json.loads(out.getvalue())["reason_code"])
+
+    def test_revoke_tells_an_ungranted_caller_only_that_it_holds_nothing(self) -> None:
+        answers = {
+            "a real grant of this node": self.ask(
+                ["revoke", "--grant", self.grant, "--revoked-by", "stranger"]),
+            "a real grant of another node": self.ask(
+                ["revoke", "--grant", self.peer_grant, "--revoked-by", "stranger"]),
+            "an id nothing carries": self.ask(
+                ["revoke", "--grant", ABSENT_GRANT, "--revoked-by", "stranger"]),
+        }
+        self.assertEqual(set(answers.values()), {"NO_LIVE_GRANT"}, answers)
+
+    def test_open_thread_tells_an_ungranted_caller_only_that_it_holds_nothing(self):
+        answers = {
+            "a real channel of this node": self.ask(
+                ["open-thread", "--operator", "stranger", "--channel", self.channel,
+                 "--title", "x"]),
+            "a real channel of another node": self.ask(
+                ["open-thread", "--operator", "stranger", "--channel",
+                 self.peer_channel, "--title", "x"]),
+            "an id nothing carries": self.ask(
+                ["open-thread", "--operator", "stranger", "--channel", ABSENT_CHANNEL,
+                 "--title", "x"]),
+        }
+        self.assertEqual(set(answers.values()), {"NO_LIVE_GRANT"}, answers)
+
+
+class AUsageErrorIsStillOneJsonObject(unittest.TestCase):
+    """`--node BAD` left a `ValueError` traceback and no JSON, on every subcommand."""
+
+    def setUp(self) -> None:
+        holder = TemporaryDirectory(ignore_cleanup_errors=True)
+        self.addCleanup(holder.cleanup)
+        self.store = Path(holder.name) / "console"
+
+    def test_a_node_that_is_not_a_node_identifier_answers_in_json(self) -> None:
+        for node in ("BAD", "", "node:LOCAL", "node:local\n", "node:", "☃"):
+            with self.subTest(node=node):
+                out = StringIO()
+                with contextlib.redirect_stdout(out):
+                    code = cli.main(["--root", str(self.store), "--node", node,
+                                     "grants", "--reader", BDO])
+                answer = json.loads(out.getvalue())
+                # A usage error, not a refusal: no console opened, so no operation was
+                # attempted and no receipt carries a reason code for it.
+                self.assertEqual(answer["outcome"], "USAGE_ERROR")
+                self.assertNotIn("reason_code", answer)
+                self.assertEqual(code, 1)
 
 
 class RaisedTypesCarryTheCode(unittest.TestCase):

@@ -85,8 +85,11 @@ def _body(args: argparse.Namespace) -> bytes:
 
 def _commands() -> dict[str, Callable[[ConsoleService, argparse.Namespace], dict[str, Any]]]:
     return {
+        # The map is passed as a loader, not as bytes: reading the file is what tells a
+        # caller whether a path exists, parses, or is a directory, and `discover` does
+        # not call this until the caller has shown its grant.
         "operations": lambda c, a: discover(
-            c, _capability_map(a.capability_map), a.operator, fresh=a.fresh),
+            c, lambda: _capability_map(a.capability_map), a.operator, fresh=a.fresh),
         "grant": lambda c, a: c.grant(a.operator, a.capability, a.scope, a.granted_by),
         "revoke": lambda c, a: c.revoke(a.grant, a.revoked_by),
         "grants": lambda c, a: {"live_grants": c.grants(reader_id=a.reader,
@@ -225,7 +228,17 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    console = _open(args.root, args.node)
+    try:
+        # Opening the console was outside this block, so `--node BAD` - and every other
+        # spelling `contracts/node-identity.schema.json` refuses - left a `ValueError`
+        # traceback on stderr and nothing on stdout, on every subcommand, against this
+        # module's own promise that every answer including a refusal is one JSON object.
+        console = _open(args.root, args.node)
+    except ValueError as malformed:
+        # A usage error and not a refusal: no console was opened, so no operation was
+        # attempted, nothing was refused and no receipt exists to carry a reason code.
+        # Exit 1 is what this module's own docstring says a usage error is.
+        return _emit({"outcome": "USAGE_ERROR", "message": str(malformed)}, 1)
     try:
         return _emit(_commands()[args.command](console, args))
     except ConsoleRefusal as refusal:

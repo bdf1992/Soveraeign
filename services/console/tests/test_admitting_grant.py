@@ -285,6 +285,30 @@ class TheFoldReadsAGrantOnce(ConsoleCase):
         self.console.open_channel("ana", "governance channel", "governance")
         self.assertEqual(cited(self.record.reconstruct(), "console.open-channel"), [held])
 
+    def test_a_nodeless_revocation_does_not_withdraw_a_nodeless_grant_either(self) -> None:
+        """The one journal shape the node comparison alone would have let through.
+
+        `None == None`, so a revocation carrying no node withdrew a grant carrying no
+        node - two unattributable records cancelling each other. Neither could ever
+        admit anything, so nothing is gained by honouring it, and the rule the fold
+        states is that a record naming no office does not act as one.
+        """
+        payload = {"grant_id": "grant_nonodeatall00", "operator_id": "ana",
+                   "capability": "open:channel", "scope": "governance",
+                   "granted_by": FOUNDER, "granted_at": self.console.stamp(),
+                   "standing": "RECORDED"}
+        self.record.append("EVENT", payload["grant_id"], FOUNDER,
+                           dict(payload, record_kind=authority.GRANT_KIND))
+        self.record.append("EVENT", payload["grant_id"], "nobody", {
+            "record_kind": authority.REVOCATION_KIND, "grant_id": payload["grant_id"],
+            "revoked_by": "nobody", "revoked_at": self.console.stamp(),
+            "standing": "RECORDED"})
+        self.assertIn(payload["grant_id"],
+                      authority.live_grants(self.record.reconstruct()))
+        # And it still admits nothing, which is the other half of the same rule.
+        with self.assertRaises(AuthorityRefused):
+            self.console.open_channel("ana", "governance channel", "governance")
+
 
 if __name__ == "__main__":
     unittest.main()

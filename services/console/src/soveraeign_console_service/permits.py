@@ -139,17 +139,21 @@ def withdraw(console: "ConsoleService", grant_id: str,
     withdrawing left a `COMMITTED` receipt naming a grant the same record revoked.
     """
     entries = console.record.reconstruct()
+    # Authority first, and it costs nothing to put it first: this grant's scope is the
+    # node, which is known without reading anything. Reading the target first collapsed
+    # absent and foreign into one answer but still told a caller holding nothing that a
+    # grant id *existed*, by answering NO_LIVE_GRANT for a real one and UNKNOWN_RECORD
+    # for an invented one - and, run under a second `--node`, which office minted it.
+    require(console.record, entries, console.node_id, revoked_by,
+            REVOKE_CAPABILITY, console.node_id, "console.revoke", grant_id)
     target = grant_record(entries, grant_id)
     # `grant_exists` is a declared precondition and this branch enforced nothing, so
     # `revoke --grant ""` appended a revocation naming no grant and exited 0. A grant
-    # this node's office did not mint is answered as missing rather than as another
-    # node's: this runs before the authority check, so a caller holding nothing could
-    # otherwise sweep grant ids and learn which existed and which office issued them.
+    # this node's office did not mint is still answered as missing: holding
+    # `revoke:authority` here says nothing about the peer whose office minted it.
     if target is None or target.get("node_id") != console.node_id:
         raise console.refusal(UnknownRecord(grant_id), "console.revoke", grant_id,
                               revoked_by)
-    require(console.record, entries, console.node_id, revoked_by,
-            REVOKE_CAPABILITY, console.node_id, "console.revoke", grant_id)
     capability = target["capability"]
     if (capability in OFFICE_CAPABILITIES and target["scope"] == console.node_id
             and not _other_holders(entries, console.node_id, capability, grant_id)):

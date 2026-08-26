@@ -8,7 +8,11 @@
     "source",
     "derivation-lineage",
     "asset-relationship",
-    "asset-use-record"
+    "asset-use-record",
+    "collection-type",
+    "asset-collection",
+    "collection-membership",
+    "library-conformance"
   ],
   "references": [
     "shared-kernel-contracts"
@@ -211,12 +215,132 @@
         "AUTHORITY_REFUSED",
         "GRANT_NOT_COVERED"
       ]
+    },
+    {
+      "operation": "declare-collection-type",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://asset/declare-collection-type",
+      "subject": "collection-type",
+      "crud": "CREATE",
+      "requirement": "PROD-I-2",
+      "preconditions": [
+        "declared_spec",
+        "type_undeclared",
+        "live_grant"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "GRANT_NOT_COVERED",
+        "INCOMPLETE_PROPOSAL",
+        "POLICY_REFUSED",
+        "STALE_STATE"
+      ]
+    },
+    {
+      "operation": "declare-collection",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://asset/declare-collection",
+      "subject": "asset-collection",
+      "crud": "CREATE",
+      "requirement": "PROD-I-2",
+      "preconditions": [
+        "type_declared",
+        "declared_label",
+        "live_grant"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "GRANT_NOT_COVERED",
+        "TYPE_UNDECLARED"
+      ]
+    },
+    {
+      "operation": "add-member",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://asset/add-member",
+      "subject": "collection-membership",
+      "crud": "CREATE",
+      "requirement": "PROD-I-2",
+      "preconditions": [
+        "collection_exists",
+        "asset_exists",
+        "role_admitted",
+        "live_grant"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "GRANT_NOT_COVERED",
+        "MISSING_PRECONDITION",
+        "DUPLICATE_MEMBERSHIP",
+        "MEMBER_KIND_REFUSED"
+      ]
+    },
+    {
+      "operation": "remove-member",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://asset/remove-member",
+      "subject": "collection-membership",
+      "crud": "COUNTER",
+      "requirement": "PROD-I-4",
+      "kernel_transition": "retract",
+      "preconditions": [
+        "membership_exists",
+        "live_retraction_grant",
+        "declared_reason"
+      ],
+      "commit": "COUNTERED",
+      "refusals": [
+        "AUTHORITY_REFUSED",
+        "GRANT_NOT_COVERED"
+      ]
+    },
+    {
+      "operation": "read-collection",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://asset/read-collection",
+      "subject": "asset-collection",
+      "crud": "READ",
+      "requirement": "PROD-I-2",
+      "also_reads": [
+        "collection-membership",
+        "collection-type"
+      ],
+      "preconditions": [
+        "collection_exists"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "MISSING_PRECONDITION"
+      ]
+    },
+    {
+      "operation": "read-library-conformance",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://asset/read-library-conformance",
+      "subject": "library-conformance",
+      "crud": "READ",
+      "requirement": "PROD-I-2",
+      "also_reads": [
+        "asset-collection",
+        "collection-membership",
+        "collection-type"
+      ],
+      "preconditions": [
+        "authoritative_records_readable"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "UNREADABLE"
+      ]
     }
   ],
   "local_refusals": {
     "GRANT_NOT_COVERED": "AUTHORITY_REFUSED",
     "PAYLOAD_ABSENT": "UNREADABLE",
     "SOURCE_UNREACHABLE": "UNREADABLE",
+    "TYPE_UNDECLARED": "MISSING_PRECONDITION",
+    "MEMBER_KIND_REFUSED": "POLICY_REFUSED",
+    "DUPLICATE_MEMBERSHIP": "STALE_STATE",
     "VERSION_UNKNOWN": "MISSING_PRECONDITION"
   },
   "undeclared_events": [

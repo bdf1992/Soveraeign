@@ -31,7 +31,9 @@ a named boundary and decision record; import participant code into the oracle.
 - `services/asset/KNOWN-GAPS.md` - observed gaps vs proposed SPEC (work surface)
 - `services/asset/contracts/service.json` - service contract (owns/operations/forbids)
 - `services/asset/contracts/ai-native-asset-service.yaml` - narrative contract
-- `services/asset/src/soveraeign_asset_service/core.py` - participant (over 300 lines; named gap)
+- `services/asset/src/soveraeign_asset_service/core.py` - participant lifecycle
+- `services/asset/src/soveraeign_asset_service/organization.py` - typed collections and membership (`sov-librarian` owns curation)
+- `services/asset/src/soveraeign_asset_service/librarian.py` - the conformance read over them
 - `services/asset/src/soveraeign_asset_service/cli.py` - CLI binding
 - `services/asset/tests/test_walking_skeleton.py` - self-tests (BUILT evidence only)
 - `services/asset/scripts/conformance_observations.py` - observation adapter

@@ -1,0 +1,237 @@
+{
+  "corpus_id": "soveraeign-authority-grant-cases/v1",
+  "note": "Positive and defeating cases for contracts/authority-grant.schema.json and the evaluator in scripts/sovkernel/authority.py. Two cases prove a live grant covers a request; nineteen prove a refusal, and every refusal code the evaluator can report has at least one case proving it actually fires. Each case is a patch over base_grant and base_request, so what a case says is exactly what it changes; a field a case does not mention is the base value, and a field neither mentions is absent rather than satisfied.",
+  "base_grant": {
+    "grant_schema": "soveraeign-authority-grant/v1",
+    "status": "RATIFIED",
+    "grant_id": "grant:corpus-landing",
+    "issuer_id": "bdo",
+    "actor_id": "sov",
+    "authority_type": "VERIFICATION",
+    "capabilities": ["repository.commit", "repository.land"],
+    "scope": {
+      "paths": ["services/", "contracts/", "conformance/", "scripts/", ".claude/"],
+      "excluded_paths": ["contracts/standing-grants.json", "decisions/", "STATUS.yaml",
+                         "SPEC.md", "AGENTS.md"],
+      "branches": ["main"]
+    },
+    "budget": {"unit": "agent_invocations", "ceiling": 60},
+    "preconditions": {
+      "required_checks": ["verify", "lint"],
+      "requires_independent_observation": true
+    },
+    "effect_ceiling": "RESOURCE_CONSUMPTION",
+    "valid_from": "2026-08-25T00:00:00Z",
+    "valid_until": "2026-11-23T00:00:00Z",
+    "revoked_at": null
+  },
+  "base_request": {
+    "request_schema": "soveraeign-authority-request/v1",
+    "actor_id": "sov",
+    "capability": "repository.land",
+    "effect_class": "RESOURCE_CONSUMPTION",
+    "at": "2026-09-01T12:00:00Z",
+    "branch": "main",
+    "paths": ["services/asset/src/soveraeign_asset_service/core.py"],
+    "spend": {"unit": "agent_invocations", "amount": 12},
+    "evidence": {
+      "checks": {"verify": "PASS", "lint": "PASS"},
+      "observation": {
+        "observer_id": "sov-witness-01",
+        "contributed_to_build": false,
+        "verdict": "CONFIRMED"
+      }
+    }
+  },
+  "cases": [
+    {
+      "case_id": "P-001-witnessed-green-in-scope-landing",
+      "expect": "PERMITTED",
+      "proves": "The whole point of the standing grant: a change inside scope, on an admitted branch, under budget, with a green verify and lint and an independent CONFIRMED observation, lands without a fresh conversation.",
+      "grant_patch": {},
+      "request_patch": {}
+    },
+    {
+      "case_id": "P-002-record-local-commit-under-a-heavier-ceiling",
+      "expect": "PERMITTED",
+      "proves": "A ceiling admits every class at or below it. A RECORD_LOCAL commit is covered by a RESOURCE_CONSUMPTION grant; the ceiling is a maximum, not an equality.",
+      "grant_patch": {},
+      "request_patch": {"capability": "repository.commit", "effect_class": "RECORD_LOCAL"}
+    },
+    {
+      "case_id": "D-001-grant-not-yet-ratified",
+      "expect": "AUTHORITY_REFUSED",
+      "proves": "Writing a grant is not the same act as switching it on. A grant at PROPOSED standing is inert, so a participant cannot author its own authority into effect.",
+      "grant_patch": {"status": "PROPOSED"},
+      "request_patch": {}
+    },
+    {
+      "case_id": "D-002-grant-names-another-actor",
+      "expect": "AUTHORITY_REFUSED",
+      "proves": "A grant is exercised by the actor it names and by nobody else.",
+      "grant_patch": {"actor_id": "some-other-profile"},
+      "request_patch": {}
+    },
+    {
+      "case_id": "D-003-capability-not-carried",
+      "expect": "AUTHORITY_REFUSED",
+      "proves": "Scope is per capability. A grant that can land cannot thereby ratify; the capability list is exhaustive.",
+      "grant_patch": {},
+      "request_patch": {"capability": "standing.ratify"}
+    },
+    {
+      "case_id": "D-004-grant-revoked",
+      "expect": "AUTHORITY_REFUSED",
+      "proves": "Revocation refuses visibly (SPEC.md, PROD-I-5), and refuses on its own without waiting for the expiry.",
+      "grant_patch": {"revoked_at": "2026-08-30T00:00:00Z"},
+      "request_patch": {}
+    },
+    {
+      "case_id": "D-005-request-before-valid-from",
+      "expect": "AUTHORITY_REFUSED",
+      "proves": "A grant issued for a future window does not reach backwards.",
+      "grant_patch": {},
+      "request_patch": {"at": "2026-08-01T12:00:00Z"}
+    },
+    {
+      "case_id": "D-006-grant-expired",
+      "expect": "AUTHORITY_REFUSED",
+      "proves": "A standing grant that never has to be renewed stops being a decision. Past valid_until it refuses, and nothing in the loop can extend it.",
+      "grant_patch": {},
+      "request_patch": {"at": "2027-01-04T12:00:00Z"}
+    },
+    {
+      "case_id": "D-007-path-inside-an-excluded-prefix",
+      "expect": "AUTHORITY_REFUSED",
+      "proves": "An exclusion beats an inclusion. decisions/ sits under no included prefix and is excluded besides, so the loop cannot record its own policy.",
+      "grant_patch": {},
+      "request_patch": {"paths": ["services/asset/src/core.py", "decisions/0061-x.md"]}
+    },
+    {
+      "case_id": "D-008a-grant-cannot-widen-itself",
+      "expect": "AUTHORITY_REFUSED",
+      "proves": "The registry sits under contracts/, which the grant otherwise admits. Excluding it by name is what stops an exercise of the grant from widening the grant it is being exercised under.",
+      "grant_patch": {},
+      "request_patch": {"paths": ["contracts/standing-grants.json"]}
+    },
+    {
+      "case_id": "D-008-path-outside-every-included-prefix",
+      "expect": "AUTHORITY_REFUSED",
+      "proves": "Scope is an allow list, not a deny list. A path nobody thought to exclude is still outside the grant unless a prefix admits it.",
+      "grant_patch": {},
+      "request_patch": {"paths": ["README.md"]}
+    },
+    {
+      "case_id": "D-009-branch-not-admitted",
+      "expect": "AUTHORITY_REFUSED",
+      "proves": "The branches a grant names are the branches it reaches. A grant to land on main is not a grant to land anywhere.",
+      "grant_patch": {},
+      "request_patch": {"branch": "release/1.0"}
+    },
+    {
+      "case_id": "D-010-budget-exceeded",
+      "expect": "AUTHORITY_REFUSED",
+      "proves": "An over-budget grant refuses visibly (SPEC.md, PROD-I-5). A run that sprawled past its envelope stops at the landing gate rather than at nothing.",
+      "grant_patch": {},
+      "request_patch": {"spend": {"unit": "agent_invocations", "amount": 61}}
+    },
+    {
+      "case_id": "D-011-effect-class-above-the-ceiling",
+      "expect": "AUTHORITY_REFUSED",
+      "proves": "A RECORD_LOCAL grant does not stretch to cover resource consumption merely because the work is otherwise in scope.",
+      "grant_patch": {"effect_ceiling": "RECORD_LOCAL"},
+      "request_patch": {}
+    },
+    {
+      "case_id": "D-012-judgement-authority-issued-by-a-non-owner",
+      "expect": "AUTHORITY_REFUSED",
+      "proves": "JUDGEMENT authority may be issued by the owner alone. A participant that writes itself a judgement grant has written nothing.",
+      "grant_patch": {
+        "authority_type": "JUDGEMENT",
+        "issuer_id": "sov",
+        "capabilities": ["standing.ratify"]
+      },
+      "request_patch": {"capability": "standing.ratify"}
+    },
+    {
+      "case_id": "D-013-external-world-effect-refused-by-phase",
+      "expect": "EFFECT_CLASS_REFUSED",
+      "proves": "Phase FOUNDING admits no external-world effect, and the phase refuses before any grant is consulted. No grant can be written that gets around it.",
+      "grant_patch": {"effect_ceiling": "EXTERNAL_WORLD"},
+      "request_patch": {"effect_class": "EXTERNAL_WORLD"}
+    },
+    {
+      "case_id": "D-014-no-independent-observation-offered",
+      "expect": "OBSERVATION_MISSING",
+      "proves": "A build cannot witness itself. A landing request carrying only its own green checks is a self-report, and the gate says so.",
+      "grant_patch": {},
+      "request_patch": {
+        "evidence": {"checks": {"verify": "PASS", "lint": "PASS"}, "observation": null}
+      }
+    },
+    {
+      "case_id": "D-015-observation-did-not-confirm",
+      "expect": "OBSERVATION_MISSING",
+      "proves": "An observation that exists but does not confirm is not an observation the gate can stand on. Only CONFIRMED counts.",
+      "grant_patch": {},
+      "request_patch": {
+        "evidence": {
+          "checks": {"verify": "PASS", "lint": "PASS"},
+          "observation": {
+            "observer_id": "sov-witness-01",
+            "contributed_to_build": false,
+            "verdict": "DISSENTED"
+          }
+        }
+      }
+    },
+    {
+      "case_id": "D-016-observer-was-inside-the-build",
+      "expect": "OBSERVER_NOT_INDEPENDENT",
+      "proves": "A helper that read or edited the change is inside the build and can never witness it (AGENTS.md, Closure ownership). The gate refuses the substitution rather than trusting the label.",
+      "grant_patch": {},
+      "request_patch": {
+        "evidence": {
+          "checks": {"verify": "PASS", "lint": "PASS"},
+          "observation": {
+            "observer_id": "sov-worker-03",
+            "contributed_to_build": true,
+            "verdict": "CONFIRMED"
+          }
+        }
+      }
+    },
+    {
+      "case_id": "D-017-required-check-absent-from-the-evidence",
+      "expect": "MISSING_PRECONDITION",
+      "proves": "A check the request does not mention is absent, never satisfied. Silence is not a pass.",
+      "grant_patch": {},
+      "request_patch": {
+        "evidence": {
+          "checks": {"lint": "PASS"},
+          "observation": {
+            "observer_id": "sov-witness-01",
+            "contributed_to_build": false,
+            "verdict": "CONFIRMED"
+          }
+        }
+      }
+    },
+    {
+      "case_id": "D-018-required-check-failed",
+      "expect": "MISSING_PRECONDITION",
+      "proves": "main stays releasable. A failing repository check stops the landing at the gate, not at review.",
+      "grant_patch": {},
+      "request_patch": {
+        "evidence": {
+          "checks": {"verify": "PASS", "lint": "FAIL"},
+          "observation": {
+            "observer_id": "sov-witness-01",
+            "contributed_to_build": false,
+            "verdict": "CONFIRMED"
+          }
+        }
+      }
+    }
+  ]
+}

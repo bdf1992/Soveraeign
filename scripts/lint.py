@@ -163,6 +163,44 @@ def check_decision_numbers(directory: Path) -> list[str]:
             for number, names in sorted(by_number.items()) if len(names) > 1]
 
 
+def check_duplicate_keys(path: Path, text: str) -> list[str]:
+    """Report every top-level key a YAML document declares more than once.
+
+    A YAML reader keeps the last value and discards the earlier one without a word,
+    so a duplicated key is a silent deletion rather than a conflict anyone sees.
+
+    Reported as named debt rather than as a defect, because in `STATUS.yaml` the eight
+    current duplicates are not typos and deleting one would destroy a claim. That file
+    writes three kinds of statement into one flat namespace: a general status, an
+    `OWNER_ACCEPTED_A*` value carried by an acceptance packet, and a `RULED_*` value
+    that its own comment calls a reversible default which "is not owner acceptance and
+    does not claim to be". Where both are written, the reversible default wins the key
+    and the owner acceptance disappears - on `sov_operating_agent_status` it also drops
+    `NOT_WITNESSED` from the standing the document records. Repairing that means
+    deciding how two kinds of claim about one subject are represented, which is a
+    governing choice and not a lint fix. The check names it so it stops being invisible.
+
+    Only column-zero keys are read. Nested duplicates are a real defect this does not
+    catch, and saying that is better than implying the file is clean.
+    """
+    if path.suffix not in {".yaml", ".yml"}:
+        return []
+    seen: dict[str, int] = {}
+    duplicated: dict[str, int] = {}
+    for line in text.splitlines():
+        match = re.match(r"^([A-Za-z_][A-Za-z0-9_-]*):", line)
+        if not match:
+            continue
+        key = match.group(1)
+        seen[key] = seen.get(key, 0) + 1
+        if seen[key] > 1:
+            duplicated[key] = seen[key]
+    relative = path.relative_to(ROOT).as_posix()
+    return [f"{relative}: key '{key}' is declared {count} times; a YAML reader keeps only "
+            "the last value and discards the rest"
+            for key, count in sorted(duplicated.items())]
+
+
 def main() -> int:
     defects = []
     warnings = []
@@ -184,6 +222,7 @@ def main() -> int:
             defects.append(f"{relative}: not valid UTF-8 at byte {error.start}")
             continue
         defects.extend(check_text(path, text))
+        warnings.extend(check_duplicate_keys(path, text))
         if path.suffix == ".py":
             python_count += 1
             python_defects, python_warnings = check_python(path, text)

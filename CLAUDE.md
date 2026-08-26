@@ -91,8 +91,8 @@ human and model operators share one world. Two records define it:
 Every governed design claim carries artifact standing,
 `OPEN -> BUILT -> WITNESSED -> RATIFIED`; operational records use the distinct
 standing defined in `SPEC.md`. Every consequential transition needs a typed,
-scoped, live grant. Phase is `FOUNDING`; the next gate is
-`F0_FOUNDING_CLOSURE`.
+scoped, live grant. Phase is `FOUNDING`; `STATUS.yaml` owns the gate and
+currently reads `next_gate: EVIDENCE_PRODUCING_EXECUTION`.
 
 ## Repository snapshot (informational)
 
@@ -156,7 +156,7 @@ ruling (`decisions/0033-close-the-founding-docket.md`, Ruling 1). Escalating a
 question this session could have settled with available evidence is a defect,
 not caution.
 
-What genuinely waits on Bdo is `external_acceptance_holds` in `STATUS.yaml`
+What genuinely waits on Bdo is `owner_holds` in `STATUS.yaml`
 (today: public release clearance), plus owner-held product intent, public
 naming, external commitment, irreversible external effects, secrets, and
 destructive repository administration. Bdo's gate is acceptance over an
@@ -169,8 +169,13 @@ evidenced result, never permission to begin
   domain: "...", plan_only: true }`. It runs control, orchestration, work, an
   independent witness, then `python scripts/sov_land.py`, the only place in the
   repository that commits and merges. The gate grades the landing against
-  `contracts/standing-grants.json`; the shipped grant is `PROPOSED`, so it
-  presently refuses every landing until Bdo ratifies it
+  `contracts/standing-grants.json`. `grant:standing-landing-loop` is `RATIFIED`
+  (Bdo, 2026-08-25, `decisions/0065-standing-grant-ratified.md`): actor `sov`,
+  capabilities `repository.commit` and `repository.land`, scope excluding
+  `decisions/`, `STATUS.yaml`, `lineage/`, `.github/` and every root governing
+  document. What refuses a landing now is evidence, not permission: the grant
+  requires `verify` PASS, `lint` PASS, and an independent observation from a
+  participant that did not build the change
   (`decisions/0064-standing-authorization-and-the-landing-loop.md`).
 - Whole stack: Workflow `sov-federation`, optionally
   `{ domains: [...], objective: "...", sequential: true }`.
@@ -228,7 +233,7 @@ it as current (`LESSONS.md` L-0001). Correct the page rather than the tolerance.
 | Need | Open |
 | --- | --- |
 | Which tier settles a decision | `decisions/0033-close-the-founding-docket.md`, Ruling 1 |
-| What genuinely waits on Bdo | `STATUS.yaml`, `external_acceptance_holds` |
+| What genuinely waits on Bdo | `STATUS.yaml`, `owner_holds` |
 | A term or enum | `CLASSIFICATION.md`, then `SPEC.md` |
 | Whether a surface is AI-native | `AI-NATIVE.md` |
 | Harness layout and invocation | `.claude/README.md` |

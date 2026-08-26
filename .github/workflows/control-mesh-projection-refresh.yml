@@ -1,0 +1,41 @@
+name: control mesh projection refresh
+
+on:
+  push:
+    branches: [feat/sov-control-mesh]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: control-mesh-projection-refresh
+  cancel-in-progress: true
+
+jobs:
+  refresh:
+    if: ${{ !contains(github.event.head_commit.message, '[projection-refresh]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/sov-control-mesh
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Rebuild checked projections
+        run: |
+          python scripts/sov_docs.py build
+          python scripts/sov_surface.py render
+      - name: Commit exact generated outputs
+        run: |
+          git add docs/documentation.html docs/surface.html
+          if git diff --cached --quiet; then
+            echo "No projection changes"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "docs: refresh control mesh projections [projection-refresh]"
+          git push origin HEAD:feat/sov-control-mesh

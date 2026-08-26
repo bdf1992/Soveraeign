@@ -13,39 +13,18 @@ questions that genuinely need a repository are asked here instead.
 
 from __future__ import annotations
 
+from hashlib import sha256
 from pathlib import Path
 import json
 import subprocess
 import sys
 
-ROOT = Path(__file__).resolve().parents[2]
-
-
-class LandingRefused(Exception):
-    """The gate cannot honestly grade this landing, so it refuses instead of failing."""
-
-
-def _git(*argv: str) -> str:
-    """Run one git command in the repository root and return its stdout."""
-    done = subprocess.run(["git", *argv], cwd=ROOT, capture_output=True, text=True)
-    if done.returncode != 0:
-        raise RuntimeError(f"git {' '.join(argv)} failed: {done.stderr.strip()}")
-    return done.stdout
-
-
-def current_branch() -> str:
-    return _git("rev-parse", "--abbrev-ref", "HEAD").strip()
-
-
-def dirty_paths() -> list[str]:
-    """Every path git reports as changed, in porcelain order."""
-    lines = [line for line in _git("status", "--porcelain").splitlines() if line.strip()]
-    return [line[3:].strip().strip('"').split(" -> ")[-1] for line in lines]
+from sovland import repo
 
 
 def _run_check(name: str, argv: list[str]) -> str:
     """Run one repository check and reduce it to PASS or FAIL."""
-    done = subprocess.run([sys.executable, *argv], cwd=ROOT, capture_output=True, text=True)
+    done = subprocess.run([sys.executable, *argv], cwd=repo.ROOT, capture_output=True, text=True)
     return "PASS" if done.returncode == 0 else "FAIL"
 
 
@@ -57,44 +36,6 @@ def gather_checks(skip: bool) -> dict[str, str]:
         "lint": _run_check("lint", ["scripts/lint.py"]),
         "verify": _run_check("verify", ["scripts/verify.py"]),
     }
-
-
-def carried_paths(target: str, branch: str) -> list[str]:
-    """Every path the merge would move onto the target.
-
-    `--path` says what this landing stages. It never said what the merge carries.
-    `git merge --no-ff` moves every commit already on the branch, and those paths
-    were never shown to the evaluator, so the exclusion list was not decorative -
-    it was simply not asked. Reproduced on 2026-08-25 in a throwaway clone:
-    `.github/probe-workflow.yml`, which the standing grant excludes by name,
-    reached the target PERMITTED while the gate was only ever asked about
-    `scripts/lint.py`.
-
-    `decisions/0064` names a landed commit touching `decisions/` or `STATUS.yaml`
-    as defeating its ruling. This is not that commit - the probe used a different
-    excluded path - but it is the mechanism that would produce it, and the record
-    should be read as having been reachable rather than as having been defeated.
-    An earlier version of this docstring said 0064 named this case; a witness
-    checked the record and it does not.
-
-    The graded set is now this range plus whatever is about to be staged. Staging
-    still follows `--path` alone; a path already committed needs no `git add`,
-    and adding one would sweep in whatever is dirty there.
-    """
-    try:
-        out = _git("diff", "--name-only", f"{target}...{branch}")
-    except RuntimeError as exc:
-        raise LandingRefused(
-            f"cannot compute what a merge onto {target} would carry: {exc}. Until that "
-            "range is readable the gate cannot know what it is grading, so it refuses "
-            "rather than grading the staged paths alone.") from exc
-    return [line.strip() for line in out.splitlines() if line.strip()]
-
-
-def _commit_span(target: str, branch: str) -> tuple[int, int]:
-    """How many commits the branch is ahead of and behind the target."""
-    counts = _git("rev-list", "--left-right", "--count", f"{target}...{branch}").split()
-    return int(counts[1]), int(counts[0])
 
 
 def repo_relative(raw: str) -> str:
@@ -129,10 +70,10 @@ def repo_relative(raw: str) -> str:
     trailing = "/" if raw.rstrip().endswith(("/", "\\")) else ""
     candidate = Path(raw)
     if not candidate.is_absolute():
-        candidate = ROOT / candidate
+        candidate = repo.ROOT / candidate
     resolved = candidate.resolve()
     try:
-        return resolved.relative_to(ROOT).as_posix() + trailing
+        return resolved.relative_to(repo.ROOT).as_posix() + trailing
     except ValueError:
         return resolved.as_posix() + trailing
 
@@ -146,7 +87,74 @@ def directory_paths(paths: list[str]) -> list[str]:
     path. The evaluator cannot see it - it holds no filesystem - but the caller
     can, so the refusal belongs here.
     """
-    return [p for p in paths if (ROOT / p).is_dir()]
+    return [p for p in paths if (repo.ROOT / p).is_dir()]
+
+
+def fingerprint(paths: list[str]) -> dict[str, str]:
+    """What each path is right now: its bytes, or that it is a directory or absent.
+
+    The gate grades a set and then stages it, and `gather_checks` runs `verify`
+    and `lint` in between. Measured at twelve seconds. Everything graded is that
+    stale by the time `git add` runs, and `git add` stages the bytes on disk then,
+    not the bytes that were graded - so a file another session edits inside the
+    window is committed under evidence that read the old content, in a working
+    directory this repository expects several sessions to share.
+
+    Taking a fingerprint at grade time and comparing it immediately before
+    staging does not shrink the window. It makes the window fail closed: a
+    landing whose evidence has stopped describing the tree refuses instead of
+    committing something nobody graded.
+    """
+    seen: dict[str, str] = {}
+    for path in paths:
+        target = repo.ROOT / path
+        if target.is_symlink():
+            # Before is_file(), which follows the link and reads the target's
+            # bytes. git stores a symlink as mode 120000 with the link target as
+            # the blob, so hashing what it points at says "unchanged" about an
+            # object whose kind changed.
+            seen[path] = "symlink:" + str(target.readlink())
+        elif target.is_dir():
+            seen[path] = "directory"
+        elif target.is_file():
+            seen[path] = "sha256:" + sha256(target.read_bytes()).hexdigest()
+        elif repo.tracked(path):
+            # Deleted, but git knows it. `git add` on this exits 0 and stages the
+            # removal, which is exactly right. An earlier version called this
+            # `absent` alongside a path that never existed and refused both, so
+            # the gate could not land a deletion at all.
+            seen[path] = "deleted"
+        else:
+            seen[path] = "absent"
+    return seen
+
+
+def drifted(before: dict[str, str], after: dict[str, str]) -> list[str]:
+    """Name every path whose fingerprint changed between grading and staging."""
+    return sorted(p for p, was in before.items() if after.get(p) != was)
+
+
+def staged_wrong(paths: list[str], graded_blobs: dict[str, str]) -> list[str]:
+    """Paths whose staged object is not what was graded, read from the index itself.
+
+    Comparing before `git add` narrows the stale-evidence window to one subprocess
+    spawn; it does not close it. `git rev-parse :<path>` reads the index, which is
+    precisely what the commit will contain, so comparing after staging and before
+    committing closes it exactly. Nothing is committed at that point, so a
+    mismatch costs a `git reset` and no effect has occurred.
+    """
+    return sorted(p for p in paths if repo.index_blob(p) != graded_blobs.get(p))
+
+
+def absent_paths(fingerprints: dict[str, str]) -> list[str]:
+    """Paths that never existed, which `git add` errors on rather than refusing.
+
+    A predicate rather than an inline comprehension, so it can be tested for
+    identity the way `directory_paths`, `drifted` and `staged_wrong` are. Six
+    refusals in `cmd_land` all return 2, and asserting on printed prose couples a
+    test to wording; asserting on the predicate does not.
+    """
+    return sorted(p for p, state in fingerprints.items() if state == "absent")
 
 
 def _held_elsewhere(paths: list[str]) -> list[str]:
@@ -156,7 +164,7 @@ def _held_elsewhere(paths: list[str]) -> list[str]:
     asking session, so the gate asks it rather than re-deriving who is who.
     """
     done = subprocess.run([sys.executable, "scripts/sov_session.py", "contested", "--json"],
-                          cwd=ROOT, capture_output=True, text=True)
+                          cwd=repo.ROOT, capture_output=True, text=True)
     if done.returncode != 0:
         return [f"could not read contested paths: {done.stderr.strip()}"]
     try:
@@ -174,9 +182,19 @@ def _held_elsewhere(paths: list[str]) -> list[str]:
     held = []
     for entry in contested:
         path = entry.get("path") if isinstance(entry, dict) else str(entry)
-        seen = repo_relative(path or ".").rstrip("/")
-        if any(seen == w or seen.startswith(w + "/") or w.startswith(seen + "/")
-               for w in wanted):
+        if not path:
+            # A claim record with no path resolved to the repository root through
+            # the `or "."` fallback, and the whole-tree condition then blocked
+            # every landing in the repository on one malformed record.
+            continue
+        seen = repo_relative(path).rstrip("/")
+        # `repo_relative` normalises the repository root to `.`, and no ordinary
+        # path starts with `./`, so a session holding the whole tree matched
+        # nothing in either direction. Claiming everything is not ordinary use,
+        # but it is recordable, and a collision check that misses the largest
+        # possible claim is the wrong way round.
+        if seen == "." or any(seen == w or seen.startswith(w + "/")
+                              or w.startswith(seen + "/") for w in wanted):
             holder = entry.get("holder", "another session") if isinstance(entry, dict) else "?"
             held.append(f"{path}: held by {holder}")
     return held

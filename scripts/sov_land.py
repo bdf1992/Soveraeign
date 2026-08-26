@@ -29,6 +29,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from sovkernel import authority  # noqa: E402
+from sovland import repo  # noqa: E402
 from sovland import tree  # noqa: E402
 import sov_grant  # noqa: E402
 
@@ -71,19 +72,36 @@ def _report(request: dict, result: dict, branch: str, ahead: int, behind: int,
     print(f"  {result['detail']}")
 
 
-def _evaluate(args: argparse.Namespace) -> tuple[dict, dict, str, int, int, list, list]:
-    """Assemble and grade one landing, returning everything the caller reports."""
-    branch = tree.current_branch()
-    staged = [tree.repo_relative(p) for p in (args.path if args.path else tree.dirty_paths())]
-    carried = [tree.repo_relative(p) for p in tree.carried_paths(args.target, branch)]
+def _evaluate(
+    args: argparse.Namespace,
+) -> tuple[dict, dict, str, int, int, list, list, dict, dict, list]:
+    """Assemble and grade one landing, returning everything the caller reports.
+
+    Ten positional values is past what a tuple should carry, and every round of
+    this concern added one. A witness named it on 2026-08-25; it is recorded as a
+    residual rather than repaired here, because restructuring the carrier at the
+    end of a witnessed concern would change what was observed.
+    """
+    branch = repo.current_branch()
+    staged = [tree.repo_relative(p) for p in (args.path if args.path else repo.dirty_paths())]
+    carried = [tree.repo_relative(p) for p in repo.carried_paths(args.target, branch)]
     # The graded set is everything that reaches the target: what this landing is
     # about to stage, plus every path the merge already carries. Grading only the
     # first is what let an excluded path onto main without ever being asked about.
+    # Taken before the checks, which are what make the window twelve seconds long.
+    graded_as = tree.fingerprint(staged)
+    graded_blobs = {q: repo.worktree_blob(q) for q in staged}
     checks = tree.gather_checks(args.skip_checks)
+    # A third reading, so drift caused by the checks themselves is named as
+    # that rather than blamed on another session. verify.py contains
+    # generated-artifact checks; the day one regenerates a file in the
+    # landing set, every landing refuses and the reason should be findable.
+    by_checks = tree.drifted(graded_as, tree.fingerprint(staged))
     request = build_request(args, sorted(set(staged) | set(carried)), checks)
     result = authority.evaluate(sov_grant.load_grants(), request)
-    ahead, behind = tree._commit_span(args.target, branch)
-    return request, result, branch, ahead, behind, staged, carried
+    ahead, behind = repo._commit_span(args.target, branch)
+    return (request, result, branch, ahead, behind, staged, carried, graded_as,
+            graded_blobs, by_checks)
 
 
 def _carried_note(result: dict, carried: list) -> None:
@@ -107,7 +125,8 @@ def _carried_note(result: dict, carried: list) -> None:
 
 def cmd_plan(args: argparse.Namespace) -> int:
     """Grade the landing and change nothing."""
-    request, result, branch, ahead, behind, staged, carried = _evaluate(args)
+    (request, result, branch, ahead, behind, staged, carried, graded_as,
+     graded_blobs, by_checks) = _evaluate(args)
     _report(request, result, branch, ahead, behind, staged, carried)
     if result["verdict"] != authority.PERMITTED:
         _carried_note(result, carried)
@@ -132,7 +151,8 @@ def cmd_land(args: argparse.Namespace) -> int:
         print("REFUSED: land requires explicit --path arguments; this tree is shared and a "
               "blanket stage would land another participant's work under this evidence.")
         return 2
-    request, result, branch, ahead, behind, staged, carried = _evaluate(args)
+    (request, result, branch, ahead, behind, staged, carried, graded_as,
+     graded_blobs, by_checks) = _evaluate(args)
     _report(request, result, branch, ahead, behind, staged, carried)
     # Authority first. A contested path used to be reported before the verdict,
     # so a landing the grant never covered came back as "held by another live
@@ -164,15 +184,50 @@ def cmd_land(args: argparse.Namespace) -> int:
               "update before merge (AGENTS.md, Branch and commit strategy).")
         return 2
 
+    absent = tree.absent_paths(graded_as)
+    # A deleted path that git still tracks is not absent: `git add` on it exits 0
+    # and stages the removal, which is what landing a deletion means.
+    if absent:
+        print("\nREFUSED: these do not exist, so nothing was graded for them and "
+              "`git add` would fail rather than refuse:")
+        for path in absent:
+            print(f"  {path}")
+        return 2
+    moved = tree.drifted(graded_as, tree.fingerprint(staged))
+    if by_checks:
+        print("\nREFUSED: running verify and lint modified these paths, so the "
+              "checks changed the thing they were checking:")
+        for path in by_checks:
+            print(f"  {path}")
+        return 2
+    if moved:
+        print("\nREFUSED: these changed between grading and staging, so the evidence "
+              "this landing carries describes content it would not commit:")
+        for path in moved:
+            print(f"  {path}")
+        print("Re-run the gate. Several sessions share this working directory, and "
+              "`git add` stages the bytes on disk now, not the bytes that were graded.")
+        return 2
+
     # Stage only what --path named. A carried path is already committed, and
     # adding one would sweep in whatever happens to be dirty there.
-    tree._git("add", "--", *staged)
-    tree._git("commit", "-m", args.message)
-    tree._git("checkout", args.target)
+    repo._git("add", "--", *staged)
+    wrong = tree.staged_wrong(staged, graded_blobs)
+    if wrong:
+        repo._git("reset", "--", *staged)
+        print("\n"
+      "REFUSED: what git staged is not what was graded, so the commit would "
+              "not contain the content this landing carries evidence for:")
+        for path in wrong:
+            print(f"  {path}")
+        print("The index has been reset and nothing was committed. Re-run the gate.")
+        return 2
+    repo._git("commit", "-m", args.message)
+    repo._git("checkout", args.target)
     try:
-        tree._git("merge", "--no-ff", branch, "-m", f"merge: {args.message}")
+        repo._git("merge", "--no-ff", branch, "-m", f"merge: {args.message}")
     finally:
-        tree._git("checkout", branch)
+        repo._git("checkout", branch)
     print(f"\nLANDED on {args.target} under {result['grant_id']}")
     return 0
 
@@ -203,7 +258,7 @@ def main(argv: list[str] | None = None) -> int:
         return 2
     try:
         return {"plan": cmd_plan, "land": cmd_land}[args.command](args)
-    except tree.LandingRefused as refusal:
+    except repo.LandingRefused as refusal:
         print(f"REFUSED: {refusal}")
         return 2
 

@@ -12,6 +12,7 @@ from __future__ import annotations
 from pathlib import Path
 from unittest import mock
 import json
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -21,8 +22,48 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import sov_land  # noqa: E402
+from sovland import repo  # noqa: E402
 from sovland import tree  # noqa: E402
 from sovkernel import authority  # noqa: E402
+
+
+class _RepoTemplate:
+    """A git repository built once and copied per test.
+
+    Each `_repo()` was six git subprocesses, and seven tests using it put enough
+    work into the tooling shard to push `verify.py` from 11.6s to 15.5s and over
+    its budget. Building the template once and copying it is one filesystem call
+    per test, which keeps the isolation and returns the time.
+    """
+
+    _root = None
+    _dir = None
+
+    @classmethod
+    def build(cls):
+        if cls._root is not None:
+            return cls._root
+        cls._dir = tempfile.TemporaryDirectory()
+        root = Path(cls._dir.name) / "template"
+        root.mkdir()
+
+        def run(*a):
+            subprocess.run(["git", *a], cwd=root, capture_output=True, check=True)
+
+        run("init", "-q", "-b", "main")
+        run("config", "user.email", "t@t")
+        run("config", "user.name", "t")
+        (root / "kept.py").write_text("original" + chr(10), encoding="utf-8")
+        run("add", "--", "kept.py")
+        run("commit", "-q", "-m", "base")
+        run("checkout", "-q", "-b", "work")
+        cls._root = root
+        return root
+
+    @classmethod
+    def copy_into(cls, destination: Path) -> Path:
+        shutil.copytree(cls.build(), destination)
+        return destination
 
 
 class RepoRelative(unittest.TestCase):
@@ -169,27 +210,21 @@ class GradedSetIsWhatReachesTheTarget(unittest.TestCase):
     """
 
     def _repo(self, tmp: str) -> Path:
-        """A throwaway repository with one commit on main and one on a branch."""
-        root = Path(tmp) / "repo"
-        root.mkdir()
-        run = lambda *a: subprocess.run(["git", *a], cwd=root, capture_output=True, check=True)
-        run("init", "-q", "-b", "main")
-        run("config", "user.email", "t@t")
-        run("config", "user.name", "t")
-        (root / "kept.py").write_text("x" + chr(10), encoding="utf-8")
-        run("add", "-A")
-        run("commit", "-q", "-m", "base")
-        run("checkout", "-q", "-b", "work")
+        """The template, plus one commit on the branch that no --path will name."""
+        root = _RepoTemplate.copy_into(Path(tmp) / "repo")
         (root / "excluded.yaml").write_text("y" + chr(10), encoding="utf-8")
-        run("add", "-A")
-        run("commit", "-q", "-m", "an excluded path, committed and never declared")
+        subprocess.run(["git", "add", "--", "excluded.yaml"], cwd=root,
+                       capture_output=True, check=True)
+        subprocess.run(["git", "commit", "-q", "-m",
+                        "an excluded path, committed and never declared"],
+                       cwd=root, capture_output=True, check=True)
         return root
 
     def test_a_committed_path_is_graded_even_though_no_one_declared_it(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = self._repo(tmp)
-            with mock.patch.object(tree, "ROOT", root):
-                carried = tree.carried_paths("main", "work")
+            with mock.patch.object(repo, "ROOT", root):
+                carried = repo.carried_paths("main", "work")
         self.assertIn("excluded.yaml", carried)
 
     def test_a_branch_level_with_its_target_carries_nothing(self):
@@ -198,8 +233,8 @@ class GradedSetIsWhatReachesTheTarget(unittest.TestCase):
             root = self._repo(tmp)
             subprocess.run(["git", "checkout", "-q", "main"], cwd=root, check=True)
             subprocess.run(["git", "merge", "-q", "work"], cwd=root, check=True)
-            with mock.patch.object(tree, "ROOT", root):
-                carried = tree.carried_paths("main", "work")
+            with mock.patch.object(repo, "ROOT", root):
+                carried = repo.carried_paths("main", "work")
         self.assertEqual(carried, [])
 
     def test_the_graded_set_is_the_union_of_staged_and_carried(self):
@@ -207,15 +242,15 @@ class GradedSetIsWhatReachesTheTarget(unittest.TestCase):
         args = mock.Mock(path=["scripts/a.py"], target="main", observation=None,
                          actor="sov", spend=0, skip_checks=True)
         patches = (
-            mock.patch.object(tree, "current_branch", return_value="work"),
-            mock.patch.object(tree, "carried_paths", return_value=["decisions/x.md"]),
-            mock.patch.object(tree, "_commit_span", return_value=(1, 0)),
+            mock.patch.object(repo, "current_branch", return_value="work"),
+            mock.patch.object(repo, "carried_paths", return_value=["decisions/x.md"]),
+            mock.patch.object(repo, "_commit_span", return_value=(1, 0)),
             mock.patch.object(sov_land.sov_grant, "load_grants", return_value=[]),
         )
         for patch in patches:
             patch.start()
         try:
-            request, _result, _b, _a, _be, staged, carried = sov_land._evaluate(args)
+            request, _result, _b, _a, _be, staged, carried, _fp, _bl, _bc = sov_land._evaluate(args)
         finally:
             for patch in patches:
                 patch.stop()
@@ -259,6 +294,14 @@ class ADirectoryIsAnOpenSet(unittest.TestCase):
             held = tree._held_elsewhere(["contracts/sub/deep.json"])
         self.assertEqual(len(held), 1)
 
+    def test_a_session_holding_the_whole_tree_is_reported(self):
+        """The largest possible claim was the one the check could not see."""
+        contested = [{"path": ".", "holder": "session-other"}]
+        with mock.patch("subprocess.run") as run:
+            run.return_value = mock.Mock(returncode=0, stdout=json.dumps(contested), stderr="")
+            held = tree._held_elsewhere(["scripts/sov_land.py"])
+        self.assertEqual(len(held), 1)
+
     def test_an_unrelated_sibling_is_not_swept_in(self):
         """Containment must not become a prefix match on the string."""
         contested = [{"path": "contracts/subtle.json", "holder": "session-other"}]
@@ -276,9 +319,9 @@ class AnUnreadableRangeRefusesRatherThanCrashes(unittest.TestCase):
             root = Path(tmp) / "empty"
             root.mkdir()
             subprocess.run(["git", "init", "-q", "-b", "main"], cwd=root, check=True)
-            with mock.patch.object(tree, "ROOT", root):
-                with self.assertRaises(tree.LandingRefused):
-                    tree.carried_paths("no-such-branch", "main")
+            with mock.patch.object(repo, "ROOT", root):
+                with self.assertRaises(repo.LandingRefused):
+                    repo.carried_paths("no-such-branch", "main")
 
 
 class TheEffectPathActuallyRuns(unittest.TestCase):
@@ -292,20 +335,7 @@ class TheEffectPathActuallyRuns(unittest.TestCase):
     """
 
     def _repo(self, tmp: str) -> Path:
-        root = Path(tmp) / "repo"
-        root.mkdir()
-
-        def run(*a):
-            subprocess.run(["git", *a], cwd=root, capture_output=True, check=True)
-
-        run("init", "-q", "-b", "main")
-        run("config", "user.email", "t@t")
-        run("config", "user.name", "t")
-        (root / "kept.py").write_text("x" + chr(10), encoding="utf-8")
-        run("add", "-A")
-        run("commit", "-q", "-m", "base")
-        run("checkout", "-q", "-b", "work")
-        return root
+        return _RepoTemplate.copy_into(Path(tmp) / "repo")
 
     def _args(self, **over):
         base = dict(path=["kept.py"], target="main", observation=None, actor="sov",
@@ -320,7 +350,7 @@ class TheEffectPathActuallyRuns(unittest.TestCase):
             (root / "kept.py").write_text("changed" + chr(10), encoding="utf-8")
             permitted = {"verdict": authority.PERMITTED, "code": None,
                          "detail": "covered", "grant_id": "grant:test", "considered": []}
-            with mock.patch.object(tree, "ROOT", root), \
+            with mock.patch.object(repo, "ROOT", root), \
                     mock.patch.object(authority, "evaluate", return_value=permitted), \
                     mock.patch.object(tree, "_held_elsewhere", return_value=[]), \
                     mock.patch.object(sov_land.sov_grant, "load_grants", return_value=[]):
@@ -339,7 +369,7 @@ class TheEffectPathActuallyRuns(unittest.TestCase):
                        "detail": "no", "grant_id": None, "considered": []}
             before = subprocess.run(["git", "rev-parse", "main"], cwd=root,
                                     capture_output=True, text=True).stdout
-            with mock.patch.object(tree, "ROOT", root), \
+            with mock.patch.object(repo, "ROOT", root), \
                     mock.patch.object(authority, "evaluate", return_value=refused), \
                     mock.patch.object(sov_land.sov_grant, "load_grants", return_value=[]):
                 code = sov_land.cmd_land(self._args())
@@ -347,6 +377,192 @@ class TheEffectPathActuallyRuns(unittest.TestCase):
                                    capture_output=True, text=True).stdout
         self.assertEqual(code, 1)
         self.assertEqual(before, after)
+
+
+class TheGradedSetMustStillDescribeTheTree(unittest.TestCase):
+    """`gather_checks` runs inside the transaction, so evidence goes stale.
+
+    Measured at twelve seconds. `git add` stages the bytes on disk then, not the
+    bytes that were graded, and this repository expects several sessions to share
+    one working directory. A fingerprint taken at grade time and compared before
+    staging cannot shrink that window; it makes the window fail closed.
+    """
+
+    def _repo(self, tmp: str) -> Path:
+        return _RepoTemplate.copy_into(Path(tmp) / "repo")
+
+    def test_a_file_edited_inside_the_window_refuses_instead_of_committing(self):
+        """The defeating case: another session writes while the checks run."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._repo(tmp)
+            (root / "kept.py").write_text("graded" + chr(10), encoding="utf-8")
+            permitted = {"verdict": authority.PERMITTED, "code": None, "detail": "ok",
+                         "grant_id": "grant:test", "considered": []}
+
+            def edit_during_checks(_skip):
+                (root / "kept.py").write_text("someone else" + chr(10), encoding="utf-8")
+                return {}
+
+            before = subprocess.run(["git", "rev-parse", "main"], cwd=root,
+                                    capture_output=True, text=True).stdout
+            args = mock.Mock(path=["kept.py"], target="main", observation=None,
+                             actor="sov", spend=0, skip_checks=True, message="m")
+            with (
+                mock.patch.object(repo, "ROOT", root),
+                mock.patch.object(tree, "gather_checks", edit_during_checks),
+                mock.patch.object(authority, "evaluate", return_value=permitted),
+                mock.patch.object(tree, "_held_elsewhere", return_value=[]),
+                mock.patch.object(sov_land.sov_grant, "load_grants", return_value=[]),
+            ):
+                code = sov_land.cmd_land(args)
+            after = subprocess.run(["git", "rev-parse", "main"], cwd=root,
+                                   capture_output=True, text=True).stdout
+        self.assertEqual(code, 2)
+        self.assertEqual(before, after)
+
+    def test_an_untouched_file_still_lands(self):
+        """The control: the drift check must not refuse an ordinary landing."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._repo(tmp)
+            (root / "kept.py").write_text("graded" + chr(10), encoding="utf-8")
+            permitted = {"verdict": authority.PERMITTED, "code": None, "detail": "ok",
+                         "grant_id": "grant:test", "considered": []}
+            args = mock.Mock(path=["kept.py"], target="main", observation=None,
+                             actor="sov", spend=0, skip_checks=True, message="m")
+            with (
+                mock.patch.object(repo, "ROOT", root),
+                mock.patch.object(authority, "evaluate", return_value=permitted),
+                mock.patch.object(tree, "_held_elsewhere", return_value=[]),
+                mock.patch.object(sov_land.sov_grant, "load_grants", return_value=[]),
+            ):
+                code = sov_land.cmd_land(args)
+        self.assertEqual(code, 0)
+
+    def test_a_deletion_still_lands(self):
+        """The regression: refusing every path not on disk broke removals.
+
+        `git add` on a tracked-but-deleted path exits 0 and stages the removal,
+        which is what landing a deletion means. An earlier version called that
+        `absent` alongside a path that never existed and refused both, so the
+        gate could not land the removal of a file, a module, or anything.
+        """
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._repo(tmp)
+            (root / "kept.py").unlink()
+            permitted = {"verdict": authority.PERMITTED, "code": None, "detail": "ok",
+                         "grant_id": "grant:test", "considered": []}
+            args = mock.Mock(path=["kept.py"], target="main", observation=None,
+                             actor="sov", spend=0, skip_checks=True, message="remove it")
+            with mock.patch.object(repo, "ROOT", root), \
+                    mock.patch.object(authority, "evaluate", return_value=permitted), \
+                    mock.patch.object(tree, "_held_elsewhere", return_value=[]), \
+                    mock.patch.object(sov_land.sov_grant, "load_grants", return_value=[]):
+                code = sov_land.cmd_land(args)
+            listed = subprocess.run(["git", "ls-tree", "--name-only", "main"], cwd=root,
+                                    capture_output=True, text=True).stdout
+        self.assertEqual(code, 0)
+        self.assertNotIn("kept.py", listed)
+
+    def test_a_tracked_deletion_and_a_path_that_never_existed_are_told_apart(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._repo(tmp)
+            (root / "kept.py").unlink()
+            with mock.patch.object(repo, "ROOT", root):
+                seen = tree.fingerprint(["kept.py", "never.py"])
+        self.assertEqual(seen["kept.py"], "deleted")
+        self.assertEqual(seen["never.py"], "absent")
+
+    def test_a_path_that_does_not_exist_refuses_rather_than_failing_at_git(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = self._repo(tmp)
+            permitted = {"verdict": authority.PERMITTED, "code": None, "detail": "ok",
+                         "grant_id": "grant:test", "considered": []}
+            args = mock.Mock(path=["no-such-file.py"], target="main", observation=None,
+                             actor="sov", spend=0, skip_checks=True, message="m")
+            with (
+                mock.patch.object(repo, "ROOT", root),
+                mock.patch.object(authority, "evaluate", return_value=permitted),
+                mock.patch.object(tree, "_held_elsewhere", return_value=[]),
+                mock.patch.object(sov_land.sov_grant, "load_grants", return_value=[]),
+            ):
+                code = sov_land.cmd_land(args)
+        self.assertEqual(code, 2)
+
+
+class EveryReferenceResolves(unittest.TestCase):
+    """A moved function must not leave a caller behind, which it did three times.
+
+    `_git` stayed in the module it moved to and `cmd_land` raised `NameError`
+    after the gate had said PERMITTED, with every check green. `worktree_blob`
+    did the same one split later. Both were found by a witness reading the
+    source, not by anything that runs. Attribute access on a module is invisible
+    to the import system until the line executes, so nothing in the ordinary
+    gates can see it — which is exactly why it wants a test rather than care.
+    """
+
+    @staticmethod
+    def modules():
+        """Every module a caller could live in, derived rather than listed.
+
+        A hardcoded tuple would have gone stale at the next split, and this
+        concern's whole history is splits. A broken reference *to* a new module
+        was already caught, because the covered caller is what gets walked; a new
+        module acting as the caller was not. Walking the package closes that
+        without anyone remembering to update a list.
+        """
+        import importlib
+        names = ["sov_land"]
+        for path in sorted((ROOT / "scripts" / "sovland").glob("*.py")):
+            if path.stem != "__init__":
+                names.append(f"sovland.{path.stem}")
+        return [importlib.import_module(n) for n in names]
+
+    def test_every_module_attribute_a_caller_names_exists(self):
+        import ast
+        import types
+
+        missing = []
+        for module in self.modules():
+            name = module.__name__
+            source = Path(module.__file__).read_text(encoding="utf-8")
+            local = {n.asname or n.name.split(".")[-1]
+                     for node in ast.walk(ast.parse(source))
+                     if isinstance(node, (ast.Import, ast.ImportFrom))
+                     for n in node.names}
+            for node in ast.walk(ast.parse(source)):
+                if not isinstance(node, ast.Attribute) or not isinstance(node.value, ast.Name):
+                    continue
+                if node.value.id not in local:
+                    continue
+                target = getattr(module, node.value.id, None)
+                # ModuleType rather than __file__: a builtin module has no
+                # __file__, so `sys.exeuctable` was passed over silently.
+                if not isinstance(target, types.ModuleType):
+                    continue
+                if not hasattr(target, node.attr):
+                    missing.append(f"{name}: {node.value.id}.{node.attr}")
+        self.assertEqual(missing, [], "module attributes named but not defined")
+
+    def test_no_bare_call_is_undefined(self):
+        """The `_git` shape exactly: a name called that nothing defines or imports."""
+        import ast
+        import builtins
+
+        missing = []
+        for module in self.modules():
+            name = module.__name__
+            source = Path(module.__file__).read_text(encoding="utf-8")
+            parsed = ast.parse(source)
+            known = {n.name for n in ast.walk(parsed)
+                     if isinstance(n, (ast.FunctionDef, ast.ClassDef))}
+            known |= {n.asname or n.name.split(".")[0] for node in ast.walk(parsed)
+                      if isinstance(node, (ast.Import, ast.ImportFrom)) for n in node.names}
+            known |= set(dir(builtins))
+            for node in ast.walk(parsed):
+                if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+                    if node.func.id not in known:
+                        missing.append(f"{name}: {node.func.id}()")
+        self.assertEqual(missing, [], "names called but neither defined nor imported")
 
 
 class LandRefusesABlanketStage(unittest.TestCase):

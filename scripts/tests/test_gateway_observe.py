@@ -56,6 +56,20 @@ class GatewayObserverTests(unittest.TestCase):
         defects = observe.crossing_defects(ROOT, tampered, self.output, self.actor, "HUMAN")
         self.assertIn("JOURNAL_CHAIN_INVALID", defects)
 
+    def test_independent_observer_refuses_unknown_digest_profile(self) -> None:
+        tampered = Path(self.temporary.name) / "unknown-profile"
+        shutil.copytree(self.state, tampered)
+        database = tampered / "record" / "record-service.sqlite3"
+        connection = sqlite3.connect(database)
+        connection.execute(
+            "UPDATE journal SET digest_profile='soveraeign-record-chain/v99' "
+            "WHERE seq=(SELECT MAX(seq) FROM journal)"
+        )
+        connection.commit()
+        connection.close()
+        defects = observe.crossing_defects(ROOT, tampered, self.output, self.actor, "HUMAN")
+        self.assertIn("JOURNAL_CHAIN_INVALID", defects)
+
     def test_observer_imports_no_participant_implementation(self) -> None:
         source = (ROOT / "scripts" / "gateway_observe.py").read_text(encoding="utf-8")
         self.assertNotIn("soveraeign_", source)

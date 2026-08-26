@@ -96,7 +96,7 @@
         "product_intent"
       ],
       "already_recorded_as": "proofing_service_status",
-      "reason": "STATUS.yaml reads OWNER_ACCEPTED_BOUNDARY_NOT_IMPLEMENTED. Accepted as a boundary; the record lags.",
+      "reason": "STATUS.yaml reads RULED_SECOND_BOUNDARY_O11_CHARTERED_NOT_IMPLEMENTED. The boundary stands as a reversible default under decisions/0046, which states that none of its rulings is an owner acceptance, so the acceptance itself is outstanding and not only the record's status line. An earlier duplicate of this field spelled it OWNER_ACCEPTED_BOUNDARY_NOT_IMPLEMENTED and was dead text a YAML reader never saw; this entry read that spelling before it was deleted.",
       "action_if_confirmed": "Update the status line."
     },
     "0016-A": {
@@ -248,7 +248,7 @@
         "product_intent"
       ],
       "already_recorded_as": "observation_service_status",
-      "reason": "A chartered service boundary says what the system contains, which is the shape 0007 and 0010 already route to the owner. STATUS.yaml carries the field, but it reads CHARTERED_BOUNDARY_NOT_IMPLEMENTED rather than the OWNER_ACCEPTED_ wording 0010 carries, so unlike those two the acceptance itself is outstanding, not only the record's status line. Drafted at Bdo's direction; direction is not acceptance.",
+      "reason": "A chartered service boundary says what the system contains, which is the shape 0007 and 0010 already route to the owner. STATUS.yaml carries the field and it reads CHARTERED_BOUNDARY_NOT_IMPLEMENTED, so the acceptance itself is outstanding, not only the record's status line. This entry once drew that contrast against an OWNER_ACCEPTED_ wording on 0010's field; that wording was a duplicate a YAML reader never saw, 0010's field reads RULED_ under decisions/0046, and the two now stand alike. Drafted at Bdo's direction; direction is not acceptance.",
       "action_if_confirmed": "Present the boundary for acceptance, then update both the status line and observation_service_status."
     },
     "0042-A": {

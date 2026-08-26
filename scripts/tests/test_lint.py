@@ -193,6 +193,37 @@ class DuplicateYamlKeys(unittest.TestCase):
     def test_a_document_separator_starts_a_new_key_space(self):
         self.assertEqual(self._over("name: a\n---\nname: b\n"), [])
 
+    def test_a_separator_carrying_a_comment_or_tag_still_separates(self):
+        """A false FAIL over a correct file is worse than the misses declared below,
+        so every legal separator form ends the document, not only the bare one."""
+        self.assertEqual(self._over("name: a\n--- # second half\nname: b\n"), [])
+        self.assertEqual(self._over("name: a\n--- !!map\nname: b\n"), [])
+
+    def test_a_bare_key_that_only_looks_like_a_separator_is_still_read(self):
+        self.assertEqual(len(self._over("a: 1\n---extra\na: 2\n")), 1)
+
+    def test_the_declared_blind_spot_is_real_and_bounded(self):
+        """The check reads bare column-zero keys and says so. These duplicates are
+        genuinely missed; recording them here keeps a passing run from being read as
+        a stronger claim than the check makes."""
+        for text in ('"dup": 1\n"dup": 2\n', "a.b: 1\na.b: 2\n",
+                     "a/b: 1\na/b: 2\n", "my key: 1\nmy key: 2\n", "2fa: 1\n2fa: 2\n"):
+            self.assertEqual(self._over(text), [], text)
+
+    def test_every_key_in_the_real_population_is_bare(self):
+        """What makes the blind spot cost nothing today. If this fails, a file has
+        started using a key shape the check cannot see and the limit now bites."""
+        unread = []
+        for path in lint.repository_text_files():
+            if path.suffix not in lint.YAML_SUFFIXES:
+                continue
+            for line in path.read_bytes().decode("utf-8").splitlines():
+                if not line or line[0] in " \t#-" or ":" not in line:
+                    continue
+                if not lint.TOP_LEVEL_KEY.match(line):
+                    unread.append(f"{path.relative_to(REPO_ROOT).as_posix()}: {line}")
+        self.assertEqual(unread, [])
+
     def test_comments_and_sequence_items_are_not_keys(self):
         self.assertEqual(self._over("# note: here\nlist:\n  - note: here\n  - note: there\n"), [])
 

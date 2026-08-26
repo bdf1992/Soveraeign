@@ -2,7 +2,7 @@
 
 ```text
 source          SPEC.md · services/console/CHARTER.md · STATUS.yaml · CONTRACT.md
-source_digest   108497d370c0fd8d · 7dec971f8b6d04d8 · d597244716b3b404 · 896e59ba90828ad7
+source_digest   108497d370c0fd8d · 7dec971f8b6d04d8 · 2d80ce342fb8cbb3 · 896e59ba90828ad7
 reader          hand-authored · v2
 fidelity        LOSSY
 omissions       crossing class definitions, held by crossing-typology.md;

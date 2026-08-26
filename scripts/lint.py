@@ -166,15 +166,24 @@ def check_duplicate_keys(path: Path, text: str) -> list[str]:
     A defect, not named debt. The population is clean, so anything this reports is
     new, and the merge that introduces it is the moment to see it.
 
-    Only column-zero keys are read. A nested duplicate is a real defect this does
-    not catch; catching it needs an indentation-aware parse, and `STATUS.yaml`'s
-    own bounded reader in `scripts/sovaccept/statusblock.py` is where that belongs.
-    A `---` document separator starts a new document, whose keys are its own.
+    What it reads, stated so a passing run is not mistaken for more: column-zero
+    keys spelled bare, in the character set `[A-Za-z_][A-Za-z0-9_-]*`. A duplicate
+    nested inside a mapping is missed, and so is one spelled with a quoted, dotted,
+    slashed, spaced, or digit-initial key. Catching either needs a real parse; the
+    bounded reader in `scripts/sovaccept/statusblock.py` is where that belongs, and
+    it refuses by name every construct it does not admit. Every key in the current
+    population is bare, so the blind spot costs nothing today and is recorded rather
+    than discovered later.
+
+    A `---` document separator starts a new document whose keys are its own. It is
+    matched with anything legal after it -- a comment, a tag, a directive -- because
+    treating `--- # second half` as an ordinary line turns a correct two-document
+    file into a lint failure, and a false FAIL is worse than the miss above.
     """
     seen: dict[str, int] = {}
     duplicated: dict[str, int] = {}
     for number, line in enumerate(text.splitlines(), 1):
-        if line.rstrip() == "---":
+        if line == "---" or line.startswith(("--- ", "---\t")):
             seen.clear()
             duplicated.clear()
             continue

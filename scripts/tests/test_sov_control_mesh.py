@@ -276,6 +276,7 @@ class AuthorityLanguage(unittest.TestCase):
             self.assertEqual(strange, set(), name)
             self.assertNotRegex(raw, r"&#\w+;|&[a-z]+;", name)
             self.assertNotIn("<!--", raw, name)
+            self.assertNotRegex(raw, r"<[!?]", name)
 
 
 if __name__ == "__main__":

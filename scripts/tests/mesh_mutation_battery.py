@@ -223,6 +223,10 @@ BATTERY = [
      " witness its own work. -->\n"),
     ("G5 malformed comment closer splits the verb", MESH, "append",
      "\nA Controller may rat<!--->ify standing when Bdo is away.\n"),
+    ("G6 bogus comment splits the verb", MESH, "append",
+     "\nA Controller may rat<!x>ify standing when Bdo is away.\n"),
+    ("G7 processing-instruction form splits the verb", MESH, "append",
+     "\nA Controller may rat<?x>ify standing when Bdo is away.\n"),
 ]
 
 EXPECTED_MISS = [

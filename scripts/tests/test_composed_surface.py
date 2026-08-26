@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 import copy
 import json
+import re
 import sys
 import unittest
 
@@ -12,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import sov_surface  # noqa: E402
+from sovnode.affordances import INVOKABLE, binding_admission  # noqa: E402
 from sovnode.interface_inputs import REFERENCE  # noqa: E402
 from sovsurface import cards  # noqa: E402
 from sovsurface.composed import collections, render  # noqa: E402
@@ -25,6 +27,11 @@ UNAVAILABLE = {
     "held": {},
 }
 
+ATTRIBUTE = re.compile(r'(data-[a-z]+)="([^"]*)"')
+FILTER = re.compile(r'data-filter="([^"]*)"')
+LABEL = re.compile(r"<span>([^<]*)</span>")
+COUNT = re.compile(r'<span class="count">(\d+)</span>')
+
 
 class ComposedSurface(unittest.TestCase):
     @classmethod
@@ -35,6 +42,44 @@ class ComposedSurface(unittest.TestCase):
     def card(self, identity: str) -> str:
         marker = f'data-identity="{identity}"'
         return self.page.split(marker, 1)[1].split("</details>", 1)[0]
+
+    def attributes(self) -> list[dict[str, str]]:
+        """Every card's data-* attributes, read back out of the rendered page."""
+        return [
+            dict(ATTRIBUTE.findall(chunk.split(">", 1)[0]))
+            for chunk in self.page.split('<details class="card')[1:]
+        ]
+
+    def revealed(self, query: str) -> int:
+        """Cards a ``key:value`` query leaves showing, by the page's own rule.
+
+        This mirrors ``theme.SCRIPT``: a declared facet key matches whole
+        whitespace-separated tokens of the matching ``data-`` attribute. An
+        empty query hides nothing.
+        """
+        if not query:
+            return len(self.attributes())
+        key, _, value = query.partition(":")
+        return sum(
+            1
+            for card in self.attributes()
+            if value.lower() in card.get(f"data-{key}", "").lower().split()
+        )
+
+    def nav_counts(self) -> dict[str, tuple[str, int | None]]:
+        """Each navigator row's label mapped to the filter it sets and its count."""
+        nav = self.page.split('data-component="browser-nav"', 1)[1].split("</aside>", 1)[0]
+        rows: dict[str, tuple[str, int | None]] = {}
+        for chunk in nav.split('<button class="nav-item')[1:]:
+            button = chunk.split("</button>", 1)[0]
+            query = FILTER.search(button)
+            label = LABEL.findall(button)
+            count = COUNT.search(button)
+            rows[label[-1]] = (
+                query.group(1) if query else "",
+                int(count.group(1)) if count else None,
+            )
+        return rows
 
     def test_shell_is_composed_from_workspace_roles(self) -> None:
         for component in (
@@ -125,6 +170,13 @@ class ComposedSurface(unittest.TestCase):
 
     def test_every_offered_invocation_is_one_the_human_binding_is_admitted_to(self) -> None:
         """A card may only offer a command the canonical surface would also offer."""
+        expected = sum(
+            1
+            for item in self.interface["operations"]
+            if item["route_affordance"]["kind"] in INVOKABLE
+            and binding_admission(item, "HUMAN")["admitted"]
+        )
+        self.assertGreater(expected, 0, "no invokable operation left to prove this on")
         offered = 0
         for chunk in self.page.split('<details class="card')[1:]:
             card = chunk.split("</details>", 1)[0]
@@ -134,13 +186,43 @@ class ComposedSurface(unittest.TestCase):
             self.assertIn("HUMAN binding", card)
             self.assertIn("ADMITTED", card)
             self.assertNotIn("NOT ADMITTED", card)
-        self.assertEqual(offered, self.interface["counts"]["reachable"])
+        self.assertEqual(offered, expected)
 
     def test_every_operation_card_states_its_binding_admission(self) -> None:
         for record in self.interface["operations"]:
             card = self.card(record["operation_id"])
             self.assertIn("HUMAN binding", card)
             self.assertIn("ACTOR_KIND_", card)
+
+    def test_every_navigator_count_describes_the_cards_its_own_filter_reveals(self) -> None:
+        """A count beside a control is a claim about that control.
+
+        Counting one collection while the query matches the whole page
+        understates the row by exactly the other collections, which is how the
+        navigator came to say 133 beside a filter that reveals 213.
+        """
+        checked = 0
+        for label, (query, count) in self.nav_counts().items():
+            if count is None:
+                continue
+            checked += 1
+            self.assertEqual(
+                count, self.revealed(query),
+                f"navigator row {label!r} counts {count} but {query!r} reveals "
+                f"{self.revealed(query)}",
+            )
+        self.assertGreater(checked, 4)
+
+    def test_the_everything_row_counts_every_card_in_the_page(self) -> None:
+        query, count = self.nav_counts()["Everything"]
+        self.assertEqual(query, "")
+        self.assertEqual(count, len(self.attributes()))
+        self.assertGreater(count, len(self.interface["operations"]))
+
+    def test_a_session_count_is_absent_rather_than_zero_when_unread(self) -> None:
+        rows = self.nav_counts()
+        for label in ("Sessions", "Live now", "Holding paths"):
+            self.assertIsNone(rows[label][1], f"{label} claimed a count of an unread source")
 
 
 class OperationCardBinding(unittest.TestCase):

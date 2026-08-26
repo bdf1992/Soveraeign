@@ -22,8 +22,8 @@ LIVE = {
     "live": True,
     "ended": False,
     "registered": True,
-    "branch": "feat/human-collection-substrate",
-    "tree": "C:/Users/bdf19/Desktop/Soveraeign",
+    "branch": "feat/fixture-branch",
+    "tree": "/fixture/worktree/alpha",
     "intent": "human interface integration",
     "at": "2026-08-25T03:54:12Z",
     "pid": 21264,
@@ -35,7 +35,7 @@ ENDED = {
     "ended_at": "2026-08-25T01:00:00Z",
     "registered": True,
     "branch": "feat/old",
-    "tree": "C:/Users/bdf19/Desktop/Soveraeign",
+    "tree": "/fixture/worktree/alpha",
     "at": "2026-08-25T00:59:00Z",
 }
 
@@ -75,7 +75,7 @@ class SessionCollection(unittest.TestCase):
         built = sessions.collection(snapshot())
         html = render(built)
         card = html.split('data-identity="session-a75dfb"', 1)[1].split("</details>", 1)[0]
-        self.assertIn("feat/human-collection-substrate", card)
+        self.assertIn("feat/fixture-branch", card)
         self.assertIn("human interface integration", card)
         self.assertIn("21264", card)
         self.assertIn("2026-08-25T03:54:12Z", card)
@@ -237,6 +237,27 @@ class SessionCollection(unittest.TestCase):
         )
         self.assertIn("unavailable", panel)
         self.assertIn("no CLI here", panel)
+
+    def test_a_hostile_session_field_reaches_the_page_as_text(self) -> None:
+        """The adapter owns escaping for the summary it composes.
+
+        ``Record.summary`` is inserted as HTML by design, so the mechanism
+        cannot defend this: an adapter that interpolated a source string
+        directly would put a session's own intent into the page as markup.
+        """
+        hostile = "<img src=x onerror=alert(1)>"
+        built = sessions.collection(
+            snapshot((dict(LIVE, intent=hostile, branch=hostile, principal=hostile),))
+        )
+        html = render(built) + sessions.presence_panel(built)
+        self.assertNotIn("<img", html)
+        self.assertIn("&lt;img src=x onerror=alert(1)&gt;", html)
+
+    def test_a_hostile_session_identity_never_becomes_an_attribute_break(self) -> None:
+        built = sessions.collection(snapshot((dict(LIVE, session='" onload="x'),)))
+        html = render(built)
+        self.assertNotIn(' onload="x', html)
+        self.assertIn("&quot; onload=&quot;x", html)
 
 
 if __name__ == "__main__":

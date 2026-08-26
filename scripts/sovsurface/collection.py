@@ -263,3 +263,25 @@ def counts(collections: Sequence[Collection]) -> dict[str, int | None]:
         item.collection_id: (len(item.records) if item.available else None)
         for item in collections
     }
+
+
+def cards_total(collections: Sequence[Collection]) -> int:
+    """Every card the workspace will render, across every readable collection."""
+    return sum(len(item.records) for item in collections if item.available)
+
+
+def facet_total(collections: Sequence[Collection], key: str, value: str) -> int:
+    """How many cards one ``key:value`` query would leave showing.
+
+    A count shown beside a filter is a claim about what that filter does. The
+    query matches every card in the page, not the cards of one collection, so a
+    count taken over a single collection describes a different population than
+    the control it labels and is wrong by exactly the other collections.
+    """
+    return sum(
+        1
+        for collection in collections
+        if collection.available
+        for record in collection.records
+        if value in record.facets.get(key, ())
+    )

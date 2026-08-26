@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Mapping
 from typing import Any
 import html
 
@@ -12,33 +11,19 @@ def e(value: Any) -> str:
     return html.escape(str(value), quote=True)
 
 
-def attrs(values: Mapping[str, Any] | None = None) -> str:
-    """Render a stable attribute mapping, omitting None and false booleans."""
-    if not values:
-        return ""
-    parts: list[str] = []
-    for key in sorted(values):
-        value = values[key]
-        if value is None or value is False:
-            continue
-        safe_key = key.replace("_", "-")
-        if value is True:
-            parts.append(safe_key)
-        else:
-            parts.append(f'{safe_key}="{e(value)}"')
-    return (" " + " ".join(parts)) if parts else ""
-
-
 def badge(label: str, tone: str = "muted") -> str:
+    """One short uppercase tag. Tone is presentation; it asserts nothing."""
     return f'<span class="badge {e(tone)}">{e(label)}</span>'
 
 
 def code(value: Any, css: str = "") -> str:
+    """An escaped literal — an id, a digest, an authority string."""
     class_attr = f' class="{e(css)}"' if css else ""
     return f"<code{class_attr}>{e(value)}</code>"
 
 
 def metric(value: Any, label: str, hint: str = "") -> str:
+    """One headline figure with its label and an optional boundary hint."""
     hint_html = f'<small>{e(hint)}</small>' if hint else ""
     return (
         '<div class="metric" data-component="metric">'
@@ -54,6 +39,10 @@ def nav_item(
     count: int | None = None,
     filter_value: str | None = None,
 ) -> str:
+    """A navigator row. ``count`` of None renders no count at all.
+
+    None is how a caller says the source behind this row was never read.
+    Zero would claim it was read and reported nothing."""
     count_html = f'<span class="count">{count}</span>' if count is not None else ""
     return (
         f'<button class="nav-item{" active" if active else ""}" '
@@ -69,6 +58,7 @@ def rail_item(
     filter_value: str = "",
     active: bool = False,
 ) -> str:
+    """A two-letter rail button. The title carries the full label."""
     return (
         f'<button class="rail-item{" active" if active else ""}" '
         f'title="{e(label)}" data-filter="{e(filter_value)}" type="button">'
@@ -84,6 +74,7 @@ def panel(
     css: str = "",
     component: str = "panel",
 ) -> str:
+    """A titled block for the utility drawer, addressable by component."""
     eyebrow_html = f'<div class="eyebrow">{e(eyebrow)}</div>' if eyebrow else ""
     return (
         f'<section class="panel {e(css)}" data-component="{e(component)}">'
@@ -91,12 +82,8 @@ def panel(
     )
 
 
-def definition_rows(rows: Iterable[tuple[str, str]]) -> str:
-    body = "".join(f"<dt>{e(label)}</dt><dd>{value}</dd>" for label, value in rows)
-    return f'<dl class="facts">{body}</dl>'
-
-
 def empty_state(title: str, detail: str, *, code_value: str = "") -> str:
+    """Say why there is nothing here, and name the source that said so."""
     code_html = f"<p>{code(code_value)}</p>" if code_value else ""
     return (
         '<div class="empty-state" data-component="empty-state">'
@@ -105,6 +92,7 @@ def empty_state(title: str, detail: str, *, code_value: str = "") -> str:
 
 
 def pill_button(label: str, *, filter_value: str = "", pressed: bool = False) -> str:
+    """A filter pill. Setting the query changes visibility and nothing else."""
     return (
         f'<button class="pill{" active" if pressed else ""}" type="button" '
         f'data-filter="{e(filter_value)}">{e(label)}</button>'

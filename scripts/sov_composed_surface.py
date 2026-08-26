@@ -63,7 +63,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--register-session",
         action="store_true",
-        help="explicitly register this host session through scripts/sov_session.py before rendering",
+        help="register this host session through scripts/sov_session.py "
+             "before rendering",
     )
     parser.add_argument("--session-name", help="override the SOV session registry name")
     parser.add_argument("--intent", help="intent recorded when explicitly registering")

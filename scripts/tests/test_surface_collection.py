@@ -73,7 +73,9 @@ class CollectionMechanism(unittest.TestCase):
                 collection(facets=("kind", bad))
 
     def test_facet_manifest_declares_keys_to_the_query_script_as_data(self) -> None:
-        manifest = facet_manifest([collection(), collection(collection_id="other", facets=("live",))])
+        manifest = facet_manifest(
+            [collection(), collection(collection_id="other", facets=("live",))]
+        )
         payload = json.loads(manifest.split(">", 1)[1].rsplit("<", 1)[0])
         self.assertEqual(payload, ["colour", "kind", "live"])
 
@@ -172,6 +174,58 @@ class CollectionMechanism(unittest.TestCase):
         html = render_record(record(facets={"kind": ("thing",)}), ("kind",), layout="grid")
         self.assertEqual(html.count("data-kind="), 1)
         self.assertIn('data-kind="thing"', html)
+
+    def test_summary_and_section_rows_are_composed_html_the_adapter_owns(self) -> None:
+        """The split the Record docstring declares, pinned so it cannot drift silently.
+
+        Escaping every field would make an adapter unable to compose a card, and
+        escaping none would let a source string become markup. The mechanism
+        escapes the scalar fields and takes ``summary`` and row values as HTML
+        the adapter has already composed, so the adapter owns their escaping.
+        """
+        html = render_record(
+            record(
+                summary="<p class='card-statline'>composed</p>",
+                sections=(Section("Identity", (("Id", "<b>composed</b>"),)),),
+            ),
+            ("kind",),
+            layout="grid",
+        )
+        self.assertIn("<p class='card-statline'>composed</p>", html)
+        self.assertIn("<b>composed</b>", html)
+
+    def test_every_field_the_adapter_does_not_compose_is_escaped(self) -> None:
+        """The other half of the same split: nothing else may become markup."""
+        hostile = "<img src=x onerror=alert(1)>"
+        html = render_record(
+            record(
+                "id" + hostile,
+                title=hostile,
+                eyebrow=hostile,
+                search=hostile,
+                omissions=(hostile,),
+                sections=(Section(hostile, (), note=hostile),),
+                affordances=(Affordance(hostile, detail=hostile, filter_value=hostile),),
+                facets={"colour": (hostile,)},
+            ),
+            ("colour",),
+            layout="grid",
+        )
+        self.assertNotIn("<img", html)
+        self.assertNotIn(hostile, html)
+        # Nine fields were seeded; every one has to arrive escaped, and some
+        # reach the page more than once, so the floor is the count that matters.
+        self.assertGreaterEqual(html.count("&lt;img src=x onerror=alert(1)&gt;"), 9)
+
+    def test_a_section_note_is_escaped_even_though_its_rows_are_not(self) -> None:
+        html = render_record(
+            record(sections=(Section("Identity", (("Id", "<b>ok</b>"),), note="<hr>"),)),
+            ("kind",),
+            layout="grid",
+        )
+        self.assertIn("<b>ok</b>", html)
+        self.assertNotIn("<hr>", html)
+        self.assertIn("&lt;hr&gt;", html)
 
 
 if __name__ == "__main__":

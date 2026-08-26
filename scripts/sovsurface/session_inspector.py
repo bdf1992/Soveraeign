@@ -85,7 +85,10 @@ def sections(
             "Location",
             (
                 ("Branch", code(_text(item.get("branch"))) if item.get("branch") else NOT_REPORTED),
-                ("Working tree", code(_text(item.get("tree"))) if item.get("tree") else NOT_REPORTED),
+                (
+                    "Working tree",
+                    code(_text(item.get("tree"))) if item.get("tree") else NOT_REPORTED,
+                ),
                 ("Process", code(item.get("pid")) if item.get("pid") else NOT_REPORTED),
             ),
         ),

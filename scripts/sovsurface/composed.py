@@ -13,13 +13,15 @@ cards turns host presence into a governed Node fact.
 from __future__ import annotations
 
 from collections import Counter
+from collections.abc import Sequence
 from typing import Any
 
 from sovsurface import sessions as session_cards
 from sovsurface.catalog import operation_collection, service_collection, subject_collection
-from sovsurface.collection import Collection, counts, facet_manifest
+from sovsurface.collection import Collection, cards_total, counts, facet_manifest, facet_total
 from sovsurface.collection import render as render_collection
-from sovsurface.primitives import badge, e, empty_state, metric, nav_item, panel, rail_item
+from sovsurface.primitives import badge, e, empty_state, metric, nav_item, panel
+from sovsurface.primitives import pill_button, rail_item
 from sovsurface.theme import EXTRA, SCRIPT, STYLE
 
 __all__ = ["render", "STYLE", "SCRIPT"]
@@ -53,21 +55,32 @@ def _rail(services: dict[str, list[dict[str, Any]]]) -> str:
 def _nav(
     interface: dict[str, Any],
     services: dict[str, list[dict[str, Any]]],
-    session_collection: Collection,
+    built: Sequence[Collection],
 ) -> str:
-    kinds = Counter(item["route_affordance"]["kind"] for item in interface["operations"])
+    """Every count here is taken over the same cards its own filter would leave.
+
+    A count beside a control is a claim about that control. Counting one
+    collection while the query matches the whole page understates every row by
+    the other collections, so both come from the built collections.
+    """
+    session_collection = built[0]
     read = session_collection.available
-    live = session_collection.facet_values("live").get("true", 0) if read else None
-    known = len(session_collection.records) if read else None
+    live = facet_total(built, "live", "true") if read else None
+    known = facet_total(built, "kind", "session") if read else None
+    holding = facet_total(built, "has", "claim") if read else None
     rows = [
-        nav_item("Everything", icon="⌂", active=True, count=len(interface["operations"])),
-        nav_item("Actions", icon="▶", count=kinds["ACTION"], filter_value="affordance:ACTION"),
-        nav_item("Reads", icon="↳", count=kinds["READ"], filter_value="affordance:READ"),
-        nav_item("Inspect", icon="◇", count=kinds["INSPECT"], filter_value="affordance:INSPECT"),
+        nav_item("Everything", icon="⌂", active=True, count=cards_total(built)),
+        nav_item("Actions", icon="▶", count=facet_total(built, "affordance", "ACTION"),
+                 filter_value="affordance:ACTION"),
+        nav_item("Reads", icon="↳", count=facet_total(built, "affordance", "READ"),
+                 filter_value="affordance:READ"),
+        nav_item("Inspect", icon="◇", count=facet_total(built, "affordance", "INSPECT"),
+                 filter_value="affordance:INSPECT"),
     ]
     service_rows = [
-        nav_item(service, icon="#", count=len(ops), filter_value=f"service:{service}")
-        for service, ops in sorted(services.items())
+        nav_item(service, icon="#", count=facet_total(built, "service", service),
+                 filter_value=f"service:{service}")
+        for service in sorted(services)
     ]
     node = interface["node"]
     return (
@@ -84,7 +97,7 @@ def _nav(
         + '<div class="section-label">Host harness</div>'
         + nav_item("Sessions", icon="◉", count=known, filter_value="kind:session")
         + nav_item("Live now", icon="●", count=live, filter_value="live:true")
-        + nav_item("Holding paths", icon="⛨", filter_value="has:claim")
+        + nav_item("Holding paths", icon="⛨", count=holding, filter_value="has:claim")
         + "</aside>"
     )
 
@@ -165,8 +178,7 @@ def _toolbar() -> str:
         ("Callable actions", "affordance:ACTION"),
     )
     buttons = "".join(
-        f'<button class="pill{" active" if not value else ""}" '
-        f'data-filter="{e(value)}" type="button">{e(label)}</button>'
+        pill_button(label, filter_value=value, pressed=not value)
         for label, value in pills
     )
     return f'<div class="toolbar" data-component="filter-pills">{buttons}</div>'
@@ -210,7 +222,8 @@ def render(interface: dict[str, Any], presence: dict[str, Any] | None = None) ->
         '<header class="topbar" data-component="command-bar">'
         f'<h1>{e(node["display_name"])}</h1>{badge("projection only")}'
         '<div class="search"><input data-query aria-label="Filter Node and harness cards" '
-        'placeholder="Search or filter: service:asset  kind:session  live:true"><kbd>Ctrl K</kbd></div>'
+        'placeholder="Search or filter: service:asset  kind:session  live:true">'
+        '<kbd>Ctrl K</kbd></div>'
         '<span class="result-count" data-result-count></span></header>'
     )
     status = (
@@ -228,7 +241,7 @@ def render(interface: dict[str, Any], presence: dict[str, Any] | None = None) ->
         + facet_manifest(built)
         + '<div class="shell">'
         + _rail(services)
-        + _nav(interface, services, session)
+        + _nav(interface, services, built)
         + top
         + _main(interface, built, session)
         + _utility(interface, session)

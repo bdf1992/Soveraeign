@@ -27,7 +27,9 @@ class SessionPresence(unittest.TestCase):
         self.tmp.cleanup()
 
     @staticmethod
-    def result(payload: object, code: int = 0, stderr: str = "") -> subprocess.CompletedProcess[str]:
+    def result(
+        payload: object, code: int = 0, stderr: str = "",
+    ) -> subprocess.CompletedProcess[str]:
         return subprocess.CompletedProcess(
             args=["python"], returncode=code,
             stdout=json.dumps(payload) if not isinstance(payload, str) else payload,
@@ -122,9 +124,46 @@ class SessionPresence(unittest.TestCase):
         self.assertIn("non-JSON", data["reason"])
         self.assertEqual(data["records"], [])
 
-    def test_the_adapter_reads_and_renders_nothing(self) -> None:
-        self.assertFalse(hasattr(session_presence, "fragment"))
-        self.assertFalse(hasattr(session_presence, "decorate"))
+    def test_the_adapter_is_a_boundary_and_exposes_no_renderer(self) -> None:
+        """Naming two absent functions proved nothing; the whole surface is pinned.
+
+        A renderer added here under any name would put HTML behind the CLI
+        boundary, where the module docstring says nothing renders.
+        """
+        public = {
+            name for name, value in vars(session_presence).items()
+            if not name.startswith("_") and callable(value)
+            and getattr(value, "__module__", "") == session_presence.__name__
+        }
+        self.assertEqual(public, {"snapshot", "register"})
+        source = Path(session_presence.__file__).read_text(encoding="utf-8")
+        for markup in ("<div", "<span", "<section", "class=", "html.escape"):
+            self.assertNotIn(markup, source)
+
+    def test_the_real_subprocess_path_reads_a_cli_that_actually_runs(self) -> None:
+        """Every other case injects a runner; this one crosses the real boundary."""
+        script = self.root / "scripts" / "sov_session.py"
+        script.write_text(
+            "import json\n"
+            "print(json.dumps({'sessions': [{'session': 's1', 'live': True}],"
+            " 'held': {'a/path': [{'session': 's1'}]}}))\n",
+            encoding="utf-8",
+        )
+        data = session_presence.snapshot(self.root)
+        self.assertTrue(data["available"], data["reason"])
+        self.assertEqual([item["session"] for item in data["sessions"]], ["s1"])
+        self.assertEqual(data["held"], {"a/path": [{"session": "s1"}]})
+
+    def test_the_real_subprocess_path_refuses_a_cli_that_exits_nonzero(self) -> None:
+        script = self.root / "scripts" / "sov_session.py"
+        script.write_text(
+            "import sys\nprint('not a git repository', file=sys.stderr)\nsys.exit(2)\n",
+            encoding="utf-8",
+        )
+        data = session_presence.snapshot(self.root)
+        self.assertFalse(data["available"])
+        self.assertIn("not a git repository", data["reason"])
+        self.assertEqual(data["records"], [])
 
 
 if __name__ == "__main__":

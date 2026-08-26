@@ -131,17 +131,29 @@ def revocation_payload(grant_id: str, revoked_by: str, revoked_at: str,
 
 
 def live_grants(entries: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
-    """Fold a replayed journal into the grants that are live right now."""
+    """Fold a replayed journal into the grants that are live right now.
+
+    A revocation counts only against a grant its own office issued. `permits.withdraw`
+    refuses to withdraw another node's grant, and `revocation_payload` records the node
+    that withdrew "so a journal carrying more than one console does not read as one
+    office" - but this fold matched on `grant_id` alone, so a revocation appended under
+    `node:peer` still killed a `node:local` grant and undid both. Reachable only through
+    a crossing, which has no transport in Phase I; the field was already on the record.
+    """
     granted: dict[str, dict[str, Any]] = {}
-    revoked: set[str] = set()
+    revoked: list[dict[str, Any]] = []
     for entry in entries:
         payload = entry["payload"]
         kind = payload.get("record_kind")
         if kind == GRANT_KIND:
             granted[payload["grant_id"]] = payload
         elif kind == REVOCATION_KIND:
-            revoked.add(payload["grant_id"])
-    return {grant_id: record for grant_id, record in granted.items() if grant_id not in revoked}
+            revoked.append(payload)
+    withdrawn = {payload["grant_id"] for payload in revoked
+                 if payload["grant_id"] in granted
+                 and payload.get("node_id") == granted[payload["grant_id"]].get("node_id")}
+    return {grant_id: record for grant_id, record in granted.items()
+            if grant_id not in withdrawn}
 
 
 def held(entries: list[dict[str, Any]], operator_id: str | None = None,

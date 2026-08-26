@@ -123,13 +123,20 @@ class Gateway:
         if entry is None:
             raise EndpointRefused("UNKNOWN_OPERATION", f"{tool} is not an exposed endpoint")
         handler = self._handlers[tool]
-        if entry.get("actor_is_operator"):
-            # The principal the service checks a grant against is the caller this
+        caller_argument = entry.get("caller_argument")
+        if caller_argument is not None:
+            # The principal a service checks a grant against is the caller this
             # gateway was handed, never a name the caller typed into the arguments.
-            # Letting the argument win would let anyone spend anyone's grant, which
-            # is what the endpoint costs since the Console Service began checking
-            # the authority it declares (2026-08-25).
-            arguments = {**arguments, "operator_id": actor}
+            # `server.py` passes `params["arguments"]` through unvalidated, so the
+            # name genuinely arrives from the wire.
+            #
+            # Applied to every handler that takes a principal, not only to the one
+            # this change added a guard for. `authority_grant` took `issuer` from
+            # arguments, so an ungranted caller issued itself a grant in the root
+            # seat's name and then spent it; `asset_ingest` took `actor`, and
+            # `authority_open_session` took `participant`. Overwriting rather than
+            # rejecting, so a caller that sends the field honestly is unaffected.
+            arguments = {**arguments, caller_argument: actor}
         self._precheck(entry, actor)
         if entry["tier"] == "read":
             return handler(**arguments)
@@ -215,16 +222,16 @@ class Gateway:
     def _ingest(self, path: str, label: str, actor: str) -> dict[str, str]:
         return self.asset.ingest(path, label, actor)
 
-    def _operations(self, operator_id: str) -> dict[str, Any]:  # actor_is_operator
+    def _operations(self, operator_id: str) -> dict[str, Any]:  # caller_argument
         """What this node declares, and what one operator holds, from the projection.
 
         The gateway supplies the map and says nothing about whether it is fresh: it
         reads the checked-in projection and has not rebuilt it, so `fresh` stays unset
         and the answer says nobody checked rather than implying somebody did.
 
-        `operator_id` is not a tool argument. The manifest marks this endpoint
-        `actor_is_operator`, so the dispatcher supplies the caller it was handed and
-        a caller cannot ask what a different operator may do. The Console Service
+        `operator_id` is not a tool argument. The manifest names it as this
+        endpoint's `caller_argument`, so the dispatcher supplies the caller it was
+        handed and a caller cannot ask what a different operator may do. The Console Service
         checks the `read:session` this operation declares as of 2026-08-25, so the
         name here decides whose grant is spent.
         """

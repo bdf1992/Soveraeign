@@ -85,8 +85,14 @@ class Guarded(NamedTuple):
     subject: str
 
 
-#: The nine, each named by its capability id so a reader can join this table to
+#: Every enforced capability, named by its id so a reader can join this table to
 #: `contracts/capability-offices.json` and to `authority.ENFORCED_AUTHORITY` by eye.
+#:
+#: All fifteen, not the nine this work guarded. Subtracting the six that already
+#: enforced left them graded by nothing: `console.withdraw-publication` could have
+#: its `authorize` call deleted outright and the whole gate stayed green, because its
+#: only two cases were positive ones. A coverage set that excludes what it does not
+#: expect to break is not a coverage set.
 GUARDED = (
     Guarded("console.grant",
             lambda t, actor: t.console.grant("someone", "post:message", "thread",
@@ -120,6 +126,26 @@ GUARDED = (
     Guarded("console.list-publications",
             lambda t, actor: published_threads(t.console, operator_id=actor),
             lambda t: NODE, "NODE"),
+    # The six that already enforced before 2026-08-25. Each mutates a subject of its
+    # own so table order cannot make one case depend on another having run.
+    Guarded("console.open-channel",
+            lambda t, actor: t.console.open_channel(actor, "ops", "governance"),
+            lambda t: "governance", "DOMAIN"),
+    Guarded("console.open-thread",
+            lambda t, actor: t.console.open_thread(actor, t.channel, "another"),
+            lambda t: t.channel, "CHANNEL"),
+    Guarded("console.archive-thread",
+            lambda t, actor: t.console.archive_thread(actor, t.archivable),
+            lambda t: t.channel, "CHANNEL"),
+    Guarded("console.publish-thread",
+            lambda t, actor: t.console.publish_thread(actor, t.thread),
+            lambda t: None, "THREAD"),
+    Guarded("console.withdraw-publication",
+            lambda t, actor: t.console.withdraw_publication(actor, t.publication),
+            lambda t: None, "THREAD"),
+    Guarded("console.post",
+            lambda t, actor: t.console.post(actor, t.outsider, t.thread, b"guarded"),
+            lambda t: None, "THREAD"),
 )
 
 
@@ -147,10 +173,29 @@ class EnforcedAuthorityTest(unittest.TestCase):
         session = console.open_session(ROOT_SEAT, "HUMAN", "cli")
         # Something for `console.revoke` to aim at that no case depends on.
         spare = console.grant("someone", "post:message", thread["thread_id"])
+        # A separate thread for `archive-thread` to close, so archiving it does not
+        # take the thread `post` and `publish-thread` need out from under them: the
+        # cases below share one journal per test method and run in table order.
+        archivable = console.open_thread(ROOT_SEAT, channel["channel_id"], "closes")
+        # A mark for `withdraw-publication` to withdraw, and the stranger's own
+        # session, because `post` refuses a session it does not own before any grant
+        # can help it (`posts.py`, ACTOR_ATTRIBUTION_MISMATCH).
+        console.grant(ROOT_SEAT, "publish:thread", thread["thread_id"])
+        mark = console.publish_thread(ROOT_SEAT, thread["thread_id"])
+        opening = console.grant(STRANGER, "open:session", STRANGER)
+        outsider = console.open_session(STRANGER, "MODEL", "cli")
+        # Withdrawn again: the stranger must own a session for `post` to reach its
+        # attribution check, and must still hold nothing at all when the cases start,
+        # or `console.open-session` would have no defeating case left.
+        console.revoke(opening["grant_id"])
         record.close()
         cls.template_root = root
+        cls.prepared_channel = channel["channel_id"]
         cls.prepared_thread = thread["thread_id"]
+        cls.prepared_archivable = archivable["thread_id"]
+        cls.prepared_publication = mark["publication_id"]
         cls.prepared_session = session["session_id"]
+        cls.prepared_outsider = outsider["session_id"]
         cls.prepared_spare = spare["grant_id"]
 
     @classmethod
@@ -165,13 +210,22 @@ class EnforcedAuthorityTest(unittest.TestCase):
         self.addCleanup(self.record.close)
         self.addCleanup(self.tmp.cleanup)
         self.console = ConsoleService(self.record, root / "console", NODE)
+        self.channel = self.prepared_channel
         self.thread = self.prepared_thread
+        self.archivable = self.prepared_archivable
+        self.publication = self.prepared_publication
         self.session = self.prepared_session
+        self.outsider = self.prepared_outsider
         self.spare_grant = self.prepared_spare
 
     def scope(self, case: Guarded) -> str:
-        """The scope the case's grant carries; `None` in the table means the thread."""
+        """The exact scope this case's grant must carry; `None` means the thread."""
         return case.scope(self) or self.thread
+
+    def subject_values(self) -> dict[str, str]:
+        """What each declared subject in `authority.ENFORCED_SCOPE` resolves to here."""
+        return {"NODE": NODE, "THREAD": self.thread, "CHANNEL": self.channel,
+                "DOMAIN": "governance"}
 
     def records(self) -> int:
         return sum(1 for entry in self.record.entries() if entry["kind"] == "EVENT")
@@ -180,14 +234,29 @@ class EnforcedAuthorityTest(unittest.TestCase):
         receipts = [entry for entry in self.record.entries() if entry["kind"] == "RECEIPT"]
         return receipts[-1]["payload"]
 
-    def test_the_table_here_names_the_nine_that_were_unenforced(self) -> None:
-        """A tenth unguarded capability must land in this table rather than pass quietly."""
-        self.assertEqual(len(GUARDED), 9)
+    def test_the_table_here_names_every_enforced_capability(self) -> None:
+        """A capability enforced but ungraded must land here rather than pass quietly.
+
+        This subtracted the six that already enforced, which made them ungraded by
+        construction - `console.withdraw-publication` could be fully unguarded with
+        the whole gate green. Nothing is subtracted now, so adding an entry to
+        `ENFORCED_AUTHORITY` without a case here fails.
+        """
         self.assertEqual({case.capability_id for case in GUARDED},
-                         set(authority.ENFORCED_AUTHORITY)
-                         - {"console.open-channel", "console.open-thread",
-                            "console.archive-thread", "console.publish-thread",
-                            "console.withdraw-publication", "console.post"})
+                         set(authority.ENFORCED_AUTHORITY))
+
+    def test_the_table_here_covers_every_built_console_capability(self) -> None:
+        """The census that has to reach call sites, joined where the driving happens.
+
+        `test_discovery.py` asserts the same coverage out of `ENFORCED_AUTHORITY` and
+        the capability map, and both are declarations - it passes unchanged if every
+        call site stops checking. This is the same join made against the table above,
+        every entry of which is driven ungranted, granted, at the wrong scope and
+        after revocation. A BUILT console capability that gains no case here fails.
+        """
+        built = {row["capability_id"] for row in MAP["capabilities"]
+                 if row["service_id"] == "console" and row["service_standing"] == "BUILT"}
+        self.assertEqual({case.capability_id for case in GUARDED}, built)
 
     def test_each_refuses_a_participant_holding_nothing(self) -> None:
         """The defeating case: the operation must not run for an ungranted caller."""
@@ -259,13 +328,13 @@ class EnforcedAuthorityTest(unittest.TestCase):
         """
         self.assertEqual(set(authority.ENFORCED_SCOPE),
                          set(authority.ENFORCED_AUTHORITY))
-        resolved = {"NODE": NODE, "THREAD": self.thread}
+        resolved = self.subject_values()
         for case in GUARDED:
             with self.subTest(case.capability_id):
                 declared = authority.ENFORCED_SCOPE[case.capability_id]
                 self.assertEqual(declared, case.subject)
                 if declared == "OPERATOR":
-                    self.assertNotIn(self.scope(case), (NODE, self.thread))
+                    self.assertNotIn(self.scope(case), set(resolved.values()))
                 else:
                     self.assertEqual(self.scope(case), resolved[declared])
 

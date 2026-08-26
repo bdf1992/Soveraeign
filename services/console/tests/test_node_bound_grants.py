@@ -232,6 +232,45 @@ class NodeNamespacePartition(unittest.TestCase):
         with self.assertRaises(AuthorityRefused):
             impostor.grant(MALLORY, "read:thread", HOME, granted_by=MALLORY)
 
+    def test_a_revocation_from_another_node_does_not_kill_this_nodes_grant(self) -> None:
+        """The fold has to read the node too, not only the grant id.
+
+        `permits.withdraw` refuses to withdraw another node's grant, so this cannot
+        be reached through the transition - it is reached by a revocation record
+        arriving in the journal, which is what a crossing does. `revocation_payload`
+        records the withdrawing node for exactly this reason and `live_grants` matched
+        on `grant_id` alone, so a `node:peer` revocation killed a `node:local` grant
+        and undid the transition guard from the other side.
+        """
+        live = authority.held(self.record.reconstruct(), None, HOME)
+        target = next(record for record in live
+                      if record["capability"] == "read:thread")
+        forged = [{"payload": {"record_kind": authority.REVOCATION_KIND,
+                               "grant_id": target["grant_id"], "node_id": EVIL,
+                               "revoked_by": MALLORY, "standing": "RECORDED"}}]
+        entries = self.record.reconstruct() + forged
+        self.assertIn(target["grant_id"], authority.live_grants(entries))
+        self.assertTrue(authority.check(entries, HOME, "Bdo", "read:thread", HOME))
+
+        # Its own office still withdraws it, which is the other half.
+        owned = [{"payload": dict(forged[0]["payload"], node_id=HOME)}]
+        self.assertNotIn(target["grant_id"],
+                         authority.live_grants(self.record.reconstruct() + owned))
+
+    def test_a_node_identifier_with_a_trailing_newline_is_refused(self) -> None:
+        """`fullmatch`, not `match`: `$` also matches before a trailing newline.
+
+        Such a name reached no other node's grants - `authority.check` compares byte
+        for byte - but it printed identically to the real one in every report, so two
+        nodes were indistinguishable by eye. Only the source-digest checks noticed the
+        regex, and a digest says a byte changed, not what it cost.
+        """
+        for spelling in (HOME + chr(10), HOME + chr(13), HOME + " "):
+            with self.subTest(repr(spelling)):
+                with self.assertRaises(ValueError):
+                    ConsoleService(self.record, self.root / "bad", spelling)
+        self.assertTrue(ConsoleService(self.record, self.root / "good", HOME))
+
     def test_another_node_cannot_revoke_this_nodes_grants(self) -> None:
         """The denial of service that mirrors the minting bypass.
 
@@ -558,12 +597,13 @@ class ReproducedThroughTheCLI(unittest.TestCase):
             for capability, scope in (("open:channel", "work"), ("open:session", "Bdo")):
                 self.assertEqual(
                     self.cli(store, HOME, "grant", "--operator", "Bdo",
+                             "--granted-by", "Bdo",
                              "--capability", capability, "--scope", scope)[0], 0)
             channel = self.cli(store, HOME, "open-channel", "--operator", "Bdo",
                                "--name", "work", "--domain", "work")[1]
             self.assertEqual(
                 self.cli(store, HOME, "grant", "--operator", "Bdo",
-                         "--capability", "open:thread",
+                         "--granted-by", "Bdo", "--capability", "open:thread",
                          "--scope", channel["channel_id"])[0], 0)
             thread = self.cli(store, HOME, "open-thread", "--operator", "Bdo",
                               "--channel", channel["channel_id"], "--title", "work")[1]

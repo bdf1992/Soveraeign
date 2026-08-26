@@ -237,15 +237,18 @@ class AuthorityHonestyTest(unittest.TestCase):
         self.assertEqual(row["authority"]["reading"], discovery.NOT_KNOWN_HERE)
         self.assertIn("no implementation", row["authority"]["because"])
 
-    def test_every_built_console_capability_checks_the_authority_it_declares(self) -> None:
-        """No built console operation gets a silent pass any more.
+    def test_the_surface_reports_every_built_console_capability_as_checked(self) -> None:
+        """What the surface says, which is all this module owns.
 
-        Nine of them did until 2026-08-25 - `console.grant` and `console.revoke`
-        among them, so anyone reaching the service could write itself a grant - and
-        Bdo ruled to guard all nine, having been told a check removes an ability from
-        whoever can call them today. This asserts the ruling: every BUILT console
-        capability names a check, and the omissions no longer report any of them as
-        admitting every caller.
+        This is a claim about the answer `discovery.operations` renders, not about
+        any call site: both sets here come from `ENFORCED_AUTHORITY` and the
+        capability map, so it passes unchanged if every operation stops checking. It
+        was named as though it were the guard against exactly that, and it never was -
+        `console.withdraw-publication` could be fully unguarded with this green.
+
+        `services/console/tests/test_enforced_authority.py` makes the same join
+        against a table whose every entry is driven against a live service, ungranted
+        and granted. That is the check; this is the report of it.
         """
         answer = discovery.operations(MAP, enforced=ENFORCED_AUTHORITY,
                                       operator_id="sov", grants=[])

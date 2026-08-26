@@ -129,16 +129,18 @@ def _authority(observed: Observation, store: Path) -> dict[str, Any]:
                       "--domain", "governance", expect=2)
     observed.note(refused.get("outcome") == "REFUSED", "an ungranted operator is refused",
                   str(refused.get("reason_code")))
-    console(store, "grant", "--operator", "Bdo", "--capability", "open:channel",
+    console(store, "grant", "--operator", "Bdo", "--granted-by", "Bdo",
+            "--capability", "open:channel",
             "--scope", "governance")
     # The session lifecycle and the reads are guarded as of 2026-08-25, so the walk
     # buys what it is about to spend. Bdo is this store's root issuer by virtue of
     # the grant above, which is the first one this journal ever carried.
     for operator in ("Bdo", "sov"):
         for capability in ("open:session", "read:session"):
-            console(store, "grant", "--operator", operator,
+            console(store, "grant", "--operator", operator, "--granted-by", "Bdo",
                     "--capability", capability, "--scope", operator)
-    console(store, "grant", "--operator", "Bdo", "--capability", "read:authority",
+    console(store, "grant", "--operator", "Bdo", "--granted-by", "Bdo",
+            "--capability", "read:authority",
             "--scope", "node:local")
     channel = console(store, "open-channel", "--operator", "Bdo", "--name", "general",
                       "--domain", "governance")
@@ -195,7 +197,7 @@ def _refusals(observed: Observation, store: Path, thread: dict[str, Any],
         return
     before = console(store, "read-thread", "--operator", "Bdo",
                      "--thread", thread["thread_id"])
-    console(store, "revoke", "--grant", posting[0])
+    console(store, "revoke", "--grant", posting[0], "--revoked-by", "Bdo")
     after = console(store, "post", "--operator", "Bdo", "--session",
                     human["session_id"], "--thread", thread["thread_id"],
                     "--body", "after revocation", expect=2)
@@ -230,16 +232,18 @@ def observe() -> int:
     with TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
         store = Path(tmp) / "console"
         channel = _authority(observed, store)
-        console(store, "grant", "--operator", "Bdo", "--capability", "open:thread",
+        console(store, "grant", "--operator", "Bdo", "--granted-by", "Bdo",
+                "--capability", "open:thread",
                 "--scope", channel["channel_id"])
         thread = console(store, "open-thread", "--operator", "Bdo", "--channel",
                          channel["channel_id"], "--title", "independent observation")
         observed.note(not declared_shape(thread, "thread.schema.json"), "a thread validates",
                       "; ".join(declared_shape(thread, "thread.schema.json")))
         for operator in ("Bdo", "sov"):
-            console(store, "grant", "--operator", operator, "--capability", "post:message",
-                    "--scope", thread["thread_id"])
-        console(store, "grant", "--operator", "Bdo", "--capability", "read:thread",
+            console(store, "grant", "--operator", operator, "--granted-by", "Bdo",
+                    "--capability", "post:message", "--scope", thread["thread_id"])
+        console(store, "grant", "--operator", "Bdo", "--granted-by", "Bdo",
+                "--capability", "read:thread",
                 "--scope", thread["thread_id"])
         human = _parity(observed, store, thread)
         model_claim = console(store, "post", "--operator", "sov", "--session",

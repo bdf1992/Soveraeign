@@ -68,6 +68,13 @@ def validate(endpoints: dict[str, dict[str, Any]],
     for tool, entry in endpoints.items():
         if entry["tier"] not in TIERS:
             raise UnbuiltEndpoint(f"{tool} declares unknown tier {entry['tier']!r}")
+        caller = entry.get("caller_argument")
+        if caller is not None and caller in entry.get("arguments", {}):
+            # Declaring it as an input invites a caller to send one, and a reader of
+            # the tool schema would believe it decides something. The dispatcher
+            # overwrites it, so the two together would be a contradiction on the wire.
+            raise UnbuiltEndpoint(
+                f"{tool} declares {caller!r} as an argument and as its caller_argument")
         if entry["tier"] != "act":
             continue
         mode = entry.get("authority")

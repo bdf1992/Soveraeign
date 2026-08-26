@@ -18,10 +18,6 @@
       "effect_class": "RECORD_LOCAL",
       "description": "Open a bounded session for this participant and model identity. Every later act-tier call carries the returned session id, and closing the session withdraws every grant issued under it.",
       "arguments": {
-        "participant": {
-          "type": "string",
-          "required": true
-        },
         "model_identity": {
           "type": "string",
           "required": true
@@ -34,7 +30,8 @@
       "authority": "bootstrap",
       "requires_session": false,
       "realizes": null,
-      "undeclared_because": "The asset service implements sessions; no service manifest declares them as an operation."
+      "undeclared_because": "The asset service implements sessions; no service manifest declares them as an operation.",
+      "caller_argument": "participant"
     },
     {
       "tool": "authority_grant",
@@ -44,10 +41,6 @@
       "effect_class": "RECORD_LOCAL",
       "description": "Issue a live, expiring grant bound to the current session. The Authority layer owns the check: the store's recorded root may issue, and anyone else may only issue what one of their own live grants already covers, so a delegated grant narrows and never widens.",
       "arguments": {
-        "issuer": {
-          "type": "string",
-          "required": true
-        },
         "actor": {
           "type": "string",
           "required": true
@@ -67,7 +60,8 @@
       },
       "authority": "service-enforced",
       "realizes": null,
-      "undeclared_because": "The asset service implements grants; no service manifest declares them as an operation."
+      "undeclared_because": "The asset service implements grants; no service manifest declares them as an operation.",
+      "caller_argument": "issuer"
     },
     {
       "tool": "asset_ingest",
@@ -85,14 +79,11 @@
         "label": {
           "type": "string",
           "required": true
-        },
-        "actor": {
-          "type": "string",
-          "required": true
         }
       },
       "authority": "gateway",
-      "realizes": "asset.ingest-asset"
+      "realizes": "asset.ingest-asset",
+      "caller_argument": "actor"
     },
     {
       "tool": "asset_search",
@@ -146,7 +137,7 @@
       "realizes": "console.discover-operations",
       "requires_session": false,
       "note": "observe rather than read, so the crossing is journalled. A participant asking what it may do is an act the node should be able to account for afterwards (GROUND-007). It takes no arguments: the operator is the caller the gateway was handed, and the answer costs the read:session grant the office table declares. Bdo ruled on 2026-08-25 that this operation checks the authority it declares, which removed the anonymous reading decisions/0053 recorded.",
-      "actor_is_operator": true
+      "caller_argument": "operator_id"
     }
   ],
   "withheld_endpoints": [],
@@ -154,6 +145,7 @@
     "gateway": "The gateway requires the caller to hold the declared capability.",
     "service-enforced": "The service owns the check. The gateway adds no second, stricter rule it has no bootstrap for.",
     "bootstrap": "Establishes the session the other endpoints require, so it cannot itself require one.",
-    "node": "The gateway requires the caller to hold the capability the office table declares, checked against this node's authority store rather than the Asset Service's. Named by node_authority on the endpoint."
+    "node": "The gateway requires the caller to hold the capability the office table declares, checked against this node's authority store rather than the Asset Service's. Named by node_authority on the endpoint.",
+    "note_caller_argument": "caller_argument names the argument that carries the principal a service checks. The dispatcher supplies it from the authenticated caller and it is not a declared input, so a caller cannot name a different principal. Added 2026-08-25 after authority_grant was found taking its issuer from caller arguments."
   }
 }

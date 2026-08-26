@@ -112,11 +112,17 @@ def build_parser() -> argparse.ArgumentParser:
     grant.add_argument("--operator", required=True)
     grant.add_argument("--capability", required=True)
     grant.add_argument("--scope", required=True)
-    grant.add_argument("--granted-by", dest="granted_by", default="Bdo")
+    grant.add_argument("--granted-by", dest="granted_by", required=True,
+                       help="the issuer whose grant:authority is spent. Required: it "
+                            "defaulted to Bdo, and once this became the principal "
+                            "checked rather than a label, the default let any caller "
+                            "issue in the root seat's name without naming it")
 
     revoke = sub.add_parser("revoke", help="withdraw a grant by appending a revocation")
     revoke.add_argument("--grant", required=True)
-    revoke.add_argument("--revoked-by", dest="revoked_by", default="Bdo")
+    revoke.add_argument("--revoked-by", dest="revoked_by", required=True,
+                        help="the revoker whose revoke:authority is spent; required "
+                             "for the same reason as --granted-by")
 
     grants = sub.add_parser("grants", help="list the grants that are live right now")
     grants.add_argument("--reader", required=True,

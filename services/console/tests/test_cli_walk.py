@@ -69,7 +69,13 @@ class ConsoleCLIWalk(unittest.TestCase):
         return json.loads(out.getvalue())
 
     def grant(self, operator: str, capability: str, scope: str) -> dict[str, Any]:
-        return self.run_cli("grant", "--operator", operator,
+        """One grant, always naming its issuer.
+
+        `--granted-by` is required. It defaulted to `Bdo`, and this walk was built on
+        that default - which is how a flag that decides whose authority is spent went
+        four rounds without a caller ever naming it.
+        """
+        return self.run_cli("grant", "--operator", operator, "--granted-by", BDO,
                             "--capability", capability, "--scope", scope)
 
     def test_the_whole_surface_runs_end_to_end(self) -> None:
@@ -135,7 +141,7 @@ class ConsoleCLIWalk(unittest.TestCase):
         self.assertTrue(all(record["node_id"] == NODE for record in live))
         posting = next(record["grant_id"] for record in live
                        if record["capability"] == "post:message")
-        self.run_cli("revoke", "--grant", posting)
+        self.run_cli("revoke", "--grant", posting, "--revoked-by", BDO)
 
         self.grant(BDO, "archive:thread", channel["channel_id"])
         archived = self.run_cli("archive-thread", "--operator", BDO, "--thread", thread_id)
@@ -150,6 +156,26 @@ class ConsoleCLIWalk(unittest.TestCase):
         for action in parser._subparsers._group_actions:  # noqa: SLF001 - argparse census
             declared.update(action.choices)
         self.assertEqual(declared - self.reached, set())
+
+    def test_the_issuer_flags_cannot_be_left_unnamed(self) -> None:
+        """A flag that decides whose authority is spent must be typed, not defaulted.
+
+        `--granted-by` and `--revoked-by` defaulted to `Bdo`. Bootstrap the office as
+        Bdo, then omit the flag, and the console issued in the root seat's name at
+        exit 0 - `--granted-by Eve` was correctly refused, so the check worked and
+        the default walked straight past it. This change is what turned that flag
+        from a label into the principal whose grant is checked.
+        """
+        with TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
+            store = Path(tmp) / "console"
+            for args in (("grant", "--operator", "Mallory",
+                          "--capability", "grant:authority", "--scope", NODE),
+                         ("revoke", "--grant", "grant_0000000000000000")):
+                with self.subTest(args[0]):
+                    with self.assertRaises(SystemExit) as exited:
+                        with contextlib.redirect_stderr(StringIO()):
+                            cli.main(["--root", str(store), "--node", NODE, *args])
+                    self.assertEqual(exited.exception.code, 2)
 
     def test_a_refusal_comes_back_as_json_with_its_reason_code(self) -> None:
         """Exit 2 and a machine-readable reason, not a traceback, at the real boundary."""
@@ -170,7 +196,8 @@ class ConsoleCLIWalk(unittest.TestCase):
             out = StringIO()
             with contextlib.redirect_stdout(out):
                 code = cli.main(["--root", str(store), "--node", NODE,
-                                 "revoke", "--grant", ""])
+                                 "revoke", "--grant", "",
+                                 "--revoked-by", BDO])
             self.assertEqual(code, 3)
             self.assertEqual(json.loads(out.getvalue())["reason_code"], "UNKNOWN_RECORD")
 

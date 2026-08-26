@@ -23,6 +23,7 @@ import unittest
 sys.path.insert(0, str(Path(__file__).parents[1]))
 
 from gateway import EndpointRefused, Gateway, UnbuiltEndpoint  # noqa: E402
+from manifest_gate import validate  # noqa: E402
 from server import Server  # noqa: E402
 
 ACTOR = "Bdo"
@@ -245,6 +246,78 @@ class GovernedCrossing(GatewayCase):
         with self.assertRaises(EndpointRefused) as raised:
             self.gateway.call("record_entries", {}, ACTOR)
         self.assertEqual(raised.exception.code, "GRANT_NOT_HELD")
+
+    def test_a_caller_cannot_name_a_different_principal(self):
+        """The guard this change added, and the three siblings that never had it.
+
+        `server.py` hands `params["arguments"]` to the dispatcher with no schema
+        validation, so a name in the arguments genuinely arrives from the wire. Every
+        handler that takes a principal now has it overwritten with the authenticated
+        caller. Removing `caller_argument` from the manifest, or inverting the merge
+        in `gateway.py` so the argument wins, must turn this red on both halves.
+        """
+        self.open_session()
+        self.hold("operate:ingest")          # Bdo becomes the asset store's root
+        source = self.source("hero.txt", b"payload")
+
+        # console_operations: naming Bdo must not read Bdo's holdings. Ungranted
+        # Mallory is refused because the principal checked became Mallory; if the
+        # argument won she would have been admitted on Bdo's read:session.
+        self.gateway.console.grant(ACTOR, "read:session", ACTOR)
+        with self.assertRaises(Exception) as named:
+            self.gateway.call("console_operations", {"operator_id": ACTOR}, MALLORY)
+        self.assertIn("read:session", str(named.exception))
+        # Holding her own, she gets her own reading and not the one she asked for.
+        self.gateway.console.grant(MALLORY, "read:session", MALLORY)
+        answer = self.gateway.call("console_operations", {"operator_id": ACTOR}, MALLORY)
+        self.assertEqual(answer["operator_id"], MALLORY)
+
+        # authority_grant: the escalation. Ungranted Mallory asks for a grant in the
+        # root seat's name; the issuer checked is Mallory, who may issue nothing.
+        with self.assertRaises(Exception) as raised:
+            self.gateway.call("authority_grant",
+                              {"issuer": ACTOR, "actor": MALLORY,
+                               "capability": "operate:ingest"}, MALLORY)
+        self.assertNotIsInstance(raised.exception, AssertionError)
+        self.assertFalse(
+            self.gateway.asset.authority.authorized(MALLORY, "operate:ingest", "*"),
+            "Mallory took a grant in Bdo's name")
+
+        # asset_ingest: naming Bdo must not spend Bdo's grant.
+        with self.assertRaises(EndpointRefused) as refused:
+            self.gateway.call("asset_ingest",
+                              {"path": str(source), "label": "Hero", "actor": ACTOR},
+                              MALLORY)
+        self.assertEqual(refused.exception.code, "GRANT_NOT_HELD")
+
+        # authority_open_session: the session opens for the caller, not the name.
+        opened = self.gateway.call(
+            "authority_open_session",
+            {"participant": ACTOR, "model_identity": MODEL}, MALLORY)
+        self.assertEqual(opened["participant"], MALLORY)
+
+    def test_a_principal_argument_is_not_a_declared_input(self):
+        """A caller must not be told to send what the dispatcher overwrites.
+
+        Two rules together: the schema does not offer the field, and the manifest
+        gate refuses a manifest that declares it both ways.
+        """
+        for tool, name in (("authority_grant", "issuer"), ("asset_ingest", "actor"),
+                           ("authority_open_session", "participant"),
+                           ("console_operations", "operator_id")):
+            with self.subTest(tool):
+                entry = self.gateway.endpoints[tool]
+                self.assertEqual(entry["caller_argument"], name)
+                self.assertNotIn(name, entry.get("arguments", {}))
+                schema = next(t for t in self.gateway.tools() if t["name"] == tool)
+                self.assertNotIn(name, schema["inputSchema"]["properties"])
+
+        contradictory = {"probe": {"tool": "probe", "tier": "read", "service": "x",
+                                   "operation": "probe", "effect_class": "NONE",
+                                   "caller_argument": "actor",
+                                   "arguments": {"actor": {"type": "string"}}}}
+        with self.assertRaises(UnbuiltEndpoint):
+            validate(contradictory)
 
     def test_an_act_without_a_session_is_refused(self):
         """The defeating case: no live session, no act."""

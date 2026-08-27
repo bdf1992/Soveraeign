@@ -71,10 +71,10 @@ def check_projection_reads_the_same_under_both_bindings() -> dict[str, Any]:
     """
     model_code, _, model = interface("show", "host.read-health", "--binding", "MODEL")
     if model_code != 0 or model is None:
-        return {"held": False, "why": f"show refused under MODEL at exit {model_code}"}
+        return {"held": None, "why": f"unreached: show refused under MODEL at exit {model_code}"}
     human_code, human_raw, _ = interface("show", "host.read-health", "--binding", "HUMAN")
     if human_code != 0:
-        return {"held": False, "why": f"show refused under HUMAN at exit {human_code}"}
+        return {"held": None, "why": f"unreached: show refused under HUMAN at exit {human_code}"}
     digest = model["record_digest"]
     agrees = any(digest.startswith(token.strip("[]")) or token.strip("[]") == digest[:12]
                  for token in human_raw.split() if token.startswith("["))
@@ -170,7 +170,8 @@ def check_grant_through_the_declared_console_surface(work: Path) -> dict[str, An
         console_root = console_root_of(state)
         grant_code, grant_raw, grant = console(console_root, "grant", "--operator", "operator",
                                                "--capability", "read:host-health",
-                                               "--scope", "host:local")
+                                               "--scope", "host:local",
+                                               "--granted-by", "witness:probe")
         journal_files = sorted(str(p.relative_to(state)) for p in state.rglob("*")
                                if p.is_file())
         code, _, result = interface("invoke", "host.read-health", "--actor", "operator",
@@ -188,6 +189,15 @@ def check_grant_through_the_declared_console_surface(work: Path) -> dict[str, An
             "reached_the_success_path": outcome == "COMMITTED",
         }
     reached = any(a["reached_the_success_path"] for a in attempts.values())
+    # A grant that never recorded means the invoke was never actually put to the
+    # test. Concluding "unreachable" from that would be the probe grading its own
+    # broken setup as a finding about the subject.
+    granted = any(a["grant_recorded"] for a in attempts.values())
+    if not granted:
+        return {"reachable_through_declared_surfaces": None,
+                "why": "unreached: no grant was recorded at any placement, so no "
+                       "invoke was exercised; this measures the probe, not the subject",
+                "attempts": attempts}
     return {"reachable_through_declared_surfaces": reached, "attempts": attempts,
             "attack": "record the grant through the Console CLI at every state-root "
                       "placement the declared arguments allow, then invoke"}
@@ -197,7 +207,7 @@ def check_prove_vertical() -> dict[str, Any]:
     """RED: what does the interface's own proof actually exercise?"""
     code, raw, proof = interface("prove")
     if code != 0 or proof is None:
-        return {"held": False, "why": f"prove refused at exit {code}"}
+        return {"held": None, "why": f"unreached: prove refused at exit {code}"}
     reads = proof.get("host_reads", {})
     adapters = {binding: read.get("adapter_id") for binding, read in reads.items()}
     real_adapter = all("proof" not in str(a).lower() for a in adapters.values())

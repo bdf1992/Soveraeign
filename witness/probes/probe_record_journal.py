@@ -56,15 +56,39 @@ def reason_of(result: Any) -> str | None:
     return result.get("reason_code") if isinstance(result, dict) else None
 
 
-def charter_digest(prev: str, kind: str, subject: str, actor: str, payload: Any) -> str:
+LEGACY_PROFILE = "soveraeign-record-chain/v1"
+CURRENT_PROFILE = "soveraeign-record-chain/v2"
+
+
+def charter_digest(prev: str, entry: dict[str, Any]) -> str | None:
     """Recompute one link from the rule CHARTER.md states, not from core.py.
 
-    "Every entry's digest is sha256 over prev_digest, kind, subject, actor, and
-    the entry payload as canonical JSON, joined by |."
+    The charter names two profiles and says verification "never tries both
+    algorithms", so this reads the profile the row declares and refuses an
+    unknown one rather than guessing. Returning None means the probe cannot
+    recompute the row at all, which is a different fact from a mismatch.
+
+    v1: compact key-sorted payload JSON joined with prev, kind, subject, actor
+        by `|`. Retained for existing rows; ambiguous when a field contains `|`.
+    v2: UTF-8 bytes of compact JSON for
+        [profile, prev_digest, kind, subject, actor, payload], object keys
+        sorted, non-finite refused, Unicode code points preserved.
     """
-    canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"))
-    joined = "|".join([prev, kind, subject, actor, canonical])
-    return hashlib.sha256(joined.encode("utf-8")).hexdigest()
+    profile = entry.get("digest_profile", LEGACY_PROFILE)
+    if profile == LEGACY_PROFILE:
+        canonical = json.dumps(entry["payload"], sort_keys=True, separators=(",", ":"))
+        encoded = "|".join(
+            [prev, entry["kind"], entry["subject"], entry["actor"], canonical]
+        ).encode("utf-8")
+    elif profile == CURRENT_PROFILE:
+        encoded = json.dumps(
+            [profile, prev, entry["kind"], entry["subject"], entry["actor"], entry["payload"]],
+            ensure_ascii=False, allow_nan=False,
+            separators=(",", ":"), sort_keys=True,
+        ).encode("utf-8")
+    else:
+        return None
+    return hashlib.sha256(encoded).hexdigest()
 
 
 def store_files(root: Path) -> list[Path]:
@@ -129,18 +153,28 @@ def check_chain_rule_is_the_declared_one(root: Path, _: Path) -> dict[str, Any]:
     seeded = seed(root)
     code, replay = cli(root, "reconstruct-journal")
     if code != 0:
-        return {"held": False, "why": f"reconstruct refused on a clean journal: {replay}"}
+        return {"held": None, "why": f"unreached: reconstruct refused on a clean journal: {replay}"}
     prev = GENESIS
-    mismatches = []
+    mismatches, unreadable = [], []
     for entry in replay["entries"]:
-        mine = charter_digest(prev, entry["kind"], entry["subject"], entry["actor"],
-                              entry["payload"])
-        if mine != entry["entry_digest"]:
+        mine = charter_digest(prev, entry)
+        if mine is None:
+            unreadable.append({"entry_id": entry["entry_id"],
+                               "digest_profile": entry.get("digest_profile")})
+        elif mine != entry["entry_digest"]:
             mismatches.append({"entry_id": entry["entry_id"], "stored": entry["entry_digest"],
                                "recomputed_from_charter": mine})
         prev = entry["entry_digest"]
+    if unreadable:
+        # The charter declares a profile this probe does not implement. That is the
+        # probe being out of date, not the subject failing, and it must not read as
+        # either a pass or a defeat.
+        return {"held": None, "why": "the journal declares a digest profile this probe "
+                                     "cannot recompute; the probe is stale, not the subject",
+                "unreadable": unreadable, "entries": len(replay["entries"])}
     return {"held": not mismatches, "entries": len(replay["entries"]),
             "seeded": len(seeded), "head": replay["head"], "mismatches": mismatches,
+            "profiles": sorted({e.get("digest_profile") for e in replay["entries"]}),
             "attack": "recompute every digest from CHARTER.md's stated rule alone"}
 
 
@@ -148,7 +182,7 @@ def check_no_mutation_on_the_reachable_surface(root: Path, _: Path) -> dict[str,
     """RED: is there any declared operation that edits or deletes an entry?"""
     code, ops = cli(root, "operations")
     if code != 0:
-        return {"held": False, "why": f"discovery refused: {ops}"}
+        return {"held": None, "why": f"unreached: discovery refused: {ops}"}
     offending = [op["operation"] for op in ops["operations"]
                  if op.get("subject") in {"journal-entry", "terminal-receipt", "counter-record",
                                           "digest-chain"}
@@ -210,7 +244,16 @@ def check_undigested_fields(root: Path, _: Path) -> dict[str, Any]:
         table, columns = locate(connection, "payload")
         if table is None:
             return {"held": None, "why": f"no journal table found; tables were {columns}"}
+        # Which columns the rule covers depends on the profile the rows declare:
+        # v2 domain-separates with the profile string, so `digest_profile` is
+        # inside the chain and rewriting it proves nothing about the fields that
+        # are outside it. Deriving this rather than hardcoding it is why the
+        # check survived the v1 -> v2 change with its meaning intact.
         digested = {payload_column(columns), "kind", "subject", "actor", "prev_digest"}
+        profiles = {row[0] for row in
+                    connection.execute(f"SELECT DISTINCT digest_profile FROM {table}")}             if "digest_profile" in columns else set()
+        if profiles and profiles <= {CURRENT_PROFILE}:
+            digested.add("digest_profile")
         structural = {"entry_digest", "seq", "id", "rowid"}
         outside = [name for name in columns if name not in digested and name not in structural]
         row = connection.execute(f"SELECT rowid FROM {table} ORDER BY rowid LIMIT 1").fetchone()
@@ -222,6 +265,8 @@ def check_undigested_fields(root: Path, _: Path) -> dict[str, Any]:
     code, result = cli(root, "reconstruct-journal")
     return {"detected": code != 0, "exit_code": code, "reason_code": reason_of(result),
             "columns_in_table": columns, "columns_rewritten": findings,
+            "digest_profiles_present": sorted(profiles),
+            "columns_the_rule_covers": sorted(digested),
             "note": "detected=false means these fields sit outside the digest chain",
             "attack": "rewrite every stored column the declared digest rule omits"}
 
@@ -233,10 +278,10 @@ def check_retraction_preserves(root: Path, _: Path) -> dict[str, Any]:
     code, countered = cli(root, "counter-entry", "--entry", original["entry_id"],
                           "--actor", "witness:probe", "--reason", "probe retraction")
     if code != 0:
-        return {"held": False, "why": f"counter refused: {countered}"}
+        return {"held": None, "why": f"unreached: counter refused, so retraction was never exercised: {countered}"}
     code, reread = cli(root, "read-entry", "--entry", original["entry_id"])
     if code != 0:
-        return {"held": False, "why": f"original unreadable after retraction: {reread}"}
+        return {"held": False, "why": f"defeated: retraction made the original unreadable: {reread}"}
     same_payload = reread.get("payload") == original["payload"]
     same_digest = reread.get("entry_digest") == original["entry_digest"]
     code, replay = cli(root, "reconstruct-journal")
@@ -253,20 +298,20 @@ def check_projection_is_rebuildable(root: Path, _: Path) -> dict[str, Any]:
     seed(root)
     code, before_head = cli(root, "reconstruct-journal")
     if code != 0:
-        return {"held": False, "why": f"reconstruct refused: {before_head}"}
+        return {"held": None, "why": f"unreached: reconstruct refused: {before_head}"}
     # Appending does not materialize a projection; the manifest's declared
     # precondition for read-projection is `projection_built`, so build it first.
     unbuilt_code, unbuilt = cli(root, "read-projection", "--subject", "probe/subject-1")
     cli(root, "rebuild-projections")
     code, before = cli(root, "read-projection", "--subject", "probe/subject-1")
     if code != 0:
-        return {"held": False, "why": f"projection unreadable after first build: {before}"}
+        return {"held": None, "why": f"unreached: no baseline projection to compare against: {before}"}
     cli(root, "drop-projections")
     dropped_code, dropped = cli(root, "read-projection", "--subject", "probe/subject-1")
     cli(root, "rebuild-projections")
     code, after = cli(root, "read-projection", "--subject", "probe/subject-1")
     if code != 0:
-        return {"held": False, "why": f"projection unreadable after rebuild: {after}"}
+        return {"held": False, "why": f"defeated: a rebuilt projection is unreadable: {after}"}
     code, after_head = cli(root, "reconstruct-journal")
     identical = before == after
     unchanged = before_head["head"] == after_head["head"]

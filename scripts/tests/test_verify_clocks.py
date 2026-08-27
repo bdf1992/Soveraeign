@@ -54,10 +54,19 @@ def measure(code: str, *extra: str) -> clocks.Reading:
     return clocks.run([sys.executable, "-c", code, *extra], ROOT)
 
 
+def cpu_reports(reading: clocks.Reading) -> list[float]:
+    """Every CPU figure a process in the measured tree stated about itself, ascending.
+
+    `time.process_time` excludes children, so a parent that only spawns and waits
+    states a small number and the process doing the work states a large one.
+    """
+    return sorted(float(line.removeprefix("CPU="))
+                  for line in reading.output.splitlines() if line.startswith("CPU="))
+
+
 def self_reported(reading: clocks.Reading) -> float:
     """Sum every CPU figure the measured process tree stated about itself."""
-    return sum(float(line.removeprefix("CPU="))
-               for line in reading.output.splitlines() if line.startswith("CPU="))
+    return sum(cpu_reports(reading))
 
 
 class Measured(unittest.TestCase):
@@ -92,15 +101,20 @@ class Measured(unittest.TestCase):
         self.assertLess(self.sleeper.ratio, 0.6)
 
     def test_a_cpu_bound_check_spends_more_cpu_than_a_waiting_one(self):
-        self.assertGreater(self.burner.cpu, self.sleeper.cpu)
-        self.assertGreater(self.burner.ratio, self.sleeper.ratio)
+        """Absolute CPU, not the ratio: an oversubscribed runner moves wall, not work."""
+        self.assertGreater(self.burner.cpu, self.sleeper.cpu * 2)
 
     def test_cpu_covers_work_the_check_did_in_a_grandchild(self):
-        """`scripts/run_tooling_tests.py` spends nearly all its time in grandchildren."""
-        stated = self_reported(self.nested)
-        self.assertEqual(len(self.nested.output.splitlines()), 2)
-        self.assertGreaterEqual(self.nested.cpu, stated * 0.8)
-        self.assertGreater(self.nested.cpu, self.burner.cpu)
+        """`scripts/run_tooling_tests.py` spends nearly all its time in grandchildren.
+
+        Take the parent's own CPU off the observed total. What is left has to be
+        most of what the grandchild said it spent. A per-process measurement would
+        leave nothing there, which is what makes this the defeating case.
+        """
+        parent, grandchild = cpu_reports(self.nested)
+        self.assertGreater(grandchild, parent)
+        self.assertGreaterEqual(self.nested.cpu - parent, grandchild * 0.7)
+        self.assertGreaterEqual(self.nested.cpu, (parent + grandchild) * 0.8)
 
     def test_argv_and_working_directory_reach_the_child_unaltered(self):
         """The harness must not perturb what it measures: no shim, no rewritten argv."""

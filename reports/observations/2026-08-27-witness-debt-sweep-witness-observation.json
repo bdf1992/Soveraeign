@@ -1,0 +1,109 @@
+{
+  "observer_id": "urn:soveraeign:actor:sov-witness/session-f444fd",
+  "contributed_to_build": false,
+  "verdict": "REPRODUCED_WITH_DEFECTS",
+  "concern": "PR #119 (docs/witness-debt-sweep): were exactly three subjects observed, and was none promoted?",
+  "subject": {
+    "commits": [
+      "5acce368a5e4231a4f32858fccae5c3d5c6ec830"
+    ],
+    "pull_request": 119,
+    "decisions": [],
+    "claims_under_test": [
+      "three subjects observed",
+      "none promoted to WITNESSED"
+    ]
+  },
+  "observer_relation": {
+    "to_builder": "NONE",
+    "basis": "Launched after the branch was pushed; built its own detached worktree and read no builder correspondence."
+  },
+  "frozen_head": "5acce368a5e4231a4f32858fccae5c3d5c6ec830",
+  "shared_tree_conditions": {
+    "trap": "CLAUDE.md T6",
+    "mitigation": "every reading taken in a detached worktree built from the pull request head; the shared primary tree was never used for measurement"
+  },
+  "checks": [
+    {
+      "command": "python scripts/lint.py",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/verify.py",
+      "result": "PASS: 39 checks, GRADE SILVER at 13.894s",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/sov_standing.py",
+      "result": "no status field claims WITNESSED or RATIFIED (3 records on file)",
+      "exit_code": 0
+    }
+  ],
+  "reproduced": [
+    {
+      "id": "WDS-1",
+      "claim": "exactly three subjects",
+      "method": "listed witness/ at the frozen head and diffed against origin/main",
+      "finding": "three records, three receipts, three probes; 13 files changed and no fourth record. Four issues are covered because two point at services/record/ and the record says so under Uncovered."
+    },
+    {
+      "id": "WDS-2",
+      "claim": "none promoted",
+      "method": "diffed STATUS.yaml against origin/main, grepped the diff for added status lines, ran sov_standing.py",
+      "finding": "STATUS.yaml is byte-identical to origin/main. All three receipts carry verdict NOT-YET and standing_supported NONE."
+    },
+    {
+      "id": "WDS-3",
+      "claim": "each observer did not build its subject",
+      "method": "confirmed the branch edits no byte of services/record/, services/host/, adapters/host/, SOV.md or bindings/sov/; confirmed each probe imports stdlib only and drives participant code as a subprocess; re-ran all three probes at the frozen head",
+      "finding": "independence is structural rather than declared, and every central probe finding reproduced exactly. 23 of 23 declared digests recomputed to their declared value; all three receipts validate against contracts/participant-observation.schema.json."
+    },
+    {
+      "id": "WDS-4",
+      "claim": "trap T3 is not tripped",
+      "method": "read scripts/sov_standing.py and its tests; grepped the probes and both modified scripts for substring matching on WITNESSED",
+      "finding": "this branch adds no standing check, and sov_standing.py still splits on '_' and denies a token preceded by NOT. Adjacent, pre-existing and untouched: scripts/sovdocs/facets.py settled() does use substring matching against a RATIFIED token, so NOT_RATIFIED would grade as ratified there. Unreachable in this change because the three new records carry no Status line."
+    }
+  ],
+  "dissented": [
+    {
+      "id": "WDS-D1",
+      "severity": "MATERIAL",
+      "claim_defeated": "the change is within the module-size contract",
+      "finding": "witness/probes/probe_record_journal.py is 507 lines and probe_host_interface.py is 312 lines, both past the 300-line ceiling AGENTS.md sets, with no KNOWN_MODULE_DEBT entry. scripts/lint.py PRODUCTION_ROOTS does not include 'witness/', so neither file is measured.",
+      "consequence": "lint reports its named debt over a tree carrying unmeasured overruns. The comment above that list says it was widened precisely so no new executable root could grow past the limit unseen; this branch creates such a root without adding it.",
+      "what_would_have_defeated_this_finding": "adding 'witness/' to PRODUCTION_ROOTS, or walking the tree instead of reading a declared path list"
+    },
+    {
+      "id": "WDS-D2",
+      "severity": "MATERIAL",
+      "claim_defeated": "depositing these records leaves the standing gate's reach unchanged",
+      "finding": "sov_standing.witness_records() returns three stems that map exactly onto host_service_status, record_service_status and sov_operating_agent_status in STATUS.yaml. The gate matches on filename stem and by its own docstring cannot tell a good witness record from a bad one.",
+      "consequence": "after this merge a later commit could set any of those three fields to WITNESSED and the gate would pass, on the strength of three records that each say NOT-YET. This branch is the first to deposit into that directory and it also edited the gate's own test to accommodate the deposit.",
+      "what_would_have_defeated_this_finding": "a gate that reads each record's verdict rather than its filename"
+    }
+  ],
+  "residuals": [
+    {
+      "id": "WDS-R1",
+      "severity": "MINOR",
+      "finding": "PR body drift: the body names frozen commit 4b96ba1 while the shipped receipts name b3057c0, and its Checks block reads 39 checks at 10.197s over 736 files against 13.894s over 759 files at the head. Not restamped after the last two commits."
+    },
+    {
+      "id": "WDS-R2",
+      "severity": "MINOR",
+      "finding": "The receipts' held booleans are hand-transcribed rather than emitted by the probe named in each reproduction field: two probe checks are merged into one predicate and one name is inverted, and telemetry.checks_run reads 11 against 12 probe checks. Every underlying fact reproduces, so nothing is misstated, but running the named command does not reproduce the receipt's keys."
+    },
+    {
+      "id": "WDS-R3",
+      "severity": "MINOR",
+      "finding": "test_a_deposited_record_does_not_advance_standing was rewritten into two assertions the file already made elsewhere. The old assertion had to change, but the replacement adds no coverage and its name promises a relation it never exercises, since it deposits nothing."
+    }
+  ],
+  "not_examined": [
+    "whether the three subjects should be promoted; the records themselves say NOT-YET"
+  ],
+  "standing_supported": "Does not support BUILT -> WITNESSED for 5acce36. Both title claims reproduce in full; the verdict is withheld for what the change ships unreported, and both findings are repairable inside this concern.",
+  "judgement_items": []
+}

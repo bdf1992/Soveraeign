@@ -1395,6 +1395,60 @@
       "expect_findings": [],
       "expect_reading": "HEALTHY",
       "proves": "1200s against the 1000s run before it is well inside the multiple and stays quiet. Count the 30s crash between them as a runtime and the comparison becomes 1200s against 30s, which fires. The table's completed_note names this hazard in prose and a witness found nothing defeating it: a flaky host would have produced a drift finding after every crash."
+    },
+    {
+      "case_id": "H-037-a-switched-off-schedule-can-still-be-in-a-refusal-loop",
+      "schedule": {
+        "name": "code-review",
+        "enabled": false,
+        "target_exists": true,
+        "cron": "0 */2 * * *",
+        "timeout_seconds": 2700,
+        "declaration_defect": null
+      },
+      "now": "2026-08-27T04:30:00Z",
+      "runs": [
+        {
+          "run_id": "code-review-1",
+          "attempted_at": "2026-08-27T00:00:00Z",
+          "attempt_outcome": "REFUSED",
+          "reason_code": "TREE_DIRTY",
+          "reported_at": null,
+          "report_outcome": null,
+          "exit_code": null,
+          "outputs": []
+        },
+        {
+          "run_id": "code-review-2",
+          "attempted_at": "2026-08-27T02:00:00Z",
+          "attempt_outcome": "REFUSED",
+          "reason_code": "TREE_DIRTY",
+          "reported_at": null,
+          "report_outcome": null,
+          "exit_code": null,
+          "outputs": []
+        },
+        {
+          "run_id": "code-review-3",
+          "attempted_at": "2026-08-27T04:00:00Z",
+          "attempt_outcome": "REFUSED",
+          "reason_code": "TREE_DIRTY",
+          "reported_at": null,
+          "report_outcome": null,
+          "exit_code": null,
+          "outputs": []
+        }
+      ],
+      "expect_status": [
+        "REFUSED",
+        "REFUSED",
+        "REFUSED"
+      ],
+      "expect_findings": [
+        "REFUSAL_LOOP"
+      ],
+      "expect_reading": "DEGRADED",
+      "proves": "REFUSAL_LOOP declares applies_to_disabled: true and no case proved that value, which is why a witness could flip it to false with the whole corpus still green. The mechanism was proven on a rule that declares false; this rule's own value was not. It matters because a schedule switched off after a refusal loop keeps the loop in its record, and a reader who sees the refusals disappear the moment the switch flips learns nothing about why it was switched off."
     }
   ]
 }

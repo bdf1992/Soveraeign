@@ -17,6 +17,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import contextlib
+import dataclasses
 import subprocess
 import io
 import json
@@ -139,6 +140,37 @@ class DeclaredCorpus(unittest.TestCase):
                         self._corpus_disagrees(threshold, value),
                         f"{threshold} can be changed to {value} with every case still "
                         "holding, so no case pins it")
+
+    def test_every_rule_that_applies_to_disabled_is_proved_by_a_disabled_case(self) -> None:
+        """The mechanism being proven on one rule does not prove the other eight values.
+
+        A witness flipped `applies_to_disabled` on all nine rules and killed five. The
+        survivor was REFUSAL_LOOP, which declares true and had no switched-off case: the
+        field could be flipped to false with the whole corpus still green. Requiring the
+        case for every rule that declares true is what stops the next rule reopening it.
+        """
+        for rule, declared in TABLE["rules"].items():
+            if not declared["applies_to_disabled"]:
+                continue
+            with self.subTest(rule=rule):
+                proving = [c["case_id"] for c in CORPUS["cases"]
+                           if rule in c["expect_findings"] and not c["schedule"]["enabled"]]
+                self.assertTrue(proving, f"{rule} declares applies_to_disabled: true and "
+                                         "no switched-off case fires it, so the value is "
+                                         "unpinned and can be flipped unnoticed")
+
+    def test_flipping_applies_to_disabled_is_caught_on_every_rule_that_declares_it(self) -> None:
+        """Run the witness's mutation against the corpus rather than describing it."""
+        for rule, declared in TABLE["rules"].items():
+            with self.subTest(rule=rule):
+                table = json.loads(json.dumps(TABLE))
+                table["rules"][rule]["applies_to_disabled"] = not declared["applies_to_disabled"]
+                disagrees = any(
+                    sorted(f.rule for f in health.judge(facts_of(case), table).findings)
+                    != sorted(case["expect_findings"])
+                    for case in CORPUS["cases"])
+                self.assertTrue(disagrees, f"{rule}: applies_to_disabled can be flipped "
+                                           "with the corpus still green")
 
     def test_the_corpus_reaches_every_reading_and_every_run_status(self) -> None:
         """A corpus that never produced UNHEALTHY would prove nothing refuses."""
@@ -535,6 +567,69 @@ class PageAndCheck(unittest.TestCase):
         code, out = self.check()
         self.assertEqual(code, 1)
         self.assertIn("has not been rendered", out)
+
+    def _every_rule_firing(self):
+        """One digest carrying a synthetic finding for each declared rule.
+
+        The corpus cannot reach this: it judges one schedule at a time and this node has
+        no ledger, so the page's two findings sections are never both populated by real
+        records. Synthetic findings are honest here because the subject under test is the
+        grouping, not the judging.
+        """
+        digest = report.assemble(self.root, self.NOW, source=report.COMMIT)
+        findings = tuple(health.Finding(rule=name, severity=rule["severity"],
+                                        detail=f"stated by the test, not derived: {name}")
+                         for name, rule in TABLE["rules"].items())
+        return dataclasses.replace(
+            digest, rows=(dataclasses.replace(digest.rows[0], findings=findings),))
+
+    def test_flipping_any_rules_needs_moves_it_on_the_page(self) -> None:
+        """`needs` decides which section prints a finding, and no case pinned it.
+
+        A witness flipped it on all nine rules and the corpus stayed green on every one,
+        because nothing the corpus asserts can see the page. This is the same mutation,
+        run against the thing the field actually controls.
+        """
+        base = self._every_rule_firing()
+        before = page.render(base)
+        for rule, declared in TABLE["rules"].items():
+            with self.subTest(rule=rule):
+                table = json.loads(json.dumps(TABLE))
+                other = [s for s in page.SECTIONS if s != declared["needs"]]
+                self.assertEqual(len(other), 1, "SECTIONS is no longer a pair")
+                table["rules"][rule]["needs"] = other[0]
+                after = page.render(dataclasses.replace(base, table=table))
+                self.assertNotEqual(before, after, f"{rule}: needs can be flipped and the "
+                                                   "page does not move")
+
+    def test_a_needs_naming_no_section_refuses_rather_than_printing_nowhere(self) -> None:
+        """The sharper half of the same finding, and the reason for the guard.
+
+        The page has exactly two call sites. A third value is not a third section - the
+        finding appears under neither while the headline reading still counts it, so the
+        page reads "Nothing fired." twice above a verdict of UNHEALTHY.
+        """
+        base = self._every_rule_firing()
+        table = json.loads(json.dumps(TABLE))
+        table["rules"]["TARGET_MISSING"]["needs"] = "somewhere-else"
+        with self.assertRaises(page.UnrenderableFinding) as caught:
+            page.render(dataclasses.replace(base, table=table))
+        self.assertIn("TARGET_MISSING", str(caught.exception))
+
+    def test_a_real_finding_of_each_kind_prints_under_its_own_heading(self) -> None:
+        """The two sections wired to real records, which is what the guard protects."""
+        self.land(target={"kind": "workflow", "name": "sov-ghost"})
+        self.record_run(outcome="FAILED")
+        digest = report.assemble(self.root, self.NOW, source=report.COMMIT)
+        fired = {f.rule for _, f in digest.findings}
+        self.assertIn("TARGET_MISSING", fired)
+        self.assertIn("LAST_RUN_FAILED", fired)
+        history_half = page._findings(digest, "history")
+        declaration_half = page._findings(digest, "declaration")
+        self.assertIn("LAST_RUN_FAILED", history_half)
+        self.assertNotIn("LAST_RUN_FAILED", declaration_half)
+        self.assertIn("TARGET_MISSING", declaration_half)
+        self.assertNotIn("TARGET_MISSING", history_half)
 
     def test_the_elided_page_drops_the_history_block_and_the_provenance(self) -> None:
         self.render()

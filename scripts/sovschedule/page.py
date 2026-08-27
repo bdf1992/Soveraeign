@@ -33,6 +33,22 @@ PROVENANCE_ELIDED = "<!--sov:provenance-elided-->"
 READING_CLASS = {"UNHEALTHY": "bad", "DEGRADED": "warn",
                  "UNOBSERVED": "abs", "HEALTHY": "ok"}
 
+#: The sections this page prints findings under. A rule's ``needs`` selects one.
+SECTIONS = ("history", "declaration")
+
+
+class UnrenderableFinding(ValueError):
+    """A rule whose ``needs`` names no section this page prints.
+
+    ``needs`` is not a label. It decides which of the two sections a finding appears
+    under, and there are exactly two call sites. A third value is not a third section:
+    it is a finding that appears under neither, so the page prints "Nothing fired."
+    twice while the headline reading above it still counts that finding and still says
+    UNHEALTHY. Refusing to render is the only honest answer, because the alternative is
+    a page that under-reports what its own judge found. A witness found this reachable
+    and unpinned; the table alone could open it again.
+    """
+
 
 
 
@@ -152,6 +168,17 @@ def _history_table(rows: tuple[Row, ...]) -> str:
     return f'<div class="wrap"><table>{head}{body}</table></div>'
 
 
+def _refuse_unrenderable(table: dict) -> None:
+    """Every rule must name a section that exists, or the page cannot be trusted."""
+    stray = {name: rule["needs"] for name, rule in table["rules"].items()
+             if rule["needs"] not in SECTIONS}
+    if stray:
+        raise UnrenderableFinding(
+            f"these rules name a section this page does not print: {stray}. "
+            f"It prints {list(SECTIONS)}. A finding under any other name is counted "
+            "in the reading and shown nowhere.")
+
+
 def _findings(digest: Digest, needs: str) -> str:
     entries = [(name, finding) for name, finding in digest.findings
                if digest.table["rules"][finding.rule]["needs"] == needs]
@@ -207,6 +234,7 @@ def _provenance_block(digest: Digest) -> str:
 def render(digest: Digest) -> str:
     """Deterministic bytes: derived rows, the declared table, no clock beyond the stamp."""
     table = digest.table
+    _refuse_unrenderable(table)
     head = json.dumps(provenance(digest), sort_keys=True)
     return f"""<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">

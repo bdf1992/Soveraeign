@@ -5,7 +5,7 @@
   "subject": {
     "artifact": "contracts/automation-health.json",
     "from_standing": "OPEN",
-    "to_standing": "BUILT"
+    "to_standing": "WITNESSED"
   },
   "presented_by_seat": "seat:session-control",
   "accepted_by_seat": "seat:root",
@@ -14,7 +14,10 @@
     "actor_id": "urn:soveraeign:actor:claude-interactive-session",
     "actor_kind": "MODEL"
   },
-  "witnessed_by": null,
+  "witnessed_by": {
+    "actor_id": "urn:soveraeign:actor:claude-session-796628",
+    "actor_kind": "MODEL"
+  },
   "visible_result": {
     "demo": [
       "python",
@@ -66,7 +69,8 @@
     "A real unhealthy state the nine rules cannot express. The one already recorded: a schedule the host tick has never fired, silenced for ever by a single forced manual run.",
     "A case in the corpus that passes for a reason other than the one it claims to prove. A helper found exactly this during construction - H-017 stated that it proved the scan cap, and the rule returns before the cap is ever reached. That claim was removed and H-021 now proves the cap.",
     "A reading of HEALTHY over a schedule that has never executed.",
-    "docs/automation.html graded as current on a machine that never held the run records it describes."
+    "docs/automation.html graded as current on a machine that never held the run records it describes.",
+    "A tenth rule, or a reworded needs value, that reaches the page without a case. The renderer refuses a needs it cannot print, and a test flips the field on every rule and requires the page to move; neither proves the next field added is pinned."
   ],
   "residuals": [
     "Step two - switching a schedule on or off with a record of who changed it and when - is not built. Your request says it waits on you saying this read is right, and it does.",
@@ -74,7 +78,8 @@
     "No rule fires on the executor's exit code. It is parsed and shown, because 124 is a timeout and 127 is claude not being on the machine, and without it an environment fault reads as a schedule fault. A person looking at the row is the reader for now.",
     "The page is a projection of HEAD and the command reads what is on disk, so the two can disagree about a schedule you have written and not committed. Both say which they read.",
     "The corpus is not proven complete. It defeats every rule and every threshold, and the threshold half is a test rather than a claim; it defeats the three selectors a witness enumerated. Nobody has shown there is nothing left, and this packet does not say so.",
-    "Independent observation. Three readers have been through this and none of them can settle it. A helper read the modules while they were being built and found twelve defects. A first witness ran against the frozen commit and dissented: the page had been rendered in the shared working tree, so the change's own check refused its own commit, and three of six thresholds were unpinned. A second witness ran against the repair and dissented again: three more inputs of the same page were still reading the working tree, and three selectors were undefended. Every one of those is repaired here. But that second witness was launched from the building session and shared its scratchpad, and said so itself - so it is a second reading, not the independent observation the landing grant requires. That observation is what this packet still owes, and it has to come from a participant this session did not start."
+    "The observation is over commit 11c3f1a and the repairs it asked for came after it. session-796628 - no build relation to this concern, its own detached worktree, its own disjoint work - returned SUPPORTS. It attacked the load-bearing claim, that the page is a function of the commit, with six working-tree mutations and could not move the page; it also pinned the clock, which was the fifth input it expected to find and did not. It raised two coverage findings, neither defeating a claim made here, and both are repaired in this commit. Those repairs are themselves unobserved. It also said plainly that it cannot settle its own observation, and it is right: this is evidence for whoever holds the landing, not a ruling.",
+    "Three readings have each found something the one before it missed - a helper found twelve defects while the modules were being built, a first witness found the page rendered from the working tree and three unpinned thresholds, a second found three more working-tree inputs and three undefended selectors, and the independent witness found two unpinned rule fields. That is the reading to take from the coverage, not the count of cases."
   ],
   "on_accept": "The read stands as the right read, and step two - the switching surface - becomes admissible work. contracts/automation-health.json moves from PROPOSED to accepted and decisions/0083 with it. Nothing is enabled by accepting this; turning a schedule on stays yours and stays undone.",
   "on_reject": "Say which rule reads wrong or which column is missing. The rules are a contract and a fixture corpus, so changing one is a case first and a code change second; nothing here is load-bearing for another concern, and reverting the commit removes the check, the page and the surface without touching the runner or the declarations."

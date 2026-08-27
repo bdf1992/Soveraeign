@@ -1,0 +1,251 @@
+{
+  "corpus_id": "soveraeign-automation-control-cases/v1",
+  "governs": "contracts/automation-control.json",
+  "note": "Cases for the operation that moves a schedule's switch. Each states a starting declaration and one request, and says what the operation must decide. They are executed against the real implementation in scripts/tests/test_automation_control.py and the oracle imports no participant code beyond the operation under test.\n\nThe corpus is written against outcomes rather than against messages, because the wording of a refusal is prose and the fact of it is the contract.",
+  "actors": {
+    "owner": "The local operator, holding seat:root. What the console page records, because possession of this machine is the only thing it can check.",
+    "model": "A model operator holding no seat. What the command line records unless the owner says otherwise with --as-owner."
+  },
+  "cases": [
+    {
+      "case_id": "C-001-the-owner-arms-a-schedule",
+      "schedule": {
+        "name": "nightly-qa",
+        "enabled": false,
+        "target_exists": true,
+        "valid": true
+      },
+      "request": {
+        "name": "nightly-qa",
+        "direction": "ENABLE",
+        "reason": "an operator said why",
+        "actor": "owner"
+      },
+      "expect_outcome": "EFFECTED",
+      "expect_refusal": null,
+      "expect_enabled_after": true,
+      "expect_log_lines": 1,
+      "proves": "The operation exists and does what it says. Arming is the transition Bdo held back for himself in the ticket that opened this work, and this is the only case in the corpus where it moves."
+    },
+    {
+      "case_id": "C-002-a-model-cannot-arm-a-schedule-and-the-asking-is-recorded",
+      "schedule": {
+        "name": "nightly-qa",
+        "enabled": false,
+        "target_exists": true,
+        "valid": true
+      },
+      "request": {
+        "name": "nightly-qa",
+        "direction": "ENABLE",
+        "reason": "an operator said why",
+        "actor": "model"
+      },
+      "expect_outcome": "PROPOSED",
+      "expect_refusal": "GRANT_NOT_HELD",
+      "expect_enabled_after": false,
+      "expect_log_lines": 1,
+      "proves": "The authority split, from the side that matters. A model operator asking to arm a schedule gets a recorded proposal and the switch does not move. If this ever passes, any session on this box can commit the owner's tokens while he is asleep. The asking is still recorded, because who tried is the question after an incident."
+    },
+    {
+      "case_id": "C-003-a-model-may-switch-a-schedule-off",
+      "schedule": {
+        "name": "nightly-qa",
+        "enabled": true,
+        "target_exists": true,
+        "valid": true
+      },
+      "request": {
+        "name": "nightly-qa",
+        "direction": "DISABLE",
+        "reason": "an operator said why",
+        "actor": "model"
+      },
+      "expect_outcome": "EFFECTED",
+      "expect_refusal": null,
+      "expect_enabled_after": false,
+      "expect_log_lines": 1,
+      "proves": "The other half of the split, and the reason it is not symmetric. Stopping a machine consumes nothing and reverses in a keystroke. A surface that made an operator wait for the owner before switching something off would be unusable during the exact incident it exists for. AGENTS.md refuses a request for permission to do reversible record-local work by name."
+    },
+    {
+      "case_id": "C-004-the-owner-may-also-switch-one-off",
+      "schedule": {
+        "name": "nightly-qa",
+        "enabled": true,
+        "target_exists": true,
+        "valid": true
+      },
+      "request": {
+        "name": "nightly-qa",
+        "direction": "DISABLE",
+        "reason": "an operator said why",
+        "actor": "owner"
+      },
+      "expect_outcome": "EFFECTED",
+      "expect_refusal": null,
+      "expect_enabled_after": false,
+      "expect_log_lines": 1,
+      "proves": "Holding the root seat does not cost the owner the ordinary permissions. A grant check written as an equality rather than a membership would fail here."
+    },
+    {
+      "case_id": "C-005-arming-what-is-already-armed-writes-nothing",
+      "schedule": {
+        "name": "nightly-qa",
+        "enabled": true,
+        "target_exists": true,
+        "valid": true
+      },
+      "request": {
+        "name": "nightly-qa",
+        "direction": "ENABLE",
+        "reason": "an operator said why",
+        "actor": "owner"
+      },
+      "expect_outcome": "UNCHANGED",
+      "expect_refusal": null,
+      "expect_enabled_after": true,
+      "expect_log_lines": 0,
+      "proves": "Idempotence, and why the button is safe to press when you are not sure the last press landed. Two operators clicking the same control produce one transition and one log line, not two. Reporting this as EFFECTED would make the record claim a change that never happened."
+    },
+    {
+      "case_id": "C-006-switching-off-what-is-already-off-writes-nothing",
+      "schedule": {
+        "name": "nightly-qa",
+        "enabled": false,
+        "target_exists": true,
+        "valid": true
+      },
+      "request": {
+        "name": "nightly-qa",
+        "direction": "DISABLE",
+        "reason": "an operator said why",
+        "actor": "model"
+      },
+      "expect_outcome": "UNCHANGED",
+      "expect_refusal": null,
+      "expect_enabled_after": false,
+      "expect_log_lines": 0,
+      "proves": "The same in the other direction, which is the state every schedule on this node is actually in."
+    },
+    {
+      "case_id": "C-007-a-schedule-that-does-not-exist",
+      "schedule": {
+        "name": "nightly-qa",
+        "enabled": false,
+        "target_exists": true,
+        "valid": true
+      },
+      "request": {
+        "name": "ghost",
+        "direction": "DISABLE",
+        "reason": "an operator said why",
+        "actor": "owner"
+      },
+      "expect_outcome": "REFUSED",
+      "expect_refusal": "UNKNOWN_SCHEDULE",
+      "expect_enabled_after": false,
+      "expect_log_lines": 1,
+      "proves": "A typo must not create a declaration, and must not read as success. The refusal is recorded because an operator hunting for why nothing happened needs to see the attempt."
+    },
+    {
+      "case_id": "C-008-a-direction-that-is-neither",
+      "schedule": {
+        "name": "nightly-qa",
+        "enabled": false,
+        "target_exists": true,
+        "valid": true
+      },
+      "request": {
+        "name": "nightly-qa",
+        "direction": "TOGGLE",
+        "reason": "an operator said why",
+        "actor": "owner"
+      },
+      "expect_outcome": "REFUSED",
+      "expect_refusal": "NOT_A_DIRECTION",
+      "expect_enabled_after": false,
+      "expect_log_lines": 1,
+      "proves": "There are two directions and the operation refuses a third rather than guessing. A binding that sent TOGGLE would otherwise get whatever the grant table's default lookup did."
+    },
+    {
+      "case_id": "C-009-no-reason-given",
+      "schedule": {
+        "name": "nightly-qa",
+        "enabled": false,
+        "target_exists": true,
+        "valid": true
+      },
+      "request": {
+        "name": "nightly-qa",
+        "direction": "DISABLE",
+        "reason": "   ",
+        "actor": "owner"
+      },
+      "expect_outcome": "REFUSED",
+      "expect_refusal": "REASON_MISSING",
+      "expect_enabled_after": false,
+      "expect_log_lines": 1,
+      "proves": "A switch record with a blank reason answers who and when and not the only question anyone asks afterwards, which is why. Whitespace is not a reason: the check is on the stripped string, because a form field submits a space more often than it submits nothing."
+    },
+    {
+      "case_id": "C-010-a-declaration-that-does-not-validate",
+      "schedule": {
+        "name": "nightly-qa",
+        "enabled": false,
+        "target_exists": true,
+        "valid": false
+      },
+      "request": {
+        "name": "nightly-qa",
+        "direction": "DISABLE",
+        "reason": "an operator said why",
+        "actor": "owner"
+      },
+      "expect_outcome": "REFUSED",
+      "expect_refusal": "DECLARATION_REFUSED",
+      "expect_enabled_after": false,
+      "expect_log_lines": 1,
+      "proves": "There is no known state to move from, so the operation refuses instead of writing an enabled field into a document that is already broken. Repairing the declaration comes first."
+    },
+    {
+      "case_id": "C-011-arming-a-schedule-whose-target-is-gone",
+      "schedule": {
+        "name": "nightly-qa",
+        "enabled": false,
+        "target_exists": false,
+        "valid": true
+      },
+      "request": {
+        "name": "nightly-qa",
+        "direction": "ENABLE",
+        "reason": "an operator said why",
+        "actor": "owner"
+      },
+      "expect_outcome": "REFUSED",
+      "expect_refusal": "TARGET_MISSING",
+      "expect_enabled_after": false,
+      "expect_log_lines": 1,
+      "proves": "Arming this would arm a run that cannot execute, and the run ledger would then fill with failures that are not the schedule's fault. The health read already fires TARGET_MISSING on the declaration; this stops the control from creating the condition."
+    },
+    {
+      "case_id": "C-012-switching-off-a-schedule-whose-target-is-gone-is-allowed",
+      "schedule": {
+        "name": "nightly-qa",
+        "enabled": true,
+        "target_exists": false,
+        "valid": true
+      },
+      "request": {
+        "name": "nightly-qa",
+        "direction": "DISABLE",
+        "reason": "an operator said why",
+        "actor": "owner"
+      },
+      "expect_outcome": "EFFECTED",
+      "expect_refusal": null,
+      "expect_enabled_after": false,
+      "expect_log_lines": 1,
+      "proves": "The quiet case for C-011, and the one that matters operationally: a schedule pointing at a deleted workflow is exactly the one you want to switch off, and a check that refused both directions would trap it on."
+    }
+  ]
+}

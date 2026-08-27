@@ -56,4 +56,21 @@ code{font:12.5px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;background:var
 border-radius:.2rem;padding:.04rem .25rem}
 footer{margin-top:3rem;padding-top:1rem;border-top:1px solid var(--line);color:var(--muted);
 font-size:.82rem}footer li{margin-bottom:.35rem;max-width:80ch}
+
+.live{background:#123d2a;color:#8ff0c0;padding:.5rem .9rem;border-radius:6px;
+ margin:0 0 1rem;font-size:.85rem;letter-spacing:.02em}
+.ro{background:#2a2a2e;color:#b9b9c2;padding:.5rem .9rem;border-radius:6px;
+ margin:0 0 1rem;font-size:.85rem;letter-spacing:.02em}
+p.note{font-size:.86rem;color:#b9b9c2;background:#232327;border-left:3px solid #4a4a55;
+ padding:.6rem .9rem;border-radius:0 6px 6px 0}
+td.sw{white-space:nowrap}
+.btn{margin-left:.5rem;border:1px solid #55555f;background:#2c2c33;color:#e6e6ea;
+ border-radius:5px;padding:.2rem .55rem;font:inherit;font-size:.78rem;cursor:pointer}
+.btn:hover{background:#3a3a43}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.arm{border-color:#7a5d1f;color:#f3d68b}
+.btn.off{border-color:#6a2f2f;color:#f0a9a9}
+.say{margin:.6rem 0 0;font-size:.85rem;min-height:1.2rem;white-space:pre-wrap}
+.say.ok{color:#8ff0c0}
+.say.bad{color:#f0a9a9}
 """

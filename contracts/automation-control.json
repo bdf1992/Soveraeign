@@ -1,0 +1,104 @@
+{
+  "table_id": "soveraeign-automation-control/v1",
+  "status": "PROPOSED",
+  "governed_by": "decisions/0086-automation-switch-controls.md",
+  "note": "What it takes to turn one of this node's automations on or off, and what refuses. The read surface (contracts/automation-health.json) says what is happening; this says who may change it. One operation, two bindings, one authority check inside the operation - a page button and a command line reach the same function, and the difference between them is the grant the actor holds, not the path it takes. This table grants nothing itself. It declares what a grant would have to say.",
+  "operation": {
+    "name": "automation.set_switch",
+    "changes": "the enabled field of exactly one declaration under .claude/schedules/",
+    "directions": [
+      "ENABLE",
+      "DISABLE"
+    ],
+    "effect_class": {
+      "ENABLE": "RESOURCE_COMMITMENT",
+      "DISABLE": "RECORD_LOCAL"
+    },
+    "effect_class_note": "The two directions are not symmetric, and typing them the same is the mistake this table exists to avoid. Enabling arms a run that will spend tokens and wall clock against limits.max_budget_usd; that is a resource commitment and AGENTS.md puts it on the owner seat. Disabling only removes a future effect: it consumes nothing, reverses in one keystroke, and nobody needs permission to stop a machine. A surface that asks the owner before letting anyone switch something off is not being careful, it is being unusable during the exact incident it was built for.",
+    "idempotent": true,
+    "idempotent_note": "Setting a switch to the state it already holds writes no declaration and appends no record. It is not an error and it is not a change: two operators clicking the same button produce one transition, which is what makes a button safe to click when you are unsure whether the last click landed.",
+    "does_not": [
+      "run the schedule, or bring its next occurrence forward",
+      "commit, stage, push, or land anything - the changed declaration is left in the working tree for whoever holds the branch, because committing is a separate authority and this operation does not hold it",
+      "register anything with the host scheduler; a declaration reading enabled: true is armed in this repository and still inert until something ticks it",
+      "edit any field but enabled"
+    ]
+  },
+  "authority": {
+    "checked_at": "the operation, not the binding",
+    "checked_at_note": "Both bindings call one function and the grant is tested inside it. A control merely hidden from a page is not an authority check: the command line reaches the same operation, and so does anything else that imports the module.",
+    "grants": {
+      "ENABLE": {
+        "held_by": "seat:root",
+        "reason": "RESOURCE_COMMITMENT",
+        "why": "The owner arms his own automations. Bdo wrote this in the ticket that opened this work: turning any schedule on is his, and he has not done it.",
+        "model_may": "propose - the proposal is recorded and the switch does not move"
+      },
+      "DISABLE": {
+        "held_by": "any participant holding the concern",
+        "reason": null,
+        "why": "Stopping a machine is reversible, consumes nothing, and reduces effect. AGENTS.md refuses a request for permission to do reversible record-local work by name, PREAPPROVAL_REQUESTED, and this is that.",
+        "model_may": "perform"
+      }
+    }
+  },
+  "record": {
+    "address": ".claude/schedules/switch-log.ndjson",
+    "append_only": true,
+    "committed": true,
+    "committed_note": "Committed, not under .local/. The effective state lives in the declaration and git carries it; if the provenance lived in gitignored machine-local state then cloning this repository would produce a node whose automations are armed with no record of who armed them. The run ledger stays machine-local because runs are local events. A switch is a decision about the repository.",
+    "carries": [
+      "schedule name",
+      "direction, and the from and to values it actually moved between",
+      "actor id and actor kind",
+      "the binding the actor reached through, so a page click and a command are told apart",
+      "occurred_at",
+      "the reason the actor gave",
+      "the digest of the declaration before and after",
+      "outcome: EFFECTED, PROPOSED, or REFUSED with its code"
+    ],
+    "refusals_are_recorded": true,
+    "refusals_are_recorded_note": "A refused attempt appends a record too. A surface that logs only what succeeded cannot answer the question an operator actually asks after an incident, which is who tried.",
+    "retraction": {
+      "mechanism": "a further switch record in the opposite direction",
+      "never": "editing or removing an earlier record",
+      "honesty": "Disabling a schedule counters the arming. It does not counter a run that already happened and it refunds nothing that run spent. The record says so rather than reading as though the schedule had never been on."
+    }
+  },
+  "bindings": {
+    "human": {
+      "surface": "the served page at http://127.0.0.1:<port>/, one switch per row",
+      "reaches": "automation.set_switch"
+    },
+    "model": {
+      "surface": "python scripts/sov_schedule.py enable|disable <name> --reason <text>",
+      "reaches": "automation.set_switch"
+    },
+    "parity_note": "Same function, same contract, same refusals, same record shape. The two bindings differ in the grant their actor holds and in nothing else. The AI-native standard's two-binding proof is a fixture running both against the same cases, not a claim made here."
+  },
+  "transport": {
+    "kind": "HTTP over loopback",
+    "bind": "127.0.0.1",
+    "refuses_any_other_bind": true,
+    "effect_class": "RESOURCE_CONSUMPTION",
+    "why_at_all": "A page opened from disk has no process behind it, so its buttons cannot change anything. Controls on a page require something serving it. AGENTS.md says HTTP waits for a conformance case that requires it; the owner requiring a page with working controls is that case, and it is written into conformance/fixtures/automation-control/ rather than asserted here.",
+    "not_external_world": "A socket bound to 127.0.0.1 reaches no third party and crosses no data boundary, so this is not the EXTERNAL_WORLD effect Phase I refuses. It is still a listening process on the owner's machine that writes repository files, so it binds loopback only, mints a token per run, prints it once, and refuses a request carrying the wrong one.",
+    "token_note": "The token is not authentication. It tells one local process from another and stops a page you happen to be visiting from posting into your console. Every operator on this box is the same operator as far as this server can tell, and the record says so rather than implying an identity it never checked."
+  },
+  "refusals": {
+    "UNKNOWN_SCHEDULE": "No declaration of that name is tracked.",
+    "NOT_A_DIRECTION": "The requested direction is neither ENABLE nor DISABLE.",
+    "GRANT_NOT_HELD": "The actor does not hold the grant this direction requires. Recorded as an attempt, with the grant named.",
+    "REASON_MISSING": "No reason was given. A switch record whose reason is blank answers who and when and not the only question anyone asks afterwards.",
+    "DECLARATION_REFUSED": "The declaration does not parse or does not validate, so there is no known state to move from. Repair the declaration before switching it.",
+    "TARGET_MISSING": "The declared target does not exist, so enabling would arm a run that cannot execute. Disabling such a schedule is allowed and is usually the right move.",
+    "NON_LOOPBACK_BIND": "The server was asked to listen on an address that is not 127.0.0.1.",
+    "BAD_TOKEN": "A request reached the console without the token minted for this run."
+  },
+  "residuals": {
+    "the_console_cannot_tell_operators_apart": "Anyone with the box is the owner as far as this server can see. It records the binding and the fact that the actor was local, and does not claim an identity it did not check. Real principal identity is a separate open concern.",
+    "armed_is_not_running": "Nothing on this node ticks a schedule. Flipping a switch to on arms a declaration and starts nothing, because no host scheduler is registered - that was outside this work by instruction. An operator who reads on as running would be wrong, so the surface says armed.",
+    "the_switch_is_dirty_until_someone_commits_it": "The operation writes the working tree and does not commit. Until someone lands it, the declaration on disk and the declaration at HEAD disagree, and the two readers already say which they read. That is the honest split and it is also a way to forget: a switch flipped and never committed is a decision this repository loses on the next clean checkout.",
+    "no_schedule_is_on": "This table describes what it takes to arm one. When it was written every declaration on this node still read enabled: false, and no participant but Bdo can change that."
+  }
+}

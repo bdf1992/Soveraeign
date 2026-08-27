@@ -47,7 +47,7 @@
       "kind": "EVENT",
       "subject": "discover-operations",
       "actor": "sov",
-      "entry_digest": "0987755f46e5b86361bce2982ba9144f0b3e3cee483e65ab8e4ecdc8a3cf0508",
+      "entry_digest": "01699fb3970a9d8af7bb8583c59144635cf73fa9be86d35e0031a0ef2ca3b2c8",
       "payload": {
         "arguments": {
           "operator_id": "<str:3>"
@@ -63,10 +63,10 @@
       "kind": "RECEIPT",
       "subject": "discover-operations",
       "actor": "sov",
-      "entry_digest": "8f2d19f886bef35846e1a2ab14f3eb201fc8874716e0f52a15245b97fd86d4fd",
+      "entry_digest": "e741e60d6fc719cab4eea23a161948c61a8d946563cdf746c9cccf81c5022a5d",
       "payload": {
         "detail": {
-          "entry_id": "entry_ab86070e4f864cca9a9d99c3ce2a95de",
+          "entry_id": "entry_e7a14289950d4f28a1e6eab2d17f445c",
           "result": {
             "authoritative": false,
             "capability_revision": "1bd99c822041e371f99a92a09b7ea54db3f5e06ba8b0ed6c7f6861bf3b01fecc",

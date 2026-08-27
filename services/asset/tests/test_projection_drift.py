@@ -153,6 +153,19 @@ class ProjectionDrift(unittest.TestCase):
     def test_an_empty_store_has_no_drift_rather_than_an_error(self) -> None:
         self.assertEqual(self.service.projection_drift(), [])
 
+    def test_a_label_that_cannot_be_projected_is_refused_at_ingest(self) -> None:
+        """Otherwise drift crashes on the store it exists to inspect.
+
+        Found by a re-witness: `ingest` accepted a bytes label, and every later
+        `projection_drift` and `rebuild_projections` raised TypeError from the
+        join that builds the search row. The read you reach for when you do not
+        trust a store gave a traceback instead of a defect name.
+        """
+        with self.assertRaises(TypeError):
+            self.service.ingest(self.source("odd.txt", b"odd"), b"a bytes label", "Bdo")
+        self.assertEqual(self.service.projection_drift(), [])
+        self.service.rebuild_projections()
+
     def test_a_ratification_that_cannot_be_resolved_still_rebuilds(self) -> None:
         """An independent witness fired this decision's own stated defeater.
 

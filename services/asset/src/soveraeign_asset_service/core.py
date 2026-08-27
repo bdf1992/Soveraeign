@@ -142,7 +142,18 @@ class AssetService(ReadSurface):
         capturing the same locator again adds a version rather than a second
         identity. Unchanged bytes add nothing: that is not a new state of the
         asset, so no version follows.
+
+        The label is checked rather than assumed. Nothing enforced the annotation,
+        so a bytes label was accepted and then poisoned every later
+        `projection_drift` and `rebuild_projections` with a TypeError from the
+        join that builds the search row - the safe read you call precisely when
+        you do not trust a store crashed on the store it was asked to inspect.
         """
+        if not isinstance(label, str):
+            raise TypeError(
+                f"label must be str, not {type(label).__name__}: a non-string label "
+                "is accepted here and then fails every later projection derivation"
+            )
         source_path = Path(path)
         data = source_path.read_bytes()
         digest, blob = self._store_blob(data)

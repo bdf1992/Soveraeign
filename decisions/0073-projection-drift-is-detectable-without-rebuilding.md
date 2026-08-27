@@ -124,16 +124,39 @@ construction:
   node's vocabulary does not contain and no check notices. The rename at
   `e384285` still carries no decision record.
 
+## What a re-witness added after the repair
+
+The same witness re-read the repair at `79bf087`, withdrew its C4 dissent, and
+proposed `BUILT -> WITNESSED` for all six claims. It found three residuals it
+explicitly did not hold on, all taken here:
+
+- `rebuild` inserted positionally, so a column added to a projection table was
+  invisible to `_compare`, which reads a fixed list, and then broke the rebuild
+  meant to clear what drift reported. The same detection-and-repair disagreement
+  as the NULL case, arriving from the other side. Both inserts now name columns.
+- `Projections.drift` still said an empty list means the stored views are
+  "exactly what a rebuild would produce", which the added-column case falsifies.
+  It now claims the row-level property it actually grades, and says so.
+- `ingest` accepted a non-string label, which then raised `TypeError` inside
+  every later `projection_drift` and `rebuild_projections` — the safe read you
+  reach for when you do not trust a store crashed on the store it was asked to
+  inspect. Refused at the boundary now.
+
+It also recorded that `cli_commands` is true again in both directions but true by
+hand, since nothing in the repository measures it against argparse. Measuring it
+belongs to the verification domain, not here.
+
 ## Standing
 
-`PROPOSED`. Built and self-tested: 149 Asset Service tests pass.
+`PROPOSED`. Built and self-tested: 150 Asset Service tests pass.
 
 An independent witness examined this at `3db4f87`. It confirmed C1, C2, C3 and
 C5 — the defect was real, the three names are correctly distinguished, `drift`
 writes nothing on five separate instruments, and the legacy receipt name is
 resolved and survives a rebuild — and supported `BUILT -> WITNESSED` for those.
 It dissented from the unqualified form of C4 and from the trustworthiness claim
-in `reads.py`, and found the `cli_commands` omission. All three are repaired
-above. The change has not been re-witnessed since.
+in `reads.py`, and found the `cli_commands` omission. All three were repaired,
+and the re-witness above withdrew the dissent on evidence it produced itself,
+including 250 randomised stores carrying the forgery kind that had defeated it.
 
 Self-tests establish `BUILT`. Only Bdo ratifies.

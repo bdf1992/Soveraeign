@@ -106,8 +106,16 @@ class Projections:
         search, edges = self.derived()
         self.db.execute("DELETE FROM search_projection")
         self.db.execute("DELETE FROM graph_projection")
-        self.db.executemany("INSERT INTO search_projection VALUES(?,?,?)", search.values())
-        self.db.executemany("INSERT INTO graph_projection VALUES(?,?,?,?,?)", edges.values())
+        # Named columns, not positional. A column added to a projection table was
+        # invisible to `_compare`, which reads a fixed list, and then broke the
+        # rebuild meant to clear what drift reported - the same detection-and-repair
+        # disagreement as the NULL case, arriving from the other side.
+        self.db.executemany(
+            "INSERT INTO search_projection(asset_id,text_value,source_receipt) "
+            "VALUES(?,?,?)", search.values())
+        self.db.executemany(
+            "INSERT INTO graph_projection(relationship_id,src_asset,predicate,"
+            "dst_asset,source_receipt) VALUES(?,?,?,?,?)", edges.values())
         counts = {"search": len(search), "edges": len(edges)}
         self.store.receipt("COMMITTED", "asset.rebuild-projection", "projection", "all", actor, counts)
         self.db.commit()
@@ -117,9 +125,14 @@ class Projections:
         """Every projected row that disagrees with the ledger, without rebuilding.
 
         Returns one entry per disagreeing row, naming the table, the key, and which
-        of the three disagreements it is. An empty list means the stored views are
-        exactly what a rebuild would produce right now - which is a claim a row
-        count cannot make, since rewriting a row in place leaves the count intact.
+        of the three disagreements it is. An empty list means every row the stored
+        views hold is a row a rebuild would derive, and no row it would derive is
+        missing - which is a claim a row count cannot make, since rewriting a row
+        in place leaves the count intact.
+
+        Row-level, and only row-level. It compares a fixed column list, so a column
+        added to a projection table is outside what it grades: such a column is
+        neither reported here nor survivable by a rebuild.
 
         This never writes: not to the projections, and not a receipt. It is a read
         over state the caller already holds, and a check that changed what it

@@ -143,13 +143,22 @@ class ExecutableRootsAreGraded(unittest.TestCase):
     def test_the_debt_list_is_pinned_to_its_length(self) -> None:
         """The two guards below check each entry is real and unpaid. Neither
         notices a third arriving, so a genuinely over-ceiling file could buy
-        silence from the ceiling by adding its own name. Pinning the count makes
-        a new exemption edit this line too, which is the deliberate, visible act
-        an exemption should be. Raise it when you mean to; do not raise it to
-        make a run go green."""
+        silence from the ceiling by adding its own name.
+
+        The set is pinned, not the length. A witness pointed out that a count
+        measures the wrong thing: swapping one exempt module for another keeps
+        it at three and never touches the pinned line. Adding, removing, or
+        swapping an exemption now edits this list, which is the deliberate,
+        visible act an exemption should be. Change it when you mean to; do not
+        change it to make a run go green.
+        """
         self.assertEqual(
-            len(lint.KNOWN_MODULE_DEBT), 3,
-            "the debt list changed length; if that was intended, say so here")
+            sorted(lint.KNOWN_MODULE_DEBT), [
+                "scripts/witness_infrastructure.py",
+                "witness/probes/probe_host_interface.py",
+                "witness/probes/probe_record_journal.py",
+            ],
+            "the debt list changed; if that was intended, say so here")
 
     def test_every_named_debt_is_actually_over_the_ceiling(self) -> None:
         """Debt that has been paid must leave the list, or the list stops meaning anything."""

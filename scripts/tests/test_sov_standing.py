@@ -13,6 +13,7 @@ still reports every unwitnessed subject in the repository as witnessed.
 from __future__ import annotations
 
 from pathlib import Path
+import re
 import sys
 import tempfile
 import unittest
@@ -32,8 +33,30 @@ def _status(body: str) -> Path:
     return Path(handle.name)
 
 
-def _record(directory: Path, name: str, supports: str = "BUILT -> WITNESSED") -> None:
-    """A record that says what it supports, which is what the gate now reads."""
+CANONICAL = re.compile(r"```standing-supported\n(.*?)\n```", re.DOTALL)
+
+
+def _readme_example() -> str:
+    """The one spelling witness/README.md instructs an author to write.
+
+    Fenced under `standing-supported` so this is an address rather than a
+    search for prose. A README with no such block fails loudly here, because a
+    document that stops instructing the shape is the defect this case exists
+    to catch.
+    """
+    text = (sov_standing.WITNESS_DIR / "README.md").read_text(encoding="utf-8")
+    found = CANONICAL.search(text)
+    assert found is not None, "witness/README.md has no standing-supported example"
+    return found.group(1).strip()
+
+
+def _record(directory: Path, name: str, supports: str = "WITNESSED") -> None:
+    """A record that says what it supports, which is what the gate now reads.
+
+    The default was `BUILT -> WITNESSED` while the gate scanned a value for a
+    standing token. The gate now compares the whole value, so the default is
+    the exact spelling `witness/README.md` documents.
+    """
     body = f"# observation{LF}{LF}**Standing supported: {supports}.**{LF}"
     (directory / name).write_text(body, encoding="utf-8", newline=LF)
 
@@ -160,7 +183,7 @@ class RecordMustCarryTheStanding(unittest.TestCase):
                          ["asset_service_status"])
 
     def test_a_record_that_carries_the_standing_still_supports_it(self):
-        self.assertEqual(self._gap_fields("BUILT_WITNESSED", "BUILT -> WITNESSED"), [])
+        self.assertEqual(self._gap_fields("BUILT_WITNESSED", "WITNESSED"), [])
 
     def test_the_directory_readme_is_still_not_a_record(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -238,18 +261,25 @@ class WhatTheRecordSaysIsGraded(unittest.TestCase):
                 self.assertFalse(self._promotes(self._observation(value)))
 
     def test_a_denial_after_the_standing_still_denies_it(self):
-        """`WITNESSED is refused` names a standing and refuses it in three words;
-        a rule that only reads the token before the standing misses that. The
-        spelling matters: with `RATIFIED` here the over-reach rule refuses the
-        record anyway, and this case would pass while testing nothing."""
+        """`WITNESSED is refused` names a standing and refuses it in three words.
+
+        This once needed a hand-written denial list. It does not any more: the
+        value is compared whole and this is not the word. The case is kept
+        because the behaviour it pins is still required, and because a future
+        rewrite that reintroduces scanning has to defeat it again.
+        """
         self.assertFalse(self._promotes(self._observation("WITNESSED is refused.")))
         self.assertFalse(self._promotes(self._observation("RATIFIED is refused.")))
 
     def test_naming_both_standings_is_ambiguous_and_supports_nothing(self):
-        """Asserted on the reading rather than the verdict, deliberately. Through
-        `unsupported()` a two-element set resolves arbitrarily and the over-reach
-        rule catches roughly half the runs, so the verdict passes by set ordering
-        rather than by the rule. A mutation run found that; this is the repair."""
+        """Asserted on the reading rather than the verdict, deliberately.
+
+        Under the scanning implementation this went through `unsupported()`,
+        where a two-element set resolved arbitrarily and the over-reach rule
+        caught roughly half the runs - so the case passed by set ordering rather
+        than by the rule. A mutation run found that. Asserting on the reading is
+        deterministic under any implementation.
+        """
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "asset-service.md"
             path.write_text(self._observation("WITNESSED and RATIFIED."),
@@ -259,7 +289,7 @@ class WhatTheRecordSaysIsGraded(unittest.TestCase):
 
     def test_an_honest_record_still_supports_the_claim(self):
         self.assertTrue(self._promotes(self._observation("WITNESSED.")))
-        self.assertTrue(self._promotes(f"# observation{LF}{LF}Standing supported: BUILT -> WITNESSED{LF}"))
+        self.assertTrue(self._promotes(f"# observation{LF}{LF}Standing supported: WITNESSED{LF}"))
 
     def test_a_record_may_not_declare_ratified(self):
         """`witness/README.md`: a record supports a transition at most as far as
@@ -288,13 +318,123 @@ class WhatTheRecordSaysIsGraded(unittest.TestCase):
         self.assertEqual(over, [])
 
     def test_the_shape_the_readme_documents_is_the_shape_the_gate_reads(self):
-        """The input contract changed in the same commit that left the only
-        document instructing its authors untouched, and the shape that document
-        showed was one the gate could not read. They fail together now."""
-        readme = (sov_standing.WITNESS_DIR / "README.md").read_text(encoding="utf-8")
-        self.assertIn("`Standing supported: WITNESSED`", readme)
+        """The record body here is READ OUT of witness/README.md, not restated.
+
+        The previous version of this case asserted a literal that also appeared
+        in the README, which is two constants that happen to agree and no data
+        flow between them. A witness proved it: it rewrote the README to instruct
+        a shape the gate cannot read, and all thirty-one cases stayed green
+        because the literal survived elsewhere in the file. Now the documented
+        example IS the record under test, so misinstructing an author fails here.
+        """
+        example = _readme_example()
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "asset-service.md"
-            path.write_text(f"# observation{LF}{LF}Standing supported: WITNESSED{LF}",
+            path.write_text(f"# observation{LF}{LF}{example}{LF}",
                             encoding="utf-8", newline=LF)
-            self.assertEqual(sov_standing.supported_standing(path), "WITNESSED")
+            self.assertEqual(
+                sov_standing.supported_standing(path), "WITNESSED",
+                f"witness/README.md instructs {example!r}, which the gate cannot read")
+
+
+class TheValueIsAStandingOrItIsNot(unittest.TestCase):
+    """A third independent reading defeated the scanning implementation again.
+
+    Three readings, three repairs, and each closed exactly the cases it was shown
+    while leaving the class open. The class is scanning: any rule that looks for a
+    standing *inside* a value has a tail of spellings that carry the token and
+    mean something else, and the tail is not enumerable. The value is now compared
+    whole against a closed set, which has no tail.
+    """
+
+    def _reading(self, value: str) -> str | None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "asset-service.md"
+            path.write_text(f"# observation{LF}{LF}**Standing supported: {value}**{LF}",
+                            encoding="utf-8", newline=LF)
+            return sov_standing.supported_standing(path)
+
+    def test_a_self_witness_is_not_a_witness(self):
+        """The sharpest of them. `AGENTS.md` exists in part to forbid this exact
+        inversion - a build report cannot witness itself - and a token scan splits
+        SELF_WITNESSED into SELF and WITNESSED and reads the second half as
+        support for it. The gate would have promoted a record announcing the one
+        thing the contract most plainly refuses."""
+        self.assertIsNone(self._reading("SELF_WITNESSED."))
+        self.assertIsNone(self._reading("BUILDER_WITNESSED."))
+
+    def test_a_compound_spelling_is_not_the_word(self):
+        for value in ("PRE-WITNESSED.", "PARTIALLY_WITNESSED.", "WITNESSED_IN_PART."):
+            with self.subTest(value=value):
+                self.assertIsNone(self._reading(value))
+
+    def test_a_qualified_verdict_supports_nothing(self):
+        """Each of these defeated a different hand-written denial list, which is
+        the argument against having one. `subject to conditions` is not invented:
+        it is reachable from README's own RATIFIABLE-WITH-CONDITIONS verdict."""
+        for value in ("WITNESSED (retracted).", "WITNESSED - withdrawn.",
+                      "WITNESSED subject to conditions.", "WITNESSED, pending repair."):
+            with self.subTest(value=value):
+                self.assertIsNone(self._reading(value))
+
+    def test_a_lookalike_that_case_folds_onto_the_word_is_refused(self):
+        """Case folding is not identity. The Turkish dotless i upper-cases to `I`,
+        so this spelling passes an exact uppercase comparison. ASCII is required
+        before the comparison, which is why it does not."""
+        dotless = "W" + chr(0x131) + "TNESSED."
+        self.assertEqual(dotless.upper().rstrip("."), "WITNESSED")
+        self.assertIsNone(self._reading(dotless))
+
+    def test_the_bare_word_is_read(self):
+        self.assertEqual(self._reading("WITNESSED"), "WITNESSED")
+        self.assertEqual(self._reading("WITNESSED."), "WITNESSED")
+        self.assertEqual(self._reading("witnessed"), "WITNESSED")
+
+
+class QuotedTextDoesNotAnswerForTheRecord(unittest.TestCase):
+    """`LABEL.search` took the first match in the file and could not see markdown.
+
+    This needs no adversary. A record about the standing gate quotes the required
+    spelling while explaining it, and the quote appears above the record's own
+    verdict - so the record graded on the example it was citing. It is the shape
+    of the next record this repository writes.
+    """
+
+    def _reading(self, body: str) -> str | None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "asset-service.md"
+            path.write_text(body, encoding="utf-8", newline=LF)
+            return sov_standing.supported_standing(path)
+
+    def test_a_fenced_example_does_not_speak_for_the_record(self):
+        fence = "`" * 3
+        body = (f"# observation{LF}{LF}## Findings{LF}{LF}"
+                f"The gate requires:{LF}{LF}{fence}{LF}Standing supported: WITNESSED{LF}"
+                f"{fence}{LF}{LF}**Standing supported: none.**{LF}")
+        self.assertIsNone(self._reading(body))
+
+    def test_an_inline_span_does_not_speak_for_the_record(self):
+        body = (f"# observation{LF}{LF}Authors must write `Standing supported: WITNESSED`"
+                f" exactly.{LF}{LF}**Standing supported: none.**{LF}")
+        self.assertIsNone(self._reading(body))
+
+    def test_an_html_comment_does_not_speak_for_the_record(self):
+        body = (f"# observation{LF}{LF}<!-- Standing supported: WITNESSED -->{LF}{LF}"
+                f"**Standing supported: none.**{LF}")
+        self.assertIsNone(self._reading(body))
+
+    def test_two_unquoted_labels_are_ambiguous(self):
+        """A record must say this once. Two answers is not an answer, and picking
+        the first is how the quoted-example defeat worked in the first place."""
+        body = (f"# observation{LF}{LF}Standing supported: WITNESSED{LF}{LF}"
+                f"Standing supported: none{LF}")
+        self.assertIsNone(self._reading(body))
+
+    def test_the_record_still_speaks_when_it_quotes_the_example_correctly(self):
+        """The honest shape: quote the spelling, then declare your own verdict.
+        A gate that refused this would make a record about itself unwritable."""
+        fence = "`" * 3
+        body = (f"# observation{LF}{LF}The documented spelling is:{LF}{LF}"
+                f"{fence}{LF}Standing supported: none{LF}{fence}{LF}{LF}"
+                f"**Standing supported: WITNESSED.**{LF}")
+        self.assertEqual(self._reading(body), "WITNESSED")

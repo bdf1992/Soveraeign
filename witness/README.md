@@ -57,13 +57,32 @@ in order to do that grading themselves:
 - **Uncovered** — what the witness did not examine, stated plainly. A record
   that claims total coverage is not usable, because a reader cannot calibrate it.
 - **Standing supported** — which transition, if any, the observation supports,
-  and the one field `scripts/sov_standing.py` reads. Write it as
-  `Standing supported: WITNESSED` with the value on the label's own line, or say
-  plainly that the observation supports nothing. The value must name `WITNESSED`
-  and carry no denial: a verdict on the line *below* the label, `NOT_WITNESSED`,
-  `n/a`, `OPEN -> BUILT`, and `WITNESSED and RATIFIED` each support nothing. A
-  record may not declare `RATIFIED`; it carries a subject as far as WITNESSED and
-  the owner settles the rest.
+  and the one field `scripts/sov_standing.py` reads. The whole value must be one
+  of two words, on the label's own line. This is the spelling that advances a
+  subject, and the test suite reads it out of this block rather than restating
+  it:
+
+```standing-supported
+Standing supported: WITNESSED
+```
+
+  Anything else supports nothing, and that is deliberate rather than strict. The
+  value is compared whole, so `SELF_WITNESSED`, `PRE-WITNESSED`,
+  `WITNESSED (retracted)`, `WITNESSED - withdrawn`, and
+  `WITNESSED subject to conditions` are each not that word and each support
+  nothing — as do `NOT_WITNESSED`, `n/a`, `OPEN -> BUILT`, and a verdict written
+  on the line *below* the label. If the observation supports nothing, say so in
+  ordinary words; there is no spelling you have to get right in order to refuse.
+
+  Say it once, in the record's own voice. Fenced blocks, inline spans, and HTML
+  comments are stripped before the field is read, so quoting this example inside
+  a record does not answer for it — a record about this gate will quote it, and
+  must still declare its own verdict outside the quote. Two labels outside quoted
+  text are ambiguous and support nothing.
+
+  A record may not declare `RATIFIED`. It carries a subject as far as WITNESSED;
+  the owner settles the rest, and the gate names that over-reach rather than
+  quietly ignoring it.
 
 ## What a witness may not do
 

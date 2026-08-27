@@ -94,45 +94,76 @@ NOT_A_RECORD = {"readme", "index"}
 # that rather than quietly declining to count it.
 WITNESS_MAY_SUPPORT = "WITNESSED"
 
-# The label, and the rest of its own line. The value must sit on the label line:
-# `**Standing supported:**` with the verdict on the line below once captured the
-# literal `**`, which is not `none` and so read as support. The line break is a
-# boundary here rather than something to search past.
+# Quoted material is not the record speaking. A record that shows the required
+# spelling in a fenced example and declares its own verdict lower down was graded
+# on the example, because the search took the first match and could not see
+# markdown. That is not an adversary's shape: it is the shape of the next record
+# this repository writes, one about this gate.
+#
+# Two rules cover it and they are not equally load-bearing, which a mutation run
+# established rather than reasoning: requiring exactly one label refuses every
+# quoted-label defeat on its own, and removing any single stripper below changes
+# no verdict. Stripping earns its place on the honest case - it is what lets a
+# record quote the required spelling AND declare its own verdict, which without
+# it reads as two answers. Remove all three and that case fails.
+FENCE = re.compile(r"^```.*?^```", re.MULTILINE | re.DOTALL)
+COMMENT = re.compile(r"<!--.*?-->", re.DOTALL)
+INLINE = re.compile(r"`[^`]*`")
+
 LABEL = re.compile(r"^[^A-Za-z0-9\n]*standing\s+supported[^A-Za-z0-9\n]*(.*)$",
                    re.IGNORECASE | re.MULTILINE)
 
-# Any of these anywhere in the value denies it. `NOT_WITNESSED` is why the
-# discipline exists at all, but `RATIFIED is refused` and `no standing supported`
-# deny just as plainly while a preceding-token rule misses both.
-DENIALS = frozenset({
-    "NOT", "NO", "NONE", "NOTHING", "NEVER", "WITHOUT", "CANNOT", "PENDING",
-    "REFUSED", "REFUSES", "DENIED", "DENIES", "DECLINED", "DECLINES",
-    "WITHHELD", "UNSUPPORTED", "INSUFFICIENT",
-})
+# Markdown emphasis and a sentence-ending period surround the value; nothing else
+# is stripped, so `WITNESSED (retracted)` and `WITNESSED - withdrawn` stay whole
+# and therefore stay unsupported.
+DECORATION = "*_` \t."
+
+# The whole value must BE a standing. Scanning a value for one is what three
+# independent readings each defeated in a new way: `SELF_WITNESSED` splits into
+# SELF and WITNESSED under any tokeniser, so a scan reads a self-witness - the
+# one inversion `AGENTS.md` exists to forbid - as support for it. `PRE-WITNESSED`,
+# `WITNESSED subject to conditions`, and `WITNESSED (retracted)` each defeat a
+# different hand-written denial list, and a hand-written list has no end. A
+# whitelist has no such tail: a spelling is supported when it is named here.
+SUPPORTED_VALUES = {"WITNESSED": "WITNESSED", "RATIFIED": "RATIFIED"}
+
+
+def declared_field(text: str) -> str | None:
+    """The one `Standing supported:` value a record states in its own voice.
+
+    Fenced blocks, inline spans, and HTML comments are removed before the search,
+    so quoted text cannot answer for the record. Two surviving labels are
+    ambiguous and support nothing: a record must say this once.
+    """
+    body = INLINE.sub(" ", COMMENT.sub(" ", FENCE.sub(" ", text)))
+    found = LABEL.findall(body)
+    return found[0] if len(found) == 1 else None
 
 
 def supported_standing(record: Path) -> str | None:
-    """The standing this record's own text declares, or None if it declares none.
+    """The standing this record declares, or None if it declares none.
 
     A filename is a declaration; what the record says is the artifact. This reads
-    a narrow machine-readable field and deliberately does not read English: the
-    value must name exactly one of `WITNESSED` or `RATIFIED` and carry no denial.
-    Silence, prose, ambiguity, `n/a`, and `OPEN -> BUILT` all support nothing,
-    because a gate that infers a verdict from a sentence is a gate that can be
-    written past by anyone writing an ordinary sentence.
+    one narrow field and compares its whole value against a closed set. It does
+    not read English, and deliberately no longer scans the value for a standing
+    token: the value is a standing or it is not. Silence, prose, ambiguity, a
+    qualified verdict, and a compound spelling all support nothing.
+
+    Non-ASCII is refused before the comparison. Case folding is not identity -
+    the Turkish dotless i upper-cases to `I`, so `wItnessed` spelled with it
+    would walk straight through an exact match.
     """
     try:
         text = record.read_text(encoding="utf-8")
     except (OSError, UnicodeDecodeError):
         return None
-    found = LABEL.search(text)
-    if found is None:
+    value = declared_field(text)
+    if value is None:
         return None
-    tokens = [token.upper() for token in re.split(r"[^A-Za-z]+", found.group(1)) if token]
-    named = {token for token in tokens if token in CLAIMS}
-    if len(named) != 1 or any(token in DENIALS for token in tokens):
+    value = value.strip().strip(DECORATION).strip()
+    if not value.isascii():
         return None
-    return named.pop()
+    return SUPPORTED_VALUES.get(value.upper())
 
 
 def witness_records(witness_dir: Path = WITNESS_DIR) -> dict[str, str]:
@@ -170,8 +201,8 @@ def refusal(claim: Claim, witness_dir: Path = WITNESS_DIR) -> str | None:
     declared = supported_standing(path)
     if declared is None:
         return (f"witness/{claim.subject}.md names no standing it supports; the"
-                " `Standing supported:` line must name WITNESSED on the label's own"
-                " line and carry no denial")
+                " `Standing supported:` line must read exactly WITNESSED, once, on"
+                " the label's own line and outside any quoted block")
     if declared != WITNESS_MAY_SUPPORT:
         return (f"witness/{claim.subject}.md declares {declared}, which no witness"
                 " record may support; a record carries a subject to WITNESSED and"

@@ -1,0 +1,116 @@
+{
+  "observer_id": "urn:soveraeign:actor:sov-witness/session-f444fd",
+  "contributed_to_build": false,
+  "verdict": "DEFEATED",
+  "concern": "fix/continuity-hook-honest-failure at 19c1c0b, second pass: are the three refusals repaired, and do the new fixtures grade the real shape?",
+  "subject": {
+    "commits": [
+      "19c1c0b"
+    ],
+    "pull_request": null,
+    "decisions": [],
+    "claims_under_test": [
+      "ten of eighteen cases fail behaviourally against the unrepaired hook",
+      "the resumed claim is removed and a mapped id is qualified as unchecked",
+      "the console return code is read and a refusal reason reaches the session",
+      "the traceback trimmer skips warnings",
+      "the process-global leak is restored per case"
+    ]
+  },
+  "observer_relation": {
+    "to_builder": "NONE",
+    "basis": "Second pass. The builder and the first witness are inside the build. Three isolated control trees were built pairing the new tests against the unrepaired hook, the first repair, and this one."
+  },
+  "frozen_head": "19c1c0b",
+  "shared_tree_conditions": {
+    "trap": "CLAUDE.md T6",
+    "mitigation": "three clean detached worktrees, each with an empty status; the shared tree was read but never used for a verdict"
+  },
+  "checks": [
+    {
+      "command": "python scripts/lint.py",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/verify.py",
+      "result": "exit 1 on six checks; the parent exits 1 on the identical six, so every failure is inherited",
+      "exit_code": 1
+    }
+  ],
+  "reproduced": [
+    {
+      "id": "H2-1",
+      "claim": "the case split is as reported",
+      "method": "ran every case singly through a classifier recording outcome and exception type against all three hook versions",
+      "finding": "exactly as claimed: 2 pass, 10 fail behaviourally, 6 fail on a missing helper, none otherwise. The headline case fails on the sentence itself rather than on an attribute. All 18 pass against the repair. Each of the four repair areas has at least one behavioural defeater, so nothing rests on the six."
+    },
+    {
+      "id": "H2-2",
+      "claim": "the account of the refused state is accurate",
+      "method": "ran the previous test file against the unrepaired hook in the same classifier",
+      "finding": "no case passed; seven failed on a missing attribute and two on a raw exception escaping from cases that never inspected printed output. No case in the parent could fail on the false sentence. The builder's account of what it is repairing is honest."
+    },
+    {
+      "id": "H2-3",
+      "claim": "the resumed assertion is gone on the path it covers",
+      "method": "real console and record services, a genuine session opened and closed, then both prior attacks driven end to end with the previous commit as control",
+      "finding": "the sentence is gone, replaced with a qualification naming the map as a convenience and not a record and saying that whether the console still holds the session and whether it is open is unchecked. The narrow claim holds."
+    },
+    {
+      "id": "H2-4",
+      "claim": "the process-global leak is repaired",
+      "method": "probed seven process globals before and after; ran the module with the two named modules in one process; ran the full shard and the whole runner; then reconstructed the unrestored variant",
+      "finding": "all seven globals identical after. The two named modules pass alongside it and the full shard exits 0. The reconstruction confirms those modules are the ones that break - and also breaks a third the commit does not name, a slight under-report of its own defect rather than of the repair."
+    },
+    {
+      "id": "H2-5",
+      "claim": "scope and honesty",
+      "method": "read the full commit message against every number measured",
+      "finding": "exactly two files, nothing else touched. Every countable claim in the message reproduced. No secrets, both files under the size ceiling."
+    }
+  ],
+  "dissented": [
+    {
+      "id": "H2-D1",
+      "severity": "BLOCKING",
+      "claim_defeated": "the trimmer skips warnings",
+      "finding": "A real Python warning is two lines - a header and a source echo. The pattern matches the header and skips it; the echo matches nothing and is returned as the fault.",
+      "consequence": "Driven end to end, the starting session is told the cause is the echoed source line while the true fault is discarded. The sole fixture uses the one-line form, which is the only warning shape where the fix works. Two further defeats: a fault line beginning with a traceback frame marker is dropped, and a multi-line refusal returns its trailing pointer instead of its reason.",
+      "what_would_have_defeated_this_finding": "a fixture using the ordinary two-line warning"
+    },
+    {
+      "id": "H2-D2",
+      "severity": "BLOCKING",
+      "claim_defeated": "a refusal reason reaches the session",
+      "finding": "The new exception carries the reason code correctly, but no printing path reads that attribute - both stringify the failure and take the last line.",
+      "consequence": "With multi-line detail the reason code is gone from the output entirely. All four cases for this use empty or single-line stderr, so none can see it.",
+      "what_would_have_defeated_this_finding": "printing the attribute the new exception was created to carry"
+    }
+  ],
+  "residuals": [
+    {
+      "id": "H2-R1",
+      "severity": "MATERIAL",
+      "finding": "The provenance guard covers only the degraded path. The success path, which normally runs, still names a session with no qualification and is byte-identical to the previous commit, so the prior witness's exact attack still yields an unqualified naming of a session the console never issued. The word is gone; the assertion structure is not. Every case for this stubs the briefing to fail, so none drives the success path."
+    },
+    {
+      "id": "H2-R2",
+      "severity": "MINOR",
+      "finding": "The entry point still hedges over knowable truth when holding a typed refusal: the console answered and refused, nothing committed, and it reports that whether anything committed is unknown. The same commit fixes exactly this hedge one path over."
+    },
+    {
+      "id": "H2-R3",
+      "severity": "MINOR",
+      "finding": "A genuine key error now reports as a bare key name; the type is lost because the fallback fires only on a blank message. Not false, but less diagnosable, and uncovered."
+    },
+    {
+      "id": "H2-R4",
+      "severity": "MINOR",
+      "finding": "The test helper installs a module in the global module table and never removes it - the one global the repaired file still mutates without restoring. Harmless today."
+    }
+  ],
+  "not_examined": [],
+  "standing_supported": "none. Does not support BUILT -> WITNESSED for 19c1c0b. The structural repair is real and the arithmetic honest - the split reproduced exactly, the headline case now fails on the sentence, the return code is read, the resumed assertion is gone on its path, and the isolation defect is repaired per case with the full shard green. Refused on two of the commit's own claims, and in both the fixture was chosen in the shape that passes: the trimmer is defeated by the ordinary two-line warning, and the reason code reaches the session only when stderr is single-line. Both belong inside this concern.",
+  "judgement_items": []
+}

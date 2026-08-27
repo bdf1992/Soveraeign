@@ -1,0 +1,64 @@
+{
+  "observer_id": "sov-witness (independent observation, Claude Opus 5 1M)",
+  "contributed_to_build": false,
+  "verdict": "CONFIRMED",
+  "concern": "landing gate: module-form import repair and bidirectional containment (round 8, bounded to the two repairs)",
+  "checks": [
+    {
+      "command": "python -c \"digests pinned before reading: sov_land.py 5400eb1bf62a7e8d (212), sovland/tree.py deec7612813c21dc (182), test_sov_land.py 98aca23843e20a13 (360), authority.py d00c63cfc42f1420 and scope.py fa8c1fe9f643b86b - both byte-identical to rounds 6 and 7, so the evaluator was not re-attacked and did not need to be\"",
+      "exit_code": 0
+    },
+    {
+      "command": "REPAIR 1: python -c \"AST scan of sov_land.py and sovland/tree.py for names called but neither defined nor imported\"  # [] for both; unused imports [] for both; subprocess and ROOT are gone",
+      "exit_code": 0
+    },
+    {
+      "command": "REPAIR 1: python -c \"every tree.* attribute referenced in sov_land.py resolved at runtime\"  # LandingRefused, _commit_span, _git, _held_elsewhere, carried_paths, current_branch, directory_paths, dirty_paths, gather_checks, repo_relative - all exist",
+      "exit_code": 0
+    },
+    {
+      "command": "REPAIR 1: grep for sov_land.<moved name> across the repository  # none; no caller still reaches for anything the split moved",
+      "exit_code": 1
+    },
+    {
+      "command": "DEFEATING CASE: copied scripts/ and contracts/ to a scratch tree, replaced the five 'tree._git(' call sites with bare '_git(' to reproduce the round-7 defect exactly, ran the suite  # ERROR test_land_reaches_git_and_commits_and_merges NameError: name '_git' is not defined; Ran 22 tests, FAILED (errors=1), exit 1",
+      "exit_code": 1
+    },
+    {
+      "command": "SAFETY: recorded git rev-parse HEAD, rev-parse main, current branch, a hash of git status --porcelain -uall and the reflog length before and after running the effect-path tests that drive cmd_land for real  # all five identical; the mock.patch.object(tree, 'ROOT', root) redirection is complete and the tests cannot reach the real repository",
+      "exit_code": 0
+    },
+    {
+      "command": "REPAIR 2: python -c \"thirteen directional probes of the containment matcher\"  # forward, reverse, reverse with the contested path spelled with a trailing slash, reverse with the staged path spelled with a slash, grandparent contested, and exact all match; sibling both ways, name-prefix both ways, single-char sibling and unrelated all correctly do not",
+      "exit_code": 0
+    },
+    {
+      "command": "RESIDUAL: python -c \"contested '.' against staged 'scripts/a.py' -> False\"  # repo_relative normalises the root to '.' and no ordinary path starts with './', so a session holding the whole repository is not reported; sovsession/claims.py accepts '.' since it is not absolute",
+      "exit_code": 0
+    },
+    {
+      "command": "python -m unittest discover -s scripts/tests -p \"test_sov_land.py\"  # Ran 22 tests, OK, three consecutive runs, no PermissionError from TemporaryDirectory cleanup on Windows",
+      "exit_code": 0
+    },
+    {
+      "command": "python -c \"sizes and hygiene: sov_land.py 212, sovland/tree.py 182, tests 360; all LF, no line over 100\"",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/sov_grant.py selfcheck  # PASS: 1 grant(s) valid, 34 authority cases graded",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/lint.py  # 739 text files, 317 Python modules, 0 named debt",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/verify.py  # PASS: 39 checks in 13.563s wall, GRADE SILVER; nearer the 15s ceiling than my three round-7 runs at 11.5s, which corroborates the variance the builder reported without reproducing a failure",
+      "exit_code": 0
+    },
+    {
+      "command": "git rev-parse HEAD; git rev-parse main; git status --porcelain -uall | md5sum  # unchanged across every command in this observation",
+      "exit_code": 0
+    }
+  ]
+}

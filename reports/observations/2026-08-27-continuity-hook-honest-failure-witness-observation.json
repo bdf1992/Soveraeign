@@ -1,0 +1,117 @@
+{
+  "observer_id": "urn:soveraeign:actor:sov-witness/session-f444fd",
+  "contributed_to_build": false,
+  "verdict": "DEFEATED",
+  "concern": "fix/continuity-hook-honest-failure at 6fd1602: did the old hook commit a record and then report that nothing was recorded, and does the repair make the failure report true?",
+  "subject": {
+    "commits": [
+      "6fd16023bb68e2bcdcd37389b722d39cbced7e87"
+    ],
+    "pull_request": null,
+    "decisions": [],
+    "claims_under_test": [
+      "the pre-repair hook recorded an open session and then printed that nothing was recorded",
+      "all nine new cases fail against the pre-repair hook",
+      "the repaired output names the session, says opened or resumed, says what is unknown, and trims the traceback"
+    ]
+  },
+  "observer_relation": {
+    "to_builder": "NONE",
+    "basis": "Requested by the builder, which cannot witness its own build. No helper is declared in the commit and none is offered as an observation. This is the first independent reading."
+  },
+  "frozen_head": "6fd16023bb68e2bcdcd37389b722d39cbced7e87",
+  "shared_tree_conditions": {
+    "trap": "CLAUDE.md T6",
+    "mitigation": "detached worktrees for subject and parent plus separate repro sandboxes, all removed; the shared tree was never written"
+  },
+  "checks": [
+    {
+      "command": "python scripts/lint.py",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/verify.py",
+      "result": "exit 1 with six failing checks - orientation snapshot, diagram provenance, Node Interface projection, documentation reader, operation surface page, repository tooling tests. The parent commit fails a byte-identical set, so none is this change's.",
+      "exit_code": 1
+    }
+  ],
+  "reproduced": [
+    {
+      "id": "HK-1",
+      "claim": "the defect is real",
+      "method": "built an independent sandbox rather than using the builder's suggested stub: copied the console and record sources, wrote the pre-repair hook where its root resolves, ran it once against a fresh store, then broke the hash chain for real with a direct database update, and counted journal rows before and after",
+      "finding": "confirmed with no stubbing at all. The journal went from four entries to six - an event and its receipt - the host binding map gained the session, and stdout ended with a twenty-line traceback followed by the sentence saying nothing was recorded. Exit 0. The split is independent: append uses the head rather than a reconstruction, so opening still succeeds while reading context raises."
+    },
+    {
+      "id": "HK-2",
+      "claim": "the repair makes the report true in the reproduced case",
+      "method": "ran the repaired hook against the same broken store, unbound then bound, counting rows",
+      "finding": "the unbound run committed and said so truthfully; the bound run opened nothing and said it resumed. Neither printed the false sentence and neither leaked a traceback."
+    },
+    {
+      "id": "HK-3",
+      "claim": "the output says what the session does not know",
+      "method": "compared the printed sentence against what the context call actually returns",
+      "finding": "exact. The companion sentence about a failed close not advancing the read position is also true, reproduced against a real failing close on the same store."
+    },
+    {
+      "id": "HK-4",
+      "claim": "the change is scoped and the test grades the artifact",
+      "method": "diffed name-status, read both files fully, checked byte-level line endings and sizes, and traced the runner wiring",
+      "finding": "exactly two files and four deleted lines, all accounted for. Both under the size ceiling, no secrets, no local absolute paths. The test computes the hook path from its own location and loads the committed bytes rather than a copy, re-execing per case so patches do not leak."
+    },
+    {
+      "id": "HK-5",
+      "claim": "the failure battery holds",
+      "method": "ten scenarios driving the entry point, plus two real runs with the console package removed from disk",
+      "finding": "all exit 0, none print the false sentence, none leak a traceback, including an exception whose string conversion itself raises."
+    }
+  ],
+  "dissented": [
+    {
+      "id": "HK-D1",
+      "severity": "BLOCKING",
+      "claim_defeated": "all nine cases fail against the pre-repair hook",
+      "finding": "Literally true and materially misleading. Seven of the nine fail with an attribute error because two new private helpers do not exist in the old file. They are unit tests of those helpers and cannot fail against the old code for any other reason. Only two fail behaviourally.",
+      "consequence": "The case whose own docstring calls it the defeating case - the sentence this repair exists to delete - errors on a missing attribute and never observes the old code emitting that sentence. And the entry point, the single function that ever held the false sentence and whose message this commit rewrote, has no case at all. A repair whose subject is truthfulness has not proven the untrue thing was untrue.",
+      "what_would_have_defeated_this_finding": "one case running the entry point over the real defect"
+    },
+    {
+      "id": "HK-D2",
+      "severity": "BLOCKING",
+      "claim_defeated": "the repaired output cannot print a claim the run does not support",
+      "finding": "The repair introduces a new unverified positive claim of exactly the kind it deletes. Whether a session was resumed is derived solely from the host-side binding map, which the module's own docstring calls a host convenience and not a record.",
+      "consequence": "Reproduced printing 'was resumed from an earlier session' for an id the console never issued, and for a session already closed with its cursor pinned - and since closing never deletes the binding, that second case is the ordinary path after any session ends. Nothing was resumed in either. No case covers it.",
+      "what_would_have_defeated_this_finding": "asking the console rather than the host map, or a case pinning what resumed may assert"
+    },
+    {
+      "id": "HK-D3",
+      "severity": "MATERIAL",
+      "claim_defeated": "the hook reports the cause the run observed",
+      "finding": "The console call checks only whether standard output is empty and never reads the return code, while the console command writes refusal payloads to standard output with a nonzero exit. So a refusal is indistinguishable from success at the call site.",
+      "consequence": "A refused open reaches the session as a missing-key message and a refused context read as a different missing-key message. The refusal's reason code and its message never reach the session, which is told the cause was a missing dictionary key. Pre-existing in the call helper, but both messages that swallow it were rewritten in this commit and neither has a case.",
+      "what_would_have_defeated_this_finding": "reading the return code"
+    }
+  ],
+  "residuals": [
+    {
+      "id": "HK-R1",
+      "severity": "MINOR",
+      "finding": "The traceback trimmer returns the last non-blank line rather than the line naming the fault, so a trailing resource warning after a traceback is reported as the fault, and a two-reason refusal loses its first reason. The docstring promises the fault line; the implementation promises the last line."
+    },
+    {
+      "id": "HK-R2",
+      "severity": "MINOR",
+      "finding": "Two hedges over knowable truth. When the open succeeded and only the host-side remember failed, the code holds the returned session id and therefore knows a record committed, yet reports that whether it committed is unknown - and silently leaves the next start opening a second session. An unknown action word reports the same hedge for an operation never attempted, where the deleted sentence was more accurate."
+    }
+  ],
+  "not_examined": [
+    "the live console journal, which belongs to other sessions; the failure mode was reproduced deliberately instead"
+  ],
+  "standing_supported": "none. Does not support BUILT -> WITNESSED for 6fd1602. The defect is real and was reproduced end to end on the real services with no stubbing, the repair's output is true in that scenario, scope is exact, lint passes, and every verify failure is byte-identical at the parent. Refused on two grounds: the evidence does not grade the behaviour it claims to grade, and the repair introduces a claim of the same kind it deletes. All findings are inside the same two files, the same service, effect class and authority, so they are absorbed and repaired inside this concern rather than filed. A second pass with a case running the entry point over the real defect, and a case pinning what resumed may assert, should reach it.",
+  "judgement_items": [
+    "The live console journal's broken chain is the Record Service's defect and crosses out of this concern. Does it get its own concern now, or does the continuity path stay dark until the Record Service is worked?",
+    "This is host plumbing, which the contract says holds no standing. Does a hook that writes the opening context of every session warrant conformance coverage, or do the tooling tests remain the right ceiling?"
+  ]
+}

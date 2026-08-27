@@ -1,0 +1,23 @@
+{
+  "name": "daily-coldstart",
+  "description": "Sit the cold-start awareness benchmark with fresh agents every morning and record both readings; measures whether the orientation layer still tells the truth, builds nothing. The workflow stamps each run from the clock, because two runs sharing a stamp would overwrite one another's answers file.",
+  "enabled": false,
+  "target": {
+    "kind": "workflow",
+    "name": "sov-coldstart",
+    "args": {
+      "participant": "scheduled-fresh-agent"
+    }
+  },
+  "cron": "30 6 * * *",
+  "mode": "observe",
+  "effect_class": "RESOURCE_CONSUMPTION",
+  "isolation": "worktree",
+  "preconditions": {
+    "clean_tree": false
+  },
+  "limits": {
+    "max_budget_usd": 4,
+    "timeout_seconds": 2400
+  }
+}

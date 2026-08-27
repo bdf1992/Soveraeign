@@ -1,0 +1,96 @@
+{
+  "observer_id": "sov-witness (independent observation, Claude Opus 5 1M)",
+  "contributed_to_build": false,
+  "verdict": "DISSENTED",
+  "concern": "orientation snapshot check, LESSONS.md L-0001",
+  "checks": [
+    {
+      "command": "SCOPE. Graded state: HEAD 5c3a8ad22c119055064bd314f84e679ba9efe839 on feat/federation-harness-and-hardening, working tree shared by several live sessions. Digests pinned at the moment of the final read, not at launch: LESSONS.md sha256:85ee731ddf54fa2805c82223 (13227 bytes), CLAUDE.md sha256:cd77184c216b093680ebea84 (13483 bytes), scripts/sov_snapshot.py sha256:002d17965fd889f15fcf66ff (8706 bytes), scripts/sovverify/checks.py sha256:91dd81942a79958d726b610f (18431 bytes). All four LF-only.",
+      "exit_code": 0
+    },
+    {
+      "command": "SCOPE, L-0007. A concurrent session appended LESSONS.md L-0007 and moved the count line from 5 to 6 after I launched. That is a different concern which happens to live in the same file. I did not grade it and it is not covered here; by the file's own rules it stands RECORDED, which is what an unwitnessed lesson is. Peer acceptance by another live session is not independent observation. I re-read LESSONS.md after the change: the L-0001 block is byte-identical to what I graded, and the header now reads 6 RECORDED against 6 RECORDED entries, so my earlier reading of an off-by-one is resolved at the digest above.",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/sov_snapshot.py selfcheck  # PASS: 4 claims, 5 selfcheck cases",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/sov_snapshot.py check  # three NOT CHECKED lines, then PASS: 4 snapshot claim(s) match the record",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/lint.py  # PASS: repository hygiene (746 text files, 319 Python modules, 0 named debt). sov_snapshot.py is 209 lines, under the 300 ceiling",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/verify.py  # run 1, subject state before L-0007 arrived: PASS: 40 checks in 11.708s wall, 31.660s of work; GRADE: SILVER at 11.708s. The orientation snapshot check ran inside it and passed in 0.125s",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/verify.py  # runs 2 and 3, current shared tree: FAIL: documentation reader, repository tooling tests, because docs/documentation.html is stale. Attributed to the sibling L-0007 edit and not to this concern: scripts/sov_docs.py indexes only .md files, and the built page already carries this concern's 40 checks, 356 commits, sov_snapshot and the ADMITTED standing of L-0001 while it does not carry L-0007's title. My own .json observation cannot perturb it. The statement made to me that verify runs 40 checks is true as to count; the run does not currently pass",
+      "exit_code": 1
+    },
+    {
+      "command": "git rev-list --count HEAD  # 356, and git rev-list --count main is also 356. The page states 356 with tolerance 25. The number is branch-relative, which the page does not say",
+      "exit_code": 0
+    },
+    {
+      "command": "count decision records with a leading four-digit number and a .md suffix  # 64, no non-numeric files and no duplicate numbers. The page states 64",
+      "exit_code": 0
+    },
+    {
+      "command": "count reports/*.md  # 24, and the page states 24. reports/observations/*.json is excluded by the non-recursive glob, which is a definition the check invents rather than reads; a report filed into a subdirectory would silently stop counting",
+      "exit_code": 0
+    },
+    {
+      "command": "count Check( entries in scripts/sovverify/checks.py  # 40, matching len(CHECKS) and verify.py's own PASS line. verify.py maps run_check over CHECKS with no filtering, so _verification_checks reads the same object the runner iterates and cannot become a second implementation. Strongest of the four derivations",
+      "exit_code": 0
+    },
+    {
+      "command": "git show HEAD:scripts/sovverify/checks.py counted 39 Check entries, against a page at HEAD claiming 36  # 40 is 39 plus this check, so it was derived rather than fitted, and the page was already stale by three before this concern began",
+      "exit_code": 0
+    },
+    {
+      "command": "ATTACK on the regexes: 14 synthetic pages driven through grade() out of process, repository file unmodified  # reflow survives - the real CLAUDE.md joined to one line and rewrapped at 30 columns both read clean. The historical day-two sentence carrying 26 commits, 17 decision records and 8 reports is not matched, and a page carrying only it is reported as stating no number. Off-by-one on each of the four is caught; 14 extra commits, inside tolerance 25, is correctly not reported",
+      "exit_code": 0
+    },
+    {
+      "command": "ATTACK, duplicate wording  # an EARLIER stale duplicate is caught, because re.search takes the first match and grades the stale one. A LATER stale duplicate reads CLEAN: a second sentence saying 7 checks, 1 commits, 2 decision records and 3 reports, appended below the true one, passes. DEFECT (c) - a stale set of numbers can sit further down the same page unchecked, which is the failure L-0001 names, relocated",
+      "exit_code": 0
+    },
+    {
+      "command": "ATTACK, prose edits  # reordering the sentence, replacing the conjunction with a comma before reports, and bolding the commit number each report that the snapshot states no number. It fails loud rather than silent, so this is fragility rather than a hole",
+      "exit_code": 0
+    },
+    {
+      "command": "MUTATION test of the selfcheck's honesty, on a scratch copy outside the repository with its own git record and a copy of scripts/sovverify, repository file untouched  # baseline PASS exit 0; regex typo FAILS; grade() forced to return empty FAILS; the comparison forced never to fire FAILS; tolerance 25 to 900 FAILS; deleting the reports Claim crashes, exit 1. The selfcheck is load-bearing and honest",
+      "exit_code": 1
+    },
+    {
+      "command": "MUTATION test, the historical-count defect reintroduced by reverting the commits pattern to bare digits before the word commits, with ROOT pointed at the real record  # selfcheck FAILS naming a historical count read as the current one, and check reports that the snapshot says 26 while the record holds 356. The near-miss the module names is genuinely regression-covered in the environment that matters",
+      "exit_code": 1
+    },
+    {
+      "command": "MUTATION test, tolerance widened from 25 to 400  # selfcheck PASSES. The drifted case moves commits by 500 and the within-tolerance case by 20, so any commits tolerance between 20 and 500 is undetectable, and 400 would make the claim vacuous against a record of 356. DEFECT (d), against the module's own instruction to correct CLAUDE.md rather than widen a tolerance",
+      "exit_code": 0
+    },
+    {
+      "command": "grep selfcheck in scripts/sovverify/checks.py, and grep sov_snapshot across all Python  # sov_kernel, sov_ticket, sov_closure and sov_grant each register selfcheck as their gated command; sov_snapshot registers only check. There is no test under scripts/tests/, no workflow, and nothing else references it. The five defeating cases run only when a person types the command, and the grade()-returns-empty mutation proves a broken check still prints PASS under check. PRIMARY DEFECT (a) - the positive case is gated and the refusal case is not",
+      "exit_code": 0
+    },
+    {
+      "command": "sum the operations arrays across services/*/contracts/service.json  # 10 manifests, 133 operations, matching the page's corrected 10 service boundaries and 133 declared operations. No manifest carries a total field",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/sov_capability.py check  # PASS: 133 capabilities, no defect, not stale. An existing gated repository derivation already reports the exact number listed NOT CHECKED, so the recorded reason - that the manifests report their own total and re-counting it here would be a second implementation - is wrong on both halves. DEFECT (b): the restraint is right in principle, and this instance of it records a false reason",
+      "exit_code": 0
+    },
+    {
+      "command": "read the LESSONS.md rules for how an entry moves, against the L-0001 entry at the pinned digest  # ADMITTED is honest, since a check passes for it. Nothing claims RATIFIED and the entry says ratification is Bdo's. By the same rules the check also runs inside scripts/verify.py, which that file defines as EFFECTIVE, and the four standings are declared not to collapse. The entry records only ADMITTED. DEFECT (f), an under-claim rather than an over-claim",
+      "exit_code": 0
+    }
+  ]
+}

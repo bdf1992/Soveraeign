@@ -1,0 +1,119 @@
+{
+  "registry_schema": "soveraeign-principal-registry/v1",
+  "status": "PROPOSED",
+  "root_principal": "principal:bdo",
+  "principals": [
+    {
+      "principal_id": "principal:bdo",
+      "kind": "HUMAN",
+      "durability": "DURABLE",
+      "controller": null,
+      "anchor": {"kind": "decision", "reference": "decisions/0001-founding-boundary.md"},
+      "crossing_class": "in-node",
+      "model": null,
+      "delegation": null,
+      "claim": {
+        "claimed_at": "2026-08-22T00:00:00Z",
+        "claim_basis": "seated by decisions/0001; occupies the root seat (decisions/0020)",
+        "verification": "UNVERIFIED"
+      },
+      "verification_channel": {
+        "kind": "console-session",
+        "reference": "the interactive session Bdo operates"
+      },
+      "revoked": null
+    },
+    {
+      "principal_id": "principal:claude-opus-5",
+      "kind": "MODEL",
+      "durability": "DURABLE",
+      "controller": "principal:bdo",
+      "anchor": {
+        "kind": "model-binding",
+        "reference": "CLAUDE.md host binding; BYOM.md (declared, no adapter)"
+      },
+      "crossing_class": "provider-boundary",
+      "model": {"model_id": "claude", "model_version": "opus-5", "lineage": null},
+      "delegation": null,
+      "claim": {
+        "claimed_at": "2026-08-26T00:00:00Z",
+        "claim_basis": "the model this node's interactive sessions currently run on",
+        "verification": "UNVERIFIED"
+      },
+      "verification_channel": {
+        "kind": "local-file",
+        "reference": ".local/challenges/ (gitignored runtime state)"
+      },
+      "revoked": null
+    },
+    {
+      "principal_id": "principal:claude-fable-5",
+      "kind": "MODEL",
+      "durability": "DURABLE",
+      "controller": "principal:bdo",
+      "anchor": {
+        "kind": "model-binding",
+        "reference": "reports/2026-08-23-seat-adoption.md; BYOM.md (declared, no adapter)"
+      },
+      "crossing_class": "provider-boundary",
+      "model": {"model_id": "claude", "model_version": "fable-5", "lineage": null},
+      "delegation": null,
+      "claim": {
+        "claimed_at": "2026-08-23T00:00:00Z",
+        "claim_basis": "the model that carried the founding sessions",
+        "verification": "UNVERIFIED"
+      },
+      "verification_channel": {
+        "kind": "local-file",
+        "reference": ".local/challenges/ (gitignored runtime state)"
+      },
+      "revoked": null
+    },
+    {
+      "principal_id": "principal:qwen3-4b",
+      "kind": "MODEL",
+      "durability": "DURABLE",
+      "controller": "principal:bdo",
+      "anchor": {
+        "kind": "model-binding",
+        "reference": "adapters/ollama/bindings/qwen3-4b.json"
+      },
+      "crossing_class": "in-node",
+      "model": {"model_id": "qwen3", "model_version": "4b", "lineage": null},
+      "delegation": null,
+      "claim": {
+        "claimed_at": "2026-08-24T00:00:00Z",
+        "claim_basis": "owner-supplied local model with a declared binding and an adapter",
+        "verification": "UNVERIFIED"
+      },
+      "verification_channel": {
+        "kind": "local-file",
+        "reference": "adapters/ollama/invoke.py resolves provenance from the live runtime"
+      },
+      "revoked": null
+    },
+    {
+      "principal_id": "principal:gpt-oss-20b",
+      "kind": "MODEL",
+      "durability": "DURABLE",
+      "controller": "principal:bdo",
+      "anchor": {
+        "kind": "model-binding",
+        "reference": "adapters/ollama/bindings/gpt-oss-20b.json"
+      },
+      "crossing_class": "in-node",
+      "model": {"model_id": "gpt-oss", "model_version": "20b", "lineage": null},
+      "delegation": null,
+      "claim": {
+        "claimed_at": "2026-08-24T00:00:00Z",
+        "claim_basis": "owner-supplied local model with a declared binding and an adapter",
+        "verification": "UNVERIFIED"
+      },
+      "verification_channel": {
+        "kind": "local-file",
+        "reference": "adapters/ollama/invoke.py resolves provenance from the live runtime"
+      },
+      "revoked": null
+    }
+  ]
+}

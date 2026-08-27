@@ -65,7 +65,7 @@ never by reopening an identifier. This is the same demotion rule as
 `decisions/0024-open-decision-drain.md`, applied to the identifier space itself:
 history is added to, not rewritten.
 
-Genuinely owner-held questions live in `external_acceptance_holds` in
+Genuinely owner-held questions live in `owner_holds` in
 `STATUS.yaml`, which states what the hold blocks *and what it does not block*.
 `PUBLIC-CLEARANCE` is the only one today.
 

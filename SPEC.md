@@ -86,6 +86,172 @@ captured_at, captured_by
 The bytes resolved by `source_address` must match `payload_digest` before a
 reading begins.
 
+The six governed asset objects sit on one plane of five, and a fact belongs to
+the narrowest identity for which it stays true. **Governed** says what the thing
+is and what constitutes its state. **Representation** says what kind of content
+state this is. **Placement** says where a constituent appears in one whole state.
+**Source** says where a thing was observed or obtained. **Custody** says where
+the exact bytes are.
+
+A file is a representation and a placement, not an identity every asset must
+hold, and no object below acquires a file's properties by having been captured
+from one. Metadata is likewise not an object class: a metadata statement targets
+the narrowest governed or observed subject for which it remains true, and
+governed descriptions continue to travel through `submit_proposal` and `ratify`
+rather than through a generic bag.
+
+#### `Asset`
+
+```text
+asset_id, asset_type_id, label, created_at, created_by
+```
+
+An asset is a governed identity, not bytes. It holds no payload of its own:
+every byte an asset carries is reached through a part version and that version's
+custody reference. Descriptive facts that stay true when every byte, path and
+representation changes belong to the asset; facts true only of one whole state
+belong to an `AssetVersion`. An `asset_type_id` naming no declared `AssetType`
+is refused `TYPE_UNDECLARED`.
+
+#### `AssetType`
+
+```text
+asset_type_id, label, spec, declared_at, declared_by
+
+spec: part_roles: [ part_role, required: true | false ],
+      admitted_representations, required_description_fields
+```
+
+A declared schema an asset is held to. It declares the constituent roles a
+version must carry and which are optional, which representations are admitted,
+and which descriptive fields a description supplies. A type is declared before
+an asset names it. A media type, a filename suffix and a magic-number reading
+are evidence a declaration may cite; none is authority, and none may stand in
+for a declared type. Redeclaring an `asset_type_id` is refused `STALE_STATE`.
+
+#### `AssetVersion`
+
+```text
+version_id, asset_id, predecessor_version_id, entries, content_digest,
+derivation: null | derivation_record,
+created_at, created_by
+
+entry: part_id, part_version_id, placement
+
+placement: logical_path
+```
+
+An immutable state of a whole asset: which constituents it contained, the exact
+content state of each, and where each was placed. The entry count is not bounded
+at one, and no transition may assume a single payload. `content_digest` is
+computed over the entry set, so a version has one address without any
+constituent losing its own.
+
+Placement belongs to the entry and never to the part version. Where a
+constituent sits is a fact about one composition, not about a content state, so
+moving a constituent produces a new asset version over the same part version and
+never a new content state.
+
+Lineage and derivation are orthogonal and are never collapsed into one exclusive
+value. `predecessor_version_id` says which state this version supersedes;
+`derivation` says which versions it was produced from. A version may carry both,
+either or neither, and `ORIGINAL`, `REVISION` and `DERIVATIVE` are read off those
+two fields rather than stored as a mutually exclusive role.
+
+A version is judged against its asset's `AssetType` when it is recorded, not when
+it is read back. Changing, adding, removing or moving any entry produces a new
+version and leaves the predecessor's entries resolvable (C15).
+
+#### `AssetPart`
+
+```text
+part_id, asset_id, part_role, declared_at
+```
+
+A constituent identity inside one asset - the source, the printable, the
+transcript. `part_role` is the stable type-governed slot this constituent
+occupies, declared by the asset's `AssetType` and not arbitrary description. A
+part is not a file: a filename, a logical path, a locator and a source address
+are placement or observation, and none of them is the part's identity (C10).
+
+A part identity is preserved across a known rename. A rename changes a placement
+or a source locator and does not by itself mint a part, a content state or an
+asset.
+
+Resolution binds captured bytes to a part and is an attributed act, never a
+derivation. A matching digest, an unchanged locator and a source observation are
+evidence a resolution may cite; no one of them constitutes identity, and byte
+equality never does. Where the evidence does not make one part unique,
+resolution takes a declared default, records the evidence it used and that it
+defaulted, never blocks the operation, and never becomes a judgement claim; a
+counter-record overrides it.
+
+#### `AssetPartVersion`
+
+```text
+part_version_id, part_id, payload_address, content_digest, size,
+representation, created_at, created_by
+
+representation: media_type, format, encoding, dimensions, declared_properties
+```
+
+An immutable content state of one constituent, resolving to exactly one addressed
+payload. `representation` carries only what is intrinsic to that content state;
+anything true of where it sits belongs to a placement, and anything true of where
+it came from belongs to a `SourceObservation`. `payload_address` and
+`content_digest` are a custody reference and nothing more: whether that address
+resolves to a single blob, to a manifest of chunks or to some later
+content-addressed form is decided below this contract and never changes an asset
+version. A read refuses `PAYLOAD_ABSENT` or `DIGEST_MISMATCH` when the address
+does not resolve or does not agree with `content_digest`.
+
+A part version belongs to its part and therefore to one asset. Two part versions
+in different assets may carry the same `payload_address`; that is shared custody
+of immutable bytes, not shared identity and not a shared record.
+
+#### `SourceObservation`
+
+```text
+observation_id, source_id, part_version_id, observed_at, observed_by, evidence
+```
+
+An attributed record that a declared `Source` was observed to carry this content
+state. Many observations may point at one part version: the same bytes reached
+through a local path, an archive, an object store and another asset's import are
+four observations of one content state, not four content states.
+
+An observation is provenance and never constitutive. A source that moves,
+renames, disappears or mutates changes no part version, no part and no asset.
+`Source` already occupies this plane; `source_address` and the capture digest
+stay there and are not restated here.
+
+#### `AssetVersionDiff`
+
+```text
+from_version_id, to_version_id, changes
+
+change: part_id,
+        kind: ADDED | REMOVED | MOVED | CHANGED | MOVED_AND_CHANGED,
+        from_part_version_id, to_part_version_id,
+        from_placement, to_placement,
+        resolution: EXACT | DEFAULTED
+```
+
+The difference between two versions of one asset. It is a projection under the
+Projection rule below: derivable from the two entry sets and part identities
+alone, rebuilt rather than trusted, and never an authoritative record.
+
+Every kind is decided by identity, never by bytes. `MOVED` is the same
+`part_version_id` under a different placement; `CHANGED` is a different
+`part_version_id` under the same placement; `MOVED_AND_CHANGED` is both.
+`ADDED` and `REMOVED` are a `part_id` present on one side only. An equal
+`payload_address` never establishes that two entries are the same thing moving,
+because two content states may legitimately hold identical bytes. Because part
+identity is separate from every path that names it, a diff reporting a rename as
+a removal plus an addition is wrong, not merely coarse. `resolution` reports how
+the part behind the change was bound: `DEFAULTED` only where the evidence did not
+make one part unique.
+
 #### `Reader`
 
 ```text
@@ -374,6 +540,22 @@ Human and model bindings may present different projections, but they must:
 
 Parity is tested by equivalent operations and reconciled receipts, not by
 pixel or response-format identity.
+
+### Operation granularity
+
+An operation's subject count is not bounded at one. One declared act over four
+hundred subjects is one plan, one authority check, and one terminal receipt
+carrying four hundred emitted record addresses - never four hundred operations.
+An interface that requires a separate confirmation per subject for a single
+declared act has not met parity, whichever binding it serves. A model given one
+instruction and a human working one surface are held to the same rule.
+
+A plan declares before the act begins what a partial result means: whether a
+refused subject refuses the whole operation and commits nothing, or whether each
+subject's outcome is recorded and the operation settles on the terms declared.
+The terminal outcome describes the operation and never a subject. `OperationPlan`
+carries no field for that declaration today, so a multi-subject plan cannot yet
+state its own partial-result terms.
 
 ## Projection rule
 

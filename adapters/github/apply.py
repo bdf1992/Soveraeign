@@ -23,23 +23,28 @@ from typing import Any
 import argparse
 import json
 import shutil
-import string
 import subprocess
 import sys
 
+# ``adapters/`` is not an importable package, so the sibling proof module is reached the
+# way ``plan.py`` reaches ``scripts/``: by path, before the import. Without this the
+# crossing only imports when some other module happens to have put this directory on the
+# path first, which is how it looked working while failing in isolation.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from proofs import (  # noqa: E402
+    AUTOMATIC_BRANCH_AUTHORITY,
+    CrossingRefusal,
+    automatic_branch_basis,
+    body_write_basis,
+)
+
 #: The write actions this crossing admits. An action kind absent from this table is
 #: refused by name; the adapter never falls through to a generic GitHub call.
-ADMITTED = ("LABEL_ADD", "LABEL_REMOVE", "LABEL_CREATE", "BRANCH_DELETE")
-AUTOMATIC_BRANCH_AUTHORITY = "merged-pull-request-retirement"
-
-
-class CrossingRefusal(RuntimeError):
-    """The write crossing declined to act and must refuse visibly."""
-
-    def __init__(self, code: str, detail: str) -> None:
-        super().__init__(detail)
-        self.code = code
-        self.detail = detail
+ADMITTED = (
+    "LABEL_ADD", "LABEL_REMOVE", "LABEL_CREATE", "BRANCH_DELETE", "BODY_SET", "COMMENT_ADD",
+)
+BODY_WRITE_AUTHORITY = "owner-directed-body-write"
 
 
 def _now() -> str:
@@ -54,17 +59,6 @@ def _run(command: list[str]) -> tuple[int, str]:
     result = subprocess.run(command, capture_output=True, text=True, check=False)
     output = ((result.stdout or "") + (result.stderr or "")).strip()
     return result.returncode, output
-
-
-def _json(command: list[str], reason: str) -> Any:
-    """Run a read needed to prove an effect and decode its JSON or refuse."""
-    code, output = _run(command)
-    if code:
-        raise CrossingRefusal("AUTHORITY_PROOF_UNAVAILABLE", f"{reason}: {output[:240]}")
-    try:
-        return json.loads(output)
-    except json.JSONDecodeError as error:
-        raise CrossingRefusal("AUTHORITY_PROOF_INVALID", f"{reason}: {error}") from error
 
 
 def plan(action: dict[str, Any], repo: str) -> list[str]:
@@ -89,97 +83,41 @@ def plan(action: dict[str, Any], repo: str) -> list[str]:
             raise CrossingRefusal("MALFORMED_TARGET", f"{target!r} is not an issue reference")
         flag = "--add-label" if kind == "LABEL_ADD" else "--remove-label"
         return ["gh", "issue", "edit", number, "--repo", repo, flag, argument]
+    if kind in ("BODY_SET", "COMMENT_ADD"):
+        number = target.lstrip("#")
+        if not number.isdigit():
+            raise CrossingRefusal("MALFORMED_TARGET", f"{target!r} is not an issue reference")
+        if not Path(argument).is_file():
+            raise CrossingRefusal("BODY_SOURCE_MISSING", f"{argument} is not a readable file")
+        # --body-file, never --body: ticket text carries backticks, braces, and newlines that
+        # an argv round-trip through a shell would mangle silently.
+        if kind == "COMMENT_ADD":
+            # A comment appends; it never replaces the body, and the scope carries no verb
+            # that removes one, so this is the one admitted write with no inverse.
+            return ["gh", "issue", "comment", number, "--repo", repo, "--body-file", argument]
+        return ["gh", "issue", "edit", number, "--repo", repo, "--body-file", argument]
     if argument.startswith(("refs/", "-")):
         raise CrossingRefusal("MALFORMED_TARGET", f"{argument!r} is not a plain branch name")
     return ["gh", "api", "-X", "DELETE", f"repos/{repo}/git/refs/heads/{argument}"]
 
 
-def _automatic_branch_basis(action: dict[str, Any], repo: str) -> str:
-    """Re-prove the exact merged PR and unchanged ref before automatic retirement."""
-    if action.get("kind") != "BRANCH_DELETE":
-        raise CrossingRefusal(
-            "AUTOMATION_NOT_ADMITTED", "automatic authority admits BRANCH_DELETE only"
-        )
-    extra = action.get("extra") or {}
-    number = str(extra.get("pr_number", ""))
-    head_sha = str(extra.get("head_sha", ""))
-    base_ref = str(extra.get("base_ref", ""))
-    branch = str(action.get("argument", ""))
-    if not number.isdigit() or not base_ref:
-        raise CrossingRefusal("AUTOMATION_PROOF_MALFORMED", "PR number and base ref are required")
-    if len(head_sha) != 40 or any(char not in string.hexdigits for char in head_sha):
-        raise CrossingRefusal("AUTOMATION_PROOF_MALFORMED", "head SHA must be a 40-digit hex SHA")
+def _authority(action: dict[str, Any], repo: str) -> tuple[str, dict[str, str]]:
+    """Resolve the authority basis for this attempt, refusing unknown claims.
 
-    pull = _json(["gh", "api", f"repos/{repo}/pulls/{number}"], f"read PR #{number}")
-    observed = {
-        "merged": bool(pull.get("merged")),
-        "branch": ((pull.get("head") or {}).get("ref")),
-        "head_sha": ((pull.get("head") or {}).get("sha")),
-        "head_repo": (((pull.get("head") or {}).get("repo") or {}).get("full_name")),
-        "base_ref": ((pull.get("base") or {}).get("ref")),
-    }
-    expected = {
-        "merged": True,
-        "branch": branch,
-        "head_sha": head_sha,
-        "head_repo": repo,
-        "base_ref": base_ref,
-    }
-    if observed != expected:
-        raise CrossingRefusal(
-            "AUTOMATION_PROOF_MISMATCH",
-            f"PR #{number} no longer proves this retirement: {observed!r}",
-        )
-
-    repository = _json(["gh", "api", f"repos/{repo}"], "read repository default branch")
-    default_branch = repository.get("default_branch")
-    if not isinstance(default_branch, str) or not default_branch:
-        raise CrossingRefusal(
-            "AUTHORITY_PROOF_INVALID", "repository returned no usable default branch"
-        )
-    if branch == default_branch:
-        raise CrossingRefusal(
-            "PROTECTED_BRANCH",
-            f"{branch} is the repository default branch and is never automatically retired",
-        )
-
-    live_ref = _json(
-        ["gh", "api", f"repos/{repo}/git/ref/heads/{branch}"],
-        f"read live ref refs/heads/{branch}",
-    )
-    live_name = live_ref.get("ref")
-    live_sha = (live_ref.get("object") or {}).get("sha")
-    if live_name != f"refs/heads/{branch}" or live_sha != head_sha:
-        raise CrossingRefusal(
-            "BRANCH_HEAD_MOVED",
-            f"refs/heads/{branch} no longer points at merged head {head_sha}; "
-            f"observed {live_name!r} at {live_sha!r}",
-        )
-
-    children = _json(
-        ["gh", "pr", "list", "--repo", repo, "--state", "open", "--base", branch,
-         "--json", "number"],
-        f"check whether {branch} is still a stack base",
-    )
-    if children:
-        numbers = ", ".join(f"#{item['number']}" for item in children)
-        raise CrossingRefusal(
-            "STACK_BASE_LIVE",
-            f"{branch} still bases open pull request(s) {numbers}; retarget them before retirement",
-        )
-    return (
-        f"owner-directed automatic retirement; live PR #{number}, default-branch, "
-        "head-ref, and stack proofs revalidated"
-    )
-
-
-def _authority(action: dict[str, Any], repo: str) -> str:
-    """Resolve the authority basis for this attempt, refusing unknown automation claims."""
+    Returns the basis and any extra facts the proof produced for the receipt.
+    """
     basis = (action.get("extra") or {}).get("authority_basis")
     if basis is None:
-        return "one owner approval, recorded per action; the adapter holds none"
+        if action.get("kind") == "BODY_SET":
+            raise CrossingRefusal(
+                "AUTHORITY_BASIS_UNKNOWN",
+                "a body write names its basis; it is never one of the unproved approvals",
+            )
+        return "one owner approval, recorded per action; the adapter holds none", {}
     if basis == AUTOMATIC_BRANCH_AUTHORITY:
-        return _automatic_branch_basis(action, repo)
+        return automatic_branch_basis(action, repo, _run), {}
+    if basis == BODY_WRITE_AUTHORITY:
+        return body_write_basis(action, repo, _run)
     raise CrossingRefusal("AUTHORITY_BASIS_UNKNOWN", f"unrecognized authority basis {basis!r}")
 
 
@@ -195,7 +133,8 @@ def execute(action: dict[str, Any], repo: str, dry_run: bool) -> dict[str, Any]:
         "attempted_at": _now(),
     }
     try:
-        receipt["authority"] = _authority(action, repo)
+        receipt["authority"], proved = _authority(action, repo)
+        receipt.update(proved)
         command = plan(action, repo)
     except CrossingRefusal as refusal:
         receipt.update(outcome="REFUSED", reason_code=refusal.code, detail=refusal.detail)

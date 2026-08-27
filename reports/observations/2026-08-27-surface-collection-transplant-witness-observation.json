@@ -1,0 +1,135 @@
+{
+  "observer_id": "urn:soveraeign:actor:sov-witness/session-f444fd",
+  "contributed_to_build": false,
+  "verdict": "DEFEATED",
+  "concern": "PR #121 (feat/surface-collection-transplant): is the transplant faithful, and is the PR's own argument - that a count is a claim and the claims are now pinned - true of the page it ships?",
+  "subject": {
+    "commits": [
+      "b5f3dad69afbb802b2d9aaa2e15eab8ca3a9bc57"
+    ],
+    "pull_request": 121,
+    "decisions": [],
+    "claims_under_test": [
+      "the mutant a prior witness found is now pinned",
+      "the count defect was five mismatched navigator controls",
+      "no rendered surface claims more than its source supports",
+      "dead code was swept"
+    ]
+  },
+  "observer_relation": {
+    "to_builder": "NONE",
+    "basis": "The building session has ended. Both the red helper and the second witness whose findings produced the repair are inside the build and cannot witness the repaired state. This observer built its own mutation campaign rather than reading the CI lane's."
+  },
+  "frozen_head": "b5f3dad69afbb802b2d9aaa2e15eab8ca3a9bc57",
+  "shared_tree_conditions": {
+    "trap": "CLAUDE.md T6",
+    "mitigation": "detached worktree, clean throughout; mutants loaded through a meta-path finder so the real files were never edited"
+  },
+  "checks": [
+    {
+      "command": "python scripts/lint.py",
+      "result": "PASS twice",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/verify.py",
+      "result": "exit 0 on five consecutive runs, 13.72 to 14.96s, 39 checks, SILVER. CI green at this SHA.",
+      "exit_code": 0
+    }
+  ],
+  "reproduced": [
+    {
+      "id": "W121-1",
+      "claim": "the prior witness's mutant is pinned",
+      "method": "applied the exact substitution by hand and ran the six surface test modules",
+      "finding": "exit 1 with 12 failures. Restored, baseline exit 0. Genuinely closed."
+    },
+    {
+      "id": "W121-2",
+      "claim": "the transplant is faithful",
+      "method": "compared every file at the transplant commit against the source pull request by blob hash, then verified the guard's arithmetic against the live interface",
+      "finding": "six of nine modules are byte-identical to the source. Every hunk in the other three is either the rename main made, the admission guard, or one new facet. The guard changes no output today - 133 declared operations, 22 not admitting the human role, none of those route-invokable - exactly as claimed. The page offers the same five invocations as the existing surface, and the module feeding that surface is unchanged."
+    },
+    {
+      "id": "W121-3",
+      "claim": "the rendered numbers are exact",
+      "method": "graded every numeric claim on the page against the interface it derives from",
+      "finding": "all ten service statlines, both footer figures, the digest, all three hero counts and the utility drawer are exact, and the navigator now agrees with its own filters on all 17 counted controls."
+    },
+    {
+      "id": "W121-4",
+      "claim": "the count defect was larger than the body states",
+      "method": "wrote an independent oracle - an HTML parser plus a re-implementation of the page's own matcher, reading the page's declared manifest and importing no module under test - and compared every counted control against what its own filter reveals, at the parent of the repair and at the head",
+      "finding": "14, not five. At the parent, 16 controls carried a count and 14 mismatched; a seventeenth carried none and gained one in the repair. At the head, 17 counted and none mismatched. The body's figure is wrong in the direction of understating the repair."
+    }
+  ],
+  "dissented": [
+    {
+      "id": "W121-D1",
+      "severity": "BLOCKING",
+      "claim_defeated": "the counts are pinned",
+      "finding": "The three harness navigator counts have no case at all. Each one's source was swapped for another's and the entire 324-case tooling suite passed, exit 0, zero failing cases. The hero presence metric's two branches can be exchanged with the same result.",
+      "consequence": "This is the defect class the change exists to repair, in the half of the page the change is named for. The root cause is one fixture: the composed render is imported by exactly one test module, and that module renders only with an unavailable session source. Nothing in the repository ever renders that page with a readable one.",
+      "what_would_have_defeated_this_finding": "one render over an available presence, which closes four findings at once"
+    },
+    {
+      "id": "W121-D2",
+      "severity": "BLOCKING",
+      "claim_defeated": "the facets describe the operations they name",
+      "finding": "Inverting one flag makes the declared query for reachable operations reveal the 128 unreachable ones and the query for unreachable reveal the 5 reachable. Confirmed by rendering under the mutant and counting: 128 against 5. The full tooling suite passes.",
+      "consequence": "No case grades a facet value against the interface fact it names.",
+      "what_would_have_defeated_this_finding": "one case comparing a facet to its source fact"
+    },
+    {
+      "id": "W121-D3",
+      "severity": "MATERIAL",
+      "claim_defeated": "the mutation lane establishes coverage",
+      "finding": "The lane passes no threshold, so it returns success at any score including zero. Its advertised per-file cap is inert: with eleven targets the effective cap is ten mutants per file. The head run reports 68 percent with 32 named survivors unrepaired and about 175 mutants never generated. This observer's own campaign produced 152 mutants for one file against the lane's ten.",
+      "consequence": "What the lane establishes is that the scorer discriminates and that 68 of 100 sampled mutants died. It establishes nothing about the survivors it named, the mutants it never generated, or any floor. The body still quotes a figure from the first push and never states the head score.",
+      "what_would_have_defeated_this_finding": "a threshold"
+    },
+    {
+      "id": "W121-D4",
+      "severity": "MATERIAL",
+      "claim_defeated": "no rendered surface claims more than its source supports",
+      "finding": "The navigator and the utility drawer put different numbers under the same three nouns on the same page from the same source, with nothing labelling the difference. The navigator counts cards and the drawer counts operations.",
+      "consequence": "The repair made each navigator count agree with its filter and thereby disagree with the drawer. Under this module's own doctrine that a count is a claim, one of those numbers is a claim about the node that the node's own interface defeats. The repair is a label, not a number.",
+      "what_would_have_defeated_this_finding": "a label distinguishing cards from operations"
+    },
+    {
+      "id": "W121-D5",
+      "severity": "MINOR",
+      "claim_defeated": "dead code was swept",
+      "finding": "One card function has zero callers anywhere - production, tests or conformance - and is the sole reason its module imports a helper. It has exactly the property the sweep used to remove two other functions, and it survived the sweep.",
+      "consequence": "The sweep's own criterion was not applied uniformly.",
+      "what_would_have_defeated_this_finding": "the grep the sweep already ran"
+    }
+  ],
+  "residuals": [
+    {
+      "id": "W121-R1",
+      "severity": "MATERIAL",
+      "finding": "The navigator-count case asserts inside a bare loop with no subtest, so it aborts at the first mismatch and can only ever report one - it cannot show the 14 it detects. Its floor admits a regression that silences 12 of the 17 counted rows."
+    },
+    {
+      "id": "W121-R2",
+      "severity": "MATERIAL",
+      "finding": "The tooling shard weight case grades the live test glob rather than a declared list, and its property is not monotonic in corpus size: it fails at plus two, three, six, seven, ten and eleven modules. The shared tree currently carries three untracked test modules from other sessions, so this check is red at that count for reasons outside the change it grades. It is a scheduling hint, so a red costs a false alarm rather than a false pass."
+    },
+    {
+      "id": "W121-R3",
+      "severity": "MINOR",
+      "finding": "One guard is unasserted: dropping a filter survives everything. Equivalent on today's data - the observer checked all 133 operations - so an unpinned guard rather than a live defect. It is the same parity argument the change makes for its own new guard, not applied here."
+    },
+    {
+      "id": "W121-R4",
+      "severity": "MINOR",
+      "finding": "Body staleness after the merge that brought main forward: a highest-decision-number claim, the lint counts, a test tally, and the mutation figure. Nothing here gates anything and the decision reasoning itself checks out."
+    }
+  ],
+  "not_examined": [
+    "whether the navigator or the drawer should change; the observer holds the repair is a label"
+  ],
+  "standing_supported": "Does not support BUILT -> WITNESSED for b5f3dad6. The transplant is faithful and everything the page renders today is exact against its sources. The change's own argument - that a count is a claim and the claims are now pinned - fails on the half of the page it is named for, because one fixture means that half is never rendered with a readable source. Whoever adopts this should start with a single composed render over an available presence, which closes four findings at once.",
+  "judgement_items": []
+}

@@ -1,0 +1,122 @@
+{
+  "observer_id": "urn:soveraeign:actor:sov-witness/session-f444fd",
+  "contributed_to_build": false,
+  "verdict": "REPRODUCED_WITH_DISSENT",
+  "concern": "PR #120 after repair: does the coverage claim hold, and were the rows the first witness found false actually repaired?",
+  "subject": {
+    "commits": [
+      "56b5a26f8db01d391adb4c88446109633ffbb431"
+    ],
+    "pull_request": 120,
+    "decisions": [],
+    "claims_under_test": [
+      "the report names every ref carrying commits the trunk lacked when it was written",
+      "commit e51f881 repaired every row the independent witness found false",
+      "no disposition destroys the evidence it rests on"
+    ]
+  },
+  "observer_relation": {
+    "to_builder": "NONE",
+    "basis": "A second, separate witness. The first witness's findings shaped this repair and it is inside the build. This one was told the builder's dispute explicitly and instructed to take neither number and derive its own."
+  },
+  "frozen_head": "56b5a26f8db01d391adb4c88446109633ffbb431",
+  "shared_tree_conditions": {
+    "trap": "CLAUDE.md T6",
+    "mitigation": "isolated detached worktree, clean before and after both runs, removed at the end"
+  },
+  "checks": [
+    {
+      "command": "python scripts/lint.py",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/verify.py",
+      "result": "all 39 checks pass by exit verdict on both runs; process exit 1 solely on the wall-clock budget at 17.204s and 15.113s on a box holding 78 worktrees. CI reports both required repository checks SUCCESS on this head.",
+      "exit_code": 0
+    }
+  ],
+  "reproduced": [
+    {
+      "id": "BD2-1",
+      "claim": "the coverage claim now holds",
+      "method": "enumerated refs/heads and refs/remotes separately against both current main and the report's own frozen trunk, dated every ref by earliest reflog entry with the cutoff set at the report's first commit, then set-differenced against every branch name literally present in the report",
+      "finding": "zero unmentioned refs predating the cutoff, in either class. The builder's numbers reproduce exactly rather than approximately: the 15 branches named carry 71 commits against the frozen trunk, and all 15 have reflog entries predating the cutoff. The cutoff is insensitive to the author-versus-committer ambiguity - no ref falls in the sixty-second window between the two candidate values."
+    },
+    {
+      "id": "BD2-2",
+      "claim": "the earlier 32-of-58 figure is reconciled rather than contradicted",
+      "method": "compared the earlier reading against the repair and dated every remaining unmentioned ref by two independent signals",
+      "finding": "32 unmentioned at the earlier reading, 15 added by the repair, 17 remaining today - and all 17 have both a reflog creation and a tip committer date after the cutoff, so they are drift. Two independent signals agree on all 17. The builder's dispute is vindicated and the earlier headline does not survive a cutoff."
+    },
+    {
+      "id": "BD2-3",
+      "claim": "the local gap is zero",
+      "method": "enumerated local refs ahead of the frozen trunk at report time and checked each for mention",
+      "finding": "29 local refs were ahead, and they reconcile exactly to the report's own account: 18 dispositioned, 9 reserved with refs, the report's own branch, and local main which the report states was stale. Nothing local is missing."
+    },
+    {
+      "id": "BD2-4",
+      "claim": "no disposition destroys the evidence it rests on",
+      "method": "ran the unreachable-commit count for all 18 dispositioned rows, the 9 retire-eligible branches, and the 3 carriers the retire rows depend on",
+      "finding": "all 30 returned zero. This is the strongest part of the report and it reproduces. One re-derivation the report could not have made: a carrier branch has since lost its remote ref but still returns zero, because its commits reached main through a merge - so relying on it stays safe, for a different reason than the report gives."
+    }
+  ],
+  "dissented": [
+    {
+      "id": "BD2-D1",
+      "severity": "BLOCKING",
+      "claim_defeated": "the report's account of which branches are live",
+      "finding": "feat/human-collection-substrate is still named among ten branches being worked by live sessions right now. It has no ref, local or remote. Its tip was recovered from a stale FETCH_HEAD and carries 9 commits that reach no ref at all.",
+      "consequence": "Those 9 commits are garbage-collectable. The report's assertion that the branch is actively worked is precisely the statement that would stop a reader looking for them. This session verified the count independently and created a local ref, rescue/human-collection-substrate, so every commit is now reachable; that is preservation and reverses with a branch deletion, not a disposition.",
+      "what_would_have_defeated_this_finding": "a ref for that name anywhere, or a row recording it as lost"
+    },
+    {
+      "id": "BD2-D2",
+      "severity": "MATERIAL",
+      "claim_defeated": "the commit claim to have repaired every row the witness found false",
+      "finding": "Three rows are still false. One asserts main still defaults a parameter to a literal - true at the declared frozen trunk, false at current main, where a docstring narrates the removal. One directs absorption into a pull request that merged before the report's last two commits. One is the phantom branch above.",
+      "consequence": "The absorption row became more false through the builder's own later work: the branch's final commit merges main, which contains the very merge that closed the target. The evidence was in the tree.",
+      "what_would_have_defeated_this_finding": "re-reading the three cited facts after the merge"
+    },
+    {
+      "id": "BD2-D3",
+      "severity": "MATERIAL",
+      "claim_defeated": "the change introduces nothing the contract forbids",
+      "finding": "The report commits 12 distinct local absolute paths under the owner's home directory. AGENTS.md, under Secrets and local boundaries, says never commit local absolute paths. There is no precedent: the same search against main returns nothing.",
+      "consequence": "lint returns PASS - the hygiene check that owns this rule cannot see this class, which is the same defect the night has been cataloguing. Public release clearance is still an open owner hold, so committing the owner's home-directory layout is publication-relevant.",
+      "what_would_have_defeated_this_finding": "a lint rule for the class, or repository-relative paths"
+    },
+    {
+      "id": "BD2-D4",
+      "severity": "MINOR",
+      "claim_defeated": "the added limitation sentence is accurate",
+      "finding": "The narrow claim holds - the enumeration walked local refs only. But the sentence says it never looked at a remote-tracking ref, while the report cites three reads that do: an unreachable-commit count taking every remote-tracking ref as its operand, a frozen trunk that is itself a remote-tracking ref, and a prescribed defeating test against it. A companion claim that every comparison used a local ref walk is disproved by the phantom branch, which had no ref to walk.",
+      "consequence": "The limitation is literally false exactly where it is trying to be honest.",
+      "what_would_have_defeated_this_finding": "saying the enumeration walked local refs, rather than that nothing remote was read"
+    },
+    {
+      "id": "BD2-D5",
+      "severity": "MINOR",
+      "claim_defeated": "the withdrawal reaches the claim it withdraws",
+      "finding": "The withdrawal names the report's title, which carries no such claim. The text carrying 'every outstanding branch' is the pull request title and the first commit's message, both unchanged and still live.",
+      "consequence": "The overstated claim remains where a reader meets it first.",
+      "what_would_have_defeated_this_finding": "editing the pull request title"
+    }
+  ],
+  "residuals": [
+    {
+      "id": "BD2-R1",
+      "severity": "MINOR",
+      "finding": "The report's count of branches ahead of the trunk does not reproduce: 29 local refs were ahead at report time, and the stated figure counts only the dispositioned set while ignoring the ten reserved branches the report itself lists as ahead."
+    }
+  ],
+  "not_examined": [
+    "whether the rescued commits should be kept, landed or abandoned"
+  ],
+  "standing_supported": "Does not support BUILT -> WITNESSED for 56b5a26. The coverage arithmetic reproduces exactly and the builder's dispute is vindicated; the safety claim reproduces across all 30 branches tested. The dissent is on the artifact rather than the arithmetic: a commit claiming to repair every false row left three false, one of them the statement standing between a reader and 9 unreferenced commits, and the change introduces a contract violation the builder did not report and lint cannot see.",
+  "judgement_items": [
+    "Does committing local absolute paths under the owner's home directory clear AGENTS.md Secrets and local boundaries, given that public release clearance is still an open owner hold? If a worktree table needs those paths to be useful, is a redacted or repository-relative form acceptable, and should lint grow a check for the class so the next one is caught by measurement rather than by a witness reading prose?",
+    "The 9 rescued commits are preserved on a local ref but reach no remote. Whether to land, push or abandon them is owned by nobody: the session that made them is gone, and the concern that named the branch merely records it."
+  ]
+}

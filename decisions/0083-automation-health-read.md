@@ -22,10 +22,12 @@ step one of it: the read. The switching surface is deliberately not built.
 
 **1. A health reading is derived from records, and a rule that has no case does not
 exist.** `contracts/automation-health.json` declares nine rules, four readings, and
-five run statuses. `conformance/fixtures/automation-health/cases.json` holds
-twenty-eight cases; every rule carries at least one that proves it fires and one that
-proves it stays quiet with its own inputs in front of it, and every declared
-threshold is bounded by a case sitting exactly on it and a case one step inside.
+five run statuses. `conformance/fixtures/automation-health/cases.json` carries, for
+every rule, at least one case that proves it fires and one that proves it stays quiet
+with its own inputs in front of it; for every declared threshold, a case sitting
+exactly on it and a case one step inside; and for each selector a witness enumerated,
+a case that holds it. No count is stated here, because the commits that add cases are
+the commits that would have to remember to restate it.
 `scripts/sovschedule/rules.py` holds the arithmetic and nothing else; the severity,
 the thresholds, and whether a rule applies to a switched-off schedule all come from
 the table, and a rule declared there with no derivation raises rather than passing as
@@ -70,9 +72,11 @@ back on with the failure unaddressed and nothing having reported it.
 **5. The reading layer is separable from where the records live, and the seam is one
 module.** `scripts/sovschedule/history.py` is the only thing that knows the records
 are `.claude/schedules/*.json` and `.local/schedules/ledger.ndjson`. Moving this onto
-Console surface 3, reading what `services/automation/` owns, replaces that module and
-leaves the rules, the table, and the fixture corpus untouched. Bdo ruled the
-placement in the request and this decision does not reopen it.
+Console surface 3 replaces that module and leaves the rules, the table, and the fixture
+corpus untouched. The Automation Service that would own those records is packet A7 -
+presented, not accepted, and not committed when this was written; naming it here is a
+forward reference and is marked as one in the contract. Bdo ruled the placement in the
+request and this decision does not reopen it.
 
 **6. The page is graded in two halves, and the half that cannot be graded says so.**
 `docs/automation.html` is rendered the way the other three pages are, and
@@ -102,8 +106,9 @@ taste.
   and a walk that hits the cap fires on its own. Without that a weekly schedule
   dead for six weeks reads healthy on six days in seven.
 - A run that returned zero and wrote no completion report is `DEGRADED`
-  (`EMPTY_RUN`). Every declaration's prompt asks for one; a run that spends budget
-  and produces nothing is the refusal loop's quieter twin.
+  (`EMPTY_RUN`), read off the newest run that passed. Every declaration's prompt asks
+  for one; a run that spends budget and produces nothing is the refusal loop's quieter
+  twin.
 - Declarations are read one file at a time. `load_all` raises on the first file it
   refuses, which would mean one dead target blinding the reader to every other
   schedule — on a surface whose whole job is to say which ones are broken.
@@ -124,8 +129,15 @@ nothing records when a schedule was switched on, so `ENABLED_NEVER_RUN` fires th
 moment it is enabled rather than after a grace period; a forced manual run silences
 that rule for ever even if the host tick was never registered, which `OVERDUE` covers
 only from the next cadence onward; the executor's exit code is displayed and no rule
-keys on it; and a `REPORTED` event whose run has no attempt is skipped in silence, so
-a truncated ledger reads as fewer runs rather than as an incoherent record.
+keys on it; a `REPORTED` event whose run has no attempt is skipped in silence, so a
+truncated ledger reads as fewer runs rather than as an incoherent record; and the page
+and the command can disagree, because one is a projection of `HEAD` and the other reads
+what is on disk.
+
+There is no claim here that the corpus defeats every possible mutation. It defeats
+every rule and every threshold, and that is checked rather than asserted; it defeats
+the three selectors a witness enumerated, because that witness enumerated them. Nobody
+has shown the coverage is complete and this record does not say it is.
 
 ## What still waits on Bdo
 

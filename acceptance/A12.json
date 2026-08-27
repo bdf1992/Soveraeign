@@ -1,7 +1,7 @@
 {
   "packet_schema": "soveraeign-acceptance-packet/v1",
   "packet_id": "A12",
-  "claim": "You can now look at one place and know whether your automations are alive. Seven schedules were declared, all seven switched off, and nothing had ever run - so the honest reading is UNOBSERVED, not green, and the surface says so rather than reporting an empty record set as healthy. Nine health rules are declared in a contract and defeated by twenty-eight cases; every rule has one case proving it fires and one proving it stays quiet with its own inputs in front of it, and every threshold is pinned by a case sitting exactly on it. An unhealthy automation now fails the build, which is the only alert Phase I admits. What waits on you is one thing: whether this read is the right read, because step two - switching a schedule on or off without editing JSON - is deliberately not built until you say so.",
+  "claim": "You can now look at one place and know whether your automations are alive. Every schedule was declared switched off and nothing had ever run - so the honest reading is UNOBSERVED, not green, and the surface says so rather than reporting an empty record set as healthy. Nine health rules are declared in a contract and defeated by a fixture corpus: one case proving each rule fires, one proving it stays quiet with its own inputs present, one sitting exactly on each declared threshold and one a step inside it. An unhealthy automation now fails the build, which is the only alert Phase I admits. What waits on you is one thing: whether this read is the right read, because step two - switching a schedule on or off without editing JSON - is deliberately not built until you say so.",
   "subject": {
     "artifact": "contracts/automation-health.json",
     "from_standing": "OPEN",
@@ -33,7 +33,7 @@
     {
       "address": "conformance/fixtures/automation-health/cases.json",
       "digest": null,
-      "says": "twenty-eight cases stating facts rather than reading the ledger, so the rules can be defeated on a machine where no scheduled run has ever happened - which is every machine this repository exists on. H-021 is the one worth reading: a weekly schedule dead for six weeks, which the first draft reported as healthy on six days in seven"
+      "says": "cases stating facts rather than reading the ledger, so the rules can be defeated on a machine where no scheduled run has ever happened - which is every machine this repository exists on. H-021 is the one worth reading: a weekly schedule dead for six weeks, which the first draft reported as healthy on six days in seven"
     },
     {
       "address": "scripts/sovschedule/rules.py",
@@ -48,7 +48,7 @@
     {
       "address": "scripts/tests/test_automation_health.py",
       "digest": null,
-      "says": "twenty-nine cases: the corpus, the couplings a corpus cannot state - that the runner's own refusal wording is what the reader parses - and the page checks, including a ledger appearing after the page was rendered"
+      "says": "the corpus, the couplings a corpus cannot state - that the runner's own refusal wording is what the reader parses - and the page checks, including a ledger appearing after the page was rendered and one case for each of the four inputs the page's declared half is built from"
     },
     {
       "address": "decisions/0083-automation-health-read.md",
@@ -72,7 +72,9 @@
     "Step two - switching a schedule on or off with a record of who changed it and when - is not built. Your request says it waits on you saying this read is right, and it does.",
     "Nothing records when a schedule was enabled, so ENABLED_NEVER_RUN fires the moment you switch one on rather than after a grace period. The grace window belongs in step two, keyed on the timestamp step two would record.",
     "No rule fires on the executor's exit code. It is parsed and shown, because 124 is a timeout and 127 is claude not being on the machine, and without it an environment fault reads as a schedule fault. A person looking at the row is the reader for now.",
-    "Independent observation. A helper subagent read the contract, the corpus and the modules while they were being built and found twelve defects, all repaired in place - a weekly schedule dead for six weeks reading healthy, a run whose whole history was refusals reading healthy, and next-due times five hours wrong on your clock among them. That helper was inside the build and cannot witness it. A separate witness ran against the frozen commit and its verdict is what this packet owes before anything here is called WITNESSED."
+    "The page is a projection of HEAD and the command reads what is on disk, so the two can disagree about a schedule you have written and not committed. Both say which they read.",
+    "The corpus is not proven complete. It defeats every rule and every threshold, and the threshold half is a test rather than a claim; it defeats the three selectors a witness enumerated. Nobody has shown there is nothing left, and this packet does not say so.",
+    "Independent observation. Three readers have been through this and none of them can settle it. A helper read the modules while they were being built and found twelve defects. A first witness ran against the frozen commit and dissented: the page had been rendered in the shared working tree, so the change's own check refused its own commit, and three of six thresholds were unpinned. A second witness ran against the repair and dissented again: three more inputs of the same page were still reading the working tree, and three selectors were undefended. Every one of those is repaired here. But that second witness was launched from the building session and shared its scratchpad, and said so itself - so it is a second reading, not the independent observation the landing grant requires. That observation is what this packet still owes, and it has to come from a participant this session did not start."
   ],
   "on_accept": "The read stands as the right read, and step two - the switching surface - becomes admissible work. contracts/automation-health.json moves from PROPOSED to accepted and decisions/0083 with it. Nothing is enabled by accepting this; turning a schedule on stays yours and stays undone.",
   "on_reject": "Say which rule reads wrong or which column is missing. The rules are a contract and a fixture corpus, so changing one is a case first and a code change second; nothing here is load-bearing for another concern, and reverting the commit removes the check, the page and the surface without touching the runner or the declarations."

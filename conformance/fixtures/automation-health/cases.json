@@ -1235,6 +1235,166 @@
       ],
       "expect_reading": "DEGRADED",
       "proves": "The run reports success and carries no end time, so it has a status and no duration. EMPTY_RUN read the runs that have a duration and stayed silent on this one, which a witness found: the reading was HEALTHY over a run that returned zero and produced nothing. One reader sets both fields together today, but history.py is declared a replaceable seam and the rule must not depend on that."
+    },
+    {
+      "case_id": "H-034-a-schedule-that-used-to-write-reports-and-stopped",
+      "schedule": {
+        "name": "epic-walk",
+        "enabled": false,
+        "target_exists": true,
+        "cron": "0 7 * * *",
+        "timeout_seconds": 3600,
+        "declaration_defect": null
+      },
+      "now": "2026-08-27T04:00:00Z",
+      "runs": [
+        {
+          "run_id": "epic-walk-1",
+          "attempted_at": "2026-08-25T07:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-25T07:20:00Z",
+          "report_outcome": "ATTEMPTED",
+          "exit_code": 0,
+          "outputs": [
+            "reports/2026-08-25-epic-walk.md"
+          ]
+        },
+        {
+          "run_id": "epic-walk-2",
+          "attempted_at": "2026-08-26T07:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-26T07:22:00Z",
+          "report_outcome": "ATTEMPTED",
+          "exit_code": 0,
+          "outputs": [
+            "../../.local/schedules/runs/epic-walk-2.json"
+          ]
+        }
+      ],
+      "expect_status": [
+        "PASSED",
+        "PASSED"
+      ],
+      "expect_findings": [
+        "EMPTY_RUN"
+      ],
+      "expect_reading": "DEGRADED",
+      "proves": "The older passing run wrote a report and the newer one did not, so EMPTY_RUN has to read the newest. A witness found the rule could be made to read the oldest with every case still holding - which would report a schedule as healthy for as long as its first run had written something."
+    },
+    {
+      "case_id": "H-035-a-good-run-behind-two-failures-does-not-clear-them",
+      "schedule": {
+        "name": "code-review",
+        "enabled": true,
+        "target_exists": true,
+        "cron": "0 */2 * * *",
+        "timeout_seconds": 2700,
+        "declaration_defect": null
+      },
+      "now": "2026-08-27T06:30:00Z",
+      "runs": [
+        {
+          "run_id": "code-review-0",
+          "attempted_at": "2026-08-27T02:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-27T02:20:00Z",
+          "report_outcome": "ATTEMPTED",
+          "exit_code": 0,
+          "outputs": [
+            "reports/2026-08-27-code-review.md"
+          ]
+        },
+        {
+          "run_id": "code-review-1",
+          "attempted_at": "2026-08-27T04:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-27T04:20:00Z",
+          "report_outcome": "FAILED",
+          "exit_code": 1,
+          "outputs": []
+        },
+        {
+          "run_id": "code-review-2",
+          "attempted_at": "2026-08-27T06:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-27T06:20:00Z",
+          "report_outcome": "FAILED",
+          "exit_code": 1,
+          "outputs": []
+        }
+      ],
+      "expect_status": [
+        "PASSED",
+        "FAILED",
+        "FAILED"
+      ],
+      "expect_findings": [
+        "LAST_RUN_FAILED",
+        "CONSECUTIVE_FAILURES"
+      ],
+      "expect_reading": "UNHEALTHY",
+      "proves": "The ordinary shape of a schedule that was working and just broke, and the rule that refuses has to fire on it. A witness found the window could be widened to every settled run with the corpus still green - which would mean one passing run anywhere in a schedule's history buying it permanent silence."
+    },
+    {
+      "case_id": "H-036-a-run-that-crashed-fast-is-not-the-baseline-for-the-next-one",
+      "schedule": {
+        "name": "epic-walk",
+        "enabled": false,
+        "target_exists": true,
+        "cron": "0 7 * * *",
+        "timeout_seconds": 3600,
+        "declaration_defect": null
+      },
+      "now": "2026-08-27T04:00:00Z",
+      "runs": [
+        {
+          "run_id": "epic-walk-1",
+          "attempted_at": "2026-08-24T07:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-24T07:16:40Z",
+          "report_outcome": "ATTEMPTED",
+          "exit_code": 0,
+          "outputs": [
+            "reports/2026-08-24-epic-walk.md"
+          ]
+        },
+        {
+          "run_id": "epic-walk-2",
+          "attempted_at": "2026-08-25T07:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-25T07:00:30Z",
+          "report_outcome": "FAILED",
+          "exit_code": 1,
+          "outputs": []
+        },
+        {
+          "run_id": "epic-walk-3",
+          "attempted_at": "2026-08-26T07:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-26T07:20:00Z",
+          "report_outcome": "ATTEMPTED",
+          "exit_code": 0,
+          "outputs": [
+            "reports/2026-08-26-epic-walk.md"
+          ]
+        }
+      ],
+      "expect_status": [
+        "PASSED",
+        "FAILED",
+        "PASSED"
+      ],
+      "expect_findings": [],
+      "expect_reading": "HEALTHY",
+      "proves": "1200s against the 1000s run before it is well inside the multiple and stays quiet. Count the 30s crash between them as a runtime and the comparison becomes 1200s against 30s, which fires. The table's completed_note names this hazard in prose and a witness found nothing defeating it: a flaky host would have produced a drift finding after every crash."
     }
   ]
 }

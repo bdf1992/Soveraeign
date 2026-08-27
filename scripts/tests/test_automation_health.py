@@ -267,20 +267,27 @@ class LedgerReading(unittest.TestCase):
 
 
 class LiveRepository(unittest.TestCase):
-    """The seven declarations as they stand, read through the same path as the page."""
+    """This repository's own declarations, read the way the page reads them.
+
+    At COMMIT, because that is the page's source and because the working tree of a
+    checkout eleven sessions write is not a subject a verdict can be taken over. A
+    witness found these two cases claiming the page's path and using the other one.
+    """
 
     #: Pinned so these two cases read the committed declarations and never the wall
     #: clock or whatever .local/schedules/ happens to hold on the machine running them.
     NOW = datetime(2026, 8, 27, 4, 0, tzinfo=timezone.utc)
 
     def test_every_declared_target_exists(self) -> None:
-        digest = report.assemble(ROOT, self.NOW, utc_offset=timedelta(0))
+        digest = report.assemble(ROOT, self.NOW, utc_offset=timedelta(0),
+                                 source=report.COMMIT)
         self.assertGreater(digest.counts["declared"], 0)
         missing = [row.name for row in digest.rows if not row.target_exists]
         self.assertEqual(missing, [], "a declaration points at a file that is not there")
 
     def test_the_node_reading_is_one_the_table_declares(self) -> None:
-        digest = report.assemble(ROOT, self.NOW, utc_offset=timedelta(0))
+        digest = report.assemble(ROOT, self.NOW, utc_offset=timedelta(0),
+                                 source=report.COMMIT)
         self.assertIn(digest.reading, TABLE["readings"]["order"])
         for row in digest.rows:
             self.assertIn(row.reading, TABLE["readings"]["order"])
@@ -303,6 +310,10 @@ class PageAndCheck(unittest.TestCase):
         self.path = schedules / "nightly-qa.json"
         self.write_declaration()
         self.page = self.root / "docs" / "automation.html"
+        # The page renders the rules table's own bytes, so the temporary tree has to
+        # carry it the way the repository does: committed, and read at HEAD.
+        (self.root / "contracts").mkdir()
+        shutil.copy(ROOT / "contracts" / "automation-health.json", self.root / "contracts")
         self.git("init", "-q")
         self.git("add", "-A")
         self.commit()
@@ -420,6 +431,56 @@ class PageAndCheck(unittest.TestCase):
         self.assertEqual(code, 0, out)
         self.assertIn("UNCHECKED", out)
         self.assertIn("declared half matches", out)
+
+    def _page_is_a_function_of_the_commit(self, change) -> None:
+        """Change one input in the working tree only; the page must not move.
+
+        A witness reproduced three doors the first repair left open - the schema, the
+        declared target's existence, and the rules table - each rendering a page that
+        reported PASS and that a clean checkout of the same commit refused. A door left
+        open on this is not a smaller version of the defect; it is the defect.
+
+        The exit code is deliberately not asserted. The gate reads the working tree and
+        may refuse the same change - a tightened schema really does stop a declaration
+        loading. What must hold is that the page does not move and is not called stale.
+        """
+        self.render()
+        before = self.page.read_bytes()
+        change()
+        _, out = self.check()
+        self.assertNotIn("stale", out)
+        self.assertEqual(self.render(), 0)
+        self.assertEqual(self.page.read_bytes(), before)
+
+    def test_a_moved_target_does_not_move_the_page(self) -> None:
+        self._page_is_a_function_of_the_commit(
+            lambda: self.target.rename(self.target.with_suffix(".moved")))
+
+    def test_a_working_tree_schema_edit_does_not_move_the_page(self) -> None:
+        def tighten() -> None:
+            path = self.path.parent / "schedule.schema.json"
+            raw = json.loads(path.read_text(encoding="utf-8"))
+            raw["required"] = raw["required"] + ["description"]
+            path.write_text(json.dumps(raw, indent=2) + "\n", encoding="utf-8")
+
+        self._page_is_a_function_of_the_commit(tighten)
+
+    def test_a_working_tree_rules_edit_does_not_move_the_page(self) -> None:
+        def reword() -> None:
+            path = self.root / "contracts" / "automation-health.json"
+            raw = json.loads(path.read_text(encoding="utf-8"))
+            raw["note"] = "edited in the working tree and nowhere else"
+            path.write_text(json.dumps(raw, indent=2) + "\n", encoding="utf-8")
+
+        self._page_is_a_function_of_the_commit(reword)
+
+    def test_a_moved_target_still_refuses_through_the_gate(self) -> None:
+        """The page holds still; the gate does not. That is the split, in one case."""
+        self.render()
+        self.target.rename(self.target.with_suffix(".moved"))
+        code, out = self.check()
+        self.assertEqual(code, 1)
+        self.assertIn("TARGET_MISSING", out)
 
     def test_a_declaration_change_fails_even_when_history_is_unchecked(self) -> None:
         """The split must not become a way to hide a declaration change behind a run."""

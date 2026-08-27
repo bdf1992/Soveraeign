@@ -132,6 +132,20 @@ def stamp(moment: datetime | None) -> str:
     return moment.strftime("%Y-%m-%dT%H:%M:%S") + f"{sign}{abs(total) // 60:02d}:{abs(total) % 60:02d}"
 
 
+def _table(root: Path, source: str) -> dict:
+    """The rules table from the source being read.
+
+    Its note, its rule prose and its blocking sentence are rendered into the page, so a
+    page built from the working tree copy is one a clean checkout cannot reproduce.
+    """
+    if source == COMMIT:
+        address = health.TABLE_PATH.relative_to(root.resolve()).as_posix() \
+            if health.TABLE_PATH.is_relative_to(root.resolve()) \
+            else "contracts/automation-health.json"
+        return committed.table_at_head(root, address)
+    return health.load()
+
+
 def parse_stamp(text: str) -> datetime:
     """Read back a stamp this module wrote, in UTC or in an offset clock."""
     return datetime.fromisoformat(text)
@@ -185,18 +199,27 @@ def declarations(root: Path, source: str = WORKTREE) -> list[Declared]:
     return [_load_one(path, root) for path in paths]
 
 
-def _target_present(root: Path, declared: Declared) -> bool:
+def _target_present(root: Path, declared: Declared, source: str) -> bool:
+    """Whether the declared target exists in the source being read, not on disk.
+
+    Asking the working tree while reading declarations at HEAD is what let a moved
+    workflow file put a `missing` cell and a TARGET_MISSING row into a page that a
+    clean checkout re-derives without them.
+    """
     if declared.target_kind not in ("workflow", "skill") or not declared.target_name:
         return False
-    return target_path(root, declared.target_kind, declared.target_name).is_file()
+    address = target_path(Path("."), declared.target_kind, declared.target_name).as_posix()
+    if source == COMMIT:
+        return committed.tracked_at_head(root, address)
+    return (root / address).is_file()
 
 
 def _facts(root: Path, declared: Declared, runs: list[history.Run],
-           now: datetime) -> health.Facts:
+           now: datetime, source: str) -> health.Facts:
     return health.Facts(
         name=declared.name,
         enabled=declared.enabled,
-        target_exists=_target_present(root, declared),
+        target_exists=_target_present(root, declared, source),
         cron_expression=declared.cron_expression,
         timeout_seconds=declared.timeout_seconds,
         now=now,
@@ -253,12 +276,12 @@ def assemble(root: Path, now: datetime | None = None, table: dict | None = None,
     offset = host_offset() if utc_offset is None else utc_offset
     moment = ((now or datetime.now(timezone.utc)).astimezone(timezone(offset))
               .replace(second=0, microsecond=0))
-    declared_table = table or health.load()
+    declared_table = table or _table(root, source)
     scan_days = declared_table["thresholds"]["scan_days"]
     rows = []
     for declared in declarations(root, source):
         runs = history.runs_for(root, declared.name)
-        facts = _facts(root, declared, runs, moment)
+        facts = _facts(root, declared, runs, moment, source)
         rows.append(_row(facts, declared, health.judge(facts, declared_table), scan_days))
     counts = {
         "declared": len(rows),

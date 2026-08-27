@@ -8,8 +8,14 @@ the counted state is the committed state.
 
 HEAD is materialised into a scratch directory and the ordinary loader is pointed at
 that, so every check it runs - the schema, the file stem, the declared target - is
-answered by the commit rather than by whatever is on disk at that instant. Nothing
-here writes inside the repository.
+answered by the commit rather than by whatever is on disk at that instant. The rules
+table is read at HEAD too, because its bytes are rendered into the page. Nothing here
+writes inside the repository.
+
+A witness reproduced all three of those reading the working tree in an earlier draft:
+each one rendered a page that reported PASS and that a clean checkout of the same
+commit refused. A door left open on this is not a smaller version of the defect; it
+is the defect.
 """
 
 from __future__ import annotations
@@ -59,8 +65,14 @@ def _committed_text(root: Path, address: str) -> str:
     return result.stdout
 
 
-def _tracked_at_head(root: Path, address: str) -> bool:
+def tracked_at_head(root: Path, address: str) -> bool:
+    """Whether one path exists in the commit, which is not the same as on disk."""
     return _git(root, "cat-file", "-e", f"HEAD:{address}").returncode == 0
+
+
+def table_at_head(root: Path, address: str) -> dict:
+    """The rules table as the commit holds it; its bytes are rendered into the page."""
+    return json.loads(_committed_text(root, address))
 
 
 def declarations_at_head(root: Path, load_one: Loader) -> list[Declared]:
@@ -78,7 +90,7 @@ def declarations_at_head(root: Path, load_one: Loader) -> list[Declared]:
         (scratch / ".claude" / "workflows").mkdir(parents=True)
         (scratch / ".claude" / "skills").mkdir(parents=True)
         (scratch / SCHEDULES_DIR / SCHEMA_NAME).write_text(
-            (root / SCHEDULES_DIR / SCHEMA_NAME).read_text(encoding="utf-8"),
+            _committed_text(root, (SCHEDULES_DIR / SCHEMA_NAME).as_posix()),
             encoding="utf-8", newline="")
         out = []
         for address in addresses:
@@ -97,7 +109,7 @@ def _mirror_target(root: Path, scratch: Path, local: Path) -> None:
         address = target_path(Path("."), target["kind"], target["name"]).as_posix()
     except (json.JSONDecodeError, KeyError, TypeError):
         return
-    if not _tracked_at_head(root, address):
+    if not tracked_at_head(root, address):
         return
     stub = scratch / address
     stub.parent.mkdir(parents=True, exist_ok=True)

@@ -65,6 +65,22 @@ CHECKS = (
           "recomputes each declared source digest from the file's bytes at the moment of "
           "the check; it never reads a diagram's own claim about being current",
           ("diagrams",)),
+    Check("witness receipts against the tree",
+          [sys.executable, "scripts/sov_witness_layer.py", "records"], ROOT,
+          "recomputes every digest a witness receipt declares from the subject's bytes at "
+          "the moment of the check; it reads no field in which a receipt states its own "
+          "freshness and never asks a subject whether it changed. Subject drift is reported "
+          "as debt because a receipt observes a named commit and never claimed to describe "
+          "the present; a receipt that digests nothing, or whose own probe moved, fails",
+          ("witness/observations", "scripts/sovwitness/records.py")),
+    Check("witness probes still reach",
+          [sys.executable, "scripts/sov_witness_layer.py", "probes"], ROOT,
+          "parses each probe and requires the repository paths its own source declares as "
+          "its reach to still exist, so a probe aimed at a deleted subject fails here rather "
+          "than going on producing receipts. It grades no check the probe makes, because a "
+          "probe observes and never settles. Static only: executing the probes is "
+          "`sov_witness_layer.py run`, which is out of this budget at 12.7s",
+          ("witness/probes", "scripts/sovwitness/probes.py")),
     Check("conformance oracle controls", [sys.executable, "conformance/run.py"], ROOT,
           "the oracle derives every defect from observation records and never reads a "
           "participant verdict field, and never imports participant implementation code",

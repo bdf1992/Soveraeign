@@ -1,0 +1,1061 @@
+{
+  "corpus_id": "soveraeign-automation-health-cases/v1",
+  "note": "Positive and defeating cases for contracts/automation-health.json. Every rule in that table carries at least one case that proves it fires and one that proves it stays quiet when it should, because a rule with only a firing case proves nothing about what it lets past. Runs are listed oldest first. Times are inputs to the judge, not measurements of anything, and no case reads .claude/schedules/ or the ledger - the corpus states facts so the rules can be defeated without a run ever having happened.",
+  "run_shape": "Each run states what the ledger holds: attempted_at with the ATTEMPTED event outcome, then reported_at with the REPORTED event outcome, or nulls where no REPORTED event exists, plus the exit code and the output addresses that event recorded. expect_status names the run status contracts/automation-health.json run_status derives from that pair, so the derivation is defeated here too and not only the rules above it. A schedule block also carries declaration_defect: what scripts/sovschedule/declaration.py said when it refused the file, or null when it accepted it.",
+  "cases": [
+    {
+      "case_id": "H-001-a-declaration-pointing-at-nothing-refuses-even-switched-off",
+      "schedule": {
+        "name": "ghost",
+        "enabled": false,
+        "target_exists": false,
+        "cron": "0 2 * * *",
+        "timeout_seconds": 3600,
+        "declaration_defect": "ghost.json: workflow 'sov-ghost' not found under .claude/"
+      },
+      "now": "2026-08-27T04:00:00Z",
+      "runs": [],
+      "expect_status": [],
+      "expect_findings": [
+        "TARGET_MISSING"
+      ],
+      "expect_reading": "UNHEALTHY",
+      "proves": "TARGET_MISSING fires. A dead target is broken whether or not the schedule is on: enabling it would otherwise be the moment anyone found out, and this is the one rule a machine with no run history can still evaluate. It is also the near miss for DECLARATION_REFUSED - the loader refuses this file too, and that rule stands down so one defect is not reported twice, with the loader's text carried on this finding instead so nothing is lost."
+    },
+    {
+      "case_id": "H-002-seven-declared-none-enabled-nothing-ever-run-is-not-healthy",
+      "schedule": {
+        "name": "nightly-qa",
+        "enabled": false,
+        "target_exists": true,
+        "cron": "0 2 * * *",
+        "timeout_seconds": 3600,
+        "declaration_defect": null
+      },
+      "now": "2026-08-27T04:00:00Z",
+      "runs": [],
+      "expect_status": [],
+      "expect_findings": [],
+      "expect_reading": "UNOBSERVED",
+      "proves": "TARGET_MISSING stays quiet against a target that exists, and the reading is UNOBSERVED rather than HEALTHY. This is the state of all seven schedules on 2026-08-27 and it is the case the whole table exists for: an empty record set must not report green."
+    },
+    {
+      "case_id": "H-019-a-declaration-that-will-not-load-is-not-a-schedule",
+      "schedule": {
+        "name": "epic-walk",
+        "enabled": false,
+        "target_exists": true,
+        "cron": "0 7 * *",
+        "timeout_seconds": 3600,
+        "declaration_defect": "epic-walk.json: cron '0 7 * *': needs five fields, got 4"
+      },
+      "now": "2026-08-27T04:00:00Z",
+      "runs": [],
+      "expect_status": [],
+      "expect_findings": [
+        "DECLARATION_REFUSED"
+      ],
+      "expect_reading": "UNHEALTHY",
+      "proves": "DECLARATION_REFUSED fires and refuses. The target is there, so TARGET_MISSING is quiet and this rule carries the defect. It also proves the surface survives a file the loader will not take: every other verb in scripts/sov_schedule.py raises on the first such file and shows nothing at all, which on a seeing surface would hide the six schedules that are fine behind the one that is not. OVERDUE stays quiet rather than raising on the same unparseable expression."
+    },
+    {
+      "case_id": "H-003-a-schedule-switched-on-that-has-never-fired",
+      "schedule": {
+        "name": "nightly-qa",
+        "enabled": true,
+        "target_exists": true,
+        "cron": "0 2 * * *",
+        "timeout_seconds": 3600,
+        "declaration_defect": null
+      },
+      "now": "2026-08-27T04:00:00Z",
+      "runs": [],
+      "expect_status": [],
+      "expect_findings": [
+        "ENABLED_NEVER_RUN"
+      ],
+      "expect_reading": "DEGRADED",
+      "proves": "ENABLED_NEVER_RUN fires. A tick that was never registered with the host looks exactly like a tick that works, and nothing else in this repository would notice."
+    },
+    {
+      "case_id": "H-004-one-attempt-is-enough-to-silence-never-run",
+      "schedule": {
+        "name": "nightly-qa",
+        "enabled": true,
+        "target_exists": true,
+        "cron": "0 2 * * *",
+        "timeout_seconds": 3600,
+        "declaration_defect": null
+      },
+      "now": "2026-08-27T04:00:00Z",
+      "runs": [
+        {
+          "run_id": "nightly-qa-1",
+          "attempted_at": "2026-08-27T02:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-27T02:05:00Z",
+          "report_outcome": "ATTEMPTED",
+          "exit_code": 0,
+          "outputs": [
+            "reports/2026-08-27-nightly-qa.md"
+          ]
+        }
+      ],
+      "expect_status": [
+        "PASSED"
+      ],
+      "expect_findings": [],
+      "expect_reading": "HEALTHY",
+      "proves": "ENABLED_NEVER_RUN keys on the absence of records and not on enablement, so an enabled schedule that has run is quiet. It also proves HEALTHY is reachable at all, which UNOBSERVED would otherwise hide."
+    },
+    {
+      "case_id": "H-005-one-failure-is-news-and-does-not-refuse",
+      "schedule": {
+        "name": "code-review",
+        "enabled": true,
+        "target_exists": true,
+        "cron": "0 */2 * * *",
+        "timeout_seconds": 2700,
+        "declaration_defect": null
+      },
+      "now": "2026-08-27T04:30:00Z",
+      "runs": [
+        {
+          "run_id": "code-review-1",
+          "attempted_at": "2026-08-27T02:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-27T02:20:00Z",
+          "report_outcome": "ATTEMPTED",
+          "exit_code": 0,
+          "outputs": [
+            "reports/2026-08-27-code-review.md"
+          ]
+        },
+        {
+          "run_id": "code-review-2",
+          "attempted_at": "2026-08-27T04:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-27T04:21:00Z",
+          "report_outcome": "FAILED",
+          "exit_code": 1,
+          "outputs": []
+        }
+      ],
+      "expect_status": [
+        "PASSED",
+        "FAILED"
+      ],
+      "expect_findings": [
+        "LAST_RUN_FAILED"
+      ],
+      "expect_reading": "DEGRADED",
+      "proves": "LAST_RUN_FAILED fires and CONSECUTIVE_FAILURES does not. The executor runs against a live host, so one bad run can be the host; this reading is recorded and printed without refusing the build. RUNTIME_REGRESSION also stays quiet at 1260s against 1200s."
+    },
+    {
+      "case_id": "H-006-the-newest-settled-run-is-what-is-read",
+      "schedule": {
+        "name": "code-review",
+        "enabled": false,
+        "target_exists": true,
+        "cron": "0 */2 * * *",
+        "timeout_seconds": 2700,
+        "declaration_defect": null
+      },
+      "now": "2026-08-27T04:30:00Z",
+      "runs": [
+        {
+          "run_id": "code-review-1",
+          "attempted_at": "2026-08-27T02:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-27T02:20:00Z",
+          "report_outcome": "FAILED",
+          "exit_code": 1,
+          "outputs": []
+        },
+        {
+          "run_id": "code-review-2",
+          "attempted_at": "2026-08-27T04:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-27T04:20:00Z",
+          "report_outcome": "ATTEMPTED",
+          "exit_code": 0,
+          "outputs": [
+            "reports/2026-08-27-code-review.md"
+          ]
+        }
+      ],
+      "expect_status": [
+        "FAILED",
+        "PASSED"
+      ],
+      "expect_findings": [],
+      "expect_reading": "HEALTHY",
+      "proves": "LAST_RUN_FAILED stays quiet against an older failure the schedule has already recovered from. A rule that fired on any failure in history would never clear."
+    },
+    {
+      "case_id": "H-007-twice-in-a-row-refuses",
+      "schedule": {
+        "name": "code-review",
+        "enabled": true,
+        "target_exists": true,
+        "cron": "0 */2 * * *",
+        "timeout_seconds": 2700,
+        "declaration_defect": null
+      },
+      "now": "2026-08-27T04:30:00Z",
+      "runs": [
+        {
+          "run_id": "code-review-1",
+          "attempted_at": "2026-08-27T02:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-27T02:20:00Z",
+          "report_outcome": "FAILED",
+          "exit_code": 1,
+          "outputs": []
+        },
+        {
+          "run_id": "code-review-2",
+          "attempted_at": "2026-08-27T04:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-27T04:20:00Z",
+          "report_outcome": "FAILED",
+          "exit_code": 1,
+          "outputs": []
+        }
+      ],
+      "expect_status": [
+        "FAILED",
+        "FAILED"
+      ],
+      "expect_findings": [
+        "LAST_RUN_FAILED",
+        "CONSECUTIVE_FAILURES"
+      ],
+      "expect_reading": "UNHEALTHY",
+      "proves": "CONSECUTIVE_FAILURES fires and the reading refuses. This is the alert the request asked for: an automation that has started failing makes scripts/verify.py exit nonzero instead of failing quietly forever."
+    },
+    {
+      "case_id": "H-008-a-run-in-flight-is-neither-a-pass-nor-a-failure",
+      "schedule": {
+        "name": "code-review",
+        "enabled": true,
+        "target_exists": true,
+        "cron": "0 */2 * * *",
+        "timeout_seconds": 2700,
+        "declaration_defect": null
+      },
+      "now": "2026-08-27T04:10:00Z",
+      "runs": [
+        {
+          "run_id": "code-review-1",
+          "attempted_at": "2026-08-27T02:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-27T02:20:00Z",
+          "report_outcome": "FAILED",
+          "exit_code": 1,
+          "outputs": []
+        },
+        {
+          "run_id": "code-review-2",
+          "attempted_at": "2026-08-27T04:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": null,
+          "report_outcome": null,
+          "exit_code": null,
+          "outputs": []
+        }
+      ],
+      "expect_status": [
+        "FAILED",
+        "RUNNING"
+      ],
+      "expect_findings": [
+        "LAST_RUN_FAILED"
+      ],
+      "expect_reading": "DEGRADED",
+      "proves": "CONSECUTIVE_FAILURES stays quiet at one settled failure. The defeating case: a run that started ten minutes ago and has not answered must not be counted as the second failure that refuses the build, because that would make every long run look like an outage while it was still working."
+    },
+    {
+      "case_id": "H-009-an-answer-that-never-arrived-counts-as-a-failure",
+      "schedule": {
+        "name": "code-review",
+        "enabled": true,
+        "target_exists": true,
+        "cron": "0 */2 * * *",
+        "timeout_seconds": 2700,
+        "declaration_defect": null
+      },
+      "now": "2026-08-27T06:00:00Z",
+      "runs": [
+        {
+          "run_id": "code-review-1",
+          "attempted_at": "2026-08-27T02:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-27T02:20:00Z",
+          "report_outcome": "FAILED",
+          "exit_code": 1,
+          "outputs": []
+        },
+        {
+          "run_id": "code-review-2",
+          "attempted_at": "2026-08-27T04:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": null,
+          "report_outcome": null,
+          "exit_code": null,
+          "outputs": []
+        }
+      ],
+      "expect_status": [
+        "FAILED",
+        "INCOMPLETE"
+      ],
+      "expect_findings": [
+        "LAST_RUN_FAILED",
+        "CONSECUTIVE_FAILURES"
+      ],
+      "expect_reading": "UNHEALTHY",
+      "proves": "The same two ledger entries as H-008, read two hours later. Past the declared timeout the runner's process is gone and no report is coming; from the record's side that is indistinguishable from a bad answer, so it counts. Without this case a killed runner would look healthier than a failing one forever."
+    },
+    {
+      "case_id": "H-010-a-run-that-took-materially-longer-than-its-predecessor",
+      "schedule": {
+        "name": "epic-walk",
+        "enabled": false,
+        "target_exists": true,
+        "cron": "0 7 * * *",
+        "timeout_seconds": 3600,
+        "declaration_defect": null
+      },
+      "now": "2026-08-27T04:00:00Z",
+      "runs": [
+        {
+          "run_id": "epic-walk-1",
+          "attempted_at": "2026-08-25T07:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-25T07:05:00Z",
+          "report_outcome": "ATTEMPTED",
+          "exit_code": 0,
+          "outputs": [
+            "reports/2026-08-25-epic-walk.md"
+          ]
+        },
+        {
+          "run_id": "epic-walk-2",
+          "attempted_at": "2026-08-26T07:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-26T07:15:00Z",
+          "report_outcome": "ATTEMPTED",
+          "exit_code": 0,
+          "outputs": [
+            "reports/2026-08-26-epic-walk.md"
+          ]
+        }
+      ],
+      "expect_status": [
+        "PASSED",
+        "PASSED"
+      ],
+      "expect_findings": [
+        "RUNTIME_REGRESSION"
+      ],
+      "expect_reading": "DEGRADED",
+      "proves": "RUNTIME_REGRESSION fires at 900s against 300s: three times the predecessor and 600s more of it, so both bounds are cleared. Two passing runs and the surface still reports drift, which is the reading a pass-or-fail column cannot give."
+    },
+    {
+      "case_id": "H-011-a-big-multiple-of-a-tiny-number-is-not-drift",
+      "schedule": {
+        "name": "epic-walk",
+        "enabled": false,
+        "target_exists": true,
+        "cron": "0 7 * * *",
+        "timeout_seconds": 3600,
+        "declaration_defect": null
+      },
+      "now": "2026-08-27T04:00:00Z",
+      "runs": [
+        {
+          "run_id": "epic-walk-1",
+          "attempted_at": "2026-08-25T07:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-25T07:00:10Z",
+          "report_outcome": "ATTEMPTED",
+          "exit_code": 0,
+          "outputs": [
+            "reports/2026-08-25-epic-walk.md"
+          ]
+        },
+        {
+          "run_id": "epic-walk-2",
+          "attempted_at": "2026-08-26T07:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-26T07:00:40Z",
+          "report_outcome": "ATTEMPTED",
+          "exit_code": 0,
+          "outputs": [
+            "reports/2026-08-26-epic-walk.md"
+          ]
+        }
+      ],
+      "expect_status": [
+        "PASSED",
+        "PASSED"
+      ],
+      "expect_findings": [],
+      "expect_reading": "HEALTHY",
+      "proves": "40s against 10s is four times the predecessor and clears the multiple, and the rule stays quiet because the increase is 30s against a 60s floor. Without the floor every fast run's ordinary jitter would be reported as drift and the surface would be ignored."
+    },
+    {
+      "case_id": "H-012-a-long-run-getting-slightly-longer-is-not-drift-either",
+      "schedule": {
+        "name": "epic-walk",
+        "enabled": false,
+        "target_exists": true,
+        "cron": "0 7 * * *",
+        "timeout_seconds": 3600,
+        "declaration_defect": null
+      },
+      "now": "2026-08-27T04:00:00Z",
+      "runs": [
+        {
+          "run_id": "epic-walk-1",
+          "attempted_at": "2026-08-25T07:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-25T07:10:00Z",
+          "report_outcome": "ATTEMPTED",
+          "exit_code": 0,
+          "outputs": [
+            "reports/2026-08-25-epic-walk.md"
+          ]
+        },
+        {
+          "run_id": "epic-walk-2",
+          "attempted_at": "2026-08-26T07:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-26T07:11:40Z",
+          "report_outcome": "ATTEMPTED",
+          "exit_code": 0,
+          "outputs": [
+            "reports/2026-08-26-epic-walk.md"
+          ]
+        }
+      ],
+      "expect_status": [
+        "PASSED",
+        "PASSED"
+      ],
+      "expect_findings": [],
+      "expect_reading": "HEALTHY",
+      "proves": "700s against 600s clears the 60s floor and stays quiet because it is 1.17 times the predecessor, under the multiple. The floor alone would report every long-running schedule's normal variation."
+    },
+    {
+      "case_id": "H-013-alive-and-achieving-nothing",
+      "schedule": {
+        "name": "code-review",
+        "enabled": true,
+        "target_exists": true,
+        "cron": "0 */2 * * *",
+        "timeout_seconds": 2700,
+        "declaration_defect": null
+      },
+      "now": "2026-08-27T04:30:00Z",
+      "runs": [
+        {
+          "run_id": "code-review-1",
+          "attempted_at": "2026-08-27T00:00:00Z",
+          "attempt_outcome": "REFUSED",
+          "reason_code": "TREE_DIRTY",
+          "reported_at": null,
+          "report_outcome": null,
+          "exit_code": null,
+          "outputs": []
+        },
+        {
+          "run_id": "code-review-2",
+          "attempted_at": "2026-08-27T02:00:00Z",
+          "attempt_outcome": "REFUSED",
+          "reason_code": "TREE_DIRTY",
+          "reported_at": null,
+          "report_outcome": null,
+          "exit_code": null,
+          "outputs": []
+        },
+        {
+          "run_id": "code-review-3",
+          "attempted_at": "2026-08-27T04:00:00Z",
+          "attempt_outcome": "REFUSED",
+          "reason_code": "TREE_DIRTY",
+          "reported_at": null,
+          "report_outcome": null,
+          "exit_code": null,
+          "outputs": []
+        }
+      ],
+      "expect_status": [
+        "REFUSED",
+        "REFUSED",
+        "REFUSED"
+      ],
+      "expect_findings": [
+        "REFUSAL_LOOP"
+      ],
+      "expect_reading": "DEGRADED",
+      "proves": "REFUSAL_LOOP fires. Nine sessions share this working tree, so TREE_DIRTY is the gate a real schedule here would trip every time. The schedule is attempting on cadence and has done nothing, and every count that measures attempts reports it as alive."
+    },
+    {
+      "case_id": "H-014-differing-refusals-are-a-bad-week-not-a-loop",
+      "schedule": {
+        "name": "code-review",
+        "enabled": true,
+        "target_exists": true,
+        "cron": "0 */2 * * *",
+        "timeout_seconds": 2700,
+        "declaration_defect": null
+      },
+      "now": "2026-08-27T04:30:00Z",
+      "runs": [
+        {
+          "run_id": "code-review-0",
+          "attempted_at": "2026-08-26T22:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-26T22:20:00Z",
+          "report_outcome": "ATTEMPTED",
+          "exit_code": 0,
+          "outputs": [
+            "reports/2026-08-26-code-review.md"
+          ]
+        },
+        {
+          "run_id": "code-review-1",
+          "attempted_at": "2026-08-27T00:00:00Z",
+          "attempt_outcome": "REFUSED",
+          "reason_code": "TREE_DIRTY",
+          "reported_at": null,
+          "report_outcome": null,
+          "exit_code": null,
+          "outputs": []
+        },
+        {
+          "run_id": "code-review-2",
+          "attempted_at": "2026-08-27T02:00:00Z",
+          "attempt_outcome": "REFUSED",
+          "reason_code": "RUN_IN_PROGRESS",
+          "reported_at": null,
+          "report_outcome": null,
+          "exit_code": null,
+          "outputs": []
+        },
+        {
+          "run_id": "code-review-3",
+          "attempted_at": "2026-08-27T04:00:00Z",
+          "attempt_outcome": "REFUSED",
+          "reason_code": "TREE_DIRTY",
+          "reported_at": null,
+          "report_outcome": null,
+          "exit_code": null,
+          "outputs": []
+        }
+      ],
+      "expect_status": [
+        "PASSED",
+        "REFUSED",
+        "REFUSED",
+        "REFUSED"
+      ],
+      "expect_findings": [],
+      "expect_reading": "HEALTHY",
+      "proves": "REFUSAL_LOOP reads the codes and not the count: three refusals in a row stay quiet because they are not the same gate. It also proves refusals do not break the settled-run reading, since the one PASSED run behind them still answers LAST_RUN_FAILED and CONSECUTIVE_FAILURES."
+    },
+    {
+      "case_id": "H-015-the-tick-that-used-to-fire-and-stopped",
+      "schedule": {
+        "name": "nightly-qa",
+        "enabled": true,
+        "target_exists": true,
+        "cron": "0 2 * * *",
+        "timeout_seconds": 3600,
+        "declaration_defect": null
+      },
+      "now": "2026-08-27T04:00:00Z",
+      "runs": [
+        {
+          "run_id": "nightly-qa-1",
+          "attempted_at": "2026-08-23T02:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-23T02:05:00Z",
+          "report_outcome": "ATTEMPTED",
+          "exit_code": 0,
+          "outputs": [
+            "reports/2026-08-23-nightly-qa.md"
+          ]
+        }
+      ],
+      "expect_status": [
+        "PASSED"
+      ],
+      "expect_findings": [
+        "OVERDUE"
+      ],
+      "expect_reading": "DEGRADED",
+      "proves": "OVERDUE fires at four missed daily occurrences. Distinct from ENABLED_NEVER_RUN, which has an attempt to point at and stays quiet here; the last run passed, so every outcome rule is quiet and nothing but this one would notice that the schedule went silent."
+    },
+    {
+      "case_id": "H-016-inside-the-cadence-is-not-overdue",
+      "schedule": {
+        "name": "nightly-qa",
+        "enabled": true,
+        "target_exists": true,
+        "cron": "0 2 * * *",
+        "timeout_seconds": 3600,
+        "declaration_defect": null
+      },
+      "now": "2026-08-27T04:00:00Z",
+      "runs": [
+        {
+          "run_id": "nightly-qa-1",
+          "attempted_at": "2026-08-27T02:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-27T02:05:00Z",
+          "report_outcome": "ATTEMPTED",
+          "exit_code": 0,
+          "outputs": [
+            "reports/2026-08-27-nightly-qa.md"
+          ]
+        }
+      ],
+      "expect_status": [
+        "PASSED"
+      ],
+      "expect_findings": [],
+      "expect_reading": "HEALTHY",
+      "proves": "OVERDUE stays quiet with no whole occurrence missed. Counting occurrences rather than elapsed hours is what lets one rule cover the two-hourly code-review and the weekly weekly-baseline without a per-schedule number."
+    },
+    {
+      "case_id": "H-017-a-switched-off-schedule-is-not-late",
+      "schedule": {
+        "name": "weekly-baseline",
+        "enabled": false,
+        "target_exists": true,
+        "cron": "0 6 * * 1",
+        "timeout_seconds": 5400,
+        "declaration_defect": null
+      },
+      "now": "2026-08-27T04:00:00Z",
+      "runs": [
+        {
+          "run_id": "weekly-baseline-1",
+          "attempted_at": "2026-07-14T06:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-07-14T06:30:00Z",
+          "report_outcome": "ATTEMPTED",
+          "exit_code": 0,
+          "outputs": [
+            "reports/2026-07-14-weekly-baseline.md"
+          ]
+        }
+      ],
+      "expect_status": [
+        "PASSED"
+      ],
+      "expect_findings": [],
+      "expect_reading": "HEALTHY",
+      "proves": "OVERDUE and ENABLED_NEVER_RUN both stand down against a schedule Bdo has switched off, because the table says applies_to_disabled false and the judge honours it. Six weeks late is what switched off looks like, and a surface that reported it would train its reader to ignore the column. The scan cap is proved separately by H-021, which reaches the walk; this case never does."
+    },
+    {
+      "case_id": "H-018-a-dead-target-outranks-everything-else-fired",
+      "schedule": {
+        "name": "ghost",
+        "enabled": true,
+        "target_exists": false,
+        "cron": "0 2 * * *",
+        "timeout_seconds": 3600,
+        "declaration_defect": null
+      },
+      "now": "2026-08-27T04:00:00Z",
+      "runs": [],
+      "expect_status": [],
+      "expect_findings": [
+        "TARGET_MISSING",
+        "ENABLED_NEVER_RUN"
+      ],
+      "expect_reading": "UNHEALTHY",
+      "proves": "Two findings of different severities produce the worse reading, and both are still reported by name. A surface that collapsed to one line per schedule would show the refusing rule and hide the other, which is how the second defect gets fixed a week later."
+    },
+    {
+      "case_id": "H-020-two-failures-on-a-switched-off-schedule-do-not-refuse",
+      "schedule": {
+        "name": "code-review",
+        "enabled": false,
+        "target_exists": true,
+        "cron": "0 */2 * * *",
+        "timeout_seconds": 2700,
+        "declaration_defect": null
+      },
+      "now": "2026-08-27T04:30:00Z",
+      "runs": [
+        {
+          "run_id": "code-review-1",
+          "attempted_at": "2026-08-27T02:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-27T02:20:00Z",
+          "report_outcome": "FAILED",
+          "exit_code": 1,
+          "outputs": []
+        },
+        {
+          "run_id": "code-review-2",
+          "attempted_at": "2026-08-27T04:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-27T04:20:00Z",
+          "report_outcome": "FAILED",
+          "exit_code": 1,
+          "outputs": []
+        }
+      ],
+      "expect_status": [
+        "FAILED",
+        "FAILED"
+      ],
+      "expect_findings": [
+        "LAST_RUN_FAILED"
+      ],
+      "expect_reading": "DEGRADED",
+      "proves": "The same two runs as H-007 with the switch off. CONSECUTIVE_FAILURES stands down and the build is not refused. Without this the obvious operator response to a schedule failing twice - switching it off - would leave verify.py refusing for ever, because a disabled schedule can never produce the passing run that clears it, and the only mechanical exit would be deleting the ledger, which this table forbids. LAST_RUN_FAILED still reports it."
+    },
+    {
+      "case_id": "H-021-a-weekly-schedule-dead-for-six-weeks-is-overdue",
+      "schedule": {
+        "name": "weekly-baseline",
+        "enabled": true,
+        "target_exists": true,
+        "cron": "0 6 * * 1",
+        "timeout_seconds": 5400,
+        "declaration_defect": null
+      },
+      "now": "2026-08-27T04:00:00Z",
+      "runs": [
+        {
+          "run_id": "weekly-baseline-1",
+          "attempted_at": "2026-07-14T06:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-07-14T06:30:00Z",
+          "report_outcome": "ATTEMPTED",
+          "exit_code": 0,
+          "outputs": [
+            "reports/2026-07-14-weekly-baseline.md"
+          ]
+        }
+      ],
+      "expect_status": [
+        "PASSED"
+      ],
+      "expect_findings": [
+        "OVERDUE"
+      ],
+      "expect_reading": "DEGRADED",
+      "proves": "The defeating case for counting occurrences inside a fixed window. A weekly expression yields one or two matches in an eight-day scan depending on which weekday today is, so a threshold of two applied to the count alone would fire on one day in seven and stay silent on the other six however long the schedule had been dead - which is the state of two of the seven declarations here. The walk hitting its cap is itself the finding."
+    },
+    {
+      "case_id": "H-022-a-regression-sitting-exactly-on-both-bounds-fires",
+      "schedule": {
+        "name": "epic-walk",
+        "enabled": false,
+        "target_exists": true,
+        "cron": "0 7 * * *",
+        "timeout_seconds": 3600,
+        "declaration_defect": null
+      },
+      "now": "2026-08-27T04:00:00Z",
+      "runs": [
+        {
+          "run_id": "epic-walk-1",
+          "attempted_at": "2026-08-25T07:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-25T07:01:00Z",
+          "report_outcome": "ATTEMPTED",
+          "exit_code": 0,
+          "outputs": [
+            "reports/2026-08-25-epic-walk.md"
+          ]
+        },
+        {
+          "run_id": "epic-walk-2",
+          "attempted_at": "2026-08-26T07:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-26T07:02:00Z",
+          "report_outcome": "ATTEMPTED",
+          "exit_code": 0,
+          "outputs": [
+            "reports/2026-08-26-epic-walk.md"
+          ]
+        }
+      ],
+      "expect_status": [
+        "PASSED",
+        "PASSED"
+      ],
+      "expect_findings": [
+        "RUNTIME_REGRESSION"
+      ],
+      "expect_reading": "DEGRADED",
+      "proves": "120s against 60s is exactly the 2.0 multiple and exactly the 60s floor, and the table says at least, so it fires. H-011 and H-012 sit one step inside each bound and stay quiet. Without a case on the line, both comparisons could be tightened to strictly-greater and nothing would go red."
+    },
+    {
+      "case_id": "H-023-two-identical-refusals-are-not-yet-a-loop-and-are-not-healthy",
+      "schedule": {
+        "name": "code-review",
+        "enabled": true,
+        "target_exists": true,
+        "cron": "0 */2 * * *",
+        "timeout_seconds": 2700,
+        "declaration_defect": null
+      },
+      "now": "2026-08-27T04:30:00Z",
+      "runs": [
+        {
+          "run_id": "code-review-1",
+          "attempted_at": "2026-08-27T02:00:00Z",
+          "attempt_outcome": "REFUSED",
+          "reason_code": "TREE_DIRTY",
+          "reported_at": null,
+          "report_outcome": null,
+          "exit_code": null,
+          "outputs": []
+        },
+        {
+          "run_id": "code-review-2",
+          "attempted_at": "2026-08-27T04:00:00Z",
+          "attempt_outcome": "REFUSED",
+          "reason_code": "TREE_DIRTY",
+          "reported_at": null,
+          "report_outcome": null,
+          "exit_code": null,
+          "outputs": []
+        }
+      ],
+      "expect_status": [
+        "REFUSED",
+        "REFUSED"
+      ],
+      "expect_findings": [],
+      "expect_reading": "UNOBSERVED",
+      "proves": "Two is one short of refusal_loop_threshold, so REFUSAL_LOOP stays quiet and the threshold cannot be lowered without this going red. The reading is the other half of the case: a refusal invoked nothing, so a schedule whose whole history is refusals has still never executed and must not read HEALTHY. On a tree nine sessions share, two TREE_DIRTY refusals is the likeliest real state there is."
+    },
+    {
+      "case_id": "H-024-one-missed-occurrence-is-not-yet-overdue",
+      "schedule": {
+        "name": "nightly-qa",
+        "enabled": true,
+        "target_exists": true,
+        "cron": "0 2 * * *",
+        "timeout_seconds": 3600,
+        "declaration_defect": null
+      },
+      "now": "2026-08-27T04:00:00Z",
+      "runs": [
+        {
+          "run_id": "nightly-qa-1",
+          "attempted_at": "2026-08-26T02:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-26T02:05:00Z",
+          "report_outcome": "ATTEMPTED",
+          "exit_code": 0,
+          "outputs": [
+            "reports/2026-08-26-nightly-qa.md"
+          ]
+        }
+      ],
+      "expect_status": [
+        "PASSED"
+      ],
+      "expect_findings": [],
+      "expect_reading": "HEALTHY",
+      "proves": "Exactly one whole occurrence has passed against a threshold of two, and the walk did not hit its cap. This is the step below H-015 and it holds the threshold in place: lowering it to one turns every schedule that missed a single tick into a finding, and this case is what refuses that."
+    },
+    {
+      "case_id": "H-025-a-run-exactly-at-its-timeout-has-stopped-running",
+      "schedule": {
+        "name": "nightly-qa",
+        "enabled": true,
+        "target_exists": true,
+        "cron": "0 2 * * *",
+        "timeout_seconds": 3600,
+        "declaration_defect": null
+      },
+      "now": "2026-08-27T03:00:00Z",
+      "runs": [
+        {
+          "run_id": "nightly-qa-1",
+          "attempted_at": "2026-08-27T02:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": null,
+          "report_outcome": null,
+          "exit_code": null,
+          "outputs": []
+        }
+      ],
+      "expect_status": [
+        "INCOMPLETE"
+      ],
+      "expect_findings": [
+        "LAST_RUN_FAILED"
+      ],
+      "expect_reading": "DEGRADED",
+      "proves": "Age is exactly the declared timeout, and the table says at or above, so the run is INCOMPLETE rather than RUNNING. The boundary is where the two readings meet and it decides whether a killed runner ever gets counted at all; H-008 sits ten minutes inside it and reads RUNNING."
+    },
+    {
+      "case_id": "H-026-a-run-that-took-no-measurable-time-is-still-a-baseline",
+      "schedule": {
+        "name": "epic-walk",
+        "enabled": false,
+        "target_exists": true,
+        "cron": "0 7 * * *",
+        "timeout_seconds": 3600,
+        "declaration_defect": null
+      },
+      "now": "2026-08-27T04:00:00Z",
+      "runs": [
+        {
+          "run_id": "epic-walk-1",
+          "attempted_at": "2026-08-25T07:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-25T07:00:00Z",
+          "report_outcome": "ATTEMPTED",
+          "exit_code": 0,
+          "outputs": [
+            "reports/2026-08-25-epic-walk.md"
+          ]
+        },
+        {
+          "run_id": "epic-walk-2",
+          "attempted_at": "2026-08-26T07:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-26T08:00:00Z",
+          "report_outcome": "ATTEMPTED",
+          "exit_code": 0,
+          "outputs": [
+            "reports/2026-08-26-epic-walk.md"
+          ]
+        }
+      ],
+      "expect_status": [
+        "PASSED",
+        "PASSED"
+      ],
+      "expect_findings": [
+        "RUNTIME_REGRESSION"
+      ],
+      "expect_reading": "DEGRADED",
+      "proves": "Ledger timestamps are second-resolution, so a run that starts and reports inside one second has a duration of zero. Guarding the rule on a zero predecessor would take it silent on the largest regression it could ever be shown - nothing to an hour. The multiple is unmeasurable here and the floor is what judges it."
+    },
+    {
+      "case_id": "H-027-a-tiny-run-after-an-unmeasurable-one-is-still-not-drift",
+      "schedule": {
+        "name": "epic-walk",
+        "enabled": false,
+        "target_exists": true,
+        "cron": "0 7 * * *",
+        "timeout_seconds": 3600,
+        "declaration_defect": null
+      },
+      "now": "2026-08-27T04:00:00Z",
+      "runs": [
+        {
+          "run_id": "epic-walk-1",
+          "attempted_at": "2026-08-25T07:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-25T07:00:00Z",
+          "report_outcome": "ATTEMPTED",
+          "exit_code": 0,
+          "outputs": [
+            "reports/2026-08-25-epic-walk.md"
+          ]
+        },
+        {
+          "run_id": "epic-walk-2",
+          "attempted_at": "2026-08-26T07:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-26T07:00:30Z",
+          "report_outcome": "ATTEMPTED",
+          "exit_code": 0,
+          "outputs": [
+            "reports/2026-08-26-epic-walk.md"
+          ]
+        }
+      ],
+      "expect_status": [
+        "PASSED",
+        "PASSED"
+      ],
+      "expect_findings": [],
+      "expect_reading": "HEALTHY",
+      "proves": "The quiet twin of H-026. A zero predecessor is judged on the floor alone, so 30s stays quiet where 3600s fires. Without this the fix for the zero guard would read as a rule that fires on any run following an unmeasurable one."
+    },
+    {
+      "case_id": "H-028-a-run-that-returned-zero-and-produced-nothing",
+      "schedule": {
+        "name": "nightly-qa",
+        "enabled": true,
+        "target_exists": true,
+        "cron": "0 2 * * *",
+        "timeout_seconds": 3600,
+        "declaration_defect": null
+      },
+      "now": "2026-08-27T04:00:00Z",
+      "runs": [
+        {
+          "run_id": "nightly-qa-1",
+          "attempted_at": "2026-08-27T02:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-27T02:40:00Z",
+          "report_outcome": "ATTEMPTED",
+          "exit_code": 0,
+          "outputs": [
+            "../../.local/schedules/runs/nightly-qa-1.json"
+          ]
+        }
+      ],
+      "expect_status": [
+        "PASSED"
+      ],
+      "expect_findings": [
+        "EMPTY_RUN"
+      ],
+      "expect_reading": "DEGRADED",
+      "proves": "EMPTY_RUN fires. The run passed, so every outcome rule is quiet and every count that measures passing runs reports it as working; it recorded a capture file and no report, which is what its own prompt asked it for. This is the refusal loop quieter twin - alive, spending budget, achieving nothing - and unlike a refusal there is no code in the record naming it."
+    }
+  ]
+}

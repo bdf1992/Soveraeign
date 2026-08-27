@@ -2,7 +2,8 @@
 """Declare, check, and fire scheduled runs of harness workflows and skills.
 
 Commands: ``validate``, ``list``, ``due``, ``run NAME [--force] [--dry-run]``,
-``tick [--dry-run]``, ``ledger [--schedule NAME] [--last N]``, ``task-command``.
+``tick [--dry-run]``, ``ledger [--schedule NAME] [--last N]``, ``task-command``,
+``health [--json]``, ``health-render [--out PATH]``, ``health-check``.
 The host scheduler (Windows Task Scheduler, cron) calls ``tick`` every few
 minutes; everything else is for a human at the keyboard. Exit codes: 0 fired or
 nothing due, 1 failed or invalid, 2 refused by a gate.
@@ -16,7 +17,7 @@ import argparse
 import json
 import sys
 
-from sovschedule import ledger, runner
+from sovschedule import ledger, runner, surface
 from sovschedule.declaration import SCHEDULES_DIR, DeclarationError, load_all, load_declaration
 
 
@@ -148,6 +149,7 @@ def main(argv: list[str] | None = None) -> int:
     led.add_argument("--last", type=int, default=20)
     led.set_defaults(func=cmd_ledger)
     sub.add_parser("task-command").set_defaults(func=cmd_task_command)
+    surface.add_commands(sub)
     args = parser.parse_args(argv)
     return args.func(args)
 

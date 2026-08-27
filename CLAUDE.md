@@ -102,14 +102,18 @@ been receiving merged pull requests. This section is orientation, not standing.
 `STATUS.yaml`, the working tree, and the newest relevant report override it
 whenever they disagree.
 
-- `python scripts/verify.py` runs 40 checks in about 12 s and grades
-  itself `SILVER` (PLATINUM 3 s, GOLD 6 s, SILVER 15 s, failing past 15 s;
-  `decisions/0050`, which replaced a bare 3 s ceiling the gate was failing).
-  A slipped grade is a reportable observation, not a failing gate.
+- `python scripts/verify.py` runs 44 checks in about 12 s and grades
+  itself `SILVER` (PLATINUM 3 s, GOLD 6 s, SILVER 15 s). Past 15 s the run
+  records debt and does not fail: `decisions/0081` took the wall clock out of
+  the exit code, because it measures the host at that instant and not the
+  repository. Pressure sits on per-check ceilings in
+  `contracts/verification-budget.json`, which name the check that owns an
+  overrun; only a single check past 30 s refuses. Two checks are over ceiling
+  today, Asset Service tests and repository tooling tests.
   `python scripts/lint.py` passes with no named debt: the last entry,
   `scripts/witness_infrastructure.py`, was split into `scripts/witness_stages.py`
   on 2026-08-25 and `KNOWN_MODULE_DEBT` is now empty.
-- 10 service boundaries under `services/`, 133 declared operations
+- 10 service boundaries under `services/`, 140 declared operations
   across 10 manifests. Asset and Record are built and self-tested; Console's
   continuity path is built and its other four surfaces are text; Gateway,
   Observation, Proofing, Projection, and Registry are boundary only.
@@ -207,7 +211,7 @@ engineering baseline. Day two added the SDLC loop, Console, scheduled runs,
 Sov, the federation harness, defeating fixtures for receipts and proofing,
 LF line-ending enforcement, and the stack certification. At the end of day two
 the record held 26 commits, 17 decision records and 8 reports; it now holds
-356 commits, 69 decision records and 24 reports. The
+383 commits, 72 decision records and 24 reports. The
 first independently witnessed work landed on 2026-08-25; nothing is ratified.
 
 Those two sentences are checked. `python scripts/sov_snapshot.py` grades the

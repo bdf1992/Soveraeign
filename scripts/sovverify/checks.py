@@ -1,30 +1,26 @@
-"""The declared check table: what `scripts/verify.py` runs, and why each one is independent.
+"""The repository-owned half of the check table, and the `Check` every entry is.
 
 Every entry states in `relation` how the check avoids relying on the thing it
 checks. That sentence is the check's warrant; an entry without one is a command,
-not evidence. The table lives apart from the runner so it can grow without
-dragging the runner past its line budget with it.
+not evidence.
+
+The table lives apart from the runner so it can grow without dragging the runner
+past its line budget, and it is now split again on the same pressure and along a
+real seam: a check whose working directory is a participant's own tree is running
+that participant's own tests, which is a different kind of evidence from a check
+the repository owns over its contracts. Those live in `participants.py`. `CHECKS`
+is both, and `scripts/verify.py` reads only `CHECKS`.
 """
 
 from __future__ import annotations
 
-from pathlib import Path
-from typing import NamedTuple
 import sys
 
-
-ROOT = Path(__file__).resolve().parents[2]
-
-
-class Check(NamedTuple):
-    name: str
-    command: list[str]
-    cwd: Path
-    relation: str
-    observes: tuple[str, ...]
+from sovverify.participants import PARTICIPANT_CHECKS
+from sovverify.shape import ROOT, Check
 
 
-CHECKS = (
+REPOSITORY_CHECKS = (
     Check("repository hygiene", [sys.executable, "scripts/lint.py"], ROOT,
           "reads repository bytes directly with read_bytes, never a build report, and never "
           "Path.read_text whose newline translation would hide the defect it looks for",
@@ -191,20 +187,6 @@ CHECKS = (
           "inventory rather than a live daemon, so the result cannot depend on whether a "
           "model server happens to be running on the checking machine",
           ("adapters/ollama", "contracts/model-binding.schema.json")),
-    Check("Identity component tests",
-          [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
-          ROOT / "services" / "identity",
-          "the component's own tests; these establish BUILT evidence about the challenge and "
-          "recovery mechanics and are explicitly NOT independent of the code they exercise. "
-          "The refusal cases are the exception worth naming: they drive the lifecycle against "
-          "the refusal table services/identity/CHARTER.md declared before the code existed",
-          ("services/identity/tests", "services/identity/CHARTER.md")),
-    Check("Record Service reference tests",
-          [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
-          ROOT / "services" / "record",
-          "the participant's own tests; these establish BUILT evidence about local mechanics "
-          "and are explicitly NOT independent of the code they exercise",
-          ("services/record/tests",)),
     Check("Record Service independent witness",
           [sys.executable, "scripts/witness_record.py"], ROOT,
           "performs the witness walk declared on issue #7 without importing the participant: "
@@ -213,29 +195,6 @@ CHECKS = (
           "against the store from outside the service",
           ("scripts/witness_record.py",
            "services/record/src/soveraeign_record_service/cli.py")),
-    Check("Console Service reference tests",
-          [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
-          ROOT / "services" / "console",
-          "the participant's own tests; these establish BUILT evidence about local mechanics "
-          "and are explicitly NOT independent of the code they exercise. The contract-shape "
-          "cases are the exception worth naming: they validate the records the service emits "
-          "against the schema files in services/console/contracts/, which were written before "
-          "the implementation existed and are not edited to accommodate it",
-          ("services/console/tests", "services/console/contracts")),
-    Check("Observation Service contracts",
-          [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
-          ROOT / "services" / "observation",
-          "no implementation exists to exercise, so these cases judge the contracts alone: a "
-          "declared defeat must be refused, a record labelled schema-valid but semantically "
-          "wrong must still validate so the gap stays recorded rather than passing as "
-          "coverage, and the direct-edge vocabulary is read out of CHARTER.md at check time",
-          ("services/observation/contracts", "services/observation/CHARTER.md")),
-    Check("Asset Service reference tests",
-          [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
-          ROOT / "services" / "asset",
-          "the participant's own tests; these establish BUILT evidence about local mechanics "
-          "and are explicitly NOT independent of the code they exercise",
-          ("services/asset/tests",)),
     Check("Kernel binding closure",
           [sys.executable, "scripts/sov_kernel.py", "binding-check"], ROOT,
           "rebuilds cross-service binding facts from manifests, paradigms, and Kernel transitions; it does not ask service implementations whether their declarations are coherent",
@@ -244,11 +203,6 @@ CHECKS = (
           [sys.executable, "scripts/sov_interface.py", "check"], ROOT,
           "rebuilds from current source digests and compares the checked projection byte-for-byte; the projection cannot make itself reachable or observed",
           ("contracts/fixtures/node-interface.reference.json", "contracts/node-interface.schema.json", "scripts/sovnode")),
-    Check("Host Service reference tests",
-          [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
-          ROOT / "services" / "host",
-          "the participant's own positive and defeating cases; they establish BUILT evidence for read-health mechanics only and never witness the adapter or host effect",
-          ("services/host/tests", "services/host/contracts", "adapters/host")),
     Check("documentation reader",
           [sys.executable, "scripts/sov_docs.py", "check"], ROOT,
           "re-renders every published document from its bytes on disk and compares the page "
@@ -262,16 +216,23 @@ CHECKS = (
           "or left behind by a manifest change fails rather than misinforming a reader",
           ("docs/surface.html", "contracts/fixtures/capability-map.reference.json",
            "bindings/mcp/manifest.json")),
-    Check("MCP gateway binding",
-          [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
-          ROOT / "bindings" / "mcp",
-          "drives the gateway through its declared JSON-RPC surface rather than calling the "
-          "services behind it, and reads its evidence back out of the Record Service journal "
-          "instead of trusting the gateway's return value",
-          ("bindings/mcp", "bindings/mcp/manifest.json")),
+    Check("automation health",
+          [sys.executable, "scripts/sov_schedule.py", "health-check"], ROOT,
+          "reads the schedule declarations and the run ledger at the moment of the check "
+          "and re-derives every reading, rather than believing the rendered page; the page "
+          "is then compared byte for byte against that derivation so it cannot go stale "
+          "silently, and where this machine holds no ledger the check says the run-history "
+          "half is UNCHECKED and names the absent source instead of grading it green. An "
+          "UNHEALTHY reading refuses here, which is the only alert Phase I admits",
+          ("contracts/automation-health.json", ".claude/schedules", "docs/automation.html",
+           "conformance/fixtures/automation-health/cases.json", "scripts/sovschedule")),
     Check("repository tooling tests", [sys.executable, "scripts/run_tooling_tests.py"], ROOT,
           "the harness's own tests; independent of the repository content they check, but "
           "not of the harness itself; the runner partitions the complete discovered module "
           "population and fails if any shard fails",
           ("scripts/tests", "scripts/run_tooling_tests.py")),
 )
+
+#: Every check, in the order a run prints them: what the repository owns, then
+#: what each participant says about itself.
+CHECKS = REPOSITORY_CHECKS + PARTICIPANT_CHECKS

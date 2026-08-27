@@ -86,8 +86,29 @@ All 39 checks passed. The compute figure, 21.703 s, sits inside the idle band of
 That is the whole case in one run, and it is the first time the harness could
 state it rather than guess it.
 
-Deliberate load says the same thing less sharply. Three interleaved pairs, each
-an idle run followed immediately by a run under 32 CPU burners on 32 cores:
+Three consecutive runs later, on the same tree, with the host at 8-10 % busy from
+other sessions rather than deliberately loaded — which is the condition that
+actually trips this gate:
+
+| Run | Wall | Summed check CPU | Verdict |
+| --- | --- | --- | --- |
+| 1 | 13.981 s | 23.375 s | PASS |
+| 2 | 18.188 s | 23.047 s | FAIL |
+| 3 | 16.344 s | 24.797 s | FAIL |
+
+All 39 checks passed all three times. Wall moved 30 %; CPU moved 7 %. That is the
+same shape as the three runs on `main` at the top of this record, and it is the
+regime the proposal is actually about.
+
+CI says it too, on one commit and two runners: `repository (3.12)` passed while
+`repository (3.11)` failed at 17.068 s of wall for 14.226 s of summed CPU — a
+runner that did *less* compute and took *more* wall, which is starvation rather
+than a repository that grew.
+
+Deliberate saturation says something different, and it is the qualification this
+record turns on; it is set out under **What would defeat this**. Three
+interleaved pairs, each an idle run followed immediately by a run under 32 CPU
+burners on 32 cores:
 
 | Pair | Idle wall | Loaded wall | Idle CPU | Loaded CPU |
 | --- | --- | --- | --- | --- |
@@ -122,11 +143,14 @@ is taken up below.
   largest compute consumer in the suite. A compute-keyed budget would be least
   trustworthy exactly where it would have to be trusted.
 
-  This does not make the second clock worthless — it is still a better figure
-  than the sum of wall times it replaced, and it still told the truth about the
-  failing run above. It does mean nobody has yet shown that a compute band would
-  be narrower than the wall band it replaces, and until someone has, the case for
-  swapping them is not made.
+  What survives is narrower than the proposal but is not nothing. The two regimes
+  differ: at the moderate load that actually trips this gate, wall moved 30 % and
+  CPU 7 % across three runs of one tree; at deliberate saturation the two move
+  together. A compute-keyed budget would therefore be sound exactly where the
+  gate misfires today and unsound where a machine is being abused. Whether that
+  is a budget worth having is a judgement, not a measurement, and it is Bdo's.
+  Nobody has yet shown that the compute band would be narrower than the wall band
+  it replaces, and until someone has, the case for swapping them is not made.
 - A compute gate does not bound what the operator waits. A suite that took
   sixty seconds of wall for twenty of CPU would pass it and be unusable. If the
   wait is what Bdo wants bounded, the answer is two graded numbers, not a

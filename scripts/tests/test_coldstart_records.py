@@ -750,11 +750,23 @@ class PathsLeavingTheRepositoryAreRefused(unittest.TestCase):
     def _codes(self, patch: dict) -> set[str]:
         return {d["code"] for d in records.defects(_apply(BASE, _reconciled(patch)), SCHEMA)}
 
-    def test_an_absolute_path_is_outside(self) -> None:
-        self.assertIsNone(attribution.inside("C:/Users/somebody/Temp/answers.json"))
+    def test_an_absolute_path_is_outside_on_either_platform(self) -> None:
+        """A record is read on nodes that did not write it, so absoluteness is not
+        the reading platform's opinion. A drive-lettered path is a relative name to
+        POSIX and would resolve inside the repository, verifying a digest against a
+        file the record never meant; a rooted POSIX path is a relative name to
+        Windows. Both are refused everywhere, which is why this asserts both here
+        rather than one on each runner."""
+        for outside in ("C:/Users/somebody/Temp/answers.json",
+                        r"C:\Users\somebody\answers.json",
+                        "/home/runner/answers.json",
+                        r"\\server\share\answers.json"):
+            with self.subTest(path=outside):
+                self.assertIsNone(attribution.inside(outside))
 
     def test_a_traversal_is_outside(self) -> None:
         self.assertIsNone(attribution.inside("../../elsewhere/answers.json"))
+        self.assertIsNone(attribution.inside(r"..\..\elsewhere\answers.json"))
 
     def test_a_repository_relative_path_resolves(self) -> None:
         self.assertIsNotNone(attribution.inside("AGENTS.md"))

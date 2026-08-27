@@ -103,6 +103,23 @@ class PersistedClocks(unittest.TestCase):
         self.assertEqual(results["cpu_ratio"], 0.5)
         self.assertEqual(results["cpu_source"], clocks.POSIX_SOURCE)
 
+    def test_the_clock_keys_are_typed_here_because_the_schema_does_not_type_them(self):
+        """`predicate_results` is `additionalProperties: true` by design, so passing
+        the contract says nothing about these four keys. Whoever adds a key owns its
+        shape; that is this case. Widening the shared kernel schema to name one
+        participant's predicates would be the wrong repair.
+        """
+        for reading in (_reading(), _reading(cpu=None, source=clocks.UNMEASURED + "x")):
+            results = verify.observe(verify.CHECKS[0], "run_test", reading,
+                                     "2026-08-23T00:00:00+00:00")["predicate_results"]
+            with self.subTest(measured=reading.measured):
+                self.assertIsInstance(results["elapsed_seconds"], float)
+                self.assertIsInstance(results["cpu_source"], str)
+                for key in ("cpu_seconds", "cpu_ratio"):
+                    value = results[key]
+                    self.assertTrue(value is None or isinstance(value, float), key)
+                    self.assertEqual(value is None, not reading.measured)
+
     def test_an_unmeasured_cpu_is_recorded_as_null_and_never_as_the_wall_time(self):
         """The defeating case: a missing number must not read as a fast check."""
         unmeasured = _reading(cpu=None, source=clocks.UNMEASURED + "job-query-refused")

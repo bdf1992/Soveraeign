@@ -17,16 +17,18 @@ Grade a verification run on the CPU its checks consumed rather than on the wall
 time the operator waited, and keep wall time as a reported number that fails
 nothing.
 
-The drafter does not recommend adopting this as it stands. An adversarial pass
-measured the premise and found it holds in one regime and fails in another: at
+The drafter does not recommend adopting this. Two independent passes measured the
+premise. On the development host it holds in one regime and fails in another: at
 the moderate load that actually trips this gate the two clocks separate cleanly,
 and at deliberate saturation they move together, worst of all on the CPU-bound
-checks a compute band would have to key on. That measurement is under **What
-would defeat this** and should be read before the argument for the change.
+checks a compute band would have to key on. On `ubuntu-latest`, the only host
+whose verdict blocks a merge, it is weak outright — across seventeen jobs
+compute varied almost as much as wall, and between two simultaneous jobs on one
+commit it varied twice, in the opposite direction. Both measurements are under
+**What would defeat this** and should be read before the argument for the change.
 
-What the drafter does recommend is that the question is now answerable, which it
-was not before, and that answering it needs a measurement taken on
-`ubuntu-latest` rather than on a 32-core development host.
+What is worth keeping is that the question is now answerable, which it was not
+before, and that the answer it gets on present evidence is no.
 
 ## Why
 
@@ -70,9 +72,10 @@ Two readings the per-check numbers make visible for the first time:
   named here because it is what a wall-keyed ceiling is actually measuring.
 
 The same suite on `ubuntu-latest`, the runner that gates merges, read 7.600 s
-aggregate wall against 26.281 s of summed check CPU. Wall and compute are not
-translatable between the two hosts, which is the practical reason a compute band
-would have to be measured on CI rather than derived from the numbers above.
+aggregate wall against 26.281 s of summed check CPU — job 98390413682 of run
+33033290667, the `hygiene (3.11)` lane at commit `c04dedf`. Wall and compute are
+not translatable between the two hosts, which is the practical reason a compute
+band would have to be measured on CI rather than derived from the numbers above.
 
 ## What a compute-keyed budget would have said
 
@@ -152,8 +155,25 @@ is taken up below.
   together. A compute-keyed budget would therefore be sound exactly where the
   gate misfires today and unsound where a machine is being abused. Whether that
   is a budget worth having is a judgement, not a measurement, and it is Bdo's.
-  Nobody has yet shown that the compute band would be narrower than the wall band
-  it replaces, and until someone has, the case for swapping them is not made.
+
+- **On `ubuntu-latest`, which is the only host whose verdict blocks a merge, the
+  premise is weak.** An independent witness harvested the closing line of all 17
+  verify jobs on this branch: aggregate wall spans 5.284 s to 17.068 s, a spread
+  of x3.23 at 26.6 % coefficient of variation; summed check CPU spans 14.226 s to
+  33.006 s, x2.32 at 22.3 %. Compute is only marginally steadier than wall there.
+
+  Worse for the proposal, the two are not merely both noisy — they can move in
+  opposite directions. On commit `508e687` two jobs launched in the same second
+  against byte-identical content: `repository hygiene` read 2.853 s of CPU on
+  3.12 and 1.421 s on 3.11, `Console` 3.207 against 1.687, `Asset` 1.429 against
+  0.729, `repository tooling tests` 13.891 against 6.260. Every check reported
+  roughly half the CPU on the *slower* job. Whatever a CPU second means, it does
+  not mean the same thing on two GitHub runners, and a band expressed in CPU
+  seconds would be measuring the runner as surely as the wall band does.
+
+  So: nobody has shown that a compute band would be narrower than the wall band
+  it replaces, and on the host that matters the evidence now points the other
+  way. The case for swapping them is not made.
 - A compute gate does not bound what the operator waits. A suite that took
   sixty seconds of wall for twenty of CPU would pass it and be unusable. If the
   wait is what Bdo wants bounded, the answer is two graded numbers, not a
@@ -168,7 +188,9 @@ is taken up below.
 - Whether the gate keys on compute at all, or on both numbers, or stays as it
   is. `decisions/0050` left open whether a lost grade should ever be more than a
   reportable observation; this record narrows that to a concrete question and,
-  on its own evidence, answers it "not yet".
+  on its own evidence, answers it no. Rejecting it is the reading the drafter
+  expects, and the record exists so that the next participant to have the idea
+  meets the measurement instead of repeating the work.
 - If it does key on compute, the band values. They are not the wall bands, and
   they must be measured on the runner that gates merges rather than on a
   32-core development host.

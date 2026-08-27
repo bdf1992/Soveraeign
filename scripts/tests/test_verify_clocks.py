@@ -78,7 +78,7 @@ def self_reported(reading: clocks.Reading) -> float:
 
 
 class Measured(unittest.TestCase):
-    """Five children, measured once, asserted against many times."""
+    """Four children, measured once in setUpClass and asserted against many times."""
 
     @classmethod
     def setUpClass(cls):

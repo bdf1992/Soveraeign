@@ -138,18 +138,70 @@ def _render(context: dict[str, Any], console_session: str) -> str:
     return "\n".join(lines)
 
 
+def _terse(failure: Exception) -> str:
+    """The last line of a failure, not its traceback.
+
+    Whatever this hook prints becomes context for the session that is starting.
+    A pasted traceback spends that context on frames the session cannot act on and
+    buries the one line that names the fault (`AGENTS.md`, Context hygiene).
+    """
+    text = str(failure).strip()
+    lines = [line for line in text.splitlines() if line.strip()]
+    return lines[-1].strip() if lines else type(failure).__name__
+
+
+def _degraded(console_session: str, opened: bool, failure: Exception) -> str:
+    """Report a briefing this hook could not build, without misreporting the record.
+
+    The session is opened and bound before the briefing is asked for, so a briefing
+    that fails does not mean nothing was recorded. Saying so anyway is a false claim
+    about the journal, which is the one thing host plumbing must never make. Report
+    what is known, name what is not, and leave the diagnosis to the owning service.
+    """
+    state = "opened and recorded" if opened else "resumed from an earlier session"
+    return "\n".join([
+        "# Console continuity - briefing unavailable",
+        "",
+        f"Operator `{OPERATOR}` through binding `{BINDING_ID}`. "
+        f"Console session `{console_session}` was {state}.",
+        "",
+        f"The briefing could not be built: {_terse(failure)}",
+        "",
+        "What this session does not know: what landed while this operator was away, "
+        "and which threads are open. Nothing here says the journal lost anything.",
+        "",
+        "This hook does not diagnose the journal; the Record Service owns that rule. "
+        "Read it with `python -m soveraeign_record_service.cli --root .local/console/journal`, "
+        "with `services/record/src` and `services/console/src` on PYTHONPATH.",
+        "",
+        "A session close pins the read position the next session starts from. If the "
+        "close fails the same way, that position does not advance and the next session "
+        "sees this same gap.",
+    ])
+
+
 def start(event: dict[str, Any]) -> str:
-    """Open or resume the console session for this host session, and brief it."""
+    """Open or resume the console session for this host session, and brief it.
+
+    Opening and briefing are separate failures. The open commits a record; the
+    briefing only reads one. A briefing that cannot be built degrades to a report
+    naming what is unknown, rather than taking the whole hook down with it.
+    """
     host_session = event.get("session_id", "unknown")
     _ensure_grants()
     bindings = _bindings()
     console_session = bindings.get(host_session)
+    opened = False
     if console_session is None:
         console_session = _console("open-session", "--operator", OPERATOR,
                                    "--actor-kind", "MODEL",
                                    "--binding", BINDING_ID)["session_id"]
         _remember(host_session, console_session)
-    return _render(_console("session-context", "--reader", OPERATOR), console_session)
+        opened = True
+    try:
+        return _render(_console("session-context", "--reader", OPERATOR), console_session)
+    except Exception as failure:  # a briefing is a read; losing it loses no record
+        return _degraded(console_session, opened, failure)
 
 
 def end(event: dict[str, Any]) -> str:
@@ -171,8 +223,9 @@ def main(argv: list[str]) -> int:
     try:
         output = {"start": start, "end": end}[action](event)
     except Exception as failure:  # never break a session over a missing convenience
-        print(f"Console continuity unavailable ({type(failure).__name__}: {failure}). "
-              "Nothing was recorded.")
+        print(f"Console continuity unavailable ({_terse(failure)}). "
+              f"Whether the {action} committed a record is unknown from here; "
+              "read the journal rather than assuming either way.")
         return 0
     if output:
         print(output)

@@ -43,6 +43,21 @@ Key rules that bind you:
    with no defeating fixture is unwitnessable—say so.
 6. Look for what the builder did not report: unrelated files changed, weakened
    oracles, vocabulary drift, secrets, module-size violations.
+6a. Witness the check itself, not only its verdict. The dominant defect class in
+   this repository's history is a check that cannot see what it grades: a gate
+   that graded declared paths and then merged a whole branch, a check whose
+   subcommand was never committed and passed because every run was against a
+   working tree holding it, a harness that read `FAIL` out of stdout instead of
+   the exit verdict. For every check the claim relies on, ask what bytes it
+   reads and whether those are the artifact or a report about the artifact. A
+   check that reads a declaration where it could have measured is a finding even
+   when it is currently correct.
+6b. Establish whether a failure is the builder's before recording it. Several
+   sessions write this tree at once (`CLAUDE.md`, trap T6). Another session's
+   uncommitted file can turn the gate red, and a lint failure can resolve itself
+   a minute later. Re-run once, and record the working-tree state you witnessed
+   against; a verdict over a tree that moved underneath you is unattestable, and
+   saying so is the correct outcome.
 7. Read the builder's declared helpers. A helper that read or edited the change
    is inside the build: its reading is not independent observation, and a
    report offering one as the witness is refused, not discounted

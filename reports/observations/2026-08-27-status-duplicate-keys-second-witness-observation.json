@@ -1,0 +1,109 @@
+{
+  "observer_id": "urn:soveraeign:actor:sov-witness/session-f444fd",
+  "contributed_to_build": false,
+  "verdict": "REPRODUCED_WITH_ONE_DISSENT",
+  "concern": "PR #122 after repair: is the routing contradiction fixed, and can the new duplicate-key check be defeated?",
+  "subject": {
+    "commits": [
+      "efdcc4e52fa0bd3fe81ac220bf613a0e2b17a9b0"
+    ],
+    "pull_request": 122,
+    "decisions": [
+      "decisions/0046-decision-queue-drain.md"
+    ],
+    "claims_under_test": [
+      "the two acceptance-routing entries now route alike",
+      "exactly eight duplicate top-level keys removed, parsed mapping unchanged",
+      "lint now fails on a reinstated duplicate, so the next merge cannot reinstate them unseen"
+    ]
+  },
+  "observer_relation": {
+    "to_builder": "NONE",
+    "basis": "A second, separate witness. The first witness's finding shaped this repair and is inside the build. This one re-derived every claim in an isolated detached worktree and never measured the shared tree."
+  },
+  "frozen_head": "efdcc4e52fa0bd3fe81ac220bf613a0e2b17a9b0",
+  "shared_tree_conditions": {
+    "trap": "CLAUDE.md T6",
+    "mitigation": "isolated detached worktree; git status empty before, between and after every reading"
+  },
+  "checks": [
+    {
+      "command": "python scripts/lint.py",
+      "result": "PASS, twice",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/verify.py",
+      "result": "PASS twice: 39 checks at 13.221s and 14.131s, SILVER",
+      "exit_code": 0
+    }
+  ],
+  "reproduced": [
+    {
+      "id": "D122-1",
+      "claim": "the routing contradiction is repaired",
+      "method": "read both entries at the head, compared field by field, then mutated one back to its old action and re-ran the docket tests",
+      "finding": "repaired. Both entries now open with the same instruction and both reasons agree. Under the mutation the new name-pinned test fails, which is what pins it. The docket gate itself still returns 0 under the mutation, independently confirming it never could see this defect - its only rule on that field is a substring presence check."
+    },
+    {
+      "id": "D122-2",
+      "claim": "exactly eight duplicates removed, nothing else changed",
+      "method": "own regex over column-zero lines on both blobs, counted with a Counter, cross-read with a YAML parser; no repository code imported",
+      "finding": "main has 69 key occurrences and 61 distinct with 8 duplicated exactly twice; the head has 61 and 61 with none. Both parse to 61 keys and compare equal, zero value differences. Every other change is comment text or the deleted dead lines."
+    },
+    {
+      "id": "D122-3",
+      "claim": "the new check is not vacuous and covers the whole YAML population",
+      "method": "reinstated a deleted duplicate, ran lint, reverted, re-ran; then 15 probe files in an unrelated location; counted tracked YAML",
+      "finding": "exit 1 naming file, line and key, and the line named is the discarded one. Reverted, exit 0. A duplicate in an unrelated YAML file also fails. Coverage is all 41 tracked YAML documents, matching the count lint prints. Duplicates separated by a comment and by 400 lines are both caught."
+    },
+    {
+      "id": "D122-4",
+      "claim": "verify grades on exit code, not stdout text",
+      "method": "read the grading path and ran verify in observation mode, grading the emitted records rather than the console",
+      "finding": "confirmed at three construction sites; no stdout parsing anywhere. Both runs: 39 checks, none with a nonzero exit, while 24 FAIL-prefixed lines appear in stdout from defeating fixtures printing their own refusal. The hygiene check also digests the committed lint bytes, so the new rule is in the artifact rather than only in a working tree."
+    },
+    {
+      "id": "D122-5",
+      "claim": "the displacement count",
+      "method": "paired the discarded and surviving occurrence of each duplicated key from an independent line scan",
+      "finding": "six, not five. Six pairs are a discarded OWNER_ACCEPTED_ against a surviving RULED_; the other two are OWNER_ACCEPTED against OWNER_ACCEPTED with a packet id added. This confirms the count this session relayed and corrects the original report."
+    },
+    {
+      "id": "D122-6",
+      "claim": "nothing unreported, no oracle weakened",
+      "method": "diffed every changed file, grepped the tree for surviving references to the deleted values, checked module sizes",
+      "finding": "14 files, all accounted for. No prior lint rule touched; the new check is added as a defect rather than as named debt, and a test proves that. Remaining hits for the deleted spellings are a dated historical report and its rendering, which correctly quote what the file said then."
+    }
+  ],
+  "dissented": [
+    {
+      "id": "D122-D2",
+      "severity": "BLOCKING",
+      "claim_defeated": "the next merge cannot reinstate a duplicate unseen",
+      "finding": "check_duplicate_keys clears its accumulated findings, not only its key space, when it meets a document separator. So a duplicate is forgotten if any separator follows it anywhere later in the file.",
+      "consequence": "Reproduced on the artifact itself: reinstate the exact line this change deletes and append a separator and a second document, and lint exits 0 printing PASS, while a YAML reader still silently discards the earlier value. A comment on the separator line defeats it identically. This is a check that cannot see what it grades, in a change whose entire purpose is to stop that happening unseen, and it falsifies a guarantee the change writes into STATUS.yaml. It is not among the six blind spots the docstring declares, and no test covers it - the one separator test only proves the same key in two documents is legal. Latent today: no repository YAML uses a separator.",
+      "what_would_have_defeated_this_finding": "clearing only the key space at a separator, and a case with a duplicate in the first document"
+    }
+  ],
+  "residuals": [
+    {
+      "id": "D122-R1",
+      "severity": "MINOR",
+      "finding": "The routing repair's only guard is a test pinning two entries by name. Any other pair whose reasons claim they stand alike while routing apart is ungraded. The test says this about itself, so it is a declared residual rather than a concealed one."
+    },
+    {
+      "id": "D122-R2",
+      "severity": "MINOR",
+      "finding": "The pull request body's own check numbers were measured against an earlier commit and do not describe the artifact under review - 727 text files and 312 modules reported against 753 and 332 at the head."
+    }
+  ],
+  "not_examined": [
+    "whether the accepted_repository_claims contradiction should be resolved by packet, by ruling, or by removal"
+  ],
+  "standing_supported": "Supports OPEN -> BUILT. Does not support BUILT -> WITNESSED while the separator defeat stands. Everything else reproduces, including the repair and the corrected displacement count. The fix belongs inside this concern: stop discarding accumulated findings at a separator, and add the case no test covers.",
+  "judgement_items": [
+    "accepted_repository_claims lists seven subjects whose status fields read RULED_, while contracts/acceptance-routing.json entry 0001-A treats membership in that same list as the owner's answer already recorded. This change writes into STATUS.yaml an argument whose test of acceptance is that no packet exists. Both readings cannot hold for the same list. Is membership in that list an owner acceptance, or is only a packet in acceptance/accepted/ one?",
+    "The builder recorded that question in a pull request body under 'Not done here'. That is a residual in a report, not a result presented at an acceptance seam - no packet, no routing entry, nothing the audit can see. Whether it should be presented rather than noted is itself a question."
+  ]
+}

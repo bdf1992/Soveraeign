@@ -30,7 +30,9 @@ A lesson awaiting Bdo is a PROD-I-6 pending-right record. It blocks nothing.
   it is a judgement. Also `lint`, `known-gap`, `seam`, `drop`. The lesson declares
   its landing when written.
 
-Standing now: **6 `RECORDED`**, threshold 7.
+Standing now: **6 `RECORDED`**, threshold 7. L-0001 is `EFFECTIVE`.
+One more entry trips the drain, and three of the six declare `decision`
+landings that are Bdo's, so draining is not one concern.
 
 ## Entries
 
@@ -44,10 +46,18 @@ carry the interactive session's context.
 
 - Evidence: `lineage/SOURCES.lock`, all 65 `git-commit:*` and 18 `github-pr:*`
   sources; `CLAUDE.md` "Repository snapshot (informational)".
-- Landing: `lint` — a check comparing the snapshot's claimed counts against
-  `git rev-list --count` and `decisions/`, failing when they diverge past a
-  declared tolerance.
-- Standing: `RECORDED`.
+- Landing: `lint` — landed 2026-08-25 as `scripts/sov_snapshot.py`, run inside
+  `scripts/verify.py` as `orientation snapshot`. It derives the verification
+  check count, commits, decision records, declared operations and reports from
+  the record and fails when the page diverges past a declared tolerance. Two
+  further numbers are listed as NOT CHECKED rather than guessed at, after a draft
+  that re-counted conformance cases got 9 against the suite's own 20. A witness
+  then showed that a third, declared operations, had been wrongly listed as
+  underivable when a gated projection already held it.
+- Standing: `EFFECTIVE` — the check runs inside `scripts/verify.py`, which is
+  what this file defines `EFFECTIVE` to mean. It was recorded `ADMITTED` until
+  a witness pointed out that the four standings do not collapse and this one
+  was under-claiming. `RATIFIED` remains Bdo's and nothing here asks for it.
 
 ### L-0002 · Six of twenty-five sessions are locked but never recorded
 
@@ -136,6 +146,85 @@ locked sources currently satisfy a weaker claim than that.
   which makes the lock depend on an `EXTERNAL_WORLD` read to verify, or whether
   the lock declares metadata-only fidelity for those kinds and says so in
   `lineage/README.md`.
+- Standing: `RECORDED`.
+
+### L-0007 · A guard can be too narrow, or about the wrong thing, and hardening fixes only the first
+
+Two participants spent 2026-08-25 hardening two unrelated guards against
+independent witnesses. Ten refutations between them, seven on one side and three
+on the other. In both, the loop broke the same way, and neither participant
+reasoned their way out of it — one of them reasoned correctly.
+
+The console's authority check compares four strings: node, operator, capability,
+scope. One round hardened the node id into a predicate that held — a witness
+threw 297 spellings at it, Arabic-Indic digits through NUL, and 60 identities
+across all 3600 ordered pairs, and could not break it. It is still true. It was
+about the wrong noun. The credential was bound to a node and the *records* were
+not, so a caller who could not take one office took their own and spent it
+against the first one's data. Bound the records, and the *operator* was still
+caller-typed, because three of the four strings the check compares had never been
+examined. Every attack had varied the one already hardened.
+
+The landing gate's path check ran the same course. Five rounds closed spellings
+that reached an admitted prefix while naming an excluded file — traversal, dot
+segments, doubled separators, eight globs, pathspec magic. Those were narrowness
+and hardening was the right answer. Then a bare directory passed every one of
+them, because it is a canonical literal path that selects a set. Then the gate
+turned out to grade `--path` while `git merge` carried a different set entirely,
+so an excluded path reached the target having never been shown to the evaluator
+at all. Neither of the last two is a spelling.
+
+The distinction that matters: a guard can be too narrow, or it can be about the
+wrong thing. More rigour on the predicate finds the first and is invisible to the
+second, because from inside the predicate the wrong-thing failure looks like
+success. A participant who responds to being refuted by writing a broader
+predicate will be refuted again.
+
+Generalising correctly does not end the sequence either, and that is the harder
+half. After the wrong-noun refutation the console round did not write a broader
+predicate: it moved the fix from the call sites to the folds, one chokepoint every
+lookup by id passes through and listings filtering rather than refusing, on the
+stated reasoning that a call-site fix is a list and this needed a rule. That is
+the right response, reached deliberately, and the next witness refuted it anyway
+on an axis the new rule did not touch. So a correct generalisation at one level
+does not protect the level above it, and the stopping condition cannot be "until
+it is right". It has to be a budget and a seam.
+
+What broke both loops was a witness changing the question rather than sharpening
+it. One said it in a line: *I could not find an escape inside the string. The
+escape is outside it.*
+
+The operational move, and the only instruction here worth following: having
+established that the guard holds, enumerate what it touches — the operands it
+compares, the sets it names, the call sites that reach it — and mark which have
+actually been varied by an attack rather than assumed covered. The console check
+compares four operands and three were never varied. `--path` named one set and
+the merge carried another. Both were answerable by listing and asking, which is
+cheap, and neither participant did it until a witness did.
+
+Over-applied, this is expensive: enumerating neighbours has no natural stopping
+point, and a participant who applies it without a budget never lands. The counter
+is that bounded rounds each producing a real refutation is the loop working,
+while a further round chasing a class that cannot be closed inside the service is
+the loop failing. Knowing which one you are in is a judgement this lesson cannot
+make for anyone.
+
+- Evidence: `reports/observations/2026-08-25-*` — twelve observations across the
+  landing gate, seven of them dissents, with the bare-directory and merge-range
+  findings at `...directory-and-containment...` and `...effect-path-drift...`.
+  The console rounds are held on `feat/console-authority-enforced` and their
+  three observations are **not in the tree**, so a reader cannot reach them.
+  That is not an oversight by their author: `contracts/standing-grants.json`
+  requires an independent observation and admits no path under `reports/`, so
+  the loop cannot land the evidence its own precondition demands. Since the
+  merge-range fix landed, committing one to a branch refuses the entire landing,
+  because it is then carried whether or not `--path` names it. Both landings that
+  did carry observations went by hand. Widening the grant by one prefix makes
+  this citation reachable and the qualifier removable.
+- Landing: `decision` — whether "enumerate what the guard touches and mark what
+  has been varied" belongs in `AGENTS.md` alongside the evidence rules, or stays
+  a practice note. It is a claim about how participants attack their own work,
+  which is Bdo's to place.
 - Standing: `RECORDED`.
 
 ## Dropped

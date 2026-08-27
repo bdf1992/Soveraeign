@@ -202,5 +202,61 @@ class DecisionNumbers(unittest.TestCase):
         self.assertEqual(lint.check_decision_numbers(REPO_ROOT / "decisions"), [])
 
 
+class ModuleSizeLimitIsEnforced(unittest.TestCase):
+    """The 300-line rule, proved with an empty debt registry.
+
+    An empty KNOWN_MODULE_DEBT should mean no production module is over the limit.
+    It could equally mean the limit stopped being measured, and nothing in the tree
+    distinguishes those two once the last entry is removed. These cases fix that:
+    the registry is patched empty and a synthetic over-limit module must still be
+    reported as a defect, not as named debt.
+    """
+
+    def _module_of(self, lines: int) -> bytes:
+        body = "from __future__ import annotations\n" + "value = 1\n" * (lines - 1)
+        return body.encode("utf-8")
+
+    def test_a_module_at_the_limit_passes(self) -> None:
+        with patch.dict(lint.KNOWN_MODULE_DEBT, {}, clear=True):
+            code, report = run_lint_over(
+                {"scripts/at_limit.py": self._module_of(lint.MAX_PRODUCTION_LINES)}
+            )
+        self.assertEqual(code, 0, report)
+        self.assertNotIn("exceeds production limit", report)
+
+    def test_an_unregistered_module_one_line_over_is_a_defect(self) -> None:
+        """The defeating case: one line over, no debt entry, empty registry."""
+        with patch.dict(lint.KNOWN_MODULE_DEBT, {}, clear=True):
+            code, report = run_lint_over(
+                {"scripts/over_limit.py": self._module_of(lint.MAX_PRODUCTION_LINES + 1)}
+            )
+        self.assertEqual(code, 1, report)
+        self.assertIn(
+            f"scripts/over_limit.py: {lint.MAX_PRODUCTION_LINES + 1} lines exceeds "
+            f"production limit {lint.MAX_PRODUCTION_LINES}",
+            report,
+        )
+        self.assertNotIn("KNOWN DEBT", report)
+
+    def test_a_registered_module_over_the_limit_is_named_debt_not_a_defect(self) -> None:
+        """The warning path stays reachable, so an empty registry is a fact about the
+        tree rather than a disabled rule."""
+        entry = {"scripts/over_limit.py": "synthetic entry for this fixture"}
+        with patch.dict(lint.KNOWN_MODULE_DEBT, entry, clear=True):
+            code, report = run_lint_over(
+                {"scripts/over_limit.py": self._module_of(lint.MAX_PRODUCTION_LINES + 1)}
+            )
+        self.assertEqual(code, 0, report)
+        self.assertIn("KNOWN DEBT: scripts/over_limit.py", report)
+        self.assertNotIn("exceeds production limit", report)
+
+    def test_a_test_module_over_the_limit_is_not_production(self) -> None:
+        with patch.dict(lint.KNOWN_MODULE_DEBT, {}, clear=True):
+            code, report = run_lint_over(
+                {"scripts/tests/test_big.py": self._module_of(lint.MAX_PRODUCTION_LINES + 1)}
+            )
+        self.assertEqual(code, 0, report)
+
+
 if __name__ == "__main__":
     unittest.main()

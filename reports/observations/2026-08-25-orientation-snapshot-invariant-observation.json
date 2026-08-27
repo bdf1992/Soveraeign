@@ -1,0 +1,48 @@
+{
+  "observer_id": "sov-witness (independent observation, Claude Opus 5 1M)",
+  "contributed_to_build": false,
+  "verdict": "DISSENTED",
+  "concern": "orientation snapshot check, LESSONS.md L-0001",
+  "checks": [
+    {
+      "command": "SCOPE. Fifth round, on the four-module split, the graded invariant and MIN_CHECKABLE. HEAD 5c3a8ad22c119055064bd314f84e679ba9efe839. Pinned at read time: sov_snapshot.py sha256:cc324b5af8adc923 (98 lines), sovsnapshot/claims.py sha256:83a0c6114428b02d (153), sovsnapshot/grading.py sha256:cb9b3c4e445f26ae (86), sovsnapshot/selfcheck.py sha256:7de0a409c31a0449 (155), tests/test_sov_snapshot.py sha256:b09a53deef12cab5 (223). Rounds one to four stand in their own files. The dissent is narrow again: one defect of the class you have been chasing, and two descriptions of your own code that do not match it.",
+      "exit_code": 0
+    },
+    {
+      "command": "CONFIRMED. MIN_CHECKABLE behaves exactly as documented and the boundary is where the constant says. Four of five with no git: PASS, exit 0. Three of five, also without the projection: PASS: 3 of 5, exit 0. Two of five, also without reports/: REFUSED: only 2 of 5 claims could be checked here ... The verdict would be about this environment rather than about the snapshot, exit 1. The refusal names the environment and does not claim the check is broken",
+      "exit_code": 1
+    },
+    {
+      "command": "CONFIRMED. The exit-code regression test is at the level that broke: TheExitCodeIsWhatFailedCI drives cmd_check with a planted Underivable and asserts 0, with a control asserting 1 when a real drift accompanies it. The withheld case exercises unanswerability on a full clone. Shallow clone: PASS: 4 of 5 snapshot claim(s) match the record, exit 0. 12 tests OK. python scripts/lint.py PASS, 755 text files, 324 modules, 0 named debt",
+      "exit_code": 0
+    },
+    {
+      "command": "CONFIRMED by attack. The reference walk did pick up both new modules without being told. Planted claims.Underivabel in grading.py, the newest module, on a full copy outside the repository: AssertionError: Lists differ: ['sovsnapshot.grading: claims.Underivabel'] != []",
+      "exit_code": 1
+    },
+    {
+      "command": "DEFECT 19, the page itself is the one source with no guard. Every deriver in claims.py was taught to raise Underivable; claims.SNAPSHOT.read_text at grading.py line 51 was not. Scratch tree with sovverify, decisions/, reports/ and the projection present so four of five claims derive, and CLAUDE.md absent: the selfcheck passes, then check dies with FileNotFoundError: ... CLAUDE.md and a traceback. That is the round-three defect class again - a missing source becoming a crash instead of a reported fact - reaching every reader it was pointed at and not the sixth one, which is the thing this check exists to read",
+      "exit_code": 1
+    },
+    {
+      "command": "DEFECT 20, graded does not enforce the invariant it is described as enforcing. It is a nested function with a default argument, not a gate. Three of the eight cases call grading.grade directly and bypass it entirely: the historical case at selfcheck.py line 117, the duplicate-statement case at line 121, and the empty-page case at line 124. All three pass derived correctly today and nothing makes them. Enforcement would be making derived non-optional in grading.grade and giving the repository-reading path its own entry point; a default argument on one of four call sites is a convention",
+      "exit_code": 0
+    },
+    {
+      "command": "DEFECT 21, grading.py's docstring says 'Nothing here reads a repository' and it does. Line 51 reads claims.SNAPSHOT when text is omitted; line 72 calls claim.derive() when derived is omitted, which reaches git and the filesystem. grading.grade() with no arguments is precisely the repository-reading path, and it is the call cmd_check makes. Measured: grading.grade() returned findings by reading CLAUDE.md and running every deriver. The seam is real and the boundary is described one step cleaner than it is",
+      "exit_code": 0
+    },
+    {
+      "command": "THE INVARIANT, measured both ways. grading.grade(page.text, page.values) on a page with nothing derived returns all UNANSWERABLE, which your test asserts. grading.grade(page.text) with derived omitted returns all DRIFTED - 'page says 0, record holds 40', 'page says 0, record holds 356 (tolerance 25)' and three more. The safe path has a test; the unsafe path has a convention. That is the honest statement of where the placeholder stands, and it is better than it was, because the reason is now written down rather than lucky",
+      "exit_code": 0
+    },
+    {
+      "command": "DEFECT 22, small: RenamingAClaimIsCaught can never fail. The guard is a raise SystemExit at import in selfcheck.py, so a PAGE_SLOTS mismatch makes the module unimportable and the test module cannot load to run. The import check is the real guard and the test is a restatement that cannot observe the failure it names. Related style hazard: a library module that raises SystemExit at import controls the exit of every importer, including a tool that only meant to inspect it - the reference walk imports every module in the package. RuntimeError fails just as loudly without taking the process",
+      "exit_code": 0
+    },
+    {
+      "command": "BUDGET, not this concern's, and it failed this time. python scripts/verify.py exit 1: all 40 checks passed and the run failed on FAIL: verification budget (17.644s > 15.000s). Attribution by per-check time in the same run: Asset Service reference tests 17.100s against a 17.644s wall, repository tooling tests 8.397s, orientation snapshot 0.175s. One unsplittable check is the wall and has now crossed the ceiling by itself. A sibling session added scripts/sov_strand.py to this tree during the run, so contention is real, but the structure is what makes contention fatal - there is no headroom. This is the decisions/0050 question from round two, now realised",
+      "exit_code": 1
+    }
+  ]
+}

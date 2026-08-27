@@ -10,12 +10,18 @@ Refusal codes are the ones `contracts/kernel-transitions.json` already declares.
 No synonym is minted here: an out-of-scope path, an expired grant, an exhausted
 budget, and a missing grant are all `AUTHORITY_REFUSED`, distinguished by the
 detail sentence rather than by a second vocabulary.
+
+Whether a request path is one the grant's scope reaches is `sovkernel.scope`,
+split out on 2026-08-25 when five rounds of witness dissent had grown that
+reasoning past the point where it was a detail of grant evaluation.
 """
 
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from typing import Any, Iterable
+from typing import Any
+
+from sovkernel.scope import out_of_scope
 
 PERMITTED = "PERMITTED"
 REFUSED = "REFUSED"
@@ -55,38 +61,6 @@ def _instant(value: str, field: str) -> datetime:
     if parsed.tzinfo is None:
         parsed = parsed.replace(tzinfo=timezone.utc)
     return parsed.astimezone(timezone.utc)
-
-
-def _normalise(path: str) -> str:
-    """Compare repository paths in one direction of slash, whatever the host wrote."""
-    cleaned = path.replace("\\", "/")
-    while cleaned.startswith("./"):
-        cleaned = cleaned[2:]
-    return cleaned
-
-
-def _covers(prefixes: Iterable[str], path: str) -> str | None:
-    """Return the first prefix that covers `path`, or None."""
-    for prefix in prefixes:
-        clean = _normalise(prefix)
-        if path == clean.rstrip("/") or path.startswith(clean):
-            return prefix
-    return None
-
-
-def _out_of_scope(grant: dict, request: dict) -> str | None:
-    """Name the first requested path the grant's scope does not reach."""
-    scope = grant["scope"]
-    included = scope.get("paths", ())
-    excluded = scope.get("excluded_paths", ())
-    for raw in request.get("paths", ()):
-        path = _normalise(raw)
-        blocked = _covers(excluded, path)
-        if blocked is not None:
-            return f"{raw} is inside the excluded prefix {blocked}"
-        if _covers(included, path) is None:
-            return f"{raw} is outside every path prefix the grant admits"
-    return None
 
 
 def _branch_refused(grant: dict, request: dict) -> str | None:
@@ -143,7 +117,7 @@ def _grant_unavailable(grant: dict, request: dict, now: datetime) -> str | None:
         raise GrantError(f"request declares an unknown effect class: {declared!r}")
     if EFFECT_ORDER.index(declared) > EFFECT_ORDER.index(ceiling):
         return f"request declares {declared} against an effect ceiling of {ceiling}"
-    return (_out_of_scope(grant, request)
+    return (out_of_scope(grant, request)
             or _branch_refused(grant, request)
             or _budget_exceeded(grant, request))
 

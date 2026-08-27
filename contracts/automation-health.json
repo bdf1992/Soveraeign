@@ -1,0 +1,184 @@
+{
+  "table_id": "soveraeign-automation-health/v1",
+  "status": "PROPOSED",
+  "governed_by": "decisions/0083-automation-health-read.md",
+  "note": "What counts as an unhealthy automation, and what an unhealthy reading is allowed to do. Every schedule declared under .claude/schedules/ is enabled false and no scheduled run has ever executed on this machine, so the honest reading of this node today is not HEALTHY - it is UNOBSERVED, which this table names rather than letting an empty record set pass as a green one. That is the same defect CLAUDE.md trap T2 records one level up: green means unchanged, not correct. The table states no count of its own: a witness found the first draft asserting seven schedules, which was true of a working tree eleven sessions share and false of the commit that carried the claim. The table grants nothing, changes no standing, and enables no schedule. scripts/sovschedule/health.py reads it and conformance/fixtures/automation-health/cases.json defeats it.",
+  "readings": {
+    "note": "One reading per schedule, and one for the node, derived from the findings that fired. Ordered worst first; the node's reading is the worst of its schedules'. A reading is a report about records, never a standing: AGENTS.md holds OPEN -> BUILT -> WITNESSED -> RATIFIED and nothing here touches it.",
+    "order": [
+      "UNHEALTHY",
+      "DEGRADED",
+      "UNOBSERVED",
+      "HEALTHY"
+    ],
+    "meanings": {
+      "UNHEALTHY": "At least one finding of severity UNHEALTHY fired. This refuses: scripts/verify.py exits nonzero.",
+      "DEGRADED": "At least one finding of severity DEGRADED fired. Recorded and printed by name; it does not refuse.",
+      "UNOBSERVED": "Every declaration-derived rule was evaluated and passed, and no run has ever settled, so the history-derived rules had nothing to read. Not a pass. A schedule whose only history is refusals or a run still in flight reads UNOBSERVED too: a refusal invoked nothing and a run in flight has not answered, so neither is evidence that the schedule works. It is the reading every schedule carries today.",
+      "HEALTHY": "Every applicable rule was evaluated against records that exist, and none fired."
+    },
+    "vocabulary_note": "DEGRADED is also a verdict value in contracts/coldstart-run.schema.json. It carries the same sense there - the thing works and is worse than it should be - over a different object, and is not a synonym minted for an existing standing, event, effect, or role term (AGENTS.md, Python style and imports)."
+  },
+  "run_status": {
+    "note": "How one run in the ledger is read. scripts/sovschedule/runner.py writes an ATTEMPTED event for every attempt including refusals, then a REPORTED event once the executor returns; REPORTED carries outcome ATTEMPTED on exit 0, which is why this table maps to its own words rather than reusing the envelope's. A REPORTED event is the executor's self-report and never an observation (AGENTS.md, Evidence and standing).",
+    "values": {
+      "REFUSED": "An ATTEMPTED event with outcome REFUSED. A gate stopped the run before anything was invoked; the reason code is carried on the event.",
+      "PASSED": "An ATTEMPTED event with outcome ATTEMPTED, and a REPORTED event with outcome ATTEMPTED. The executor returned exit 0.",
+      "FAILED": "An ATTEMPTED event with outcome ATTEMPTED, and a REPORTED event with outcome FAILED.",
+      "RUNNING": "An ATTEMPTED event with outcome ATTEMPTED, no REPORTED event, and an age below the declaration's limits.timeout_seconds. A run in flight is not a failure.",
+      "INCOMPLETE": "The same, with an age at or above limits.timeout_seconds. The executor never reported; the runner's process died or was killed. Counted as a failure by CONSECUTIVE_FAILURES, because from the record's side an answer that never arrived is indistinguishable from a bad one."
+    },
+    "settled": [
+      "PASSED",
+      "FAILED",
+      "INCOMPLETE"
+    ],
+    "settled_note": "REFUSED and RUNNING are not settled: a refusal invoked nothing, and a run in flight has not answered yet. Rules that ask about outcomes read settled runs only."
+  },
+  "rules": {
+    "TARGET_MISSING": {
+      "severity": "UNHEALTHY",
+      "needs": "declaration",
+      "fires_when": "The file the declaration's target names does not exist under .claude/ - .claude/workflows/<name>.js for a workflow, .claude/skills/<name>/SKILL.md for a skill.",
+      "quiet_when": "The target file exists, whether or not the schedule is enabled.",
+      "applies_to_disabled": true,
+      "why": "A declaration pointing at a file that is not there is broken now, and turning it on would be the moment anyone found out. It is also the one rule derived entirely from committed bytes, so it is the one that can refuse on a machine that has no run history. scripts/sovschedule/declaration.py also refuses such a file outright, which is why the health read loads each declaration on its own and carries the loader's defect text on this finding: one dead target must not blind the reader to the other six schedules."
+    },
+    "DECLARATION_REFUSED": {
+      "severity": "UNHEALTHY",
+      "needs": "declaration",
+      "fires_when": "scripts/sovschedule/declaration.py refuses the file - malformed JSON, a shape the schema refuses, an unparseable cron expression, an EXTERNAL_WORLD effect class, or a build-mode run on the shared tree with no clean-tree precondition - and the target does exist.",
+      "quiet_when": "The loader accepts the file, or the target is missing and TARGET_MISSING already carries the loader's defect text.",
+      "applies_to_disabled": true,
+      "why": "A declaration that will not load is not a schedule, and every other verb in scripts/sov_schedule.py stops at the first one it cannot read. This surface reads each file on its own so a reader still sees the six that are fine.",
+      "suppression_note": "A missing target is itself a loader defect, so both rules would otherwise fire on one file and say the same thing twice. This rule stands down when the target is absent and TARGET_MISSING carries the full defect text instead - a condition on a field rather than a match on the loader's wording, which would break the moment that wording changed."
+    },
+    "ENABLED_NEVER_RUN": {
+      "severity": "DEGRADED",
+      "needs": "history",
+      "fires_when": "The schedule is enabled and the ledger holds no attempt for it at all.",
+      "quiet_when": "The schedule is disabled, or at least one attempt is recorded.",
+      "applies_to_disabled": false,
+      "why": "A schedule switched on that never fires is the failure this whole surface exists to notice: nothing watches the tick, so a tick that was never registered looks exactly like a tick that works.",
+      "residual": "There is no record of when a schedule was enabled, so a schedule turned on one minute ago reads DEGRADED immediately. That is true rather than wrong, and it is noisy. Step two of the request records who changed a schedule and when; a grace window belongs there, keyed on that timestamp, and not here."
+    },
+    "LAST_RUN_FAILED": {
+      "severity": "DEGRADED",
+      "needs": "history",
+      "fires_when": "The newest settled run is FAILED or INCOMPLETE.",
+      "quiet_when": "The newest settled run is PASSED, or no run has settled.",
+      "applies_to_disabled": true,
+      "why": "One failure is news. It is not yet a defect, because the executor runs against a live host and a single bad run can be the host. Two in a row is CONSECUTIVE_FAILURES and that one refuses."
+    },
+    "CONSECUTIVE_FAILURES": {
+      "severity": "UNHEALTHY",
+      "needs": "history",
+      "fires_when": "The newest consecutive_failure_threshold settled runs are all FAILED or INCOMPLETE.",
+      "quiet_when": "Fewer than the threshold have settled, or any of the newest that many PASSED.",
+      "applies_to_disabled": false,
+      "why": "Twice is the host excuse used up. This is the reading that refuses, and it clears by a run that passes - never by editing this table and never by deleting the ledger, because an enabled schedule with no history reads ENABLED_NEVER_RUN instead.",
+      "disabled_note": "It does not apply to a switched-off schedule, and that is deliberate rather than lenient. The obvious response to a schedule that failed twice is to switch it off; a switched-off schedule can never produce the passing run that clears this; so the build would refuse for ever with the only mechanical exit being the one this table forbids - deleting the ledger - on gitignored state nobody else can see. Stale failures on a schedule nobody is running are history. LAST_RUN_FAILED still reports them, and does not refuse."
+    },
+    "RUNTIME_REGRESSION": {
+      "severity": "DEGRADED",
+      "needs": "history",
+      "fires_when": "The newest completed run took at least regression_multiple times as long as the completed run before it, and the increase was at least regression_floor_seconds.",
+      "quiet_when": "Fewer than two runs have completed, or the newest is inside either bound.",
+      "applies_to_disabled": true,
+      "why": "Bdo asked for a run that took materially longer than its predecessor. Both bounds are load-bearing: the multiple alone turns a 0.2s jitter into a finding, and the floor alone misses a slow run getting slower.",
+      "completed_note": "Measured means PASSED and carrying both event timestamps. A REFUSED run invoked nothing and an INCOMPLETE run has no end, so neither has a duration; a FAILED run has one and it is not a runtime - a run that crashed in thirty seconds is not how long the work takes, and using it as the baseline reports the next ordinary run as drift. A predecessor of zero seconds - possible because ledger timestamps are second-resolution - clears the multiple by definition and is judged on the floor alone, rather than skipping the rule and staying silent on the largest regression it could ever be shown."
+    },
+    "REFUSAL_LOOP": {
+      "severity": "DEGRADED",
+      "needs": "history",
+      "fires_when": "The newest refusal_loop_threshold attempts were all REFUSED and carried the same reason code.",
+      "quiet_when": "Fewer than that many attempts exist, any of them was not a refusal, or the codes differ.",
+      "applies_to_disabled": true,
+      "why": "The runner refuses on SCHEDULE_DISABLED, EFFECT_CLASS_REFUSED, TREE_DIRTY, or RUN_IN_PROGRESS. A schedule that trips the same gate every time is alive, is doing nothing, and looks alive in every count that measures attempts. Differing codes are not a loop - they are a machine having a bad week - and this rule stays quiet for them."
+    },
+    "EMPTY_RUN": {
+      "severity": "DEGRADED",
+      "needs": "history",
+      "fires_when": "The newest run whose status is PASSED recorded no output address under reports/, whether or not that run also recorded an end time.",
+      "quiet_when": "No run has passed, or the newest passing run wrote a report.",
+      "applies_to_disabled": true,
+      "why": "The refusal loop quieter twin. Every declaration prompt in scripts/sovschedule/runner.py asks the executor to write a completion report; a run that returns zero and writes nothing is alive, spends budget, and achieves nothing, and unlike a refusal there is no code in the record naming it. Every count that measures passing runs reports it as working.",
+      "evidence_note": "The REPORTED event already carries the output addresses the runner observed, so this rule reads a record that exists rather than asking for a new one. It does not read the report file or judge what it says - that would be treating the executor own output as evidence about itself. It reads PASSED rather than measured: measured also requires an end time, and a witness found a PASSED run with no recorded end reading HEALTHY. One reader sets both together today, and history.py is declared a replaceable seam, so the rule must not depend on a coupling only the present source guarantees."
+    },
+    "OVERDUE": {
+      "severity": "DEGRADED",
+      "needs": "history",
+      "fires_when": "The schedule is enabled, at least one attempt is recorded, and either at least overdue_missed_occurrences whole cron occurrences have passed since the newest attempt, or that attempt is older than the scan window.",
+      "quiet_when": "The schedule is disabled, no attempt is recorded, fewer occurrences than that have passed with the scan window not exhausted, or the cron expression does not parse - in which case DECLARATION_REFUSED is what reports the file.",
+      "applies_to_disabled": false,
+      "why": "Distinct from ENABLED_NEVER_RUN: this is the tick that used to fire and stopped. Counting occurrences rather than elapsed time is what makes one rule cover a two-hourly schedule and a weekly one.",
+      "scan_note": "Occurrences are counted by walking minutes forward from the newest attempt, capped at scan_days to bound the work. A walk that hits the cap fires on its own: a weekly expression yields one or two occurrences inside an eight-day window depending on which weekday today is, so a threshold of two applied to the count alone would fire on one day in seven and stay silent on the other six however long the schedule had been dead. Two of the declarations here are weekly. Past the cap the count is reported as at-least, and both sides of scan_days carry a case: H-031 sits inside the window and stays quiet, H-032 sits just outside it and fires.",
+      "clock_note": "Counted in the same clock the page was rendered in, which is recorded on the page. scripts/sovschedule/runner.py matches cron in the host local time, so a read taken in UTC on a host west of UTC would report a next-due time hours or a day wrong; the reader converts to the recorded offset instead. A daylight-saving change inside the window can still move a boundary by one occurrence, which is one more reason the threshold is two."
+    }
+  },
+  "thresholds": {
+    "consecutive_failure_threshold": 2,
+    "regression_multiple": 2.0,
+    "regression_floor_seconds": 60,
+    "refusal_loop_threshold": 3,
+    "overdue_missed_occurrences": 2,
+    "scan_days": 8,
+    "note": "scan_days matches MAX_SCAN_MINUTES in scripts/sovschedule/cron.py, which is the window the existing due calculation already trusts. The other five are set from the shape of the declarations rather than from measurement, because nothing has run: the fastest cadence is two-hourly and the slowest is weekly, and regression_floor_seconds sits well under the smallest declared timeout of 2400s. They are reversible defaults and the fixture corpus is what would move them. Each one is pinned on both sides, and that is checked rather than asserted: scripts/tests/test_automation_health.py perturbs every number here one step up and one step down and fails unless a declared case goes red. A witness found the first draft claiming this property with three of the six unpinned, so the claim is now a test."
+  },
+  "blocking": {
+    "refuses_at": "UNHEALTHY",
+    "exit_codes": {
+      "0": "HEALTHY, UNOBSERVED, or DEGRADED",
+      "1": "UNHEALTHY"
+    },
+    "note": "This is the alert leg the request admits: a nonzero exit from a check scripts/verify.py runs, so an unhealthy automation fails the build. Phase I forbids external-world effects and nothing here opens an outbound channel - no email, no push, no notification that leaves this machine. A Console surface 1 notification record is the second admissible leg and is not built here; the Console notification path has no implementation.",
+    "reach_note": "On a machine holding no ledger - which is every CI runner, because .local/ is gitignored - the history-derived rules have nothing to read and only TARGET_MISSING and DECLARATION_REFUSED can refuse. CI therefore watches declaration health and never run health. The run-health alert is real only where the runs are, which today is Bdo's box and nowhere else. Reading a green CI as evidence that the automations are running is exactly the mistake this table exists to refuse. The check also needs a git repository, because the page it grades is a projection of HEAD: outside one it refuses with exit 1 and says so rather than grading the working tree instead."
+  },
+  "sources": {
+    "note": "The seam. Every rule above is stated over records, not over files, and one module reads the records out of wherever they live today. Moving this onto the Console is a change of source: replace scripts/sovschedule/history.py and leave health.py, the rules, and the fixture corpus untouched.",
+    "declarations": {
+      "today": ".claude/schedules/*.json",
+      "read_by": "scripts/sovschedule/declaration.py",
+      "owner_when_lifted": "the Automation Service, whose boundary is packet A7 - presented, not accepted, and not committed when this line was written. A forward reference, named as one.",
+      "moves_under": "the schedule lift recorded in the Automation Service charter, whose boundary is packet A7 - presented and not yet accepted, and not committed at the time this table was written. That lift is a separate concern."
+    },
+    "history": {
+      "today": ".local/schedules/ledger.ndjson",
+      "read_by": "scripts/sovschedule/history.py",
+      "owner_when_lifted": "services/record, reached at read:journal",
+      "moves_under": "the Automation Service's Journal awareness gap. That service's boundary is packet A7 - presented, not accepted, and not committed when this line was written. A forward reference, named as one."
+    },
+    "reader": {
+      "today": "scripts/sovschedule/health.py, reached as: python scripts/sov_schedule.py health. That command and the health gate read the working tree, because an operator asking about a schedule file in front of them wants an answer about that file; only the page and its staleness check read HEAD. The two can therefore disagree, and each says which it read.",
+      "owner_when_lifted": "services/console",
+      "surface": "Console surface 3, dashboards - declared projections over receipts, events, standing, and judgement spend (services/console/CHARTER.md)",
+      "placement_ruled_by": "Bdo, .claude/drafts/automation-health-and-controls-ticket.md, 2026-08-27"
+    },
+    "page": {
+      "today": "docs/automation.html, rendered by scripts/sovschedule/page.py",
+      "staleness": "Graded by: python scripts/sov_schedule.py health-check, run inside scripts/verify.py the way docs/topology.html, docs/surface.html and docs/documentation.html are graded.",
+      "split_note": "The page declaration half is a function of the commit and of the recorded instant: the declaration bytes, the declaration schema, whether each declared target is tracked, and this table's own bytes are all read at HEAD, because all four are rendered into that half. Not the working tree - eleven sessions share this checkout, and a page carrying anything only one of them has on disk cannot be reproduced by whoever clones the commit it ships in, which is how the first draft shipped a page its own check refused. A witness then found three of the four doors still open after the first repair, so scripts/tests/test_automation_health.py now carries one case per door. Bdo ruled the same referent on acceptance packet A5 for the orientation page. That half is byte-compared everywhere. The history half is derived from .local/schedules/, which is gitignored machine-local state, so it carries the digest of the ledger it was rendered from and the check grades it only where a ledger is present. Where none is, the check says the half is UNCHECKED and names the absent source rather than passing over it - the omission a declared projection has to declare (services/console/CHARTER.md, defeating cases). The page also records the UTC offset it was rendered in, so the check reproduces its clock rather than the checking host one."
+    }
+  },
+  "refuses": {
+    "note": "What this surface must never become.",
+    "cases": [
+      "reporting HEALTHY over a schedule that has no run records",
+      "enabling, disabling, or editing a schedule declaration - this read changes nothing",
+      "treating a REPORTED event as an observation that the run did what it said",
+      "silencing an UNHEALTHY reading by deleting the ledger",
+      "grading the page's history half as current on a machine that holds no ledger"
+    ]
+  },
+  "rules_note": "applies_to_disabled is read by scripts/sovschedule/health.py judge, not restated inside each derivation: a rule declared false here is skipped for a switched-off schedule before its arithmetic runs. That keeps the field load-bearing rather than decorative, and scripts/tests/test_automation_health.py proves flipping it changes what fires.",
+  "residuals": {
+    "note": "What this table cannot express yet, recorded where a reader will hit it rather than discovered later.",
+    "no_enablement_timestamp": "Nothing records when a schedule was switched on, so ENABLED_NEVER_RUN fires the moment it is enabled rather than after a grace period. Step two of the request records who changed a schedule and when; the grace window belongs there.",
+    "a_forced_run_counts_as_an_attempt": "sov_schedule.py run NAME --force writes an ordinary ATTEMPTED event, so one manual run silences ENABLED_NEVER_RUN for ever even if the tick was never registered with the host. OVERDUE covers it from the next cadence onward. Marking forced runs on the event would close it and is a change to the runner record shape, not to this table.",
+    "an_exit_code_has_no_rule": "history.py parses the executor exit code off the REPORTED event and both readers display it, because 124 is a timeout and 127 is claude not being on this machine, and an environment defect reads as a schedule defect without it. No rule keys on it yet; a person looking at the row is the reader for now.",
+    "a_dropped_report_event": "history.py builds its run list from ATTEMPTED events, so a REPORTED event whose run_id has no attempt is skipped in silence. A truncated or hand-edited ledger reads as fewer runs rather than as an incoherent record.",
+    "a_page_and_a_command_can_disagree": "The page is a projection of HEAD and the command reads what is on disk, so a schedule written and not yet committed, a target moved, a schema tightened or a rule reworded appears in one and not the other. Both say which they are reading, and each of the four inputs carries a case. The alternative - one reader over the working tree - is what shipped a page that its own check refused on every clean checkout.",
+    "what_the_corpus_does_not_pin": "The corpus defeats every rule and every threshold, and that is checked rather than asserted. It does not defeat every selector: a witness enumerated the newest-passing and newest-N windows and the exclusion of failed runs from the runtime baseline, all three of which then got a case. An independent witness afterwards mutated every field of every rule and found two more holes: applies_to_disabled survived on REFUSAL_LOOP, which declared true with no switched-off case to prove it, and needs survived on all nine because the corpus judges readings and cannot see a page. Both are closed - the first by a case, the second at the page, where that field is actually read. There is no claim here that mutation coverage is complete. Three readings have each found something the one before it did not.",
+    "needs_selects_a_section_and_the_page_refuses_a_third": "needs decides which of the page's two findings sections prints a rule, and the page has exactly two call sites. A third value is not a third section: the finding appears under neither while the headline reading still counts it, so the page would print 'Nothing fired.' twice above a verdict of UNHEALTHY. page.render refuses that table rather than rendering it. This node never exercises the grouping today, because every schedule is off and no ledger exists, so nothing but that refusal stands between a reworded table and a page that under-reports its own judge."
+  }
+}

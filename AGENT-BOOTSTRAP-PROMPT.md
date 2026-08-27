@@ -1,5 +1,24 @@
 # Agent Prompt — Establish the Founding Repository
 
+> **RETIRED 2026-08-26.** The operation below completed on 2026-08-22 and
+> produced this repository. It is kept as the record of how the tree was
+> established; it is not an instruction to anyone arriving now. An agent that
+> follows it will try to create a repository that already exists.
+>
+> Where its still-live rules went:
+>
+> | Rule | Now owned by |
+> | --- | --- |
+> | Bdo holds product intent, naming, judgement and phase-gate authority | `AGENTS.md`, Authority |
+> | Never repair a locked evidence file in place | `AGENTS.md`, Evidence and standing |
+> | Record a semantic contradiction rather than choosing the answer | `AGENTS.md`, Design System of Record; `OPEN-SEAMS.md` |
+> | Preserve `product_name: Soveraeign` | `AGENTS.md`, Repository protections |
+> | Do not report success from file creation alone | `AGENTS.md`, Completion report |
+> | `python scripts/verify_bootstrap.py` checks a fresh checkout | `scripts/README.md`, Not entrypoints |
+>
+> A cold agent starts at [`AGENTS.md`](AGENTS.md), then [`SOV.md`](SOV.md) and
+> [`STATUS.yaml`](STATUS.yaml). A person starts at [`README.md`](README.md).
+
 Copy everything below this line into a capable coding agent after attaching or
 extracting this ZIP.
 

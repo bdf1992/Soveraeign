@@ -1,0 +1,117 @@
+{
+  "observer_id": "urn:soveraeign:actor:sov-witness/session-f444fd",
+  "contributed_to_build": false,
+  "verdict": "DEFEATED",
+  "concern": "PR #120 (docs/branch-dispositions): does the report disposition every outstanding branch against the trunk?",
+  "subject": {
+    "commits": [
+      "718e3ebc3cfe05ded012f23e1c0bfb09842077e1"
+    ],
+    "pull_request": 120,
+    "decisions": [],
+    "claims_under_test": [
+      "every outstanding branch is dispositioned against the trunk",
+      "no recommendation destroys the evidence it rests on"
+    ]
+  },
+  "observer_relation": {
+    "to_builder": "NONE",
+    "basis": "Launched after the branch was pushed; built its own detached worktree from origin/docs/branch-dispositions."
+  },
+  "frozen_head": "718e3ebc3cfe05ded012f23e1c0bfb09842077e1",
+  "shared_tree_conditions": {
+    "trap": "CLAUDE.md T6",
+    "mitigation": "every reading taken in a detached worktree built from the pull request head; the shared primary tree was never used for measurement"
+  },
+  "checks": [
+    {
+      "command": "python scripts/lint.py",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/verify.py",
+      "result": "PASS: 39 checks, GRADE SILVER at 14.422s (a first run failed the budget at 19.314s with zero failing checks; host load, not charged to this branch)",
+      "exit_code": 0
+    }
+  ],
+  "reproduced": [
+    {
+      "id": "BD-1",
+      "claim": "no recommendation destroys its own evidence",
+      "method": "ran `git rev-list --count <b> --not --remotes` and verified an origin ref for all 18 dispositioned branches and the 5 contained ones",
+      "finding": "all 18 return 0 and all 18 have a live origin ref. The backlog rule that refuses a decision destroying the evidence it rests on is not tripped. This is the report's one safety claim and it reproduces exactly."
+    },
+    {
+      "id": "BD-2",
+      "claim": "the change touches only the report and the regenerated page",
+      "method": "diffed against origin/main",
+      "finding": "two files, +236 and +18/-9. No contract, fixture or secret touched."
+    },
+    {
+      "id": "BD-3",
+      "claim": "sampled disposition rows are accurate",
+      "method": "re-derived three load-bearing rows by hand (tree comparison, case id set containment, and a grep for the named default)",
+      "finding": "two of three reproduce exactly. feat/f2-integration: both trees are 979b559. feat/console-authority-enforced: 34 case ids, set difference NONE."
+    }
+  ],
+  "dissented": [
+    {
+      "id": "BD-D1",
+      "severity": "BLOCKING",
+      "claim_defeated": "every outstanding branch is dispositioned",
+      "finding": "58 branches carry 257 unique commits origin/main lacks. The report names 26 of them, covering 146 commits. 32 branches carrying 144 unique commits are not mentioned anywhere.",
+      "consequence": "the claim the pull request is named for does not hold.",
+      "what_would_have_defeated_this_finding": "an enumeration covering the remote refs, or a stated filter excluding them"
+    },
+    {
+      "id": "BD-D2",
+      "severity": "BLOCKING",
+      "claim_defeated": "the omission is staleness rather than a coverage failure",
+      "finding": "at least 16 of the 32 unmentioned branches existed and were already fetched into this clone before the first report commit, some by three days. The other ~16 are genuine drift.",
+      "consequence": "the coverage claim was false when written, not merely overtaken.",
+      "what_would_have_defeated_this_finding": "reflog first-seen dates postdating the report commits"
+    },
+    {
+      "id": "BD-D3",
+      "severity": "BLOCKING",
+      "claim_defeated": "the report's own scope arithmetic",
+      "finding": "the report calls itself 'the nineteenth branch ahead of the trunk' while naming ten further branches it deliberately left alone, all of which were ahead of the frozen trunk. The correct figure was at least 45.",
+      "consequence": "internally inconsistent by its own text.",
+      "what_would_have_defeated_this_finding": "counting the branches the report itself names"
+    },
+    {
+      "id": "BD-D4",
+      "severity": "MAJOR",
+      "claim_defeated": "the fix/console-grant-attribution row's evidence",
+      "finding": "the row states main still defaults granted_by to a literal; at this branch's own HEAD core.py takes granted_by with no default. PR #118 removed it and this branch's merge commit already contains that change. The row also directs absorption into PR #118, which merged first.",
+      "consequence": "a row whose evidence sentence is false against the tree this pull request proposes to land.",
+      "what_would_have_defeated_this_finding": "re-reading the cited line after the merge commit"
+    },
+    {
+      "id": "BD-D5",
+      "severity": "MAJOR",
+      "claim_defeated": "the branch list rests on a measurement",
+      "finding": "the report says 'the survey' five times and never names a command, ref filter or reproducible enumeration. The repository ships `python scripts/sov_branch.py ledger`, which returns a superset the report neither includes nor excludes by a stated rule.",
+      "consequence": "a declaration standing where a measurement was available.",
+      "what_would_have_defeated_this_finding": "naming the instrument"
+    }
+  ],
+  "residuals": [
+    {
+      "id": "BD-R1",
+      "severity": "MINOR",
+      "finding": "feat/human-collection-substrate is named among ten live branches and has no ref, local or remote."
+    },
+    {
+      "id": "BD-R2",
+      "severity": "MINOR",
+      "finding": "the branch is 6 commits behind origin/main and docs/documentation.html is a projection built against 5951bc4; the commits since change repository walks, so the projection may be stale on the merged result."
+    }
+  ],
+  "not_examined": [
+    "whether the 32 unmentioned branches individually warrant a disposition"
+  ],
+  "standing_supported": "Does not support BUILT -> WITNESSED for 718e3eb. Every finding is repairable inside the concern by the builder: measure the branch set with the shipped instrument, state the filter, and refresh the rows overtaken by PR #118.",
+  "judgement_items": []
+}

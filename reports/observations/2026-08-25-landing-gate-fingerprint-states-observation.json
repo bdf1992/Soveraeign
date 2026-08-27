@@ -1,0 +1,64 @@
+{
+  "observer_id": "sov-witness (independent observation, Claude Opus 5 1M)",
+  "contributed_to_build": false,
+  "verdict": "DISSENTED",
+  "concern": "landing gate effect path (round 10: deleted state, symlink state, claim fallback, staged_wrong)",
+  "checks": [
+    {
+      "command": "python -c \"digests pinned before reading: sov_land.py 3135d1882891e867 (247), sovland/tree.py 10db6c87ac820408 (285), test_sov_land.py 59bc605ecea3a76a (475), lint.py dd7fde37e11a6270 (206); authority.py d00c63cfc42f1420 and scope.py fa8c1fe9f643b86b unchanged since round 6\"",
+      "exit_code": 0
+    },
+    {
+      "command": "DEFECT: throwaway repo with core.symlinks true and a tracked symlink; fingerprint('link.py')='symlink:real.py' but worktree_blob('link.py') follows the link and returns the TARGET's blob 2ceb84c5, while the index holds 3350be1f at mode 120000  # staged_wrong(['link.py'], graded) returns ['link.py'] with nothing changed: a tracked symlink is falsely refused every time and the index is reset each attempt",
+      "exit_code": 0
+    },
+    {
+      "command": "python -c \"the defect is the mirror of the deletion regression: fingerprint learned about symlinks this round and worktree_blob did not, so the two disagree about what a symlink is; zero tracked symlinks in this repository, so it is not live here\"",
+      "exit_code": 0
+    },
+    {
+      "command": "CONFIRMED repair 1+2: throwaway repo, tracked file deleted, cmd_land driven for real  # fingerprint gives 'deleted' for the tracked deletion and 'absent' for a path that never existed; tracked() returns True and False respectively; cmd_land exits 0 and git ls-tree main no longer lists gone.py, so a removal lands",
+      "exit_code": 0
+    },
+    {
+      "command": "CONFIRMED repair 3: python -c \"claim entries with a missing path field, an empty string and a null are skipped and hold nothing; a genuine '.' hold and a traversal resolving to the root still match; ordinary collision matches; unrelated does not\"",
+      "exit_code": 0
+    },
+    {
+      "command": "CONFIRMED repair 4: python -c \"a write landing in the gap after drifted() and before git add is missed by the pre-add check and caught by staged_wrong; git reset leaves the index empty; unchanged content produces no refusal\"  # the residual window is closed, not narrowed",
+      "exit_code": 0
+    },
+    {
+      "command": "REPRODUCED THE BUDGET FAILURE, four consecutive runs: python scripts/verify.py  # FAIL: verification budget 15.886s, 15.578s, 15.388s, 15.441s against a 15.000s ceiling, with Asset Service reference tests at 15.149s, 14.956s and 15.020s - one check now equals the entire budget",
+      "exit_code": 1
+    },
+    {
+      "command": "CONSEQUENCE: python -c \"authority.evaluate with checks {'verify':'FAIL','lint':'PASS'} against the live grant\"  # REFUSED MISSING_PRECONDITION, required check 'verify' reads 'FAIL'. gather_checks records what verify returns, so while the budget is red every landing is refused and the effect path cannot be exercised at all",
+      "exit_code": 0
+    },
+    {
+      "command": "python -c \"lint.py has no line-length constant; 214 Python lines exceed the 100-character target across 60 files out of 50,183 lines scanned; the three worst in the repository are this concern's own test file at 395, 313 and 313 characters, and the next worst anywhere is 180\"",
+      "exit_code": 0
+    },
+    {
+      "command": "SAFETY: git rev-parse HEAD, git rev-parse main and a hash of git status --porcelain -uall recorded before and after three suite runs  # all unchanged; the effect-path tests remain hermetic",
+      "exit_code": 0
+    },
+    {
+      "command": "python -m unittest discover -s scripts/tests -p \"test_sov_land.py\"  # Ran 28 tests, OK, three consecutive runs",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/sov_grant.py selfcheck  # PASS: 1 grant(s) valid, 34 authority cases graded",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/lint.py  # 741 text files, 317 Python modules, 0 named debt",
+      "exit_code": 0
+    },
+    {
+      "command": "python -c \"sizes: sov_land.py 247, sovland/tree.py 285 - fifteen lines from the 300 budget, and the symlink repair adds to it\"",
+      "exit_code": 0
+    }
+  ]
+}

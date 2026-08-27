@@ -1,0 +1,80 @@
+{
+  "observer_id": "sov-witness (independent observation, Claude Opus 5 1M)",
+  "contributed_to_build": false,
+  "verdict": "DISSENTED",
+  "concern": "authority boundary refuses ungradeable paths (round 6: scope split and bidirectional exclusion)",
+  "checks": [
+    {
+      "command": "python -c \"sha256 of the exact bytes graded: authority.py d00c63cfc42f1420 (202 lines), scope.py fa8c1fe9f643b86b (146), sov_land.py ea21962780c3f22f (296), test_sov_land.py c9d34815f7f516c2 (163), grant-cases.json 726005743ec8f98a (328)\"",
+      "exit_code": 0
+    },
+    {
+      "command": "TREE MOVED MID-OBSERVATION: git diff --stat showed scripts/sov_land.py at 22 changed lines, then at 79 within the same observation; the second reading added carried_paths, which the claim handed to me did not mention (recorded trap T6)",
+      "exit_code": 0
+    },
+    {
+      "command": "point 1 seam: grep -rn 'authority._normalise|authority._covers|authority._out_of_scope|_out_of_scope' --include=*.py .  # none; no stale reference to anything that moved",
+      "exit_code": 1
+    },
+    {
+      "command": "point 1 seam: module sizes and bytes  # authority 202, scope 146, sov_land 296, tests 163; all under 300, all LF, no line over 100",
+      "exit_code": 0
+    },
+    {
+      "command": "point 1 seam: purity across the split - cp authority.py, scope.py, __init__.py and grant-cases.json into an empty directory; graded 34 cases with no repository, mismatches=0, only sovkernel modules imported  # substance intact, but authority.py can no longer be graded as a single file, which the round-5 test did",
+      "exit_code": 0
+    },
+    {
+      "command": "point 2: python -c \"_selects_excluded directional probes - sibling prefix 'contract' vs contracts/... -> None; exclusion as a filename prefix (STATUS.yaml.bak, standing-grants.json.bak) -> None, the old over-block is gone; 'decisions/' and 'decisions' behave identically; empty exclusion list -> None; excluded entry under the path -> 'is a directory containing'\"",
+      "exit_code": 0
+    },
+    {
+      "command": "REGRESSION SWEEP: throwaway repo, 22 cases, each graded raw AND through repo_relative against the live RATIFIED grant and cross-checked against what git add stages  # all six escape classes (traversal, dot, empty, trailing separator, glob, single-char, char class, magic x3, absolute, bare directory, directory with slash) REFUSED by both routes; HOLES: none",
+      "exit_code": 0
+    },
+    {
+      "command": "REGRESSION SWEEP positives: scripts/a.py, contracts/sub/deep.json, contracts/README.md, contracts/sub, scripts all PERMITTED by both routes and stage exactly what they name",
+      "exit_code": 0
+    },
+    {
+      "command": "point 3 first half: python -c \"same path contracts/sub - PERMITTED with the real grant, REFUSED when one exclusion is added to the grant, PERMITTED when exclusions are emptied; the verdict follows the grant's declarations, not repository contents\"  # the worry as stated is unfounded",
+      "exit_code": 0
+    },
+    {
+      "command": "DEFECT point 3 second half: a directory pathspec authorises an open set - git add -- contracts/sub stages every file beneath it including ones the request never enumerated, and _held_elsewhere matches by exact string so a contested path inside a permitted directory is not detected (simulated: contested 'contracts/sub/deep.json' against wanted {'contracts/sub'} -> matched False)",
+      "exit_code": 0
+    },
+    {
+      "command": "DEFECT: carried_paths has no test - grep -rn 'carried_paths' scripts/tests/ conformance/  # no positive case and no defeating case for a new mechanism that changes what the authority boundary is asked about (AGENTS.md, Testing and verification)",
+      "exit_code": 1
+    },
+    {
+      "command": "DEFECT: carried_paths docstring cites decisions/0064 as naming its reproduction 'as defeating its own ruling'; 0064 'What would defeat this ruling' names four things and none is this one, and '.github/probe-workflow.yml' appears nowhere in the repository except that docstring",
+      "exit_code": 0
+    },
+    {
+      "command": "the underlying carried-path defect is nonetheless real, verified independently: throwaway repo, branch commits .github/probe-workflow.yml, git diff --name-only main...feat/x reports it; graded as --path alone -> PERMITTED, graded as staged|carried -> REFUSED naming the excluded file",
+      "exit_code": 0
+    },
+    {
+      "command": "point 4: python scripts/sov_land.py plan --skip-checks --path scripts/sov_land.py  # changes nothing; reports 'graded paths (1): 1 staged now, 0 already carried', reaches REFUSED OBSERVATION_MISSING, so the reorder puts authority before the contested-path report as claimed",
+      "exit_code": 1
+    },
+    {
+      "command": "python scripts/sov_grant.py selfcheck  # PASS: 1 grant(s) valid, 34 authority cases graded",
+      "exit_code": 0
+    },
+    {
+      "command": "python -m unittest discover -s scripts/tests -p \"test_sov_land.py\"  # Ran 12 tests, OK",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/lint.py  # 735 text files, 315 Python modules, 0 named debt",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/verify.py  # PASS: 39 checks in 11.532s wall; GRADE SILVER; corpus gated as 'standing authority grants' at 34 cases; conformance SUITE PASS cases=20 coverage_gaps=0",
+      "exit_code": 0
+    }
+  ]
+}

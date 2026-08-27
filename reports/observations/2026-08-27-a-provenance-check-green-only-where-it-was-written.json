@@ -1,0 +1,76 @@
+{
+  "observer_id": "urn:soveraeign:actor:sov/session-f444fd",
+  "contributed_to_build": false,
+  "verdict": "DEFECT_FOUND",
+  "concern": "The diagram provenance check reports PASS in the working tree that produced its pins and FAIL on a clean checkout of the same commit. A stamp taken in a shared dirty tree converts a true failure into a false pass.",
+  "subject": {
+    "commits": [
+      "52cbe84"
+    ],
+    "pull_request": null,
+    "decisions": [],
+    "claims_under_test": [
+      "python scripts/sov_diagrams.py reports the truth about the committed tree"
+    ]
+  },
+  "observer_relation": {
+    "to_builder": "NONE",
+    "basis": "The sharper framing came from session-766662, which observed the PASS and named its significance. This session verified it with a clean-worktree control rather than relaying it. Neither session wrote the stamps."
+  },
+  "frozen_head": "52cbe84",
+  "shared_tree_conditions": {
+    "trap": "CLAUDE.md T6",
+    "mitigation": "the finding IS about the shared tree, so both readings were taken deliberately - one in it, one in a detached worktree at the same commit with an empty git status"
+  },
+  "checks": [
+    {
+      "command": "python scripts/sov_diagrams.py (shared tree, 4 diagrams modified-uncommitted)",
+      "result": "PASS: 8 diagram(s) graded, 0 stale or invalid",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/sov_diagrams.py (clean detached worktree, same commit, git status empty)",
+      "result": "FAIL: 8 diagram(s) graded, 3 stale or invalid",
+      "exit_code": 1
+    }
+  ],
+  "reproduced": [
+    {
+      "id": "PROV-1",
+      "claim": "the same command on the same commit gives opposite verdicts",
+      "method": "ran the check in the shared tree, then in a detached worktree at the identical commit with zero uncommitted entries",
+      "finding": "PASS 0 stale against FAIL 3 stale. The only difference is four uncommitted one-line stamp edits. Both sides of the comparison moved together in the dirty tree: the new pins name the uncommitted STATUS.yaml, so the check matches what wrote it."
+    },
+    {
+      "id": "PROV-2",
+      "claim": "the pins name bytes that were never committed",
+      "method": "computed sha256[:16] over all 34 committed versions of STATUS.yaml, with a control asserting a known-committed digest is found",
+      "finding": "the committed pin 0c06af30705ed27e matches NONE of them; the control digest is found where expected, so the loop is not vacuous. The uncommitted stamp is worse - it names bf3b5fd195f801d3, which is the working-tree value and matches no commit either."
+    }
+  ],
+  "dissented": [],
+  "residuals": [
+    {
+      "id": "PROV-R1",
+      "severity": "MATERIAL",
+      "finding": "This is a false PASS, not a false failure. An earlier record from this session claimed the opposite and was retracted at 0dcf0e8. The retraction stands and this is a distinct and worse defect found after it: a green check that is green only where it was written."
+    },
+    {
+      "id": "PROV-R2",
+      "severity": "MATERIAL",
+      "finding": "The failure mode is silent and self-concealing. Whoever ran the stamp saw the check go from red to green and had every reason to believe they had repaired it. The check confirmed the repair in the only place the repair was wrong."
+    },
+    {
+      "id": "PROV-R3",
+      "severity": "NOTE",
+      "finding": "Repaired already on fix/stale-generated-artifacts at d94c5bc, taken in a clean detached worktree with all 14 pins recomputed from git objects rather than files on disk, so a fresh clone reproduces every one. That is the acceptance test this check needs and did not have."
+    }
+  ],
+  "not_examined": [
+    "whether the other generated-artifact builders can produce the same false pass; the mechanism suggests they can"
+  ],
+  "standing_supported": "none. A defect report, not a witness of any change. It settles nothing.",
+  "judgement_items": [
+    "A provenance check that passes only in the tree that wrote its pins has stopped being evidence. Whether the builders should refuse to stamp against an unclean tree is a verification-domain question, but it is the smallest repair that makes this class impossible rather than merely detected."
+  ]
+}

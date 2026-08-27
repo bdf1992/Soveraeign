@@ -1,0 +1,60 @@
+{
+  "observer_id": "sov-witness (independent observation, Claude Opus 5 1M)",
+  "contributed_to_build": false,
+  "verdict": "DISSENTED",
+  "concern": "orientation snapshot check, LESSONS.md L-0001",
+  "checks": [
+    {
+      "command": "SCOPE. Third round, on the split and the repairs to defects 7, 8 and 9. HEAD 5c3a8ad22c119055064bd314f84e679ba9efe839. Pinned at read time: scripts/sov_snapshot.py sha256:41cb1391b560a30e5199 (10292 bytes, 218 lines), scripts/sovsnapshot/claims.py sha256:83a0c6114428b02d8e37 (6932 bytes, 153 lines), scripts/sovsnapshot/__init__.py sha256:228c5dd8772883b0d79f, all LF. Rounds one and two are recorded in their own files and are not superseded.",
+      "exit_code": 0
+    },
+    {
+      "command": "SPLIT reproduced. The seam holds: claims.py touches git and the filesystem and owns Underivable; sov_snapshot.py is string work over claims.CLAIMS. python scripts/lint.py PASS, 750 text files, 321 Python modules, 0 named debt. python scripts/verify.py 40 checks, 13.116s wall, SILVER, exit 0.",
+      "exit_code": 0
+    },
+    {
+      "command": "REPAIR (a) survives the split. grade() mutated to return an empty list, loaded against the real repository: REFUSED, exit 1.",
+      "exit_code": 1
+    },
+    {
+      "command": "REPAIR (7) reproduced. _shift(stated, 7) removes the literals. In a git clone --depth 1 of this repository with the real page, the real module and the landed checks.py copied in, the selfcheck no longer false-fires: exit 0.",
+      "exit_code": 0
+    },
+    {
+      "command": "REPAIR (9) reproduced. Underivable is raised by every deriver: sovverify absent, git absent, decisions/ absent, reports/ absent, capability projection absent. Five NOT SELF-CHECKED lines, no traceback anywhere.",
+      "exit_code": 0
+    },
+    {
+      "command": "DEFECT 10, CI still red. Corrected shallow clone - git clone --depth 1 with the real CLAUDE.md, the real module and the landed checks.py - python scripts/sov_snapshot.py check reports only 'commits: cannot be checked because the checkout is shallow', then prints 'Every claim above was unanswerable here. The page was not graded and nothing is asserted about it' and returns 1. That statement is false: four of the five claims were derived, graded and matched. The test counts only claims that were REPORTED, so one unanswerable claim with no other finding reads as nothing having been graded. And the exit code is 1 either way, so verify.py still fails in CI on a correct page, on all three workflows, on both Python versions. The repair to defect 8 changed the message and not the outcome. The module's stated principle is that an unanswerable claim is not a claim about the page; NOT CHECKED and NOT SELF-CHECKED items do not fail, and this one does",
+      "exit_code": 1
+    },
+    {
+      "command": "DEFECT 11, the floor can be satisfied vacuously - the attack asked for. Scratch tree with sov_snapshot.py and sovsnapshot/ only: no sovverify, no decisions/, no reports/, no capability projection, no git. Every claim is Underivable, so stated is empty, _page() returns '.', and grade('.') reports all five as stating no number. floor is 5 and len(grade(truthful)) is 5, so the truthful case passes; _shift of an empty dict is empty so the drifted case is also '.' and reports 5, matching len(CLAIMS); the duplicate case is '.' plus '.' and reports 5; grade('') is non-empty. selfcheck prints 'PASS: 5 claims, 6 selfcheck cases' and exits 0 having exercised nothing. Its own docstring says it exists because a check that silently found no claims would report PASS",
+      "exit_code": 0
+    },
+    {
+      "command": "DEFECT 12, silent coverage loss in the partial case, which is the CI case. In the shallow clone stated lacks commits, so _page drops the whole shared sentence and the truthful page is 'runs 40 checks ... 133 declared operations.' - floor 3, and the selfcheck exercises 2 of 5 claims. Only commits is named NOT SELF-CHECKED; decision records and reports are unexercised and unnamed, under a PASS line. The neighbour-drop that repair 7's floor calculation correctly accounts for is not reported to the reader, which breaks the module's own inversion rule that silence is never read as confirmation",
+      "exit_code": 0
+    },
+    {
+      "command": "DEFECT 13, the _page docstring is false and the function is worse than the docstring. It still reads 'A synthetic page stating exactly one number for every declared claim. Every claim, not most of them.' Measured: _page() returns '.', _page(commits=1) returns '.', _page(commits=1, decision records=2) returns '.'. The helper silently discards numbers it was handed whenever the shared sentence is incomplete. The second paragraph of that docstring describes a defect the function no longer prevents",
+      "exit_code": 0
+    },
+    {
+      "command": "DEFECT 14, an unchecked literal count inside the module built to stop unchecked literal counts. AST walk of cmd_selfcheck finds 7 distinct failures it can append - truthful, drifted, historical, duplicate, empty page, within tolerance, tolerance ceiling - and the summary line reads 'PASS: {len(CLAIMS)} claims, 6 selfcheck cases'. The claim count is derived and the case count is a literal, and it has drifted by one",
+      "exit_code": 0
+    },
+    {
+      "command": "DEFECT 15, a source that moves between the two derivations refuses the whole check. cmd_selfcheck derives each claim once for stated, then grade re-derives inside every case. Patching the zero-tolerance reports deriver to return a different value on each call: 'FAIL a truthful snapshot was reported as drifted', 'FAIL a historical count on the same page was read as the current one', REFUSED, exit 1. On this tree, which several live sessions share and where reports/*.md is one of the counted sources, a sibling writing one report during the run produces that. The refusal names the check as broken when the record moved",
+      "exit_code": 1
+    },
+    {
+      "command": "THE REFERENCE GUARD, answered with evidence rather than opinion. sov_snapshot.py names six attributes on the claims module. Five run on the happy path; 'except claims.Underivable' at lines 68 and 124 is evaluated only when a source fails, and no source fails in this repository. Planted both misspelled as claims.Underivabel and loaded the module against the real repository: check exits 0, PASS: 5 snapshot claim(s) match the record, every gate green. The same module in an environment where one source cannot answer: AttributeError: module 'sovsnapshot.claims' has no attribute 'Underivabel'. That is the _git and worktree_blob shape exactly, live in this module, on the path that only executes in CI",
+      "exit_code": 0
+    },
+    {
+      "command": "THE REFERENCE GUARD, scope. EveryReferenceResolves.modules() names sov_land and globs scripts/sovland/*.py. It cannot see sovsnapshot. There is also no test file for this module at all under scripts/tests/ - the split doubled the surface and added no test beside it",
+      "exit_code": 0
+    }
+  ]
+}

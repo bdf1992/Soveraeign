@@ -1,0 +1,179 @@
+{
+  "observer_id": "urn:soveraeign:actor:sov-witness/independent-fresh-reader",
+  "contributed_to_build": false,
+  "verdict": "CONFIRMED WITH QUALIFICATION",
+  "concern": "A5 - the orientation snapshot in CLAUDE.md is checked by an executable gate inside verify.py, and the concern is held at an authority seam",
+  "subject": "acceptance/A5.json",
+  "observed_at": "2026-08-26T05:09:56+00:00",
+  "observer_relation": "A fresh reader with no history of this design. All ten numbers were derived by hand with git, ls, and a direct read of the ten service.json manifests before the module under test was executed once. The builder's report and the nine prior observations under reports/observations/ were deliberately not read; no file in that directory was opened for its content.",
+  "shared_tree_conditions": {
+    "note": "Known trap T6. The tree moved three times during this witness. Every finding is anchored to one of three frozen readings.",
+    "F1": {
+      "head": "f89b4f012e21d49ecd9f00ff6a3c9b1919a0f20c",
+      "claude_md_digest_prefix": "sha256:d9034c5b71a75c82",
+      "state": "CLAUDE.md uncommitted at 21 skills and 19 workflows; a sibling session's sov-backlog skill and workflow untracked and mid-creation"
+    },
+    "F2": {
+      "head": "f89b4f012e21d49ecd9f00ff6a3c9b1919a0f20c",
+      "claude_md_digest_prefix": "sha256:58d32e9fe6d67929",
+      "state": "the builder amended CLAUDE.md to 22 and 20, amended acceptance/A5.json visible_result.expect, and repaired scripts/tests/test_sov_snapshot.py, all while this witness was reading them"
+    },
+    "F3": {
+      "head": "d285caea02570e567eb75250f75130fc5a21a8b1",
+      "state": "a sibling session committed CLAUDE.md carrying this concern's page correction, inside commit d285cae, feat(backlog): a domain for work that was built and then left"
+    }
+  },
+  "observed_state_addresses": [
+    "acceptance/A5.json",
+    "CLAUDE.md",
+    "LESSONS.md",
+    ".claude/README.md",
+    "STATUS.yaml",
+    "scripts/sov_snapshot.py",
+    "scripts/sovsnapshot/claims.py",
+    "scripts/sovsnapshot/grading.py",
+    "scripts/sovsnapshot/selfcheck.py",
+    "scripts/tests/test_sov_snapshot.py",
+    "scripts/sovverify/checks.py",
+    "contracts/standing-grants.json"
+  ],
+  "observed_state_digests": [
+    "sha256:fc72e47abdb1b4c6d42743219036af769ac9c5d13630947603a43e02f6369551",
+    "sha256:58d32e9fe6d6792989985aefc351013aa581d78618d46cb8c9586b802149c460",
+    "sha256:c6da3f25863b79a16bf5a62686f861fb6dd33e0a6dcb5da78b94cd6814eebb23",
+    "sha256:c87754581185314d1b4ecae62a5a12e8bc35efeaec1bf576f8436892646391e2",
+    "sha256:14c93e649ded6b09579aa5fbf7d01b6bf73594cfaf0141fff3df12a686a24d7d",
+    "sha256:9afe66c0edfe47429b96dc98cb8ac05a1bbb237bede9bd5aeec522cb79c21a3c",
+    "sha256:019a507306f1e7f267f407e73ddc16895812b2755ce29c87767d4d1bf0880ce9",
+    "sha256:f2b5b3ace08dea8d8e6b8d0d9ac6d9df97431bac45216449d8e2faaf056e244b",
+    "sha256:b9583774c2db94a1464c0fa1a0076f20a9533be712437b5cbb61e83a5485a44b",
+    "sha256:44ea26f69fbdef71c4204247015fa783eceb14f49d9640139549ee0d63f99b5d",
+    "sha256:91dd81942a79958d726b610fdecb792949ee1cebf4f103341f41620fbe94396f",
+    "sha256:817f96cda63a30fb799a5bf4066e74c57d941e34d1766c7ad81f7fc9ec835f44"
+  ],
+  "independent_derivation": {
+    "method": "Derived at F3 with git rev-list, ls, and a direct sum of the operations arrays in the ten service.json manifests, before running scripts/sov_snapshot.py. No number was taken from the module, from the packet, or from a prior observation.",
+    "table": [
+      {"claim": "verification checks", "witness_derived": 40, "source": "Check( occurrences inside the CHECKS tuple, scripts/sovverify/checks.py lines 27-267", "page_states": 40, "module_reports": 40, "agrees": true},
+      {"claim": "commits", "witness_derived": 359, "source": "git rev-list --count HEAD", "page_states": 356, "module_reports": 359, "agrees": true, "note": "inside the declared tolerance of 25"},
+      {"claim": "decision records", "witness_derived": 64, "source": "ls decisions/[0-9]*.md", "page_states": 64, "module_reports": 64, "agrees": true},
+      {"claim": "declared operations", "witness_derived": 133, "source": "sum of len(operations) across services/*/contracts/service.json, the primary source, not the capability-map projection the module reads", "page_states": 133, "module_reports": 133, "agrees": true, "note": "the projection was read separately and also holds 133, so the module's use of a derived artifact is corroborated rather than circular"},
+      {"claim": "service boundaries", "witness_derived": 10, "source": "ls services/*/contracts/service.json", "page_states": 10, "module_reports": 10, "agrees": true},
+      {"claim": "manifests", "witness_derived": 10, "source": "the same file set", "page_states": 10, "module_reports": 10, "agrees": true},
+      {"claim": "agent definitions", "witness_derived": 5, "source": "ls .claude/agents/*.md", "page_states": 5, "module_reports": 5, "agrees": true},
+      {"claim": "skills", "witness_derived": 22, "source": "ls -d .claude/skills/*/", "page_states": 22, "module_reports": 22, "agrees": true, "note": "was 21 at F1 and the check was red then; see finding W1"},
+      {"claim": "workflows", "witness_derived": 20, "source": "ls .claude/workflows/*.js", "page_states": 20, "module_reports": 20, "agrees": true, "note": "was 19 at F1"},
+      {"claim": "reports", "witness_derived": 24, "source": "ls reports/*.md", "page_states": 24, "module_reports": 24, "agrees": true}
+    ],
+    "result": "Ten of ten reproduce at F3. No number the module reports differs from a number this witness derived by an independent path, and no error shared between the page, the module and this witness was found."
+  },
+  "checks": [
+    {"command": "git rev-parse HEAD", "exit_code": 0, "observed": "f89b4f0 at F1 and F2, d285cae at F3"},
+    {"command": "python scripts/sov_snapshot.py check", "at": "F1", "exit_code": 1, "observed": "FAIL skills: page says 21, record holds 22; FAIL workflows: page says 19, record holds 20"},
+    {"command": "python scripts/sov_snapshot.py check", "at": "F3", "exit_code": 0, "observed": "PASS: 10 of 10 snapshot claim(s) match the record, after three NOT CHECKED lines"},
+    {"command": "python scripts/sov_snapshot.py selfcheck", "exit_code": 0, "observed": "PASS: 10 of 10 claims exercised, 8 cases"},
+    {"command": "python -m unittest discover -s scripts/tests -p test_sov_snapshot.py", "exit_code": 0, "observed": "Ran 21 tests, OK; repeated eight times after the builder's mid-witness repair, stable"},
+    {"command": "python scripts/verify.py", "exit_code": 0, "observed": "PASS: 40 checks in 11.789s wall, GRADE SILVER; repeated three times at 11.789s, 11.783s and 11.795s; the orientation snapshot check is present and costs 0.153 to 0.161s"},
+    {"command": "python scripts/lint.py", "exit_code": 0, "observed": "PASS: 768 text files, 329 Python modules, 0 named debt"},
+    {"command": "python scripts/sov_accept.py audit", "exit_code": 0, "observed": "PASS: 16 ruling(s), 1 presented for acceptance, 1 admissible hold(s), 0 open questions"},
+    {"command": "python scripts/sov_accept.py present A5", "exit_code": 0, "observed": "renders; subject CLAUDE.md, RATIFIED to RATIFIED"},
+    {"command": "worktree at f89b4f0 plus this concern's module, then sov_snapshot.py check against the committed page", "exit_code": 1, "observed": "FAIL verification checks: page says 36, record holds 40; FAIL declared operations: page says 102, record holds 133; eight further claims report that the page states no number. The packet's stated expect reproduces exactly."},
+    {"command": "worktree at f89b4f0 plus only this concern's own files, then sov_snapshot.py check", "exit_code": 1, "observed": "FAIL skills: page says 22, record holds 21; FAIL workflows: page says 20, record holds 19. At F2 the concern would have landed red. See W1."},
+    {"command": "worktree at d285cae plus only the in-scope subset, then sov_snapshot.py check and its tests", "exit_code": 0, "observed": "PASS 10 of 10, and Ran 21 tests OK. The blocking mechanism the packet names has dissolved. See W2."},
+    {"command": "sovkernel.scope.out_of_scope(grant:standing-landing-loop, each artifact path)", "exit_code": 0, "observed": "CLAUDE.md and STATUS.yaml refused as inside an excluded prefix; LESSONS.md, acceptance/A5.json and reports/observations/* refused as outside every admitted prefix; scripts/, .claude/ and docs/ admitted"},
+    {"command": "planted-count sweep against EveryNumberOnThePageIsClassified", "exit_code": 0, "observed": "eight of ten planted counts escape the scan entirely. See W3."},
+    {"command": "sabotage grading.grade to return an empty list; separately sabotage grading.drift to return an empty list", "exit_code": 1, "observed": "both caught by selfcheck, and cmd_check then prints REFUSED: the check itself is broken, so its verdict about the page means nothing. Nothing was graded. The packet's claim for selfcheck holds."},
+    {"command": "patch the commits tolerance to 51 against MAX_TOLERANCE 50, run selfcheck", "exit_code": 1, "observed": "FAIL commits: tolerance 51 exceeds the ceiling of 50. The ceiling fires. No test exercises it. See W4."},
+    {"command": "make N of 10 claims underivable, run cmd_check", "exit_code": 0, "observed": "4 underivable gives PASS 6 of 10 at exit 0; 5 underivable gives PASS 5 of 10 at exit 0; 6 underivable gives REFUSED at exit 1. Exactly half still passes. No test exercises the floor. See W4."},
+    {"command": "make 9 of 10 claims underivable, run selfcheck alone", "exit_code": 0, "observed": "PASS: 1 of 10 claims exercised, 7 cases. The selfcheck's own floor is only not-zero. See W5."},
+    {"command": "JSON Schema walk of acceptance/A5.json against contracts/acceptance-packet.schema.json", "exit_code": 0, "observed": "no errors; all sixteen required keys present; additionalProperties false satisfied; evidence 8, what_could_defeat_it 7, residuals 4"},
+    {"command": "ls .claude/workflows/sov-*.js compared with .claude/README.md", "exit_code": 0, "observed": "20 on disk and committed; the README was corrected in this concern to nineteen. See W6."},
+    {"command": "wc -l on the artifact; grep for secret shapes and absolute paths; byte check for CRLF", "exit_code": 0, "observed": "sov_snapshot.py 105, claims.py 254, grading.py 86, selfcheck.py 163, all under the 300-line budget; the test file is 460 lines and exempt by scripts/lint.py line 137; no secrets, no absolute paths, LF throughout"}
+  ],
+  "reproduced": [
+    "The ten claims are correctly derived. Every one reproduces against an independent derivation, including declared operations, which this witness derived from the primary manifests rather than from the projection the module reads.",
+    "The check is registered inside scripts/verify.py as orientation snapshot and runs there at 0.15s.",
+    "The packet's visible_result.expect for the committed page reproduces exactly.",
+    "grading.py cannot reach a repository: both arguments of grade() are required, and the AST allowlist test proves the module names only CLAIMS, Claim and Underivable from claims.",
+    "selfcheck catches a broken grade() and a broken drift(), and cmd_check then refuses rather than reporting on the page.",
+    "MAX_TOLERANCE is enforced: a tolerance of 51 makes selfcheck fail.",
+    "Every deriver refuses with Underivable rather than answering zero, across a missing directory, an unparseable check table, a shallow clone, a missing page, a directory of that name, and a non-UTF-8 page.",
+    "CLAUDE.md and STATUS.yaml are inside grant:standing-landing-loop scope.excluded_paths; LESSONS.md, acceptance/ and reports/ match none of its admitted prefixes. The grant is RATIFIED and typed VERIFICATION, which cannot ratify a JUDGEMENT claim in any case.",
+    "acceptance/A5.json validates against contracts/acceptance-packet.schema.json."
+  ],
+  "dissented": [
+    {
+      "id": "W2",
+      "on": "the packet's central sentence, that the concern is finished and cannot land under the standing authorization",
+      "finding": "Not true as of F3. At 00:03 a sibling session committed CLAUDE.md carrying this concern's exact page correction, inside commit d285cae, which belongs to a different concern. This witness then applied only the in-scope subset (scripts/sov_snapshot.py, scripts/sovsnapshot/, scripts/tests/test_sov_snapshot.py, scripts/sovverify/checks.py, .claude/README.md) onto a clean worktree at d285cae. sov_snapshot.py check returns PASS 10 of 10 at exit 0 and the 21 tests pass. The gate can land under grant:standing-landing-loop now. What remains outside the grant is LESSONS.md, STATUS.yaml, acceptance/A5.json and the observation files: one lesson entry and bookkeeping, not the gate. The packet's authority analysis is correct about the grant's scope and stale about the world."
+    },
+    {
+      "id": "W7",
+      "on": "residual 1, that verify.py fails on its own budget under load and exits 1 past 15.000s, and the launching agent's characterisation of a currently red build",
+      "finding": "Refuted at F3. Three consecutive runs: exit 0, 40 checks, 11.789s, 11.783s and 11.795s wall, GRADE SILVER. scripts/tests/test_sov_backlog.py is neither untracked nor failing; it landed in d285cae and passes. Nothing about verify.py is red. The historical measurements under eight live sessions may be accurate, but the residual is written in the present tense about a state this witness cannot reproduce."
+    },
+    {
+      "id": "W3",
+      "on": "the evidence entry for scripts/tests/test_sov_snapshot.py, that it fails when any number anywhere on the page is neither checked by a claim nor classified with a reason in the section it was ruled in",
+      "finding": "Overclaimed. The TOKEN regex requires digits, then whitespace, then a letter, with a lookbehind excluding word characters, dot, slash and hyphen. Ten counts were planted one line above the Sov profile bullet in the live snapshot section and eight escaped with no finding at all: 77 before a period, 77 alone in a markdown table cell, 77 before a comma, 77 in parentheses, 77 before a backticked term, 77 before a dash, 77-surface hyphenated, and 3/77 after a slash. Only a bare 77 widgets and a count wrapped across a line were caught. The page's own house style puts numbers in tables and before backticked terms, so these are not exotic shapes. what_could_defeat_it names the fenced-block gap, the indented-block gap and the wrong-reason gap; it does not name this one."
+    }
+  ],
+  "residuals": [
+    {
+      "id": "W1",
+      "severity": "material",
+      "finding": "The check has no single referent for the record. Nine of ten claims are derived from working-tree filesystem state, which counts untracked files; commits is derived from committed history. A page that is true about the repository is therefore reported as drifted whenever any session holds untracked work under .claude/skills, .claude/workflows, decisions/, reports/ or services/. This witness watched it happen: at F1 the check was red with page says 21, record holds 22 and page says 19, record holds 20, purely because a sibling session was mid-creation of an unrelated skill. Applying the concern's own files to a clean tree at f89b4f0 reproduced a red landing deterministically. The consequence is not only a noisy gate. The sibling concern's own commit message records that it edited CLAUDE.md because the orientation snapshot check demanded it within a minute of the skill appearing. The gate exports an edit to a grant-excluded governing document into every unrelated concern that adds a skill, workflow, decision, report, service or check."
+    },
+    {
+      "id": "W4",
+      "severity": "contract",
+      "finding": "Two consequential refusals have no test. A grep for MIN_CHECKABLE, MAX_TOLERANCE and tolerance across scripts/tests/test_sov_snapshot.py returns nothing. Both were exercised by hand here and both fire correctly, but AGENTS.md requires a positive case and a case proving the refusal for every consequential behavior, and neither has either. The boundary is worth stating too: MIN_CHECKABLE of 0.5 against ten claims means exactly five underivable claims still prints PASS. The comment above the constant still describes a five-claim table, a gate that goes green having checked one claim in five, four of five is the CI shape, which is stale prose inside the module whose subject is stale prose."
+    },
+    {
+      "id": "W5",
+      "severity": "minor",
+      "finding": "The two floors disagree. cmd_check refuses below half the claims; selfcheck.run() refuses only at zero and will print PASS: 1 of 10 claims exercised, 7 cases. Running selfcheck alone on a degraded tree reports green having exercised a tenth of the table. cmd_check's own floor covers the composite, so this is a reporting defect rather than a hole, and the packet's wording, refuses rather than passing when it derived nothing, is literally accurate."
+    },
+    {
+      "id": "W6",
+      "severity": "minor",
+      "finding": ".claude/README.md, corrected in this concern from eighteen to nineteen executable workflows, is already wrong: 20 sov-*.js workflows are on disk and committed. The packet's residual 2 predicted this would go stale again tomorrow; it went stale within the hour, before landing. It is a live instance of that residual rather than a new class of problem."
+    },
+    {
+      "id": "W8",
+      "severity": "minor",
+      "finding": "on_accept under-enumerates what sits outside the grant. It names CLAUDE.md and LESSONS.md. STATUS.yaml, which the declared artifact list includes for queuing A5, is in excluded_paths, and acceptance/A5.json itself matches none of the admitted prefixes. The evidence entry for the grant names reports/ and LESSONS.md but not STATUS.yaml or acceptance/."
+    },
+    {
+      "id": "W9",
+      "severity": "procedural",
+      "finding": "The artifact was not frozen for witnessing. acceptance/A5.json, CLAUDE.md and scripts/tests/test_sov_snapshot.py all changed bytes between the first and second reading of this witness, and CLAUDE.md was then committed by a third party. One test run taken mid-edit produced TypeError: expected string or bytes-like object, got tuple out of re.finditer, which was the transient state in which _prose_only had been changed to return a tuple and its caller had not yet been updated. That is explained and resolved and is not a defect in the presented bytes, but it means no reading of this artifact is a reading of a stable thing, and a witness's digests over an unfrozen tree are decorative."
+    },
+    {
+      "id": "W10",
+      "severity": "procedural",
+      "finding": "Land the concern whole is not safe to execute literally in this tree. At F3 the working tree also carries .claude/epic/tree.json, four files under diagrams/, scripts/sovkernel/scope.py and scripts/tests/test_sov_land.py, all modified by other concerns. A whole-tree commit would sweep them."
+    },
+    {
+      "id": "W11",
+      "severity": "acknowledged",
+      "finding": "The check reads numbers only, and this witness confirms the blindness is real rather than merely declared. The snapshot section names eight services in prose (Asset, Record, Console, Gateway, Observation, Proofing, Projection, Registry) while services/ holds ten; host and identity are counted by the number beside that sentence and named nowhere. The count is checked and correct, the sentence is incomplete, and the gate is silent. what_could_defeat_it item 3 covers this class honestly."
+    }
+  ],
+  "not_examined": [
+    "reports/observations/*.json, the nine prior observations for this concern. Not opened for content, by instruction. Filenames were seen incidentally in a grep -l result and in git status.",
+    "Whether skills and workflows are the right nouns for a reader, which is the packet's own fifth defeating item. This witness verified the counts, not the meaning.",
+    "Whether the sibling commit d285cae was itself authorized to edit CLAUDE.md. It is authored as Bdo on a feature branch, so no standing grant was exercised; whether it should have happened is judgement."
+  ],
+  "standing_supported": {
+    "transition": "BUILT -> WITNESSED",
+    "subject": "scripts/sov_snapshot.py, scripts/sovsnapshot/, scripts/tests/test_sov_snapshot.py, and the orientation snapshot entry in scripts/sovverify/checks.py",
+    "supported": true,
+    "note": "Supported for the gate as built. Not supported for the packet's authority conclusion, which W2 disputes. This observation settles nothing and ratifies nothing."
+  },
+  "judgement_items": [
+    "Is a gate whose nine filesystem claims count untracked files the gate you want, given that it made an unrelated concern edit CLAUDE.md, a path the ratified standing grant excludes, within a minute of that concern adding one skill? The alternatives are all cheap: derive from git ls-files, widen the tolerance on the volatile counts, or accept that adding any skill, workflow, decision or report is now also a CLAUDE.md edit.",
+    "A5 asks acceptance for a hold that no longer holds. Its page correction landed at 00:03 inside another session's commit, and the gate now lands green under the existing grant. Do you accept the packet as written, accept the narrower amendment it offers as an alternative of making the snapshot section's counts writable by the loop that checks them, or return it to be re-presented against the state that now exists?",
+    "decisions/0050 owns the verification time budget. This witness measured 11.79s three times with the tree quiet, so the packet's residual about failing past 15.000s under load is not reproducible today. Is the budget still the right question, or is it a load artifact to record and leave?"
+  ]
+}

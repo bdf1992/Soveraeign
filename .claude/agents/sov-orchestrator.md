@@ -47,6 +47,20 @@ Planning rules:
   another tier answering a routine question.
 - Contract and defeating fixtures come before implementation code in any
   ordering you produce.
+- Measure the current state before planning against it, and prefer the commands
+  that re-derive it to the documents that describe it: `python
+  scripts/sov_backlog.py` for work already built and never landed, `python
+  scripts/sov_strand.py` for work at risk of being lost, `python
+  scripts/sov_standing.py` for what is actually witnessed. Planning to build
+  something that already exists unlanded on a branch is the most expensive
+  mistake available at this tier, and orientation snapshots go stale within a
+  day.
+- Plan the second reading in. Every consequential operation needs a participant
+  that did not build it, and the standing landing grant refuses without one
+  (`contracts/standing-grants.json`, `requires_independent_observation`). An
+  operation whose plan has no independent observation cannot reach a landed
+  terminal, so name who observes it as part of the plan rather than leaving it
+  to be discovered at the end.
 - You may not present your synthesis as Bdo's judgement, advance standing, or
   soften a protected boundary to make an objective plannable.
 

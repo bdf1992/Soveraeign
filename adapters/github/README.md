@@ -19,7 +19,7 @@ carry different effect classes and different risks.
 | Crossing | Module | Effect class | What it moves |
 | --- | --- | --- | --- |
 | `COORDINATION_CAPTURE` | `export.py` | `RECORD_LOCAL` | GitHub to disk: issues, bodies, labels, pull requests |
-| `COORDINATION_WRITE` | `apply.py` | `EXTERNAL_WORLD` | disk to GitHub: label catalogue, containment edges, the rendered relations block |
+| `COORDINATION_WRITE` | `apply.py` | `EXTERNAL_WORLD` | disk to GitHub: label catalogue, merged-head retirement, and issue bodies |
 
 The write half exists because the board was a projection nobody projected. Colours,
 descriptions, and the containment tree were declared in the repository and never reached
@@ -56,19 +56,26 @@ settlement, or hidden fallback, and it receives no authority by operating succes
 
 | Field | Declaration |
 | --- | --- |
-| Data-boundary mode | `DECLARED_PROJECTION_OUTBOUND` — only values already derivable from `.github/labels.yml`, `contracts/ticket-label-projection.json`, and an issue's own metadata block cross outbound. No payload bytes, no evidence, no repository source, no credential |
-| Output projection | label name, colour, description; the containment edge parent-to-child; an issue body's delimited relations block, and nothing outside those delimiters |
-| Authority | the invoking operator's, named in the receipt and scoped to this surface. The crossing grants none and accepts none |
+| Admitted actions | `LABEL_ADD`, `LABEL_REMOVE`, `LABEL_CREATE`, `BRANCH_DELETE`, `BODY_SET`. An action kind absent from that table is refused by name; the crossing never falls through to a generic GitHub call |
+| Data-boundary mode | `DECLARED_PROJECTION_OUTBOUND` — label values are derivable from `.github/labels.yml` and `contracts/ticket-label-projection.json`; a body is authored in the repository and must satisfy `contracts/issue-metadata.schema.json` before it crosses. No payload bytes, no evidence, no repository source, no credential |
+| Output projection | label name, colour, description; a merged pull request's head ref; an issue body in full |
+| Authority | the invoking operator's, named in the receipt and scoped to this surface. The crossing grants none and accepts none. Labels take one owner approval per action; `BRANCH_DELETE` and `BODY_SET` each name a basis that `proofs.py` re-proves against live state immediately before the write |
 | Effect class | `EXTERNAL_WORLD`. Writing is opt-in: without `--apply` the tool prints the plan and stops |
-| Receipt | `.local/registrar/apply.receipt.json` records the crossing, target repository, start and finish, source export, every action, and each outcome |
-| Counteraction | `.local/registrar/bodies-before/` holds every body as it stood before the run. A rewrite is reversible from that snapshot; a label deletion is not, which is why only labels the catalogue explicitly retires may be deleted |
-| Refusal | the capture refusals, plus `REGISTRAR_REFUSED` for an action no declaration derives |
+| Receipt | `.local/registrar/apply.receipt.json` records the crossing, target repository, start and finish, source export, every action, and each outcome. A body write additionally records the prior body's snapshot path and digest, and the replacement's digest |
+| Counteraction | `.local/registrar/bodies-before/` holds each body as it stood immediately before its write, recorded by the proof rather than by the caller. A rewrite is reversible by writing the snapshot back; a label deletion is not, which is why only labels the catalogue explicitly retires may be deleted |
+| Refusal | the capture refusals, plus `REGISTRAR_REFUSED` for an action no declaration derives, `BODY_BLOCK_REFUSED` for a replacement the ticket contract will not admit, `BODY_SOURCE_MISSING`, `BODY_SOURCE_EMPTY`, and `AUTHORITY_BASIS_UNKNOWN` |
 
-What it will not do, by construction: open, close, comment on, assign, milestone, or
-label an issue outside the governed axes; touch a body outside its delimiters; delete a
-label the catalogue does not name in its `retire:` section; write standing, ratification,
-or settlement in any form. A label is a projection, and a projection that starts deciding
-things is a second authority.
+What it will not do, by construction: open, close, comment on, assign, or milestone an
+issue; label one outside the governed axes; land a body the ticket contract refuses or a
+blank one; delete a label the catalogue does not name in its `retire:` section; write
+standing, ratification, or settlement in any form. A label is a projection, and a
+projection that starts deciding things is a second authority. Typing `standing:
+WITNESSED` into a block is not witnessing it: the evidence rules in `AGENTS.md` decide
+whether the claim is true, whoever is permitted to write the word.
+
+`plan.py` renders the `sov:relations` block from a ticket's own metadata and plans the
+containment edge. The relations half now has an executor in `BODY_SET`; the containment
+edge still has none, and GitHub's native sub-issue link is set by hand.
 
 ## Operating it
 

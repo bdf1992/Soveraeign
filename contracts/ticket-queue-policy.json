@@ -40,10 +40,12 @@
   },
   "kind_rank": {
     "unblock": 0,
-    "implementation-stub": 1,
-    "bit": 2,
-    "village": 3,
-    "epic-of-epics": 4
+    "verification-engagement": 1,
+    "implementation-stub": 2,
+    "bit": 3,
+    "village": 4,
+    "epic-of-epics": 5,
+    "chore": 6
   },
   "next_action": {
     "DEMOTED": "repair against the defeating observation and re-enter at PROPOSED",
@@ -91,5 +93,6 @@
     ]
   },
   "provision_routes_note": "Which tiers may serve each provision. Declared data, not authority: serving a grant or judgement still needs the live grant the kernel checks at the transition.",
-  "acceptance_note": "WITNESSED is not a waiting room. A witnessed claim is written up as an acceptance packet and presented to the seat one edge up; nothing sits on an owner without a packet (contracts/acceptance-policy.json)."
+  "acceptance_note": "WITNESSED is not a waiting room. A witnessed claim is written up as an acceptance packet and presented to the seat one edge up; nothing sits on an owner without a packet (contracts/acceptance-policy.json).",
+  "kind_rank_note": "Every dispatchable kind is ranked. An unranked kind falls back to 99 and sorts below everything without saying so, which is what happened to verification-engagement between decisions 0018 and 0066: a Red engagement gates a release and was sorting last. The rank is only a tiebreaker - blocked, horizon, what a ticket unblocks, and standing all sort first - so it says what to prefer between equally urgent tickets, not what matters most. A chore sorts last on that tiebreak because it maintains a surface rather than advancing one."
 }

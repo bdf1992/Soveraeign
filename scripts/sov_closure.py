@@ -140,10 +140,33 @@ def _loop_incomplete(claim: dict, table: dict) -> str | None:
     return None
 
 
+def _recruitment_unbounded(claim: dict, table: dict) -> str | None:
+    spent = _helper(claim).get("invocations")
+    if spent is None:
+        return None
+    recruitment = table["helper_policy"]["recruitment"]
+    ceiling = recruitment["per_concern_ceiling"]
+    if spent <= ceiling or _helper(claim).get("resource_commitment_accepted"):
+        return None
+    return (f"{spent} helper invocations against a per-concern ceiling of {ceiling},"
+            f" with no accepted {recruitment['above_ceiling_reason']}")
+
+
+def _host_limit_as_owner_question(claim: dict, _table: dict) -> str | None:
+    helper = _helper(claim)
+    if not (helper.get("blocked_by_host") and helper.get("capability_requested")):
+        return None
+    if claim.get("requested_from") != "owner" or claim.get("provision") != "judgement":
+        return None
+    return "the host withheld the helper tool; a missing capability is not an owner ruling"
+
+
 RULES = {
     "WIP_EXCEEDED": _wip_exceeded,
     "ABSORBABLE_FOLLOW_ON": _absorbable_follow_on,
     "HELPER_AS_WITNESS": _helper_as_witness,
+    "RECRUITMENT_UNBOUNDED": _recruitment_unbounded,
+    "HOST_LIMIT_AS_OWNER_QUESTION": _host_limit_as_owner_question,
     "ROUTINE_DECISION": _routine_decision,
     "SEAM_UNDECLARED": _seam_undeclared,
     "JUDGEMENT_NOT_OWNER": _judgement_not_owner,

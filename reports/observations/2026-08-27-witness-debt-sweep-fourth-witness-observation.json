@@ -1,0 +1,119 @@
+{
+  "observer_id": "urn:soveraeign:actor:sov-witness/session-f444fd",
+  "contributed_to_build": false,
+  "verdict": "DEFEATED_IN_PART",
+  "concern": "PR #119 at 8b2c019, the structural repair: does closing the class rather than the cases hold?",
+  "subject": {
+    "commits": [
+      "8b2c019"
+    ],
+    "pull_request": 119,
+    "decisions": [],
+    "claims_under_test": [
+      "the value is compared whole against a closed set",
+      "non-ASCII is refused before comparison",
+      "the field is read once, in the record's own voice, with quoted material stripped",
+      "the README-to-gate coupling is data flow, not two agreeing constants",
+      "the debt list is pinned on the set"
+    ]
+  },
+  "observer_relation": {
+    "to_builder": "NONE",
+    "basis": "The fourth separate witness of this branch. Three prior witnesses are inside the build. Every claim re-derived. No repository file was created, edited or staged; the Write tool was disabled and probes ran against temporary directories."
+  },
+  "frozen_head": "8b2c019",
+  "shared_tree_conditions": {
+    "trap": "CLAUDE.md T6",
+    "mitigation": "detached worktree at 8b2c019 created from origin after fetch, clean before and after, removed at the end; the shared tree was never measured or read for evidence"
+  },
+  "checks": [
+    {
+      "command": "python scripts/lint.py",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/verify.py",
+      "result": "PASS: 39 checks, SILVER at 14.6s and 14.0s over two runs",
+      "exit_code": 0
+    }
+  ],
+  "reproduced": [
+    {
+      "id": "W4-1",
+      "claim": "the value is compared whole against a closed set",
+      "method": "drove 66 record bodies through the parser, including all 20 previously successful value defeats plus prefix, suffix, split-value, empty-value and zero-width variants; read the module to confirm no denial list remains",
+      "finding": "holds completely. Every one of the twenty reads as nothing and none promotes. The accepted set is a two-key whitelist and the hand-written denial list is genuinely deleted rather than extended. Honest spellings still work, including lowercase, underscored, tab-padded and CRLF. This is the half that went structural and it is the right shape."
+    },
+    {
+      "id": "W4-2",
+      "claim": "non-ASCII is refused before comparison",
+      "method": "Turkish dotless i in the token, Cyrillic O in a denial, zero-width space inside the token, zero-width joiner appended",
+      "finding": "all four read as nothing. The ASCII test is applied after strip and before the uppercase comparison, so the case-folding identity gap is closed by construction rather than enumerated."
+    },
+    {
+      "id": "W4-3",
+      "claim": "the README-to-gate coupling is real data flow",
+      "method": "repointed the gate at temp directories holding mutated copies of the README and ran the coupling test against each",
+      "finding": "confirmed. Four mutations fail loudly and by name, including one reporting that the README instructs a spelling the gate cannot read. The README's bytes are genuinely fed to the gate as the record under test. Bounded: only the tagged block is coupled, and surrounding prose can still instruct an unreadable shape while the test stays green. The README states that scope, so it is a limit rather than a false claim."
+    },
+    {
+      "id": "W4-4",
+      "claim": "the debt list is pinned on the set",
+      "method": "patched the list four ways and ran the three guards: a swap holding the count at three, an addition, a removal, and an entry naming an absent module",
+      "finding": "confirmed. The swap now fails two guards where it previously passed all twenty tests. The guards measure bytes on disk rather than declarations."
+    },
+    {
+      "id": "W4-5",
+      "claim": "RATIFIED semantics",
+      "method": "four gate runs across the claim-kind by record-state matrix",
+      "finding": "confirmed. A RATIFIED field is satisfiable by a WITNESSED record with an honest printed caveat; a record declaring RATIFIED is refused for both kinds as over-reach rather than reported as absent."
+    },
+    {
+      "id": "W4-6",
+      "claim": "three subjects, none promoted",
+      "method": "enumerated the directory and ran the gate against the real STATUS.yaml",
+      "finding": "confirmed across all 48 column-zero status keys. Nothing is promoted, so the leaks below are latent rather than a standing the repository asserts today."
+    }
+  ],
+  "dissented": [
+    {
+      "id": "W4-D1",
+      "severity": "MAJOR",
+      "claim_defeated": "the field is read in the record's own voice",
+      "finding": "Four markdown quotation forms leak and promote a WITNESSED claim from records that declare nothing themselves: a nested four-backtick fence containing a three-backtick example, because the fence pattern does not nest; an unterminated fence, which the pattern never matches; a blockquoted label; and a four-space indented label, both admitted by the label pattern's own prefix allowance. Verified end to end on four complete records whose stated verdict is NOT-YET.",
+      "consequence": "The same finding the two prior witnesses returned, at its third site. The claimed structural move is enforced by an enumeration of three strippers, and the enumeration is short by at least two forms and wrong on both fence nesting and fence termination. The most likely record to hit it is a record about this gate quoting the README, which requires an outer four-backtick fence - the exact shape the builder's own comment predicts. The README's sentence that quoting the example does not answer for the record is false for four of six quotation forms, and its invitation to say so in ordinary words produces precisely the promoting shape.",
+      "what_would_have_defeated_this_finding": "reading the value from a declared position rather than searching prose and stripping what looks like quotation"
+    },
+    {
+      "id": "W4-D2",
+      "severity": "MINOR",
+      "claim_defeated": "qualified verdicts support nothing",
+      "finding": "An asterisk footnote survives: the value followed by an asterisk, with a footnote below qualifying it, reads as plain WITNESSED and promotes, because the decoration stripper removes the asterisk.",
+      "consequence": "The README names four qualified spellings as supporting nothing; this is a fifth, and it renders visibly as a qualification to any human reader.",
+      "what_would_have_defeated_this_finding": "applying the whitelist before decoration stripping rather than after"
+    }
+  ],
+  "residuals": [
+    {
+      "id": "W4-R1",
+      "severity": "MATERIAL",
+      "finding": "The STATUS.yaml side is untouched by this branch and still scans tokens split on underscore with a NOT-denial heuristic - the exact discipline the record side just abandoned as having an unenumerable tail. Quoted, comment-suffixed, hyphen-compound, indented and capitalised status fields are all invisible to it. Not a regression and not currently exploited, since the live file has every key at column zero and claims nothing. But the argument this change makes against scanning is left unapplied to half the same gate."
+    },
+    {
+      "id": "W4-R2",
+      "severity": "MINOR",
+      "finding": "The main block sits above the twenty cases this branch added, so running the test file directly grades 21 of 41 and reports OK - a green that graded none of the repair, on the most obvious command a reader would type. The gate uses the module import path and collects all 41, so the gate is unaffected. The placement predates the branch; the branch made it consequential."
+    },
+    {
+      "id": "W4-R3",
+      "severity": "NOTE",
+      "finding": "Eleven FAIL lines in verify's stdout are defeating fixtures printing their own refusal inside the tooling shards. Both runs exited 0 with all 39 checks passing."
+    }
+  ],
+  "not_examined": [
+    "whether the STATUS.yaml side should receive the same structural treatment; that is outside this branch's diff"
+  ],
+  "standing_supported": "none. Does not support BUILT -> WITNESSED for 8b2c019. Half the repair is structural and holds under everything thrown at it; half is still an enumeration and leaked at a third site. Nothing is currently mis-standing, so this is a latent gate defect rather than a false standing on the record.",
+  "judgement_items": []
+}

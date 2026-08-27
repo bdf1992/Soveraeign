@@ -1,16 +1,19 @@
 {
+  "artifact_revision": "b3057c0d986685eb8f943597e390b0aa4f8622b6",
   "case_id": "WITNESS-DEBT-2026-08-26-HOST-READ-HEALTH",
-  "participant_id": "host-service-reference",
-  "artifact_revision": "4b96ba19df210f148bc41e4e4c2d8166bec72091",
-  "participant_claim": "REFUSED",
   "observed": {
-    "subjects": ["issue #108"],
-    "subject_paths": ["services/host/", "adapters/host/"],
+    "blue": {
+      "lint": "PASS",
+      "trap_note": "CLAUDE.md T2 applies: verify exit 0 means unchanged, not conformant.",
+      "verify": "PASS, 39 checks in 12.058s wall, GRADE SILVER"
+    },
     "consequential_claim": "One governed local health read. Every call requires a live SOV grant for its exact capability and scope; every mutating host operation stays declared but unreachable; the boundary reported is the process execution host and not an assumed machine; the host name is not exposed.",
-    "observer_id": "claude-opus-5[1m]/witness-debt-lane@2026-08-26",
-    "observer_relation": "DECLARED_SURFACE_SUBPROCESS_ONLY",
-    "observer_independence_basis": "This session did not build services/host or adapters/host and did not edit either. The probe imports neither soveraeign_host_service nor local_host_adapter; it reaches the vertical only as a subprocess through scripts/sov_interface.py and the Console Service CLI. The participant's own suite at services/host/tests/test_host_service.py was not re-run as evidence: it imports the implementation directly and uses a fake adapter in nine of its eleven tests, so running it would have been the build checking itself.",
-    "observed_at": "2026-08-26T17:06:10Z",
+    "correction_to_the_premise": {
+      "claim_examined": "that the Host Service crosses a process boundary",
+      "finding": "It does not. A grep for subprocess, os.system, popen, Popen, os.exec and shell=True across services/host/ and adapters/host/ returns zero matches. The adapter's whole host reading is three pathlib read_text calls against /proc/meminfo, /proc/uptime and /proc/sys/kernel/random/boot_id, plus os.getloadavg, os.cpu_count and three platform calls, all in-process. services/host/contracts/service.json forbids arbitrary-shell-or-command-execution and the code matches the manifest. On this Windows host the three /proc reads and os.getloadavg fail, so the real adapter would return nulls with six declared limitations.",
+      "why_it_matters_here": "The lane prioritised this subject as boundary-crossing. It is not, which lowers its consequence relative to the journal, and it means no external-world effect was ever at stake in this observation."
+    },
+    "observed_at": "2026-08-27T03:57:48Z",
     "observed_state_addresses": [
       "services/host/CHARTER.md",
       "services/host/KNOWN-GAPS.md",
@@ -30,61 +33,60 @@
       "sha256:aa9c34db73cb91982d1894818c185a82716110849de47ef2a25d15a5fa2f3773",
       "sha256:af4fc6ef00bd55f6ca79e6f089a834dd56e327b86ca83c9bbab7fc89153e97c2",
       "sha256:4bbf031ac816091600b3536f5a986d49fc7fdf050f825883b424f7b700c9276c",
-      "sha256:3860601343b2a35986506f35319d5b760593372e200899efe822e4f1a7667162",
-      "sha256:1947cb0cf2ae11b9471d27b60b80131f1e5d6ac4542bde796334e45f183027ee"
+      "sha256:087794ceb4fbac7a92f62a59ddac769c9ab54a2a8470accccae764c4f2ba2ba7",
+      "sha256:6c176fac95b657cd94bb66514f44271760ae0f1b7e1be08bee397bb1eb0638bc"
     ],
-    "reproduction": "python witness/probes/probe_host_interface.py",
+    "observer_id": "claude-opus-5[1m]/witness-debt-lane@2026-08-26",
+    "observer_independence_basis": "This session did not build services/host or adapters/host and did not edit either. The probe imports neither soveraeign_host_service nor local_host_adapter; it reaches the vertical only as a subprocess through scripts/sov_interface.py and the Console Service CLI. The participant's own suite at services/host/tests/test_host_service.py was not re-run as evidence: it imports the implementation directly and uses a fake adapter in nine of its eleven tests, so running it would have been the build checking itself.",
+    "observer_relation": "DECLARED_SURFACE_SUBPROCESS_ONLY",
     "predicate_results": {
-      "projection_agrees_under_both_bindings": {
-        "held": true,
-        "detail": "show host.read-health renders JSON under MODEL and a text rendering under HUMAN, and both carry operation digest 031838d422336d53960865013df469593d861764f0945b69fe9229906172c080. The projection itself reports observed=no with an empty observation_ids, so the Node Interface agrees that nothing had observed this operation before this receipt."
-      },
-      "no_grant_is_refused": {
-        "held": true,
-        "detail": "invoke host.read-health with no grant recorded anywhere returns reason_code AUTHORITY_REFUSED, failure_class GOVERNED_REFUSAL, at stage check-authority, and the refusal is appended to the journal as a RECEIPT entry rather than discarded."
-      },
-      "no_scope_slips_through": {
-        "held": true,
-        "isolates_scope_as_the_reason": false,
-        "detail": "A foreign scope (host:someone-elses-machine), a wildcard scope (*), and an empty scope all return AUTHORITY_REFUSED. Read narrowly: with no live grant reachable, a correct scope would refuse too, so this shows no scope slips through, not that scope was the reason."
+      "host_name_not_disclosed": {
+        "detail": "Every byte printed by show, prove, and a refused invoke was scanned for this machine's platform.node() value, its USERNAME, and its USERPROFILE path. No surface disclosed any of the three.",
+        "held": true
       },
       "mutating_operations_unreachable": {
-        "held": true,
-        "detail": "All seven of host.restart, host.power-off, host.suspend, host.request-restart, host.apply-driver-update, host.install-utility and host.remove-utility return OPERATION_NOT_REACHABLE. None committed. The refusal fires before an envelope is built, not after an authority check."
+        "detail": "All seven of host.restart, host.power-off, host.suspend, host.request-restart, host.apply-driver-update, host.install-utility and host.remove-utility return OPERATION_NOT_REACHABLE. None committed. The refusal fires before an envelope is built, not after an authority check.",
+        "held": true
       },
-      "host_name_not_disclosed": {
+      "no_grant_is_refused": {
+        "detail": "invoke host.read-health with no grant recorded anywhere returns reason_code AUTHORITY_REFUSED, failure_class GOVERNED_REFUSAL, at stage check-authority, and the refusal is appended to the journal as a RECEIPT entry rather than discarded.",
+        "held": true
+      },
+      "no_scope_slips_through": {
+        "detail": "A foreign scope (host:someone-elses-machine), a wildcard scope (*), and an empty scope all return AUTHORITY_REFUSED. Read narrowly: with no live grant reachable, a correct scope would refuse too, so this shows no scope slips through, not that scope was the reason.",
         "held": true,
-        "detail": "Every byte printed by show, prove, and a refused invoke was scanned for this machine's platform.node() value, its USERNAME, and its USERPROFILE path. No surface disclosed any of the three."
+        "isolates_scope_as_the_reason": false
+      },
+      "projection_agrees_under_both_bindings": {
+        "detail": "show host.read-health renders JSON under MODEL and a text rendering under HUMAN, and both carry operation digest 031838d422336d53960865013df469593d861764f0945b69fe9229906172c080. The projection itself reports observed=no with an empty observation_ids, so the Node Interface agrees that nothing had observed this operation before this receipt.",
+        "held": true
       },
       "prove_reaches_the_vertical_with_a_substitute_adapter": {
-        "held": true,
-        "detail": "sov_interface.py prove drives host.read-health under both bindings to terminal outcome COMMITTED with standing_effect NONE, boundary PROCESS_EXECUTION_HOST, and same_host_semantics true. It uses adapter urn:soveraeign:adapter:node-interface-proof-host:v1, not adapters/host/local_host_adapter.py, so it proves the service, gateway and binding path and not the adapter that touches the host. The proof declares its own standing as BUILT_EVIDENCE_SETTLES_NOTHING."
-      },
-      "success_path_reachable_through_declared_surfaces": {
-        "held": false,
-        "severity": "MATERIAL_TO_WITNESSING",
-        "detail": "The Console Service CLI is the only declared surface that records a live grant, and it records one successfully (exit 0) at every state-root placement its declared arguments allow. Its journal always lands at <console_root>/journal/record-service.sqlite3, while scripts/sovnode/composition.py reads authority from RecordService(<state_root>/record). Three placements were tried - console root equal to the state root, to <state_root>/console, and to <state_root>/record - and all three left invoke at AUTHORITY_REFUSED. No combination of declared arguments puts a Console-issued grant in the store the Node Interface reads.",
-        "consequence": "The success path of the Host Service's only BUILT operation cannot be reached by any participant that refuses to import the implementation. The health snapshot, its schema conformance, its limitation reporting, and the adapter diagnostic non-leakage defended by commits 33c7b98 and bbad5a6 are therefore unobserved here and cannot be observed by this path.",
-        "what_would_be_needed": "A declared operation that records a grant into the state root the Node Interface reads - either a grant subcommand on scripts/sov_interface.py, or a --journal argument on the Console CLI, or a documented state-root layout that composes the two. Any of the three would make read-health independently witnessable."
+        "detail": "sov_interface.py prove drives host.read-health under both bindings to terminal outcome COMMITTED with standing_effect NONE, boundary PROCESS_EXECUTION_HOST, and same_host_semantics true. It uses adapter urn:soveraeign:adapter:node-interface-proof-host:v1, not adapters/host/local_host_adapter.py, so it proves the service, gateway and binding path and not the adapter that touches the host. The proof declares its own standing as BUILT_EVIDENCE_SETTLES_NOTHING.",
+        "held": true
       },
       "refusal_is_visible_in_the_exit_status": {
+        "detail": "Both AUTHORITY_REFUSED on host.read-health and OPERATION_NOT_REACHABLE on host.power-off return process exit 0 from scripts/sov_interface.py. The Record Service CLI answers the same class of refusal with exit 2. A caller that reads exit status rather than parsing stdout cannot tell a governed refusal from a committed call on this surface.",
         "held": false,
-        "severity": "MINOR",
-        "detail": "Both AUTHORITY_REFUSED on host.read-health and OPERATION_NOT_REACHABLE on host.power-off return process exit 0 from scripts/sov_interface.py. The Record Service CLI answers the same class of refusal with exit 2. A caller that reads exit status rather than parsing stdout cannot tell a governed refusal from a committed call on this surface."
+        "severity": "MINOR"
+      },
+      "success_path_reachable_through_declared_surfaces": {
+        "consequence": "The success path of the Host Service's only BUILT operation cannot be reached by any participant that refuses to import the implementation. The health snapshot, its schema conformance, its limitation reporting, and the adapter diagnostic non-leakage defended by commits 33c7b98 and bbad5a6 are therefore unobserved here and cannot be observed by this path.",
+        "detail": "The Console Service CLI is the only declared surface that records a live grant, and it records one successfully (exit 0) at every state-root placement its declared arguments allow. Its journal always lands at <console_root>/journal/record-service.sqlite3, while scripts/sovnode/composition.py reads authority from RecordService(<state_root>/record). Three placements were tried - console root equal to the state root, to <state_root>/console, and to <state_root>/record - and all three left invoke at AUTHORITY_REFUSED. No combination of declared arguments puts a Console-issued grant in the store the Node Interface reads.",
+        "held": false,
+        "severity": "MATERIAL_TO_WITNESSING",
+        "what_would_be_needed": "A declared operation that records a grant into the state root the Node Interface reads - either a grant subcommand on scripts/sov_interface.py, or a --journal argument on the Console CLI, or a documented state-root layout that composes the two. Any of the three would make read-health independently witnessable."
       }
     },
-    "correction_to_the_premise": {
-      "claim_examined": "that the Host Service crosses a process boundary",
-      "finding": "It does not. A grep for subprocess, os.system, popen, Popen, os.exec and shell=True across services/host/ and adapters/host/ returns zero matches. The adapter's whole host reading is three pathlib read_text calls against /proc/meminfo, /proc/uptime and /proc/sys/kernel/random/boot_id, plus os.getloadavg, os.cpu_count and three platform calls, all in-process. services/host/contracts/service.json forbids arbitrary-shell-or-command-execution and the code matches the manifest. On this Windows host the three /proc reads and os.getloadavg fail, so the real adapter would return nulls with six declared limitations.",
-      "why_it_matters_here": "The lane prioritised this subject as boundary-crossing. It is not, which lowers its consequence relative to the journal, and it means no external-world effect was ever at stake in this observation."
-    },
-    "blue": {
-      "verify": "PASS, 39 checks in 12.058s wall, GRADE SILVER",
-      "lint": "PASS",
-      "trap_note": "CLAUDE.md T2 applies: verify exit 0 means unchanged, not conformant."
-    },
-    "verdict": "NOT-YET",
+    "reproduction": "python witness/probes/probe_host_interface.py",
     "standing_supported": "NONE for the subject as a whole. The refusal half of the vertical is independently observed and holds under attack: authority is required, no scope slips through, and every mutating operation is unreachable. The success half was not reached and is not witnessable through any declared path today. host_service_status stays BUILT_READ_HEALTH_SELF_TESTED_REMAINDER_DECLARED_NOT_WITNESSED and was not edited.",
+    "subject_paths": [
+      "services/host/",
+      "adapters/host/"
+    ],
+    "subjects": [
+      "issue #108"
+    ],
     "uncovered": [
       "The health snapshot itself: its content, its conformance to services/host/contracts/host-health.schema.json, and its limitations list.",
       "Adapter diagnostic non-leakage. The tests at services/host/tests/test_host_service.py:99-121 defend it with a fabricated credential string; this observation could not reach the code path that would leak it.",
@@ -92,13 +94,16 @@
       "Whether the real LocalHostAdapter behaves correctly on a Linux host with a live procfs. Only the Windows degradation path was seen, and only by reading, not by running it through the service.",
       "The 14 PROPOSED operations beyond confirming seven of them are unreachable.",
       "Issue #108 is absent from the checked-in epic projection .claude/epic/tree.json, which synced 2026-08-25T00:18:23Z. The subject was identified from services/host/ and STATUS.yaml instead."
-    ]
+    ],
+    "verdict": "NOT-YET"
   },
+  "participant_claim": "REFUSED",
+  "participant_id": "host-service-reference",
   "telemetry": {
-    "probe": "witness/probes/probe_host_interface.py",
-    "checks_run": 8,
-    "checks_held": 6,
     "checks_failed": 2,
+    "checks_held": 6,
+    "checks_run": 8,
+    "probe": "witness/probes/probe_host_interface.py",
     "reached_through": "scripts/sov_interface.py and the Console Service CLI as subprocesses"
   }
 }

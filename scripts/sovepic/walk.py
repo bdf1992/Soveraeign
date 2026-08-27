@@ -30,41 +30,8 @@ from sovschedule import jsonshape
 
 
 ISSUE_SCHEMA_PATH = Path("contracts") / "issue-metadata.schema.json"
+LABEL_PROJECTION_PATH = Path("contracts") / "ticket-label-projection.json"
 
-# Projections owned by .github/labels.yml and CONTRIBUTING.md; restated here only
-# for machine comparison. scripts/tests/test_sov_epic.py asserts every name below
-# still exists in the catalogue, so this table cannot drift from it silently.
-KIND_LABEL = {
-    "epic-of-epics": "type: epic",
-    "village": "type: village",
-    "bit": "type: bit",
-    "implementation-stub": "type: stub",
-    "story": "type: story",
-    "unblock": "type: unblock",
-}
-VILLAGE_LABEL = {
-    "ground-and-evidence": "village: ground",
-    "trust-and-control": "village: trust",
-    "reach-and-motion": "village: motion",
-    "domain-and-qualification": "village: domain",
-}
-HORIZON_LABEL = {
-    "NOW": "horizon: now",
-    "NEXT": "horizon: next",
-    "ON_SCALE_TRUST": "horizon: scale-trust",
-    "NOW_TO_NEXT": "horizon: spanning",
-    "NEXT_TO_SCALE_TRUST": "horizon: spanning",
-    "NOW_TO_SCALE_TRUST": "horizon: spanning",
-}
-EFFECT_LABEL = {
-    "CONTROL": "effect: control",
-    "OBSERVE_ONLY": "effect: observe-only",
-    "REQUEST_ONLY": "effect: request-only",
-    "BOUNDED_EXECUTION": "effect: bounded-execution",
-    "EXTERNAL_BOUNDARY": "effect: external-boundary",
-}
-DEFAULT_EFFECT = "RECORD_LOCAL"
-UNPROJECTED_EFFECTS = ("RESOURCE_CONSUMPTION", "EXTERNAL_WORLD")
 SATISFYING_STANDINGS = frozenset(
     {"BUILT_SELF_TESTED_NOT_WITNESSED", "WITNESSED", "RATIFIED"}
 )
@@ -85,6 +52,18 @@ def load_issue_schema(root: Path) -> dict:
     return json.loads((root / ISSUE_SCHEMA_PATH).read_text(encoding="utf-8"))
 
 
+def load_label_projection(root: Path) -> dict:
+    """Read the declared metadata-to-label derivation.
+
+    The walk reads the projection rather than restating it. A restated copy drifts
+    in the one direction a catalogue check cannot see: a kind added to the schema
+    and the catalogue but not to the copy makes every correctly labelled ticket of
+    that kind report as contradicting itself, which is what happened to the
+    ``verification-engagement`` kind between decisions 0018 and 0066.
+    """
+    return json.loads((root / LABEL_PROJECTION_PATH).read_text(encoding="utf-8"))
+
+
 def _reference(value: Any) -> int | None:
     if isinstance(value, str) and value.startswith("#") and value[1:].isdigit():
         return int(value[1:])
@@ -100,30 +79,48 @@ def metadata_defects(issue: Issue, schema: dict) -> list[str]:
     return jsonshape.check(issue.metadata, schema)
 
 
-def label_defects(issue: Issue) -> list[str]:
-    """Disagreements between the visible labels and the block they project."""
+def label_defects(issue: Issue, projection: dict) -> list[str]:
+    """Disagreements between the visible labels and the block they project.
+
+    ``projection`` is ``contracts/ticket-label-projection.json``, the declared
+    derivation. A metadata value the projection does not map is reported as an
+    unmapped gap rather than passed over, so an unlabelled axis stays visible.
+    """
     block = issue.metadata or {}
     if not block:
         return []
+    kind_to_type = projection["kind_to_type"]
+    village_to_label = projection["village_to_label"]
+    horizon_to_label = projection["horizon_to_label"]
+    effect_to_label = projection["effect_to_label"]
+    default_effect = projection["default_effect_class"]
+
     defects = []
     labels = set(issue.labels)
     expected = []
-    if block.get("kind") in KIND_LABEL:
-        expected.append(KIND_LABEL[block["kind"]])
-    if block.get("village") in VILLAGE_LABEL:
-        expected.append(VILLAGE_LABEL[block["village"]])
-    if block.get("horizon") in HORIZON_LABEL:
-        expected.append(HORIZON_LABEL[block["horizon"]])
-    effect = block.get("effect_class")
-    if effect in EFFECT_LABEL:
-        expected.append(EFFECT_LABEL[effect])
-    elif effect in UNPROJECTED_EFFECTS:
-        defects.append(f"effect_class {effect} has no label in .github/labels.yml")
+    for value, table, axis in (
+        (block.get("kind"), kind_to_type, "kind"),
+        (block.get("village"), village_to_label, "village"),
+        (block.get("horizon"), horizon_to_label, "horizon"),
+        (block.get("effect_class"), effect_to_label, "effect_class"),
+    ):
+        if value is None:
+            continue
+        if value not in table:
+            defects.append(
+                f"{axis} {value} has no label in contracts/ticket-label-projection.json"
+            )
+            continue
+        name = table[value]
+        if name is not None:
+            expected.append(name)
     for name in expected:
         if name not in labels:
             defects.append(f"missing label '{name}' projected by the metadata block")
-    if effect == DEFAULT_EFFECT and f"effect: {DEFAULT_EFFECT.lower().replace('_', '-')}" in labels:
-        defects.append("default effect label is shown; CONTRIBUTING.md omits it")
+    if block.get("effect_class") == default_effect:
+        default_label = f"effect: {default_effect.lower().replace('_', '-')}"
+        if default_label in labels:
+            defects.append("default effect label is shown; CONTRIBUTING.md omits it")
     for name in sorted(labels):
         if name.startswith("type: ") and name not in expected:
             defects.append(f"label '{name}' contradicts kind {block.get('kind')!r}")

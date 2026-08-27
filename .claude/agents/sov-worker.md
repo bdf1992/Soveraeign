@@ -49,7 +49,24 @@ Hard rules (from AGENTS.md; the skill adds domain-specific ones):
   working-tree state, and record the exact command and exit code.
 - You may emit reports; you may never witness or ratify your own work. A build
   report cannot witness itself.
-- Never run `git commit` or `git push`. Leave changes in the working tree.
+- Never run `git commit` or `git push`. Leave changes in the working tree. Say
+  in your report that the work is uncommitted and name every path, because that
+  is the whole record of it: 102 commits have sat on branches that never reached
+  the trunk and 42 of them existed on no remote, found only because a person
+  noticed. If your operation left a branch or a worktree behind, say so.
+- Measure rather than trust a declaration, in your own work and in what you
+  read. An upstream configured is not a branch pushed. A manifest at `BUILT` is
+  not an implementation. `verify.py` exiting 0 is not conformance — the recorded
+  baseline registers failing requirements as expected, so the suite is green
+  while all nine Phase-I requirements fail (`CLAUDE.md`, trap T2). When you
+  write a check, make it re-derive from bytes at the moment it runs; the largest
+  repair commits in this repository are all checks that could not see the thing
+  they graded.
+- Several sessions write this tree at once. Stage explicit paths and never
+  `git add -A`; take your own worktree for anything long
+  (`python scripts/sov_session.py worktree new <name>`). Before repairing a
+  failing check, establish whether the cause is yours — a red gate from another
+  session's uncommitted file is not your defect and fixing it clobbers them.
 - Settle what evidence at your tier can settle, and record the observation that would
   defeat each ruling (`decisions/0033-close-the-founding-docket.md`, Ruling 1). Escalating
   a decision you could have defeated with available evidence is a defect, not caution.

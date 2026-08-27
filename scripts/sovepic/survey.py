@@ -8,7 +8,10 @@ from sovepic import projection, walk
 from sovepic.projection import Issue
 
 
-WORKABLE_KINDS = ("bit", "implementation-stub", "unblock")
+# The kinds the walk may select for a builder. A verification engagement is
+# deliberately absent: SDLC.md requires the Red operator to be independent of the
+# builder, and handing one to a sov-worker in a build walk would defeat that.
+WORKABLE_KINDS = ("bit", "implementation-stub", "unblock", "chore")
 
 
 def _horizon_rank(issue: Issue) -> int:
@@ -25,6 +28,7 @@ def survey(root: Path, document: dict, routing: dict) -> dict:
     ``owner_held`` waits on Bdo.
     """
     schema = walk.load_issue_schema(root)
+    label_projection = walk.load_label_projection(root)
     by_number = projection.issues(document)
     root_issue = document["source"]["root_issue"]
     unmet = walk.readiness(by_number)
@@ -35,7 +39,7 @@ def survey(root: Path, document: dict, routing: dict) -> dict:
             continue
         for defect in walk.metadata_defects(issue, schema):
             contract.append(f"#{number}: {defect}")
-        for defect in walk.label_defects(issue):
+        for defect in walk.label_defects(issue, label_projection):
             labels.append(f"#{number}: {defect}")
 
     ready, held, unrouted, owner_held = [], [], [], []

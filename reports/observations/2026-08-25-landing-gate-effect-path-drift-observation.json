@@ -1,0 +1,72 @@
+{
+  "observer_id": "sov-witness (independent observation, Claude Opus 5 1M)",
+  "contributed_to_build": false,
+  "verdict": "DISSENTED",
+  "concern": "landing gate effect path: grade-time fingerprint, drift refusal, absent state, whole-tree hold",
+  "checks": [
+    {
+      "command": "python -c \"digests pinned before reading: sov_land.py 8b71bfbf416078aa (231), sovland/tree.py 061fb5650dcffd8d (220), test_sov_land.py 93815cd8ec426650 (441); authority.py d00c63cfc42f1420 and scope.py fa8c1fe9f643b86b, byte-identical to rounds 6 through 8\"",
+      "exit_code": 0
+    },
+    {
+      "command": "DEFECT: throwaway repo, tracked file deleted, then git add -- gone.py  # exit 0, stages 'D gone.py'. The refusal text claims git add 'would fail rather than refuse', which is false for a tracked-but-deleted path, and the absent block therefore makes a deletion unlandable",
+      "exit_code": 0
+    },
+    {
+      "command": "python -c \"tree.fingerprint on a deleted-but-tracked path returns 'absent', the same state as a path that never existed; cmd_land refuses every absent path, so the two cases are conflated and one of them is legitimate\"",
+      "exit_code": 0
+    },
+    {
+      "command": "Q2 DEFECT: python -c \"drift probes against a patched ROOT - same-size different-content DETECTED, mtime-only correctly not drift, file replaced by directory DETECTED, file replaced by a symlink to identical content MISSED\"  # is_file() follows the link and the sha256 matches, but git stages mode 120000 with the target path as blob, so the committed object is not what was graded",
+      "exit_code": 0
+    },
+    {
+      "command": "Q4: python -c \"what makes seen == '.' - a genuine whole-tree hold and './' (intended), but also a MISSING path field, an empty string, a null, a traversal like scripts/.. and the absolute repository root\"  # each now holds the entire tree; fail-closed, but a malformed claim record becomes a blanket denial naming an empty path",
+      "exit_code": 0
+    },
+    {
+      "command": "Q1: python -c \"a write landing in the millisecond gap between drifted() and git add is not caught by the pre-add check, but IS caught by reading the index afterwards: git cat-file blob :a.py, sha256, compare to the graded fingerprint\"  # closing the window does not need staging by content, only verification after staging and before commit, with git reset on mismatch",
+      "exit_code": 0
+    },
+    {
+      "command": "Q1 CAVEAT tested: repo with '* text=auto eol=lf'; a CRLF working-tree file hashes differently on disk and in the index  # a raw byte comparison would false-positive, so the index check must use filter-aware hashing (git hash-object --path, git rev-parse :path)",
+      "exit_code": 0
+    },
+    {
+      "command": "Q3: scratch copies with the drift block removed, then the absent block removed, suite run in each  # removing drift fails exactly test_a_file_edited_inside_the_window_refuses_instead_of_committing; removing absent errors exactly test_a_path_that_does_not_exist_refuses_rather_than_failing_at_git; nothing else moves, so both blocks are load-bearing and the control is independent of them",
+      "exit_code": 1
+    },
+    {
+      "command": "Q3 WEAKNESS: both defeating tests assert only code == 2, which six different refusals in cmd_land return; a new refusal inserted ahead of the drift check would let them pass for the wrong reason. Asserting the printed sentence would pin them.",
+      "exit_code": 0
+    },
+    {
+      "command": "Q3 GAP THE CONTROL MISSES, tested directly: python -c \"fingerprint the live dirty set, run the real tree.gather_checks(False), fingerprint again\"  # 14.54s, drift caused by the checks themselves: none. So the gate will not refuse every landing, but no test protects that and a future check that rewrote a graded file would break every landing",
+      "exit_code": 0
+    },
+    {
+      "command": "SAFETY: git rev-parse HEAD, git rev-parse main and a hash of git status --porcelain -uall recorded before and after running the suite three times  # all unchanged; the effect-path tests remain hermetic",
+      "exit_code": 0
+    },
+    {
+      "command": "python -m unittest discover -s scripts/tests -p \"test_sov_land.py\"  # Ran 26 tests, OK, three consecutive runs",
+      "exit_code": 0
+    },
+    {
+      "command": "python -c \"hygiene: sov_land.py 231 lines, sovland/tree.py 220, tests 441, all LF; three test lines over the 100-character target at 395, 313 and 313 characters, from collapsed with-statement continuations that no gate checks\"",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/sov_grant.py selfcheck  # PASS: 1 grant(s) valid, 34 authority cases graded",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/lint.py  # 740 text files, 317 Python modules, 0 named debt",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/verify.py  # PASS: 39 checks in 13.353s wall, GRADE SILVER; the measured window inside gather_checks was 14.54s this round against a 15s ceiling, up from 12.53s in round 7",
+      "exit_code": 0
+    }
+  ]
+}

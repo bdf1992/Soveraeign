@@ -1,0 +1,2098 @@
+[
+  {
+    "id": "AINAT-POS-QUALIFIED",
+    "polarity": "positive",
+    "note": "Every axis FULL, every qualification PASS, the owner judged the operation substantive. This is the shape of a passing reading, not a claim that any surface here is one.",
+    "record": {
+      "assessment_schema": "soveraeign-ai-native-assessment/v1",
+      "surface": "controlled-fixture",
+      "named_operation": "fixture-operation",
+      "revision": "fixture",
+      "assessed_at": "2026-08-26T00:00:00Z",
+      "assessor": "principal:claude-opus-5",
+      "phase": "FOUNDING",
+      "axes": {
+        "reachability": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "commitment": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "provenance": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "retraction": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        }
+      },
+      "earn_it": {
+        "judgement": "SUBSTANTIVE",
+        "reviewer": "principal:bdo",
+        "at": "2026-08-26T00:00:00Z",
+        "basis": "controlled fixture"
+      },
+      "qualifications": {
+        "same_world_parity": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "typed_authority": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "independent_observation": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "receipt_completeness": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "effect_honesty": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "cold_start_competence": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "two_binding_proof": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "local_sovereignty": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "model_substitutability": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        }
+      }
+    },
+    "expected": {
+      "state": "COMPLETE",
+      "verdict": "SOVERAEIGN_QUALIFIED",
+      "defects": []
+    }
+  },
+  {
+    "id": "AINAT-POS-MINIMUM",
+    "polarity": "positive",
+    "note": "Reachable, one structural axis present, substantive: the minimum verdict is earned and the target bar is not. What holds it short is reported, never rounded up.",
+    "record": {
+      "assessment_schema": "soveraeign-ai-native-assessment/v1",
+      "surface": "controlled-fixture",
+      "named_operation": "fixture-operation",
+      "revision": "fixture",
+      "assessed_at": "2026-08-26T00:00:00Z",
+      "assessor": "principal:claude-opus-5",
+      "phase": "FOUNDING",
+      "axes": {
+        "reachability": {
+          "score": "PARTIAL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "commitment": {
+          "score": "NONE",
+          "evidence": []
+        },
+        "provenance": {
+          "score": "PARTIAL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "retraction": {
+          "score": "NONE",
+          "evidence": []
+        }
+      },
+      "earn_it": {
+        "judgement": "SUBSTANTIVE",
+        "reviewer": "principal:bdo",
+        "at": "2026-08-26T00:00:00Z",
+        "basis": "controlled fixture"
+      },
+      "qualifications": {
+        "same_world_parity": {
+          "result": "UNPROVEN",
+          "evidence": []
+        },
+        "typed_authority": {
+          "result": "UNPROVEN",
+          "evidence": []
+        },
+        "independent_observation": {
+          "result": "UNPROVEN",
+          "evidence": []
+        },
+        "receipt_completeness": {
+          "result": "UNPROVEN",
+          "evidence": []
+        },
+        "effect_honesty": {
+          "result": "UNPROVEN",
+          "evidence": []
+        },
+        "cold_start_competence": {
+          "result": "UNPROVEN",
+          "evidence": []
+        },
+        "two_binding_proof": {
+          "result": "UNPROVEN",
+          "evidence": []
+        },
+        "local_sovereignty": {
+          "result": "UNPROVEN",
+          "evidence": []
+        },
+        "model_substitutability": {
+          "result": "UNPROVEN",
+          "evidence": []
+        }
+      }
+    },
+    "expected": {
+      "state": "COMPLETE",
+      "verdict": "AI_NATIVE",
+      "defects": []
+    }
+  },
+  {
+    "id": "AINAT-POS-OPEN",
+    "polarity": "positive",
+    "note": "Every score present and the human judgement not yet made. OPEN is not a favourable result and it is not a verdict; the reading waits on a person.",
+    "record": {
+      "assessment_schema": "soveraeign-ai-native-assessment/v1",
+      "surface": "controlled-fixture",
+      "named_operation": "fixture-operation",
+      "revision": "fixture",
+      "assessed_at": "2026-08-26T00:00:00Z",
+      "assessor": "principal:claude-opus-5",
+      "phase": "FOUNDING",
+      "axes": {
+        "reachability": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "commitment": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "provenance": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "retraction": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        }
+      },
+      "earn_it": {
+        "judgement": "OPEN",
+        "reviewer": null,
+        "at": null
+      },
+      "qualifications": {
+        "same_world_parity": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "typed_authority": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "independent_observation": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "receipt_completeness": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "effect_honesty": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "cold_start_competence": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "two_binding_proof": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "local_sovereignty": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "model_substitutability": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        }
+      }
+    },
+    "expected": {
+      "state": "OPEN",
+      "verdict": null,
+      "defects": []
+    }
+  },
+  {
+    "id": "AINAT-DEF-UNREACHABLE",
+    "polarity": "defeating",
+    "note": "The gate fails while structural axes remain. Truth-capable, not AI-native.",
+    "record": {
+      "assessment_schema": "soveraeign-ai-native-assessment/v1",
+      "surface": "controlled-fixture",
+      "named_operation": "fixture-operation",
+      "revision": "fixture",
+      "assessed_at": "2026-08-26T00:00:00Z",
+      "assessor": "principal:claude-opus-5",
+      "phase": "FOUNDING",
+      "axes": {
+        "reachability": {
+          "score": "NONE",
+          "evidence": []
+        },
+        "commitment": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "provenance": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "retraction": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        }
+      },
+      "earn_it": {
+        "judgement": "SUBSTANTIVE",
+        "reviewer": "principal:bdo",
+        "at": "2026-08-26T00:00:00Z",
+        "basis": "controlled fixture"
+      },
+      "qualifications": {
+        "same_world_parity": {
+          "result": "UNPROVEN",
+          "evidence": []
+        },
+        "typed_authority": {
+          "result": "UNPROVEN",
+          "evidence": []
+        },
+        "independent_observation": {
+          "result": "UNPROVEN",
+          "evidence": []
+        },
+        "receipt_completeness": {
+          "result": "UNPROVEN",
+          "evidence": []
+        },
+        "effect_honesty": {
+          "result": "UNPROVEN",
+          "evidence": []
+        },
+        "cold_start_competence": {
+          "result": "UNPROVEN",
+          "evidence": []
+        },
+        "two_binding_proof": {
+          "result": "UNPROVEN",
+          "evidence": []
+        },
+        "local_sovereignty": {
+          "result": "UNPROVEN",
+          "evidence": []
+        },
+        "model_substitutability": {
+          "result": "UNPROVEN",
+          "evidence": []
+        }
+      }
+    },
+    "expected": {
+      "state": "COMPLETE",
+      "verdict": "TRUTH_CAPABLE",
+      "defects": []
+    }
+  },
+  {
+    "id": "AINAT-DEF-BOLTED-ON",
+    "polarity": "defeating",
+    "note": "A technically excellent interface the owner judged an accessory. Decoration, whatever the scores say.",
+    "record": {
+      "assessment_schema": "soveraeign-ai-native-assessment/v1",
+      "surface": "controlled-fixture",
+      "named_operation": "fixture-operation",
+      "revision": "fixture",
+      "assessed_at": "2026-08-26T00:00:00Z",
+      "assessor": "principal:claude-opus-5",
+      "phase": "FOUNDING",
+      "axes": {
+        "reachability": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "commitment": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "provenance": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "retraction": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        }
+      },
+      "earn_it": {
+        "judgement": "BOLTED_ON",
+        "reviewer": "principal:bdo",
+        "at": "2026-08-26T00:00:00Z",
+        "basis": "an accessory beside the real surface"
+      },
+      "qualifications": {
+        "same_world_parity": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "typed_authority": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "independent_observation": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "receipt_completeness": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "effect_honesty": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "cold_start_competence": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "two_binding_proof": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "local_sovereignty": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "model_substitutability": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        }
+      }
+    },
+    "expected": {
+      "state": "COMPLETE",
+      "verdict": "DECORATION",
+      "defects": []
+    }
+  },
+  {
+    "id": "AINAT-DEF-VERDICT-DECLARED",
+    "polarity": "defeating",
+    "note": "The record states its own result. The verdict is derived from the recorded scores and is never selected directly.",
+    "record": {
+      "assessment_schema": "soveraeign-ai-native-assessment/v1",
+      "surface": "controlled-fixture",
+      "named_operation": "fixture-operation",
+      "revision": "fixture",
+      "assessed_at": "2026-08-26T00:00:00Z",
+      "assessor": "principal:claude-opus-5",
+      "phase": "FOUNDING",
+      "axes": {
+        "reachability": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "commitment": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "provenance": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "retraction": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        }
+      },
+      "earn_it": {
+        "judgement": "SUBSTANTIVE",
+        "reviewer": "principal:bdo",
+        "at": "2026-08-26T00:00:00Z",
+        "basis": "controlled fixture"
+      },
+      "qualifications": {
+        "same_world_parity": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "typed_authority": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "independent_observation": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "receipt_completeness": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "effect_honesty": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "cold_start_competence": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "two_binding_proof": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "local_sovereignty": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "model_substitutability": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        }
+      },
+      "verdict": "SOVERAEIGN_QUALIFIED"
+    },
+    "expected": {
+      "state": "INVALID",
+      "verdict": null,
+      "defects": [
+        "VERDICT_DECLARED"
+      ]
+    }
+  },
+  {
+    "id": "AINAT-DEF-EVIDENCE-ABSENT",
+    "polarity": "defeating",
+    "note": "A FULL score with nothing observable behind it. Every score above NONE must identify evidence or the assessment is invalid.",
+    "record": {
+      "assessment_schema": "soveraeign-ai-native-assessment/v1",
+      "surface": "controlled-fixture",
+      "named_operation": "fixture-operation",
+      "revision": "fixture",
+      "assessed_at": "2026-08-26T00:00:00Z",
+      "assessor": "principal:claude-opus-5",
+      "phase": "FOUNDING",
+      "axes": {
+        "reachability": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "commitment": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "provenance": {
+          "score": "FULL",
+          "evidence": []
+        },
+        "retraction": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        }
+      },
+      "earn_it": {
+        "judgement": "SUBSTANTIVE",
+        "reviewer": "principal:bdo",
+        "at": "2026-08-26T00:00:00Z",
+        "basis": "controlled fixture"
+      },
+      "qualifications": {
+        "same_world_parity": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "typed_authority": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "independent_observation": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "receipt_completeness": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "effect_honesty": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "cold_start_competence": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "two_binding_proof": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "local_sovereignty": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "model_substitutability": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        }
+      }
+    },
+    "expected": {
+      "state": "INVALID",
+      "verdict": null,
+      "defects": [
+        "EVIDENCE_ABSENT"
+      ]
+    }
+  },
+  {
+    "id": "AINAT-DEF-SEED-SCENARIO",
+    "polarity": "defeating",
+    "note": "A qualification resting on a founding scenario that is still a seed narrative. A scenario nothing executes proves nothing.",
+    "record": {
+      "assessment_schema": "soveraeign-ai-native-assessment/v1",
+      "surface": "controlled-fixture",
+      "named_operation": "fixture-operation",
+      "revision": "fixture",
+      "assessed_at": "2026-08-26T00:00:00Z",
+      "assessor": "principal:claude-opus-5",
+      "phase": "FOUNDING",
+      "axes": {
+        "reachability": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "commitment": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "provenance": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "retraction": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        }
+      },
+      "earn_it": {
+        "judgement": "SUBSTANTIVE",
+        "reviewer": "principal:bdo",
+        "at": "2026-08-26T00:00:00Z",
+        "basis": "controlled fixture"
+      },
+      "qualifications": {
+        "same_world_parity": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "typed_authority": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "independent_observation": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "receipt_completeness": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "effect_honesty": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "cold_start_competence": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "two_binding_proof": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "scenario",
+              "reference": "FOUND-006",
+              "observed": "the parity scenario as written"
+            }
+          ]
+        },
+        "local_sovereignty": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "model_substitutability": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        }
+      }
+    },
+    "expected": {
+      "state": "INVALID",
+      "verdict": null,
+      "defects": [
+        "SCENARIO_NOT_EXECUTABLE"
+      ]
+    }
+  },
+  {
+    "id": "AINAT-DEF-UNKNOWN-SCENARIO",
+    "polarity": "defeating",
+    "note": "A citation to a founding scenario the repository does not have.",
+    "record": {
+      "assessment_schema": "soveraeign-ai-native-assessment/v1",
+      "surface": "controlled-fixture",
+      "named_operation": "fixture-operation",
+      "revision": "fixture",
+      "assessed_at": "2026-08-26T00:00:00Z",
+      "assessor": "principal:claude-opus-5",
+      "phase": "FOUNDING",
+      "axes": {
+        "reachability": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "commitment": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "provenance": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "retraction": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        }
+      },
+      "earn_it": {
+        "judgement": "SUBSTANTIVE",
+        "reviewer": "principal:bdo",
+        "at": "2026-08-26T00:00:00Z",
+        "basis": "controlled fixture"
+      },
+      "qualifications": {
+        "same_world_parity": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "typed_authority": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "independent_observation": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "receipt_completeness": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "effect_honesty": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "cold_start_competence": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "two_binding_proof": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "local_sovereignty": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "scenario",
+              "reference": "FOUND-042",
+              "observed": "a scenario that does not exist"
+            }
+          ]
+        },
+        "model_substitutability": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        }
+      }
+    },
+    "expected": {
+      "state": "INVALID",
+      "verdict": null,
+      "defects": [
+        "SCENARIO_UNKNOWN"
+      ]
+    }
+  },
+  {
+    "id": "AINAT-DEF-MODEL-REVIEWER",
+    "polarity": "defeating",
+    "note": "A model scoring the check that decides whether its own surface earned the verdict. The substantive-operation check is a human judgement.",
+    "record": {
+      "assessment_schema": "soveraeign-ai-native-assessment/v1",
+      "surface": "controlled-fixture",
+      "named_operation": "fixture-operation",
+      "revision": "fixture",
+      "assessed_at": "2026-08-26T00:00:00Z",
+      "assessor": "principal:claude-opus-5",
+      "phase": "FOUNDING",
+      "axes": {
+        "reachability": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "commitment": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "provenance": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "retraction": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        }
+      },
+      "earn_it": {
+        "judgement": "SUBSTANTIVE",
+        "reviewer": "principal:claude-opus-5",
+        "at": "2026-08-26T00:00:00Z",
+        "basis": "controlled fixture"
+      },
+      "qualifications": {
+        "same_world_parity": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "typed_authority": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "independent_observation": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "receipt_completeness": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "effect_honesty": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "cold_start_competence": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "two_binding_proof": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "local_sovereignty": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "model_substitutability": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        }
+      }
+    },
+    "expected": {
+      "state": "INVALID",
+      "verdict": null,
+      "defects": [
+        "REVIEWER_NOT_HUMAN"
+      ]
+    }
+  },
+  {
+    "id": "AINAT-DEF-UNREGISTERED-REVIEWER",
+    "polarity": "defeating",
+    "note": "A judgement attributed to a principal no registry knows. An attributable reviewer is one the node can resolve.",
+    "record": {
+      "assessment_schema": "soveraeign-ai-native-assessment/v1",
+      "surface": "controlled-fixture",
+      "named_operation": "fixture-operation",
+      "revision": "fixture",
+      "assessed_at": "2026-08-26T00:00:00Z",
+      "assessor": "principal:claude-opus-5",
+      "phase": "FOUNDING",
+      "axes": {
+        "reachability": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "commitment": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "provenance": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "retraction": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        }
+      },
+      "earn_it": {
+        "judgement": "SUBSTANTIVE",
+        "reviewer": "principal:nobody",
+        "at": "2026-08-26T00:00:00Z",
+        "basis": "controlled fixture"
+      },
+      "qualifications": {
+        "same_world_parity": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "typed_authority": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "independent_observation": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "receipt_completeness": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "effect_honesty": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "cold_start_competence": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "two_binding_proof": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "local_sovereignty": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "model_substitutability": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        }
+      }
+    },
+    "expected": {
+      "state": "INVALID",
+      "verdict": null,
+      "defects": [
+        "REVIEWER_UNREGISTERED"
+      ]
+    }
+  },
+  {
+    "id": "AINAT-DEF-MISSING-QUALIFICATION",
+    "polarity": "defeating",
+    "note": "Eight of the nine answered. A silent omission would otherwise read as a pass.",
+    "record": {
+      "assessment_schema": "soveraeign-ai-native-assessment/v1",
+      "surface": "controlled-fixture",
+      "named_operation": "fixture-operation",
+      "revision": "fixture",
+      "assessed_at": "2026-08-26T00:00:00Z",
+      "assessor": "principal:claude-opus-5",
+      "phase": "FOUNDING",
+      "axes": {
+        "reachability": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "commitment": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "provenance": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "retraction": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        }
+      },
+      "earn_it": {
+        "judgement": "SUBSTANTIVE",
+        "reviewer": "principal:bdo",
+        "at": "2026-08-26T00:00:00Z",
+        "basis": "controlled fixture"
+      },
+      "qualifications": {
+        "same_world_parity": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "typed_authority": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "independent_observation": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "receipt_completeness": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "effect_honesty": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "two_binding_proof": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "local_sovereignty": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "model_substitutability": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        }
+      }
+    },
+    "expected": {
+      "state": "INVALID",
+      "verdict": null,
+      "defects": [
+        "QUALIFICATION_MISSING"
+      ]
+    }
+  },
+  {
+    "id": "AINAT-DEF-UNREACHABLE-PASS",
+    "polarity": "defeating",
+    "note": "The target bar claimed on a surface the gate says cannot be reached. Reachability is the gate; nothing above it can pass while it fails.",
+    "record": {
+      "assessment_schema": "soveraeign-ai-native-assessment/v1",
+      "surface": "controlled-fixture",
+      "named_operation": "fixture-operation",
+      "revision": "fixture",
+      "assessed_at": "2026-08-26T00:00:00Z",
+      "assessor": "principal:claude-opus-5",
+      "phase": "FOUNDING",
+      "axes": {
+        "reachability": {
+          "score": "NONE",
+          "evidence": []
+        },
+        "commitment": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "provenance": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "retraction": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        }
+      },
+      "earn_it": {
+        "judgement": "SUBSTANTIVE",
+        "reviewer": "principal:bdo",
+        "at": "2026-08-26T00:00:00Z",
+        "basis": "controlled fixture"
+      },
+      "qualifications": {
+        "same_world_parity": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "typed_authority": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "independent_observation": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "receipt_completeness": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "effect_honesty": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "cold_start_competence": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "two_binding_proof": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "local_sovereignty": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "model_substitutability": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        }
+      }
+    },
+    "expected": {
+      "state": "INVALID",
+      "verdict": null,
+      "defects": [
+        "CONTRADICTORY_SCORE"
+      ]
+    }
+  },
+  {
+    "id": "AINAT-DEF-WRONG-SHAPE",
+    "polarity": "defeating",
+    "note": "A record that is not this contract's record.",
+    "record": {
+      "assessment_schema": "soveraeign-ai-native-assessment/v0",
+      "surface": "controlled-fixture",
+      "named_operation": "fixture-operation",
+      "revision": "fixture",
+      "assessed_at": "2026-08-26T00:00:00Z",
+      "assessor": "principal:claude-opus-5",
+      "phase": "FOUNDING",
+      "axes": {
+        "reachability": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "commitment": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "provenance": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "retraction": {
+          "score": "FULL",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        }
+      },
+      "earn_it": {
+        "judgement": "SUBSTANTIVE",
+        "reviewer": "principal:bdo",
+        "at": "2026-08-26T00:00:00Z",
+        "basis": "controlled fixture"
+      },
+      "qualifications": {
+        "same_world_parity": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "typed_authority": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "independent_observation": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "receipt_completeness": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "effect_honesty": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "cold_start_competence": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "two_binding_proof": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "local_sovereignty": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        },
+        "model_substitutability": {
+          "result": "PASS",
+          "evidence": [
+            {
+              "kind": "command",
+              "reference": "python scripts/verify.py",
+              "observed": "40 checks pass"
+            }
+          ]
+        }
+      }
+    },
+    "expected": {
+      "state": "INVALID",
+      "verdict": null,
+      "defects": [
+        "SHAPE_REFUSED"
+      ]
+    }
+  }
+]

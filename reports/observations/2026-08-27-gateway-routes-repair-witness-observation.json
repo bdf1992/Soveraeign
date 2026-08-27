@@ -1,0 +1,115 @@
+{
+  "observer_id": "urn:soveraeign:actor:sov-witness/session-f444fd",
+  "contributed_to_build": false,
+  "verdict": "DEFEATED",
+  "concern": "feat/wt-routes at b32755a: is the privilege escalation closed, and does the new dispatching oracle measure what it grades?",
+  "subject": {
+    "commits": [
+      "b32755a"
+    ],
+    "pull_request": null,
+    "decisions": [],
+    "claims_under_test": [
+      "the escalation is closed and unreachable by any route",
+      "the dispatching oracle drives 43 real dispatches and fails on any pre-route refusal",
+      "reachability is 43 and every one is reachable and satisfiable"
+    ]
+  },
+  "observer_relation": {
+    "to_builder": "NONE",
+    "basis": "Third separate reading of this branch. The builder and the witness that found the original escalation are both inside the build. The interface session verified the second escalation's mechanism statically at the same commit and its merge base before carrying it."
+  },
+  "frozen_head": "b32755a",
+  "shared_tree_conditions": {
+    "trap": "CLAUDE.md T6",
+    "mitigation": "two disposable worktrees at the subject and its parent, both removed; the tree was clean before and after every run"
+  },
+  "checks": [
+    {
+      "command": "python scripts/lint.py",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/verify.py",
+      "result": "content PASS. Four runs on one clean worktree: exit 0 at 14.35s, exit 1 at 17.02s, exit 1 at 15.50s, exit 0 at 13.76s. Every failure was the budget line alone and the content verdicts were identical in all four.",
+      "exit_code": 0
+    }
+  ],
+  "reproduced": [
+    {
+      "id": "G3-1",
+      "claim": "the original escalation is closed",
+      "method": "own harness through the real Gateway rather than the builder's test, run identically against the subject and its parent",
+      "finding": "at the parent the sequence worked and the attacker's live grants grew; at the subject the append is refused, the channel stays refused, and the grants are unchanged. Closed on the path it was found on."
+    },
+    {
+      "id": "G3-2",
+      "claim": "no other routed path reaches the grant fold",
+      "method": "17 further dispatches: the key nested one level down, eight casing, whitespace and unicode variants, five non-string types under the exact key, the forged grant inside a receipt detail and inside a counter reason, and a hand-built digest-valid export through restore",
+      "finding": "none produced a live grant. The variants commit but are never folded, because the screen and the fold read the same exact key - which is what makes a one-key screen sufficient. The receipt path nests the caller's detail one level down so the key never reaches the root the fold reads. Restore is refused because the Gateway writes its own request record before routing, so the store is never at genesis."
+    },
+    {
+      "id": "G3-3",
+      "claim": "the defeating case drives the full sequence and fails when the screen is removed",
+      "method": "ran the shipped case, then disabled the screen at import time without editing any file, then suppressed the middle assertion to test whether the final one is load-bearing",
+      "finding": "screen off, two cases fail and the positive case still passes, so the mutation is targeted. With the middle assertion suppressed the final one fails on its own. The case genuinely drives refused-before, forge, refused-after. Scoping note: it drives the route classes directly rather than the Gateway, so the end-to-end sequence is proven by the harness rather than by the case."
+    },
+    {
+      "id": "G3-4",
+      "claim": "reachability is 43 and each is reachable and satisfiable",
+      "method": "census at both commits, diffed, compared against the projection, then dispatched all 43 with each operation's declared authority granted and route entry instrumented",
+      "finding": "45 to 43, exactly the two false ones removed and nothing added. With authority present, 43 of 43 entered a service route - 15 committed, 27 governed refusals, 1 failed. The projection agrees."
+    },
+    {
+      "id": "G3-5",
+      "claim": "nothing unreported was introduced",
+      "method": "read the full diff, checked the new refusal code against the kernel and five other manifests, compared the two corrected tests, checked coverage left by removed route tests",
+      "finding": "the new code maps to the kernel code five other services already use for non-attestation policy refusals, so no vocabulary drift. The corrected tests moved from asserting a seam is empty to a pinned two-element allowlist, so a third stranded operation still fails them - a correction rather than a weakening. Removed route tests are replaced and the service operation keeps coverage elsewhere."
+    }
+  ],
+  "dissented": [
+    {
+      "id": "G3-D1",
+      "severity": "BLOCKING",
+      "claim_defeated": "an actor cannot obtain a capability it was not granted",
+      "finding": "A second escalation, live at this commit and on a route this branch created. The grant operation performs no authority check of its own - it builds a payload and emits. The only check is the Gateway's, against the scope the caller puts in the request, which need bear no relation to the scope of the grant then written.",
+      "consequence": "Measured through the Gateway: an actor holding only the granting capability at one scope was refused a channel at another scope, granted itself that capability at that other scope while requesting at the first, and then succeeded. It also minted the judgement-ratifying capability at every scope for a third party. Separately the same actor was refused when it declared one actor kind and committed when it declared another, because nothing binds that string to the actor.",
+      "how_it_became_reachable": "At the merge base the console's routed operations were exactly one, a read. This branch routes all of them. The service's own gaps file already records that issuer authority must be enforced - written when the service had no route at all. So a documented dormant gap became reachable, and nothing noticed because the gap is recorded against the service while the change was to the route layer.",
+      "what_would_have_defeated_this_finding": "an authority check inside the grant operation, or a check against the granted scope rather than the requested one"
+    },
+    {
+      "id": "G3-D2",
+      "severity": "BLOCKING",
+      "claim_defeated": "the dispatching oracle measures reachability",
+      "finding": "It reaches no route at all. Zero of 43 dispatches enter a service route: every one stops at the authority check, whose refusal code the grader deliberately excludes, so it records nothing. Its own docstring says it proves the Gateway reaches the service route and that what fails is a refusal raised before the route.",
+      "consequence": "Run against the pre-repair commit it catches one of the two false facts and misses the other, because the effect-class ceiling is checked after authority and an actor with no grant never reaches it. The defect the oracle was written to remove - a check that grades a declaration where it could measure - is therefore not repaired; the new check grades a declaration join plus envelope acceptance. Its unreached set is also miscategorised in the other direction: one code in it is raised after the route is entered.",
+      "what_would_have_defeated_this_finding": "granting each operation's declared authority before dispatching, and treating a pre-route authority refusal as unreached"
+    }
+  ],
+  "residuals": [
+    {
+      "id": "G3-R1",
+      "severity": "MATERIAL",
+      "finding": "The new refusal is a property of one route handler, not of the journal. The record service's append is unchanged and the shipped record command writes a forged grant with exit 0 and no authority check, which the console then folds. Not Gateway-reachable, since that operation has no command endpoint bound - so not an open escalation, but the declared operation now declares a refusal one of its two shipped implementations does not raise."
+    },
+    {
+      "id": "G3-R2",
+      "severity": "MATERIAL",
+      "finding": "The verify exit verdict is not a function of the artifact. Four runs on one clean worktree flipped between exit 0 and exit 1 on the budget line alone, with identical content verdicts. The landing grant conditions on verify PASS, so at this commit that gate is decided by machine load about half the time."
+    },
+    {
+      "id": "G3-R3",
+      "severity": "MINOR",
+      "finding": "Two dead route handlers remain defined and still call their services, in neither handler table, unreachable and untested through the route layer."
+    }
+  ],
+  "not_examined": [
+    "whether the console's authority model should check the granted scope, which is a design question rather than a defect"
+  ],
+  "standing_supported": "none. Does not support BUILT -> WITNESSED for b32755a. The named escalation is genuinely closed and survived seventeen bypass attempts; the defeating case is real and fails when the screen is removed; reachability is 43 and every one enters a route when its authority is present. Two things stop it: a second live escalation of the same kind on a route this branch created, and a dispatching oracle that reaches no route and so does not repair the defect it was written for. Both belong inside this concern.",
+  "judgement_items": [
+    "The landing grant conditions on verify PASS, and at this commit the exit verdict flips on the fifteen-second budget about half the time on this machine while the content verdict is identical. Should the gate read the content verdict and record the grade as an observation, per the decision that graded the budget, rather than read the exit code?",
+    "The console's grant operation writes a grant at whatever scope the caller names, checked only against the scope the caller put in the request. Whether the granting capability should be scope-bound to what it may grant is an authority design question, not an engineering default."
+  ]
+}

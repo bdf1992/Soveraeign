@@ -226,11 +226,19 @@ class BudgetReporting(unittest.TestCase):
         self.assertEqual(verify.grade(3.001), "GOLD")
         self.assertEqual(verify.grade(6.001), "SILVER")
 
-    def test_past_the_last_ceiling_there_is_no_band(self):
-        """The defeating case. Grading must not turn the budget into advice:
-        over the slowest ceiling nothing is earned and the run still fails."""
+    def test_past_the_last_ceiling_nothing_is_earned_and_debt_is_recorded(self):
+        """Past the slowest ceiling no band is earned and the line says DEBT.
+
+        decisions/0081 took the wall clock out of the exit code, so this no
+        longer asserts that the run fails - a wall-clock reading measures the
+        host at that instant, not the repository. What it still asserts is that
+        nothing is earned: a run over budget must not read as a passing grade.
+        What refuses now is a single check past the catastrophic ceiling, and
+        conformance/fixtures/verification-budget/cases.json defeats that."""
         self.assertIsNone(verify.grade(verify.BUDGET_SECONDS + 0.001))
-        self.assertIn("verification budget", verify.budget_line(15.001))
+        line = verify.budget_line(verify.BUDGET_SECONDS + 0.001)
+        self.assertIn("DEBT", line)
+        self.assertNotIn("GRADE", line)
 
     def test_a_graded_run_is_told_what_the_next_band_costs(self):
         self.assertIn("PLATINUM needs 3.000s", verify.budget_line(4.0))

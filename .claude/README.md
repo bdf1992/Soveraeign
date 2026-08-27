@@ -31,11 +31,11 @@ other. **Which layer each occupies is an open judgement item for Bdo**; see
 | Prefix | Standing | Shape |
 | --- | --- | --- |
 | `sdlc-` | decision `0013-domain-mapped-sdlc-loop.md`, merged | tier and domain skills; no executable orchestration |
-| `sov-` | decision `0026-federation-harness.md`, proposed | domain skills, four role agents, eighteen executable workflows |
+| `sov-` | decision `0026-federation-harness.md`, proposed | domain skills, four role agents, twenty executable workflows |
 
 One tension the merge does not dissolve: this file states that executable
 orchestration scripts are not admitted before their logical specification and
-defeating fixtures exist, and the `sov-` family ships eighteen of them. Either
+defeating fixtures exist, and the `sov-` family ships twenty of them. Either
 those workflows fall outside the rule because they orchestrate harness agents
 rather than kernel operations, or they are currently inadmissible. That is a
 judgement, not a merge mechanic.
@@ -181,8 +181,9 @@ them.
   `contracts/standing-grants.json` and refuses with the kernel's own refusal
   code when the grant does not cover it. Every other workflow here stops at an
   uncommitted tree. Standing: `decisions/0064-standing-authorization-and-the-landing-loop.md`
-  (proposed, and the shipped grant is `PROPOSED`, so the gate presently refuses
-  every landing until Bdo ratifies it).
+  and `decisions/0065-standing-grant-ratified.md`. `grant:standing-landing-loop`
+  is `RATIFIED` for actor `sov`; a landing is refused for missing evidence — a
+  failing check, or no independent observation — not for missing permission.
 - `workflows/sov-qa.js` — cross-domain QA sweep: sov-witness observes the
   current working tree per domain and aggregates residuals; builds nothing.
 - `workflows/sov-baseline.js` — foundational control loop run before a

@@ -1,0 +1,13 @@
+{
+  "baseline_id": "coldstart-fixture-answers",
+  "participant": "principal:fixture-participant",
+  "binding": "fixture",
+  "note": "A fixture, not a reading. It exists so the positive competence case can cite an answers file that is actually there and actually digests to what the record claims. Before it, that case cited a path that had never existed and passed.",
+  "answers": [
+    {
+      "id": "A01",
+      "value": "OPEN,BUILT,WITNESSED,RATIFIED",
+      "conf": "high"
+    }
+  ]
+}

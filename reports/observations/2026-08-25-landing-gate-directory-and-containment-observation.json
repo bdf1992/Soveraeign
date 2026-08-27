@@ -1,0 +1,80 @@
+{
+  "observer_id": "sov-witness (independent observation, Claude Opus 5 1M)",
+  "contributed_to_build": false,
+  "verdict": "DISSENTED",
+  "concern": "authority boundary refuses ungradeable paths (round 7: directory_paths, containment matching, sovland/tree split)",
+  "checks": [
+    {
+      "command": "python -c \"sha256 of the bytes graded, pinned at the start: sov_land.py 2b62363ea6fd16b2 (216 lines), sovland/tree.py 61995bc56c6265cc (177), authority.py d00c63cfc42f1420 (202, byte-identical to round 6), scope.py fa8c1fe9f643b86b (146, byte-identical to round 6), test_sov_land.py 85e5be966e944ce7 (280), grant-cases.json 726005743ec8f98a (328)\"",
+      "exit_code": 0
+    },
+    {
+      "command": "DEFECT: python -c \"ast scan of scripts/sov_land.py for names called but neither defined nor imported\"  # ['_git'] - cmd_land calls _git five times for add, commit, checkout and merge; _git moved to sovland/tree.py and was not included in the from-import list",
+      "exit_code": 0
+    },
+    {
+      "command": "DEFECT confirmed by namespace: python -c \"hasattr(sov_land,'_git') -> False; hasattr(sovland.tree,'_git') -> True\"  # cmd_land raises NameError at the first staging call, so the gate can never land; nothing is staged before it fires, so no partial state",
+      "exit_code": 0
+    },
+    {
+      "command": "DEFECT is uncovered: grep -n 'def test_' scripts/tests/test_sov_land.py  # 19 tests, and the only cmd_land test is test_land_without_explicit_paths_is_refused, which returns before any git call; lint, the 19 tests and selfcheck all pass over a cmd_land that cannot run",
+      "exit_code": 0
+    },
+    {
+      "command": "DEFECT: python -c \"containment matching is one-directional - staged ['contracts/sub'] vs contested 'contracts/sub/deep.json' -> True (fixed), but staged ['contracts/sub/deep.json'] vs contested 'contracts/sub' -> False, vs 'contracts/sub/' -> False, vs 'contracts' -> False\"  # a staged file inside a contested directory is still invisible",
+      "exit_code": 0
+    },
+    {
+      "command": "the reverse direction is reachable: scripts/sovsession/claims.py claim() records any repository-relative string with no is_file or is_dir check, so a session can hold a directory path",
+      "exit_code": 0
+    },
+    {
+      "command": "RESIDUAL TOCTOU, wider than the hypothesis: python -c \"tree.gather_checks(False) took 12.53s\"  # gather_checks runs verify.py and lint.py inside _evaluate, before directory_paths and before git add, so the entire graded set - paths, contents, directory-ness, contested state - is 12 to 15 seconds stale when git add stages current disk bytes",
+      "exit_code": 0
+    },
+    {
+      "command": "python -c \"directory_paths edge cases: 'scripts' and 'scripts/' and '.' and 'reports/observations' flagged; a file not flagged; a nonexistent path NOT flagged, so it passes the directory check and reaches git add, which errors\"",
+      "exit_code": 0
+    },
+    {
+      "command": "python -c \"unused imports left by the split in scripts/sov_land.py: subprocess, ROOT\"  # lint does not check for these",
+      "exit_code": 0
+    },
+    {
+      "command": "CONFIRMED stale finding withdrawn: grep -rn 'carried_paths' scripts/tests/  # three hits, class GradedSetIsWhatReachesTheTarget with two throwaway-repo cases and one union assertion; my round-6 finding read a genuine but superseded state",
+      "exit_code": 0
+    },
+    {
+      "command": "CONFIRMED citation repaired: the carried_paths docstring now says 0064 names a commit touching decisions/ or STATUS.yaml, that the probe used a different excluded path, that this is the mechanism rather than that commit, and that an earlier docstring overclaimed; checked against decisions/0064 'What would defeat this ruling'",
+      "exit_code": 0
+    },
+    {
+      "command": "CONFIRMED: LandingRefused replaces the traceback when the merge range cannot be computed, with test_a_range_that_cannot_be_computed_is_a_refusal, and main() catches it and returns 2; the dead-end escape is printed by _carried_note where the refusal is read",
+      "exit_code": 0
+    },
+    {
+      "command": "CONFIRMED: containment sibling control - staged ['contracts/sub'] vs contested 'contracts/subtle.json' -> False, so the prefix match does not sweep in a sibling",
+      "exit_code": 0
+    },
+    {
+      "command": "CONFIRMED sizes and hygiene: sov_land.py 216, sovland/tree.py 177, tests 280; all under 300, all LF, no line over 100",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/sov_grant.py selfcheck  # PASS: 1 grant(s) valid, 34 authority cases graded; evaluator bytes unchanged from round 6, so the six escape classes stand as observed then",
+      "exit_code": 0
+    },
+    {
+      "command": "python -m unittest discover -s scripts/tests -p \"test_sov_land.py\"  # Ran 19 tests, OK",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/lint.py  # 738 text files, 317 Python modules, 0 named debt",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/verify.py  # PASS: 39 checks in 11.527s wall; GRADE SILVER; I did not reproduce the 15s budget failure on three runs (11.532s, 11.527s), but I did reproduce the critical path: Asset Service reference tests 11.131s against repository tooling tests 5.807s and Console 2.970s",
+      "exit_code": 0
+    }
+  ]
+}

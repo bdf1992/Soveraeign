@@ -1,0 +1,144 @@
+{
+  "observer_id": "urn:soveraeign:actor:sov-witness/session-f444fd",
+  "contributed_to_build": false,
+  "verdict": "DEFEATED",
+  "concern": "feat/wt-routes at 2553a5a: are the 40 built-but-unreachable service operations actually reachable through the Gateway, and does routing them grant any authority beyond the grant presented?",
+  "subject": {
+    "commits": [
+      "386f1c4",
+      "edc8675",
+      "f8f67fc",
+      "2553a5a"
+    ],
+    "pull_request": null,
+    "decisions": [],
+    "claims_under_test": [
+      "40 operations are routed and reachable, Record 11 plus Asset 15 plus Console 14",
+      "every one carries its authority check",
+      "routing grants no authority beyond the grant presented"
+    ]
+  },
+  "observer_relation": {
+    "to_builder": "NONE",
+    "basis": "Requested by the builder, which cannot witness its own build. This is the first independent reading of the change. No helper was offered as a witness. The interface session verified the escalation mechanism statically against the same commit and its parent before carrying it."
+  },
+  "frozen_head": "2553a5a04b91e2518f6ff16a756216bc1071768c",
+  "shared_tree_conditions": {
+    "trap": "CLAUDE.md T6",
+    "mitigation": "detached worktree, clean before and after; the shared tree was never read for evidence or touched"
+  },
+  "checks": [
+    {
+      "command": "python scripts/lint.py",
+      "result": "PASS: 815 text files, 351 modules, 8 named debt",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/verify.py",
+      "result": "PASS twice: 40 checks, SILVER at 12.211s and 13.854s",
+      "exit_code": 0
+    }
+  ],
+  "reproduced": [
+    {
+      "id": "RT-1",
+      "claim": "the count is honest: 11 + 15 + 14 = 40, none previously reachable",
+      "method": "ran the route census at the parent and at the head, then dispatched all 45 declared endpoints end to end through the action path into the Gateway against a temp state root",
+      "finding": "census 5 to 45. The baseline five are exactly the operations already reachable, and the 40 new ids are disjoint from them, so nothing is double counted and none was already reachable. The declared totals match the artifacts, and the projection's 133 declared is the true sum across ten manifests."
+    },
+    {
+      "id": "RT-2",
+      "claim": "every route resolves to a real callable",
+      "method": "mutation sweep: misnamed each of the 42 handler keys one at a time and ran the owning service's suite, reverting after each",
+      "finding": "42 mutants, 42 killed, zero survivors. Every declared route has at least one test that actually invokes its handler. Named limit: the kills come from per-operation tests, not from any structural assertion that the handler set equals the argument set, so deleting an operation's only test would reintroduce the gap silently."
+    },
+    {
+      "id": "RT-3",
+      "claim": "no operation crosses without a live grant",
+      "method": "dispatched all 45 endpoints with a well-formed request and no grant held",
+      "finding": "45 of 45 refused at the authority stage with a durable journal record. This holds completely."
+    },
+    {
+      "id": "RT-4",
+      "claim": "no oracle was weakened by manifest edit",
+      "method": "diffed all three manifests for removed operations and refusal codes, and traced every newly declared code back to the base tree",
+      "finding": "nothing removed. 21 codes added, all eight distinct codes already existing in the base tree, no synonyms invented, no module over the ceiling, no secret shapes."
+    },
+    {
+      "id": "RT-5",
+      "claim": "the landing gate reads the merge rather than the declared paths",
+      "method": "rehearsed the landing plan",
+      "finding": "it refused on a path carried by the merge and never passed to the path list, and said so explicitly. That is the historical gate defect repaired rather than repeated."
+    }
+  ],
+  "dissented": [
+    {
+      "id": "RT-D1",
+      "severity": "HIGH",
+      "claim_defeated": "routing grants no authority beyond the grant presented",
+      "finding": "Routing the journal append operation makes the authority substrate writable. Console derives live grants from the same journal, keyed on a payload field naming the record kind; the record service's append screens only the source address against governing document names and never looks at that field. So an actor holding only the append capability can write a forged authority-grant payload and then mint itself anything.",
+      "consequence": "Measured end to end at the head: a grant request refused for want of authority, then an append carrying a forged authority-grant payload committed, then the same grant request committed - minting the actor the capability to ratify judgement. The identical sequence at the parent is refused because no route was bound, so this branch introduces it. Two facts compound it: the actor kind is caller-asserted and verified against nothing, so the SYSTEM-only restriction the commit presents as a separation restricts nothing; and the record kind in question is declared Console-owned, so a Record operation is writing another service's state, which the directory boundary forbids.",
+      "independently_verified": "The interface session confirmed all three legs statically at the same commit: the Console authority reader's grant-kind constant and its read of the payload field; the append path screening only the source address; and the route binding appearing at the head and not once at the parent.",
+      "what_would_have_defeated_this_finding": "a screen on the record kind in append or in the route"
+    },
+    {
+      "id": "RT-D2",
+      "severity": "HIGH",
+      "claim_defeated": "all 40 are reachable",
+      "finding": "Two are declared reachable and are not. One carries a resource-consumption effect class and the Gateway refuses anything that is not record-local before the route is entered, so every call fails at the route stage and the handler is never reached. The other declares a required argument the Gateway forbids as attribution, so supplying it is malformed and omitting it is incomplete - there is no admissible successful call.",
+      "consequence": "Neither is recorded in any gaps file, decision or test, and the operator surface renders both with an action affordance offering a human gesture. The second also means no session identifier can be minted through the Gateway, so three further console operations have no Gateway-only path to a positive outcome. 38 of the 40 are both reachable and satisfiable.",
+      "what_would_have_defeated_this_finding": "dispatching each declared route once"
+    },
+    {
+      "id": "RT-D3",
+      "severity": "MATERIAL",
+      "claim_defeated": "the check that grades reachability measures it",
+      "finding": "Reachability is a join of two declarations: the keys of a Python dictionary in each route module, matched against a checked-in capability map. It never dispatches and never consults either Gateway rule that produced the two failures above. Only four operations in the entire repository are ever driven through the Gateway by any check, and none of the 40 is among them.",
+      "consequence": "This is the declaration-standing-in-for-a-measurement class, and here it is producing two false facts rather than merely risking them. The witness wrote a dispatching oracle in about forty lines that catches both.",
+      "what_would_have_defeated_this_finding": "an oracle that dispatches each declared route and requires a service-owned terminal receipt"
+    },
+    {
+      "id": "RT-D4",
+      "severity": "MINOR",
+      "claim_defeated": "the reachable and policy-active facts remain distinguishable",
+      "finding": "The only case where the two genuinely disagreed was deleted; its replacement uses an operation where both are false and therefore agree.",
+      "consequence": "With both seams now empty, no case in the tree distinguishes them, so a derivation that simply returned one for the other would pass every test in the repository.",
+      "what_would_have_defeated_this_finding": "keeping a case where the two disagree"
+    }
+  ],
+  "residuals": [
+    {
+      "id": "RT-R1",
+      "severity": "MATERIAL",
+      "finding": "Four asset operations reach their handler and then refuse from the service's own grant store, which the Gateway's authority reader cannot write. Reachable through the Gateway does not mean drivable through it. Defence in depth rather than a hole, but unreported."
+    },
+    {
+      "id": "RT-R2",
+      "severity": "MINOR",
+      "finding": "Two authority boundaries use different scope vocabularies - one console operation refuses even holding the matching capability at the Gateway scope - and nothing reconciles them."
+    },
+    {
+      "id": "RT-R3",
+      "severity": "MINOR",
+      "finding": "The journal export operation returns counts rather than the export document, so the verify and restore pair cannot be chained through the Gateway from a Gateway-obtained export. All three are reachable; the sequence is not composable across the boundary."
+    },
+    {
+      "id": "RT-R4",
+      "severity": "NOTE",
+      "finding": "The fourth commit's CLAUDE.md hunk is accurate - the witness counted 396 commits and 71 decision records independently - and it is what turns the orientation snapshot green. But CLAUDE.md is an excluded prefix of the standing grant, so that commit cannot land under it. The three routing commits inherit rather than cause the red at their own tip: the base already fails six checks and they fix three."
+    },
+    {
+      "id": "RT-R5",
+      "severity": "NOTE",
+      "finding": "decisions/0081 does not exist at this commit and the old fifteen-second gate is what ran here. There is no attributed-debt line to report because that mechanism is not in this tree."
+    }
+  ],
+  "not_examined": [
+    "whether the authority journal should share a store with a generally writable append operation at all"
+  ],
+  "standing_supported": "none. Does not support BUILT -> WITNESSED for 2553a5a. The count is honest and the engineering is careful - no oracle weakened, every added refusal code already in the vocabulary, all 42 handler mutants killed, all 45 endpoints refusing without a grant. Three findings stop it, and the third explains the first two: the check that grades reachability reads a declaration where it could dispatch, so a privilege escalation and two unreachable-but-declared-reachable operations all passed it. These belong inside this concern for repair.",
+  "judgement_items": [
+    "Should a routed journal append be permitted to write a payload whose record kind is owned by another service - specifically the kind the Console authority reader folds into live grants? The narrow repair is a screen. The wider question is whether the authority journal should share a store with a generally writable append operation at all. That is a boundary question, not an engineering default.",
+    "The actor kind is asserted by the caller and verified against nothing, so the SYSTEM-only restriction on ten write operations is not a separation today. Whether that needs an identity service before those routes are considered live is an owner question."
+  ]
+}

@@ -58,14 +58,15 @@ def target_path(root: Path, kind: str, name: str) -> Path:
     return root / ".claude" / "skills" / name / "SKILL.md"
 
 
-def _semantic_defects(root: Path, path: Path, raw: dict) -> list[str]:
+def _semantic_defects(root: Path, path: Path, raw: dict,
+                      require_target: bool = True) -> list[str]:
     defects = []
     if raw["name"] != path.stem:
         defects.append(f"name '{raw['name']}' must equal the file stem '{path.stem}'")
     if raw["effect_class"] == EXTERNAL_WORLD:
         defects.append("EXTERNAL_WORLD refused: protected boundary no_external_effects_in_phase_i")
     target = raw["target"]
-    if not target_path(root, target["kind"], target["name"]).is_file():
+    if require_target and not target_path(root, target["kind"], target["name"]).is_file():
         defects.append(f"{target['kind']} '{target['name']}' not found under .claude/")
     try:
         cron.parse(raw["cron"])
@@ -81,15 +82,23 @@ def _semantic_defects(root: Path, path: Path, raw: dict) -> list[str]:
     return defects
 
 
-def load_declaration(root: Path, path: Path) -> Declaration:
-    """Load one declaration; raise DeclarationError listing every defect found."""
+def load_declaration(root: Path, path: Path,
+                     require_target: bool = True) -> Declaration:
+    """Load one declaration; raise DeclarationError listing every defect found.
+
+    ``require_target`` is True for every reader that intends to run the thing, which is
+    all of them but one. The switch operation passes False, because a schedule whose
+    workflow file was deleted is exactly the schedule an operator needs to switch off,
+    and refusing to load it traps it on. That operation does its own target check, and
+    only in the arming direction.
+    """
     try:
         raw = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as error:
         raise DeclarationError(f"{path.name}: {error}") from None
     defects = jsonshape.check(raw, load_schema(root))
     if not defects:
-        defects = _semantic_defects(root, path, raw)
+        defects = _semantic_defects(root, path, raw, require_target=require_target)
     if defects:
         raise DeclarationError(f"{path.name}: " + "; ".join(defects))
     preconditions = raw.get("preconditions", {})

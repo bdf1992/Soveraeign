@@ -1,0 +1,72 @@
+{
+  "observer_id": "sov-witness (independent observation, Claude Opus 5 1M)",
+  "contributed_to_build": false,
+  "verdict": "CONFIRMED",
+  "concern": "landing gate effect path (round 11: sovland/repo split, ROOT seam, EveryReferenceResolves guard)",
+  "checks": [
+    {
+      "command": "python -c \"digests pinned before reading: sov_land.py cfdc4e103d79ee34 (259), sovland/tree.py c5694e9ef401bdd1 (200), sovland/repo.py 794e824977dcae5d (126), test_sov_land.py 127328ea5433fd3a (559)\"",
+      "exit_code": 0
+    },
+    {
+      "command": "SEAM: grep every ROOT reference across the three modules  # defined once at repo.py:20; tree.py reads repo.ROOT at six call sites and keeps no copy; repo.py's own functions use the module global, which mock.patch.object rebinds",
+      "exit_code": 0
+    },
+    {
+      "command": "SEAM verified empirically: patch repo.ROOT to a scratch repository, then call tree.fingerprint on a real repository path  # returns 'absent', so tree follows the patched root; tree.fingerprint on the scratch path hashes it, repo.current_branch and repo.tracked both follow. The redirection holds across the seam in both directions",
+      "exit_code": 0
+    },
+    {
+      "command": "GUARD case A: scratch copy with repo.worktree_blob deleted, a function sov_land names across the seam  # FAIL test_every_module_attribute_a_caller_names_exists, 'module attributes named but not defined', plus 7 behavioural errors. The guard fires on the round-10 bug class",
+      "exit_code": 1
+    },
+    {
+      "command": "GUARD case B: scratch copy with repo._git deleted, called bare inside its own module  # FAIL on both guard tests, 'sovland.repo: _git()' named explicitly, plus 9 behavioural errors. The guard fires on the round-7 bug class",
+      "exit_code": 1
+    },
+    {
+      "command": "RESIDUAL 1: scratch copy with a new scripts/sovland/newthing.py that calls repo.does_not_exist_at_all  # Ran 30 tests, OK. MODULES is the hardcoded tuple (\"sov_land\", \"sovland.tree\", \"sovland.repo\"); a new module acting as CALLER is not walked. A broken reference TO a new module from a covered caller IS caught, so the gap is narrower than the whole class",
+      "exit_code": 0
+    },
+    {
+      "command": "RESIDUAL 2: scratch copy with sys.executable mistyped as sys.exeuctable in tree.py  # Ran 30 tests, OK. The guard skips any imported module without __file__, so builtin modules are unchecked. A present false negative, not a future one",
+      "exit_code": 0
+    },
+    {
+      "command": "RESIDUAL 3: scratch copy with a local variable named `repo` shadowing the imported module, then a legitimate attribute on it  # FAILED, 1 failure, no errors. The check is name-based on the AST with no scope awareness, so a local shadowing an imported module name is a false positive",
+      "exit_code": 1
+    },
+    {
+      "command": "CONFIRMED symlink mirror: throwaway repo with core.symlinks and a tracked symlink  # worktree_blob and index_blob both return 3350be1f, and staged_wrong with nothing changed returns no refusal. The round-10 false refusal is gone",
+      "exit_code": 0
+    },
+    {
+      "command": "CONFIRMED absent_paths is a predicate at tree.py:149 alongside directory_paths, drifted and staged_wrong; by_checks is computed at sov_land.py:91 and consumed at 189, not computed and dropped",
+      "exit_code": 0
+    },
+    {
+      "command": "BUDGET RETRACTION: python scripts/verify.py three times  # exit 0 each, PASS 39 checks at 11.692s, 11.652s, 11.691s, with Asset Service reference tests at 11.279s, 11.264s, 11.281s - down from 14.956-15.149s last round. My four red runs were contention from the builder's test file, and the finding I sent to Bdo that the grant could not be exercised was wrong",
+      "exit_code": 0
+    },
+    {
+      "command": "python -c \"line lengths: test_sov_land.py, tree.py and repo.py all clean; sov_land.py line 75 is 106 characters, the _evaluate signature grown by the tenth tuple member\"",
+      "exit_code": 0
+    },
+    {
+      "command": "SAFETY: git rev-parse HEAD, git rev-parse main and a hash of git status --porcelain -uall before and after three suite runs  # unchanged",
+      "exit_code": 0
+    },
+    {
+      "command": "python -m unittest discover -s scripts/tests -p \"test_sov_land.py\"  # Ran 30 tests, OK, three consecutive runs at 1.43-1.64s",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/sov_grant.py selfcheck  # PASS: 1 grant(s) valid, 34 authority cases graded",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/lint.py  # 743 text files, 318 Python modules, 0 named debt",
+      "exit_code": 0
+    }
+  ]
+}

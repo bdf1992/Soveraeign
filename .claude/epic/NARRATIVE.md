@@ -3,7 +3,7 @@
 Status: proposed projection. Holds no standing, routes nothing, owns no issue.
 
 `tree.json` is the technical map of the epic-of-epics (`#1`): villages, bits,
-stubs, `requires` edges. This file is the same 49 issues told a second way:
+stubs, `requires` edges. This file is the same 52 issues told a second way:
 by where an actor meets the system (**front office**) and by what holds
 that meeting up (**back office**). `villages.json` still routes dispatch;
 `offices.json` carries this grouping in machine shape.
@@ -95,11 +95,16 @@ The Door (`#16`).
 **What they leave with:** one attributable event per consequential thing
 they did, and a judgement request that lands on the owner's desk instead of
 being decided for them.
-**Today:** the Console boundary and its name are accepted; the service is not
-built. The Sov profile validates and its fixtures pass; it is accepted as the
-operating shape and is not live. `#30` is `held` on nine issues, `#45` on two.
-The story is fully told (`services/console/CHARTER.md`, `SOV.md`); no actor can
-walk it, because the contract and its defeating fixtures do not exist yet.
+**Today:** the desk is half there. The Console's continuity path is built and
+self-tested - channels, threads, posts, operator sessions and grants - and
+fifteen of its twenty-six declared operations are `BUILT`. Three bindings exist
+(`bindings/console/`, `bindings/mcp/`, `bindings/sov/`) and a Human Binding
+workspace was composed over them. `#45` is closed; its unfinished predicate, the
+fresh-host two-model parity witness, moved to `#19` and `#30` rather than
+disappearing. `#30` is `held` on six issues and is `CHARTERED_NOT_IMPLEMENTED`:
+bindings exist, and the same-world parity the counter is named for is unproven.
+No actor can raise a judgement request, because no identity can tell the record
+who they are.
 
 ### The Door: `#16`, `#17`
 
@@ -114,9 +119,15 @@ input. The Relay Service (`#17`) carries messages once they are inside.
 Record (`#6`, `#7`).
 **What they leave with:** a receipt for the crossing, including the
 refusals. Silent fallback is forbidden, so a closed door is a recorded door.
-**Today:** nothing is built and no harness domain claims either issue;
-both are `unrouted`. This is on purpose for now: `no_external_effects_in_phase_i`
-stands, so the Door is locked and the story is about what the lock looks like.
+**Today:** the Gateway has a chartered boundary, nine declared operations, and
+one built `IN_PROCESS` slice proving a complete
+`IN_PROCESS -> sov://asset/ingest-asset -> Asset Service -> terminal receipt`
+path. `IN_PROCESS` means the caller already holds the service object, so nothing
+has crossed a transport and no third party has reached anything. The Relay
+(`#17`) has no artifact. Both are still `unrouted`. External effects are no longer
+refused by class - `decisions/0047` admits them inside declared scopes with a
+receipt - so the Door's lock is now a named list of refused verbs rather than a
+blanket.
 
 ### The Model Counter: `#19`, `#29`
 
@@ -131,11 +142,13 @@ the practice, not a service. No provider SDK type passes the counter.
 The Job Window (`#18`), The Record (`#25`).
 **What they leave with:** a declared binding with a data-boundary mode, and a
 receipt for every call, with only an opaque credential reference on it.
-**Today:** the binding contract exists (`contracts/model-binding.schema.json`)
-and two scenarios wait for it (`006`, `008`). The binding contract is
-accepted; the kernel has no `invoke_model` implementation (PROD-I-9), and the
-Ollama adapter grades declared bindings against a recorded inventory rather than
-executing one. Nothing waits on the owner here. `#19` and `#29` are `held`.
+**Today:** three adapters exist and are tested (`adapters/github/`,
+`adapters/host/`, `adapters/ollama/`), which moved `#29` from `declared` to
+`built and self-tested`. `adapters/ollama/invoke.py` does execute a model against
+the local runtime and grade its own output; it settles nothing and its data
+boundary is `LOCAL_ONLY`, so no crossing has ever put bytes in front of a third
+party. The kernel still has no `invoke_model` implementation (PROD-I-9), and
+scenarios `006` and `008` are still unbound. Nothing waits on the owner here.
 
 ### The Job Window: `#18`, `#20`, `#21`, `#31`
 
@@ -154,9 +167,12 @@ The Door (`#17`), The Inspectorate (`#9`).
 own word; then a settlement, which is someone else's.
 **Today:** this story already runs, but in the harness, not in the product.
 Controller, Orchestrator, Worker, and Witness exist as `.claude/` plumbing;
-thirteen workflows and a scheduled-run tick exist; every shipped schedule is
-disabled. There is no kernel-level append-preserving journal to settle into
-(PROD-I-8). All four issues are `unrouted`.
+twenty workflows and a scheduled-run tick exist; every shipped schedule is
+disabled. `contracts/work-lease.schema.json` types the lease and fixtures grade
+it, which is why `#18` is now `chartered` rather than `open`; `workers/` is still
+a README. The Record Service now keeps an append-preserving journal, and it is
+not the kernel's: the Asset Service still holds its own tables (PROD-I-8), so a
+run has nowhere kernel-level to settle. All four issues are `unrouted`.
 
 ### The Review Desk: `#22`, `#28`
 
@@ -171,11 +187,12 @@ reference participant.
 **Leans on:** The Record (`#8`, `#10`), The Permits Office (`#11`, `#12`,
 `#13`, `#14`), The Job Window (`#18`, `#20`), The Model Counter (`#19`).
 **What they leave with:** a decision record pinned to the versions reviewed.
-**Today:** the boundary is accepted and the service is not built
-(`services/proofing/CHARTER.md`, two schemas, a defeating fixture). What is
-missing is the contract and its fixtures, not permission. `#22` is
-`held` on ten issues. The longest "Leans on" line in the front office: this
-desk opens last.
+**Today:** unchanged in substance and now graded as what it is.
+`services/proofing/` holds a charter, a service contract with eleven `PROPOSED`
+operations, two schemas, and a defeating fixture, and no Python at all. What is
+missing is the contract's executable cases and an implementation, not permission.
+`#22` is `held` on nine issues. The longest "Leans on" line in the front office:
+this desk opens last.
 
 ### The Drafting Window: `#42`, `#50`
 
@@ -191,10 +208,12 @@ shows the forest without owning it.
 (`#30`), The Inspectorate (`#49`).
 **What they leave with:** a view. Projections are rebuildable and never
 become authoritative by convenience.
-**Today:** the newest and least settled line. Both issues are `unrouted`; the
-experimental QA sidecar (`#51`) is closed and its cleanup (`#52`) waits on an
-ownership decision (`#47`); a RED engagement (`#57`) is open against the
-foundation underneath. Nothing to walk yet.
+**Today:** the newest and least settled line. Both issues are `unrouted`. The
+experimental QA sidecar (`#51`) is closed, and its cleanup (`#52`) was invisible
+to every queue until 2026-08-26 because no ticket kind fitted a removal; `chore`
+now does (`decisions/0090`), and it waits on `#47`. The RED engagement (`#57`) is
+still open and its target pull request has since merged, so a confirmed finding
+would now demote landed work. Nothing to walk yet.
 
 ---
 
@@ -210,10 +229,14 @@ governed identities with version history; the Graph Service (`#10`) keeps the
 typed map of entities, assets, and operations; shared contracts (`#25`)
 validate every boundary record.
 
-**Today:** `#6` is the one `ready` issue in the whole tree, and everything
-else queues behind it. The Asset Service is built and self-tested, not
-witnessed. Six kernel schemas exist; `contracts/kernel-transitions.json` is in
-the working tree, uncommitted. No kernel journal (PROD-I-8).
+**Today:** the ledger largely exists now. `#6` and `#7` are both closed and
+graded `built and self-tested`: `contracts/kernel-transitions.json` is the
+compiled transition contract and `python scripts/sov_kernel.py parity` passes
+with seven correspondences; all eleven declared Record operations are `BUILT`.
+The Asset Service (`#8`) has all seventeen. Shared contracts (`#25`) hold
+forty-nine documents, which moved it from `proposed` to `built and self-tested`.
+The Graph Service (`#10`) has no artifact. The journal is not the kernel's: the
+Asset Service still keeps its own tables (PROD-I-8).
 
 ### The Permits Office: `#11`, `#12`, `#13`, `#14`, `#15`
 
@@ -223,13 +246,18 @@ every consequential boundary (Security and Gates, `#13`), knows what exists
 and which version (Registry, `#14`), and hands machines short-lived,
 attenuated tokens (Capability Broker, `#15`).
 
-**Today:** the office is half-built and half-undomained. Identity (`#11`) and
-Registry (`#14`) route to the `trust` domain on the artifacts already in
-`services/identity/` and `services/registry/`, and both are `held` behind the
-Asset Service (`#8`). Authority (`#12`), Security and Gates (`#13`), and the
-Capability Broker (`#15`) have no artifact and stay `unrouted`. This is still
-the widest gap between front and back: every counter's "Leans on" line passes
-through here, and no counter can know who is standing at it.
+**Today:** contracted in places, built nowhere, and half-undomained. Identity
+(`#11`) and Registry (`#14`) are chartered services with code and now route to
+the `trust` domain on the artifacts under `services/identity/` and
+`services/registry/`; every one of Identity's seven declared operations and
+twelve of Registry's thirteen are `PROPOSED`. Authority (`#12`) has a grant
+schema and a standing-grant registry and no service, and nine built Console
+operations declare an authority and check none. Security and Gates (`#13`) is
+enforced at each caller rather than owned anywhere, which is what those nine
+operations look like in practice. The Capability Broker (`#15`) has no
+artifact. Those three stay `unrouted`. This is still the widest gap between
+front and back: every counter's "Leans on" line passes through here, and no
+counter can know who is standing at it.
 
 ### The Inspectorate: `#9`, `#23`, `#26`, `#32`, `#49`, `#57`
 
@@ -240,10 +268,12 @@ the full human/model crossing (`#23`); the Day-0 engineering harness (`#32`);
 the Capability resolution witness (`#49`); and the first RED engagement
 (`#57`). A build cannot witness itself anywhere in this file.
 
-**Today:** the oracle is executable with 20 controlled cases and every
-defeating fixture fails as declared; `scripts/verify.py` passes in about
-1.3 s. Participant binding is still open. Nothing in the repository is
-`WITNESSED` yet.
+**Today:** the oracle is executable with 20 controlled cases and every defeating
+fixture fails as declared; `scripts/verify.py` runs 40 checks and grades its own
+wall time rather than failing at a fixed ceiling (`decisions/0050`). Participant
+binding is still open. Nothing in the repository is `WITNESSED` yet, and nothing
+can be: `#9`, the service that would make an independent observation possible, is
+chartered and unbuilt. That is a ceiling on the whole tree rather than a backlog.
 
 ### The Ground: `#37`, `#39`
 
@@ -251,8 +281,13 @@ What it does for the front: the place the node physically lives. A
 reproducible local custody ground (`#37`) first; a bridge from that node to a
 customer-owned Kubernetes topology (`#39`) later.
 
-**Today:** both `unrouted`. The node runs as local process calls and a CLI;
-that is the baseline, not a gap.
+**Today:** both `unrouted`, and further along than that suggests. The topology,
+its runtime image contract, and a CI build and execution of that image all
+landed, so eleven of `#39`'s twelve closure lines are ticked. The twelfth cannot
+be ticked from here: no customer-owned cluster has run this. The Host Service
+(`#108`) added one governed `read-health` operation reachable through the Node
+Interface. The node still runs as local process calls and a CLI; that is the
+baseline, not a gap.
 
 ### The Pattern Room: `#40`, `#41`, `#47`, `#48`
 
@@ -261,8 +296,14 @@ Window shows. The Charting contract (`#40`), the Skill and capability graph
 (`#41`), where skill declarations canonically live (`#47`), and the relation
 schema that validates them (`#48`).
 
-**Today:** `#40` `held`, the rest `unrouted`; `#57` is actively trying to
-defeat this room. Under adversarial review by design.
+**Today:** `#40` is `held` and now graded `built and self-tested`: `charting/`
+runs inside `scripts/verify.py` and its declared invariants hold in the suite.
+`#41` moved to `proposed`: skill identity and binding realization are derivable
+and fail closed, while requirements, authority predicates, possession, and live
+availability are not derivable from the current prose without interpretation.
+That is the room's real seam, and `#47` and `#48` own it. `#57` is still open
+against these exact invariants and its target has merged, so a confirmed finding
+would demote landed work. Under adversarial review by design.
 
 ### Beyond the Node: `#24`
 
@@ -277,17 +318,28 @@ Office. Not Phase I.
 ## Outside both offices
 
 - `#1` to `#5`: the epic and its four villages. Structure, not a counter.
-- `#52`: housekeeping; remove the experimental sidecar after `#47` decides.
-- `#51`, `#53` to `#56`: closed. Noise in the tree, nothing in the story.
+- `#52`: housekeeping, and the ticket that named a gap in the vocabulary. It
+  carried no metadata block from the day it was filed until 2026-08-26, because
+  no kind fitted a removal; `chore` was added for it (`decisions/0090`).
+- `#53` to `#56`: closed. Noise in the tree, nothing in the story. `#51` was
+  filed here as noise and is not: it proved a relation shape for the Pattern
+  Room and now sits there.
 
 ## What the two layers say together
 
-Read front to back, the queue has one shape: every counter leans on The
-Permits Office, The Permits Office leans on The Record, and The Record
-starts at `#6`. The technical tree says this as "two ready, fourteen held,
-twenty unrouted". The narrative says it as: nobody can be told who they
-are yet, so no counter can open; the ledger has to exist before the permits
-office can, and the ledger's first page is the kernel's list of legal moves.
+Read front to back, the queue still has one shape, and the sentence for it has
+changed once. Every counter leans on The Permits Office, and The Permits Office
+leans on The Record. The technical tree says this today as "52 issues, 41 open,
+3 ready, 12 held, 19 unrouted" (`python scripts/sov_epic.py status`), which is
+the reading after the walk stopped folding `unrouted` into `held`.
+
+What changed is which floor is missing. The ledger now largely exists: the
+kernel's list of legal moves is compiled and parity-checked, the Record Service
+keeps an append-preserving journal, and the Asset Service is built. So the
+narrative is no longer "the ledger has to exist first". It is: nobody can be
+told who they are, so no counter can open. Identity is the next floor, and
+nothing above it can be witnessed either, because the service that would do the
+witnessing has not been built.
 
 ## Decisions this layer queues for the owner
 

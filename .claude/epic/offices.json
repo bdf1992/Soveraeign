@@ -1,6 +1,6 @@
 {
   "narrative_schema": "soveraeign-epic-narrative/v1",
-  "note": "Proposed narrative projection over .claude/epic/tree.json. It regroups the same issues by where an actor meets the system (front office) and what holds that meeting up (back office). It owns no issue, no standing, and no routing; villages.json still routes dispatch. Office assignment is a proposal for Bdo.",
+  "note": "Proposed narrative projection over .claude/epic/tree.json. It regroups the same issues by where an actor meets the system (front office) and what holds that meeting up (back office). It owns no issue, no standing, and no routing; villages.json still routes dispatch. Office assignment is a proposal for Bdo. Reconciled 2026-08-26: #65 and #108 had no office, and #51 was filed as closed noise before it carried a metadata block. It proved a relation shape for the Pattern Room and sits there now; only #53 to #56 are noise.",
   "cast_note": "Tellers are named by the kernel's actor_kind and a CLASSIFICATION.md role; no new vocabulary. Owner is not a role: it is the context that sets Bdo's Binding and Projection and travels in a ticket's authority field.",
   "cast": {
     "human-operator": {
@@ -109,7 +109,8 @@
         8,
         10,
         25,
-        27
+        27,
+        65
       ]
     },
     "permits-office": {
@@ -137,8 +138,10 @@
       "title": "The Ground",
       "issues": [
         37,
-        39
-      ]
+        39,
+        108
+      ],
+      "chartered_in": "infrastructure/, services/host/CHARTER.md"
     },
     "pattern-room": {
       "title": "The Pattern Room",
@@ -146,7 +149,8 @@
         40,
         41,
         47,
-        48
+        48,
+        51
       ]
     },
     "beyond-the-node": {
@@ -168,7 +172,6 @@
       52
     ],
     "closed_noise": [
-      51,
       53,
       54,
       55,

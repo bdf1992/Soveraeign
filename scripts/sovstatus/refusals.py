@@ -37,8 +37,8 @@ SEPARATORS = re.compile(r"[^A-Za-z0-9]+")
 SUFFIX = "_status"
 SHAPE = {"field": str, "value": str, "subject": str, "claim_kind": str, "detail": str}
 # Closed. A witness added asserted_standing, settled_by, authority and a resurrected
-# standing_source to a live entry and every one passed: a type check over seven named
-# keys never rejects an eighth.
+# standing_source to a live entry and every one passed: a type check over named keys
+# never rejects an unnamed one.
 KEYS = frozenset(SHAPE) | {"reference"}
 
 
@@ -91,7 +91,7 @@ def unknown_key(_f: list[tuple[str, str]], entries: list[dict], _c: dict) -> lis
 
     The set is closed rather than merely type-checked. A witness put `asserted_standing`,
     `settled_by`, `authority` and a resurrected `standing_source` onto live entries and every
-    one passed, because checking the types of seven named keys never rejects an eighth.
+    one passed, because checking the types of named keys never rejects an unnamed one.
     """
     return [f"ENTRY_UNKNOWN_KEY: {e.get('field')} carries {sorted(set(e) - KEYS)}, which this "
             "table does not grade"

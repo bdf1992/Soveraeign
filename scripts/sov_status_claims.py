@@ -11,9 +11,10 @@ one subject are represented, which is a governing choice.
 
 `contracts/status-claims.json` records that choice as a crosswalk. It changes no prose. It
 says, for each field and value the document already carries, which subject the claim is
-about, which kind of claim it is, and where a ladder position is asserted, which one. Under
-that typing the eight duplicates are not duplicates: they are one subject carrying two kinds
-of claim, and neither erases the other.
+about and which kind of claim it is. It says nothing about standing: `sov_standing.py`
+owns that, and `contracts/status-claims.json` records why. Under this typing the eight
+duplicates are not duplicates: they are one subject carrying two kinds of claim, and
+neither erases the other.
 
 This module owns reading the document and running the table. `scripts/sovstatus/refusals.py`
 owns what counts as a wrong entry. `check` grades the live file in both directions - an

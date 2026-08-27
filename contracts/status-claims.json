@@ -8,14 +8,14 @@
     "decisions/0046-decision-queue-drain.md",
     "decisions/0074-typed-standing-and-the-node-graph.md"
   ],
-  "summary": "What each `*_status` field in STATUS.yaml claims, typed. STATUS.yaml writes three kinds of statement about a subject into one flat namespace, so eight subjects carry a duplicate key and a YAML reader silently keeps only the last. This file does not repair the prose: it says what the prose means. A reader keeps its own line and gains a subject, a claim kind, and where a ladder position is asserted, an artifact standing. The same move `contracts/decision-standing.json` already made for decision records.",
+  "summary": "What each `*_status` field in STATUS.yaml claims, typed. STATUS.yaml writes three kinds of statement about a subject into one flat namespace, so eight subjects carry a duplicate key and a YAML reader silently keeps only the last. This file does not repair the prose: it says what the prose means. A reader keeps its own line and gains a subject and a claim kind. It gains no standing: see what_this_types. The same move `contracts/decision-standing.json` already made for decision records.",
   "not_in_scope": [
     "Whether a claim is true. This types what is asserted, never whether it holds.",
     "Decision standing. `contracts/decision-standing.json` grades a decision record's settlement; this grades what a status field says about a subject.",
     "Authority. Naming a claim kind grants nothing and settles nothing.",
     "Repairing STATUS.yaml. The file is unchanged by this contract and remains the hand-written record until a projection can regenerate it."
   ],
-  "naming_screen": "`standing` already carries two senses here - artifact standing (OPEN -> BUILT -> WITNESSED -> RATIFIED) and decision standing. A third would be the collision OPEN-SEAMS.md S20 was closed to prevent, so this contract is named for the field it types (`status`) and uses `artifact_standing` unqualified only for the existing ladder. No new name is minted; Bdo owns naming (NAMING.md).",
+  "naming_screen": "`standing` already carries two senses here - artifact standing (OPEN -> BUILT -> WITNESSED -> RATIFIED) and decision standing. A third would be the collision OPEN-SEAMS.md S20 was closed to prevent, so this contract is named for the field it types (`status`) and now carries no standing of its own at all. No new name is minted; Bdo owns naming (NAMING.md).",
   "claim_kinds": {
     "STATUS": {
       "plain_english": "The general state of the subject, as the document's main body records it.",

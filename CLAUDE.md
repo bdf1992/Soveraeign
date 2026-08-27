@@ -211,7 +211,7 @@ classification contract, the Phase-I logical spec, Proofing, BYOM, and the
 engineering baseline. Day two added the SDLC loop, Console, scheduled runs,
 Sov, the federation harness, defeating fixtures for receipts and proofing,
 LF line-ending enforcement, and the stack certification. At the end of day two
-the record held 26 commits, 17 decision records and 26 reports; it now holds
+the record held 26 commits, 17 decision records and 8 reports; it now holds
 461 commits, 79 decision records and 26 reports. The
 first independently witnessed work landed on 2026-08-25; nothing is ratified.
 

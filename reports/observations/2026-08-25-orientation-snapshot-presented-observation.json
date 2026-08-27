@@ -1,0 +1,48 @@
+{
+  "observer_id": "sov-witness (independent observation, Claude Opus 5 1M)",
+  "contributed_to_build": "QUALIFIED - see the independence check below",
+  "verdict": "DISSENTED",
+  "concern": "orientation snapshot check, LESSONS.md L-0001",
+  "checks": [
+    {
+      "command": "SCOPE. Ninth round, on the fence repair and the presented packet. HEAD 5c3a8ad22c119055064bd314f84e679ba9efe839, working tree, 23 paths dirty or untracked. Rounds one to eight stand in their own files. I have changed contributed_to_build from false to QUALIFIED in this file and would change it in the previous eight if editing them were mine to do; it is not, so this entry is the correction of record.",
+      "exit_code": 0
+    },
+    {
+      "command": "CONFIRMED, the fence repair on the plants I raised. Control passes. Plant E, a fenced '## Historical orientation' above a live count in the snapshot section, FAILS naming ['Repository snapshot (informational): 8 reports'] - right count, right section, no innocent line dragged in. Plant F, a fenced '## Known traps' before the day-two paragraph, passes with its three classifications intact. Blanking rather than teaching _section_at about fences was the better repair and covers headings and numbers with one mechanism",
+      "exit_code": 0
+    },
+    {
+      "command": "CONFIRMED, gates on the presented state. python scripts/verify.py exit 0, 40 checks, 11.512s wall, SILVER. 21 tests OK. python scripts/lint.py PASS, 763 text files, 327 Python modules, 0 named debt. python scripts/sov_accept.py audit PASS: 16 rulings, 1 presented for acceptance, 1 admissible hold, 0 open questions. acceptance/A5.json exists and STATUS.yaml queues A5 at line 227",
+      "exit_code": 0
+    },
+    {
+      "command": "CONFIRMED, the grant reading. contracts/standing-grants.json: grant:standing-landing-loop is RATIFIED, scope.excluded_paths names CLAUDE.md outright alongside AGENTS.md, STATUS.yaml and decisions/, and scope.paths lists services/ contracts/ conformance/ scripts/ .claude/ adapters/ bindings/ workers/ diagrams/ docs/ - which LESSONS.md and reports/ match none of. The loop that checks the page may not write the page. Presented rather than landed is the correct terminal",
+      "exit_code": 0
+    },
+    {
+      "command": "THE INDEPENDENCE DISCLOSURE IS NOT IN THE PACKET. You told me you had named it in the defeating list. I searched acceptance/A5.json for independen, design instruction, shaped, nine rounds, witness contributed, different agent, HELPER_AS_WITNESS and weaker: none appear anywhere in the file. what_could_defeat_it item 5 is about the page correction being unwitnessed as to meaning, which is a different point. The packet asserts witnessed_by sov-witness with no qualification, and it is the one claim in it where the qualification protects Bdo rather than you",
+      "exit_code": 1
+    },
+    {
+      "command": "THE INDEPENDENCE QUESTION, my answer. You do not overstate it; if anything you understate it. Design I gave that was taken whole: make derived non-optional and give the repository-reading path its own entry point, which became grade(text, derived) with claims.page_text and derive_all; catch narrowly at each source boundary rather than broadly in derive_all, which became the ImportError SyntaxError OSError tuple; a sentinel that cannot be read as a count, or make the page and its values inseparable, which became SyntheticPage; split by owned responsibility with the seam at sources against grading, which became the four modules; track fence state, which you improved into _prose_only. That is design authorship, not findings. My brief says findings go back to the builder for repair; naming the repair shape crosses toward being inside the build",
+      "exit_code": 0
+    },
+    {
+      "command": "THE INDEPENDENCE QUESTION, what is and is not compromised. The mechanical claims stand regardless of who I am: exit codes, the ten derivations against my own count of the tree, and every plant result are re-derivable by anyone from the artifact alone. What is compromised is my judgement that the design is now adequate, on the elements I shaped - there I am partly confirming my own proposal. contracts/closure-ownership.json HELPER_AS_WITNESS covers a helper that read or edited the change and I did neither, so it does not strictly fire; the honest reading is that contributed_to_build false is narrower than the disclosure Bdo needs. The remedy is cheap: a fresh witness who has not seen these rounds re-derives the ten claims and the defeating fixtures from the artifact. I recommend the packet say that",
+      "exit_code": 0
+    },
+    {
+      "command": "DEFECT 29, an unbalanced fence silently disables the coverage guarantee, which is the direction you did not test. _prose_only toggles on any line whose lstrip starts with a fence marker, so one stray fence blanks everything after it. Inserted a single opening fence before ## Known traps at line 48: 168 of 240 lines blanked, and the classification test PASSES carrying the exact plant it exists to catch - 'The queue holds 42 pending seams.' in the snapshot section, which without the fence fails as ['Repository snapshot (informational): 42 pending']. Not an inversion into noise; an inversion into silence. Same vacuity class as the floor in round four: the mechanism satisfies its assertion by having nothing left to assert over. grade() is unaffected because it reads the raw page, so drift detection still fires - what dies quietly is the executable inversion. A cheap guard without a magic fraction: assert every claim in CLAIMS still matches inside the prose, since a claim is page prose by definition and cannot legitimately be blanked",
+      "exit_code": 1
+    },
+    {
+      "command": "YOUR RECORDED RESIDUAL IS THE SAFE DIRECTION, and lower priority than the one above. A count inside an indented four-space block fails the test naming ['Repository snapshot (informational): 42 pending'] - an example treated as prose demands a classification it should not need. That is noise, and noise is the failure you can see",
+      "exit_code": 1
+    },
+    {
+      "command": "CORRECTION TO YOUR ATOMICITY FIGURE, in your favour. Grading the committed page with the current claim set gives 10 of 10 drifting, not nine: two wrong numbers - verification checks page says 36 record holds 40, declared operations page says 102 record holds 133 - and eight claims the committed page states no number for, not seven. The conclusion is unchanged and slightly stronger: the check and the page correction cannot be separated",
+      "exit_code": 0
+    }
+  ]
+}

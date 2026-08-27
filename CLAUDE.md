@@ -91,32 +91,39 @@ human and model operators share one world. Two records define it:
 Every governed design claim carries artifact standing,
 `OPEN -> BUILT -> WITNESSED -> RATIFIED`; operational records use the distinct
 standing defined in `SPEC.md`. Every consequential transition needs a typed,
-scoped, live grant. Phase is `FOUNDING`; the next gate is
-`F0_FOUNDING_CLOSURE`.
+scoped, live grant. Phase is `FOUNDING`; `STATUS.yaml` owns the gate and
+currently reads `next_gate: EVIDENCE_PRODUCING_EXECUTION`.
 
 ## Repository snapshot (informational)
 
-Observed 2026-08-25 on `merge/one-trunk-reconciliation`, the branch that brings
+Observed 2026-08-27 on `merge/one-trunk-reconciliation`, the branch that brings
 `main` and `feat/federation-harness-and-hardening` back together after both had
 been receiving merged pull requests. This section is orientation, not standing.
 `STATUS.yaml`, the working tree, and the newest relevant report override it
 whenever they disagree.
 
-- `python scripts/verify.py` runs 33 checks in about 8.7 s and grades
-  itself `SILVER` (PLATINUM 3 s, GOLD 6 s, SILVER 15 s, failing past 15 s;
-  `decisions/0050`, which replaced a bare 3 s ceiling the gate was failing).
-  A slipped grade is a reportable observation, not a failing gate.
-  `python scripts/lint.py` passes with one named debt
-  (`scripts/witness_infrastructure.py`, 301 lines).
-- Eight service boundaries under `services/`, 102 declared operations across
-  eight manifests. Asset and Record are built and self-tested; Console's
+- `python scripts/verify.py` runs 41 checks and grades itself on wall
+  time (PLATINUM 3 s, GOLD 6 s, SILVER 15 s). Past 15 s the run still fails,
+  which is `decisions/0050` and is what this trunk carries. A successor record,
+  `decisions/0081`, would take the wall clock out of the exit code and move
+  pressure onto per-check ceilings; it is drafted and uncommitted, reachable
+  from no branch, and `scripts/sovverify/budget.py` and the per-check ceilings
+  in `contracts/verification-budget.json` are part of that unlanded work. Do
+  not read this page as saying the wall clock is advisory here. It is not.
+  A reading on a machine running several sessions at once is a reading of the
+  host, so measure on a quiet box before calling an overrun a regression.
+  `python scripts/lint.py` passes, carrying named debt for the duplicate keys
+  in `STATUS.yaml` that `chore/status-and-projection-bookkeeping` removes.
+- 10 service boundaries under `services/`, 133 declared operations
+  across 10 manifests. Asset and Record are built and self-tested; Console's
   continuity path is built and its other four surfaces are text; Gateway,
   Observation, Proofing, Projection, and Registry are boundary only.
   `services/README.md` and `diagrams/service-map.md` carry the current table.
 - Conformance oracle (`conformance/`): executable, 20 controlled cases, every
   defeating fixture fails as declared. Participant binding still open.
-- Harness (`.claude/`): five role agents, nineteen skills, sixteen workflows,
-  the epic-tree walk, and scheduled-run gates with a kernel-envelope ledger.
+- Harness (`.claude/`): 5 agent definitions (four roles and the Sov binding),
+  23 skills, 21 workflows, the epic-tree walk, and scheduled-run gates with a
+  kernel-envelope ledger.
   Every shipped schedule is disabled. Executable harness workflows are
   admissible before their defeating fixtures exist, for host plumbing only
   (`decisions/0033-close-the-founding-docket.md`).
@@ -154,7 +161,7 @@ ruling (`decisions/0033-close-the-founding-docket.md`, Ruling 1). Escalating a
 question this session could have settled with available evidence is a defect,
 not caution.
 
-What genuinely waits on Bdo is `external_acceptance_holds` in `STATUS.yaml`
+What genuinely waits on Bdo is `owner_holds` in `STATUS.yaml`
 (today: public release clearance), plus owner-held product intent, public
 naming, external commitment, irreversible external effects, secrets, and
 destructive repository administration. Bdo's gate is acceptance over an
@@ -167,8 +174,13 @@ evidenced result, never permission to begin
   domain: "...", plan_only: true }`. It runs control, orchestration, work, an
   independent witness, then `python scripts/sov_land.py`, the only place in the
   repository that commits and merges. The gate grades the landing against
-  `contracts/standing-grants.json`; the shipped grant is `PROPOSED`, so it
-  presently refuses every landing until Bdo ratifies it
+  `contracts/standing-grants.json`. `grant:standing-landing-loop` is `RATIFIED`
+  (Bdo, 2026-08-25, `decisions/0065-standing-grant-ratified.md`): actor `sov`,
+  capabilities `repository.commit` and `repository.land`, scope excluding
+  `decisions/`, `STATUS.yaml`, `lineage/`, `.github/` and every root governing
+  document. What refuses a landing now is evidence, not permission: the grant
+  requires `verify` PASS, `lint` PASS, and an independent observation from a
+  participant that did not build the change
   (`decisions/0064-standing-authorization-and-the-landing-loop.md`).
 - Whole stack: Workflow `sov-federation`, optionally
   `{ domains: [...], objective: "...", sequential: true }`.
@@ -198,9 +210,15 @@ evidence rules, the name, the AI-native standard, the Asset Service, the
 classification contract, the Phase-I logical spec, Proofing, BYOM, and the
 engineering baseline. Day two added the SDLC loop, Console, scheduled runs,
 Sov, the federation harness, defeating fixtures for receipts and proofing,
-LF line-ending enforcement, and the stack certification. 26 commits, 17
-decision records, 8 reports. Nothing is witnessed or ratified yet; that is
-the accurate reading, not a shortfall.
+LF line-ending enforcement, and the stack certification. At the end of day two
+the record held 26 commits, 17 decision records and 8 reports; it now holds
+461 commits, 79 decision records and 25 reports. The
+first independently witnessed work landed on 2026-08-25; nothing is ratified.
+
+Those two sentences are checked. `python scripts/sov_snapshot.py` grades the
+numbers on this page against the record and fails when they drift, because this
+snapshot was stale within a day of being written and every launched agent reads
+it as current (`LESSONS.md` L-0001). Correct the page rather than the tolerance.
 
 ## Host facts (Claude Code on Windows)
 
@@ -214,13 +232,22 @@ the accurate reading, not a shortfall.
 - Subagents under `.claude/agents/` load this file but not the interactive
   session's memory or transcript. Anything every launched agent must know
   lives here or in a governing document.
+- A host may withhold a tool this repository expects, most often the helper
+  subagent tool. That is a capability the invocation did not grant, never a
+  rule Soveraeign made, and reporting it as one is a defect. Name the tool and
+  the host, do the second reading in-session, and ask for the tool as a
+  capability at `DEPENDENCY_SEAM`. Recruiting a helper is
+  `RESOURCE_CONSUMPTION` and needs no one's permission up to the ceiling in
+  `contracts/closure-ownership.json` (`helper_policy.recruitment`); past it the
+  spend is `RESOURCE_COMMITMENT` and is asked before it is spent, not reported
+  after. `scripts/sov_closure.py` refuses both mistakes by name.
 
 ## Where to look first
 
 | Need | Open |
 | --- | --- |
 | Which tier settles a decision | `decisions/0033-close-the-founding-docket.md`, Ruling 1 |
-| What genuinely waits on Bdo | `STATUS.yaml`, `external_acceptance_holds` |
+| What genuinely waits on Bdo | `STATUS.yaml`, `owner_holds` |
 | A term or enum | `CLASSIFICATION.md`, then `SPEC.md` |
 | Whether a surface is AI-native | `AI-NATIVE.md` |
 | Harness layout and invocation | `.claude/README.md` |

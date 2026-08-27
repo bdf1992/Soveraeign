@@ -15,6 +15,8 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from sovticket import labels as labelmod  # noqa: E402
 
+import json  # noqa: E402
+
 
 class LabelProjectionTests(unittest.TestCase):
     """Every label the projection can emit is declared in the canonical catalogue."""
@@ -82,20 +84,34 @@ class LabelProjectionTests(unittest.TestCase):
         self.assertFalse(drift.clean)
 
     def test_unmapped_metadata_is_reported_not_ignored(self) -> None:
-        _, unmapped = labelmod.project({"effect_class": "EXTERNAL_WORLD"}, self.projection)
-        self.assertIn("effect_class=EXTERNAL_WORLD", unmapped)
+        """A value with no declared label is named, never silently dropped."""
+        _, unmapped = labelmod.project({"effect_class": "NOT_AN_EFFECT_CLASS"}, self.projection)
+        self.assertIn("effect_class=NOT_AN_EFFECT_CLASS", unmapped)
 
-    def test_unblock_request_projects_its_provision_and_serving_tier(self) -> None:
-        metadata = {
-            "kind": "unblock", "village": "trust-and-control", "horizon": "NOW",
-            "standing": "PROPOSED", "effect_class": "REQUEST_ONLY",
-            "requested_provision": "judgement", "requested_from": "owner",
-        }
-        labels, unmapped = labelmod.project(metadata, self.projection)
-        self.assertEqual(unmapped, [])
-        self.assertIn("type: unblock", labels)
-        self.assertIn("provision: judgement", labels)
-        self.assertIn("serve: owner", labels)
+    def test_every_value_the_schema_admits_has_a_declared_projection(self) -> None:
+        """The direction the catalogue check cannot see.
+
+        A value admitted by contracts/issue-metadata.schema.json and absent here is
+        reported as unmapped on every correctly filed ticket that carries it. Two
+        effect classes and one kind sat that way until decision 0066: EXTERNAL_WORLD,
+        RESOURCE_CONSUMPTION, and verification-engagement.
+        """
+        schema = json.loads(
+            (ROOT / "contracts" / "issue-metadata.schema.json").read_text(encoding="utf-8")
+        )
+        for field, table in (
+            ("kind", "kind_to_type"),
+            ("village", "village_to_label"),
+            ("horizon", "horizon_to_label"),
+            ("effect_class", "effect_to_label"),
+            ("standing", "standing_to_label"),
+        ):
+            for value in schema["properties"][field]["enum"]:
+                self.assertIn(
+                    value,
+                    self.projection[table],
+                    f"{field} {value!r} is admitted by the schema and unmapped by the projection",
+                )
 
     def test_unblock_request_projects_its_provision_and_serving_tier(self) -> None:
         metadata = {

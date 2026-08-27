@@ -1,0 +1,48 @@
+{
+  "observer_id": "sov-witness (independent observation, Claude Opus 5 1M)",
+  "contributed_to_build": false,
+  "verdict": "DISSENTED",
+  "concern": "orientation snapshot check, LESSONS.md L-0001",
+  "checks": [
+    {
+      "command": "SCOPE. Fourth round, on the typed findings, the placeholder, and the new test file. HEAD 5c3a8ad22c119055064bd314f84e679ba9efe839. Pinned at read time: scripts/sov_snapshot.py sha256:89d11ad7f2d8e2967c6f (11326 bytes, 246 lines), scripts/sovsnapshot/claims.py sha256:83a0c6114428b02d8e37 (6932 bytes, 153 lines), scripts/tests/test_sov_snapshot.py sha256:d726af98051f6db3ac81 (7662 bytes, 167 lines). Rounds one to three stand in their own files. The dissent this round is narrow: the substance holds and three gaps sit around its newest behaviour.",
+      "exit_code": 0
+    },
+    {
+      "command": "CI GREEN reproduced, and the control with it. git clone --depth 1 of this repository, real page and module and landed checks.py copied in: NOT SELF-DERIVED: commits, PASS: 4 of 5 claims exercised, 6 cases, NOT CHECKED HERE: commits, PASS: 4 of 5 snapshot claim(s) match the record, exit 0. Then edited that clone's page to say 44 checks: FAIL verification checks: page says 44, record holds 40, exit 1. Refusing to fail on the unanswerable claim did not silence the answerable ones, which is the control that matters",
+      "exit_code": 0
+    },
+    {
+      "command": "REPAIRS reproduced. The bare tree with only the two modules refuses: FAIL no claim could be derived here, so nothing was exercised and this selfcheck proves nothing, exit 1. _page(commits=1) now states all five claims. _shift moves underived claims. The case count is derived from the cases dict - 7 here, 6 in the shallow clone where the tolerance case is skipped - and is no longer a literal. python -m unittest scripts.tests.test_sov_snapshot: 8 tests OK. python scripts/lint.py PASS, 752 text files, 322 modules, 0 named debt. python scripts/verify.py 40 checks, 12.118s, SILVER, exit 0",
+      "exit_code": 0
+    },
+    {
+      "command": "THE PLACEHOLDER, the question asked. It cannot collide today, and the reason is not the value - it is an invariant that is neither stated nor enforced. Every _page result is graded with derived=stated, and grade routes a claim absent from derived to UNANSWERABLE before any number is compared, so PLACEHOLDER is never read as a count. But grade's signature is grade(text=None, derived=None) and derived is optional, so the invariant is one keyword argument away from not holding. Measured in this repository: grade(_page()) with derived omitted returns five DRIFTED findings - 'page says 0, record holds 40', 'page says 0, record holds 356 (tolerance 25)', 'page says 0, record holds 64', 'page says 0, record holds 133', 'page says 0, record holds 24'. That is the placeholder being read as a real count on every claim at once",
+      "exit_code": 0
+    },
+    {
+      "command": "THE PLACEHOLDER, why 0 is the worst available value. PLACEHOLDER is 0 and 0 is a legitimate derivation: with an existing but empty reports/ directory, claims._reports() returns 0. So the sentinel is indistinguishable from a real answer by inspection of the page, which is exactly the property that makes the finding above possible. The class is removed by a sentinel that cannot be read as a count, or by making the page and the values it was built from inseparable rather than two arguments",
+      "exit_code": 0
+    },
+    {
+      "command": "DEFECT 16, the in-module case for the newest behaviour is vacuous where it runs most. The case 'an underivable claim is not counted as drift' is all(f.kind == UNANSWERABLE for f in grade(truthful, stated)). On a full clone nothing is underivable, grade returns [], and all([]) is True. Since findings carry only two kinds, that expression is logically identical to the first case, len(_drift(grade(truthful, stated))) == 0. Measured: both True, findings []. So the defeating case for unanswerable-is-not-drift is the first case restated, and on a developer machine it asserts nothing about unanswerability at all",
+      "exit_code": 0
+    },
+    {
+      "command": "DEFECT 17, the repair that mattered has no regression test. The behaviour fixed this round is cmd_check returning 0 when a claim is UNANSWERABLE. grep of scripts/tests/test_sov_snapshot.py finds one exit-code assertion, assertEqual(done.returncode, 1) for the bare-tree refusal. Nothing invokes cmd_check. UnanswerableIsNotDrift tests grade and its control tests grade, both a layer below the exit code, and the exit code is what failed CI on three workflows for two rounds. The positive case exists only as a manual shallow-clone run, mine and yours",
+      "exit_code": 0
+    },
+    {
+      "command": "DEFECT 18, a split coupling the new walk cannot see. _page keys its five values by literal string - value['verification checks'], value['declared operations'], value['commits'], value['decision records'], value['reports'] - against names declared in claims.CLAIMS. Renaming the reports claim to 'report files' in CLAIMS gives KeyError: 'reports' out of _page: a traceback, not a reported failure. EveryReferenceResolves walks ast.Attribute and ast.Call names, so it covers claims.Underivable and cannot cover a dict key. Adding a claim is caught loudly, because the truthful page then states no number for it and the first case fails; renaming one is not",
+      "exit_code": 1
+    },
+    {
+      "command": "REPORTING CORRECTION. The floor is not gone. Line 160 still computes floor = total - len(stated) and the drifted case asserts against total - floor, which is len(stated) written the long way. Measured here: total 5, floor 0, total-floor 5, len(stated) 5. The substance did improve - the cases now assert explicit totals rather than comparing two derived counts - but the description handed to me did not match the code",
+      "exit_code": 0
+    },
+    {
+      "command": "RESIDUAL, no floor on how much of the page must be checkable. In a tree where only the check table derives, check prints two NOT CHECKED HERE lines and 'PASS: 1 of 5 snapshot claim(s) match the record' and exits 0. The count is honest and printed, which is the important half. Whether a gate should stay green having checked one claim in five is a threshold this concern owns and has not set",
+      "exit_code": 0
+    }
+  ]
+}

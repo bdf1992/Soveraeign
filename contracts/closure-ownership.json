@@ -166,7 +166,28 @@
     "governed_by": [
       "AGENTS.md",
       "SDLC.md"
-    ]
+    ],
+    "recruitment": {
+      "presumptive": true,
+      "effect_class": "RESOURCE_CONSUMPTION",
+      "ceiling_unit": "helper_invocations_per_concern",
+      "per_concern_ceiling": 8,
+      "above_ceiling_reason": "RESOURCE_COMMITMENT",
+      "above_ceiling_seam": "EFFECT_SEAM",
+      "note": "Recruiting a helper is RESOURCE_CONSUMPTION, which contracts/acceptance-policy.json places under presumptive_execution: it needs no prior owner act, and stopping to ask for one is refused as PREAPPROVAL_REQUESTED. That holds at helper scale. A fleet is not a helper. Above the ceiling the same act becomes RESOURCE_COMMITMENT, which is an admissible owner hold, and it is asked at EFFECT_SEAM before it is spent - never reported afterwards as ordinary closure.",
+      "defeated_by": "Measured helper counts. If concerns routinely need more than eight helper invocations to reach a landed result, the ceiling is set below the work and is wrong. If a single under-ceiling recruitment is ever itself a metered spend the owner would have refused, the unit is wrong and should be tokens rather than invocations.",
+      "governed_by": [
+        "contracts/acceptance-policy.json",
+        "contracts/standing-grants.json"
+      ]
+    },
+    "host_capability": {
+      "withheld_is_not_ruled": true,
+      "note": "A host that does not grant the helper tool has withheld a capability. It has not made a rule of this system, and a participant must not report it as one. The honest report names the host and the missing tool. The admissible route is a capability provision at DEPENDENCY_SEAM, asked of a tier that can change how the session is launched. Routing it to the owner as judgement dresses a missing capability as an owner ruling and is refused by HOST_LIMIT_AS_OWNER_QUESTION.",
+      "wrong_report": "I am set not to launch one unless you ask.",
+      "right_report": "This invocation did not grant the helper tool, so the second reading was done in-session instead; restoring it is a capability ask, not a permission ask.",
+      "fires_on": "helper.blocked_by_host and helper.capability_requested together: the handoff is asking for the helper tool itself. A participant whose host withheld the tool may still ask the owner for judgement on anything the owner genuinely owns; only the ask for the tool is misrouted."
+    }
   },
   "refusals": {
     "SEAM_UNDECLARED": "the handoff names no seam, or names one outside admissible_seams",
@@ -178,7 +199,9 @@
     "ABSORBABLE_FOLLOW_ON": "the filed work crosses no service, effect class, or authority boundary and belongs to the concern in hand",
     "WIP_EXCEEDED": "a new concern is opened while the participant's previous concern is unlanded",
     "JUDGEMENT_NOT_OWNER": "judgement is owner-held; it may be asked of no other tier",
-    "PROVISION_UNROUTED": "the named provision is not one the declared seam can ask for, or the tier asked cannot serve it"
+    "PROVISION_UNROUTED": "the named provision is not one the declared seam can ask for, or the tier asked cannot serve it",
+    "RECRUITMENT_UNBOUNDED": "helpers were spent past the declared per-concern ceiling and presented as ordinary closure, with no owner-accepted resource commitment behind them",
+    "HOST_LIMIT_AS_OWNER_QUESTION": "a capability the host withheld is routed to the owner as judgement, when what is missing is a tool and not a ruling"
   },
   "tools": [
     "read",
@@ -193,6 +216,8 @@
     "WIP_EXCEEDED",
     "ABSORBABLE_FOLLOW_ON",
     "HELPER_AS_WITNESS",
+    "RECRUITMENT_UNBOUNDED",
+    "HOST_LIMIT_AS_OWNER_QUESTION",
     "ROUTINE_DECISION",
     "SEAM_UNDECLARED",
     "JUDGEMENT_NOT_OWNER",

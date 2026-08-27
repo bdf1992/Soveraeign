@@ -1,0 +1,48 @@
+{
+  "observer_id": "sov-witness (independent observation, Claude Opus 5 1M)",
+  "contributed_to_build": false,
+  "verdict": "DISSENTED",
+  "concern": "orientation snapshot check, LESSONS.md L-0001",
+  "checks": [
+    {
+      "command": "SCOPE. Seventh round, on the ten claims, the executable classification and the two new source guards. HEAD 5c3a8ad22c119055064bd314f84e679ba9efe839, working tree. Pinned at read time: claims.py sha256:019a507306f1e7f2 (254 lines), grading.py sha256:f2b5b3ace08dea8d (86), selfcheck.py sha256:b9583774c2db94a1 (163), sov_snapshot.py sha256:9afe66c0edfe4742 (105), tests sha256:8c317b6a36ea9300 (401), CLAUDE.md sha256:d9034c5b71a75c82. Rounds one to six stand in their own files.",
+      "exit_code": 0
+    },
+    {
+      "command": "CONFIRMED, the ten claims against my own count of the tree. Derived: verification checks 40, commits 358, decision records 64, declared operations 133, service boundaries 10, manifests 10, agent definitions 5, skills 21, workflows 19, reports 24. Counted independently on disk: 5 in .claude/agents/*.md, 21 directories in .claude/skills, 19 .js in .claude/workflows, 10 services/*/contracts/service.json. The synthetic page states all ten and PAGE_SLOTS is 10. Note commits derived 358 against a page saying 356 - inside tolerance 25, which is the tolerance doing the job it was given",
+      "exit_code": 0
+    },
+    {
+      "command": "CONFIRMED, the shared deriver reports a half-corrected sentence. Page edited to say 10 service boundaries and across 11 manifests, graded against the derived set: DRIFT manifests: page says 11, record holds 10. Two claims on one deriver does what you said it would",
+      "exit_code": 0
+    },
+    {
+      "command": "CONFIRMED, the three page sentences and the check-table guard, on a scratch tree with a git history, .claude/, services/ and the projection. Page absent: REFUSED: the snapshot page is absent: no CLAUDE.md here. Page is a directory: REFUSED: CLAUDE.md is present but is not a file. Page written as UTF-16: REFUSED: the snapshot page cannot be read: 'utf-8' codec can't decode byte 0xff in position 0. checks.py replaced with an unclosed parenthesis: zero Tracebacks in stderr, NOT SELF-DERIVED and NOT CHECKED HERE both reading 'the check table could not be read: (' was never closed'. The round-six wording nit is fixed with a distinct sentence",
+      "exit_code": 1
+    },
+    {
+      "command": "CONFIRMED, gates. 21 tests OK. python scripts/sov_snapshot.py check: PASS: 10 of 10 snapshot claim(s) match the record. python scripts/lint.py PASS, 760 text files, 327 modules, 0 named debt. python scripts/verify.py 40 checks, exit 0, 11.557s wall, SILVER. The classification test fires in both sections: '7 pending seams' planted in Repository snapshot FAILS, '42 lessons' planted in Historical orientation FAILS",
+      "exit_code": 0
+    },
+    {
+      "command": "DEFECT 26, reflow does break it and not where you looked. The CLASSIFIED keys are reflow-safe: they are rebuilt from the match groups as value plus one space, so a wrapped '26 commits' still keys as '26 commits'. Rewrapping the sections' prose at 55 and at 72 columns passes. What breaks are the two scrubbers, the ISO-date one and the decision-filename one, which are the only regexes in this module that are not whitespace-tolerant - both use a literal hyphen class and require the whole token to be contiguous. Minimal realistic trigger: one decision reference wrapped across a line, which is ordinary editing at this repository's column convention. The test then fails naming ['0050-verification-budget-'], a fragment of a filename, as an unclassified count on a page that carries no such count. Every claim pattern learned to accept any whitespace in round one; the scrubbers did not",
+      "exit_code": 1
+    },
+    {
+      "command": "DEFECT 27, the allowlist matches by value and noun with no position, so a new pair silently inherits an old ruling. Planted 'The queue holds 8 reports awaiting review.' into the Repository snapshot section: the classification test PASSES, because '8 reports' is already classified as day-two historical. The docstring's promise - the key is the matched text, so a changed figure comes back for a fresh ruling - holds for a figure that changes and not for a second occurrence of one that did not",
+      "exit_code": 0
+    },
+    {
+      "command": "SMALL, and measured rather than asserted. EveryNumberOnThePageIsClassified covers two sections, not the page: '42 pending seams' planted under ## Known traps and under ## Where to look first both PASS. I then measured what actually lives outside those two sections and found no live orientation count - only '0 does', '4 through' and '6 need', which are 'exit 0' and the T4 and T6 trap identifiers. So this is a class name that overclaims and a latent gap, not a live one. On the skills pattern being loose: I checked the whole page and the five new patterns match only lines 112-113 and 119-120. A future collision is reported as a duplicate disagreement rather than passed over, so the looseness is self-reporting and I would leave it",
+      "exit_code": 0
+    },
+    {
+      "command": "THE LANDING BLOCKER IS MISDIAGNOSED. git ls-files --error-unmatch succeeds for both scripts/sov_interface.py and services/host/CHARTER.md: they are tracked, and services/host is committed at bbad5a6 'test(host): defeat adapter diagnostic leakage'. In the docs diff, 'sov_interface' and 'Host Service Charter' appear on BOTH the minus and the plus side, so the rebuild did not pull them in - they were already in the committed page. The one piece of foreign content the rebuild absorbed is on the plus side only: 'A guard can be too narrow' and 'L-0007', the sibling session's uncommitted LESSONS.md entry",
+      "exit_code": 0
+    },
+    {
+      "command": "THE LANDING, what follows. A separate worktree does fix it, and the split has to be at hunk level inside LESSONS.md rather than at file level, because your L-0001 drain and the sibling's L-0007 sit in the same file in this same tree. A worktree built from HEAD plus only your own hunks, with the docs page rebuilt there, produces a page carrying nothing of theirs. The uncommitted .md files the docs builder indexes are .claude/README.md, CLAUDE.md and LESSONS.md; the first two are wholly yours",
+      "exit_code": 0
+    }
+  ]
+}

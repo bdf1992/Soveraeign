@@ -15,6 +15,7 @@ from sovschedule import jsonshape  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ISSUE_SCHEMA = walk.load_issue_schema(REPO_ROOT)
+LABEL_PROJECTION = walk.load_label_projection(REPO_ROOT)
 BLOCK = """```yaml
 issue_schema: soveraeign-ticket/v1
 tags:
@@ -154,29 +155,60 @@ MINIMAL_EPIC = {
 
 
 class LabelProjectionTests(unittest.TestCase):
+    AXES = (
+        ("kind", "kind_to_type"),
+        ("village", "village_to_label"),
+        ("horizon", "horizon_to_label"),
+        ("effect_class", "effect_to_label"),
+        ("standing", "standing_to_label"),
+    )
+
     def test_every_projected_label_exists_in_the_catalogue(self):
         catalogue = (REPO_ROOT / ".github" / "labels.yml").read_text(encoding="utf-8")
         known = set(re.findall(r'^- name: "([^"]+)"$', catalogue, re.MULTILINE))
         self.assertTrue(known, "no labels parsed from .github/labels.yml")
-        for table in (walk.KIND_LABEL, walk.VILLAGE_LABEL, walk.HORIZON_LABEL, walk.EFFECT_LABEL):
-            for name in table.values():
-                self.assertIn(name, known)
+        for _, table in self.AXES:
+            for name in LABEL_PROJECTION[table].values():
+                if name is not None:
+                    self.assertIn(name, known)
 
     def test_missing_projected_label_is_a_defect(self):
         block = {"kind": "bit", "village": "ground-and-evidence", "horizon": "NOW"}
         clean = issue(6, labels=["type: bit", "village: ground", "horizon: now"], metadata=block)
-        self.assertEqual(walk.label_defects(clean), [])
+        self.assertEqual(walk.label_defects(clean, LABEL_PROJECTION), [])
         drifted = issue(6, labels=["type: bit"], metadata=block)
-        self.assertEqual(len(walk.label_defects(drifted)), 2)
+        self.assertEqual(len(walk.label_defects(drifted, LABEL_PROJECTION)), 2)
 
     def test_contradicting_label_is_a_defect(self):
         block = {"kind": "bit", "village": "ground-and-evidence", "horizon": "NOW"}
         wrong = issue(6, labels=["type: stub", "village: ground", "horizon: now"], metadata=block)
-        self.assertTrue(any("contradicts kind" in d for d in walk.label_defects(wrong)))
+        defects = walk.label_defects(wrong, LABEL_PROJECTION)
+        self.assertTrue(any("contradicts kind" in d for d in defects))
 
-    def test_effect_class_without_a_label_is_reported(self):
-        block = {"kind": "bit", "effect_class": "RESOURCE_CONSUMPTION"}
-        self.assertTrue(any("no label" in d for d in walk.label_defects(issue(6, metadata=block))))
+    def test_a_correctly_labelled_engagement_is_clean(self):
+        """The regression decision 0066 repairs: the walk restated the projection."""
+        block = {
+            "kind": "verification-engagement",
+            "village": "ground-and-evidence",
+            "horizon": "NOW",
+        }
+        filed = issue(
+            57,
+            labels=["type: engagement", "village: ground", "horizon: now"],
+            metadata=block,
+        )
+        self.assertEqual(walk.label_defects(filed, LABEL_PROJECTION), [])
+
+    def test_a_value_the_projection_does_not_map_is_reported(self):
+        """Defence in depth for the next axis value.
+
+        Every value the schema admits is mapped today, asserted above. This keeps the
+        reporting branch honest for a value added to one file and not the other: it is
+        named as an unmapped gap rather than silently passed over.
+        """
+        block = {"kind": "bit", "effect_class": "NOT_AN_EFFECT_CLASS"}
+        defects = walk.label_defects(issue(6, metadata=block), LABEL_PROJECTION)
+        self.assertTrue(any("no label" in d for d in defects))
 
 
 class ContainmentTests(unittest.TestCase):

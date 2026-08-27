@@ -221,6 +221,21 @@
             "name": "standing: demoted",
             "color": "CF222E",
             "description": "Prior standing was demoted by a defeating observation."
+          },
+          {
+            "name": "type: chore",
+            "color": "6E7781",
+            "description": "Maintains or retires a repository surface; closes no obligation and builds nothing."
+          },
+          {
+            "name": "effect: resource-consumption",
+            "color": "953800",
+            "description": "Consumes a metered or rate-limited resource; consumption is never rolled back."
+          },
+          {
+            "name": "effect: external-world",
+            "color": "67060C",
+            "description": "Acts outside the node inside a declared authorized scope, leaving a receipt."
           }
         ]
       },
@@ -454,6 +469,21 @@
             "name": "standing: demoted",
             "color": "CF222E",
             "description": "Prior standing was demoted by a defeating observation."
+          },
+          {
+            "name": "type: chore",
+            "color": "6E7781",
+            "description": "Maintains or retires a repository surface; closes no obligation and builds nothing."
+          },
+          {
+            "name": "effect: resource-consumption",
+            "color": "953800",
+            "description": "Consumes a metered or rate-limited resource; consumption is never rolled back."
+          },
+          {
+            "name": "effect: external-world",
+            "color": "67060C",
+            "description": "Acts outside the node inside a declared authorized scope, leaving a receipt."
           }
         ]
       },
@@ -687,6 +717,21 @@
             "name": "standing: demoted",
             "color": "CF222E",
             "description": "Prior standing was demoted by a defeating observation."
+          },
+          {
+            "name": "type: chore",
+            "color": "6E7781",
+            "description": "Maintains or retires a repository surface; closes no obligation and builds nothing."
+          },
+          {
+            "name": "effect: resource-consumption",
+            "color": "953800",
+            "description": "Consumes a metered or rate-limited resource; consumption is never rolled back."
+          },
+          {
+            "name": "effect: external-world",
+            "color": "67060C",
+            "description": "Acts outside the node inside a declared authorized scope, leaving a receipt."
           }
         ]
       },
@@ -910,6 +955,21 @@
             "name": "standing: demoted",
             "color": "CF222E",
             "description": "Prior standing was demoted by a defeating observation."
+          },
+          {
+            "name": "type: chore",
+            "color": "6E7781",
+            "description": "Maintains or retires a repository surface; closes no obligation and builds nothing."
+          },
+          {
+            "name": "effect: resource-consumption",
+            "color": "953800",
+            "description": "Consumes a metered or rate-limited resource; consumption is never rolled back."
+          },
+          {
+            "name": "effect: external-world",
+            "color": "67060C",
+            "description": "Acts outside the node inside a declared authorized scope, leaving a receipt."
           }
         ]
       },
@@ -1133,6 +1193,21 @@
             "name": "standing: demoted",
             "color": "CF222E",
             "description": "Prior standing was demoted by a defeating observation."
+          },
+          {
+            "name": "type: chore",
+            "color": "6E7781",
+            "description": "Maintains or retires a repository surface; closes no obligation and builds nothing."
+          },
+          {
+            "name": "effect: resource-consumption",
+            "color": "953800",
+            "description": "Consumes a metered or rate-limited resource; consumption is never rolled back."
+          },
+          {
+            "name": "effect: external-world",
+            "color": "67060C",
+            "description": "Acts outside the node inside a declared authorized scope, leaving a receipt."
           }
         ]
       },
@@ -1141,9 +1216,9 @@
       ]
     },
     {
-      "case_id": "BOARD-006-closed-ticket-is-not-surveyed",
+      "case_id": "BOARD-006-a-closed-ticket-owes-no-contract-repair",
       "defeating": true,
-      "note": "A closed ticket cannot drift. Judging one produces a report that never clears.",
+      "note": "A closed ticket with no metadata block is not a defect to report: authoring a block for work nobody will take is not work, and the report would never clear. Its labels are surveyed all the same, which BOARD-014 covers.",
       "capture": {
         "issues": [
           {
@@ -1356,6 +1431,21 @@
             "name": "standing: demoted",
             "color": "CF222E",
             "description": "Prior standing was demoted by a defeating observation."
+          },
+          {
+            "name": "type: chore",
+            "color": "6E7781",
+            "description": "Maintains or retires a repository surface; closes no obligation and builds nothing."
+          },
+          {
+            "name": "effect: resource-consumption",
+            "color": "953800",
+            "description": "Consumes a metered or rate-limited resource; consumption is never rolled back."
+          },
+          {
+            "name": "effect: external-world",
+            "color": "67060C",
+            "description": "Acts outside the node inside a declared authorized scope, leaving a receipt."
           }
         ]
       },
@@ -1602,6 +1692,21 @@
             "name": "standing: demoted",
             "color": "CF222E",
             "description": "Prior standing was demoted by a defeating observation."
+          },
+          {
+            "name": "type: chore",
+            "color": "6E7781",
+            "description": "Maintains or retires a repository surface; closes no obligation and builds nothing."
+          },
+          {
+            "name": "effect: resource-consumption",
+            "color": "953800",
+            "description": "Consumes a metered or rate-limited resource; consumption is never rolled back."
+          },
+          {
+            "name": "effect: external-world",
+            "color": "67060C",
+            "description": "Acts outside the node inside a declared authorized scope, leaving a receipt."
           }
         ]
       },
@@ -1848,6 +1953,21 @@
             "name": "standing: demoted",
             "color": "CF222E",
             "description": "Prior standing was demoted by a defeating observation."
+          },
+          {
+            "name": "type: chore",
+            "color": "6E7781",
+            "description": "Maintains or retires a repository surface; closes no obligation and builds nothing."
+          },
+          {
+            "name": "effect: resource-consumption",
+            "color": "953800",
+            "description": "Consumes a metered or rate-limited resource; consumption is never rolled back."
+          },
+          {
+            "name": "effect: external-world",
+            "color": "67060C",
+            "description": "Acts outside the node inside a declared authorized scope, leaving a receipt."
           }
         ]
       },
@@ -2094,6 +2214,21 @@
             "name": "standing: demoted",
             "color": "CF222E",
             "description": "Prior standing was demoted by a defeating observation."
+          },
+          {
+            "name": "type: chore",
+            "color": "6E7781",
+            "description": "Maintains or retires a repository surface; closes no obligation and builds nothing."
+          },
+          {
+            "name": "effect: resource-consumption",
+            "color": "953800",
+            "description": "Consumes a metered or rate-limited resource; consumption is never rolled back."
+          },
+          {
+            "name": "effect: external-world",
+            "color": "67060C",
+            "description": "Acts outside the node inside a declared authorized scope, leaving a receipt."
           }
         ]
       },
@@ -2343,6 +2478,21 @@
             "name": "standing: demoted",
             "color": "CF222E",
             "description": "Prior standing was demoted by a defeating observation."
+          },
+          {
+            "name": "type: chore",
+            "color": "6E7781",
+            "description": "Maintains or retires a repository surface; closes no obligation and builds nothing."
+          },
+          {
+            "name": "effect: resource-consumption",
+            "color": "953800",
+            "description": "Consumes a metered or rate-limited resource; consumption is never rolled back."
+          },
+          {
+            "name": "effect: external-world",
+            "color": "67060C",
+            "description": "Acts outside the node inside a declared authorized scope, leaving a receipt."
           }
         ]
       },
@@ -2563,6 +2713,21 @@
             "name": "standing: demoted",
             "color": "CF222E",
             "description": "Prior standing was demoted by a defeating observation."
+          },
+          {
+            "name": "type: chore",
+            "color": "6E7781",
+            "description": "Maintains or retires a repository surface; closes no obligation and builds nothing."
+          },
+          {
+            "name": "effect: resource-consumption",
+            "color": "953800",
+            "description": "Consumes a metered or rate-limited resource; consumption is never rolled back."
+          },
+          {
+            "name": "effect: external-world",
+            "color": "67060C",
+            "description": "Acts outside the node inside a declared authorized scope, leaving a receipt."
           }
         ],
         "receipt": {
@@ -2800,6 +2965,21 @@
             "name": "type: saga",
             "color": "E16F24",
             "description": "d"
+          },
+          {
+            "name": "type: chore",
+            "color": "6E7781",
+            "description": "Maintains or retires a repository surface; closes no obligation and builds nothing."
+          },
+          {
+            "name": "effect: resource-consumption",
+            "color": "953800",
+            "description": "Consumes a metered or rate-limited resource; consumption is never rolled back."
+          },
+          {
+            "name": "effect: external-world",
+            "color": "67060C",
+            "description": "Acts outside the node inside a declared authorized scope, leaving a receipt."
           }
         ],
         "receipt": {
@@ -3038,6 +3218,21 @@
             "name": "bug",
             "color": "d73a4a",
             "description": "d"
+          },
+          {
+            "name": "type: chore",
+            "color": "6E7781",
+            "description": "Maintains or retires a repository surface; closes no obligation and builds nothing."
+          },
+          {
+            "name": "effect: resource-consumption",
+            "color": "953800",
+            "description": "Consumes a metered or rate-limited resource; consumption is never rolled back."
+          },
+          {
+            "name": "effect: external-world",
+            "color": "67060C",
+            "description": "Acts outside the node inside a declared authorized scope, leaving a receipt."
           }
         ],
         "receipt": {
@@ -3047,6 +3242,250 @@
         }
       },
       "expect_actions": []
+    },
+    {
+      "case_id": "BOARD-014-a-closed-tickets-labels-are-still-surveyed",
+      "note": "A closed ticket keeps its labels, keeps appearing under a standing filter, and keeps being read. Surveying closed tickets for nothing at all made their labels the one part of the board that could drift with nothing watching.",
+      "capture": {
+        "issues": [
+          {
+            "number": 107,
+            "title": "fixture 107",
+            "state": "CLOSED",
+            "body": "```yaml\nissue_schema: soveraeign-ticket/v1\ntags: [village:ground, horizon:now, type:bit]\nkind: bit\nbit_id: BIT-FIXTURE\nvillage: ground-and-evidence\nvillage_issue: \"#4\"\nparent: \"#4\"\nrequires: []\nstanding: OPEN\nhorizon: NOW\nauthority: none\neffect_class: RECORD_LOCAL\nevidence_pointer: conformance/fixtures/board/survey-cases.json\nlast_observed_at: null\nwalker_receipt: none\ndemotion_pointer: \"#none\"\ndependency_channels: []\n```\n\nFixture ticket.\n",
+            "labels": [
+              {
+                "name": "type: bit"
+              },
+              {
+                "name": "village: ground"
+              }
+            ]
+          }
+        ],
+        "pulls": [],
+        "branches": [],
+        "receipt": {
+          "source_repository": "fixture/board",
+          "captured_at": "2026-08-23T12:00:00Z",
+          "export_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+        },
+        "labels": [
+          {
+            "name": "type: epic",
+            "color": "6F42C1",
+            "description": "System-spanning coordination and qualification."
+          },
+          {
+            "name": "type: village",
+            "color": "0969DA",
+            "description": "Bounded operational surface containing bits and stubs."
+          },
+          {
+            "name": "type: bit",
+            "color": "1A7F37",
+            "description": "Named, independently inspectable system obligation."
+          },
+          {
+            "name": "type: stub",
+            "color": "57606A",
+            "description": "Repository implementation surface closing one or more bits."
+          },
+          {
+            "name": "type: engagement",
+            "color": "B60205",
+            "description": "Verification engagement against a pinned target; produces findings, builds nothing."
+          },
+          {
+            "name": "type: story",
+            "color": "E16F24",
+            "description": "One participant crossing one counter and finding the substrate short; asks, never builds."
+          },
+          {
+            "name": "type: unblock",
+            "color": "D73A4A",
+            "description": "A proven block filed as work: one held ticket, one blocked transition, one provision asked."
+          },
+          {
+            "name": "provision: grant",
+            "color": "8250DF",
+            "description": "Unblock request for a typed, scoped, live grant."
+          },
+          {
+            "name": "provision: judgement",
+            "color": "8250DF",
+            "description": "Unblock request for an owner-held judgement; always served by the owner."
+          },
+          {
+            "name": "provision: contract",
+            "color": "8250DF",
+            "description": "Unblock request for a schema, charter, or declared interface."
+          },
+          {
+            "name": "provision: fixture",
+            "color": "8250DF",
+            "description": "Unblock request for a positive or defeating case."
+          },
+          {
+            "name": "provision: capability",
+            "color": "8250DF",
+            "description": "Unblock request for a tool, adapter, binding, or runtime the tier does not have."
+          },
+          {
+            "name": "provision: observation",
+            "color": "8250DF",
+            "description": "Unblock request for an independent observation of something already built."
+          },
+          {
+            "name": "serve: worker",
+            "color": "0E8A16",
+            "description": "Served at the Work tier."
+          },
+          {
+            "name": "serve: orchestrator",
+            "color": "0E8A16",
+            "description": "Served at the Orchestration tier."
+          },
+          {
+            "name": "serve: controller",
+            "color": "0E8A16",
+            "description": "Served at the Control tier."
+          },
+          {
+            "name": "serve: owner",
+            "color": "0E8A16",
+            "description": "Served only by the owner."
+          },
+          {
+            "name": "scope: system",
+            "color": "5319E7",
+            "description": "Applies to the complete Soveraeign node."
+          },
+          {
+            "name": "village: ground",
+            "color": "BF8700",
+            "description": "Ground and Evidence: record, asset, graph, and observation."
+          },
+          {
+            "name": "village: trust",
+            "color": "CF222E",
+            "description": "Trust and Control: identity, authority, gates, registry, and capability."
+          },
+          {
+            "name": "village: motion",
+            "color": "008B8B",
+            "description": "Reach and Motion: ingress, delivery, execution, bindings, and composition."
+          },
+          {
+            "name": "village: domain",
+            "color": "8250DF",
+            "description": "Domain and Qualification: proofing, qualification, and federation."
+          },
+          {
+            "name": "horizon: now",
+            "color": "D1242F",
+            "description": "Required in the current evidence-gated construction band."
+          },
+          {
+            "name": "horizon: next",
+            "color": "FBCA04",
+            "description": "Begins after the current gate earns its prerequisites."
+          },
+          {
+            "name": "horizon: spanning",
+            "color": "A371F7",
+            "description": "Coordinates more than one construction horizon."
+          },
+          {
+            "name": "horizon: scale-trust",
+            "color": "0550AE",
+            "description": "Deferred until local Phase-I trust is independently qualified."
+          },
+          {
+            "name": "effect: record-local",
+            "color": "D0D7DE",
+            "description": "Default: changes governed local record state only; normally omitted."
+          },
+          {
+            "name": "effect: control",
+            "color": "A40E26",
+            "description": "Changes admission, authority, or control state."
+          },
+          {
+            "name": "effect: observe-only",
+            "color": "1F6FEB",
+            "description": "Observes and reports without committing domain state."
+          },
+          {
+            "name": "effect: request-only",
+            "color": "218BFF",
+            "description": "May propose or request work but cannot settle it."
+          },
+          {
+            "name": "effect: bounded-execution",
+            "color": "BC4C00",
+            "description": "Executes within an admitted, leased, and observable boundary."
+          },
+          {
+            "name": "effect: external-boundary",
+            "color": "CF222E",
+            "description": "Translates across a declared external-system boundary."
+          },
+          {
+            "name": "standing: proposed",
+            "color": "D4C5F9",
+            "description": "Defined as a proposal; no built evidence exists."
+          },
+          {
+            "name": "standing: declared",
+            "color": "B6BBC0",
+            "description": "Boundary is declared but implementation has not begun."
+          },
+          {
+            "name": "standing: chartered",
+            "color": "54AEFF",
+            "description": "Contract or charter exists; implementation is incomplete."
+          },
+          {
+            "name": "standing: self-tested",
+            "color": "D29922",
+            "description": "Built and self-tested; independent witness remains outstanding."
+          },
+          {
+            "name": "standing: witnessed",
+            "color": "2DA44E",
+            "description": "An independent witness receipt is current and resolvable."
+          },
+          {
+            "name": "standing: ratified",
+            "color": "116329",
+            "description": "Bdo accepted the evidenced result; the terminal rung of the lifecycle."
+          },
+          {
+            "name": "standing: demoted",
+            "color": "CF222E",
+            "description": "Prior standing was demoted by a defeating observation."
+          },
+          {
+            "name": "type: chore",
+            "color": "6E7781",
+            "description": "Maintains or retires a repository surface; closes no obligation and builds nothing."
+          },
+          {
+            "name": "effect: resource-consumption",
+            "color": "953800",
+            "description": "Consumes a metered or rate-limited resource; consumption is never rolled back."
+          },
+          {
+            "name": "effect: external-world",
+            "color": "67060C",
+            "description": "Acts outside the node inside a declared authorized scope, leaving a receipt."
+          }
+        ]
+      },
+      "expect_actions": [
+        "LABEL_ADD:#107:horizon: now"
+      ]
     }
   ],
   "approval_cases": [

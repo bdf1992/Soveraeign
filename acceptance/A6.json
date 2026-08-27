@@ -1,0 +1,74 @@
+{
+  "packet_schema": "soveraeign-acceptance-packet/v1",
+  "packet_id": "A6",
+  "claim": "AI-NATIVE.md now has an oracle. A surface is graded against the four axes, the nine qualifications and the derived verdict by a program that reads the standard as data, and the record shape has no verdict field to set. What needs your judgement is the joint I built into it: the substantive-operation check is resolved against the principal registry and refused unless a registered human made it, so no surface in this repository can ever reach a verdict without you. The first real reading, of the operation a swarm would perform, comes back OPEN for exactly that reason.",
+  "subject": {
+    "artifact": "contracts/ai-native-qualifications.json",
+    "from_standing": "OPEN",
+    "to_standing": "BUILT"
+  },
+  "presented_by_seat": "seat:session-control",
+  "accepted_by_seat": "seat:root",
+  "claim_type": "JUDGEMENT",
+  "built_by": {
+    "actor_id": "urn:soveraeign:actor:claude-interactive-session",
+    "actor_kind": "MODEL"
+  },
+  "witnessed_by": null,
+  "visible_result": {
+    "demo": [
+      "python",
+      "scripts/sov_ainative.py",
+      "grade"
+    ],
+    "shows": "the AI-native reading of execute-and-land-bounded-concern, the operation a Soveraeign swarm would perform, derived from recorded scores rather than asserted",
+    "expect": "conformance/assessments/self-hosted-concern-execution.json: OPEN, held by the substantive-operation judgement. Two qualifications read FAIL with evidence: independent observation, because the landing grant decides independence from a boolean the request writes about itself, and model substitutability, because the model that performs the work has no binding, no invocation receipt and no visible cost. `python scripts/sov_ainative.py selfcheck` grades the corpus: 14 cases, 8 declared refusals, every one proven to fire. `python scripts/sov_ainative.py scenarios` prints what each qualification still rests on: zero of ten founding scenarios can evidence anything today."
+  },
+  "evidence": [
+    {
+      "address": "contracts/ai-native-qualifications.json",
+      "digest": null,
+      "says": "AI-NATIVE.md compiled: four axes, nine qualifications with the founding scenario each rests on, the derivation rules, and eight refusals"
+    },
+    {
+      "address": "contracts/ai-native-assessment.schema.json",
+      "digest": null,
+      "says": "the record shape, which declares no verdict property and refuses additional ones, so a record that states its own result fails the shape"
+    },
+    {
+      "address": "scripts/sovainative/grade.py",
+      "digest": null,
+      "says": "the derivation, including the reviewer resolution that refuses a judgement made by anything that is not a registered HUMAN principal"
+    },
+    {
+      "address": "conformance/fixtures/ai-native/assessment-cases.json",
+      "digest": null,
+      "says": "14 controlled cases covering every declared refusal and every verdict path"
+    },
+    {
+      "address": "contracts/principals.json",
+      "digest": null,
+      "says": "the principal registry instance at the path scripts/sovsession/principals.py has always looked for; five durable principals, every control chain resolving to the root"
+    },
+    {
+      "address": "decisions/0070-ai-native-assessment-grader.md",
+      "digest": null,
+      "says": "the four rulings asked for, the defaults taken, and the unreachable fourth branch of the standard's derived-verdict list"
+    }
+  ],
+  "why_it_matters": "Every claim that something here is AI-native has so far been an opinion typed by whoever was writing, and no such claim could be defeated. The plan we settled on this week grades readiness for an agent swarm against this standard, so the standard had to become checkable before anything is built toward it. It also fixes where you sit in the loop: not as a permission gate before work, but as the one input a swarm cannot manufacture for itself.",
+  "what_could_defeat_it": [
+    "A reviewer resolving as a registered human principal by a route a model can take. The registry is a projection and grants nothing, so if a model can get a HUMAN entry written for itself, ruling 2 is decorative.",
+    "A qualification reaching PASS on evidence nobody can re-observe. The evidence shape requires an address and a reading; if either can be left vague, the grader grades prose again.",
+    "A surface reaching SOVERAEIGN_QUALIFIED that an unpersuaded reader would not call AI-native. That would mean the table compiled the document wrongly, and the table is what should change."
+  ],
+  "residuals": [
+    "No independent witness. This session built it and this session tested it, so it is BUILT and self-tested; witnessed_by is null and the standing is capped below WITNESSED.",
+    "The fourth branch of the derived-verdict list in AI-NATIVE.md has no live case under the natural reading and is implemented as dead code. Either the document means something else by 'present' or the clause is redundant; the ruling is yours.",
+    "The ten founding scenarios are still SEED narratives. Nothing executes them, so nine qualifications can only read UNPROVEN or FAIL until they do.",
+    "Ruling 4, that reachability NONE contradicts any qualification PASS, is a reading of the standard rather than a quotation from it.",
+    "The orientation snapshot in CLAUDE.md was already drifted before this work and this decision record adds one to its decision count. Two other live sessions hold that file, so it was left for them rather than raced."
+  ],
+  "on_accept": "The table, the shape and the grader stand as the way an AI-native claim is made in this repository, and the four rulings in decisions/0070 become settled. Judging earn_it on the recorded assessment is a separate act you can take whenever you want a verdict rather than an OPEN reading.",
+  "on_reject": "Say which ruling is wrong. Ruling 2, the human reviewer requirement, changes the most if you reject it: without it a model can complete an assessment end to end. Reverting is deleting six files and one directory; nothing else was changed and no existing check was weakened."
+}

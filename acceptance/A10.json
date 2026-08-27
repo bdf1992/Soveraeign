@@ -1,0 +1,82 @@
+{
+  "packet_schema": "soveraeign-acceptance-packet/v1",
+  "packet_id": "A10",
+  "claim": "Three rules this repository states in prose had no mechanism behind them, and now do. A build could witness itself, because the landing gate decided independence from one boolean the landing request wrote about itself. The actor bound by the refused verbs could edit the file that declares them and land the edit. A model could write its own id into seat:root and the whole test suite stayed green, because the only seat-registry assertions read a fixture. Each is now refused, each refusal has a defeating case, and none of it was found by review: it was found by adversarial readers asked to build a participant that passes the cold-start benchmark and still does damage. What needs your judgement is decisions/0075: narrowing the scope of a grant you ratified is your act, not the loop's.",
+  "subject": {
+    "artifact": "scripts/sovkernel/authority.py",
+    "from_standing": "OPEN",
+    "to_standing": "BUILT"
+  },
+  "presented_by_seat": "seat:session-control",
+  "accepted_by_seat": "seat:root",
+  "claim_type": "JUDGEMENT",
+  "built_by": {
+    "actor_id": "urn:soveraeign:actor:claude-interactive-session",
+    "actor_kind": "MODEL"
+  },
+  "witnessed_by": null,
+  "visible_result": {
+    "demo": [
+      "python",
+      "scripts/sov_grant.py",
+      "selfcheck"
+    ],
+    "shows": "the authority corpus, now including four cases that prove the landing gate refuses an observation that is visibly not independent",
+    "expect": "PASS over 40 cases. D-019 refuses an observation whose observer id normalises to the same actor as the request, in urn form or bare. D-020 refuses an observation carrying no observer_relation at all, which is 23 of the 28 observations currently in reports/observations/. D-021 refuses to_builder DIRECT, which one existing observation already reads. D-022 refuses a relation asserted with an empty basis. Then `python -m unittest scripts.tests.test_grant_scope_bounds` grades the live grant, not a mock: eight bounding files must refuse and four ordinary paths must still be admitted."
+  },
+  "evidence": [
+    {
+      "address": "scripts/sovkernel/authority.py",
+      "digest": null,
+      "says": "_observation_verdict now layers five refusals before the two that existed, and _actor_of normalises an actor id so naming the builder in urn form is the same claim as naming it bare"
+    },
+    {
+      "address": "scripts/tests/test_kernel_observation.py",
+      "digest": null,
+      "says": "15 cases; before them every test that touched this gate passed observation=None, so nothing exercised it at all"
+    },
+    {
+      "address": "conformance/fixtures/authority/grant-cases.json",
+      "digest": null,
+      "says": "40 cases; D-019 through D-022 are the four that prove the new refusals fire rather than merely being written"
+    },
+    {
+      "address": "contracts/standing-grants.json",
+      "digest": null,
+      "says": "excluded_paths grew from 19 to 25, and the registry note states the principle so the next entry has a test to apply rather than a precedent to follow"
+    },
+    {
+      "address": "scripts/tests/test_grant_scope_bounds.py",
+      "digest": null,
+      "says": "grades the live grant rather than a fixture, with both halves: the eight files that must refuse and the four that must still be admitted"
+    },
+    {
+      "address": "scripts/tests/test_seat_registry.py",
+      "digest": null,
+      "says": "a LiveRegistry class with nine assertions against contracts/seat-registry.json and contracts/principals.json; the root occupant must resolve to a HUMAN principal, not merely claim actor_kind HUMAN about itself"
+    },
+    {
+      "address": "decisions/0075-grant-scope-excludes-what-bounds-it.md",
+      "digest": null,
+      "says": "the ruling proposed, the two files deliberately left inside the grant with reasons, what would defeat it, and what it does not fix"
+    }
+  ],
+  "why_it_matters": "no_self_witnessing and no_owner_impersonation are two of the twelve protected boundaries in STATUS.yaml, and force_push, delete_repository, write_secret, spend_money and change_repository_visibility are refused because one JSON file inside the grant's writable scope says so. Until this change, all seven rested on a participant choosing not to do something it was mechanically able to do. There is no incident here and no adversary: nothing was edited, nothing was self-witnessed. It is the difference between a rule and a rule that holds.",
+  "what_could_defeat_it": [
+    "A landing legitimately blocked by one of the six new exclusions, showing the line was drawn in the wrong place rather than too narrowly.",
+    "A file outside the six that turns out to declare a refusal the kernel reads at runtime. The principle would then be right and its application incomplete.",
+    "Some other path reaching those files despite the exclusion. scripts/sovkernel/scope.py is what would have to be wrong.",
+    "The observation gate refusing a genuinely independent witness because the relation vocabulary is too narrow. Only NONE currently admits independence, and the 23 existing observations that carry no observer_relation would all be refused today.",
+    "The seam resolving the third way: a landing gate that takes an Observation record by address rather than an inline object. That would close the seam this gate's own docstring names, and would make this change an intermediate step rather than the answer."
+  ],
+  "residuals": [
+    "The observation is still a file the lander supplies. These checks refuse an observation that is visibly not independent; nothing here proves any landing was independent, and current practice has the builder transcribe the witness's prose into the file. That seam is named in the docstring and is not closed.",
+    "23 of the 28 observations already in reports/observations/ carry no observer_relation and one reads DIRECT. Under the new gate none of them would be admitted. Nothing was rewritten: back-filling a field into someone else's past observation would be inventing evidence.",
+    "The observation-gate repair carries no decision record. It enforces a rule AGENTS.md already states rather than changing policy, so it carries defeating fixtures instead. If you read that as a policy change, it needs one.",
+    "observer_relation carries two incompatible shapes in this tree, and the shape this change depends on is the one nothing declares. contracts/observation.schema.json types it as a required string on the Observation record verify.py emits per check; the landing request's evidence.observation, which this gate reads, has no declared shape at all. The docstring here and the fixture note both claimed the object shape was what that schema requires; a witness caught it and both are corrected. Recorded as OPEN-SEAMS.md S26 and left for you: SPEC.md owns what an observation must state and decisions/0064 owns the landing preconditions, and neither has been asked.",
+    "contracts/kernel-transitions.json and conformance/ were deliberately left inside the grant, with reasons recorded in decisions/0075 under Defaults taken. Both are reversible.",
+    "decisions/0075 and contracts/standing-grants.json cannot be landed by the standing loop: the grant excludes both decisions/ and its own registry, which is the correct outcome and the reason this packet exists."
+  ],
+  "on_accept": "The ruling in decisions/0075 stands: a grant may not write the files that bound it, scoped to files declaring a refusal, an authorized scope, a hold reason, a seat occupancy or a principal's kind. The tightened observation gate becomes the standard every future landing is held to, which means the next landing in this repository needs an observation carrying observer_relation, and the 23 that do not would need re-taking rather than editing.",
+  "on_reject": "For the grant scope, say whether the principle is wrong or only its application. Reverting is removing six strings from excluded_paths and deleting one test file. For the observation gate, rejecting it means the landing gate goes back to trusting one boolean the lander writes about itself; reverting is restoring _observation_verdict and deleting two test files and four conformance cases. Nothing else changes and no existing check was weakened in either direction."
+}

@@ -1,0 +1,68 @@
+{
+  "observer_id": "sov-witness (independent observation, Claude Opus 5 1M)",
+  "contributed_to_build": false,
+  "verdict": "DISSENTED",
+  "concern": "authority boundary refuses ungradeable paths",
+  "checks": [
+    {
+      "command": "git status --porcelain -uall; git rev-parse HEAD; git log --oneline -6; git diff -- scripts/sovkernel/authority.py conformance/fixtures/authority/grant-cases.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python -c \"grant status on disk: grant:standing-landing-loop is RATIFIED, so the hole was live on main and not latent\"",
+      "exit_code": 0
+    },
+    {
+      "command": "git show HEAD:scripts/sovkernel/authority.py > scratchpad/prefix/scripts/sovkernel/authority.py; cd scratchpad/prefix; python scripts/sov_grant.py check scratchpad/req_escape.json  # PERMITTED on scripts/../STATUS.yaml, scripts/../contracts/standing-grants.json, scripts/../../etc/passwd: the reproduction is real",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/sov_grant.py check scratchpad/req_escape.json  # working tree: REFUSED AUTHORITY_REFUSED, detail names the `..` segment",
+      "exit_code": 1
+    },
+    {
+      "command": "python -c \"27 spellings graded against the live RATIFIED grant with preconditions cleared to isolate scope: every .. spelling and every absolute spelling REFUSED; five spellings PERMITTED\"",
+      "exit_code": 0
+    },
+    {
+      "command": "DEFECT: python scripts/sov_grant.py check scratchpad/req_dotslash.json  # PERMITTED, exit 0, for contracts/./standing-grants.json and contracts//standing-grants.json against the live grant with full preconditions satisfied",
+      "exit_code": 0
+    },
+    {
+      "command": "DEFECT reaches the effect layer: throwaway git repo; git add -- 'contracts/./standing-grants.json' then 'contracts//standing-grants.json'  # each stages contracts/standing-grants.json",
+      "exit_code": 0
+    },
+    {
+      "command": "python -c \"lesser: contracts/Standing-Grants.json PERMITTED at the evaluator but git pathspec matching is case-sensitive, nothing stages; scripts/.../STATUS.yaml, scripts/%2e%2e/STATUS.yaml and fullwidth U+FF0E PERMITTED but name no real path\"",
+      "exit_code": 0
+    },
+    {
+      "command": "python -c \"symlink-produced traversal: scripts/out -> outside, path scripts/out/x.py PERMITTED at the evaluator (string inspection cannot see it, by design); git refuses with 'pathspec is beyond a symbolic link'; git ls-files -s shows 0 tracked symlinks\"",
+      "exit_code": 0
+    },
+    {
+      "command": "python -c \"composition: repo_relative then evaluate, six spellings of two legitimate paths; absolute and relative produce an identical sent string and an identical PERMITTED verdict; a raw absolute straight at the evaluator is REFUSED\"",
+      "exit_code": 0
+    },
+    {
+      "command": "grep -n '^import|^from' scripts/sovkernel/authority.py; grep -n 'open(|pathlib|os\\.|Path(|__file__|getenv|environ|subprocess|socket' scripts/sovkernel/authority.py  # imports only datetime and typing; no filesystem reference",
+      "exit_code": 1
+    },
+    {
+      "command": "cp authority.py and grant-cases.json into an empty directory; python -c \"graded 25 cases with no repository present, mismatches=0, no non-stdlib module imported\"  # the purity claim holds",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/sov_grant.py selfcheck  # PASS: 1 grant(s) valid, 25 authority cases graded",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/lint.py  # 731 text files, 314 Python modules, 0 named debt",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/verify.py  # PASS: 39 checks in 11.520s wall; GRADE SILVER; corpus gated inside as 'standing authority grants'; conformance SUITE PASS cases=20 coverage_gaps=0",
+      "exit_code": 0
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "corpus_id": "soveraeign-authority-grant-cases/v1",
-  "note": "Positive and defeating cases for contracts/authority-grant.schema.json and the evaluator in scripts/sovkernel/authority.py. Two cases prove a live grant covers a request; nineteen prove a refusal, and every refusal code the evaluator can report has at least one case proving it actually fires. Each case is a patch over base_grant and base_request, so what a case says is exactly what it changes; a field a case does not mention is the base value, and a field neither mentions is absent rather than satisfied.",
+  "note": "Positive and defeating cases for contracts/authority-grant.schema.json and the evaluator in scripts/sovkernel/authority.py. Three cases prove a live grant covers a request; thirty-three prove a refusal, and every refusal code the evaluator can report has at least one case proving it actually fires. Each case is a patch over base_grant and base_request, so what a case says is exactly what it changes; a field a case does not mention is the base value, and a field neither mentions is absent rather than satisfied.",
   "base_grant": {
     "grant_schema": "soveraeign-authority-grant/v1",
     "status": "RATIFIED",
@@ -113,6 +113,97 @@
       "proves": "The registry sits under contracts/, which the grant otherwise admits. Excluding it by name is what stops an exercise of the grant from widening the grant it is being exercised under.",
       "grant_patch": {},
       "request_patch": {"paths": ["contracts/standing-grants.json"]}
+    },
+    {
+      "case_id": "D-008b-dot-dot-walks-out-of-an-admitted-prefix",
+      "expect": "AUTHORITY_REFUSED",
+      "proves": "scripts/../STATUS.yaml begins with an admitted prefix and names an excluded file. Found live on main on 2026-08-25, with the grant ratified, by a witness that had already dissented once. A prefix comparison cannot see through a `..` segment, so the evaluator refuses the spelling rather than pretending to grade it.",
+      "grant_patch": {},
+      "request_patch": {"paths": ["scripts/../STATUS.yaml"]}
+    },
+    {
+      "case_id": "D-008c-dot-dot-reaches-the-grant-registry-itself",
+      "expect": "AUTHORITY_REFUSED",
+      "proves": "The same escape aimed at the one exclusion that exists to stop an exercise of the grant widening the grant. D-008a proves the plain spelling is refused; this proves the traversal spelling is too, which is the pair that makes the exclusion mean something.",
+      "grant_patch": {},
+      "request_patch": {"paths": ["scripts/../contracts/standing-grants.json"]}
+    },
+    {
+      "case_id": "D-008d-dot-dot-leaves-the-repository-altogether",
+      "expect": "AUTHORITY_REFUSED",
+      "proves": "A traversal that climbs past the repository root reaches a file no scope prefix describes at all. The evaluator holds no root and cannot tell where it landed, which is exactly why it refuses the spelling instead of resolving it.",
+      "grant_patch": {},
+      "request_patch": {"paths": ["scripts/../../etc/passwd"]}
+    },
+    {
+      "case_id": "D-008f-a-dot-segment-reaches-the-grant-registry",
+      "expect": "AUTHORITY_REFUSED",
+      "proves": "contracts/./standing-grants.json does not begin with the excluded string and is the excluded file; git add stages the real registry. Found by a witness on 2026-08-25 against a version of this evaluator that refused `..` and absolute paths and nothing else, which is why the predicate is now a property rather than a list of known escapes.",
+      "grant_patch": {},
+      "request_patch": {"paths": ["contracts/./standing-grants.json"]}
+    },
+    {
+      "case_id": "D-008g-a-doubled-separator-reaches-the-grant-registry",
+      "expect": "AUTHORITY_REFUSED",
+      "proves": "The same escape spelled with an empty segment instead of a dot. It is the pair with D-008f: two different spellings of one file, both admitted by a prefix comparison, both resolved by git. A path is gradeable only when every segment names something.",
+      "grant_patch": {},
+      "request_patch": {"paths": ["contracts//standing-grants.json"]}
+    },
+    {
+      "case_id": "D-008h-a-trailing-separator-does-not-name-a-file",
+      "expect": "AUTHORITY_REFUSED",
+      "proves": "A request path names a file, so a trailing separator leaves an empty final segment and the string stops describing one thing. Refused by the same property, without a rule of its own.",
+      "grant_patch": {},
+      "request_patch": {"paths": ["scripts/sov_land.py/"]}
+    },
+    {
+      "case_id": "D-008i-a-wildcard-selects-the-grant-registry-after-the-check",
+      "expect": "AUTHORITY_REFUSED",
+      "proves": "contracts/* is inside an admitted prefix and is not the excluded string, and git add stages the excluded registry with it. A pattern names no file until git expands it, which happens after the scope check has already decided. Found by a witness on 2026-08-25 against a version of this evaluator that had closed every normalisation escape and none of the globbing ones.",
+      "grant_patch": {},
+      "request_patch": {"paths": ["contracts/*"]}
+    },
+    {
+      "case_id": "D-008j-a-single-character-wildcard-is-the-same-escape",
+      "expect": "AUTHORITY_REFUSED",
+      "proves": "contracts/standing-grants.jso? differs from the excluded string by one character and selects it. A fix that stripped only `*` would leave this open, which is why the pair is here: the class is pattern characters, not the asterisk.",
+      "grant_patch": {},
+      "request_patch": {"paths": ["contracts/standing-grants.jso?"]}
+    },
+    {
+      "case_id": "D-008k-a-character-class-is-the-same-escape-again",
+      "expect": "AUTHORITY_REFUSED",
+      "proves": "contracts/[s]tanding-grants.json is the third spelling of one escape. Three cases rather than one because each was reachable on its own against a fix aimed at the others.",
+      "grant_patch": {},
+      "request_patch": {"paths": ["contracts/[s]tanding-grants.json"]}
+    },
+    {
+      "case_id": "D-008l-pathspec-magic-rewrites-what-a-string-selects",
+      "expect": "AUTHORITY_REFUSED",
+      "proves": "A leading colon opens git's pathspec magic, which changes what a string selects before matching begins. No magic spelling was found that both passed the evaluator and staged an excluded file, so this closes a reachable class rather than a demonstrated escape; refusing it costs nothing, because no repository path begins with a colon.",
+      "grant_patch": {},
+      "request_patch": {"paths": [":!contracts/standing-grants.json"]}
+    },
+    {
+      "case_id": "D-008m-a-bare-directory-selects-what-it-contains",
+      "expect": "AUTHORITY_REFUSED",
+      "proves": "contracts is repository-relative, carries no pattern character and no non-naming segment, and git add -- contracts stages the grant registry and the grant schema. It is the one escape class that cannot be seen in the string, which is why the exclusion check asks in both directions: not whether the path begins with an excluded prefix, but whether it selects something excluded. Found by a witness on 2026-08-25 against a version that had closed every string-level class.",
+      "grant_patch": {},
+      "request_patch": {"paths": ["contracts"]}
+    },
+    {
+      "case_id": "P-003-a-directory-containing-nothing-excluded-still-lands",
+      "expect": "PERMITTED",
+      "proves": "The depth control for D-008m. contracts/sub is a directory too, and nothing excluded lives under it, so it stays admitted. A fix that refused directories outright rather than asking what they contain would fail here, which is the difference between closing the escape and closing the gate.",
+      "grant_patch": {},
+      "request_patch": {"paths": ["contracts/sub"]}
+    },
+    {
+      "case_id": "D-008e-an-absolute-path-cannot-be-graded-here",
+      "expect": "AUTHORITY_REFUSED",
+      "proves": "A grant declares repository-relative prefixes, so an absolute path is not comparable to one. The first sov-loop run fed exactly this and it was refused for the wrong reason - no prefix matched - which reads identically to a grant refusing the file. Naming the real reason is what tells a caller to normalise rather than to ask for a wider grant.",
+      "grant_patch": {},
+      "request_patch": {"paths": ["C:/Users/bdf19/Desktop/Soveraeign/scripts/sov_land.py"]}
     },
     {
       "case_id": "D-008-path-outside-every-included-prefix",
@@ -231,6 +322,24 @@
             "verdict": "CONFIRMED"
           }
         }
+      }
+    },
+    {
+      "case_id": "D-008c-a-backslash-names-two-different-files",
+      "expect": "AUTHORITY_REFUSED",
+      "proves": "A backslash is a path separator on Windows and an ordinary legal filename character on POSIX, so one string names two different files depending on where the check runs, and this module reads no host. Normalising it to `/` before comparing is safe in one direction only: it over-refuses an excluded path, which is harmless, and over-admits an included one, which is not. On POSIX a root-level file literally named scripts\\tests\\x.py normalised to scripts/tests/x.py and was admitted under the prefix scripts/ while sitting nowhere near it. Reached from two Linux CI failures on a Windows-only assertion, reported by a sibling session.",
+      "grant_patch": {},
+      "request_patch": {
+        "paths": ["scripts\\tests\\x.py"]
+      }
+    },
+    {
+      "case_id": "D-008d-a-backslash-inside-an-admitted-prefix-is-still-refused",
+      "expect": "AUTHORITY_REFUSED",
+      "proves": "The refusal is on the character, not on where it sits. A path whose leading segment is admitted and whose tail carries a backslash still names one file on one host and another elsewhere. A caller canonicalises first with sovland.tree.repo_relative; one that does not gets the refusal.",
+      "grant_patch": {},
+      "request_patch": {
+        "paths": ["scripts/tests\\x.py"]
       }
     }
   ]

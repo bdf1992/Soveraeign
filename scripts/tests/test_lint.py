@@ -71,7 +71,7 @@ class RepositoryTraversal(unittest.TestCase):
         def fake_walk(start: Path, topdown: bool = True):
             self.assertEqual(start, root)
             self.assertTrue(topdown)
-            dirs = [".git", "visible", ".local"]
+            dirs = [".git", "visible", ".local", "worktrees"]
             yield str(root), dirs, ["root.md"]
             kept_dirs.extend(dirs)
             if ".git" in dirs:
@@ -80,6 +80,10 @@ class RepositoryTraversal(unittest.TestCase):
                 yield str(root / "visible"), [], ["child.py"]
             if ".local" in dirs:
                 yield str(root / ".local"), [], ["capture.md"]
+            # A whole checkout of this repository, as `.claude/worktrees/` holds. Its
+            # copy of an already-linted module must not enter the population twice.
+            if "worktrees" in dirs:
+                yield str(root / "worktrees"), [], ["child.py"]
 
         with patch.object(lint, "ROOT", root), patch.object(lint.os, "walk", fake_walk):
             paths = lint.repository_text_files()

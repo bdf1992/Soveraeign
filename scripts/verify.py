@@ -37,7 +37,14 @@ from sovverify import clocks
 from sovverify.checks import CHECKS, ROOT, Check
 
 
-SKIP_PARTS = {".git", ".venv", "__pycache__", ".local"}
+# Filtered after the glob rather than pruned at descent, so this set costs a walk it
+# then discards. `worktrees` is here for the same reason it is in the other two walkers:
+# an agent checkout under `.claude/worktrees/` is a copy of this repository and would
+# enter a directory digest as though it were repository content. Latent today, because
+# no check declares an observed address that contains one. `lineage` and `node_modules`
+# are deliberately not added: the other two sets drop them from a document corpus and a
+# lint population, and a check that digests attributed evidence should see it.
+SKIP_PARTS = {".git", ".venv", "__pycache__", ".local", "worktrees"}
 BUDGET_GRADES = (("PLATINUM", 3.0), ("GOLD", 6.0), ("SILVER", 15.0))
 BUDGET_SECONDS = BUDGET_GRADES[-1][1]
 # Starting every repository check at once became slower as the suite grew: the

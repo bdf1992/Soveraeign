@@ -1,8 +1,8 @@
 {
   "observer_id": "urn:soveraeign:actor:sov/session-f444fd",
   "contributed_to_build": false,
-  "verdict": "DEFECT_FOUND",
-  "concern": "Four generated-artifact checks inside the required gate grade a committed artifact against a rebuild from the mutable working tree, so uncommitted work anywhere in the tree makes them report the artifact stale when it is correct.",
+  "verdict": "RETRACTED_IN_PART",
+  "concern": "RETRACTED IN PART. The original concern claimed that four generated-artifact checks in the required gate produce false failures because they rebuild from the mutable working tree. The mechanism reading is correct and stands. The false-failure claim is withdrawn: it rested on one datapoint from another session which that session has since withdrawn, and a decisive test defeats it.",
   "subject": {
     "commits": [],
     "pull_request": null,
@@ -56,7 +56,8 @@
       "id": "REF-4",
       "claim": "this is the mechanism behind the red shared tree reported earlier tonight",
       "method": "compared the failing check list from a full verify run against the four working-tree readers",
-      "finding": "the run failed on diagram provenance, Node Interface projection, documentation reader and operation surface page - which is exactly the set of checks that rebuild from the working tree - plus orientation snapshot and hygiene. The earlier reading attributed the red tree to collisions between sessions. The more precise mechanism is that these checks grade a committed artifact against uncommitted state, so any session's unstaged work makes them report stale."
+      "finding": "RETRACTED. A clean detached worktree at the same commit, git status empty, still fails the surface check and still reports 3 of 8 diagrams stale. The failures do not depend on any other session's uncommitted work. The earlier attribution of the red tree to contention between sessions was closer to right than this refinement, and even that is imprecise: the committed artifacts are simply stale against their committed sources.",
+      "result_after_retest": "REFUTED"
     }
   ],
   "dissented": [],
@@ -64,7 +65,7 @@
     {
       "id": "REF-R1",
       "severity": "MATERIAL",
-      "finding": "This is a false failure in a required check. The Gate ruleset requires repository (3.11) and repository (3.12), which run verify.py, which runs these checks. On CI the tree is clean so the failure does not appear there; it appears on any working tree with uncommitted work, which is every local landing path. sov_land.py runs verify locally before the gate, so this refuses local landings on the strength of other people's unstaged edits."
+      "finding": "REPLACES A RETRACTED ENTRY. The real defect is that the branch carries stale generated artifacts against its own committed sources: the Node Interface reference fixture and 3 of 8 diagrams. That is reproducible on a clean checkout and is what fails verify locally. It needs the builders re-run and the results committed, which is ordinary reversible work - but several of the affected paths are held by live sessions, so it wants coordinating rather than doing unilaterally."
     },
     {
       "id": "REF-R2",
@@ -80,8 +81,25 @@
   "not_examined": [
     "whether each of the four checks should read committed state, or only the ones that grade rather than remind"
   ],
-  "standing_supported": "none. This is a defect report, not a witness of any change. It settles nothing and proposes no transition. It is recorded because it is the mechanism behind a reading this session gave Bdo earlier in less precise terms.",
+  "standing_supported": "none, and less than none: this record's central claim was wrong and is retracted above. It is kept rather than deleted because a counter-record is how this repository corrects a claim, and because the error is more instructive than the finding was. A true mechanism was allowed to carry a conclusion the evidence never supported, and the one-command control that would have defeated it was available throughout.",
   "judgement_items": [
-    "Four checks in the required gate grade committed artifacts against a working-tree rebuild while a fifth was repaired to read committed state. Whether the remaining four follow it is a verification domain question with an existing precedent, not obviously an owner one - but the precedent is referred to as a ruling and no decision record for it was found."
-  ]
+    "Nothing here is Bdo's. The stale artifacts want re-rendering and committing, which is ordinary work needing coordination between the sessions holding those paths."
+  ],
+  "retraction": {
+    "what_was_claimed": "That the night's failing checks were 'exactly the four working-tree readers' and that they reported artifacts stale which were in fact correct - a false failure in a required check.",
+    "what_defeated_it": "A clean detached worktree at the same commit, with an empty git status and no uncommitted work from any session, was checked directly. `python scripts/sov_surface.py check` FAILS there with 'contracts/fixtures/node-interface.reference.json is stale', and `python scripts/sov_diagrams.py` FAILS with 3 of 8 stale. With no other session's edits present at all, the failures persist. They are therefore true failures against committed sources, not false failures caused by contention.",
+    "what_the_failures_actually_are": "The committed generated artifacts on this branch are genuinely stale against their committed sources. Someone edited sources, committed, and did not re-run the builders. That is the checks working correctly and reporting a real defect.",
+    "how_the_error_was_made": "Two separate things were read as one. Another session reported a surface.html false failure; it has since withdrawn that, having measured the artifact after rendering it, when a zero diff is guaranteed whether or not the page was ever stale. This session took that datapoint, found a true mechanism in the source, and let the mechanism carry a conclusion the evidence never supported. The mechanism reading was independent and correct; the failure attribution was borrowed and wrong. A clean-worktree control would have caught it in one command and was not run before the record was written.",
+    "what_still_stands": [
+      "build() calls surface() calls rebuild(), which re-derives from working-tree source bytes. Read from the source.",
+      "The derivation is deterministic: six successive input_state_digest readings are byte-identical.",
+      "sov_snapshot.py routes its reaches through committed state and is the only one of the five that does.",
+      "The remaining four carry no git or HEAD reference between them."
+    ],
+    "what_does_not_stand": [
+      "That any observed failure this session saw was false.",
+      "That the failing set was exactly the four working-tree readers - it also contained hygiene, orientation snapshot and the tooling tests, each failing for its own real reason.",
+      "That this refuses local landings on other people's unstaged edits. Unsupported; the failures reproduce with no other edits present."
+    ]
+  }
 }

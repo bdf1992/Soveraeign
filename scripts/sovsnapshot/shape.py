@@ -13,8 +13,8 @@ how the defect survived nine review rounds. So the invariant is structural and i
 re-read from the bytes of `claims.py` on every run, and the two exceptions are
 named here rather than left to be recognised.
 
-An independent reading planted five shapes against the first version of this and
-watched every one of them pass, including a fall back to a glob through a local
+An independent reading planted four shapes against the first version of this and
+a second reading three more, and watched every one of them pass, including a fall back to a glob through a local
 variable named `committed`, which defeated the invariant rather than escaping it.
 A second reading then took `committed.ROOT` - a `Path` exported by the module
 this treats as the record - and globbed the working tree with it while satisfying
@@ -42,10 +42,15 @@ READERS = (RECORD,)
 #: Attributes of a reader that are not answers. `committed.ROOT` is a `Path`, so a
 #: derivation that takes it and globs reads the working tree while satisfying
 #: "reaches `committed`" - the reach an independent reading demonstrated, and the
-#: one shape here that could be closed rather than only named. Reaching one of
-#: these does not count as reaching the record, and reaching one anywhere in
-#: `claims.py` is reported.
-NOT_AN_ANSWER = ("ROOT",)
+#: one shape here that could be closed rather than only named. `committed._git` is
+#: the same escape one level down: a second reading handed it `ls-files --others
+#: --exclude-standard --cached` from inside a claim and got the original defect
+#: back, because running the record module's private wrapper counted as reading it.
+#: The wrapper refuses an undeclared vector itself now (`committed.PERMITTED_ARGV`)
+#: and is named here too, so a claim reaching only for it fails the invariant.
+#: Reaching one of these does not count as reaching the record, and reaching one
+#: anywhere in `claims.py` is reported.
+NOT_AN_ANSWER = ("ROOT", "_git")
 
 #: The claims Bdo's ruling on acceptance packet A5 left on the working tree,
 #: named so a third cannot join them quietly. Each counts something the repository
@@ -242,8 +247,18 @@ def _exceptions_are_live(table: list[tuple[str, ast.expr | None]],
         stray.append(f"{absent} are named as reading the working tree and the claim "
                      "table declares no such claim, so the exception grades nothing")
     if table and not graded:
-        stray.append("every declared claim is a named working-tree exception, so this "
-                     "guard graded nothing")
+        # Split: this fired on any empty grading and then stated a cause it had
+        # not established. With the exceptions emptied no claim is one, and the
+        # sentence was simply false - found by a reading proving a different guard
+        # vacuous, which is how an unread message becomes wrong evidence.
+        named = [name for name, _ in table if name in WORKING_TREE]
+        if len(named) == len(table):
+            stray.append("every declared claim is a named working-tree exception, so "
+                         "this guard graded nothing")
+        else:
+            stray.append(f"none of the {len(table)} declared claims was graded, and "
+                         f"only {named} are named exceptions, so this guard graded "
+                         "nothing for a reason the exception list does not explain")
     return stray
 
 

@@ -89,6 +89,29 @@ class Entry(NamedTuple):
 #: against the measured cost: the slowest call here is a 25 ms full listing.
 GIT_TIMEOUT_SECONDS = 30
 
+#: The only argument vectors this module hands git. `_git` takes `*argv`, so the
+#: subcommand is chosen at each call site and nothing above it read the vector: an
+#: independent reading put `ls-files --others --exclude-standard --cached` into a
+#: claim and got the original working-tree defect back, through a call the shape
+#: guard approved for reaching `committed`. Reaching this module is not the
+#: property that matters; running one of these is. The referent ruling is exactly
+#: the gap between `ls-tree HEAD` and `ls-files`, so it is pinned rather than said.
+PERMITTED_ARGV = frozenset({
+    ("ls-tree", "-r", "-z", "--full-name", "--name-only", "HEAD"),
+    ("rev-parse", "--is-shallow-repository"),
+    ("rev-list", "--count", "HEAD"),
+})
+
+
+class NotADeclaredReading(Exception):
+    """A git call this module does not declare.
+
+    Deliberately not an `Underivable`: an environment that cannot answer is a
+    refusal the check survives, while a vector nobody declared is a defect here,
+    and reporting it as "cannot derive" would hide the one thing the referent
+    ruling exists to fix. It propagates.
+    """
+
 
 def _git(*argv: str) -> subprocess.CompletedProcess[bytes]:
     """Run git rooted at `ROOT`, capturing bytes.
@@ -98,6 +121,10 @@ def _git(*argv: str) -> subprocess.CompletedProcess[bytes]:
     raise or silently mangle under text mode. Every call site below decodes
     explicitly and says which errors handler it chose.
     """
+    if tuple(argv) not in PERMITTED_ARGV:
+        raise NotADeclaredReading(
+            f"git {' '.join(argv)} is not a declared reading; adding one means "
+            "declaring it in PERMITTED_ARGV with a case proving it reads the commit")
     try:
         return subprocess.run(["git", *argv], cwd=ROOT, capture_output=True,
                               timeout=GIT_TIMEOUT_SECONDS)

@@ -779,9 +779,12 @@ class OneDerivationPassReadsTheCommitOnce(unittest.TestCase):
 class GitIsNeverAllowedToAnswerWithSomethingElse(unittest.TestCase):
     """Every way git can fail to answer has to arrive as `Underivable`.
 
-    A `check` spawns ten git processes where it spawned two, so each of these is
-    ten times likelier to be reached than it was, and each of them escaped
-    `derive_all` - which catches `Underivable` and nothing else - as a traceback.
+    A `check` spawns six git processes where it spawned four - `rev-parse`,
+    `rev-list` and `ls-tree`, twice over the two derivation passes - so each of
+    these is likelier to be reached than it was, and each of them escaped
+    `derive_all`, which catches `Underivable` and nothing else, as a traceback.
+    The figure is measured rather than remembered: an independent reading counted
+    the spawns and found this sentence said ten against two.
     """
 
     def test_every_git_call_carries_a_timeout(self):
@@ -793,8 +796,92 @@ class GitIsNeverAllowedToAnswerWithSomethingElse(unittest.TestCase):
             return subprocess.CompletedProcess(argv[0], 0, b"", b"")
 
         with unittest.mock.patch.object(subprocess, "run", record):
-            committed._git("rev-parse", "HEAD")
+            committed._git("rev-parse", "--is-shallow-repository")
         self.assertEqual(seen.get("timeout"), committed.GIT_TIMEOUT_SECONDS)
+
+    def test_a_shallow_checkout_refuses_the_commit_count(self):
+        """CI is the only place this fires, and nothing protected it.
+
+        `actions/checkout@v4` defaults to depth 1 and three workflows run `verify.py`
+        after it, so without this guard `commits` reads the clone's depth against a
+        page stating hundreds and reports a correct page as drifted. An independent
+        reading cut the guard to `if False:` and left 55 tests green - and so did
+        comparing git's bytes against the string `"true"`, which is silently always
+        False now that this module runs git in bytes mode.
+        """
+        def answer(argv, **_keywords):
+            payload = b"true" if argv[1] == "rev-parse" else b"3"
+            return subprocess.CompletedProcess(argv, 0, payload, b"")
+
+        with unittest.mock.patch.object(subprocess, "run", answer):
+            with self.assertRaises(committed.Underivable) as refused:
+                committed.commits()
+        self.assertIn("shallow", str(refused.exception))
+
+    def test_a_full_checkout_answers_the_commit_count(self):
+        """The positive half. A guard that refused every checkout would pass the case
+        above while breaking the claim in every environment there is."""
+        def answer(argv, **_keywords):
+            payload = b"false" if argv[1] == "rev-parse" else b"373"
+            return subprocess.CompletedProcess(argv, 0, payload, b"")
+
+        with unittest.mock.patch.object(subprocess, "run", answer):
+            self.assertEqual(373, committed.commits())
+
+    def test_an_undeclared_vector_is_refused_rather_than_run(self):
+        """The reach a second reading demonstrated, closed at the source.
+
+        `_git` takes `*argv`, so before this the subcommand was chosen at the call
+        site and nothing read it. A claim calling
+        `committed._git("ls-files", "--others", "--exclude-standard", "--cached", ...)`
+        passed the shape guard, passed selfcheck, and turned the gate red on one
+        untracked directory - the original defect back verbatim, through a call that
+        satisfied "reaches the record".
+        """
+        for argv in (
+            ("ls-files",),
+            ("ls-files", "--others", "--exclude-standard", "--cached", "--",
+             ".claude/skills"),
+            ("grep", "--no-index", "x"),
+            ("hash-object", "-w", "CLAUDE.md"),
+            ("ls-tree", "-r", "-z", "--full-name", "--name-only", "HEAD~1"),
+            ("show", "HEAD:CLAUDE.md"),
+        ):
+            with self.subTest(argv=argv):
+                spawned = []
+
+                def record(*called, **_keywords):
+                    spawned.append(called)
+                    return subprocess.CompletedProcess(called[0], 0, b"", b"")
+
+                with unittest.mock.patch.object(subprocess, "run", record):
+                    with self.assertRaises(committed.NotADeclaredReading):
+                        committed._git(*argv)
+                self.assertEqual([], spawned, f"git {argv} was spawned before refusing")
+
+    def test_a_declared_vector_is_refused_by_nothing(self):
+        """The positive half. A guard that refused everything would pass the case above
+        and break every claim, so the three declared vectors are asserted to run."""
+        for argv in sorted(committed.PERMITTED_ARGV):
+            with self.subTest(argv=argv):
+                with unittest.mock.patch.object(
+                        subprocess, "run",
+                        lambda *a, **k: subprocess.CompletedProcess(a[0], 0, b"", b"")):
+                    self.assertEqual(0, committed._git(*argv).returncode)
+
+    def test_every_vector_the_module_runs_is_declared(self):
+        """The allowlist against the source, so a fourth call site cannot be added and
+        left undeclared - which would fail at runtime rather than here."""
+        tree = ast.parse(Path(committed.__file__).read_text(encoding="utf-8"))
+        found = set()
+        for node in ast.walk(tree):
+            if (isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+                    and node.func.id == "_git"):
+                self.assertTrue(
+                    all(isinstance(a, ast.Constant) for a in node.args),
+                    "a git call site builds its vector, so the allowlist cannot read it")
+                found.add(tuple(a.value for a in node.args))
+        self.assertEqual(set(committed.PERMITTED_ARGV), found)
 
     def test_a_git_that_does_not_return_refuses(self):
         def blocked(*_argv, **keywords):
@@ -1100,7 +1187,7 @@ def _build():
 
 def _skills() -> int:
     return committed.count(".claude/skills", "*", "skills", dirs=True)
-''', "graded nothing"),
+''', "no claim table could be read from"),
         "the page reached by name rather than through SNAPSHOT": ('''
 from pathlib import Path
 

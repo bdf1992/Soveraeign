@@ -18,6 +18,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from .errors import ProjectionNotAuthoritative, UnknownEntry
+
 
 class ProjectionSurface:
     """The journal's derived views, mixed into ``RecordService``.
@@ -63,8 +65,6 @@ class ProjectionSurface:
 
     def projection(self, subject: str) -> dict[str, Any]:
         """Read one projection row. Rebuildable, never authoritative."""
-        from soveraeign_record_service.core import UnknownEntry
-
         row = self.db.execute(
             "SELECT * FROM subject_projection WHERE subject=?", (subject,)
         ).fetchone()
@@ -74,8 +74,6 @@ class ProjectionSurface:
 
     def append_from_projection(self, *_: Any, **__: Any) -> None:
         """Refuse the convenient shortcut of promoting a projection to the record."""
-        from soveraeign_record_service.core import ProjectionNotAuthoritative
-
         raise ProjectionNotAuthoritative(
             "a projection is rebuildable and never authoritative; "
             "re-enter the claim as a proposal through the transition contract"

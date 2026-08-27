@@ -254,7 +254,7 @@
     },
     {
       "address": "services/record/src/soveraeign_record_service/core.py",
-      "digest": "83dd3ca462515292c13edd716055039883f1a2b88ef423a9b3fbe8c67706a996"
+      "digest": "ce0f1f34370e6a035cf11ec673c29a5f8a5dc5c5f9c7cab13c6bf5731c9349b9"
     },
     {
       "address": "services/registry/contracts/service.json",
@@ -273,7 +273,7 @@
       "digest": "150834886995a8e0c32334beb5ef53dbc69cbb244172b510a06b056e608bf4b0"
     }
   ],
-  "input_state_digest": "d5dc4b1ffb5346b6d5e093bdb01802c897182f4d3d858126aa2135a1d4a0ad8d",
+  "input_state_digest": "5d445c9e64453e626b086e44f4cfd5036285ade4a6c25b552cea4f69762dd020",
   "counts": {
     "declared": 133,
     "bound": 133,
@@ -5333,7 +5333,7 @@
         },
         {
           "address": "services/record/src/soveraeign_record_service/core.py",
-          "digest": "83dd3ca462515292c13edd716055039883f1a2b88ef423a9b3fbe8c67706a996"
+          "digest": "ce0f1f34370e6a035cf11ec673c29a5f8a5dc5c5f9c7cab13c6bf5731c9349b9"
         }
       ],
       "route_affordance": {
@@ -5341,7 +5341,7 @@
         "reason_code": "EXACT_READ_ROUTE_ACTIVE",
         "explanation": "An exact policy-active service route exists for this read."
       },
-      "record_digest": "05556362a717090857e5e2531a4ce0d016fbb5bcc18e4c6c30b83321a4b8ef9f"
+      "record_digest": "c7e354fecbc21e65e30bf8017d324ccd7afd8c500d8d118a9ed8c824357f1577"
     },
     {
       "operation_id": "console.rebuild-projection",

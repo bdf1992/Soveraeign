@@ -11,8 +11,9 @@ import unittest
 sys.path.insert(0, str(Path(__file__).parents[1] / "src"))
 
 from soveraeign_record_service.core import (  # noqa: E402
-    CURRENT_PROFILE, DIGEST_PROFILE, GENESIS, LEGACY_DIGEST_PROFILE, BrokenChain,
-    RecordService, _digest, _legacy_canonical, _legacy_digest,
+    BOUND_DIGEST_PROFILE, CURRENT_PROFILE, DIGEST_PROFILE, GENESIS,
+    LEGACY_DIGEST_PROFILE, BrokenChain, ProfileNotAdopted, RecordService, _digest,
+    _legacy_canonical, _legacy_digest,
 )
 from soveraeign_record_service.custody import (  # noqa: E402
     LEGACY_EXPORT_SCHEMA, restore, verify_export,
@@ -137,6 +138,148 @@ class DigestProfiles(unittest.TestCase):
         self.assertEqual(restore(target, document), 1)
         [entry] = target.reconstruct()
         self.assertTrue(math.isnan(entry["payload"]["legacy_value"]))
+
+
+def _v1_only_reader(service: RecordService) -> int:
+    """Verify a journal the way the service did before the profile column existed.
+
+    Returns how many entries verified before the arithmetic stopped agreeing. This
+    is the reader running in every checkout that predates profiles, and it is the
+    thing a silent upgrade breaks: it is not wrong, it is old.
+    """
+    previous, held = GENESIS, 0
+    for entry in service.entries():
+        expected = _legacy_digest(previous, entry["kind"], entry["subject"],
+                                  entry["actor"], entry["payload"])
+        if entry["prev_digest"] != previous or entry["entry_digest"] != expected:
+            return held
+        previous = entry["entry_digest"]
+        held += 1
+    return held
+
+
+class AStoreKeepsItsOwnProfile(unittest.TestCase):
+    """What a store writes is the store's property, not the library's.
+
+    `append` used to write whichever profile the library named as current, so a
+    newer service opening an older journal upgraded it from the next row on. The
+    live operator journal `.local/console` is the worked example: six v3 rows
+    landed on 406 v1 rows and every session running the older checkout got
+    `BrokenChain` at the first of them, while the journal itself stayed intact and
+    verified completely under a v3-aware reader.
+    """
+
+    def setUp(self) -> None:
+        self.tmp = TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+        self.opened: list[RecordService] = []
+
+    def tearDown(self) -> None:
+        for service in self.opened:
+            service.close()
+        self.tmp.cleanup()
+
+    def v1_store(self, name: str = "legacy", rows: int = 3) -> RecordService:
+        """A journal written the way a pre-profile service wrote one."""
+        root = self.root / name
+        root.mkdir(parents=True)
+        connection = sqlite3.connect(root / "record-service.sqlite3")
+        connection.execute(
+            "CREATE TABLE journal(seq INTEGER PRIMARY KEY AUTOINCREMENT, entry_id TEXT NOT NULL "
+            "UNIQUE, kind TEXT NOT NULL, subject TEXT NOT NULL, actor TEXT NOT NULL, "
+            "source_address TEXT, payload_json TEXT NOT NULL, recorded_at REAL NOT NULL, "
+            "prev_digest TEXT NOT NULL, entry_digest TEXT NOT NULL)"
+        )
+        previous = GENESIS
+        for index in range(rows):
+            # Non-ASCII on purpose: v1 escapes it and v2/v3 do not, so a row that
+            # silently changed encoder shows up here rather than hiding behind
+            # bytes the two profiles happen to agree on.
+            payload = {"step": index, "text": "café"}
+            digest = _legacy_digest(previous, "EVENT", "subject", "actor", payload)
+            connection.execute(
+                "INSERT INTO journal(entry_id,kind,subject,actor,source_address,payload_json,"
+                "recorded_at,prev_digest,entry_digest) VALUES(?,?,?,?,?,?,?,?,?)",
+                (f"entry_legacy_{index}", "EVENT", "subject", "actor", None,
+                 _legacy_canonical(payload), float(index), previous, digest),
+            )
+            previous = digest
+        connection.commit()
+        connection.close()
+        service = RecordService(root)
+        self.opened.append(service)
+        return service
+
+    def test_an_empty_store_starts_at_the_current_profile(self) -> None:
+        service = self.service_at("fresh")
+        self.assertEqual(service.writing_profile(), CURRENT_PROFILE)
+        entry = service.append("EVENT", "subject", "actor", {"step": 1})
+        self.assertEqual(entry["digest_profile"], CURRENT_PROFILE)
+
+    def service_at(self, name: str) -> RecordService:
+        service = RecordService(self.root / name)
+        self.opened.append(service)
+        return service
+
+    def test_appending_to_a_v1_store_writes_v1_and_leaves_old_readers_working(self) -> None:
+        """The defect, stated as the case that failed: this is what broke the console."""
+        service = self.v1_store(rows=3)
+        self.assertEqual(service.writing_profile(), LEGACY_DIGEST_PROFILE)
+        entry = service.append("EVENT", "subject", "actor", {"step": 3, "text": "café"})
+        self.assertEqual(entry["digest_profile"], LEGACY_DIGEST_PROFILE)
+        # The bytes follow the profile too, or the row would carry v2 encoding
+        # under a v1 label and stop verifying the moment anyone read it.
+        self.assertEqual(
+            service.db.execute("SELECT payload_json FROM journal WHERE entry_id=?",
+                               (entry["entry_id"],)).fetchone()["payload_json"],
+            _legacy_canonical({"step": 3, "text": "café"}))
+        self.assertEqual(len(service.reconstruct()), 4)
+        self.assertEqual(_v1_only_reader(service), 4)
+
+    def test_a_v1_store_still_refuses_a_non_finite_payload(self) -> None:
+        """The regression the fix could have introduced, pinned before it arrives.
+
+        `legacy_canonical` permits NaN and has to keep permitting it, or the v1
+        rows already carrying one stop verifying. Writing v1 bytes therefore had
+        to gain an explicit admission check, because the refusal used to be a side
+        effect of always encoding with `canonical`.
+        """
+        service = self.v1_store(name="legacy-nan")
+        for value in (float("nan"), float("inf")):
+            with self.assertRaises(ValueError):
+                service.append("EVENT", "subject", "actor", {"value": value})
+        self.assertEqual(len(service.reconstruct()), 3)
+
+    def test_adopting_a_profile_is_itself_an_entry_under_the_new_one(self) -> None:
+        service = self.v1_store(name="adopting")
+        adopted = service.adopt_profile(BOUND_DIGEST_PROFILE, "operator:bdo")
+        self.assertEqual(adopted["digest_profile"], BOUND_DIGEST_PROFILE)
+        self.assertEqual(adopted["payload"]["superseded"], LEGACY_DIGEST_PROFILE)
+        self.assertEqual(service.writing_profile(), BOUND_DIGEST_PROFILE)
+        following = service.append("EVENT", "subject", "actor", {"step": 9})
+        self.assertEqual(following["digest_profile"], BOUND_DIGEST_PROFILE)
+        self.assertEqual(len(service.reconstruct()), 5)
+
+    def test_an_old_reader_stops_exactly_at_the_adopted_entry(self) -> None:
+        """The consequence the adoption entry states, measured rather than asserted."""
+        service = self.v1_store(name="boundary", rows=3)
+        service.adopt_profile(BOUND_DIGEST_PROFILE, "operator:bdo")
+        service.append("EVENT", "subject", "actor", {"step": 9})
+        self.assertEqual(_v1_only_reader(service), 3)
+
+    def test_adoption_refuses_to_stand_still_or_go_backwards(self) -> None:
+        service = self.service_at("no-move")
+        service.append("EVENT", "subject", "actor", {"step": 1})
+        for target in (CURRENT_PROFILE, DIGEST_PROFILE, LEGACY_DIGEST_PROFILE):
+            with self.assertRaises(ProfileNotAdopted):
+                service.adopt_profile(target, "operator:bdo")
+        self.assertEqual(len(service.reconstruct()), 1)
+
+    def test_adoption_refuses_a_profile_that_is_not_implemented(self) -> None:
+        service = self.v1_store(name="unknown")
+        with self.assertRaises(ValueError):
+            service.adopt_profile("soveraeign-record-chain/v9", "operator:bdo")
+        self.assertEqual(len(service.reconstruct()), 3)
 
 
 if __name__ == "__main__":

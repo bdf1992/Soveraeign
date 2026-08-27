@@ -97,13 +97,13 @@ names the exact profile used to hash it:
 
 - `soveraeign-record-chain/v1` is the legacy Python representation: compact,
   key-sorted JSON payload text joined with `prev_digest`, `kind`, `subject`, and
-  `actor` by `|`. Existing rows and version-1 exports retain it; no new row uses
-  it because field values containing `|` make the tuple ambiguous.
+  `actor` by `|`. It is superseded because field values containing `|` make the
+  tuple ambiguous.
 - `soveraeign-record-chain/v2`: UTF-8 bytes of compact JSON for
   `[profile, prev_digest, kind, subject, actor, payload]`, with object keys
   sorted, non-finite numbers refused, and Unicode code points preserved. The
-  profile string domain-separates the hash input. Existing rows retain it; no new
-  row uses it, because it binds none of the entry's own identity.
+  profile string domain-separates the hash input. It is superseded because it
+  binds none of the entry's own identity.
 - `soveraeign-record-chain/v3` is the current representation: the same compact
   JSON with `entry_id`, `source_address` and `recorded_at` bound in, as
   `[profile, prev_digest, entry_id, kind, subject, actor, source_address,
@@ -112,10 +112,26 @@ names the exact profile used to hash it:
   other content (`decisions/0072`).
 
 The entry digest is lowercase SHA-256 hex over those exact bytes. Opening a
-pre-profile database adds `digest_profile` and marks only the existing rows v1;
-new rows are explicitly v3. A version-1 export is read as v1, while a version-2
-export carries every row's profile. Verification never tries both algorithms,
-so compatibility cannot make a row pass under a weaker profile's rule.
+pre-profile database adds `digest_profile` and marks only the existing rows v1.
+A version-1 export is read as v1, while a version-2 export carries every row's
+profile. Verification never tries both algorithms, so compatibility cannot make a
+row pass under a weaker profile's rule.
+
+**Which profile a new row uses is the store's answer, not the library's.**
+`append` writes the profile of the store's newest entry, so an empty store starts
+at v3 and an existing one keeps its own however new the code opening it is. A
+store moves forward only through `adopt_profile`, which appends the first entry
+under the new profile and states in it what was superseded and that a reader
+implementing only the old profile stops verifying there. Superseded therefore
+means "not chosen for a new store", not "never written again": a v1 journal keeps
+writing v1, with v1's weaker coverage, until somebody moves it.
+
+The reason is symmetrical with the reason profiles are immutable. Editing a
+profile in place invalidates its own history; adopting one in place invalidates
+its own readers. Both are silent, and the second has already happened here — six
+v3 rows appended to the live `.local/console` journal left every older checkout
+unable to read past them, over a journal that was never damaged
+(`decisions/0072`).
 
 Every profile binds the payload's *parsed value*, not the bytes the column holds,
 so verification separately requires those bytes to be the profile's canonical
@@ -129,13 +145,23 @@ parse correctly and verify as tampered:
 
 - `record-chain/v1` stores `json.dumps(payload, sort_keys=True,
   separators=(",", ":"))` — non-ASCII code points are **escaped**, and non-finite
-  numbers are permitted, which is a known divergence: `NaN` and `Infinity` are not
-  valid JSON, every strict reader refuses them, and a v1 row carrying one
-  verifies here. It is a divergence rather than a forgery, since changing a value
-  still changes the digest.
+  numbers are permitted by the *encoder*, which is a known divergence: `NaN` and
+  `Infinity` are not valid JSON, every strict reader refuses them, and a v1 row
+  carrying one verifies here. It is a divergence rather than a forgery, since
+  changing a value still changes the digest.
 - `record-chain/v2` and `record-chain/v3` store the same form with
   `ensure_ascii=False` and `allow_nan=False` — non-ASCII code points are
-  **preserved** and non-finite numbers are refused at write time.
+  **preserved** and the encoder itself refuses non-finite numbers.
+
+`append` refuses a non-finite payload under **every** profile, v1 included. The
+encoder cannot carry that refusal, because v1 rows already exist carrying such a
+value and a profile that stopped accepting them would stop verifying its own
+history; the refusal is therefore made at admission, in
+`digest.refuse_non_finite`. `custody.restore` is the exception and is deliberate:
+it reproduces what an export holds, so a v1 row carrying `NaN` can still enter a
+new store — and `write_export` will then emit a file no strict JSON reader
+parses. Whether restore should refuse that is an open judgement recorded in
+`decisions/0072`, not a settled rule.
 
 A row's encoder is chosen by that row's own `digest_profile`, never by the schema
 of the document carrying it. Choosing by the export schema is what made a

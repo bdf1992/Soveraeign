@@ -44,6 +44,7 @@ from sovwitness import Observation  # noqa: E402
 from sovwitness.record_chain import (  # noqa: E402
     GENESIS, LEGACY_DIGEST_PROFILE, canonical_bytes_disagree, recompute, verify_chain,
 )
+from sovwitness.record_tampers import detects_a_tamper  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 SUBJECT = "run-witness-1"
@@ -170,45 +171,6 @@ def _projections(observed: Observation, store: Path) -> None:
                   "the service declares the prohibition rather than only implementing it")
 
 
-def _detects_a_tamper(observed: Observation, store: Path) -> None:
-    """Prove this walk detects a bad chain, not only that it agrees about a good one.
-
-    Until now every stage ran `verify_chain` over honest data, so 21 held
-    observations established that three implementations agree about a sound
-    journal - not that any of them catches an unsound one. An independent witness
-    said so, and it was right: a check never shown failing has not been shown to
-    work.
-
-    Each tamper is written straight into a copy of the store, read back through
-    this module's own arithmetic, and rolled back.
-    """
-    database = store / "record-service.sqlite3"
-    connection = sqlite3.connect(str(database))
-    connection.row_factory = sqlite3.Row
-    try:
-        rows = [dict(row) for row in connection.execute(
-            "SELECT * FROM journal ORDER BY seq")]
-        target = rows[-1]
-        for label, column, value in (
-            ("a rewritten actor", "actor", "somebody-else"),
-            ("a repointed identifier", "entry_id", "entry_forged"),
-            ("payload bytes that parse the same", "payload_json",
-             '{"x": 1, "forged": 0}'),
-        ):
-            connection.execute(f"UPDATE journal SET {column}=? WHERE seq=?",
-                               (value, target["seq"]))
-            walked = [dict(row) for row in connection.execute(
-                "SELECT * FROM journal ORDER BY seq")]
-            for entry in walked:
-                entry["payload"] = json.loads(entry["payload_json"])
-            observed.note(bool(verify_chain(walked)),
-                          f"this walk detects {label}",
-                          "detected" if verify_chain(walked) else "MISSED")
-            connection.rollback()
-    finally:
-        connection.close()
-
-
 def _distinctness(observed: Observation, store: Path) -> None:
     """A governing document is refused as event storage, loudly and from outside."""
     refused = record(store, "append-entry", "--kind", "EVENT", "--subject", SUBJECT,
@@ -236,7 +198,7 @@ def observe(emit: Path | None = None) -> int:
         before = _survives_restart(observed, store, [entry, receipt])
         _retract(observed, store, entry, before)
         _projections(observed, store)
-        _detects_a_tamper(observed, store)
+        detects_a_tamper(observed, store)
         _distinctness(observed, store)
         final = record(store, "reconstruct-journal")
         settled = record(store, "read-entry", "--entry", receipt["entry_id"])

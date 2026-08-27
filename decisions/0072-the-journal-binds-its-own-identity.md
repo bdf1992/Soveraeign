@@ -4,11 +4,20 @@ Status: `PROPOSED · BUILT AND SELF-TESTED · RATIFICATION PENDING`
 
 ## Decision
 
-`soveraeign-record-chain/v3` becomes the profile new journal entries are written
-under. It binds three columns `v2` recorded but never protected: `entry_id`,
+`soveraeign-record-chain/v3` becomes the profile a new journal is written under.
+It binds three columns `v2` recorded but never protected: `entry_id`,
 `source_address`, and `recorded_at`. `v1` and `v2` are unchanged and still verify
 the entries already written under them, because a profile edited in place
 silently invalidates its own history.
+
+**A store keeps writing the profile it already writes.** `append` reads the
+profile from the store's newest entry rather than from whatever the library calls
+current, so an existing journal does not change profile because the code that
+opened it was upgraded. Moving one forward is `RecordService.adopt_profile`, which
+appends the first entry under the new profile and names in that entry which
+profile it supersedes and that a reader implementing only the old one stops
+verifying there. The boundary is inside the journal instead of being discovered by
+whoever opens the store next.
 
 Alongside it, `digest.COVERAGE` states per profile which journal columns that
 profile's verification detects a change to, and `digest.uncovered` returns the
@@ -70,6 +79,17 @@ fires — that rule had been applied once per mechanism rather than once per cla
   profile and is verified under it. A journal written before this change keeps
   exactly the coverage it always had, which is the honest outcome; claiming
   otherwise would require rewriting history to assert it.
+- **An existing store stays on its profile until somebody moves it; an empty one
+  starts at the strongest.** The alternative — every store upgrading on its next
+  write — is what broke the live console journal, and it also makes the moment a
+  reader stops working depend on when a library happened to be updated rather than
+  on a decision anybody took. The cost is real and is accepted: a store that
+  already exists keeps `v2`'s weaker coverage until it is deliberately moved, so
+  the identifier hole this record closes stays open in it. Adoption being one call
+  with a recorded entry is what keeps that cost payable.
+- **Adoption refuses to stand still or go backwards.** Both would append an entry
+  claiming a transition that is not happening, and a journal that records a move
+  which did not occur is worse than one that never raises the question.
 - **The two independent verifiers were updated separately.**
   `scripts/witness_record.py` and `scripts/gateway_observe.py` each reimplement
   the chain rule deliberately so a witness does not borrow the participant's own
@@ -123,6 +143,50 @@ profiles rather than only here.
 - A demonstration that binding `recorded_at` blocks a legitimate correction. An
   append-preserving journal corrects by counter-record and never by editing a
   row, so no such correction should exist; one would defeat this.
+- An append that changes the profile a store writes without anyone adopting it.
+  `test_appending_to_a_v1_store_writes_v1_and_leaves_old_readers_working` runs a
+  pre-profile reader over the journal after the append and requires it to verify
+  every entry; that reader stopping is the defect returning.
+
+## What adopting v3 silently broke, and what fixed it
+
+The first arrangement wrote `CURRENT_PROFILE` on every append. Nothing consulted
+the store, so opening an existing journal with this branch's service upgraded it
+from the next row on.
+
+It did that to the live operator journal. `.local/console` holds 412 entries; six
+of them, at `seq` 405 to 412, are `v3` rows written by runs from this branch and
+the console branch on top of 406 `v1` rows. The journal is not damaged — a
+`v3`-aware reader verifies all 412 — but every session running an older checkout
+gets `BrokenChain` at `seq` 405, and the operator continuity surface has been down
+for all of them since. Eleven sessions share that working tree.
+
+    old reader on the live store   BrokenChain entry_80767935e18c488fb45502df9d5c385e
+    v3-aware reader, same bytes    412 entries verified
+
+That is the same shape as the rule this record already rests on. A profile edited
+in place invalidates its own history; a profile adopted in place invalidates its
+own readers. The first was stated and enforced, the second was neither.
+
+`append` now writes `writing_profile()`, `adopt_profile` is the deliberate move,
+and `services/record/src/soveraeign_record_service/profiles.py` carries the
+reasoning beside the code. `test_appending_to_a_v1_store_writes_v1_and_leaves_old_
+readers_working` is the failing case stated as a fixture: it reconstructs a
+pre-profile reader and asserts it still verifies the whole chain after a new
+append. `test_an_old_reader_stops_exactly_at_the_adopted_entry` measures the
+consequence the adoption entry claims, rather than asserting it in prose.
+
+One thing followed. Refusing `NaN` and `Infinity` at write time had been a side
+effect of always encoding with `canonical`; a store writing `v1` would have
+regained the divergence, because `legacy_canonical` permits both and has to keep
+permitting them for the rows already carrying one. `digest.refuse_non_finite` now
+makes the refusal explicit at admission, where it belongs, and
+`test_a_v1_store_still_refuses_a_non_finite_payload` pins it.
+
+The six rows already written are left exactly where they are. Removing them to
+please an older reader would be the one thing an append-preserving journal must
+never do, and `.local/` is runtime state rather than a governed record. What
+remains for Bdo is under **What still waits on Bdo** below.
 
 ## What the canonical requirement broke, and what fixed it
 
@@ -149,9 +213,29 @@ Two things followed from the same seam:
   row's encoder comes from its own profile and never from the schema of the
   document carrying it.
 
+## What still waits on Bdo
+
+- **The live console journal.** `.local/console` cannot be read by any checkout
+  older than this branch, and that is not repairable from inside the store: the
+  six `v3` rows are real entries and removing them is the one thing forbidden
+  here. It becomes readable again when this change lands and the shared checkout
+  moves; until then eleven sessions have no operator continuity surface. The
+  alternatives are landing an unwitnessed service into the shared tree or
+  rebuilding the store from empty and losing 412 entries of continuity, and
+  neither is a call this seat makes.
+- **Whether `custody.restore` should refuse a non-finite payload on a new row.**
+  An independent witness built an export carrying a `v1` `NaN` row and restored it
+  into a brand-new empty store; it verifies, and `write_export` then emits a file
+  no strict JSON reader will parse. `refuse_non_finite` closes the `append` path
+  and deliberately does not close the restore path, because a restore reproduces
+  what was exported and refusing there would make some existing exports
+  irrecoverable. Whether that trade is right is a judgement, not an engineering
+  default. The charter currently implies the divergence is confined to history,
+  and it is not.
+
 ## Standing
 
-`PROPOSED`. Built and self-tested: 47 Record Service tests pass.
+`PROPOSED`. Built and self-tested: 54 Record Service tests pass.
 
 An independent witness examined this change at commit `514d12e` and **refused to
 propose `BUILT -> WITNESSED`**. It confirmed C1, C2, C4, C5 and C6 — the defect
@@ -165,9 +249,22 @@ One thing the earlier draft claimed too much: it offered `scripts/witness_record
 21/21 as the observation proposing `WITNESSED`. That walk ran `verify_chain` only
 over honest data and contained no tamper case, so it established that three
 implementations agree about a good chain — not that any of them detects a bad
-one. A check never shown failing has not been shown to work. The walk now has a
-stage that rewrites an actor, repoints an identifier and substitutes payload bytes
-that parse the same, and asserts its own arithmetic catches each; it reports 24/24.
+one. A check never shown failing has not been shown to work.
+
+The repair to that was itself too weak, and a third witness proved it. The stage
+named "payload bytes that parse the same" substituted a fixed
+`{"x": 1, "forged": 0}` into a row whose payload was something else, so the values
+differed and the digest caught it — the byte rule never fired, and the walk still
+reported 24/24 with `canonical_bytes_disagree` forced to return `False`. A check
+cited as evidence for a rule it did not exercise, which is the same defect one
+level down. The stage now re-encodes the target row's own payload with different
+spacing, so the parsed value is identical and the whole weight sits on the bytes.
+Forcing the byte rule off now yields 23/24 and exit 1; unmodified it is 24/24.
+
+That is the fourth check in this concern found unable to fail — after one tamper
+value per column, a note asserted against the constant that generated it, and a
+fixture whose ASCII payload made two different encoders coincide. Each was found
+by an independent reading and none by the build.
 
 Both independent verifiers also gained the canonical rule. Without it they graded
 a strictly weaker property than the service — the exact tamper this change exists

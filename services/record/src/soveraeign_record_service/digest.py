@@ -101,6 +101,20 @@ def uncovered(profile: str) -> frozenset[str]:
     return JOURNAL_COLUMNS - COVERAGE[profile]
 
 
+def refuse_non_finite(payload: Any) -> None:
+    """Raise if the payload carries NaN or Infinity, whatever profile is writing.
+
+    `legacy_canonical` permits both, and has to keep permitting them: v1 rows
+    already exist carrying them, and a profile edited in place stops verifying its
+    own history. The refusal therefore belongs at admission, where it stops a new
+    row joining them without touching the profile obliged to accept the old ones.
+    Before profile selection moved to the store this was a side effect of always
+    encoding with `canonical`, which meant a store writing v1 would have quietly
+    regained the divergence.
+    """
+    json.dumps(payload, allow_nan=False)
+
+
 def canonical(payload: Any) -> str:
     """The v2 compact JSON payload form; explicit, UTF-8 capable, and finite."""
     return json.dumps(

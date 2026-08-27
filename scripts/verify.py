@@ -33,7 +33,7 @@ import sys
 import time
 import uuid
 
-from sovverify import clocks
+from sovverify import budget, clocks
 from sovverify.checks import CHECKS, ROOT, Check
 
 
@@ -45,8 +45,13 @@ from sovverify.checks import CHECKS, ROOT, Check
 # are deliberately not added: the other two sets drop them from a document corpus and a
 # lint population, and a check that digests attributed evidence should see it.
 SKIP_PARTS = {".git", ".venv", "__pycache__", ".local", "worktrees"}
-BUDGET_GRADES = (("PLATINUM", 3.0), ("GOLD", 6.0), ("SILVER", 15.0))
-BUDGET_SECONDS = BUDGET_GRADES[-1][1]
+# The budget is declared in contracts/verification-budget.json, not here, so the
+# numbers and the rule that a wall-clock reading never refuses live in one place
+# a reader can open (decisions/0081). These names remain because callers and the
+# structural drift tests use them; both are derived, never restated.
+BUDGET_TABLE = budget.load()
+BUDGET_GRADES = tuple(budget.grades(BUDGET_TABLE))
+BUDGET_SECONDS = budget.slowest_band(BUDGET_TABLE)
 # Starting every repository check at once became slower as the suite grew: the
 # hosted runner spent its budget context-switching between 20+ Python processes.
 # Keep enough independent work in flight to hide startup/I/O without allowing
@@ -98,27 +103,18 @@ def observe(check: Check, run_id: str, reading: clocks.Reading, when: str) -> di
 
 
 def grade(wall: float) -> str | None:
-    """Name the band a wall time earns, or None when it exceeds the budget.
+    """Name the band a wall time earns, or None past the slowest band.
 
-    Bands run fastest first, each ceiling is inclusive, and the slowest ceiling
-    is the budget - so every graded run is a passing run.
+    None no longer means the run failed. A wall-clock reading measures the host
+    at that instant, not the repository, so past the slowest band the run earns
+    no grade and records debt (`decisions/0081`).
     """
-    for name, ceiling in BUDGET_GRADES:
-        if wall <= ceiling:
-            return name
-    return None
+    return budget.grade(wall, BUDGET_TABLE)
 
 
 def budget_line(wall: float) -> str:
-    """State the grade a run earned, naming the next faster band if there is one."""
-    earned = grade(wall)
-    if earned is None:
-        return f"verification budget ({wall:.3f}s > {BUDGET_SECONDS:.3f}s)"
-    index = [name for name, _ in BUDGET_GRADES].index(earned)
-    if index == 0:
-        return f"GRADE: {earned} at {wall:.3f}s, the fastest band"
-    faster, ceiling = BUDGET_GRADES[index - 1]
-    return f"GRADE: {earned} at {wall:.3f}s; {faster} needs {ceiling:.3f}s or less"
+    """State the grade a run earned, or the debt it owes, naming the next faster band."""
+    return budget.wall_clock_line(wall, BUDGET_TABLE)
 
 
 def run_check(check: Check) -> tuple[Check, clocks.Reading]:
@@ -190,10 +186,15 @@ def main(argv: list[str] | None = None, run_id: str | None = None,
         print(reading.output.rstrip("\n"), flush=True)
         print(f"TIME: {check.name}: {reading.report()}", flush=True)
 
-    if wall > BUDGET_SECONDS:
-        failed.append(budget_line(wall))
+    debts, catastrophes = budget.judge(
+        [(check.name, reading.wall) for check, reading in results], BUDGET_TABLE)
+    # A catastrophe is a timing reading no host load explains, so it joins the
+    # semantic failures. Ordinary overruns never do: they are attributed below.
+    failed.extend(entry.line() for entry in catastrophes)
     print("")
     for line in summary(results, wall, failed):
+        print(line)
+    for line in budget.report(debts, budget_line(wall), BUDGET_TABLE):
         print(line)
     return 1 if failed else 0
 

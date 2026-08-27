@@ -182,18 +182,35 @@ or reviewed implementation adoption.
 
 ## Start here
 
-1. Read `AGENTS.md`, `SOV.md`, `CONTRIBUTING.md`, and `STATUS.yaml`.
-2. Read `SYSTEM.md`, `CONTRACT.md`, `PRD.md`, and `SPEC.md` as one governing set.
-3. Read `ENGINEERING.md` and inspect `OPEN-SEAMS.md` before implementation.
-4. Run `python scripts/verify.py`; the dependency-free local and CI loop grades
-   its wall time - `PLATINUM` at three seconds, `GOLD` at six, `SILVER` at
-   fifteen - and fails only past fifteen (`decisions/0050`).
-5. Run `python scripts/sov_next.py`. It reconciles every signpost that claims
-   to say what happens next and prints one answer with each alias the job
-   travels under. Where the declared gate and the reachable work name different
-   jobs it reports the disagreement rather than resolving it, because that
-   choice is owner judgement. Use the proposed reference baseline without
-   treating it as owner-ratified or importing an ancestor implementation.
+Run it before you read it. Python 3.11 or newer, no dependencies to install.
+
+```sh
+python scripts/verify.py     # the required gate; graded on wall time, not just pass/fail
+python scripts/sov_next.py   # what happens next, and where the signposts disagree
+python scripts/sov_traps.py  # facts about this repository that answer confidently and wrongly
+```
+
+`verify.py` grades itself `PLATINUM` at three seconds, `GOLD` at six, `SILVER`
+at fifteen, and fails only past fifteen (`decisions/0050`). `sov_next.py`
+reconciles five signposts and prints one answer with every alias the job travels
+under; where the declared gate and the reachable work name different jobs it
+reports the disagreement rather than resolving it, because that choice is owner
+judgement.
+
+[`scripts/README.md`](scripts/README.md) indexes the whole command surface —
+thirty-six entrypoints grouped by the question each one answers.
+
+Then read, in this order:
+
+1. `AGENTS.md`, `SOV.md`, `CONTRIBUTING.md`, and `STATUS.yaml`.
+2. `SYSTEM.md`, `CONTRACT.md`, `PRD.md`, and `SPEC.md` as one governing set.
+3. `ENGINEERING.md` and `OPEN-SEAMS.md` before implementation.
+
+Use the proposed reference baseline without treating it as owner-ratified or
+importing an ancestor implementation.
+
+Writing a binding or an adapter is a different path:
+[`bindings/INTEGRATING.md`](bindings/INTEGRATING.md).
 
 ## Immediate objective
 

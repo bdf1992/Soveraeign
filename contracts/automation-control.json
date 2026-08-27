@@ -1,0 +1,196 @@
+{
+  "table_id": "soveraeign-automation-control/v1",
+  "status": "PROPOSED",
+  "governed_by": "decisions/0086-automation-switch-controls.md",
+  "note": "What it takes to change one of this node's automations, and what refuses. The read surface (contracts/automation-health.json) says what is happening; this says who may change it. Three changes: moving the switch, creating a declaration, and editing one. One authority check covers all three, and it is inside the operations rather than in either binding - a page button and a command line reach the same functions, and the difference between them is the grant the actor holds, not the path it takes. This table grants nothing itself. It declares what a grant would have to say.",
+  "operation": {
+    "name": "automation.set_switch",
+    "changes": "the enabled field of exactly one declaration under .claude/schedules/",
+    "directions": [
+      "ENABLE",
+      "DISABLE"
+    ],
+    "effect_class": {
+      "ENABLE": "RESOURCE_COMMITMENT",
+      "DISABLE": "RECORD_LOCAL"
+    },
+    "effect_class_note": "The two directions are not symmetric, and typing them the same is the mistake this table exists to avoid. Enabling arms a run that will spend tokens and wall clock against limits.max_budget_usd; that is a resource commitment and AGENTS.md puts it on the owner seat. Disabling only removes a future effect: it consumes nothing, reverses in one keystroke, and nobody needs permission to stop a machine. A surface that asks the owner before letting anyone switch something off is not being careful, it is being unusable during the exact incident it was built for.",
+    "idempotent": true,
+    "idempotent_note": "Setting a switch to the state it already holds writes no declaration and appends no record. It is not an error and it is not a change: two operators clicking the same button produce one transition, which is what makes a button safe to click when you are unsure whether the last click landed.",
+    "does_not": [
+      "run the schedule, or bring its next occurrence forward",
+      "commit, stage, push, or land anything - the changed declaration is left in the working tree for whoever holds the branch, because committing is a separate authority and this operation does not hold it",
+      "register anything with the host scheduler; a declaration reading enabled: true is armed in this repository and still inert until something ticks it",
+      "edit any field but enabled"
+    ]
+  },
+  "authority": {
+    "checked_at": "the operation, not the binding",
+    "checked_at_note": "Both bindings call one function and the grant is tested inside it. A control merely hidden from a page is not an authority check: the command line reaches the same operation, and so does anything else that imports the module.",
+    "grants": {
+      "ENABLE": {
+        "held_by": "seat:root",
+        "reason": "RESOURCE_COMMITMENT",
+        "why": "The owner arms his own automations. Bdo wrote this in the ticket that opened this work: turning any schedule on is his, and he has not done it.",
+        "model_may": "propose - the proposal is recorded and the switch does not move"
+      },
+      "DISABLE": {
+        "held_by": "any participant holding the concern",
+        "reason": null,
+        "why": "Stopping a machine is reversible, consumes nothing, and reduces effect. AGENTS.md refuses a request for permission to do reversible record-local work by name, PREAPPROVAL_REQUESTED, and this is that.",
+        "model_may": "perform"
+      }
+    }
+  },
+  "record": {
+    "address": ".claude/schedules/change-log.ndjson",
+    "append_only": true,
+    "committed": true,
+    "committed_note": "Committed, not under .local/. The effective state lives in the declaration and git carries it; if the provenance lived in gitignored machine-local state then cloning this repository would produce a node whose automations are armed with no record of who armed them. The run ledger stays machine-local because runs are local events. A switch is a decision about the repository.",
+    "carries": [
+      "schedule name",
+      "direction, and the from and to values it actually moved between",
+      "actor id and actor kind",
+      "the binding the actor reached through, so a page click and a command are told apart",
+      "occurred_at",
+      "the reason the actor gave",
+      "the digest of the declaration before and after",
+      "outcome: EFFECTED, PROPOSED, or REFUSED with its code"
+    ],
+    "refusals_are_recorded": true,
+    "refusals_are_recorded_note": "A refused attempt appends a record too. A surface that logs only what succeeded cannot answer the question an operator actually asks after an incident, which is who tried.",
+    "retraction": {
+      "mechanism": "a further switch record in the opposite direction",
+      "never": "editing or removing an earlier record",
+      "honesty": "Disabling a schedule counters the arming. It does not counter a run that already happened and it refunds nothing that run spent. The record says so rather than reading as though the schedule had never been on."
+    }
+  },
+  "bindings": {
+    "human": {
+      "surface": "the served pages at http://127.0.0.1:<port>/ - one switch and one edit link per row, and a form at /new and /edit, and an ask box in each open row",
+      "reaches": "automation.set_switch, automation.create_schedule, automation.update_schedule"
+    },
+    "model": {
+      "surface": "python scripts/sov_schedule.py enable|disable|create|edit <name> --reason <text>",
+      "reaches": "automation.set_switch, automation.create_schedule, automation.update_schedule"
+    },
+    "parity_note": "Same function, same contract, same refusals, same record shape. The two bindings differ in the grant their actor holds and in nothing else. The AI-native standard's two-binding proof is a fixture running both against the same cases, not a claim made here."
+  },
+  "transport": {
+    "kind": "HTTP over loopback",
+    "bind": "127.0.0.1",
+    "refuses_any_other_bind": true,
+    "effect_class": "RESOURCE_CONSUMPTION",
+    "why_at_all": "A page opened from disk has no process behind it, so its buttons cannot change anything. Controls on a page require something serving it. AGENTS.md says HTTP waits for a conformance case that requires it; the owner requiring a page with working controls is that case, and it is written into conformance/fixtures/automation-control/ rather than asserted here.",
+    "not_external_world": "A socket bound to 127.0.0.1 reaches no third party and crosses no data boundary, so this is not the EXTERNAL_WORLD effect Phase I refuses. It is still a listening process on the owner's machine that writes repository files, so it binds loopback only, mints a token per run, prints it once, and refuses a request carrying the wrong one.",
+    "token_note": "The token is not authentication. It tells one local process from another and stops a page you happen to be visiting from posting into your console. Every operator on this box is the same operator as far as this server can tell, and the record says so rather than implying an identity it never checked.",
+    "does_not_share_a_port": "allow_reuse_address is off. A surface that writes repository files must not share a socket with anything, and on Windows the default would let it."
+  },
+  "refusals": {
+    "UNKNOWN_SCHEDULE": "No declaration of that name is tracked.",
+    "NOT_A_DIRECTION": "The requested direction is neither ENABLE nor DISABLE.",
+    "GRANT_NOT_HELD": "The actor does not hold the grant this direction requires. Recorded as an attempt, with the grant named.",
+    "REASON_MISSING": "No reason was given. A switch record whose reason is blank answers who and when and not the only question anyone asks afterwards.",
+    "DECLARATION_REFUSED": "The declaration does not parse or does not validate, so there is no known state to move from. Repair the declaration before switching it.",
+    "TARGET_MISSING": "The declared target does not exist, so enabling would arm a run that cannot execute. Disabling such a schedule is allowed and is usually the right move.",
+    "NON_LOOPBACK_BIND": "The server was asked to listen on an address that is not 127.0.0.1.",
+    "BAD_TOKEN": "A request reached the console without the token minted for this run.",
+    "PORT_IN_USE": "The requested port is already listening, so the console did not start. The stdlib sets allow_reuse_address, and on Windows that permits binding a port another process actively holds - with no error and no defined winner for connections. This console did that: it bound a port an unrelated application held, printed a URL, and sent the operator to that application. A page of switches pointed at somebody else's server looks like it worked, which is what makes it the worst failure here.",
+    "NAME_SHAPE": "A schedule name becomes a file name, so it is refused by shape before it reaches the filesystem: lower case, digits and hyphens, 3 to 50 characters.",
+    "ALREADY_EXISTS": "Create never overwrites. Eleven sessions share this checkout and a form submitted twice must not replace a declaration somebody else is editing.",
+    "NOT_EDITABLE": "The requested field is name or enabled. Both have their own answer, named in the refusal.",
+    "INVALID_DECLARATION": "The resulting document does not load. The loader's own wording is reported and the previous bytes are restored.",
+    "EXTERNAL_WORLD_REFUSED": "Phase I refuses external-world effects. Caught before a file is written, with a code naming the boundary, rather than as a schema complaint to interpret.",
+    "MODEL_UNAVAILABLE": "The local model could not be reached, or the adapter refused the binding. No fallback to another model or provider - a silent substitution is forbidden.",
+    "UNREADABLE_PROPOSAL": "The model's answer carried no JSON object this could read.",
+    "WRONG_SHAPE": "A proposed value is not the kind of thing that field holds.",
+    "NOTHING_UNDERSTOOD": "The request named no field this operation can change. Returned with the model's own sentence about why, rather than a guess at what was meant."
+  },
+  "residuals": {
+    "the_console_cannot_tell_operators_apart": "Anyone with the box is the owner as far as this server can see. It records the binding and the fact that the actor was local, and does not claim an identity it did not check. Real principal identity is a separate open concern.",
+    "armed_is_not_running": "Nothing on this node ticks a schedule. Flipping a switch to on arms a declaration and starts nothing, because no host scheduler is registered - that was outside this work by instruction. An operator who reads on as running would be wrong, so the surface says armed.",
+    "the_switch_is_dirty_until_someone_commits_it": "The operation writes the working tree and does not commit. Until someone lands it, the declaration on disk and the declaration at HEAD disagree, and the two readers already say which they read. That is the honest split and it is also a way to forget: a switch flipped and never committed is a decision this repository loses on the next clean checkout.",
+    "no_schedule_is_on": "This table describes what it takes to arm one. When it was written every declaration on this node still read enabled: false, and no participant but Bdo can change that.",
+    "a_form_cannot_write_a_workflow": "A schedule says when to run one workflow or skill, with what arguments and under what budget. It does not compose services, adapters or connections - that is what the workflow itself does, and a workflow is JavaScript under .claude/workflows/. So the form creates schedules over things that already exist and cannot create the thing being scheduled. Authoring a workflow from a surface is a separate and much larger concern, and nothing here starts it.",
+    "a_model_answer_is_not_evidence": "The proposal names which model produced it, in what time, under which data boundary. It is still a suggestion from a 4-billion-parameter model running on a desktop, and the surface says so by showing the fields it changed rather than applying them. Nobody has measured how often it is right, and this table does not claim it usually is.",
+    "the_adapter_is_not_packaged": "scripts/sovschedule/intent.py bootstraps sys.path to import adapters/ollama, which AGENTS.md forbids in production code. The alternative was a second, undeclared model crossing, which is worse. Named here and in decisions/0088 rather than left for a reader to find."
+  },
+  "refusal_layer": {
+    "note": "Which layer owns each refusal, and therefore what has to defeat it. An operation refusal is reachable from a fixture case and needs one. A transport refusal is a property of the socket, can only be defeated by standing a server up, and needs a named test instead. This is declared rather than hardcoded in a test because a skip list inside a test grows quietly - PORT_IN_USE was added to this contract and the test that would have caught a missing case skipped it by name.\n\nThe operation refusals are split across two corpora and two test modules: the switch ones in `cases`, the authoring ones in `authoring_cases`.\n\nA third layer arrived with the proposal operation. Its refusals are defeated by cases that feed a canned model answer through a fake transport: the model itself is not a fixture and its output is not deterministic, so what is pinned is what this code does with an answer, never what an answer will be.",
+    "operation": [
+      "ALREADY_EXISTS",
+      "DECLARATION_REFUSED",
+      "EXTERNAL_WORLD_REFUSED",
+      "GRANT_NOT_HELD",
+      "INVALID_DECLARATION",
+      "NAME_SHAPE",
+      "NOT_A_DIRECTION",
+      "NOT_EDITABLE",
+      "REASON_MISSING",
+      "TARGET_MISSING",
+      "UNKNOWN_SCHEDULE"
+    ],
+    "transport": [
+      "NON_LOOPBACK_BIND",
+      "BAD_TOKEN",
+      "PORT_IN_USE"
+    ],
+    "proposal": [
+      "MODEL_UNAVAILABLE",
+      "UNREADABLE_PROPOSAL",
+      "WRONG_SHAPE",
+      "NOTHING_UNDERSTOOD"
+    ]
+  },
+  "operations": {
+    "note": "Three operations, one rule. The rule is that a change to what runs unattended is the owner's and everything else is not, which is why the same sentence decides all three: arming is the owner's, creating something already armed is arming, and editing something already armed changes what is armed.",
+    "automation.set_switch": {
+      "changes": "the enabled field of one declaration",
+      "owner_when": "always for ENABLE; never for DISABLE"
+    },
+    "automation.create_schedule": {
+      "changes": "writes a declaration that did not exist",
+      "owner_when": "the new declaration is armed",
+      "why": "Without this the switch authority is theatre. A model that may not arm nightly-qa creates nightly-qa-2 with enabled true and the owner's budget is committed anyway. Case D-002."
+    },
+    "automation.update_schedule": {
+      "changes": "the eight editable fields of an existing declaration",
+      "not_editable": [
+        "name",
+        "enabled"
+      ],
+      "not_editable_why": "name is the file stem, so changing it creates a second declaration and removes this one - not an edit. enabled has its own operation: two doors to one transition means two authority checks to keep in step, and one will drift.",
+      "owner_when": "the schedule being edited is armed",
+      "why": "The second hole. A model that leaves the switch alone and repoints an armed schedule at a different workflow, or raises its budget, has committed the same resources by another route. Case D-008. Switching it off first is the route, and anyone may do that."
+    },
+    "no_delete": {
+      "offered": false,
+      "why": "Removing a declaration is not offered. An uncommitted one has no copy anywhere and the operator who typed it is the only thing that ever knew it existed. Switching it off is the reversible answer and leaves the record intact."
+    },
+    "automation.propose_edit": {
+      "changes": "nothing. It reads a declaration and answers with a suggestion",
+      "owner_when": "never - it writes nothing, so there is nothing to authorise",
+      "effect_class": "RESOURCE_CONSUMPTION",
+      "effect_class_note": "A model run on the owner's machine. Nothing is written and no third party is reached, so this proceeds unattended like any other reversible local work. What it spends is time and electricity.",
+      "why": "Bdo asked to request an edit in natural language. A model that could write a declaration directly would walk through the authority split this table exists to state - so it fills the form and a person saves. That is not caution about model quality; it is the same shape the switch already uses, where a model operator holding no seat gets a proposal rather than an effect.",
+      "model": {
+        "through": "adapters/ollama, binding urn:soveraeign:binding:ollama:qwen3-4b",
+        "data_boundary": "LOCAL_ONLY",
+        "data_boundary_note": "The model runs on this machine. No bytes reach a third party, so this is not the EXTERNAL_WORLD effect Phase I refuses. The adapter's own invocation record carries the model id, its version digest, the input digest and the tokens spent, and the console shows the model and the seconds beside every answer - an unattributed suggestion is the thing this avoids.",
+        "silent_fallback": "forbidden; an unreachable model is MODEL_UNAVAILABLE"
+      },
+      "what_is_checked_after": [
+        "every proposed field is one an edit may touch, or NOT_EDITABLE",
+        "every value is the kind of thing that field holds, or WRONG_SHAPE",
+        "the answer parses at all, or UNREADABLE_PROPOSAL",
+        "a partial nested object is completed from the current declaration before a person sees it, because a model asked to raise a budget answers with the budget alone and the schema requires both halves of limits"
+      ],
+      "worst_case": "A proposal a person reads and rejects. The model is not given a path to automation.update_schedule and there is nothing for it to hold: the proposal is returned to the browser and the save is a separate request with its own grant check, made by whoever is looking at it."
+    }
+  },
+  "validation": {
+    "how": "The document is written, the ordinary loader is asked to load it, and the loader's own complaint is what the operator reads. A rejected write is rolled back to the exact prior bytes - bytes rather than a re-serialised equivalent, because rewriting through a text write normalises line endings and a rollback on this host would silently convert a CRLF file to LF while reporting that it changed nothing.",
+    "why_not_a_second_checker": "Reimplementing the schema and semantic checks here would create a second opinion about what a valid declaration is, and the two would drift. A form must not be able to write a document the runner later refuses.",
+    "what_the_form_offers": "The target dropdown is read off .claude/ the same way the loader's target check reads it, so it cannot offer a workflow the save refuses. The enums come from the schema. EXTERNAL_WORLD is absent from the form because the phase refuses it, and EXTERNAL_WORLD_REFUSED is what stops the command line and the HTTP route being the way around that."
+  }
+}

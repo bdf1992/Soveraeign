@@ -1,0 +1,40 @@
+{
+  "observer_id": "sov-witness (independent observation, Claude Opus 5 1M)",
+  "contributed_to_build": false,
+  "verdict": "DISSENTED",
+  "concern": "orientation snapshot check, LESSONS.md L-0001",
+  "checks": [
+    {
+      "command": "SCOPE. Sixth round, on page_text, derive_all and the required grade signature. HEAD 5c3a8ad22c119055064bd314f84e679ba9efe839, working tree. Pinned at read time: sov_snapshot.py sha256:9afe66c0edfe4742 (105 lines), claims.py sha256:fbca66e225778732 (192), grading.py sha256:f2b5b3ace08dea8d (86), selfcheck.py sha256:3e8fffd4473b133b (158), tests sha256:e59f42f6e7b468b4 (287). Rounds one to five stand in their own files.",
+      "exit_code": 0
+    },
+    {
+      "command": "CONFIRMED, all five repairs. A directory named CLAUDE.md: REFUSED: the snapshot page is absent: no CLAUDE.md here. There is nothing to grade. exit 1, no traceback. grading.grade with one argument: TypeError: grade() missing 1 required positional argument: 'derived'. reasons cannot change a verdict - measured, identical kinds with and without an invented reasons mapping. An AST walk shows grading names only CLAIMS and Claim on the claims module, narrower than the allowlist itself. PAGE_SLOTS patched with reports renamed to dispatches: run() returns 1 naming both lists, as an ordinary failure rather than SystemExit at import. 17 tests OK; lint PASS 759 text files, 327 modules, 0 named debt; verify.py 40 checks exit 0 at 11.569s SILVER; real shallow clone 4 of 5, exit 0",
+      "exit_code": 0
+    },
+    {
+      "command": "BUDGET, my earlier reading corrected. python scripts/verify.py on this tree: PASS: 40 checks in 11.569s wall, exit 0, SILVER. My 17.644s failure last round was contention, as you said. Asset Service reference tests is still the wall and the headroom problem is unchanged; it is Bdo's decisions/0050 question and not this concern's",
+      "exit_code": 0
+    },
+    {
+      "command": "DEFECT 23, and it is live. The orientation snapshot is stale right now, on this page, on numbers the check neither reads nor names. CLAUDE.md states 'five role agents, nineteen skills, sixteen workflows'. On disk: 5 agents in .claude/agents/*.md, 21 skills in .claude/skills/*/, 19 workflows in .claude/workflows/. Two of the three are wrong. python scripts/sov_snapshot.py check prints PASS: 5 of 5 snapshot claim(s) match the record. That is L-0001's exact failure - a stale orientation number read as current by every launched agent - live on the page the check was built to protect",
+      "exit_code": 0
+    },
+    {
+      "command": "DEFECT 23, the shape rather than the instance. Measured every count stated in the snapshot section against the declared claims: 40 checks, 133 declared operations, 356 commits, 64 decision records and 24 reports are claims; the historical 26 / 17 / 8 are correctly not claims, which is the anchoring working; 20 controlled cases is correctly named in UNCHECKED. Neither a claim nor named: '10 service boundaries' and '10 manifests', plus the three harness counts spelled as words. services/*/contracts/service.json gives exactly 10 on disk, so the boundary count is as cheaply and authoritatively derivable as declared operations was in round two. The inversion rule - listed so silence is never read as confirmation - is applied to two items someone remembered rather than to the page",
+      "exit_code": 0
+    },
+    {
+      "command": "DEFECT 24, page_text guards existence and not readability. Scratch tree with sovverify, decisions/, reports/, the projection and a nine-commit git history, and CLAUDE.md rewritten as UTF-16, which is a real way a Windows editor saves a file: UnicodeDecodeError: 'utf-8' codec can't decode byte 0xff in position 0: invalid start byte, traceback, exit 1. is_file() then read_text covers absent and not present-but-unreadable. That is the guard built for the failure that was demonstrated and not for its neighbour, which is L-0007's own point and the reason you rewrote the blocklist as an allowlist one paragraph earlier",
+      "exit_code": 1
+    },
+    {
+      "command": "DEFECT 25, derive_all lets a SyntaxError out, and the case is live in this tree. _verification_checks catches ImportError only. scripts/sovverify/checks.py replaced with an unclosed parenthesis, which is what a shared tree looks like mid-edit and checks.py is uncommitted and being edited right now: SyntaxError: '(' was never closed, traceback out of check. My answer to the question you asked: the line is not Underivable against everything else, it is the environment failing to answer against this module being wrong. A malformed check table and an undecodable page are both the environment and both belong in Underivable. Catch narrowly at each source boundary; a broad except Exception in derive_all would swallow genuine bugs in this module, which is the trap the narrow guards exist to avoid",
+      "exit_code": 1
+    },
+    {
+      "command": "WORDING, small. A directory named CLAUDE.md is handled correctly and reported as 'the snapshot page is absent: no CLAUDE.md here'. It is not absent; it is present and not a file. The verdict is right and the sentence names a cause it has not established, which is the distinction this module spent two rounds getting right elsewhere",
+      "exit_code": 1
+    }
+  ]
+}

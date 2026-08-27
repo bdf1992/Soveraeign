@@ -27,7 +27,7 @@ another service's state; touch immutable lineage/ evidence.
 - scripts/verify.py - runs all checks. BUDGET_GRADES holds the bands
   (PLATINUM 3.0, GOLD 6.0, SILVER 15.0) and BUDGET_SECONDS is derived from
   the slowest, so the two cannot drift apart. Every passing run prints its
-  grade; only passing 15.0s fails. decisions/0042.
+  grade; only passing 15.0s fails. decisions/0050.
 - scripts/lint.py - hygiene: UTF-8 decodability, CRLF/trailing-whitespace/final-
   newline, Python syntax and future-annotations, 300-line module limit with
   KNOWN_MODULE_DEBT, secret shapes, local absolute user paths. It reads bytes,

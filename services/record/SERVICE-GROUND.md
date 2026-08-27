@@ -51,8 +51,10 @@ under another; `reconstruct-journal` returning success past a broken link.
 > alone, identical every time. `append_from_projection` exists only to
 > refuse.
 
-Specializes `GROUND-011` (standing does not collapse) — a derived read model
-promoted to authoritative status is exactly the collapse that claim refuses.
+No root `GROUND-<nnn>` claim names this directly; the closest is `GROUND-011`
+(standing does not collapse), and treating a derived projection as
+authoritative is, by inference rather than a stated citation, the same shape
+of collapse that claim refuses at the standing-lifecycle level.
 
 *What would defeat it.* `append_from_projection` committing instead of
 refusing; two rebuilds of the same unchanged journal producing different

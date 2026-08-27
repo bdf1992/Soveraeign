@@ -86,6 +86,114 @@ captured_at, captured_by
 The bytes resolved by `source_address` must match `payload_digest` before a
 reading begins.
 
+#### `Asset`
+
+```text
+asset_id, asset_type_id, label, created_at, created_by
+```
+
+An asset is a governed identity, not bytes. It holds no payload of its own:
+every byte an asset carries is reached through a part version. Two assets whose
+parts resolve identical bytes remain distinct identities, and identity never
+follows bytes (C10). An `asset_type_id` naming no declared `AssetType` is
+refused `TYPE_UNDECLARED`.
+
+#### `AssetType`
+
+```text
+asset_type_id, label, spec, declared_at, declared_by
+```
+
+A declared schema an asset is held to: which parts a version must carry, which
+payload kinds are admitted, and which metadata fields a description supplies. A
+type is declared before an asset names it and is never inferred from a payload,
+a filename suffix, or a media type. Redeclaring an `asset_type_id` is refused
+`STALE_STATE`.
+
+#### `AssetVersion`
+
+```text
+version_id, asset_id, predecessor_version_id, entries, content_digest,
+role: ORIGINAL | REVISION | DERIVATIVE,
+derivation: null | derivation_record,
+created_at, created_by
+
+entry: part_id, part_path, part_version_id
+```
+
+An immutable state of a whole asset: which parts it contained and the exact
+version of each. The entry count is not bounded at one, and no transition may
+assume a single payload. `content_digest` is computed over the entry set, so a
+version has one address without any part losing its own.
+
+A version is judged against its asset's `AssetType` when it is recorded, not
+when it is read back. Changing, adding, or removing any entry produces a new
+version and leaves the predecessor's entries resolvable (C15).
+
+#### `AssetPart`
+
+```text
+part_id, asset_id, declared_at
+```
+
+The identity of one file inside an asset, held separately from the path that
+names it. `part_path` is a label carried on the entry and may differ between two
+versions of the same part (C10). A part identity survives a rename, and a rename
+is therefore not a removal plus an addition.
+
+Resolving captured bytes to a part is exact when their `content_digest` matches
+exactly one part version the asset already holds: the part is that part,
+whatever path the bytes arrived under, and nobody is asked. Where several parts
+carry the same bytes, an unchanged `part_path` settles which. Resolution is
+inexact when the path and the bytes both changed, or when neither match is
+unique. An inexact resolution takes a declared default, records the evidence it
+used, never blocks the operation, and never becomes a judgement claim; a
+counter-record overrides it.
+
+#### `AssetPartVersion`
+
+```text
+part_version_id, part_id, content_digest, size, chunks,
+source_id, created_at, created_by
+
+chunk: chunk_address, chunk_digest, chunk_size, offset
+```
+
+An immutable state of one part, reached through an ordered list of addressed
+chunks. The chunk count is not bounded at one and carries no declared minimum or
+maximum size; how bytes are divided is a storage choice this specification does
+not make. Chunks are served only when each resolves and agrees with its own
+digest and their concatenation agrees with `content_digest`; otherwise the read
+refuses `PAYLOAD_ABSENT` or `DIGEST_MISMATCH`.
+
+One part version may be referenced by versions of more than one asset. Shared
+custody of bytes is not shared identity.
+
+#### `AssetVersionDiff`
+
+```text
+from_version_id, to_version_id, changes
+
+change: part_id,
+        kind: ADDED | REMOVED | MOVED | CHANGED | MOVED_AND_CHANGED,
+        from_part_path, to_part_path,
+        from_part_version_id, to_part_version_id,
+        resolution: EXACT | DEFAULTED
+```
+
+The difference between two versions of one asset. It is a projection under the
+Projection rule below: derivable from the two entry sets and part identities
+alone, rebuilt rather than trusted, and never an authoritative record. `MOVED`
+and `CHANGED` are distinguishable from `ADDED` and `REMOVED` because part
+identity is separate from part path; a diff reporting a rename as a removal plus
+an addition is wrong, not merely coarse.
+
+`MOVED` names a changed path under an unchanged part version, `CHANGED` a
+changed part version under an unchanged path, and `MOVED_AND_CHANGED` both at
+once. The first two are decided by digest and carry `resolution: EXACT`. Only
+the third can carry `DEFAULTED`, and a diff that reports `DEFAULTED` on a change
+a digest already settled is wrong.
+
 #### `Reader`
 
 ```text
@@ -374,6 +482,22 @@ Human and model bindings may present different projections, but they must:
 
 Parity is tested by equivalent operations and reconciled receipts, not by
 pixel or response-format identity.
+
+### Operation granularity
+
+An operation's subject count is not bounded at one. One declared act over four
+hundred subjects is one plan, one authority check, and one terminal receipt
+carrying four hundred emitted record addresses - never four hundred operations.
+An interface that requires a separate confirmation per subject for a single
+declared act has not met parity, whichever binding it serves. A model given one
+instruction and a human working one surface are held to the same rule.
+
+A plan declares before the act begins what a partial result means: whether a
+refused subject refuses the whole operation and commits nothing, or whether each
+subject's outcome is recorded and the operation settles on the terms declared.
+The terminal outcome describes the operation and never a subject. `OperationPlan`
+carries no field for that declaration today, so a multi-subject plan cannot yet
+state its own partial-result terms.
 
 ## Projection rule
 

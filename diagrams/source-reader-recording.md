@@ -2,7 +2,7 @@
 
 ```text
 source          SPEC.md · CONTRACT.md
-source_digest   108497d370c0fd8d · 896e59ba90828ad7
+source_digest   ccc0f2b8ac8f15eb · 896e59ba90828ad7
 reader          hand-authored · v1
 fidelity        LOSSY
 omissions       full field lists for Source, Reader, and Recording;

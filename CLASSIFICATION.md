@@ -127,8 +127,12 @@ remains the standing term.
 | **Referent** | The real thing a representation addresses |
 | **Asset** | A governed enterprise identity with a version history |
 | **Payload** | Exact bytes under custody |
+| **Chunk** | An addressed unit of payload bytes |
 | **Source** | The addressed origin read or transformed |
 | **Asset version** | An immutable state of an asset |
+| **Asset type** | A declared schema an asset is held to |
+| **Asset part** | The identity of one file inside an asset, held apart from its path |
+| **Asset part version** | An immutable state of one part, addressed as chunks |
 | **Reading** | An interpretation that leaves its source unchanged |
 | **View** | A presentation or projection of authoritative records |
 | **Recording** | A deposited result of a declared derivation |

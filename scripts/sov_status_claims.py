@@ -57,7 +57,10 @@ FIELD = re.compile(r"^([a-z0-9_]+_status):\s*(\S+)\s*$")
 # would be the same defect this module keeps paying for: an enumeration that is short
 # by whatever nobody listed. None of them occurs in STATUS.yaml, a full YAML parse
 # agrees exactly with the strict reader, and since no standing is derived the worst
-# case is a field going untyped rather than falsely typed.
+# case is a field going untyped rather than falsely typed. The rule is one-directional:
+# the leading character is narrower than the body, so a key must also start with a
+# letter or digit - `services/asset_status:` is taken and `/services/asset_status:` is
+# not, one character apart.
 LOOSE = re.compile(r"^[\s\-{\[,]*[\"']?[A-Za-z0-9][A-Za-z0-9_.\-/]*_[Ss][Tt][Aa][Tt][Uu][Ss][\"']?\s*:")
 
 

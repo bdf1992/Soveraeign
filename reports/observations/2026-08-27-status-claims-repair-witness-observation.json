@@ -1,0 +1,199 @@
+{
+  "observer_id": "urn:soveraeign:actor:sov-witness/fourth-reading-repair-98aaf88",
+  "contributed_to_build": false,
+  "witness_ordinal": 4,
+  "reading": "second reading by the fourth witness; delta against my own observation of 510f5b8",
+  "verdict": "REPRODUCED_WITH_DEFECTS",
+  "concern": "commit 98aaf88 on feat/status-claims-on-main repairs W4-B1, the finding that the commit deleting the artifact standing still described one in its own prose. Is the repair real, is it prose-only, and is the CLASS now closed rather than the sites I happened to name?",
+  "subject": {
+    "graded_commit": "98aaf88c86f9cb66ea4ecace638b9078f16ec23f",
+    "parent": "510f5b85f273760a67e2c407b8f8c2675e41496f",
+    "base": "b5de995661edd743cfbac97529daf2cfcaa5167a",
+    "branch": "feat/status-claims-on-main",
+    "paths_in_repair": [
+      "contracts/status-claims.json",
+      "scripts/sov_status_claims.py",
+      "scripts/sovstatus/refusals.py"
+    ],
+    "claims_under_test": [
+      "R1 - the repair is prose only, with no behaviour change",
+      "R2 - the five named sites are now true",
+      "R3 - the class is closed, not just the five sites",
+      "R4 - check, selfcheck, the 28 tests and lint are unmoved",
+      "R5 - the verify delta against main is still exactly the two registered checks",
+      "R6 - the deliberately retained historical narrative reads as history, not as a live claim"
+    ]
+  },
+  "observer_relation": {
+    "to_builder": "NONE",
+    "basis": "I am the witness who raised W4-B1 against 510f5b8. I did not write, suggest, or review the repair; I named three sites in a finding and the builder found two more and chose the wording. Reading a repair of my own finding is not building it. I measured in a fresh detached worktree of my own at 98aaf88 and did not read any builder note beyond the handover message, which I treated as a set of claims to test rather than as evidence.",
+    "prior_readings": "I read all three prior witness observations before my first reading and used them as claims to re-derive. This reading re-runs my own battery against the new commit rather than trusting that an AST-identical change preserves behaviour."
+  },
+  "frozen_head": "98aaf88c86f9cb66ea4ecace638b9078f16ec23f",
+  "shared_tree_conditions": {
+    "trap": "CLAUDE.md T6",
+    "mitigation": "Measured only in w4-repair at 98aaf88 and w4-main-b5de995 at b5de995, both confirmed clean by git status --porcelain before and after. The adversarial battery ran as pure calls over synthesized input and deep copies, so no file in either worktree was written during measurement.",
+    "stability_recheck": "check, selfcheck and the 28-test module re-run after all other measurements with identical output; both worktrees still clean at their frozen commits.",
+    "trap_6b_applied": "Two interleaved verify rounds per side. No budget failure on either side in either round: main 14.180s and 13.630s, repair 13.741s and 13.785s, against a 15.000s ceiling."
+  },
+  "checks": [
+    {
+      "command": "ast.parse on both commits with all docstrings stripped, then ast.dump compared",
+      "result": "IDENTICAL",
+      "exit_code": 0,
+      "detail": "scripts/sov_status_claims.py and scripts/sovstatus/refusals.py differ in bytes and are AST-identical once docstrings are removed. scripts/sovstatus/__init__.py, scripts/tests/test_status_claims.py and scripts/sovverify/checks.py are byte-identical. This is the measurement behind the prose-only claim; I did not take it from the diff shape."
+    },
+    {
+      "command": "json comparison of every contract field, 510f5b8 vs 98aaf88",
+      "result": "TWO PROSE FIELDS CHANGED, EVERY OPERATIVE FIELD IDENTICAL",
+      "exit_code": 0,
+      "detail": "summary and naming_screen differ. crosswalk, refusals, claim_kinds, not_in_scope, evolution, governed_by, decision, witnessed_by, grounded_in, status and contract_id are all identical. conformance/fixtures/status-claims/cases.json is byte-identical."
+    },
+    {
+      "command": "python scripts/sov_status_claims.py check",
+      "cwd": "w4-repair (98aaf88, clean)",
+      "result": "PASS",
+      "exit_code": 0,
+      "output": "status claims: 48 typed against 40 subjects, no defects"
+    },
+    {
+      "command": "python scripts/sov_status_claims.py selfcheck",
+      "cwd": "w4-repair (98aaf88, clean)",
+      "result": "PASS",
+      "exit_code": 0,
+      "output": "status-claims selfcheck: 10 refusals each fire"
+    },
+    {
+      "command": "python -m unittest scripts.tests.test_status_claims",
+      "cwd": "w4-repair (98aaf88, clean)",
+      "result": "PASS",
+      "exit_code": 0,
+      "output": "Ran 28 tests in 0.010s - OK"
+    },
+    {
+      "command": "python scripts/lint.py",
+      "cwd": "w4-repair (98aaf88, clean)",
+      "result": "PASS",
+      "exit_code": 0,
+      "output": "PASS: repository hygiene (764 text files, 336 Python modules, 1 named debt)"
+    },
+    {
+      "command": "newline count from bytes",
+      "result": "PASS",
+      "exit_code": 0,
+      "detail": "sov_status_claims.py 182 (up one, the docstring gained a line), sovstatus/refusals.py 184, sovverify/checks.py 270. Limit 300. Zero CRLF, all newline-terminated."
+    },
+    {
+      "command": "python scripts/verify.py, two interleaved rounds, main then repair commit",
+      "result": "PASS BOTH SIDES, BOTH ROUNDS",
+      "exit_code": 0,
+      "detail": "main 39 checks, repair 41 checks. Check-name delta is exactly status claims are typed and status claim refusals fire; nothing removed. The 24 embedded conformance FAIL lines are byte-identical on both sides. No budget failure in any run."
+    },
+    {
+      "command": "prose audit: 475 strings extracted from the five non-observation landing paths - every JSON string recursively, every Python docstring via ast, every comment via tokenize - then swept for standing vocabulary, number words and ordinals",
+      "result": "ONE SITE REMAINS",
+      "exit_code": null,
+      "detail": "See R3 and the dissent. Every standing mention is now past-tense history or a correct present claim, with one exception, and it is a key-count claim rather than a standing claim."
+    },
+    {
+      "command": "re-ran my full first-reading battery against 98aaf88: 33 standing hazards, 9 key-injection shapes, 20 reader class members, 15 quiet-line controls, 13 corpus replays",
+      "result": "IDENTICAL TO 510f5b8",
+      "exit_code": null,
+      "detail": "33 hazards earn no refusal; all 9 key injections earn ENTRY_UNKNOWN_KEY; 20 of 20 class members earn FIELD_UNREADABLE; 0 of 15 false positives; 13 corpus cases each earn exactly what they declare. Behaviour is unmoved, measured rather than inferred from the AST result."
+    }
+  ],
+  "reproduced": [
+    {
+      "id": "R1",
+      "claim": "the repair is prose only, with no behaviour change",
+      "method": "parsed both commits, stripped every module, class and function docstring, and compared the dumped ASTs; separately compared every contract field and the corpus bytes; then re-ran the whole first-reading battery rather than resting on the AST result",
+      "finding": "CONFIRMED, and confirmed twice by independent paths. Both modified Python modules are AST-identical with docstrings stripped, so no statement, constant, regex or table changed. In the contract only summary and naming_screen differ; refusals, crosswalk and claim_kinds are identical, and the corpus is byte-identical. The behavioural battery returns exactly the results it returned at 510f5b8. SHAPE still holds five keys and KEYS six, unchanged."
+    },
+    {
+      "id": "R2",
+      "claim": "the five named sites are now true",
+      "method": "read each site back at 98aaf88 and checked it against the measured artifact",
+      "finding": "CONFIRMED, all five. summary now reads that a reader gains a subject and a claim kind and It gains no standing: see what_this_types - true, and it points at the section that explains why. naming_screen now reads that the contract now carries no standing of its own at all - true; the surviving mention of artifact standing in that field describes the two existing senses of the word in the repository, which is the reason the contract avoids the name, and is not a claim about this contract. The reader docstring now reads which subject the claim is about and which kind of claim it is. It says nothing about standing - true. Both refusals.py sites now read a type check over named keys never rejects an unnamed one, which is true at any size and is the right shape of fix: it cannot go stale when the key set changes. The two sites the builder found and I did not are real, and finding them was a better reading than mine."
+    },
+    {
+      "id": "R4",
+      "claim": "check, selfcheck, the 28 tests and lint are unmoved",
+      "method": "ran all four in a clean detached worktree at 98aaf88 and re-ran them after every other measurement",
+      "finding": "CONFIRMED. check exit 0 reporting 48 typed against 40 subjects; selfcheck exit 0 reporting 10 refusals each fire; 28 tests OK; lint exit 0 with one pre-existing named debt. Module sizes 182, 184 and 270 against a 300-line limit, zero CRLF."
+    },
+    {
+      "id": "R5",
+      "claim": "the verify delta against main is still exactly the two registered checks",
+      "method": "two interleaved rounds per side in clean detached worktrees, parsing check-name sets, summary lines and the embedded FAIL baseline",
+      "finding": "CONFIRMED. verify exits 0 on both sides, main 39 checks and repair 41. The added set is exactly the two checks this change registers and the removed set is empty. The 24 embedded conformance FAIL lines are byte-identical on both sides. No budget failure on either side in either round; main 14.180s and 13.630s, repair 13.741s and 13.785s, ceiling 15.000s."
+    },
+    {
+      "id": "R6",
+      "claim": "the deliberately retained historical narrative reads as history, not as a live claim",
+      "method": "read every retained passage the builder named - the narrative in refusals.py, the corpus revision_note and note, the defeating-entry-unknown-key case - and asked of each whether a reader would take it as a description of the artifact as it stands",
+      "finding": "CONFIRMED, and the builder was right to keep them. The refusals.py narrative is explicitly past tense (This table used to extract an artifact standing) and closes on the present state. The corpus revision_note describes the drafts and why they failed. The defeating-entry-unknown-key case must carry asserted_standing and settled_by as fixture data, because that is what proves the refusal. None of these reads as a live claim, and deleting them would lose the reason the contract has this shape, which is the part of the record hardest to reconstruct later. The useful distinction I would offer is narrower than history versus no history: the one passage that goes wrong is the one that begins as history and ends as a live present-tense claim in the same sentence. That is closed_key_set, and that is where the remaining error is. A sentence that mixes the two lets a stale number ride on the back of a true story."
+    }
+  ],
+  "dissented": [
+    {
+      "id": "R3-B1",
+      "severity": "MINOR",
+      "claim_defeated": "the class of stale key-count claims is closed (handover: I grepped every standing and key-count claim across all five landing paths and found two more; five sites, not three)",
+      "finding": "There is a sixth site, and it is a key-count claim in the same contract key the repair used as its template. contracts/status-claims.json closed_key_set reads, in full: An entry carries exactly field, value, subject, claim_kind, detail and reference. A witness added asserted_standing, settled_by, authority and a resurrected standing_source to live entries and every one passed, because type-checking named keys never rejects an unnamed one. The set is now closed and an eighth key is refused. The first sentence correctly enumerates six keys. The middle sentence is already size-agnostic and is the exact wording the repair copied into the two refusals.py sites. The last sentence is still pinned to the seven-key entry of the standing era: with six allowed keys, the key that gets refused is the SEVENTH. I measured it rather than counting - adding one key to a live six-key entry produces a seven-key entry and earns ENTRY_UNKNOWN_KEY. The corpus says so correctly: conformance/fixtures/status-claims/cases.json case defeating-entry-unknown-key states type-checking six named keys never rejects a seventh. So the contract and the fixture that proves this very refusal disagree about the same rule by one, and the contract is the wrong one. An exhaustive ordinal sweep across all ten landing paths returns exactly two key-count ordinals: cases.json line 64, correct, and contracts/status-claims.json line 452, wrong. There is no seventh site.",
+      "consequence": "Small and self-correcting for an attentive reader, who can count the six keys listed in the same sentence. It is reported because it is precisely the class the repair set out to close, because the builder asked to be told if a sixth was sitting somewhere he had not grepped, and because two artifacts in one commit now state the same mechanism with different numbers. It carries no behavioural risk: the check refuses a seventh key whatever the prose says, and no code reads this field. The residue is also instructive about how the class survives - the repair generalised the middle clause of this sentence and carried that generalisation to two other files, without reading to the end of the sentence it was copying from.",
+      "what_would_have_defeated_this_finding": "changing the tail of closed_key_set to say that any key outside the set is refused, which is true at any size and matches the wording the repair adopted everywhere else; or, if a number is wanted, seventh rather than eighth. One clause."
+    }
+  ],
+  "residuals": [
+    {
+      "id": "R-N1",
+      "severity": "MINOR",
+      "finding": "The corpus note states One controlled case per declared refusal. The corpus carries 11 defeating cases for 10 declared refusals, because REFERENCE_CONTRADICTS_VALUE correctly has one case per branch after the third witness found the second branch unproven. The note therefore under-describes its own corpus. The direction is safe - more coverage than claimed, not less - and selfcheck enforces at least one case earning exactly each code, so nothing is unproven. Recorded only so the count is not read as a ceiling if a future refusal needs two cases."
+    },
+    {
+      "id": "R-N2",
+      "severity": "MINOR",
+      "finding": "My W4-B2 is unrepaired and was not claimed as repaired: the LOOSE comment and the FIELD_UNREADABLE refusal text still say the detector takes any key ending in _status however it is written, and sixteen shapes remain invisible to it - an anchored key, a tagged key, the explicit-key form, a leading BOM, a zero-width space, keys containing a space, a colon, a plus, an at, a percent or parentheses. All are absent from the live file. With the standing gone the worst case is an untyped field going silently untyped rather than falsely typed, which is why I graded it MINOR on the first reading and grade it MINOR now. Recorded so it is not lost, not as a landing objection."
+    },
+    {
+      "id": "R-N3",
+      "severity": "MATERIAL",
+      "finding": "Unchanged from my first reading: contracts/status-claims.json names decisions/0074-typed-standing-and-the-node-graph.md as its decision and in governed_by, and that record is absent from 98aaf88 because decisions/ sits outside grant:standing-landing-loop. The witnessed_by half remains repaired - all three observations it names are in the commit. This is the seam for Bdo, not a defect in the repair."
+    },
+    {
+      "id": "R-N4",
+      "severity": "INFORMATIONAL",
+      "finding": "Every count claim other than the one in R3-B1 was verified against measurement rather than read: eighteen live OWNER_ACCEPTED values without a packet digit, measured 18 of 22 with 4 carrying a digit; eight duplicated keys, measured 8; three claim kinds, measured 3; six named keys and a seventh in the corpus, measured correct; five live fields the third draft refused, faithful to the third witness. All accurate."
+    },
+    {
+      "id": "R-N5",
+      "severity": "INFORMATIONAL",
+      "finding": "I missed two of the five sites on my first reading. I audited the contract prose and the reader docstring for standing claims and did not sweep the refusal table for key-count claims, which is where both lay. The builder found them. Recorded against my own reading because a witness that reports a class should have swept for the class, and this reading only found the sixth site because it did sweep - 475 prose strings extracted mechanically from every JSON value, every docstring and every comment, rather than read."
+    }
+  ],
+  "not_examined": [
+    "whether any typed claim is true; unchanged in scope from my first reading",
+    "whether the eighteen bare OWNER_ACCEPTED values are acceptances; product judgement, recorded openly by the contract as Bdo to overturn",
+    "the 24 embedded conformance FAIL lines on their own merits; only the delta was graded and it is empty",
+    "decisions/0074, which is not in the commit and was not read",
+    "the three committed observations, re-verified as faithful on my first reading and byte-identical here"
+  ],
+  "landing_assessment": {
+    "target": "98aaf88 on feat/status-claims-on-main, base b5de995 (main)",
+    "scope": "Unchanged and inside grant:standing-landing-loop. The repair touches three of the ten paths and adds none. No .github/, no STATUS.yaml, no CLAUDE.md, no decisions/, no lineage/.",
+    "evidence_the_grant_requires": "verify PASS, exit 0, both rounds. lint PASS, exit 0. An independent observation from a participant that did not build the change - this document.",
+    "what_changed_since_my_first_reading": "W4-B1 is repaired in five sites, two of which I had not reported. The repair is prose-only, proven by AST equality rather than by inspection. Nothing else moved: same behaviour, same delta, same counts, same seam on decisions/0074.",
+    "my_view": "One clause from landable. Everything I was asked to check reproduces, the repair is real and correctly shaped - generalising the sentence so it cannot go stale again is a better fix than correcting a number - and the retained history is the right call. The single thing standing in the way is that closed_key_set still ends an eighth key is refused when the seventh is refused, and the corpus in the same commit says seventh. That is one clause in one field, it needs no design decision, and it sits in the path the grant already covers. I would confirm on a reading of a commit that fixes it, and I would not ask for anything else."
+  },
+  "standing_supported": "Supports OPEN to BUILT for the ten paths and supports the narrower claim that W4-B1 is repaired. The repair is prose-only, proven by AST equality with docstrings stripped rather than inferred from the diff; all five named sites are now true; the two sites the builder found and I had not are real, and the wording chosen - named keys never rejects an unnamed one - is size-agnostic and cannot go stale when the key set changes, which is a better answer than correcting a count. Behaviour is unmoved under my full first-reading battery re-run against the new commit. verify passes on both sides with a delta of exactly the two registered checks. It does not support BUILT to WITNESSED on one finding, which is the finding the builder asked me to look for: the class is not quite closed. contracts/status-claims.json closed_key_set still ends The set is now closed and an eighth key is refused. A live entry carries six keys, the seventh is what earns ENTRY_UNKNOWN_KEY, and the corpus case that proves this refusal says a seventh in the same commit. An exhaustive ordinal sweep across all ten paths finds exactly two key-count ordinals and this is the wrong one; there is no seventh site. The remaining error is one clause, carries no behavioural risk, and is in the same sentence whose middle clause the repair copied into two other files without reading to its end.",
+  "judgement_items": [
+    {
+      "id": "R-J1",
+      "question": "Unchanged from my first reading and still the only item I would put to Bdo: contracts/status-claims.json names decisions/0074 as its governing decision and that record cannot land with the code, because decisions/ is outside grant:standing-landing-loop. Should verify grade the decision and governed_by paths of a contract for existence, forcing a contract to land with its decision, or is a contract permitted to name its governing decision before the record exists?"
+    },
+    {
+      "id": "R-J2",
+      "question": "Two rounds have now been spent on prose that described the artifact wrongly, and both were found by reading rather than by a check. The repair adopted a size-agnostic wording that cannot go stale, which is the durable fix for one sentence. Is it worth a check that greps a contract for keys no entry carries and no module reads, or is the honest answer that prose drift is caught by reading and this concern has now had enough of it?"
+    }
+  ]
+}

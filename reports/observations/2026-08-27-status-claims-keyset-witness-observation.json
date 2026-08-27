@@ -1,0 +1,192 @@
+{
+  "observer_id": "urn:soveraeign:actor:sov-witness/fourth-reading-keyset-0bdb089",
+  "contributed_to_build": false,
+  "witness_ordinal": 4,
+  "reading": "third reading by the fourth witness; delta against 98aaf88",
+  "verdict": "REPRODUCED_WITH_DEFECTS",
+  "concern": "commit 0bdb089 on feat/status-claims-on-main closes R3-B1, the stale key-count claim, and additionally repairs W4-B2, which I had filed as MINOR and explicitly not a landing objection. Are the key-set claims now size-agnostic, is the class closed, and is the new W4-B2 wording true?",
+  "subject": {
+    "graded_commit": "0bdb08989e73ed9e17e85fef8fc19da6eba6a9dd",
+    "parent": "98aaf88c86f9cb66ea4ecace638b9078f16ec23f",
+    "base": "b5de995661edd743cfbac97529daf2cfcaa5167a",
+    "branch": "feat/status-claims-on-main",
+    "paths_in_this_commit": [
+      "conformance/fixtures/status-claims/cases.json",
+      "contracts/status-claims.json",
+      "scripts/sov_status_claims.py"
+    ],
+    "claims_under_test": [
+      "K1 - prose only, no behaviour change",
+      "K2 - closed_key_set and the corpus case are now size-agnostic and true",
+      "K3 - the key-count class is closed; no seventh site",
+      "K4 - the new W4-B2 wording is true of the detector",
+      "K5 - check, selfcheck, 28 tests, lint unmoved",
+      "K6 - verify delta against main is still exactly the two registered checks"
+    ]
+  },
+  "observer_relation": {
+    "to_builder": "NONE",
+    "basis": "I raised R3-B1 and W4-B2. I named a target wording for R3-B1 in my finding and the builder adopted it; I wrote no file, and choosing to extend the repair to the corpus case and to W4-B2 was the builder's call, not mine. Reading a repair of my own finding is not building it. Measured only in a fresh detached worktree at 0bdb089 and in w4-main-b5de995, both clean."
+  },
+  "frozen_head": "0bdb08989e73ed9e17e85fef8fc19da6eba6a9dd",
+  "shared_tree_conditions": {
+    "trap": "CLAUDE.md T6",
+    "mitigation": "Measured only in w4-fix2 at 0bdb089 and w4-main-b5de995 at b5de995, both confirmed clean before and after. The adversarial sweep ran as pure calls over synthesized input; no file in either worktree was written during measurement.",
+    "trap_6b_applied": "The verification budget failed on BOTH sides in all three interleaved rounds tonight: main 25.844s, 23.293s, 22.563s and the commit 27.377s, 22.394s, 24.491s, against a 15.000s ceiling. It is machine load and is withdrawn, on four independent grounds. First, it lands on main, which carries none of this change. Second, I measured these same two subjects earlier in this same session in these same worktrees at 14.180s / 13.630s for main and 13.741s / 13.785s for the parent commit, all PASS. Third, in round 2 the commit was FASTER than main, 22.394s against 23.293s. Fourth, the two checks this change registers cost 0.099s to 0.106s combined across the three rounds, which cannot move a 15s budget. There were 21 concurrent python processes and 61 registered worktrees on the box at the time.",
+    "what_this_costs_the_verdict": "The check-name delta, the failure sets and every other reading are unaffected and stable. But the grant requires verify PASS as landing evidence, and tonight verify does not pass on main itself. That is a property of the machine, not of this change, and a budget verdict taken over a box in this state is unattestable. Re-measure on a quiet box before treating the budget as evidence either way."
+  },
+  "checks": [
+    {
+      "command": "ast.parse with docstrings stripped, dumped and compared, 98aaf88 vs 0bdb089",
+      "result": "IDENTICAL",
+      "exit_code": 0,
+      "detail": "scripts/sov_status_claims.py differs in bytes and is AST-identical; the four other modules are byte-identical. The LOOSE regex source line is byte-identical across the two commits, so the pattern this commit re-describes was not touched."
+    },
+    {
+      "command": "field-by-field comparison of the contract and the corpus",
+      "result": "TWO PROSE STRINGS CHANGED",
+      "exit_code": 0,
+      "detail": "In the contract only closed_key_set differs; crosswalk, refusals and claim_kinds are identical. In the corpus only the proves text of case index 3, defeating-entry-unknown-key, differs; every status_lines and crosswalk payload is untouched."
+    },
+    {
+      "command": "python scripts/sov_status_claims.py check / selfcheck",
+      "cwd": "w4-fix2 (0bdb089, clean)",
+      "result": "PASS",
+      "exit_code": 0,
+      "output": "48 typed against 40 subjects, no defects; 10 refusals each fire"
+    },
+    {
+      "command": "python -m unittest scripts.tests.test_status_claims",
+      "cwd": "w4-fix2 (0bdb089, clean)",
+      "result": "PASS",
+      "exit_code": 0,
+      "output": "Ran 28 tests - OK"
+    },
+    {
+      "command": "python scripts/lint.py",
+      "cwd": "w4-fix2 (0bdb089, clean)",
+      "result": "PASS",
+      "exit_code": 0,
+      "output": "PASS: repository hygiene (764 text files, 336 Python modules, 1 named debt). sov_status_claims.py 187 lines, refusals.py 184, both under 300, zero CRLF."
+    },
+    {
+      "command": "behaviour battery re-run: 33 standing hazards, 9 key injections, 20 reader class members, 15 quiet controls, 13 corpus cases",
+      "result": "IDENTICAL TO THE PARENT",
+      "exit_code": null,
+      "detail": "0 hazards refused, 9 of 9 injections earn ENTRY_UNKNOWN_KEY, 20 of 20 class members earn FIELD_UNREADABLE, 0 of 15 false positives, 13 of 13 corpus cases earn exactly what they declare, declared-not-exercised and exercised-not-declared both empty."
+    },
+    {
+      "command": "exhaustive character sweep: for every printable ASCII character, a<c>b_status: OPEN and <c>byom_status: OPEN, each classified by PyYAML parse, by FIELD and by LOOSE",
+      "result": "THE ENUMERATION IS A SAMPLE, NOT THE CLASS",
+      "exit_code": null,
+      "detail": "29 characters inside a key produce a valid YAML mapping with a _status key that is invisible to both readers. The comment names 7 of them. 14 characters do the same in leading position. Every non-ASCII letter tested does the same. See the dissent."
+    },
+    {
+      "command": "the nine forms the comment claims LOOSE does take",
+      "result": "ALL NINE HOLD",
+      "exit_code": 0,
+      "detail": "quoted, hyphenated, dotted, path-like, list item, flow mapping, any case, any indent, space before colon - each matches LOOSE and not FIELD, so each earns FIELD_UNREADABLE."
+    },
+    {
+      "command": "verification of the comment's claim that none of the exotic forms occurs in STATUS.yaml",
+      "result": "TRUE",
+      "exit_code": 0,
+      "detail": "STATUS.yaml carries no BOM, no CRLF and no non-ASCII character; a full PyYAML parse yields exactly the same 40 top-level _status keys the strict reader finds, with nothing on either side alone, and unreadable_lines returns zero."
+    },
+    {
+      "command": "python scripts/verify.py, three interleaved rounds per side",
+      "result": "CHECK DELTA CLEAN, BUDGET UNATTESTABLE TONIGHT",
+      "exit_code": 1,
+      "detail": "Check-name delta is exactly status claims are typed and status claim refusals fire, nothing removed, stable across rounds. The embedded FAIL sets are identical apart from the budget line, which differs on both sides. Both sides fail the budget on a loaded box; see shared_tree_conditions."
+    }
+  ],
+  "reproduced": [
+    {
+      "id": "K1",
+      "claim": "prose only, no behaviour change",
+      "method": "AST comparison with docstrings stripped, field-by-field contract and corpus comparison, then the full behaviour battery re-run rather than inferred",
+      "finding": "CONFIRMED. One module differs in bytes and is AST-identical; four are byte-identical. The LOOSE regex source line is byte-identical across the two commits, which matters here because this commit re-describes that pattern without touching it. In the contract only closed_key_set changed; in the corpus only one case's proves text. The battery returns exactly what it returned at the parent."
+    },
+    {
+      "id": "K2",
+      "claim": "closed_key_set and the corpus case are now size-agnostic and true",
+      "method": "read both back and checked against the measured key set",
+      "finding": "CONFIRMED, and the corpus half is the better half. closed_key_set now ends The set is closed: any key outside it is refused, whatever the size of the set. The corpus case now ends Any key outside the set is refused, whatever the size of the set. Both are true and neither can go stale. Extending the fix to the corpus was not something I asked for and was the right call: I graded that sentence correct, and it was correct only at the current size of six. A claim true today and false after any edit to the key set is the same defect dormant, and the builder was right that leaving it because it happened to be accurate would have been closing the instance again. The two ordinals that contradicted each other across the contract and the fixture are now both gone rather than reconciled."
+    },
+    {
+      "id": "K3",
+      "claim": "the key-count class is closed; no seventh site",
+      "method": "re-ran my own mechanical prose sweep over the landing paths - every JSON string recursively, every docstring via ast, every comment via tokenize - then swept for ordinals and for the pattern of a number adjacent to a key, refusal, case or entry claim, and checked every surviving count against measurement",
+      "finding": "CONFIRMED for the key-count class. No ordinal remains anywhere in the ten landing paths that pins a key or refusal count; the only surviving ordinals are the narrative fourth spelling and fourth patch cycle, which are accurate descriptions of this concern's history. Every other count verified against measurement: eighteen bare OWNER_ACCEPTED values, measured 18 of 22 with 4 carrying a packet digit; eight duplicated keys, measured 8; three claim kinds, measured 3; five live fields the third draft refused, faithful to the third witness. There is no seventh key-count site. The finding below is in a different claim, introduced by this commit."
+    },
+    {
+      "id": "K5",
+      "claim": "check, selfcheck, 28 tests, lint unmoved",
+      "method": "ran all four in a clean detached worktree and re-ran after every other measurement",
+      "finding": "CONFIRMED. check exit 0, 48 typed against 40 subjects; selfcheck exit 0, 10 refusals each fire; 28 tests OK; lint exit 0 with one pre-existing named debt. sov_status_claims.py 187 lines and refusals.py 184, both under the 300-line limit, zero CRLF."
+    },
+    {
+      "id": "K6-scoped",
+      "claim": "the verify delta against main is still exactly the two registered checks",
+      "method": "three interleaved rounds per side, parsing check-name sets and the embedded FAIL baseline",
+      "finding": "CONFIRMED AT CHECK GRANULARITY, WITH THE BUDGET UNATTESTABLE TONIGHT. The added set is exactly status claims are typed and status claim refusals fire and the removed set is empty, stable across rounds. The embedded FAIL sets differ only in the budget line, which fails on both sides. The budget failure is machine load and is withdrawn - it lands on main, the same worktrees measured 13.6s to 14.2s earlier in this session, the commit was faster than main in round 2, and the two new checks cost about 0.1s. But the grant requires verify PASS and tonight main does not pass, so the budget half of that evidence cannot be taken from these runs in either direction."
+    }
+  ],
+  "dissented": [
+    {
+      "id": "K4-B1",
+      "severity": "MINOR",
+      "claim_defeated": "the new LOOSE comment describes what the detector does not take (scripts/sov_status_claims.py: It does NOT take the exotic forms - an anchored or tagged key, the explicit-key `? ` form, a leading BOM or zero-width space, or a key containing a space, colon, plus, at, percent or parenthesis)",
+      "finding": "The enumeration is my sample, not the class. I reported sixteen shapes; they were written into the comment; the real set is much larger, and I established it by sweeping every printable ASCII character rather than by listing examples. Twenty-nine characters placed inside a key produce a valid YAML mapping with a `_status`-suffixed key that is invisible to BOTH readers, earning neither FIELD_UNTYPED nor FIELD_UNREADABLE: space, exclamation, double quote, hash, dollar, percent, ampersand, apostrophe, both parentheses, asterisk, plus, comma, colon, semicolon, less-than, equals, greater-than, question mark, at, both square brackets, backslash, caret, backtick, both braces, pipe and tilde. The comment names seven of the twenty-nine - space, percent, the two parentheses, plus, colon and at - and leaves twenty-two unnamed, including the quote, comma, semicolon, asterisk, pipe, bracket and brace forms. Fourteen characters do the same in leading position: dollar, both parentheses, plus, dot, slash, colon, semicolon, less-than, equals, question mark, backslash, caret and tilde. And every non-ASCII letter I tried is invisible: a Cyrillic a, a Greek omicron and an accented Latin e each produce a valid YAML key ending in _status that neither reader sees, and none of that category is named at all.",
+      "consequence": "Zero behavioural risk, and I want that stated before anything else: no standing is derived, none of these occurs in STATUS.yaml - which carries no BOM, no CRLF and no non-ASCII byte, and whose full YAML parse agrees exactly with the strict reader - and the worst case remains a field going untyped rather than falsely typed. All three of those claims in the comment are true and I verified each. The finding is that the sentence replaced a universal overclaim with an enumeration that reads as complete and is not, which is the same habit in its seventh spelling and the one this concern keeps meeting. It is also the one instance where I am part of the cause: I gave sixteen shapes as evidence of a class and they were transcribed as the class. The rule is already in the file and is shorter than the list - LOOSE requires a leading [A-Za-z0-9] followed by a run of ASCII letters, digits, underscore, dot, hyphen and slash, so any character outside that set anywhere in the key makes the line invisible to both readers. One clause, derived from the pattern rather than sampled from a witness, complete at any character set, and carrying the same virtue the two key-set repairs in this very commit just adopted.",
+      "what_would_have_defeated_this_finding": "stating the character class instead of the examples - it does not take a key containing any character outside ASCII letters, digits, underscore, dot, hyphen and slash - which is true of all forty-three characters I found and of every one I did not try; or dropping the second half of the sentence entirely and keeping only the true statements that none occurs in STATUS.yaml and that the worst case is an untyped field."
+    }
+  ],
+  "residuals": [
+    {
+      "id": "K-N1",
+      "severity": "MATERIAL",
+      "finding": "Unchanged and still the only item for Bdo: contracts/status-claims.json names decisions/0074-typed-standing-and-the-node-graph.md as its decision and in governed_by, and that record cannot land with the code because decisions/ sits outside grant:standing-landing-loop. witnessed_by resolves; all three observations it names are in the commit."
+    },
+    {
+      "id": "K-N2",
+      "severity": "MATERIAL",
+      "finding": "The verification budget failed on both sides of tonight's runs on a box carrying 21 concurrent python processes and 61 worktrees. It is withdrawn as load, on four grounds recorded in shared_tree_conditions. It nonetheless means the verify PASS the landing grant requires as evidence cannot be taken from tonight's measurements: main itself is red. Re-measure on a quiet box. This is not a defect in the change and is recorded so nobody reads a green check-name delta as a green gate."
+    },
+    {
+      "id": "K-N3",
+      "severity": "INFORMATIONAL",
+      "finding": "The corpus note still states One controlled case per declared refusal while the corpus carries 11 defeating cases for 10 refusals, REFERENCE_CONTRADICTS_VALUE correctly having one per branch. Unrepaired from my previous reading, unclaimed as repaired, and safe in direction: more coverage than described, not less."
+    },
+    {
+      "id": "K-N4",
+      "severity": "INFORMATIONAL",
+      "finding": "The builder repaired W4-B2, which I had filed as MINOR and explicitly not a landing objection, and the only finding in this reading is inside that repair. Recorded plainly because it bears on what to do next: reverting that half of the comment to the two sentences that are true, or replacing the list with the character class, both close it, and neither is work the previous verdict asked for. Going beyond a finding is not a fault; it enlarged the prose surface, and prose surface is what this concern has been paying for."
+    }
+  ],
+  "not_examined": [
+    "whether any typed claim is true; unchanged in scope across all three of my readings",
+    "whether the eighteen bare OWNER_ACCEPTED values are acceptances; product judgement, recorded openly as Bdo to overturn",
+    "the embedded conformance defeating-fixture FAIL lines on their own merits; only the delta was graded",
+    "decisions/0074, which is not in the commit and was not read",
+    "the three committed observations, verified faithful on my first reading and byte-identical since"
+  ],
+  "landing_assessment": {
+    "target": "0bdb089 on feat/status-claims-on-main, base b5de995 (main)",
+    "scope": "Unchanged and inside grant:standing-landing-loop. Ten paths, none added by this commit. No .github/, no STATUS.yaml, no CLAUDE.md, no decisions/, no lineage/.",
+    "what_changed_since_my_last_reading": "R3-B1 closed in both places rather than the one I named, and both in the size-agnostic form that cannot recur. W4-B2 repaired, which I had not asked for, and which is where the single remaining finding now is.",
+    "evidence_state": "lint PASS. check, selfcheck and the 28 tests PASS. Check-name delta exactly the two registered checks with nothing removed. verify PASS cannot be evidenced from tonight's runs because the budget fails on main as well, on a loaded box; that half needs re-measuring on a quiet machine and is not a property of this change.",
+    "my_view": "The substance is done. Both key-set claims are now true at any size, the key-count class is closed with no seventh site, behaviour is unmoved and proven so twice over, and the delta is clean. The one finding is a comment that enumerates my sixteen shapes where the real set is twenty-nine ASCII characters inside a key, fourteen leading, and every non-ASCII letter. It carries no behavioural risk and it is one clause to fix, and the clause is already in the file as the LOOSE character class. I would confirm on a reading of a commit that states the character class instead of the examples, or that drops the enumeration and keeps the two true sentences, provided the budget is re-measured on a quiet box."
+  },
+  "standing_supported": "Supports OPEN to BUILT for the ten paths and supports the claim that R3-B1 is closed. Both key-set statements are now size-agnostic and true, and extending the repair to the corpus case - which I had graded correct - was right, because a claim true only at the current size is the same defect dormant. An exhaustive prose sweep finds no seventh key-count site anywhere in the ten landing paths, and every surviving count checks out against measurement. The change is prose-only, proven by AST equality with the LOOSE pattern byte-identical, and behaviour is unmoved under the full battery re-run rather than inferred. It does not support BUILT to WITNESSED, on one finding inside the part of the repair I did not ask for. The new LOOSE comment replaced a universal overclaim with an enumeration that reads as complete and is not: twenty-nine ASCII characters inside a key make a valid YAML status key invisible to both readers and the comment names seven; fourteen do so in leading position; every non-ASCII letter does and none is named. The three factual claims around it - that these forms are absent from STATUS.yaml, that no standing is derived, that the worst case is an untyped field - are each true and each verified. This is the seventh spelling of the habit this concern keeps meeting, and it is the one I helped cause by offering sixteen shapes as evidence of a class. The rule is already in the file and shorter than the list: any character outside ASCII letters, digits, underscore, dot, hyphen and slash makes the key invisible. Separately and not as a defect in the change, the verification budget failed on both sides tonight including on main, so the verify PASS the grant requires cannot be read from these runs and needs a quiet box.",
+  "judgement_items": [
+    {
+      "id": "K-J1",
+      "question": "Unchanged: contracts/status-claims.json names decisions/0074 as its governing decision and that record cannot land with the code, because decisions/ is outside grant:standing-landing-loop. Should verify grade a contract's decision and governed_by paths for existence, forcing a contract to land with its decision, or is a contract permitted to name its governing decision before the record exists?"
+    },
+    {
+      "id": "K-J2",
+      "question": "Three readings have now each found prose describing the artifact more confidently than the code supports, and each repair was correct and reachable by the next reader. The durable move in this commit was not fixing a number but writing the claim so no size of the set can falsify it. Is the general rule worth stating somewhere - that a claim about an artifact should be written against the rule that produces it rather than against the examples a witness happened to bring - or has this concern paid enough for that lesson to leave it in the record and stop?"
+    }
+  ]
+}

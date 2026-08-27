@@ -96,6 +96,30 @@ class StrandedWorkTest(unittest.TestCase):
         self.assertEqual(found[0].verdict, sov_strand.UNLANDED)
         self.assertEqual(found[0].unreachable, 0)
 
+    def test_a_branch_only_a_remote_ref_names_is_still_measured(self) -> None:
+        """The defeating case this reading was blind to until 2026-08-27.
+
+        `push_as` leaves `origin/feat/renamed-there` with no local head, which is the
+        shape of a branch pushed once and never checked out here again. Reading only
+        `refs/heads/` reported eighteen such branches as nothing at all - 88 commits,
+        one of them with an open pull request - in the tool Bdo reads at session start
+        to learn what is unlanded. It is not at risk, because a remote ref reaches it;
+        it is unlanded, and saying nothing about it is not the same as saying that.
+        """
+        found = self.measure(with_remote=False, push_as="feat/renamed-there")
+        names = [item.name for item in found]
+        self.assertIn("origin/feat/renamed-there", names)
+        remote_only = next(i for i in found if i.name == "origin/feat/renamed-there")
+        self.assertEqual(remote_only.verdict, sov_strand.UNLANDED)
+        self.assertEqual(remote_only.unreachable, 0)
+
+    def test_a_remote_copy_of_a_local_branch_is_not_measured_twice(self) -> None:
+        """The over-fire case. `origin/feat/side` and `feat/side` are one branch, and
+        reporting both would inflate the count this reading exists to be trusted on."""
+        found = self.measure(with_remote=True)
+        names = [item.name for item in found]
+        self.assertEqual(names, ["feat/side"])
+
     def test_shared_history_is_counted_once(self) -> None:
         """Nested branches must not each contribute the commits they hold in common."""
         with tempfile.TemporaryDirectory() as raw:

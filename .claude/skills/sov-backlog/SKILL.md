@@ -39,6 +39,14 @@ branch that has never been merged into it.
 - `scripts/tests/test_sov_backlog.py`, `scripts/tests/test_sov_strand.py` - the
   defeating cases, including work already landed under another hash.
 
+Both tools read local heads **and** remote-tracking refs with no local head, and
+skip a remote copy of a branch already counted locally. Until 2026-08-27 they
+read `refs/heads/` alone, so a branch pushed once and never checked out here
+again was reported as nothing at all: eighteen branches carrying 88 commits,
+one of them with an open pull request, invisible in the two tools whose whole
+purpose is seeing them. `git fetch --prune` before a survey, or the reading is
+of a stale copy of the remote rather than of the remote.
+
 ## The three measures, and what each one settles
 
 | Column | Question it answers | Why it is not obvious |

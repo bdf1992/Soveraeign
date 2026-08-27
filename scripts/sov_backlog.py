@@ -58,11 +58,35 @@ def trunk() -> str:
     return ""
 
 
+def candidates() -> list[str]:
+    """Every branch this checkout can see: local heads, then remotes with no local head.
+
+    Reading only ``refs/heads/`` made a branch that was pushed and never checked out
+    here invisible to the survey whose whole purpose is finding unlanded work. On
+    2026-08-27 that was eighteen branches carrying 88 commits, including one with an
+    open pull request. A remote-tracking branch whose local counterpart exists is
+    skipped, because the local head already measures that work and would otherwise be
+    counted twice.
+    """
+    heads = [n for n in
+             git("for-each-ref", "--format=%(refname:short)", "refs/heads/").splitlines() if n]
+    local = set(heads)
+    remotes = []
+    for name in git("for-each-ref", "--format=%(refname:short)", "refs/remotes/").splitlines():
+        if not name or name.endswith("/HEAD"):
+            continue
+        # "origin/feat/x" names the same work as a local "feat/x"; keep only the orphan.
+        if name.split("/", 1)[-1] in local:
+            continue
+        remotes.append(name)
+    return heads + remotes
+
+
 def unlanded(against: str) -> list[str]:
-    """List local branches carrying at least one commit the trunk does not have."""
+    """List branches carrying at least one commit the trunk does not have."""
     names = []
-    for name in git("for-each-ref", "--format=%(refname:short)", "refs/heads/").splitlines():
-        if not name or name == against:
+    for name in candidates():
+        if name == against:
             continue
         count = git("rev-list", "--count", f"{against}..{name}")
         if count.isdigit() and int(count) > 0:
@@ -116,6 +140,10 @@ def measure(against: str, name: str) -> dict[str, Any]:
     conflicted = conflicts(against, name)
     changed = touches(against, name)
     upstream = git("for-each-ref", "--format=%(upstream:short)", f"refs/heads/{name}")
+    if not upstream and name.count("/") and git("rev-parse", "--verify", "--quiet",
+                                                f"refs/remotes/{name}"):
+        # The branch is itself a remote-tracking ref; it is its own copy on the remote.
+        upstream = name
     unpushed = git("rev-list", "--count", name, "--not", "--remotes", against)
     return {
         "branch": name,

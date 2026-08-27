@@ -144,6 +144,58 @@ class BacklogSurveyTest(unittest.TestCase):
         self.assertEqual(row["already_on_trunk"], 1)
         self.assertEqual(row["outstanding"], 1)
 
+    def test_a_branch_that_exists_only_on_a_remote_is_surveyed(self) -> None:
+        """The defeating case this survey was blind to until 2026-08-27.
+
+        A branch pushed and never checked out here has no `refs/heads/` entry, so a
+        survey reading only local heads reports it as nothing at all. Eighteen such
+        branches carrying 88 commits were invisible, one of them with an open pull
+        request - in the one tool whose whole purpose is finding unlanded work.
+        """
+
+        def build(work: Path) -> None:
+            git(work, "checkout", "-b", "feat/pushed-then-forgotten")
+            write(work, "remote-only.txt", "work\n")
+            git(work, "add", "remote-only.txt")
+            git(work, "commit", "-m", "work nobody checked out again")
+            # A bare clone standing in for the remote, then drop the local head so the
+            # only thing naming this work is refs/remotes/.
+            bare = work.parent / "origin.git"
+            git(work, "init", "--bare", str(bare))
+            git(work, "remote", "add", "origin", str(bare))
+            git(work, "push", "-q", "origin", "main", "feat/pushed-then-forgotten")
+            git(work, "checkout", "main")
+            git(work, "branch", "-D", "feat/pushed-then-forgotten")
+            git(work, "fetch", "-q", "origin")
+
+        reading = self.survey_in(build)
+        names = [row["branch"] for row in reading["branches"]]
+        self.assertIn("origin/feat/pushed-then-forgotten", names)
+        row = next(r for r in reading["branches"]
+                   if r["branch"] == "origin/feat/pushed-then-forgotten")
+        self.assertEqual(row["outstanding"], 1)
+        self.assertEqual(row["touches"], ["remote-only.txt"])
+
+    def test_a_remote_copy_of_a_local_branch_is_not_counted_twice(self) -> None:
+        """The over-fire case. `origin/feat/x` and `feat/x` are one piece of work, and
+        reporting both would inflate every count this survey exists to be trusted on."""
+
+        def build(work: Path) -> None:
+            git(work, "checkout", "-b", "feat/side")
+            write(work, "only-here.txt", "side\n")
+            git(work, "add", "only-here.txt")
+            git(work, "commit", "-m", "side file")
+            bare = work.parent / "origin2.git"
+            git(work, "init", "--bare", str(bare))
+            git(work, "remote", "add", "origin", str(bare))
+            git(work, "push", "-q", "origin", "main", "feat/side")
+            git(work, "fetch", "-q", "origin")
+
+        reading = self.survey_in(build)
+        names = [row["branch"] for row in reading["branches"]]
+        self.assertEqual(names.count("feat/side"), 1)
+        self.assertNotIn("origin/feat/side", names)
+
     def test_a_file_two_branches_change_is_named(self) -> None:
         """Contested files are surfaced before landing order turns into a conflict."""
 

@@ -9,6 +9,7 @@ honestly rather than hiding growth behind concurrency.
 from __future__ import annotations
 
 from pathlib import Path
+from unittest.mock import patch
 import json
 import sys
 import tempfile
@@ -154,3 +155,42 @@ class BudgetReporting(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class DigestOverAnObservedAddress(unittest.TestCase):
+    """`digest()` states the bytes an observation claims to cover.
+
+    It is not a corpus walk. If a checkout of this repository ever sits under an
+    observed address, the record would name bytes the digest never hashed and
+    nothing would say so, which is why the prune is asserted here rather than
+    left to the two walkers that own the same entry.
+    """
+
+    @staticmethod
+    def _write(path: Path, text: str) -> None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text, encoding="utf-8", newline="\n")
+
+    def _tree(self, root: Path) -> None:
+        """One observed address holding a file, and a copy of it inside a worktree."""
+        self._write(root / "observed" / "real.txt", "evidence\n")
+        self._write(root / "observed" / "worktrees" / "agent-x" / "real.txt", "evidence\n")
+        self._write(root / "alone" / "real.txt", "evidence\n")
+
+    def test_a_checkout_under_an_observed_address_is_not_hashed(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            self._tree(root)
+            with patch.object(verify, "ROOT", root):
+                self.assertEqual(verify.digest("observed"), verify.digest("alone"))
+
+    def test_without_the_prune_the_copy_enters_the_manifest(self) -> None:
+        """The defeating case: drop the entry and the digest stops describing the address."""
+        without = verify.SKIP_PARTS - {"worktrees"}
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            self._tree(root)
+            with patch.object(verify, "ROOT", root):
+                pruned = verify.digest("observed")
+                with patch.object(verify, "SKIP_PARTS", without):
+                    self.assertNotEqual(verify.digest("observed"), pruned)

@@ -466,6 +466,40 @@ class ProbeLiveness(TreeCase):
         defects, _ = probe_grader.joins(self.root)
         self.assertEqual(defects, [])
 
+    def test_a_decoy_sharing_a_probes_filename_does_not_satisfy_the_join(self) -> None:
+        """The join keyed on a basename the receipt supplies, so a copy anywhere
+        in the tree stood in for the real probe.
+
+        A cold witness defeated this on real content: it copied a probe to
+        `docs/`, repointed the receipt's `telemetry.probe` and digested address
+        at the copy, then edited the real probe. Every output was byte-identical
+        to a clean run - the receipt stayed CURRENT, the real probe's "named by
+        no receipt" debt was silenced by the matching basename, and nothing
+        anywhere reported the edit. The join must measure the path an address
+        resolves to, not the name it carries.
+        """
+        decoy = write(self.root / "docs" / "probe_thing.py", GOOD_PROBE)
+        self.receipt(
+            telemetry={"probe": "docs/probe_thing.py"},
+            observed={"observed_state_addresses": ["docs/probe_thing.py"],
+                      "observed_state_digests": [digest(GOOD_PROBE)]})
+        defects, debts = probe_grader.joins(self.root)
+        self.assertIn("is not a probe module", " ".join(defects),
+                      "a file outside witness/probes/ satisfied the join")
+        self.assertIn("probe_thing.py is named by no receipt", " ".join(debts),
+                      "the decoy silenced the real probe's debt by sharing its name")
+        self.assertTrue(decoy.is_file())
+
+    def test_the_real_probe_still_satisfies_the_join_by_its_own_path(self) -> None:
+        """The positive half: resolving rather than name-matching must not break
+        the ordinary case, including an address spelled with a different separator."""
+        self.receipt(observed={
+            "observed_state_addresses": ["witness/probes/probe_thing.py"],
+            "observed_state_digests": [digest(GOOD_PROBE)]})
+        defects, debts = probe_grader.joins(self.root)
+        self.assertEqual(defects, [])
+        self.assertNotIn("named by no receipt", " ".join(debts))
+
     def test_a_stray_file_is_reported_rather_than_silently_skipped(self) -> None:
         """The collectors filter on name, so an unfiltered file was graded by nothing."""
         write(self.root / "witness" / "probes" / "check_thing.py", "def main( ->:")

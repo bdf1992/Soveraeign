@@ -78,7 +78,8 @@
     {
       "id": "DUP-R1",
       "severity": "MATERIAL",
-      "finding": "A relayed claim that in five of eight the surviving value is a reversible default displacing an owner-accepted one is wrong on the count: it is six, not five. RULED_ survives over a discarded OWNER_ACCEPTED_ in six keys; the remaining two are OWNER_ACCEPTED against OWNER_ACCEPTED where the survivor adds a packet id. Two qualifications matter more than the count: the displacement is a property of main rather than of this change, because YAML last-wins had already made RULED_ the only value any program read and this diff changes zero parsed values; and the RULED_ reading is grounded in the record, since decisions/0046 states none of its rulings is an owner acceptance, and both acceptance/accepted/ and STATUS.yaml owner_accepted list only A1 through A4."
+      "finding": "A relayed claim that in five of eight the surviving value is a reversible default displacing an owner-accepted one is wrong on the count: it is six, not five. RULED_ survives over a discarded OWNER_ACCEPTED_ in six keys; the remaining two are OWNER_ACCEPTED against OWNER_ACCEPTED. Two qualifications matter more than the count: the displacement is a property of main rather than of this change, because YAML last-wins had already made RULED_ the only value any program read and this diff changes zero parsed values; and the RULED_ reading is grounded in the record, since decisions/0046 states none of its rulings is an owner acceptance, and both acceptance/accepted/ and STATUS.yaml owner_accepted list A1 through A5.",
+      "corrected": "This entry originally read 'A1 through A4'. Corrected after the session that reported the original count re-derived it and flagged the range as stale. Verified independently: acceptance/accepted/ holds A1.json through A5.json, and STATUS.yaml owner_accepted lists A5 first, accepted by seat:root at 2026-08-26T16:34:35Z for the orientation snapshot gate. The argument is unchanged; only the range was wrong."
     },
     {
       "id": "DUP-R2",
@@ -104,6 +105,14 @@
       "id": "DUP-R6",
       "severity": "MINOR",
       "finding": "accepted_repository_claims in STATUS.yaml still lists all six demoted subjects. Disclosed by the builder and left for Bdo, but named in a pull request body rather than presented at a seam; sov_accept.py audit reports zero open questions, so nothing in the gate holds it."
+    },
+    {
+      "id": "DUP-R7",
+      "severity": "MATERIAL",
+      "finding": "The two OWNER_ACCEPTED-against-OWNER_ACCEPTED pairs are not both clean supersets, and the original form of DUP-R1 implied they were. sdlc_loop_status is clean: the survivor gains the packet id A3 and keeps everything else. engineering_framework_status is not: the discarded value reads OWNER_ACCEPTED_PHASE_I_REFERENCE_BASELINE_BUDGET_GRADED_UNDER_0042 and the survivor reads OWNER_ACCEPTED_A1_PHASE_I_REFERENCE_BASELINE, so it gains A1 and drops the budget-grading pointer. Deleting that duplicate loses the pointer unless the survivor absorbs it.",
+      "but": "Checking what the pointer addresses shows it should not be absorbed, because it is already wrong. decisions/0042 is 'The decision queue is not a queue' both locally and on origin/main. The budget grading is decisions/0050, which records in its own numbering note that it was drafted as 0042 and renumbered because 0042 was taken before it could land. So the discarded value points at a pre-renumber draft number that no longer holds the budget grading anywhere. Deleting it removes a stale pointer rather than a live one, which strengthens the change rather than weakening it.",
+      "consequence": "The same stale pointer survives this change in the harness, where the pull request's sweep does not reach. .claude/skills/sov-verification/SKILL.md:30 tells a reader 'only passing 15.0s fails. decisions/0042', and line 52 quotes the full OWNER_ACCEPTED_PHASE_I_REFERENCE_BASELINE_BUDGET_GRADED_UNDER_0042 spelling. Every agent that loads the verification-domain skill is pointed at the decision-queue record for a rule that lives in 0050 - and 0050 is the record Bdo has not yet ruled on.",
+      "what_would_have_defeated_this_finding": "a decisions/0042 that held the budget grading, or a sov-verification skill citing 0050"
     }
   ],
   "not_examined": [
@@ -112,6 +121,7 @@
   "standing_supported": "Supports OPEN -> BUILT for the duplicate-key deletion and the new lint check. Does not support BUILT -> WITNESSED while DUP-D1 stands. The defect is small and repairable in place inside this concern; repairing it makes this a clean witness.",
   "judgement_items": [
     "Does the record stand as RULED_ for the six subjects whose deleted duplicate said OWNER_ACCEPTED? The parsed value on main was already RULED_ and this change alters nothing a program reads, but the file now shows RULED_ with no visible counterclaim while accepted_repository_claims still lists the same six as accepted. That tension is now the only reading left in the file.",
-    "Should the six subjects be presented for acceptance as packets, ruled explicitly again, or removed from accepted_repository_claims? This reaches Bdo under product intent."
+    "Should the six subjects be presented for acceptance as packets, ruled explicitly again, or removed from accepted_repository_claims? This reaches Bdo under product intent.",
+    "decisions/0050 owns the fifteen-second ceiling and is still PROPOSED. Two surfaces cite 0042 for that rule instead, and 0042 is a different record. Whichever way Bdo rules, those citations need to move."
   ]
 }

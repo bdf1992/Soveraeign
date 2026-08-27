@@ -757,10 +757,12 @@ class PathsLeavingTheRepositoryAreRefused(unittest.TestCase):
         file the record never meant; a rooted POSIX path is a relative name to
         Windows. Both are refused everywhere, which is why this asserts both here
         rather than one on each runner."""
-        for outside in ("C:/Users/somebody/Temp/answers.json",
-                        r"C:\Users\somebody\answers.json",
-                        "/home/runner/answers.json",
-                        r"\\server\share\answers.json"):
+        # Synthetic locations, not this machine's: scripts/lint.py refuses a
+        # committed /Users/, /home/ or drive Users path, and it is right to.
+        for outside in ("C:/nowhere/answers.json",
+                        r"D:\nowhere\answers.json",
+                        "/nowhere/answers.json",
+                        r"\\share\public\answers.json"):
             with self.subTest(path=outside):
                 self.assertIsNone(attribution.inside(outside))
 

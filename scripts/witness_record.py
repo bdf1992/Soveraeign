@@ -41,9 +41,7 @@ import time
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from sovwitness import Observation  # noqa: E402
-from sovwitness.record_chain import (  # noqa: E402
-    GENESIS, LEGACY_DIGEST_PROFILE, canonical_bytes_disagree, recompute, verify_chain,
-)
+from sovwitness.record_chain import GENESIS, verify_chain  # noqa: E402
 from sovwitness.record_tampers import detects_a_tamper  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]

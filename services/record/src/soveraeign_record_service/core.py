@@ -232,10 +232,11 @@ class RecordService(ProjectionSurface, ProfileSurface):
             )
             if entry["prev_digest"] != previous or entry["entry_digest"] != expected:
                 raise BrokenChain(entry["entry_id"])
-            try:
-                encode = canonical_for(entry["digest_profile"])
-            except ValueError as unknown:
-                raise BrokenChain(str(unknown)) from None
+            # No guard around `canonical_for`: it implements exactly the profiles
+            # `_digest_for_profile` does, so an unknown one has already refused
+            # above. A witness found the guard here unreachable, and dead code
+            # that looks like a refusal is worse than no code at all.
+            encode = canonical_for(entry["digest_profile"])
             if stored.get(entry["entry_id"]) != encode(entry["payload"]):
                 raise BrokenChain(
                     f"{entry['entry_id']}: payload bytes are not the canonical encoding "

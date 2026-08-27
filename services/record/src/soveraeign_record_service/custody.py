@@ -39,8 +39,8 @@ from typing import Any
 import json
 
 from soveraeign_record_service.core import (
-    DIGEST_PROFILE, GENESIS, LEGACY_DIGEST_PROFILE, BrokenChain, RecordService,
-    _canonical, _digest_for_profile, _legacy_canonical, canonical_for,
+    GENESIS, LEGACY_DIGEST_PROFILE, BrokenChain, RecordService, _digest_for_profile,
+    canonical_for,
 )
 
 EXPORT_SCHEMA = "soveraeign-record-export/v2"

@@ -70,6 +70,56 @@ class GatewayObserverTests(unittest.TestCase):
         defects = observe.crossing_defects(ROOT, tampered, self.output, self.actor, "HUMAN")
         self.assertIn("JOURNAL_CHAIN_INVALID", defects)
 
+    def _bytes_only_tamper(self, name: str, rewrite) -> list[str]:
+        """Rewrite the newest row's payload bytes without changing what they parse to.
+
+        Every profile binds the payload's *parsed value*, so a tamper of this shape
+        leaves the digest untouched and can only be caught by the separate rule
+        requiring the stored bytes to be the profile's canonical encoding. The
+        other cases in this file change a value or a profile, so the digest catches
+        all of them and none reaches that rule.
+        """
+        tampered = Path(self.temporary.name) / name
+        shutil.copytree(self.state, tampered)
+        database = tampered / "record" / "record-service.sqlite3"
+        connection = sqlite3.connect(database)
+        try:
+            row = connection.execute(
+                "SELECT seq, payload_json FROM journal ORDER BY seq DESC LIMIT 1").fetchone()
+            substitute = rewrite(row[1])
+            self.assertNotEqual(substitute, row[1], "this tamper changes no bytes")
+            self.assertEqual(json.loads(substitute), json.loads(row[1]),
+                             "this tamper changes the value, so the digest would catch it")
+            connection.execute("UPDATE journal SET payload_json=? WHERE seq=?",
+                               (substitute, row[0]))
+            connection.commit()
+        finally:
+            connection.close()
+        return observe.crossing_defects(ROOT, tampered, self.output, self.actor, "HUMAN")
+
+    def test_observer_rejects_payload_bytes_that_parse_to_the_same_value(self) -> None:
+        """The defeating case for the canonical byte rule, which nothing exercised.
+
+        Without it this observer grades a strictly weaker property than the
+        participant: two readers of one committed row can disagree about its
+        content while the chain endorses both.
+        """
+        spaced = self._bytes_only_tamper(
+            "spaced-bytes",
+            lambda stored: json.dumps(json.loads(stored), sort_keys=True,
+                                      separators=(", ", ": ")))
+        self.assertIn("JOURNAL_CHAIN_INVALID", spaced)
+
+    def test_observer_rejects_a_duplicate_key_injected_into_a_committed_row(self) -> None:
+        """The concrete harm: a parser keeps the last key, another reader the first."""
+        def inject(stored: str) -> str:
+            parsed = json.loads(stored)
+            key = sorted(parsed)[0]
+            body = json.dumps(parsed, sort_keys=True, separators=(",", ":"))
+            forged = json.dumps(key) + ":" + json.dumps("forged") + ","
+            return "{" + forged + body[1:]
+        self.assertIn("JOURNAL_CHAIN_INVALID", self._bytes_only_tamper("duplicate-key", inject))
+
     def test_observer_imports_no_participant_implementation(self) -> None:
         source = (ROOT / "scripts" / "gateway_observe.py").read_text(encoding="utf-8")
         self.assertNotIn("soveraeign_", source)

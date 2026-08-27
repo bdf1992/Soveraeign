@@ -15,7 +15,7 @@
     "services/registry/contracts/service.json",
     "contracts/capability-offices.json"
   ],
-  "input_state_digest": "a7d9948482ddb9b5241223c94d90c7313e670b51e7e8d9660eaf765d89f635fe",
+  "input_state_digest": "a82c897f08c6f165f8be4b929bd9dc28e284b3f268abc8010eaa52324ce77fb5",
   "capabilities": [
     {
       "capability_id": "asset.add-member",
@@ -5400,6 +5400,55 @@
         "commit": "COMMITTED",
         "refusals": [
           "INCOMPLETE_PROPOSAL",
+          "STALE_STATE"
+        ]
+      }
+    },
+    {
+      "capability_id": "record.adopt-profile",
+      "service_id": "record",
+      "operation": "adopt-profile",
+      "office": "BACK",
+      "counter": "record",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "adopt:profile",
+      "actor_kinds": [
+        "SYSTEM"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "record:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "ACTIVE",
+          "address": "python -m soveraeign_record_service.cli adopt-profile"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ],
+      "shape": {
+        "logical_endpoint": "sov://record/adopt-profile",
+        "subject": "digest-chain",
+        "crud": "SUPERSEDE",
+        "requirement": "PROD-I-4",
+        "preconditions": [
+          "implemented_profile",
+          "moves_forward"
+        ],
+        "commit": "COMMITTED",
+        "refusals": [
+          "MISSING_PRECONDITION",
           "STALE_STATE"
         ]
       }

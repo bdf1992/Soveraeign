@@ -5,7 +5,7 @@ They lived in `core` and were imported from there, which meant `projections` and
 them. Both worked around it with function-local imports. A leaf module holding
 only the exception types removes the cycle instead of hiding it.
 
-`core` re-exports all four, so `from soveraeign_record_service.core import
+`core` re-exports all five, so `from soveraeign_record_service.core import
 BrokenChain` keeps working for every existing caller.
 """
 

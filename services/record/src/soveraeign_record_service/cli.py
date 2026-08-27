@@ -29,6 +29,7 @@ from soveraeign_record_service import custody
 from soveraeign_record_service.core import (
     BrokenChain,
     DesignRecordRefused,
+    ProfileNotAdopted,
     RecordService,
     UnknownEntry,
 )
@@ -117,7 +118,24 @@ def _commands() -> dict[str, Callable[[RecordService, argparse.Namespace], dict[
         "export-journal": export_journal,
         "verify-export": verify_export_file,
         "restore-journal": restore_journal,
+        "adopt-profile": adopt_profile,
     }
+
+
+def adopt_profile(service: RecordService, args: argparse.Namespace) -> dict[str, Any]:
+    """Move this store onto a newer chain profile, or report where it stands.
+
+    Without `--to`, this reads and writes nothing: an operator asking what a store
+    writes should not have to change it to find out. With `--to`, the returned
+    entry is the first row under the new profile, and therefore the exact point an
+    older reader stops verifying.
+    """
+    if not args.to:
+        return {"writing_profile": service.writing_profile(), "adopted": False}
+    entry = service.adopt_profile(args.to, args.actor)
+    return {"writing_profile": service.writing_profile(), "adopted": True,
+            "entry_id": entry["entry_id"], "supersedes": entry["payload"]["superseded"],
+            "older_readers_stop_here": entry["entry_id"]}
 
 
 def export_journal(service: RecordService, args: argparse.Namespace) -> dict[str, Any]:
@@ -197,6 +215,12 @@ def build_parser() -> argparse.ArgumentParser:
     restore = sub.add_parser("restore-journal",
                              help="replay an export into an empty store")
     restore.add_argument("--export", type=Path, required=True)
+
+    adopt = sub.add_parser("adopt-profile",
+                           help="report which chain profile this store writes, or move it")
+    adopt.add_argument("--to", help="the profile to adopt; omit to only report")
+    adopt.add_argument("--actor", default="operator",
+                       help="who is adopting it; recorded in the entry")
     return parser
 
 
@@ -217,6 +241,11 @@ def main(argv: list[str] | None = None) -> int:
     except BrokenChain as broken:
         return _emit({"outcome": "REFUSED", "reason_code": "DIGEST_MISMATCH",
                       "message": f"the journal stops verifying at {broken}"}, 2)
+    except ProfileNotAdopted as refused:
+        # STALE_STATE, not MISSING_PRECONDITION: nothing is missing, the store is
+        # already at or past the profile asked for. The manifest declares both.
+        return _emit({"outcome": "REFUSED", "reason_code": "STALE_STATE",
+                      "message": str(refused)}, 2)
     except UnknownEntry as missing:
         return _emit({"outcome": "REFUSED", "reason_code": "MISSING_PRECONDITION",
                       "message": f"no such record: {missing}"}, 3)

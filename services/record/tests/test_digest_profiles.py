@@ -15,6 +15,7 @@ from soveraeign_record_service.core import (  # noqa: E402
     LEGACY_DIGEST_PROFILE, BrokenChain, ProfileNotAdopted, RecordService, _digest,
     _legacy_canonical, _legacy_digest,
 )
+from soveraeign_record_service.digest import digest_for_profile  # noqa: E402
 from soveraeign_record_service.custody import (  # noqa: E402
     LEGACY_EXPORT_SCHEMA, restore, verify_export,
 )
@@ -140,6 +141,63 @@ class DigestProfiles(unittest.TestCase):
         self.assertTrue(math.isnan(entry["payload"]["legacy_value"]))
 
 
+class TheRefusalsNothingExercised(unittest.TestCase):
+    """Two refusals stated in `decisions/0072` that no case could falsify.
+
+    An independent witness found both by mutation: making `digest_for_profile`'s
+    v3 branch return the v2 digest instead of raising, and making `digest_for_row`
+    fall back to the v1 arithmetic for a profile it does not implement, each left
+    all 54 record tests green. A refusal named in a governed record and defended by
+    nothing is the shape this whole concern keeps producing.
+    """
+
+    def setUp(self) -> None:
+        self.tmp = TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+
+    def tearDown(self) -> None:
+        self.tmp.cleanup()
+
+    def test_verifying_v3_without_what_it_binds_raises_instead_of_grading_it_as_v2(self) -> None:
+        """`decisions/0072`: the caller raises rather than silently grading under v2.
+
+        Falling back would return a digest that verifies - computed over strictly
+        less than the entry was written with - so a v3 row's identifier and moment
+        would be unprotected again by a caller that simply forgot two arguments.
+        """
+        args = (GENESIS, "EVENT", "subject", "actor", {"step": 1})
+        bound = digest_for_profile(BOUND_DIGEST_PROFILE, *args, entry_id="entry_a",
+                                   source_address=None, recorded_at=1.0)
+        for missing in ({"source_address": None, "recorded_at": 1.0},
+                        {"entry_id": "entry_a", "source_address": None}):
+            with self.assertRaises(ValueError):
+                digest_for_profile(BOUND_DIGEST_PROFILE, *args, **missing)
+        # The thing the raise prevents: a weaker digest that would verify.
+        self.assertNotEqual(bound, digest_for_profile(DIGEST_PROFILE, *args),
+                            "if these agreed, falling back would be undetectable")
+
+    def test_an_unimplemented_profile_on_the_read_path_is_a_broken_chain(self) -> None:
+        """Not a bad argument: the row exists, and this service cannot verify it.
+
+        `test_adoption_refuses_a_profile_that_is_not_implemented` covers the write
+        path only. This is the read path, which is where an unknown profile
+        actually arrives - from a restore, or from a store written by a service
+        this one has never met.
+        """
+        service = RecordService(self.root / "unknown")
+        try:
+            entry = service.append("EVENT", "subject", "actor", {"step": 1})
+            service.db.execute("UPDATE journal SET digest_profile=? WHERE entry_id=?",
+                               ("soveraeign-record-chain/v9", entry["entry_id"]))
+            service.db.commit()
+            with self.assertRaises(BrokenChain) as caught:
+                service.reconstruct()
+            self.assertIn("v9", str(caught.exception),
+                          "the refusal names the profile it cannot implement")
+        finally:
+            service.close()
+
+
 def _v1_only_reader(service: RecordService) -> int:
     """Verify a journal the way the service did before the profile column existed.
 
@@ -209,6 +267,63 @@ class AStoreKeepsItsOwnProfile(unittest.TestCase):
         service = RecordService(root)
         self.opened.append(service)
         return service
+
+    def test_the_profile_is_the_strongest_any_row_carries_not_the_newest(self) -> None:
+        """The shape the live journal actually has, which defeated the newest-row rule.
+
+        Eleven sessions share that tree. An older checkout wrote v1 rows after this
+        branch's service had written v3 ones, so `.local/console` runs v1, v3, v1,
+        v3. Reading only the newest row makes the store's answer depend on which
+        checkout wrote last; once any row is v3 no v1-only reader can verify
+        through it, so writing v1 again restores nobody.
+        """
+        service = self.v1_store(name="interleaved", rows=2)
+        service.adopt_profile(BOUND_DIGEST_PROFILE, "operator:bdo")
+        # An older checkout appends two v1 rows on top, exactly as one did live.
+        self.append_as_an_older_checkout(service, steps=2)
+        profiles = [row["digest_profile"] for row in
+                    service.db.execute("SELECT digest_profile FROM journal ORDER BY seq")]
+        self.assertEqual(
+            profiles,
+            [LEGACY_DIGEST_PROFILE, LEGACY_DIGEST_PROFILE, BOUND_DIGEST_PROFILE,
+             LEGACY_DIGEST_PROFILE, LEGACY_DIGEST_PROFILE],
+            "this case needs a store whose newest row is weaker than one before it")
+        self.assertEqual(service.writing_profile(), BOUND_DIGEST_PROFILE,
+                         "the newest row is v1; the store has written v3 and cannot go back")
+        self.assertEqual(
+            service.append("EVENT", "subject", "actor", {"step": 9})["digest_profile"],
+            BOUND_DIGEST_PROFILE)
+
+    def test_a_profile_this_service_cannot_verify_refuses_rather_than_sorting_low(self) -> None:
+        """An unknown profile is not the weakest profile; it is a row that cannot be read."""
+        service = self.v1_store(name="unknown-row")
+        service.db.execute("UPDATE journal SET digest_profile=? WHERE seq=1",
+                           ("soveraeign-record-chain/v9",))
+        service.db.commit()
+        with self.assertRaises(BrokenChain):
+            service.writing_profile()
+        with self.assertRaises(BrokenChain):
+            service.append("EVENT", "subject", "actor", {"step": 1})
+
+    def append_as_an_older_checkout(self, service: RecordService, steps: int = 1) -> None:
+        """Append v1 rows the way a pre-profile service would, bypassing this one.
+
+        Straight SQL on purpose. The point is a writer that knows nothing about
+        profiles, which is what actually wrote into the live store.
+        """
+        for step in range(steps):
+            previous = service.head()
+            payload = {"older": step}
+            digest = _legacy_digest(previous, "EVENT", "subject", "older-checkout", payload)
+            service.db.execute(
+                "INSERT INTO journal(entry_id,kind,subject,actor,source_address,payload_json,"
+                "recorded_at,prev_digest,entry_digest,digest_profile) "
+                "VALUES(?,?,?,?,?,?,?,?,?,?)",
+                (f"entry_older_{step}_{id(service)}", "EVENT", "subject", "older-checkout",
+                 None, _legacy_canonical(payload), 100.0 + step, previous, digest,
+                 LEGACY_DIGEST_PROFILE),
+            )
+        service.db.commit()
 
     def test_an_empty_store_starts_at_the_current_profile(self) -> None:
         service = self.service_at("fresh")

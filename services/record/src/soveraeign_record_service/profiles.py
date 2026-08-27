@@ -8,15 +8,28 @@ profile then stops verifying at that row - not because anything was tampered
 with, but because a library moved underneath a store other readers share.
 
 That is not hypothetical. It happened to `.local/console`, the live operator
-journal: six `record-chain/v3` rows written by this branch's service landed on
-top of 406 `record-chain/v1` rows, and every session running the older checkout
-now gets `BrokenChain` at the first of them. The journal is intact and verifies
-completely under a v3-aware reader. The readers are what broke.
+journal: `record-chain/v3` rows written by this branch's service landed on top of
+404 `record-chain/v1` rows, and every session running the older checkout now gets
+`BrokenChain` at the first of them. The journal is intact and verifies completely
+under a v3-aware reader. The readers are what broke.
 
 So a store keeps writing what it already writes, and moving it forward is an act
 somebody performs. ``adopt_profile`` appends the first entry under the new
 profile, which puts the exact row where older readers stop inside the journal
 rather than leaving it to be discovered by whoever opens the store next.
+
+**Which profile a store writes is the strongest any of its rows carries**, not
+the one on its newest row. An independent witness proved why the shorter rule was
+wrong, using the live journal itself: eleven sessions share that tree, an older
+checkout wrote into it after this branch's service did, and its rows run v1 to
+404, v3 to 408, v1 again at 409 and 410, then v3. Under a newest-row rule that
+store's answer depends on which checkout happened to write last - the same defect
+this module exists to remove, one turn further in.
+
+The stronger rule is also the true one. Once a single v3 row exists, no v1-only
+reader can verify the chain through it, and writing v1 afterwards restores nobody.
+What a store can still be read by only ever narrows, so the profile it writes only
+ever moves forward.
 """
 
 from __future__ import annotations
@@ -67,16 +80,35 @@ class ProfileSurface:
     """
 
     def writing_profile(self) -> str:
-        """The profile this store writes, which is the one its newest entry uses.
+        """The profile this store writes: the strongest any of its rows carries.
 
         An empty store has no readers and no history to protect, so it starts at
         the strongest profile available. A store that already holds entries keeps
         its own, whatever the library currently considers current.
+
+        Every row is read, not just the newest. The module docstring carries the
+        reason: rows arrive in whatever order the checkouts sharing a store happen
+        to write them, and the live journal is genuinely not monotonic. Taking the
+        maximum makes the answer a property of the store rather than of the last
+        writer, and it cannot go backwards - which is the whole point, since a
+        store that has ever written v3 can never be read by a v1-only reader
+        again.
+
+        An unimplemented profile in the store refuses rather than sorting to the
+        bottom. A row this service cannot verify is not a row it may quietly
+        write past.
         """
-        row = self.db.execute(
-            "SELECT digest_profile FROM journal ORDER BY seq DESC LIMIT 1"
-        ).fetchone()
-        return row["digest_profile"] if row else CURRENT_PROFILE
+        carried = {row["digest_profile"] for row in
+                   self.db.execute("SELECT DISTINCT digest_profile FROM journal")}
+        if not carried:
+            return CURRENT_PROFILE
+        unknown = carried - set(PROFILE_ORDER)
+        if unknown:
+            raise BrokenChain(
+                "this store carries chain profile(s) this service does not implement: "
+                + ", ".join(sorted(unknown))
+            )
+        return max(carried, key=PROFILE_ORDER.index)
 
     def adopt_profile(self, profile: str, actor: str) -> dict[str, Any]:
         """Move this store onto a newer chain profile, recording the move as an entry.

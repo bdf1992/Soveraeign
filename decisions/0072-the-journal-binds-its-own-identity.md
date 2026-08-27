@@ -10,10 +10,12 @@ It binds three columns `v2` recorded but never protected: `entry_id`,
 the entries already written under them, because a profile edited in place
 silently invalidates its own history.
 
-**A store keeps writing the profile it already writes.** `append` reads the
-profile from the store's newest entry rather than from whatever the library calls
-current, so an existing journal does not change profile because the code that
-opened it was upgraded. Moving one forward is `RecordService.adopt_profile`, which
+**A store keeps writing the profile it already writes**, which is the strongest
+profile any of its rows carries — not whatever the library calls current, and not
+the profile on its newest row. An existing journal therefore does not change
+profile because the code that opened it was upgraded, and its answer does not
+depend on which of several checkouts sharing it wrote last. Moving one forward is
+`RecordService.adopt_profile`, reachable as `adopt-profile` on the CLI, which
 appends the first entry under the new profile and names in that entry which
 profile it supersedes and that a reader implementing only the old one stops
 verifying there. The boundary is inside the journal instead of being discovered by
@@ -32,8 +34,9 @@ digest binds. Every profile binds the *parsed value*, so without this a
 byte-different, value-identical payload passed unnoticed — including duplicate-key
 injection, where a JSON parser reads the last key, anything taking the first key
 reads another number, and one committed row is therefore read two ways with the
-chain endorsing both. All 402 entries in this repository's live journal were
-already canonical, so the requirement cost no history.
+chain endorsing both. All 412 entries in this repository's live journal are
+already canonical — verified with the byte rule applied over the raw rows — so
+the requirement costs no history.
 
 ## What defeated the previous arrangement
 
@@ -87,6 +90,19 @@ fires — that rule had been applied once per mechanism rather than once per cla
   already exists keeps `v2`'s weaker coverage until it is deliberately moved, so
   the identifier hole this record closes stays open in it. Adoption being one call
   with a recorded entry is what keeps that cost payable.
+- **A store's profile is the strongest any row carries, not the newest row's.**
+  Rows arrive in whatever order the checkouts sharing a store happen to write
+  them, so the newest row names the last writer rather than the store. The
+  maximum can only move forward, which matches what is actually true: a store
+  that has ever written `v3` can never be read by a `v1`-only reader again.
+- **An unimplemented profile found in a store refuses rather than sorting to the
+  bottom.** A row this service cannot verify is not a row it may quietly write
+  past, so `writing_profile` raises `BrokenChain` naming the profile.
+- **`adopt-profile` is reachable from the CLI, and answers without moving
+  anything when `--to` is omitted.** An independent witness pointed out that a
+  store was otherwise stuck for any operator not writing Python — including the
+  one store this record says is stuck. Asking what a store writes must not be an
+  act that changes it.
 - **Adoption refuses to stand still or go backwards.** Both would append an entry
   claiming a transition that is not happening, and a journal that records a move
   which did not occur is worse than one that never raises the question.
@@ -154,12 +170,20 @@ The first arrangement wrote `CURRENT_PROFILE` on every append. Nothing consulted
 the store, so opening an existing journal with this branch's service upgraded it
 from the next row on.
 
-It did that to the live operator journal. `.local/console` holds 412 entries; six
-of them, at `seq` 405 to 412, are `v3` rows written by runs from this branch and
-the console branch on top of 406 `v1` rows. The journal is not damaged — a
-`v3`-aware reader verifies all 412 — but every session running an older checkout
-gets `BrokenChain` at `seq` 405, and the operator continuity surface has been down
-for all of them since. Eleven sessions share that working tree.
+It did that to the live operator journal, and the exact shape matters because two
+independent readings used it to defeat the first repair. `.local/console` holds
+412 entries, and its profiles run:
+
+    v1   seq 1   - 404    404 rows
+    v3   seq 405 - 408      4 rows
+    v1   seq 409 - 410      2 rows
+    v3   seq 411 - 412      2 rows
+
+Eleven sessions share that working tree, so the v3 rows did not land *on top of*
+the v1 rows: an older checkout kept writing v1 in between. The journal is not
+damaged — a `v3`-aware reader verifies all 412 — but every session running an
+older checkout gets `BrokenChain` at `seq` 405, and the operator continuity
+surface has been down for all of them since.
 
     old reader on the live store   BrokenChain entry_80767935e18c488fb45502df9d5c385e
     v3-aware reader, same bytes    412 entries verified
@@ -175,6 +199,18 @@ readers_working` is the failing case stated as a fixture: it reconstructs a
 pre-profile reader and asserts it still verifies the whole chain after a new
 append. `test_an_old_reader_stops_exactly_at_the_adopted_entry` measures the
 consequence the adoption entry claims, rather than asserting it in prose.
+
+**The first repair read only the newest row, and two witnesses defeated it with
+this store.** Under that rule `.local/console` answers `v3`, because `seq` 412 is
+v3 — so the store the record argues from was one row-ordering away from proving
+its own fix wrong, and every fixture defending it built a homogeneous journal
+where the one row read is representative by construction. `writing_profile()` now
+takes the strongest profile any row carries. That is also the true property:
+once a single v3 row exists no v1-only reader can verify through it, so writing
+v1 afterwards restores nobody, and what a store can still be read by only ever
+narrows. `test_the_profile_is_the_strongest_any_row_carries_not_the_newest`
+builds the live journal's actual v1/v3/v1 shape, with the trailing v1 rows written
+by straight SQL the way a pre-profile service wrote them.
 
 One thing followed. Refusing `NaN` and `Infinity` at write time had been a side
 effect of always encoding with `canonical`; a store writing `v1` would have
@@ -235,7 +271,22 @@ Two things followed from the same seam:
 
 ## Standing
 
-`PROPOSED`. Built and self-tested: 54 Record Service tests pass.
+`PROPOSED`. Built and self-tested: 58 Record Service tests pass, the independent
+walk holds 24/24, and 7 gateway observer tests pass.
+
+`python scripts/verify.py` fails no named check in any run. Its exit code carries
+the total wall clock on this branch, which straddles the 15-second ceiling
+depending on how many sessions are running. That is contention rather than this
+change, and it is measured rather than asserted — an earlier draft asserted it,
+and an independent witness was right that a claim about a machine needs a
+baseline. Runs interleaved back to back against the merge-base `5951bc4`:
+
+    base 14.490 -> branch 13.831        base 14.082 -> branch 14.046
+    base 13.922 -> branch 14.509        base 13.876 -> branch 14.407
+
+Within ±0.7s in both directions, all eight exit 0. Under load both sit at 16-21s
+and both fail. The record service's own tests do grow, from about 0.95s to about
+1.7s, which is under a tenth of the run.
 
 An independent witness examined this change at commit `514d12e` and **refused to
 propose `BUILT -> WITNESSED`**. It confirmed C1, C2, C4, C5 and C6 — the defect
@@ -265,6 +316,26 @@ That is the fourth check in this concern found unable to fail — after one tamp
 value per column, a note asserted against the constant that generated it, and a
 fixture whose ASCII payload made two different encoders coincide. Each was found
 by an independent reading and none by the build.
+
+A fourth reading found three more of the same kind, by mutating the service and
+watching all 54 tests stay green:
+
+- `scripts/gateway_observe.py` gained the canonical byte rule and no case
+  exercised it. Its four behavioural cases change a value or a profile, so the
+  digest catches all of them and none reaches the byte comparison. Deleting the
+  rule left the suite passing, while this record cited both verifiers' canonical
+  rule as evidence. Two cases now write bytes that parse to the row's own value —
+  a spaced re-encoding and a duplicate-key injection — and assert
+  `JOURNAL_CHAIN_INVALID`.
+- The v3 branch raising when `entry_id` and `recorded_at` are absent, stated in
+  **Consequences** below, had no fixture. Returning the v2 digest instead broke
+  nothing.
+- `digest_for_row` turning an unimplemented profile into `BrokenChain` on the
+  *read* path had none either; only the adopt path was covered.
+
+`TheRefusalsNothingExercised` carries the last two. That is seven checks in one
+concern that could not fail, all found by reading and none by building, which is
+the finding this record should be read for as much as for the digest.
 
 Both independent verifiers also gained the canonical rule. Without it they graded
 a strictly weaker property than the service — the exact tamper this change exists

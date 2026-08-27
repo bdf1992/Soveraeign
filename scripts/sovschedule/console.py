@@ -28,7 +28,7 @@ import secrets
 import threading
 import webbrowser
 
-from sovschedule import authoring, changelog, control, page, report
+from sovschedule import authoring, changelog, control, intent, page, report
 
 LOOPBACK = "127.0.0.1"
 TOKEN_BYTES = 24
@@ -104,6 +104,25 @@ class Console:
             "moved": outcome.moved,
         }
 
+    def propose(self, payload: dict) -> tuple[int, dict]:
+        """Ask a local model what a sentence means to change. Nothing is written.
+
+        This route holds no authority and needs none: it reads a declaration and
+        answers with a suggestion. What it does spend is a model run on this machine,
+        which is RESOURCE_CONSUMPTION and proceeds unattended. The save is still the
+        save, with its own grant check, taken by whoever is looking at the proposal.
+        """
+        proposal = intent.interpret(self.root, str(payload.get("name", "")),
+                                    str(payload.get("request", "")))
+        return 200, {
+            "schedule": proposal.schedule,
+            "changes": proposal.changes,
+            "why": proposal.why,
+            "refusal_code": proposal.refusal_code,
+            "detail": proposal.detail,
+            **intent.summary(proposal.record),
+        }
+
     def switch(self, payload: dict) -> tuple[int, dict]:
         """Perform one requested switch and answer with what the operation decided."""
         name = str(payload.get("schedule", ""))
@@ -164,7 +183,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:  # noqa: N802 - the stdlib names this
         parsed = urlparse(self.path)
-        if parsed.path not in ("/switch", "/save"):
+        if parsed.path not in ("/switch", "/save", "/interpret"):
             self._refuse(404, f"no route {parsed.path}")
             return
         try:
@@ -183,7 +202,8 @@ class Handler(BaseHTTPRequestHandler):
         if not isinstance(payload, dict) or not self._token_ok(payload.get("token")):
             self._refuse(403, "BAD_TOKEN: this request did not come from the served page")
             return
-        act = self.console.switch if parsed.path == "/switch" else self.console.save
+        act = {"/switch": self.console.switch, "/save": self.console.save,
+               "/interpret": self.console.propose}[parsed.path]
         code, body = act(payload)
         self._send(code, json.dumps(body).encode("utf-8"),
                    "application/json; charset=utf-8")

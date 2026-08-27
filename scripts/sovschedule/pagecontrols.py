@@ -37,8 +37,11 @@ SCRIPT = """
                  body: JSON.stringify(payload)})
       .then(function (r) { return r.json(); })
       .then(function (answer) {
-        report(answer.refusal || (answer.outcome + ": " + answer.detail),
-               !!answer.refusal || answer.outcome === "REFUSED");
+        if (answer.outcome || answer.refusal || answer.refusal_code) {
+          report(answer.refusal || answer.detail || answer.outcome,
+                 !!(answer.refusal || answer.refusal_code)
+                 || answer.outcome === "REFUSED");
+        }
         done(answer);
       })
       .catch(function (error) { report("no answer: " + error, true); done(null); });
@@ -71,8 +74,50 @@ SCRIPT = """
     if (bad) { report(bad, true); return null; }
     return body;
   }
+  // The proposal comes back keyed by declaration field; the inputs are keyed by what
+  // they edit, and two of them live inside nested objects. Mapped here rather than
+  // flattened on the way out, so the operation keeps taking whole objects.
+  function fill(key, changes) {
+    var touched = [];
+    function set(field, value) {
+      var input = document.getElementById(field + "-" + key);
+      if (!input) { return; }
+      input.value = (typeof value === "object") ? JSON.stringify(value) : value;
+      input.classList.add("moved");
+      touched.push(field);
+    }
+    Object.keys(changes).forEach(function (field) {
+      var value = changes[field];
+      if (field === "limits") {
+        set("max_budget_usd", value.max_budget_usd);
+        set("timeout_seconds", value.timeout_seconds);
+      } else if (field === "target") {
+        set("target", value.kind + ":" + value.name);
+        if (value.args !== undefined) { set("args", value.args); }
+      } else {
+        set(field, value);
+      }
+    });
+    return touched;
+  }
   document.addEventListener("click", function (event) {
     var el = event.target;
+    if (el.dataset.ask) {
+      var key = el.dataset.ask;
+      var text = document.getElementById("ask-" + key).value;
+      if (!text.trim()) { return; }
+      el.disabled = true;
+      report("asking the local model...", false);
+      post("/interpret", {name: key, request: text}, function (answer) {
+        el.disabled = false;
+        if (!answer || answer.refusal_code) { return; }
+        var touched = fill(key, answer.changes || {});
+        report("proposed: " + touched.join(", ") + " - " + answer.why
+               + "  [" + answer.model + ", " + answer.seconds + "s, nothing saved]",
+               false);
+      });
+      return;
+    }
     if (el.dataset.edit) {
       var row = document.getElementById("ed-" + el.dataset.edit);
       row.hidden = !row.hidden;

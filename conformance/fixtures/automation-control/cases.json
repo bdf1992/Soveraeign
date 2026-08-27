@@ -670,5 +670,81 @@
       "expect_exists_after": false,
       "proves": "Phase I refuses external-world effects and the loader refuses this too, so the case is about where the refusal happens: before a file is written, with a code that names the boundary, rather than as a schema complaint the operator has to interpret. The form does not offer the value at all, and this is what stops the command line and the HTTP route from being the way around that."
     }
+  ],
+  "proposal_note": "Cases for the operation that turns a sentence into a proposed edit. Each supplies the answer a model gave and states what this code must do with it. The model is not the subject: its output is not deterministic and pinning it would be pinning a 4-billion-parameter model's mood. What is pinned is the boundary around it - which answers become a proposal, which become a refusal, and that neither becomes a write.",
+  "proposal_cases": [
+    {
+      "case_id": "P-001-an-ordinary-request-becomes-a-proposal",
+      "request": "run it every four hours",
+      "model_answer": "{\"changes\": {\"cron\": \"0 */4 * * *\"}, \"why\": \"every four hours\"}",
+      "expect_changes": {
+        "cron": "0 */4 * * *"
+      },
+      "expect_refusal": null,
+      "proves": "The path works: a sentence in, a field change out, nothing written."
+    },
+    {
+      "case_id": "P-002-a-field-outside-the-editable-set-is-refused",
+      "request": "turn it on",
+      "model_answer": "{\"changes\": {\"enabled\": true}, \"why\": \"turning it on\"}",
+      "expect_changes": null,
+      "expect_refusal": "NOT_EDITABLE",
+      "proves": "The one that matters. Arming is the owner's, and a model that could propose enabled into a form the owner then saves has routed around that by making the owner the one who clicks. The field never reaches the form."
+    },
+    {
+      "case_id": "P-003-a-name-change-is-refused-the-same-way",
+      "request": "rename it",
+      "model_answer": "{\"changes\": {\"name\": \"something-else\"}, \"why\": \"renaming\"}",
+      "expect_changes": null,
+      "expect_refusal": "NOT_EDITABLE",
+      "proves": "A rename creates one declaration and removes another. Not an edit, and not reachable by asking for it in words."
+    },
+    {
+      "case_id": "P-004-a-value-of-the-wrong-kind",
+      "request": "give it a bigger budget",
+      "model_answer": "{\"changes\": {\"limits\": 8}, \"why\": \"bigger budget\"}",
+      "expect_changes": null,
+      "expect_refusal": "WRONG_SHAPE",
+      "proves": "limits is an object and a number is not one. Without this the form would be filled with something the save then refuses, and the person would read a schema complaint about a change they did not make."
+    },
+    {
+      "case_id": "P-005-an-answer-that-is-not-json",
+      "request": "change it",
+      "model_answer": "I think you probably want to change the cron expression here.",
+      "expect_changes": null,
+      "expect_refusal": "UNREADABLE_PROPOSAL",
+      "proves": "Models answer in prose. That is a refusal, not something to guess at."
+    },
+    {
+      "case_id": "P-006-json-wrapped-in-prose-and-fences-is-still-read",
+      "request": "make it a build job",
+      "model_answer": "Sure! Here you go:\\n```json\\n{\"changes\": {\"mode\": \"build\"}, \"why\": \"you asked for build\"}\\n```\\nLet me know!",
+      "expect_changes": {
+        "mode": "build"
+      },
+      "expect_refusal": null,
+      "proves": "Leniency about packaging only. Models wrap JSON however they are asked not to, and refusing that would make the feature useless while proving nothing - what is inside is still checked strictly."
+    },
+    {
+      "case_id": "P-007-a-request-the-model-cannot-express-as-a-field",
+      "request": "delete this schedule",
+      "model_answer": "{\"changes\": {}, \"why\": \"deleting is not a field on this declaration\"}",
+      "expect_changes": null,
+      "expect_refusal": "NOTHING_UNDERSTOOD",
+      "proves": "An empty changes object is an honest answer and is reported as the model worded it. Inventing a field to look useful is the failure."
+    },
+    {
+      "case_id": "P-008-a-partial-nested-object-is-completed-before-anyone-sees-it",
+      "request": "give it a bigger budget of 8 dollars",
+      "model_answer": "{\"changes\": {\"limits\": {\"max_budget_usd\": 8}}, \"why\": \"bigger budget\"}",
+      "expect_changes": {
+        "limits": {
+          "max_budget_usd": 8,
+          "timeout_seconds": 2700
+        }
+      },
+      "expect_refusal": null,
+      "proves": "The schema requires both halves of limits, so the literal answer would be refused and rolled back - safe, but the person asked to change one number and would get a schema complaint. This is what the real model returned on the first try."
+    }
   ]
 }

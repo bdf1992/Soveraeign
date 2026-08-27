@@ -117,8 +117,12 @@ def _editor(key: str, values: dict, columns: int, targets: tuple,
         fields += _field("name", "text", "name", "", key, targets)
     fields += "".join(_field(f, kind, label, values.get(f, ""), key, targets)
                       for f, kind, label in INLINE)
+    ask = "" if creating else (
+        f'<div class="ask"><input id="ask-{e(key)}" class="why" '
+        f'placeholder="or say what to change - a local model fills the fields below">'
+        f'<button type="button" class="btn" data-ask="{e(key)}">ask</button></div>')
     return (f'<tr class="ed-row" id="ed-{e(key)}"{"" if creating else " hidden"}>'
-            f'<td colspan="{columns}"><div class="grid">{fields}</div>'
+            f'<td colspan="{columns}">{ask}<div class="grid">{fields}</div>'
             f'<div class="save"><input id="why-{e(key)}" class="why" '
             f'placeholder="why - goes in the change log">'
             f'<button type="button" class="btn arm" data-save="{e(key)}">save</button>'

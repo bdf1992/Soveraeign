@@ -99,16 +99,34 @@ names the exact profile used to hash it:
   key-sorted JSON payload text joined with `prev_digest`, `kind`, `subject`, and
   `actor` by `|`. Existing rows and version-1 exports retain it; no new row uses
   it because field values containing `|` make the tuple ambiguous.
-- `soveraeign-record-chain/v2` is the current representation: UTF-8 bytes of
-  compact JSON for `[profile, prev_digest, kind, subject, actor, payload]`, with
-  object keys sorted, non-finite numbers refused, and Unicode code points
-  preserved. The profile string domain-separates the hash input.
+- `soveraeign-record-chain/v2`: UTF-8 bytes of compact JSON for
+  `[profile, prev_digest, kind, subject, actor, payload]`, with object keys
+  sorted, non-finite numbers refused, and Unicode code points preserved. The
+  profile string domain-separates the hash input. Existing rows retain it; no new
+  row uses it, because it binds none of the entry's own identity.
+- `soveraeign-record-chain/v3` is the current representation: the same compact
+  JSON with `entry_id`, `source_address` and `recorded_at` bound in, as
+  `[profile, prev_digest, entry_id, kind, subject, actor, source_address,
+  recorded_at, payload]`. Under v2 two entries could exchange their identifiers
+  and the chain still verified, so every receipt citing one could be repointed at
+  other content (`decisions/0072`).
 
 The entry digest is lowercase SHA-256 hex over those exact bytes. Opening a
 pre-profile database adds `digest_profile` and marks only the existing rows v1;
-new rows are explicitly v2. A version-1 export is read as v1, while a version-2
+new rows are explicitly v3. A version-1 export is read as v1, while a version-2
 export carries every row's profile. Verification never tries both algorithms,
-so compatibility cannot make a v2 row pass under the ambiguous v1 rule.
+so compatibility cannot make a row pass under a weaker profile's rule.
+
+Every profile binds the payload's *parsed value*, not the bytes the column holds,
+so verification separately requires those bytes to be the profile's canonical
+encoding of that value. Without it, byte-different but value-identical JSON went
+undetected — including duplicate-key injection, where one committed row is read
+two ways and the chain endorses both.
+
+What no profile detects: an outsider with write access to the database file can
+append a well-formed entry, or rewrite the whole chain from genesis, and every
+verification here reports clean. Only a head held outside the store catches that,
+which is what `custody.verify_export` uses `expected_head` for.
 
 The rule is stated here because an outside observer has to recompute the chain
 without reading `core.py`; `scripts/witness_record.py` does exactly that.

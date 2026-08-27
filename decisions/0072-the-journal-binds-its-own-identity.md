@@ -17,6 +17,15 @@ test_digest_coverage.py` tampers with every column of a real journal under every
 profile and fails if the declaration and the behaviour disagree in either
 direction.
 
+`RecordService.reconstruct` additionally requires each row's stored
+`payload_json` bytes to be its profile's canonical encoding of the value the
+digest binds. Every profile binds the *parsed value*, so without this a
+byte-different, value-identical payload passed unnoticed — including duplicate-key
+injection, where a JSON parser reads the last key, anything taking the first key
+reads another number, and one committed row is therefore read two ways with the
+chain endorsing both. All 402 entries in this repository's live journal were
+already canonical, so the requirement cost no history.
+
 ## What defeated the previous arrangement
 
 Under `v2` the digest material was `[profile, previous, kind, subject, actor,
@@ -47,10 +56,14 @@ fires — that rule had been applied once per mechanism rather than once per cla
 
 ## Defaults taken
 
-- **`seq` stays uncovered, and says so.** It is a local autoincrement that means
-  nothing after a restore into another database, and replay order is already
-  protected by the `prev_digest` link rather than by the column's value. Binding
-  it would make a faithful restore verify as tampered.
+- **`seq` stays uncovered, and its two answers are stated separately.** It is a
+  local autoincrement meaning nothing after a restore into another database, so
+  binding it would make a faithful restore verify as tampered. Its *value* is
+  genuinely unprotected: renumbering that preserves order is undetected and hides
+  nothing. Its *order* is protected, by the `prev_digest` link rather than by any
+  digest — every reordering breaks the chain. An independent witness proved the
+  first draft of this record wrong to imply the second followed from the first,
+  and `TheOrderOfEntries` now grades both.
 - **`recorded_at` is bound as its exact float**, not a rounded or formatted form,
   so a change below display resolution is still detected.
 - **No migration, and no rewrite of existing entries.** Each row records its own
@@ -78,10 +91,30 @@ fires — that rule had been applied once per mechanism rather than once per cla
   `scripts/sov_precedent.py` pins its material so the byte format cannot drift
   unrecorded.
 
+## What v3 still does not detect
+
+Stated because the framing above — that an unbound identifier made every citation
+forgeable — invites reading v3 as making them unforgeable. It does not.
+
+An outsider with write access to the database file can append a well-formed entry
+to the end of the chain, or rewrite the whole chain from genesis, and every
+verification in this repository reports clean. The chain proves internal
+consistency, not that the head is the head anyone else last saw. Only a head held
+outside the store catches either, which is what `custody.verify_export` takes
+`expected_head` for. `services/record/CHARTER.md` now says this beside the
+profiles rather than only here.
+
 ## What would defeat this
 
 - A column in `COVERAGE` that the tamper test cannot actually break, or one
-  outside it that breaks anyway. Either fails the suite by construction.
+  outside it that breaks anyway. An earlier draft of this record claimed the
+  suite caught that "by construction"; it caught it by fixture, and an
+  independent witness showed the fixtures were too weak to catch either of the
+  two cases that were actually wrong — one tamper value per column, applied only
+  to the last row, where a value that would reorder the journal cannot. The sweep
+  now runs several replacements per column at the first row and the last, refuses
+  a replacement equal to what is already stored (one case was grading a no-op as
+  evidence), and fails if any journal column is graded by no case at all.
 - A faithful export/restore cycle that verifies as tampered. `custody.py` carries
   `entry_id`, `source_address` and `recorded_at` through the export, and
   `verify_export` recomputes with them, so a round trip preserves the digest — if
@@ -93,7 +126,21 @@ fires — that rule had been applied once per mechanism rather than once per cla
 
 ## Standing
 
-`PROPOSED`. The change is built, self-tested, and independently observed by
-`scripts/witness_record.py`, which recomputes the chain from the charter rather
-than from the service and held 21/21. Self-tests establish `BUILT`; the
-independent walk proposes `WITNESSED`. Only Bdo ratifies.
+`PROPOSED`. Built and self-tested: 46 Record Service tests pass.
+
+An independent witness examined this change at commit `514d12e` and **refused to
+propose `BUILT -> WITNESSED`**. It confirmed C1, C2, C4, C5 and C6 — the defect
+was real, v3 fixes it, history is not rewritten, a round trip is not tampering,
+and the two independent verifiers agree — and refuted the coverage declaration in
+both directions, on `payload_json` and on `seq`. Everything above about canonical
+bytes, about `seq`'s two answers, and about the sweep's fixtures is that refusal
+repaired inside the concern. The change has not been re-witnessed since.
+
+One thing the earlier draft claimed too much: it offered `scripts/witness_record.py`'s
+21/21 as the observation proposing `WITNESSED`. That walk runs `verify_chain` only
+over honest data and contains no tamper case, so it establishes that three
+implementations agree about a good chain — not that any of them detects a bad
+one. It is real independent observation, of a narrower claim than it was cited
+for.
+
+Self-tests establish `BUILT`. Nothing here is witnessed. Only Bdo ratifies.

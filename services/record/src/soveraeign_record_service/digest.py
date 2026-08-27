@@ -36,10 +36,24 @@ CURRENT_PROFILE = BOUND_DIGEST_PROFILE
 
 #: Journal columns whose alteration each profile's verification detects.
 #:
-#: Read a set as the exact tamper-evidence the profile offers. `seq` is absent
-#: from every profile on purpose: it is a local autoincrement that carries no
-#: meaning across a restore into another database, and replay order is already
-#: protected by the `prev_digest` link rather than by the column's value.
+#: Read a set as the exact tamper-evidence the profile offers. Two columns need
+#: their wording stated exactly, because an independent witness proved the earlier
+#: phrasing wrong in both directions:
+#:
+#: `payload_json` is bound by its *parsed value*, not by its stored bytes. On its
+#: own that left byte-different, value-identical JSON undetected - and duplicate
+#: key injection with it, where two readers of one committed row disagree about
+#: its content and the chain endorses both. `RecordService.reconstruct` therefore
+#: also requires the stored bytes to be the canonical encoding of that value, so
+#: the column is covered against both. `canonical_for` is that encoding.
+#:
+#: `seq` is absent from every profile and stays absent. It is a local
+#: autoincrement carrying no meaning across a restore into another database, so
+#: binding it would make a faithful restore verify as tampered. Its *value* is
+#: genuinely unprotected - renumbering that preserves order is undetected and
+#: hides nothing. Its *order* is protected, by the `prev_digest` link rather than
+#: by any digest: every reordering breaks the chain. That is why one column can
+#: be both absent here and impossible to reorder unnoticed.
 COVERAGE: dict[str, frozenset[str]] = {
     LEGACY_DIGEST_PROFILE: frozenset({
         "kind", "subject", "actor", "payload_json", "prev_digest", "entry_digest",
@@ -61,6 +75,19 @@ JOURNAL_COLUMNS: frozenset[str] = frozenset({
     "seq", "entry_id", "kind", "subject", "actor", "source_address", "payload_json",
     "recorded_at", "prev_digest", "entry_digest", "digest_profile",
 })
+
+
+def canonical_for(profile: str):
+    """The exact encoding a profile's stored `payload_json` bytes must have.
+
+    The digest binds the parsed value, so this is what closes the gap between the
+    value the chain protects and the bytes a reader actually reads.
+    """
+    if profile == LEGACY_DIGEST_PROFILE:
+        return legacy_canonical
+    if profile in (DIGEST_PROFILE, BOUND_DIGEST_PROFILE):
+        return canonical
+    raise ValueError(f"unknown record digest profile {profile!r}")
 
 
 def uncovered(profile: str) -> frozenset[str]:

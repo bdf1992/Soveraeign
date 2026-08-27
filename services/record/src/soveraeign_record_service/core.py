@@ -24,11 +24,12 @@ import sqlite3
 import time
 import uuid
 
+from .projections import ProjectionSurface
 from .digest import (
-    BOUND_DIGEST_PROFILE, COVERAGE, CURRENT_PROFILE, DIGEST_PROFILE,
-    LEGACY_DIGEST_PROFILE, bound_digest as _bound_digest, canonical as _canonical,
+    BOUND_DIGEST_PROFILE, CURRENT_PROFILE, DIGEST_PROFILE, LEGACY_DIGEST_PROFILE,
+    bound_digest as _bound_digest, canonical as _canonical, canonical_for,
     digest as _digest, digest_for_profile, legacy_canonical as _legacy_canonical,
-    legacy_digest as _legacy_digest, uncovered,
+    legacy_digest as _legacy_digest,
 )
 
 GENESIS = "0" * 64
@@ -86,7 +87,7 @@ def _digest_for_profile(
         raise BrokenChain(str(error)) from error
 
 
-class RecordService:
+class RecordService(ProjectionSurface):
     """An append-preserving operational journal over a local SQLite store."""
 
     def __init__(self, root: str | Path):
@@ -214,7 +215,19 @@ class RecordService:
         return [self.entry(row["entry_id"]) for row in rows]
 
     def reconstruct(self) -> list[dict[str, Any]]:
-        """Replay the journal, verifying every link before returning it."""
+        """Replay the journal, verifying every link and every payload encoding.
+
+        The digest binds the payload's parsed value, not the bytes the column
+        holds. Left there, byte-different but value-identical JSON went
+        undetected, and duplicate-key injection with it: a committed row two
+        readers read differently, endorsed by the chain. Requiring the stored
+        bytes to be their profile's canonical encoding closes that, and costs
+        nothing on a journal this service wrote, because it wrote them that way.
+        """
+        stored = {
+            row["entry_id"]: row["payload_json"]
+            for row in self.db.execute("SELECT entry_id,payload_json FROM journal")
+        }
         previous, replayed = GENESIS, []
         for entry in self.entries():
             expected = _digest_for_profile(
@@ -224,6 +237,14 @@ class RecordService:
             )
             if entry["prev_digest"] != previous or entry["entry_digest"] != expected:
                 raise BrokenChain(entry["entry_id"])
+            try:
+                encode = canonical_for(entry["digest_profile"])
+            except ValueError as unknown:
+                raise BrokenChain(str(unknown)) from None
+            if stored.get(entry["entry_id"]) != encode(entry["payload"]):
+                raise BrokenChain(
+                    f"{entry['entry_id']}: payload bytes are not the canonical encoding "
+                    "of the value the digest binds")
             previous = entry["entry_digest"]
             replayed.append(entry)
         return replayed
@@ -236,54 +257,9 @@ class RecordService:
         return False
 
     # ---- projections -------------------------------------------------------
-
-    def drop_projections(self) -> None:
-        """Delete every projection. Only projections are ever deleted here."""
-        self.db.execute("DELETE FROM subject_projection")
-        self.db.commit()
-
-    def rebuild_projections(self) -> int:
-        """Rebuild every projection from the journal alone."""
-        self.drop_projections()
-        state: dict[str, dict[str, Any]] = {}
-        countered: set[str] = set()
-        for entry in self.reconstruct():
-            if entry["kind"] == "COUNTER":
-                countered.add(entry["payload"]["counters"])
-            row = state.setdefault(
-                entry["subject"],
-                {"entry_count": 0, "last_kind": entry["kind"], "countered": 0,
-                 "head_digest": GENESIS},
-            )
-            row["entry_count"] += 1
-            row["last_kind"] = entry["kind"]
-            row["head_digest"] = entry["entry_digest"]
-        for entry in self.entries():
-            if entry["entry_id"] in countered:
-                state[entry["subject"]]["countered"] += 1
-        self.db.executemany(
-            "INSERT INTO subject_projection VALUES(?,?,?,?,?)",
-            [(subject, row["entry_count"], row["last_kind"], row["countered"],
-              row["head_digest"]) for subject, row in state.items()],
-        )
-        self.db.commit()
-        return len(state)
-
-    def projection(self, subject: str) -> dict[str, Any]:
-        """Read one projection row. Rebuildable, never authoritative."""
-        row = self.db.execute(
-            "SELECT * FROM subject_projection WHERE subject=?", (subject,)
-        ).fetchone()
-        if row is None:
-            raise UnknownEntry(subject)
-        return dict(row)
-
-    def append_from_projection(self, *_: Any, **__: Any) -> None:
-        """Refuse the convenient shortcut of promoting a projection to the record."""
-        raise ProjectionNotAuthoritative(
-            "a projection is rebuildable and never authoritative; "
-            "re-enter the claim as a proposal through the transition contract"
-        )
+    #
+    # Everything derived from the journal lives in `projections.ProjectionSurface`,
+    # mixed into this class. What remains here is the journal itself.
 
 
 def open_service(root: str | Path) -> RecordService:

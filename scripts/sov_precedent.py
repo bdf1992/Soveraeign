@@ -33,6 +33,7 @@ REQUIRED_TEXT = {
         "[DIGEST_PROFILE, previous, kind, subject, actor, payload]",
         'BOUND_DIGEST_PROFILE = "soveraeign-record-chain/v3"',
         "[BOUND_DIGEST_PROFILE, previous, entry_id, kind, subject, actor,",
+        "source_address, float(recorded_at), payload]",
     ),
     "services/record/src/soveraeign_record_service/core.py": (
         "digest_profile TEXT NOT NULL",

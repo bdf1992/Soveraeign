@@ -2,7 +2,7 @@
 
 Status: `BUILT (self-report by the drafting session) · NOT WITNESSED · NOT RATIFIED`
 
-A service-scoped projection of `GROUND.md` under `decisions/0067-service-srd-spec-ground.md`.
+A service-scoped projection of `GROUND.md` under `decisions/0093-service-srd-spec-ground.md`.
 Each claim below is one this service commits to always being true for whoever depends on it,
 with what would defeat it and, where one applies, the root `GROUND-<nnn>` claim it specializes.
 This list is short by design; it is not forced to a fixed count.

@@ -50,7 +50,7 @@
     "irreversible_external_effect": "An effect that cannot be counter-recorded away.",
     "acceptance_standing": "A change to something the owner already accepted, or to the acceptance rule itself."
   },
-  "crosswalk_note": "Every status string observed across decisions/ on 2026-08-23, mapped to a standing, plus the six strings records 0052-0059 minted afterwards and which were added on 2026-08-24 while main and feat/federation-harness-and-hardening were reconciled. Twenty-two distinct strings for forty records is the condition this contract exists to end; the crosswalk is the bridge, not the destination. A status string absent from here is a defect the checker reports rather than guessing at.",
+  "crosswalk_note": "Every status string observed across decisions/ on 2026-08-23, mapped to a standing, plus the six strings records 0052-0059 minted afterwards and which were added on 2026-08-24 while main and feat/federation-harness-and-hardening were reconciled. Twenty-two distinct strings for forty records is the condition this contract exists to end; the crosswalk is the bridge, not the destination. A status string absent from here is a defect the checker reports rather than guessing at. Two strings added 2026-08-27 while draining the backlog: the bare \"PROPOSED\", which is the canonical spelling of the standing itself and the one addition that argues for fewer spellings rather than more, and \"PROPOSED · EVIDENCE TALLY, NOT A RULING\", which decisions/0094 carries because a tally of open questions settles nothing.",
   "crosswalk": {
     "PROPOSED FOR BDO RATIFICATION": "PROPOSED",
     "PROPOSED · OWNER RATIFICATION PENDING": "PROPOSED",
@@ -84,7 +84,9 @@
     "PROPOSED · SLICES 1-4 BUILT, SELF-TESTED, NOT WITNESSED": "PROPOSED",
     "PROPOSED · DRAFTED AT OWNER DIRECTION · ACCEPTANCE PENDING": "OWNER_DIRECTED",
     "PROPOSED · CONTRACT, FIXTURES, AND CHALLENGE RUNTIME BUILT": "PROPOSED",
-    "PROPOSED · OWNER-DIRECTED EDIT · O2 STILL GATES RATIFICATION": "OWNER_DIRECTED"
+    "PROPOSED · OWNER-DIRECTED EDIT · O2 STILL GATES RATIFICATION": "OWNER_DIRECTED",
+    "PROPOSED": "PROPOSED",
+    "PROPOSED · EVIDENCE TALLY, NOT A RULING": "PROPOSED"
   },
   "owner_questions_section": {
     "heading": "What still waits on Bdo",

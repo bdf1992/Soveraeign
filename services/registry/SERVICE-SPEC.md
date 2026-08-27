@@ -2,7 +2,7 @@
 
 Status: `PROPOSED · SERVICE-SCOPED PROJECTION OF SPEC.md`
 
-This document applies `decisions/0067-service-srd-spec-ground.md` to the
+This document applies `decisions/0093-service-srd-spec-ground.md` to the
 Registry: `SPEC.md`'s shape, re-scoped to what the Registry itself owns. It
 does not re-derive the kernel transition contract, the receipt shape, or the
 authority model — those stay owned by `SPEC.md`, `contracts/kernel-transitions.json`,

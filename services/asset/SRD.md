@@ -3,7 +3,7 @@
 Status: `PROPOSED · BUILT AT MOST · NOT WITNESSED · NOT RATIFIED`
 
 A service-scoped projection of `PRD.md`'s shape onto the Asset Service, under
-`decisions/0067-service-srd-spec-ground.md`. The named user here is the node
+`decisions/0093-service-srd-spec-ground.md`. The named user here is the node
 itself — the callers listed below — not a human directly. This document grants
 no authority and settles no standing; it is `BUILT` because a drafting agent
 self-reported it, and stays there until an independent witness reads it against

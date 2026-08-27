@@ -1,6 +1,6 @@
 # Host Service Requirements — Founding and Phase I
 
-Status: `BUILT` (drafted under `decisions/0067-service-srd-spec-ground.md`; self-report by
+Status: `BUILT` (drafted under `decisions/0093-service-srd-spec-ground.md`; self-report by
 the drafting session, not independently witnessed or ratified)
 
 This is a service-scope projection of `PRD.md`'s shape, with the node — not a human — named

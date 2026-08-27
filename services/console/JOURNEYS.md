@@ -2,7 +2,7 @@
 
 Status: `BUILT · SELF-REPORTED BY THE DRAFTING SESSION · NOT OWNER-RATIFIED`
 
-Per `decisions/0067-service-srd-spec-ground.md`, this document has no root-level
+Per `decisions/0093-service-srd-spec-ground.md`, this document has no root-level
 analog: it enumerates the abstract journeys a caller takes through the Console
 Service and states, per journey, whether it completes or dead-ends, citing the
 charter and `KNOWN-GAPS.md` standing that makes it so. Naming an open custody

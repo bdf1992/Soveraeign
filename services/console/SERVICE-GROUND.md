@@ -3,7 +3,7 @@
 Status: `BUILT · SELF-REPORTED BY THE DRAFTING SESSION · NOT OWNER-RATIFIED`
 
 Scoped copy of `GROUND.md`'s shape for one service, per
-`decisions/0067-service-srd-spec-ground.md`. Not forced to sixteen claims.
+`decisions/0093-service-srd-spec-ground.md`. Not forced to sixteen claims.
 Each claim is what this service commits to always being true for its caller;
 each names what would defeat it and, where the underlying operation is not
 yet built, says so instead of implying the commitment is already kept.

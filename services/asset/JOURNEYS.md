@@ -2,7 +2,7 @@
 
 Status: `PROPOSED · BUILT AT MOST · NOT WITNESSED · NOT RATIFIED`
 
-This is the piece `decisions/0067-service-srd-spec-ground.md` names as having
+This is the piece `decisions/0093-service-srd-spec-ground.md` names as having
 no root-level analog. Each journey below is the abstract path a caller takes
 through
 this service — discover, authority-check, invoke, report/observe, receipt,

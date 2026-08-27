@@ -1,4 +1,4 @@
-# 0033 · Tier model bindings and the executable three-tier loop
+# 0092 · Tier model bindings and the executable three-tier loop
 
 Status: `PROPOSED`
 

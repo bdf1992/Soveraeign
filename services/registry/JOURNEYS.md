@@ -2,7 +2,7 @@
 
 Status: `BUILT · SELF-REPORTED, NOT WITNESSED`
 
-`decisions/0067-service-srd-spec-ground.md` introduces this document with no
+`decisions/0093-service-srd-spec-ground.md` introduces this document with no
 root-level analog: the abstract journeys a caller takes through this service,
 each marked whether it completes or dead-ends, citing the charter or
 `contracts/service.json` standing that makes it so, plus a named section for

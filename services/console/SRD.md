@@ -2,7 +2,7 @@
 
 Status: `BUILT · SELF-REPORTED BY THE DRAFTING SESSION · NOT OWNER-RATIFIED`
 
-Scoped copy of `PRD.md`'s shape for one service, per `decisions/0067-service-srd-spec-ground.md`.
+Scoped copy of `PRD.md`'s shape for one service, per `decisions/0093-service-srd-spec-ground.md`.
 This is a projection at service scope of decisions already made at root scope. It
 grants the Console Service no authority over its own account of itself: `BUILT`
 is what self-report produces here; `WITNESSED` requires a party that did not

@@ -2,7 +2,7 @@
 
 Status: `BUILT (self-report by the drafting session) · NOT WITNESSED · NOT RATIFIED`
 
-A service-scoped projection of `SPEC.md` under `decisions/0067-service-srd-spec-ground.md`. This
+A service-scoped projection of `SPEC.md` under `decisions/0093-service-srd-spec-ground.md`. This
 file cites `contracts/kernel-transitions.json` and `services/gateway/contracts/service.json`
 rather than re-deriving their contents. Where this document and either contract disagree, the
 contract governs and this document is stale.

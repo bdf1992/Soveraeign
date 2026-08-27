@@ -3,7 +3,7 @@
 Status: `PROPOSED · BUILT AT MOST · NOT WITNESSED · NOT RATIFIED`
 
 A short, service-scoped list of claims the Asset Service commits to always
-being true for its callers, under `decisions/0067-service-srd-spec-ground.md`.
+being true for its callers, under `decisions/0093-service-srd-spec-ground.md`.
 Not forced to sixteen, and not a fourth ladder competing with root `GROUND.md`
 — each claim below specializes exactly one root `GROUND-<nnn>` claim to this
 service's own owned records and transitions. Accepting this list is not a

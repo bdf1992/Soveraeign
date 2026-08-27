@@ -3,7 +3,7 @@
 Status: `BUILT · SELF-REPORTED BY THE DRAFTING SESSION · NOT OWNER-RATIFIED`
 
 Scoped copy of `SPEC.md`'s shape for one service, per
-`decisions/0067-service-srd-spec-ground.md`. This does not re-derive the
+`decisions/0093-service-srd-spec-ground.md`. This does not re-derive the
 kernel: it cites `contracts/kernel-transitions.json` and
 `services/console/contracts/service.json` rather than restating their rules,
 and it fixes no storage, encoding, language, or transport of its own beyond

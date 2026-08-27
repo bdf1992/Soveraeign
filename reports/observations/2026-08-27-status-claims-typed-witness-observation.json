@@ -33,7 +33,7 @@
   "frozen_head": "5dbe5133cf41c50bd254d612564d690b960bbae3",
   "shared_tree_conditions": {
     "trap": "CLAUDE.md T6",
-    "primary_tree_state": "C:/Users/bdf19/Desktop/Soveraeign was at 1264300 on feat/federation-harness-and-hardening with more than thirty modified paths including STATUS.yaml, CLAUDE.md, AGENTS.md and scripts/sovverify/checks.py. Unusable for measurement and not measured in.",
+    "primary_tree_state": "the primary working tree was at 1264300 on feat/federation-harness-and-hardening with more than thirty modified paths including STATUS.yaml, CLAUDE.md, AGENTS.md and scripts/sovverify/checks.py. Unusable for measurement and not measured in.",
     "mitigation": "Every reading taken in two purpose-built detached worktrees confirmed clean by git status --porcelain with empty output, immediately before and after the verify runs. Perturbation testing done in a separate file-copy sandbox so neither worktree was dirtied during measurement.",
     "stability_recheck": "check and selfcheck were re-run after all other measurements; identical output, worktree still clean at 5dbe513. The verdict is attestable against a tree that did not move.",
     "note": "An earlier git worktree add using a bash-style /c/ path silently created worktrees at a literal Windows path; these were removed and recreated before any reading was taken."

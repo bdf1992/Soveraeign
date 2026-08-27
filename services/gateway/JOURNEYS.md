@@ -2,7 +2,7 @@
 
 Status: `BUILT (self-report by the drafting session) · NOT WITNESSED · NOT RATIFIED`
 
-`decisions/0067-service-srd-spec-ground.md` names this document as the one with no analog in the
+`decisions/0093-service-srd-spec-ground.md` names this document as the one with no analog in the
 root pattern. `CHARTER.md` calls this service "the node's door." Today exactly one journey through
 that door completes end to end, in process. Every other journey a caller could plausibly attempt
 is a door that has not been opened — declared in `contracts/service.json`, described in

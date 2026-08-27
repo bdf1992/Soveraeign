@@ -2,7 +2,7 @@
 
 Status: `BUILT · SELF-REPORTED, NOT WITNESSED`
 
-This document applies `decisions/0067-service-srd-spec-ground.md` to the
+This document applies `decisions/0093-service-srd-spec-ground.md` to the
 Registry: a short list of claims this service commits to always being true
 for its caller — the node's own participants, not a human end user. Not
 forced to sixteen. Each claim names what would defeat it and, where one

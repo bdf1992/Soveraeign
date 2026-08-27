@@ -1,4 +1,4 @@
-# 0068 · Cross-service custody tally: what the seven journey maps found
+# 0094 · Cross-service custody tally: what the seven journey maps found
 
 Status: `PROPOSED · EVIDENCE TALLY, NOT A RULING`
 

@@ -2,7 +2,7 @@
 
 Status: `BUILT (self-report by the drafting session) · NOT WITNESSED · NOT RATIFIED`
 
-This is a service-scoped projection of `PRD.md` under `decisions/0067-service-srd-spec-ground.md`.
+This is a service-scoped projection of `PRD.md` under `decisions/0093-service-srd-spec-ground.md`.
 It states what the Gateway Service owes the callers that depend on it. It is not a new
 requirement ladder: every `SVC-GATEWAY-<n>` below either serves a named `PROD-I-<n>` or narrows
 `CHARTER.md`'s route contract to a checkable claim. `CHARTER.md` remains this service's

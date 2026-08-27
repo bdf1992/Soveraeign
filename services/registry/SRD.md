@@ -2,7 +2,7 @@
 
 Status: `PROPOSED · SERVICE-SCOPED PROJECTION OF PRD.md`
 
-This document applies the pattern `decisions/0067-service-srd-spec-ground.md`
+This document applies the pattern `decisions/0093-service-srd-spec-ground.md`
 authorizes: `PRD.md` at node scope, re-derived at Registry scope with the node
 itself — its Gateway, its other services, its harness — named as the caller
 instead of a human. It grants no standing. `CHARTER.md` remains the Registry's

@@ -3,7 +3,7 @@
 Status: `PROPOSED · BUILT AT MOST · NOT WITNESSED · NOT RATIFIED`
 
 A service-scoped projection of `SPEC.md`'s shape onto the Asset Service, under
-`decisions/0067-service-srd-spec-ground.md`. It cites
+`decisions/0093-service-srd-spec-ground.md`. It cites
 `contracts/kernel-transitions.json` and `services/asset/contracts/service.json`
 rather than re-deriving their content, and it does not select a storage
 mechanism `ENGINEERING.md` and this participant have not already chosen. Named

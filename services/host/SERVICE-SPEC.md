@@ -1,6 +1,6 @@
 # Host Service Specification (service scope)
 
-Status: `BUILT` (drafted under `decisions/0067-service-srd-spec-ground.md`; self-report only)
+Status: `BUILT` (drafted under `decisions/0093-service-srd-spec-ground.md`; self-report only)
 
 A service-scope projection of `SPEC.md`'s shape. It cites `contracts/kernel-transitions.json`
 and `services/host/contracts/service.json` rather than re-deriving the kernel's transition

@@ -1,6 +1,6 @@
 # Host Service Ground
 
-Status: `BUILT` (drafted under `decisions/0067-service-srd-spec-ground.md`; self-report only)
+Status: `BUILT` (drafted under `decisions/0093-service-srd-spec-ground.md`; self-report only)
 
 A short list of claims this service commits to always being true for its caller — not forced
 to sixteen, per `decisions/0067`. Each names what would defeat it, and cites the root

@@ -2,20 +2,37 @@
 
 One aggregate wall time cannot say whether a slow verification run means the
 repository grew or the machine was busy. Wall time answers how long the operator
-waited; CPU time answers how much work the machine did. Reported together per
-check, a run that doubles in wall while its CPU holds is contention, and a run
-whose CPU rises is the repository.
+waited; CPU time answers how much CPU the machine spent on this check. A check
+whose wall rose while its CPU held was waiting, which is the reading the old
+single number could not give.
+
+What CPU time is not is a stable measure of the work a check asks for. Measured
+on a 32-core host, saturating it inflated a fixed-work child's wall by 2.19x and
+its own CPU by 2.12x: competing for cores, cache and turbo headroom buys real
+cycles for identical bytes. The CPU-bound checks are where that bites hardest,
+and they are exactly the ones a compute figure would otherwise describe best.
+Read a rise in CPU as either more work or more competition, never as proof of the
+first. `decisions/0071` carries the measurements and proposes nothing in force.
 
 Both numbers are taken from the observing side. The command, its argv, its
 working directory and its pipes are what `subprocess` would have used anyway, so
 nothing here perturbs the thing it measures, and nothing here reads a check's own
 claim about its cost.
 
-The CPU number covers the check's whole process tree on both platforms.
-Measuring only the direct child would understate the most expensive check in the
-suite: `scripts/run_tooling_tests.py` spends nearly all its time in four
-grandchildren, and a direct-child reading of it on Windows was 0.031s against
-0.203s for the tree.
+The CPU number covers the process tree a check waits for. Measuring only the
+direct child would understate the most expensive check in the suite:
+`scripts/run_tooling_tests.py` spends nearly all its time in four grandchildren,
+and a direct-child reading of it on Windows was 0.031s against 0.203s for the
+tree. A descendant the check does not wait for is a different matter: on Windows
+the job still holds it, so a reading is refused as unmeasured when the job has
+not gone quiet shortly after the check returned; on POSIX `wait4` simply never
+sees it and the reading is short by that much. Every check in the current table
+waits for its children.
+
+Resolution differs by platform and the printed three decimals do not: Windows job
+accounting quantizes to 15.625ms, so a check reading 0.047s spent somewhere
+between two and four quanta. Aggregates are sound; a single small per-check
+figure is coarse.
 
 - Windows: the child is assigned to a fresh job object and the job's
   `TotalUserTime + TotalKernelTime` is read after it exits. Job accounting counts
@@ -75,7 +92,12 @@ class Reading(NamedTuple):
     def report(self) -> str:
         """Both clocks in one line. An unmeasured CPU says so; wall never stands in."""
         if self.cpu is None:
-            return f"{self.wall:.3f}s wall, cpu unmeasured ({self.cpu_source.removeprefix(UNMEASURED)})"
+            reason = self.cpu_source.removeprefix(UNMEASURED)
+            return f"{self.wall:.3f}s wall, cpu unmeasured ({reason})"
+        if self.ratio is None:
+            # A zero wall leaves no ratio to state. Printing the pair still beats
+            # raising out of the report after every check has already run.
+            return f"{self.wall:.3f}s wall, {self.cpu:.3f}s cpu"
         return f"{self.wall:.3f}s wall, {self.cpu:.3f}s cpu ({self.ratio:.2f}x)"
 
 
@@ -106,21 +128,25 @@ def run_unmeasured(command: list[str], cwd: Path, reason: str) -> Reading:
 def _run_posix(command: list[str], cwd: Path) -> Reading:
     """Read both pipes, then collect the child's own rusage with os.wait4."""
     started = time.perf_counter()
-    process = subprocess.Popen(command, cwd=cwd, bufsize=0,
-                               stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    try:
-        output = _drain(process)
-        _, status, usage = os.wait4(process.pid, 0)
-    except BaseException:
-        # What subprocess.run does on the same failure: never leave a child running
-        # and unreaped because the observer gave up on it.
-        process.kill()
-        process.wait()
-        raise
-    # Recording the code here is what stops Popen calling waitpid on a pid os.wait4
-    # already collected. Without it the interpreter reaps twice or warns on teardown.
-    process.returncode = os.waitstatus_to_exitcode(status)
-    wall = time.perf_counter() - started
+    # bufsize=0 is load-bearing: it makes each pipe a raw FileIO, so reading the
+    # file descriptor directly cannot strand bytes in a BufferedReader nobody drains.
+    # The context manager is what closes both pipes on every path, including the
+    # interrupt that ends a verification run early; subprocess.run uses it for that.
+    with subprocess.Popen(command, cwd=cwd, bufsize=0,
+                          stdout=subprocess.PIPE, stderr=subprocess.PIPE) as process:
+        try:
+            output = _drain(process)
+            _, status, usage = os.wait4(process.pid, 0)
+        except BaseException:
+            # What subprocess.run does on the same failure: never leave a child
+            # running and unreaped because the observer gave up on it.
+            process.kill()
+            process.wait()
+            raise
+        # Recording the code here is what stops Popen calling waitpid on a pid
+        # os.wait4 already collected. Without it the interpreter reaps twice.
+        process.returncode = os.waitstatus_to_exitcode(status)
+        wall = time.perf_counter() - started
     return Reading(process.returncode, output, wall,
                    usage.ru_utime + usage.ru_stime, POSIX_SOURCE)
 
@@ -146,10 +172,7 @@ def _drain(process: subprocess.Popen) -> str:
                     chunks[key.fd].append(data)
                 else:
                     selector.unregister(key.fileobj)
-    text = "".join(_text(b"".join(chunks[fileno])) for fileno in order)
-    for stream in streams:
-        stream.close()
-    return text
+    return "".join(_text(b"".join(chunks[fileno])) for fileno in order)
 
 
 if sys.platform == "win32":
@@ -212,25 +235,47 @@ def _run_windows(command: list[str], cwd: Path) -> Reading:
     return Reading(process.returncode, _text(out) + _text(err), wall, cpu, source)
 
 
-def _job_cpu(job: int) -> tuple[float | None, str]:
-    """Kernel plus user time for every process the job ever held, terminated included."""
-    accounting = _Accounting()
-    queried = _KERNEL32.QueryInformationJobObject(
-        job, _ACCOUNTING_CLASS, ctypes.byref(accounting), ctypes.sizeof(accounting), None)
-    if not queried:
-        return None, UNMEASURED + "job-query-refused"
-    if not accounting.TotalProcesses:
-        # An empty job accounts for 0.000s, which would read as an instant check.
-        # If the assignment never actually took, say nothing was measured.
-        return None, UNMEASURED + "job-held-no-process"
-    total = accounting.TotalUserTime + accounting.TotalKernelTime
-    return total / _HUNDRED_NANOSECONDS, WINDOWS_SOURCE
+def _job_cpu(job: int, settle: float = 0.1) -> tuple[float | None, str]:
+    """Kernel plus user time for every process the job ever held, terminated included.
+
+    A job can still report an active process for a few milliseconds after the
+    check returned, because disassociating a terminated process from its job is
+    not instantaneous; under a saturated host that lag grew far enough to refuse
+    ordinary checks. So poll it out, and treat only what does not settle as a
+    descendant the check never waited for. `settle` is spent after the wall clock
+    has stopped, so it cannot enter the measurement.
+    """
+    deadline = time.perf_counter() + settle
+    while True:
+        accounting = _Accounting()
+        queried = _KERNEL32.QueryInformationJobObject(
+            job, _ACCOUNTING_CLASS, ctypes.byref(accounting), ctypes.sizeof(accounting),
+            None)
+        if not queried:
+            return None, UNMEASURED + "job-query-refused"
+        if not accounting.TotalProcesses:
+            # An empty job accounts for 0.000s, which would read as an instant check.
+            # If the assignment never actually took, say nothing was measured.
+            return None, UNMEASURED + "job-held-no-process"
+        if not accounting.ActiveProcesses:
+            total = accounting.TotalUserTime + accounting.TotalKernelTime
+            return total / _HUNDRED_NANOSECONDS, WINDOWS_SOURCE
+        if time.perf_counter() >= deadline:
+            # Something the check started outlived it. The total is real but
+            # partial, and a partial total reads exactly like a cheap check:
+            # measured at 0.062s against the 0.422s its tree went on to spend.
+            return None, UNMEASURED + "job-tree-still-running"
+        time.sleep(0.002)
 
 
 def _refusal(job: int, handle: int) -> str:
-    """Name which step of the Windows path declined, so a zero is never invented."""
+    """Name which step of the Windows path declined, so a zero is never invented.
+
+    The assignment case carries its Win32 error, because that is the one whose
+    cause is not obvious from the name: 5 is the already-exited process.
+    """
     if not job:
         return UNMEASURED + "job-object-unavailable"
     if not handle:
         return UNMEASURED + "process-handle-unavailable"
-    return UNMEASURED + "job-assignment-refused"
+    return UNMEASURED + f"job-assignment-refused-win32-{ctypes.get_last_error()}"

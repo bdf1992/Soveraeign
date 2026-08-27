@@ -17,6 +17,14 @@ Grade a verification run on the CPU its checks consumed rather than on the wall
 time the operator waited, and keep wall time as a reported number that fails
 nothing.
 
+The drafter does not recommend adopting this as it stands. An adversarial pass
+over the same branch measured the premise and found it holds for the suite and
+fails for the part of the suite that matters; that measurement is under **What
+would defeat this**, and it should be read before the argument for the change.
+What the drafter does recommend is that the question is now answerable, which it
+was not before, and that the answer needs a measurement taken on `ubuntu-latest`
+rather than on a 32-core development host.
+
 ## Why
 
 A gate that keys on wall time reports "the repository is too slow" when the
@@ -98,12 +106,27 @@ is taken up below.
   with no corresponding wall movement. If that spread is the normal case rather
   than an artifact, a CPU-keyed band is no more honest than the wall band and
   this record is wrong.
-- CPU rising for reasons that are not the repository growing. This is measured,
-  not hypothetical: saturating the host added 31 % to summed CPU, because
-  competing for cache and memory buys real cycles. A compute band wide enough to
-  absorb that may be no more discriminating than the wall band it replaced, and
-  the strongest argument against this record is that nobody has yet shown the
-  compute band would be narrower.
+- **The suite-level figure above is diluted, and the undiluted one nearly settles
+  this against the proposal.** An adversarial pass measured a fixed-work child on
+  the same host: at exactly saturating load its wall inflated x2.19 and its CPU
+  x2.12, and the child's own `time.process_time` moved with them, so the extra
+  cycles are real rather than a measurement artifact. Competing for cores, cache
+  and turbo headroom costs CPU. The suite reads a gentler x1.31 only because most
+  of its wall is spent waiting: `Asset Service reference tests` reads 0.09x and
+  `Console Service reference tests` 0.17x, and averaging mostly-idle checks hides
+  the inflation of the busy ones.
+
+  The sharpest number is the one check that is genuinely CPU-bound. Across five
+  runs of byte-identical bytes, `repository tooling tests` reported 10.531,
+  11.641, 16.312, 14.141 and 11.703 seconds of CPU: a spread of x1.55 on the
+  largest compute consumer in the suite. A compute-keyed budget would be least
+  trustworthy exactly where it would have to be trusted.
+
+  This does not make the second clock worthless — it is still a better figure
+  than the sum of wall times it replaced, and it still told the truth about the
+  failing run above. It does mean nobody has yet shown that a compute band would
+  be narrower than the wall band it replaces, and until someone has, the case for
+  swapping them is not made.
 - A compute gate does not bound what the operator waits. A suite that took
   sixty seconds of wall for twenty of CPU would pass it and be unusable. If the
   wait is what Bdo wants bounded, the answer is two graded numbers, not a
@@ -117,7 +140,12 @@ is taken up below.
 
 - Whether the gate keys on compute at all, or on both numbers, or stays as it
   is. `decisions/0050` left open whether a lost grade should ever be more than a
-  reportable observation; this record narrows that to a concrete question.
+  reportable observation; this record narrows that to a concrete question and,
+  on its own evidence, answers it "not yet".
 - If it does key on compute, the band values. They are not the wall bands, and
   they must be measured on the runner that gates merges rather than on a
   32-core development host.
+- Whether the reading that actually deserves work is the one this record turned
+  up sideways: the two largest wall consumers in the suite spend nine-tenths of
+  that wall not computing. Reducing a wait is a different repair from raising a
+  ceiling, and it is the one that would make either budget comfortable.

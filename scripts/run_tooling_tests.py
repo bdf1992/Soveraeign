@@ -28,7 +28,10 @@ DEFAULT_WORKERS = 4
 # its shard on the critical path even after pre-descent pruning. Weight it as roughly
 # ten bounded modules so the existing four-worker pool nearly isolates that corpus
 # reader without adding a process or dropping evidence.
-MODULE_WEIGHTS = {"test_sov_docs.py": 10}
+# test_verify_clocks measures real subprocesses, so it deliberately sleeps and burns
+# CPU. Measured at 0.54s against roughly 0.05s for a bounded module, and it added
+# 0.75s to whichever shard drew it while carrying ordinary weight.
+MODULE_WEIGHTS = {"test_sov_docs.py": 10, "test_verify_clocks.py": 7}
 
 
 def test_modules() -> tuple[Path, ...]:

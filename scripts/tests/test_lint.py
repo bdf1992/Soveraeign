@@ -140,6 +140,17 @@ class ExecutableRootsAreGraded(unittest.TestCase):
                    if not (lint.ROOT / name).is_file()]
         self.assertEqual(missing, [], f"debt named for absent modules: {missing}")
 
+    def test_the_debt_list_is_pinned_to_its_length(self) -> None:
+        """The two guards below check each entry is real and unpaid. Neither
+        notices a third arriving, so a genuinely over-ceiling file could buy
+        silence from the ceiling by adding its own name. Pinning the count makes
+        a new exemption edit this line too, which is the deliberate, visible act
+        an exemption should be. Raise it when you mean to; do not raise it to
+        make a run go green."""
+        self.assertEqual(
+            len(lint.KNOWN_MODULE_DEBT), 3,
+            "the debt list changed length; if that was intended, say so here")
+
     def test_every_named_debt_is_actually_over_the_ceiling(self) -> None:
         """Debt that has been paid must leave the list, or the list stops meaning anything."""
         paid = []

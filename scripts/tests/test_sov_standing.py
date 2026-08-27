@@ -165,7 +165,7 @@ class RecordMustCarryTheStanding(unittest.TestCase):
     def test_the_directory_readme_is_still_not_a_record(self):
         with tempfile.TemporaryDirectory() as tmp:
             _record(Path(tmp), "README.md")
-            self.assertEqual(sov_standing.witness_records(Path(tmp)), set())
+            self.assertEqual(sov_standing.witness_records(Path(tmp)), {})
 
 
 class LiveRepository(unittest.TestCase):
@@ -192,3 +192,109 @@ class LiveRepository(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class WhatTheRecordSaysIsGraded(unittest.TestCase):
+    """A second witness defeated the first repair five ways, all by the same slip.
+
+    `supports_a_standing()` read a line and then tested it for truthiness, so any
+    non-empty remainder counted as support. Each case below was reproduced
+    against that implementation and promoted a WITNESSED claim. The honest record
+    is here too, so the repair is not merely "refuse everything".
+    """
+
+    def _promotes(self, body: str, claim: str = "BUILT_WITNESSED") -> bool:
+        path = _status(f"asset_service_status: {claim}{LF}")
+        with tempfile.TemporaryDirectory() as tmp:
+            (Path(tmp) / "asset-service.md").write_text(body, encoding="utf-8", newline=LF)
+            return sov_standing.unsupported(path, Path(tmp)) == []
+
+    def _observation(self, value: str) -> str:
+        return f"# observation{LF}{LF}**Standing supported: {value}**{LF}"
+
+    def test_a_label_line_with_its_verdict_below_supports_nothing(self):
+        """The worst of the five: the line captured the literal `**`, which is not
+        "none", so a record refusing in the loudest possible terms promoted.
+
+        Both spellings are here on purpose. With `none.` below the label the
+        denial scan would refuse the record even if the line break were not a
+        boundary, so that case alone leaves the boundary untested - a mutation
+        run proved it. With `WITNESSED.` below the label the boundary is the only
+        rule standing between the record and a promotion it never declared.
+        """
+        for below in ("none.", "WITNESSED.", "RATIFIED."):
+            with self.subTest(below=below):
+                self.assertFalse(self._promotes(
+                    f"# observation{LF}{LF}**Standing supported:**{LF}{below}{LF}"))
+
+    def test_not_witnessed_inside_a_record_is_a_denial(self):
+        """T3 reproduced at the site the first repair created. The whole-token
+        discipline lived in `claimed_standing()` and was not carried across."""
+        self.assertFalse(self._promotes(self._observation("NOT_WITNESSED.")))
+
+    def test_a_value_naming_no_standing_supports_nothing(self):
+        for value in ("OPEN -> BUILT.", "n/a", "BUILT.", "see the findings below."):
+            with self.subTest(value=value):
+                self.assertFalse(self._promotes(self._observation(value)))
+
+    def test_a_denial_after_the_standing_still_denies_it(self):
+        """`WITNESSED is refused` names a standing and refuses it in three words;
+        a rule that only reads the token before the standing misses that. The
+        spelling matters: with `RATIFIED` here the over-reach rule refuses the
+        record anyway, and this case would pass while testing nothing."""
+        self.assertFalse(self._promotes(self._observation("WITNESSED is refused.")))
+        self.assertFalse(self._promotes(self._observation("RATIFIED is refused.")))
+
+    def test_naming_both_standings_is_ambiguous_and_supports_nothing(self):
+        """Asserted on the reading rather than the verdict, deliberately. Through
+        `unsupported()` a two-element set resolves arbitrarily and the over-reach
+        rule catches roughly half the runs, so the verdict passes by set ordering
+        rather than by the rule. A mutation run found that; this is the repair."""
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "asset-service.md"
+            path.write_text(self._observation("WITNESSED and RATIFIED."),
+                            encoding="utf-8", newline=LF)
+            self.assertIsNone(sov_standing.supported_standing(path))
+        self.assertFalse(self._promotes(self._observation("WITNESSED and RATIFIED.")))
+
+    def test_an_honest_record_still_supports_the_claim(self):
+        self.assertTrue(self._promotes(self._observation("WITNESSED.")))
+        self.assertTrue(self._promotes(f"# observation{LF}{LF}Standing supported: BUILT -> WITNESSED{LF}"))
+
+    def test_a_record_may_not_declare_ratified(self):
+        """`witness/README.md`: a record supports a transition at most as far as
+        BUILT -> WITNESSED. A record declaring more has over-reached, for both
+        kinds of claim, and the gate must not read the over-reach as support."""
+        self.assertFalse(self._promotes(self._observation("RATIFIED.")))
+        self.assertFalse(self._promotes(self._observation("RATIFIED."), claim="BUILT_RATIFIED"))
+
+    def test_the_refusal_names_the_over_reach_rather_than_reporting_absence(self):
+        """A record that is present and wrong must not be reported as missing."""
+        path = _status(f"asset_service_status: BUILT_WITNESSED{LF}")
+        with tempfile.TemporaryDirectory() as tmp:
+            (Path(tmp) / "asset-service.md").write_text(
+                self._observation("RATIFIED."), encoding="utf-8", newline=LF)
+            reason = sov_standing.refusal(sov_standing.read_claims(path)[0], Path(tmp))
+        self.assertIn("declares RATIFIED", reason)
+        self.assertIn("the owner settles the rest", reason)
+
+    def test_no_record_on_file_over_reaches(self):
+        """Durable against the real directory: a record declares WITNESSED or
+        nothing. This fails the day one declares a standing it may not carry."""
+        allowed = (None, sov_standing.WITNESS_MAY_SUPPORT)
+        over = [path.name for path in sorted(sov_standing.WITNESS_DIR.glob("*.md"))
+                if path.stem.lower() not in sov_standing.NOT_A_RECORD
+                and sov_standing.supported_standing(path) not in allowed]
+        self.assertEqual(over, [])
+
+    def test_the_shape_the_readme_documents_is_the_shape_the_gate_reads(self):
+        """The input contract changed in the same commit that left the only
+        document instructing its authors untouched, and the shape that document
+        showed was one the gate could not read. They fail together now."""
+        readme = (sov_standing.WITNESS_DIR / "README.md").read_text(encoding="utf-8")
+        self.assertIn("`Standing supported: WITNESSED`", readme)
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "asset-service.md"
+            path.write_text(f"# observation{LF}{LF}Standing supported: WITNESSED{LF}",
+                            encoding="utf-8", newline=LF)
+            self.assertEqual(sov_standing.supported_standing(path), "WITNESSED")

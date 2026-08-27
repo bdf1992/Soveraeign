@@ -13,9 +13,11 @@ subject. Claiming the standing and writing the record are then the same act.
 
 Scope, stated so it is not mistaken for more: this checks standing FIELDS in
 `STATUS.yaml`. It does not police open-decision removal, and it cannot tell a
-good witness record from a bad one - it checks that an independent record was
-deposited, not that it was persuasive. Only Bdo ratifies; this refuses a claim
-that was never witnessed at all.
+good witness record from a bad one - it reads the one machine-readable field a
+record must carry, `Standing supported:`, and grades that. Whether the record
+attacked the subject honestly is a reader's judgement, and whether the record is
+about the subject at all rests on its filename, which is a convention and not a
+proof. Only Bdo ratifies; this refuses a claim no record supports.
 """
 
 from __future__ import annotations
@@ -85,62 +87,116 @@ def read_claims(status_path: Path = STATUS) -> list[Claim]:
 
 NOT_A_RECORD = {"readme", "index"}
 
+# A witness record carries a subject at most to WITNESSED. `AGENTS.md` reserves
+# ratification for a seat that settles JUDGEMENT, and `witness/README.md` says
+# the same: depositing a record makes advancing standing possible and never
+# performs it. A record declaring RATIFIED has over-reached, and the gate names
+# that rather than quietly declining to count it.
+WITNESS_MAY_SUPPORT = "WITNESSED"
 
-SUPPORTED_LINE = re.compile(r"standing supported:\s*(.+)", re.IGNORECASE)
-SUPPORTS_NOTHING = re.compile(r"^\W*(none|nothing)\b", re.IGNORECASE)
+# The label, and the rest of its own line. The value must sit on the label line:
+# `**Standing supported:**` with the verdict on the line below once captured the
+# literal `**`, which is not `none` and so read as support. The line break is a
+# boundary here rather than something to search past.
+LABEL = re.compile(r"^[^A-Za-z0-9\n]*standing\s+supported[^A-Za-z0-9\n]*(.*)$",
+                   re.IGNORECASE | re.MULTILINE)
+
+# Any of these anywhere in the value denies it. `NOT_WITNESSED` is why the
+# discipline exists at all, but `RATIFIED is refused` and `no standing supported`
+# deny just as plainly while a preceding-token rule misses both.
+DENIALS = frozenset({
+    "NOT", "NO", "NONE", "NOTHING", "NEVER", "WITHOUT", "CANNOT", "PENDING",
+    "REFUSED", "REFUSES", "DENIED", "DENIES", "DECLINED", "DECLINES",
+    "WITHHELD", "UNSUPPORTED", "INSUFFICIENT",
+})
 
 
-def supports_a_standing(record: Path) -> bool:
-    """Whether this record's own text carries a subject past BUILT.
+def supported_standing(record: Path) -> str | None:
+    """The standing this record's own text declares, or None if it declares none.
 
-    A filename is a declaration; what the record says is the artifact. Matching
-    on the stem alone meant depositing `witness/record-service.md` was enough to
-    let `record_service_status` claim WITNESSED, however loudly the record itself
-    said otherwise - and every record on file today states "Standing supported:
-    none". Read the line and fail closed when it is missing, because a record
-    that will not say what it supports supports nothing.
+    A filename is a declaration; what the record says is the artifact. This reads
+    a narrow machine-readable field and deliberately does not read English: the
+    value must name exactly one of `WITNESSED` or `RATIFIED` and carry no denial.
+    Silence, prose, ambiguity, `n/a`, and `OPEN -> BUILT` all support nothing,
+    because a gate that infers a verdict from a sentence is a gate that can be
+    written past by anyone writing an ordinary sentence.
     """
     try:
         text = record.read_text(encoding="utf-8")
     except (OSError, UnicodeDecodeError):
-        return False
-    found = SUPPORTED_LINE.search(text)
+        return None
+    found = LABEL.search(text)
     if found is None:
-        return False
-    return not SUPPORTS_NOTHING.match(found.group(1).strip())
+        return None
+    tokens = [token.upper() for token in re.split(r"[^A-Za-z]+", found.group(1)) if token]
+    named = {token for token in tokens if token in CLAIMS}
+    if len(named) != 1 or any(token in DENIALS for token in tokens):
+        return None
+    return named.pop()
 
 
-def witness_records(witness_dir: Path = WITNESS_DIR) -> set[str]:
-    """Subjects whose record carries a standing, by filename stem.
+def witness_records(witness_dir: Path = WITNESS_DIR) -> dict[str, str]:
+    """Subject to the standing its record declares, for records that declare one.
 
     The directory's own documentation is not an observation of anything. Counting
-    it would let a file that explains the convention satisfy a claim made under
-    that convention. Nor is a record that observed the subject and declined to
-    advance it: it is evidence the claim is not yet earned, not evidence for it.
+    it would let the file that explains the convention satisfy a claim made under
+    that convention.
     """
     if not witness_dir.is_dir():
-        return set()
-    stems = {p.stem.lower() for p in witness_dir.glob("*.md")
-             if supports_a_standing(p)}
-    return stems - NOT_A_RECORD
+        return {}
+    declared = {}
+    for path in sorted(witness_dir.glob("*.md")):
+        stem = path.stem.lower()
+        if stem in NOT_A_RECORD:
+            continue
+        standing = supported_standing(path)
+        if standing is not None:
+            declared[stem] = standing
+    return declared
+
+
+def refusal(claim: Claim, witness_dir: Path = WITNESS_DIR) -> str | None:
+    """Why this claim is refused, in the record's own terms, or None if supported.
+
+    Both `WITNESSED` and `RATIFIED` claims need the same thing here, because
+    nothing is ratified that was not first witnessed. What this gate cannot see
+    is the owner half of a ratification, and it says so rather than implying a
+    passing RATIFIED claim was checked end to end.
+    """
+    subject = claim.subject.lower()
+    path = witness_dir / f"{subject}.md"
+    if subject in NOT_A_RECORD or not path.is_file():
+        return f"no witness record at witness/{claim.subject}.md"
+    declared = supported_standing(path)
+    if declared is None:
+        return (f"witness/{claim.subject}.md names no standing it supports; the"
+                " `Standing supported:` line must name WITNESSED on the label's own"
+                " line and carry no denial")
+    if declared != WITNESS_MAY_SUPPORT:
+        return (f"witness/{claim.subject}.md declares {declared}, which no witness"
+                " record may support; a record carries a subject to WITNESSED and"
+                " the owner settles the rest")
+    return None
 
 
 def unsupported(status_path: Path = STATUS, witness_dir: Path = WITNESS_DIR) -> list[Claim]:
-    """Standing claims with no witness record naming their subject."""
-    records = witness_records(witness_dir)
-    return [c for c in read_claims(status_path) if c.subject.lower() not in records]
+    """Standing claims that no witness record supports."""
+    return [c for c in read_claims(status_path) if refusal(c, witness_dir) is not None]
 
 
 def main(argv: list[str] | None = None) -> int:
     claims = read_claims()
     records = witness_records()
-    gaps = unsupported()
+    reasons = {claim.field: refusal(claim) for claim in claims}
+    gaps = [claim for claim in claims if reasons[claim.field] is not None]
 
     for claim in claims:
-        mark = "REFUSED" if claim in gaps else "SUPPORTED"
-        print(f"{mark:<10} {claim.field} claims {claim.standing}")
-        if claim in gaps:
-            print(f"           no witness record at witness/{claim.subject}.md", file=sys.stderr)
+        refused = reasons[claim.field]
+        print(f"{'REFUSED' if refused else 'SUPPORTED':<10} {claim.field} claims {claim.standing}")
+        if refused:
+            print(f"           {refused}", file=sys.stderr)
+        elif claim.standing == "RATIFIED":
+            print("           witnessed half only; this gate does not see the owner's act")
 
     if gaps:
         print(

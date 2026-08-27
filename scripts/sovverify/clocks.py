@@ -1,4 +1,4 @@
-"""Two clocks for one subprocess: wall time, and the CPU its process tree spent.
+"""Two clocks for one subprocess: wall time, and the CPU the tree it waits for spent.
 
 One aggregate wall time cannot say whether a slow verification run means the
 repository grew or the machine was busy. Wall time answers how long the operator

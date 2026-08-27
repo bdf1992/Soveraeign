@@ -26,6 +26,18 @@
             ],
             "timeout": 20,
             "statusMessage": "Reading the live-session registry"
+          },
+          {
+            "type": "command",
+            "command": "python",
+            "args": [
+              "-c",
+              "import os, runpy, sys\nname = sys.argv[1] if len(sys.argv) > 1 else ''\nmode = sys.argv[2] if len(sys.argv) > 2 else ''\nd, p = os.getcwd(), ''\nwhile True:\n    c = os.path.join(d, '.claude', 'hooks', name)\n    if os.path.isfile(c):\n        p = c\n        break\n    n = os.path.dirname(d)\n    if n == d:\n        break\n    d = n\nif p:\n    sys.argv = [p, mode]\n    try:\n        runpy.run_path(p, run_name='__main__')\n    except BaseException:\n        pass\nsys.exit(0)",
+              "stranded_work.py",
+              "start"
+            ],
+            "timeout": 20,
+            "statusMessage": "Checking for work left where nothing will find it"
           }
         ]
       }

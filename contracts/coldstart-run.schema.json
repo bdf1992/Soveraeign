@@ -1,0 +1,331 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/coldstart-run.schema.json",
+  "title": "Soveraeign Cold-Start Run Record (PROPOSED, decisions/0078)",
+  "description": "One execution of the cold-start benchmark: which corpus, against which revision, by which participant, and what each tier scored. The record carries a verdict field, but the verdict is derived from the tier table and a record that states a different one is refused rather than argued with. A run establishes BUILT and never more: a benchmark cannot witness the participant that ran it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_schema",
+    "run_id",
+    "mode",
+    "observed_at",
+    "revision",
+    "corpus",
+    "coverage",
+    "tiers",
+    "verdict",
+    "standing",
+    "sections"
+  ],
+  "properties": {
+    "record_schema": {
+      "const": "soveraeign-coldstart-run/v1"
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^coldstart_[0-9a-f]{16,32}$"
+    },
+    "mode": {
+      "enum": [
+        "INTEGRITY",
+        "COMPETENCE"
+      ],
+      "description": "INTEGRITY grades the corpus against the world: has `expected` drifted. COMPETENCE grades a participant's frozen answers against the probes. They are different readings and are never averaged."
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "revision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "commit",
+        "branch",
+        "tree_state"
+      ],
+      "properties": {
+        "commit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "branch": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tree_state": {
+          "enum": [
+            "CLEAN",
+            "DIRTY"
+          ],
+          "description": "DIRTY means probes read a working tree no one else can reproduce. It is recorded, not refused: most runs happen mid-change."
+        }
+      }
+    },
+    "corpus": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "digest",
+        "questions",
+        "selected"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "questions": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "selected": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fast",
+        "offline",
+        "sections"
+      ],
+      "properties": {
+        "fast": {
+          "type": "boolean"
+        },
+        "offline": {
+          "type": "boolean"
+        },
+        "sections": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "participant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "host",
+        "answers_digest"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "host": {
+          "type": "string",
+          "minLength": 1
+        },
+        "answers": {
+          "type": "string",
+          "minLength": 1
+        },
+        "answers_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      }
+    },
+    "tiers": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "$ref": "#/$defs/tier"
+      }
+    },
+    "sections": {
+      "type": "object",
+      "description": "Per-section counts. A daily cadence is only useful if it can name which section moved; a total that moved says only that something did. Required, and reconciled against the tier table both in total and per entry: an empty block used to skip the check, and totals could reconcile while one section claimed 95 hits out of 45 scored.",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "asked",
+          "scored",
+          "hit",
+          "unmeasured"
+        ],
+        "properties": {
+          "asked": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "scored": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "hit": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "unmeasured": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "minProperties": 1
+    },
+    "verdict": {
+      "enum": [
+        "ADMISSIBLE",
+        "DEGRADED",
+        "UNPROVEN",
+        "PARTIAL",
+        "NOT_ADMISSIBLE"
+      ]
+    },
+    "standing": {
+      "const": "BUILT",
+      "description": "AGENTS.md: a test may establish BUILT; it may never claim WITNESSED or RATIFIED. A run record that names a higher standing is refused by STANDING_OVERCLAIMED."
+    },
+    "graded_by": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner_verdicts",
+        "manual_asked",
+        "manual_graded"
+      ],
+      "properties": {
+        "owner_verdicts": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "The verdict file an owner seat wrote, or null. It must exist, digest to owner_verdicts_digest, and state a grades_answer_digest equal to this record's participant.answers_digest."
+        },
+        "manual_asked": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "manual_graded": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "owner_verdicts_digest": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^sha256:[0-9a-f]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "sha256 of the verdict file. The path alone was never opened, so any non-empty string satisfied the rule that no seat settles its own output."
+        }
+      }
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "$defs": {
+    "tier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tier",
+        "asked",
+        "scored",
+        "hit",
+        "unmeasured",
+        "gate",
+        "result"
+      ],
+      "properties": {
+        "tier": {
+          "enum": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        "asked": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "scored": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Questions that actually produced a comparison. asked minus scored is unmeasured, and an unmeasured invariant is never a passed one."
+        },
+        "hit": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unmeasured": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "gate": {
+          "enum": [
+            1.0,
+            0.9,
+            0.8,
+            null
+          ],
+          "description": "The share required of this tier, or null for tier 3. Pinned to the canonical table in scripts/sovcoldstart/report.py rather than left open: a record that supplies its own threshold grades itself. TIER_NOT_DERIVED refuses one that disagrees with the counts, and this enum refuses one that is not a declared gate at all."
+        },
+        "result": {
+          "enum": [
+            "PASS",
+            "FAIL",
+            "WARN",
+            "PART",
+            "NONE",
+            "ABSENT",
+            "INFO"
+          ],
+          "description": "Derived from the counts, never selected. TIER_NOT_DERIVED refuses a row whose stated result differs from what asked, scored and hit give."
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "mode": {
+            "const": "COMPETENCE"
+          }
+        },
+        "required": [
+          "mode"
+        ]
+      },
+      "then": {
+        "required": [
+          "participant",
+          "graded_by"
+        ],
+        "description": "A participant reading names who was graded and who graded the prose. Both were optional, and omitting graded_by was the cheapest way past SELF_GRADED: the refusal read a number out of a block that need not exist."
+      }
+    }
+  ]
+}

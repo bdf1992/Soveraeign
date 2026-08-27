@@ -1360,6 +1360,217 @@
           "console.discover-operations"
         ]
       }
+    },
+    {
+      "case_id": "MC-032-chore-is-a-declared-kind",
+      "expect": "VALID",
+      "proves": "Work that retires a repository surface is a first-class kind: it names the surface it acts on and may be held on a decision, while closing nothing.",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:chore",
+          "village:ground-and-evidence",
+          "horizon:now",
+          "effect:record-local"
+        ],
+        "kind": "chore",
+        "chore_id": "CHORE-RETIRE-QA-SIDECAR",
+        "path": "charting/experiments/qa.skill.json",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#40",
+        "standing": "OPEN",
+        "horizon": "NOW",
+        "authority": "Bdo/phase-gate",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "charting/experiments/qa.skill.json",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "topology"
+        ],
+        "requires": [
+          "#47"
+        ]
+      }
+    },
+    {
+      "case_id": "MC-033-chore-without-chore-id",
+      "expect": "INVALID",
+      "proves": "A chore must carry its own identity rather than borrowing a construction one.",
+      "refuses": "chore_id",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:chore",
+          "village:ground-and-evidence",
+          "horizon:now",
+          "effect:record-local"
+        ],
+        "kind": "chore",
+        "path": "charting/experiments/qa.skill.json",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#40",
+        "standing": "OPEN",
+        "horizon": "NOW",
+        "authority": "Bdo/phase-gate",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "charting/experiments/qa.skill.json",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "topology"
+        ],
+        "requires": [
+          "#47"
+        ]
+      }
+    },
+    {
+      "case_id": "MC-034-chore-without-the-surface-it-acts-on",
+      "expect": "INVALID",
+      "proves": "A chore that does not name its surface cannot be judged done.",
+      "refuses": "path",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:chore",
+          "village:ground-and-evidence",
+          "horizon:now",
+          "effect:record-local"
+        ],
+        "kind": "chore",
+        "chore_id": "CHORE-RETIRE-QA-SIDECAR",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#40",
+        "standing": "OPEN",
+        "horizon": "NOW",
+        "authority": "Bdo/phase-gate",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "charting/experiments/qa.skill.json",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "topology"
+        ],
+        "requires": [
+          "#47"
+        ]
+      }
+    },
+    {
+      "case_id": "MC-035-chore-may-not-carry-construction-identity",
+      "expect": "INVALID",
+      "proves": "A chore builds nothing, so a stub identity on it is a mislabelled build.",
+      "refuses": "stub_id",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:chore",
+          "village:ground-and-evidence",
+          "horizon:now",
+          "effect:record-local"
+        ],
+        "kind": "chore",
+        "chore_id": "CHORE-RETIRE-QA-SIDECAR",
+        "path": "charting/experiments/qa.skill.json",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#40",
+        "standing": "OPEN",
+        "horizon": "NOW",
+        "authority": "Bdo/phase-gate",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "charting/experiments/qa.skill.json",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "topology"
+        ],
+        "requires": [
+          "#47"
+        ],
+        "stub_id": "STUB-RETIRE-QA-SIDECAR"
+      }
+    },
+    {
+      "case_id": "MC-036-chore-may-not-close-a-bit",
+      "expect": "INVALID",
+      "proves": "A chore discharges no obligation. A surface whose removal leaves a bit unclosed is a demotion of the stub that closed it, not housekeeping.",
+      "refuses": "parent_bits",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:chore",
+          "village:ground-and-evidence",
+          "horizon:now",
+          "effect:record-local"
+        ],
+        "kind": "chore",
+        "chore_id": "CHORE-RETIRE-QA-SIDECAR",
+        "path": "charting/experiments/qa.skill.json",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#40",
+        "standing": "OPEN",
+        "horizon": "NOW",
+        "authority": "Bdo/phase-gate",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "charting/experiments/qa.skill.json",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "topology"
+        ],
+        "requires": [
+          "#47"
+        ],
+        "parent_bits": [
+          "#40"
+        ]
+      }
+    },
+    {
+      "case_id": "MC-037-chore-id-may-not-borrow-the-red-prefix",
+      "expect": "INVALID",
+      "proves": "A chore attacks nothing; the engagement prefix is not available to it.",
+      "refuses": "chore_id",
+      "metadata": {
+        "issue_schema": "soveraeign-ticket/v1",
+        "tags": [
+          "kind:chore",
+          "village:ground-and-evidence",
+          "horizon:now",
+          "effect:record-local"
+        ],
+        "kind": "chore",
+        "chore_id": "RED-RETIRE-QA-SIDECAR",
+        "path": "charting/experiments/qa.skill.json",
+        "village": "ground-and-evidence",
+        "village_issue": "#4",
+        "parent": "#40",
+        "standing": "OPEN",
+        "horizon": "NOW",
+        "authority": "Bdo/phase-gate",
+        "effect_class": "RECORD_LOCAL",
+        "evidence_pointer": "charting/experiments/qa.skill.json",
+        "last_observed_at": null,
+        "walker_receipt": "PENDING",
+        "demotion_pointer": "#demotion-pointer",
+        "dependency_channels": [
+          "topology"
+        ],
+        "requires": [
+          "#47"
+        ]
+      }
     }
   ]
 }

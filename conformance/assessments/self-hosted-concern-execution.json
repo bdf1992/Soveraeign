@@ -1,0 +1,160 @@
+{
+  "assessment_schema": "soveraeign-ai-native-assessment/v1",
+  "surface": "self-hosted-concern-execution",
+  "named_operation": "execute-and-land-bounded-concern",
+  "revision": "feat/federation-harness-and-hardening @ 2026-08-26",
+  "assessed_at": "2026-08-26T00:00:00Z",
+  "assessor": "principal:claude-opus-5",
+  "phase": "FOUNDING",
+  "note": "The operation a Soveraeign swarm would perform: a participant takes one bounded concern, works it, and lands the result. This is the first reading taken with a grader rather than typed, and it is a self-assessment by a participant that also builds on this surface, so it establishes BUILT evidence and witnesses nothing.",
+  "axes": {
+    "reachability": {
+      "score": "PARTIAL",
+      "note": "Declared endpoints are machine-readable and the console can be asked what operations exist, but the landing step itself is a script a participant has to be told about: it is not a declared service operation, and the gateway operation that would list endpoints is PROPOSED.",
+      "evidence": [
+        {
+          "kind": "command",
+          "reference": "python scripts/sov_service.py endpoints",
+          "observed": "133 declared logical endpoints across 10 manifests"
+        },
+        {
+          "kind": "command",
+          "reference": "python scripts/sov_ainative.py scenarios",
+          "observed": "the grader itself is reachable only as a script, not a declared operation"
+        },
+        {
+          "kind": "file",
+          "reference": "services/gateway/contracts/service.json",
+          "observed": "list-endpoints and the other eight gateway operations are all PROPOSED"
+        }
+      ]
+    },
+    "commitment": {
+      "score": "PARTIAL",
+      "note": "Proposal, build and acceptance are distinguishable and the landing gate cannot ratify. Attestation is declared and unexercised, so the full ladder is not yet observable end to end.",
+      "evidence": [
+        {
+          "kind": "file",
+          "reference": "contracts/standing-grants.json",
+          "observed": "the standing grant is typed VERIFICATION and cannot ratify a JUDGEMENT claim"
+        },
+        {
+          "kind": "file",
+          "reference": "services/observation/contracts/service.json",
+          "observed": "attest-observation is PROPOSED, so attestation leaves no record today"
+        }
+      ]
+    },
+    "provenance": {
+      "score": "PARTIAL",
+      "note": "A landed change resolves to a commit, a tree and an observation file. What the model read before producing it resolves to nothing: there is no context package and no model invocation receipt.",
+      "evidence": [
+        {
+          "kind": "command",
+          "reference": "git log --stat",
+          "observed": "every landed change resolves to a commit and the paths it touched"
+        },
+        {
+          "kind": "file",
+          "reference": "services/projection/contracts/service.json",
+          "observed": "package-context is PROPOSED, so no digest-pinned context record exists"
+        },
+        {
+          "kind": "file",
+          "reference": "contracts/kernel-transitions.json",
+          "observed": "invoke_model is declared with no kernel implementation (PROD-I-9)"
+        }
+      ]
+    },
+    "retraction": {
+      "score": "PARTIAL",
+      "note": "Record-local counteraction is built and preserves history. Effect-class aware counteraction is not: nothing in the landing path exercises a counter-record, and consumed model resources are neither measured nor declared unrefundable.",
+      "evidence": [
+        {
+          "kind": "file",
+          "reference": "services/record/contracts/service.json",
+          "observed": "counter-entry is BUILT and the journal is append-preserving"
+        },
+        {
+          "kind": "file",
+          "reference": "scripts/sov_land.py",
+          "observed": "the landing path ends at commit and merge; no counter-record is produced"
+        }
+      ]
+    }
+  },
+  "earn_it": {
+    "judgement": "OPEN",
+    "reviewer": null,
+    "at": null
+  },
+  "qualifications": {
+    "same_world_parity": {
+      "result": "UNPROVEN",
+      "note": "A human binding interface is declared; nothing drives both sides of one operation.",
+      "evidence": []
+    },
+    "typed_authority": {
+      "result": "UNPROVEN",
+      "note": "The grant is typed, scoped, budgeted and checked at the operation, and refuses. Attribution is the untested half: the actor is a string the request supplies and no principal is resolved at the gate.",
+      "evidence": []
+    },
+    "independent_observation": {
+      "result": "FAIL",
+      "note": "The grant requires an independent observation and the evaluator decides independence from a boolean the request writes about itself. An executor that can assert its own witness is the success oracle.",
+      "evidence": [
+        {
+          "kind": "file",
+          "reference": "scripts/sovkernel/authority.py",
+          "observed": "_observation_verdict refuses only when observation.contributed_to_build is true, a field supplied by the same request"
+        },
+        {
+          "kind": "file",
+          "reference": "contracts/standing-grants.json",
+          "observed": "requires_independent_observation is true and rests on that field"
+        }
+      ]
+    },
+    "receipt_completeness": {
+      "result": "UNPROVEN",
+      "note": "Admission and refusal leave records; observation and counteraction do not yet.",
+      "evidence": []
+    },
+    "effect_honesty": {
+      "result": "UNPROVEN",
+      "note": "Nothing meters what a run consumes, so there is no claim about refunds to be honest or dishonest about yet.",
+      "evidence": []
+    },
+    "cold_start_competence": {
+      "result": "UNPROVEN",
+      "note": "A fresh instance is oriented by CLAUDE.md and a checked snapshot, and neither time to useful nor intervention count is measured.",
+      "evidence": []
+    },
+    "two_binding_proof": {
+      "result": "UNPROVEN",
+      "note": "FOUND-006 is a seed narrative; no fixture drives a human and a model binding.",
+      "evidence": []
+    },
+    "local_sovereignty": {
+      "result": "UNPROVEN",
+      "note": "The record and the payload store are local, and whether this operation survives the loss of the provider that performs it has never been tried.",
+      "evidence": []
+    },
+    "model_substitutability": {
+      "result": "FAIL",
+      "note": "Two local models have declared bindings and an adapter that measures what a run consumes. The model that actually performs this operation has neither, so its identity, crossed data, usage and cost are not visible anywhere.",
+      "evidence": [
+        {
+          "kind": "file",
+          "reference": "adapters/ollama/bindings/qwen3-4b.json",
+          "observed": "a declared binding for a model that performs none of this work"
+        },
+        {
+          "kind": "file",
+          "reference": "contracts/principals.json",
+          "observed": "principal:claude-opus-5 is anchored to a declared binding that has no adapter"
+        }
+      ]
+    }
+  }
+}

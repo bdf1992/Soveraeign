@@ -1,0 +1,179 @@
+{
+  "assessment_schema": "soveraeign-ai-native-assessment/v1",
+  "surface": "automation-switch",
+  "named_operation": "automation.set_switch",
+  "revision": "merge/one-trunk-reconciliation @ 2026-08-27",
+  "assessed_at": "2026-08-27T21:00:00Z",
+  "assessor": "principal:claude-opus-5",
+  "phase": "FOUNDING",
+  "note": "A self-assessment by the participant that built this surface. It establishes BUILT and witnesses nothing. Bdo asked for controls on the automation page and for the result to be AI-native; this reading says which axes that actually reached and which it did not. The one that decides the verdict is not a technical axis: earn_it is a human judgement and it is his. Rewritten 2026-08-27 against contracts/ai-native-assessment.schema.json, which requires a reading with every address: bare citations were replaced with what was actually seen, and two of them were wrong - scripts/sovschedule/switchlog.py does not exist (the record is written by scripts/sovschedule/changelog.py) and the fixture ids are full slugs, not C-002. The defeating cases the earlier draft listed separately are C-002, C-011, C-012 and test_automation_control.py::ConsoleTransport; they are carried as evidence below. The derived line the earlier draft stated by hand is derived by the grader and is not restated here: earn_it is OPEN, so the assessment state is OPEN and the verdict is underived no matter how the technical axes score.",
+  "axes": {
+    "reachability": {
+      "score": "FULL",
+      "note": "A fresh model instance can find the operation, its inputs, its constraints and its result without reading source. contracts/automation-control.json declares the operation, both directions, the effect class of each, the grant each needs, the record shape and all eight refusals. `python scripts/sov_schedule.py --help` lists enable, disable, switches and console; each verb states its own arguments. The result is a typed outcome with a refusal code from the declared set, and `switches --json` returns the record. Nothing about this operation requires a human to read the page or to translate anything.",
+      "evidence": [
+        {
+          "kind": "file",
+          "reference": "contracts/automation-control.json",
+          "observed": "Declares operation, operations, authority, record, bindings, transport, refusals, residuals, refusal_layer and validation. 18 refusal codes are named with a sentence each. authority.checked_at reads 'the operation, not the binding'."
+        },
+        {
+          "kind": "file",
+          "reference": "scripts/sovschedule/controlsurface.py",
+          "observed": "Binds enable, disable, changes, create, edit and console as argparse subcommands; each states its own arguments and every one routes through _switch or the control module rather than writing a declaration itself."
+        },
+        {
+          "kind": "fixture",
+          "reference": "conformance/fixtures/automation-control/cases.json",
+          "observed": "12 controlled cases C-001 through C-012, plus separate authoring_cases, each declaring expect_outcome and expect_refusal."
+        }
+      ]
+    },
+    "commitment": {
+      "score": "FULL",
+      "note": "A model's request and accepted state are not the same thing and cannot be confused. A model asking to arm a schedule produces outcome PROPOSED with refusal_code GRANT_NOT_HELD, the declaration is untouched, and the asking is recorded. Only an actor holding seat:root moves the switch, and the record distinguishes EFFECTED from PROPOSED from REFUSED from the no-op that wrote nothing at all. C-002 is the defeating case: if it ever passes, any session on this box can commit the owner's tokens.",
+      "evidence": [
+        {
+          "kind": "fixture",
+          "reference": "conformance/fixtures/automation-control/cases.json#C-002-a-model-cannot-arm-a-schedule-and-the-asking-is-recorded",
+          "observed": "A model actor requesting ENABLE expects outcome PROPOSED, not EFFECTED. This is the case that fails if any session on this box can commit the owner's tokens."
+        },
+        {
+          "kind": "fixture",
+          "reference": "conformance/fixtures/automation-control/cases.json#C-011-arming-a-schedule-whose-target-is-gone",
+          "observed": "Arming a schedule whose target does not exist is refused TARGET_MISSING; C-012 records that switching such a schedule off is still allowed."
+        },
+        {
+          "kind": "file",
+          "reference": "scripts/tests/test_automation_control.py::TheAuthoritySplit",
+          "observed": "3 tests. The grant table is data and the class asserts that changing it changes the outcome, so the check is the table rather than a hard-coded branch."
+        }
+      ]
+    },
+    "provenance": {
+      "score": "PARTIAL",
+      "note": "Every attempt resolves to who, when, through which binding, from which value to which, why, and the digest of the declaration before and after. What it cannot resolve is identity: the console authenticates nobody, so an actor at this machine is recorded as a local operator holding the root seat by possession of the box. That is what was actually checked, and the record says so rather than naming a person. FULL needs a principal this surface can verify, which does not exist yet on this node.",
+      "evidence": [
+        {
+          "kind": "file",
+          "reference": "contracts/automation-control.json#record",
+          "observed": "record.address is .claude/schedules/change-log.ndjson and record.carries names eight fields including the binding reached through and the declaration digest before and after. record.refusals_are_recorded is declared."
+        },
+        {
+          "kind": "file",
+          "reference": "scripts/sovschedule/changelog.py",
+          "observed": "The module that writes that record, committed rather than under .local/ so a clone carries who armed what. Its own docstring states refused attempts are appended too. The earlier draft cited scripts/sovschedule/switchlog.py, which does not exist."
+        }
+      ]
+    },
+    "retraction": {
+      "score": "PARTIAL",
+      "note": "A switch is countered by a further switch in the opposite direction and the earlier record stays. Nothing is edited and nothing is removed. It is PARTIAL rather than FULL because the counteraction is record-local only and honest about it: switching a schedule off does not counter a run that already happened and refunds nothing that run spent. The contract says this in record.retraction.honesty rather than letting the reversal read as a rollback.",
+      "evidence": [
+        {
+          "kind": "file",
+          "reference": "contracts/automation-control.json#record.retraction",
+          "observed": "mechanism is 'a further switch record in the opposite direction'; never is 'editing or removing an earlier record'; honesty states that disabling counters the arming and does not counter a run that already happened or refund what it spent."
+        },
+        {
+          "kind": "file",
+          "reference": "scripts/tests/test_automation_control.py::TheRecord",
+          "observed": "5 tests over the append-preserving record, including that a refusal leaves a line."
+        }
+      ]
+    }
+  },
+  "earn_it": {
+    "judgement": "OPEN",
+    "reviewer": null,
+    "at": null
+  },
+  "qualifications": {
+    "same_world_parity": {
+      "result": "PASS",
+      "note": "One function, two bindings. The page's button and the command line call control.set_switch and nothing else, so the authority check cannot be reached around by either. A test drives both against the same schedule and asserts the log records the same shape from each, differing only in the binding field. Hiding a button is explicitly not the check.",
+      "evidence": [
+        {
+          "kind": "file",
+          "reference": "scripts/tests/test_automation_control.py::test_the_served_page_and_the_command_line_reach_one_operation",
+          "observed": "Drives the human binding over a real loopback socket and the model binding in process against one schedule, and asserts both land in the same log differing only in the binding field."
+        }
+      ]
+    },
+    "typed_authority": {
+      "result": "PASS",
+      "note": "Scoped: seat:root, and only for ENABLE. Attributable: the actor is in every record. Checked at the operation, not at the binding. Revocable in the sense that matters here - the grant table is data and a test proves flipping it changes the outcome, so the check is the table rather than a hard-coded branch. Verification authority ratifies nothing: the operation settles whether a switch moved, never whether it should have.",
+      "evidence": [
+        {
+          "kind": "file",
+          "reference": "contracts/automation-control.json#authority",
+          "observed": "checked_at is 'the operation, not the binding', with the note that a control merely hidden from a page is not an authority check. ENABLE is held_by seat:root."
+        },
+        {
+          "kind": "file",
+          "reference": "scripts/sovschedule/control.py",
+          "observed": "Docstring states both bindings call this one function and the grant is tested inside it, so neither binding can reach around the check."
+        }
+      ]
+    },
+    "independent_observation": {
+      "result": "UNPROVEN",
+      "note": "The tests establish BUILT. Nothing here has been observed by a participant that did not build it. This is the axis the previous packet on this surface owed and paid, and this one owes again.",
+      "evidence": []
+    },
+    "receipt_completeness": {
+      "result": "FAIL",
+      "note": "Every admission, refusal and operation leaves a durable line, including the refusals, which is the part usually missing. It is still not a kernel receipt: no receipt_id, no authority_grant_ids, and the kernel does not settle it. FAIL rather than UNPROVEN because this was measured, not skipped.",
+      "evidence": [
+        {
+          "kind": "file",
+          "reference": "contracts/automation-control.json#record",
+          "observed": "The record carries no receipt_id and no authority_grant_ids, and no kernel transition settles it. It is a harness record; calling it a kernel receipt would be the misreport this line prevents."
+        }
+      ]
+    },
+    "effect_honesty": {
+      "result": "PASS",
+      "note": "The two directions carry different effect classes because they are different effects, and the contract says why. Disabling is never described as undoing a run. Arming is never described as running: the surface says armed, because nothing on this node ticks a schedule and an operator who read on as running would be wrong.",
+      "evidence": [
+        {
+          "kind": "file",
+          "reference": "contracts/automation-control.json#operations",
+          "observed": "The two directions carry different effect classes and the contract says why. The surface says 'armed' rather than 'running', because nothing on this node ticks a schedule."
+        }
+      ]
+    },
+    "cold_start_competence": {
+      "result": "UNPROVEN",
+      "note": "Not measured. A fresh instance reading contracts/automation-control.json and the CLI help has what it needs in principle, and nobody has timed one doing it.",
+      "evidence": []
+    },
+    "two_binding_proof": {
+      "result": "PASS",
+      "note": "test_the_served_page_and_the_command_line_reach_one_operation drives the human binding over HTTP and the model binding in process against the same schedule and the same contract, and asserts both land in the same log. The human binding is exercised through the real socket, not a stub.",
+      "evidence": [
+        {
+          "kind": "file",
+          "reference": "scripts/tests/test_automation_control.py::ConsoleTransport",
+          "observed": "Drives the console transport itself, including a non-loopback bind refused NON_LOOPBACK_BIND and a wrong token refused BAD_TOKEN. The human binding is exercised through the real socket, not a stub."
+        }
+      ]
+    },
+    "local_sovereignty": {
+      "result": "PASS",
+      "note": "No integration is involved. The operation reads and writes files in this repository, the transport is a loopback socket, and losing Claude, GitHub or any network removes nothing: the command line still switches schedules and the log is committed, so the record survives cloning.",
+      "evidence": [
+        {
+          "kind": "file",
+          "reference": "scripts/sovschedule/changelog.py",
+          "observed": "The record is committed to the repository rather than kept under .local/, so it survives cloning and losing any network removes nothing."
+        }
+      ]
+    },
+    "model_substitutability": {
+      "result": "UNPROVEN",
+      "note": "No model is invoked by this operation at all, so the axis has nothing to grade. Marking it PASS on the grounds that nothing can go wrong would be reading an absence as a proof.",
+      "evidence": []
+    }
+  }
+}

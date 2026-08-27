@@ -1,0 +1,142 @@
+{
+  "observer_id": "urn:soveraeign:actor:sov-witness/session-f444fd",
+  "contributed_to_build": false,
+  "verdict": "DEFEATED",
+  "concern": "PR #119 (docs/witness-debt-sweep) at fec8dd7, the second repair: do the four claims hold against cases the repair did not anticipate?",
+  "subject": {
+    "commits": [
+      "fec8dd7"
+    ],
+    "pull_request": 119,
+    "decisions": [],
+    "claims_under_test": [
+      "supported_standing() requires the value on the label's own line, names exactly one of WITNESSED/RATIFIED, and carries no denial token anywhere",
+      "refusal() distinguishes absent / declares-nothing / over-reaches without trapping a future ratification",
+      "KNOWN_MODULE_DEBT is pinned so a new exemption is a deliberate visible act",
+      "a test couples the README's documented spelling to the gate so doc and code fail together",
+      "exactly three subjects observed, none promoted"
+    ]
+  },
+  "observer_relation": {
+    "to_builder": "NONE",
+    "basis": "The third separate witness of this branch. The first refused it; the builder repaired; the second defeated one repair three ways; the builder repaired again. Both prior witnesses are inside the build. This one re-derived every claim rather than taking either."
+  },
+  "frozen_head": "fec8dd7",
+  "shared_tree_conditions": {
+    "trap": "CLAUDE.md T6",
+    "mitigation": "two disposable worktrees at fec8dd7, clean before and after, both removed; the shared tree was never touched"
+  },
+  "checks": [
+    {
+      "command": "python scripts/lint.py",
+      "result": "PASS, 2.871s, 3 named debt",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/verify.py",
+      "result": "all 39 checks PASS by exit verdict on both runs; run 1 exit 0 at 13.962s SILVER, run 2 exit 1 at 15.158s on the wall-clock budget alone with no failing check",
+      "exit_code": 0
+    }
+  ],
+  "reproduced": [
+    {
+      "id": "W3-1",
+      "claim": "refusal() distinguishes three states and traps no future ratification",
+      "method": "drove refusal() through read_claims() over synthetic STATUS.yaml files across the full matrix of two claim kinds by four record states",
+      "finding": "confirmed, and confirmed as three genuinely distinct refusals rather than two with different wording. A record present and wrong is not reported as missing. A RATIFIED field is not trapped: it is satisfied by a record declaring WITNESSED, and the gate then prints that it saw the witnessed half only and does not see the owner's act. A record declaring RATIFIED is refused for both claim kinds, which is the correct direction."
+    },
+    {
+      "id": "W3-2",
+      "claim": "exactly three subjects, none promoted",
+      "method": "re-derived from the frozen tree independently of the PR body; compared STATUS.yaml blob hashes against origin/main and recomputed all 23 receipt digests from git objects at both the pinned revision and HEAD",
+      "finding": "confirmed. STATUS.yaml is byte-identical to origin/main, both blob 6f5f389c. Nothing under decisions/, lineage/ or .github/ was touched. read_claims() is empty and witness_records() is empty because each record declares 'none' - not one even offers a standing. All 23 digests match at the pinned revision and still match at HEAD, so the observations still measure the current bytes of their subjects."
+    },
+    {
+      "id": "W3-3",
+      "claim": "the debt pin catches a fourth entry",
+      "method": "mutation: wrote a 321-line module and added a fourth debt entry, then raised the pin",
+      "finding": "confirmed as stated. lint alone only WARNs and still exits 0; the catch is the pin test, failing 4 != 3. Raising the pin goes green and costs an explicit one-line edit visible in the diff. The pin measures the artifact rather than a declaration about it."
+    },
+    {
+      "id": "W3-4",
+      "claim": "verify's stdout FAIL lines are defeating fixtures rather than check failures",
+      "method": "located the stale-surface line inside a tooling shard whose unittest result was OK, and read verify.py main()",
+      "finding": "confirmed. verify computes its failure list from subprocess exit codes and never from stdout text. All 39 checks exited 0 on both runs. This closes the reading hazard recorded earlier."
+    }
+  ],
+  "dissented": [
+    {
+      "id": "W3-D1",
+      "severity": "BLOCKING",
+      "claim_defeated": "the value names exactly one of WITNESSED/RATIFIED",
+      "finding": "`Standing supported: SELF_WITNESSED` returns WITNESSED and the claim is promoted. re.split(r'[^A-Za-z]+') dissolves the compound into SELF and WITNESSED, so the whole-token discipline that closed NOT_WITNESSED does not survive one layer down. `PRE-WITNESSED` promotes identically.",
+      "consequence": "This is the single most consequential inversion in the repository being read as support: AGENTS.md says a build report cannot witness itself. Note the asymmetry - the same token-splitting shape is fail-closed on the STATUS.yaml side in claimed_standing() and fail-open on the record side.",
+      "what_would_have_defeated_this_finding": "whitelisting the value as a bare standing token rather than scanning it for one"
+    },
+    {
+      "id": "W3-D2",
+      "severity": "BLOCKING",
+      "claim_defeated": "the value must sit on the label's own line",
+      "finding": "LABEL.search takes the first match and the pattern is markdown-blind, so the label matches inside fenced code blocks, HTML comments, blockquotes and four-space indents, and a later honest line cannot override it. A record that quotes witness/README.md's own required spelling in a fenced block under Findings and then declares '**Standing supported: none.**' at the bottom grades as WITNESSED.",
+      "consequence": "No adversary is required. That is the shape of the most likely next record this repository writes - a witness record about the standing gate, quoting the gate's documented format. witness/README.md itself escapes only by luck of line order: its bullet matches before its example. A differently ordered README would promote.",
+      "what_would_have_defeated_this_finding": "anchoring to a single canonical field position"
+    },
+    {
+      "id": "W3-D3",
+      "severity": "MATERIAL",
+      "claim_defeated": "no denial token anywhere",
+      "finding": "The scan covers only the label's own line, and DENIALS is a closed hand-written word list. A record declaring WITNESSED on line 3 whose body says the subject is NOT witnessed still returns WITNESSED. So do 'WITNESSED (retracted)', 'WITNESSED - withdrawn', 'WITNESSED, dissented', 'WITNESSED subject to conditions' and 'WITNESSED - void'.",
+      "consequence": "'WITNESSED subject to conditions' is reachable from witness/README.md's own defined verdict RATIFIABLE-WITH-CONDITIONS. And a closed hand-written list where nothing is measured is the pattern this very change criticises in PRODUCTION_ROOTS.",
+      "what_would_have_defeated_this_finding": "whitelisting the value instead of blacklisting denials"
+    },
+    {
+      "id": "W3-D4",
+      "severity": "MINOR",
+      "claim_defeated": "unicode is handled symmetrically",
+      "finding": "A homoglyph inside the standing token fails closed, which is correct. A homoglyph inside the denial fails open: 'Standing supported: N[Cyrillic O]T WITNESSED' returns WITNESSED.",
+      "consequence": "Low realism, but it is the one direction that should never fail open.",
+      "what_would_have_defeated_this_finding": "a whitelist, which makes the question moot"
+    },
+    {
+      "id": "W3-D5",
+      "severity": "MATERIAL",
+      "claim_defeated": "a test couples the README's spelling to the gate so doc and code fail together",
+      "finding": "The test asserts two independent hardcoded constants with no data flow between them: it reads the README and asserts a literal, then separately writes its OWN hardcoded record body and asserts the gate parses it. The README is never the gate's input.",
+      "consequence": "Demonstrated: rewriting the README to instruct the bold-label-then-next-line shape - precisely the shape this commit says it repaired, and precisely the misinstruction the test exists to prevent - leaves all 31 tests green, because the literal survives in a historical parenthetical. The guard would not have caught the original defect.",
+      "what_would_have_defeated_this_finding": "deriving the record body from the README's own backticked example and feeding it to the parser"
+    },
+    {
+      "id": "W3-D6",
+      "severity": "MATERIAL",
+      "claim_defeated": "the branch's own deliverable is internally consistent",
+      "finding": "All three prose records still read 'Commit witnessed: 4b96ba19' while their receipts read b3057c0. An earlier commit restamped the JSON and left the prose.",
+      "consequence": "Between those commits four subject files changed, and the digest rule under test did not exist at 4b96ba1. One record then asserts commands were run at the commit above, listing a probe file that also did not exist there. The record is both what the gate reads and what a human reads, and witness/README.md warns about exactly this. The recorded lint counts in that section are also false at HEAD.",
+      "what_would_have_defeated_this_finding": "restamping the prose with the JSON"
+    },
+    {
+      "id": "W3-D7",
+      "severity": "MINOR",
+      "claim_defeated": "the debt pin makes a new exemption a deliberate visible act",
+      "finding": "The pin measures cardinality where it could measure the set. A swap - trimming one debted module under the ceiling, removing its entry, adding a new over-ceiling module's - keeps the length at three, passes all twenty tests, and never touches the pinned line.",
+      "consequence": "A new exemption can arrive without the visible act the docstring promises. The letter of the claim holds; its intent does not.",
+      "what_would_have_defeated_this_finding": "pinning the sorted key set rather than the length, at identical cost"
+    }
+  ],
+  "residuals": [
+    {
+      "id": "W3-R1",
+      "severity": "MINOR",
+      "finding": "Both new test classes are defined after the __main__ block. Running either file directly executes 12 of 20 and 20 of 31, silently skipping every case this repair added. The gate path imports the module and does collect them, so the gate is sound today, but a human re-running the file by hand sees green from a suite that never executed the repair."
+    },
+    {
+      "id": "W3-R2",
+      "severity": "MINOR",
+      "finding": "refusal() resolves a record by constructing the path while witness_records() keys on a lowercased stem, so a record filed with different capitalisation resolves on this Windows box and would not on a case-sensitive CI filesystem. Separately, a status field literally named readme_status would be permanently refused."
+    }
+  ],
+  "not_examined": [
+    "whether the three subjects should be promoted; every record declares none"
+  ],
+  "standing_supported": "none. Does not support BUILT -> WITNESSED for fec8dd7. Two claims re-derive cleanly and well; two do not, defeated by the same defect class in cases the repair did not anticipate. Nothing is live today - read_claims() is empty, so no promotion is reachable - but a gate whose whole purpose is to be correct at the moment someone first writes WITNESSED into STATUS.yaml cannot be witnessed on the strength of not yet having been asked.",
+  "judgement_items": []
+}

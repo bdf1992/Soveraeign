@@ -1,0 +1,65 @@
+{
+  "packet_schema": "soveraeign-acceptance-packet/v1",
+  "packet_id": "A9",
+  "claim": "SPEC.md now says what an asset is, and the reference participant fails it. An asset is a governed identity holding no bytes; its constituents are parts with their own content states; a part is not a file; a path is placement on a version entry, not identity; a source is an observation, not state; and how bytes are stored sits below the contract. What needs your judgement is whether these six governed objects are the asset you mean. The corrections that produced them are yours from two passes over 2026-08-26 and 2026-08-27, including the reversal that moved logical_path off the part version once it became clear a rename was minting a new content state for content that had not changed.",
+  "subject": {
+    "artifact": "SPEC.md",
+    "from_standing": "OPEN",
+    "to_standing": "BUILT"
+  },
+  "presented_by_seat": "seat:session-control",
+  "accepted_by_seat": "seat:root",
+  "claim_type": "JUDGEMENT",
+  "built_by": {
+    "actor_id": "urn:soveraeign:actor:claude-interactive-session",
+    "actor_kind": "MODEL"
+  },
+  "witnessed_by": null,
+  "visible_result": {
+    "demo": [
+      "python",
+      "services/asset/tests/test_asset_identity.py"
+    ],
+    "shows": "the reference participant passing every test it owns while failing the definition written for it",
+    "expect": "17 tests, OK, in about 1.2s. That green is the claim. A probe of the twenty invariants the new objects state returns six HOLDS, six CONTRADICTED and eight ABSENT. The verdicts separate two facts: CONTRADICTED means the code has the concept and does the opposite, ABSENT means the concept does not exist so there is nothing to contradict. Trap T2 in the flesh - green means unchanged, not correct."
+  },
+  "evidence": [
+    {
+      "address": "SPEC.md",
+      "digest": null,
+      "says": "six governed Information objects - Asset, AssetType, AssetVersion, AssetPart, AssetPartVersion, AssetVersionDiff - plus SourceObservation on the source plane, and an Operation granularity subsection under Interface parity. Before this branch the string 'Asset' did not occur anywhere in the file."
+    },
+    {
+      "address": "decisions/0077-asset-objects-in-the-spec.md",
+      "digest": null,
+      "says": "four rulings, the twenty-invariant grade, four defeating cases, six defaults taken and six residuals. Written as the final state: no superseded wording is preserved underneath."
+    },
+    {
+      "address": "CLASSIFICATION.md",
+      "digest": null,
+      "says": "five vocabulary terms and a note stating that an asset part is not a file and that payload storage form is not asset vocabulary. It no longer defines a part as a file or a part version by chunks."
+    },
+    {
+      "address": "services/asset/src/soveraeign_asset_service/identity.py",
+      "digest": null,
+      "says": "'Identity follows the locator rather than the bytes'. That is the undeclared identity-equals-address equivalence CONTRACT.md C10 forbids, and it is why a renamed file mints a second asset today."
+    }
+  ],
+  "why_it_matters": "The Asset Service is the one service with a real implementation, and the thing it is named after had no logical definition anywhere. Conformance had nothing to grade a participant against, so the participant could pass every test it owned while doing something nobody had written down. The gap also hid live defects: a rename produces two assets, a content state names exactly one origin, and the asset record stores a filesystem path. Writing the objects is what turns 'the asset service works' into a claim that can be false. Landing the definition before the fixtures is deliberate - the field names had to stay free through two correction passes, and they did.",
+  "what_could_defeat_it": [
+    "An asset type for which a plain rename genuinely should mint a new part rather than move the existing one. Ruling 3 would then have to be type-dependent rather than uniform.",
+    "A real need for File as a governed identity - a file appearing in several assets, holding its own version history, or carrying permissions independent of its asset. Ruling 1 keeps File a representation only until one of those is true.",
+    "A partial-result semantic a plan-level declaration cannot express, which would mean Ruling 4 needs a new terminal outcome rather than an OperationPlan field.",
+    "Measured evidence that separating part from part version costs more than it saves at the scale this node holds. ENGINEERING.md forbids generalized infrastructure for imagined scale, and the constituent layer is the part most exposed to that rule."
+  ],
+  "residuals": [
+    "No independent witness. This session wrote the objects, wrote the probe and ran it, so this is BUILT and self-tested; witnessed_by is null and the standing is capped below WITNESSED.",
+    "No conformance fixture exists for any of the twenty invariants. SPEC.md's own conformance boundary requires a positive and a defeating fixture per normative predicate, and those are the next bounded concern.",
+    "No service operation is declared for any object, so none is reachable through the CLI, the Gateway or MCP. The AI-native reachability score is unmoved.",
+    "OperationPlan carries no field declaring what a partial result means; repairing that crosses into the contracts boundary.",
+    "Six contradictions are unrepaired. identity.py is the first code change any of them implies.",
+    "The verification budget is marginal on the machine this was measured on: main alone runs 13.6-13.8s against a 15s ceiling with ten sessions sharing the box, and this branch measured 12.7-16.6s with identical check CPU. The wall-clock difference is contention rather than compute, and CI on a dedicated runner is the arbiter, not this measurement."
+  ],
+  "on_accept": "The six objects stand as the declared shape of an asset at PROPOSED, decisions/0077 moves from proposed to ruled, and the next bounded concern is the conformance fixtures - after which identity.py is repaired against Ruling 3 and the five remaining contradictions are worked in place.",
+  "on_reject": "Revert the single commit on docs/asset-object-semantics. That removes the objects, the vocabulary terms and the decision record together. Nothing else has to move, because no code changed, no operation became reachable and no standing entry was touched."
+}

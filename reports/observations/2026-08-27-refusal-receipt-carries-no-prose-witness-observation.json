@@ -1,0 +1,100 @@
+{
+  "observer_id": "urn:soveraeign:actor:sov-witness/session-f444fd",
+  "contributed_to_build": false,
+  "verdict": "REPRODUCED",
+  "concern": "fix/refusal-receipt-carries-no-prose at b33e655: did refusal receipts carry exception prose into the durable record against the function's own docstring, and does the repair close the class?",
+  "subject": {
+    "commits": [
+      "b33e655"
+    ],
+    "pull_request": null,
+    "decisions": [],
+    "claims_under_test": [
+      "the receipt carried the exception message while the docstring forbade it",
+      "the field was write-only",
+      "the repair closes the class rather than one site"
+    ]
+  },
+  "observer_relation": {
+    "to_builder": "NONE",
+    "basis": "Requested by the builder, which cannot witness its own build. First independent reading."
+  },
+  "frozen_head": "b33e655",
+  "shared_tree_conditions": {
+    "trap": "CLAUDE.md T6",
+    "mitigation": "two detached worktrees, subject and parent, both removed; the live journal was copied to scratch and never modified"
+  },
+  "checks": [
+    {
+      "command": "python scripts/lint.py",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/verify.py",
+      "result": "exit 1 on seven checks, every one proven inherited by running the parent as a control - six identical stale-artifact failures plus the wall-clock budget at 17.205s. None involves console.",
+      "exit_code": 1
+    }
+  ],
+  "reproduced": [
+    {
+      "id": "PR-1",
+      "claim": "the code contradicted its own docstring",
+      "method": "read the parent file in a detached worktree at the parent commit",
+      "finding": "the contradiction is inside one function. The docstring says the receipt carries the reason code and never the message, and that nothing an exception happens to say reaches the record. Three lines below, the receipt is written with the stringified error. No schema governed the field either way, so the docstring was the only rule and the code broke it."
+    },
+    {
+      "id": "PR-2",
+      "claim": "the field was write-only",
+      "method": "tree-wide search for the key, for detail-dict access and for any iteration over receipt detail; then an empirical control comparing the full verification suite at the commit and at its parent",
+      "finding": "the only occurrence was the line that wrote it. Both candidate readers exclude it by explicit allowlist. Decisive: the failing-check set and the failing-test set are byte-identical with the field present and absent, so nothing in the repository depended on it."
+    },
+    {
+      "id": "PR-3",
+      "claim": "nothing sensitive was already recorded",
+      "method": "read every refusal message builder reachable from the refusing path, then read the live untracked journal from a copy and extracted every payload carrying the field",
+      "finding": "12 of 420 rows carry prose: session ids, thread ids, node ids, capability and scope names, and operator ids. No filesystem path, no credential or token, no environment value, no post body - post payloads are bytes and are never interpolated. The one message that could have carried a path is static text and raises directly rather than through the refusing path, so it never reached the record. Every operator id in a message is already in that row's own actor column, so the field disclosed nothing the record did not already hold. The file is gitignored and untracked and never entered the repository."
+    },
+    {
+      "id": "PR-4",
+      "claim": "the repair closes the class",
+      "method": "enumerated every receipt writer in the service, then swept services, adapters, bindings, workers and scripts for a stringified exception reaching a durable receipt",
+      "finding": "the service has exactly two receipt writers and the other already carried no prose. All five refusing transitions and all refusal reasons funnel through the single repaired path, so the one-line fix covers reasons the tests do not drive. The Gateway already implements this exact discipline - reason code, failure class, stage and the exception's class name, never its message - so this aligns the console with an existing repository norm rather than inventing one."
+    },
+    {
+      "id": "PR-5",
+      "claim": "six cases fail against the unrepaired file",
+      "method": "checked out the parent's module with the new tests left in place, ran the service suite, restored, confirmed a clean tree",
+      "finding": "exactly six failures and no errors - the single-path case plus all five transition subtests. None passes against unrepaired code, so all five transitions genuinely refuse and genuinely wrote prose. The check reads the artifact: it asserts on the journal read back through the verified digest chain, not on a returned value, and its assertion is set equality rather than absence of one key, so it fails on any future prose field."
+    }
+  ],
+  "dissented": [],
+  "residuals": [
+    {
+      "id": "PR-R1",
+      "severity": "MINOR",
+      "finding": "The service's second refusal-receipt writer is exercised by neither new case. It writes no prose today so the class is closed in fact, but the new guard would not catch prose reintroduced there."
+    },
+    {
+      "id": "PR-R2",
+      "severity": "MINOR",
+      "finding": "The class-closing case drives only one refusal reason on each of the five transitions. The guarantee holds because every reason routes through the single repaired path, so the test's strength rests on that funnel rather than on coverage."
+    },
+    {
+      "id": "PR-R3",
+      "severity": "NOTE",
+      "finding": "Not a regression but worth recording: capability and scope were carried only by the prose. A refused channel open no longer records which domain was attempted and nothing else in the receipt holds it. 'Nothing consumes the field' is true of code and not of an operator reading the journal. If that information is wanted it belongs in structured fields. No contract declared it, so nothing is broken."
+    },
+    {
+      "id": "PR-R4",
+      "severity": "NOTE",
+      "finding": "The 12 prose entries already in the local journal stay there permanently - the record is append-preserving and this repair is forward-only. That is correct behaviour, recorded so nobody expects the fix to clean them. It is also why the latent risk mattered: had a message ever carried a secret, the record would have been unfixable."
+    }
+  ],
+  "not_examined": [],
+  "standing_supported": "Supports BUILT -> WITNESSED for b33e655. Every material claim reproduced through a path independent of the builder's report. The defect is real and self-documented, the write-only claim survives both a static sweep and an empirical control, the two new cases are genuine defeating fixtures asserting over the durable journal rather than a returned value, scope is exactly the two declared files, lint passes, and every verify failure is proven inherited by running the parent as a control. The residuals are guard-coverage gaps rather than falsifications. This settles nothing and ratifies nothing.",
+  "judgement_items": [
+    "The standing landing grant conditions on verify PASS, and verify exits 1 here. All seven failing checks are proven inherited from the parent - six identical stale-generated-artifact failures plus a load-dependent wall-clock budget - and none involves the changed service. Does that precondition admit a commit whose only failures are demonstrably its parent's, or must the tree's stale artifacts be rebuilt before anything lands on top of them? This gates every concern on this branch, not only this one.",
+    "Refusal receipts now record the reason code and effect class only. Is the capability and scope of a refused transition information the operational record should carry in structured fields, or is the reason code deliberately the whole of what a refusal owes the journal?"
+  ]
+}

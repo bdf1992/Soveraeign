@@ -84,6 +84,11 @@
       "uniqueItems": true,
       "minItems": 1
     },
+    "chore_id": {
+      "description": "Identity of a chore: one repository surface maintained or retired. A chore closes no obligation, so it carries no construction identity.",
+      "type": "string",
+      "pattern": "^CHORE-[A-Z0-9-]+$"
+    },
     "custody": {
       "type": "string"
     },
@@ -194,7 +199,8 @@
         "implementation-stub",
         "verification-engagement",
         "story",
-        "unblock"
+        "unblock",
+        "chore"
       ]
     },
     "last_observed_at": {
@@ -643,6 +649,49 @@
           "requested_from": {
             "description": "Judgement is owner-held; an unblock request for a judgement is addressed to the owner and to no one else.",
             "const": "owner"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "chore"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "then": {
+        "required": [
+          "chore_id",
+          "path",
+          "village",
+          "village_issue",
+          "parent"
+        ],
+        "properties": {
+          "stub_id": {
+            "description": "A chore closes no repository surface; it maintains or retires one that already exists.",
+            "enum": []
+          },
+          "bit_id": {
+            "description": "A chore obliges nothing to exist.",
+            "enum": []
+          },
+          "engagement_id": {
+            "description": "A chore attacks nothing.",
+            "enum": []
+          },
+          "story_id": {
+            "description": "A chore is not told from a counter.",
+            "enum": []
+          },
+          "parent_bits": {
+            "description": "A chore discharges no obligation. A surface whose removal would leave a bit unclosed is not a chore; that is a demotion of the stub that closed it.",
+            "enum": []
           }
         }
       }

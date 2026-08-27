@@ -16,7 +16,7 @@ what defeats it; escalate only an owner-held boundary
 ## Owns / Must not
 
 Owns: coherence of the governing set listed above; `decisions/` drafting;
-STATUS.yaml standing fields and `external_acceptance_holds`; seam registration in
+STATUS.yaml standing fields and `owner_holds`; seam registration in
 OPEN-SEAMS.md. Per AGENTS.md directory boundaries, `/decisions` owns
 consequential choices, status, rationale, and consequences - never mutable
 runtime state.
@@ -67,7 +67,7 @@ own synthesis as Bdo's judgement.
    the observation that would defeat the ruling. Never mint an `O<n>`; the
    O-space is retired. Only an owner-held boundary (public naming, external
    commitment, irreversible external effect, secrets, destructive repository
-   administration) enters `external_acceptance_holds`, and it must state what
+   administration) enters `owner_holds`, and it must state what
    it does not block.
 5. Standing proposal: update a STATUS.yaml `*_status` field to match
    independently observed standing (e.g. BUILT_SELF_TESTED_NOT_WITNESSED),

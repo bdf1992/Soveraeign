@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+from contextlib import redirect_stdout
 import importlib.util
+import io
 import json
 import os
 from pathlib import Path
@@ -98,6 +100,79 @@ class WitnessProtocolTests(unittest.TestCase):
         expected["custody"]["paths"]["work"] = "expected-work"
         self.assertIn("LOCAL_CONTRACT_SUBSTITUTED",
                       observe.independent_bundle_defects(bundle, CUSTODY_CLAIM, expected))
+
+
+def activation_stage() -> tuple[object, object]:
+    """Load whichever scripts/ module currently defines the activation stage.
+
+    The stage moved out of witness_infrastructure.py into witness_stages.py, so the
+    case binds to the function rather than to a file name and reads the same before
+    and after that split.
+    """
+    for name in ("witness_stages", "witness_infrastructure"):
+        module_path = ROOT / "scripts" / f"{name}.py"
+        if not module_path.exists():
+            continue
+        spec = importlib.util.spec_from_file_location(name, module_path)
+        assert spec and spec.loader
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        for attribute in ("exercise_activation", "_exercise_activation"):
+            stage = getattr(module, attribute, None)
+            if stage is not None:
+                return module, stage
+    raise AssertionError("no module under scripts/ defines the activation stage")
+
+
+def resolve_as_the_body_would(function, name: str):
+    """Resolve a global name exactly as the function body resolves it, or raise NameError.
+
+    Calling the stage does not reach the name on every host: the activation stage
+    refuses with HOST_CANNOT_ENFORCE_CUSTODY on its first line where os.geteuid is
+    absent, so a Windows run goes green with an undefined name still in the body.
+    Resolving the name through the function's own globals reaches it on every platform.
+    """
+    namespace = function.__globals__
+    if name in namespace:
+        return namespace[name]
+    builtins = namespace.get("__builtins__")
+    if isinstance(builtins, dict) and name in builtins:
+        return builtins[name]
+    if builtins is not None and hasattr(builtins, name):
+        return getattr(builtins, name)
+    raise NameError(f"name '{name}' is not defined")
+
+
+class ActivationStageResolvesCustody(unittest.TestCase):
+    """The custody lookup the activation stage performs must actually resolve.
+
+    This is platform-independent by construction: it never calls os.geteuid and never
+    runs the stage, so a host without POSIX identity still observes the binding.
+    """
+
+    def test_custody_posix_is_bound_where_the_activation_stage_reads_it(self):
+        _, stage = activation_stage()
+        custody = resolve_as_the_body_would(stage, "custody_posix")
+        uid, gid = custody.effective()
+        self.assertIsInstance(uid, int)
+        self.assertIsInstance(gid, int)
+
+    def test_the_witness_entry_point_keeps_its_refusal_codes(self):
+        """The split must not move the CLI or rename a refusal reason."""
+        spec = importlib.util.spec_from_file_location(
+            "witness_infrastructure", ROOT / "scripts" / "witness_infrastructure.py"
+        )
+        assert spec and spec.loader
+        entry = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(entry)
+        buffer = io.StringIO()
+        with redirect_stdout(buffer):
+            code = entry.main(["--witness-id", "probe", "--expected-commit", "0" * 40])
+        self.assertEqual(code, 2)
+        self.assertEqual(
+            json.loads(buffer.getvalue()),
+            {"outcome": "REFUSED", "reason": "INDEPENDENCE_DECLARATION_REQUIRED"},
+        )
 
 
 if __name__ == "__main__":

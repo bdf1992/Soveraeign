@@ -158,7 +158,9 @@ class ExecutableRootsAreGraded(unittest.TestCase):
         """
         self.assertEqual(
             sorted(lint.KNOWN_MODULE_DEBT), [
-                "scripts/witness_infrastructure.py",
+                # scripts/witness_infrastructure.py left this list on 2026-08-25
+                # because it was actually split into witness_stages.py and now
+                # reads 103 lines. Paid, not hidden.
                 "witness/probes/probe_host_interface.py",
                 "witness/probes/probe_record_journal.py",
             ],

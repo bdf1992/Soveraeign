@@ -176,7 +176,8 @@ class HostGatewayVertical(unittest.TestCase):
 
         def authority(actor: str, capability: str, scope: str) -> str:
             return console_authority.check(
-                self.record.reconstruct(), actor, capability, scope)
+                self.record.reconstruct(), self.console.node_id, actor, capability,
+                scope)
 
         self.gateway = Gateway(
             self.record, capability_map, manifests, table, authority,
@@ -205,7 +206,7 @@ class HostGatewayVertical(unittest.TestCase):
     def test_human_and_model_use_same_route_and_service_receipt(self) -> None:
         for actor, actor_kind in (("operator", "HUMAN"), ("local-model", "MODEL")):
             with self.subTest(actor_kind=actor_kind):
-                self.console.grant(actor, "read:host-health", "host:local")
+                self.console.grant(actor, "read:host-health", "host:local", "Bdo")
                 returned = self.gateway.dispatch(self.request(actor, actor_kind))
                 self.assertEqual(returned, self.record.entry(returned["entry_id"]))
                 self.assertEqual(returned["payload"]["outcome"], "COMMITTED")
@@ -220,7 +221,7 @@ class HostGatewayVertical(unittest.TestCase):
         self.assertEqual(self.adapter.calls, 0)
 
     def test_client_attribution_override_refuses_before_the_adapter(self) -> None:
-        self.console.grant("operator", "read:host-health", "host:local")
+        self.console.grant("operator", "read:host-health", "host:local", "Bdo")
         returned = self.gateway.dispatch(
             self.request("operator", arguments={"actor": "mallory"}))
         self.assertEqual(returned["payload"]["outcome"], "REFUSED")
@@ -228,7 +229,7 @@ class HostGatewayVertical(unittest.TestCase):
         self.assertEqual(self.adapter.calls, 0)
 
     def test_service_argument_refusal_crosses_gateway_unchanged(self) -> None:
-        self.console.grant("operator", "read:host-health", "host:local")
+        self.console.grant("operator", "read:host-health", "host:local", "Bdo")
         returned = self.gateway.dispatch(
             self.request("operator", arguments={"physical_host": True}))
         self.assertEqual(returned["payload"]["outcome"], "REFUSED")

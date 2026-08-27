@@ -35,7 +35,18 @@ DEFAULT_WORKERS = 4
 # it lands in becomes the whole suite's critical path. Weighted here it stays with one
 # peer instead of four. The weight is a scheduling hint; it changes no check and no
 # budget, which decisions/0050 owns.
-MODULE_WEIGHTS = {"test_sov_docs.py": 10, "test_sov_branch.py": 4}
+# test_verify_clocks measures real subprocesses, so it deliberately sleeps and burns
+# CPU. Measured at 0.64s on Windows and 0.28s on Linux against roughly 0.05s for a
+# bounded module, and at ordinary weight it added 0.75s to whichever shard drew it.
+# test_sov_branch was 4 against a two-entry table and no longer bought what it was
+# chosen for once a third heavy module arrived: measured over the merged set, 4
+# gave its shard 18 peers where dropping the entry gave 15. The property only
+# holds from 8 upward. 10 puts it level with the other multi-second reader and
+# leaves margin. Note for whoever tunes this next: peers are not monotonic in the
+# weight across the whole range - weight 1 packs late and lands at 15, weight 2
+# at 20 - so a weight has to be measured rather than reasoned about.
+MODULE_WEIGHTS = {"test_sov_docs.py": 10, "test_verify_clocks.py": 7,
+                  "test_sov_branch.py": 10}
 
 
 def test_modules() -> tuple[Path, ...]:

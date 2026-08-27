@@ -18,12 +18,15 @@ time the operator waited, and keep wall time as a reported number that fails
 nothing.
 
 The drafter does not recommend adopting this as it stands. An adversarial pass
-over the same branch measured the premise and found it holds for the suite and
-fails for the part of the suite that matters; that measurement is under **What
-would defeat this**, and it should be read before the argument for the change.
+measured the premise and found it holds in one regime and fails in another: at
+the moderate load that actually trips this gate the two clocks separate cleanly,
+and at deliberate saturation they move together, worst of all on the CPU-bound
+checks a compute band would have to key on. That measurement is under **What
+would defeat this** and should be read before the argument for the change.
+
 What the drafter does recommend is that the question is now answerable, which it
-was not before, and that the answer needs a measurement taken on `ubuntu-latest`
-rather than on a 32-core development host.
+was not before, and that answering it needs a measurement taken on
+`ubuntu-latest` rather than on a 32-core development host.
 
 ## Why
 

@@ -53,18 +53,43 @@ Two readings the per-check numbers make visible for the first time:
 - `repository tooling tests` reads a CPU-to-wall ratio above 1, because its four
   shards run at once. A per-process measurement would have reported nearly zero
   for the most expensive check in the suite.
-- `Asset Service reference tests` reads 12.982 s wall against 1.625 s CPU, a
-  ratio of 0.13. The largest single consumer of the wall budget is a check that
-  spends seven-eighths of that budget waiting. That is a separate concern; it is
+- `Asset Service reference tests` reads 12.982 s wall against 1.625 s CPU on this
+  Windows host, a ratio of 0.13. The largest single consumer of the wall budget
+  spends seven-eighths of it not computing. Why is a separate concern; it is
   named here because it is what a wall-keyed ceiling is actually measuring.
 
-## What a compute-keyed budget would have done
+The same suite on `ubuntu-latest`, the runner that gates merges, read 7.600 s
+aggregate wall against 26.281 s of summed check CPU. Wall and compute are not
+translatable between the two hosts, which is the practical reason a compute band
+would have to be measured on CI rather than derived from the numbers above.
 
-Wall inflates under contention and CPU does not follow it. Measured on this
-branch, the whole suite run idle and then under artificial CPU load on the same
+## What a compute-keyed budget would have said
+
+One run of this branch failed the gate while a second agent was working the same
 host:
 
-<!-- CONTENDED TABLE -->
+```
+FAIL: verification budget (17.259s > 15.000s)
+COST: 39 checks in 17.259s wall; 44.636s of check wall, 21.703s of check cpu
+```
+
+All 39 checks passed. The compute figure, 21.703 s, sits inside the idle band of
+19.719 s to 22.719 s above. Wall crossed the ceiling and compute did not move.
+That is the whole case in one run, and it is the first time the harness could
+state it rather than guess it.
+
+Deliberate load says the same thing less sharply. Three interleaved pairs, each
+an idle run followed immediately by a run under 32 CPU burners on 32 cores:
+
+| Pair | Idle wall | Loaded wall | Idle CPU | Loaded CPU |
+| --- | --- | --- | --- | --- |
+| 1 | 13.619 s PASS | 44.374 s FAIL | 21.938 s | 33.984 s |
+| 2 | 22.311 s FAIL | 31.392 s FAIL | 26.641 s | 36.047 s |
+| 3 | 24.625 s FAIL | 48.913 s FAIL | 29.812 s | 34.844 s |
+
+Median inflation: wall x1.99, CPU x1.31. Wall inflated more than CPU in every
+pair, which is the claim; CPU inflated by a third, which is the qualification and
+is taken up below.
 
 ## What would defeat this
 
@@ -73,9 +98,12 @@ host:
   with no corresponding wall movement. If that spread is the normal case rather
   than an artifact, a CPU-keyed band is no more honest than the wall band and
   this record is wrong.
-- CPU rising for reasons that are not the repository growing: a slower
-  interpreter, a different core count, or cache pressure under contention, which
-  does add real CPU rather than only wall.
+- CPU rising for reasons that are not the repository growing. This is measured,
+  not hypothetical: saturating the host added 31 % to summed CPU, because
+  competing for cache and memory buys real cycles. A compute band wide enough to
+  absorb that may be no more discriminating than the wall band it replaced, and
+  the strongest argument against this record is that nobody has yet shown the
+  compute band would be narrower.
 - A compute gate does not bound what the operator waits. A suite that took
   sixty seconds of wall for twenty of CPU would pass it and be unusable. If the
   wait is what Bdo wants bounded, the answer is two graded numbers, not a

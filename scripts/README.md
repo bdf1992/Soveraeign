@@ -54,6 +54,7 @@ Run any of them with `--help` for exact arguments.
 | `sov_grant.py` | `list` `check` `selfcheck` | The standing authority grants, and whether one request is inside them. |
 | `sov_standing.py` | — | Refuses a standing claim in `STATUS.yaml` that no witness record supports. |
 | `sov_closure.py` | `loop` `judge` `selfcheck` | Whether a handoff is a genuine seam or a concern being abandoned. |
+| `sov_custody.py` | `list` `board` `circuit` `estimate` `reconcile` `orphans` `selfcheck` | Who is on the hook for an initiative, how far it has been drawn, and what it was estimated to cost. |
 | `sov_land.py` | — | The landing gate. The only place a witnessed change becomes a commit on `main`. |
 | `sov_witness.py` | `semantic` | The semantic task a fresh witness can judge without reading the code. |
 

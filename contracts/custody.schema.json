@@ -1,0 +1,207 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/custody.schema.json",
+  "title": "Soveraeign Custody (PROPOSED)",
+  "description": "Durable accountability for one initiative, held after the session that started it has ended. GROUND-001 already says an enterprise keeps custody of its memory, its authority, its operation and its continuity; this is that word applied to work in progress. A custody is not a seat, which is an authority position; not a work lease, which is one participant holding one concern for a bounded moment and then expiring; and not an office, which groups capabilities. Custody is hierarchical on purpose. An EXIT custody holds exactly one clause of a phase exit and has no parent. A DELIVERY custody is bounded service or cross-cutting work and must name the exit custody it serves, or be marked explicitly outside the phase exit with a reason. A flat set of peers reproduces at a new layer the failure it was built to fix: work that is locally coherent and globally non-closing. A custody confers nothing. required_authority names the grant its work would need, never one the custody holds. Semantic constraints a schema cannot express - a member address held by two custodies, a closure condition nobody can ever meet, a holder that also settles its own closure, a delivery custody serving an exit custody that does not exist - are checked by scripts/sovcustody/model.py and each has a fixture that defeats it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "custody_schema",
+    "status",
+    "custody_id",
+    "custody_kind",
+    "initiative",
+    "held_by",
+    "roots",
+    "circuit",
+    "entry_stage",
+    "target_stage",
+    "closure",
+    "members"
+  ],
+  "properties": {
+    "custody_schema": {"const": "soveraeign-custody/v1"},
+    "status": {"enum": ["PROPOSED", "RATIFIED"]},
+    "custody_id": {"type": "string", "pattern": "^custody:[a-z0-9][a-z0-9/-]*$"},
+    "custody_kind": {
+      "description": "EXIT holds one clause of a phase exit and has no parent. DELIVERY is bounded service or cross-cutting work and serves an exit custody, or is explicitly outside the phase exit.",
+      "enum": ["EXIT", "DELIVERY"]
+    },
+    "phase": {
+      "type": ["string", "null"],
+      "pattern": "^phase:[a-z0-9][a-z0-9-]*$",
+      "description": "The campaign this custody belongs to. Required on an EXIT custody."
+    },
+    "exit_clause": {
+      "type": ["string", "null"],
+      "pattern": "^[A-Z0-9][A-Z0-9-]*$",
+      "description": "The clause_id this custody holds to settlement. Required on an EXIT custody, refused on a DELIVERY one."
+    },
+    "serves_exit": {
+      "type": ["string", "null"],
+      "pattern": "^custody:[a-z0-9][a-z0-9/-]*$",
+      "description": "The exit custody this delivery work serves. A DELIVERY custody names this or outside_phase_exit, never both and never neither."
+    },
+    "outside_phase_exit": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "description": "Why this initiative is not Phase-I exit work, in one clause. Being outside the exit is admissible and ordinary - coordination cleanup and future product capability both are - but it is stated rather than left for a reader to infer from an absent parent."
+    },
+    "initiative": {
+      "type": "string",
+      "minLength": 1,
+      "description": "One sentence naming what closes, in ordinary English. Not a theme, not an area, not a service name. If it cannot be said in one sentence the initiative is two initiatives."
+    },
+    "held_by": {
+      "type": "string",
+      "pattern": "^seat:[a-z0-9][a-z0-9-]*$",
+      "description": "The seat carrying this initiative to its target stage. Resolves against contracts/seat-registry.json."
+    },
+    "roots": {
+      "type": "array",
+      "minItems": 1,
+      "description": "What this initiative descends from. At least one must resolve, which is what stops a board accumulating work nobody can trace to product ground.",
+      "items": {"$ref": "#/$defs/root"}
+    },
+    "circuit": {"const": "soveraeign-work-circuit/v1"},
+    "entry_stage": {"$ref": "#/$defs/stage"},
+    "target_stage": {
+      "$ref": "#/$defs/stage",
+      "description": "The stage this initiative must reach. Declaring a target below CAPABLE_NODE is ordinary; a contract mapping may honestly stop at HORIZONTAL_SURFACE and a service boundary at EXPLODED_SURFACE."
+    },
+    "closure": {"$ref": "#/$defs/closure"},
+    "required_authority": {
+      "type": ["string", "null"],
+      "pattern": "^[a-z][a-z0-9-]*[:.][a-z][a-z0-9-]*$",
+      "description": "The grant the work under this custody would need. Naming it lets a participant filter to what it could lawfully take; it never gives the custody or its holder that authority."
+    },
+    "estimate": {"$ref": "https://soveraeign.local/contracts/estimate.schema.json"},
+    "members": {
+      "type": "array",
+      "description": "Addresses of the existing work this custody collects. A member is a referent into whatever surface owns it, never a second copy. Empty is admissible and means the initiative is named and nothing has been drawn under it yet.",
+      "items": {"$ref": "#/$defs/member"}
+    },
+    "depends_on": {
+      "type": "array",
+      "items": {"type": "string", "pattern": "^custody:[a-z0-9][a-z0-9/-]*$"},
+      "description": "Custodies that must reach their target stage before this one can. A cycle is refused by CUSTODY_CYCLE."
+    },
+    "cleanup_obligations": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "description": "The coordination objects this custody must retire before it closes: issues, branches, worktrees, leases, projections. A custody that produced inventory and did not retire it has not closed, it has stopped."
+    },
+    "note": {"type": "string"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"custody_kind": {"const": "EXIT"}}, "required": ["custody_kind"]},
+      "then": {
+        "required": ["phase", "exit_clause"],
+        "properties": {
+          "phase": {"type": "string"},
+          "exit_clause": {"type": "string"},
+          "serves_exit": {"type": "null"},
+          "outside_phase_exit": {"type": "null"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"custody_kind": {"const": "DELIVERY"}}, "required": ["custody_kind"]},
+      "then": {"properties": {"exit_clause": {"type": "null"}}}
+    }
+  ],
+  "$defs": {
+    "stage": {
+      "description": "Circuit maturity: how much of the system object has been drawn. Independent of standing and of work state.",
+      "enum": [
+        "ROOT_POINT",
+        "VERTICAL_SLICE",
+        "HORIZONTAL_SURFACE",
+        "EXPLODED_SURFACE",
+        "CAPABLE_NODE"
+      ]
+    },
+    "standing": {
+      "description": "How well a claim about the object is evidenced and authorized. The existing artifact lifecycle, unchanged. A CAPABLE_NODE at OPEN standing is an ordinary reading and not a contradiction.",
+      "enum": ["OPEN", "BUILT", "WITNESSED", "RATIFIED"]
+    },
+    "work_state": {
+      "description": "Where the concern is in the operating queue. The default columns of a board, because a queue answers what to pick up next and the other two axes answer how far along and how well proven. CANDIDATE is visible inventory that has not passed the definition of ready.",
+      "enum": [
+        "CANDIDATE",
+        "READY",
+        "CLAIMED",
+        "IN_PROGRESS",
+        "PRESENTED",
+        "LANDED",
+        "RETIRED"
+      ]
+    },
+    "root": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["root_kind", "reference"],
+      "properties": {
+        "root_kind": {
+          "enum": ["GROUND", "CANON", "REQUIREMENT", "PREDICATE", "DECISION", "SEAM", "PHASE"],
+          "description": "GROUND is a product-ground claim, the strongest root. REQUIREMENT is a PROD-I row and PREDICATE a PRED-I, TRANS- or PARITY- row. DECISION is a record under decisions/. SEAM is a row in OPEN-SEAMS.md. PHASE is a ROADMAP row."
+        },
+        "reference": {"type": "string", "minLength": 1},
+        "serves": {
+          "type": "string",
+          "description": "How this initiative serves that root, in one clause. The join a reader needs to check the claim rather than take it."
+        }
+      }
+    },
+    "closure": {
+      "description": "What would make this custody done. Exactly one of the two routes must be available, the same rule contracts/work-item.schema.json applies to a single item. A custody with neither can never close, which is the shape the epic tree accumulated and the reason twenty-one of its issues are unroutable.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["check", "judgement_seat", "defeated_by"],
+      "properties": {
+        "check": {
+          "type": ["object", "null"],
+          "additionalProperties": false,
+          "required": ["kind", "expression"],
+          "properties": {
+            "kind": {"enum": ["COMMAND", "DERIVATION_ABSENT", "RECORD_PRESENT", "STAGE_REACHED"]},
+            "expression": {"type": "string", "minLength": 1}
+          }
+        },
+        "judgement_seat": {
+          "type": ["string", "null"],
+          "pattern": "^seat:[a-z0-9][a-z0-9-]*$",
+          "description": "The seat that settles closure when no machine check can. Refused by SELF_HELD_CUSTODY when it equals held_by: holder and settler stay separate."
+        },
+        "defeated_by": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The observation that would show this custody closed when it had not. Required, because a closure condition with no stated defeat is a condition nobody can argue with."
+        }
+      }
+    },
+    "member": {
+      "description": "One collected piece of work, carrying all three axes. A card showing only its circuit stage invites CAPABLE_NODE to be read as done.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["member_kind", "address", "stage", "standing", "work_state"],
+      "properties": {
+        "member_kind": {
+          "enum": ["OPERATION", "CONTRACT", "SERVICE", "TICKET", "ITEM", "SEAM", "DECISION",
+                   "DOCUMENT", "BRANCH", "PACKET", "PULL_REQUEST", "WORKTREE"]
+        },
+        "address": {"type": "string", "minLength": 1},
+        "stage": {"$ref": "#/$defs/stage"},
+        "standing": {"$ref": "#/$defs/standing"},
+        "work_state": {"$ref": "#/$defs/work_state"},
+        "stage_observed_by": {
+          "type": ["string", "null"],
+          "description": "The participant that settled this member stage. Null means the stage is a build claim and has not been witnessed."
+        },
+        "estimate": {"$ref": "https://soveraeign.local/contracts/estimate.schema.json"},
+        "note": {"type": "string"}
+      }
+    }
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/estimate.schema.json",
+  "title": "Soveraeign Estimate (PROPOSED)",
+  "description": "A cost claim over the dimensions contracts/estimation.json declares, and the measured actuals against it. Every dimension is a low-high range on the registry unit, because a single number hides whether the estimator knew the shape of the work. The actual half is optional and is filled in from the sources the registry names, never typed in by the participant that produced the estimate. Semantic constraints a schema cannot express - a dimension id the registry does not declare, an estimate missing a dimension its circuit stage requires, a variance settled by the estimator - are checked by scripts/sovcustody/estimate.py and each has a fixture that defeats it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "estimate_schema",
+    "estimated_by",
+    "estimated_at",
+    "dimensions",
+    "maturity"
+  ],
+  "properties": {
+    "estimate_schema": {
+      "const": "soveraeign-estimate/v1"
+    },
+    "estimated_by": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The principal that produced the claim. Recorded so the variance has an author; it does not make that author the settler of the variance."
+    },
+    "estimated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "basis": {
+      "type": "string",
+      "description": "What the estimate was reasoned from - a comparable landed concern, a measured prior run, or an admission that it was a guess. A guess declared as a guess is admissible; a guess presented as a measurement is not."
+    },
+    "dimensions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/dimension"
+      }
+    },
+    "maturity": {
+      "description": "How firm this estimate is, which contracts/estimation.json ties to circuit position. DISCOVERY_ENVELOPE is the cost of finding out and promises no delivery. WIDE_RANGE is deliberately wide and is not a worse estimate than a tight one, it is a truer report of what is known. COMMITTED_RANGE is a delivery promise and is refused at a stage that cannot support one.",
+      "enum": [
+        "DISCOVERY_ENVELOPE",
+        "WIDE_RANGE",
+        "COMMITTED_RANGE"
+      ]
+    }
+  },
+  "$defs": {
+    "dimension": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "dimension_id",
+        "low",
+        "high"
+      ],
+      "properties": {
+        "dimension_id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "description": "Must resolve against contracts/estimation.json. An unresolved id is reported as UNKNOWN_DIMENSION rather than dropped, so a dimension cannot appear on one side of a boundary only."
+        },
+        "low": {
+          "type": "number",
+          "minimum": 0
+        },
+        "high": {
+          "type": "number",
+          "minimum": 0
+        },
+        "actual": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "description": "The measured value, read from the actual_source the registry names for this dimension. Null while the work is unfinished. Always null for a dimension the registry declares ungraded."
+        },
+        "actual_observed_by": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "The participant that read the actual. Refused by SELF_SETTLED_VARIANCE when it equals estimated_by and the variance is being settled rather than merely recorded."
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

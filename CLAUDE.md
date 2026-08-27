@@ -112,9 +112,8 @@ whenever they disagree.
   not read this page as saying the wall clock is advisory here. It is not.
   A reading on a machine running several sessions at once is a reading of the
   host, so measure on a quiet box before calling an overrun a regression.
-  `python scripts/lint.py` passes with 8 named debt entries, all of them
-  duplicate keys in `STATUS.yaml` that `chore/status-and-projection-bookkeeping`
-  removes.
+  `python scripts/lint.py` passes, carrying named debt for the duplicate keys
+  in `STATUS.yaml` that `chore/status-and-projection-bookkeeping` removes.
 - 10 service boundaries under `services/`, 133 declared operations
   across 10 manifests. Asset and Record are built and self-tested; Console's
   continuity path is built and its other four surfaces are text; Gateway,

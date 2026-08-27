@@ -114,7 +114,7 @@ what the surface's absence would leave behind: if removing it leaves a bit
 unclosed, that is a demotion of the stub that closed it and not a chore. It is
 takeable work and enters the queue, sorting last among equally urgent tickets
 because it maintains a surface rather than advancing one
-(`decisions/0088-chore-ticket-kind.md`).
+(`decisions/0090-chore-ticket-kind.md`).
 
 Changing the issue schema, label axes, color meanings, containment rule, or
 milestone semantics is a reviewed contract change. Update this section, the JSON

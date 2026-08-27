@@ -44,6 +44,10 @@ LOCAL_PATH_PATTERNS = (
     re.compile(r"(?:^|[\s'\"])/Users/[^/\s]+/"),
     re.compile(r"(?:^|[\s'\"])/home/[^/\s]+/"),
     re.compile(r"(?:^|[\s'\"])[A-Za-z]:\\Users\\[^\\\s]+\\"),
+    # Git Bash, JSON documents and most tooling on this host spell a drive path
+    # with forward slashes. Matching only the backslash form left the dominant
+    # shape of a Windows home directory invisible to the rule forbidding it.
+    re.compile(r"(?:^|[\s'\"])[A-Za-z]:/Users/[^/\s]+/"),
 )
 
 

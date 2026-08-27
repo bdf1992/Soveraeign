@@ -88,8 +88,9 @@ def _context(payload: dict[str, Any], near: str = ""):
         root = store.repo_root(anchor)
     except Exception:  # noqa: BLE001 - fall back to the session's own tree
         root = store.repo_root(Path(cwd))
-    name = sov_session.session_name(payload.get("session_id") and
-                                    "session-" + str(payload["session_id"])[:6])
+    payload_id = str(payload.get("session_id") or "")
+    name = sov_session.session_name(
+        fallback="session-" + payload_id[:6] if payload_id else None)
     return {
         "claims": claims, "guard": guard, "store": store,
         "root": root, "directory": store.store_dir(root),

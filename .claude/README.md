@@ -314,6 +314,48 @@ anyone declaring anything.
 - **PostToolUse on Edit/Write** records the claim and refreshes liveness.
 - **SessionEnd** releases everything.
 
+SessionStart honours `SOV_SESSION`. Before 2026-08-26 it did not: it handed the
+resolver a name derived from the payload session id as an explicit override,
+which outranked the environment variable a launcher had already set. One
+process then held two registry rows, the name its launcher chose and a
+`session-` alias nothing could join to it, and four of nine live sessions were
+in that state when it was found.
+
+## Starting a session, not just finding one (`sov_hypervisor`)
+
+The registry answers who is already here. `scripts/sov_hypervisor.py` puts them
+here. Standing: host plumbing, no authority, no standing, no second event log.
+
+A campaign that had already built the right worktrees still needed Bdo to open
+three terminals and paste a loader line into each, because a session started
+from inside another Claude session did not reliably persist, register, or
+receive a cross-session bootstrap message.
+
+A lane plan names, for each session, a worktree, the exact ref that worktree
+must be sitting on, whether it may write, and where its orders live. Orders
+travel as the opening prompt of the process, which is the one channel that
+cannot miss a session that does not yet exist; `SendMessage` stays for
+coordination afterwards.
+
+| Need | Command |
+| --- | --- |
+| Grade every lane, start nothing | `python scripts/sov_hypervisor.py plan <plan.json>` |
+| See the argv without launching | `python scripts/sov_hypervisor.py launch <plan.json> --dry-run` |
+| Start the ready lanes | `python scripts/sov_hypervisor.py launch <plan.json>` |
+| What is live now | `python scripts/sov_hypervisor.py status <plan.json>` |
+| Prove every refusal fires | `python scripts/sov_hypervisor.py selfcheck` |
+
+Nine refusals fire before a process exists, among them a worktree that is not
+on the ref its lane named, a read-only lane pointed at a writable branch, and a
+lane carrying no orders. Two fire after: a session that never registered, and
+one that registered against a different tree. A launched process is not a live
+lane, and `READY` is claimed only once the registry agrees.
+
+Plans are host configuration; keep them under `.local/`. `status` renders
+`HOST COORDINATION PROJECTION - NO SOVERAEIGN STANDING` on every call, and
+names any duplicate `session-` row still carried by a session started before
+the SessionStart repair.
+
 ### Why it cannot wedge the repository
 
 It wedged the repository twice on 2026-08-24 before these held, once by a hook

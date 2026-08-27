@@ -13,7 +13,10 @@ Trunk frozen at `origin/main` = `3360a26` (merge of PR #117). Local `main` was
 four commits stale at the time of the survey, so every comparison in this report
 is against `origin/main` and not against `main`.
 
-Eighteen branches are dispositioned here. Ten more were deliberately left alone:
+Eighteen branches are dispositioned here, out of the local branches ahead of
+the trunk. Fifteen remote-tracking branches were missed entirely; that is
+repaired under `Coverage` at the end, and the scope claim in this report's
+title is withdrawn there. Ten more were deliberately left alone:
 `feat/sov-control-mesh`, `feat/sov-hypervisor`, `feat/console-authority-enforced-only`,
 `feat/human-collection-substrate`, `wt/pr118`, `chore/status-and-projection-bookkeeping`,
 `docs/witness-debt-sweep`, `fix/harness-routing-model`, `feat/surface-collection-transplant`
@@ -234,3 +237,80 @@ present. Each row names the exact path; re-running `git ls-tree -r --name-only
 origin/main -- <path>` defeats or confirms the row directly. Separately: several
 sessions write this tree at once, so a branch reserved above may have been
 finished, and a branch dispositioned above may have moved, since `3360a26`.
+
+## Coverage: this survey read local branches only
+
+A second independent reading found the survey incomplete, and it is. Every
+comparison above uses `git for-each-ref refs/heads/` and
+`git rev-list --count <branch> --not --remotes`, so it never looked at a
+remote-tracking ref. Thirty-three branch names appear above and every local
+branch that carried unlanded commits against `3360a26` when this was written is
+among them — that part holds and was re-checked. But fifteen branches under
+`refs/remotes/origin/` were already in this clone before the first report commit,
+carried seventy-one commits against the frozen trunk, and are named nowhere.
+
+The claim "every outstanding branch" was false for that reason and is withdrawn.
+What follows repairs it with the same method the rows above use: per-file
+presence against `origin/main`, then a blob comparison for files present in both.
+
+One correction to the finding as it reached me, because it matters for anyone
+re-running this. The first count I made said seven *local* branches were
+uncovered. That was wrong: I had typed the named set out of the pull request
+summary rather than reading it out of this file, and all seven are named here.
+Counted against the file, the local gap is zero and the whole gap is remote.
+
+### Nine that carry nothing main does not already have
+
+For each of these, no file it touches is absent from `origin/main`, and every
+file whose bytes differ has a newer commit date on main. Nothing is lost by
+retiring them, and each reaches a remote.
+
+| Branch | Evidence |
+| --- | --- |
+| `feat/gateway-end-to-end-slice` | no file absent, no file differing |
+| `feat/kernel-binding-closure` | no file absent, no file differing |
+| `feat/node-interface-projection` | no file absent, no file differing |
+| `feat/phase-i-runtime-image-proof` | no file absent, no file differing, 2 identical |
+| `feat/phase-i-runtime-image-contract` | 2 files differ, both newer on main, 7 identical |
+| `fix/verification-budget-five-tooling-shards` | 1 file differs, newer on main |
+| `fix/verification-budget-tooling-shards` | 4 files differ, all newer on main |
+| `queue-agent-controller` | 1 file differs, newer on main |
+| `merge/main-into-federation` | 113 files differ, all newer on main, 388 identical |
+
+### Six that carry files present nowhere on main
+
+These are measured, not judged. Each carries at least one file that
+`git rev-parse origin/main:<path>` cannot resolve, so the work is unlanded and a
+`RETIRE` or `SUPERSEDED` call would destroy evidence. Whether any of them should
+land is a judgement about product intent that measurement does not settle, and
+two of them are branch names this repository did not mint.
+
+| Branch | Files absent from main | Differ | One that proves it |
+| --- | --- | --- | --- |
+| `claude/console-terminal-interfaces-5d0lzg` | 39 | 10 | `bindings/desk/scripts/demo.py` |
+| `feat/composable-human-surface` | 7 | 0 | `scripts/sov_composed_surface.py` |
+| `feat/surface-session-presence` | 7 | 0 | `scripts/sov_composed_surface.py` |
+| `claude/ui-primitives-service-nav-rfqg7t` | 5 | 4 | `contracts/fixtures/surface-primitives.fixtures.json` |
+| `feat/human-binding-affordances` | 5 | 0 | `scripts/sov_composed_surface.py` |
+| `feat/phase-i-local-infrastructure` | 2 | 18 | `decisions/0014-phase-i-local-infrastructure.md` |
+
+Three of the six name the same absent file, `scripts/sov_composed_surface.py`.
+They are one body of surface work split across three branches, not three
+independent claims on the trunk, and dispositioning any of them alone would
+misread the other two.
+
+### What would defeat this section
+
+The presence test is `git rev-parse -q --verify origin/main:<path>` per file, and
+the ordering test compares `git log -1 --format=%ci` on each side. The ordering
+test is the weaker of the two: a newer commit date on main proves main's copy was
+written later, not that it contains everything the branch's copy holds. A row in
+the nine above is defeated by finding one hunk on the branch that is absent from
+main's newer version of the same file. The six are defeated by finding their
+"absent" path on main under a name this survey did not check.
+
+The count of fifteen is itself dated. It is every remote-tracking ref whose
+earliest reflog entry precedes this report's first commit at
+`2026-08-26 12:49:04 -0500`; a ref fetched after that is drift and is excluded
+deliberately, which is why the number here is smaller than a plain count of
+unmentioned remote branches today.

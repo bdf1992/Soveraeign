@@ -16,6 +16,10 @@ sys.path.insert(0, str(ROOT / "services" / "record" / "src"))
 
 from soveraeign_console_service import ConsoleRoutes, ConsoleService  # noqa: E402
 from soveraeign_record_service import RecordService  # noqa: E402
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from fixtures import empty_journal  # noqa: E402
 from sovkernel.jsonschema import validate  # noqa: E402
 
 
@@ -23,17 +27,22 @@ class ConsoleReadRoute(unittest.TestCase):
     def setUp(self) -> None:
         self.tmp = TemporaryDirectory()
         root = Path(self.tmp.name)
-        self.record = RecordService(root / "record")
+        self.record = RecordService(empty_journal(root / "record"))
         self.console = ConsoleService(self.record, root / "console", "node:test")
-        self.console.grant("reader", "open:channel", "work")
+        self.console.grant("reader", "open:channel", "work", "Bdo")
         channel = self.console.open_channel("reader", "work", "work")
-        self.console.grant("reader", "open:thread", channel["channel_id"])
+        self.console.grant("reader", "open:thread", channel["channel_id"], "Bdo")
         self.thread = self.console.open_thread(
             "reader", channel["channel_id"], "Read plane")
+        self.console.grant("reader", "open:session", "reader", "Bdo")
+        self.console.grant("reader", "close:session", "reader", "Bdo")
         self.session = self.console.open_session("reader", "HUMAN", "human-binding")
-        self.console.grant("reader", "post:message", self.thread["thread_id"])
+        self.console.grant("reader", "post:message", self.thread["thread_id"], "Bdo")
+        # The Gateway checks `read:thread` before this route is reached and the read
+        # checks it again as of 2026-08-25, so the route's own cases hold it too.
+        self.console.grant("reader", "read:thread", self.thread["thread_id"], "Bdo")
         self.post = self.console.post(
-            self.session["session_id"], self.thread["thread_id"], b"grounded post")
+            "reader", self.session["session_id"], self.thread["thread_id"], b"grounded post")
         self.routes = ConsoleRoutes(self.console)
 
     def tearDown(self) -> None:
@@ -82,16 +91,19 @@ class ConsoleReadRoute(unittest.TestCase):
         malformed = self.routes.call(
             "read-thread", self.arguments(thread_id="not-a-thread"), "reader")
         self.assertEqual(unknown["payload"]["outcome"], "REFUSED")
-        self.assertEqual(self.reason(unknown), "THREAD_UNKNOWN")
+        # The same code the CLI returns for the same fact; `test_declared_refusals.py`
+        # drives both paths against one journal and holds them to it.
+        self.assertEqual(self.reason(unknown), "UNKNOWN_RECORD")
         self.assertEqual(malformed["payload"]["outcome"], "REFUSED")
         self.assertEqual(self.reason(malformed), "MALFORMED_IDENTITY")
 
     def test_session_must_be_live_and_belong_to_the_checked_actor(self) -> None:
+        self.console.grant("other", "open:session", "other", "Bdo")
         other = self.console.open_session("other", "MODEL", "model-binding")
         mismatch = self.routes.call(
             "read-thread", self.arguments(session_id=other["session_id"]), "reader")
         self.assertEqual(self.reason(mismatch), "ACTOR_ATTRIBUTION_MISMATCH")
-        self.console.close_session(self.session["session_id"])
+        self.console.close_session("reader", self.session["session_id"])
         closed = self.routes.call("read-thread", self.arguments(), "reader")
         self.assertEqual(self.reason(closed), "SESSION_NOT_LIVE")
 
@@ -123,7 +135,7 @@ class ConsoleReadRoute(unittest.TestCase):
             self.routes.call("read-thread", self.arguments(), "reader"))["object_record"]
         self.assertEqual(first["revision"], second["revision"])
         self.console.post(
-            self.session["session_id"], self.thread["thread_id"], b"second post")
+            "reader", self.session["session_id"], self.thread["thread_id"], b"second post")
         changed = self.detail(
             self.routes.call("read-thread", self.arguments(), "reader"))["object_record"]
         self.assertNotEqual(first["revision"], changed["revision"])

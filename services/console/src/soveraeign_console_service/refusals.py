@@ -5,8 +5,10 @@ refusals they realize, by driving both sides on the same fact. That check reads 
 declared vocabulary, so the vocabulary is a module rather than exception classes
 scattered across the transitions that raise them.
 
-Every refusal carries a `reason_code`. A receipt records the code, never the
-message, so a caller matches on a stable value instead of parsing prose.
+Every refusal carries a `reason_code`, and a caller matches on that stable value
+instead of parsing prose. `append.refuse` records the code and the message both, so
+what a refusal says is not private to the caller who received it - which is why the
+messages here are written to name a capability rather than whose record it was.
 """
 
 from __future__ import annotations
@@ -19,9 +21,27 @@ class ConsoleRefusal(Exception):
 
 
 class AuthorityRefused(ConsoleRefusal):
-    """No live grant with the required capability, scoped to the target."""
+    """No live grant with the required capability, scoped to the target.
+
+    The message names the capability and never the scope. A scope is an operator id,
+    a channel or a thread, so saying it handed a caller holding nothing the name of
+    whoever owns the record it just asked about - `close-session` answered "no live
+    close:session grant scoped to Bdo" to anybody. That is a disclosure defect on its
+    own and not part of the identity seam: even a perfectly authenticated caller
+    holding nothing should not learn who owns a session.
+
+    The scope is kept on the exception for a caller that already has it - the tests
+    that must assert precisely, and any future in-process handler - because an
+    attribute is not something the CLI or a receipt ever serialises. `cli.py` prints
+    `reason_code` and `str(...)`; `append.refuse` records the same two.
+    """
 
     reason_code = "NO_LIVE_GRANT"
+
+    def __init__(self, message: str, capability: str = "", scope: str = "") -> None:
+        super().__init__(message)
+        self.capability = capability
+        self.scope = scope
 
 
 class ModelClaimWithoutProposal(ConsoleRefusal):
@@ -39,6 +59,26 @@ class StaleCapabilityMap(ConsoleRefusal):
     """
 
     reason_code = "MISSING_PRECONDITION"
+
+
+class CapabilityMapUnreadable(ConsoleRefusal):
+    """The capability projection is not a projection this service can read.
+
+    Distinct from `StaleCapabilityMap`, which is a map that is current in shape and
+    behind its sources. This one has the wrong shape: no `capabilities`, no
+    `input_state_digest`, a row missing `required_authority`, a file that is absent or
+    not JSON. `discovery.operations` indexed those keys directly and the CLI's catch-all
+    labelled the resulting `KeyError` `UNKNOWN_RECORD`, so `console.discover-operations`
+    returned a code its manifest does not declare, and a missing or malformed file left
+    a traceback on stderr with nothing on stdout - against this CLI's own promise that
+    every answer, refusals included, is one JSON object.
+
+    `UNREADABLE` is the kernel's own refusal for a source that cannot be read, so this
+    borrows it rather than minting a console synonym; it needs no `local_refusals` entry
+    and is declared on the one operation that returns it.
+    """
+
+    reason_code = "UNREADABLE"
 
 
 class SessionClosed(ConsoleRefusal):
@@ -72,4 +112,66 @@ class StandingClaim(ConsoleRefusal):
 
 
 class UnknownRecord(KeyError):
-    """The named console record is not in the journal."""
+    """The named console record is not one this node's journal carries.
+
+    One fact, one code. A by-id read that runs before the caller has shown a grant
+    answers the same way whether the record is absent or belongs to another node -
+    `core.held_record` collapses the two on purpose, so a caller holding nothing cannot
+    sweep ids and learn which existed and whose they were.
+
+    `UNKNOWN_RECORD` was the one code the service produced and never declared. Eight
+    operations returned it over the CLI while `services/console/contracts/service.json`
+    named it nowhere, so a caller matching on `reason_code` had no declared name for
+    a refusal it could receive; `routes.py` answered the same fact about the same
+    thread with `THREAD_UNKNOWN`, so the two paths disagreed. Both are now this code,
+    declared per operation and mapped to the kernel's `MISSING_PRECONDITION` - the
+    `*_exists` precondition each of those operations declares is what failed. Declaring
+    it also brought it under `append.py`'s rule that a refusal is written down: it used
+    to be raised out of the read helpers and leave nothing in the journal, so the one
+    code the manifest had just named was the one a reviewer could not see afterwards.
+    `core.by_id` and `core.held_record` record it now.
+
+    "The same answer" is exact about the record and not about the code alone. Three
+    operations - `open-thread`, `post` and `publish-thread` - check authority *first*,
+    because their grant's scope is an id the caller supplied and nothing has to be read
+    to check it. Those answer a record belonging to another node with
+    `FOREIGN_NODE_RECORD`, which `core.owned` explains and the manifest declares for
+    exactly those three: a caller that has shown a grant over the subject has earned
+    being told the record exists elsewhere. The collapse to one answer is the rule for
+    the reads that run *before* a grant has been shown, which is what `core.held_record`
+    owns.
+
+    A `KeyError` rather than a `ConsoleRefusal` because it is raised by the read
+    helpers before any transition has been chosen, and because callers already catch
+    it as one. The code lives here so `cli.py` and `routes.py` name the same constant
+    instead of spelling the string twice.
+    """
+
+    reason_code = "UNKNOWN_RECORD"
+
+
+class ActorAttributionMismatch(ConsoleRefusal):
+    """The caller does not own the operator session it is acting through.
+
+    A session identifies an operator; holding one does not make you that operator.
+    `routes.py` refused this at the read route from the start and `core.post` did
+    not, so a caller that knew any session id could write a post attributed to its
+    owner. `contracts/capability-offices.json` declares the same actor kinds for
+    both; `services/console/contracts/service.json` declares the precondition.
+    """
+
+    reason_code = "ACTOR_ATTRIBUTION_MISMATCH"
+
+
+class LastIssuerStanding(ConsoleRefusal):
+    """Withdrawing this grant would leave the node's permits office with no issuer.
+
+    Revocation appends and the bootstrap is once-ever, so a node whose last live
+    `grant:authority` is withdrawn can never issue another grant and no console
+    operation can restore it. A legitimate operator could brick the office by
+    accident. Carries `MISSING_PRECONDITION` rather than a new code: the precondition
+    `another_issuer_remains` is what failed, and inventing vocabulary for it would
+    add a refusal the kernel does not know.
+    """
+
+    reason_code = "MISSING_PRECONDITION"

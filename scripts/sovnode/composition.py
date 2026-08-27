@@ -156,7 +156,7 @@ class LocalActionPath:
 
         def authority(actor: str, capability: str, scope: str) -> str:
             return console_authority.check(
-                self.record.reconstruct(), actor, capability, scope)
+                self.record.reconstruct(), self.node_id, actor, capability, scope)
 
         self.gateway = Gateway(
             self.record, capability_map, manifests, table, authority,

@@ -29,11 +29,14 @@ another service's state; touch immutable lineage/ evidence.
   the slowest, so the two cannot drift apart. Every passing run prints its
   grade; only passing 15.0s fails. decisions/0042.
 - scripts/sovverify/clocks.py - the two clocks every check is timed on: wall from
-  perf_counter, and the CPU its whole process tree spent (a Windows job object, or
-  os.wait4 rusage on POSIX). A CPU that cannot be taken is reported as unmeasured;
-  wall is never substituted for it. The gate keys on aggregate wall time and on
-  nothing else, so adding a clock changed no verdict. decisions/0071 proposes
-  changing what the budget keys on and is not in force.
+  perf_counter, and the CPU spent by the process tree the check waits for (a
+  Windows job object, or os.wait4 rusage on POSIX). A CPU that cannot be taken is
+  reported as unmeasured; wall is never substituted for it. The gate keys on
+  aggregate wall time and on nothing else, so adding a clock changed no verdict.
+  Do not read a rise in CPU as proof the repository grew: contention buys real
+  cycles, and on ubuntu-latest one commit measured twice read half the CPU on the
+  slower runner. decisions/0071 proposes keying the budget on compute, carries
+  the measurements, and recommends its own rejection; it is not in force.
 - scripts/lint.py - hygiene: UTF-8 decodability, CRLF/trailing-whitespace/final-
   newline, Python syntax and future-annotations, 300-line module limit with
   KNOWN_MODULE_DEBT, secret shapes, local absolute user paths. It reads bytes,

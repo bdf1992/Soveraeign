@@ -2,8 +2,10 @@
 
 They lived in `core` and were imported from there, which meant `projections` and
 `profiles` could not name a refusal without importing the module that imports
-them. Both worked around it with function-local imports. A leaf module holding
-only the exception types removes the cycle instead of hiding it.
+them. `projections` worked around it with function-local imports. A leaf module
+holding only the exception types removes the cycle for the refusals instead of
+hiding it. One function-local import survives in `projections` for `GENESIS`,
+which is a constant rather than a refusal and still lives in `core`.
 
 `core` re-exports all five, so `from soveraeign_record_service.core import
 BrokenChain` keeps working for every existing caller.

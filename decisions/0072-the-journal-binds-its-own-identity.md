@@ -95,9 +95,11 @@ fires — that rule had been applied once per mechanism rather than once per cla
   them, so the newest row names the last writer rather than the store. The
   maximum can only move forward, which matches what is actually true: a store
   that has ever written `v3` can never be read by a `v1`-only reader again.
-- **An unimplemented profile found in a store refuses rather than sorting to the
-  bottom.** A row this service cannot verify is not a row it may quietly write
-  past, so `writing_profile` raises `BrokenChain` naming the profile.
+- **An unimplemented profile found in a store refuses by name.** Without the
+  guard the row does not sort to the bottom, which an earlier draft of this line
+  claimed: `PROFILE_ORDER.index` raises a bare `ValueError` naming nothing. The
+  guard turns an obscure crash into a refusal that says which profile could not be
+  read. Either way a row this service cannot verify is not one it writes past.
 - **`adopt-profile` is reachable from the CLI, and answers without moving
   anything when `--to` is omitted.** An independent witness pointed out that a
   store was otherwise stuck for any operator not writing Python — including the
@@ -272,7 +274,7 @@ Two things followed from the same seam:
 ## Standing
 
 `PROPOSED`. Built and self-tested: 58 Record Service tests pass, the independent
-walk holds 24/24, and 7 gateway observer tests pass.
+walk holds 28/28, and 7 gateway observer tests pass.
 
 `python scripts/verify.py` fails no named check in any run. Its exit code carries
 the total wall clock on this branch, which straddles the 15-second ceiling
@@ -306,11 +308,12 @@ The repair to that was itself too weak, and a third witness proved it. The stage
 named "payload bytes that parse the same" substituted a fixed
 `{"x": 1, "forged": 0}` into a row whose payload was something else, so the values
 differed and the digest caught it — the byte rule never fired, and the walk still
-reported 24/24 with `canonical_bytes_disagree` forced to return `False`. A check
+reported 24/24 with `canonical_bytes_disagree` forced to return `False` — the
+walk held 24 observations at that time. A check
 cited as evidence for a rule it did not exercise, which is the same defect one
 level down. The stage now re-encodes the target row's own payload with different
 spacing, so the parsed value is identical and the whole weight sits on the bytes.
-Forcing the byte rule off now yields 23/24 and exit 1; unmodified it is 24/24.
+Forcing the byte rule off now yields 27/28 and exit 1; unmodified it is 28/28.
 
 That is the fourth check in this concern found unable to fail — after one tamper
 value per column, a note asserted against the constant that generated it, and a

@@ -44,7 +44,12 @@ def reporting(body: str) -> str:
             + "sys.stdout.write('CPU=' + str(time.process_time()) + chr(10))\n")
 
 
-BURN = reporting("x = 0\nfor i in range(2000000):\n    x += i\n")
+# Sized to the platform's clock, not to a round number. Windows job accounting
+# quantizes to 15.625ms, so the burn has to clear several quanta to be readable;
+# POSIX rusage is finer and its interpreter is slower per iteration, so the same
+# count would cost this module three times as much on the runner that gates merges.
+ITERATIONS = 3000000 if sys.platform == "win32" else 800000
+BURN = reporting("x = 0\nfor i in range(%d):\n    x += i\n" % ITERATIONS)
 SLEEP = reporting("time.sleep(0.15)\n")
 NESTED = reporting("subprocess.run([sys.executable, '-c', " + repr(BURN) + "])\n")
 ECHO = ("import os, sys\n"

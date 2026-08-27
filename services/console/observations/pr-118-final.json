@@ -1,0 +1,273 @@
+{
+  "artifact_revision": "d604455",
+  "case_id": "WITNESS-PR-118-FINAL",
+  "observed": {
+    "about_the_checks_themselves": [
+      "verify.py prints 24 lines beginning `FAIL` to stdout and exits 0. Twenty-two are defeating-fixture output inside conformance and acceptance cases; the other two - `docs/documentation.html is stale` and `docs\\surface.html is stale` - are a defeating fixture's own output inside the tooling shards, and the standalone checks for both pages pass here at exit 0. A harness that graded this repository by grepping stdout for FAIL would read a passing gate as failing. Recorded as an observation about the check, not as a defect in this commit.",
+      "The four generated artifacts this delta touched are graded by byte-for-byte rebuild rather than by declaration: sov_capability check, sov_interface check, sov_surface check and sov_docs check each regenerate from current sources and compare. Those four checks read the artifact.",
+      "services/console/tests/test_declared_refusals.py reads the manifest bytes and the shipped parser on both sides of its partition. What it still reads as a declaration is which side an operation is filed on and which grants the driven caller holds; see finding GRANT-LIST-IS-THE-NEW-DECLARATION."
+    ],
+    "claims": [
+      {
+        "asserted": "The note removed the counting sentences and every remaining factual statement in it is true of the file and the code it describes.",
+        "coverage": "Every factual statement in the 4430-character note was checked. Sixteen hold and were verified by machine against the manifest bytes, contracts/capability-offices.json, services/console/src, scripts/sovkernel/manifests.py and git history at 73c8825 and 35bc49c. Three do not hold.",
+        "did_not_hold": [
+          "NOTE-COUNT-SESSION-LIVE",
+          "NOTE-STATES-NO-COUNTS",
+          "NOTE-BUILT-OPERATIONS-LIST"
+        ],
+        "held": [
+          "Every BUILT operation checks the authority capability-offices.json declares for it: ENFORCED_AUTHORITY has 15 entries, each agreeing with required_authority, and all 15 were driven ungranted and granted.",
+          "local_node_record is declared on every operation that names a record by id (8) and on list-publications and session-context, 10 in total.",
+          "FOREIGN_NODE_RECORD is declared on exactly three: open-thread, post, publish-thread.",
+          "UNKNOWN_RECORD is declared on exactly eight, maps to MISSING_PRECONDITION in local_refusals, and was declared nowhere at 73c8825.",
+          "THREAD_UNKNOWN is gone from local_refusals and from every operation; it was present at 73c8825.",
+          "At 73c8825 only publish-thread and withdraw-publication declared NO_LIVE_GRANT, so the four that enforced and did not declare are archive-thread, open-channel, open-thread and post; PIN_INCOMPLETE, SESSION_CLOSED, THREAD_ARCHIVED and CLAIM_WITHOUT_PROPOSAL were absent from local_refusals there.",
+          "discover-operations declares UNREADABLE and capability_map_readable.",
+          "scripts/sovkernel/manifests.py checks declared-to-known and local_refusals-to-used, and never produced-to-declared (_refusal_defects, lines 106-122).",
+          "Nothing in the repository compares a declared precondition against the check implementing it: preconditions are consumed only by capability_map.py, node_interface.py, discovery.py, projection.py and sovsurface/page.py, all projections, and asserted once at services/console/tests/test_discovery.py:116 for console.post, which does enforce it.",
+          "Nothing reads the note field. contracts/service-manifest.schema.json types it as a bare string; no code path in scripts/, services/, conformance/ or bindings/ reads it.",
+          "console.discover-operations does report session_live among console.grant's preconditions, driven: on one store with no session record, `operations --operator Bdo` returned preconditions [declared_capability, declared_scope, issuer_holds_authority, live_matching_grant, session_live] for console.grant and `grant ...` exited 0 on the same store in the same run.",
+          "Session liveness is enforced only in posts.py and routes.py, as a statement of where; grep across services/console/src finds no third site.",
+          "The four operations that enforced an authority and declared no precondition for it now declare live_matching_grant.",
+          "Ten service manifests exist, so `changes ten manifests` is a true count of manifests."
+        ],
+        "id": "1-the-note-states-nothing-false",
+        "verdict": "DISSENTED"
+      },
+      {
+        "also_found": [
+          "DECLARED-SATISFIED-BY-EMPTY-STRING",
+          "DECLARED-REFUSALS-NEVER-PRODUCED",
+          "CLI-TRANSPORT-DECLARED-NOT-ACTIVATED"
+        ],
+        "asserted": "archive-thread, open-channel, open-thread and post each enforce an authority and now declare live_matching_grant, and no BUILT operation is left enforcing an authority it does not declare.",
+        "converse_coverage": "Beyond authority, every declared precondition of the 15 was accounted for. session_live: driven, 11 declare it and 10 do not check it - see NOTE-COUNT-SESSION-LIVE. The seven declared_* preconditions: driven with empty strings - see DECLARED-SATISFIED-BY-EMPTY-STRING. The *_exists preconditions: driven against absent ids by the shipped module, which I ran and then attacked. capability_map_fresh and capability_map_readable: driven. another_issuer_remains: driven, the last revoke:authority refuses its own withdrawal. session_actor_matches_checked_actor and declared_session_identity on read-thread: not driven here; the read-thread subcommand takes no session argument, so those two can only be enforced on the routed path. Not individually driven: issuer_holds_authority, declared_actor, declared_thread_identity.",
+        "evidence": "All 15 BUILT operations were driven twice through the shipped CLI as subprocesses, each on its own fresh store built by an ordinary bootstrap: once by a caller holding nothing and once by the same caller after being granted exactly the capability and scope contracts/capability-offices.json and authority.ENFORCED_SCOPE name. Every one of the 15 answered exit 2 NO_LIVE_GRANT ungranted and exit 0 granted, the four in question among them. Cross-read by machine: ENFORCED_AUTHORITY has an entry for each of the 15 and each agrees with required_authority in capability-offices.json; the manifest now declares live_matching_grant on 13 and live_publish_grant on 2, which is all 15.",
+        "id": "2-four-operations-gained-live-matching-grant",
+        "verdict": "REPRODUCED"
+      },
+      {
+        "asserted": "test_declared_refusals.py no longer keys on a set of id-shaped flag names; each operation filed as naming no record is driven holding what it needs, and what it answers is what files it. Reproducing the third observation's exact defeat turns the suite red.",
+        "did_not_hold": "GRANT-LIST-IS-THE-NEW-DECLARATION",
+        "held": [
+          "The third observation's own defeat was reproduced against the repair on a copy, both ways, and both turn the module red. show-receipt promoted to BUILT with a `show-receipt --operator --receipt` subcommand and filed in NO_RECORD_BY_ID alone: Ran 25 tests, FAILED (failures=1), on the set-equality assertion that every operation filed as naming no record must also be driven. The same, also added to NO_ID with an absent receipt id: Ran 25 tests, FAILED (failures=1), on the drive itself, subTest operation='show-receipt'. Baseline on the same copy: Ran 25 tests, OK.",
+          "Mis-filing any of the eight operations that name a record by id today is caught. Each of archive-thread, close-session, open-thread, post, publish-thread, read-thread, revoke and withdraw-publication was moved to NO_RECORD_BY_ID and NO_ID with its own argument list, with UNKNOWN_RECORD removed from its manifest refusals, on eight separate copies: all eight turned the module red, five with one failure and open-thread, publish-thread and read-thread with two.",
+          "A NO_ID argument list that never reaches the operation does not pass silently. argparse's _Parser.error raises SystemExit, which escapes run_cli, so the case errors rather than reading a USAGE_ERROR answer as `not UNKNOWN_RECORD`. Demonstrated twice on copies: Ran 25 tests, FAILED (errors=1).",
+          "The manifest-to-CLI name mapping is asserted onto both sets, and the whole subcommand set is compared, so a subcommand with no manifest operation fails too."
+        ],
+        "id": "3-the-rewritten-test",
+        "verdict": "REPRODUCED_AND_DISSENTED"
+      },
+      {
+        "asserted": "authority.check returns the newest live match and never the grant being withdrawn; UNKNOWN_RECORD is one code across the CLI and ConsoleRoutes and is recorded as a receipt; console.discover-operations returns no undeclared code and does not read the capability map before the grant is shown; console.revoke and console.open-thread check authority before reading.",
+        "driven_here": [
+          "4a: three identical revoke:authority grants at node scope were minted for one operator in a known append order and the COMMITTED console.revoke receipt, read off the journal with sqlite3, cited the third. With exactly two and the newer one as the target, the receipt cited the older. With exactly one, revoke refused NO_LIVE_GRANT with the message '... holds no live revoke:authority grant other than the one being withdrawn for this operation'.",
+          "4b: CLI read-thread against an absent thread answered exit 3 UNKNOWN_RECORD and left exactly one REFUSED receipt on the journal carrying {effect_class RECORD_LOCAL, reason_code UNKNOWN_RECORD} for event console.read-thread, read back with sqlite3. ConsoleRoutes.call('read-thread') on the same fact returned a REFUSED receipt with the same code; that half was called in process because the route has no CLI surface.",
+          "4c: an ungranted caller passing an absent path, a directory, an unparseable file and the real reference map to --capability-map received one byte-identical answer across all four - exit 2, NO_LIVE_GRANT. A caller holding read:session received exit 2 UNREADABLE for all three broken paths and exit 0 with counts {declared 133, reachable 45} for the real map. Both codes are in the operation's declared refusals.",
+          "4d: revoke by an ungranted caller answered exit 2 NO_LIVE_GRANT identically for a real grant of this node and for an id nothing carries; open-thread by an ungranted caller answered exit 2 NO_LIVE_GRANT identically for a real channel of this node and for channel_0000000000000000."
+        ],
+        "id": "4-nothing-regressed",
+        "taken_on_the_prior_observation": "Nothing. Each of 4a through 4d was re-derived here. Not re-derived and not carried forward: the third observation's two-writer chain-break rates and its identity-row walk, neither of which this delta touches.",
+        "verdict": "REPRODUCED"
+      }
+    ],
+    "commands": [
+      {
+        "checks": 39,
+        "command": "python scripts/verify.py",
+        "exit": 0,
+        "grade": "SILVER",
+        "wall": "14.542s",
+        "work": "42.757s"
+      },
+      {
+        "checks": 39,
+        "command": "python scripts/verify.py (re-run, AGENTS.md trap T6)",
+        "exit": 0,
+        "grade": "SILVER",
+        "spread": "0.189s across two runs, no grade slip. The commit message reports 13.683s SILVER; the same grade on a differently loaded host. decisions/0050 makes a slipped grade reportable, not failing.",
+        "wall": "14.353s",
+        "work": "42.391s"
+      },
+      {
+        "command": "python scripts/lint.py",
+        "exit": 0,
+        "note": "The one named debt is scripts/witness_infrastructure.py at 301 lines, pre-existing and untouched by this delta. CLAUDE.md's snapshot says KNOWN_MODULE_DEBT is empty; that is stale for this branch and is not this commit's doing.",
+        "result": "PASS: repository hygiene (749 text files, 330 Python modules, 1 named debt)"
+      },
+      {
+        "command": "python scripts/sov_service.py check",
+        "exit": 0,
+        "result": "PASS: 10 service manifests, 133 declared operations, no defect"
+      },
+      {
+        "command": "cd services/console && python -m unittest discover -s tests",
+        "exit": 0,
+        "result": "Ran 188 tests in 7.200s, OK"
+      },
+      {
+        "command": "python scripts/witness_console.py",
+        "exit": 0,
+        "note": "Read before running: the module reaches the console only as a subprocess through cli.py, reads the declared record shape out of the schema files rather than out of contract.py, and joins post to receipt by scanning the journal. It measures the artifact rather than reading a report about it.",
+        "result": "20/20 independent observations held"
+      },
+      {
+        "command": "python scripts/sov_capability.py check",
+        "exit": 0,
+        "result": "PASS: 133 capabilities, no defect, not stale",
+        "why": "Run because this delta regenerated the capability map. The check rebuilds the projection from the manifests and compares, so the four added live_matching_grant declarations are graded against their source rather than accepted as checked-in bytes."
+      },
+      {
+        "command": "python scripts/sov_interface.py check",
+        "exit": 0,
+        "result": "PASS: Node Interface matches its sources - 133 declared, 133 bound, 45 policy-active, 5 reachable, 0 observed"
+      },
+      {
+        "command": "python scripts/sov_surface.py check",
+        "exit": 0,
+        "result": "PASS: surface consumes the current Node Interface - 133 declared / 5 reachable / 0 observed"
+      },
+      {
+        "command": "python scripts/sov_docs.py check",
+        "exit": 0,
+        "result": "PASS: documentation page matches 196 documents"
+      }
+    ],
+    "could_not_confirm": [
+      "That pull request #118 points at d604455. This worktree is on local branch wt/pr118 and no network call was made.",
+      "The historical claims about what was true before 2026-08-25 were checked at 73c8825 and 35bc49c only. Whether those are the right revisions to check against is the builder's framing, carried forward.",
+      "issuer_holds_authority, declared_actor and declared_thread_identity were not individually driven.",
+      "declared_session_identity and session_actor_matches_checked_actor on console.read-thread: the read-thread subcommand takes no session argument, so neither can be enforced on the CLI path and neither was driven on the routed path here.",
+      "The findings in services/console/observations/pr-118-merge-head.json and pr-118-console-authority.json. Neither was read as evidence; only pr-118-delta.json was read, and only as a claim to check.",
+      "Whether the manifest `preconditions` field is intended as a claim about enforcement or as a description of logical shape. CONTRACT.md and SPEC.md were not read on this point; the question is Bdo's and is restated below."
+    ],
+    "delta_scope": {
+      "files_changed": 8,
+      "generated_audit": "Measured, not assumed. contracts/fixtures/node-interface.reference.json: 600 changed lines, of which 596 contain digest, revision, entry_, input_state or live_matching_grant, and the remaining 4 are the alphabetical reorder of open-channel's two preconditions. capability-map.reference.json: 10 changed lines, same shape. docs/surface.html: 4 lines, two of them the input digest. bindings/mcp/observations/journey-02-*.json: recorded digests, receipt and grant ids only. Nothing unrelated to the manifest edit rode along. All four regenerated artifacts were then re-derived from their sources by sov_capability check, sov_interface check, sov_surface check and sov_docs check, each at exit 0.",
+      "landed_record": [
+        "services/console/observations/pr-118-delta.json"
+      ],
+      "no_source_change": "services/console/src is byte-identical to 3826da3. The four operations did not gain an authority check in this commit; they gained the declaration of one they already enforced, which is what the drive confirms.",
+      "range": "3826da3..d604455",
+      "substantive": [
+        "services/console/contracts/service.json",
+        "services/console/tests/test_declared_refusals.py"
+      ]
+    },
+    "findings": [
+      {
+        "how_measured": "Counted from the manifest bytes. Then driven: on a store whose journal has never carried a session record, archive-thread, discover-operations, grant, list-grants, open-channel, open-thread, read-thread, revoke and session-context all exited 0. close-session was driven three times against one session: the second and third close each exited 0 against a session already CLOSED, so it declares session_live and does not enforce it either. post through a CLOSED session exited 2 SESSION_CLOSED, which is the one enforcement on the CLI path.",
+        "id": "NOTE-COUNT-SESSION-LIVE",
+        "measured": {
+          "most_generous_reading": "Crediting read-thread to routes.py, which does check it on the routed path, gives nine. Neither reading gives eight.",
+          "operations_declaring_it_and_not_checking_it": 10,
+          "operations_declaring_session_live": 11,
+          "the_eleven": [
+            "archive-thread",
+            "close-session",
+            "discover-operations",
+            "grant",
+            "list-grants",
+            "open-channel",
+            "open-thread",
+            "post",
+            "read-thread",
+            "revoke",
+            "session-context"
+          ],
+          "the_only_one_that_checks_it_on_the_cli_path": "post"
+        },
+        "probable_origin": "The third observation drove eight operations on a session-less store and wrote 'All eight declare session_live' about the eight it drove. The note read that as the total. close-session and revoke were not in that walk and both declare it and do not check it.",
+        "severity": "The fourth consecutive commit to write a count into this field that the file defeats, and this one is load-bearing: the count sits inside the paragraph put to Bdo, and eight against ten changes the size of the misdeclaration he is being asked to rule on.",
+        "text_at_head": "Under the first reading eight console operations declare `session_live` and do not check it - only `posts.py` and `routes.py` do",
+        "where": "services/console/contracts/service.json, note"
+      },
+      {
+        "id": "NOTE-STATES-NO-COUNTS",
+        "measured": "The same note goes on to state eight counts, seven of them counts of operations: 'the nine that declared one and checked none', 'only on the three', 'produced from eight operations', 'declared on the eight operations that can return it', 'Four operations that have enforced authority', 'eight console operations declare session_live', 'changes ten manifests', 'The four operations that enforced an authority'. Extracted by regex over the note's own bytes.",
+        "not_a_behaviour_defect": true,
+        "severity": "What the commit removed is the count of BUILT operations, not the counts. The sentence claims a property the field does not have, and one of the counts it kept is wrong - which is the exact failure the sentence was written to end.",
+        "text_at_head": "So it states no counts: the operations array carries them and cannot drift from itself.",
+        "where": "services/console/contracts/service.json, note"
+      },
+      {
+        "id": "NOTE-BUILT-OPERATIONS-LIST",
+        "measured": "git log --all -S built_operations over contracts/, scripts/ and services/ returns four commits: 35bc49c, which introduced the note carrying the phrase, and the three note revisions on this branch. At 35bc49c's parent the console manifest carried a flat operations list of names, no standing per operation and no built_operations key; contracts/service-manifest.schema.json never declared such a property; scripts/sovkernel/capability_map.py did not yet exist. No tracked file in this repository's history has ever carried a built_operations key.",
+        "reading": "The claim is not invented here - decisions/0040, line 115, says 'built_operations is retired' - but the record shows nothing that was retired. This commit's own message says 'no revision of this file ever carried that key', removes the clause that said so in one sentence, and leaves the same assertion standing in the sentence above it. The third observation's NOTE-ORIGIN-OF-TWELVE is unrepaired in shorter form.",
+        "severity": "An unsupported history claim, carried forward by the commit that reported removing it.",
+        "text_at_head": "every operation carries its own standing, which replaced the former built_operations list",
+        "where": "services/console/contracts/service.json, note"
+      },
+      {
+        "an_available_signal_not_a_prescription": "The case could assert that each NO_ID drive committed, or at least that it did not refuse for want of authority, which would make a masked drive fail instead of pass. Whether that is the right shape is the builder's call.",
+        "bounded": "For the fifteen operations as they stand today the case is sound: mis-filing each of the eight that name a record by id turns the module red, because the setUp grants and the bootstrap cover every capability those eight check. The gap is reachable by the next operation, not by the current surface.",
+        "demonstrated_on_a_copy": {
+          "module_result": "Ran 25 tests, OK",
+          "setup": "On a copy of contracts/, services/, scripts/ and the governing documents, show-receipt was promoted from PROPOSED to BUILT with preconditions [live_matching_grant, receipt_exists] and refusals [NO_LIVE_GRANT], given a `show-receipt --operator --receipt` subcommand that checks a read:receipt grant at node scope and then reads the record by id, and filed in both NO_RECORD_BY_ID and NO_ID.",
+          "the_real_tree_was_never_touched": true,
+          "what_the_operation_actually_answers": "Driven on the copy: a caller holding read:receipt at node scope asking for receipt_0000000000000000 gets exit 3 UNKNOWN_RECORD, while the manifest declares refusals [NO_LIVE_GRANT] alone. That is the defect the second observation found, reproduced against the repair.",
+          "whole_console_suite": "Ran 188 tests, OK, once the new subcommand has an ordinary caller in test_cli_walk - which its builder would add anyway, because the walk's parser census is what first turns red. Without that one line the walk catches the new subcommand, but for having no caller, not for being mis-filed."
+        },
+        "id": "GRANT-LIST-IS-THE-NEW-DECLARATION",
+        "mechanism": "The case drives each NO_ID operation and asserts only that the answer's reason_code is not UNKNOWN_RECORD. Whether the drive reached the operation at all is not asserted. The caller's grants come from a hand-kept list - the six in setUp, the two the bootstrap mints, and five more in the case body - so an operation whose capability is not on that list is refused NO_LIVE_GRANT before the by-id read runs, and the refusal that fires first passes the assertion. The hand-kept set moved from id-shaped flag names to grant names; it did not go away.",
+        "severity": "The strengthened check still admits a mis-filed operation, one step out from where the third observation defeated it.",
+        "where": "services/console/tests/test_declared_refusals.py, test_an_operation_filed_as_naming_no_record_cannot_answer_the_absent_fact"
+      },
+      {
+        "declared_where": "declared_channel_name (open-channel), declared_subject (open-thread), declared_capability and declared_scope (grant), declared_participant (open-session), declared_body (post). Seven declared preconditions across five BUILT operations, each satisfied by the flag being present and empty.",
+        "id": "DECLARED-SATISFIED-BY-EMPTY-STRING",
+        "measured": "Driven through the shipped CLI, each holding the grant it needs: `open-channel --name ''` exit 0; `open-thread --title ''` exit 0; `grant --capability '' --scope s` exit 0; `grant --capability read:thread --scope ''` exit 0; `open-session --binding ''` exit 0; `post --body ''` exit 0, recording the empty digest sha256:e3b0c442...; `post` with empty stdin exit 0.",
+        "relation_to_this_delta": "Pre-existing and untouched by d604455. It matters here because the note's paragraph to Bdo names session_live as the class of declared-and-unenforced preconditions, and it is not the only one.",
+        "severity": "A second declared-but-unenforced class the note does not name.",
+        "why_this_counts_by_the_repositorys_own_standard": "The note records that `revoke --grant \"\"` appending a revocation naming no grant at exit 0 was a defect worth repairing, under the same declared-precondition heading. `grant --capability \"\" --scope \"\"` mints a live authority record naming no capability over no scope, one office along. It is inert - authority.check compares capability strings exactly, so it can never admit anything - but it is a permanent record in an append-preserving journal."
+      },
+      {
+        "id": "DECLARED-REFUSALS-NEVER-PRODUCED",
+        "measured": "STALE_STATE is declared on archive-thread, close-session, revoke and withdraw-publication and appears nowhere in services/console/src. INCOMPLETE_PROPOSAL is declared on open-channel, open-session, open-thread and post and appears nowhere. SESSION_NOT_LIVE is declared on 13 of the 15 and is produced only by routes.py, on the routed read.",
+        "reading": "The mirror of the class this delta's predecessor closed. The manifest gate checks declared-to-known; the shipped module checks produced-to-declared for the eight, and declared-to-not-producible for exactly one code on the other seven. Nothing checks whether a declared refusal is reachable at all.",
+        "relation_to_this_delta": "Pre-existing and untouched. Reported, not charged to this commit."
+      },
+      {
+        "id": "CLI-TRANSPORT-DECLARED-NOT-ACTIVATED",
+        "measured": "contracts/capability-offices.json declares a cli_commands entry for 4 of the 15 BUILT console operations: discover-operations, list-publications, publish-thread and withdraw-publication. The capability map therefore carries activation DECLARED_NOT_ACTIVATED on the CLI endpoint of the other 11, and console.discover-operations repeats that to any operator who asks. All 15 were driven to a committed result through exactly that CLI in this walk, console.grant, console.revoke, console.post and console.read-thread among them.",
+        "reading": "A declaration on the AI-native discovery surface that a measurement contradicts, in the same direction as the session_live class: the map is generated faithfully from a policy file whose contents no check compares against what the CLI can actually run.",
+        "relation_to_this_delta": "Pre-existing, outside the console manifest, and inside the contracts-domain gap the note already reports. Recorded because the note's paragraph presents session_live as the class at issue and this is another instance of it on the same surface."
+      }
+    ],
+    "judgement_items": [
+      "Does the `preconditions` field of a service manifest carry a claim about what an operation enforces, or only a description of its logical shape? Under the first reading the console misdeclares more than the note says: session_live on ten operations, and seven declared_* preconditions across five operations that an empty string satisfies. Under the second, the local_node_record added to revoke and the live_matching_grant added to the four repaired nothing. The answer sets whether the missing declared-versus-enforced check is a contracts-domain gap or a console defect, and it reaches ten manifests.",
+      "Is a manifest `note` a governed claim held to the standard of the fields beside it? Four consecutive commits have now written a statement into this one that the file itself defeats, three of them while repairing the previous. Nothing reads the field, and the schema types it as a bare string."
+    ],
+    "observer_relation": "Independent of the build and of the three earlier observers. This participant wrote no repository file except this one; it ran no git command that moves the branch, the index or the working tree, and it took no builder statement, commit message or prior observation as evidence - services/console/observations/pr-118-delta.json was read as a claim and every finding it carries forward was re-derived here. Every console behaviour claimed below was driven as `python -m soveraeign_console_service.cli` in a child process with PYTHONPATH covering services/console/src and services/record/src and cwd at the repository root, and the answers were read as stdout JSON and process exit codes. Receipts were read back out of the journal file with sqlite3 directly, not through the console that wrote them. Two declared exceptions, both in process because neither has a CLI surface: ConsoleRoutes.call for the routed half of the one-code comparison, and soveraeign_console_service.authority.ENFORCED_AUTHORITY imported to cross-read against contracts/capability-offices.json. Manifest, offices and source files were counted by machine, never by eye. Every experiment requiring an edit was performed on a copy of contracts/, services/, scripts/ and the governing documents under a scratch directory outside the repository, with __pycache__ excluded; the real worktree was never written except for this file.",
+    "participant_claim_note": "The participant_claim field records the Console Service participant's own outcome for this case, as the schema defines it and as the sibling observations in this directory use it. It is not this observer's verdict. The verdicts are per claim in observed.claims, and two of them carry dissent.",
+    "residuals": [
+      "NOTE-COUNT-SESSION-LIVE: the note says eight console operations declare session_live and do not check it; eleven declare it and ten do not check it.",
+      "NOTE-STATES-NO-COUNTS: the note says it states no counts and then states eight, seven of them counts of operations.",
+      "NOTE-BUILT-OPERATIONS-LIST: an unsupported history claim the commit message says it removed, still standing one sentence up.",
+      "GRANT-LIST-IS-THE-NEW-DECLARATION: a mis-filed future operation whose capability is not in the case's hand-kept grant list passes the rewritten case and the whole console suite; demonstrated on a copy.",
+      "DECLARED-SATISFIED-BY-EMPTY-STRING: seven declared preconditions across five BUILT operations are satisfied by an empty string.",
+      "DECLARED-REFUSALS-NEVER-PRODUCED: STALE_STATE on four operations and INCOMPLETE_PROPOSAL on four appear nowhere in the implementation; SESSION_NOT_LIVE is declared on thirteen and produced on one path.",
+      "CLI-TRANSPORT-DECLARED-NOT-ACTIVATED: eleven of fifteen BUILT console operations are reported to a fresh operator as having no active CLI, and all fifteen run through it.",
+      "Unchanged by this delta and reported rather than closed by the builder: no check in the repository compares a declared precondition against the check implementing it, and none compares a declared refusal against the implementation's ability to produce it.",
+      "Named debt scripts/witness_infrastructure.py at 301 lines is still open; CLAUDE.md's snapshot says KNOWN_MODULE_DEBT is empty, which is stale for this branch."
+    ],
+    "standing_note": "An observation by a participant that did not build the change and wrote no repository file except this one. It proposes at most BUILT -> WITNESSED for the parts named above and settles nothing. Only Bdo ratifies judgement.",
+    "standing_supported": {
+      "for": "The behaviour this delta declares and the check it rewrote: that archive-thread, open-channel, open-thread and post each enforce the authority capability-offices.json names for them and now declare live_matching_grant; that all 15 BUILT operations refuse an ungranted caller and admit a granted one; that the rewritten test_declared_refusals.py drives rather than declares which side each of today's fifteen belongs on, and turns red for every mis-filing of the eight that name a record by id, including the exact defeat the third observation demonstrated. This observation supports the standing proposal BUILT -> WITNESSED for those.",
+      "note": "This is an observation. It settles nothing and ratifies nothing, and no part of it is a claim of WITNESSED or RATIFIED standing.",
+      "withheld_from": "The manifest note, on NOTE-COUNT-SESSION-LIVE, NOTE-STATES-NO-COUNTS and NOTE-BUILT-OPERATIONS-LIST; and the completeness of the rewritten case, on GRANT-LIST-IS-THE-NEW-DECLARATION."
+    },
+    "working_tree_state": {
+      "branch_named_in_the_task": "feat/console-authority-enforced-only",
+      "branch_note": "The commit was observed, not the remote branch. No network call was made, so nothing here confirms which commit pull request #118 points at.",
+      "head": "d6044558a91721c2d6a9dddda15d4b00b7866c1c",
+      "local_branch": "wt/pr118",
+      "porcelain_after": "clean",
+      "porcelain_before": "clean",
+      "tree_moved_underneath_this_walk": false
+    }
+  },
+  "participant_claim": "COMPLETED",
+  "participant_id": "console-service-reference"
+}

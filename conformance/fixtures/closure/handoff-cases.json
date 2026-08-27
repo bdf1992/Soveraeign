@@ -1,6 +1,6 @@
 {
   "corpus_id": "soveraeign-closure-handoff-cases/v1",
-  "note": "Positive and defeating cases for contracts/closure-ownership.json. Eight cases prove a genuine seam is admitted; eleven prove a refusal, and every refusal code in the contract has at least one case proving it actually fires. A case declares the whole claim, so a field omitted is absent rather than satisfied.",
+  "note": "Positive and defeating cases for contracts/closure-ownership.json. 11 cases prove a genuine seam is admitted; 13 prove a refusal, and every refusal code in the contract has at least one case proving it actually fires. A case declares the whole claim, so a field omitted is absent rather than satisfied.",
   "cases": [
     {
       "case_id": "C-001-acceptance-of-an-evidenced-result",
@@ -290,6 +290,118 @@
         },
         "reachable_alternative": "NONE",
         "open_unlanded_concerns": 1
+      }
+    },
+    {
+      "case_id": "C-009-recruitment-exactly-at-the-declared-ceiling",
+      "expect": "PERMITTED",
+      "proves": "Helper recruitment is RESOURCE_CONSUMPTION and presumptive. The ceiling is a boundary the participant may reach: eight invocations against a ceiling of eight is spending that needs no owner act, which fixes the comparison as strictly greater than rather than greater or equal.",
+      "claim": {
+        "claim_schema": "soveraeign-closure-handoff/v1",
+        "concern": "asset-core-split",
+        "handoff_kind": "owner_question",
+        "asks": "acceptance of the split Asset Service core",
+        "seam": "ACCEPTANCE_SEAM",
+        "provision": "judgement",
+        "requested_by": "worker",
+        "requested_from": "owner",
+        "tools_available": [
+          "read",
+          "edit",
+          "run_tests",
+          "run_verify",
+          "report",
+          "recruit_helper"
+        ],
+        "loop_steps_taken": [
+          "inspect",
+          "implement",
+          "test",
+          "verify",
+          "present_or_land"
+        ],
+        "helper": {
+          "recruited": true,
+          "role": "editing",
+          "offered_as_witness": false,
+          "invocations": 8
+        },
+        "reachable_alternative": "NONE"
+      }
+    },
+    {
+      "case_id": "C-010-a-helper-tool-the-host-withheld-asked-as-a-capability",
+      "expect": "PERMITTED",
+      "proves": "The host did not grant the helper tool. That is a missing capability, so it is asked at DEPENDENCY_SEAM of a tier that can change how the session is launched. Nothing here asks the owner for permission, and the participant did the reading it could do in-session first.",
+      "claim": {
+        "claim_schema": "soveraeign-closure-handoff/v1",
+        "concern": "closure-recruitment-clause",
+        "handoff_kind": "unblock_request",
+        "asks": "an invocation that grants the helper tool",
+        "seam": "DEPENDENCY_SEAM",
+        "provision": "capability",
+        "requested_by": "worker",
+        "requested_from": "controller",
+        "tools_available": [
+          "read",
+          "edit",
+          "run_tests",
+          "run_verify",
+          "report"
+        ],
+        "loop_steps_taken": [
+          "inspect",
+          "implement",
+          "test",
+          "verify",
+          "present_or_land"
+        ],
+        "helper": {
+          "recruited": false,
+          "role": null,
+          "offered_as_witness": false,
+          "blocked_by_host": true,
+          "capability_requested": true
+        },
+        "reachable_alternative": "NONE"
+      }
+    },
+    {
+      "case_id": "C-011-recruitment-above-the-ceiling-with-the-commitment-accepted",
+      "expect": "PERMITTED",
+      "proves": "Above the ceiling the spend is RESOURCE_COMMITMENT, which the owner may accept. Once accepted, the same forty invocations are admissible closure. The escape is the acceptance, not the size of the run.",
+      "claim": {
+        "claim_schema": "soveraeign-closure-handoff/v1",
+        "concern": "federation-sweep",
+        "handoff_kind": "owner_question",
+        "asks": "acceptance of the federation sweep result",
+        "seam": "ACCEPTANCE_SEAM",
+        "provision": "judgement",
+        "requested_by": "controller",
+        "requested_from": "owner",
+        "tools_available": [
+          "read",
+          "edit",
+          "run_tests",
+          "run_verify",
+          "report",
+          "recruit_helper"
+        ],
+        "loop_steps_taken": [
+          "inspect",
+          "implement",
+          "test",
+          "verify",
+          "present_or_land"
+        ],
+        "helper": {
+          "recruited": true,
+          "role": "editing",
+          "offered_as_witness": false,
+          "invocations": 40,
+          "resource_commitment_accepted": true
+        },
+        "reachable_alternative": "NONE"
       }
     },
     {
@@ -699,6 +811,82 @@
           "recruited": true,
           "role": "editing",
           "offered_as_witness": false
+        },
+        "reachable_alternative": "NONE"
+      }
+    },
+    {
+      "case_id": "C-112-a-fleet-spent-and-presented-as-ordinary-closure",
+      "expect": "REFUSED",
+      "refusal": "RECRUITMENT_UNBOUNDED",
+      "proves": "Forty helper invocations is not a second reading. Past the ceiling the act is RESOURCE_COMMITMENT, an admissible owner hold, and it is asked at EFFECT_SEAM before the spend rather than reported afterwards as though it were routine.",
+      "claim": {
+        "claim_schema": "soveraeign-closure-handoff/v1",
+        "concern": "federation-sweep",
+        "handoff_kind": "owner_question",
+        "asks": "acceptance of the federation sweep result",
+        "seam": "ACCEPTANCE_SEAM",
+        "provision": "judgement",
+        "requested_by": "controller",
+        "requested_from": "owner",
+        "tools_available": [
+          "read",
+          "edit",
+          "run_tests",
+          "run_verify",
+          "report",
+          "recruit_helper"
+        ],
+        "loop_steps_taken": [
+          "inspect",
+          "implement",
+          "test",
+          "verify",
+          "present_or_land"
+        ],
+        "helper": {
+          "recruited": true,
+          "role": "editing",
+          "offered_as_witness": false,
+          "invocations": 40
+        },
+        "reachable_alternative": "NONE"
+      }
+    },
+    {
+      "case_id": "C-113-a-host-withheld-tool-routed-to-the-owner-as-judgement",
+      "expect": "REFUSED",
+      "refusal": "HOST_LIMIT_AS_OWNER_QUESTION",
+      "proves": "The host withheld the helper tool, and the participant asked the owner to rule on it. What is missing is a tool, not a ruling. Reporting a host default as a rule of this system, and asking permission for RESOURCE_CONSUMPTION that contracts/acceptance-policy.json already makes presumptive, is the defect.",
+      "claim": {
+        "claim_schema": "soveraeign-closure-handoff/v1",
+        "concern": "closure-recruitment-clause",
+        "handoff_kind": "owner_question",
+        "asks": "permission to launch a helper subagent",
+        "seam": "ACCEPTANCE_SEAM",
+        "provision": "judgement",
+        "requested_by": "worker",
+        "requested_from": "owner",
+        "tools_available": [
+          "read",
+          "edit",
+          "run_tests",
+          "run_verify",
+          "report"
+        ],
+        "loop_steps_taken": [
+          "inspect",
+          "implement",
+          "test",
+          "verify",
+          "present_or_land"
+        ],
+        "helper": {
+          "recruited": false,
+          "role": null,
+          "offered_as_witness": false,
+          "blocked_by_host": true,
+          "capability_requested": true
         },
         "reachable_alternative": "NONE"
       }

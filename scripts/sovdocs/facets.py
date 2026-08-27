@@ -36,6 +36,8 @@ KIND_RULES: tuple[tuple[str, str, str], ...] = (
     (r"(^|/)KNOWN-GAPS\.md$", "known-gaps", "What a service has not built yet, stated by the service."),
     (r"(^|/)PARITY\.md$", "known-gaps", "A parity ledger: what a boundary has not reached yet."),
     (r"(^|/)BASELINE\.md$", "baseline", "A recorded grading a participant is measured against."),
+    (r"(^|/)INTEGRATING\.md$", "guide",
+     "How to add the next one of a thing, written from what the existing ones do."),
     (r"\.claude/skills/[^/]+/SKILL\.md$", "skill", "Domain know-how loaded for one kind of task."),
     (r"\.claude/agents/[^/]+\.md$", "agent", "A stable role an operator can launch."),
     (r"\.claude/workflows/[^/]+\.md$", "workflow", "A launchable multi-step run."),

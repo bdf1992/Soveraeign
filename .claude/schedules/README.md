@@ -67,7 +67,19 @@ python scripts/sov_schedule.py run nightly-qa --force     # fire a disabled one 
 python scripts/sov_schedule.py tick              # fire everything enabled and due
 python scripts/sov_schedule.py ledger --last 10  # read the ledger
 python scripts/sov_schedule.py task-command      # print the Task Scheduler / cron registration
+python scripts/sov_schedule.py health            # is each one alive, late, failing, drifting
+python scripts/sov_schedule.py health --json     # the same read, for a model or for CI
+python scripts/sov_schedule.py health-render     # write docs/automation.html
+python scripts/sov_schedule.py health-check      # refuse a stale page or an unhealthy schedule
 ```
+
+The three `health` verbs read and change nothing. What counts as unhealthy is
+declared in `contracts/automation-health.json` and defeated by
+`conformance/fixtures/automation-health/cases.json`; `decisions/0083` records why
+each rule is what it is. `health-check` runs inside `scripts/verify.py`, so an
+unhealthy schedule fails the build - the only alert Phase I admits. On a checkout
+holding no ledger, which is every CI runner, it can only refuse on a declaration
+defect; run health is watched where the runs are.
 
 Registering the tick with the host scheduler is a human action; the runner
 never registers itself. Headless runs use whatever credential the `claude`

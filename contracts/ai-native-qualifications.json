@@ -1,0 +1,111 @@
+{
+  "table_id": "soveraeign-ai-native-qualifications/v1",
+  "status": "PROPOSED",
+  "compiles": "AI-NATIVE.md",
+  "governed_by": [
+    "AI-NATIVE.md",
+    "AGENTS.md",
+    "STATUS.yaml",
+    "decisions/0070-ai-native-assessment-grader.md"
+  ],
+  "note": "The machine-readable form of the AI-native standard. AI-NATIVE.md states four scored axes, one human judgement, nine qualifications and a derived verdict in prose; nothing compiled them, so every claim that a surface is AI-native has so far been an opinion typed by whoever was writing. This table is the single statement the grader reads. It is a proposal: AI-NATIVE.md is a freeze candidate and the residual named in decisions/0070 is unruled, so a disagreement between this table and the document is a judgement item, not a licence to edit either.",
+  "axes": {
+    "reachability": {
+      "clause": "AI-NATIVE.md, Reachability - the gate",
+      "gate": true,
+      "asks": "Can a fresh model instance discover the state, operations, inputs and result through a declared machine-usable path?"
+    },
+    "commitment": {
+      "clause": "AI-NATIVE.md, Commitment",
+      "gate": false,
+      "asks": "Can the system distinguish a model's output from accepted enterprise state?"
+    },
+    "provenance": {
+      "clause": "AI-NATIVE.md, Provenance",
+      "gate": false,
+      "asks": "Can a model-used or model-produced value resolve to where it came from?"
+    },
+    "retraction": {
+      "clause": "AI-NATIVE.md, Retraction",
+      "gate": false,
+      "asks": "Can an AI-caused effective change be countered without erasing what happened?"
+    }
+  },
+  "scores": ["NONE", "PARTIAL", "FULL"],
+  "structural_axes": ["commitment", "provenance", "retraction"],
+  "earn_it": {
+    "clause": "AI-NATIVE.md, Substantive-operation check",
+    "judgements": ["SUBSTANTIVE", "BOLTED_ON", "OPEN"],
+    "reviewer_must_be": "HUMAN",
+    "reviewer_note": "AI-NATIVE.md calls this a human judgement with an attributable reviewer. The grader resolves the named reviewer against contracts/principals.json and refuses a judgement supplied by anything that is not a registered human principal, which is what stops a model scoring the check that decides whether its own surface earned the verdict."
+  },
+  "qualification_results": ["PASS", "FAIL", "UNPROVEN"],
+  "qualifications": {
+    "same_world_parity": {
+      "clause": "AI-NATIVE.md, target bar 1",
+      "asks": "Human and model interfaces resolve to the same transitions, constraints, standings and receipts.",
+      "evidenced_by": ["FOUND-006"]
+    },
+    "typed_authority": {
+      "clause": "AI-NATIVE.md, target bar 2",
+      "asks": "Permissions are scoped, revocable, attributable and checked at the operation; verification authority cannot ratify judgement.",
+      "evidenced_by": ["FOUND-003"]
+    },
+    "independent_observation": {
+      "clause": "AI-NATIVE.md, target bar 3",
+      "asks": "An executor's report is not the success oracle.",
+      "evidenced_by": ["FOUND-004", "FOUND-007"]
+    },
+    "receipt_completeness": {
+      "clause": "AI-NATIVE.md, target bar 4",
+      "asks": "Admission, refusal, operation, failure, observation and counteraction leave the required durable records.",
+      "evidenced_by": ["FOUND-001", "FOUND-002"]
+    },
+    "effect_honesty": {
+      "clause": "AI-NATIVE.md, target bar 5",
+      "asks": "Record retraction never masquerades as resource refund or external-world rollback.",
+      "evidenced_by": ["FOUND-005"]
+    },
+    "cold_start_competence": {
+      "clause": "AI-NATIVE.md, target bar 6",
+      "asks": "A fresh instance becomes safely useful from the artifact alone, with time and intervention measured.",
+      "evidenced_by": ["FOUND-009"]
+    },
+    "two_binding_proof": {
+      "clause": "AI-NATIVE.md, target bar 7",
+      "asks": "A human binding and a model binding pass the same positive and defeating fixtures against the same kernel contract.",
+      "evidenced_by": ["FOUND-006"]
+    },
+    "local_sovereignty": {
+      "clause": "AI-NATIVE.md, target bar 8",
+      "asks": "Loss of an integration cannot silently remove custody of authoritative memory, authority or continuity.",
+      "evidenced_by": ["FOUND-010"]
+    },
+    "model_substitutability": {
+      "clause": "AI-NATIVE.md, target bar 9",
+      "asks": "Two materially different models use the same named operation; identity, crossed data, usage and cost stay visible and an unavailable model refuses without silent fallback.",
+      "evidenced_by": ["FOUND-008"]
+    }
+  },
+  "scenario_root": "conformance/founding-scenarios",
+  "executable_scenario_status": ["EXECUTABLE"],
+  "scenario_note": "A qualification may be claimed PASS only on evidence that exists. A founding scenario at SEED standing is a narrative given/when/then that nothing executes, so citing one as the proof of a qualification is refused by SCENARIO_NOT_EXECUTABLE. Turning a seed into an executable case is what moves its qualification from UNPROVEN.",
+  "verdicts": ["DECORATION", "TRUTH_CAPABLE", "AI_NATIVE", "SOVERAEIGN_QUALIFIED"],
+  "assessment_states": ["INVALID", "OPEN", "COMPLETE"],
+  "soveraeign_bar": {
+    "minimum_verdict": "AI_NATIVE",
+    "axes_at_full": ["reachability", "commitment", "provenance", "retraction"],
+    "qualifications_at_pass": "ALL",
+    "note": "AI-NATIVE.md requires FULL on reachability, commitment, provenance and the effect envelope admitted for the current phase. Retraction is that envelope axis, and its FULL definition is already phase-aware: it requires record state, consumed resources and external-world effects to be distinguished with compensation or refusal boundaries explicit. Phase I refuses external-world effects, so an explicit refusal boundary is how a Phase I surface reaches FULL; nothing here lowers the bar for the phase."
+  },
+  "refusals": {
+    "VERDICT_DECLARED": "The record states a verdict. The verdict is derived from the recorded scores and is never selected directly (AI-NATIVE.md, Derived verdict).",
+    "EVIDENCE_ABSENT": "A score above NONE, or a qualification claiming PASS, identifies no observable evidence.",
+    "SCENARIO_NOT_EXECUTABLE": "The cited founding scenario is a seed narrative, so it evidences nothing yet.",
+    "SCENARIO_UNKNOWN": "The cited founding scenario does not exist.",
+    "REVIEWER_NOT_HUMAN": "The substantive-operation judgement names a reviewer that is not a registered human principal.",
+    "REVIEWER_UNREGISTERED": "The substantive-operation judgement names a reviewer no principal registry knows.",
+    "QUALIFICATION_MISSING": "The record does not answer every declared qualification.",
+    "CONTRADICTORY_SCORE": "The record's own evidence contradicts the score it carries."
+  }
+}

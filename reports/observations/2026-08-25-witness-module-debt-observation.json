@@ -1,0 +1,120 @@
+{
+  "observer_id": "sov-witness (independent observation, Claude Opus 5)",
+  "contributed_to_build": false,
+  "verdict": "CONFIRMED",
+  "concern": "Pay the named module debt on scripts/witness_infrastructure.py: extract the four _exercise_* stage functions into scripts/witness_stages.py, leave witness_infrastructure.py owning only the protocol run and its CLI, repair the undefined custody_posix reference the extraction exposes, add a focused test that the activation stage resolves its custody lookup, and remove the KNOWN_MODULE_DEBT entry from scripts/lint.py.",
+  "checks": [
+    {
+      "check": "working-tree state re-derived, not taken from the report",
+      "command": "git status --porcelain=v1; git rev-parse --abbrev-ref HEAD; git log -1 --oneline",
+      "exit_code": 0,
+      "observed": "Branch feat/federation-harness-and-hardening at b6a2539. Modified: CLAUDE.md, docs/documentation.html, scripts/lint.py, scripts/tests/test_lint.py, scripts/tests/test_witness_infrastructure.py, scripts/witness_infrastructure.py. Untracked: scripts/witness_stages.py. Nothing staged.",
+      "result": "REPRODUCED - exactly the seven files claimed, no unreported file"
+    },
+    {
+      "check": "repository verification gate",
+      "command": "python scripts/verify.py",
+      "exit_code": 0,
+      "observed": "PASS: 36 checks in 9.107s wall, 29.825s of work. GRADE: SILVER at 9.107s; GOLD needs 6.000s or less. 864 tooling tests ran, OK (skipped=15). Every FAIL string in the transcript was traced to a defeating fixture printing its own output, not to the gate.",
+      "result": "REPRODUCED"
+    },
+    {
+      "check": "lint gate and the debt-registry claim",
+      "command": "python scripts/lint.py",
+      "exit_code": 0,
+      "observed": "PASS: repository hygiene (675 text files, 282 Python modules, 0 named debt)",
+      "result": "REPRODUCED - KNOWN_MODULE_DEBT is empty and lint still exits 0"
+    },
+    {
+      "check": "the 300-line rule is paid, not waived",
+      "command": "wc -l scripts/witness_infrastructure.py scripts/witness_stages.py",
+      "exit_code": 0,
+      "observed": "witness_infrastructure.py 103 lines (was 301); witness_stages.py 246 lines. Both under MAX_PRODUCTION_LINES=300. witness_infrastructure.py retains _git_preconditions, run_witness and main; all four stages plus run_command and expect_refusal moved out.",
+      "result": "REPRODUCED with a note: the concern said only run_witness/main, and _git_preconditions also stayed. It is a precondition of the protocol run rather than one of the four named _exercise_* stages, so the concern reads as held, not widened."
+    },
+    {
+      "check": "the undefined custody_posix reference was real at HEAD",
+      "command": "git show HEAD:scripts/witness_infrastructure.py | grep -n custody_posix",
+      "exit_code": 0,
+      "observed": "At HEAD, line 182 calls custody_posix.effective() and no import of custody_posix appears anywhere in the module. The name was undefined. scripts/custody_posix.py exists and defines effective() returning a (uid, gid) tuple.",
+      "result": "REPRODUCED - a genuine NameError, not a cosmetic repair"
+    },
+    {
+      "check": "severity of that defect on the host that actually runs the protocol",
+      "command": "read .github/workflows/infrastructure-witness.yml",
+      "exit_code": 0,
+      "observed": "The workflow runs on ubuntu-latest and invokes scripts/witness_infrastructure.py. os.geteuid exists there, so exercise_activation passes its first-line guard and reaches the undefined name. On Windows the same guard refuses with HOST_CANNOT_ENFORCE_CUSTODY before reaching it, which is why local runs stayed green over a broken body.",
+      "result": "REPRODUCED - the defect was live on the only host that exercises the stage"
+    },
+    {
+      "check": "DEFEATING CASE A - the new custody test fails when the fix is removed",
+      "command": "copied scripts/ and infrastructure/ into a scratchpad tree, deleted the single line import custody_posix from witness_stages.py, cleared __pycache__, then ran python -m unittest discover -s scripts/tests -p test_witness_infrastructure.py -v",
+      "exit_code": 1,
+      "observed": "ERROR: ActivationStageResolvesCustody.test_custody_posix_is_bound_where_the_activation_stage_reads_it raised NameError: name custody_posix is not defined. FAILED (errors=1, skipped=1). Unmodified baseline in the same scratchpad tree: Ran 5 tests, OK (skipped=1).",
+      "result": "REPRODUCED - the defeating case fails as declared. The test resolves the name through the function __globals__ instead of calling the stage, so it observes the binding on Windows too; that is what makes it a guard rather than a platform skip."
+    },
+    {
+      "check": "DEFEATING CASE B - an empty debt registry still proves the size rule fires",
+      "command": "copied scripts/ into a second scratchpad tree, replaced the size guard with if False and is_production and lines > MAX_PRODUCTION_LINES, then ran python -m unittest discover -s scripts/tests -p test_lint.py",
+      "exit_code": 1,
+      "observed": "FAIL: ModuleSizeLimitIsEnforced.test_an_unregistered_module_one_line_over_is_a_defect and ModuleSizeLimitIsEnforced.test_a_registered_module_over_the_limit_is_named_debt_not_a_defect. Unmodified baseline in the real repository: Ran 18 tests, OK.",
+      "result": "REPRODUCED - the new lint cases distinguish no module is over the limit from the limit stopped being measured. Without them, emptying KNOWN_MODULE_DEBT would have been unfalsifiable."
+    },
+    {
+      "check": "positive cases on the witnessed tree",
+      "command": "python -m unittest discover -s scripts/tests -p test_witness_infrastructure.py; python -m unittest discover -s scripts/tests -p test_lint.py",
+      "exit_code": 0,
+      "observed": "test_witness_infrastructure: Ran 5 tests, OK (skipped=1, the POSIX permission-drift case, skipped with a stated reason). test_lint: Ran 18 tests, OK.",
+      "result": "REPRODUCED"
+    },
+    {
+      "check": "nothing left dangling by the extraction",
+      "command": "grep -rn for _exercise_, witness_infrastructure, witness_stages, KNOWN_MODULE_DEBT",
+      "exit_code": 0,
+      "observed": "No caller references witness_infrastructure._run, _expect_refusal, or any _exercise_* name. The only surviving _exercise_ strings are the back-compatible lookup inside the new test and a descriptive comment in lint.py. .github/workflows/infrastructure-witness.yml and infrastructure/WITNESS.md still invoke scripts/witness_infrastructure.py, whose entry point is unchanged and whose import of witness_stages resolves via scripts/ on sys.path exactly as the pre-existing witness_observe import already did.",
+      "result": "REPRODUCED"
+    },
+    {
+      "check": "no weakened oracle, no vocabulary drift, no secret",
+      "command": "git diff -- scripts/lint.py scripts/tests/test_lint.py; python scripts/lint.py",
+      "exit_code": 0,
+      "observed": "The only oracle change in lint.py is emptying KNOWN_MODULE_DEBT; the size guard, the production roots, the 300 limit and every SECRET_PATTERN are byte-identical. Tests were added, none removed or relaxed. The synthetic token in the secret-gate stage is still assembled at runtime from fragments and never literal. No CLASSIFICATION.md or SPEC.md enum term is touched.",
+      "result": "REPRODUCED"
+    },
+    {
+      "check": "the two files changed beyond the named scope",
+      "command": "git diff -- CLAUDE.md docs/documentation.html; python scripts/verify.py",
+      "exit_code": 0,
+      "observed": "The CLAUDE.md repository snapshot moves from one named debt (scripts/witness_infrastructure.py, 301 lines) to no named debt, and from 33 to 36 checks. I independently observed 36 checks and 0 named debt, so both edits are corrections rather than fresh claims. docs/documentation.html is a one-line regeneration of the embedded CLAUDE.md text, and the verify.py staleness check (documentation page matches 186 documents) passes against it.",
+      "result": "REPRODUCED - same service, same effect class (RECORD_LOCAL), same authority. Reads as absorption under AGENTS.md Closure ownership, not scope creep."
+    },
+    {
+      "check": "independence of this observation",
+      "command": "n/a - self-declaration",
+      "exit_code": 0,
+      "observed": "This observer read no file before the build, edited nothing in the build, and was not consulted as a helper during it. Its only write to the repository is this file. It is therefore not inside the build under contracts/closure-ownership.json, HELPER_AS_WITNESS.",
+      "result": "REPRODUCED"
+    },
+    {
+      "check": "RESIDUAL - the protocol itself is still unexercised end to end",
+      "command": "n/a - platform limit",
+      "exit_code": null,
+      "observed": "exercise_activation refuses with HOST_CANNOT_ENFORCE_CUSTODY on Windows, and that refusal aborts run_witness. run_witness has therefore not been observed to complete on this host, before or after the change. What is proved is that the name now binds and that custody_posix.effective() returns two ints; what is not proved is that the repaired activation stage completes against a real POSIX custody root.",
+      "result": "UNATTESTABLE ON THIS HOST"
+    },
+    {
+      "check": "RESIDUAL - one new line over the 100-character target",
+      "command": "measured line lengths in the changed modules",
+      "exit_code": null,
+      "observed": "witness_stages.py line 107 is 103 characters, newly over the AGENTS.md 100-character target; renaming _run to run_command added seven characters to a line that was 96. Four other over-100 lines (155, 165, 167, 168) carried over unchanged from HEAD. scripts/lint.py does not enforce line length, so no gate catches this.",
+      "result": "MINOR RESIDUAL - a style target, not a gate"
+    },
+    {
+      "check": "RESIDUAL - no helper declaration accompanied the build claim",
+      "command": "ls -t reports/; git status",
+      "exit_code": 0,
+      "observed": "No build report was written to reports/ for this concern and the claim handed to me declared no helper. I cannot check the HELPER_AS_WITNESS rule against the builder own recruitment; I can only confirm that I am not that helper.",
+      "result": "UNATTESTABLE"
+    }
+  ]
+}

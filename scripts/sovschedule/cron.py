@@ -99,3 +99,37 @@ def first_due(spec: CronSpec, after: datetime, until: datetime) -> datetime | No
             return cursor
         cursor += timedelta(minutes=1)
     return None
+
+
+def count_between(spec: CronSpec, after: datetime, until: datetime,
+                  cap_days: int) -> tuple[int, bool]:
+    """Whole cron occurrences in (after, until], and whether the scan hit its cap.
+
+    Counted on UTC timestamps, while ``runner.is_due`` matches the same expression
+    in the host's local time. For a daily, weekly, or n-hourly expression the two
+    counts over one interval differ by at most one occurrence at a boundary, which
+    is why ``overdue_missed_occurrences`` is two and not one.
+    """
+    cursor = after.replace(second=0, microsecond=0) + timedelta(minutes=1)
+    limit = until.replace(second=0, microsecond=0)
+    floor = limit - timedelta(days=cap_days)
+    capped = cursor < floor
+    if capped:
+        cursor = floor
+    count = 0
+    while cursor <= limit:
+        if matches(spec, cursor):
+            count += 1
+        cursor += timedelta(minutes=1)
+    return count, capped
+
+
+def next_after(spec: CronSpec, after: datetime, cap_days: int) -> datetime | None:
+    """The first minute after ``after`` the expression matches, or None inside the cap."""
+    cursor = after.replace(second=0, microsecond=0) + timedelta(minutes=1)
+    limit = cursor + timedelta(days=cap_days)
+    while cursor <= limit:
+        if matches(spec, cursor):
+            return cursor
+        cursor += timedelta(minutes=1)
+    return None

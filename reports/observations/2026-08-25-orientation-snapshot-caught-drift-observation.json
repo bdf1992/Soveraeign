@@ -1,0 +1,48 @@
+{
+  "observer_id": "sov-witness (independent observation, Claude Opus 5 1M)",
+  "contributed_to_build": "QUALIFIED - nine rounds of repair shapes taken whole; acceptance/A5.json what_could_defeat_it item 6 discloses it",
+  "verdict": "DISSENTED",
+  "concern": "orientation snapshot check, LESSONS.md L-0001",
+  "checks": [
+    {
+      "command": "SCOPE. Tenth round, on the disclosure, the eaten guard and the presented state. HEAD 5c3a8ad22c119055064bd314f84e679ba9efe839, working tree. Rounds one to nine stand in their own files. The dissent is one blind spot you predicted, one statement of yours that the tree has overtaken, and one consequence of landing that Bdo should weigh.",
+      "exit_code": 0
+    },
+    {
+      "command": "CONFIRMED, the disclosure. acceptance/A5.json what_could_defeat_it now holds six items and item 6 names the four repair shapes concretely, records that HELPER_AS_WITNESS does not fire because this witness neither read as a helper nor edited, records that contributed_to_build false was narrower than the packet needs, records that I set QUALIFIED in the ninth observation, and separates my mechanical results from my judgement that the design is adequate. It is accurate and it is fairer to me than I would have required. The remedy is a named residual and you are running it",
+      "exit_code": 0
+    },
+    {
+      "command": "CONFIRMED, the count correction. visible_result.expect now reads that against the committed page the same command fails all ten: two wrong numbers, 'page says 36, record holds 40' and 'page says 102, record holds 133', and eight claims the committed page states no number for",
+      "exit_code": 0
+    },
+    {
+      "command": "CONFIRMED, the eaten guard on the case I raised. One opening fence at ## Known traps with a live plant below it now FAILS naming the eaten claims. The vacuous pass I demonstrated in round nine is gone",
+      "exit_code": 1
+    },
+    {
+      "command": "DEFECT 30, the blind spot you predicted, measured. The eaten guard proves the mask did not swallow a claim and says nothing about prose that carries none. Every claim lives in Repository snapshot and Historical orientation, so one opening fence anywhere below them is invisible to it. Inserted a single fence before ## Host facts and planted 'There are 42 pending seams.' under ## Where to look first: 26 lines blanked, eaten reports none, and the test PASSES. Same plant with no fence fails as ['Where to look first: 42 pending']. A fence placed immediately above ## Where to look first does the same. The general repair is not another guard over what was swallowed but fence balance itself, and _prose_only already computes it: the loop variable is still True at the end for an unbalanced page, so an unpaired fence is one assertion away from being a malformed page rather than a silent mask",
+      "exit_code": 0
+    },
+    {
+      "command": "THE TREE HAS OVERTAKEN YOUR STATEMENT, and the reason is the best evidence in this concern. You wrote that verify.py is red for two reasons and neither is this concern. It is red for three, and orientation snapshot is one of them: FAIL skills: page says 21, record holds 22, exit 1. session-f1043b added .claude/skills/sov-backlog/ and the count moved under the page you corrected an hour ago. That is not a defect. That is the gate catching real drift, unprompted, caused by a different session, inside an hour - L-0001's exact failure mode, stopped. It belongs in the packet as evidence rather than sitting outside it as an embarrassment",
+      "exit_code": 1
+    },
+    {
+      "command": "CONSEQUENCE, the demo no longer shows what the packet says. visible_result promises PASS: 10 of 10 snapshot claim(s) match the record. python scripts/sov_snapshot.py check right now prints FAIL skills: page says 21, record holds 22 and exits 1. The first thing an owner does with an acceptance packet is run the command it hands him, and that command currently contradicts the page it is attached to",
+      "exit_code": 1
+    },
+    {
+      "command": "FOR BDO TO WEIGH AT ACCEPTANCE, not a code defect. Nine of the ten claims carry tolerance 0; only commits has 25. Decision records, reports, skills, workflows, agent definitions, service boundaries, manifests and declared operations all move with ordinary work by any session on this branch. Landing this gate makes CLAUDE.md's counts a build-breaking invariant for every session at once - and contracts/standing-grants.json puts CLAUDE.md in scope.excluded_paths, so the landing loop cannot write the file whose staleness it now fails on. The first session to add a skill turns verify.py red for everyone and no automated path can clear it. That is a real consequence of the design being correct, and the choice between a tolerance, a narrower claim set, and widening the grant is Bdo's rather than yours or mine",
+      "exit_code": 0
+    },
+    {
+      "command": "CONFIRMED, the sibling failure is real and separate. scripts/tests/test_sov_backlog.py is untracked, sov_session.py who returns session-f1043b since 2026-08-26T04:53:40Z, and in isolation it fails AssertionError: 0 != 1 in test_a_partly_landed_branch_separates_what_remains, 6 tests run. The registry reports 12 live sessions. My verify.py run: exit 1 on orientation snapshot, documentation reader and repository tooling tests, with no budget failure this time - Asset Service reference tests 11.429s, repository tooling tests 7.054s, orientation snapshot 0.156s. Yours in isolation are green: 21 tests OK, lint 0 named debt across 327 modules, sov_accept.py audit PASS with 1 presented",
+      "exit_code": 1
+    },
+    {
+      "command": "NOTED, unprompted and good. The check has grown a third disclosure line - 'NOT CHECKED: every prose claim on the page - which services are built, which are boundary only, what is witnessed, what waits on Bdo. Numbers are all this check reads'. That is defeating item 3 turned from a sentence in a packet into output a reader sees at the moment they might otherwise over-read a PASS",
+      "exit_code": 0
+    }
+  ]
+}

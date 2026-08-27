@@ -1,3 +1,0 @@
-CLAUDE.md
-docs/documentation.html
-.p.txt

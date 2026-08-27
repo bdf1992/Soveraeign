@@ -15,7 +15,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import sov_surface  # noqa: E402
 from sovnode.affordances import INVOKABLE, binding_admission  # noqa: E402
 from sovnode.interface_inputs import REFERENCE  # noqa: E402
-from sovsurface import cards  # noqa: E402
+from sovsurface import cards, catalog  # noqa: E402
 from sovsurface.composed import collections, render  # noqa: E402
 
 UNAVAILABLE = {
@@ -31,6 +31,63 @@ ATTRIBUTE = re.compile(r'(data-[a-z]+)="([^"]*)"')
 FILTER = re.compile(r'data-filter="([^"]*)"')
 LABEL = re.compile(r"<span>([^<]*)</span>")
 COUNT = re.compile(r'<span class="count">(\d+)</span>')
+
+
+class ServiceCardStatesReachability(unittest.TestCase):
+    """A service card's "exact routes" number is a claim about the node, not a tally.
+
+    `catalog.service_record` sums each operation's `facts.reachable`. Replacing
+    that sum with `len(operations)` survived all 302 tooling cases and the CI
+    mutation sample, and made every service card state its whole operation count
+    as exact routes - 133 where the truth is 5 - beside a hero that still said 5.
+    Nothing pinned the most consequential number a service card carries.
+    """
+
+    @staticmethod
+    def _operation(service: str, reachable: bool, observed: bool = False) -> dict:
+        return {
+            "service_id": service,
+            "subject": f"{service}/subject",
+            "required_authority": f"read:{service}",
+            "route_affordance": {"kind": "READ"},
+            "facts": {"reachable": reachable, "observed": observed},
+        }
+
+    def test_the_card_counts_reachable_routes_not_operations(self) -> None:
+        operations = [self._operation("asset", True), self._operation("asset", False),
+                      self._operation("asset", False)]
+        record = catalog.service_record("asset", operations)
+        self.assertIn("<b>3</b> operations", record.summary)
+        self.assertIn("<b>1</b> exact routes", record.summary,
+                      "the card counted operations where it must count reachable routes")
+
+    def test_no_reachable_route_is_stated_as_zero_not_as_the_operation_count(self) -> None:
+        operations = [self._operation("proofing", False) for _ in range(4)]
+        record = catalog.service_record("proofing", operations)
+        self.assertIn("<b>4</b> operations", record.summary)
+        self.assertIn("<b>0</b> exact routes", record.summary)
+
+    def test_observed_is_counted_the_same_way_and_is_not_reachability(self) -> None:
+        operations = [self._operation("record", True, observed=True),
+                      self._operation("record", True, observed=False)]
+        record = catalog.service_record("record", operations)
+        self.assertIn("<b>2</b> exact routes", record.summary)
+        self.assertNotIn("<b>2</b> observed", record.summary)
+
+    def test_the_card_agrees_with_the_node_interface_it_reads(self) -> None:
+        """The oracle the page cannot supply: grade against the interface, not the page.
+
+        The navigator's own count check compares the page to a helper that reads
+        the same facet dict the page emits, so a wrong facet moves both sides
+        together. This grades the rendered claim against the Node Interface.
+        """
+        interface = sov_surface.surface()
+        for service in sorted({item["service_id"] for item in interface["operations"]}):
+            operations = [i for i in interface["operations"] if i["service_id"] == service]
+            expected = sum(1 for i in operations if i["facts"]["reachable"])
+            with self.subTest(service=service):
+                self.assertIn(f"<b>{expected}</b> exact routes",
+                              catalog.service_record(service, operations).summary)
 
 
 class ComposedSurface(unittest.TestCase):

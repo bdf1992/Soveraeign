@@ -18,7 +18,9 @@ from sovsurface.collection import (  # noqa: E402
     FacetError,
     Record,
     Section,
+    cards_total,
     counts,
+    facet_total,
     facet_manifest,
     render,
     render_record,
@@ -50,6 +52,44 @@ def collection(**overrides: object) -> Collection:
     }
     base.update(overrides)
     return Collection(**base)  # type: ignore[arg-type]
+
+
+class UnreadableCollectionsAreNotCounted(unittest.TestCase):
+    """`available=False` means the source was never read, so it contributes no cards.
+
+    `counts()` pins this already: an unavailable collection returns None, not 0,
+    because zero is a claim that the source was read and reported nothing. Its
+    two siblings had the same guard and nothing pinned it, so dropping
+    `if item.available` from either left the totals counting records the page
+    will not render - which is the exact defect this module exists to repair,
+    reachable through a frozen dataclass any future adapter can build.
+    """
+
+    def unread(self) -> Collection:
+        """A collection carrying records it never managed to read."""
+        return collection(collection_id="unread", available=False,
+                          records=(record("ghost-1"), record("ghost-2")))
+
+    def test_counts_says_not_read_rather_than_zero(self) -> None:
+        self.assertEqual(counts([self.unread()]), {"unread": None})
+
+    def test_cards_total_excludes_an_unreadable_collection(self) -> None:
+        readable = collection(collection_id="things", records=(record("thing-1"),))
+        self.assertEqual(cards_total([readable, self.unread()]), 1,
+                         "the total counted cards the page will not render")
+
+    def test_facet_total_excludes_an_unreadable_collection(self) -> None:
+        readable = collection(collection_id="things", records=(record("thing-1"),))
+        self.assertEqual(facet_total([readable, self.unread()], "kind", "thing"), 1,
+                         "the filter's count promised cards its filter cannot reveal")
+
+    def test_the_three_totals_agree_about_what_was_read(self) -> None:
+        """A count beside a control, a total, and a per-collection reading are
+        three statements about one population; they may not disagree."""
+        both = [collection(collection_id="things", records=(record("thing-1"),)),
+                self.unread()]
+        self.assertEqual(counts(both)["unread"], None)
+        self.assertEqual(cards_total(both), facet_total(both, "kind", "thing"))
 
 
 class CollectionMechanism(unittest.TestCase):

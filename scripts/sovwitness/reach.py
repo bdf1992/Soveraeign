@@ -129,14 +129,21 @@ def handler_defects(tree: ast.Module) -> tuple[list[str], list[str]]:
     carries on without re-raising is reported as debt and not failed, because
     whether the reason reaches the report is not decidable from the source; that
     is the limit `sovwitness/probes.py` records.
+
+    Grading does not depend on the probe having declared a reach-failure class.
+    An earlier version returned here when none was declared, so a probe carrying
+    `except Exception: pass` and no class of its own was never graded at all and
+    read `LIVE` — the rule was evaded by deleting one line. The missing class
+    stays a debt; the handlers are graded either way, against the builtin bases a
+    reach failure would travel through.
     """
     declared, bases = _reach_failure_names(tree)
+    debts: list[str] = []
     if not declared:
-        return [], ["declares no reach-failure exception, so a probe that cannot reach "
-                    "its subject is indistinguishable from one that did"]
+        debts.append("declares no reach-failure exception, so a probe that cannot reach "
+                     "its subject is indistinguishable from one that did")
     catchable = declared | bases
     defects: list[str] = []
-    debts: list[str] = []
     for node in ast.walk(tree):
         if not isinstance(node, ast.ExceptHandler) or not _catches(node, catchable):
             continue

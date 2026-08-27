@@ -61,6 +61,8 @@ def records(root: Path, as_json: bool) -> int:
             print(f"              {moved}")
         for defect in item["defects"]:
             print(f"              {defect}")
+        for debt in item.get("debts", []):
+            print(f"DEBT:         {item['receipt']}: {debt}")
     if drifted:
         print(f"DEBT: {len(drifted)} receipt(s) describe a subject that has since moved. "
               "That is a record ageing, not a record failing: each one still observes the "

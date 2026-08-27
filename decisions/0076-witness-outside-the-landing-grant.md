@@ -73,10 +73,19 @@ in the same concern. A receipt digests its own probe into
 `observed_state_addresses`; `scripts/sovwitness/records.py` recomputes those
 digests and grades an address under `witness/` that has moved as `STALE_PROBE`,
 which fails `scripts/verify.py`. A builder who edits a probe after its receipt
-was written now breaks the build. That is narrower than the conduct rule — it
-catches editing a probe an existing receipt covers, not writing a self-serving
-probe from scratch — and it is the first part of the rule that is measured
-rather than declared.
+was written now breaks the build.
+
+An independent observation caught that sentence overstating itself in an earlier
+draft. Digesting the probe was the receipt author's choice, and the author is the
+party the rule constrains: a receipt that named a probe in `telemetry.probe` and
+left it out of the address list stayed `CURRENT` however the probe was edited.
+`scripts/sovwitness/probes.py` now joins the two and fails a receipt that names a
+probe it does not digest, so the sentence above is true rather than aspirational.
+All three receipts on PR #119 already digest their probes and are unaffected.
+
+It is still narrower than the conduct rule — it catches editing a probe an
+existing receipt covers, not writing a self-serving probe from scratch — and it
+is the first part of the rule that is measured rather than declared.
 
 ## Consequences
 

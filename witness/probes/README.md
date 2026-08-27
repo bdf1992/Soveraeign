@@ -29,6 +29,11 @@ A probe that catches its reach-failure exception and discards it fails. One that
 catches it and does not re-raise is reported as debt, and one that declares no
 reach-failure exception at all is reported as debt.
 
+Declaring no exception class does not exempt a probe's handlers from that rule.
+An earlier version graded handlers only for probes that had declared a class, so
+`except Exception: pass` in a probe with no class of its own read `LIVE` — the
+rule was evaded by deleting one line. Handlers are now graded either way.
+
 ## What these checks do not catch
 
 A probe is graded on what it declares about itself, which is the defect this

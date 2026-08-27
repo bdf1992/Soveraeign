@@ -15,10 +15,11 @@ never claimed to describe the present, so a subject that has legitimately moved
 is reported as drift rather than failed. Two things are failed, because neither
 is a subject changing:
 
-- `INVALID` — the receipt's own shape cannot be graded. A receipt that digests
-  nothing, recomputes nothing, names the same address twice, or points outside
-  the repository is not weak evidence; it is unmeasurable while looking
-  measurable, which is the defect this module exists to catch.
+- `INVALID` — the receipt's own shape cannot be graded: `sovwitness/shape.py`
+  refused it. A receipt that digests nothing, names the same address twice,
+  points outside the repository, or does not conform to
+  `contracts/participant-observation.schema.json` is not weak evidence; it is
+  unmeasurable while looking measurable, which is the defect this layer catches.
 - `STALE_PROBE` — an address under `witness/` moved. The witness digested its own
   probe into the receipt, so when that byte range changes the receipt no longer
   describes the code that produced its results. Subject drift ages a record;
@@ -41,116 +42,19 @@ from pathlib import Path
 from typing import Any
 import json
 
-DIGEST_PREFIX = "sha256:"
-DIGEST_LENGTH = 64
-HEX_DIGITS = frozenset("0123456789abcdef")
+from sovwitness.shape import (
+    DIGEST_PREFIX, ReceiptError, resolve_address, verify_shape)
+
 # The first path segment that marks an address as the witness's own machinery.
 WITNESS_SEGMENT = "witness"
-# Win32 resolves these to a device wherever they appear, so `nul` exists in every
-# directory and reads as an empty file. A receipt naming one would digest zero
-# bytes and grade CURRENT forever, having measured nothing.
-RESERVED_NAMES = frozenset(
-    ["con", "prn", "aux", "nul"]
-    + [f"com{digit}" for digit in range(1, 10)]
-    + [f"lpt{digit}" for digit in range(1, 10)])
 CURRENT, STALE_SUBJECT, STALE_PROBE, INVALID = (
     "CURRENT", "STALE_SUBJECT", "STALE_PROBE", "INVALID")
 FAILING_VERDICTS = frozenset({STALE_PROBE, INVALID})
 
 
-class ReceiptError(ValueError):
-    """The receipt cannot be graded at all, which is a defect and not subject drift."""
-
-
 def digest_of(path: Path) -> str:
     """The recorded digest shape: `sha256:` over the file's exact bytes."""
     return DIGEST_PREFIX + sha256(path.read_bytes()).hexdigest()
-
-
-def _no_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict:
-    """Refuse a JSON object that states the same key twice.
-
-    Python keeps the last such key and a person reads the first, so a receipt
-    could carry an honest `observed` block above a lying one and grade off the
-    lie while reading as honest.
-    """
-    seen: set[str] = set()
-    for key, _ in pairs:
-        if key in seen:
-            raise ReceiptError(f"duplicate JSON key: {key!r}")
-        seen.add(key)
-    return dict(pairs)
-
-
-def _well_formed(digest: Any) -> bool:
-    """A digest string this module is willing to compare against."""
-    if not isinstance(digest, str) or not digest.startswith(DIGEST_PREFIX):
-        return False
-    body = digest[len(DIGEST_PREFIX):]
-    return len(body) == DIGEST_LENGTH and set(body) <= HEX_DIGITS
-
-
-def _pairs(document: Any) -> list[tuple[str, str]]:
-    """The address/digest pairs a receipt declares, or a refusal naming the defect.
-
-    Every refusal here is about the receipt's own shape. None of them can be
-    produced by the subject changing, which is why they are graded `INVALID`
-    rather than stale.
-    """
-    if not isinstance(document, dict):
-        raise ReceiptError("receipt is not a JSON object")
-    if not isinstance(document.get("artifact_revision"), str) \
-            or not document["artifact_revision"].strip():
-        raise ReceiptError("no artifact_revision, so the receipt names no commit")
-    observed = document.get("observed")
-    if not isinstance(observed, dict):
-        raise ReceiptError("no observed object")
-    addresses = observed.get("observed_state_addresses")
-    digests = observed.get("observed_state_digests")
-    if not isinstance(addresses, list) or not isinstance(digests, list):
-        raise ReceiptError("observed_state_addresses and observed_state_digests must be lists")
-    if not addresses:
-        raise ReceiptError("receipt digests nothing, so it measures nothing")
-    if len(addresses) != len(digests):
-        raise ReceiptError(f"{len(addresses)} address(es) against {len(digests)} digest(s)")
-    for address in addresses:
-        if not isinstance(address, str) or not address.strip():
-            raise ReceiptError(f"address is not a non-empty string: {address!r}")
-    if len(set(addresses)) != len(addresses):
-        raise ReceiptError("the same address is named twice, which inflates what was measured")
-    for digest in digests:
-        if not _well_formed(digest):
-            raise ReceiptError(f"digest is not a sha256 hex string: {digest!r}")
-    return list(zip(addresses, digests))
-
-
-def _resolve(address: str, root: Path) -> Path:
-    """Resolve an address inside the repository, refusing anything that escapes it.
-
-    A receipt that reaches outside the tree is not gradeable evidence about the
-    tree, so containment is checked before any byte is read. Windows normalisation
-    is refused rather than accommodated: a trailing space or dot is stripped by
-    Win32, so the file opened would not be the address the receipt recorded, and
-    the same receipt would grade differently on Linux.
-    """
-    if address.startswith("/") or address.startswith("\\") or ":" in address:
-        raise ReceiptError(f"address is not repository-relative: {address!r}")
-    if "\\" in address:
-        raise ReceiptError(f"address is not slash-separated: {address!r}")
-    if "\x00" in address:
-        raise ReceiptError(f"address contains a null byte: {address!r}")
-    for part in address.split("/"):
-        if part in (".", ".."):
-            raise ReceiptError(
-                f"address is not canonical: {address!r} carries a {part!r} segment")
-        if part.rstrip(". ") != part:
-            raise ReceiptError(f"address segment {part!r} is normalised away by the host")
-        if part.split(".")[0].lower() in RESERVED_NAMES:
-            raise ReceiptError(f"address names the reserved device {part!r}")
-    candidate = (root / address).resolve()
-    if candidate != root.resolve() and root.resolve() not in candidate.parents:
-        raise ReceiptError(f"address escapes the repository: {address!r}")
-    return candidate
 
 
 def _witness_owned(candidate: Path, root: Path) -> bool:
@@ -170,16 +74,14 @@ def _witness_owned(candidate: Path, root: Path) -> bool:
 def grade(path: Path, root: Path) -> dict[str, Any]:
     """Recompute every digest a receipt declares and name what moved."""
     result: dict[str, Any] = {"receipt": path.name, "verdict": CURRENT,
-                              "moved": [], "defects": [], "graded": 0}
+                              "moved": [], "defects": [], "debts": [], "graded": 0}
 
     def invalid(detail: str) -> dict[str, Any]:
         result.update(verdict=INVALID, defects=result["defects"] + [detail])
         return result
 
     try:
-        document = json.loads(path.read_text(encoding="utf-8"),
-                              object_pairs_hook=_no_duplicate_keys)
-        pairs = _pairs(document)
+        document, pairs = verify_shape(path)
     except json.JSONDecodeError as broken:
         return invalid(f"unreadable JSON: {broken}")
     except (ReceiptError, OSError, ValueError, UnicodeDecodeError) as broken:
@@ -190,7 +92,7 @@ def grade(path: Path, root: Path) -> dict[str, Any]:
     subject_drift = False
     for address, recorded in pairs:
         try:
-            target = _resolve(address, root)
+            target = resolve_address(address, root)
             missing = not target.exists()
             directory = not missing and target.is_dir()
         except (ReceiptError, OSError, ValueError) as broken:
@@ -226,9 +128,15 @@ def grade(path: Path, root: Path) -> dict[str, Any]:
             "an address under witness/ moved: the receipt no longer describes the code "
             "that produced its results")
         return result
+    # Recomputing nothing is reported and not failed. An earlier version made it
+    # INVALID, which meant a receipt naming one subject that was later renamed
+    # turned the build red while the same rename inside a two-address receipt
+    # passed as drift: the verdict turned on how many addresses the author listed
+    # rather than on what happened to the subject. Renames are routine here, and
+    # the repair for a red build would have been to pad the address list.
     if not result["graded"]:
-        return invalid("no address could be recomputed, so the receipt measures nothing "
-                       "against this tree")
+        result["debts"].append(
+            "no address could be recomputed, so the receipt covers nothing in this tree")
     if subject_drift:
         result["verdict"] = STALE_SUBJECT
     return result

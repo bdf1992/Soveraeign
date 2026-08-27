@@ -94,6 +94,8 @@ class TreeCase(unittest.TestCase):
 
     def receipt(self, name: str = "obs.json", **override) -> Path:
         body = {
+            "case_id": "CASE-1",
+            "participant_id": "scratch-participant",
             "artifact_revision": "0" * 40,
             "observed": {
                 "observed_state_addresses": ["subject/thing.txt"],
@@ -180,6 +182,23 @@ class Staleness(TreeCase):
             self.observing("subject/thing.txt", "witness/probes/probe_thing.py")["verdict"],
             record_grader.STALE_PROBE)
 
+    def test_a_renamed_sole_subject_is_drift_and_not_a_broken_receipt(self) -> None:
+        """The verdict must not turn on how many addresses the author happened to list.
+
+        Recomputing nothing was `INVALID` for one commit, which meant a receipt
+        naming one subject that was later renamed turned the build red while the
+        same rename inside a two-address receipt passed as drift.
+        """
+        one = self.observing("subject/thing.txt", name="one.json", text=self.subject_text)
+        self.assertEqual(one["verdict"], record_grader.CURRENT)
+        (self.root / "subject" / "thing.txt").rename(self.root / "subject" / "renamed.txt")
+        one = self.grade("one.json")
+        two = self.observing("subject/thing.txt", "subject/other.txt", name="two.json")
+        self.assertEqual(one["verdict"], record_grader.STALE_SUBJECT)
+        self.assertEqual(two["verdict"], record_grader.STALE_SUBJECT)
+        self.assertEqual(one["graded"], 0)
+        self.assertIn("covers nothing in this tree", " ".join(one["debts"]))
+
     def test_subject_drift_alone_does_not_fail(self) -> None:
         """The graded line, exercised through grading rather than restated."""
         self.receipt()
@@ -219,9 +238,23 @@ class UngradeableReceipts(TreeCase):
         self.observing("subject/thing.txt", "subject/thing.txt")
         self.assert_invalid("named twice")
 
-    def test_receipt_that_recomputes_nothing_is_invalid(self) -> None:
-        self.observing("gone/a.txt", "gone/b.txt")
-        self.assert_invalid("measures nothing")
+    def test_a_receipt_the_declared_schema_rejects_is_invalid(self) -> None:
+        """`witness/observations/README.md` names the schema; it is now checked."""
+        for missing in ("case_id", "participant_id"):
+            with self.subTest(missing=missing):
+                body = json.loads(self.receipt().read_text(encoding="utf-8"))
+                del body[missing]
+                write(self.root / "witness" / "observations" / "obs.json", json.dumps(body))
+                self.assert_invalid("does not conform")
+
+    def test_an_empty_participant_id_is_invalid(self) -> None:
+        """The field naming who observed is the whole subject of witness separation."""
+        self.receipt(participant_id="   ")
+        self.assert_invalid("names no observer")
+
+    def test_an_undeclared_key_is_invalid(self) -> None:
+        self.receipt(smuggled="anything")
+        self.assert_invalid("does not conform")
 
     def test_duplicate_json_keys_are_invalid(self) -> None:
         """Python keeps the last block and a reader sees the first."""
@@ -248,9 +281,15 @@ class UngradeableReceipts(TreeCase):
         self.assert_invalid("artifact_revision")
 
     def test_missing_observed_is_invalid(self) -> None:
-        write(self.root / "witness" / "observations" / "obs.json",
-              json.dumps({"artifact_revision": "a"}))
+        """The schema requires it, so this refuses at the schema rather than the shape."""
+        body = json.loads(self.receipt().read_text(encoding="utf-8"))
+        del body["observed"]
+        write(self.root / "witness" / "observations" / "obs.json", json.dumps(body))
         self.assert_invalid("observed")
+
+    def test_a_non_object_receipt_is_invalid(self) -> None:
+        write(self.root / "witness" / "observations" / "obs.json", json.dumps([1, 2, 3]))
+        self.assertEqual(self.grade()["verdict"], record_grader.INVALID)
 
     def test_unreadable_json_is_invalid(self) -> None:
         write(self.root / "witness" / "observations" / "obs.json", "{not json")
@@ -380,6 +419,18 @@ class ProbeLiveness(TreeCase):
         self.assertEqual(result["verdict"], probe_grader.LIVE)
         self.assertIn("declares no reach-failure exception", " ".join(result["debts"]))
 
+    def test_declaring_no_error_class_does_not_exempt_the_handlers(self) -> None:
+        """The rule was evaded by deleting one line: no class, so nothing was graded."""
+        text = GOOD_PROBE.replace("class ProbeError(RuntimeError):", "class ProbeError:")
+        text = text.replace("    except ProbeError as failure:" + LF
+                            + '        json.dump({"checks": {"a": {"held": None, '
+                              '"probe_error": repr(failure)}}}, sys.stdout)' + LF
+                            + "        return 0",
+                            "    except Exception:" + LF + "        pass")
+        result = self.probe(text)
+        self.assertEqual(result["verdict"], probe_grader.DEAD, result)
+        self.assertIn("discards it", " ".join(result["defects"]))
+
     def test_probes_are_found_at_any_depth(self) -> None:
         write(self.root / "witness" / "probes" / "deep" / "probe_nested.py", GOOD_PROBE)
         found = {path.name for path in probe_grader.modules(self.root)}
@@ -403,6 +454,26 @@ class ProbeLiveness(TreeCase):
     def test_join_debt_when_probe_has_no_receipt(self) -> None:
         _, debts = probe_grader.joins(self.root)
         self.assertIn("probe_thing.py is named by no receipt", debts)
+
+    def test_a_receipt_must_digest_the_probe_it_names(self) -> None:
+        """Otherwise STALE_PROBE is opt-in by the author the rule constrains."""
+        self.receipt()
+        defects, _ = probe_grader.joins(self.root)
+        self.assertIn("does not digest it", " ".join(defects))
+        self.receipt(observed={
+            "observed_state_addresses": ["witness/probes/probe_thing.py"],
+            "observed_state_digests": [digest(GOOD_PROBE)]})
+        defects, _ = probe_grader.joins(self.root)
+        self.assertEqual(defects, [])
+
+    def test_a_stray_file_is_reported_rather_than_silently_skipped(self) -> None:
+        """The collectors filter on name, so an unfiltered file was graded by nothing."""
+        write(self.root / "witness" / "probes" / "check_thing.py", "def main( ->:")
+        write(self.root / "witness" / "observations" / "obs.yaml", "not: json")
+        _, debts = probe_grader.joins(self.root)
+        joined = " ".join(debts)
+        self.assertIn("check_thing.py is graded by nothing", joined)
+        self.assertIn("obs.yaml is graded by nothing", joined)
 
 
 class ProbeExecution(TreeCase):

@@ -55,6 +55,8 @@ import subprocess
 import sys
 
 from sovwitness import reach
+from sovwitness.records import observations_dir, receipts
+from sovwitness.shape import ReceiptError, resolve_address
 
 REACH_TIMEOUT_SECONDS = 300
 LIVE, DEAD = "LIVE", "DEAD"
@@ -163,15 +165,39 @@ def modules(root: Path) -> list[Path]:
                   and path.name.lower().startswith("probe_"))
 
 
+def _strays(root: Path) -> list[str]:
+    """Files in either directory that the collectors' name filters skip.
+
+    `modules()` sees only `probe_*.py` and `receipts()` only `*.json`, so a probe
+    named `check_thing.py` or a receipt named `obs.yaml` was collected by neither
+    and both commands reported a clean zero. The filters are declared in the
+    directory READMEs, so a stray is reported rather than failed; what is not
+    acceptable is that it went unmentioned.
+    """
+    seen = {path.resolve() for path in modules(root)} | {p.resolve() for p in receipts(root)}
+    strays: list[str] = []
+    for directory in (probes_dir(root), observations_dir(root)):
+        if not directory.is_dir():
+            continue
+        for path in sorted(directory.rglob("*")):
+            if path.is_file() and path.name != "README.md" and path.resolve() not in seen:
+                strays.append(f"{path.relative_to(root).as_posix()} is graded by nothing")
+    return strays
+
+
 def joins(root: Path) -> tuple[list[str], list[str]]:
     """Grade the receipt/probe join both ways. Returns (defects, debts).
 
     The declared probe address is put through the same containment the receipt's
     own addresses face, because a join that skipped it accepted a path outside the
     repository entirely.
-    """
-    from sovwitness.records import ReceiptError, _resolve, receipts
 
+    A receipt must also digest the probe it names. Both halves were already in
+    hand here and were never joined, so `STALE_PROBE` was opt-in by the receipt's
+    author — the party the rule constrains. A receipt that names a probe and omits
+    it from `observed_state_addresses` stayed `CURRENT` no matter how the probe
+    was edited, which made the central claim of `decisions/0076` aspirational.
+    """
     present = {path.name for path in modules(root)}
     named: set[str] = set()
     defects: list[str] = []
@@ -185,7 +211,7 @@ def joins(root: Path) -> tuple[list[str], list[str]]:
         if not isinstance(declared, str) or not declared.strip():
             continue
         try:
-            target = _resolve(declared, root)
+            target = resolve_address(declared, root)
         except (ReceiptError, OSError, ValueError) as broken:
             defects.append(f"{receipt.name} names probe {declared!r}: {broken}")
             continue
@@ -194,5 +220,11 @@ def joins(root: Path) -> tuple[list[str], list[str]]:
             defects.append(f"{receipt.name} names probe {declared}, which is not in the tree")
         elif Path(declared).name not in present:
             defects.append(f"{receipt.name} names {declared}, which is not a probe module")
+        observed = document.get("observed") if isinstance(document, dict) else None
+        addresses = observed.get("observed_state_addresses") if isinstance(observed, dict) else []
+        if declared not in (addresses if isinstance(addresses, list) else []):
+            defects.append(
+                f"{receipt.name} names probe {declared} and does not digest it, so editing "
+                "the probe cannot turn this receipt STALE_PROBE")
     debts = [f"{name} is named by no receipt" for name in sorted(present - named)]
-    return defects, debts
+    return defects, debts + _strays(root)

@@ -99,7 +99,7 @@ class SourceTraversal(unittest.TestCase):
         def fake_walk(start: Path, topdown: bool = True):
             self.assertEqual(start, root)
             self.assertTrue(topdown)
-            dirs = [".git", "reports", "docs", ".local"]
+            dirs = [".git", "reports", "docs", ".local", "worktrees"]
             yield str(root), dirs, ["ROOT.md", "ignore.txt"]
             kept_dirs.extend(dirs)
             if ".git" in dirs:
@@ -110,6 +110,11 @@ class SourceTraversal(unittest.TestCase):
                 yield str(root / "docs"), [], ["generated.md"]
             if ".local" in dirs:
                 yield str(root / ".local"), [], ["capture.md"]
+            # A whole checkout of this repository, as `.claude/worktrees/` holds. Its
+            # copy of a published document must not be published a second time, and an
+            # unclassifiable file inside it must not fail the corpus it is not part of.
+            if "worktrees" in dirs:
+                yield str(root / "worktrees"), [], ["ROOT.md", "AGENT-BOOTSTRAP-PROMPT.md"]
 
         with mock.patch.object(sov_docs, "ROOT", root), mock.patch.object(
                 sov_docs.os, "walk", fake_walk):

@@ -227,6 +227,15 @@ it as current (`LESSONS.md` L-0001). Correct the page rather than the tolerance.
 - Subagents under `.claude/agents/` load this file but not the interactive
   session's memory or transcript. Anything every launched agent must know
   lives here or in a governing document.
+- A host may withhold a tool this repository expects, most often the helper
+  subagent tool. That is a capability the invocation did not grant, never a
+  rule Soveraeign made, and reporting it as one is a defect. Name the tool and
+  the host, do the second reading in-session, and ask for the tool as a
+  capability at `DEPENDENCY_SEAM`. Recruiting a helper is
+  `RESOURCE_CONSUMPTION` and needs no one's permission up to the ceiling in
+  `contracts/closure-ownership.json` (`helper_policy.recruitment`); past it the
+  spend is `RESOURCE_COMMITMENT` and is asked before it is spent, not reported
+  after. `scripts/sov_closure.py` refuses both mistakes by name.
 
 ## Where to look first
 

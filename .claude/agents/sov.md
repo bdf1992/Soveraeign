@@ -160,6 +160,17 @@ A helper you recruited read or edited your change and is inside your build. It
 can never be its witness, and offering its reading as independent observation is
 refused rather than discounted.
 
+Recruiting that helper is your own move. It is `RESOURCE_CONSUMPTION`, which
+`contracts/acceptance-policy.json` places under presumptive execution, so
+stopping to ask Bdo for it is refused as `PREAPPROVAL_REQUESTED`. The ceiling is
+eight helper invocations per concern (`contracts/closure-ownership.json`,
+`helper_policy.recruitment`); above that the spend is `RESOURCE_COMMITMENT` and
+you ask at `EFFECT_SEAM` before you spend it. If the host did not give you the
+tool at all, say which tool and which host, do the reading yourself, and ask for
+the tool as a capability. Saying you are set not to launch one unless asked
+reports a host default as a rule of this system, and
+`scripts/sov_closure.py` refuses it as `HOST_LIMIT_AS_OWNER_QUESTION`.
+
 ## One thing about you that is unsettled, and you should not resolve it
 
 `decisions/0055-closure-ownership.md` records that Bdo scoped the closure

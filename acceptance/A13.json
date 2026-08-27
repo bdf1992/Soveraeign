@@ -1,0 +1,66 @@
+{
+  "packet_schema": "soveraeign-acceptance-packet/v1",
+  "packet_id": "A13",
+  "claim": "The automation page has working switches. You open a console on this machine, look at every schedule, and turn one on or off without editing JSON - and the switch cannot be reached around, because the page's button and the command line call one function and the authority check is inside it. Arming stays yours: a model asking to arm gets a recorded proposal and the switch does not move. Switching off is anyone's, because making an operator wait for you before stopping a broken machine would be useless during the exact incident this exists for. Every attempt, refusals included, appends a line saying who, when, from what to what, and why. Nothing is armed; every declaration still reads enabled: false.",
+  "subject": {
+    "artifact": "contracts/automation-control.json",
+    "from_standing": "OPEN",
+    "to_standing": "BUILT"
+  },
+  "presented_by_seat": "seat:session-control",
+  "accepted_by_seat": "seat:root",
+  "claim_type": "JUDGEMENT",
+  "built_by": {
+    "actor_id": "urn:soveraeign:actor:claude-interactive-session",
+    "actor_kind": "MODEL"
+  },
+  "witnessed_by": null,
+  "visible_result": {
+    "command": "python scripts/sov_schedule.py console",
+    "shows": "The health page at 127.0.0.1 on a port the OS picks, with a button on every row. Click one, give a reason, and the declaration changes in the working tree. python scripts/sov_schedule.py switches prints what was done and by whom. docs/automation.html is the same read with the switches inert, because a file opened from disk has no process behind it and a button that silently does nothing is worse than no button.",
+    "takes": "about a second to start; it stops with ctrl-c"
+  },
+  "evidence": [
+    {
+      "address": "contracts/automation-control.json",
+      "says": "the operation, both directions, the effect class of each, the grant each needs, the record shape, nine refusals and which layer owns each one"
+    },
+    {
+      "address": "conformance/fixtures/automation-control/cases.json",
+      "says": "twelve cases: one firing every refusal the operation can raise and one proving it stays quiet. C-002 is the one to read - a model arming a schedule. If it ever passes, any session on this box can spend your tokens while you sleep"
+    },
+    {
+      "address": "scripts/sovschedule/control.py",
+      "says": "the one function both bindings call, where the grant is tested"
+    },
+    {
+      "address": "scripts/tests/test_automation_control.py",
+      "says": "the corpus, and what a corpus cannot state: that a model reaching either binding gets the same refusal, that the served page and the command line land in the same log, that a switch is countered rather than erased, and that a running console does not move the committed page bytes"
+    },
+    {
+      "address": "conformance/assessments/automation-switch.json",
+      "says": "the AI-native reading: FULL on reachability and commitment, PARTIAL on provenance and retraction, earn_it OPEN because that judgement is yours, and four of nine Soveraeign checks left visibly unproven"
+    },
+    {
+      "address": "decisions/0086-automation-switch-controls.md",
+      "says": "why HTTP was added, why the two directions are typed differently, and what still waits on you"
+    }
+  ],
+  "why_it_matters": "You said the page needs controls and you were right: a read you cannot act on sends you back to editing JSON by hand, which is what the ticket was about. The part worth your attention is not the button. It is that arming and disarming are not the same kind of act, and the surface treats them differently - arming spends your money unattended and stays yours, stopping something costs nothing and belongs to whoever is holding the incident. A surface that got that backwards would either be unusable at 3am or would let a model commit your budget.",
+  "what_could_defeat_it": [
+    "A path that arms a schedule without holding seat:root. The check is inside the operation rather than in either binding, so hiding a button proves nothing - but anything importing control.py could try, and only the grant table stops it.",
+    "A switch that leaves no record, or a record that survives being edited. The log is append-only by construction and nothing rewrites it, which is a weaker guarantee than a kernel receipt and is described as what it is.",
+    "The console reachable from anywhere but this machine. It binds loopback, refuses any other address in the module that opens the socket, and now refuses to share a port - the last of those because it did share one and pointed me at another application's server.",
+    "A running console changing docs/automation.html. The static page renders with controls off and a test holds it, because that file is what the staleness gate grades."
+  ],
+  "residuals": [
+    "The console authenticates nobody. Anyone at this machine is you as far as it can tell. It records that the actor was local rather than naming a person, which is what it actually checked, and provenance is scored PARTIAL for exactly this.",
+    "Nothing ticks a schedule. Arming one arms a declaration and starts nothing, because registering with the Windows scheduler was outside the earlier work by your instruction. The surface says armed rather than running so a reader cannot take a switch reading on as evidence something is happening.",
+    "A flipped switch is not committed. It sits in the working tree until someone lands it, so it is a decision this repository loses on the next clean checkout.",
+    "The switch log is not a kernel receipt. It carries no receipt_id and no grant ids, and the kernel settles nothing about it. Calling it a receipt would be the misreport the assessment record exists to prevent.",
+    "Independent observation is owed and not held. The tests establish BUILT. The observation on the read surface covers commit 11c3f1a and nothing here.",
+    "Two defects were found by running this rather than reading it: the console printed its URL only after it stopped, and it bound a port another application held and sent me to that application. Both are fixed and both have tests. Two in one afternoon is the reading to take about how much of this a review catches."
+  ],
+  "on_accept": "The switching surface stands. contracts/automation-control.json moves to BUILT and the earn_it judgement in conformance/assessments/automation-switch.json can be closed with your name on it, which is the only thing that lets the AI-native verdict derive at all. Arming a schedule is then a thing you can do in two clicks.",
+  "on_reject": "Say which part. If it is the authority split, that is one table in contracts/automation-control.json and a corpus case, and changing it changes both. If it is HTTP on this machine at all, the surface reverts to the command line and the page goes back to being a reading - the console is one module and its removal does not touch the operation. If it is that a page of buttons is not what you meant by a UI, say what you did mean; I built the thing I could defend and it may not be the thing you pictured."
+}

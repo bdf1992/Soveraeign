@@ -97,7 +97,7 @@
       ],
       "already_recorded_as": "proofing_service_status",
       "reason": "STATUS.yaml reads RULED_SECOND_BOUNDARY_O11_CHARTERED_NOT_IMPLEMENTED. The boundary stands as a reversible default under decisions/0046, which states that none of its rulings is an owner acceptance, so the acceptance itself is outstanding and not only the record's status line. An earlier duplicate of this field spelled it OWNER_ACCEPTED_BOUNDARY_NOT_IMPLEMENTED and was dead text a YAML reader never saw; this entry read that spelling before it was deleted.",
-      "action_if_confirmed": "Update the status line."
+      "action_if_confirmed": "Present the boundary for acceptance, then update both the status line and proofing_service_status. Its reason says the acceptance is outstanding and not only the record's status line, and 0041-A says the two stand alike; an action that only rewrites a line would discharge neither."
     },
     "0016-A": {
       "record": "0016",

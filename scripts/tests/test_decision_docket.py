@@ -28,11 +28,43 @@ STANDING = json.loads((ROOT / "contracts" / "decision-standing.json").read_text(
 ROUTING = json.loads((ROOT / "contracts" / "acceptance-routing.json").read_text("utf-8"))
 
 
+def _routed_questions() -> dict:
+    """Every question entry the checked-in routing contract carries, read directly.
+
+    Read from the JSON rather than through `sov_docket`, so a case about the
+    contract's content is not graded by the module it is grading.
+    """
+    document = json.loads(
+        (ROOT / "contracts" / "acceptance-routing.json").read_text(encoding="utf-8"))
+    return document["questions"]
+
+
 class CheckedInState(unittest.TestCase):
     """The repository as it stands passes its own gate."""
 
     def test_the_checked_in_routing_has_no_defect(self) -> None:
         self.assertEqual(sov_docket.check(), 0)
+
+    def test_entries_that_say_they_stand_alike_route_to_the_same_kind_of_action(self) -> None:
+        """0010-A and 0041-A were rewritten to say the same thing and left routing apart.
+
+        Both reasons now state the acceptance itself is outstanding and not only the
+        record's status line, and 0041-A says outright that "the two now stand alike".
+        0010-A's action still read "Update the status line." - the weaker action its own
+        rewritten reason calls insufficient. Nothing caught it: `check()` grades the
+        field's presence, not whether it agrees with the reason beside it, and the entry
+        vocabulary deliberately carries no field that could hold the claim as data
+        (`entry_keys_note`). So this pair is pinned by name rather than by rule, and the
+        gap is the finding: prose asserting a thing about other prose is not gradeable
+        here, and this case is the whole of the coverage.
+        """
+        entries = _routed_questions()
+        for qid in ("0010-A", "0041-A"):
+            with self.subTest(entry=qid):
+                self.assertIn(qid, entries)
+                action = entries[qid]["action_if_confirmed"]
+                self.assertIn("Present the boundary for acceptance", action)
+                self.assertNotEqual(action.strip(), "Update the status line.")
 
     def test_every_record_this_contract_routes_is_a_record_that_exists(self) -> None:
         """The direction that holds: the table may not name a record that is not there.

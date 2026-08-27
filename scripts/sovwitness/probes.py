@@ -198,8 +198,13 @@ def joins(root: Path) -> tuple[list[str], list[str]]:
     it from `observed_state_addresses` stayed `CURRENT` no matter how the probe
     was edited, which made the central claim of `decisions/0076` aspirational.
     """
-    present = {path.name for path in modules(root)}
-    named: set[str] = set()
+    # Keyed on the RESOLVED path, never the basename. A basename is a string the
+    # receipt supplies, so a copy of a probe placed anywhere in the tree satisfied
+    # the join: the receipt digested the copy, the real probe was edited, and the
+    # run was byte-identical to a clean one. Measuring the path the address
+    # actually resolves to is the difference between a check and a declaration.
+    present = {path.resolve(): path for path in modules(root)}
+    named: set[Path] = set()
     defects: list[str] = []
     for receipt in receipts(root):
         try:
@@ -215,16 +220,20 @@ def joins(root: Path) -> tuple[list[str], list[str]]:
         except (ReceiptError, OSError, ValueError) as broken:
             defects.append(f"{receipt.name} names probe {declared!r}: {broken}")
             continue
-        named.add(Path(declared).name)
+        resolved = target.resolve()
+        named.add(resolved)
         if not target.is_file():
             defects.append(f"{receipt.name} names probe {declared}, which is not in the tree")
-        elif Path(declared).name not in present:
-            defects.append(f"{receipt.name} names {declared}, which is not a probe module")
+        elif resolved not in present:
+            defects.append(
+                f"{receipt.name} names {declared}, which is not a probe module in "
+                "witness/probes/")
         observed = document.get("observed") if isinstance(document, dict) else None
         addresses = observed.get("observed_state_addresses") if isinstance(observed, dict) else []
         if declared not in (addresses if isinstance(addresses, list) else []):
             defects.append(
                 f"{receipt.name} names probe {declared} and does not digest it, so editing "
                 "the probe cannot turn this receipt STALE_PROBE")
-    debts = [f"{name} is named by no receipt" for name in sorted(present - named)]
+    debts = [f"{present[path].name} is named by no receipt"
+             for path in sorted(set(present) - named)]
     return defects, debts + _strays(root)

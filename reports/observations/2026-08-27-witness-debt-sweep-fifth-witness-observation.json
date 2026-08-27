@@ -75,8 +75,9 @@
       "severity": "BLOCKING",
       "claim_defeated": "the gate reads the declared block and stops, never searching the document",
       "finding": "The repair pinned where the block OPENS and left where it CLOSES as an unbounded forward search. The scan runs from the opening fence to the first later line that is a bare fence, with no limit. So an opening block that is not closed swallows the intervening document and reads a quoted value as the record's own declaration. In a synthetic case the value was read more than 600 lines below the opening fence.",
-      "consequence": "Proven end to end on the shipped witness/host-service.md: remove its closing fence, insert a section quoting witness/README.md verbatim where a record would naturally put it, and the gate promotes the real status field to WITNESSED and exits 0 - while the record's own words still read 'Verdict: NOT-YET', 'Standing supported: none for the subject as a whole' and 'This record declares nothing.' The value is taken from a verbatim quotation of the very document that instructs authors to quote it. This is the same defect class the four prior witnesses each found, at a fifth site.",
-      "what_would_have_defeated_this_finding": "bounding the close, or reading the block as a fixed number of lines from a fixed position"
+      "consequence": "CORRECTED. The finding stands and the class is real, but the specific end-to-end construction originally reported here does not reproduce, and this session verified both halves itself at 91bd7ab rather than accepting either account.\n\nWhat does NOT reproduce: taking the shipped witness/host-service.md, removing its closing fence and pasting witness/README.md below it. That leaves two standing_supported lines in the file, and two is ambiguous, so it is refused - for a reason unrelated to the unbounded close. Measured: supported_standing() returns None.\n\nWhat DOES reproduce, measured directly at 91bd7ab with a single field line so the ambiguity rule cannot mask the result: an unclosed block carrying no field, followed by a quoted witness block that carries the only field, returns WITNESSED. So does an unclosed block followed by forty lines of prose and a bare field line. In both the record's own block declares nothing. The honest control - a closed block declaring none, with a quoted example below - correctly returns None.",
+      "what_would_have_defeated_this_finding": "bounding the close, or reading the block as a fixed number of lines from a fixed position",
+      "corrected_by": "The builder reported that the headline construction did not reproduce, having tested it. This session then reproduced the class independently rather than taking either account, and the builder's correction is right."
     },
     {
       "id": "W5-D2",
@@ -121,6 +122,11 @@
   ],
   "residuals": [
     {
+      "id": "W5-R0",
+      "severity": "MATERIAL",
+      "finding": "A reporting defect in this session, recorded because it is the third instance and the pattern is consistent. Twice before tonight this session relayed a vivid construction from another participant without reproducing it, and both times the construction was wrong while the underlying mechanism was right. Here it happened with a witness's own end-to-end claim. The quotable case is exactly the one most worth reproducing before repeating, and it is the one that keeps getting repeated unreproduced. The class survived on all three occasions; the headline did not."
+    },
+    {
       "id": "W5-R1",
       "severity": "MATERIAL",
       "finding": "Confirmed independently and still unrepaired: all three receipts declare artifact_revision b3057c0 while all three records' prose declares the commit witnessed as 4b96ba1, and services/record changed materially between them - 264 insertions across six files, including a new digest module and its tests. One of the records itself files a vague-artifact-revision finding and instructs the reader to check that field for exactness rather than presence."
@@ -139,7 +145,7 @@
   "not_examined": [
     "whether the record prose should be restamped; the builder holds that editing another participant's observation would settle their output"
   ],
-  "standing_supported": "none. Does not support BUILT -> WITNESSED for 91bd7ab. The value half is sound and resisted every mutation; the position half pinned the open and left the close unbounded, so the class survives at a fifth site and is reachable through the document the README instructs authors to quote. Nothing is mis-standing today.",
+  "standing_supported": "none. Does not support BUILT -> WITNESSED for 91bd7ab. The value half is sound and resisted every mutation. The position half pinned the open and left the close unbounded, and that class reproduces at 91bd7ab under direct measurement - though not through the construction first reported, which was refused by an unrelated rule. Nothing is mis-standing today.",
   "judgement_items": [
     "Five witness rounds have now been spent on this branch, each finding real defects and each closing what it was shown. That is the loop working, and it is also a cost. Whether to continue iterating or hold the branch and move the queue is a sequencing call worth making deliberately rather than by default."
   ]

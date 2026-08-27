@@ -137,6 +137,27 @@ REPOSITORY_CHECKS = (
           "walks from SPEC.md requirements to the evidence records that claim them and "
           "refuses a standing whose predecessor standing is unreached",
           ("SPEC.md", "PRD.md")),
+    Check("lessons loop", [sys.executable, "scripts/sov_lessons.py", "check"], ROOT,
+          "parses LESSONS.md and grades each standing against the tree rather than against "
+          "the page's own summary of itself, and reads what counts as EFFECTIVE out of the "
+          "check table it is an entry in, so a lesson cannot assert a check that is not "
+          "running. The drain count does not refuse: decisions/0029 declined that on the "
+          "reasoning that failing on an eighth lesson makes capture costly exactly when "
+          "capture matters, and this closes the half of that residual which taxes nobody",
+          ("LESSONS.md", "contracts/lessons-loop.json", "decisions/0029-lessons-loop.md",
+           "scripts/sov_lessons.py")),
+    Check("phase progress floor", [sys.executable, "scripts/sov_phase_progress.py", "check"],
+          ROOT,
+          "re-reads SPEC.md and the conformance corpus at check time and grades the distance "
+          "between them against a recorded floor, so the number that defines the phase is one "
+          "something refuses on; it never reads a prior gate report or any claim that coverage "
+          "was added. The F2 gate itself is deliberately not the check: registering it would "
+          "refuse every run until the phase exit is earned, which teaches a reader to ignore "
+          "it. A fall refuses because a fall is attributable to the edit that caused it; a "
+          "stall is printed and recorded as debt, on the reasoning decisions/0081 used to take "
+          "the wall clock out of the exit code (reports/2026-08-27-phase-i-retro.md, finding 1)",
+          ("SPEC.md", "conformance/oracle-controls.json", "contracts/phase-progress.json",
+           "scripts/sov_f2_gate.py", "scripts/sov_phase_progress.py")),
     Check("semantic cold-start task", [sys.executable, "scripts/sov_witness.py", "semantic"],
           ROOT,
           "judges the custody round trip by digests the witness computes itself rather than "

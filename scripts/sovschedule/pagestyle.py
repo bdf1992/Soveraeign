@@ -73,4 +73,15 @@ td.sw{white-space:nowrap}
 .say{margin:.6rem 0 0;font-size:.85rem;min-height:1.2rem;white-space:pre-wrap}
 .say.ok{color:#8ff0c0}
 .say.bad{color:#f0a9a9}
+
+form label{display:block;margin:0 0 1.1rem}
+form label>span:first-child{display:block;font-weight:600;margin-bottom:.15rem}
+form .hint{display:block;color:#9a9aa4;font-size:.78rem;margin-bottom:.35rem;max-width:70ch}
+form input,form select,form textarea{width:100%;max-width:56rem;background:#232327;
+ color:#e6e6ea;border:1px solid #45454f;border-radius:5px;padding:.4rem .55rem;
+ font:inherit;font-size:.88rem}
+form textarea{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.82rem}
+form input:disabled{opacity:.55}
+.row{display:flex;gap:.6rem;align-items:center;margin:1.2rem 0}
+a.btn{text-decoration:none;display:inline-block}
 """

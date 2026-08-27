@@ -54,6 +54,14 @@ def counts(digest: Digest) -> str:
     return f'<div class="counts">{body}</div>'
 
 
+def _edit_cell(row: Row, controls, token: str) -> str:
+    """An edit link per row, live only. The static page has nowhere to send it."""
+    if not controls:
+        return ""
+    return (f'<td><a class="btn" href="/edit?t={e(token)}&amp;name={e(row.name)}">'
+            "edit</a></td>")
+
+
 def _switch_cell(row: Row, controls: bool) -> str:
     """The switch, as a live control or as a reading.
 
@@ -72,12 +80,16 @@ def _switch_cell(row: Row, controls: bool) -> str:
             f'data-direction="{direction}">{e(label)}</button></td>')
 
 
-def declaration_table(rows: tuple[Row, ...], controls: bool = False) -> str:
-    head = ("<tr><th>schedule</th><th>switch</th><th>target</th><th>cadence</th>"
+def declaration_table(rows: tuple[Row, ...], controls: bool = False,
+                      token: str = "") -> str:
+    head = ("<tr><th>schedule</th><th>switch</th>"
+            + ("<th>edit</th>" if controls else "")
+            + "<th>target</th><th>cadence</th>"
             "<th>next due</th><th>mode</th><th>effect class</th><th>timeout</th></tr>")
     body = "".join(
         f'<tr data-row="{e(row.name)}"><td class="id">{e(row.name)}</td>'
         + _switch_cell(row, controls)
+        + _edit_cell(row, controls, token)
         + f'<td class="t">{e(row.target)}'
         + ("" if row.target_exists else ' <span class="tag bad">missing</span>')
         + ("" if row.defect is None else ' <span class="tag bad">refused</span>')

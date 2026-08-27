@@ -24,7 +24,7 @@ from pathlib import Path
 import json
 import re
 
-from sovschedule import switchlog
+from sovschedule import changelog
 from sovschedule.declaration import (
     SCHEDULES_DIR, DeclarationError, load_declaration, target_path,
 )
@@ -40,7 +40,7 @@ HUMAN = "HUMAN"
 MODEL = "MODEL"
 
 #: Which grant each direction needs. Empty means the direction needs none.
-GRANT_FOR = {switchlog.ENABLE: "seat:root", switchlog.DISABLE: ""}
+GRANT_FOR = {changelog.ENABLE: "seat:root", changelog.DISABLE: ""}
 
 REFUSALS = ("UNKNOWN_SCHEDULE", "NOT_A_DIRECTION", "GRANT_NOT_HELD", "REASON_MISSING",
             "DECLARATION_REFUSED", "TARGET_MISSING")
@@ -72,12 +72,12 @@ class Outcome:
 
     @property
     def moved(self) -> bool:
-        return self.outcome == switchlog.EFFECTED
+        return self.outcome == changelog.EFFECTED
 
     @property
     def exit_code(self) -> int:
         """A refusal is a nonzero exit; a recorded proposal is not a failure."""
-        return 1 if self.outcome == switchlog.REFUSED else 0
+        return 1 if self.outcome == changelog.REFUSED else 0
 
 
 def owner(binding: str = BINDING_CONSOLE) -> Actor:
@@ -102,13 +102,14 @@ def declaration_path(root: Path, name: str) -> Path:
 
 def _refuse(root: Path, *, schedule: str, direction: str, actor: Actor, reason: str,
             code: str, detail: str, now: datetime, from_enabled: bool | None) -> Outcome:
-    entry = switchlog.record(
-        schedule=schedule, direction=direction, from_enabled=from_enabled,
+    entry = changelog.record(
+        schedule=schedule, change=changelog.SWITCH, direction=direction,
+        from_enabled=from_enabled,
         to_enabled=from_enabled, actor_id=actor.actor_id, actor_kind=actor.actor_kind,
         binding=actor.binding, reason=reason, occurred_at=now,
-        outcome=switchlog.REFUSED, refusal_code=code)
-    switchlog.append(root, entry)
-    return Outcome(switchlog.REFUSED, schedule, direction, code, detail, entry)
+        outcome=changelog.REFUSED, refusal_code=code)
+    changelog.append(root, entry)
+    return Outcome(changelog.REFUSED, schedule, direction, code, detail, entry)
 
 
 def set_switch(root: Path, name: str, direction: str, actor: Actor, reason: str,
@@ -144,9 +145,9 @@ def set_switch(root: Path, name: str, direction: str, actor: Actor, reason: str,
                        reason=reason, code="DECLARATION_REFUSED", from_enabled=None,
                        now=now, detail=f"{error}; repair it before switching it")
 
-    wanted = direction == switchlog.ENABLE
+    wanted = direction == changelog.ENABLE
     if declared.enabled == wanted:
-        return Outcome(switchlog.UNCHANGED, name, direction, None,
+        return Outcome(changelog.UNCHANGED, name, direction, None,
                        f"{name} is already {_word(wanted)}. Nothing was written and "
                        "nothing was recorded, because nothing moved.", {})
 
@@ -159,13 +160,14 @@ def set_switch(root: Path, name: str, direction: str, actor: Actor, reason: str,
 
     grant = GRANT_FOR[direction]
     if not actor.holds_grant(grant):
-        entry = switchlog.record(
-            schedule=name, direction=direction, from_enabled=declared.enabled,
+        entry = changelog.record(
+            schedule=name, change=changelog.SWITCH, direction=direction,
+            from_enabled=declared.enabled,
             to_enabled=declared.enabled, actor_id=actor.actor_id,
             actor_kind=actor.actor_kind, binding=actor.binding, reason=reason,
-            occurred_at=now, outcome=switchlog.PROPOSED, refusal_code="GRANT_NOT_HELD")
-        switchlog.append(root, entry)
-        return Outcome(switchlog.PROPOSED, name, direction, "GRANT_NOT_HELD",
+            occurred_at=now, outcome=changelog.PROPOSED, refusal_code="GRANT_NOT_HELD")
+        changelog.append(root, entry)
+        return Outcome(changelog.PROPOSED, name, direction, "GRANT_NOT_HELD",
                        f"recorded as a proposal: arming {name} spends resources without "
                        f"anyone watching, so it needs {grant}, which this actor does not "
                        "hold. The switch did not move.", entry)
@@ -173,14 +175,15 @@ def set_switch(root: Path, name: str, direction: str, actor: Actor, reason: str,
     before = path.read_text(encoding="utf-8")
     after = _rewrite(before, wanted)
     path.write_text(after, encoding="utf-8", newline="\n")
-    entry = switchlog.record(
-        schedule=name, direction=direction, from_enabled=declared.enabled,
+    entry = changelog.record(
+        schedule=name, change=changelog.SWITCH, direction=direction,
+        from_enabled=declared.enabled,
         to_enabled=wanted, actor_id=actor.actor_id, actor_kind=actor.actor_kind,
         binding=actor.binding, reason=reason, occurred_at=now,
-        outcome=switchlog.EFFECTED, before_digest=switchlog.digest_text(before),
-        after_digest=switchlog.digest_text(after))
-    switchlog.append(root, entry)
-    return Outcome(switchlog.EFFECTED, name, direction, None,
+        outcome=changelog.EFFECTED, before_digest=changelog.digest_text(before),
+        after_digest=changelog.digest_text(after))
+    changelog.append(root, entry)
+    return Outcome(changelog.EFFECTED, name, direction, None,
                    f"{name} is now {_word(wanted)}. The declaration is changed in the "
                    "working tree and not committed; nothing ticks it yet.", entry)
 

@@ -1,4 +1,4 @@
-# 0086 — A switch you can reach, and an authority you cannot reach around
+# 0086 — Controls you can reach, and an authority you cannot reach around
 
 Status: `PROPOSED · BDO HAS NOT RULED`
 Date: 2026-08-27
@@ -63,7 +63,7 @@ incident it exists for, and a surface that let a model arm one would let any ses
 this box spend the owner's money while he slept.
 
 **4. Refused attempts are recorded, and the no-op is not.** Every path through the
-operation appends one line to `.claude/schedules/switch-log.ndjson`, including the
+operation appends one line to `.claude/schedules/change-log.ndjson`, including the
 refusals, because a log of only what succeeded cannot answer the question an operator
 asks after an incident, which is who tried. The exception is setting a switch to the
 state it already holds: that writes nothing and records nothing, because two operators
@@ -81,7 +81,38 @@ than no button, and the staleness check from `decisions/0083` still grades a fil
 console never serves — a running console does not move the committed bytes, which is a
 test rather than a claim.
 
-**7. The declaration diff is one line.** The operation patches the `enabled` line and
+**7. Creating and editing are the same authority question as arming.** Bdo asked next
+for the definitions themselves to be editable, which opens two holes that would have made
+the switch rule theatre. A model that may not arm `nightly-qa` can create `nightly-qa-2`
+with `enabled: true`; or it can leave an armed schedule's switch alone and repoint it at
+a different workflow, or raise its budget. Both commit the owner's resources by another
+route.
+
+One sentence closes both, and it is the sentence already there: a change to what runs
+unattended is the owner's. So creating a declaration already armed needs the owner, and
+editing an armed one needs the owner. Creating a switched-off declaration and editing a
+switched-off one are reversible record-local work and need nobody. Switching it off
+first is the route, and anyone may do that. Cases `D-002` and `D-008`.
+
+`name` and `enabled` are not editable through that path. `name` is the file stem, so
+changing it creates a second declaration and removes this one, which is not an edit.
+`enabled` has its own operation, because two doors to one transition means two authority
+checks to keep in step and one of them will drift.
+
+**8. A form must not be able to write a document the runner would refuse.** The operation
+writes the declaration, asks the ordinary loader to load it, and reports the loader's own
+complaint — one opinion about validity rather than two that drift. A rejected write is
+rolled back to the exact prior bytes: bytes rather than a re-serialised equivalent,
+because rewriting through a text write normalises line endings and a rollback on this
+host would silently convert a CRLF file to LF while reporting it changed nothing. The
+target dropdown is read off `.claude/` the same way the loader's target check reads it,
+so it cannot offer something the save refuses.
+
+Deleting a declaration is not offered. An uncommitted one has no copy anywhere and the
+operator who typed it is the only thing that ever knew it existed. Switching it off is
+the reversible answer.
+
+**9. The declaration diff is one line.** The operation patches the `enabled` line and
 verifies the result by re-parsing rather than reserialising the document, because these
 declarations are hand-written and hold formatting `json.dumps` does not reproduce. A
 switch that reformatted the whole file would bury its own changed field in a diff nobody
@@ -89,8 +120,11 @@ reviews.
 
 ## Defaults taken
 
-- The switch log lives beside the declarations rather than in a new service. Moving both
-  onto Console surface 3 is one move; the seam is still `history.py` plus `switchlog.py`.
+- One log for all three changes, `.claude/schedules/change-log.ndjson`, rather than one
+  per operation. An operator asking what happened to a schedule should read one file, not
+  merge two by timestamp.
+- The log lives beside the declarations rather than in a new service. Moving both onto
+  Console surface 3 is one move; the seam is `history.py` plus `changelog.py`.
 - The command line records a model actor unless `--as-owner` is passed, because a session
   running the CLI is not Bdo and must not be able to arm a schedule by claiming to be.
 - The console opens a browser on start. `--no-open` turns it off.
@@ -127,7 +161,13 @@ surface is a human judgement and it is Bdo's. Four of the nine Soveraeign checks
    the page? `OPEN` is not a favourable result and only he closes it.
 2. Whether adding HTTP, even bound to loopback, is a boundary he wants crossed in Phase
    I. The alternative was a page whose buttons do nothing, which he rejected.
-3. Arming any schedule. That was his before this work and it still is; what changed is
+3. What you meant by "create with a list of services, adapters, and connections". A
+   schedule says *when* to run one workflow or skill, with what arguments and under what
+   budget. It does not compose services — that is what the workflow itself does, and a
+   workflow is JavaScript. The form creates schedules over things that already exist. If
+   what you want is to define the composed thing from a surface, that is a separate and
+   much larger concern and nothing here starts it.
+4. Arming any schedule. That was his before this work and it still is; what changed is
    that there is now a control for it and a record of it.
 
 ## Standing

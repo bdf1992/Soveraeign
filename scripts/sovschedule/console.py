@@ -27,7 +27,7 @@ import secrets
 import threading
 import webbrowser
 
-from sovschedule import control, page, report, switchlog
+from sovschedule import authoring, changelog, control, page, pageform, report
 
 LOOPBACK = "127.0.0.1"
 TOKEN_BYTES = 24
@@ -80,6 +80,38 @@ class Console:
         digest = report.assemble(self.root, self.clock(), source=report.WORKTREE)
         return page.render(digest, controls=self.token).encode("utf-8")
 
+    def form(self, name: str | None) -> bytes:
+        """The create form, or the edit form for one existing schedule."""
+        if name:
+            path = self.root / "\u002eclaude" / "schedules" / f"{name}.json"
+            body = json.loads(path.read_text(encoding="utf-8"))
+        else:
+            body = authoring.blank()
+        return pageform.render(authoring.targets(self.root), body, self.token,
+                               creating=not name).encode("utf-8")
+
+    def save(self, payload: dict) -> tuple[int, dict]:
+        """Create a declaration or edit one, through the operation that checks the grant."""
+        actor = control.owner(control.BINDING_CONSOLE)
+        name = str(payload.get("name", ""))
+        reason = str(payload.get("reason", ""))
+        body = payload.get("body")
+        if not isinstance(body, dict):
+            return 200, {"outcome": changelog.REFUSED, "refusal_code": "INVALID_DECLARATION",
+                         "detail": "the form sent no declaration body", "moved": False}
+        if payload.get("mode") == "create":
+            outcome = authoring.create(self.root, name, body, actor, reason,
+                                       now=self.clock())
+        else:
+            changes = {field: body[field] for field in authoring.EDITABLE if field in body}
+            outcome = authoring.update(self.root, name, changes, actor, reason,
+                                       now=self.clock())
+        return 200, {
+            "outcome": outcome.outcome, "schedule": outcome.schedule,
+            "refusal_code": outcome.refusal_code, "detail": outcome.detail,
+            "moved": outcome.moved,
+        }
+
     def switch(self, payload: dict) -> tuple[int, dict]:
         """Perform one requested switch and answer with what the operation decided."""
         name = str(payload.get("schedule", ""))
@@ -130,18 +162,31 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self) -> None:  # noqa: N802 - the stdlib names this
         parsed = urlparse(self.path)
-        if parsed.path != "/":
+        if parsed.path not in ("/", "/new", "/edit"):
             self._refuse(404, f"no route {parsed.path}")
             return
-        supplied = parse_qs(parsed.query).get("t", [None])[0]
-        if not self._token_ok(supplied):
+        query = parse_qs(parsed.query)
+        if not self._token_ok(query.get("t", [None])[0]):
             self._refuse(403, "BAD_TOKEN: open the URL this console printed when it started")
             return
-        self._send(200, self.console.render(), "text/html; charset=utf-8")
+        if parsed.path == "/":
+            self._send(200, self.console.render(), "text/html; charset=utf-8")
+            return
+        name = query.get("name", [""])[0] if parsed.path == "/edit" else ""
+        if parsed.path == "/edit" and not self._known(name):
+            self._refuse(404, f"UNKNOWN_SCHEDULE: no declaration named {name!r}")
+            return
+        self._send(200, self.console.form(name), "text/html; charset=utf-8")
+
+    def _known(self, name: str) -> bool:
+        """A name that is a real declaration. Checked by listing, never by joining a path."""
+        return name in {target.stem for target in
+                        (self.console.root / ".claude" / "schedules").glob("*.json")
+                        if target.name != "schedule.schema.json"}
 
     def do_POST(self) -> None:  # noqa: N802 - the stdlib names this
         parsed = urlparse(self.path)
-        if parsed.path != "/switch":
+        if parsed.path not in ("/switch", "/save"):
             self._refuse(404, f"no route {parsed.path}")
             return
         try:
@@ -160,7 +205,8 @@ class Handler(BaseHTTPRequestHandler):
         if not isinstance(payload, dict) or not self._token_ok(payload.get("token")):
             self._refuse(403, "BAD_TOKEN: this request did not come from the served page")
             return
-        code, body = self.console.switch(payload)
+        act = self.console.switch if parsed.path == "/switch" else self.console.save
+        code, body = act(payload)
         self._send(code, json.dumps(body).encode("utf-8"),
                    "application/json; charset=utf-8")
 
@@ -225,6 +271,6 @@ def serve(root: Path, port: int = 0, open_browser: bool = True, out=_say) -> Non
         server.server_close()
 
 
-def switch_log_rows(root: Path, limit: int = 40) -> list[switchlog.Entry]:
+def switch_log_rows(root: Path, limit: int = 40) -> list[changelog.Entry]:
     """The newest recorded attempts, for the console's own history panel."""
-    return switchlog.read(root)[-limit:]
+    return changelog.read(root)[-limit:]

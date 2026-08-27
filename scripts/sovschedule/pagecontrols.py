@@ -30,7 +30,7 @@ LIVE_NOTE = (
     "change sits in the working tree until someone lands it. Arming a schedule is the "
     "owner's - a model reaching this same operation gets a recorded proposal and the "
     "switch does not move. Every attempt, including every refusal, appends a line to "
-    "<code>.claude/schedules/switch-log.ndjson</code>.")
+    "<code>.claude/schedules/change-log.ndjson</code>.")
 
 SCRIPT = """
 <script>
@@ -47,8 +47,8 @@ SCRIPT = """
       var direction = button.dataset.direction;
       var reason = window.prompt(
         direction === "ENABLE"
-          ? "Arming " + schedule + ". Why? This goes in the switch log."
-          : "Switching " + schedule + " off. Why? This goes in the switch log.");
+          ? "Arming " + schedule + ". Why? This goes in the change log."
+          : "Switching " + schedule + " off. Why? This goes in the change log.");
       if (reason === null) { return; }
       button.disabled = true;
       report("asking...", false);
@@ -88,6 +88,14 @@ def say_line(controls: bool) -> str:
 
 def script(controls: bool) -> str:
     return SCRIPT if controls else ""
+
+
+def links(controls: bool, token: str) -> str:
+    """New and edit are reachable only where something can act on them."""
+    if not controls:
+        return ""
+    return (f'<div class="row"><a class="btn arm" href="/new?t={e(token)}">'
+            "new schedule</a></div>")
 
 
 def banner(controls: bool, schedule_count: int) -> str:

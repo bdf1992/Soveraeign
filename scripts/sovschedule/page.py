@@ -162,8 +162,9 @@ re-deriving it there would prove only that an absent source produces an empty an
 each says which it read: a committed page reproduces on any checkout and is byte-compared
 everywhere, while the console shows the state an operator is looking at.</p>
 {pagecontrols.note(live)}
+{pagecontrols.links(live, str(controls or ""))}
 {pagecontrols.say_line(live)}
-{pagetables.declaration_table(digest.rows, controls=live)}
+{pagetables.declaration_table(digest.rows, controls=live, token=str(controls or ""))}
 <h3>Findings from the declarations</h3>
 {_findings(digest, "declaration")}
 <h2>The rules</h2>

@@ -247,5 +247,428 @@
       "expect_log_lines": 1,
       "proves": "The quiet case for C-011, and the one that matters operationally: a schedule pointing at a deleted workflow is exactly the one you want to switch off, and a check that refused both directions would trap it on."
     }
+  ],
+  "authoring_note": "Cases for the other two changes a declaration has: creating one and editing one. The switch cases above use `schedule`/`request`; these use `change`, `existing` and either a whole `body` or a set of `changes`. They are executed by scripts/tests/test_automation_authoring.py.\n\nThe two that matter are D-002 and D-008. Without them the switch authority is theatre: a model that may not arm a schedule creates one already armed, or leaves the switch alone and repoints an armed schedule at something else.",
+  "authoring_cases": [
+    {
+      "case_id": "D-001-a-model-may-draft-a-schedule-that-is-switched-off",
+      "change": "CREATE",
+      "existing": null,
+      "request": {
+        "name": "code-review",
+        "actor": "model",
+        "reason": "an operator said why",
+        "body": {
+          "description": "Review the branch every two hours; reports only.",
+          "target": {
+            "kind": "workflow",
+            "name": "sov-review",
+            "args": {}
+          },
+          "cron": "0 */2 * * *",
+          "mode": "observe",
+          "effect_class": "RESOURCE_CONSUMPTION",
+          "isolation": "tree",
+          "preconditions": {
+            "clean_tree": false
+          },
+          "limits": {
+            "max_budget_usd": 3,
+            "timeout_seconds": 2700
+          }
+        },
+        "changes": null
+      },
+      "expect_outcome": "EFFECTED",
+      "expect_refusal": null,
+      "expect_exists_after": true,
+      "proves": "Creating a disarmed declaration writes a file and runs nothing, so it is reversible record-local work and needs nobody's permission. This is the path Bdo asked for: describe a job, get a declaration, arm it separately."
+    },
+    {
+      "case_id": "D-002-creating-one-already-armed-is-arming-one",
+      "change": "CREATE",
+      "existing": null,
+      "request": {
+        "name": "code-review",
+        "actor": "model",
+        "reason": "an operator said why",
+        "body": {
+          "description": "Review the branch every two hours; reports only.",
+          "target": {
+            "kind": "workflow",
+            "name": "sov-review",
+            "args": {}
+          },
+          "cron": "0 */2 * * *",
+          "mode": "observe",
+          "effect_class": "RESOURCE_CONSUMPTION",
+          "isolation": "tree",
+          "preconditions": {
+            "clean_tree": false
+          },
+          "limits": {
+            "max_budget_usd": 3,
+            "timeout_seconds": 2700
+          },
+          "enabled": true
+        },
+        "changes": null
+      },
+      "expect_outcome": "REFUSED",
+      "expect_refusal": "GRANT_NOT_HELD",
+      "expect_exists_after": false,
+      "proves": "The hole this closes. Without it the whole switch authority is theatre: a model that cannot arm nightly-qa simply creates nightly-qa-2 with enabled true and the owner's budget is committed anyway. Creating armed is arming."
+    },
+    {
+      "case_id": "D-003-the-owner-may-create-one-already-armed",
+      "change": "CREATE",
+      "existing": null,
+      "request": {
+        "name": "code-review",
+        "actor": "owner",
+        "reason": "an operator said why",
+        "body": {
+          "description": "Review the branch every two hours; reports only.",
+          "target": {
+            "kind": "workflow",
+            "name": "sov-review",
+            "args": {}
+          },
+          "cron": "0 */2 * * *",
+          "mode": "observe",
+          "effect_class": "RESOURCE_CONSUMPTION",
+          "isolation": "tree",
+          "preconditions": {
+            "clean_tree": false
+          },
+          "limits": {
+            "max_budget_usd": 3,
+            "timeout_seconds": 2700
+          },
+          "enabled": true
+        },
+        "changes": null
+      },
+      "expect_outcome": "EFFECTED",
+      "expect_refusal": null,
+      "expect_exists_after": true,
+      "proves": "The quiet case for D-002. The rule is about the grant, not about the field being forbidden."
+    },
+    {
+      "case_id": "D-004-a-name-that-is-not-a-file-stem",
+      "change": "CREATE",
+      "existing": null,
+      "request": {
+        "name": "../../etc/passwd",
+        "actor": "owner",
+        "reason": "an operator said why",
+        "body": {
+          "description": "Review the branch every two hours; reports only.",
+          "target": {
+            "kind": "workflow",
+            "name": "sov-review",
+            "args": {}
+          },
+          "cron": "0 */2 * * *",
+          "mode": "observe",
+          "effect_class": "RESOURCE_CONSUMPTION",
+          "isolation": "tree",
+          "preconditions": {
+            "clean_tree": false
+          },
+          "limits": {
+            "max_budget_usd": 3,
+            "timeout_seconds": 2700
+          }
+        },
+        "changes": null
+      },
+      "expect_outcome": "REFUSED",
+      "expect_refusal": "NAME_SHAPE",
+      "expect_exists_after": false,
+      "proves": "A name becomes a path, so it is refused by shape before it reaches the filesystem. A form field is the obvious way in and the console posts whatever it is given."
+    },
+    {
+      "case_id": "D-005-a-declaration-the-runner-would-refuse-is-not-written",
+      "change": "CREATE",
+      "existing": null,
+      "request": {
+        "name": "code-review",
+        "actor": "owner",
+        "reason": "an operator said why",
+        "body": {
+          "description": "Review the branch every two hours; reports only.",
+          "target": {
+            "kind": "workflow",
+            "name": "sov-review",
+            "args": {}
+          },
+          "cron": "not a cron expression",
+          "mode": "observe",
+          "effect_class": "RESOURCE_CONSUMPTION",
+          "isolation": "tree",
+          "preconditions": {
+            "clean_tree": false
+          },
+          "limits": {
+            "max_budget_usd": 3,
+            "timeout_seconds": 2700
+          }
+        },
+        "changes": null
+      },
+      "expect_outcome": "REFUSED",
+      "expect_refusal": "INVALID_DECLARATION",
+      "expect_exists_after": false,
+      "proves": "The form validates by writing the document and asking the loader, then removing it when the loader complains - so a form cannot create anything the runner would later refuse, and the operator reads the loader's own wording rather than a second description that drifts from it."
+    },
+    {
+      "case_id": "D-006-creating-one-that-already-exists",
+      "change": "CREATE",
+      "existing": {
+        "enabled": false
+      },
+      "request": {
+        "name": "code-review",
+        "actor": "owner",
+        "reason": "an operator said why",
+        "body": {
+          "description": "Review the branch every two hours; reports only.",
+          "target": {
+            "kind": "workflow",
+            "name": "sov-review",
+            "args": {}
+          },
+          "cron": "0 */2 * * *",
+          "mode": "observe",
+          "effect_class": "RESOURCE_CONSUMPTION",
+          "isolation": "tree",
+          "preconditions": {
+            "clean_tree": false
+          },
+          "limits": {
+            "max_budget_usd": 3,
+            "timeout_seconds": 2700
+          }
+        },
+        "changes": null
+      },
+      "expect_outcome": "REFUSED",
+      "expect_refusal": "ALREADY_EXISTS",
+      "expect_exists_after": true,
+      "proves": "Create never overwrites. A form submitted twice must not silently replace a declaration somebody else is editing - eleven sessions share this tree."
+    },
+    {
+      "case_id": "D-007-a-model-may-edit-a-schedule-that-is-off",
+      "change": "UPDATE",
+      "existing": {
+        "enabled": false
+      },
+      "request": {
+        "name": "code-review",
+        "actor": "model",
+        "reason": "an operator said why",
+        "body": null,
+        "changes": {
+          "cron": "0 4 * * *"
+        }
+      },
+      "expect_outcome": "EFFECTED",
+      "expect_refusal": null,
+      "expect_exists_after": true,
+      "proves": "Editing something that cannot run changes nothing that happens, so it is reversible record-local work."
+    },
+    {
+      "case_id": "D-008-editing-an-armed-schedule-is-the-owners",
+      "change": "UPDATE",
+      "existing": {
+        "enabled": true
+      },
+      "request": {
+        "name": "code-review",
+        "actor": "model",
+        "reason": "an operator said why",
+        "body": null,
+        "changes": {
+          "cron": "0 4 * * *"
+        }
+      },
+      "expect_outcome": "REFUSED",
+      "expect_refusal": "GRANT_NOT_HELD",
+      "expect_exists_after": true,
+      "proves": "The second hole. Arming is the owner's, so editing what an armed schedule runs has to be too - otherwise a model leaves the switch alone and repoints the target at something else, or raises the budget. Switch it off first, which anyone may do, then edit it."
+    },
+    {
+      "case_id": "D-009-the-owner-may-edit-an-armed-schedule",
+      "change": "UPDATE",
+      "existing": {
+        "enabled": true
+      },
+      "request": {
+        "name": "code-review",
+        "actor": "owner",
+        "reason": "an operator said why",
+        "body": null,
+        "changes": {
+          "cron": "0 4 * * *"
+        }
+      },
+      "expect_outcome": "EFFECTED",
+      "expect_refusal": null,
+      "expect_exists_after": true,
+      "proves": "The quiet case for D-008."
+    },
+    {
+      "case_id": "D-010-the-switch-cannot-be-moved-through-the-edit-path",
+      "change": "UPDATE",
+      "existing": {
+        "enabled": false
+      },
+      "request": {
+        "name": "code-review",
+        "actor": "owner",
+        "reason": "an operator said why",
+        "body": null,
+        "changes": {
+          "enabled": true
+        }
+      },
+      "expect_outcome": "REFUSED",
+      "expect_refusal": "NOT_EDITABLE",
+      "expect_exists_after": true,
+      "proves": "Two doors to one transition means two authority checks to keep in step, and one of them will drift. Arming has an operation; editing refuses the field and says which operation owns it."
+    },
+    {
+      "case_id": "D-011-the-name-cannot-be-edited",
+      "change": "UPDATE",
+      "existing": {
+        "enabled": false
+      },
+      "request": {
+        "name": "code-review",
+        "actor": "owner",
+        "reason": "an operator said why",
+        "body": null,
+        "changes": {
+          "name": "something-else"
+        }
+      },
+      "expect_outcome": "REFUSED",
+      "expect_refusal": "NOT_EDITABLE",
+      "expect_exists_after": true,
+      "proves": "The name is the file stem. Changing it creates a second declaration and removes this one, which is not an edit and is not offered."
+    },
+    {
+      "case_id": "D-012-an-edit-that-would-break-the-declaration-leaves-it-alone",
+      "change": "UPDATE",
+      "existing": {
+        "enabled": false
+      },
+      "request": {
+        "name": "code-review",
+        "actor": "owner",
+        "reason": "an operator said why",
+        "body": null,
+        "changes": {
+          "cron": "nonsense"
+        }
+      },
+      "expect_outcome": "REFUSED",
+      "expect_refusal": "INVALID_DECLARATION",
+      "expect_exists_after": true,
+      "proves": "The bytes are restored. A validating write that leaves the file broken when it refuses is worse than no validation, because the operator now has a defect they did not type and no record of what it replaced."
+    },
+    {
+      "case_id": "D-013-editing-nothing-writes-nothing",
+      "change": "UPDATE",
+      "existing": {
+        "enabled": false
+      },
+      "request": {
+        "name": "code-review",
+        "actor": "model",
+        "reason": "an operator said why",
+        "body": null,
+        "changes": {
+          "cron": "0 2 * * *"
+        }
+      },
+      "expect_outcome": "UNCHANGED",
+      "expect_refusal": null,
+      "expect_exists_after": true,
+      "proves": "A form posts every field on every save, so most saves change nothing. Recording those would bury the real changes in a log of no-ops."
+    },
+    {
+      "case_id": "D-014-an-edit-with-no-reason",
+      "change": "UPDATE",
+      "existing": {
+        "enabled": false
+      },
+      "request": {
+        "name": "code-review",
+        "actor": "owner",
+        "reason": "  ",
+        "body": null,
+        "changes": {
+          "cron": "0 4 * * *"
+        }
+      },
+      "expect_outcome": "REFUSED",
+      "expect_refusal": "REASON_MISSING",
+      "expect_exists_after": true,
+      "proves": "Same rule as the switch. The log answers why or it answers nothing worth having."
+    },
+    {
+      "case_id": "D-015-editing-a-schedule-that-does-not-exist",
+      "change": "UPDATE",
+      "existing": null,
+      "request": {
+        "name": "never-made",
+        "actor": "owner",
+        "reason": "editing a typo",
+        "body": null,
+        "changes": {
+          "cron": "0 4 * * *"
+        }
+      },
+      "expect_outcome": "REFUSED",
+      "expect_refusal": "UNKNOWN_SCHEDULE",
+      "expect_exists_after": false,
+      "proves": "An edit must not create. A form or a command that misspells a name would otherwise conjure a declaration with only the edited field in it, which the loader would then refuse for reasons that name the wrong problem."
+    },
+    {
+      "case_id": "D-016-an-external-world-schedule-is-refused-before-it-is-written",
+      "change": "CREATE",
+      "existing": null,
+      "request": {
+        "name": "reaches-out",
+        "actor": "owner",
+        "reason": "trying the boundary",
+        "body": {
+          "description": "Review the branch every two hours; reports only.",
+          "target": {
+            "kind": "workflow",
+            "name": "sov-review",
+            "args": {}
+          },
+          "cron": "0 */2 * * *",
+          "mode": "observe",
+          "effect_class": "EXTERNAL_WORLD",
+          "isolation": "tree",
+          "preconditions": {
+            "clean_tree": false
+          },
+          "limits": {
+            "max_budget_usd": 3,
+            "timeout_seconds": 2700
+          }
+        },
+        "changes": null
+      },
+      "expect_outcome": "REFUSED",
+      "expect_refusal": "EXTERNAL_WORLD_REFUSED",
+      "expect_exists_after": false,
+      "proves": "Phase I refuses external-world effects and the loader refuses this too, so the case is about where the refusal happens: before a file is written, with a code that names the boundary, rather than as a schema complaint the operator has to interpret. The form does not offer the value at all, and this is what stops the command line and the HTTP route from being the way around that."
+    }
   ]
 }

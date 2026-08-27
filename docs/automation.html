@@ -67,8 +67,19 @@ td.sw{white-space:nowrap}
 .say{margin:.6rem 0 0;font-size:.85rem;min-height:1.2rem;white-space:pre-wrap}
 .say.ok{color:#8ff0c0}
 .say.bad{color:#f0a9a9}
+
+form label{display:block;margin:0 0 1.1rem}
+form label>span:first-child{display:block;font-weight:600;margin-bottom:.15rem}
+form .hint{display:block;color:#9a9aa4;font-size:.78rem;margin-bottom:.35rem;max-width:70ch}
+form input,form select,form textarea{width:100%;max-width:56rem;background:#232327;
+ color:#e6e6ea;border:1px solid #45454f;border-radius:5px;padding:.4rem .55rem;
+ font:inherit;font-size:.88rem}
+form textarea{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.82rem}
+form input:disabled{opacity:.55}
+.row{display:flex;gap:.6rem;align-items:center;margin:1.2rem 0}
+a.btn{text-decoration:none;display:inline-block}
 </style></head>
-<body><!--sov:provenance {"declaration_source": "COMMIT", "ledger_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "ledger_entries": 0, "ledger_path": ".local/schedules/ledger.ndjson", "ledger_present": false, "reading": "UNOBSERVED", "readings": {"code-review": "UNOBSERVED", "daily-coldstart": "UNOBSERVED", "epic-advance": "UNOBSERVED", "epic-walk": "UNOBSERVED", "nightly-qa": "UNOBSERVED", "pr-review": "UNOBSERVED", "weekly-baseline": "UNOBSERVED"}, "rendered_at": "2026-08-27T15:30:00-05:00", "table_id": "soveraeign-automation-health/v1", "utc_offset_minutes": -300}-->
+<body><!--sov:provenance {"declaration_source": "COMMIT", "ledger_digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "ledger_entries": 0, "ledger_path": ".local/schedules/ledger.ndjson", "ledger_present": false, "reading": "UNOBSERVED", "readings": {"code-review": "UNOBSERVED", "daily-coldstart": "UNOBSERVED", "epic-advance": "UNOBSERVED", "epic-walk": "UNOBSERVED", "nightly-qa": "UNOBSERVED", "pr-review": "UNOBSERVED", "weekly-baseline": "UNOBSERVED"}, "rendered_at": "2026-08-27T15:54:00-05:00", "table_id": "soveraeign-automation-health/v1", "utc_offset_minutes": -300}-->
 <main>
 <div class="ro">read-only page - switches show state and do not change it</div>
 <h1>Automation health</h1>
@@ -76,7 +87,7 @@ td.sw{white-space:nowrap}
 due, what happened the last time it ran, and which of the declared health rules fired.
 Armed is not running - nothing on this node ticks a schedule yet.</p>
 <!--sov:history-->
-<div class="prov"><b>read at</b>2026-08-27T15:30:00-05:00<br><b>clock</b>host local, -05:00 from UTC - the clock scripts/sovschedule/runner.py matches cron in<br><b>declarations</b>.claude/schedules/*.json at HEAD<br><b>run history</b>.local/schedules/ledger.ndjson (absent)<br><b>ledger digest</b>sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855<br><b>rules</b>contracts/automation-health.json (soveraeign-automation-health/v1, PROPOSED)<br><b>refuses at</b>UNHEALTHY<br><br>.local/schedules/ledger.ndjson does not exist: no scheduled run has ever executed here, and this checkout holds no record of one that executed elsewhere</div>
+<div class="prov"><b>read at</b>2026-08-27T15:54:00-05:00<br><b>clock</b>host local, -05:00 from UTC - the clock scripts/sovschedule/runner.py matches cron in<br><b>declarations</b>.claude/schedules/*.json at HEAD<br><b>run history</b>.local/schedules/ledger.ndjson (absent)<br><b>ledger digest</b>sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855<br><b>rules</b>contracts/automation-health.json (soveraeign-automation-health/v1, PROPOSED)<br><b>refuses at</b>UNHEALTHY<br><br>.local/schedules/ledger.ndjson does not exist: no scheduled run has ever executed here, and this checkout holds no record of one that executed elsewhere</div>
 <div class="counts"><div><b>7</b><span>declared</span></div><div><b>0</b><span>armed</span></div><div><b>0</b><span>ever run</span></div><div><b>0</b><span>ledger events</span></div><div><b>0</b><span>findings</span></div><div><b>0</b><span>refusing</span></div></div>
 <div class="verdict abs"><b>UNOBSERVED</b><p>Every declaration-derived rule was evaluated and passed, and no run has ever settled, so the history-derived rules had nothing to read. Not a pass. A schedule whose only history is refusals or a run still in flight reads UNOBSERVED too: a refusal invoked nothing and a run in flight has not answered, so neither is evidence that the schedule works. It is the reading every schedule carries today.</p></div>
 <h2>What the records say</h2>
@@ -92,6 +103,7 @@ re-deriving it there would prove only that an absent source produces an empty an
 each says which it read: a committed page reproduces on any checkout and is byte-compared
 everywhere, while the console shows the state an operator is looking at.</p>
 <p class="note">This page is a reading. Its switch column shows state and cannot change it, because a file opened from disk has no process behind it. For working switches run <code>python scripts/sov_schedule.py console</code>, which serves this same read at <code>127.0.0.1</code> with the buttons live. The command line reaches the same operation: <code>python scripts/sov_schedule.py disable &lt;name&gt; --reason &lt;text&gt;</code>.</p>
+
 
 <div class="wrap"><table><tr><th>schedule</th><th>switch</th><th>target</th><th>cadence</th><th>next due</th><th>mode</th><th>effect class</th><th>timeout</th></tr><tr data-row="code-review"><td class="id">code-review</td><td><span class="tag abs">off</span></td><td class="t">workflow:sov-review</td><td class="t">0 */2 * * *</td><td class="t">2026-08-27T16:00:00-05:00</td><td class="t">observe</td><td class="t">RESOURCE_CONSUMPTION</td><td class="n">2700s</td></tr><tr data-row="daily-coldstart"><td class="id">daily-coldstart</td><td><span class="tag abs">off</span></td><td class="t">workflow:sov-coldstart</td><td class="t">30 6 * * *</td><td class="t">2026-08-28T06:30:00-05:00</td><td class="t">observe</td><td class="t">RESOURCE_CONSUMPTION</td><td class="n">2400s</td></tr><tr data-row="epic-advance"><td class="id">epic-advance</td><td><span class="tag abs">off</span></td><td class="t">workflow:sov-epic</td><td class="t">0 8 * * 3</td><td class="t">2026-09-02T08:00:00-05:00</td><td class="t">build</td><td class="t">RESOURCE_CONSUMPTION</td><td class="n">5400s</td></tr><tr data-row="epic-walk"><td class="id">epic-walk</td><td><span class="tag abs">off</span></td><td class="t">workflow:sov-epic</td><td class="t">0 7 * * *</td><td class="t">2026-08-28T07:00:00-05:00</td><td class="t">observe</td><td class="t">RESOURCE_CONSUMPTION</td><td class="n">3600s</td></tr><tr data-row="nightly-qa"><td class="id">nightly-qa</td><td><span class="tag abs">off</span></td><td class="t">workflow:sov-qa</td><td class="t">0 2 * * *</td><td class="t">2026-08-28T02:00:00-05:00</td><td class="t">observe</td><td class="t">RESOURCE_CONSUMPTION</td><td class="n">3600s</td></tr><tr data-row="pr-review"><td class="id">pr-review</td><td><span class="tag abs">off</span></td><td class="t">workflow:sov-review</td><td class="t">30 7 * * *</td><td class="t">2026-08-28T07:30:00-05:00</td><td class="t">observe</td><td class="t">RESOURCE_CONSUMPTION</td><td class="n">3600s</td></tr><tr data-row="weekly-baseline"><td class="id">weekly-baseline</td><td><span class="tag abs">off</span></td><td class="t">workflow:sov-baseline</td><td class="t">0 6 * * 1</td><td class="t">2026-08-31T06:00:00-05:00</td><td class="t">observe</td><td class="t">RESOURCE_CONSUMPTION</td><td class="n">5400s</td></tr></table></div>
 <h3>Findings from the declarations</h3>

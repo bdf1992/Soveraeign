@@ -25,7 +25,7 @@ import urllib.request
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from sovschedule import console, control, page, report, switchlog  # noqa: E402
+from sovschedule import console, control, page, report, changelog  # noqa: E402
 
 CORPUS = json.loads(
     (ROOT / "conformance" / "fixtures" / "automation-control" / "cases.json")
@@ -101,7 +101,7 @@ class DeclaredCorpus(Tree):
                 if declared["valid"]:
                     self.assertEqual(self.enabled_of(declared["name"]),
                                      case["expect_enabled_after"])
-                self.assertEqual(len(switchlog.read(self.root)),
+                self.assertEqual(len(changelog.read(self.root)),
                                  case["expect_log_lines"])
 
     def test_every_declared_refusal_is_assigned_a_layer(self) -> None:
@@ -111,11 +111,17 @@ class DeclaredCorpus(Tree):
         self.assertEqual(layered, set(TABLE["refusals"]))
 
     def test_every_operation_refusal_has_a_corpus_case(self) -> None:
-        """A refusal nothing exercises is prose, not a refusal."""
-        reached = {case["expect_refusal"] for case in CORPUS["cases"]} - {None}
-        for code in TABLE["refusal_layer"]["operation"]:
-            with self.subTest(code=code):
-                self.assertIn(code, reached)
+        """A refusal nothing exercises is prose, not a refusal.
+
+        Both corpora, because the operations split across two files: the switch cases
+        here and the authoring cases beside them. Checking one would let a refusal
+        declared for either operation sit uncovered as long as the other corpus grew.
+        """
+        reached = {case["expect_refusal"]
+                   for case in CORPUS["cases"] + CORPUS["authoring_cases"]} - {None}
+        missing = [code for code in TABLE["refusal_layer"]["operation"]
+                   if code not in reached]
+        self.assertEqual(missing, [], f"operation refusals with no case: {missing}")
 
     def test_every_transport_refusal_is_asserted_somewhere_in_this_module(self) -> None:
         """A socket refusal cannot come from a fixture, so a named test stands for it.
@@ -155,7 +161,7 @@ class TheAuthoritySplit(Tree):
                 actor = control.model("urn:soveraeign:actor:test-model", binding)
                 outcome = control.set_switch(self.root, "nightly-qa", "ENABLE", actor,
                                              "let me in", now=NOW)
-                self.assertEqual(outcome.outcome, switchlog.PROPOSED)
+                self.assertEqual(outcome.outcome, changelog.PROPOSED)
                 self.assertEqual(outcome.refusal_code, "GRANT_NOT_HELD")
                 self.assertFalse(self.enabled_of())
 
@@ -165,18 +171,18 @@ class TheAuthoritySplit(Tree):
         actor = control.model("urn:soveraeign:actor:test-model")
         original = dict(control.GRANT_FOR)
         try:
-            control.GRANT_FOR[switchlog.DISABLE] = "seat:root"
+            control.GRANT_FOR[changelog.DISABLE] = "seat:root"
             outcome = control.set_switch(self.root, "nightly-qa", "DISABLE", actor,
                                          "stop it", now=NOW)
-            self.assertEqual(outcome.outcome, switchlog.PROPOSED)
+            self.assertEqual(outcome.outcome, changelog.PROPOSED)
         finally:
             control.GRANT_FOR.clear()
             control.GRANT_FOR.update(original)
 
     def test_the_contract_and_the_code_agree_on_which_direction_needs_a_seat(self) -> None:
         declared = TABLE["authority"]["grants"]
-        self.assertEqual(control.GRANT_FOR[switchlog.ENABLE], declared["ENABLE"]["held_by"])
-        self.assertEqual(control.GRANT_FOR[switchlog.DISABLE], "")
+        self.assertEqual(control.GRANT_FOR[changelog.ENABLE], declared["ENABLE"]["held_by"])
+        self.assertEqual(control.GRANT_FOR[changelog.DISABLE], "")
         self.assertEqual(declared["ENABLE"]["reason"], "RESOURCE_COMMITMENT")
 
 
@@ -203,7 +209,7 @@ class TheRecord(Tree):
                            "armed for the overnight run", now=NOW)
         control.set_switch(self.root, "nightly-qa", "DISABLE", self.actor("model"),
                            "it failed twice, stopping it", now=NOW)
-        entries = switchlog.read(self.root)
+        entries = changelog.read(self.root)
         self.assertEqual([e.direction for e in entries], ["ENABLE", "DISABLE"])
         self.assertEqual([e.outcome for e in entries], ["EFFECTED", "EFFECTED"])
         self.assertEqual(entries[0].reason, "armed for the overnight run")
@@ -214,9 +220,9 @@ class TheRecord(Tree):
         self.declare(enabled=False)
         control.set_switch(self.root, "ghost", "ENABLE", self.actor("owner"),
                            "fat-fingered the name", now=NOW)
-        entries = switchlog.read(self.root)
+        entries = changelog.read(self.root)
         self.assertEqual(len(entries), 1)
-        self.assertEqual(entries[0].outcome, switchlog.REFUSED)
+        self.assertEqual(entries[0].outcome, changelog.REFUSED)
         self.assertEqual(entries[0].refusal_code, "UNKNOWN_SCHEDULE")
 
     def test_the_record_carries_every_field_the_contract_names(self) -> None:
@@ -234,11 +240,11 @@ class TheRecord(Tree):
         self.declare(enabled=False)
         control.set_switch(self.root, "nightly-qa", "DISABLE", self.actor("owner"),
                            "already off, so nothing", now=NOW)
-        path = switchlog.log_path(self.root)
+        path = changelog.log_path(self.root)
         path.parent.mkdir(parents=True, exist_ok=True)
         with path.open("a", encoding="utf-8") as handle:
             handle.write('{"schedule": "half-writ')
-        self.assertEqual(switchlog.read(self.root), [])
+        self.assertEqual(changelog.read(self.root), [])
 
 
 class ConsoleTransport(Tree):
@@ -289,14 +295,14 @@ class ConsoleTransport(Tree):
         try:
             answer = self.post(base, {"token": token, "schedule": "nightly-qa",
                                       "direction": "ENABLE", "reason": "clicked arm"})
-            self.assertEqual(answer["outcome"], switchlog.EFFECTED)
+            self.assertEqual(answer["outcome"], changelog.EFFECTED)
             self.assertTrue(self.enabled_of())
             outcome = control.set_switch(self.root, "nightly-qa", "DISABLE",
                                          self.actor("model"), "stopped from the CLI",
                                          now=NOW)
-            self.assertEqual(outcome.outcome, switchlog.EFFECTED)
+            self.assertEqual(outcome.outcome, changelog.EFFECTED)
             self.assertFalse(self.enabled_of())
-            bindings = [entry.binding for entry in switchlog.read(self.root)]
+            bindings = [entry.binding for entry in changelog.read(self.root)]
             self.assertEqual(bindings, [control.BINDING_CONSOLE, control.BINDING_COMMAND])
         finally:
             server.shutdown()
@@ -352,7 +358,11 @@ class TwoSurfacesOneRender(Tree):
         self.declare("code-review", enabled=True)
         digest = report.assemble(self.root, NOW, source=report.WORKTREE)
         live = page.render(digest, controls="a-token")
-        self.assertEqual(live.count('class="btn'), 2)
+        # Counted by element, not by class: edit links and the new-schedule link carry
+        # the same class, and a bare class count would pass with the switches removed.
+        self.assertEqual(live.count("<button "), 2)
+        self.assertEqual(live.count('href="/edit?'), 2)
+        self.assertIn('href="/new?', live)
         self.assertIn('data-direction="ENABLE"', live)
         self.assertIn('data-direction="DISABLE"', live)
         self.assertIn("live console", live)

@@ -24,12 +24,21 @@ boundary where all context is lost, and let a human operator and a model operato
 reach the same thread through one transition.
 
 ```
-PYTHONPATH=services/console/src;services/record/src python -m soveraeign_console_service.cli --root .local/console operations
+PYTHONPATH=services/console/src;services/record/src python -m soveraeign_console_service.cli --root .local/console operations --operator sov
 ```
 
 `operations` is the discovery command - `AI-NATIVE.md` gates on whether a fresh
 model instance can find out what may be done without a person explaining it.
 Every command returns one JSON object, refusals included.
+
+The operator is required, and so is a live grant. Every BUILT operation here
+checks the authority `contracts/capability-offices.json` declares for it: nine
+of them declared one and checked nothing until Bdo ruled on 2026-08-25 to guard
+them, `grant` and `revoke` among them, so anyone reaching the service could
+write itself a grant. What a fresh instance can now find out without a person
+explaining it is what may be done and what each operation costs; running one
+still needs the permit. `services/console/tests/test_enforced_authority.py`
+drives all nine from both sides.
 
 `.claude/hooks/console_session.py` binds a Claude Code session to an operator
 session: it briefs a starting session with what landed while the operator was

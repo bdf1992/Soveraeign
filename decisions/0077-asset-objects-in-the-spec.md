@@ -1,71 +1,112 @@
-# 0077 · An asset is a pointer with parts, and its parts are versioned
+# 0077 · An asset is a governed identity, and a file is not one
 
 Status: `OWNER-DIRECTED · PROPOSED`
 
 ## Decision
 
-Bdo directed on 2026-08-26 that the Asset be specified, and named three
-requirements in the same session: file version, content-addressable version
-chunks, and a diff between two versions of one asset.
+Bdo directed on 2026-08-26 that the Asset be specified, and named the
+requirements over two correction passes: constituents carry their own version
+history, storage form must not reach the asset contract, a diff between two
+versions must distinguish a rename from a delete-plus-add, and file-shaped facts
+must not become asset facts.
 
-`SPEC.md` gains six Information objects — `Asset`, `AssetType`, `AssetVersion`,
-`AssetPart`, `AssetPartVersion`, `AssetVersionDiff` — and one `Operation
-granularity` subsection under Interface parity. `CLASSIFICATION.md` gains four
-vocabulary rows: chunk, asset type, asset part, asset part version. Nothing was
-built, no operation became reachable, and no standing moved.
+`SPEC.md` gains six governed Information objects — `Asset`, `AssetType`,
+`AssetVersion`, `AssetPart`, `AssetPartVersion`, `AssetVersionDiff` — plus
+`SourceObservation` on the source plane, and one `Operation granularity`
+subsection under Interface parity. `CLASSIFICATION.md` gains five vocabulary
+terms and a note fixing what a part is and where custody sits.
+
+Nothing was built. No operation became reachable through any binding, and no
+standing entry moved.
 
 ## What was missing
 
-`SPEC.md` declared fourteen Information objects and none of them was the Asset.
-The word did not occur in the file. The central object of the Asset Service was
+`SPEC.md` declared fourteen Information objects and none of them was the Asset;
+the word did not occur in the file. The central object of the Asset Service was
 defined only in the `CLASSIFICATION.md` vocabulary table and in Python, so no
-conformance case had a checkable statement to grade a participant against.
+conformance case had a checkable statement to grade a participant against. A
+search of the tracked repository returned zero occurrences of `asset type`,
+`typed asset`, `composite asset` and `multi-file`; the only typing that existed
+was `collection-type`, which types a collection, so an asset was typed
+transitively by being filed into one.
 
-A search of the tracked repository returned zero occurrences of `asset type`,
-`typed asset`, `asset kind`, `composite asset`, and `multi-file`. The only
-typing that existed was `collection-type`, which types a collection; an asset
-was typed transitively, by being filed into one.
+## Ruling 1 — the asset layer is not the file layer
 
-## Ruling 1 — an asset holds no bytes
+A fact belongs to the narrowest identity for which it stays true. Five planes
+carry the distinctions the reference participant had collapsed:
 
-An asset is a governed identity. Every byte it carries is reached through a part
-version, and a part version's bytes are reached through addressed chunks. This
-restates what `CLASSIFICATION.md` already settled — "an asset is not its
-payload" — at the level where a fixture can defeat it.
+| Plane | Answers |
+| --- | --- |
+| Governed | what the thing is and what constitutes its state |
+| Representation | what kind of content state this is |
+| Placement | where a constituent appears in one whole state |
+| Source | where a thing was observed or obtained |
+| Custody | where the exact bytes are |
 
-The chunk count and the entry count are each unbounded at one. A version
-carrying one part and a version carrying a thousand are the same object, and no
-transition may assume a single payload. How bytes are divided into chunks is a
-storage choice this specification does not make, because `SPEC.md` is
-stack-neutral by its own header.
+A file is a representation and a placement, not an identity every asset must
+hold. It earns first-class objects only when a file needs its own version
+history, its own permissions, or its own participation in relationships, and
+none of those is true today.
 
-## Ruling 2 — a part identity is separate from the path that names it
+Metadata is not an object class. A metadata statement targets the narrowest
+governed or observed subject for which it remains true, and governed
+descriptions keep travelling through `submit_proposal` and `ratify` rather than
+through a generic bag. No `AssetMetadata` object exists and none is proposed.
 
-`AssetPart` carries identity; `part_path` is a label on the version entry and
-may differ between two versions of the same part. A part identity therefore
-survives a rename, and a rename is not a removal plus an addition.
+## Ruling 2 — an asset holds no bytes, and no count is bounded at one
 
-This is what the diff requires. `MOVED` and `CHANGED` are distinguishable from
-`ADDED` and `REMOVED` only because identity is not the path, and a diff that
-reports a rename as a removal plus an addition is wrong rather than coarse.
+Every byte an asset carries is reached through an `AssetPartVersion` and that
+version's custody reference. An `AssetVersion` names which constituents it
+contained, the exact content state of each, and where each was placed; the entry
+count is not bounded at one and no transition may assume a single payload.
 
-It also repairs an undeclared equivalence. `CONTRACT.md` C10 permits identity
-and address to share a value only under an intentional declared equivalence.
-The current implementation resolves asset identity by file locator, which is
-that equivalence, undeclared.
+`payload_address` and `content_digest` are a custody reference and nothing more.
+Whether that address resolves to a single blob, a manifest of chunks, or a later
+content-addressed form is decided below this contract and never changes an asset
+version. This is why chunking is absent from the objects: putting it there would
+have made a storage decision able to mint a new governed state.
 
-Bdo ruled the resolution on 2026-08-26: a plain rename is decided, and only a
-rename combined with an edit is uncertain. Resolution is exact when the captured
-bytes match exactly one part version the asset already holds, whatever path they
-arrived under, and nobody is asked. Where several parts carry identical bytes an
-unchanged path settles which. Only when the path and the bytes both changed, or
-when neither match is unique, is resolution inexact - and an inexact resolution
-takes a declared default, records its evidence, never blocks the operation, and
-is overridden by a counter-record rather than by a question. `AssetVersionDiff`
-carries this on the change: `MOVED_AND_CHANGED` is the only kind that may report
-`resolution: DEFAULTED`.
+Placement belongs to the version entry and never to the part version. Where a
+constituent sits is a fact about one composition, not about a content state, so
+a rename produces a new asset version over the same part version — same part,
+same content state, different composition state. Putting a path on the part
+version instead would make a pure rename mint a new *content state* for content
+that had not changed, contradicting that object's own definition.
 
-## Ruling 3 — one act over many subjects is one operation
+## Ruling 3 — identity is never constituted by a path, a locator, or bytes
+
+`AssetPart` is a constituent identity — the source, the printable, the
+transcript — carrying `part_role`, the stable slot its `AssetType` declares. A
+filename, a logical path, a locator and a source address are placement or
+observation; none is identity (`CONTRACT.md` C10). A part identity is preserved
+across a known rename.
+
+Byte equality is not identity either. Two content states may legitimately hold
+identical bytes, so an equal `payload_address` never establishes that two
+entries are the same thing moving. Every `AssetVersionDiff` kind is therefore
+decided by identity: `MOVED` is the same `part_version_id` under a different
+placement, `CHANGED` a different `part_version_id` under the same placement.
+
+Resolution binds captured bytes to a part as an attributed act, never a
+derivation. A matching digest, an unchanged locator and a source observation are
+evidence a resolution may cite. Where the evidence does not make one part
+unique, resolution takes a declared default, records the evidence it used, never
+blocks the operation, and never becomes a judgement claim; a counter-record
+overrides it. `decisions/0063` refused to route filing through ratification
+because two hundred filings would mint two hundred judgement claims, and four
+hundred resolved parts have the same shape.
+
+A source is provenance, not state. Many `SourceObservation` records may point at
+one part version: the same bytes reached through a local path, an archive, an
+object store and another asset's import are four observations of one content
+state, not four content states. A source that moves, renames, disappears or
+mutates changes no part version, no part and no asset.
+
+A media type, a filename suffix and a magic-number reading are evidence an
+`AssetType` declaration may cite. None is authority and none may stand in for a
+declared type.
+
+## Ruling 4 — one act over many subjects is one operation
 
 An operation's subject count is not bounded at one. One declared act over four
 hundred subjects is one plan, one authority check, and one terminal receipt
@@ -74,81 +115,126 @@ separate confirmation per subject for a single declared act has not met parity,
 whichever binding it serves, and a model given one instruction is held to the
 same rule as a human working one surface.
 
-The kernel already admitted this shape: `OperationPlan`, `EventEnvelope`, and
+The kernel already admitted this shape: `OperationPlan`, `EventEnvelope` and
 `Receipt` all carry plural inputs and outputs. Nothing was added to the
 transition contract.
 
 ## What the current implementation does against these rulings
 
-Thirteen predicates were probed against the running participant rather than
-read off the source. Four pass, five fail, four name a concept the code does not
-have:
+Twenty invariants probed against the reference participant by execution and
+record-shape inspection. Three verdicts, because contradiction and absence are
+different facts:
 
-| Verdict | Predicate |
-| --- | --- |
-| PASS | identity never follows bytes; a change makes a new version with the predecessor resolvable; a tampered payload is refused before serving; shared custody is not shared identity |
-| FAIL | bytes only via a part version; a type is never inferred from a suffix; the entry count is not bounded at one; a part identity survives a rename; the chunk count is not bounded at one |
-| ABSENT | an undeclared type is refused; redeclaring a type is refused; a version is judged against its type; a diff between two versions |
+- **HOLDS** — the code has what the invariant names and satisfies it.
+- **CONTRADICTED** — the code has the concept and does the opposite. A defect.
+- **ABSENT** — the concept does not exist, so there is nothing to contradict.
 
-The rename failure is demonstrated, not inferred: ingesting a file, renaming it
-on disk, and ingesting again yields two asset identities.
+Six hold, six are contradicted, eight are absent.
+
+| Verdict | Invariant | What was observed |
+| --- | --- | --- |
+| CONTRADICTED | an asset holds no payload of its own | the `versions` row carries digest, mime, size and `blob_path` directly, so an asset state *is* a payload rather than reaching one |
+| CONTRADICTED | a version may reference more than one constituent | the row holds one digest and one `blob_path`; structurally singular, not merely unimplemented |
+| CONTRADICTED | lineage and derivation are orthogonal | `role` is one exclusive value assigned `REVISION if held is not None else ORIGINAL`, so a derived version that also supersedes cannot say both |
+| CONTRADICTED | a locator does not constitute identity | `identity.by_locator` resolves by file URI, so a rename minted a second identity. Tested at asset level; not a part-continuity test, because parts do not exist |
+| CONTRADICTED | custody form is below the asset contract | the row stores `blob_path`, a filesystem path, while `store.py` already returns a portable `cas:sha256:` address the lifecycle never uses |
+| CONTRADICTED | a source observation is provenance, never constitutive | the row carries a singular `source_id`, so a content state names exactly one origin and a second sighting of the same bytes cannot be recorded without minting another version |
+| HOLDS | descriptive facts attach to the governed identity | propose/ratify records a title against the asset id, not against a payload |
+| HOLDS | a media type is evidence, never authority | `mimetypes.guess_type` is stored and nothing reads it as authority |
+| HOLDS | a change makes a new state, predecessor resolves | one identity, two states, the earlier payload still verifies |
+| HOLDS | byte equality does not constitute identity | two identities over one stored payload |
+| HOLDS | a content state resolves to a verifiable payload | read refused on digest mismatch, at version level |
+| HOLDS | a shared payload is not a shared record | one stored payload, two independent records |
+| ABSENT | an asset naming no declared type is refused | no asset carries a type |
+| ABSENT | a type is declared before use; redeclaring refuses | no asset type exists |
+| ABSENT | `content_digest` over the entry set | no entry set; the digest is of a single payload |
+| ABSENT | a version is judged against its type when recorded | no type to judge against |
+| ABSENT | a part is a constituent identity, not a file | no constituent layer at all |
+| ABSENT | resolution is attributed and records its evidence | the locator lookup cites no evidence and records no default |
+| ABSENT | placement belongs to the entry, not the content state | no entry and no placement; where a payload sits is the source locator, a different plane |
+| ABSENT | a diff is derivable from entries and part identities | no diff, and nothing for one to read |
+
+Meanwhile the participant passes all seventeen of its own identity tests. That
+green is the point and it is trap T2 in the flesh: green means unchanged, not
+correct.
 
 ## Effect class and rollback
 
-`RECORD_LOCAL`. Two governing documents and nine declared diagram source pins.
-`git checkout SPEC.md CLASSIFICATION.md diagrams/` reverses it completely. No
-code changed and no participant behaviour changed, so nothing can have consumed
-a resource or reached the outside world on the strength of it.
+`RECORD_LOCAL`. Two governing documents, one decision record, and the generated
+projections that read them. Reverting this commit removes every object, every
+vocabulary term and this record. No code changed and no participant behaviour
+changed, so nothing can have consumed a resource or reached the outside world on
+the strength of it.
 
 ## What would defeat this
 
 - An asset type for which a plain rename genuinely should mint a new part rather
-  than move the existing one. Ruling 2 would then have to be type-dependent
+  than move the existing one. Ruling 3 would then have to be type-dependent
   rather than uniform.
-- A corpus in which unique-digest resolution is wrong often enough that the
-  default costs more than a prompt would. The measured duplicate rates on this
-  node argue the other way - 173,467 byte-identical files on one directory
-  tree - but that is an argument about scale, not about correctness.
-- Measured evidence that chunk addressing costs more than it saves at the scale
-  this node actually holds. `ENGINEERING.md` forbids generalized infrastructure
-  for imagined scale, and the chunk layer is the part of this record most
-  exposed to that rule.
-- A partial-result semantic that a plan-level declaration cannot express, which
-  would mean Ruling 3 needs a new terminal outcome rather than a plan field.
+- A real need for `File` as a governed identity — a file appearing in several
+  assets, holding its own version history, or carrying permissions independent
+  of its asset. Ruling 1 keeps `File` a representation only until one of those
+  is true.
+- A partial-result semantic a plan-level declaration cannot express, which would
+  mean Ruling 4 needs a new terminal outcome rather than an `OperationPlan`
+  field.
+- Measured evidence that separating part from part version costs more than it
+  saves at the scale this node holds. `ENGINEERING.md` forbids generalized
+  infrastructure for imagined scale, and the constituent layer is the part of
+  this most exposed to that rule.
 
 ## Defaults taken
 
-- Part identity was made separate from part path. Merging them is simpler and
-  makes the diff unable to distinguish a rename, which is the requirement.
-- The chunking algorithm is unspecified. Naming one would put a storage choice
-  in a stack-neutral document.
-- `AssetVersionDiff` is declared a projection, not a record, under the existing
-  Projection rule. Storing a diff would create a value that goes stale the
-  moment either version is superseded.
+- `part_role` rather than `part_key`, with `AssetType.spec` declaring
+  `part_roles` so the slot is type-governed rather than free description.
+- `placement` carries `logical_path` only. No separate `filename`: it is the
+  last segment, and carrying both invites them to disagree.
+- `SourceObservation` references `source_id` rather than restating a locator.
+  `SPEC.md` already defines `Source` with `source_address`, and duplicating it
+  would create the synonym `AGENTS.md` forbids.
+- `ORIGINAL`, `REVISION` and `DERIVATIVE` survive as a derived read off
+  `predecessor_version_id` and `derivation` rather than as a stored exclusive
+  role. Collection types already admit assets by role, so deleting the words
+  would break `decisions/0063`.
 - No kernel transitions were added. `decisions/0063` introduced collection
   records with no `kernel_transition` at all, and that precedent was followed
   rather than widening the kernel grammar.
-- Rename resolution is an act under a capability grant, reversible by
-  counter-record, not a judgement. `decisions/0063` refused to route filing
-  through ratification because two hundred filings would mint two hundred
-  judgement claims; four hundred moved files have the same shape.
+- The `Chunk` vocabulary term was not added to `CLASSIFICATION.md`. Chunking is
+  custody, below this contract, and naming it as asset vocabulary is what this
+  record exists to prevent.
 
 ## Residuals
 
-- `OperationPlan` carries no field declaring what a partial result means, so a
-  multi-subject plan cannot state its own terms. `refusal_behavior` is already a
-  structured object in `contracts/operation-plan.schema.json` and overloading it
-  would break that schema. Repairing this crosses into the contracts boundary
-  and is a separate concern.
-- `services/asset/src/soveraeign_asset_service/identity.py` resolves identity by
-  locator and contradicts Ruling 2. It is unrepaired.
+- No independent witness. This session wrote the objects, wrote the probe and
+  ran it, so this is `BUILT` and self-tested; the standing is capped below
+  `WITNESSED`.
+- No conformance fixture exists. `SPEC.md`'s own conformance boundary requires a
+  positive and a defeating fixture per normative predicate, and those are owed
+  before the oracle can grade any of this.
 - No service operation is declared in `services/asset/contracts/service.json`
-  for any of the six objects, so none is reachable through any binding.
-- The `SPEC.md` traceability table gained no row. The existing rows cite
-  `SUBSTRATE` and `ANCHOR` clauses in `lineage/`, and inventing a citation for
-  asset identity would be a fabricated ground.
+  for any object, so none is reachable through the CLI, the Gateway or MCP. The
+  AI-native reachability score is unmoved.
+- `OperationPlan` carries no field declaring what a partial result means.
+  `refusal_behavior` is already a structured object in
+  `contracts/operation-plan.schema.json` and overloading it would break that
+  schema; repairing it crosses into the contracts boundary.
+- Six contradictions are unrepaired. `identity.py`, which resolves identity by
+  locator, is the first code change any of them implies.
+- The `SPEC.md` traceability table gained no row. Existing rows cite `SUBSTRATE`
+  and `ANCHOR` clauses in `lineage/`, and inventing a ground for asset identity
+  would be fabricated.
+
+## What still waits on Bdo
+
+One judgement: whether these six governed objects are the asset he means.
+`acceptance/A9.json` presents it, and rejecting it is a revert of one commit.
+
+Nothing else here waits on him. The conformance fixtures, the repair of
+`identity.py` against Ruling 3, and the five remaining contradictions are
+reversible record-local work that proceeds without asking
+(`decisions/0023-acceptance-not-approval.md`).
 
 ## Standing
 
-`PROPOSED`. Bdo has not ruled. The objects inherit the `PROPOSED` standing
-`SPEC.md` already carries; no entry in `STATUS.yaml` moved.
+`PROPOSED`. The objects inherit the `PROPOSED` standing `SPEC.md` already
+carries. Nothing here is ratified and no `STATUS.yaml` entry moved.

@@ -1,27 +1,38 @@
-"""Render the automation health read as a deterministic offline page.
+"""Render the automation health read, as a static page or as a live console.
 
-Every value is derived. The page carries a provenance comment naming the instant
-it was rendered at and the exact ledger bytes it read, because the two halves of
-this page have different lifetimes: the declarations are committed and reproduce
-on any machine, while the run history lives in gitignored machine-local state and
-does not exist in CI at all.
+Every value is derived. The page carries a provenance comment naming the instant it was
+rendered at and the exact ledger bytes it read, because the two halves of this page have
+different lifetimes: the declarations are committed and reproduce on any machine, while
+the run history lives in gitignored machine-local state and does not exist in CI at all.
 
-So the history block is delimited. ``outside_history`` returns the page with that
-block replaced, and the check compares those bytes everywhere and the full bytes
-only where the ledger digest still matches. A machine that holds no ledger is told
-the history half is UNCHECKED and why, rather than being shown a page graded as
-current over records it never had.
+So the history block is delimited. ``outside_history`` returns the page with that block
+replaced, and the check compares those bytes everywhere and the full bytes only where
+the ledger digest still matches. A machine that holds no ledger is told the history half
+is UNCHECKED and why, rather than being shown a page graded as current over records it
+never had.
+
+The node verdict sits inside the history block rather than at the top of the page. It
+is a function of both halves, so a page carrying it outside would change its declared
+half the moment a ledger appeared - which is the byte comparison the staleness check
+depends on. A test drives exactly that.
+
+``controls`` is the one switch between the two surfaces. False - the default, and what
+``docs/automation.html`` is built with - renders a reading whose switch column shows
+state. A token renders the same document with working buttons that post to
+``control.set_switch``. The static bytes are unaffected by the live surface existing,
+which is why the staleness check still grades a file it never serves.
 
 The page holds no standing. A reading here is a report about records.
 """
 
 from __future__ import annotations
 
-import html
 import json
 
+from sovschedule import pagecontrols, pagetables
 from sovschedule.pagestyle import STYLE
-from sovschedule.report import Digest, Row, stamp
+from sovschedule.pagetables import READING_CLASS, e as _e  # noqa: F401 - re-exported
+from sovschedule.report import Digest, stamp
 
 PROVENANCE_PREFIX = "<!--sov:provenance "
 PROVENANCE_SUFFIX = "-->"
@@ -30,34 +41,26 @@ HISTORY_CLOSE = "<!--/sov:history-->"
 HISTORY_ELIDED = "<!--sov:history-elided-->"
 PROVENANCE_ELIDED = "<!--sov:provenance-elided-->"
 
-READING_CLASS = {"UNHEALTHY": "bad", "DEGRADED": "warn",
-                 "UNOBSERVED": "abs", "HEALTHY": "ok"}
+#: The sections this page prints findings under. A rule's ``needs`` selects one.
+SECTIONS = ("history", "declaration")
 
 
+class UnrenderableFinding(ValueError):
+    """A rule whose ``needs`` names no section this page prints.
+
+    ``needs`` is not a label. It decides which of the two sections a finding appears
+    under, and there are exactly two call sites. A third value is not a third section:
+    it is a finding that appears under neither, so the page prints "Nothing fired."
+    twice while the headline reading above it still counts that finding and still says
+    UNHEALTHY. Refusing to render is the only honest answer, because the alternative is
+    a page that under-reports what its own judge found. A witness found this reachable
+    and unpinned; the table alone could open it again.
+    """
 
 
-def _e(value: object) -> str:
-    return html.escape(str(value), quote=True)
-
-
-def _duration(seconds: float | None) -> str:
-    if seconds is None:
-        return "-"
-    if seconds < 90:
-        return f"{seconds:.0f}s"
-    return f"{seconds / 60:.1f}m"
-
-
-def _outcome(row: Row) -> str:
-    """The run status, carrying the exit code where the executor left one."""
-    if row.last_status is None:
-        return "-"
-    return (row.last_status if row.last_exit_code is None
-            else f"{row.last_status} (exit {row.last_exit_code})")
-
-
-def _tag(reading: str) -> str:
-    return f'<span class="tag {READING_CLASS.get(reading, "abs")}">{_e(reading)}</span>'
+def _findings(digest: Digest, needs: str) -> str:
+    """Kept as a name because the tests and the section wiring both address it."""
+    return pagetables.findings(digest, needs)
 
 
 def provenance(digest: Digest) -> dict:
@@ -110,103 +113,30 @@ def outside_history(page: str) -> str:
     return _elide(page, PROVENANCE_PREFIX, PROVENANCE_SUFFIX, PROVENANCE_ELIDED)
 
 
-def _counts(digest: Digest) -> str:
-    counts = digest.counts
-    cells = ((counts["declared"], "declared"), (counts["enabled"], "enabled"),
-             (counts["with_history"], "ever run"), (digest.ledger.entries, "ledger events"),
-             (counts["findings"], "findings"), (counts["refusing"], "refusing"))
-    body = "".join(f"<div><b>{_e(value)}</b><span>{_e(label)}</span></div>"
-                   for value, label in cells)
-    return f'<div class="counts">{body}</div>'
+def _refuse_unrenderable(table: dict) -> None:
+    """Every rule must name a section that exists, or the page cannot be trusted."""
+    stray = {name: rule["needs"] for name, rule in table["rules"].items()
+             if rule["needs"] not in SECTIONS}
+    if stray:
+        raise UnrenderableFinding(
+            f"these rules name a section this page does not print: {stray}. "
+            f"It prints {list(SECTIONS)}. A finding under any other name is counted "
+            "in the reading and shown nowhere.")
 
 
-def _declaration_table(rows: tuple[Row, ...]) -> str:
-    head = ("<tr><th>schedule</th><th>switch</th><th>target</th><th>cadence</th>"
-            "<th>next due</th><th>mode</th><th>effect class</th><th>timeout</th></tr>")
-    body = "".join(
-        f'<tr><td class="id">{_e(row.name)}</td>'
-        f'<td>{_tag("on" if row.enabled else "off")}</td>'
-        f'<td class="t">{_e(row.target)}'
-        + ("" if row.target_exists else ' <span class="tag bad">missing</span>')
-        + ("" if row.defect is None else ' <span class="tag bad">refused</span>')
-        + f'</td><td class="t">{_e(row.cron_expression)}</td>'
-        f'<td class="t">{_e(stamp(row.next_due))}</td>'
-        f'<td class="t">{_e(row.mode)}</td><td class="t">{_e(row.effect_class)}</td>'
-        f'<td class="n">{_e(row.timeout_seconds)}s</td></tr>'
-        for row in rows)
-    return f'<div class="wrap"><table>{head}{body}</table></div>'
+def render(digest: Digest, controls: bool | str = False, targets: tuple = ()) -> str:
+    """Deterministic bytes: derived rows, the declared table, no clock beyond the stamp.
 
-
-def _history_table(rows: tuple[Row, ...]) -> str:
-    head = ("<tr><th>schedule</th><th>reading</th><th>attempts</th><th>last attempt</th>"
-            "<th>outcome</th><th>duration</th><th>refused</th><th>fails in a row</th></tr>")
-    body = "".join(
-        f'<tr><td class="id">{_e(row.name)}</td><td>{_tag(row.reading)}</td>'
-        f'<td class="n">{_e(row.attempts)}</td>'
-        f'<td class="t">{_e(stamp(row.last_attempted_at))}</td>'
-        f'<td class="t">{_e(_outcome(row))}</td>'
-        f'<td class="n">{_e(_duration(row.last_duration_seconds))}</td>'
-        f'<td class="t">{_e(row.last_reason_code or "-")}</td>'
-        f'<td class="n">{_e(row.consecutive_failures)}</td></tr>'
-        for row in rows)
-    return f'<div class="wrap"><table>{head}{body}</table></div>'
-
-
-def _findings(digest: Digest, needs: str) -> str:
-    entries = [(name, finding) for name, finding in digest.findings
-               if digest.table["rules"][finding.rule]["needs"] == needs]
-    if not entries:
-        return "<p>Nothing fired.</p>"
-    head = "<tr><th>schedule</th><th>rule</th><th>severity</th><th>what fired it</th></tr>"
-    body = "".join(
-        f'<tr><td class="id">{_e(name)}</td><td class="t">{_e(finding.rule)}</td>'
-        f'<td>{_tag(finding.severity)}</td><td>{_e(finding.detail)}</td></tr>'
-        for name, finding in entries)
-    return f'<div class="wrap"><table>{head}{body}</table></div>'
-
-
-def _rules(table: dict) -> str:
-    blocks = []
-    for name, rule in table["rules"].items():
-        blocks.append(
-            f'<div class="rule"><h4>{_e(name)} {_tag(rule["severity"])}</h4>'
-            f'<p>{_e(rule["fires_when"])}</p>'
-            f'<p class="q">Quiet when: {_e(rule["quiet_when"])}</p>'
-            f'<p class="q">{_e(rule["why"])}</p></div>')
-    return "".join(blocks)
-
-
-def _verdict(digest: Digest) -> str:
-    reading = digest.reading
-    meaning = digest.table["readings"]["meanings"][reading]
-    return (f'<div class="verdict {READING_CLASS.get(reading, "abs")}">'
-            f'<b>{_e(reading)}</b><p>{_e(meaning)}</p></div>')
-
-
-def _provenance_block(digest: Digest) -> str:
-    absent = digest.ledger.absent_reason
-    lines = [
-        ("read at", stamp(digest.rendered_at)),
-        ("clock", "UTC" if not digest.utc_offset else
-         f"host local, {stamp(digest.rendered_at)[-6:]} from UTC - the clock "
-         "scripts/sovschedule/runner.py matches cron in"),
-        ("declarations", ".claude/schedules/*.json"
-         + (" at HEAD" if digest.source == "COMMIT" else " in the working tree")),
-        ("run history", digest.ledger.path if digest.ledger.present
-         else f"{digest.ledger.path} (absent)"),
-        ("ledger digest", digest.ledger.digest),
-        ("rules", f"contracts/automation-health.json ({digest.table['table_id']}, "
-                  f"{digest.table['status']})"),
-        ("refuses at", digest.table["blocking"]["refuses_at"]),
-    ]
-    body = "".join(f"<b>{_e(label)}</b>{_e(value)}<br>" for label, value in lines)
-    tail = f"<br>{_e(absent)}" if absent else ""
-    return f'<div class="prov">{body}{tail}</div>'
-
-
-def render(digest: Digest) -> str:
-    """Deterministic bytes: derived rows, the declared table, no clock beyond the stamp."""
+    ``controls`` is falsy for the committed reading and the console's token for the
+    served one. Only the served page carries buttons and a script; the static bytes are
+    what the staleness check grades, and they do not move when a console is running.
+    """
     table = digest.table
+    _refuse_unrenderable(table)
+    live = bool(controls)
+    source_line = ("in the working tree, which is the state you are about to change"
+                   if live else
+                   "tracked at <code>HEAD</code>, not from the working tree")
     head = json.dumps(provenance(digest), sort_keys=True)
     return f"""<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
@@ -215,47 +145,34 @@ def render(digest: Digest) -> str:
 <style>{STYLE}</style></head>
 <body>{PROVENANCE_PREFIX}{head}{PROVENANCE_SUFFIX}
 <main>
+{pagecontrols.banner(live, len(digest.rows))}
 <h1>Automation health</h1>
-<p class="sub">Every declared schedule on this node: whether it is switched on, when it is
-next due, what happened the last time it ran, and which of the declared health rules fired.
-Read-only. Nothing on this page enables, disables, or edits a schedule.</p>
-{HISTORY_OPEN}
-{_provenance_block(digest)}
-{_counts(digest)}
-{_verdict(digest)}
-<h2>What the records say</h2>
-<p>Derived from the run ledger, which is gitignored machine-local state. On a checkout that
-holds no ledger this section is the part the staleness check reports as unchecked, because
-re-deriving it there would prove only that an absent source produces an empty answer.</p>
-{_history_table(digest.rows)}
-<h3>Findings from run history</h3>
-{_findings(digest, "history")}
-{HISTORY_CLOSE}
-<h2>What is declared</h2>
-<p>Derived from the declarations tracked at <code>HEAD</code>, not from the working tree.
-Eleven sessions share this checkout, so a page carrying an untracked schedule could not be
-reproduced by anyone who cloned the commit it shipped in - the referent Bdo ruled on for the
-orientation page in acceptance packet A5. This section therefore reproduces on any checkout
-and is byte-compared everywhere. <code>python scripts/sov_schedule.py health</code> reads the
-working tree instead, and will show a schedule that has been written and not yet committed.</p>
-{_declaration_table(digest.rows)}
-<h3>Findings from the declarations</h3>
+<p class="sub">Armed is not running: nothing on this node ticks a schedule yet.
+Declarations read {source_line}.</p>
+{pagecontrols.note(live)}
+{pagecontrols.say_line(live)}
+{pagetables.declaration_table(digest.rows, controls=live,
+                              token=str(controls or ""), targets=targets)}
 {_findings(digest, "declaration")}
-<h2>The rules</h2>
+{HISTORY_OPEN}
+{pagetables.verdict(digest)}
+<h2>Runs</h2>
+{pagetables.counts(digest)}
+{pagetables.history_table(digest.rows)}
+{_findings(digest, "history")}
+{pagetables.provenance_block(digest)}
+{HISTORY_CLOSE}
+<details><summary>The {len(table["rules"])} health rules</summary>
 <p>{_e(table["note"])}</p>
-{_rules(table)}
-<footer><ul>
-<li>Refuses at <code>{_e(table["blocking"]["refuses_at"])}</code>:
-{_e(table["blocking"]["note"])}</li>
-<li>Rebuild: <code>python scripts/sov_schedule.py health-render</code>. Grade:
-<code>python scripts/sov_schedule.py health-check</code>, which
-<code>scripts/verify.py</code> runs.</li>
-<li>The reading layer is separable from where the records come from. The seam is
-<code>scripts/sovschedule/history.py</code>; moving this onto Console surface 3 replaces
-that module and leaves the rules and their fixtures untouched.</li>
+{pagetables.rules(table)}
+<ul>
+<li>Refuses the build at <code>{_e(table["blocking"]["refuses_at"])}</code>.</li>
+<li>Rebuild <code>docs/automation.html</code>:
+<code>python scripts/sov_schedule.py health-render</code>.</li>
+<li>Same operations without a browser: <code>enable</code>, <code>disable</code>,
+<code>create</code>, <code>edit</code>, <code>changes</code>.</li>
 <li>A reading is a report about records and holds no standing. A <code>REPORTED</code>
-event in those records is the executor's own self-report, never an observation that the
-run did what it said.</li>
-</ul></footer>
-</main></body></html>
+event is the executor's own self-report, not an observation.</li>
+</ul></details>
+</main>{pagecontrols.script(live)}</body></html>
 """

@@ -19,11 +19,16 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Any, Iterable
-import hashlib
 import json
 import sqlite3
 import time
 import uuid
+
+from .digest import (
+    DIGEST_PROFILE, LEGACY_DIGEST_PROFILE, canonical as _canonical,
+    digest as _digest, digest_for_profile, legacy_canonical as _legacy_canonical,
+    legacy_digest as _legacy_digest,
+)
 
 GENESIS = "0" * 64
 
@@ -59,13 +64,13 @@ def _now() -> float:
     return time.time()
 
 
-def _canonical(payload: Any) -> str:
-    return json.dumps(payload, sort_keys=True, separators=(",", ":"))
-
-
-def _digest(previous: str, kind: str, subject: str, actor: str, payload: Any) -> str:
-    material = "|".join((previous, kind, subject, actor, _canonical(payload)))
-    return hashlib.sha256(material.encode("utf-8")).hexdigest()
+def _digest_for_profile(
+    profile: str, previous: str, kind: str, subject: str, actor: str, payload: Any
+) -> str:
+    try:
+        return digest_for_profile(profile, previous, kind, subject, actor, payload)
+    except ValueError as error:
+        raise BrokenChain(str(error)) from error
 
 
 class RecordService:
@@ -92,7 +97,8 @@ class RecordService:
               payload_json TEXT NOT NULL,
               recorded_at REAL NOT NULL,
               prev_digest TEXT NOT NULL,
-              entry_digest TEXT NOT NULL
+              entry_digest TEXT NOT NULL,
+              digest_profile TEXT NOT NULL DEFAULT 'soveraeign-record-chain/v2'
             );
             CREATE TABLE IF NOT EXISTS subject_projection(
               subject TEXT PRIMARY KEY,
@@ -103,6 +109,12 @@ class RecordService:
             );
             """
         )
+        columns = {row["name"] for row in self.db.execute("PRAGMA table_info(journal)")}
+        if "digest_profile" not in columns:
+            self.db.execute(
+                "ALTER TABLE journal ADD COLUMN digest_profile TEXT NOT NULL "
+                f"DEFAULT '{LEGACY_DIGEST_PROFILE}'"
+            )
         self.db.commit()
 
     def close(self) -> None:
@@ -138,9 +150,10 @@ class RecordService:
         digest = _digest(previous, kind, subject, actor, payload)
         self.db.execute(
             "INSERT INTO journal(entry_id,kind,subject,actor,source_address,"
-            "payload_json,recorded_at,prev_digest,entry_digest) VALUES(?,?,?,?,?,?,?,?,?)",
+            "payload_json,recorded_at,prev_digest,entry_digest,digest_profile) "
+            "VALUES(?,?,?,?,?,?,?,?,?,?)",
             (entry_id, kind, subject, actor, source_address,
-             _canonical(payload), _now(), previous, digest),
+             _canonical(payload), _now(), previous, digest, DIGEST_PROFILE),
         )
         self.db.commit()
         return self.entry(entry_id)
@@ -185,8 +198,9 @@ class RecordService:
         """Replay the journal, verifying every link before returning it."""
         previous, replayed = GENESIS, []
         for entry in self.entries():
-            expected = _digest(
-                previous, entry["kind"], entry["subject"], entry["actor"], entry["payload"]
+            expected = _digest_for_profile(
+                entry["digest_profile"], previous, entry["kind"], entry["subject"],
+                entry["actor"], entry["payload"]
             )
             if entry["prev_digest"] != previous or entry["entry_digest"] != expected:
                 raise BrokenChain(entry["entry_id"])

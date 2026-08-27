@@ -13,7 +13,7 @@ record on disk and a hand-placed one never went through a producer.
 
 from __future__ import annotations
 
-from pathlib import Path
+from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Any
 import json
 
@@ -243,10 +243,17 @@ def inside(rel: Any) -> Path | None:
     """
     if not isinstance(rel, str) or not rel.strip():
         return None
-    candidate = Path(rel)
-    if candidate.is_absolute() or ".." in candidate.parts:
-        return None
-    resolved = (ROOT / candidate).resolve()
+    # Absoluteness and separators are platform-dependent, and a record is read on
+    # nodes that are not the one that wrote it. "C:/Users/somebody/answers.json" is
+    # absolute on Windows and a relative name on POSIX, so a single-flavour check
+    # would resolve it inside the repository on Linux and verify a digest against a
+    # file the record never meant. Refuse what either flavour calls absolute, and
+    # read ".." under both separator conventions.
+    for flavour in (PureWindowsPath, PurePosixPath):
+        candidate = flavour(rel)
+        if candidate.is_absolute() or ".." in candidate.parts:
+            return None
+    resolved = (ROOT / Path(rel)).resolve()
     return resolved if resolved.is_relative_to(ROOT) else None
 
 

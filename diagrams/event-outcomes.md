@@ -2,7 +2,7 @@
 
 ```text
 source          CLASSIFICATION.md · SPEC.md · CONTRACT.md
-source_digest   decdd2138b8d87f5 · ccc0f2b8ac8f15eb · 896e59ba90828ad7
+source_digest   b034a56c7cf90000 · b58dc1ed68c2b999 · ff6873d56338933b
 reader          hand-authored · v1
 fidelity        LOSSY
 omissions       EventEnvelope and Receipt field shapes (contracts/);

@@ -92,11 +92,26 @@ only be performed by the code being witnessed.
 
 ## The digest chain
 
-Every entry's digest is `sha256` over `prev_digest`, `kind`, `subject`, `actor`,
-and the entry payload as canonical JSON, joined by `|`. The first entry chains
-from a genesis digest of sixty-four zeroes. It is stated here because an outside
-observer has to be able to recompute the chain without reading `core.py`;
-`scripts/witness_record.py` does exactly that.
+The first entry chains from a genesis digest of sixty-four zeroes. Every row
+names the exact profile used to hash it:
+
+- `soveraeign-record-chain/v1` is the legacy Python representation: compact,
+  key-sorted JSON payload text joined with `prev_digest`, `kind`, `subject`, and
+  `actor` by `|`. Existing rows and version-1 exports retain it; no new row uses
+  it because field values containing `|` make the tuple ambiguous.
+- `soveraeign-record-chain/v2` is the current representation: UTF-8 bytes of
+  compact JSON for `[profile, prev_digest, kind, subject, actor, payload]`, with
+  object keys sorted, non-finite numbers refused, and Unicode code points
+  preserved. The profile string domain-separates the hash input.
+
+The entry digest is lowercase SHA-256 hex over those exact bytes. Opening a
+pre-profile database adds `digest_profile` and marks only the existing rows v1;
+new rows are explicitly v2. A version-1 export is read as v1, while a version-2
+export carries every row's profile. Verification never tries both algorithms,
+so compatibility cannot make a v2 row pass under the ambiguous v1 rule.
+
+The rule is stated here because an outside observer has to recompute the chain
+without reading `core.py`; `scripts/witness_record.py` does exactly that.
 
 ## Proving operation
 

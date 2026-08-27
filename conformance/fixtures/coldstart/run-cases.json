@@ -1,0 +1,1630 @@
+{
+  "corpus_id": "coldstart-run-cases/v1",
+  "grades": "contracts/coldstart-run.schema.json",
+  "note": "Positive and defeating cases for one cold-start run record. The interesting refusal is VERDICT_NOT_DERIVED: every other field in the record is a measurement, but `verdict` is a conclusion, and a participant that writes its own conclusion has removed the only part of the reading anyone else was going to check. The tier table is the evidence and the verdict is recomputed from it, so a record cannot be made to read ADMISSIBLE by saying so. SELF_GRADED is the second: a manual question scored with no owner verdict file is the participant grading its own prose, which AGENTS.md refuses under `no seat settles its own output`. D-012 and D-013 were added after an independent witness read the gate out of the record instead of the gate table and made a failing run write ADMISSIBLE. `expect` now names every code a case earns, not a subset of them. D-014 through D-021 came from a second witness pass, which found the same defect class alive in five more places after the first was repaired: the tier set, the two count blocks, the answers digest and the graded_by block were all read from the record where they could be checked against something. D-022 through D-027 came from a third witness pass. The pattern held a third time: owner_verdicts was a path nobody opened, sections reconciled only in total, and a malformed participant crashed the grader instead of being refused. D-028 came from a fourth pass, which also found that the producer never computed the owner_verdicts_digest this corpus hand-writes into P-002 - a positive case declaring a shape no code path could make. Every case that names a participant now names the answers file too: a fifth witness found that stating a digest and omitting the path switched ANSWERS_UNVERIFIED off, which is the same omission shape the schema already closes for graded_by. D-029 closes the fifth pass's central finding: SELF_GRADED checked that two files agreed and not that a second party existed. D-028 came from a fourth pass, which also found that the producer never computed the owner_verdicts_digest this corpus hand-writes into P-002 - a positive case declaring a shape no code path could make. D-028 came from a fourth pass, which also found that the producer never computed the owner_verdicts_digest this corpus hand-writes into P-002 - a positive case declaring a shape no code path could make. P-006, D-030 and D-031 came from a seventh pass, which found that the corpus-binding checks had zero coverage here and that a record could name any file as its corpus. D-032 exists because disabling _answers_shape changed nothing: the fixture set reached it through no case of its own.",
+  "base_record": {
+    "record_schema": "soveraeign-coldstart-run/v1",
+    "run_id": "coldstart_e8bd699f443263e1a279e274b7499aef",
+    "mode": "INTEGRITY",
+    "observed_at": "2026-08-26T12:00:00Z",
+    "revision": {
+      "commit": "c7830c9c7830c9c7830c9c7830c9c7830c9c7830",
+      "branch": "feat/federation-harness-and-hardening",
+      "tree_state": "DIRTY"
+    },
+    "corpus": {
+      "path": "scripts/sovcoldstart/corpus.json",
+      "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "questions": 175,
+      "selected": 175
+    },
+    "coverage": {
+      "fast": false,
+      "offline": false,
+      "sections": []
+    },
+    "tiers": [
+      {
+        "tier": 0,
+        "asked": 40,
+        "scored": 40,
+        "hit": 40,
+        "unmeasured": 0,
+        "gate": 1.0,
+        "result": "PASS"
+      },
+      {
+        "tier": 1,
+        "asked": 45,
+        "scored": 45,
+        "hit": 43,
+        "unmeasured": 0,
+        "gate": 0.9,
+        "result": "PASS"
+      },
+      {
+        "tier": 2,
+        "asked": 60,
+        "scored": 60,
+        "hit": 52,
+        "unmeasured": 0,
+        "gate": 0.8,
+        "result": "PASS"
+      },
+      {
+        "tier": 3,
+        "asked": 30,
+        "scored": 0,
+        "hit": 0,
+        "unmeasured": 30,
+        "gate": null,
+        "result": "INFO"
+      }
+    ],
+    "verdict": "ADMISSIBLE",
+    "standing": "BUILT",
+    "sections": {
+      "all": {
+        "asked": 175,
+        "scored": 145,
+        "hit": 135,
+        "unmeasured": 30
+      }
+    }
+  },
+  "cases": [
+    {
+      "case_id": "P-001-clean-integrity-run",
+      "expect": [],
+      "proves": "The ordinary case: every tier met its gate, nothing was left unmeasured, and the stated verdict is the one the tier table derives.",
+      "patch": {
+        "sections": {
+          "all": {
+            "asked": 175,
+            "scored": 145,
+            "hit": 135,
+            "unmeasured": 30
+          }
+        },
+        "run_id": "coldstart_e8bd699f443263e1a279e274b7499aef"
+      }
+    },
+    {
+      "case_id": "P-002-competence-run-with-nothing-hand-graded",
+      "expect": [],
+      "proves": "A participant reading is admissible when it names the participant and digests the answers it was graded on. It carries no owner verdicts because none exists: Bdo has not graded the 57 prose questions, and a fixture cannot supply that without putting a real person's name on verdicts they did not make. Every reference it does carry is looked up - the file must be there and digest to what the record states.",
+      "patch": {
+        "mode": "COMPETENCE",
+        "participant": {
+          "id": "principal:fixture-participant",
+          "host": "fixture",
+          "answers": "conformance/fixtures/coldstart/answers.fixture.json",
+          "answers_digest": "sha256:b73565371068b2e6ece7143c97e352f239a211e81f1b7f7ff2c13d13489ae658"
+        },
+        "graded_by": {
+          "owner_verdicts": null,
+          "manual_asked": 0,
+          "manual_graded": 0
+        },
+        "sections": {
+          "all": {
+            "asked": 175,
+            "scored": 145,
+            "hit": 135,
+            "unmeasured": 30
+          }
+        },
+        "run_id": "coldstart_0fec07b505f9d49289418679f9c03206"
+      }
+    },
+    {
+      "case_id": "P-003-honest-degraded",
+      "expect": [],
+      "proves": "A short tier 2 is DEGRADED, and a record that says so is admissible. The contract refuses overclaiming, not bad news.",
+      "patch": {
+        "tiers": [
+          {
+            "tier": 0,
+            "asked": 40,
+            "scored": 40,
+            "hit": 40,
+            "unmeasured": 0,
+            "gate": 1.0,
+            "result": "PASS"
+          },
+          {
+            "tier": 1,
+            "asked": 45,
+            "scored": 45,
+            "hit": 43,
+            "unmeasured": 0,
+            "gate": 0.9,
+            "result": "PASS"
+          },
+          {
+            "tier": 2,
+            "asked": 60,
+            "scored": 60,
+            "hit": 40,
+            "unmeasured": 0,
+            "gate": 0.8,
+            "result": "WARN"
+          },
+          {
+            "tier": 3,
+            "asked": 30,
+            "scored": 0,
+            "hit": 0,
+            "unmeasured": 30,
+            "gate": null,
+            "result": "INFO"
+          }
+        ],
+        "verdict": "DEGRADED",
+        "sections": {
+          "all": {
+            "asked": 175,
+            "scored": 145,
+            "hit": 123,
+            "unmeasured": 30
+          }
+        },
+        "run_id": "coldstart_e8bd699f443263e1a279e274b7499aef"
+      }
+    },
+    {
+      "case_id": "P-004-honest-unproven-when-tier-zero-was-not-fully-run",
+      "expect": [],
+      "proves": "Two tier 0 questions were skipped under --fast. Nothing failed, and nothing proved the gate either. UNPROVEN is the honest reading and the contract accepts it.",
+      "patch": {
+        "coverage": {
+          "fast": true,
+          "offline": true,
+          "sections": []
+        },
+        "tiers": [
+          {
+            "tier": 0,
+            "asked": 40,
+            "scored": 38,
+            "hit": 38,
+            "unmeasured": 2,
+            "gate": 1.0,
+            "result": "PART"
+          },
+          {
+            "tier": 1,
+            "asked": 45,
+            "scored": 45,
+            "hit": 43,
+            "unmeasured": 0,
+            "gate": 0.9,
+            "result": "PASS"
+          },
+          {
+            "tier": 2,
+            "asked": 60,
+            "scored": 60,
+            "hit": 52,
+            "unmeasured": 0,
+            "gate": 0.8,
+            "result": "PASS"
+          },
+          {
+            "tier": 3,
+            "asked": 30,
+            "scored": 0,
+            "hit": 0,
+            "unmeasured": 30,
+            "gate": null,
+            "result": "INFO"
+          }
+        ],
+        "verdict": "UNPROVEN",
+        "sections": {
+          "all": {
+            "asked": 175,
+            "scored": 143,
+            "hit": 133,
+            "unmeasured": 32
+          }
+        },
+        "run_id": "coldstart_e8bd699f443263e1a279e274b7499aef"
+      }
+    },
+    {
+      "case_id": "P-005-honest-not-admissible",
+      "expect": [],
+      "proves": "One tier 0 invariant answered wrongly is NOT_ADMISSIBLE however well the rest scored.",
+      "patch": {
+        "tiers": [
+          {
+            "tier": 0,
+            "asked": 40,
+            "scored": 40,
+            "hit": 39,
+            "unmeasured": 0,
+            "gate": 1.0,
+            "result": "FAIL"
+          },
+          {
+            "tier": 1,
+            "asked": 45,
+            "scored": 45,
+            "hit": 45,
+            "unmeasured": 0,
+            "gate": 0.9,
+            "result": "PASS"
+          },
+          {
+            "tier": 2,
+            "asked": 60,
+            "scored": 60,
+            "hit": 60,
+            "unmeasured": 0,
+            "gate": 0.8,
+            "result": "PASS"
+          },
+          {
+            "tier": 3,
+            "asked": 30,
+            "scored": 0,
+            "hit": 0,
+            "unmeasured": 30,
+            "gate": null,
+            "result": "INFO"
+          }
+        ],
+        "verdict": "NOT_ADMISSIBLE",
+        "sections": {
+          "all": {
+            "asked": 175,
+            "scored": 145,
+            "hit": 144,
+            "unmeasured": 30
+          }
+        },
+        "run_id": "coldstart_e8bd699f443263e1a279e274b7499aef"
+      }
+    },
+    {
+      "case_id": "D-001-admissible-claimed-over-a-failed-invariant",
+      "expect": [
+        "VERDICT_NOT_DERIVED"
+      ],
+      "proves": "The single edit that would make a benchmark useless: leave the tier table honest and change the word at the bottom.",
+      "patch": {
+        "tiers": [
+          {
+            "tier": 0,
+            "asked": 40,
+            "scored": 40,
+            "hit": 39,
+            "unmeasured": 0,
+            "gate": 1.0,
+            "result": "FAIL"
+          },
+          {
+            "tier": 1,
+            "asked": 45,
+            "scored": 45,
+            "hit": 45,
+            "unmeasured": 0,
+            "gate": 0.9,
+            "result": "PASS"
+          },
+          {
+            "tier": 2,
+            "asked": 60,
+            "scored": 60,
+            "hit": 60,
+            "unmeasured": 0,
+            "gate": 0.8,
+            "result": "PASS"
+          },
+          {
+            "tier": 3,
+            "asked": 30,
+            "scored": 0,
+            "hit": 0,
+            "unmeasured": 30,
+            "gate": null,
+            "result": "INFO"
+          }
+        ],
+        "verdict": "ADMISSIBLE",
+        "sections": {
+          "all": {
+            "asked": 175,
+            "scored": 145,
+            "hit": 144,
+            "unmeasured": 30
+          }
+        },
+        "run_id": "coldstart_e8bd699f443263e1a279e274b7499aef"
+      }
+    },
+    {
+      "case_id": "D-002-admissible-claimed-over-an-unmeasured-invariant",
+      "expect": [
+        "VERDICT_NOT_DERIVED"
+      ],
+      "proves": "Skipping a tier 0 probe is a way to run less of the gate, never a way to pass it. Without this, --fast and --offline are both routes to a clean card.",
+      "patch": {
+        "coverage": {
+          "fast": true,
+          "offline": false,
+          "sections": []
+        },
+        "tiers": [
+          {
+            "tier": 0,
+            "asked": 40,
+            "scored": 38,
+            "hit": 38,
+            "unmeasured": 2,
+            "gate": 1.0,
+            "result": "PART"
+          },
+          {
+            "tier": 1,
+            "asked": 45,
+            "scored": 45,
+            "hit": 45,
+            "unmeasured": 0,
+            "gate": 0.9,
+            "result": "PASS"
+          },
+          {
+            "tier": 2,
+            "asked": 60,
+            "scored": 60,
+            "hit": 60,
+            "unmeasured": 0,
+            "gate": 0.8,
+            "result": "PASS"
+          },
+          {
+            "tier": 3,
+            "asked": 30,
+            "scored": 0,
+            "hit": 0,
+            "unmeasured": 30,
+            "gate": null,
+            "result": "INFO"
+          }
+        ],
+        "verdict": "ADMISSIBLE",
+        "sections": {
+          "all": {
+            "asked": 175,
+            "scored": 143,
+            "hit": 143,
+            "unmeasured": 32
+          }
+        },
+        "run_id": "coldstart_e8bd699f443263e1a279e274b7499aef"
+      }
+    },
+    {
+      "case_id": "D-003-admissible-claimed-over-a-short-tier-two",
+      "expect": [
+        "VERDICT_NOT_DERIVED"
+      ],
+      "proves": "The gates are conjunctive. A clean tier 0 does not carry a tier that missed its threshold.",
+      "patch": {
+        "tiers": [
+          {
+            "tier": 0,
+            "asked": 40,
+            "scored": 40,
+            "hit": 40,
+            "unmeasured": 0,
+            "gate": 1.0,
+            "result": "PASS"
+          },
+          {
+            "tier": 1,
+            "asked": 45,
+            "scored": 45,
+            "hit": 45,
+            "unmeasured": 0,
+            "gate": 0.9,
+            "result": "PASS"
+          },
+          {
+            "tier": 2,
+            "asked": 60,
+            "scored": 60,
+            "hit": 30,
+            "unmeasured": 0,
+            "gate": 0.8,
+            "result": "WARN"
+          },
+          {
+            "tier": 3,
+            "asked": 30,
+            "scored": 0,
+            "hit": 0,
+            "unmeasured": 30,
+            "gate": null,
+            "result": "INFO"
+          }
+        ],
+        "verdict": "ADMISSIBLE",
+        "sections": {
+          "all": {
+            "asked": 175,
+            "scored": 145,
+            "hit": 115,
+            "unmeasured": 30
+          }
+        },
+        "run_id": "coldstart_e8bd699f443263e1a279e274b7499aef"
+      }
+    },
+    {
+      "case_id": "D-004-admissible-claimed-with-a-whole-tier-unasked",
+      "expect": [
+        "VERDICT_NOT_DERIVED"
+      ],
+      "proves": "`--section host` selects no tier 0 question at all. An absent tier is not a passed tier, and a run that asked none of them is PARTIAL.",
+      "patch": {
+        "coverage": {
+          "fast": false,
+          "offline": false,
+          "sections": [
+            "host"
+          ]
+        },
+        "tiers": [
+          {
+            "tier": 0,
+            "asked": 0,
+            "scored": 0,
+            "hit": 0,
+            "unmeasured": 0,
+            "gate": 1.0,
+            "result": "ABSENT"
+          },
+          {
+            "tier": 1,
+            "asked": 45,
+            "scored": 45,
+            "hit": 45,
+            "unmeasured": 0,
+            "gate": 0.9,
+            "result": "PASS"
+          },
+          {
+            "tier": 2,
+            "asked": 60,
+            "scored": 60,
+            "hit": 60,
+            "unmeasured": 0,
+            "gate": 0.8,
+            "result": "PASS"
+          },
+          {
+            "tier": 3,
+            "asked": 30,
+            "scored": 0,
+            "hit": 0,
+            "unmeasured": 30,
+            "gate": null,
+            "result": "INFO"
+          }
+        ],
+        "verdict": "ADMISSIBLE",
+        "corpus": {
+          "path": "scripts/sovcoldstart/corpus.json",
+          "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+          "questions": 175,
+          "selected": 135
+        },
+        "sections": {
+          "all": {
+            "asked": 135,
+            "scored": 105,
+            "hit": 105,
+            "unmeasured": 30
+          }
+        },
+        "run_id": "coldstart_e8bd699f443263e1a279e274b7499aef"
+      }
+    },
+    {
+      "case_id": "D-005-run-record-claims-it-was-witnessed",
+      "expect": [
+        "STANDING_OVERCLAIMED",
+        "RECORD_SHAPE"
+      ],
+      "proves": "AGENTS.md: a test may establish BUILT and may never claim WITNESSED. A benchmark cannot witness the participant that ran it, and the record is refused by name rather than by a schema shape error a reader has to decode. It earns RECORD_SHAPE too, from the const, and `expect` names both: grading a case by subset let a refusal over-fire unnoticed.",
+      "patch": {
+        "standing": "WITNESSED",
+        "sections": {
+          "all": {
+            "asked": 175,
+            "scored": 145,
+            "hit": 135,
+            "unmeasured": 30
+          }
+        },
+        "run_id": "coldstart_e8bd699f443263e1a279e274b7499aef"
+      }
+    },
+    {
+      "case_id": "D-006-competence-run-that-names-no-participant",
+      "expect": [
+        "PARTICIPANT_MISSING",
+        "RECORD_SHAPE"
+      ],
+      "proves": "A competence score with no participant attached to it is a number about nobody. Attribution is the point of the reading. The shape now requires the block too, so it earns RECORD_SHAPE as well: two independent refusals rather than one.",
+      "patch": {
+        "mode": "COMPETENCE",
+        "graded_by": {
+          "owner_verdicts": null,
+          "manual_asked": 0,
+          "manual_graded": 0
+        },
+        "sections": {
+          "all": {
+            "asked": 175,
+            "scored": 145,
+            "hit": 135,
+            "unmeasured": 30
+          }
+        },
+        "run_id": "coldstart_be9383245cce741e147607e14dd4619f"
+      }
+    },
+    {
+      "case_id": "D-007-manual-answers-scored-with-no-owner-verdict-file",
+      "expect": [
+        "SELF_GRADED"
+      ],
+      "proves": "Fifty-seven questions in the corpus are prose a string comparison cannot judge. Scoring them with no verdict file is the participant settling its own output.",
+      "patch": {
+        "mode": "COMPETENCE",
+        "participant": {
+          "id": "principal:claude-opus-5",
+          "host": "claude-code on win32",
+          "answers_digest": "sha256:b73565371068b2e6ece7143c97e352f239a211e81f1b7f7ff2c13d13489ae658",
+          "answers": "conformance/fixtures/coldstart/answers.fixture.json"
+        },
+        "graded_by": {
+          "owner_verdicts": null,
+          "manual_asked": 57,
+          "manual_graded": 57
+        },
+        "sections": {
+          "all": {
+            "asked": 175,
+            "scored": 145,
+            "hit": 135,
+            "unmeasured": 30
+          }
+        },
+        "run_id": "coldstart_28dd6b7332a22c5cff9d9d0057c989a1"
+      }
+    },
+    {
+      "case_id": "D-008-tier-hits-exceed-what-was-scored",
+      "expect": [
+        "TIER_ARITHMETIC"
+      ],
+      "proves": "The numerator cannot be larger than the denominator. Without this the tier table is editable in the direction that flatters the participant, and the derived verdict then derives from a lie.",
+      "patch": {
+        "tiers": [
+          {
+            "tier": 0,
+            "asked": 40,
+            "scored": 40,
+            "hit": 44,
+            "unmeasured": 0,
+            "gate": 1.0,
+            "result": "PASS"
+          },
+          {
+            "tier": 1,
+            "asked": 45,
+            "scored": 45,
+            "hit": 43,
+            "unmeasured": 0,
+            "gate": 0.9,
+            "result": "PASS"
+          },
+          {
+            "tier": 2,
+            "asked": 60,
+            "scored": 60,
+            "hit": 52,
+            "unmeasured": 0,
+            "gate": 0.8,
+            "result": "PASS"
+          },
+          {
+            "tier": 3,
+            "asked": 30,
+            "scored": 0,
+            "hit": 0,
+            "unmeasured": 30,
+            "gate": null,
+            "result": "INFO"
+          }
+        ],
+        "sections": {
+          "all": {
+            "asked": 175,
+            "scored": 145,
+            "hit": 139,
+            "unmeasured": 30
+          }
+        },
+        "run_id": "coldstart_e8bd699f443263e1a279e274b7499aef"
+      }
+    },
+    {
+      "case_id": "D-009-unmeasured-does-not-account-for-what-was-asked",
+      "expect": [
+        "TIER_ARITHMETIC"
+      ],
+      "proves": "scored plus unmeasured is what was asked. A tier that drops rows out of both columns hides the questions it could not answer.",
+      "patch": {
+        "tiers": [
+          {
+            "tier": 0,
+            "asked": 40,
+            "scored": 30,
+            "hit": 30,
+            "unmeasured": 0,
+            "gate": 1.0,
+            "result": "PASS"
+          },
+          {
+            "tier": 1,
+            "asked": 45,
+            "scored": 45,
+            "hit": 43,
+            "unmeasured": 0,
+            "gate": 0.9,
+            "result": "PASS"
+          },
+          {
+            "tier": 2,
+            "asked": 60,
+            "scored": 60,
+            "hit": 52,
+            "unmeasured": 0,
+            "gate": 0.8,
+            "result": "PASS"
+          },
+          {
+            "tier": 3,
+            "asked": 30,
+            "scored": 0,
+            "hit": 0,
+            "unmeasured": 30,
+            "gate": null,
+            "result": "INFO"
+          }
+        ],
+        "sections": {
+          "all": {
+            "asked": 175,
+            "scored": 135,
+            "hit": 125,
+            "unmeasured": 30
+          }
+        },
+        "run_id": "coldstart_e8bd699f443263e1a279e274b7499aef"
+      }
+    },
+    {
+      "case_id": "D-010-record-carries-no-corpus-digest",
+      "expect": [
+        "RECORD_SHAPE"
+      ],
+      "proves": "Without the digest of the questions asked, yesterday's card and today's are not comparable, and a corpus edited between them leaves no trace.",
+      "patch": {
+        "corpus": {
+          "path": "scripts/sovcoldstart/corpus.json",
+          "questions": 175,
+          "selected": 175
+        },
+        "sections": {
+          "all": {
+            "asked": 175,
+            "scored": 145,
+            "hit": 135,
+            "unmeasured": 30
+          }
+        },
+        "run_id": "coldstart_75c968cfcaa346c25725bbc8230ccb21"
+      }
+    },
+    {
+      "case_id": "D-011-record-pins-no-real-commit",
+      "expect": [
+        "RECORD_SHAPE"
+      ],
+      "proves": "Every probe reads a revision. A record that does not name it cannot be reproduced or disputed.",
+      "patch": {
+        "revision": {
+          "commit": "HEAD",
+          "branch": "main",
+          "tree_state": "CLEAN"
+        },
+        "sections": {
+          "all": {
+            "asked": 175,
+            "scored": 145,
+            "hit": 135,
+            "unmeasured": 30
+          }
+        },
+        "run_id": "coldstart_269d8a6fde0c91ed8afb9db7cbedad3d"
+      }
+    },
+    {
+      "case_id": "D-012-record-supplies-its-own-gate",
+      "expect": [
+        "RECORD_SHAPE",
+        "RECORD_SHAPE",
+        "TIER_NOT_DERIVED",
+        "TIER_NOT_DERIVED",
+        "TIER_NOT_DERIVED",
+        "TIER_NOT_DERIVED",
+        "VERDICT_NOT_DERIVED"
+      ],
+      "proves": "A witness defeated the first version of this contract here. The tier table was honest, the verdict was faithfully re-derived, and the threshold it was derived against came out of the record being graded: gate 0.0 on tiers 1 and 2 made 5 of 46 meet its own bar and the record wrote ADMISSIBLE. A check that reads a declaration where it could compute one is not a check. Three refusals now catch it independently: the schema no longer admits a gate that is not a declared one, the tier row is recomputed from the counts, and the verdict is derived against the canonical table rather than the record's. `expect` lists each code once per firing: set grading let one declared RECORD_SHAPE stand for any number of shape defects.",
+      "patch": {
+        "tiers": [
+          {
+            "tier": 0,
+            "asked": 40,
+            "scored": 40,
+            "hit": 40,
+            "unmeasured": 0,
+            "gate": 1.0,
+            "result": "PASS"
+          },
+          {
+            "tier": 1,
+            "asked": 46,
+            "scored": 46,
+            "hit": 5,
+            "unmeasured": 0,
+            "gate": 0.0,
+            "result": "PASS"
+          },
+          {
+            "tier": 2,
+            "asked": 46,
+            "scored": 46,
+            "hit": 3,
+            "unmeasured": 0,
+            "gate": 0.0,
+            "result": "PASS"
+          },
+          {
+            "tier": 3,
+            "asked": 30,
+            "scored": 0,
+            "hit": 0,
+            "unmeasured": 30,
+            "gate": null,
+            "result": "INFO"
+          }
+        ],
+        "corpus": {
+          "path": "scripts/sovcoldstart/corpus.json",
+          "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+          "questions": 175,
+          "selected": 162
+        },
+        "sections": {
+          "all": {
+            "asked": 162,
+            "scored": 132,
+            "hit": 48,
+            "unmeasured": 30
+          }
+        },
+        "run_id": "coldstart_e8bd699f443263e1a279e274b7499aef"
+      }
+    },
+    {
+      "case_id": "D-013-record-supplies-its-own-tier-result",
+      "expect": [
+        "TIER_NOT_DERIVED"
+      ],
+      "proves": "The per-tier result was equally readable: 30 of 60 against a 0.8 gate stating PASS. The verdict is derived from the counts, so this alone does not change it, which is exactly why nothing caught it.",
+      "patch": {
+        "tiers": [
+          {
+            "tier": 0,
+            "asked": 40,
+            "scored": 40,
+            "hit": 40,
+            "unmeasured": 0,
+            "gate": 1.0,
+            "result": "PASS"
+          },
+          {
+            "tier": 1,
+            "asked": 45,
+            "scored": 45,
+            "hit": 43,
+            "unmeasured": 0,
+            "gate": 0.9,
+            "result": "PASS"
+          },
+          {
+            "tier": 2,
+            "asked": 60,
+            "scored": 60,
+            "hit": 30,
+            "unmeasured": 0,
+            "gate": 0.8,
+            "result": "PASS"
+          },
+          {
+            "tier": 3,
+            "asked": 30,
+            "scored": 0,
+            "hit": 0,
+            "unmeasured": 30,
+            "gate": null,
+            "result": "INFO"
+          }
+        ],
+        "verdict": "DEGRADED",
+        "sections": {
+          "all": {
+            "asked": 175,
+            "scored": 145,
+            "hit": 113,
+            "unmeasured": 30
+          }
+        },
+        "run_id": "coldstart_e8bd699f443263e1a279e274b7499aef"
+      }
+    },
+    {
+      "case_id": "D-014-tier-zero-row-deleted-entirely",
+      "expect": [
+        "TIER_SET_INVALID",
+        "RECORD_SHAPE"
+      ],
+      "proves": "A second witness deleted the tier 0 row. The grader read a missing tier as a clean one and the check that catches an unasked tier inspected only rows that were present, so the record derived ADMISSIBLE with no hard-invariant gate in it at all. The tier set is fixed and is now checked against the fixed set, not against what the record supplies. The verdict is not derived at all once the tier set is invalid: deriving from a table that is missing a row would be answering a question nobody can ask.",
+      "patch": {
+        "tiers": [
+          {
+            "tier": 1,
+            "asked": 45,
+            "scored": 45,
+            "hit": 43,
+            "unmeasured": 0,
+            "gate": 0.9,
+            "result": "PASS"
+          },
+          {
+            "tier": 2,
+            "asked": 60,
+            "scored": 60,
+            "hit": 52,
+            "unmeasured": 0,
+            "gate": 0.8,
+            "result": "PASS"
+          },
+          {
+            "tier": 3,
+            "asked": 30,
+            "scored": 0,
+            "hit": 0,
+            "unmeasured": 30,
+            "gate": null,
+            "result": "INFO"
+          }
+        ],
+        "sections": {
+          "all": {
+            "asked": 135,
+            "scored": 105,
+            "hit": 95,
+            "unmeasured": 30
+          }
+        },
+        "run_id": "coldstart_e8bd699f443263e1a279e274b7499aef"
+      }
+    },
+    {
+      "case_id": "D-015-tier-zero-appears-twice-with-the-clean-copy-last",
+      "expect": [
+        "TIER_SET_INVALID",
+        "RECORD_SHAPE"
+      ],
+      "proves": "The same witness duplicated tier 0 and put the clean copy second, so the row that decided the verdict was chosen by ordering. The record carried a visible result FAIL on tier 0 and claimed DEGRADED.",
+      "patch": {
+        "tiers": [
+          {
+            "tier": 0,
+            "asked": 40,
+            "scored": 40,
+            "hit": 20,
+            "unmeasured": 0,
+            "gate": 1.0,
+            "result": "FAIL"
+          },
+          {
+            "tier": 0,
+            "asked": 40,
+            "scored": 40,
+            "hit": 40,
+            "unmeasured": 0,
+            "gate": 1.0,
+            "result": "PASS"
+          },
+          {
+            "tier": 1,
+            "asked": 45,
+            "scored": 45,
+            "hit": 43,
+            "unmeasured": 0,
+            "gate": 0.9,
+            "result": "PASS"
+          },
+          {
+            "tier": 2,
+            "asked": 60,
+            "scored": 60,
+            "hit": 52,
+            "unmeasured": 0,
+            "gate": 0.8,
+            "result": "PASS"
+          },
+          {
+            "tier": 3,
+            "asked": 30,
+            "scored": 0,
+            "hit": 0,
+            "unmeasured": 30,
+            "gate": null,
+            "result": "INFO"
+          }
+        ],
+        "verdict": "DEGRADED",
+        "sections": {
+          "all": {
+            "asked": 215,
+            "scored": 185,
+            "hit": 155,
+            "unmeasured": 30
+          }
+        },
+        "run_id": "coldstart_e8bd699f443263e1a279e274b7499aef"
+      }
+    },
+    {
+      "case_id": "D-016-sections-do-not-add-up-to-the-tier-table",
+      "expect": [
+        "COUNTS_DISAGREE",
+        "COUNTS_DISAGREE",
+        "COUNTS_DISAGREE",
+        "COUNTS_DISAGREE"
+      ],
+      "proves": "`sections` drives the whole drift reading and was never reconciled with anything. A record could count the same run one way in its tier table and another in the block a reader compares day to day.",
+      "patch": {
+        "sections": {
+          "doctrine": {
+            "asked": 999,
+            "scored": 999,
+            "hit": 999,
+            "unmeasured": 0
+          }
+        },
+        "run_id": "coldstart_e8bd699f443263e1a279e274b7499aef"
+      }
+    },
+    {
+      "case_id": "D-017-corpus-selected-disagrees-with-what-was-asked",
+      "expect": [
+        "COUNTS_DISAGREE"
+      ],
+      "proves": "How much of the corpus was asked is stated in two places. A record saying one question was selected and 175 were asked is not a reading anyone can use.",
+      "patch": {
+        "corpus": {
+          "path": "scripts/sovcoldstart/corpus.json",
+          "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+          "questions": 175,
+          "selected": 1
+        },
+        "sections": {
+          "all": {
+            "asked": 175,
+            "scored": 145,
+            "hit": 135,
+            "unmeasured": 30
+          }
+        },
+        "run_id": "coldstart_e8bd699f443263e1a279e274b7499aef"
+      }
+    },
+    {
+      "case_id": "D-018-answers-digest-does-not-match-the-file",
+      "expect": [
+        "ANSWERS_UNVERIFIED"
+      ],
+      "proves": "The digest was recorded and never checked, so it identified nothing. A competence score is attributable only if the answers it graded are.",
+      "patch": {
+        "mode": "COMPETENCE",
+        "participant": {
+          "id": "principal:claude-opus-5",
+          "host": "claude-code on win32",
+          "answers": "scripts/sovcoldstart/baselines/2026-08-26-claude-opus-5-cold.json",
+          "answers_digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+        },
+        "graded_by": {
+          "owner_verdicts": null,
+          "manual_asked": 0,
+          "manual_graded": 0
+        },
+        "sections": {
+          "all": {
+            "asked": 175,
+            "scored": 145,
+            "hit": 135,
+            "unmeasured": 30
+          }
+        },
+        "run_id": "coldstart_28dd6b7332a22c5cff9d9d0057c989a1"
+      }
+    },
+    {
+      "case_id": "D-019-answers-file-is-not-there-to-be-digested",
+      "expect": [
+        "ANSWERS_UNVERIFIED"
+      ],
+      "proves": "A digest of a file that does not exist identifies nothing either, and is the cheaper way to defeat the check than forging one.",
+      "patch": {
+        "mode": "COMPETENCE",
+        "participant": {
+          "id": "principal:claude-opus-5",
+          "host": "claude-code on win32",
+          "answers": "scripts/sovcoldstart/baselines/never-written.json",
+          "answers_digest": "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+        },
+        "graded_by": {
+          "owner_verdicts": null,
+          "manual_asked": 0,
+          "manual_graded": 0
+        },
+        "sections": {
+          "all": {
+            "asked": 175,
+            "scored": 145,
+            "hit": 135,
+            "unmeasured": 30
+          }
+        },
+        "run_id": "coldstart_28dd6b7332a22c5cff9d9d0057c989a1"
+      }
+    },
+    {
+      "case_id": "D-020-competence-run-states-no-graded-by-block",
+      "expect": [
+        "SELF_GRADED",
+        "RECORD_SHAPE"
+      ],
+      "proves": "SELF_GRADED read manual_graded out of a block that could simply be omitted, so the cheapest evasion was to say nothing about grading at all. The shape now requires the block too, so it earns RECORD_SHAPE as well: two independent refusals rather than one.",
+      "patch": {
+        "mode": "COMPETENCE",
+        "participant": {
+          "id": "principal:claude-opus-5",
+          "host": "claude-code on win32",
+          "answers_digest": "sha256:b73565371068b2e6ece7143c97e352f239a211e81f1b7f7ff2c13d13489ae658",
+          "answers": "conformance/fixtures/coldstart/answers.fixture.json"
+        },
+        "sections": {
+          "all": {
+            "asked": 175,
+            "scored": 145,
+            "hit": 135,
+            "unmeasured": 30
+          }
+        },
+        "run_id": "coldstart_28dd6b7332a22c5cff9d9d0057c989a1"
+      }
+    },
+    {
+      "case_id": "D-021-gate-is-a-boolean",
+      "expect": [
+        "TIER_NOT_DERIVED"
+      ],
+      "proves": "True equals 1.0 in Python, so a boolean passed both the enum and the equality check and landed in a numeric field. The schema enum does not catch it, which is the finding: only an explicit type check does.",
+      "patch": {
+        "tiers": [
+          {
+            "tier": 0,
+            "asked": 40,
+            "scored": 40,
+            "hit": 40,
+            "unmeasured": 0,
+            "gate": true,
+            "result": "PASS"
+          },
+          {
+            "tier": 1,
+            "asked": 45,
+            "scored": 45,
+            "hit": 43,
+            "unmeasured": 0,
+            "gate": 0.9,
+            "result": "PASS"
+          },
+          {
+            "tier": 2,
+            "asked": 60,
+            "scored": 60,
+            "hit": 52,
+            "unmeasured": 0,
+            "gate": 0.8,
+            "result": "PASS"
+          },
+          {
+            "tier": 3,
+            "asked": 30,
+            "scored": 0,
+            "hit": 0,
+            "unmeasured": 30,
+            "gate": null,
+            "result": "INFO"
+          }
+        ],
+        "sections": {
+          "all": {
+            "asked": 175,
+            "scored": 145,
+            "hit": 135,
+            "unmeasured": 30
+          }
+        },
+        "run_id": "coldstart_e8bd699f443263e1a279e274b7499aef"
+      }
+    },
+    {
+      "case_id": "D-022-owner-verdict-file-is-not-there",
+      "expect": [
+        "SELF_GRADED"
+      ],
+      "proves": "The verdict file path was recorded and never opened, so any non-empty string satisfied the rule that no seat settles its own output. The check that already existed for the answers file seventeen lines above is the one this field needed.",
+      "patch": {
+        "mode": "COMPETENCE",
+        "participant": {
+          "id": "p",
+          "host": "h",
+          "answers_digest": "sha256:b73565371068b2e6ece7143c97e352f239a211e81f1b7f7ff2c13d13489ae658",
+          "answers": "conformance/fixtures/coldstart/answers.fixture.json"
+        },
+        "graded_by": {
+          "owner_verdicts": "nope/not-a-file.json",
+          "manual_asked": 41,
+          "manual_graded": 41
+        },
+        "sections": {
+          "all": {
+            "asked": 175,
+            "scored": 145,
+            "hit": 135,
+            "unmeasured": 30
+          }
+        },
+        "run_id": "coldstart_17c34828b26b21fd957b8faf1b88de39"
+      }
+    },
+    {
+      "case_id": "D-023-owner-verdict-file-does-not-digest-to-what-the-record-states",
+      "expect": [
+        "SELF_GRADED",
+        "SELF_GRADED"
+      ],
+      "proves": "A verdict set carried forward onto a different submission grades answers nobody looked at. The file has to be the file the record names, byte for byte. It earns the refusal twice: the bytes do not match, and the file names a grader that resolves to no registered principal. Any fixture verdict file earns the second one, which is the point.",
+      "patch": {
+        "mode": "COMPETENCE",
+        "participant": {
+          "id": "p",
+          "host": "h",
+          "answers": "conformance/fixtures/coldstart/answers.fixture.json",
+          "answers_digest": "sha256:b73565371068b2e6ece7143c97e352f239a211e81f1b7f7ff2c13d13489ae658"
+        },
+        "graded_by": {
+          "owner_verdicts": "conformance/fixtures/coldstart/owner-verdicts.fixture.json",
+          "owner_verdicts_digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "manual_asked": 1,
+          "manual_graded": 1
+        },
+        "sections": {
+          "all": {
+            "asked": 175,
+            "scored": 145,
+            "hit": 135,
+            "unmeasured": 30
+          }
+        },
+        "run_id": "coldstart_17c34828b26b21fd957b8faf1b88de39"
+      }
+    },
+    {
+      "case_id": "D-024-more-answers-graded-than-were-asked",
+      "expect": [
+        "COUNTS_DISAGREE",
+        "SELF_GRADED"
+      ],
+      "proves": "manual_graded and manual_asked were never related, so a record could grade ninety-nine of nothing. The verdict file it cites is a fixture, so it also earns SELF_GRADED for naming an unregistered grader.",
+      "patch": {
+        "mode": "COMPETENCE",
+        "participant": {
+          "id": "p",
+          "host": "h",
+          "answers_digest": "sha256:b73565371068b2e6ece7143c97e352f239a211e81f1b7f7ff2c13d13489ae658",
+          "answers": "conformance/fixtures/coldstart/answers.fixture.json"
+        },
+        "graded_by": {
+          "owner_verdicts": "conformance/fixtures/coldstart/owner-verdicts.fixture.json",
+          "owner_verdicts_digest": "sha256:58d4dc0628ad668792c3d4a5120b99a409a368c122e9391744856b77dcdc1477",
+          "manual_asked": 0,
+          "manual_graded": 99
+        },
+        "sections": {
+          "all": {
+            "asked": 175,
+            "scored": 145,
+            "hit": 135,
+            "unmeasured": 30
+          }
+        },
+        "run_id": "coldstart_17c34828b26b21fd957b8faf1b88de39"
+      }
+    },
+    {
+      "case_id": "D-025-one-section-does-not-add-up-while-the-totals-do",
+      "expect": [
+        "COUNTS_DISAGREE"
+      ],
+      "proves": "Reconciling only the totals let one section claim 95 hits out of 45 scored, offset by another claiming none. `moved` reads the individual numbers, so the totals reconciling is not the property that matters.",
+      "patch": {
+        "sections": {
+          "routing": {
+            "asked": 45,
+            "scored": 45,
+            "hit": 95,
+            "unmeasured": 0
+          },
+          "rest": {
+            "asked": 130,
+            "scored": 100,
+            "hit": 40,
+            "unmeasured": 30
+          }
+        },
+        "run_id": "coldstart_e8bd699f443263e1a279e274b7499aef"
+      }
+    },
+    {
+      "case_id": "D-026-record-states-no-sections-at-all",
+      "expect": [
+        "RECORD_SHAPE",
+        "COUNTS_DISAGREE"
+      ],
+      "proves": "An empty block skipped reconciliation entirely, so omitting the sections was cheaper than forging them.",
+      "patch": {
+        "sections": {},
+        "run_id": "coldstart_e8bd699f443263e1a279e274b7499aef"
+      }
+    },
+    {
+      "case_id": "D-027-participant-is-not-an-object",
+      "expect": [
+        "RECORD_SHAPE",
+        "PARTICIPANT_MISSING"
+      ],
+      "proves": "A participant recorded as a bare string raised AttributeError rather than being refused, and load_all grades every file on disk, so one such record made history crash for the whole directory.",
+      "patch": {
+        "mode": "COMPETENCE",
+        "participant": "me",
+        "graded_by": {
+          "owner_verdicts": null,
+          "manual_asked": 0,
+          "manual_graded": 0
+        },
+        "sections": {
+          "all": {
+            "asked": 175,
+            "scored": 145,
+            "hit": 135,
+            "unmeasured": 30
+          }
+        },
+        "run_id": "coldstart_be9383245cce741e147607e14dd4619f"
+      }
+    },
+    {
+      "case_id": "D-028-run-id-the-record-did-not-earn",
+      "expect": [
+        "RUN_ID_NOT_DERIVED"
+      ],
+      "proves": "The run id derives from the commit, the corpus digest, the instant and the mode, all four of which the record already carries, so it needs nothing external to check and was never checked. `write` names the file from it, so a record declaring an id it had not earned could take another record's filename; a witness dropped one carrying thirty-two f characters into a records directory and `history` read it clean.",
+      "patch": {
+        "run_id": "coldstart_ffffffffffffffffffffffffffffffff"
+      }
+    },
+    {
+      "case_id": "D-029-verdicts-graded-by-a-seat-that-is-in-no-principal-registry",
+      "expect": [
+        "SELF_GRADED"
+      ],
+      "proves": "Digest-binding two files proves only that they were made together, which the participant does trivially: a witness wrote both, put the sha256 of its own answers in the verdict file, named itself the grader and granted RIGHT to all 57 hand-graded questions. `decisions/0070` already settled the shape of the answer for the AI-native grader - a judgement is refused unless a registered HUMAN principal made it - and this is the same rule, `AGENTS.md`: no seat settles its own output. It is a floor, not a proof: the registry grants nothing, and anyone who can write it can add an entry.",
+      "patch": {
+        "mode": "COMPETENCE",
+        "participant": {
+          "id": "principal:fixture-participant",
+          "host": "fixture",
+          "answers": "conformance/fixtures/coldstart/answers.fixture.json",
+          "answers_digest": "sha256:b73565371068b2e6ece7143c97e352f239a211e81f1b7f7ff2c13d13489ae658"
+        },
+        "graded_by": {
+          "owner_verdicts": "conformance/fixtures/coldstart/owner-verdicts.fixture.json",
+          "owner_verdicts_digest": "sha256:58d4dc0628ad668792c3d4a5120b99a409a368c122e9391744856b77dcdc1477",
+          "manual_asked": 1,
+          "manual_graded": 1
+        },
+        "sections": {
+          "all": {
+            "asked": 175,
+            "scored": 145,
+            "hit": 135,
+            "unmeasured": 30
+          }
+        },
+        "run_id": "coldstart_0fec07b505f9d49289418679f9c03206"
+      }
+    },
+    {
+      "case_id": "P-006-competence-run-bound-to-the-canonical-corpus",
+      "expect": [],
+      "proves": "The only case that reaches the corpus-binding checks at all. A witness instrumented them and found they returned early on all 34 cases, because the base record's digest is 64 zeros and nothing ever bound the real corpus - so `selfcheck` reported eleven refusals all proven while the code that stops a record naming its own referent was never executed. The `CANONICAL` sentinel substitutes the live digest and question count, which a fixture cannot state without changing every time the corpus does.",
+      "patch": {
+        "mode": "COMPETENCE",
+        "corpus": {
+          "path": "scripts/sovcoldstart/corpus.json",
+          "digest": "CANONICAL",
+          "questions": 0,
+          "selected": 175
+        },
+        "tiers": [
+          {
+            "tier": 0,
+            "asked": 49,
+            "scored": 26,
+            "hit": 26,
+            "unmeasured": 23,
+            "gate": 1.0,
+            "result": "PART"
+          },
+          {
+            "tier": 1,
+            "asked": 46,
+            "scored": 46,
+            "hit": 46,
+            "unmeasured": 0,
+            "gate": 0.9,
+            "result": "PASS"
+          },
+          {
+            "tier": 2,
+            "asked": 46,
+            "scored": 46,
+            "hit": 46,
+            "unmeasured": 0,
+            "gate": 0.8,
+            "result": "PASS"
+          },
+          {
+            "tier": 3,
+            "asked": 34,
+            "scored": 0,
+            "hit": 0,
+            "unmeasured": 34,
+            "gate": null,
+            "result": "INFO"
+          }
+        ],
+        "sections": {
+          "all": {
+            "asked": 175,
+            "scored": 118,
+            "hit": 118,
+            "unmeasured": 57
+          }
+        },
+        "verdict": "UNPROVEN",
+        "participant": {
+          "id": "principal:fixture-participant",
+          "host": "fixture",
+          "answers": "conformance/fixtures/coldstart/answers.fixture.json",
+          "answers_digest": "sha256:b73565371068b2e6ece7143c97e352f239a211e81f1b7f7ff2c13d13489ae658"
+        },
+        "graded_by": {
+          "owner_verdicts": null,
+          "manual_asked": 57,
+          "manual_graded": 0
+        }
+      }
+    },
+    {
+      "case_id": "D-030-record-binds-a-corpus-of-its-own-choosing",
+      "expect": [
+        "CORPUS_NOT_CANONICAL"
+      ],
+      "proves": "The seventh pass read the generator behind six passes of findings: the record supplies its own referents, so each repair binds one more of them by digest and the hole moves one field over. A record pointed `corpus.path` at a one-answer fixture with its true digest, the hand-graded count read as zero, and a claim of 175 of 175 ADMISSIBLE with no owner verdict was written and read back clean. The corpus a run record is a reading of is now fixed by the system.",
+      "patch": {
+        "corpus": {
+          "path": "conformance/fixtures/coldstart/answers.fixture.json",
+          "digest": "sha256:b73565371068b2e6ece7143c97e352f239a211e81f1b7f7ff2c13d13489ae658",
+          "questions": 175,
+          "selected": 175
+        },
+        "run_id": "coldstart_024d3d46cc98137193bc35fae4d1b77d"
+      }
+    },
+    {
+      "case_id": "D-031-canonical-corpus-and-nothing-declared-hand-graded",
+      "expect": [
+        "COUNTS_DISAGREE"
+      ],
+      "proves": "With the corpus pinned, the hand-graded count is read from it. Declaring zero was how a competence record used to skip SELF_GRADED entirely. The declared count is replaced by the corpus count before the ungraded arithmetic runs, so the record earns one refusal naming the real disagreement rather than two describing the same lie.",
+      "patch": {
+        "mode": "COMPETENCE",
+        "corpus": {
+          "path": "scripts/sovcoldstart/corpus.json",
+          "digest": "CANONICAL",
+          "questions": 0,
+          "selected": 175
+        },
+        "tiers": [
+          {
+            "tier": 0,
+            "asked": 49,
+            "scored": 26,
+            "hit": 26,
+            "unmeasured": 23,
+            "gate": 1.0,
+            "result": "PART"
+          },
+          {
+            "tier": 1,
+            "asked": 46,
+            "scored": 46,
+            "hit": 46,
+            "unmeasured": 0,
+            "gate": 0.9,
+            "result": "PASS"
+          },
+          {
+            "tier": 2,
+            "asked": 46,
+            "scored": 46,
+            "hit": 46,
+            "unmeasured": 0,
+            "gate": 0.8,
+            "result": "PASS"
+          },
+          {
+            "tier": 3,
+            "asked": 34,
+            "scored": 0,
+            "hit": 0,
+            "unmeasured": 34,
+            "gate": null,
+            "result": "INFO"
+          }
+        ],
+        "sections": {
+          "all": {
+            "asked": 175,
+            "scored": 118,
+            "hit": 118,
+            "unmeasured": 57
+          }
+        },
+        "verdict": "UNPROVEN",
+        "participant": {
+          "id": "principal:fixture-participant",
+          "host": "fixture",
+          "answers": "conformance/fixtures/coldstart/answers.fixture.json",
+          "answers_digest": "sha256:b73565371068b2e6ece7143c97e352f239a211e81f1b7f7ff2c13d13489ae658"
+        },
+        "graded_by": {
+          "owner_verdicts": null,
+          "manual_asked": 0,
+          "manual_graded": 0
+        }
+      }
+    },
+    {
+      "case_id": "D-032-answers-file-is-a-real-file-and-not-a-submission",
+      "expect": [
+        "ANSWERS_UNVERIFIED"
+      ],
+      "proves": "Existing and digesting correctly says a file was not swapped; it says nothing about the file being what the record claims was graded. A witness cited README.md with its true digest and the record was admitted. This is also the one mutation that survived scripts/tests/test_fixture_coverage.py: every other case citing an answers file also failed the digest check, so the shape check itself was never the thing that fired.",
+      "patch": {
+        "mode": "COMPETENCE",
+        "corpus": {
+          "path": "scripts/sovcoldstart/corpus.json",
+          "digest": "CANONICAL",
+          "questions": 0,
+          "selected": 175
+        },
+        "tiers": [
+          {
+            "tier": 0,
+            "asked": 49,
+            "scored": 26,
+            "hit": 26,
+            "unmeasured": 23,
+            "gate": 1.0,
+            "result": "PART"
+          },
+          {
+            "tier": 1,
+            "asked": 46,
+            "scored": 46,
+            "hit": 46,
+            "unmeasured": 0,
+            "gate": 0.9,
+            "result": "PASS"
+          },
+          {
+            "tier": 2,
+            "asked": 46,
+            "scored": 46,
+            "hit": 46,
+            "unmeasured": 0,
+            "gate": 0.8,
+            "result": "PASS"
+          },
+          {
+            "tier": 3,
+            "asked": 34,
+            "scored": 0,
+            "hit": 0,
+            "unmeasured": 34,
+            "gate": null,
+            "result": "INFO"
+          }
+        ],
+        "sections": {
+          "all": {
+            "asked": 175,
+            "scored": 118,
+            "hit": 118,
+            "unmeasured": 57
+          }
+        },
+        "verdict": "UNPROVEN",
+        "participant": {
+          "id": "principal:fixture-participant",
+          "host": "fixture",
+          "answers": "contracts/coldstart-run.schema.json",
+          "answers_digest": "DIGEST_OF_ANSWERS"
+        },
+        "graded_by": {
+          "owner_verdicts": null,
+          "manual_asked": 57,
+          "manual_graded": 0
+        }
+      }
+    }
+  ]
+}

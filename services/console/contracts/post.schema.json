@@ -4,18 +4,86 @@
   "title": "Console Post",
   "type": "object",
   "additionalProperties": false,
-  "required": ["post_id", "thread_id", "actor_id", "actor_kind", "content_address", "content_digest", "mentions", "proposal_id", "posted_at", "receipt_id", "standing"],
+  "required": [
+    "node_id",
+    "post_id",
+    "thread_id",
+    "actor_id",
+    "actor_kind",
+    "content_address",
+    "content_digest",
+    "mentions",
+    "proposal_id",
+    "posted_at",
+    "receipt_id",
+    "standing"
+  ],
   "properties": {
-    "post_id": {"type": "string", "minLength": 1},
-    "thread_id": {"type": "string", "minLength": 1},
-    "actor_id": {"type": "string", "minLength": 1},
-    "actor_kind": {"enum": ["HUMAN", "MODEL"]},
-    "content_address": {"type": "string", "minLength": 1, "description": "Address of the immutable post payload; a post is never rewritten, corrections are new posts or counter-records."},
-    "content_digest": {"type": "string", "minLength": 1},
-    "mentions": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true, "description": "Operator ids named in the post; each yields a MENTION notification resolving back to this post's address and digest."},
-    "proposal_id": {"type": ["string", "null"], "minLength": 1, "description": "Set when the post enters the kernel as a Proposal; a MODEL post that claims anything must carry one."},
-    "posted_at": {"type": "string", "format": "date-time"},
-    "receipt_id": {"type": "string", "minLength": 1, "description": "Receipt of the post transition; a human post and a model post in one thread take the same transition and yield reconcilable receipts."},
-    "standing": {"enum": ["RECORDED", "ADMITTED", "RATIFIED", "EFFECTIVE"]}
+    "node_id": {
+      "type": "string",
+      "pattern": "^node:[a-z0-9][a-z0-9-]*$",
+      "description": "The node this record belongs to, as contracts/node-identity.schema.json names it. Required so a record read on its own says which node it is from; a console that holds a peer's records through a crossing must never present them as its own (decisions/0039). Added 2026-08-25: the record carried this field and the schema did not, so contract.foreign_records could not see a foreign one at all and additionalProperties:false would have rejected the honest projection."
+    },
+    "post_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "thread_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "actor_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "actor_kind": {
+      "enum": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "content_address": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Address of the immutable post payload; a post is never rewritten, corrections are new posts or counter-records."
+    },
+    "content_digest": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mentions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true,
+      "description": "Operator ids named in the post; each yields a MENTION notification resolving back to this post's address and digest."
+    },
+    "proposal_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "description": "Set when the post enters the kernel as a Proposal; a MODEL post that claims anything must carry one."
+    },
+    "posted_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "receipt_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Receipt of the post transition; a human post and a model post in one thread take the same transition and yield reconcilable receipts."
+    },
+    "standing": {
+      "enum": [
+        "RECORDED",
+        "ADMITTED",
+        "RATIFIED",
+        "EFFECTIVE"
+      ]
+    }
   }
 }

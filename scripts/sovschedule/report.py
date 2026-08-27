@@ -17,17 +17,29 @@ hours - sometimes a day - wrong on any host that is not on UTC. The offset is ta
 once, carried on the digest, and reproduced by the staleness check, so the answer is
 right for the machine the runs happen on and the page still byte-compares elsewhere.
 
-Reading only. Nothing here writes a declaration, the ledger, or any standing.
+Declarations are read from one of two places and the caller says which. The page and
+its staleness check read them at HEAD, because a page derived from a tree eleven
+sessions share cannot be committed correctly: another session's untracked schedule puts
+a row on the page that a clean checkout cannot reproduce, and the check then refuses the
+commit it shipped in. That is the referent Bdo ruled on in acceptance packet A5 for the
+orientation page, applied here for the same reason. The operator command reads the
+working tree, because someone asking about a schedule file in front of them wants an
+answer about that file.
+
+Reading only. Nothing here writes a declaration, the ledger, or any standing, and the
+committed read materialises HEAD into a scratch directory rather than touching the tree.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import json
 
-from sovschedule import cron, health, history
+from sovschedule import committed, cron, health, history
+from sovschedule.clock import host_offset, parse_stamp, stamp  # noqa: F401
+from sovschedule.committed import COMMIT, WORKTREE
 from sovschedule.declaration import (
     SCHEDULES_DIR, SCHEMA_NAME, DeclarationError, load_declaration, target_path,
 )
@@ -47,6 +59,9 @@ class Declared:
     effect_class: str
     timeout_seconds: int
     defect: str | None
+    #: The declaration as parsed, for readers that need a field this class does not name.
+    #: Empty when the file could not be parsed at all.
+    raw: dict
 
     @property
     def target(self) -> str:
@@ -80,6 +95,8 @@ class Row:
     consecutive_failures: int
     reading: str
     findings: tuple[health.Finding, ...]
+    #: The declaration as parsed. The inline editor fills itself from this.
+    raw: dict = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -93,6 +110,7 @@ class Digest:
     counts: dict[str, int]
     rendered_at: datetime
     utc_offset: timedelta
+    source: str
 
     @property
     def refuses(self) -> bool:
@@ -103,33 +121,26 @@ class Digest:
         return [(row.name, finding) for row in self.rows for finding in row.findings]
 
 
-def host_offset() -> timedelta:
-    """The host current offset from UTC, which is the clock the runner fires in."""
-    return datetime.now(timezone.utc).astimezone().utcoffset() or timedelta(0)
+def _table(root: Path, source: str) -> dict:
+    """The rules table from the source being read.
 
-
-def stamp(moment: datetime | None) -> str:
-    """One timestamp, in whatever clock it carries, with that clock named on it."""
-    if moment is None:
-        return "-"
-    offset = moment.utcoffset() or timedelta(0)
-    if not offset:
-        return moment.strftime("%Y-%m-%dT%H:%M:%SZ")
-    total = int(offset.total_seconds()) // 60
-    sign = "+" if total >= 0 else "-"
-    return moment.strftime("%Y-%m-%dT%H:%M:%S") + f"{sign}{abs(total) // 60:02d}:{abs(total) % 60:02d}"
-
-
-def parse_stamp(text: str) -> datetime:
-    """Read back a stamp this module wrote, in UTC or in an offset clock."""
-    return datetime.fromisoformat(text)
+    Its note, its rule prose and its blocking sentence are rendered into the page, so a
+    page built from the working tree copy is one a clean checkout cannot reproduce.
+    """
+    if source == COMMIT:
+        address = health.TABLE_PATH.relative_to(root.resolve()).as_posix() \
+            if health.TABLE_PATH.is_relative_to(root.resolve()) \
+            else "contracts/automation-health.json"
+        return committed.table_at_head(root, address)
+    return health.load()
 
 
 def _accepted(path: Path, root: Path) -> Declared:
     decl = load_declaration(root, path)
     return Declared(decl.name, decl.description, decl.enabled, decl.target_kind,
                     decl.target_name, decl.spec.expression, decl.mode, decl.effect_class,
-                    decl.timeout_seconds, None)
+                    decl.timeout_seconds, None,
+                    json.loads(path.read_text(encoding="utf-8")))
 
 
 def _refused(path: Path, defect: str) -> Declared:
@@ -154,34 +165,47 @@ def _refused(path: Path, defect: str) -> Declared:
         effect_class=str(raw.get("effect_class", "")),
         timeout_seconds=int(limits.get("timeout_seconds") or 0),
         defect=defect,
+        raw=raw,
     )
 
 
-def declarations(root: Path) -> list[Declared]:
-    """Every declaration file, sorted by name, refused ones included."""
+def _load_one(path: Path, root: Path) -> Declared:
+    try:
+        return _accepted(path, root)
+    except DeclarationError as error:
+        return _refused(path, str(error))
+
+
+def declarations(root: Path, source: str = WORKTREE) -> list[Declared]:
+    """Every declaration, sorted by name, refused ones included."""
+    if source == COMMIT:
+        return committed.declarations_at_head(root, _load_one)
     directory = root / SCHEDULES_DIR
     paths = sorted(p for p in directory.glob("*.json") if p.name != SCHEMA_NAME)
-    out = []
-    for path in paths:
-        try:
-            out.append(_accepted(path, root))
-        except DeclarationError as error:
-            out.append(_refused(path, str(error)))
-    return out
+    return [_load_one(path, root) for path in paths]
 
 
-def _target_present(root: Path, declared: Declared) -> bool:
+def _target_present(root: Path, declared: Declared, source: str) -> bool:
+    """Whether the declared target exists in the source being read, not on disk.
+
+    Asking the working tree while reading declarations at HEAD is what let a moved
+    workflow file put a `missing` cell and a TARGET_MISSING row into a page that a
+    clean checkout re-derives without them.
+    """
     if declared.target_kind not in ("workflow", "skill") or not declared.target_name:
         return False
-    return target_path(root, declared.target_kind, declared.target_name).is_file()
+    address = target_path(Path("."), declared.target_kind, declared.target_name).as_posix()
+    if source == COMMIT:
+        return committed.tracked_at_head(root, address)
+    return (root / address).is_file()
 
 
 def _facts(root: Path, declared: Declared, runs: list[history.Run],
-           now: datetime) -> health.Facts:
+           now: datetime, source: str) -> health.Facts:
     return health.Facts(
         name=declared.name,
         enabled=declared.enabled,
-        target_exists=_target_present(root, declared),
+        target_exists=_target_present(root, declared, source),
         cron_expression=declared.cron_expression,
         timeout_seconds=declared.timeout_seconds,
         now=now,
@@ -223,11 +247,12 @@ def _row(facts: health.Facts, declared: Declared, reading: health.Reading,
         consecutive_failures=health.consecutive_failures(facts),
         reading=reading.reading,
         findings=reading.findings,
+        raw=declared.raw,
     )
 
 
 def assemble(root: Path, now: datetime | None = None, table: dict | None = None,
-             utc_offset: timedelta | None = None) -> Digest:
+             utc_offset: timedelta | None = None, source: str = WORKTREE) -> Digest:
     """Read declarations and history at this instant, in this clock, and judge each schedule.
 
     ``now`` and ``utc_offset`` are both injectable because a surface whose output
@@ -238,12 +263,12 @@ def assemble(root: Path, now: datetime | None = None, table: dict | None = None,
     offset = host_offset() if utc_offset is None else utc_offset
     moment = ((now or datetime.now(timezone.utc)).astimezone(timezone(offset))
               .replace(second=0, microsecond=0))
-    declared_table = table or health.load()
+    declared_table = table or _table(root, source)
     scan_days = declared_table["thresholds"]["scan_days"]
     rows = []
-    for declared in declarations(root):
+    for declared in declarations(root, source):
         runs = history.runs_for(root, declared.name)
-        facts = _facts(root, declared, runs, moment)
+        facts = _facts(root, declared, runs, moment, source)
         rows.append(_row(facts, declared, health.judge(facts, declared_table), scan_days))
     counts = {
         "declared": len(rows),
@@ -253,4 +278,4 @@ def assemble(root: Path, now: datetime | None = None, table: dict | None = None,
         "refusing": sum(1 for row in rows if row.reading == "UNHEALTHY"),
     }
     return Digest(tuple(rows), health.worst([row.reading for row in rows], declared_table),
-                  history.ledger_state(root), declared_table, counts, moment, offset)
+                  history.ledger_state(root), declared_table, counts, moment, offset, source)

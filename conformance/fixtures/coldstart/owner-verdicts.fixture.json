@@ -1,0 +1,12 @@
+{
+  "verdict_schema": "soveraeign-coldstart-owner-verdicts/v1",
+  "grades_answer_digest": "sha256:b73565371068b2e6ece7143c97e352f239a211e81f1b7f7ff2c13d13489ae658",
+  "graded_by": "fixture-owner-seat",
+  "note": "A defeating fixture, not anyone's judgement. `graded_by` names a seat that resolves to no registered principal, which is exactly what D-029 proves is refused: binding a verdict file to its answers by digest shows the two were made together, and a participant that writes both does that trivially. No real owner verdict file exists yet.",
+  "verdicts": [
+    {
+      "id": "X01",
+      "verdict": "RIGHT"
+    }
+  ]
+}

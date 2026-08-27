@@ -31,7 +31,7 @@ def drive(state: Path, actor: str, actor_kind: str) -> dict[str, object]:
     asset = AssetService(state / "asset")
     try:
         scope = f"asset:new:{actor}"
-        console.grant(actor, "ingest:asset", scope)
+        console.grant(actor, "ingest:asset", scope, "Bdo")
         capability_map, manifests, capability_table = load_surface(ROOT)
         gateway = Gateway(
             record,
@@ -39,7 +39,8 @@ def drive(state: Path, actor: str, actor_kind: str) -> dict[str, object]:
             manifests,
             capability_table,
             lambda checked_actor, capability, checked_scope: console_authority.check(
-                record.reconstruct(), checked_actor, capability, checked_scope
+                record.reconstruct(), console.node_id, checked_actor, capability,
+                checked_scope
             ),
             {"asset:in-process": AssetRoutes(asset).call},
             authority_denials=(AuthorityRefused,),

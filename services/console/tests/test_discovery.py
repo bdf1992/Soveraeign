@@ -17,8 +17,9 @@ proving the code does what it says is not evidence that a participant can get an
 
 `python scripts/sov_mutate.py run --target
 services/console/src/soveraeign_console_service/discovery.py` is the adversarial pass over
-this file: 31 mutants, 30 killed. The survivor is `return None` mutated to `return None`.
-It is not part of `scripts/verify.py` and has to be run deliberately.
+this file: 30 mutants, 29 killed, re-run on 2026-08-25 after `discover` was guarded. The
+survivor is `return None` mutated to `return None`. It is not part of `scripts/verify.py`
+and has to be run deliberately.
 """
 
 from __future__ import annotations
@@ -37,7 +38,10 @@ sys.path.insert(0, str(ROOT / "services" / "record" / "src"))
 from soveraeign_console_service import discovery  # noqa: E402
 from soveraeign_console_service.authority import ENFORCED_AUTHORITY  # noqa: E402
 from soveraeign_console_service.core import ConsoleService  # noqa: E402
-from soveraeign_console_service.refusals import StaleCapabilityMap  # noqa: E402
+from soveraeign_console_service.refusals import (  # noqa: E402
+    AuthorityRefused,
+    StaleCapabilityMap,
+)
 from soveraeign_record_service import RecordService  # noqa: E402
 
 MAP = json.loads((ROOT / "contracts" / "fixtures"
@@ -55,6 +59,17 @@ KNOWN_DIVERGENCE: set[str] = set()
 
 def _rows(answer: dict) -> dict[str, dict]:
     return {row["capability_id"]: row for row in answer["operations"]}
+
+
+def _without(capability_id: str) -> dict[str, str]:
+    """The enforcement table with one capability's check removed.
+
+    `NOT_ENFORCED` has no live instance to drive since the nine were guarded, so the
+    reading is proved against a table missing an entry rather than against a hole
+    left in the service for a test's benefit.
+    """
+    return {name: value for name, value in ENFORCED_AUTHORITY.items()
+            if name != capability_id}
 
 
 class FromTheProjectionTest(unittest.TestCase):
@@ -189,15 +204,15 @@ class AuthorityHonestyTest(unittest.TestCase):
         self.assertNotEqual(authority["required"],
                             OFFICES["console.open-thread"]["required_authority"])
 
-    def test_a_built_operation_that_checks_nothing_says_so(self) -> None:
-        """The reading this surface was getting wrong about itself.
+    def test_a_built_operation_that_checks_nothing_still_says_so(self) -> None:
+        """The reading kept under test after the last instance of it was closed.
 
-        `console.discover-operations` is BUILT, declares `read:session` and checks
-        nothing. Until 2026-08-24 the row read `NOT_KNOWN_HERE ... because it is not
-        built`, which was false twice over: it is built, and the reason a grant does not
-        decide it is that no check exists, not that nobody could answer.
+        `NOT_ENFORCED` had nine instances on 2026-08-24 and has none since Bdo ruled
+        on 2026-08-25 to guard them. The reading stays because it is how a tenth built
+        operation added without a check would announce itself, so it is driven against
+        an enforcement table with a hole punched in it rather than deleted.
         """
-        answer = discovery.operations(MAP, enforced=ENFORCED_AUTHORITY,
+        answer = discovery.operations(MAP, enforced=_without("console.discover-operations"),
                                       operator_id="sov", grants=[])
         authority = _rows(answer)["console.discover-operations"]["authority"]
         self.assertEqual(authority["reading"], discovery.NOT_ENFORCED)
@@ -207,7 +222,7 @@ class AuthorityHonestyTest(unittest.TestCase):
     def test_holding_a_grant_does_not_change_an_unenforced_reading(self) -> None:
         """`NOT_ENFORCED` is about the operation, not about the participant."""
         answer = discovery.operations(
-            MAP, enforced=ENFORCED_AUTHORITY, operator_id="sov",
+            MAP, enforced=_without("console.discover-operations"), operator_id="sov",
             grants=[{"capability": "read:session", "scope": "*"}])
         self.assertEqual(
             _rows(answer)["console.discover-operations"]["authority"]["reading"],
@@ -222,13 +237,18 @@ class AuthorityHonestyTest(unittest.TestCase):
         self.assertEqual(row["authority"]["reading"], discovery.NOT_KNOWN_HERE)
         self.assertIn("no implementation", row["authority"]["because"])
 
-    def test_every_built_console_capability_is_either_checked_or_named_unenforced(self) -> None:
-        """The count is the finding: no built operation gets a silent pass.
+    def test_the_surface_reports_every_built_console_capability_as_checked(self) -> None:
+        """What the surface says, which is all this module owns.
 
-        This is a report, not a policy. Nine built console operations check no
-        authority, `console.grant` and `console.revoke` among them. Narrowing that is
-        Bdo's call the way `console.archive-thread` was; what this asserts is that the
-        surface says so out loud rather than reporting them as unanswerable.
+        This is a claim about the answer `discovery.operations` renders, not about
+        any call site: both sets here come from `ENFORCED_AUTHORITY` and the
+        capability map, so it passes unchanged if every operation stops checking. It
+        was named as though it were the guard against exactly that, and it never was -
+        `console.withdraw-publication` could be fully unguarded with this green.
+
+        `services/console/tests/test_enforced_authority.py` makes the same join
+        against a table whose every entry is driven against a live service, ungranted
+        and granted. That is the check; this is the report of it.
         """
         answer = discovery.operations(MAP, enforced=ENFORCED_AUTHORITY,
                                       operator_id="sov", grants=[])
@@ -236,10 +256,11 @@ class AuthorityHonestyTest(unittest.TestCase):
                       if row["authority"]["reading"] == discovery.NOT_ENFORCED}
         built = {row["capability_id"] for row in answer["operations"]
                  if row["service_id"] == "console" and row["standing"] == "BUILT"}
-        self.assertEqual(unenforced | set(ENFORCED_AUTHORITY), built)
-        self.assertIn("console.grant", unenforced)
-        self.assertIn("console.revoke", unenforced)
-        self.assertIn("check none", " ".join(answer["omissions"]))
+        self.assertEqual(unenforced, set())
+        self.assertEqual(set(ENFORCED_AUTHORITY), built)
+        self.assertIn("console.grant", built)
+        self.assertIn("console.revoke", built)
+        self.assertNotIn("check none", " ".join(answer["omissions"]))
 
     def test_the_omissions_count_what_could_not_be_determined(self) -> None:
         answer = discovery.operations(MAP, enforced=ENFORCED_AUTHORITY,
@@ -295,7 +316,12 @@ class EntryPointTest(unittest.TestCase):
         root = Path(cls._tmp.name) / "console"
         cls.record = RecordService(root / "journal")
         cls.console = ConsoleService(cls.record, root, "node:test")
-        cls.console.grant("Bdo", "open:channel", "governance")
+        cls.console.grant("Bdo", "open:channel", "governance", "Bdo")
+        # Discovery costs a `read:session` grant scoped to the operator asking as of
+        # 2026-08-25. "nobody" holds one so the permitted reading can still be driven
+        # for a participant that holds nothing else.
+        cls.console.grant("Bdo", "read:session", "Bdo", "Bdo")
+        cls.console.grant("nobody", "read:session", "nobody", "Bdo")
 
     @classmethod
     def tearDownClass(cls) -> None:
@@ -303,35 +329,53 @@ class EntryPointTest(unittest.TestCase):
         cls._tmp.cleanup()
 
     def test_it_returns_an_answer(self) -> None:
-        answer = discovery.discover(self.console, MAP)
+        answer = discovery.discover(self.console, MAP, "Bdo")
         self.assertEqual(answer["counts"]["declared"], len(MAP["capabilities"]))
 
     def test_naming_an_operator_reads_that_operators_grants(self) -> None:
-        answer = discovery.discover(self.console, MAP, operator_id="Bdo")
+        answer = discovery.discover(self.console, MAP, "Bdo")
         self.assertEqual(answer["operator_id"], "Bdo")
         self.assertEqual(_rows(answer)["console.open-channel"]["authority"]["reading"],
                          discovery.HELD)
 
-    def test_naming_no_operator_reads_no_grants_at_all(self) -> None:
-        """The narrower answer, and the one a fresh participant gets."""
-        answer = discovery.discover(self.console, MAP)
-        self.assertIsNone(answer["operator_id"])
-        readings = {row["authority"]["reading"] for row in answer["operations"]}
-        self.assertNotIn(discovery.HELD, readings)
-        self.assertNotIn(discovery.NOT_HELD, readings)
+    def test_an_unnamed_or_ungranted_participant_can_no_longer_ask(self) -> None:
+        """The ability the ruling removed, asserted rather than described.
 
-    def test_an_operator_holding_nothing_is_not_the_same_as_no_operator(self) -> None:
+        `decisions/0053` recorded a participant holding no session and no grant
+        getting an answer through the binding. Bdo ruled on 2026-08-25 that this
+        operation checks the `read:session` it declares, and that ability is what the
+        check costs, so the anonymous reading is gone rather than narrowed.
+        """
+        with self.assertRaises(TypeError):
+            discovery.discover(self.console, MAP)
+        with self.assertRaises(AuthorityRefused) as refused:
+            discovery.discover(self.console, MAP, "stranger")
+        self.assertIn("read:session", str(refused.exception))
+
+    def test_an_operator_holding_nothing_else_still_reads_not_held(self) -> None:
         """`NOT_HELD` is an answer; `NOT_KNOWN_HERE` is a refusal to guess."""
-        held = _rows(discovery.discover(self.console, MAP, operator_id="nobody"))
-        unnamed = _rows(discovery.discover(self.console, MAP))
+        held = _rows(discovery.discover(self.console, MAP, "nobody"))
         self.assertEqual(held["console.open-channel"]["authority"]["reading"],
                          discovery.NOT_HELD)
-        self.assertEqual(unnamed["console.open-channel"]["authority"]["reading"],
+        self.assertEqual(held["asset.ingest-asset"]["authority"]["reading"],
                          discovery.NOT_KNOWN_HERE)
+
+    def test_the_permitted_reading_does_not_cost_a_second_permit(self) -> None:
+        """Discovery reads grants from the journal, not through `console.list-grants`.
+
+        Routing it through the list would make one answer cost `read:session` and
+        `read:authority` together, and put the permits office inside the front desk.
+        """
+        with self.assertRaises(AuthorityRefused):
+            self.console.grants(reader_id="Bdo")
+        self.assertEqual(
+            _rows(discovery.discover(self.console, MAP, "Bdo"))[
+                "console.open-channel"]["authority"]["reading"],
+            discovery.HELD)
 
     def test_a_stale_map_is_refused_through_the_entry_point_too(self) -> None:
         with self.assertRaises(StaleCapabilityMap):
-            discovery.discover(self.console, MAP, operator_id="Bdo", fresh=False)
+            discovery.discover(self.console, MAP, "Bdo", fresh=False)
 
 
 class RecordedObservationTest(unittest.TestCase):
@@ -345,10 +389,21 @@ class RecordedObservationTest(unittest.TestCase):
         kinds = [entry["kind"] for entry in self.OBSERVATION["journal"]]
         self.assertEqual(kinds, ["EVENT", "RECEIPT"])
 
-    def test_the_walk_carried_no_session_and_no_grant(self) -> None:
-        """A participant holding nothing still gets an answer, which is the point."""
+    def test_the_walk_carried_no_session_and_exactly_the_declared_grant(self) -> None:
+        """What the walk costs now, which is what Bdo's 2026-08-25 ruling changed.
+
+        The observation used to record a participant holding nothing getting an
+        answer. It holds two grants now - the `read:session` the office table declares
+        for `console.discover-operations`, and the `read:journal` that reading the
+        journal back has always declared and was not asked for until 2026-08-25 - and
+        still no session, because neither operation declares one and the binding opens
+        none.
+        """
         self.assertIsNone(self.OBSERVATION["participant"]["session"])
-        self.assertEqual(self.OBSERVATION["participant"]["grants_held"], 0)
+        self.assertEqual(self.OBSERVATION["participant"]["grants_held"], 2)
+        self.assertEqual(self.OBSERVATION["participant"]["grants"],
+                         ["read:session scoped to sov",
+                          "read:journal scoped to node:local"])
 
     def test_the_observation_says_what_it_does_not_establish(self) -> None:
         """It was taken by calling the gateway, so it cannot settle the gateway."""

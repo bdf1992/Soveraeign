@@ -1,0 +1,56 @@
+{
+  "table_id": "soveraeign-verification-budget/v1",
+  "status": "PROPOSED",
+  "governed_by": "decisions/0081-verification-budget-stops-blocking.md",
+  "note": "Where performance pressure sits, and what it is allowed to do. A wall-clock reading is a property of the host at that instant, not of the repository, so it grades and records debt and never refuses a landing. Pressure moves to per-check ceilings, which attribute an overrun to the check that owns it instead of to whoever touched the repository next. Only a single check past catastrophic_check_seconds refuses, because that is a regression no host load explains. This table grants nothing and settles nothing; scripts/verify.py reads it and conformance/fixtures/verification-budget/cases.json defeats it.",
+  "wall_clock": {
+    "blocks": false,
+    "grades": [
+      [
+        "PLATINUM",
+        3.0
+      ],
+      [
+        "GOLD",
+        6.0
+      ],
+      [
+        "SILVER",
+        15.0
+      ]
+    ],
+    "note": "Bands run fastest first and each ceiling is inclusive. Past the slowest band the run earns no grade and records DEBT. It does not fail. decisions/0050 measured the same commit passing at 2.674s and failing at 3.233s on two runners of one run; that is the reading this rule refuses to treat as a defect."
+  },
+  "check_ceilings": {
+    "blocks": false,
+    "default_seconds": 0.5,
+    "note": "Twenty-nine of forty-three checks finish under 0.2s. The default is set at 0.5s so ordinary growth is visible without a routine reading tripping it. A named ceiling overrides the default and is set from the measured cost of that check plus modest headroom, except where Bdo named an aspiration in the 2026-08-27 direction: Asset Service reference tests and repository tooling tests carry the numbers he set, which they presently exceed, so the debt is attributed rather than hidden by a ceiling drawn around it.",
+    "named": {
+      "Asset Service reference tests": 4.0,
+      "repository tooling tests": 3.0,
+      "Console Service reference tests": 4.0,
+      "MCP gateway binding": 3.0,
+      "Record Service reference tests": 2.0,
+      "Record Service independent witness": 2.0,
+      "repository hygiene": 2.0,
+      "Host Service reference tests": 1.5,
+      "participant against its baseline": 1.0,
+      "documentation reader": 1.0,
+      "kernel participant parity": 1.0,
+      "semantic cold-start task": 1.0
+    }
+  },
+  "catastrophic_check_seconds": 30.0,
+  "catastrophic_note": "One check past this refuses the run with exit 1. It is the only timing condition that blocks, and it is set far above any measured check so that host load cannot reach it: the slowest check on 2026-08-27 was 11.701s under eleven concurrent sessions. A check that reaches 30s has changed, not been crowded.",
+  "measured": {
+    "at": "2026-08-27",
+    "host": "Windows, eleven live sessions sharing one working tree",
+    "checks": 43,
+    "total_work_seconds": 37.3,
+    "wall_seconds_observed": [
+      18.7,
+      24.7
+    ],
+    "note": "Recorded so a later reader can tell a ceiling set from evidence from one set from taste. These are loaded-host numbers and are the pessimistic end; a quiet host and the hosted CI runner both come in faster."
+  }
+}

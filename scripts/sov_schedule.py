@@ -17,7 +17,7 @@ import argparse
 import json
 import sys
 
-from sovschedule import ledger, runner, surface
+from sovschedule import controlsurface, ledger, runner, surface
 from sovschedule.declaration import SCHEDULES_DIR, DeclarationError, load_all, load_declaration
 
 
@@ -150,6 +150,7 @@ def main(argv: list[str] | None = None) -> int:
     led.set_defaults(func=cmd_ledger)
     sub.add_parser("task-command").set_defaults(func=cmd_task_command)
     surface.add_commands(sub)
+    controlsurface.add_commands(sub)
     args = parser.parse_args(argv)
     return args.func(args)
 

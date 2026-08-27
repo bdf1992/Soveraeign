@@ -4,17 +4,82 @@
   "title": "Console Operator Session",
   "type": "object",
   "additionalProperties": false,
-  "required": ["session_id", "operator_id", "actor_kind", "binding_id", "opened_at", "closed_at", "lifecycle", "active_thread_id", "unread_cursor", "standing"],
+  "required": [
+    "node_id",
+    "session_id",
+    "operator_id",
+    "actor_kind",
+    "binding_id",
+    "opened_at",
+    "closed_at",
+    "lifecycle",
+    "active_thread_id",
+    "unread_cursor",
+    "standing"
+  ],
   "properties": {
-    "session_id": {"type": "string", "minLength": 1},
-    "operator_id": {"type": "string", "minLength": 1},
-    "actor_kind": {"enum": ["HUMAN", "MODEL"]},
-    "binding_id": {"type": "string", "minLength": 1, "description": "The Human Binding or Model Binding through which this operator reaches the console; a binding realizes an interface and grants no authority."},
-    "opened_at": {"type": "string", "format": "date-time"},
-    "closed_at": {"type": ["string", "null"], "format": "date-time"},
-    "lifecycle": {"enum": ["OPEN", "CLOSED"]},
-    "active_thread_id": {"type": ["string", "null"], "minLength": 1},
-    "unread_cursor": {"type": ["string", "null"], "description": "Opaque read-position marker for this operator; it conditions presentation only and is never an authority or standing input."},
-    "standing": {"enum": ["RECORDED", "ADMITTED", "RATIFIED", "EFFECTIVE"]}
+    "node_id": {
+      "type": "string",
+      "pattern": "^node:[a-z0-9][a-z0-9-]*$",
+      "description": "The node this record belongs to, as contracts/node-identity.schema.json names it. Required so a record read on its own says which node it is from; a console that holds a peer's records through a crossing must never present them as its own (decisions/0039). Added 2026-08-25: the record carried this field and the schema did not, so contract.foreign_records could not see a foreign one at all and additionalProperties:false would have rejected the honest projection."
+    },
+    "session_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "operator_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "actor_kind": {
+      "enum": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "binding_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The Human Binding or Model Binding through which this operator reaches the console; a binding realizes an interface and grants no authority."
+    },
+    "opened_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "closed_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "lifecycle": {
+      "enum": [
+        "OPEN",
+        "CLOSED"
+      ]
+    },
+    "active_thread_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1
+    },
+    "unread_cursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Opaque read-position marker for this operator; it conditions presentation only and is never an authority or standing input."
+    },
+    "standing": {
+      "enum": [
+        "RECORDED",
+        "ADMITTED",
+        "RATIFIED",
+        "EFFECTIVE"
+      ]
+    }
   }
 }

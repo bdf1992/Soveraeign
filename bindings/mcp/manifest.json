@@ -18,23 +18,22 @@
       "effect_class": "RECORD_LOCAL",
       "description": "Open a bounded session for this participant and model identity. Every later act-tier call carries the returned session id, and closing the session withdraws every grant issued under it.",
       "arguments": {
-        "participant": {
-          "type": "string",
-          "required": true
-        },
         "model_identity": {
           "type": "string",
-          "required": true
+          "required": true,
+          "principal": false
         },
         "ttl_seconds": {
           "type": "number",
-          "required": false
+          "required": false,
+          "principal": false
         }
       },
       "authority": "bootstrap",
       "requires_session": false,
       "realizes": null,
-      "undeclared_because": "The asset service implements sessions; no service manifest declares them as an operation."
+      "undeclared_because": "The asset service implements sessions; no service manifest declares them as an operation.",
+      "caller_argument": "participant"
     },
     {
       "tool": "authority_grant",
@@ -44,30 +43,34 @@
       "effect_class": "RECORD_LOCAL",
       "description": "Issue a live, expiring grant bound to the current session. The Authority layer owns the check: the store's recorded root may issue, and anyone else may only issue what one of their own live grants already covers, so a delegated grant narrows and never widens.",
       "arguments": {
-        "issuer": {
-          "type": "string",
-          "required": true
-        },
         "actor": {
           "type": "string",
-          "required": true
+          "required": true,
+          "principal": true
         },
         "capability": {
           "type": "string",
-          "required": true
+          "required": true,
+          "principal": false
         },
         "scope": {
           "type": "string",
-          "required": false
+          "required": false,
+          "principal": false
         },
         "ttl_seconds": {
           "type": "number",
-          "required": false
+          "required": false,
+          "principal": false
         }
       },
       "authority": "service-enforced",
       "realizes": null,
-      "undeclared_because": "The asset service implements grants; no service manifest declares them as an operation."
+      "undeclared_because": "The asset service implements grants; no service manifest declares them as an operation.",
+      "caller_argument": "issuer",
+      "subject_arguments": {
+        "actor": "The grantee, not the principal checked. The caller names who a grant is for; the issuer it is spent from is caller_argument and is supplied by the dispatcher. AssetService.Authority attenuates what an issuer may hand on, so naming a grantee widens nothing."
+      }
     },
     {
       "tool": "asset_ingest",
@@ -80,19 +83,18 @@
       "arguments": {
         "path": {
           "type": "string",
-          "required": true
+          "required": true,
+          "principal": false
         },
         "label": {
           "type": "string",
-          "required": true
-        },
-        "actor": {
-          "type": "string",
-          "required": true
+          "required": true,
+          "principal": false
         }
       },
       "authority": "gateway",
-      "realizes": "asset.ingest-asset"
+      "realizes": "asset.ingest-asset",
+      "caller_argument": "actor"
     },
     {
       "tool": "asset_search",
@@ -104,11 +106,13 @@
       "arguments": {
         "query": {
           "type": "string",
-          "required": true
+          "required": true,
+          "principal": false
         }
       },
       "realizes": null,
-      "undeclared_because": "Reads the search projection. The asset manifest declares read-asset, which is not the same operation."
+      "undeclared_because": "Reads the search projection. The asset manifest declares read-asset, which is not the same operation. requires_session is stated rather than defaulted: the read tier used to return before the precheck ran, so the default never reached it, and making every tier cross the precheck on 2026-08-25 would otherwise have started demanding a session this read has never needed.",
+      "requires_session": false
     },
     {
       "tool": "observe_verify",
@@ -130,9 +134,9 @@
       "description": "Every entry in the operational journal, in append order, with its digest chain.",
       "arguments": {},
       "realizes": "record.read-entry",
-      "authority": "read:journal",
       "requires_session": false,
-      "note": "Withheld on 2026-08-24 as the reversible default when the build fired BACK_OFFICE_EXPOSED, and restored the same day: Bdo ruled that reading authorized operational history is an operator act, and the office table was the wrong side. decisions/0052."
+      "note": "Withheld on 2026-08-24 as the reversible default when the build fired BACK_OFFICE_EXPOSED, and restored the same day: Bdo ruled that reading authorized operational history is an operator act, and the office table was the wrong side. decisions/0052. That ruling said the read still costs the read:journal grant and the gateway did not ask for it until 2026-08-25, because the read tier returned before the precheck ran. node_authority names the capability contracts/capability-offices.json already declares for record.read-entry; the gateway checks it against this node's own authority store, scoped to the node, because the endpoint returns the journal entire.",
+      "node_authority": "read:journal"
     },
     {
       "tool": "console_operations",
@@ -141,21 +145,20 @@
       "operation": "discover-operations",
       "effect_class": "RECORD_LOCAL",
       "description": "What can be asked of this node, and what one operator may currently ask. Every declared operation with where it is reachable, what authority it costs, what it acts on, what must already be true, what it commits and how it refuses - read from the capability projection the repository rebuilds and checks, never from a list beside it.",
-      "arguments": {
-        "operator_id": {
-          "type": "string",
-          "required": false
-        }
-      },
+      "arguments": {},
       "realizes": "console.discover-operations",
       "requires_session": false,
-      "note": "observe rather than read, so the crossing is journalled. A participant asking what it may do is an act the node should be able to account for afterwards (GROUND-007)."
+      "note": "observe rather than read, so the crossing is journalled. A participant asking what it may do is an act the node should be able to account for afterwards (GROUND-007). It takes no arguments: the operator is the caller the gateway was handed, and the answer costs the read:session grant the office table declares. Bdo ruled on 2026-08-25 that this operation checks the authority it declares, which removed the anonymous reading decisions/0053 recorded.",
+      "caller_argument": "operator_id"
     }
   ],
   "withheld_endpoints": [],
   "authority_modes": {
     "gateway": "The gateway requires the caller to hold the declared capability.",
     "service-enforced": "The service owns the check. The gateway adds no second, stricter rule it has no bootstrap for.",
-    "bootstrap": "Establishes the session the other endpoints require, so it cannot itself require one."
+    "bootstrap": "Establishes the session the other endpoints require, so it cannot itself require one.",
+    "node": "The gateway requires the caller to hold the capability the office table declares, checked against this node's authority store rather than the Asset Service's. Named by node_authority on the endpoint.",
+    "note_caller_argument": "caller_argument names the argument that carries the principal a service checks. The dispatcher supplies it from the authenticated caller and it is not a declared input, so a caller cannot name a different principal. Added 2026-08-25 after authority_grant was found taking its issuer from caller arguments.",
+    "note_subject_arguments": "subject_arguments names declared arguments that carry a principal the caller is naming rather than claiming to be, each with the reason it is not the caller. Every declared argument states principal true or false, and bindings/mcp/manifest_gate.audit_handlers refuses a manifest whose statement disagrees with the handler's own type annotation, or that omits either."
   }
 }

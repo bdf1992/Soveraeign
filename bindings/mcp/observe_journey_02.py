@@ -1,7 +1,13 @@
 """Walk JOURNEY-02 through the MCP binding, measure it, and record what came back.
 
-A fresh participant, no session, no grant. It asks the node what it can do, then reads the
-journal back through a different endpoint to see what the crossing left behind.
+A participant with no session and one grant. It asks the node what it can do, then reads
+the journal back through a different endpoint to see what the crossing left behind.
+
+The grant is the change Bdo's 2026-08-25 ruling made to this walk. `console.discover-
+operations` declares `read:session` and, until that ruling, checked nothing, so the
+walk recorded a participant holding nothing getting an answer. The operation now checks
+what it declares, so the node's root issues `sov` that one grant before the crossing and
+the observation records it rather than reporting a cost it no longer has.
 
 Two artifacts come out of one run:
 
@@ -45,6 +51,14 @@ RECEIPT = HERE / "observations" / "journey-02-receipt.json"
 #: once, and every broader intention containing it is a view rather than a second
 #: expenditure.
 SERVES = "console.discover-operations"
+#: Who walks it, and the one grant the operation costs. Issued as setup before the
+#: measured crossing, so the seconds below are the answer and not the permit.
+WALKER = "sov"
+REQUIRED_GRANT = "read:session"
+#: Reading the journal back is a second crossing with its own declared cost. It is
+#: setup for the observation, not part of the measured one.
+JOURNAL_GRANT = "read:journal"
+NODE = "node:local"
 
 
 def _digest(payload: dict) -> str:
@@ -57,7 +71,7 @@ def _stamp(seconds: float) -> str:
 
 
 def _receipt(answer: dict, journal: list[dict], elapsed: float,
-             started: float) -> dict:
+             started: float, grant_id: str) -> dict:
     """A schema-valid receipt for the crossing, carrying what it served and spent."""
     body = {
         "receipt_id": f"receipt_{journal[-1]['entry_digest'][:16]}",
@@ -67,10 +81,12 @@ def _receipt(answer: dict, journal: list[dict], elapsed: float,
         "interface_id": "bindings/mcp:console_operations",
         "input_addresses": ["contracts/fixtures/capability-map.reference.json"],
         "input_state_digest": answer["capability_revision"],
-        "authority_grant_ids": [],
+        "authority_grant_ids": [grant_id],
         "precondition_results": [
             {"precondition": "session_live", "required": False,
              "note": "the manifest declares this endpoint requires_session false"},
+            {"precondition": "live_matching_grant", "result": "SATISFIED",
+             "note": f"{WALKER} holds {REQUIRED_GRANT} scoped to {WALKER}"},
             {"precondition": "capability_map_fresh", "result": "UNVERIFIED",
              "note": "the gateway read the projection and did not rebuild it"},
         ],
@@ -102,9 +118,14 @@ def main() -> int:
         gateway = Gateway(Path(tmp) / "state")
         try:
             tools = {tool["name"] for tool in gateway.tools()}
+            # Setup, not the crossing: the node's root records the one grant the
+            # operation declares. The first grant against an empty journal also
+            # records the root issuer (services/console .. authority.py, Bootstrap).
+            grant_id = gateway.console.grant(WALKER, REQUIRED_GRANT, WALKER, "Bdo")["grant_id"]
+            gateway.console.grant(WALKER, JOURNAL_GRANT, NODE, "Bdo")
             started = time.time()
             mark = time.perf_counter()
-            answer = gateway.call("console_operations", {"operator_id": "sov"}, "sov")
+            answer = gateway.call("console_operations", {}, WALKER)
             elapsed = time.perf_counter() - mark
             entries = gateway.call("record_entries", {}, "sov")
         finally:
@@ -118,7 +139,9 @@ def main() -> int:
     observation = {
         "observation": "JOURNEY-02 walked through the MCP binding by a fresh participant",
         "walked_by": "gateway.call, bindings/mcp/gateway.py",
-        "participant": {"actor": "sov", "session": None, "grants_held": 0},
+        "participant": {"actor": WALKER, "session": None, "grants_held": 2,
+                        "grants": [f"{REQUIRED_GRANT} scoped to {WALKER}",
+                                   f"{JOURNAL_GRANT} scoped to {NODE}"]},
         "tool_surface": sorted(tools),
         "capability_revision": answer["capability_revision"],
         "counts": answer["counts"],
@@ -135,6 +158,12 @@ def main() -> int:
             "that any reachable capability works; only that the node declares it and the "
             "projection records a transport",
             "that the capability map is current, which nobody checked on this call",
+            "that a participant holding nothing can get an answer. It cannot any more: "
+            "the operation checks the read:session it declares, and this walk issued "
+            "that grant as setup before measuring the crossing",
+            "that reading the journal back is free. It costs read:journal over the "
+            "node, checked against the node's own authority store since 2026-08-25; "
+            "the walk holds that grant too and only the discovery crossing is timed",
             "that this observation is independent of the gateway - it was taken by "
             "calling the gateway. The journal read is a second endpoint, not a second "
             "observer, and settling this needs the Observation Service (GROUND-010)",
@@ -145,7 +174,7 @@ def main() -> int:
     DISCOVERY.write_text(json.dumps(observation, indent=2, ensure_ascii=False) + "\n",
                          encoding="utf-8", newline="\n")
     RECEIPT.write_text(
-        json.dumps(_receipt(answer, crossing, elapsed, started), indent=2,
+        json.dumps(_receipt(answer, crossing, elapsed, started, grant_id), indent=2,
                    ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
 
     print(f"declared {answer['counts']['declared']}, "

@@ -54,6 +54,29 @@ def _console(*args: str) -> dict[str, Any]:
     return json.loads(result.stdout)
 
 
+#: What this binding spends, per contracts/capability-offices.json. Bdo ruled on
+#: 2026-08-25 that the session lifecycle and the session read check the authority
+#: they declare, so the operator's own store records the operator's own grants
+#: before the hook uses them. Recording a grant on your own node is not the hook
+#: acquiring authority; issuing there costs `grant:authority`, and if this operator
+#: does not hold it the calls below refuse and the session is briefed without them.
+NEEDED = ("open:session", "close:session", "read:session")
+
+
+def _ensure_grants() -> None:
+    """Record the operator's own session grants if they are not live yet."""
+    try:
+        live = _console("grants", "--reader", OPERATOR,
+                        "--operator", OPERATOR)["live_grants"]
+        held = {record["capability"] for record in live}
+    except Exception:  # a store with no permits office read for this operator yet
+        held = set()
+    for capability in NEEDED:
+        if capability not in held:
+            _console("grant", "--operator", OPERATOR, "--capability", capability,
+                     "--scope", OPERATOR, "--granted-by", OPERATOR)
+
+
 def _bindings() -> dict[str, str]:
     """Map Claude Code session ids to console session ids.
 
@@ -118,6 +141,7 @@ def _render(context: dict[str, Any], console_session: str) -> str:
 def start(event: dict[str, Any]) -> str:
     """Open or resume the console session for this host session, and brief it."""
     host_session = event.get("session_id", "unknown")
+    _ensure_grants()
     bindings = _bindings()
     console_session = bindings.get(host_session)
     if console_session is None:
@@ -125,7 +149,7 @@ def start(event: dict[str, Any]) -> str:
                                    "--actor-kind", "MODEL",
                                    "--binding", BINDING_ID)["session_id"]
         _remember(host_session, console_session)
-    return _render(_console("session-context", "--operator", OPERATOR), console_session)
+    return _render(_console("session-context", "--reader", OPERATOR), console_session)
 
 
 def end(event: dict[str, Any]) -> str:
@@ -133,7 +157,8 @@ def end(event: dict[str, Any]) -> str:
     console_session = _bindings().get(event.get("session_id", ""))
     if console_session is None:
         return ""
-    closed = _console("close-session", "--session", console_session)
+    closed = _console("close-session", "--operator", OPERATOR,
+                      "--session", console_session)
     return f"Console session {console_session} closed at cursor {closed['unread_cursor'][:16]}."
 
 

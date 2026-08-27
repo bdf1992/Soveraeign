@@ -17,15 +17,18 @@ from __future__ import annotations
 
 from typing import Any
 
+from soveraeign_console_service import reads
+
 CHANNEL_FIELDS = ("node_id", "channel_id", "name", "domain", "opened_by", "opened_at",
                   "standing")
 THREAD_FIELDS = ("node_id", "thread_id", "channel_id", "title", "opened_by", "opened_at",
                  "lifecycle", "pinned_address", "pinned_digest", "standing")
-SESSION_FIELDS = ("session_id", "operator_id", "actor_kind", "binding_id", "opened_at",
-                  "closed_at", "lifecycle", "active_thread_id", "unread_cursor", "standing")
-POST_FIELDS = ("post_id", "thread_id", "actor_id", "actor_kind", "content_address",
-               "content_digest", "mentions", "proposal_id", "posted_at", "receipt_id",
-               "standing")
+SESSION_FIELDS = ("node_id", "session_id", "operator_id", "actor_kind", "binding_id",
+                  "opened_at", "closed_at", "lifecycle", "active_thread_id",
+                  "unread_cursor", "standing")
+POST_FIELDS = ("node_id", "post_id", "thread_id", "actor_id", "actor_kind",
+               "content_address", "content_digest", "mentions", "proposal_id",
+               "posted_at", "receipt_id", "standing")
 PUBLICATION_FIELDS = ("node_id", "publication_id", "thread_id", "visibility", "lifecycle",
                       "published_by", "published_at", "withdrawn_at", "standing")
 
@@ -81,17 +84,29 @@ def published_threads(projected: dict[str, list[dict[str, Any]]]) -> list[dict[s
     return sorted(published, key=lambda record: record["thread_id"])
 
 
+def local_records(projected: dict[str, list[dict[str, Any]]],
+                  node_id: str) -> dict[str, list[dict[str, Any]]]:
+    """One node's view of a projection, for a caller that must not see a peer's records.
+
+    Applied after `records` rather than inside it, so `foreign_records` still reads a
+    projection that can contain a contradiction to report.
+    """
+    return {group: [record for record in rows if record.get("node_id") == node_id]
+            for group, rows in projected.items()}
+
+
 def foreign_records(projected: dict[str, list[dict[str, Any]]], node_id: str) -> list[str]:
     """Every projected record that does not belong to ``node_id``.
 
     A journal that carries records from two nodes is not corrupt; once a crossing
     exists it is the expected shape (decisions/0039). What would be a defect is
-    presenting a peer's channel or thread as this node's own, so the contradiction
-    is reported here rather than raised. A thread whose ``node_id`` disagrees with
-    its channel's is named too: one of the two is wrong and neither is authoritative
-    over the other.
+    presenting a peer's record as this node's own, so the contradiction is reported
+    here rather than raised. A record whose ``node_id`` disagrees with its container's
+    is named too - a thread against its channel, a post against its thread: one of the
+    two is wrong and neither is authoritative over the other.
     """
     by_channel = {record["channel_id"]: record for record in projected["channels"]}
+    by_thread = {record["thread_id"]: record for record in projected["threads"]}
     foreign: list[str] = []
     for record in projected["channels"]:
         if record["node_id"] != node_id:
@@ -104,6 +119,22 @@ def foreign_records(projected: dict[str, list[dict[str, Any]]], node_id: str) ->
             foreign.append(
                 f"thread {record['thread_id']}: claims node {record['node_id']} but its "
                 f"channel {record['channel_id']} claims {channel['node_id']}")
+    # Posts and sessions were invisible here until 2026-08-25: they carried a node on
+    # the journal record and the declared projection dropped it, so the one detector
+    # this repository has for the contradiction could not see the two record kinds a
+    # foreign write actually produces.
+    for record in projected["operator_sessions"]:
+        if record["node_id"] != node_id:
+            foreign.append(
+                f"operator session {record['session_id']}: belongs to {record['node_id']}")
+    for record in projected["posts"]:
+        if record["node_id"] != node_id:
+            foreign.append(f"post {record['post_id']}: belongs to {record['node_id']}")
+        thread = by_thread.get(record["thread_id"])
+        if thread is not None and thread["node_id"] != record["node_id"]:
+            foreign.append(
+                f"post {record['post_id']}: claims node {record['node_id']} but its "
+                f"thread {record['thread_id']} claims {thread['node_id']}")
     return foreign
 
 
@@ -129,6 +160,12 @@ def records(entries: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
     `entries` must come from `RecordService.reconstruct`, which verifies the digest
     chain first. Passing an unverified read would project a rewritten history as if
     it were sound.
+
+    Deliberately unfiltered. `foreign_records` is the one detector this repository
+    has for a peer's record presented as this node's own, and it reads this output;
+    narrowing here on 2026-08-25 made it structurally unable to fire in every
+    production path, so the same change widened a verifier and blinded it. A caller
+    that wants one node's view narrows afterwards with `local_records`.
     """
     receipts = receipt_index(entries)
     folded: dict[str, dict[str, dict[str, Any]]] = {"channel": {}, "thread": {}, "session": {},

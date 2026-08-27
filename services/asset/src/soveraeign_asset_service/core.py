@@ -33,6 +33,7 @@ from soveraeign_asset_service.authority import (
 from soveraeign_asset_service.identity import ORIGINAL, REVISION, Identity
 from soveraeign_asset_service.librarian import Librarian
 from soveraeign_asset_service.organization import Organization, OrganizationRefused
+from soveraeign_asset_service.reads import ReadSurface
 from soveraeign_asset_service.projections import Projections
 from soveraeign_asset_service.recording import ReaderDeclaration
 from soveraeign_asset_service.runs import DEFAULT_LEASE_TTL_SECONDS, Runs, StaleLease
@@ -73,7 +74,7 @@ CREATE TABLE IF NOT EXISTS retractions(
 """
 
 
-class AssetService:
+class AssetService(ReadSurface):
     """The asset lifecycle: capture, propose, ratify, derive, observe, retract."""
 
     def __init__(self, root: str | Path, clock: Callable[[], float] = time.time):
@@ -254,31 +255,14 @@ class AssetService:
         self.db.commit()
         return receipt
 
-    # -- projections and reads --------------------------------------------
+    # -- projections and crossings ----------------------------------------
+    #
+    # The read-only delegations that used to sit here live in `reads.ReadSurface`,
+    # mixed into this class. What remains is what writes.
 
     def rebuild_projections(self, actor: str = "projector") -> dict[str, int]:
         """Derive both views again from ratified records."""
         return self.projections.rebuild(actor)
-
-    def history(self, asset_id: str) -> list[dict[str, Any]]:
-        """Every version of one asset, oldest first."""
-        return self.identity.history(asset_id)
-
-    def duplicates(self) -> list[dict[str, Any]]:
-        """Distinct assets whose newest versions share one payload digest."""
-        return self.identity.duplicates()
-
-    def relationships(self, asset_id: str) -> list[dict[str, Any]]:
-        """Asserted relations touching this asset, in either direction."""
-        return self.identity.relationships(asset_id)
-
-    def search(self, query: str) -> list[str]:
-        """Assets whose projected text contains the query."""
-        return self.projections.search(query)
-
-    def neighbors(self, asset_id: str) -> list[dict[str, Any]]:
-        """Projected edges touching an asset."""
-        return self.projections.neighbors(asset_id)
 
     def federation_cross(self, actor: str, asset_id: str) -> str:
         """Refuse a federation crossing while no second node is configured."""
@@ -286,14 +270,6 @@ class AssetService:
                                 actor, {"reason": "UNCONFIGURED", "node_two": None})
         self.db.commit()
         return receipt
-
-    def receipts(self) -> list[dict[str, Any]]:
-        """Every receipt in write order."""
-        return self.store.receipts()
-
-    def library_report(self) -> dict[str, Any]:
-        """Every collection judged against its type, plus the assets nobody filed."""
-        return self.librarian.report()
 
 
 __all__ = ["AssetService", "AuthorityRefused", "OrganizationRefused", "StaleLease"]

@@ -33,6 +33,7 @@ def build_parser() -> argparse.ArgumentParser:
     search = sub.add_parser("search", help="assets whose projected text contains a query")
     search.add_argument("query")
     sub.add_parser("rebuild", help="derive the search and graph projections again")
+    sub.add_parser("drift", help="name every projected row that disagrees with the ledger")
     sub.add_parser("receipts", help="every receipt in write order")
 
     grant = sub.add_parser("grant", help="issue a live grant (bootstrap; see OPEN-SEAMS S14)")
@@ -80,6 +81,8 @@ def dispatch(service: AssetService, args: argparse.Namespace) -> object:
         return service.search(args.query)
     if args.command == "rebuild":
         return service.rebuild_projections()
+    if args.command == "drift":
+        return service.projection_drift()
     if args.command == "receipts":
         return service.receipts()
     if args.command == "grant":

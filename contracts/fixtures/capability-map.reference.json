@@ -15,7 +15,7 @@
     "services/registry/contracts/service.json",
     "contracts/capability-offices.json"
   ],
-  "input_state_digest": "a7d9948482ddb9b5241223c94d90c7313e670b51e7e8d9660eaf765d89f635fe",
+  "input_state_digest": "db943119f2f6f6fc292ed31a2d973aec47eb0747f1bc11cc88d5818246170f60",
   "capabilities": [
     {
       "capability_id": "asset.add-member",
@@ -465,6 +465,53 @@
       "shape": {
         "logical_endpoint": "sov://asset/read-library-conformance",
         "subject": "library-conformance",
+        "crud": "READ",
+        "requirement": "PROD-I-2",
+        "preconditions": [
+          "authoritative_records_readable"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "UNREADABLE"
+        ]
+      }
+    },
+    {
+      "capability_id": "asset.read-projection-drift",
+      "service_id": "asset",
+      "operation": "read-projection-drift",
+      "office": "BACK",
+      "counter": "inspectorate",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:projection",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "asset:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ],
+      "shape": {
+        "logical_endpoint": "sov://asset/read-projection-drift",
+        "subject": "asset-relationship",
         "crud": "READ",
         "requirement": "PROD-I-2",
         "preconditions": [

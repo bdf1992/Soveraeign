@@ -180,6 +180,21 @@
       ]
     },
     {
+      "operation": "read-projection-drift",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://asset/read-projection-drift",
+      "subject": "asset-relationship",
+      "crud": "READ",
+      "requirement": "PROD-I-2",
+      "preconditions": [
+        "authoritative_records_readable"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "UNREADABLE"
+      ]
+    },
+    {
       "operation": "request-derivative",
       "standing": "BUILT",
       "logical_endpoint": "sov://asset/request-derivative",

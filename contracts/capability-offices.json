@@ -162,6 +162,16 @@
         "MODEL"
       ]
     },
+    "asset.read-projection-drift": {
+      "office": "BACK",
+      "counter": "inspectorate",
+      "required_authority": "read:projection",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
     "asset.read-shared-custody": {
       "office": "FRONT",
       "counter": "operator-desk",
@@ -734,6 +744,70 @@
         "MODEL"
       ]
     },
+    "identity.deliver-challenge": {
+      "office": "BACK",
+      "counter": "permits-office",
+      "required_authority": "deliver:challenge",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "SYSTEM"
+      ]
+    },
+    "identity.enroll-recovery": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "enroll:recovery",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN"
+      ]
+    },
+    "identity.mint-challenge": {
+      "office": "BACK",
+      "counter": "permits-office",
+      "required_authority": "mint:challenge",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "SYSTEM"
+      ]
+    },
+    "identity.present-challenge": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "present:challenge",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ]
+    },
+    "identity.redeem-recovery": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "redeem:recovery",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN"
+      ]
+    },
+    "identity.report-unenrolled": {
+      "office": "BACK",
+      "counter": "permits-office",
+      "required_authority": "read:recovery",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "SYSTEM"
+      ]
+    },
+    "identity.revoke-recovery": {
+      "office": "BACK",
+      "counter": "permits-office",
+      "required_authority": "revoke:recovery",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN"
+      ]
+    },
     "observation.attest-observation": {
       "office": "BACK",
       "counter": "inspectorate",
@@ -1117,6 +1191,15 @@
         "SYSTEM"
       ]
     },
+    "record.export-journal": {
+      "office": "BACK",
+      "counter": "record",
+      "required_authority": "export:journal",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "SYSTEM"
+      ]
+    },
     "record.read-entry": {
       "office": "FRONT",
       "counter": "operator-desk",
@@ -1150,6 +1233,24 @@
       "office": "BACK",
       "counter": "record",
       "required_authority": "read:journal",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "SYSTEM"
+      ]
+    },
+    "record.restore-journal": {
+      "office": "BACK",
+      "counter": "record",
+      "required_authority": "restore:journal",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "SYSTEM"
+      ]
+    },
+    "record.verify-export": {
+      "office": "BACK",
+      "counter": "record",
+      "required_authority": "verify:export",
       "effect_class": "RECORD_LOCAL",
       "actor_kinds": [
         "SYSTEM"
@@ -1280,97 +1381,6 @@
       "effect_class": "RECORD_LOCAL",
       "actor_kinds": [
         "HUMAN"
-      ]
-    },
-    "identity.mint-challenge": {
-      "office": "BACK",
-      "counter": "permits-office",
-      "required_authority": "mint:challenge",
-      "effect_class": "RECORD_LOCAL",
-      "actor_kinds": [
-        "SYSTEM"
-      ]
-    },
-    "identity.deliver-challenge": {
-      "office": "BACK",
-      "counter": "permits-office",
-      "required_authority": "deliver:challenge",
-      "effect_class": "RECORD_LOCAL",
-      "actor_kinds": [
-        "SYSTEM"
-      ]
-    },
-    "identity.present-challenge": {
-      "office": "FRONT",
-      "counter": "operator-desk",
-      "required_authority": "present:challenge",
-      "effect_class": "RECORD_LOCAL",
-      "actor_kinds": [
-        "HUMAN",
-        "MODEL"
-      ]
-    },
-    "identity.enroll-recovery": {
-      "office": "FRONT",
-      "counter": "operator-desk",
-      "required_authority": "enroll:recovery",
-      "effect_class": "RECORD_LOCAL",
-      "actor_kinds": [
-        "HUMAN"
-      ]
-    },
-    "identity.redeem-recovery": {
-      "office": "FRONT",
-      "counter": "operator-desk",
-      "required_authority": "redeem:recovery",
-      "effect_class": "RECORD_LOCAL",
-      "actor_kinds": [
-        "HUMAN"
-      ]
-    },
-    "identity.revoke-recovery": {
-      "office": "BACK",
-      "counter": "permits-office",
-      "required_authority": "revoke:recovery",
-      "effect_class": "RECORD_LOCAL",
-      "actor_kinds": [
-        "HUMAN"
-      ]
-    },
-    "identity.report-unenrolled": {
-      "office": "BACK",
-      "counter": "permits-office",
-      "required_authority": "read:recovery",
-      "effect_class": "RECORD_LOCAL",
-      "actor_kinds": [
-        "SYSTEM"
-      ]
-    },
-    "record.export-journal": {
-      "office": "BACK",
-      "counter": "record",
-      "required_authority": "export:journal",
-      "effect_class": "RECORD_LOCAL",
-      "actor_kinds": [
-        "SYSTEM"
-      ]
-    },
-    "record.verify-export": {
-      "office": "BACK",
-      "counter": "record",
-      "required_authority": "verify:export",
-      "effect_class": "RECORD_LOCAL",
-      "actor_kinds": [
-        "SYSTEM"
-      ]
-    },
-    "record.restore-journal": {
-      "office": "BACK",
-      "counter": "record",
-      "required_authority": "restore:journal",
-      "effect_class": "RECORD_LOCAL",
-      "actor_kinds": [
-        "SYSTEM"
       ]
     }
   },

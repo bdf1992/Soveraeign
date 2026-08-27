@@ -122,7 +122,7 @@ whenever they disagree.
 - Conformance oracle (`conformance/`): executable, 20 controlled cases, every
   defeating fixture fails as declared. Participant binding still open.
 - Harness (`.claude/`): 5 agent definitions (four roles and the Sov binding),
-  22 skills, 20 workflows, the epic-tree walk, and scheduled-run gates with a
+  24 skills, 22 workflows, the epic-tree walk, and scheduled-run gates with a
   kernel-envelope ledger.
   Every shipped schedule is disabled. Executable harness workflows are
   admissible before their defeating fixtures exist, for host plumbing only
@@ -212,7 +212,7 @@ engineering baseline. Day two added the SDLC loop, Console, scheduled runs,
 Sov, the federation harness, defeating fixtures for receipts and proofing,
 LF line-ending enforcement, and the stack certification. At the end of day two
 the record held 26 commits, 17 decision records and 8 reports; it now holds
-395 commits, 66 decision records and 24 reports. The
+461 commits, 79 decision records and 25 reports. The
 first independently witnessed work landed on 2026-08-25; nothing is ratified.
 
 Those two sentences are checked. `python scripts/sov_snapshot.py` grades the

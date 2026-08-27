@@ -48,11 +48,16 @@ FIELD = re.compile(r"^([a-z0-9_]+_status):\s*(\S+)\s*$")
 # path-like, in a list item, in a flow mapping, in any case, at any indent, with or
 # without a space before the colon. Requiring something before the underscore stops it
 # firing on a bare `status:` key, which is not a status field and which no entry could
-# ever match. It does NOT take the exotic forms - an anchored or tagged key, the
-# explicit-key `? ` form, a leading BOM or zero-width space, or a key containing a
-# space, colon, plus, at, percent or parenthesis. None occurs in STATUS.yaml, and since
-# no standing is derived any longer the worst case is a field going untyped rather than
-# falsely typed. Saying so beats a sentence that claims the whole class.
+# ever match.
+#
+# What it misses follows from the pattern rather than from a list of examples: a key
+# body is `[A-Za-z0-9_.\-/]`, so any character outside ASCII letters, digits,
+# underscore, dot, hyphen and slash makes a valid YAML `_status` key invisible to both
+# readers - which includes every non-ASCII letter. Naming a sample of those characters
+# would be the same defect this module keeps paying for: an enumeration that is short
+# by whatever nobody listed. None of them occurs in STATUS.yaml, a full YAML parse
+# agrees exactly with the strict reader, and since no standing is derived the worst
+# case is a field going untyped rather than falsely typed.
 LOOSE = re.compile(r"^[\s\-{\[,]*[\"']?[A-Za-z0-9][A-Za-z0-9_.\-/]*_[Ss][Tt][Aa][Tt][Uu][Ss][\"']?\s*:")
 
 

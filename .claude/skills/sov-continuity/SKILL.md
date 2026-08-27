@@ -48,18 +48,25 @@ refused, `3` unknown record, `1` usage error.
 Ask the service what it can do rather than trusting this file to stay current:
 
 ```
-... cli operations
+... cli operations --operator <operator>
 ```
+
+The operator is required and the answer costs a live `read:session` grant scoped
+to that operator. Bdo ruled on 2026-08-25 that every built console operation
+checks the authority it declares, so asking anonymously is refused rather than
+answered narrowly.
 
 ## Posting a message forward
 
 ```
-... cli post --session <console-session> --thread <thread> --body "..." --mention Bdo
+... cli post --operator <operator> --session <console-session> \n      --thread <thread> --body "..." --mention Bdo
 ```
 
-The console session id is in the session-start briefing. `--mention` names an
-operator so the post surfaces for them specifically; it changes nothing about
-authority.
+The console session id is in the session-start briefing. `--operator` must be the
+session's own operator: holding a session id is not the same as being the operator
+it belongs to, and since 2026-08-25 the service refuses the mismatch rather than
+signing the post with the owner's name. `--mention` names an operator so the post
+surfaces for them specifically; it changes nothing about authority.
 
 **A post that makes a claim needs a proposal.** A `MODEL` post with `--claims`
 and no `--proposal-id` is refused with `CLAIM_WITHOUT_PROPOSAL`, and the refusal
@@ -72,16 +79,20 @@ Three ordinary refusals, all of them recorded:
 
 | Reason code | What actually happened |
 | --- | --- |
-| `NO_LIVE_GRANT` | This operator has no live `post` grant for that thread. Bdo grants it; you cannot grant it to yourself. |
+| `NO_LIVE_GRANT` | This operator has no live grant for what it asked - `post:message` for a post, `read:thread` for a read, `read:session` for discovery or continuity. Bdo grants it; you cannot grant it to yourself, and since 2026-08-25 the service refuses the attempt rather than recording it. The message names the capability and not the scope, because a scope is an operator id, a channel or a thread and a caller holding nothing should not learn one. Ask Bdo which scope you need. |
+| `ACTOR_ATTRIBUTION_MISMATCH` | The session named is not yours. Holding a session id is not being its operator. |
 | `SESSION_CLOSED` | The console session ended. Open a new one. |
 | `THREAD_ARCHIVED` | That thread is closed to new posts. Open a new thread. |
 
 ## Reading
 
 ```
-... cli read-thread --thread <thread> --binding claude-code
-... cli session-context --operator <operator>
+... cli read-thread --operator <operator> --thread <thread> --binding claude-code
+... cli session-context --reader <operator>
 ```
+
+Both name who is reading, and both cost a grant: `read:thread` scoped to that
+thread, and `read:session` scoped to that operator.
 
 `read-thread` returns posts in append order with a content address and digest
 each. Read a body with the address under `.local/console/`. A post is never

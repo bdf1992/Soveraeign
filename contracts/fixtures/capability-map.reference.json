@@ -15,7 +15,7 @@
     "services/registry/contracts/service.json",
     "contracts/capability-offices.json"
   ],
-  "input_state_digest": "0065fbe6d83768a79cbf410acf38476106b4161de4d3473e7dd1e71ff83f16d9",
+  "input_state_digest": "a7d9948482ddb9b5241223c94d90c7313e670b51e7e8d9660eaf765d89f635fe",
   "capabilities": [
     {
       "capability_id": "asset.add-member",
@@ -957,13 +957,17 @@
         "crud": "SUPERSEDE",
         "requirement": "PROD-I-6",
         "preconditions": [
-          "thread_exists",
-          "session_live"
+          "live_matching_grant",
+          "local_node_record",
+          "session_live",
+          "thread_exists"
         ],
         "commit": "COMMITTED",
         "refusals": [
+          "NO_LIVE_GRANT",
           "SESSION_NOT_LIVE",
-          "STALE_STATE"
+          "STALE_STATE",
+          "UNKNOWN_RECORD"
         ]
       }
     },
@@ -1006,13 +1010,17 @@
         "crud": "SUPERSEDE",
         "requirement": "PROD-I-6",
         "preconditions": [
-          "session_live",
-          "declared_actor"
+          "declared_actor",
+          "live_matching_grant",
+          "local_node_record",
+          "session_live"
         ],
         "commit": "COMMITTED",
         "refusals": [
+          "NO_LIVE_GRANT",
           "SESSION_NOT_LIVE",
-          "STALE_STATE"
+          "STALE_STATE",
+          "UNKNOWN_RECORD"
         ]
       }
     },
@@ -1057,13 +1065,17 @@
         "crud": "READ",
         "requirement": "PROD-I-6",
         "preconditions": [
-          "session_live",
-          "capability_map_fresh"
+          "capability_map_fresh",
+          "capability_map_readable",
+          "live_matching_grant",
+          "session_live"
         ],
         "commit": "DERIVED",
         "refusals": [
+          "MISSING_PRECONDITION",
+          "NO_LIVE_GRANT",
           "SESSION_NOT_LIVE",
-          "MISSING_PRECONDITION"
+          "UNREADABLE"
         ]
       }
     },
@@ -1105,14 +1117,15 @@
         "crud": "CREATE",
         "requirement": "PROD-I-5",
         "preconditions": [
-          "session_live",
           "declared_capability",
           "declared_scope",
-          "issuer_holds_authority"
+          "issuer_holds_authority",
+          "live_matching_grant",
+          "session_live"
         ],
         "commit": "COMMITTED",
         "refusals": [
-          "AUTHORITY_REFUSED",
+          "NO_LIVE_GRANT",
           "SESSION_NOT_LIVE"
         ]
       }
@@ -1202,10 +1215,12 @@
         "crud": "READ",
         "requirement": "PROD-I-5",
         "preconditions": [
+          "live_matching_grant",
           "session_live"
         ],
         "commit": "DERIVED",
         "refusals": [
+          "NO_LIVE_GRANT",
           "SESSION_NOT_LIVE"
         ]
       }
@@ -1342,10 +1357,12 @@
         "crud": "READ",
         "requirement": "PROD-I-6",
         "preconditions": [
+          "live_matching_grant",
           "local_node_record"
         ],
         "commit": "DERIVED",
         "refusals": [
+          "NO_LIVE_GRANT",
           "SESSION_NOT_LIVE"
         ]
       }
@@ -1435,13 +1452,15 @@
         "crud": "CREATE",
         "requirement": "PROD-I-6",
         "preconditions": [
-          "session_live",
-          "declared_channel_name"
+          "declared_channel_name",
+          "live_matching_grant",
+          "session_live"
         ],
         "commit": "COMMITTED",
         "refusals": [
-          "SESSION_NOT_LIVE",
-          "INCOMPLETE_PROPOSAL"
+          "INCOMPLETE_PROPOSAL",
+          "NO_LIVE_GRANT",
+          "SESSION_NOT_LIVE"
         ]
       }
     },
@@ -1484,12 +1503,14 @@
         "crud": "CREATE",
         "requirement": "PROD-I-6",
         "preconditions": [
+          "declared_actor_kind",
           "declared_participant",
-          "declared_actor_kind"
+          "live_matching_grant"
         ],
         "commit": "COMMITTED",
         "refusals": [
           "INCOMPLETE_PROPOSAL",
+          "NO_LIVE_GRANT",
           "SESSION_NOT_LIVE"
         ]
       }
@@ -1534,13 +1555,19 @@
         "requirement": "PROD-I-6",
         "preconditions": [
           "channel_exists",
-          "session_live",
-          "declared_subject"
+          "declared_subject",
+          "live_matching_grant",
+          "local_node_record",
+          "session_live"
         ],
         "commit": "COMMITTED",
         "refusals": [
+          "FOREIGN_NODE_RECORD",
+          "INCOMPLETE_PROPOSAL",
+          "NO_LIVE_GRANT",
+          "PIN_INCOMPLETE",
           "SESSION_NOT_LIVE",
-          "INCOMPLETE_PROPOSAL"
+          "UNKNOWN_RECORD"
         ]
       }
     },
@@ -1583,14 +1610,24 @@
         "crud": "CREATE",
         "requirement": "PROD-I-6",
         "preconditions": [
-          "thread_exists",
+          "declared_body",
+          "live_matching_grant",
+          "local_node_record",
+          "session_actor_matches_checked_actor",
           "session_live",
-          "declared_body"
+          "thread_exists"
         ],
         "commit": "COMMITTED",
         "refusals": [
+          "ACTOR_ATTRIBUTION_MISMATCH",
+          "CLAIM_WITHOUT_PROPOSAL",
+          "FOREIGN_NODE_RECORD",
+          "INCOMPLETE_PROPOSAL",
+          "NO_LIVE_GRANT",
+          "SESSION_CLOSED",
           "SESSION_NOT_LIVE",
-          "INCOMPLETE_PROPOSAL"
+          "THREAD_ARCHIVED",
+          "UNKNOWN_RECORD"
         ]
       }
     },
@@ -1634,14 +1671,15 @@
         "crud": "CREATE",
         "requirement": "PROD-I-6",
         "preconditions": [
-          "thread_exists",
+          "live_publish_grant",
           "local_node_record",
-          "live_publish_grant"
+          "thread_exists"
         ],
         "commit": "COMMITTED",
         "refusals": [
+          "FOREIGN_NODE_RECORD",
           "NO_LIVE_GRANT",
-          "FOREIGN_NODE_RECORD"
+          "UNKNOWN_RECORD"
         ]
       }
     },
@@ -1684,18 +1722,21 @@
         "crud": "READ",
         "requirement": "PROD-I-6",
         "preconditions": [
-          "declared_thread_identity",
           "declared_session_identity",
-          "thread_exists",
+          "declared_thread_identity",
+          "live_matching_grant",
+          "local_node_record",
+          "session_actor_matches_checked_actor",
           "session_live",
-          "session_actor_matches_checked_actor"
+          "thread_exists"
         ],
         "commit": "DERIVED",
         "refusals": [
           "ACTOR_ATTRIBUTION_MISMATCH",
           "MALFORMED_IDENTITY",
+          "NO_LIVE_GRANT",
           "SESSION_NOT_LIVE",
-          "THREAD_UNKNOWN"
+          "UNKNOWN_RECORD"
         ]
       }
     },
@@ -1881,15 +1922,20 @@
         "crud": "COUNTER",
         "requirement": "PROD-I-5",
         "preconditions": [
+          "another_issuer_remains",
           "grant_exists",
-          "session_live",
-          "issuer_holds_authority"
+          "issuer_holds_authority",
+          "live_matching_grant",
+          "local_node_record",
+          "session_live"
         ],
         "commit": "COUNTERED",
         "refusals": [
-          "AUTHORITY_REFUSED",
+          "MISSING_PRECONDITION",
+          "NO_LIVE_GRANT",
           "SESSION_NOT_LIVE",
-          "STALE_STATE"
+          "STALE_STATE",
+          "UNKNOWN_RECORD"
         ]
       }
     },
@@ -1932,10 +1978,13 @@
         "crud": "READ",
         "requirement": "PROD-I-6",
         "preconditions": [
+          "live_matching_grant",
+          "local_node_record",
           "session_live"
         ],
         "commit": "DERIVED",
         "refusals": [
+          "NO_LIVE_GRANT",
           "SESSION_NOT_LIVE"
         ]
       }
@@ -1983,8 +2032,8 @@
         ],
         "commit": "COMMITTED",
         "refusals": [
-          "SESSION_NOT_LIVE",
-          "INCOMPLETE_PROPOSAL"
+          "INCOMPLETE_PROPOSAL",
+          "SESSION_NOT_LIVE"
         ]
       }
     },
@@ -2122,13 +2171,15 @@
         "crud": "SUPERSEDE",
         "requirement": "PROD-I-6",
         "preconditions": [
-          "publication_exists",
-          "live_publish_grant"
+          "live_publish_grant",
+          "local_node_record",
+          "publication_exists"
         ],
         "commit": "COMMITTED",
         "refusals": [
           "NO_LIVE_GRANT",
-          "STALE_STATE"
+          "STALE_STATE",
+          "UNKNOWN_RECORD"
         ]
       }
     },

@@ -7,11 +7,14 @@ to `bindings/mcp/server.py` over stdio as a subprocess, nothing imported, and th
 journal read back through the gateway's own `record_entries` tool rather than by
 opening the store behind it.
 
-Two checks are different and say so where they run: the startup validation
+Three steps are different and say so where they run: the startup validation
 constructs `Gateway` directly, because `server.py` exposes no way to point at a
-different manifest; and the attribution check opens the asset store read-only,
-because the divergence it looks for is between two records that no single tool
-returns together.
+different manifest; the attribution check opens the asset store read-only, because
+the divergence it looks for is between two records that no single tool returns
+together; and one console grant is recorded before the server starts, because
+`record_entries` began costing `read:journal` on 2026-08-25 and this binding exposes
+no tool that issues a console grant. That provisioning runs in its own subprocess so
+this module still imports nothing.
 
 Running this establishes an independent observation. It proposes at most
 `BUILT -> WITNESSED` and settles nothing.
@@ -94,6 +97,45 @@ class Client:
     def close(self) -> None:
         self.process.stdin.close()
         self.process.wait(timeout=60)
+
+
+#: The node the gateway's console serves. A stale value here would provision the
+#: wrong store and then report on a grant nobody holds.
+NODE_ID = "node:local"
+#: The name a caller types into `actor` that no record may end up carrying.
+IMPOSTOR = "mallory"
+
+PROVISION = """
+import sys
+sys.path[:0] = [{console_src!r}, {record_src!r}]
+from soveraeign_console_service import ConsoleService
+from soveraeign_record_service import RecordService
+record = RecordService({journal!r})
+ConsoleService(record, {console_dir!r}, {node!r}).grant(
+    {actor!r}, "read:journal", {node!r}, {actor!r})
+record.close()
+"""
+
+
+def _provision(state: Path, actor: str) -> str:
+    """Record the one console grant `record_entries` costs, before the server starts.
+
+    The journal read back here is the gateway's, at `<state>/record`, governed by a
+    console whose own records sit at `<state>/console`; the console CLI cannot be
+    aimed at that pair, so this writes the grant through the service in a subprocess
+    and this module still imports nothing. Setup, not measurement: exactly
+    `read:journal` over the node, so every gate below is bought or refused on its own.
+    """
+    script = PROVISION.format(
+        console_src=str(ROOT / "services" / "console" / "src"),
+        record_src=str(ROOT / "services" / "record" / "src"),
+        journal=str(state / "record"), console_dir=str(state / "console"),
+        node=NODE_ID, actor=actor)
+    done = subprocess.run([sys.executable, "-c", script], cwd=str(ROOT),
+                          capture_output=True, text=True)
+    if done.returncode:
+        raise SystemExit("could not provision the journal read: " + done.stderr.strip())
+    return NODE_ID
 
 
 def _refused(result: dict[str, Any], code: str) -> bool:
@@ -183,11 +225,7 @@ def _attribution(observed: Observation, client: Client, payload: Path, state: Pa
     actors, and the caller chooses one of them.
     """
     diverged = client.call("asset_ingest", path=str(payload), label="attributed",
-                           actor="mallory")
-    if diverged.get("isError"):
-        observed.note(True, "the actor argument cannot diverge from the gated identity",
-                      _detail(diverged))
-        return
+                           actor=IMPOSTOR)
     recorded = {entry.get("actor") for entry in client.entries()
                 if entry["kind"] in ("EVENT", "RECEIPT")}
     stores = sorted(state.rglob("*.sqlite3")) + sorted(state.rglob("*.db"))
@@ -201,9 +239,14 @@ def _attribution(observed: Observation, client: Client, payload: Path, state: Pa
             asset_actors = [row["actor"] for row in connection.execute(
                 "SELECT actor FROM receipts")]
         connection.close()
-    observed.note(False, "the actor argument cannot diverge from the gated identity",
-                  "ADMITTED: journal actors " + str(sorted(a for a in recorded if a))
-                  + ", asset receipts " + str(sorted(set(asset_actors))))
+    everywhere = {a for a in recorded if a} | set(asset_actors)
+    # The property is that no record names the identity the caller typed, not that the
+    # call was refused. Grading only the refusal made the better outcome - the binding
+    # overwriting the argument with the gated identity - read as a failure.
+    detail = ("refused: " + _detail(diverged) if diverged.get("isError")
+              else "admitted as " + str(sorted(everywhere)))
+    observed.note(IMPOSTOR not in everywhere,
+                  "the actor argument cannot diverge from the gated identity", detail)
 
 
 def _startup(observed: Observation, workspace: Path) -> None:
@@ -237,8 +280,11 @@ def observe() -> int:
         state = workspace / "state"
         payload = workspace / "payload.txt"
         payload.write_text("observed payload", encoding="utf-8")
+        node = _provision(state, "Bdo")
         client = Client(state, actor="Bdo")
         try:
+            observed.note(bool(node), "the journal read was bought before the walk",
+                          "read:journal scoped to " + node)
             _protocol(observed, client)
             _gates(observed, client, payload)
             _journal(observed, client)

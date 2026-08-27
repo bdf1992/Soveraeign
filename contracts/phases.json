@@ -1,7 +1,7 @@
 {
   "collection_schema": "soveraeign-phase-collection/v1",
   "status": "PROPOSED",
-  "note": "Phases and their terminals. Phase I closes on two readings rather than one: the operating window is over, and the exit was not earned. Recording both keeps the original definition historically intact, which is the whole point - a phase that ends by narrowing its definition until the evidence fits leaves a record saying it was earned, and no later reader can tell the difference. Every unmet clause names the exit custody that inherits it, because carried forward is not a terminal.",
+  "note": "Phases and their terminals. Phase I closes on two readings rather than one: the operating window is over, and the exit was not earned. Recording both keeps the original definition historically intact, which is the whole point - a phase that ends by narrowing its definition until the evidence fits leaves a record saying it was earned, and no later reader can tell the difference. Every unmet clause names the exit custody that inherits it, because carried forward is not a terminal. Repinned 2026-08-27 for SPEC.md, which moved when main and the federation branch were reconciled and main's asset-object rewrite landed (702a70e). The pin exists so a phase cannot end by narrowing its own definition, so the move was measured rather than assumed: SPEC.md owns the 44 normative predicates the first clause counts, and `python scripts/sov_f2_gate.py` reads 44 before and after. The definition did not narrow; the document it lives in changed around it.",
   "governed_by": [
     "PRD.md",
     "ROADMAP.md",
@@ -29,7 +29,7 @@
         },
         {
           "document": "SPEC.md",
-          "digest": "sha256:ccc0f2b8ac8f15eb7a4f64d87fb17bf2d674918346b78cc6116e7600c75a7c50",
+          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
           "owns": "the 44 normative predicates the first clause counts"
         }
       ],

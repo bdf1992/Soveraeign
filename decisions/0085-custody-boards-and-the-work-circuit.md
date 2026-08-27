@@ -1,6 +1,6 @@
 # 0085 · Custody, the work circuit, and the Phase-I terminal
 
-Status: `OWNER-DIRECTED · CONTRACTS PROPOSED`
+Status: `OWNER-DIRECTED · CONTRACT WORDING PROPOSED`
 
 Bdo ruled on Phase I on 2026-08-27. This record implements that ruling and adds
 the contracts it needs. The ruling itself is his; the sections below restate it

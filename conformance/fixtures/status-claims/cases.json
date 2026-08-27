@@ -61,7 +61,7 @@
     {
       "id": "defeating-entry-unknown-key",
       "expect": "ENTRY_UNKNOWN_KEY",
-      "proves": "The key set is closed. A witness put asserted_standing, settled_by, authority and a resurrected standing_source onto live entries and every one passed exit 0, because type-checking six named keys never rejects a seventh.",
+      "proves": "The key set is closed. A witness put asserted_standing, settled_by, authority and a resurrected standing_source onto live entries and every one passed exit 0, because type-checking named keys never rejects an unnamed one. Any key outside the set is refused, whatever the size of the set.",
       "status_lines": [
         "asset_service_status: BUILT_SELF_TESTED_NOT_WITNESSED"
       ],

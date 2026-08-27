@@ -43,11 +43,16 @@ CORPUS = ROOT / "conformance" / "fixtures" / "status-claims" / "cases.json"
 
 FIELD = re.compile(r"^([a-z0-9_]+_status):\s*(\S+)\s*$")
 # Deliberately far looser than FIELD, and anchored on a real `_status` suffix. Three
-# drafts of this pattern were each taught the shapes the previous witness reported;
-# this one takes any key ending in `_status` however it is written - quoted, hyphenated,
-# dotted, in a list item, in a flow mapping, in any case, at any indent, with or without
-# a space before the colon. Requiring something before the underscore stops it firing on
-# a bare `status:` key, which is not a status field and which no entry could ever match.
+# drafts of this pattern were each taught the shapes the previous witness reported, so
+# this one takes the ordinary YAML forms as a class: quoted, hyphenated, dotted,
+# path-like, in a list item, in a flow mapping, in any case, at any indent, with or
+# without a space before the colon. Requiring something before the underscore stops it
+# firing on a bare `status:` key, which is not a status field and which no entry could
+# ever match. It does NOT take the exotic forms - an anchored or tagged key, the
+# explicit-key `? ` form, a leading BOM or zero-width space, or a key containing a
+# space, colon, plus, at, percent or parenthesis. None occurs in STATUS.yaml, and since
+# no standing is derived any longer the worst case is a field going untyped rather than
+# falsely typed. Saying so beats a sentence that claims the whole class.
 LOOSE = re.compile(r"^[\s\-{\[,]*[\"']?[A-Za-z0-9][A-Za-z0-9_.\-/]*_[Ss][Tt][Aa][Tt][Uu][Ss][\"']?\s*:")
 
 

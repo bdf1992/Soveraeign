@@ -21,14 +21,30 @@ Two commands read this directory, and neither grades whether a subject survived:
   against a 15s ceiling for the whole suite, so running them is an attended
   action.
 
-`run` never judges by exit code. Every probe here exits 0 by design, so a probe
-whose every check failed to reach its subject still exits 0 and still emits a
-well-formed report; liveness is read out of the report's contents instead.
+`run` never judges by exit code alone. Every probe here exits 0 by design, so a
+clean exit is not evidence of reaching; a dirty one is evidence against it. The
+report's contents are read as well, and an empty or non-object report fails.
 
-A probe that declares a reach-failure exception and then catches it without
-carrying the reason is reported as debt. One that catches it and discards it
-fails, because a probe that cannot reach its subject must not be
-indistinguishable from one that did.
+A probe that catches its reach-failure exception and discards it fails. One that
+catches it and does not re-raise is reported as debt, and one that declares no
+reach-failure exception at all is reported as debt.
+
+## What these checks do not catch
+
+A probe is graded on what it declares about itself, which is the defect this
+layer exists to catch appearing inside the tool. Written down rather than
+papered over:
+
+- The reach constants are read from the probe's own source. Requiring each one
+  to exist and to be used kills the cheap decoy; it does not make the
+  declaration true. A probe can name a path that exists and reach elsewhere.
+- `run` reads the report the probe wrote about its own health. A probe that
+  catches its reach failure and reports `{"held": true}` reads as `LIVE`.
+
+What catches that is a reader who opens the probe, and the receipt digesting the
+probe under `observed_state_addresses` so that editing it turns the receipt
+`STALE_PROBE`. A receipt that does not digest its own probe forgoes the second
+one. Neither is automated.
 
 This directory is empty on `main`. The probes written on
 `docs/witness-debt-sweep` (PR #119) land here.

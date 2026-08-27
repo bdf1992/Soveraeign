@@ -76,10 +76,12 @@ CHECKS = (
     Check("witness probes still reach",
           [sys.executable, "scripts/sov_witness_layer.py", "probes"], ROOT,
           "parses each probe and requires the repository paths its own source declares as "
-          "its reach to still exist, so a probe aimed at a deleted subject fails here rather "
-          "than going on producing receipts. It grades no check the probe makes, because a "
-          "probe observes and never settles. Static only: executing the probes is "
-          "`sov_witness_layer.py run`, which is out of this budget at 12.7s",
+          "its reach to exist and to be used, so a probe aimed at a deleted subject fails "
+          "here rather than going on producing receipts. It grades no check the probe makes, "
+          "because a probe observes and never settles. The reach is the probe's own "
+          "declaration and this check says so: a probe naming a path it does not take is "
+          "caught by the receipt digesting the probe, not here. Executing the probes is "
+          "`sov_witness_layer.py run`, out of this budget at 12.7s",
           ("witness/probes", "scripts/sovwitness/probes.py")),
     Check("conformance oracle controls", [sys.executable, "conformance/run.py"], ROOT,
           "the oracle derives every defect from observation records and never reads a "

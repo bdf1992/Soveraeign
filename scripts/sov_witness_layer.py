@@ -10,11 +10,16 @@ Three commands, none of which reads a declaration where it could measure a file:
 
     records   recompute every receipt's digests against the working tree
     probes    parse every probe and require its declared reach to still exist
-    run       execute every probe and read reaching out of the report it emits
+    run       execute every probe and grade the process and the report it emits
 
 `records` and `probes` are wired into `scripts/verify.py`. `run` is not: the
 probes shipped on PR #119 cost 12.7s together, against a 15s ceiling for the
 whole suite, so executing them is an attended action.
+
+`records` measures bytes. `probes` and `run` grade a probe partly on what it
+declares about itself, which is the defect this file exists to catch appearing
+inside the file. `sovwitness/probes.py` records exactly where that line falls and
+what does catch a probe that misreports; it is not claimed to be caught here.
 
 Nothing here settles standing. A receipt that still matches the tree is not
 thereby correct, and a probe that still reaches its subject has not thereby
@@ -89,7 +94,8 @@ def probes(root: Path, as_json: bool) -> int:
     verdict = "FAIL" if failing or join_defects else "PASS"
     print(f"{verdict}: {len(results)} witness probe(s) inspected, "
           f"{len(failing) + len(join_defects)} unreachable, {len(debts)} debt(s). "
-          "Static reach only; `run` is what observes reaching.")
+          "Graded on the reach each probe declares; a probe that names a path it does "
+          "not take is not caught here.")
     return 1 if failing or join_defects else 0
 
 
@@ -106,8 +112,9 @@ def run(root: Path, as_json: bool) -> int:
         for defect in item["defects"]:
             print(f"      {defect}")
     verdict = "FAIL" if failing else "PASS"
-    print(f"{verdict}: {len(results)} witness probe(s) executed, {len(failing)} could not "
-          "reach their subject. Whether a subject survived is not graded here.")
+    print(f"{verdict}: {len(results)} witness probe(s) executed, {len(failing)} reported "
+          "trouble reaching their subject. Whether a subject survived is not graded here, "
+          "and a probe that misreports its own reaching is not caught here either.")
     return 1 if failing else 0
 
 

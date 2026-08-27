@@ -639,7 +639,7 @@ class PageAndCheck(unittest.TestCase):
         self.assertIn(page.PROVENANCE_ELIDED, elided)
         self.assertNotIn(page.HISTORY_OPEN, elided)
         self.assertNotIn(page.PROVENANCE_PREFIX, elided)
-        self.assertIn("What is declared", elided)
+        self.assertIn("Automation health", elided)
 
 
 class DisabledSchedulesAndTheNodeReading(unittest.TestCase):

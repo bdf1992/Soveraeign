@@ -74,14 +74,16 @@ td.sw{white-space:nowrap}
 .say.ok{color:#8ff0c0}
 .say.bad{color:#f0a9a9}
 
-form label{display:block;margin:0 0 1.1rem}
-form label>span:first-child{display:block;font-weight:600;margin-bottom:.15rem}
-form .hint{display:block;color:#9a9aa4;font-size:.78rem;margin-bottom:.35rem;max-width:70ch}
-form input,form select,form textarea{width:100%;max-width:56rem;background:#232327;
- color:#e6e6ea;border:1px solid #45454f;border-radius:5px;padding:.4rem .55rem;
- font:inherit;font-size:.88rem}
-form textarea{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.82rem}
-form input:disabled{opacity:.55}
-.row{display:flex;gap:.6rem;align-items:center;margin:1.2rem 0}
-a.btn{text-decoration:none;display:inline-block}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:.7rem;
+ padding:.3rem 0 .6rem}
+label.f>span{display:block;color:#9a9aa4;font-size:.74rem;margin-bottom:.15rem}
+label.f input,label.f select,label.f textarea,input.why{width:100%;background:#1d1d21;
+ color:#e6e6ea;border:1px solid #45454f;border-radius:4px;padding:.3rem .45rem;
+ font:inherit;font-size:.82rem}
+label.f textarea{font-family:ui-monospace,Consolas,monospace;font-size:.76rem}
+tr.ed-row>td{background:#202024;border-top:0}
+.save{display:flex;gap:.5rem;align-items:center;padding-bottom:.3rem}
+.save .why{flex:1}
+details{margin-top:2rem;border-top:1px solid var(--line);padding-top:1rem}
+summary{cursor:pointer;color:#9a9aa4;font-size:.85rem}
 """

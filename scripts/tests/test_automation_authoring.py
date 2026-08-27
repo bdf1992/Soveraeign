@@ -27,7 +27,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from sovschedule import authoring, changelog, control, pageform  # noqa: E402
+from sovschedule import authoring, changelog, control, pagetables  # noqa: E402
 
 CORPUS = json.loads(
     (ROOT / "conformance" / "fixtures" / "automation-control" / "cases.json")
@@ -190,7 +190,7 @@ class TheFileIsLeftAlone(Tree):
         self.assertFalse(body["enabled"])
 
 
-class TheFormOffersOnlyWhatSaves(Tree):
+class TheEditorOffersOnlyWhatSaves(Tree):
     """A dropdown that offers a choice the save refuses is a trap, not a control."""
 
     def test_every_offered_target_is_one_the_loader_accepts(self) -> None:
@@ -205,26 +205,27 @@ class TheFormOffersOnlyWhatSaves(Tree):
                     self.actor("owner"), "checking the dropdown", now=NOW)
                 self.assertEqual(outcome.outcome, changelog.EFFECTED, outcome.detail)
 
-    def test_the_form_offers_no_effect_class_the_phase_refuses(self) -> None:
-        self.assertNotIn("EXTERNAL_WORLD", pageform.EFFECTS)
+    def test_the_editor_offers_no_effect_class_the_phase_refuses(self) -> None:
+        self.assertNotIn("EXTERNAL_WORLD", pagetables.OPTIONS["effect_class"])
         outcome = authoring.create(self.root, "worldly",
                                    dict(EXISTING, effect_class="EXTERNAL_WORLD"),
                                    self.actor("owner"), "trying it", now=NOW)
         self.assertEqual(outcome.refusal_code, "EXTERNAL_WORLD_REFUSED")
 
-    def test_the_form_renders_every_field_the_declaration_carries(self) -> None:
-        rendered = pageform.render(authoring.targets(self.root), authoring.blank("x"),
-                                   "a-token", creating=True)
-        for field in ("name", "description", "target", "cron", "mode", "effect_class",
-                      "isolation", "reason"):
-            with self.subTest(field=field):
-                self.assertIn(f'name="{field}"', rendered)
+    def test_the_editor_offers_every_editable_field_and_no_other(self) -> None:
+        """The inline editor and the operation must agree on what an edit may touch."""
+        offered = {field for field, _, _ in pagetables.INLINE}
+        # budget and timeout are the two halves of `limits`, and args is inside `target`.
+        offered = (offered - {"max_budget_usd", "timeout_seconds", "args"}) | {"limits"}
+        self.assertEqual(offered, set(authoring.EDITABLE))
 
-    def test_the_edit_form_cannot_rename(self) -> None:
-        """The name input is disabled, and the operation refuses it anyway."""
-        rendered = pageform.render([], dict(EXISTING), "a-token", creating=False)
-        self.assertIn("disabled", rendered)
+    def test_the_editor_never_offers_name_or_enabled(self) -> None:
+        """Both have their own answer, and neither is an edit."""
+        fields = {field for field, _, _ in pagetables.INLINE}
+        self.assertNotIn("name", fields)
+        self.assertNotIn("enabled", fields)
         self.assertNotIn("name", authoring.EDITABLE)
+        self.assertNotIn("enabled", authoring.EDITABLE)
 
 
 class TheRecord(Tree):

@@ -360,9 +360,13 @@ class TwoSurfacesOneRender(Tree):
         live = page.render(digest, controls="a-token")
         # Counted by element, not by class: edit links and the new-schedule link carry
         # the same class, and a bare class count would pass with the switches removed.
-        self.assertEqual(live.count("<button "), 2)
-        self.assertEqual(live.count('href="/edit?'), 2)
-        self.assertIn('href="/new?', live)
+        # Two switch buttons, two edit toggles, two save/cancel pairs, and the new
+        # row's own set. Counted by role rather than by class: edit toggles and switch
+        # buttons share a class and a bare count would pass with the switches gone.
+        self.assertEqual(live.count("data-direction="), 2)
+        self.assertEqual(live.count("data-edit="), 3)
+        self.assertEqual(live.count('data-edit="__new__"'), 1)
+        self.assertEqual(live.count("data-save="), 3)
         self.assertIn('data-direction="ENABLE"', live)
         self.assertIn('data-direction="DISABLE"', live)
         self.assertIn("live console", live)

@@ -2,8 +2,9 @@
 
 A page opened from disk has no process behind it, so its buttons cannot change
 anything. That is the whole reason this exists. It serves the same render the static
-page uses, with a controls column, and posts back to the same operation the command
-line calls - ``control.set_switch``, where the authority check lives.
+page uses, with the controls live, and posts back to the same operations the command
+line calls - where the authority checks live. One route serves the page and two accept
+changes; editing happens in the table rather than on a page of its own.
 
 What this is not. It is not a web server for anything but this box: it binds
 ``127.0.0.1`` and refuses any other address rather than trusting a flag. It mints a
@@ -27,7 +28,7 @@ import secrets
 import threading
 import webbrowser
 
-from sovschedule import authoring, changelog, control, page, pageform, report
+from sovschedule import authoring, changelog, control, page, report
 
 LOOPBACK = "127.0.0.1"
 TOKEN_BYTES = 24
@@ -78,17 +79,8 @@ class Console:
         one says so too, on the page.
         """
         digest = report.assemble(self.root, self.clock(), source=report.WORKTREE)
-        return page.render(digest, controls=self.token).encode("utf-8")
-
-    def form(self, name: str | None) -> bytes:
-        """The create form, or the edit form for one existing schedule."""
-        if name:
-            path = self.root / "\u002eclaude" / "schedules" / f"{name}.json"
-            body = json.loads(path.read_text(encoding="utf-8"))
-        else:
-            body = authoring.blank()
-        return pageform.render(authoring.targets(self.root), body, self.token,
-                               creating=not name).encode("utf-8")
+        return page.render(digest, controls=self.token,
+                           targets=tuple(authoring.targets(self.root))).encode("utf-8")
 
     def save(self, payload: dict) -> tuple[int, dict]:
         """Create a declaration or edit one, through the operation that checks the grant."""
@@ -162,27 +154,13 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self) -> None:  # noqa: N802 - the stdlib names this
         parsed = urlparse(self.path)
-        if parsed.path not in ("/", "/new", "/edit"):
+        if parsed.path != "/":
             self._refuse(404, f"no route {parsed.path}")
             return
-        query = parse_qs(parsed.query)
-        if not self._token_ok(query.get("t", [None])[0]):
+        if not self._token_ok(parse_qs(parsed.query).get("t", [None])[0]):
             self._refuse(403, "BAD_TOKEN: open the URL this console printed when it started")
             return
-        if parsed.path == "/":
-            self._send(200, self.console.render(), "text/html; charset=utf-8")
-            return
-        name = query.get("name", [""])[0] if parsed.path == "/edit" else ""
-        if parsed.path == "/edit" and not self._known(name):
-            self._refuse(404, f"UNKNOWN_SCHEDULE: no declaration named {name!r}")
-            return
-        self._send(200, self.console.form(name), "text/html; charset=utf-8")
-
-    def _known(self, name: str) -> bool:
-        """A name that is a real declaration. Checked by listing, never by joining a path."""
-        return name in {target.stem for target in
-                        (self.console.root / ".claude" / "schedules").glob("*.json")
-                        if target.name != "schedule.schema.json"}
+        self._send(200, self.console.render(), "text/html; charset=utf-8")
 
     def do_POST(self) -> None:  # noqa: N802 - the stdlib names this
         parsed = urlparse(self.path)

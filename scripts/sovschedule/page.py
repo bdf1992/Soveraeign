@@ -11,6 +11,11 @@ the ledger digest still matches. A machine that holds no ledger is told the hist
 is UNCHECKED and why, rather than being shown a page graded as current over records it
 never had.
 
+The node verdict sits inside the history block rather than at the top of the page. It
+is a function of both halves, so a page carrying it outside would change its declared
+half the moment a ledger appeared - which is the byte comparison the staleness check
+depends on. A test drives exactly that.
+
 ``controls`` is the one switch between the two surfaces. False - the default, and what
 ``docs/automation.html`` is built with - renders a reading whose switch column shows
 state. A token renders the same document with working buttons that post to
@@ -119,7 +124,7 @@ def _refuse_unrenderable(table: dict) -> None:
             "in the reading and shown nowhere.")
 
 
-def render(digest: Digest, controls: bool | str = False) -> str:
+def render(digest: Digest, controls: bool | str = False, targets: tuple = ()) -> str:
     """Deterministic bytes: derived rows, the declared table, no clock beyond the stamp.
 
     ``controls`` is falsy for the committed reading and the console's token for the
@@ -142,50 +147,32 @@ def render(digest: Digest, controls: bool | str = False) -> str:
 <main>
 {pagecontrols.banner(live, len(digest.rows))}
 <h1>Automation health</h1>
-<p class="sub">Every declared schedule on this node: whether it is armed, when it is next
-due, what happened the last time it ran, and which of the declared health rules fired.
-Armed is not running - nothing on this node ticks a schedule yet.</p>
-{HISTORY_OPEN}
-{pagetables.provenance_block(digest)}
-{pagetables.counts(digest)}
-{pagetables.verdict(digest)}
-<h2>What the records say</h2>
-<p>Derived from the run ledger, which is gitignored machine-local state. On a checkout that
-holds no ledger this section is the part the staleness check reports as unchecked, because
-re-deriving it there would prove only that an absent source produces an empty answer.</p>
-{pagetables.history_table(digest.rows)}
-<h3>Findings from run history</h3>
-{_findings(digest, "history")}
-{HISTORY_CLOSE}
-<h2>What is declared</h2>
-<p>Derived from the declarations {source_line}. The two readers differ on purpose and
-each says which it read: a committed page reproduces on any checkout and is byte-compared
-everywhere, while the console shows the state an operator is looking at.</p>
+<p class="sub">Armed is not running: nothing on this node ticks a schedule yet.
+Declarations read {source_line}.</p>
 {pagecontrols.note(live)}
-{pagecontrols.links(live, str(controls or ""))}
 {pagecontrols.say_line(live)}
-{pagetables.declaration_table(digest.rows, controls=live, token=str(controls or ""))}
-<h3>Findings from the declarations</h3>
+{pagetables.declaration_table(digest.rows, controls=live,
+                              token=str(controls or ""), targets=targets)}
 {_findings(digest, "declaration")}
-<h2>The rules</h2>
+{HISTORY_OPEN}
+{pagetables.verdict(digest)}
+<h2>Runs</h2>
+{pagetables.counts(digest)}
+{pagetables.history_table(digest.rows)}
+{_findings(digest, "history")}
+{pagetables.provenance_block(digest)}
+{HISTORY_CLOSE}
+<details><summary>The {len(table["rules"])} health rules</summary>
 <p>{_e(table["note"])}</p>
 {pagetables.rules(table)}
-<footer><ul>
-<li>Refuses at <code>{_e(table["blocking"]["refuses_at"])}</code>:
-{_e(table["blocking"]["note"])}</li>
-<li>Rebuild: <code>python scripts/sov_schedule.py health-render</code>. Grade:
-<code>python scripts/sov_schedule.py health-check</code>, which
-<code>scripts/verify.py</code> runs.</li>
-<li>Switches: <code>python scripts/sov_schedule.py console</code> for this page with
-working buttons, or <code>enable</code> / <code>disable</code> on the command line. Both
-reach one operation, declared in
-<code>contracts/automation-control.json</code>.</li>
-<li>The reading layer is separable from where the records come from. The seam is
-<code>scripts/sovschedule/history.py</code>; moving this onto Console surface 3 replaces
-that module and leaves the rules and their fixtures untouched.</li>
+<ul>
+<li>Refuses the build at <code>{_e(table["blocking"]["refuses_at"])}</code>.</li>
+<li>Rebuild <code>docs/automation.html</code>:
+<code>python scripts/sov_schedule.py health-render</code>.</li>
+<li>Same operations without a browser: <code>enable</code>, <code>disable</code>,
+<code>create</code>, <code>edit</code>, <code>changes</code>.</li>
 <li>A reading is a report about records and holds no standing. A <code>REPORTED</code>
-event in those records is the executor's own self-report, never an observation that the
-run did what it said.</li>
-</ul></footer>
+event is the executor's own self-report, not an observation.</li>
+</ul></details>
 </main>{pagecontrols.script(live)}</body></html>
 """

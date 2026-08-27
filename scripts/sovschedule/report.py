@@ -32,12 +32,13 @@ committed read materialises HEAD into a scratch directory rather than touching t
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import json
 
 from sovschedule import committed, cron, health, history
+from sovschedule.clock import host_offset, parse_stamp, stamp  # noqa: F401
 from sovschedule.committed import COMMIT, WORKTREE
 from sovschedule.declaration import (
     SCHEDULES_DIR, SCHEMA_NAME, DeclarationError, load_declaration, target_path,
@@ -58,6 +59,9 @@ class Declared:
     effect_class: str
     timeout_seconds: int
     defect: str | None
+    #: The declaration as parsed, for readers that need a field this class does not name.
+    #: Empty when the file could not be parsed at all.
+    raw: dict
 
     @property
     def target(self) -> str:
@@ -91,6 +95,8 @@ class Row:
     consecutive_failures: int
     reading: str
     findings: tuple[health.Finding, ...]
+    #: The declaration as parsed. The inline editor fills itself from this.
+    raw: dict = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -115,23 +121,6 @@ class Digest:
         return [(row.name, finding) for row in self.rows for finding in row.findings]
 
 
-def host_offset() -> timedelta:
-    """The host current offset from UTC, which is the clock the runner fires in."""
-    return datetime.now(timezone.utc).astimezone().utcoffset() or timedelta(0)
-
-
-def stamp(moment: datetime | None) -> str:
-    """One timestamp, in whatever clock it carries, with that clock named on it."""
-    if moment is None:
-        return "-"
-    offset = moment.utcoffset() or timedelta(0)
-    if not offset:
-        return moment.strftime("%Y-%m-%dT%H:%M:%SZ")
-    total = int(offset.total_seconds()) // 60
-    sign = "+" if total >= 0 else "-"
-    return moment.strftime("%Y-%m-%dT%H:%M:%S") + f"{sign}{abs(total) // 60:02d}:{abs(total) % 60:02d}"
-
-
 def _table(root: Path, source: str) -> dict:
     """The rules table from the source being read.
 
@@ -146,16 +135,12 @@ def _table(root: Path, source: str) -> dict:
     return health.load()
 
 
-def parse_stamp(text: str) -> datetime:
-    """Read back a stamp this module wrote, in UTC or in an offset clock."""
-    return datetime.fromisoformat(text)
-
-
 def _accepted(path: Path, root: Path) -> Declared:
     decl = load_declaration(root, path)
     return Declared(decl.name, decl.description, decl.enabled, decl.target_kind,
                     decl.target_name, decl.spec.expression, decl.mode, decl.effect_class,
-                    decl.timeout_seconds, None)
+                    decl.timeout_seconds, None,
+                    json.loads(path.read_text(encoding="utf-8")))
 
 
 def _refused(path: Path, defect: str) -> Declared:
@@ -180,6 +165,7 @@ def _refused(path: Path, defect: str) -> Declared:
         effect_class=str(raw.get("effect_class", "")),
         timeout_seconds=int(limits.get("timeout_seconds") or 0),
         defect=defect,
+        raw=raw,
     )
 
 
@@ -261,6 +247,7 @@ def _row(facts: health.Facts, declared: Declared, reading: health.Reading,
         consecutive_failures=health.consecutive_failures(facts),
         reading=reading.reading,
         findings=reading.findings,
+        raw=declared.raw,
     )
 
 

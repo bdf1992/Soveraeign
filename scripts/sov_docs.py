@@ -44,7 +44,11 @@ from sovdocs.markdown import render as render_markdown  # noqa: E402
 from sovdocs.render import NEWLINE, _rendered, _resolver  # noqa: E402
 from sovdocs.site import render as render_site  # noqa: E402
 
-SKIP_PARTS = {".git", ".venv", "__pycache__", ".local", "node_modules", "lineage", "docs"}
+# `worktrees` prunes `.claude/worktrees/`: an agent worktree is a whole checkout of this
+# repository, so every document under one is already published from where it really lives.
+# One unclassified file in one of them failed the documentation check for the whole corpus.
+SKIP_PARTS = {".git", ".venv", "__pycache__", ".local", "node_modules", "lineage",
+              "docs", "worktrees"}
 PAGE = ROOT / "docs" / "documentation.html"
 LEDGER = ROOT / "docs" / "ingest.json"
 STORE = ROOT / ".local" / "docs-assets"

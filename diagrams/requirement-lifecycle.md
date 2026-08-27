@@ -1,8 +1,8 @@
 # Requirement lifecycle
 
 ```text
-source          PRD.md · SPEC.md · CONTRACT.md · STATUS.yaml
-source_digest   f1157f2f1ebad6aa · ccc0f2b8ac8f15eb · 896e59ba90828ad7 · 0c06af30705ed27e
+source          PRD.md · SPEC.md · CONTRACT.md · STATUS.yaml · contracts/fixtures/node-interface.reference.json
+source_digest   f1157f2f1ebad6aa · ccc0f2b8ac8f15eb · 896e59ba90828ad7 · a8fd3bfc54c9e441 · f8a844109389e3d5
 reader          hand-authored · v2
 fidelity        LOSSY
 omissions       the nine PROD-I requirement texts and their defeating cases;
@@ -43,6 +43,6 @@ The engineering framework itself is owner-accepted as the Phase-I reference
 baseline; that acceptance does not convert every implementation beneath it into
 witnessed behavior.
 
-The derived operation surface currently says 127 declared, 5 reachable, and 0
+The derived operation surface currently says 133 declared, 5 reachable, and 0
 observed. That is not a health score. It is three independent layers of fact,
 and the lifecycle must not collapse them into one percentage.

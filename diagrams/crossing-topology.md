@@ -1,8 +1,8 @@
 # Crossing topology
 
 ```text
-source          SPEC.md · services/console/CHARTER.md · STATUS.yaml · CONTRACT.md
-source_digest   ccc0f2b8ac8f15eb · 7dec971f8b6d04d8 · 0c06af30705ed27e · 896e59ba90828ad7
+source          SPEC.md · services/console/CHARTER.md · STATUS.yaml · CONTRACT.md · contracts/fixtures/node-interface.reference.json
+source_digest   ccc0f2b8ac8f15eb · 7dec971f8b6d04d8 · a8fd3bfc54c9e441 · 896e59ba90828ad7 · f8a844109389e3d5
 reader          hand-authored · v2
 fidelity        LOSSY
 omissions       crossing class definitions, held by crossing-typology.md;

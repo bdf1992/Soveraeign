@@ -1,8 +1,8 @@
 # Service map
 
 ```text
-source          CLASSIFICATION.md · STATUS.yaml · CONTRACT.md · services/README.md
-source_digest   decdd2138b8d87f5 · 0c06af30705ed27e · 896e59ba90828ad7 · 4ca2feb395c892f8
+source          CLASSIFICATION.md · STATUS.yaml · CONTRACT.md · services/README.md · contracts/fixtures/node-interface.reference.json
+source_digest   decdd2138b8d87f5 · a8fd3bfc54c9e441 · 896e59ba90828ad7 · d5a11f10339de0c2 · f8a844109389e3d5
 reader          hand-authored · v3
 fidelity        LOSSY
 omissions       each service's internal components and full operation list;
@@ -17,7 +17,7 @@ flowchart TB
 
     subgraph nd["Soveraeign Node — personal profile"]
         direction TB
-        NI["<b>Node Interface</b><br/>127 declared · 5 reachable · 0 observed"]
+        NI["<b>Node Interface</b><br/>133 declared · 5 reachable · 0 observed"]
         G["<b>Gateway</b><br/>admit · resolve · route · receipt"]
 
         subgraph live["Implementation exists — standing remains evidence-specific"]
@@ -78,8 +78,8 @@ completed service implementations.
 
 The five reachable Node operations are a narrower fact than “these services are
 built.” Reachability is derived from the exact policy-active route surface;
-standing remains separate. The current Node Interface records **127 declared,
-127 bound, 39 policy-active, 5 reachable, and 0 observed**. In particular,
+standing remains separate. The current Node Interface records **133 declared,
+133 bound, 45 policy-active, 5 reachable, and 0 observed**. In particular,
 Host `read-health` is reachable and self-tested but not independently observed.
 
 All actor-facing action enters through the same Node Interface and Gateway

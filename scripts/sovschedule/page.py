@@ -64,6 +64,7 @@ def provenance(digest: Digest) -> dict:
     """What the check needs to know about how these bytes were produced."""
     return {
         "rendered_at": stamp(digest.rendered_at),
+        "declaration_source": digest.source,
         "utc_offset_minutes": int(digest.utc_offset.total_seconds()) // 60,
         "ledger_path": digest.ledger.path,
         "ledger_present": digest.ledger.present,
@@ -189,7 +190,8 @@ def _provenance_block(digest: Digest) -> str:
         ("clock", "UTC" if not digest.utc_offset else
          f"host local, {stamp(digest.rendered_at)[-6:]} from UTC - the clock "
          "scripts/sovschedule/runner.py matches cron in"),
-        ("declarations", ".claude/schedules/*.json"),
+        ("declarations", ".claude/schedules/*.json"
+         + (" at HEAD" if digest.source == "COMMIT" else " in the working tree")),
         ("run history", digest.ledger.path if digest.ledger.present
          else f"{digest.ledger.path} (absent)"),
         ("ledger digest", digest.ledger.digest),
@@ -230,8 +232,12 @@ re-deriving it there would prove only that an absent source produces an empty an
 {_findings(digest, "history")}
 {HISTORY_CLOSE}
 <h2>What is declared</h2>
-<p>Derived from <code>.claude/schedules/*.json</code>, which is committed. This section
-reproduces on any checkout and is byte-compared everywhere.</p>
+<p>Derived from the declarations tracked at <code>HEAD</code>, not from the working tree.
+Eleven sessions share this checkout, so a page carrying an untracked schedule could not be
+reproduced by anyone who cloned the commit it shipped in - the referent Bdo ruled on for the
+orientation page in acceptance packet A5. This section therefore reproduces on any checkout
+and is byte-compared everywhere. <code>python scripts/sov_schedule.py health</code> reads the
+working tree instead, and will show a schedule that has been written and not yet committed.</p>
 {_declaration_table(digest.rows)}
 <h3>Findings from the declarations</h3>
 {_findings(digest, "declaration")}

@@ -1056,6 +1056,185 @@
       ],
       "expect_reading": "DEGRADED",
       "proves": "EMPTY_RUN fires. The run passed, so every outcome rule is quiet and every count that measures passing runs reports it as working; it recorded a capture file and no report, which is what its own prompt asked it for. This is the refusal loop quieter twin - alive, spending budget, achieving nothing - and unlike a refusal there is no code in the record naming it."
+    },
+    {
+      "case_id": "H-029-exactly-two-missed-occurrences-is-overdue",
+      "schedule": {
+        "name": "nightly-qa",
+        "enabled": true,
+        "target_exists": true,
+        "cron": "0 2 * * *",
+        "timeout_seconds": 3600,
+        "declaration_defect": null
+      },
+      "now": "2026-08-27T04:00:00Z",
+      "runs": [
+        {
+          "run_id": "nightly-qa-1",
+          "attempted_at": "2026-08-25T02:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-25T02:05:00Z",
+          "report_outcome": "ATTEMPTED",
+          "exit_code": 0,
+          "outputs": [
+            "reports/2026-08-25-nightly-qa.md"
+          ]
+        }
+      ],
+      "expect_status": [
+        "PASSED"
+      ],
+      "expect_findings": [
+        "OVERDUE"
+      ],
+      "expect_reading": "DEGRADED",
+      "proves": "Exactly overdue_missed_occurrences have passed, and the table says at least, so it fires. H-024 sits one occurrence inside and stays quiet. Without a case on the line the comparison could be tightened to strictly-greater, or the threshold raised to three, and the corpus would stay green - which is what a witness found."
+    },
+    {
+      "case_id": "H-030-a-run-under-the-multiple-is-not-drift-however-long-it-grew",
+      "schedule": {
+        "name": "epic-walk",
+        "enabled": false,
+        "target_exists": true,
+        "cron": "0 7 * * *",
+        "timeout_seconds": 3600,
+        "declaration_defect": null
+      },
+      "now": "2026-08-27T04:00:00Z",
+      "runs": [
+        {
+          "run_id": "epic-walk-1",
+          "attempted_at": "2026-08-25T07:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-25T07:10:00Z",
+          "report_outcome": "ATTEMPTED",
+          "exit_code": 0,
+          "outputs": [
+            "reports/2026-08-25-epic-walk.md"
+          ]
+        },
+        {
+          "run_id": "epic-walk-2",
+          "attempted_at": "2026-08-26T07:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-26T07:18:00Z",
+          "report_outcome": "ATTEMPTED",
+          "exit_code": 0,
+          "outputs": [
+            "reports/2026-08-26-epic-walk.md"
+          ]
+        }
+      ],
+      "expect_status": [
+        "PASSED",
+        "PASSED"
+      ],
+      "expect_findings": [],
+      "expect_reading": "HEALTHY",
+      "proves": "1080s against 600s is 1.8 times and 480s more, so it clears the floor by a wide margin and stays quiet on the multiple alone. H-012 sits at 1.17 times, which any plausible multiple would let past; this one sits between 1.5 and 2.0 and is what stops the multiple being lowered without a case going red."
+    },
+    {
+      "case_id": "H-031-inside-the-scan-window-the-count-is-what-decides",
+      "schedule": {
+        "name": "weekly-baseline",
+        "enabled": true,
+        "target_exists": true,
+        "cron": "0 6 * * 1",
+        "timeout_seconds": 5400,
+        "declaration_defect": null
+      },
+      "now": "2026-08-27T04:00:00Z",
+      "runs": [
+        {
+          "run_id": "weekly-baseline-1",
+          "attempted_at": "2026-08-19T16:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-19T16:30:00Z",
+          "report_outcome": "ATTEMPTED",
+          "exit_code": 0,
+          "outputs": [
+            "reports/2026-08-19-weekly-baseline.md"
+          ]
+        }
+      ],
+      "expect_status": [
+        "PASSED"
+      ],
+      "expect_findings": [],
+      "expect_reading": "HEALTHY",
+      "proves": "The last attempt is seven and a half days old, inside the eight-day scan window, so the walk is not capped and the single missed Monday is under the threshold. Shorten scan_days to seven and this same schedule becomes capped and fires. This is the quiet side of a number a witness found unpinned in both directions."
+    },
+    {
+      "case_id": "H-032-just-outside-the-scan-window-the-cap-is-what-decides",
+      "schedule": {
+        "name": "weekly-baseline",
+        "enabled": true,
+        "target_exists": true,
+        "cron": "0 6 * * 1",
+        "timeout_seconds": 5400,
+        "declaration_defect": null
+      },
+      "now": "2026-08-27T04:00:00Z",
+      "runs": [
+        {
+          "run_id": "weekly-baseline-1",
+          "attempted_at": "2026-08-18T16:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": "2026-08-18T16:30:00Z",
+          "report_outcome": "ATTEMPTED",
+          "exit_code": 0,
+          "outputs": [
+            "reports/2026-08-24-weekly-baseline.md"
+          ]
+        }
+      ],
+      "expect_status": [
+        "PASSED"
+      ],
+      "expect_findings": [
+        "OVERDUE"
+      ],
+      "expect_reading": "DEGRADED",
+      "proves": "The last attempt is eight and a half days old, just outside the window, so the walk is capped and that alone fires - the count inside the window is one, under the threshold. Lengthen scan_days to nine and this stops firing. With H-031 it pins the window from both sides, which nothing did before."
+    },
+    {
+      "case_id": "H-033-a-passing-run-with-no-recorded-end-is-still-a-passing-run",
+      "schedule": {
+        "name": "nightly-qa",
+        "enabled": true,
+        "target_exists": true,
+        "cron": "0 2 * * *",
+        "timeout_seconds": 3600,
+        "declaration_defect": null
+      },
+      "now": "2026-08-27T04:00:00Z",
+      "runs": [
+        {
+          "run_id": "nightly-qa-1",
+          "attempted_at": "2026-08-27T02:00:00Z",
+          "attempt_outcome": "ATTEMPTED",
+          "reason_code": null,
+          "reported_at": null,
+          "report_outcome": "ATTEMPTED",
+          "exit_code": 0,
+          "outputs": [
+            "../../.local/schedules/runs/nightly-qa-1.json"
+          ]
+        }
+      ],
+      "expect_status": [
+        "PASSED"
+      ],
+      "expect_findings": [
+        "EMPTY_RUN"
+      ],
+      "expect_reading": "DEGRADED",
+      "proves": "The run reports success and carries no end time, so it has a status and no duration. EMPTY_RUN read the runs that have a duration and stayed silent on this one, which a witness found: the reading was HEALTHY over a run that returned zero and produced nothing. One reader sets both fields together today, but history.py is declared a replaceable seam and the rule must not depend on that."
     }
   ]
 }

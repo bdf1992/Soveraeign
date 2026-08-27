@@ -8,7 +8,7 @@ schedules and left nothing watching them.
 
 ## What was true before this
 
-Seven schedule declarations under `.claude/schedules/`, all seven `enabled: false`.
+Every schedule declaration under `.claude/schedules/` reading `enabled: false`.
 A working runner in `scripts/sov_schedule.py`. `.local/schedules/` did not exist, so
 no scheduled run had ever executed on this machine and the ledger had nothing to
 read. Three rendered pages under `docs/`, none about automation.
@@ -37,8 +37,8 @@ case that passes for a reason other than the one it claims to prove.
 **2. An empty record set does not read green.** A schedule with no settled run reads
 `UNOBSERVED`, not `HEALTHY`. So does one whose entire history is refusals, and one
 whose only run is still in flight: a refusal invoked nothing and a run in flight has
-not answered, so neither is evidence that the schedule works. All seven schedules
-read `UNOBSERVED` today, which is the true statement about them. This is trap T2 one
+not answered, so neither is evidence that the schedule works. Every schedule reads
+`UNOBSERVED` today, which is the true statement about them. This is trap T2 one
 level down — green means unchanged, not correct.
 
 *What would defeat it:* a reading of `HEALTHY` over a schedule that has never
@@ -110,7 +110,7 @@ taste.
 
 ## What this does not do
 
-No schedule was enabled; all seven remain `enabled: false`. Nothing was registered
+No schedule was enabled; every one remains `enabled: false`. Nothing was registered
 with the Windows scheduler or any OS task. `fire-trigger` is untouched and still
 refuses `AUTHORITY_UNCONFIGURED`. `.claude/schedules/` was not moved into the
 Automation Service. The switching surface — step two of the request — is not built,
@@ -126,6 +126,26 @@ that rule for ever even if the host tick was never registered, which `OVERDUE` c
 only from the next cadence onward; the executor's exit code is displayed and no rule
 keys on it; and a `REPORTED` event whose run has no attempt is skipped in silence, so
 a truncated ledger reads as fewer runs rather than as an incoherent record.
+
+## What still waits on Bdo
+
+Two things, both raised by the independent witness of commit `564baad` rather than by
+the builder.
+
+1. **Does this read read right?** That is the gate the request itself named, and the
+   switching surface does not start until it is answered. Accepting it is accepting the
+   nine rules and the four readings, not enabling anything.
+2. **Whether a rendered artifact should be graded against `HEAD` as a rule, rather than
+   case by case.** This change shipped a page derived from a working tree eleven
+   sessions share, and its own check refused its own commit in a clean checkout. The
+   repair applies the referent Bdo already ruled for the orientation page on acceptance
+   packet A5. The same defect reached three places in one change - the page, the
+   orientation counts, and prose asserting a schedule count true only of the shared
+   tree - which suggests the rule belongs above this decision rather than inside it.
+
+Neither blocks work. The rules and the page stand as a reversible default under the
+first, and the second is a question about a rule this repository already applies in one
+place and not the others.
 
 ## Standing
 

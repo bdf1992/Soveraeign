@@ -13,7 +13,8 @@ from __future__ import annotations
 
 from sovschedule import cron
 from sovschedule.facts import (
-    FAILED, FAILURE_STATUSES, REFUSED, Facts, measured, settled, statuses_of, utc,
+    FAILED, FAILURE_STATUSES, PASSED, REFUSED, Facts, measured, settled, statuses_of,
+    utc,
 )
 
 
@@ -125,11 +126,17 @@ def _empty_run(facts: Facts, _table: dict, _limits: dict) -> str | None:
     A run that passes without writing one is the refusal loop quieter twin: it is
     alive, it spends budget, and it achieves nothing - and unlike a refusal, nothing
     else in the record calls it out.
+
+    Reads PASSED runs rather than measured ones. Measured also requires an end time,
+    and a witness found the difference reachable: a PASSED run with no recorded end
+    read HEALTHY. Today one reader sets both together, but ``history.py`` is declared
+    a replaceable seam, and a rule that depends on a coupling only the present source
+    guarantees is exactly what that seam promises it does not.
     """
-    passing = measured(facts)
-    if not passing or passing[-1].produced_reports:
+    passed = [run for run, status in zip(facts.runs, statuses_of(facts)) if status == PASSED]
+    if not passed or passed[-1].produced_reports:
         return None
-    return (f"run {passing[-1].run_id} returned zero and wrote no report under "
+    return (f"run {passed[-1].run_id} returned zero and wrote no report under "
             "reports/, which is what its prompt asked for")
 
 

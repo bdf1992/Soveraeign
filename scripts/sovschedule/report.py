@@ -17,7 +17,17 @@ hours - sometimes a day - wrong on any host that is not on UTC. The offset is ta
 once, carried on the digest, and reproduced by the staleness check, so the answer is
 right for the machine the runs happen on and the page still byte-compares elsewhere.
 
-Reading only. Nothing here writes a declaration, the ledger, or any standing.
+Declarations are read from one of two places and the caller says which. The page and
+its staleness check read them at HEAD, because a page derived from a tree eleven
+sessions share cannot be committed correctly: another session's untracked schedule puts
+a row on the page that a clean checkout cannot reproduce, and the check then refuses the
+commit it shipped in. That is the referent Bdo ruled on in acceptance packet A5 for the
+orientation page, applied here for the same reason. The operator command reads the
+working tree, because someone asking about a schedule file in front of them wants an
+answer about that file.
+
+Reading only. Nothing here writes a declaration, the ledger, or any standing, and the
+committed read materialises HEAD into a scratch directory rather than touching the tree.
 """
 
 from __future__ import annotations
@@ -27,7 +37,8 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import json
 
-from sovschedule import cron, health, history
+from sovschedule import committed, cron, health, history
+from sovschedule.committed import COMMIT, WORKTREE
 from sovschedule.declaration import (
     SCHEDULES_DIR, SCHEMA_NAME, DeclarationError, load_declaration, target_path,
 )
@@ -93,6 +104,7 @@ class Digest:
     counts: dict[str, int]
     rendered_at: datetime
     utc_offset: timedelta
+    source: str
 
     @property
     def refuses(self) -> bool:
@@ -157,17 +169,20 @@ def _refused(path: Path, defect: str) -> Declared:
     )
 
 
-def declarations(root: Path) -> list[Declared]:
-    """Every declaration file, sorted by name, refused ones included."""
+def _load_one(path: Path, root: Path) -> Declared:
+    try:
+        return _accepted(path, root)
+    except DeclarationError as error:
+        return _refused(path, str(error))
+
+
+def declarations(root: Path, source: str = WORKTREE) -> list[Declared]:
+    """Every declaration, sorted by name, refused ones included."""
+    if source == COMMIT:
+        return committed.declarations_at_head(root, _load_one)
     directory = root / SCHEDULES_DIR
     paths = sorted(p for p in directory.glob("*.json") if p.name != SCHEMA_NAME)
-    out = []
-    for path in paths:
-        try:
-            out.append(_accepted(path, root))
-        except DeclarationError as error:
-            out.append(_refused(path, str(error)))
-    return out
+    return [_load_one(path, root) for path in paths]
 
 
 def _target_present(root: Path, declared: Declared) -> bool:
@@ -227,7 +242,7 @@ def _row(facts: health.Facts, declared: Declared, reading: health.Reading,
 
 
 def assemble(root: Path, now: datetime | None = None, table: dict | None = None,
-             utc_offset: timedelta | None = None) -> Digest:
+             utc_offset: timedelta | None = None, source: str = WORKTREE) -> Digest:
     """Read declarations and history at this instant, in this clock, and judge each schedule.
 
     ``now`` and ``utc_offset`` are both injectable because a surface whose output
@@ -241,7 +256,7 @@ def assemble(root: Path, now: datetime | None = None, table: dict | None = None,
     declared_table = table or health.load()
     scan_days = declared_table["thresholds"]["scan_days"]
     rows = []
-    for declared in declarations(root):
+    for declared in declarations(root, source):
         runs = history.runs_for(root, declared.name)
         facts = _facts(root, declared, runs, moment)
         rows.append(_row(facts, declared, health.judge(facts, declared_table), scan_days))
@@ -253,4 +268,4 @@ def assemble(root: Path, now: datetime | None = None, table: dict | None = None,
         "refusing": sum(1 for row in rows if row.reading == "UNHEALTHY"),
     }
     return Digest(tuple(rows), health.worst([row.reading for row in rows], declared_table),
-                  history.ledger_state(root), declared_table, counts, moment, offset)
+                  history.ledger_state(root), declared_table, counts, moment, offset, source)

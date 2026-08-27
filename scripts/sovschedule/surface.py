@@ -20,6 +20,7 @@ import argparse
 import json
 
 from sovschedule import page, report
+from sovschedule.committed import SourceUnavailable
 from sovschedule.report import stamp
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -27,9 +28,9 @@ PAGE = ROOT / "docs" / "automation.html"
 RENDER_COMMAND = "python scripts/sov_schedule.py health-render"
 
 
-def _digest(root: Path, now: datetime | None = None,
-            offset: timedelta | None = None) -> report.Digest:
-    return report.assemble(root, now, utc_offset=offset)
+def _digest(root: Path, now: datetime | None = None, offset: timedelta | None = None,
+            source: str = report.WORKTREE) -> report.Digest:
+    return report.assemble(root, now, utc_offset=offset, source=source)
 
 
 def _print_findings(digest: report.Digest) -> None:
@@ -102,8 +103,17 @@ def _as_json(digest: report.Digest) -> dict:
 
 
 def command_render(args: argparse.Namespace) -> int:
-    """Write the page from the tree as it stands, stamped with the instant it was read."""
-    digest = _digest(args.root, args.now)
+    """Write the page from the declarations at HEAD, stamped with the instant it was read.
+
+    Not from the working tree: eleven sessions share this checkout, and a page carrying
+    another session's untracked schedule cannot be reproduced by anyone who clones the
+    commit it ships in.
+    """
+    try:
+        digest = _digest(args.root, args.now, source=report.COMMIT)
+    except SourceUnavailable as error:
+        print(f"FAIL: the declarations at HEAD could not be read: {error}")
+        return 1
     out = Path(args.out) if args.out else args.page_path
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(page.render(digest), encoding="utf-8", newline="\n")
@@ -126,7 +136,7 @@ def _grade_page(live: report.Digest, root: Path, page_path: Path) -> tuple[int, 
     # imposed its own offset would report every page from another zone as stale.
     expected = page.render(_digest(
         root, report.parse_stamp(recorded["rendered_at"]),
-        timedelta(minutes=recorded.get("utc_offset_minutes", 0))))
+        timedelta(minutes=recorded.get("utc_offset_minutes", 0)), source=report.COMMIT))
     if recorded.get("ledger_digest") != live.ledger.digest:
         if page.outside_history(text) != page.outside_history(expected):
             return 1, (f"FAIL: {name} is stale in its declared half; "
@@ -152,8 +162,14 @@ def command_check(args: argparse.Namespace) -> int:
     A declaration the loader refuses does not stop either job: it becomes a row with
     DECLARATION_REFUSED against it, which is UNHEALTHY, which refuses here by name.
     """
-    live = _digest(args.root, args.now or datetime.now(timezone.utc))
-    code, note = _grade_page(live, args.root, args.page_path)
+    moment = args.now or datetime.now(timezone.utc)
+    live = _digest(args.root, moment)
+    try:
+        committed = _digest(args.root, moment, source=report.COMMIT)
+    except SourceUnavailable as error:
+        print(f"FAIL: the declarations at HEAD could not be read: {error}")
+        return 1
+    code, note = _grade_page(committed, args.root, args.page_path)
     if code:
         print(note)
         return code

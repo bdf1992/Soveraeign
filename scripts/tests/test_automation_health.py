@@ -17,6 +17,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import contextlib
+import subprocess
 import io
 import json
 import shutil
@@ -95,6 +96,49 @@ class DeclaredCorpus(unittest.TestCase):
             with self.subTest(rule=rule):
                 self.assertIn(case_id, by_id, f"{rule} names a case that is not in the corpus")
                 self.assertNotIn(rule, by_id[case_id]["expect_findings"])
+
+    #: One step either side of each declared threshold. A step is the smallest change a
+    #: reader might plausibly make to that number, not an arbitrary delta.
+    PERTURBATIONS = {
+        "consecutive_failure_threshold": (1, 3),
+        "regression_multiple": (1.5, 2.5),
+        "regression_floor_seconds": (30, 90),
+        "refusal_loop_threshold": (2, 4),
+        "overdue_missed_occurrences": (1, 3),
+        "scan_days": (7, 9),
+    }
+
+    def _corpus_disagrees(self, threshold: str, value) -> bool:
+        """Whether moving one threshold makes any declared case stop holding."""
+        table = json.loads(json.dumps(TABLE))
+        table["thresholds"][threshold] = value
+        for case in CORPUS["cases"]:
+            reading = health.judge(facts_of(case), table)
+            if sorted(f.rule for f in reading.findings) != sorted(case["expect_findings"]):
+                return True
+            if reading.reading != case["expect_reading"]:
+                return True
+        return False
+
+    def test_every_threshold_is_pinned_on_both_sides_by_a_case(self) -> None:
+        """The property the contract claims, checked rather than asserted.
+
+        A witness found the first draft asserting this with three of the six numbers
+        unpinned: `regression_multiple` could be lowered to 1.5, `overdue_missed_occurrences`
+        raised to 3, and `scan_days` moved either way, all with the corpus staying green.
+        A threshold nothing defeats is a number somebody picked, not a rule.
+        """
+        numeric = {name: value for name, value in TABLE["thresholds"].items()
+                   if isinstance(value, (int, float)) and not isinstance(value, bool)}
+        self.assertEqual(sorted(numeric), sorted(self.PERTURBATIONS),
+                         "a threshold was added or removed without a perturbation for it")
+        for threshold, (lower, higher) in self.PERTURBATIONS.items():
+            for value in (lower, higher):
+                with self.subTest(threshold=threshold, value=value):
+                    self.assertTrue(
+                        self._corpus_disagrees(threshold, value),
+                        f"{threshold} can be changed to {value} with every case still "
+                        "holding, so no case pins it")
 
     def test_the_corpus_reaches_every_reading_and_every_run_status(self) -> None:
         """A corpus that never produced UNHEALTHY would prove nothing refuses."""
@@ -259,9 +303,26 @@ class PageAndCheck(unittest.TestCase):
         self.path = schedules / "nightly-qa.json"
         self.write_declaration()
         self.page = self.root / "docs" / "automation.html"
+        self.git("init", "-q")
+        self.git("add", "-A")
+        self.commit()
 
     def tearDown(self) -> None:
         self.tmp.cleanup()
+
+    def git(self, *args: str) -> None:
+        subprocess.run(["git", *args], cwd=self.root, check=True,
+                       capture_output=True, text=True)
+
+    def commit(self) -> None:
+        """Land the temporary tree. The page is a projection of HEAD, so it needs one."""
+        self.git("-c", "user.email=t@t", "-c", "user.name=t", "-c", "commit.gpgsign=false",
+                 "commit", "-q", "--allow-empty", "-m", "state")
+
+    def land(self, **overrides) -> None:
+        self.write_declaration(**overrides)
+        self.git("add", "-A")
+        self.commit()
 
     def write_declaration(self, **overrides) -> None:
         raw = {
@@ -305,8 +366,8 @@ class PageAndCheck(unittest.TestCase):
             effect_class="RECORD_LOCAL", outcome=outcome))
 
     def test_two_renders_of_an_unchanged_tree_are_identical_bytes(self) -> None:
-        first = page.render(report.assemble(self.root, self.NOW))
-        second = page.render(report.assemble(self.root, self.NOW))
+        first = page.render(report.assemble(self.root, self.NOW, source=report.COMMIT))
+        second = page.render(report.assemble(self.root, self.NOW, source=report.COMMIT))
         self.assertEqual(first, second)
 
     def test_a_freshly_rendered_page_passes_both_halves(self) -> None:
@@ -315,12 +376,36 @@ class PageAndCheck(unittest.TestCase):
         self.assertEqual(code, 0, out)
         self.assertIn("both halves", out)
 
-    def test_a_changed_declaration_makes_the_page_stale(self) -> None:
+    def test_a_landed_declaration_change_makes_the_page_stale(self) -> None:
         self.render()
-        self.write_declaration(cron="0 3 * * *")
+        self.land(cron="0 3 * * *")
         code, out = self.check()
         self.assertEqual(code, 1)
         self.assertIn("is stale", out)
+
+    def test_an_uncommitted_declaration_does_not_make_the_page_stale(self) -> None:
+        """The regression the witness found: the page must be a projection of HEAD.
+
+        Eleven sessions share the real checkout. A page derived from the working tree
+        carries whatever any of them has written and not committed, so a clean clone of
+        the commit it ships in re-derives different bytes and the check refuses the
+        commit it shipped with. The health gate still reads the working tree.
+        """
+        self.render()
+        (self.path.parent / "later.json").write_text(json.dumps({
+            "name": "later", "enabled": False,
+            "target": {"kind": "workflow", "name": "sov-qa"},
+            "cron": "0 4 * * *", "mode": "observe",
+            "effect_class": "RESOURCE_CONSUMPTION",
+            "preconditions": {"clean_tree": False},
+            "limits": {"max_budget_usd": 5, "timeout_seconds": 600},
+        }, indent=2) + "\n", encoding="utf-8")
+        code, out = self.check()
+        self.assertEqual(code, 0, out)
+        page_rows = page.read_provenance(self.page.read_text(encoding="utf-8"))["readings"]
+        self.assertEqual(sorted(page_rows), ["nightly-qa"])
+        digest = report.assemble(self.root, self.NOW, utc_offset=timedelta(0))
+        self.assertEqual(sorted(row.name for row in digest.rows), ["later", "nightly-qa"])
 
     def test_a_ledger_appearing_after_the_render_leaves_history_unchecked(self) -> None:
         """The defeating case for a naive byte comparison.
@@ -340,7 +425,7 @@ class PageAndCheck(unittest.TestCase):
         """The split must not become a way to hide a declaration change behind a run."""
         self.render()
         self.record_run()
-        self.write_declaration(cron="0 3 * * *")
+        self.land(cron="0 3 * * *")
         code, out = self.check()
         self.assertEqual(code, 1)
         self.assertIn("stale in its declared half", out)
@@ -348,7 +433,7 @@ class PageAndCheck(unittest.TestCase):
     def test_a_reading_that_moves_without_the_records_moving_fails(self) -> None:
         """OVERDUE becomes true by time passing and by nothing changing on disk."""
         self.record_run()
-        self.write_declaration(enabled=True)
+        self.land(enabled=True)
         self.render()
         code, out = self.check(now=self.NOW.replace(day=30))
         self.assertEqual(code, 1)
@@ -356,7 +441,12 @@ class PageAndCheck(unittest.TestCase):
         self.assertIn("nightly-qa", out)
 
     def test_an_unhealthy_reading_refuses_once_the_page_is_current(self) -> None:
-        """The alert leg the request admits: an unhealthy automation fails the build."""
+        """The alert leg the request admits: an unhealthy automation fails the build.
+
+        The target is removed from the working tree and not from HEAD, so the page still
+        renders it present and stays current while the gate refuses. That is the split:
+        the page is a projection of the commit, the gate is a reading of the tree.
+        """
         self.target.unlink()
         self.render()
         code, out = self.check()
@@ -367,7 +457,7 @@ class PageAndCheck(unittest.TestCase):
     def test_one_refused_declaration_does_not_hide_the_others(self) -> None:
         """load_all raises on the first bad file and shows nothing. This must not."""
         (self.path.parent / "broken.json").write_text('{"name": "broken"}\n', encoding="utf-8")
-        digest = report.assemble(self.root, self.NOW)
+        digest = report.assemble(self.root, self.NOW, utc_offset=timedelta(0))
         self.assertEqual([row.name for row in digest.rows], ["broken", "nightly-qa"])
         self.assertEqual(digest.rows[0].reading, "UNHEALTHY")
         self.assertEqual(digest.rows[1].reading, "UNOBSERVED")
@@ -375,7 +465,7 @@ class PageAndCheck(unittest.TestCase):
 
     def test_a_declaration_that_is_not_json_at_all_still_produces_a_row(self) -> None:
         (self.path.parent / "garbage.json").write_text("not json\n", encoding="utf-8")
-        digest = report.assemble(self.root, self.NOW)
+        digest = report.assemble(self.root, self.NOW, utc_offset=timedelta(0))
         row = next(row for row in digest.rows if row.name == "garbage")
         self.assertIsNotNone(row.defect)
         self.assertEqual(row.reading, "UNHEALTHY")

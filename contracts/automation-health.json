@@ -2,7 +2,7 @@
   "table_id": "soveraeign-automation-health/v1",
   "status": "PROPOSED",
   "governed_by": "decisions/0083-automation-health-read.md",
-  "note": "What counts as an unhealthy automation, and what an unhealthy reading is allowed to do. Seven schedules are declared under .claude/schedules/, all seven are enabled false, and no scheduled run has ever executed on this machine, so the honest reading of this node today is not HEALTHY - it is UNOBSERVED, which this table names rather than letting an empty record set pass as a green one. That is the same defect CLAUDE.md trap T2 records one level up: green means unchanged, not correct. The table grants nothing, changes no standing, and enables no schedule. scripts/sovschedule/health.py reads it and conformance/fixtures/automation-health/cases.json defeats it.",
+  "note": "What counts as an unhealthy automation, and what an unhealthy reading is allowed to do. Every schedule declared under .claude/schedules/ is enabled false and no scheduled run has ever executed on this machine, so the honest reading of this node today is not HEALTHY - it is UNOBSERVED, which this table names rather than letting an empty record set pass as a green one. That is the same defect CLAUDE.md trap T2 records one level up: green means unchanged, not correct. The table states no count of its own: a witness found the first draft asserting seven schedules, which was true of a working tree eleven sessions share and false of the commit that carried the claim. The table grants nothing, changes no standing, and enables no schedule. scripts/sovschedule/health.py reads it and conformance/fixtures/automation-health/cases.json defeats it.",
   "readings": {
     "note": "One reading per schedule, and one for the node, derived from the findings that fired. Ordered worst first; the node's reading is the worst of its schedules'. A reading is a report about records, never a standing: AGENTS.md holds OPEN -> BUILT -> WITNESSED -> RATIFIED and nothing here touches it.",
     "order": [
@@ -99,20 +99,20 @@
     "EMPTY_RUN": {
       "severity": "DEGRADED",
       "needs": "history",
-      "fires_when": "The newest run that passed recorded no output address under reports/.",
+      "fires_when": "The newest run whose status is PASSED recorded no output address under reports/, whether or not that run also recorded an end time.",
       "quiet_when": "No run has passed, or the newest passing run wrote a report.",
       "applies_to_disabled": true,
       "why": "The refusal loop quieter twin. Every declaration prompt in scripts/sovschedule/runner.py asks the executor to write a completion report; a run that returns zero and writes nothing is alive, spends budget, and achieves nothing, and unlike a refusal there is no code in the record naming it. Every count that measures passing runs reports it as working.",
-      "evidence_note": "The REPORTED event already carries the output addresses the runner observed, so this rule reads a record that exists rather than asking for a new one. It does not read the report file or judge what it says - that would be treating the executor own output as evidence about itself."
+      "evidence_note": "The REPORTED event already carries the output addresses the runner observed, so this rule reads a record that exists rather than asking for a new one. It does not read the report file or judge what it says - that would be treating the executor own output as evidence about itself. It reads PASSED rather than measured: measured also requires an end time, and a witness found a PASSED run with no recorded end reading HEALTHY. One reader sets both together today, and history.py is declared a replaceable seam, so the rule must not depend on a coupling only the present source guarantees."
     },
     "OVERDUE": {
       "severity": "DEGRADED",
       "needs": "history",
       "fires_when": "The schedule is enabled, at least one attempt is recorded, and either at least overdue_missed_occurrences whole cron occurrences have passed since the newest attempt, or that attempt is older than the scan window.",
-      "quiet_when": "The schedule is disabled, no attempt is recorded, or fewer occurrences than that have passed.",
+      "quiet_when": "The schedule is disabled, no attempt is recorded, fewer occurrences than that have passed with the scan window not exhausted, or the cron expression does not parse - in which case DECLARATION_REFUSED is what reports the file.",
       "applies_to_disabled": false,
       "why": "Distinct from ENABLED_NEVER_RUN: this is the tick that used to fire and stopped. Counting occurrences rather than elapsed time is what makes one rule cover a two-hourly schedule and a weekly one.",
-      "scan_note": "Occurrences are counted by walking minutes forward from the newest attempt, capped at scan_days to bound the work. A walk that hits the cap fires on its own: a weekly expression yields one or two occurrences inside an eight-day window depending on which weekday today is, so a threshold of two applied to the count alone would fire on one day in seven and stay silent on the other six however long the schedule had been dead. Two of the seven declarations here are weekly. Past the cap the count is reported as at-least.",
+      "scan_note": "Occurrences are counted by walking minutes forward from the newest attempt, capped at scan_days to bound the work. A walk that hits the cap fires on its own: a weekly expression yields one or two occurrences inside an eight-day window depending on which weekday today is, so a threshold of two applied to the count alone would fire on one day in seven and stay silent on the other six however long the schedule had been dead. Two of the declarations here are weekly. Past the cap the count is reported as at-least, and both sides of scan_days carry a case: H-031 sits inside the window and stays quiet, H-032 sits just outside it and fires.",
       "clock_note": "Counted in the same clock the page was rendered in, which is recorded on the page. scripts/sovschedule/runner.py matches cron in the host local time, so a read taken in UTC on a host west of UTC would report a next-due time hours or a day wrong; the reader converts to the recorded offset instead. A daylight-saving change inside the window can still move a boundary by one occurrence, which is one more reason the threshold is two."
     }
   },
@@ -123,7 +123,7 @@
     "refusal_loop_threshold": 3,
     "overdue_missed_occurrences": 2,
     "scan_days": 8,
-    "note": "scan_days matches MAX_SCAN_MINUTES in scripts/sovschedule/cron.py, which is the window the existing due calculation already trusts. The other five are set from the shape of the seven declarations rather than from measurement, because nothing has run: the fastest cadence is two-hourly and the slowest is weekly, and regression_floor_seconds sits well under the smallest declared timeout of 2400s. They are reversible defaults and the fixture corpus is what would move them. Each one is bounded on both sides by a case sitting exactly on it and a case one step inside, so a threshold cannot be changed without a case going red."
+    "note": "scan_days matches MAX_SCAN_MINUTES in scripts/sovschedule/cron.py, which is the window the existing due calculation already trusts. The other five are set from the shape of the declarations rather than from measurement, because nothing has run: the fastest cadence is two-hourly and the slowest is weekly, and regression_floor_seconds sits well under the smallest declared timeout of 2400s. They are reversible defaults and the fixture corpus is what would move them. Each one is pinned on both sides, and that is checked rather than asserted: scripts/tests/test_automation_health.py perturbs every number here one step up and one step down and fails unless a declared case goes red. A witness found the first draft claiming this property with three of the six unpinned, so the claim is now a test."
   },
   "blocking": {
     "refuses_at": "UNHEALTHY",
@@ -140,7 +140,7 @@
       "today": ".claude/schedules/*.json",
       "read_by": "scripts/sovschedule/declaration.py",
       "owner_when_lifted": "services/automation",
-      "moves_under": "the schedule lift recorded in services/automation/KNOWN-GAPS.md, which is a separate concern"
+      "moves_under": "the schedule lift recorded in the Automation Service charter, whose boundary is packet A7 - presented and not yet accepted, and not committed at the time this table was written. That lift is a separate concern."
     },
     "history": {
       "today": ".local/schedules/ledger.ndjson",
@@ -149,7 +149,7 @@
       "moves_under": "services/automation/KNOWN-GAPS.md, Journal awareness"
     },
     "reader": {
-      "today": "scripts/sovschedule/health.py, reached as: python scripts/sov_schedule.py health",
+      "today": "scripts/sovschedule/health.py, reached as: python scripts/sov_schedule.py health. That command and the health gate read the working tree, because an operator asking about a schedule file in front of them wants an answer about that file; only the page and its staleness check read HEAD.",
       "owner_when_lifted": "services/console",
       "surface": "Console surface 3, dashboards - declared projections over receipts, events, standing, and judgement spend (services/console/CHARTER.md)",
       "placement_ruled_by": "Bdo, .claude/drafts/automation-health-and-controls-ticket.md, 2026-08-27"
@@ -157,7 +157,7 @@
     "page": {
       "today": "docs/automation.html, rendered by scripts/sovschedule/page.py",
       "staleness": "Graded by: python scripts/sov_schedule.py health-check, run inside scripts/verify.py the way docs/topology.html, docs/surface.html and docs/documentation.html are graded.",
-      "split_note": "The page declaration half is derived from committed bytes and the recorded instant, and is byte-compared everywhere. Its history half is derived from .local/schedules/, which is gitignored machine-local state: a run that happens on this machine would make the committed page stale in CI, where no ledger exists. So the history half carries the digest of the ledger it was rendered from, and the check grades it only where a ledger is present. Where none is, the check says the half is UNCHECKED and names the absent source rather than passing over it - the omission a declared projection has to declare (services/console/CHARTER.md, defeating cases). The page also records the UTC offset it was rendered in, so the check reproduces its clock rather than the checking host one."
+      "split_note": "The page declaration half is derived from the declarations tracked at HEAD and the recorded instant, not from the working tree: eleven sessions share this checkout, and a page carrying an untracked schedule cannot be reproduced by anyone who clones the commit it ships in - which is how the first draft shipped a page its own check refused. Bdo ruled the same referent on acceptance packet A5 for the orientation page. That half is byte-compared everywhere. The history half is derived from .local/schedules/, which is gitignored machine-local state, so it carries the digest of the ledger it was rendered from and the check grades it only where a ledger is present. Where none is, the check says the half is UNCHECKED and names the absent source rather than passing over it - the omission a declared projection has to declare (services/console/CHARTER.md, defeating cases). The page also records the UTC offset it was rendered in, so the check reproduces its clock rather than the checking host one."
     }
   },
   "refuses": {
@@ -176,6 +176,7 @@
     "no_enablement_timestamp": "Nothing records when a schedule was switched on, so ENABLED_NEVER_RUN fires the moment it is enabled rather than after a grace period. Step two of the request records who changed a schedule and when; the grace window belongs there.",
     "a_forced_run_counts_as_an_attempt": "sov_schedule.py run NAME --force writes an ordinary ATTEMPTED event, so one manual run silences ENABLED_NEVER_RUN for ever even if the tick was never registered with the host. OVERDUE covers it from the next cadence onward. Marking forced runs on the event would close it and is a change to the runner record shape, not to this table.",
     "an_exit_code_has_no_rule": "history.py parses the executor exit code off the REPORTED event and both readers display it, because 124 is a timeout and 127 is claude not being on this machine, and an environment defect reads as a schedule defect without it. No rule keys on it yet; a person looking at the row is the reader for now.",
-    "a_dropped_report_event": "history.py builds its run list from ATTEMPTED events, so a REPORTED event whose run_id has no attempt is skipped in silence. A truncated or hand-edited ledger reads as fewer runs rather than as an incoherent record."
+    "a_dropped_report_event": "history.py builds its run list from ATTEMPTED events, so a REPORTED event whose run_id has no attempt is skipped in silence. A truncated or hand-edited ledger reads as fewer runs rather than as an incoherent record.",
+    "a_page_and_a_command_can_disagree": "The page counts declarations at HEAD and the command counts them on disk, so a schedule written and not yet committed appears in one and not the other. Both say which they are reading. The alternative - one reader over the working tree - is what shipped a page that its own check refused on every clean checkout."
   }
 }

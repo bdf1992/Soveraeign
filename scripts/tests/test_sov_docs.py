@@ -111,8 +111,10 @@ class SourceTraversal(unittest.TestCase):
             if ".local" in dirs:
                 yield str(root / ".local"), [], ["capture.md"]
             # A whole checkout of this repository, as `.claude/worktrees/` holds. Its
-            # copy of a published document must not be published a second time, and an
-            # unclassifiable file inside it must not fail the corpus it is not part of.
+            # copy of a published document must not be published a second time. The
+            # unclassifiable file beside it models what the real defect looked like and
+            # does not prove it: this walk reaches facets.excluded(), never facets.kind(),
+            # and no test can pin that linkage while a clean checkout has no worktrees.
             if "worktrees" in dirs:
                 yield str(root / "worktrees"), [], ["ROOT.md", "AGENT-BOOTSTRAP-PROMPT.md"]
 

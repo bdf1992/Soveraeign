@@ -41,12 +41,13 @@ STATUS = ROOT / "STATUS.yaml"
 CORPUS = ROOT / "conformance" / "fixtures" / "status-claims" / "cases.json"
 
 FIELD = re.compile(r"^([a-z0-9_]+_status):\s*(\S+)\s*$")
-# Deliberately far looser than FIELD: anything key-shaped whose name ends in "status",
-# quoted or not, hyphenated or not, in any case, with or without a space before the
-# colon. A second witness passed four shapes the earlier pattern could not see -
-# `ai-native_status:`, `"quoted_status":`, `x_status :` and `FOO_STATUS:` - because it
-# was written against the two shapes the first witness reported.
-LOOSE = re.compile(r"^\s*[\"']?[A-Za-z0-9_-]*[Ss][Tt][Aa][Tt][Uu][Ss][\"']?\s*:")
+# Deliberately far looser than FIELD, and anchored on a real `_status` suffix. Three
+# drafts of this pattern were each taught the shapes the previous witness reported;
+# this one takes any key ending in `_status` however it is written - quoted, hyphenated,
+# dotted, in a list item, in a flow mapping, in any case, at any indent, with or without
+# a space before the colon. Requiring something before the underscore stops it firing on
+# a bare `status:` key, which is not a status field and which no entry could ever match.
+LOOSE = re.compile(r"^[\s\-{\[,]*[\"']?[A-Za-z0-9][A-Za-z0-9_.\-/]*_[Ss][Tt][Aa][Tt][Uu][Ss][\"']?\s*:")
 
 
 def load_contract(path: Path = CONTRACT) -> dict:
@@ -158,8 +159,7 @@ def _cmd_show(args: argparse.Namespace) -> int:
     for subject in sorted({e["subject"] for e in wanted}):
         print(subject)
         for entry in [e for e in wanted if e["subject"] == subject]:
-            print(f"  {entry['claim_kind']:<16} {entry['artifact_standing'] or '-':<9} "
-                  f"{entry['detail']}")
+            print(f"  {entry['claim_kind']:<16} {entry['detail']}")
     return 0
 
 

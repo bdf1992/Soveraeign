@@ -4,33 +4,42 @@ Kept apart from `scripts/sov_status_claims.py` so the table can grow without dra
 reader and the command line past the module budget with it. The reader owns what counts as
 a status field; this owns what counts as a wrong entry.
 
-Nothing an entry declares is trusted where it can be derived. The subject is the field
-stem. The claim kind is fixed by the value's own prefix. The standing is the value's
-leading token or nothing at all.
+Nothing an entry declares is trusted where it can be derived, and nothing is derived from
+prose. The subject is the field stem. The claim kind is fixed by the value's own leading
+tokens. The set of keys an entry may carry is closed.
 
-That last rule is the third attempt, and the first two are why it is shaped this way. A
-first draft let an entry declare a standing from prose, and a witness declared `WITNESSED`
-on a value reading `NOT_WITNESSED`. A second draft compared the standing to a token and
-treated a preceding `NOT` as denial, and a second witness walked through
-`NOT_YET_WITNESSED`, `NEVER_WITNESSED`, `AWAITING_WITNESSED` and `BUILT-NOT_WITNESSED` -
-the last one because splitting on underscores alone hides a hyphenated negator entirely.
+This table used to extract an artifact standing from the value, and three independent
+witnesses broke three attempts at it. The first read a standing from prose and admitted
+`WITNESSED` on a value reading `NOT_WITNESSED`. The second compared whole tokens and treated
+`NOT` as denial, and fell to `NOT_YET`, `NEVER`, `AWAITING`, and to `BUILT-NOT_WITNESSED`,
+where a hyphen hid the negator. The third asked only what the value led with, and fell to
+`WITNESSED_RETRACTED`, `RATIFIED_NOT` and `-WITNESSED`, where splitting on non-alphanumerics
+deletes a negator rather than seeing it. Each draft closed the instance it was shown and left
+the class open in a new spelling.
 
-Both drafts guarded the reported instance. A vocabulary of negations can always be extended
-by one word, so this draft asks a question with no vocabulary in it: is the standing the
-first thing the value says? A value that opens with `BUILT` is not denying `BUILT`, and a
-value that opens with anything else asserts no standing here whatever else it contains.
-Four interacting refusals collapse into that one biconditional.
+The fourth answer is not a fourth spelling. The extraction is gone. Whether something is
+witnessed is a standing claim, `scripts/sov_standing.py` already owns it and checks the thing
+that decides it - whether a witness record exists naming the subject - and a second, weaker
+standing rule here was the competing authority `AGENTS.md` forbids. Reading a structured fact
+out of unstructured prose is what kept failing; not doing it is the repair.
+
+What this table owns is which subject a status line is about and which kind of claim it
+makes. No witness has broken that across three rounds.
 """
 
 from __future__ import annotations
 
 import re
 
-ACCEPTANCE_VALUE = re.compile(r"^OWNER_ACCEPTED_A(\d+)")
-PACKET_REFERENCE = re.compile(r"^A(\d+)$")
+PACKET_TOKEN = re.compile(r"\AA(\d+)\Z")
+PACKET_REFERENCE = re.compile(r"\AA(\d+)\Z")
 SEPARATORS = re.compile(r"[^A-Za-z0-9]+")
 SUFFIX = "_status"
 SHAPE = {"field": str, "value": str, "subject": str, "claim_kind": str, "detail": str}
+# Closed. A witness added asserted_standing, settled_by, authority and a resurrected
+# standing_source to a live entry and every one passed: a type check over seven named
+# keys never rejects an eighth.
+KEYS = frozenset(SHAPE) | {"reference"}
 
 
 def tokens(value: str) -> list[str]:
@@ -40,12 +49,6 @@ def tokens(value: str) -> list[str]:
     negator written with a hyphen was never seen by a rule looking for one.
     """
     return [token for token in SEPARATORS.split(value.upper()) if token]
-
-
-def leading_standing(value: str, ladder: set[str]) -> str | None:
-    """The standing a value asserts: its first token, if that token is a rung."""
-    found = tokens(value)
-    return found[0] if found and found[0] in ladder else None
 
 
 def derived_subject(field: str) -> str:
@@ -62,10 +65,10 @@ def expected_kind(value: str) -> str:
     an act rather than the record of the act. Eighteen live fields turn on that reading and
     it is Bdo's to overturn; see `decisions/0074`, Residuals.
     """
-    upper = value.upper()
-    if upper.startswith("RULED_"):
+    found = tokens(value)
+    if found[:1] == ["RULED"]:
         return "RULING"
-    if ACCEPTANCE_VALUE.match(upper):
+    if found[:2] == ["OWNER", "ACCEPTED"] and len(found) > 2 and PACKET_TOKEN.match(found[2]):
         return "OWNER_ACCEPTANCE"
     return "STATUS"
 
@@ -77,10 +80,22 @@ def malformed(_f: list[tuple[str, str]], entries: list[dict], _c: dict) -> list[
         bad = [k for k, kind in SHAPE.items() if not isinstance(entry.get(k), kind)]
         if bad:
             defects.append(f"ENTRY_MALFORMED: entry {index} lacks well-formed {', '.join(bad)}")
-        elif "artifact_standing" not in entry or "reference" not in entry:
+        elif "reference" not in entry:
             defects.append(f"ENTRY_MALFORMED: entry {index} ({entry['field']}) omits a "
-                           "standing or a reference")
+                           "reference")
     return defects
+
+
+def unknown_key(_f: list[tuple[str, str]], entries: list[dict], _c: dict) -> list[str]:
+    """ENTRY_UNKNOWN_KEY - an entry may carry no key this table does not grade.
+
+    The set is closed rather than merely type-checked. A witness put `asserted_standing`,
+    `settled_by`, `authority` and a resurrected `standing_source` onto live entries and every
+    one passed, because checking the types of seven named keys never rejects an eighth.
+    """
+    return [f"ENTRY_UNKNOWN_KEY: {e.get('field')} carries {sorted(set(e) - KEYS)}, which this "
+            "table does not grade"
+            for e in entries if set(e) - KEYS]
 
 
 def untyped(fields: list[tuple[str, str]], entries: list[dict], _c: dict) -> list[str]:
@@ -142,26 +157,6 @@ def kind_contradicts(_f: list[tuple[str, str]], entries: list[dict], contract: d
     return defects
 
 
-def standing_not_leading(_f: list[tuple[str, str]], entries: list[dict],
-                         contract: dict) -> list[str]:
-    """STANDING_NOT_THE_LEADING_TOKEN - the whole standing rule, in both directions.
-
-    A standing is declared if and only if the value's first token is a rung, and then it is
-    that rung. No negation vocabulary, so no negation vocabulary to be short by one.
-    """
-    ladder = set(contract["artifact_standing_ladder"])
-    defects = []
-    for entry in entries:
-        asserted = leading_standing(entry.get("value", ""), ladder)
-        declared = entry.get("artifact_standing")
-        if declared != asserted:
-            defects.append(f"STANDING_NOT_THE_LEADING_TOKEN: {entry.get('field')} declares "
-                           f"{declared!r} and {entry.get('value')} leads with "
-                           f"{(tokens(entry.get('value', '')) or ['nothing'])[0]}, which "
-                           f"asserts {asserted!r}")
-    return defects
-
-
 def reference_contradicts(_f: list[tuple[str, str]], entries: list[dict], _c: dict) -> list[str]:
     """REFERENCE_CONTRADICTS_VALUE - the packet id an entry names must be the one it carries.
 
@@ -171,7 +166,9 @@ def reference_contradicts(_f: list[tuple[str, str]], entries: list[dict], _c: di
     """
     defects = []
     for entry in entries:
-        carried = ACCEPTANCE_VALUE.match(entry.get("value", "").upper())
+        found = tokens(entry.get("value", ""))
+        carried = (PACKET_TOKEN.match(found[2])
+                   if found[:2] == ["OWNER", "ACCEPTED"] and len(found) > 2 else None)
         named = PACKET_REFERENCE.match(str(entry.get("reference") or ""))
         if carried and (not named or named.group(1) != carried.group(1)):
             defects.append(f"REFERENCE_CONTRADICTS_VALUE: {entry.get('field')} carries packet "
@@ -182,5 +179,6 @@ def reference_contradicts(_f: list[tuple[str, str]], entries: list[dict], _c: di
     return defects
 
 
-CHECKS = (malformed, untyped, unmatched, subject_not_derived, kind_undeclared, collision,
-          kind_contradicts, standing_not_leading, reference_contradicts)
+CHECKS = (malformed, unknown_key, untyped, unmatched, subject_not_derived,
+          kind_undeclared, collision,
+          kind_contradicts, reference_contradicts)

@@ -1,20 +1,20 @@
 """Checks for the status-claim crosswalk and the refusals that grade it.
 
 The crosswalk exists so that three kinds of claim about one subject stop sharing one key in
-`STATUS.yaml`. Its own correctness therefore matters more than usual: a crosswalk that
-admits a false standing is worse than no crosswalk, because a reader would trust it.
+`STATUS.yaml`. Its own correctness therefore matters more than usual: a crosswalk a reader
+would trust and should not is worse than none.
 
-Two independent witnesses defeated two drafts of this check, and both defeats had the same
-shape - a guard written against the instance that was reported rather than the class it
-named. The first got a standing past an unverifiable prose source. The second walked past a
-NOT-aware token comparison using `NOT_YET`, `NEVER`, `AWAITING` and a hyphenated `NOT`, and
-past a reader that had been taught two shapes of unparseable line rather than the class.
+Three independent witnesses broke three drafts of a rule that tried to read an artifact
+standing out of the value's prose. The first read it from prose outright and admitted
+`WITNESSED` on a value reading `NOT_WITNESSED`. The second compared whole tokens and treated
+`NOT` as denial, and fell to `NOT_YET`, `NEVER`, `AWAITING` and a hyphenated `NOT`. The third
+asked only what the value led with, and fell to `WITNESSED_RETRACTED`, `RATIFIED_NOT` and
+`-WITNESSED` - and also refused the correct entry on five live fields.
 
-Every case either witness got through is a test here rather than only a note in a decision
-record, because a defect that is only described comes back. The negator battery in
-`LeadingStanding` is deliberately longer than the list of words either witness used: the
-point of the current rule is that it asks a question with no vocabulary in it, and these
-cases are what would fail loudly if someone reintroduced one.
+There is no fourth spelling. The extraction is gone, `scripts/sov_standing.py` owns standing
+claims, and the tests below cover what remains: which subject a line is about, which kind of
+claim it makes, and a closed set of keys. `WhatWasRemoved` exists so that reintroducing the
+extraction fails loudly rather than quietly starting the cycle again.
 """
 
 from __future__ import annotations
@@ -30,8 +30,6 @@ sys.path.insert(0, str(SCRIPTS))
 import sov_status_claims  # noqa: E402
 from sovstatus import refusals  # noqa: E402
 
-LADDER = {"OPEN", "BUILT", "WITNESSED", "RATIFIED"}
-
 
 def entry(**overrides) -> dict:
     """A well-formed entry, so a test changes exactly the one thing it is about."""
@@ -40,7 +38,6 @@ def entry(**overrides) -> dict:
         "value": "BUILT_SELF_TESTED_NOT_WITNESSED",
         "subject": "record-service",
         "claim_kind": "STATUS",
-        "artifact_standing": "BUILT",
         "detail": "self-tested",
         "reference": None,
     }
@@ -56,42 +53,16 @@ def codes(entries: list[dict], text: str) -> set[str]:
 
 
 class Tokenisation(unittest.TestCase):
-    """Splitting on underscores alone hid a hyphenated negator from the previous rule."""
+    """Splitting matters for the kind rule, which is the only rule left that reads a value."""
 
     def test_it_splits_on_every_non_alphanumeric_run(self):
-        self.assertEqual(refusals.tokens("BUILT-NOT_WITNESSED"), ["BUILT", "NOT", "WITNESSED"])
+        self.assertEqual(refusals.tokens("RULED-O19_X"), ["RULED", "O19", "X"])
 
     def test_it_upper_cases(self):
-        self.assertEqual(refusals.tokens("built_and_tested"), ["BUILT", "AND", "TESTED"])
+        self.assertEqual(refusals.tokens("ruled_open"), ["RULED", "OPEN"])
 
     def test_it_drops_empty_runs(self):
-        self.assertEqual(refusals.tokens("__BUILT__"), ["BUILT"])
-
-
-class LeadingStanding(unittest.TestCase):
-    """A standing is the value's first token or nothing. No negation vocabulary."""
-
-    def test_a_value_leading_with_a_rung_asserts_it(self):
-        self.assertEqual(refusals.leading_standing("BUILT_SELF_TESTED", LADDER), "BUILT")
-
-    def test_a_value_leading_with_anything_else_asserts_nothing(self):
-        for value in ("PROPOSED_CONTRACT_BUILT", "OWNER_ACCEPTED_BUILT", "RULED_O17_BUILT"):
-            with self.subTest(value=value):
-                self.assertIsNone(refusals.leading_standing(value, LADDER))
-
-    def test_no_negator_or_deferral_lets_a_trailing_rung_assert(self):
-        """The battery. A vocabulary of negations is always short by one word; this is not
-        a vocabulary, so every one of these fails for the same single reason."""
-        for value in ("NOT_WITNESSED", "NOT_YET_WITNESSED", "NEVER_WITNESSED",
-                      "NO_WITNESSED", "UN_WITNESSED", "PENDING_WITNESSED",
-                      "AWAITING_WITNESSED", "BUILT-NOT_WITNESSED",
-                      "SELF_TESTED_NOT-YET_WITNESSED", "NOT_NOT_WITNESSED",
-                      "ALMOST_WITNESSED", "WOULD_HAVE_BEEN_WITNESSED"):
-            with self.subTest(value=value):
-                self.assertNotEqual(refusals.leading_standing(value, LADDER), "WITNESSED")
-
-    def test_the_lowercase_form_of_a_rung_still_asserts_it(self):
-        self.assertEqual(refusals.leading_standing("built_and_tested", LADDER), "BUILT")
+        self.assertEqual(refusals.tokens("__RULED__"), ["RULED"])
 
 
 class Derivation(unittest.TestCase):
@@ -106,50 +77,81 @@ class Derivation(unittest.TestCase):
         self.assertEqual(refusals.expected_kind("OWNER_ACCEPTED_PHASE_I_CONTRACT"), "STATUS")
 
     def test_the_kind_rule_is_case_insensitive(self):
-        """The previous draft compared raw bytes here and upper-cased elsewhere, so a
-        lowercase value could be silently demoted from a ruling to a status."""
         self.assertEqual(refusals.expected_kind("ruled_open_until_bdo"), "RULING")
+
+    def test_the_kind_rule_is_not_separator_literal(self):
+        """A witness found `RULED-O19` typing as a reversible STATUS, because the prefix was
+        compared as raw bytes while everything else tokenised."""
+        self.assertEqual(refusals.expected_kind("RULED-O19"), "RULING")
+        self.assertEqual(refusals.expected_kind("OWNER-ACCEPTED-A2-SPEC"), "OWNER_ACCEPTANCE")
 
     def test_an_accepted_value_without_a_packet_digit_is_a_status(self):
         """`OWNER_ACCEPTED_ALPHA` is the document reporting an acceptance, not the record of
         one. Eighteen live fields turn on this reading; decisions/0074 records it as Bdo's."""
         self.assertEqual(refusals.expected_kind("OWNER_ACCEPTED_ALPHA"), "STATUS")
+        self.assertEqual(refusals.expected_kind("OWNER_ACCEPTED"), "STATUS")
+
+
+class WhatWasRemoved(unittest.TestCase):
+    """The standing extraction is gone. These fail if anyone starts the cycle again."""
+
+    def test_no_module_still_extracts_a_standing(self):
+        for gone in ("leading_standing", "token_asserts", "standing_not_leading"):
+            with self.subTest(gone=gone):
+                self.assertFalse(hasattr(refusals, gone))
+
+    def test_the_contract_declares_no_standing_vocabulary(self):
+        contract = sov_status_claims.load_contract()
+        for gone in ("artifact_standing_ladder", "artifact_standing_rule", "standing_sources",
+                     "token_trap"):
+            with self.subTest(gone=gone):
+                self.assertNotIn(gone, contract)
+
+    def test_no_entry_carries_a_standing_or_its_source(self):
+        for candidate in sov_status_claims.load_contract()["crosswalk"]:
+            with self.subTest(field=candidate["field"]):
+                self.assertNotIn("artifact_standing", candidate)
+                self.assertNotIn("standing_source", candidate)
+
+    def test_the_values_that_defeated_all_three_drafts_now_earn_nothing(self):
+        """Each of these got a false standing past one of the three rules. None of them can
+        now, because nothing reads a standing out of a value."""
+        for value in ("NOT_WITNESSED", "NOT_YET_WITNESSED", "NEVER_WITNESSED",
+                      "BUILT-NOT_WITNESSED", "WITNESSED_RETRACTED", "RATIFIED_NOT",
+                      "-WITNESSED", "¬WITNESSED", "PROPOSED_CONTRACT_BUILT"):
+            with self.subTest(value=value):
+                good = entry(field="x_status", value=value, subject="x")
+                self.assertEqual(codes([good], f"x_status: {value}"), set())
 
 
 class WitnessBypasses(unittest.TestCase):
-    """Every case either independent witness got past a previous draft."""
+    """Every case an independent witness got past a previous draft, in the part that remains."""
 
-    def test_a_standing_the_value_does_not_lead_with_is_refused(self):
-        for value in ("OWNER_ACCEPTED_BUILT_SELF_TESTED_NOT_WITNESSED", "NOT_YET_WITNESSED",
-                      "NEVER_WITNESSED", "BUILT-NOT_WITNESSED", "AWAITING_WITNESSED"):
-            with self.subTest(value=value):
-                bad = entry(field="x_status", value=value, subject="x",
-                            artifact_standing="WITNESSED")
-                self.assertEqual(codes([bad], f"x_status: {value}"),
-                                 {"STANDING_NOT_THE_LEADING_TOKEN"})
-
-    def test_a_value_leading_with_a_rung_must_declare_it(self):
-        bad = entry(field="x_status", value="BUILT_AND_TESTED", subject="x",
-                    artifact_standing=None)
-        self.assertEqual(codes([bad], "x_status: BUILT_AND_TESTED"),
-                         {"STANDING_NOT_THE_LEADING_TOKEN"})
+    def test_an_unknown_key_is_refused(self):
+        """A witness added asserted_standing, settled_by, authority and a resurrected
+        standing_source to live entries; all four passed a type check over named keys."""
+        text = "record_service_status: BUILT_SELF_TESTED_NOT_WITNESSED"
+        for extra in ("asserted_standing", "settled_by", "authority", "standing_source"):
+            with self.subTest(extra=extra):
+                bad = dict(entry(), **{extra: "RATIFIED"})
+                self.assertEqual(codes([bad], text), {"ENTRY_UNKNOWN_KEY"})
 
     def test_a_renamed_subject_cannot_dissolve_a_collision(self):
         text = "byom_status: OWNER_ACCEPTED_PHASE_I_CONTRACT"
         bad = entry(field="byom_status", value="OWNER_ACCEPTED_PHASE_I_CONTRACT",
-                    subject="byom-ruling", artifact_standing=None)
+                    subject="byom-ruling")
         self.assertEqual(codes([bad], text), {"SUBJECT_NOT_DERIVED"})
 
     def test_a_mistyped_kind_cannot_disable_the_kind_rules(self):
         text = "byom_status: RULED_CONTRACT_STANDS_O12"
         bad = entry(field="byom_status", value="RULED_CONTRACT_STANDS_O12", subject="byom",
-                    claim_kind="RULLING", artifact_standing=None)
+                    claim_kind="RULLING")
         self.assertEqual(codes([bad], text), {"CLAIM_KIND_UNDECLARED"})
 
     def test_an_owner_acceptance_cannot_be_demoted_to_a_status(self):
         value = "OWNER_ACCEPTED_A2_PHASE_I_LOGICAL_SPEC"
         bad = entry(field="specification_status", value=value, subject="specification",
-                    claim_kind="STATUS", artifact_standing=None, reference="A2")
+                    claim_kind="STATUS", reference="A2")
         self.assertEqual(codes([bad], f"specification_status: {value}"),
                          {"CLAIM_KIND_CONTRADICTS_VALUE"})
 
@@ -158,23 +160,39 @@ class WitnessBypasses(unittest.TestCase):
         self.assertEqual(codes([entry(), entry()], text), {"CLAIM_KIND_COLLISION"})
 
     def test_the_reader_names_the_class_of_line_it_cannot_parse(self):
-        """A previous detector was taught the two shapes the first witness reported; the
-        second walked past it with four more."""
-        for line in ("ai-native_status: OPEN", '"quoted_status": OPEN', "x_status : OPEN",
-                     "FOO_STATUS: OPEN", "  indented_status: OPEN",
-                     "spaced_value_status: BUILT AND TESTED"):
+        """Two drafts were each taught the previous witness's examples. A list item, a flow
+        mapping, a dotted key and a path-like key walked past the second."""
+        for line in ("- byom_status: OPEN", "{byom_status: OPEN}", "node.v1_status: OPEN",
+                     "services/asset_status: OPEN", "ai-native_status: OPEN",
+                     '"quoted_status": OPEN', "x_status : OPEN", "FOO_STATUS: OPEN",
+                     "  indented_status: OPEN", "spaced_value_status: BUILT AND TESTED"):
             with self.subTest(line=line):
                 self.assertEqual(codes([], line), {"FIELD_UNREADABLE"})
 
-    def test_a_packet_reference_is_graded_not_declared(self):
+    def test_the_reader_does_not_cry_wolf(self):
+        """A detector that fires on a line no entry could ever match is a defect too: the
+        only repair would be editing STATUS.yaml, which this contract does not do."""
+        for line in ("status: FOUNDING", "  status: OPEN", "phase: FOUNDING", "my status: x"):
+            with self.subTest(line=line):
+                self.assertEqual(codes([], line), set())
+
+    def test_a_packet_reference_is_graded_in_both_directions(self):
         value = "OWNER_ACCEPTED_A2_PHASE_I_LOGICAL_SPEC"
         wrong = entry(field="specification_status", value=value, subject="specification",
-                      claim_kind="OWNER_ACCEPTANCE", artifact_standing=None, reference="A9")
+                      claim_kind="OWNER_ACCEPTANCE", reference="A9")
         self.assertEqual(codes([wrong], f"specification_status: {value}"),
                          {"REFERENCE_CONTRADICTS_VALUE"})
         invented = entry(field="x_status", value="CHARTERED_BOUNDARY", subject="x",
-                         artifact_standing=None, reference="A3")
+                         reference="A3")
         self.assertEqual(codes([invented], "x_status: CHARTERED_BOUNDARY"),
+                         {"REFERENCE_CONTRADICTS_VALUE"})
+
+    def test_a_packet_reference_is_anchored(self):
+        """`$` matches before a trailing newline; a witness got `A2\\n` past it."""
+        value = "OWNER_ACCEPTED_A2_PHASE_I_LOGICAL_SPEC"
+        bad = entry(field="specification_status", value=value, subject="specification",
+                    claim_kind="OWNER_ACCEPTANCE", reference="A2\n")
+        self.assertEqual(codes([bad], f"specification_status: {value}"),
                          {"REFERENCE_CONTRADICTS_VALUE"})
 
     def test_a_malformed_entry_refuses_rather_than_raising(self):
@@ -183,7 +201,7 @@ class WitnessBypasses(unittest.TestCase):
             with self.subTest(broken=broken):
                 self.assertEqual(codes([broken], text), {"ENTRY_MALFORMED"})
         missing = entry()
-        del missing["artifact_standing"]
+        del missing["reference"]
         self.assertEqual(codes([missing], text), {"ENTRY_MALFORMED"})
 
 
@@ -216,19 +234,6 @@ class LiveCrosswalk(unittest.TestCase):
             kinds = [e["claim_kind"] for e in self.contract["crosswalk"] if e["field"] == field]
             with self.subTest(field=field):
                 self.assertEqual(len(kinds), len(set(kinds)), "a duplicate the typing hides")
-
-    def test_no_entry_declares_a_standing_it_does_not_lead_with(self):
-        ladder = set(self.contract["artifact_standing_ladder"])
-        for candidate in self.contract["crosswalk"]:
-            with self.subTest(field=candidate["field"]):
-                self.assertEqual(candidate["artifact_standing"],
-                                 refusals.leading_standing(candidate["value"], ladder))
-
-    def test_no_entry_carries_a_removed_field(self):
-        """`standing_source` was deleted rather than graded: a declared field the checker
-        never read is the shape of defect this table exists to refuse."""
-        for candidate in self.contract["crosswalk"]:
-            self.assertNotIn("standing_source", candidate)
 
 
 class Selfcheck(unittest.TestCase):

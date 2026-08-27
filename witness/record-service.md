@@ -1,5 +1,9 @@
 # Witness record — Record Service (issues #7, #65)
 
+```witness
+standing_supported  none
+```
+
 **Verdict: NOT-YET.**
 
 **Standing supported: none.** This observation does not carry `services/record`

@@ -94,49 +94,69 @@ NOT_A_RECORD = {"readme", "index"}
 # that rather than quietly declining to count it.
 WITNESS_MAY_SUPPORT = "WITNESSED"
 
-# Quoted material is not the record speaking. A record that shows the required
-# spelling in a fenced example and declares its own verdict lower down was graded
-# on the example, because the search took the first match and could not see
-# markdown. That is not an adversary's shape: it is the shape of the next record
-# this repository writes, one about this gate.
+# The field is read from a declared position, never searched for in the document.
 #
-# Two rules cover it and they are not equally load-bearing, which a mutation run
-# established rather than reasoning: requiring exactly one label refuses every
-# quoted-label defeat on its own, and removing any single stripper below changes
-# no verdict. Stripping earns its place on the honest case - it is what lets a
-# record quote the required spelling AND declare its own verdict, which without
-# it reads as two answers. Remove all three and that case fails.
-FENCE = re.compile(r"^```.*?^```", re.MULTILINE | re.DOTALL)
-COMMENT = re.compile(r"<!--.*?-->", re.DOTALL)
-INLINE = re.compile(r"`[^`]*`")
-
-LABEL = re.compile(r"^[^A-Za-z0-9\n]*standing\s+supported[^A-Za-z0-9\n]*(.*)$",
-                   re.IGNORECASE | re.MULTILINE)
-
-# Markdown emphasis and a sentence-ending period surround the value; nothing else
-# is stripped, so `WITNESSED (retracted)` and `WITNESSED - withdrawn` stay whole
-# and therefore stay unsupported.
-DECORATION = "*_` \t."
+# The previous repair stripped fenced blocks, inline spans and HTML comments and
+# then searched what remained. A fourth reading walked four quotation forms past
+# it: a nested four-backtick fence, an unterminated fence, a blockquoted label,
+# and an indented one. That was the correct finding and the general one - there
+# is no finite list of ways markdown can quote, so stripping what looks like
+# quotation is enumeration wearing structure's clothes. It is the same mistake
+# the value half of this gate had already been repaired for, made again on the
+# other axis in the same commit.
+#
+# A position has no such tail. The block must be the first content in the file,
+# after an optional heading, and nothing after it is read at all. A record may
+# then quote anything, in any nesting, terminated or not, without touching what
+# it declares - which matters, because the most likely record to quote this gate
+# is a record about this gate.
+BLOCK_OPEN = "```witness"
+BLOCK_CLOSE = "```"
+STANDING_FIELD = "standing_supported"
 
 # The whole value must BE a standing. Scanning a value for one is what three
-# independent readings each defeated in a new way: `SELF_WITNESSED` splits into
-# SELF and WITNESSED under any tokeniser, so a scan reads a self-witness - the
-# one inversion `AGENTS.md` exists to forbid - as support for it. `PRE-WITNESSED`,
-# `WITNESSED subject to conditions`, and `WITNESSED (retracted)` each defeat a
-# different hand-written denial list, and a hand-written list has no end. A
-# whitelist has no such tail: a spelling is supported when it is named here.
+# readings each defeated in a new way: `SELF_WITNESSED` splits into SELF and
+# WITNESSED under any tokeniser, so a scan reads a self-witness - the one
+# inversion `AGENTS.md` exists to forbid - as support for it. `PRE-WITNESSED`,
+# `WITNESSED subject to conditions` and `WITNESSED (retracted)` each defeated a
+# different hand-written denial list, and such a list has no end. Inside a plain
+# text block there is no emphasis to strip either, so `WITNESSED*` and its
+# footnote are simply not this word.
 SUPPORTED_VALUES = {"WITNESSED": "WITNESSED", "RATIFIED": "RATIFIED"}
 
 
-def declared_field(text: str) -> str | None:
-    """The one `Standing supported:` value a record states in its own voice.
+def declared_block(text: str) -> list[str] | None:
+    """The record's declaration block, or None if it does not open with one.
 
-    Fenced blocks, inline spans, and HTML comments are removed before the search,
-    so quoted text cannot answer for the record. Two surviving labels are
-    ambiguous and support nothing: a record must say this once.
+    Position is the whole point. The block is the first content in the file, past
+    blank lines and an optional heading; anything else there means the record
+    declares nothing. An unterminated block is not a block.
     """
-    body = INLINE.sub(" ", COMMENT.sub(" ", FENCE.sub(" ", text)))
-    found = LABEL.findall(body)
+    lines = text.split("\n")
+    index = 0
+    while index < len(lines) and (not lines[index].strip() or lines[index].startswith("#")):
+        index += 1
+    if index >= len(lines) or lines[index].strip() != BLOCK_OPEN:
+        return None
+    index += 1
+    body: list[str] = []
+    while index < len(lines) and lines[index].strip() != BLOCK_CLOSE:
+        body.append(lines[index])
+        index += 1
+    return body if index < len(lines) else None
+
+
+def declared_field(text: str) -> str | None:
+    """The one `standing_supported` value the record's own block states.
+
+    Stated twice is stated ambiguously and counts as not stated: a record says
+    this once or it says nothing.
+    """
+    body = declared_block(text)
+    if body is None:
+        return None
+    found = [line.split(None, 1)[1] if len(line.split(None, 1)) > 1 else ""
+             for line in body if line.split(None, 1)[:1] == [STANDING_FIELD]]
     return found[0] if len(found) == 1 else None
 
 
@@ -144,14 +164,12 @@ def supported_standing(record: Path) -> str | None:
     """The standing this record declares, or None if it declares none.
 
     A filename is a declaration; what the record says is the artifact. This reads
-    one narrow field and compares its whole value against a closed set. It does
-    not read English, and deliberately no longer scans the value for a standing
-    token: the value is a standing or it is not. Silence, prose, ambiguity, a
-    qualified verdict, and a compound spelling all support nothing.
+    one field from one declared position and compares its whole value against a
+    closed set. It does not read English and does not search the document.
 
     Non-ASCII is refused before the comparison. Case folding is not identity -
-    the Turkish dotless i upper-cases to `I`, so `wItnessed` spelled with it
-    would walk straight through an exact match.
+    the Turkish dotless i upper-cases to `I`, so a lookalike spelling would walk
+    straight through an exact match.
     """
     try:
         text = record.read_text(encoding="utf-8")
@@ -160,7 +178,7 @@ def supported_standing(record: Path) -> str | None:
     value = declared_field(text)
     if value is None:
         return None
-    value = value.strip().strip(DECORATION).strip()
+    value = value.strip()
     if not value.isascii():
         return None
     return SUPPORTED_VALUES.get(value.upper())

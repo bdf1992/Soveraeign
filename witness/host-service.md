@@ -1,5 +1,9 @@
 # Witness record — Host Service (issue #108)
 
+```witness
+standing_supported  none
+```
+
 **Verdict: NOT-YET.**
 
 **Standing supported: none for the subject as a whole.** The refusal half of the

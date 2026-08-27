@@ -39,8 +39,8 @@ and nothing else. A receipt without a record supports no claim.
 
 ## What a record must carry
 
-The gate reads exactly one field of a record, `Standing supported:`, and grades
-it. It cannot check that the record is any good, and it does not try — a check that graded persuasion would be a check
+The gate reads exactly one field of a record, from one declared position, and
+grades it. It cannot check that the record is any good, and it does not try — a check that graded persuasion would be a check
 that ratifies, which nothing here may do. These are the contents a reader needs
 in order to do that grading themselves:
 
@@ -56,29 +56,28 @@ in order to do that grading themselves:
   would discharge each one.
 - **Uncovered** — what the witness did not examine, stated plainly. A record
   that claims total coverage is not usable, because a reader cannot calibrate it.
-- **Standing supported** — which transition, if any, the observation supports,
-  and the one field `scripts/sov_standing.py` reads. The whole value must be one
-  of two words, on the label's own line. This is the spelling that advances a
-  subject, and the test suite reads it out of this block rather than restating
-  it:
+- **Standing supported** — which transition, if any, the observation supports.
+  Say it in the prose, for a reader. Then declare it once, for the gate, in a
+  block that is the **first thing in the file** after the heading:
 
-```standing-supported
-Standing supported: WITNESSED
+```witness
+standing_supported  WITNESSED
 ```
 
-  Anything else supports nothing, and that is deliberate rather than strict. The
-  value is compared whole, so `SELF_WITNESSED`, `PRE-WITNESSED`,
-  `WITNESSED (retracted)`, `WITNESSED - withdrawn`, and
-  `WITNESSED subject to conditions` are each not that word and each support
-  nothing — as do `NOT_WITNESSED`, `n/a`, `OPEN -> BUILT`, and a verdict written
-  on the line *below* the label. If the observation supports nothing, say so in
-  ordinary words; there is no spelling you have to get right in order to refuse.
+  That position is the whole contract, and it is what makes the rest of the
+  record free. `scripts/sov_standing.py` reads this block and stops; it never
+  searches the document. So a record may quote anything, at any nesting depth,
+  fenced or unfenced, terminated or not, without changing what it declares —
+  which matters, because the record most likely to quote this page is a record
+  about this gate. Earlier versions stripped what looked like quotation and
+  searched the rest, and four quotation forms walked past them.
 
-  Say it once, in the record's own voice. Fenced blocks, inline spans, and HTML
-  comments are stripped before the field is read, so quoting this example inside
-  a record does not answer for it — a record about this gate will quote it, and
-  must still declare its own verdict outside the quote. Two labels outside quoted
-  text are ambiguous and support nothing.
+  The whole value must be one word. `WITNESSED` advances a subject; anything
+  else supports nothing, including `SELF_WITNESSED`, `PRE-WITNESSED`,
+  `WITNESSED*`, `WITNESSED (retracted)`, and `WITNESSED subject to conditions`.
+  If the observation supports nothing, write `none` — or omit the block, which
+  means the same thing. There is no spelling you have to get right in order to
+  refuse; the strictness is entirely on the side that advances standing.
 
   A record may not declare `RATIFIED`. It carries a subject as far as WITNESSED;
   the owner settles the rest, and the gate names that over-reach rather than

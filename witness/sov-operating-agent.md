@@ -1,5 +1,9 @@
 # Witness record — Sov operating agent (issue #45)
 
+```witness
+standing_supported  none
+```
+
 **Verdict: NOT-YET.**
 
 **Standing supported: none.** `sov_operating_agent_status` stays

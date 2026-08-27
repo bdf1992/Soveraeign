@@ -30,7 +30,8 @@ from soveraeign_record_service.core import (  # noqa: E402
 )
 from soveraeign_record_service.digest import (  # noqa: E402
     BOUND_DIGEST_PROFILE, COVERAGE, CURRENT_PROFILE, DIGEST_PROFILE, JOURNAL_COLUMNS,
-    LEGACY_DIGEST_PROFILE, canonical_for, digest_for_profile, uncovered,
+    LEGACY_DIGEST_PROFILE, canonical, canonical_for, digest_for_profile,
+    legacy_canonical, uncovered,
 )
 
 INSERT = (
@@ -40,15 +41,48 @@ INSERT = (
 
 #: Every fixture row carries this same payload, so "the same value in different
 #: bytes" means the same thing at every row position. Two keys, because a
-#: single-key object cannot express a key-order difference.
-PAYLOAD = {"n": 0, "z": 1}
-#: One byte form carrying a different value, and three carrying PAYLOAD's value
-#: written differently. The last is read as n=0 by a JSON parser and as n=999999
-#: by anything taking the first key.
+#: single-key object cannot express a key-order difference, and a non-ASCII value,
+#: because v1 escapes those and v2/v3 do not.
+#:
+#: That last part is not decoration. While this was `{"n": 0, "z": 1}` the two
+#: encoders produced identical bytes, so the v1 arm of this sweep was valid only
+#: by coincidence and no case here could reach the one place the profiles disagree
+#: - which is exactly where a re-witness found `custody.restore` broken.
+PAYLOAD = {"n": 0, "z": "café"}
+
+#: One byte form carrying a different value. The same-value variants cannot be
+#: literals: each profile encodes this payload differently, so "the same value in
+#: other bytes" only means something against the bytes that profile stores.
 PAYLOAD_FORGED = '{"forged": true}'
-PAYLOAD_SPACED = '{"n": 0, "z": 1}'
-PAYLOAD_REORDERED = '{"z":1,"n":0}'
-PAYLOAD_DUPLICATE = '{"n":999999,"z":1,"n":0}'
+
+
+def spaced(encoded: str) -> str:
+    """The same value with insignificant whitespace: other bytes, same parse."""
+    return encoded.replace(":", ": ").replace(",", ", ")
+
+
+def reordered(encoded: str) -> str:
+    """The same members in the other order."""
+    return "{" + ",".join(reversed(encoded[1:-1].split(","))) + "}"
+
+
+def duplicated(encoded: str) -> str:
+    """The sharp one: a JSON parser reads the last key, other readers the first."""
+    first_key = encoded[1:-1].split(",")[0].split(":")[0]
+    return "{" + first_key + ":999999," + encoded[1:]
+
+
+def other_encoding(encoded: str) -> str:
+    """The same value as some *other* profile would store it.
+
+    v1 escapes non-ASCII and v2/v3 do not, so these bytes parse to the bound value
+    and are correct under a different profile. Verification picks its encoder by
+    the row's profile, so this must be refused - and `custody.restore` chose its
+    encoder by the export schema instead, which is how a faithful restore of a v1
+    row wrote bytes its own verification then rejected.
+    """
+    alternative = legacy_canonical if encoded == canonical(PAYLOAD) else canonical
+    return alternative(PAYLOAD)
 
 #: Several replacements per column, not one. A single value per column is what let
 #: this check pass while the declaration was wrong in both directions: an
@@ -67,15 +101,17 @@ TAMPERS: dict[str, tuple[tuple[str, object], ...]] = {
     "actor": (("another actor", "forged-actor"), ("empty", "")),
     "source_address": (("another path", "forged/elsewhere.md"), ("null", None),
                        ("empty", "")),
+    # These are functions of the bytes the profile under test actually stores,
+    # because each profile encodes PAYLOAD differently and "the same value in
+    # other bytes" only means something relative to those. The first three are
+    # what an independent witness proved undetected; the fourth is the encoder
+    # disagreement between profiles, which no literal could express.
     "payload_json": (
         ("a different value", PAYLOAD_FORGED),
-        # The three an independent witness proved undetected. Each parses to the
-        # value the digest binds and differs in the bytes a reader reads; the last
-        # is read as n=0 by a JSON parser and as n=999999 by anything taking the
-        # first key, so one committed row is read two ways.
-        ("same value, whitespace added", PAYLOAD_SPACED),
-        ("same value, extra key ordered first", PAYLOAD_REORDERED),
-        ("same value, duplicate key injected", PAYLOAD_DUPLICATE),
+        ("same value, whitespace added", spaced),
+        ("same value, members reordered", reordered),
+        ("same value, duplicate key injected", duplicated),
+        ("the other profile's encoding of the same value", other_encoding),
     ),
     "recorded_at": (("epoch zero", 0.0),
                     ("one microsecond later", 1_700_000_000.500001)),
@@ -127,10 +163,13 @@ class Coverage(unittest.TestCase):
                 row["payload"], entry_id=row["entry_id"],
                 source_address=row["source_address"], recorded_at=row["recorded_at"],
             )
+            # Encoded by the profile under test, not always by the v2 encoder.
+            # While the fixture payload was ASCII the two agreed, so the v1 arm was
+            # valid by coincidence and no case could reach the disagreement.
             service.db.execute(INSERT, (
                 row["entry_id"], row["kind"], row["subject"], row["actor"],
-                row["source_address"], _canonical(row["payload"]), row["recorded_at"],
-                previous, row["entry_digest"], profile,
+                row["source_address"], canonical_for(profile)(row["payload"]),
+                row["recorded_at"], previous, row["entry_digest"], profile,
             ))
             previous = row["entry_digest"]
             made.append(row)
@@ -154,6 +193,9 @@ class Coverage(unittest.TestCase):
         # exactly that unnoticed, so it is refused here rather than graded.
         before = service.db.execute(
             f"SELECT {column} FROM journal WHERE entry_id = ?", (target,)).fetchone()[0]
+        # A callable replacement is a function of the bytes this profile stores.
+        if callable(value):
+            value = value(before)
         if before == value:
             raise AssertionError(
                 f"the {column!r} replacement {value!r} equals what the fixture already "
@@ -307,7 +349,9 @@ class ThePayloadBytes(unittest.TestCase):
         with TemporaryDirectory() as tmp:
             service = RecordService(Path(tmp))
             entry = service.append("EVENT", "sub", "alice", dict(PAYLOAD))
-            for forged in (PAYLOAD_SPACED, PAYLOAD_REORDERED, PAYLOAD_DUPLICATE):
+            stored = canonical(PAYLOAD)
+            for forged in (spaced(stored), reordered(stored), duplicated(stored),
+                           legacy_canonical(PAYLOAD)):
                 service.db.execute("UPDATE journal SET payload_json=? WHERE entry_id=?",
                                    (forged, entry["entry_id"]))
                 with self.subTest(stored_bytes=forged):
@@ -391,6 +435,43 @@ class TheIdentifierSwap(unittest.TestCase):
 
 class TheRoundTrip(unittest.TestCase):
     """Binding the moment must not make a faithful restore look like tampering."""
+
+    def test_a_v1_row_with_a_non_ascii_payload_still_restores(self) -> None:
+        """The regression requiring canonical bytes introduced, found by a re-witness.
+
+        `export_document` always emits schema v2, so `restore` chose the v2
+        encoder for every row including v1 ones. v1 escapes non-ASCII and v2 does
+        not, so a faithful restore wrote bytes verification then refused - and it
+        wrote them committed, leaving the target store unverifiable, un-restorable
+        and un-exportable. The repository's own `test_digest_profiles` fixture is
+        that shape: a v1 row whose payload is `{"text": "café"}`.
+        """
+        from soveraeign_record_service.custody import export_document, restore
+        from soveraeign_record_service.digest import legacy_digest
+
+        payload = {"text": "café"}
+        with TemporaryDirectory() as tmp:
+            source = RecordService(Path(tmp) / "source")
+            digest = legacy_digest(GENESIS, "EVENT", "subject", "actor", payload)
+            source.db.execute(INSERT, (
+                "entry_v1", "EVENT", "subject", "actor", None,
+                legacy_canonical(payload), 1_700_000_000.0, GENESIS, digest,
+                LEGACY_DIGEST_PROFILE))
+            source.db.commit()
+            source.append("EVENT", "after", "actor", payload)
+            head = source.head()
+            document = export_document(source)
+
+            restored = RecordService(Path(tmp) / "restored")
+            self.assertEqual(restore(restored, document, expected_head=head), 2)
+            self.assertEqual(restored.head(), head)
+            self.assertEqual(len(restored.reconstruct()), 2)
+            self.assertEqual(restored.db.execute(
+                "SELECT payload_json FROM journal WHERE entry_id=?", ("entry_v1",)
+            ).fetchone()[0], legacy_canonical(payload),
+                "the v1 row was re-encoded with another profile's encoder")
+            source.close()
+            restored.close()
 
     def test_export_and_restore_preserve_a_v3_chain(self) -> None:
         from soveraeign_record_service.custody import (  # noqa: PLC0415

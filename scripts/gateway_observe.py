@@ -85,7 +85,15 @@ def _journal(state: Path) -> tuple[list[dict[str, Any]], list[str]]:
         payload = json.loads(row["payload_json"])
         profile = row.get("digest_profile", LEGACY_DIGEST_PROFILE)
         expected = _record_digest(profile, previous, row, payload)
-        if expected is None or row["prev_digest"] != previous or row["entry_digest"] != expected:
+        # Every profile binds the payload's parsed value, so the stored bytes are
+        # checked separately: without this a row whose bytes read differently to a
+        # different reader passes a digest-only walk. v1 escapes non-ASCII.
+        encoded = (canonical(payload) if profile == LEGACY_DIGEST_PROFILE
+                   else json.dumps(payload, sort_keys=True, separators=(",", ":"),
+                                   ensure_ascii=False, allow_nan=False))
+        if (expected is None or row["prev_digest"] != previous
+                or row["entry_digest"] != expected
+                or row["payload_json"] != encoded):
             defects.append("JOURNAL_CHAIN_INVALID")
         previous = row["entry_digest"]
         row["payload"] = payload

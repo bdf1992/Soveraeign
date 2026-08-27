@@ -124,9 +124,34 @@ profiles rather than only here.
   append-preserving journal corrects by counter-record and never by editing a
   row, so no such correction should exist; one would defeat this.
 
+## What the canonical requirement broke, and what fixed it
+
+Requiring canonical bytes regressed `custody.restore`, and a re-witness caught it
+at `66b260e`. `export_document` always emits schema v2, so `restore` chose the v2
+encoder for every row it wrote — including v1 rows. v1 escapes non-ASCII and v2
+does not, so a faithful restore of a v1 row holding `{"text": "café"}` wrote bytes
+that verification, which picks its encoder by the row's profile, then refused. It
+wrote them committed, leaving the target store unverifiable, un-restorable and
+un-exportable. The repository's own `test_digest_profiles` fixture is that shape.
+
+`restore` now picks the encoder by the row's own profile, exactly as verification
+does. `test_a_v1_row_with_a_non_ascii_payload_still_restores` is the fixture.
+
+Two things followed from the same seam:
+
+- The sweep's payload was ASCII, so the two encoders produced identical bytes and
+  the v1 arm was valid only by coincidence. It is now non-ASCII, the fixture
+  encodes each row by its own profile, and one tamper case is "the other
+  profile's encoding of the same value" — which is what the check could not
+  previously express.
+- `services/record/CHARTER.md` required "the profile's canonical encoding"
+  without saying what each encoding is. It now states both, and states that a
+  row's encoder comes from its own profile and never from the schema of the
+  document carrying it.
+
 ## Standing
 
-`PROPOSED`. Built and self-tested: 46 Record Service tests pass.
+`PROPOSED`. Built and self-tested: 47 Record Service tests pass.
 
 An independent witness examined this change at commit `514d12e` and **refused to
 propose `BUILT -> WITNESSED`**. It confirmed C1, C2, C4, C5 and C6 — the defect
@@ -137,10 +162,15 @@ bytes, about `seq`'s two answers, and about the sweep's fixtures is that refusal
 repaired inside the concern. The change has not been re-witnessed since.
 
 One thing the earlier draft claimed too much: it offered `scripts/witness_record.py`'s
-21/21 as the observation proposing `WITNESSED`. That walk runs `verify_chain` only
-over honest data and contains no tamper case, so it establishes that three
+21/21 as the observation proposing `WITNESSED`. That walk ran `verify_chain` only
+over honest data and contained no tamper case, so it established that three
 implementations agree about a good chain — not that any of them detects a bad
-one. It is real independent observation, of a narrower claim than it was cited
-for.
+one. A check never shown failing has not been shown to work. The walk now has a
+stage that rewrites an actor, repoints an identifier and substitutes payload bytes
+that parse the same, and asserts its own arithmetic catches each; it reports 24/24.
+
+Both independent verifiers also gained the canonical rule. Without it they graded
+a strictly weaker property than the service — the exact tamper this change exists
+to catch passed both checks whose job is to catch it.
 
 Self-tests establish `BUILT`. Nothing here is witnessed. Only Bdo ratifies.

@@ -24,13 +24,13 @@ import sqlite3
 import time
 import uuid
 
-from .projections import ProjectionSurface
 from .digest import (
     BOUND_DIGEST_PROFILE, CURRENT_PROFILE, DIGEST_PROFILE, LEGACY_DIGEST_PROFILE,
     bound_digest as _bound_digest, canonical as _canonical, canonical_for,
     digest as _digest, digest_for_profile, legacy_canonical as _legacy_canonical,
     legacy_digest as _legacy_digest,
 )
+from .projections import ProjectionSurface
 
 GENESIS = "0" * 64
 

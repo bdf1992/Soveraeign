@@ -40,7 +40,7 @@ import json
 
 from soveraeign_record_service.core import (
     DIGEST_PROFILE, GENESIS, LEGACY_DIGEST_PROFILE, BrokenChain, RecordService,
-    _canonical, _digest_for_profile, _legacy_canonical,
+    _canonical, _digest_for_profile, _legacy_canonical, canonical_for,
 )
 
 EXPORT_SCHEMA = "soveraeign-record-export/v2"
@@ -143,10 +143,18 @@ def restore(service: RecordService, document: Any, *,
         raise RestoreRefused("store already holds a journal; restore only into an empty one")
     head = verify_export(document, expected_head=expected_head)
     legacy = document["export_schema"] == LEGACY_EXPORT_SCHEMA
+    # Encode each payload by the row's own profile, never by the export schema.
+    # They diverge: `export_document` always emits schema v2, so a v1 row inside
+    # any export this service produces was re-encoded with the v2 canonicaliser.
+    # For ASCII the two coincide; for anything else they do not, and verification
+    # picks the encoder by profile - so a faithful restore of a v1 row holding a
+    # non-ASCII payload wrote bytes its own verification then refused, leaving the
+    # target store committed, unverifiable, un-restorable and un-exportable.
     rows = [
         (entry["entry_id"], entry["kind"], entry["subject"], entry["actor"],
          entry["source_address"],
-         (_legacy_canonical(entry["payload"]) if legacy else _canonical(entry["payload"])),
+         canonical_for(LEGACY_DIGEST_PROFILE if legacy else entry["digest_profile"])(
+             entry["payload"]),
          entry["recorded_at"],
          entry["prev_digest"], entry["entry_digest"],
          LEGACY_DIGEST_PROFILE if legacy else entry["digest_profile"])

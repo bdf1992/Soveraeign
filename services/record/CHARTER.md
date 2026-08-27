@@ -123,6 +123,25 @@ encoding of that value. Without it, byte-different but value-identical JSON went
 undetected — including duplicate-key injection, where one committed row is read
 two ways and the chain endorses both.
 
+The encodings differ, and an implementer reading only this page has to be able to
+tell them apart, because writing a row under the wrong one produces bytes that
+parse correctly and verify as tampered:
+
+- `record-chain/v1` stores `json.dumps(payload, sort_keys=True,
+  separators=(",", ":"))` — non-ASCII code points are **escaped**, and non-finite
+  numbers are permitted, which is a known divergence: `NaN` and `Infinity` are not
+  valid JSON, every strict reader refuses them, and a v1 row carrying one
+  verifies here. It is a divergence rather than a forgery, since changing a value
+  still changes the digest.
+- `record-chain/v2` and `record-chain/v3` store the same form with
+  `ensure_ascii=False` and `allow_nan=False` — non-ASCII code points are
+  **preserved** and non-finite numbers are refused at write time.
+
+A row's encoder is chosen by that row's own `digest_profile`, never by the schema
+of the document carrying it. Choosing by the export schema is what made a
+faithful restore of a v1 row holding a non-ASCII payload write bytes its own
+verification then refused.
+
 What no profile detects: an outsider with write access to the database file can
 append a well-formed entry, or rewrite the whole chain from genesis, and every
 verification here reports clean. Only a head held outside the store catches that,

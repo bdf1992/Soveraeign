@@ -70,17 +70,55 @@ def recompute(previous: str, entry: dict[str, Any]) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
+#: The byte form each profile's stored payload must have. Restated here, from the
+#: charter, rather than imported: every profile binds the payload's parsed value,
+#: so a check that verified digests alone would call a row clean whose bytes read
+#: differently to a different reader. v1 escapes non-ASCII; v2 and v3 do not.
+CANONICAL = {
+    LEGACY_DIGEST_PROFILE: lambda payload: json.dumps(
+        payload, sort_keys=True, separators=(",", ":")),
+    DIGEST_PROFILE: lambda payload: json.dumps(
+        payload, ensure_ascii=False, allow_nan=False, sort_keys=True,
+        separators=(",", ":")),
+    BOUND_DIGEST_PROFILE: lambda payload: json.dumps(
+        payload, ensure_ascii=False, allow_nan=False, sort_keys=True,
+        separators=(",", ":")),
+}
+
+
+def canonical_bytes_disagree(entry: dict[str, Any]) -> bool:
+    """Whether this row's stored payload bytes are not its profile's encoding.
+
+    Takes the raw column under `payload_json` when the caller has it. An entry
+    read back through the service carries only the parsed value, in which case
+    there is nothing here to check and the digest alone stands.
+    """
+    stored = entry.get("payload_json")
+    if stored is None:
+        return False
+    encode = CANONICAL.get(entry.get("digest_profile", LEGACY_DIGEST_PROFILE))
+    if encode is None:
+        return True
+    try:
+        return stored != encode(entry["payload"])
+    except (TypeError, ValueError):
+        return True
+
+
 def verify_chain(entries: list[dict[str, Any]]) -> list[str]:
-    """Return the entry ids whose reported digest does not match a recomputed one."""
+    """Return the entry ids whose digest or whose payload bytes do not recompute."""
     previous, broken = GENESIS, []
     for entry in entries:
-        if entry["prev_digest"] != previous or entry["entry_digest"] != recompute(previous, entry):
+        if (entry["prev_digest"] != previous
+                or entry["entry_digest"] != recompute(previous, entry)
+                or canonical_bytes_disagree(entry)):
             broken.append(entry["entry_id"])
         previous = entry["entry_digest"]
     return broken
 
 
 __all__ = [
-    "BOUND_DIGEST_PROFILE", "BOUND_MATERIAL", "CHAIN_MATERIAL", "DIGEST_PROFILE",
-    "GENESIS", "LEGACY_DIGEST_PROFILE", "recompute", "verify_chain",
+    "BOUND_DIGEST_PROFILE", "BOUND_MATERIAL", "CANONICAL", "CHAIN_MATERIAL",
+    "DIGEST_PROFILE", "GENESIS", "LEGACY_DIGEST_PROFILE",
+    "canonical_bytes_disagree", "recompute", "verify_chain",
 ]

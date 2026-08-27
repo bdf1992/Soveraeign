@@ -153,10 +153,6 @@ class BudgetReporting(unittest.TestCase):
         self.assertEqual(len(names), len(set(names)))
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class DigestOverAnObservedAddress(unittest.TestCase):
     """`digest()` states the bytes an observation claims to cover.
 
@@ -194,3 +190,7 @@ class DigestOverAnObservedAddress(unittest.TestCase):
                 pruned = verify.digest("observed")
                 with patch.object(verify, "SKIP_PARTS", without):
                     self.assertNotEqual(verify.digest("observed"), pruned)
+
+
+if __name__ == "__main__":
+    unittest.main()

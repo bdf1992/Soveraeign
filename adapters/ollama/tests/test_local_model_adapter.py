@@ -60,7 +60,8 @@ def fixture(stem: str) -> dict:
 class DeclaredBindingTests(unittest.TestCase):
     def test_every_declared_binding_is_accepted(self) -> None:
         paths = sorted(adapter_module.BINDINGS_DIR.glob("*.json"))
-        self.assertEqual(len(paths), 2, "the parity proof needs exactly two declared bindings")
+        self.assertGreaterEqual(len(paths), 2,
+                                "PROD-I-9 needs at least two declared bindings to prove parity")
         for path in paths:
             with self.subTest(binding=path.name):
                 result = check_binding(json.loads(path.read_text(encoding="utf-8")))
@@ -69,10 +70,27 @@ class DeclaredBindingTests(unittest.TestCase):
                 self.assertEqual(result["data_boundary"], "LOCAL_ONLY")
                 self.assertFalse(result["authority_granted"])
 
-    def test_the_two_bindings_are_materially_different_models(self) -> None:
-        models = {json.loads(path.read_text(encoding="utf-8"))["model_id"]
-                  for path in sorted(adapter_module.BINDINGS_DIR.glob("*.json"))}
-        self.assertEqual(len(models), 2, models)
+    def test_every_binding_names_a_materially_different_model(self) -> None:
+        """No two declared bindings may name the same model.
+
+        PROD-I-9 needs two materially different bindings; it does not cap the
+        count. Requiring every binding to name a distinct model keeps that proof
+        intact as bindings are added, and is stricter than checking a fixed pair:
+        a duplicate anywhere in the set now fails.
+        """
+        paths = sorted(adapter_module.BINDINGS_DIR.glob("*.json"))
+        models = [json.loads(path.read_text(encoding="utf-8"))["model_id"] for path in paths]
+        self.assertGreaterEqual(len(set(models)), 2, models)
+        self.assertEqual(len(set(models)), len(models),
+                         f"two bindings name the same model: {models}")
+
+    def test_no_two_bindings_share_a_model_version(self) -> None:
+        """A digest repeated across bindings means one of them records a lie."""
+        paths = sorted(adapter_module.BINDINGS_DIR.glob("*.json"))
+        versions = [json.loads(path.read_text(encoding="utf-8"))["model_version"]
+                    for path in paths]
+        self.assertEqual(len(set(versions)), len(versions),
+                         f"two bindings record the same model_version: {versions}")
 
     def test_binding_refusals(self) -> None:
         for stem, code in BINDING_CASES:

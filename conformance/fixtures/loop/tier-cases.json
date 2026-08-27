@@ -1,0 +1,2212 @@
+{
+  "cases": [
+    {
+      "case_id": "LOOP-001",
+      "description": "a three-tier run on declared bindings with an independent observer",
+      "expect_refusals": [],
+      "run": {
+        "artifacts": [
+          {
+            "artifact_id": "urn:soveraeign:artifact:objective:9c4e4e28d5a41284",
+            "binding_id": "urn:soveraeign:binding:none",
+            "body": "close the founding docket",
+            "digest": "sha256:9c4e4e28d5a4128461f80db0f37900f2fe5e54c86f00cb0f9b16be115e1a607a",
+            "input_addresses": [],
+            "kind": "OBJECTIVE",
+            "produced_by": "urn:soveraeign:actor:owner",
+            "scope": "repository/4cd8bf727cb8"
+          },
+          {
+            "artifact_id": "urn:soveraeign:artifact:plan:baef41f600b290e4",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "body": "recorded CONTROL output",
+            "digest": "sha256:baef41f600b290e4696c8cc13fff4fd579c1f965e639a3a4a246565cf7bf013a",
+            "input_addresses": [
+              "urn:soveraeign:artifact:objective:9c4e4e28d5a41284"
+            ],
+            "kind": "PLAN",
+            "produced_by": "urn:soveraeign:actor:controller",
+            "scope": "repository/4cd8bf727cb8"
+          },
+          {
+            "artifact_id": "urn:soveraeign:artifact:task:29fed62782c2e09b",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "body": "recorded ORCHESTRATION output",
+            "digest": "sha256:29fed62782c2e09ba4cd48b44068253db3ff04b25ecb806e21c27b431ae6eb21",
+            "input_addresses": [
+              "urn:soveraeign:artifact:plan:baef41f600b290e4"
+            ],
+            "kind": "TASK",
+            "produced_by": "urn:soveraeign:actor:orchestrator",
+            "scope": "repository/4cd8bf727cb8/operation-1"
+          },
+          {
+            "artifact_id": "urn:soveraeign:artifact:report:4fa2225c0e61e973",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+            "body": "recorded WORK output",
+            "digest": "sha256:4fa2225c0e61e9737e8dbb825fffe8490802ab688cf8776c498712350b2cee05",
+            "input_addresses": [
+              "urn:soveraeign:artifact:task:29fed62782c2e09b"
+            ],
+            "kind": "REPORT",
+            "produced_by": "urn:soveraeign:actor:worker",
+            "scope": "repository/4cd8bf727cb8/operation-1/task-1"
+          },
+          {
+            "artifact_id": "urn:soveraeign:artifact:observation:63faa11c016d351f",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "body": "NO FINDINGS",
+            "digest": "sha256:63faa11c016d351fd359f8d6923d3119c504b97bb8a70516703350247a51de02",
+            "input_addresses": [
+              "urn:soveraeign:artifact:report:4fa2225c0e61e973"
+            ],
+            "kind": "OBSERVATION",
+            "produced_by": "urn:soveraeign:actor:observer",
+            "scope": "repository/4cd8bf727cb8/operation-1/task-1"
+          }
+        ],
+        "chain": [
+          {
+            "actor_id": "urn:soveraeign:actor:controller",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "capabilities": [
+              "select_operation",
+              "issue_grant",
+              "launch_orchestration",
+              "observe",
+              "settle",
+              "escalate"
+            ],
+            "effect_class": "RESOURCE_CONSUMPTION",
+            "scope": "repository/4cd8bf727cb8",
+            "tier": "CONTROL"
+          },
+          {
+            "actor_id": "urn:soveraeign:actor:orchestrator",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "capabilities": [
+              "issue_grant",
+              "observe",
+              "escalate"
+            ],
+            "effect_class": "RESOURCE_CONSUMPTION",
+            "scope": "repository/4cd8bf727cb8/operation-1",
+            "tier": "ORCHESTRATION"
+          },
+          {
+            "actor_id": "urn:soveraeign:actor:worker",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+            "capabilities": [
+              "execute"
+            ],
+            "effect_class": "RESOURCE_CONSUMPTION",
+            "scope": "repository/4cd8bf727cb8/operation-1/task-1",
+            "tier": "WORK"
+          }
+        ],
+        "created_at": "1970-01-01T00:00:00Z",
+        "invocations": [
+          {
+            "adapter_id": "urn:soveraeign:adapter:ollama",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "cost": {
+              "amount": 0,
+              "basis": "OWNER_OWNED_HARDWARE",
+              "unit": "USD"
+            },
+            "data_boundary": "LOCAL_ONLY",
+            "host_id": "urn:soveraeign:host:local-node",
+            "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+            "invocation_id": "urn:soveraeign:invocation:control",
+            "model_id": "model-for/gpt-oss-20b",
+            "model_version": "sha256:recorded-for-the-fixture",
+            "omissions": [
+              "lineage/evidence",
+              "credentials"
+            ],
+            "output_text": "recorded CONTROL output",
+            "provider_id": "urn:soveraeign:provider:ollama:local-node",
+            "purpose": "CONTROL",
+            "runtime_id": "ollama",
+            "usage": {
+              "input_tokens": 64,
+              "output_tokens": 32,
+              "wall_clock_seconds": 0.5
+            }
+          },
+          {
+            "adapter_id": "urn:soveraeign:adapter:ollama",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "cost": {
+              "amount": 0,
+              "basis": "OWNER_OWNED_HARDWARE",
+              "unit": "USD"
+            },
+            "data_boundary": "LOCAL_ONLY",
+            "host_id": "urn:soveraeign:host:local-node",
+            "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+            "invocation_id": "urn:soveraeign:invocation:orchestration",
+            "model_id": "model-for/gpt-oss-20b",
+            "model_version": "sha256:recorded-for-the-fixture",
+            "omissions": [
+              "lineage/evidence",
+              "credentials"
+            ],
+            "output_text": "recorded ORCHESTRATION output",
+            "provider_id": "urn:soveraeign:provider:ollama:local-node",
+            "purpose": "ORCHESTRATION",
+            "runtime_id": "ollama",
+            "usage": {
+              "input_tokens": 64,
+              "output_tokens": 32,
+              "wall_clock_seconds": 0.5
+            }
+          },
+          {
+            "adapter_id": "urn:soveraeign:adapter:ollama",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+            "cost": {
+              "amount": 0,
+              "basis": "OWNER_OWNED_HARDWARE",
+              "unit": "USD"
+            },
+            "data_boundary": "LOCAL_ONLY",
+            "host_id": "urn:soveraeign:host:local-node",
+            "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+            "invocation_id": "urn:soveraeign:invocation:work",
+            "model_id": "model-for/qwen3-5-4b",
+            "model_version": "sha256:recorded-for-the-fixture",
+            "omissions": [
+              "lineage/evidence",
+              "credentials"
+            ],
+            "output_text": "recorded WORK output",
+            "provider_id": "urn:soveraeign:provider:ollama:local-node",
+            "purpose": "WORK",
+            "runtime_id": "ollama",
+            "usage": {
+              "input_tokens": 64,
+              "output_tokens": 32,
+              "wall_clock_seconds": 0.5
+            }
+          },
+          {
+            "adapter_id": "urn:soveraeign:adapter:ollama",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "cost": {
+              "amount": 0,
+              "basis": "OWNER_OWNED_HARDWARE",
+              "unit": "USD"
+            },
+            "data_boundary": "LOCAL_ONLY",
+            "host_id": "urn:soveraeign:host:local-node",
+            "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+            "invocation_id": "urn:soveraeign:invocation:observe",
+            "model_id": "model-for/gpt-oss-20b",
+            "model_version": "sha256:recorded-for-the-fixture",
+            "omissions": [
+              "lineage/evidence",
+              "credentials"
+            ],
+            "output_text": "NO FINDINGS",
+            "provider_id": "urn:soveraeign:provider:ollama:local-node",
+            "purpose": "OBSERVE",
+            "runtime_id": "ollama",
+            "usage": {
+              "input_tokens": 64,
+              "output_tokens": 32,
+              "wall_clock_seconds": 0.5
+            }
+          }
+        ],
+        "objective": "close the founding docket",
+        "observation": {
+          "clean": true,
+          "findings": [],
+          "observed_binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+          "observer": "urn:soveraeign:actor:observer",
+          "observer_binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+          "subject_artifact_id": "urn:soveraeign:artifact:report:4fa2225c0e61e973",
+          "subject_digest": "sha256:4fa2225c0e61e9737e8dbb825fffe8490802ab688cf8776c498712350b2cee05",
+          "verdict": "CLEARED"
+        },
+        "report": {
+          "artifact_id": "urn:soveraeign:artifact:report:4fa2225c0e61e973",
+          "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+          "digest": "sha256:4fa2225c0e61e9737e8dbb825fffe8490802ab688cf8776c498712350b2cee05",
+          "produced_by": "urn:soveraeign:actor:worker"
+        },
+        "run_id": "urn:soveraeign:run:4cd8bf727cb860f1",
+        "settlement": {
+          "outcome": "COMMITTED",
+          "reason": "observer cleared the report and no separation rule was defeated",
+          "settled_by": "urn:soveraeign:actor:controller"
+        }
+      }
+    },
+    {
+      "case_id": "LOOP-002",
+      "description": "a chain missing the Work tier",
+      "expect_refusals": [
+        "TIER_DEPTH_REFUSED"
+      ],
+      "run": {
+        "artifacts": [
+          {
+            "artifact_id": "urn:soveraeign:artifact:objective:9c4e4e28d5a41284",
+            "binding_id": "urn:soveraeign:binding:none",
+            "body": "close the founding docket",
+            "digest": "sha256:9c4e4e28d5a4128461f80db0f37900f2fe5e54c86f00cb0f9b16be115e1a607a",
+            "input_addresses": [],
+            "kind": "OBJECTIVE",
+            "produced_by": "urn:soveraeign:actor:owner",
+            "scope": "repository/4cd8bf727cb8"
+          },
+          {
+            "artifact_id": "urn:soveraeign:artifact:plan:baef41f600b290e4",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "body": "recorded CONTROL output",
+            "digest": "sha256:baef41f600b290e4696c8cc13fff4fd579c1f965e639a3a4a246565cf7bf013a",
+            "input_addresses": [
+              "urn:soveraeign:artifact:objective:9c4e4e28d5a41284"
+            ],
+            "kind": "PLAN",
+            "produced_by": "urn:soveraeign:actor:controller",
+            "scope": "repository/4cd8bf727cb8"
+          },
+          {
+            "artifact_id": "urn:soveraeign:artifact:task:29fed62782c2e09b",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "body": "recorded ORCHESTRATION output",
+            "digest": "sha256:29fed62782c2e09ba4cd48b44068253db3ff04b25ecb806e21c27b431ae6eb21",
+            "input_addresses": [
+              "urn:soveraeign:artifact:plan:baef41f600b290e4"
+            ],
+            "kind": "TASK",
+            "produced_by": "urn:soveraeign:actor:orchestrator",
+            "scope": "repository/4cd8bf727cb8/operation-1"
+          },
+          {
+            "artifact_id": "urn:soveraeign:artifact:report:4fa2225c0e61e973",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+            "body": "recorded WORK output",
+            "digest": "sha256:4fa2225c0e61e9737e8dbb825fffe8490802ab688cf8776c498712350b2cee05",
+            "input_addresses": [
+              "urn:soveraeign:artifact:task:29fed62782c2e09b"
+            ],
+            "kind": "REPORT",
+            "produced_by": "urn:soveraeign:actor:worker",
+            "scope": "repository/4cd8bf727cb8/operation-1/task-1"
+          },
+          {
+            "artifact_id": "urn:soveraeign:artifact:observation:63faa11c016d351f",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "body": "NO FINDINGS",
+            "digest": "sha256:63faa11c016d351fd359f8d6923d3119c504b97bb8a70516703350247a51de02",
+            "input_addresses": [
+              "urn:soveraeign:artifact:report:4fa2225c0e61e973"
+            ],
+            "kind": "OBSERVATION",
+            "produced_by": "urn:soveraeign:actor:observer",
+            "scope": "repository/4cd8bf727cb8/operation-1/task-1"
+          }
+        ],
+        "chain": [
+          {
+            "actor_id": "urn:soveraeign:actor:controller",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "capabilities": [
+              "select_operation",
+              "issue_grant",
+              "launch_orchestration",
+              "observe",
+              "settle",
+              "escalate"
+            ],
+            "effect_class": "RESOURCE_CONSUMPTION",
+            "scope": "repository/4cd8bf727cb8",
+            "tier": "CONTROL"
+          },
+          {
+            "actor_id": "urn:soveraeign:actor:orchestrator",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "capabilities": [
+              "issue_grant",
+              "observe",
+              "escalate"
+            ],
+            "effect_class": "RESOURCE_CONSUMPTION",
+            "scope": "repository/4cd8bf727cb8/operation-1",
+            "tier": "ORCHESTRATION"
+          }
+        ],
+        "created_at": "1970-01-01T00:00:00Z",
+        "invocations": [
+          {
+            "adapter_id": "urn:soveraeign:adapter:ollama",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "cost": {
+              "amount": 0,
+              "basis": "OWNER_OWNED_HARDWARE",
+              "unit": "USD"
+            },
+            "data_boundary": "LOCAL_ONLY",
+            "host_id": "urn:soveraeign:host:local-node",
+            "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+            "invocation_id": "urn:soveraeign:invocation:control",
+            "model_id": "model-for/gpt-oss-20b",
+            "model_version": "sha256:recorded-for-the-fixture",
+            "omissions": [
+              "lineage/evidence",
+              "credentials"
+            ],
+            "output_text": "recorded CONTROL output",
+            "provider_id": "urn:soveraeign:provider:ollama:local-node",
+            "purpose": "CONTROL",
+            "runtime_id": "ollama",
+            "usage": {
+              "input_tokens": 64,
+              "output_tokens": 32,
+              "wall_clock_seconds": 0.5
+            }
+          },
+          {
+            "adapter_id": "urn:soveraeign:adapter:ollama",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "cost": {
+              "amount": 0,
+              "basis": "OWNER_OWNED_HARDWARE",
+              "unit": "USD"
+            },
+            "data_boundary": "LOCAL_ONLY",
+            "host_id": "urn:soveraeign:host:local-node",
+            "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+            "invocation_id": "urn:soveraeign:invocation:orchestration",
+            "model_id": "model-for/gpt-oss-20b",
+            "model_version": "sha256:recorded-for-the-fixture",
+            "omissions": [
+              "lineage/evidence",
+              "credentials"
+            ],
+            "output_text": "recorded ORCHESTRATION output",
+            "provider_id": "urn:soveraeign:provider:ollama:local-node",
+            "purpose": "ORCHESTRATION",
+            "runtime_id": "ollama",
+            "usage": {
+              "input_tokens": 64,
+              "output_tokens": 32,
+              "wall_clock_seconds": 0.5
+            }
+          },
+          {
+            "adapter_id": "urn:soveraeign:adapter:ollama",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+            "cost": {
+              "amount": 0,
+              "basis": "OWNER_OWNED_HARDWARE",
+              "unit": "USD"
+            },
+            "data_boundary": "LOCAL_ONLY",
+            "host_id": "urn:soveraeign:host:local-node",
+            "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+            "invocation_id": "urn:soveraeign:invocation:work",
+            "model_id": "model-for/qwen3-5-4b",
+            "model_version": "sha256:recorded-for-the-fixture",
+            "omissions": [
+              "lineage/evidence",
+              "credentials"
+            ],
+            "output_text": "recorded WORK output",
+            "provider_id": "urn:soveraeign:provider:ollama:local-node",
+            "purpose": "WORK",
+            "runtime_id": "ollama",
+            "usage": {
+              "input_tokens": 64,
+              "output_tokens": 32,
+              "wall_clock_seconds": 0.5
+            }
+          },
+          {
+            "adapter_id": "urn:soveraeign:adapter:ollama",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "cost": {
+              "amount": 0,
+              "basis": "OWNER_OWNED_HARDWARE",
+              "unit": "USD"
+            },
+            "data_boundary": "LOCAL_ONLY",
+            "host_id": "urn:soveraeign:host:local-node",
+            "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+            "invocation_id": "urn:soveraeign:invocation:observe",
+            "model_id": "model-for/gpt-oss-20b",
+            "model_version": "sha256:recorded-for-the-fixture",
+            "omissions": [
+              "lineage/evidence",
+              "credentials"
+            ],
+            "output_text": "NO FINDINGS",
+            "provider_id": "urn:soveraeign:provider:ollama:local-node",
+            "purpose": "OBSERVE",
+            "runtime_id": "ollama",
+            "usage": {
+              "input_tokens": 64,
+              "output_tokens": 32,
+              "wall_clock_seconds": 0.5
+            }
+          }
+        ],
+        "objective": "close the founding docket",
+        "observation": {
+          "clean": true,
+          "findings": [],
+          "observed_binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+          "observer": "urn:soveraeign:actor:observer",
+          "observer_binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+          "subject_artifact_id": "urn:soveraeign:artifact:report:4fa2225c0e61e973",
+          "subject_digest": "sha256:4fa2225c0e61e9737e8dbb825fffe8490802ab688cf8776c498712350b2cee05",
+          "verdict": "CLEARED"
+        },
+        "report": {
+          "artifact_id": "urn:soveraeign:artifact:report:4fa2225c0e61e973",
+          "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+          "digest": "sha256:4fa2225c0e61e9737e8dbb825fffe8490802ab688cf8776c498712350b2cee05",
+          "produced_by": "urn:soveraeign:actor:worker"
+        },
+        "run_id": "urn:soveraeign:run:4cd8bf727cb860f1",
+        "settlement": {
+          "outcome": "COMMITTED",
+          "reason": "observer cleared the report and no separation rule was defeated",
+          "settled_by": "urn:soveraeign:actor:controller"
+        }
+      }
+    },
+    {
+      "case_id": "LOOP-003",
+      "description": "Work claims the settle verb the table withholds",
+      "expect_refusals": [
+        "GRANT_NOT_NARROWED"
+      ],
+      "run": {
+        "artifacts": [
+          {
+            "artifact_id": "urn:soveraeign:artifact:objective:9c4e4e28d5a41284",
+            "binding_id": "urn:soveraeign:binding:none",
+            "body": "close the founding docket",
+            "digest": "sha256:9c4e4e28d5a4128461f80db0f37900f2fe5e54c86f00cb0f9b16be115e1a607a",
+            "input_addresses": [],
+            "kind": "OBJECTIVE",
+            "produced_by": "urn:soveraeign:actor:owner",
+            "scope": "repository/4cd8bf727cb8"
+          },
+          {
+            "artifact_id": "urn:soveraeign:artifact:plan:baef41f600b290e4",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "body": "recorded CONTROL output",
+            "digest": "sha256:baef41f600b290e4696c8cc13fff4fd579c1f965e639a3a4a246565cf7bf013a",
+            "input_addresses": [
+              "urn:soveraeign:artifact:objective:9c4e4e28d5a41284"
+            ],
+            "kind": "PLAN",
+            "produced_by": "urn:soveraeign:actor:controller",
+            "scope": "repository/4cd8bf727cb8"
+          },
+          {
+            "artifact_id": "urn:soveraeign:artifact:task:29fed62782c2e09b",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "body": "recorded ORCHESTRATION output",
+            "digest": "sha256:29fed62782c2e09ba4cd48b44068253db3ff04b25ecb806e21c27b431ae6eb21",
+            "input_addresses": [
+              "urn:soveraeign:artifact:plan:baef41f600b290e4"
+            ],
+            "kind": "TASK",
+            "produced_by": "urn:soveraeign:actor:orchestrator",
+            "scope": "repository/4cd8bf727cb8/operation-1"
+          },
+          {
+            "artifact_id": "urn:soveraeign:artifact:report:4fa2225c0e61e973",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+            "body": "recorded WORK output",
+            "digest": "sha256:4fa2225c0e61e9737e8dbb825fffe8490802ab688cf8776c498712350b2cee05",
+            "input_addresses": [
+              "urn:soveraeign:artifact:task:29fed62782c2e09b"
+            ],
+            "kind": "REPORT",
+            "produced_by": "urn:soveraeign:actor:worker",
+            "scope": "repository/4cd8bf727cb8/operation-1/task-1"
+          },
+          {
+            "artifact_id": "urn:soveraeign:artifact:observation:63faa11c016d351f",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "body": "NO FINDINGS",
+            "digest": "sha256:63faa11c016d351fd359f8d6923d3119c504b97bb8a70516703350247a51de02",
+            "input_addresses": [
+              "urn:soveraeign:artifact:report:4fa2225c0e61e973"
+            ],
+            "kind": "OBSERVATION",
+            "produced_by": "urn:soveraeign:actor:observer",
+            "scope": "repository/4cd8bf727cb8/operation-1/task-1"
+          }
+        ],
+        "chain": [
+          {
+            "actor_id": "urn:soveraeign:actor:controller",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "capabilities": [
+              "select_operation",
+              "issue_grant",
+              "launch_orchestration",
+              "observe",
+              "settle",
+              "escalate"
+            ],
+            "effect_class": "RESOURCE_CONSUMPTION",
+            "scope": "repository/4cd8bf727cb8",
+            "tier": "CONTROL"
+          },
+          {
+            "actor_id": "urn:soveraeign:actor:orchestrator",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "capabilities": [
+              "issue_grant",
+              "observe",
+              "escalate"
+            ],
+            "effect_class": "RESOURCE_CONSUMPTION",
+            "scope": "repository/4cd8bf727cb8/operation-1",
+            "tier": "ORCHESTRATION"
+          },
+          {
+            "actor_id": "urn:soveraeign:actor:worker",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+            "capabilities": [
+              "execute",
+              "settle"
+            ],
+            "effect_class": "RESOURCE_CONSUMPTION",
+            "scope": "repository/4cd8bf727cb8/operation-1/task-1",
+            "tier": "WORK"
+          }
+        ],
+        "created_at": "1970-01-01T00:00:00Z",
+        "invocations": [
+          {
+            "adapter_id": "urn:soveraeign:adapter:ollama",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "cost": {
+              "amount": 0,
+              "basis": "OWNER_OWNED_HARDWARE",
+              "unit": "USD"
+            },
+            "data_boundary": "LOCAL_ONLY",
+            "host_id": "urn:soveraeign:host:local-node",
+            "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+            "invocation_id": "urn:soveraeign:invocation:control",
+            "model_id": "model-for/gpt-oss-20b",
+            "model_version": "sha256:recorded-for-the-fixture",
+            "omissions": [
+              "lineage/evidence",
+              "credentials"
+            ],
+            "output_text": "recorded CONTROL output",
+            "provider_id": "urn:soveraeign:provider:ollama:local-node",
+            "purpose": "CONTROL",
+            "runtime_id": "ollama",
+            "usage": {
+              "input_tokens": 64,
+              "output_tokens": 32,
+              "wall_clock_seconds": 0.5
+            }
+          },
+          {
+            "adapter_id": "urn:soveraeign:adapter:ollama",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "cost": {
+              "amount": 0,
+              "basis": "OWNER_OWNED_HARDWARE",
+              "unit": "USD"
+            },
+            "data_boundary": "LOCAL_ONLY",
+            "host_id": "urn:soveraeign:host:local-node",
+            "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+            "invocation_id": "urn:soveraeign:invocation:orchestration",
+            "model_id": "model-for/gpt-oss-20b",
+            "model_version": "sha256:recorded-for-the-fixture",
+            "omissions": [
+              "lineage/evidence",
+              "credentials"
+            ],
+            "output_text": "recorded ORCHESTRATION output",
+            "provider_id": "urn:soveraeign:provider:ollama:local-node",
+            "purpose": "ORCHESTRATION",
+            "runtime_id": "ollama",
+            "usage": {
+              "input_tokens": 64,
+              "output_tokens": 32,
+              "wall_clock_seconds": 0.5
+            }
+          },
+          {
+            "adapter_id": "urn:soveraeign:adapter:ollama",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+            "cost": {
+              "amount": 0,
+              "basis": "OWNER_OWNED_HARDWARE",
+              "unit": "USD"
+            },
+            "data_boundary": "LOCAL_ONLY",
+            "host_id": "urn:soveraeign:host:local-node",
+            "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+            "invocation_id": "urn:soveraeign:invocation:work",
+            "model_id": "model-for/qwen3-5-4b",
+            "model_version": "sha256:recorded-for-the-fixture",
+            "omissions": [
+              "lineage/evidence",
+              "credentials"
+            ],
+            "output_text": "recorded WORK output",
+            "provider_id": "urn:soveraeign:provider:ollama:local-node",
+            "purpose": "WORK",
+            "runtime_id": "ollama",
+            "usage": {
+              "input_tokens": 64,
+              "output_tokens": 32,
+              "wall_clock_seconds": 0.5
+            }
+          },
+          {
+            "adapter_id": "urn:soveraeign:adapter:ollama",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "cost": {
+              "amount": 0,
+              "basis": "OWNER_OWNED_HARDWARE",
+              "unit": "USD"
+            },
+            "data_boundary": "LOCAL_ONLY",
+            "host_id": "urn:soveraeign:host:local-node",
+            "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+            "invocation_id": "urn:soveraeign:invocation:observe",
+            "model_id": "model-for/gpt-oss-20b",
+            "model_version": "sha256:recorded-for-the-fixture",
+            "omissions": [
+              "lineage/evidence",
+              "credentials"
+            ],
+            "output_text": "NO FINDINGS",
+            "provider_id": "urn:soveraeign:provider:ollama:local-node",
+            "purpose": "OBSERVE",
+            "runtime_id": "ollama",
+            "usage": {
+              "input_tokens": 64,
+              "output_tokens": 32,
+              "wall_clock_seconds": 0.5
+            }
+          }
+        ],
+        "objective": "close the founding docket",
+        "observation": {
+          "clean": true,
+          "findings": [],
+          "observed_binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+          "observer": "urn:soveraeign:actor:observer",
+          "observer_binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+          "subject_artifact_id": "urn:soveraeign:artifact:report:4fa2225c0e61e973",
+          "subject_digest": "sha256:4fa2225c0e61e9737e8dbb825fffe8490802ab688cf8776c498712350b2cee05",
+          "verdict": "CLEARED"
+        },
+        "report": {
+          "artifact_id": "urn:soveraeign:artifact:report:4fa2225c0e61e973",
+          "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+          "digest": "sha256:4fa2225c0e61e9737e8dbb825fffe8490802ab688cf8776c498712350b2cee05",
+          "produced_by": "urn:soveraeign:actor:worker"
+        },
+        "run_id": "urn:soveraeign:run:4cd8bf727cb860f1",
+        "settlement": {
+          "outcome": "COMMITTED",
+          "reason": "observer cleared the report and no separation rule was defeated",
+          "settled_by": "urn:soveraeign:actor:controller"
+        }
+      }
+    },
+    {
+      "case_id": "LOOP-004",
+      "description": "Work runs on a scope that is not inside its parent",
+      "expect_refusals": [
+        "GRANT_NOT_NARROWED"
+      ],
+      "run": {
+        "artifacts": [
+          {
+            "artifact_id": "urn:soveraeign:artifact:objective:9c4e4e28d5a41284",
+            "binding_id": "urn:soveraeign:binding:none",
+            "body": "close the founding docket",
+            "digest": "sha256:9c4e4e28d5a4128461f80db0f37900f2fe5e54c86f00cb0f9b16be115e1a607a",
+            "input_addresses": [],
+            "kind": "OBJECTIVE",
+            "produced_by": "urn:soveraeign:actor:owner",
+            "scope": "repository/4cd8bf727cb8"
+          },
+          {
+            "artifact_id": "urn:soveraeign:artifact:plan:baef41f600b290e4",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "body": "recorded CONTROL output",
+            "digest": "sha256:baef41f600b290e4696c8cc13fff4fd579c1f965e639a3a4a246565cf7bf013a",
+            "input_addresses": [
+              "urn:soveraeign:artifact:objective:9c4e4e28d5a41284"
+            ],
+            "kind": "PLAN",
+            "produced_by": "urn:soveraeign:actor:controller",
+            "scope": "repository/4cd8bf727cb8"
+          },
+          {
+            "artifact_id": "urn:soveraeign:artifact:task:29fed62782c2e09b",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "body": "recorded ORCHESTRATION output",
+            "digest": "sha256:29fed62782c2e09ba4cd48b44068253db3ff04b25ecb806e21c27b431ae6eb21",
+            "input_addresses": [
+              "urn:soveraeign:artifact:plan:baef41f600b290e4"
+            ],
+            "kind": "TASK",
+            "produced_by": "urn:soveraeign:actor:orchestrator",
+            "scope": "repository/4cd8bf727cb8/operation-1"
+          },
+          {
+            "artifact_id": "urn:soveraeign:artifact:report:4fa2225c0e61e973",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+            "body": "recorded WORK output",
+            "digest": "sha256:4fa2225c0e61e9737e8dbb825fffe8490802ab688cf8776c498712350b2cee05",
+            "input_addresses": [
+              "urn:soveraeign:artifact:task:29fed62782c2e09b"
+            ],
+            "kind": "REPORT",
+            "produced_by": "urn:soveraeign:actor:worker",
+            "scope": "repository/4cd8bf727cb8/operation-1/task-1"
+          },
+          {
+            "artifact_id": "urn:soveraeign:artifact:observation:63faa11c016d351f",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "body": "NO FINDINGS",
+            "digest": "sha256:63faa11c016d351fd359f8d6923d3119c504b97bb8a70516703350247a51de02",
+            "input_addresses": [
+              "urn:soveraeign:artifact:report:4fa2225c0e61e973"
+            ],
+            "kind": "OBSERVATION",
+            "produced_by": "urn:soveraeign:actor:observer",
+            "scope": "repository/4cd8bf727cb8/operation-1/task-1"
+          }
+        ],
+        "chain": [
+          {
+            "actor_id": "urn:soveraeign:actor:controller",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "capabilities": [
+              "select_operation",
+              "issue_grant",
+              "launch_orchestration",
+              "observe",
+              "settle",
+              "escalate"
+            ],
+            "effect_class": "RESOURCE_CONSUMPTION",
+            "scope": "repository/4cd8bf727cb8",
+            "tier": "CONTROL"
+          },
+          {
+            "actor_id": "urn:soveraeign:actor:orchestrator",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "capabilities": [
+              "issue_grant",
+              "observe",
+              "escalate"
+            ],
+            "effect_class": "RESOURCE_CONSUMPTION",
+            "scope": "repository/4cd8bf727cb8/operation-1",
+            "tier": "ORCHESTRATION"
+          },
+          {
+            "actor_id": "urn:soveraeign:actor:worker",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+            "capabilities": [
+              "execute"
+            ],
+            "effect_class": "RESOURCE_CONSUMPTION",
+            "scope": "repository/elsewhere/task-1",
+            "tier": "WORK"
+          }
+        ],
+        "created_at": "1970-01-01T00:00:00Z",
+        "invocations": [
+          {
+            "adapter_id": "urn:soveraeign:adapter:ollama",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "cost": {
+              "amount": 0,
+              "basis": "OWNER_OWNED_HARDWARE",
+              "unit": "USD"
+            },
+            "data_boundary": "LOCAL_ONLY",
+            "host_id": "urn:soveraeign:host:local-node",
+            "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+            "invocation_id": "urn:soveraeign:invocation:control",
+            "model_id": "model-for/gpt-oss-20b",
+            "model_version": "sha256:recorded-for-the-fixture",
+            "omissions": [
+              "lineage/evidence",
+              "credentials"
+            ],
+            "output_text": "recorded CONTROL output",
+            "provider_id": "urn:soveraeign:provider:ollama:local-node",
+            "purpose": "CONTROL",
+            "runtime_id": "ollama",
+            "usage": {
+              "input_tokens": 64,
+              "output_tokens": 32,
+              "wall_clock_seconds": 0.5
+            }
+          },
+          {
+            "adapter_id": "urn:soveraeign:adapter:ollama",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "cost": {
+              "amount": 0,
+              "basis": "OWNER_OWNED_HARDWARE",
+              "unit": "USD"
+            },
+            "data_boundary": "LOCAL_ONLY",
+            "host_id": "urn:soveraeign:host:local-node",
+            "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+            "invocation_id": "urn:soveraeign:invocation:orchestration",
+            "model_id": "model-for/gpt-oss-20b",
+            "model_version": "sha256:recorded-for-the-fixture",
+            "omissions": [
+              "lineage/evidence",
+              "credentials"
+            ],
+            "output_text": "recorded ORCHESTRATION output",
+            "provider_id": "urn:soveraeign:provider:ollama:local-node",
+            "purpose": "ORCHESTRATION",
+            "runtime_id": "ollama",
+            "usage": {
+              "input_tokens": 64,
+              "output_tokens": 32,
+              "wall_clock_seconds": 0.5
+            }
+          },
+          {
+            "adapter_id": "urn:soveraeign:adapter:ollama",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+            "cost": {
+              "amount": 0,
+              "basis": "OWNER_OWNED_HARDWARE",
+              "unit": "USD"
+            },
+            "data_boundary": "LOCAL_ONLY",
+            "host_id": "urn:soveraeign:host:local-node",
+            "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+            "invocation_id": "urn:soveraeign:invocation:work",
+            "model_id": "model-for/qwen3-5-4b",
+            "model_version": "sha256:recorded-for-the-fixture",
+            "omissions": [
+              "lineage/evidence",
+              "credentials"
+            ],
+            "output_text": "recorded WORK output",
+            "provider_id": "urn:soveraeign:provider:ollama:local-node",
+            "purpose": "WORK",
+            "runtime_id": "ollama",
+            "usage": {
+              "input_tokens": 64,
+              "output_tokens": 32,
+              "wall_clock_seconds": 0.5
+            }
+          },
+          {
+            "adapter_id": "urn:soveraeign:adapter:ollama",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "cost": {
+              "amount": 0,
+              "basis": "OWNER_OWNED_HARDWARE",
+              "unit": "USD"
+            },
+            "data_boundary": "LOCAL_ONLY",
+            "host_id": "urn:soveraeign:host:local-node",
+            "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+            "invocation_id": "urn:soveraeign:invocation:observe",
+            "model_id": "model-for/gpt-oss-20b",
+            "model_version": "sha256:recorded-for-the-fixture",
+            "omissions": [
+              "lineage/evidence",
+              "credentials"
+            ],
+            "output_text": "NO FINDINGS",
+            "provider_id": "urn:soveraeign:provider:ollama:local-node",
+            "purpose": "OBSERVE",
+            "runtime_id": "ollama",
+            "usage": {
+              "input_tokens": 64,
+              "output_tokens": 32,
+              "wall_clock_seconds": 0.5
+            }
+          }
+        ],
+        "objective": "close the founding docket",
+        "observation": {
+          "clean": true,
+          "findings": [],
+          "observed_binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+          "observer": "urn:soveraeign:actor:observer",
+          "observer_binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+          "subject_artifact_id": "urn:soveraeign:artifact:report:4fa2225c0e61e973",
+          "subject_digest": "sha256:4fa2225c0e61e9737e8dbb825fffe8490802ab688cf8776c498712350b2cee05",
+          "verdict": "CLEARED"
+        },
+        "report": {
+          "artifact_id": "urn:soveraeign:artifact:report:4fa2225c0e61e973",
+          "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+          "digest": "sha256:4fa2225c0e61e9737e8dbb825fffe8490802ab688cf8776c498712350b2cee05",
+          "produced_by": "urn:soveraeign:actor:worker"
+        },
+        "run_id": "urn:soveraeign:run:4cd8bf727cb860f1",
+        "settlement": {
+          "outcome": "COMMITTED",
+          "reason": "observer cleared the report and no separation rule was defeated",
+          "settled_by": "urn:soveraeign:actor:controller"
+        }
+      }
+    },
+    {
+      "case_id": "LOOP-005",
+      "description": "the worker settles the report it produced",
+      "expect_refusals": [
+        "SELF_SETTLEMENT_REFUSED"
+      ],
+      "run": {
+        "artifacts": [
+          {
+            "artifact_id": "urn:soveraeign:artifact:objective:9c4e4e28d5a41284",
+            "binding_id": "urn:soveraeign:binding:none",
+            "body": "close the founding docket",
+            "digest": "sha256:9c4e4e28d5a4128461f80db0f37900f2fe5e54c86f00cb0f9b16be115e1a607a",
+            "input_addresses": [],
+            "kind": "OBJECTIVE",
+            "produced_by": "urn:soveraeign:actor:owner",
+            "scope": "repository/4cd8bf727cb8"
+          },
+          {
+            "artifact_id": "urn:soveraeign:artifact:plan:baef41f600b290e4",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "body": "recorded CONTROL output",
+            "digest": "sha256:baef41f600b290e4696c8cc13fff4fd579c1f965e639a3a4a246565cf7bf013a",
+            "input_addresses": [
+              "urn:soveraeign:artifact:objective:9c4e4e28d5a41284"
+            ],
+            "kind": "PLAN",
+            "produced_by": "urn:soveraeign:actor:controller",
+            "scope": "repository/4cd8bf727cb8"
+          },
+          {
+            "artifact_id": "urn:soveraeign:artifact:task:29fed62782c2e09b",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "body": "recorded ORCHESTRATION output",
+            "digest": "sha256:29fed62782c2e09ba4cd48b44068253db3ff04b25ecb806e21c27b431ae6eb21",
+            "input_addresses": [
+              "urn:soveraeign:artifact:plan:baef41f600b290e4"
+            ],
+            "kind": "TASK",
+            "produced_by": "urn:soveraeign:actor:orchestrator",
+            "scope": "repository/4cd8bf727cb8/operation-1"
+          },
+          {
+            "artifact_id": "urn:soveraeign:artifact:report:4fa2225c0e61e973",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+            "body": "recorded WORK output",
+            "digest": "sha256:4fa2225c0e61e9737e8dbb825fffe8490802ab688cf8776c498712350b2cee05",
+            "input_addresses": [
+              "urn:soveraeign:artifact:task:29fed62782c2e09b"
+            ],
+            "kind": "REPORT",
+            "produced_by": "urn:soveraeign:actor:worker",
+            "scope": "repository/4cd8bf727cb8/operation-1/task-1"
+          },
+          {
+            "artifact_id": "urn:soveraeign:artifact:observation:63faa11c016d351f",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "body": "NO FINDINGS",
+            "digest": "sha256:63faa11c016d351fd359f8d6923d3119c504b97bb8a70516703350247a51de02",
+            "input_addresses": [
+              "urn:soveraeign:artifact:report:4fa2225c0e61e973"
+            ],
+            "kind": "OBSERVATION",
+            "produced_by": "urn:soveraeign:actor:observer",
+            "scope": "repository/4cd8bf727cb8/operation-1/task-1"
+          }
+        ],
+        "chain": [
+          {
+            "actor_id": "urn:soveraeign:actor:controller",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "capabilities": [
+              "select_operation",
+              "issue_grant",
+              "launch_orchestration",
+              "observe",
+              "settle",
+              "escalate"
+            ],
+            "effect_class": "RESOURCE_CONSUMPTION",
+            "scope": "repository/4cd8bf727cb8",
+            "tier": "CONTROL"
+          },
+          {
+            "actor_id": "urn:soveraeign:actor:orchestrator",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "capabilities": [
+              "issue_grant",
+              "observe",
+              "escalate"
+            ],
+            "effect_class": "RESOURCE_CONSUMPTION",
+            "scope": "repository/4cd8bf727cb8/operation-1",
+            "tier": "ORCHESTRATION"
+          },
+          {
+            "actor_id": "urn:soveraeign:actor:worker",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+            "capabilities": [
+              "execute"
+            ],
+            "effect_class": "RESOURCE_CONSUMPTION",
+            "scope": "repository/4cd8bf727cb8/operation-1/task-1",
+            "tier": "WORK"
+          }
+        ],
+        "created_at": "1970-01-01T00:00:00Z",
+        "invocations": [
+          {
+            "adapter_id": "urn:soveraeign:adapter:ollama",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "cost": {
+              "amount": 0,
+              "basis": "OWNER_OWNED_HARDWARE",
+              "unit": "USD"
+            },
+            "data_boundary": "LOCAL_ONLY",
+            "host_id": "urn:soveraeign:host:local-node",
+            "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+            "invocation_id": "urn:soveraeign:invocation:control",
+            "model_id": "model-for/gpt-oss-20b",
+            "model_version": "sha256:recorded-for-the-fixture",
+            "omissions": [
+              "lineage/evidence",
+              "credentials"
+            ],
+            "output_text": "recorded CONTROL output",
+            "provider_id": "urn:soveraeign:provider:ollama:local-node",
+            "purpose": "CONTROL",
+            "runtime_id": "ollama",
+            "usage": {
+              "input_tokens": 64,
+              "output_tokens": 32,
+              "wall_clock_seconds": 0.5
+            }
+          },
+          {
+            "adapter_id": "urn:soveraeign:adapter:ollama",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "cost": {
+              "amount": 0,
+              "basis": "OWNER_OWNED_HARDWARE",
+              "unit": "USD"
+            },
+            "data_boundary": "LOCAL_ONLY",
+            "host_id": "urn:soveraeign:host:local-node",
+            "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+            "invocation_id": "urn:soveraeign:invocation:orchestration",
+            "model_id": "model-for/gpt-oss-20b",
+            "model_version": "sha256:recorded-for-the-fixture",
+            "omissions": [
+              "lineage/evidence",
+              "credentials"
+            ],
+            "output_text": "recorded ORCHESTRATION output",
+            "provider_id": "urn:soveraeign:provider:ollama:local-node",
+            "purpose": "ORCHESTRATION",
+            "runtime_id": "ollama",
+            "usage": {
+              "input_tokens": 64,
+              "output_tokens": 32,
+              "wall_clock_seconds": 0.5
+            }
+          },
+          {
+            "adapter_id": "urn:soveraeign:adapter:ollama",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+            "cost": {
+              "amount": 0,
+              "basis": "OWNER_OWNED_HARDWARE",
+              "unit": "USD"
+            },
+            "data_boundary": "LOCAL_ONLY",
+            "host_id": "urn:soveraeign:host:local-node",
+            "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+            "invocation_id": "urn:soveraeign:invocation:work",
+            "model_id": "model-for/qwen3-5-4b",
+            "model_version": "sha256:recorded-for-the-fixture",
+            "omissions": [
+              "lineage/evidence",
+              "credentials"
+            ],
+            "output_text": "recorded WORK output",
+            "provider_id": "urn:soveraeign:provider:ollama:local-node",
+            "purpose": "WORK",
+            "runtime_id": "ollama",
+            "usage": {
+              "input_tokens": 64,
+              "output_tokens": 32,
+              "wall_clock_seconds": 0.5
+            }
+          },
+          {
+            "adapter_id": "urn:soveraeign:adapter:ollama",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "cost": {
+              "amount": 0,
+              "basis": "OWNER_OWNED_HARDWARE",
+              "unit": "USD"
+            },
+            "data_boundary": "LOCAL_ONLY",
+            "host_id": "urn:soveraeign:host:local-node",
+            "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+            "invocation_id": "urn:soveraeign:invocation:observe",
+            "model_id": "model-for/gpt-oss-20b",
+            "model_version": "sha256:recorded-for-the-fixture",
+            "omissions": [
+              "lineage/evidence",
+              "credentials"
+            ],
+            "output_text": "NO FINDINGS",
+            "provider_id": "urn:soveraeign:provider:ollama:local-node",
+            "purpose": "OBSERVE",
+            "runtime_id": "ollama",
+            "usage": {
+              "input_tokens": 64,
+              "output_tokens": 32,
+              "wall_clock_seconds": 0.5
+            }
+          }
+        ],
+        "objective": "close the founding docket",
+        "observation": {
+          "clean": true,
+          "findings": [],
+          "observed_binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+          "observer": "urn:soveraeign:actor:observer",
+          "observer_binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+          "subject_artifact_id": "urn:soveraeign:artifact:report:4fa2225c0e61e973",
+          "subject_digest": "sha256:4fa2225c0e61e9737e8dbb825fffe8490802ab688cf8776c498712350b2cee05",
+          "verdict": "CLEARED"
+        },
+        "report": {
+          "artifact_id": "urn:soveraeign:artifact:report:4fa2225c0e61e973",
+          "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+          "digest": "sha256:4fa2225c0e61e9737e8dbb825fffe8490802ab688cf8776c498712350b2cee05",
+          "produced_by": "urn:soveraeign:actor:worker"
+        },
+        "run_id": "urn:soveraeign:run:4cd8bf727cb860f1",
+        "settlement": {
+          "outcome": "COMMITTED",
+          "reason": "observer cleared the report and no separation rule was defeated",
+          "settled_by": "urn:soveraeign:actor:worker"
+        }
+      }
+    },
+    {
+      "case_id": "LOOP-006",
+      "description": "the producing binding observes its own output",
+      "expect_refusals": [
+        "SELF_WITNESS_REFUSED"
+      ],
+      "run": {
+        "artifacts": [
+          {
+            "artifact_id": "urn:soveraeign:artifact:objective:9c4e4e28d5a41284",
+            "binding_id": "urn:soveraeign:binding:none",
+            "body": "close the founding docket",
+            "digest": "sha256:9c4e4e28d5a4128461f80db0f37900f2fe5e54c86f00cb0f9b16be115e1a607a",
+            "input_addresses": [],
+            "kind": "OBJECTIVE",
+            "produced_by": "urn:soveraeign:actor:owner",
+            "scope": "repository/4cd8bf727cb8"
+          },
+          {
+            "artifact_id": "urn:soveraeign:artifact:plan:baef41f600b290e4",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "body": "recorded CONTROL output",
+            "digest": "sha256:baef41f600b290e4696c8cc13fff4fd579c1f965e639a3a4a246565cf7bf013a",
+            "input_addresses": [
+              "urn:soveraeign:artifact:objective:9c4e4e28d5a41284"
+            ],
+            "kind": "PLAN",
+            "produced_by": "urn:soveraeign:actor:controller",
+            "scope": "repository/4cd8bf727cb8"
+          },
+          {
+            "artifact_id": "urn:soveraeign:artifact:task:29fed62782c2e09b",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "body": "recorded ORCHESTRATION output",
+            "digest": "sha256:29fed62782c2e09ba4cd48b44068253db3ff04b25ecb806e21c27b431ae6eb21",
+            "input_addresses": [
+              "urn:soveraeign:artifact:plan:baef41f600b290e4"
+            ],
+            "kind": "TASK",
+            "produced_by": "urn:soveraeign:actor:orchestrator",
+            "scope": "repository/4cd8bf727cb8/operation-1"
+          },
+          {
+            "artifact_id": "urn:soveraeign:artifact:report:4fa2225c0e61e973",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+            "body": "recorded WORK output",
+            "digest": "sha256:4fa2225c0e61e9737e8dbb825fffe8490802ab688cf8776c498712350b2cee05",
+            "input_addresses": [
+              "urn:soveraeign:artifact:task:29fed62782c2e09b"
+            ],
+            "kind": "REPORT",
+            "produced_by": "urn:soveraeign:actor:worker",
+            "scope": "repository/4cd8bf727cb8/operation-1/task-1"
+          },
+          {
+            "artifact_id": "urn:soveraeign:artifact:observation:63faa11c016d351f",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "body": "NO FINDINGS",
+            "digest": "sha256:63faa11c016d351fd359f8d6923d3119c504b97bb8a70516703350247a51de02",
+            "input_addresses": [
+              "urn:soveraeign:artifact:report:4fa2225c0e61e973"
+            ],
+            "kind": "OBSERVATION",
+            "produced_by": "urn:soveraeign:actor:observer",
+            "scope": "repository/4cd8bf727cb8/operation-1/task-1"
+          }
+        ],
+        "chain": [
+          {
+            "actor_id": "urn:soveraeign:actor:controller",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "capabilities": [
+              "select_operation",
+              "issue_grant",
+              "launch_orchestration",
+              "observe",
+              "settle",
+              "escalate"
+            ],
+            "effect_class": "RESOURCE_CONSUMPTION",
+            "scope": "repository/4cd8bf727cb8",
+            "tier": "CONTROL"
+          },
+          {
+            "actor_id": "urn:soveraeign:actor:orchestrator",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "capabilities": [
+              "issue_grant",
+              "observe",
+              "escalate"
+            ],
+            "effect_class": "RESOURCE_CONSUMPTION",
+            "scope": "repository/4cd8bf727cb8/operation-1",
+            "tier": "ORCHESTRATION"
+          },
+          {
+            "actor_id": "urn:soveraeign:actor:worker",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+            "capabilities": [
+              "execute"
+            ],
+            "effect_class": "RESOURCE_CONSUMPTION",
+            "scope": "repository/4cd8bf727cb8/operation-1/task-1",
+            "tier": "WORK"
+          }
+        ],
+        "created_at": "1970-01-01T00:00:00Z",
+        "invocations": [
+          {
+            "adapter_id": "urn:soveraeign:adapter:ollama",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "cost": {
+              "amount": 0,
+              "basis": "OWNER_OWNED_HARDWARE",
+              "unit": "USD"
+            },
+            "data_boundary": "LOCAL_ONLY",
+            "host_id": "urn:soveraeign:host:local-node",
+            "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+            "invocation_id": "urn:soveraeign:invocation:control",
+            "model_id": "model-for/gpt-oss-20b",
+            "model_version": "sha256:recorded-for-the-fixture",
+            "omissions": [
+              "lineage/evidence",
+              "credentials"
+            ],
+            "output_text": "recorded CONTROL output",
+            "provider_id": "urn:soveraeign:provider:ollama:local-node",
+            "purpose": "CONTROL",
+            "runtime_id": "ollama",
+            "usage": {
+              "input_tokens": 64,
+              "output_tokens": 32,
+              "wall_clock_seconds": 0.5
+            }
+          },
+          {
+            "adapter_id": "urn:soveraeign:adapter:ollama",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "cost": {
+              "amount": 0,
+              "basis": "OWNER_OWNED_HARDWARE",
+              "unit": "USD"
+            },
+            "data_boundary": "LOCAL_ONLY",
+            "host_id": "urn:soveraeign:host:local-node",
+            "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+            "invocation_id": "urn:soveraeign:invocation:orchestration",
+            "model_id": "model-for/gpt-oss-20b",
+            "model_version": "sha256:recorded-for-the-fixture",
+            "omissions": [
+              "lineage/evidence",
+              "credentials"
+            ],
+            "output_text": "recorded ORCHESTRATION output",
+            "provider_id": "urn:soveraeign:provider:ollama:local-node",
+            "purpose": "ORCHESTRATION",
+            "runtime_id": "ollama",
+            "usage": {
+              "input_tokens": 64,
+              "output_tokens": 32,
+              "wall_clock_seconds": 0.5
+            }
+          },
+          {
+            "adapter_id": "urn:soveraeign:adapter:ollama",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+            "cost": {
+              "amount": 0,
+              "basis": "OWNER_OWNED_HARDWARE",
+              "unit": "USD"
+            },
+            "data_boundary": "LOCAL_ONLY",
+            "host_id": "urn:soveraeign:host:local-node",
+            "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+            "invocation_id": "urn:soveraeign:invocation:work",
+            "model_id": "model-for/qwen3-5-4b",
+            "model_version": "sha256:recorded-for-the-fixture",
+            "omissions": [
+              "lineage/evidence",
+              "credentials"
+            ],
+            "output_text": "recorded WORK output",
+            "provider_id": "urn:soveraeign:provider:ollama:local-node",
+            "purpose": "WORK",
+            "runtime_id": "ollama",
+            "usage": {
+              "input_tokens": 64,
+              "output_tokens": 32,
+              "wall_clock_seconds": 0.5
+            }
+          },
+          {
+            "adapter_id": "urn:soveraeign:adapter:ollama",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "cost": {
+              "amount": 0,
+              "basis": "OWNER_OWNED_HARDWARE",
+              "unit": "USD"
+            },
+            "data_boundary": "LOCAL_ONLY",
+            "host_id": "urn:soveraeign:host:local-node",
+            "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+            "invocation_id": "urn:soveraeign:invocation:observe",
+            "model_id": "model-for/gpt-oss-20b",
+            "model_version": "sha256:recorded-for-the-fixture",
+            "omissions": [
+              "lineage/evidence",
+              "credentials"
+            ],
+            "output_text": "NO FINDINGS",
+            "provider_id": "urn:soveraeign:provider:ollama:local-node",
+            "purpose": "OBSERVE",
+            "runtime_id": "ollama",
+            "usage": {
+              "input_tokens": 64,
+              "output_tokens": 32,
+              "wall_clock_seconds": 0.5
+            }
+          }
+        ],
+        "objective": "close the founding docket",
+        "observation": {
+          "clean": true,
+          "findings": [],
+          "observed_binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+          "observer": "urn:soveraeign:actor:observer",
+          "observer_binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+          "subject_artifact_id": "urn:soveraeign:artifact:report:4fa2225c0e61e973",
+          "subject_digest": "sha256:4fa2225c0e61e9737e8dbb825fffe8490802ab688cf8776c498712350b2cee05",
+          "verdict": "CLEARED"
+        },
+        "report": {
+          "artifact_id": "urn:soveraeign:artifact:report:4fa2225c0e61e973",
+          "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+          "digest": "sha256:4fa2225c0e61e9737e8dbb825fffe8490802ab688cf8776c498712350b2cee05",
+          "produced_by": "urn:soveraeign:actor:worker"
+        },
+        "run_id": "urn:soveraeign:run:4cd8bf727cb860f1",
+        "settlement": {
+          "outcome": "COMMITTED",
+          "reason": "observer cleared the report and no separation rule was defeated",
+          "settled_by": "urn:soveraeign:actor:controller"
+        }
+      }
+    },
+    {
+      "case_id": "LOOP-007",
+      "description": "Work declares an external-world effect this phase refuses",
+      "expect_refusals": [
+        "EFFECT_CLASS_REFUSED"
+      ],
+      "run": {
+        "artifacts": [
+          {
+            "artifact_id": "urn:soveraeign:artifact:objective:9c4e4e28d5a41284",
+            "binding_id": "urn:soveraeign:binding:none",
+            "body": "close the founding docket",
+            "digest": "sha256:9c4e4e28d5a4128461f80db0f37900f2fe5e54c86f00cb0f9b16be115e1a607a",
+            "input_addresses": [],
+            "kind": "OBJECTIVE",
+            "produced_by": "urn:soveraeign:actor:owner",
+            "scope": "repository/4cd8bf727cb8"
+          },
+          {
+            "artifact_id": "urn:soveraeign:artifact:plan:baef41f600b290e4",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "body": "recorded CONTROL output",
+            "digest": "sha256:baef41f600b290e4696c8cc13fff4fd579c1f965e639a3a4a246565cf7bf013a",
+            "input_addresses": [
+              "urn:soveraeign:artifact:objective:9c4e4e28d5a41284"
+            ],
+            "kind": "PLAN",
+            "produced_by": "urn:soveraeign:actor:controller",
+            "scope": "repository/4cd8bf727cb8"
+          },
+          {
+            "artifact_id": "urn:soveraeign:artifact:task:29fed62782c2e09b",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "body": "recorded ORCHESTRATION output",
+            "digest": "sha256:29fed62782c2e09ba4cd48b44068253db3ff04b25ecb806e21c27b431ae6eb21",
+            "input_addresses": [
+              "urn:soveraeign:artifact:plan:baef41f600b290e4"
+            ],
+            "kind": "TASK",
+            "produced_by": "urn:soveraeign:actor:orchestrator",
+            "scope": "repository/4cd8bf727cb8/operation-1"
+          },
+          {
+            "artifact_id": "urn:soveraeign:artifact:report:4fa2225c0e61e973",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+            "body": "recorded WORK output",
+            "digest": "sha256:4fa2225c0e61e9737e8dbb825fffe8490802ab688cf8776c498712350b2cee05",
+            "input_addresses": [
+              "urn:soveraeign:artifact:task:29fed62782c2e09b"
+            ],
+            "kind": "REPORT",
+            "produced_by": "urn:soveraeign:actor:worker",
+            "scope": "repository/4cd8bf727cb8/operation-1/task-1"
+          },
+          {
+            "artifact_id": "urn:soveraeign:artifact:observation:63faa11c016d351f",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "body": "NO FINDINGS",
+            "digest": "sha256:63faa11c016d351fd359f8d6923d3119c504b97bb8a70516703350247a51de02",
+            "input_addresses": [
+              "urn:soveraeign:artifact:report:4fa2225c0e61e973"
+            ],
+            "kind": "OBSERVATION",
+            "produced_by": "urn:soveraeign:actor:observer",
+            "scope": "repository/4cd8bf727cb8/operation-1/task-1"
+          }
+        ],
+        "chain": [
+          {
+            "actor_id": "urn:soveraeign:actor:controller",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "capabilities": [
+              "select_operation",
+              "issue_grant",
+              "launch_orchestration",
+              "observe",
+              "settle",
+              "escalate"
+            ],
+            "effect_class": "RESOURCE_CONSUMPTION",
+            "scope": "repository/4cd8bf727cb8",
+            "tier": "CONTROL"
+          },
+          {
+            "actor_id": "urn:soveraeign:actor:orchestrator",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "capabilities": [
+              "issue_grant",
+              "observe",
+              "escalate"
+            ],
+            "effect_class": "RESOURCE_CONSUMPTION",
+            "scope": "repository/4cd8bf727cb8/operation-1",
+            "tier": "ORCHESTRATION"
+          },
+          {
+            "actor_id": "urn:soveraeign:actor:worker",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+            "capabilities": [
+              "execute"
+            ],
+            "effect_class": "EXTERNAL_WORLD",
+            "scope": "repository/4cd8bf727cb8/operation-1/task-1",
+            "tier": "WORK"
+          }
+        ],
+        "created_at": "1970-01-01T00:00:00Z",
+        "invocations": [
+          {
+            "adapter_id": "urn:soveraeign:adapter:ollama",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "cost": {
+              "amount": 0,
+              "basis": "OWNER_OWNED_HARDWARE",
+              "unit": "USD"
+            },
+            "data_boundary": "LOCAL_ONLY",
+            "host_id": "urn:soveraeign:host:local-node",
+            "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+            "invocation_id": "urn:soveraeign:invocation:control",
+            "model_id": "model-for/gpt-oss-20b",
+            "model_version": "sha256:recorded-for-the-fixture",
+            "omissions": [
+              "lineage/evidence",
+              "credentials"
+            ],
+            "output_text": "recorded CONTROL output",
+            "provider_id": "urn:soveraeign:provider:ollama:local-node",
+            "purpose": "CONTROL",
+            "runtime_id": "ollama",
+            "usage": {
+              "input_tokens": 64,
+              "output_tokens": 32,
+              "wall_clock_seconds": 0.5
+            }
+          },
+          {
+            "adapter_id": "urn:soveraeign:adapter:ollama",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "cost": {
+              "amount": 0,
+              "basis": "OWNER_OWNED_HARDWARE",
+              "unit": "USD"
+            },
+            "data_boundary": "LOCAL_ONLY",
+            "host_id": "urn:soveraeign:host:local-node",
+            "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+            "invocation_id": "urn:soveraeign:invocation:orchestration",
+            "model_id": "model-for/gpt-oss-20b",
+            "model_version": "sha256:recorded-for-the-fixture",
+            "omissions": [
+              "lineage/evidence",
+              "credentials"
+            ],
+            "output_text": "recorded ORCHESTRATION output",
+            "provider_id": "urn:soveraeign:provider:ollama:local-node",
+            "purpose": "ORCHESTRATION",
+            "runtime_id": "ollama",
+            "usage": {
+              "input_tokens": 64,
+              "output_tokens": 32,
+              "wall_clock_seconds": 0.5
+            }
+          },
+          {
+            "adapter_id": "urn:soveraeign:adapter:ollama",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+            "cost": {
+              "amount": 0,
+              "basis": "OWNER_OWNED_HARDWARE",
+              "unit": "USD"
+            },
+            "data_boundary": "LOCAL_ONLY",
+            "host_id": "urn:soveraeign:host:local-node",
+            "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+            "invocation_id": "urn:soveraeign:invocation:work",
+            "model_id": "model-for/qwen3-5-4b",
+            "model_version": "sha256:recorded-for-the-fixture",
+            "omissions": [
+              "lineage/evidence",
+              "credentials"
+            ],
+            "output_text": "recorded WORK output",
+            "provider_id": "urn:soveraeign:provider:ollama:local-node",
+            "purpose": "WORK",
+            "runtime_id": "ollama",
+            "usage": {
+              "input_tokens": 64,
+              "output_tokens": 32,
+              "wall_clock_seconds": 0.5
+            }
+          },
+          {
+            "adapter_id": "urn:soveraeign:adapter:ollama",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "cost": {
+              "amount": 0,
+              "basis": "OWNER_OWNED_HARDWARE",
+              "unit": "USD"
+            },
+            "data_boundary": "LOCAL_ONLY",
+            "host_id": "urn:soveraeign:host:local-node",
+            "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+            "invocation_id": "urn:soveraeign:invocation:observe",
+            "model_id": "model-for/gpt-oss-20b",
+            "model_version": "sha256:recorded-for-the-fixture",
+            "omissions": [
+              "lineage/evidence",
+              "credentials"
+            ],
+            "output_text": "NO FINDINGS",
+            "provider_id": "urn:soveraeign:provider:ollama:local-node",
+            "purpose": "OBSERVE",
+            "runtime_id": "ollama",
+            "usage": {
+              "input_tokens": 64,
+              "output_tokens": 32,
+              "wall_clock_seconds": 0.5
+            }
+          }
+        ],
+        "objective": "close the founding docket",
+        "observation": {
+          "clean": true,
+          "findings": [],
+          "observed_binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+          "observer": "urn:soveraeign:actor:observer",
+          "observer_binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+          "subject_artifact_id": "urn:soveraeign:artifact:report:4fa2225c0e61e973",
+          "subject_digest": "sha256:4fa2225c0e61e9737e8dbb825fffe8490802ab688cf8776c498712350b2cee05",
+          "verdict": "CLEARED"
+        },
+        "report": {
+          "artifact_id": "urn:soveraeign:artifact:report:4fa2225c0e61e973",
+          "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+          "digest": "sha256:4fa2225c0e61e9737e8dbb825fffe8490802ab688cf8776c498712350b2cee05",
+          "produced_by": "urn:soveraeign:actor:worker"
+        },
+        "run_id": "urn:soveraeign:run:4cd8bf727cb860f1",
+        "settlement": {
+          "outcome": "COMMITTED",
+          "reason": "observer cleared the report and no separation rule was defeated",
+          "settled_by": "urn:soveraeign:actor:controller"
+        }
+      }
+    },
+    {
+      "case_id": "LOOP-008",
+      "description": "an invocation omits its model version",
+      "expect_refusals": [
+        "PROVENANCE_INCOMPLETE"
+      ],
+      "run": {
+        "artifacts": [
+          {
+            "artifact_id": "urn:soveraeign:artifact:objective:9c4e4e28d5a41284",
+            "binding_id": "urn:soveraeign:binding:none",
+            "body": "close the founding docket",
+            "digest": "sha256:9c4e4e28d5a4128461f80db0f37900f2fe5e54c86f00cb0f9b16be115e1a607a",
+            "input_addresses": [],
+            "kind": "OBJECTIVE",
+            "produced_by": "urn:soveraeign:actor:owner",
+            "scope": "repository/4cd8bf727cb8"
+          },
+          {
+            "artifact_id": "urn:soveraeign:artifact:plan:baef41f600b290e4",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "body": "recorded CONTROL output",
+            "digest": "sha256:baef41f600b290e4696c8cc13fff4fd579c1f965e639a3a4a246565cf7bf013a",
+            "input_addresses": [
+              "urn:soveraeign:artifact:objective:9c4e4e28d5a41284"
+            ],
+            "kind": "PLAN",
+            "produced_by": "urn:soveraeign:actor:controller",
+            "scope": "repository/4cd8bf727cb8"
+          },
+          {
+            "artifact_id": "urn:soveraeign:artifact:task:29fed62782c2e09b",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "body": "recorded ORCHESTRATION output",
+            "digest": "sha256:29fed62782c2e09ba4cd48b44068253db3ff04b25ecb806e21c27b431ae6eb21",
+            "input_addresses": [
+              "urn:soveraeign:artifact:plan:baef41f600b290e4"
+            ],
+            "kind": "TASK",
+            "produced_by": "urn:soveraeign:actor:orchestrator",
+            "scope": "repository/4cd8bf727cb8/operation-1"
+          },
+          {
+            "artifact_id": "urn:soveraeign:artifact:report:4fa2225c0e61e973",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+            "body": "recorded WORK output",
+            "digest": "sha256:4fa2225c0e61e9737e8dbb825fffe8490802ab688cf8776c498712350b2cee05",
+            "input_addresses": [
+              "urn:soveraeign:artifact:task:29fed62782c2e09b"
+            ],
+            "kind": "REPORT",
+            "produced_by": "urn:soveraeign:actor:worker",
+            "scope": "repository/4cd8bf727cb8/operation-1/task-1"
+          },
+          {
+            "artifact_id": "urn:soveraeign:artifact:observation:63faa11c016d351f",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "body": "NO FINDINGS",
+            "digest": "sha256:63faa11c016d351fd359f8d6923d3119c504b97bb8a70516703350247a51de02",
+            "input_addresses": [
+              "urn:soveraeign:artifact:report:4fa2225c0e61e973"
+            ],
+            "kind": "OBSERVATION",
+            "produced_by": "urn:soveraeign:actor:observer",
+            "scope": "repository/4cd8bf727cb8/operation-1/task-1"
+          }
+        ],
+        "chain": [
+          {
+            "actor_id": "urn:soveraeign:actor:controller",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "capabilities": [
+              "select_operation",
+              "issue_grant",
+              "launch_orchestration",
+              "observe",
+              "settle",
+              "escalate"
+            ],
+            "effect_class": "RESOURCE_CONSUMPTION",
+            "scope": "repository/4cd8bf727cb8",
+            "tier": "CONTROL"
+          },
+          {
+            "actor_id": "urn:soveraeign:actor:orchestrator",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "capabilities": [
+              "issue_grant",
+              "observe",
+              "escalate"
+            ],
+            "effect_class": "RESOURCE_CONSUMPTION",
+            "scope": "repository/4cd8bf727cb8/operation-1",
+            "tier": "ORCHESTRATION"
+          },
+          {
+            "actor_id": "urn:soveraeign:actor:worker",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+            "capabilities": [
+              "execute"
+            ],
+            "effect_class": "RESOURCE_CONSUMPTION",
+            "scope": "repository/4cd8bf727cb8/operation-1/task-1",
+            "tier": "WORK"
+          }
+        ],
+        "created_at": "1970-01-01T00:00:00Z",
+        "invocations": [
+          {
+            "adapter_id": "urn:soveraeign:adapter:ollama",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "cost": {
+              "amount": 0,
+              "basis": "OWNER_OWNED_HARDWARE",
+              "unit": "USD"
+            },
+            "data_boundary": "LOCAL_ONLY",
+            "host_id": "urn:soveraeign:host:local-node",
+            "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+            "invocation_id": "urn:soveraeign:invocation:control",
+            "model_id": "model-for/gpt-oss-20b",
+            "model_version": "sha256:recorded-for-the-fixture",
+            "omissions": [
+              "lineage/evidence",
+              "credentials"
+            ],
+            "output_text": "recorded CONTROL output",
+            "provider_id": "urn:soveraeign:provider:ollama:local-node",
+            "purpose": "CONTROL",
+            "runtime_id": "ollama",
+            "usage": {
+              "input_tokens": 64,
+              "output_tokens": 32,
+              "wall_clock_seconds": 0.5
+            }
+          },
+          {
+            "adapter_id": "urn:soveraeign:adapter:ollama",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "cost": {
+              "amount": 0,
+              "basis": "OWNER_OWNED_HARDWARE",
+              "unit": "USD"
+            },
+            "data_boundary": "LOCAL_ONLY",
+            "host_id": "urn:soveraeign:host:local-node",
+            "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+            "invocation_id": "urn:soveraeign:invocation:orchestration",
+            "model_id": "model-for/gpt-oss-20b",
+            "model_version": "sha256:recorded-for-the-fixture",
+            "omissions": [
+              "lineage/evidence",
+              "credentials"
+            ],
+            "output_text": "recorded ORCHESTRATION output",
+            "provider_id": "urn:soveraeign:provider:ollama:local-node",
+            "purpose": "ORCHESTRATION",
+            "runtime_id": "ollama",
+            "usage": {
+              "input_tokens": 64,
+              "output_tokens": 32,
+              "wall_clock_seconds": 0.5
+            }
+          },
+          {
+            "adapter_id": "urn:soveraeign:adapter:ollama",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+            "cost": {
+              "amount": 0,
+              "basis": "OWNER_OWNED_HARDWARE",
+              "unit": "USD"
+            },
+            "data_boundary": "LOCAL_ONLY",
+            "host_id": "urn:soveraeign:host:local-node",
+            "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+            "invocation_id": "urn:soveraeign:invocation:work",
+            "model_id": "model-for/qwen3-5-4b",
+            "model_version": null,
+            "omissions": [
+              "lineage/evidence",
+              "credentials"
+            ],
+            "output_text": "recorded WORK output",
+            "provider_id": "urn:soveraeign:provider:ollama:local-node",
+            "purpose": "WORK",
+            "runtime_id": "ollama",
+            "usage": {
+              "input_tokens": 64,
+              "output_tokens": 32,
+              "wall_clock_seconds": 0.5
+            }
+          },
+          {
+            "adapter_id": "urn:soveraeign:adapter:ollama",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "cost": {
+              "amount": 0,
+              "basis": "OWNER_OWNED_HARDWARE",
+              "unit": "USD"
+            },
+            "data_boundary": "LOCAL_ONLY",
+            "host_id": "urn:soveraeign:host:local-node",
+            "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+            "invocation_id": "urn:soveraeign:invocation:observe",
+            "model_id": "model-for/gpt-oss-20b",
+            "model_version": "sha256:recorded-for-the-fixture",
+            "omissions": [
+              "lineage/evidence",
+              "credentials"
+            ],
+            "output_text": "NO FINDINGS",
+            "provider_id": "urn:soveraeign:provider:ollama:local-node",
+            "purpose": "OBSERVE",
+            "runtime_id": "ollama",
+            "usage": {
+              "input_tokens": 64,
+              "output_tokens": 32,
+              "wall_clock_seconds": 0.5
+            }
+          }
+        ],
+        "objective": "close the founding docket",
+        "observation": {
+          "clean": true,
+          "findings": [],
+          "observed_binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+          "observer": "urn:soveraeign:actor:observer",
+          "observer_binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+          "subject_artifact_id": "urn:soveraeign:artifact:report:4fa2225c0e61e973",
+          "subject_digest": "sha256:4fa2225c0e61e9737e8dbb825fffe8490802ab688cf8776c498712350b2cee05",
+          "verdict": "CLEARED"
+        },
+        "report": {
+          "artifact_id": "urn:soveraeign:artifact:report:4fa2225c0e61e973",
+          "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+          "digest": "sha256:4fa2225c0e61e9737e8dbb825fffe8490802ab688cf8776c498712350b2cee05",
+          "produced_by": "urn:soveraeign:actor:worker"
+        },
+        "run_id": "urn:soveraeign:run:4cd8bf727cb860f1",
+        "settlement": {
+          "outcome": "COMMITTED",
+          "reason": "observer cleared the report and no separation rule was defeated",
+          "settled_by": "urn:soveraeign:actor:controller"
+        }
+      }
+    },
+    {
+      "case_id": "LOOP-009",
+      "description": "Work runs on the judging binding, collapsing the dyad",
+      "expect_refusals": [
+        "BINDING_UNDECLARED",
+        "SELF_WITNESS_REFUSED"
+      ],
+      "run": {
+        "artifacts": [
+          {
+            "artifact_id": "urn:soveraeign:artifact:objective:9c4e4e28d5a41284",
+            "binding_id": "urn:soveraeign:binding:none",
+            "body": "close the founding docket",
+            "digest": "sha256:9c4e4e28d5a4128461f80db0f37900f2fe5e54c86f00cb0f9b16be115e1a607a",
+            "input_addresses": [],
+            "kind": "OBJECTIVE",
+            "produced_by": "urn:soveraeign:actor:owner",
+            "scope": "repository/4cd8bf727cb8"
+          },
+          {
+            "artifact_id": "urn:soveraeign:artifact:plan:baef41f600b290e4",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "body": "recorded CONTROL output",
+            "digest": "sha256:baef41f600b290e4696c8cc13fff4fd579c1f965e639a3a4a246565cf7bf013a",
+            "input_addresses": [
+              "urn:soveraeign:artifact:objective:9c4e4e28d5a41284"
+            ],
+            "kind": "PLAN",
+            "produced_by": "urn:soveraeign:actor:controller",
+            "scope": "repository/4cd8bf727cb8"
+          },
+          {
+            "artifact_id": "urn:soveraeign:artifact:task:29fed62782c2e09b",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "body": "recorded ORCHESTRATION output",
+            "digest": "sha256:29fed62782c2e09ba4cd48b44068253db3ff04b25ecb806e21c27b431ae6eb21",
+            "input_addresses": [
+              "urn:soveraeign:artifact:plan:baef41f600b290e4"
+            ],
+            "kind": "TASK",
+            "produced_by": "urn:soveraeign:actor:orchestrator",
+            "scope": "repository/4cd8bf727cb8/operation-1"
+          },
+          {
+            "artifact_id": "urn:soveraeign:artifact:report:4fa2225c0e61e973",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+            "body": "recorded WORK output",
+            "digest": "sha256:4fa2225c0e61e9737e8dbb825fffe8490802ab688cf8776c498712350b2cee05",
+            "input_addresses": [
+              "urn:soveraeign:artifact:task:29fed62782c2e09b"
+            ],
+            "kind": "REPORT",
+            "produced_by": "urn:soveraeign:actor:worker",
+            "scope": "repository/4cd8bf727cb8/operation-1/task-1"
+          },
+          {
+            "artifact_id": "urn:soveraeign:artifact:observation:63faa11c016d351f",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "body": "NO FINDINGS",
+            "digest": "sha256:63faa11c016d351fd359f8d6923d3119c504b97bb8a70516703350247a51de02",
+            "input_addresses": [
+              "urn:soveraeign:artifact:report:4fa2225c0e61e973"
+            ],
+            "kind": "OBSERVATION",
+            "produced_by": "urn:soveraeign:actor:observer",
+            "scope": "repository/4cd8bf727cb8/operation-1/task-1"
+          }
+        ],
+        "chain": [
+          {
+            "actor_id": "urn:soveraeign:actor:controller",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "capabilities": [
+              "select_operation",
+              "issue_grant",
+              "launch_orchestration",
+              "observe",
+              "settle",
+              "escalate"
+            ],
+            "effect_class": "RESOURCE_CONSUMPTION",
+            "scope": "repository/4cd8bf727cb8",
+            "tier": "CONTROL"
+          },
+          {
+            "actor_id": "urn:soveraeign:actor:orchestrator",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "capabilities": [
+              "issue_grant",
+              "observe",
+              "escalate"
+            ],
+            "effect_class": "RESOURCE_CONSUMPTION",
+            "scope": "repository/4cd8bf727cb8/operation-1",
+            "tier": "ORCHESTRATION"
+          },
+          {
+            "actor_id": "urn:soveraeign:actor:worker",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "capabilities": [
+              "execute"
+            ],
+            "effect_class": "RESOURCE_CONSUMPTION",
+            "scope": "repository/4cd8bf727cb8/operation-1/task-1",
+            "tier": "WORK"
+          }
+        ],
+        "created_at": "1970-01-01T00:00:00Z",
+        "invocations": [
+          {
+            "adapter_id": "urn:soveraeign:adapter:ollama",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "cost": {
+              "amount": 0,
+              "basis": "OWNER_OWNED_HARDWARE",
+              "unit": "USD"
+            },
+            "data_boundary": "LOCAL_ONLY",
+            "host_id": "urn:soveraeign:host:local-node",
+            "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+            "invocation_id": "urn:soveraeign:invocation:control",
+            "model_id": "model-for/gpt-oss-20b",
+            "model_version": "sha256:recorded-for-the-fixture",
+            "omissions": [
+              "lineage/evidence",
+              "credentials"
+            ],
+            "output_text": "recorded CONTROL output",
+            "provider_id": "urn:soveraeign:provider:ollama:local-node",
+            "purpose": "CONTROL",
+            "runtime_id": "ollama",
+            "usage": {
+              "input_tokens": 64,
+              "output_tokens": 32,
+              "wall_clock_seconds": 0.5
+            }
+          },
+          {
+            "adapter_id": "urn:soveraeign:adapter:ollama",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "cost": {
+              "amount": 0,
+              "basis": "OWNER_OWNED_HARDWARE",
+              "unit": "USD"
+            },
+            "data_boundary": "LOCAL_ONLY",
+            "host_id": "urn:soveraeign:host:local-node",
+            "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+            "invocation_id": "urn:soveraeign:invocation:orchestration",
+            "model_id": "model-for/gpt-oss-20b",
+            "model_version": "sha256:recorded-for-the-fixture",
+            "omissions": [
+              "lineage/evidence",
+              "credentials"
+            ],
+            "output_text": "recorded ORCHESTRATION output",
+            "provider_id": "urn:soveraeign:provider:ollama:local-node",
+            "purpose": "ORCHESTRATION",
+            "runtime_id": "ollama",
+            "usage": {
+              "input_tokens": 64,
+              "output_tokens": 32,
+              "wall_clock_seconds": 0.5
+            }
+          },
+          {
+            "adapter_id": "urn:soveraeign:adapter:ollama",
+            "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+            "cost": {
+              "amount": 0,
+              "basis": "OWNER_OWNED_HARDWARE",
+              "unit": "USD"
+            },
+            "data_boundary": "LOCAL_ONLY",
+            "host_id": "urn:soveraeign:host:local-node",
+            "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+            "invocation_id": "urn:soveraeign:invocation:work",
+            "model_id": "model-for/qwen3-5-4b",
+            "model_version": "sha256:recorded-for-the-fixture",
+            "omissions": [
+              "lineage/evidence",
+              "credentials"
+            ],
+            "output_text": "recorded WORK output",
+            "provider_id": "urn:soveraeign:provider:ollama:local-node",
+            "purpose": "WORK",
+            "runtime_id": "ollama",
+            "usage": {
+              "input_tokens": 64,
+              "output_tokens": 32,
+              "wall_clock_seconds": 0.5
+            }
+          },
+          {
+            "adapter_id": "urn:soveraeign:adapter:ollama",
+            "binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+            "cost": {
+              "amount": 0,
+              "basis": "OWNER_OWNED_HARDWARE",
+              "unit": "USD"
+            },
+            "data_boundary": "LOCAL_ONLY",
+            "host_id": "urn:soveraeign:host:local-node",
+            "input_projection_id": "urn:soveraeign:projection:operation-input:redacted-local",
+            "invocation_id": "urn:soveraeign:invocation:observe",
+            "model_id": "model-for/gpt-oss-20b",
+            "model_version": "sha256:recorded-for-the-fixture",
+            "omissions": [
+              "lineage/evidence",
+              "credentials"
+            ],
+            "output_text": "NO FINDINGS",
+            "provider_id": "urn:soveraeign:provider:ollama:local-node",
+            "purpose": "OBSERVE",
+            "runtime_id": "ollama",
+            "usage": {
+              "input_tokens": 64,
+              "output_tokens": 32,
+              "wall_clock_seconds": 0.5
+            }
+          }
+        ],
+        "objective": "close the founding docket",
+        "observation": {
+          "clean": true,
+          "findings": [],
+          "observed_binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+          "observer": "urn:soveraeign:actor:observer",
+          "observer_binding_id": "urn:soveraeign:binding:ollama:gpt-oss-20b",
+          "subject_artifact_id": "urn:soveraeign:artifact:report:4fa2225c0e61e973",
+          "subject_digest": "sha256:4fa2225c0e61e9737e8dbb825fffe8490802ab688cf8776c498712350b2cee05",
+          "verdict": "CLEARED"
+        },
+        "report": {
+          "artifact_id": "urn:soveraeign:artifact:report:4fa2225c0e61e973",
+          "binding_id": "urn:soveraeign:binding:ollama:qwen3-5-4b",
+          "digest": "sha256:4fa2225c0e61e9737e8dbb825fffe8490802ab688cf8776c498712350b2cee05",
+          "produced_by": "urn:soveraeign:actor:worker"
+        },
+        "run_id": "urn:soveraeign:run:4cd8bf727cb860f1",
+        "settlement": {
+          "outcome": "COMMITTED",
+          "reason": "observer cleared the report and no separation rule was defeated",
+          "settled_by": "urn:soveraeign:actor:controller"
+        }
+      }
+    }
+  ],
+  "checks": "contracts/tier-bindings.json separation rules, via scripts/sovloop/rules.py",
+  "corpus_id": "soveraeign-tier-loop-cases/v1",
+  "note": "Every separation rule SDLC.md states has one run that satisfies it and one that defeats it. A rule with no defeating case is a rule nothing proves is enforced.",
+  "status": "PROPOSED"
+}

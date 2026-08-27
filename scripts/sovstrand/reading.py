@@ -55,14 +55,37 @@ def trunk() -> str:
     return ""
 
 
-def branches(against: str) -> list[Branch]:
-    """Measure every local branch against the trunk, newest divergence first."""
-    listing = git("for-each-ref", "--format=%(refname:short)%09%(upstream:short)",
-                  "refs/heads/")
-    found: list[Branch] = []
-    for line in listing.splitlines():
+def _listing() -> list[tuple[str, str]]:
+    """Every branch this checkout can see, as (name, upstream) pairs.
+
+    Local heads first, then remote-tracking refs with no local head of the same name.
+    A branch that was pushed and never checked out here has no `refs/heads/` entry, so
+    reading only local heads reported it as nothing at all - on 2026-08-27 that hid
+    eighteen branches carrying 88 commits, one of them with an open pull request.
+    A remote-tracking ref whose local counterpart exists is skipped, because the local
+    head already measures that work and counting both would double it.
+    """
+    pairs: list[tuple[str, str]] = []
+    local: set[str] = set()
+    for line in git("for-each-ref", "--format=%(refname:short)%09%(upstream:short)",
+                    "refs/heads/").splitlines():
         name, _, upstream = line.partition("\t")
-        if not name or name == against:
+        if name:
+            local.add(name)
+            pairs.append((name, upstream))
+    for name in git("for-each-ref", "--format=%(refname:short)", "refs/remotes/").splitlines():
+        if not name or name.endswith("/HEAD") or name.split("/", 1)[-1] in local:
+            continue
+        # It is its own copy on the remote, which is what an upstream records.
+        pairs.append((name, name))
+    return pairs
+
+
+def branches(against: str) -> list[Branch]:
+    """Measure every branch this checkout can see against the trunk, newest divergence first."""
+    found: list[Branch] = []
+    for name, upstream in _listing():
+        if name == against:
             continue
         count = git("rev-list", "--count", f"{against}..{name}")
         ahead = int(count) if count.isdigit() else 0

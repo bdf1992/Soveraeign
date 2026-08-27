@@ -1,0 +1,252 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/ai-native-assessment.schema.json",
+  "title": "Soveraeign AI-Native Assessment (PROPOSED, decisions/0070)",
+  "description": "One surface performing one named operation, scored against AI-NATIVE.md. The record carries scores, evidence and one human judgement; it carries no verdict, because the verdict is derived from the scores and is never selected directly. A record that states its own result fails this shape rather than being argued with.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "assessment_schema",
+    "surface",
+    "named_operation",
+    "revision",
+    "assessed_at",
+    "assessor",
+    "phase",
+    "axes",
+    "earn_it",
+    "qualifications"
+  ],
+  "properties": {
+    "assessment_schema": {
+      "const": "soveraeign-ai-native-assessment/v1"
+    },
+    "surface": {
+      "type": "string",
+      "minLength": 1
+    },
+    "named_operation": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The operation being evaluated. AI-NATIVE.md makes the unit of evaluation a surface performing a named operation, never a repository or a product."
+    },
+    "revision": {
+      "type": "string",
+      "minLength": 1
+    },
+    "assessed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "assessor": {
+      "type": "string",
+      "minLength": 1
+    },
+    "phase": {
+      "type": "string",
+      "minLength": 1
+    },
+    "axes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reachability",
+        "commitment",
+        "provenance",
+        "retraction"
+      ],
+      "properties": {
+        "reachability": {
+          "$ref": "#/$defs/axis"
+        },
+        "commitment": {
+          "$ref": "#/$defs/axis"
+        },
+        "provenance": {
+          "$ref": "#/$defs/axis"
+        },
+        "retraction": {
+          "$ref": "#/$defs/axis"
+        }
+      }
+    },
+    "earn_it": {
+      "$ref": "#/$defs/earn_it"
+    },
+    "qualifications": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/qualification"
+      },
+      "minProperties": 1,
+      "description": "One entry per declared qualification. Which nine must be answered is declared by contracts/ai-native-qualifications.json, not restated here; a record that omits one is refused by QUALIFICATION_MISSING with the name, rather than by a shape error a reader has to decode."
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "$defs": {
+    "axis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "score",
+        "evidence"
+      ],
+      "properties": {
+        "score": {
+          "enum": [
+            "NONE",
+            "PARTIAL",
+            "FULL"
+          ]
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/evidence"
+          }
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "qualification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "result",
+        "evidence"
+      ],
+      "properties": {
+        "result": {
+          "enum": [
+            "PASS",
+            "FAIL",
+            "UNPROVEN"
+          ]
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/evidence"
+          }
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "earn_it": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "judgement",
+        "reviewer",
+        "at"
+      ],
+      "properties": {
+        "judgement": {
+          "enum": [
+            "SUBSTANTIVE",
+            "BOLTED_ON",
+            "OPEN"
+          ]
+        },
+        "reviewer": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "The principal id of the human who made the judgement, or null while it is OPEN."
+        },
+        "at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "basis": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "judgement": {
+                "enum": [
+                  "SUBSTANTIVE",
+                  "BOLTED_ON"
+                ]
+              }
+            },
+            "required": [
+              "judgement"
+            ]
+          },
+          "then": {
+            "required": [
+              "basis"
+            ],
+            "properties": {
+              "reviewer": {
+                "type": "string",
+                "minLength": 1
+              },
+              "at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "reference",
+        "observed"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "command",
+            "file",
+            "scenario",
+            "fixture",
+            "report",
+            "receipt"
+          ]
+        },
+        "reference": {
+          "type": "string",
+          "minLength": 1
+        },
+        "observed": {
+          "type": "string",
+          "minLength": 1,
+          "description": "What was actually seen. An address with no reading is a citation, not evidence."
+        }
+      }
+    }
+  }
+}

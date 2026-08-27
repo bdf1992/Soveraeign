@@ -81,6 +81,15 @@ class ContractIsData(unittest.TestCase):
         self.assertEqual(sov_closure.judge(claim, table)["refusal"], "SEAM_UNDECLARED")
 
 
+    def test_lowering_the_recruitment_ceiling_refuses_what_it_admitted(self):
+        claim = case("C-009")
+        self.assertEqual(sov_closure.judge(claim)["verdict"], sov_closure.PERMITTED)
+        table = copy.deepcopy(CONTRACT)
+        table["helper_policy"]["recruitment"]["per_concern_ceiling"] = 4
+        verdict = sov_closure.judge(claim, table)
+        self.assertEqual(verdict["refusal"], "RECRUITMENT_UNBOUNDED")
+
+
 class Boundaries(unittest.TestCase):
     """Each rule is stated at one point in the corpus; prove the other side."""
 
@@ -117,6 +126,36 @@ class Boundaries(unittest.TestCase):
                 verdict = sov_closure.judge(claim)
                 self.assertEqual(verdict["refusal"], "LOOP_INCOMPLETE")
                 self.assertIn(step["step"], verdict["because"])
+
+    def test_the_recruitment_ceiling_is_a_boundary_the_participant_may_reach(self):
+        ceiling = CONTRACT["helper_policy"]["recruitment"]["per_concern_ceiling"]
+        claim = case("C-112")
+        self.assertEqual(sov_closure.judge(claim)["refusal"], "RECRUITMENT_UNBOUNDED")
+        claim["helper"]["invocations"] = ceiling
+        self.assertEqual(sov_closure.judge(claim)["verdict"], sov_closure.PERMITTED)
+
+    def test_an_accepted_commitment_admits_a_spend_above_the_ceiling(self):
+        claim = case("C-112")
+        claim["helper"]["resource_commitment_accepted"] = True
+        self.assertEqual(sov_closure.judge(claim)["verdict"], sov_closure.PERMITTED)
+
+    def test_a_host_withheld_tool_asked_as_a_capability_is_admitted(self):
+        claim = case("C-113")
+        claim["seam"] = "DEPENDENCY_SEAM"
+        claim["provision"] = "capability"
+        claim["requested_from"] = "controller"
+        self.assertEqual(sov_closure.judge(claim)["verdict"], sov_closure.PERMITTED)
+
+    def test_a_tool_the_participant_simply_lacks_is_not_a_host_limit(self):
+        claim = case("C-113")
+        del claim["helper"]["blocked_by_host"]
+        self.assertEqual(sov_closure.judge(claim)["verdict"], sov_closure.PERMITTED)
+
+    def test_a_host_limited_participant_may_still_ask_the_owner_for_judgement(self):
+        claim = case("C-113")
+        claim["asks"] = "acceptance of the split Asset Service core"
+        del claim["helper"]["capability_requested"]
+        self.assertEqual(sov_closure.judge(claim)["verdict"], sov_closure.PERMITTED)
 
     def test_judgement_is_refused_at_every_tier_that_is_not_the_owner(self):
         for tier in ("worker", "orchestrator", "controller"):

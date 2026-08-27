@@ -1,0 +1,130 @@
+{
+  "observer_id": "urn:soveraeign:actor:sov-witness/session-f444fd",
+  "contributed_to_build": false,
+  "verdict": "DEFEATED",
+  "concern": "PR #125 (feat/witness-layer-executable): do the added checks measure artifacts rather than read declarations about them?",
+  "subject": {
+    "commits": [
+      "0a1944a1ce6f429d6f6fcfcb4edce2177be5d0ef"
+    ],
+    "pull_request": 125,
+    "decisions": [
+      "decisions/0076"
+    ],
+    "claims_under_test": [
+      "witness-written probes and receipts become checks that measure",
+      "the receipt-to-probe join keys on resolved paths, so a decoy cannot satisfy it",
+      "a builder who edits a probe after its receipt was written breaks the build",
+      "nothing here lets a build report witness itself"
+    ]
+  },
+  "observer_relation": {
+    "to_builder": "NONE",
+    "basis": "The session that built this has ended, so there is no builder to ask and no repair coming unless someone adopts it. The RED-pass helper described in the pull request body read and shaped the change and is inside the build, so it cannot serve as the observation. No independent observation for this change exists anywhere under reports/."
+  },
+  "frozen_head": "0a1944a1ce6f429d6f6fcfcb4edce2177be5d0ef",
+  "shared_tree_conditions": {
+    "trap": "CLAUDE.md T6",
+    "mitigation": "three isolated detached worktrees, all removed; the shared tree was never measured"
+  },
+  "checks": [
+    {
+      "command": "python scripts/lint.py",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/verify.py",
+      "result": "41 content checks pass. Run 1 exit 0 at 13.581s SILVER; run 2 exit 1 solely on the budget at 16.269s. An origin/main baseline on the same box under the same load measured 16.489s and also exit 1, so main is slower than this head. The two new checks cost 0.106s and 0.098s. CI green.",
+      "exit_code": 0
+    }
+  ],
+  "reproduced": [
+    {
+      "id": "W125-1",
+      "claim": "the records check measures rather than declares",
+      "method": "drove it against purpose-built scratch trees",
+      "finding": "genuine. It recomputes sha256 over the bytes at each declared address at check time and never reads a freshness field. Editing a probe flipped its verdict to stale at exit 1."
+    },
+    {
+      "id": "W125-2",
+      "claim": "the resolved-path fix exists and is present at the head",
+      "method": "read the fixing commit's four hunks, then reproduced the original decoy attack at the head",
+      "finding": "confirmed both ways. The fix replaces basename keys with resolved paths across four hunks, and the specific attack that produced it is closed: a copy placed outside the graded directory now exits 1 naming the file that is not a probe module."
+    },
+    {
+      "id": "W125-3",
+      "claim": "nothing promotes any standing",
+      "method": "diffed STATUS.yaml and the grants contract against main; listed every changed file",
+      "finding": "confirmed. 11 files, none of them STATUS.yaml or a contract, and the decision is PROPOSED. Note for routing: decisions/ is in the grant's excluded paths, so this cannot land through the automated loop regardless of its verdict."
+    },
+    {
+      "id": "W125-4",
+      "claim": "the local budget overrun is not this change's",
+      "method": "ran the head twice and origin/main once on the same box under the same load",
+      "finding": "main is slower than this head. The overrun is the box."
+    }
+  ],
+  "dissented": [
+    {
+      "id": "W125-D1",
+      "severity": "BLOCKING",
+      "claim_defeated": "a builder who edits a probe after its receipt was written breaks the build",
+      "finding": "Defeated two ways at the current head. Move the decoy INSIDE the graded directory - point the receipt at an archive subdirectory copy, then edit the real probe - and both commands exit 0. That is the same attack the resolved-path fix exists to close, moved one directory, and no case covers it. Separately, omit the telemetry field entirely and the join short-circuits, so no join runs at all; the schema makes that field optional, so it is a legal receipt.",
+      "consequence": "The one part of this change that gives builder-witness separation a mechanical consequence is opt-in by the author of the receipt. The debt line also prints basenames, so with two same-named probes the output is unattributable - discarding the very path the function was fixed to key on.",
+      "what_would_have_defeated_this_finding": "requiring the telemetry field for a receipt whose subject is a probe, and failing rather than debting when a probe is named by no receipt"
+    },
+    {
+      "id": "W125-D2",
+      "severity": "BLOCKING",
+      "claim_defeated": "the governed documents state what the code enforces",
+      "finding": "Two documents shipping in this change state the digest-your-probe rule unconditionally while the code enforces it only for receipts that opt in. One asserts the rule is true rather than aspirational.",
+      "consequence": "The builder recorded that overstatement in his own commit message - naming the exact lines as overstating the mechanism - and shipped both unrepaired, carrying the caveat into neither the pull request body nor the READMEs. A governed document asserting a rule nothing enforces is the defect class this concern was opened to remove.",
+      "what_would_have_defeated_this_finding": "striking the unconditional sentences, or making the field required"
+    },
+    {
+      "id": "W125-D3",
+      "severity": "MATERIAL",
+      "claim_defeated": "a commit's reported result describes the commit",
+      "finding": "The commit whose stated job was adding two test cases silently reverted all four hunks of the earlier fix, and its message asserts a passing suite. Checked out in its own worktree, that commit FAILS its own committed defeating case.",
+      "consequence": "The reported result was unobtainable from the bytes the commit contains. It can only have come from a working tree holding the uncommitted fix. That is the shared-tree hazard in its purest form, occurring inside the concern written to eliminate exactly this - and nothing in the repository prevents recurrence, because no check grades a commit's claimed result against the commit's own contents.",
+      "what_would_have_defeated_this_finding": "running the suite in a clean checkout of the commit"
+    },
+    {
+      "id": "W125-D4",
+      "severity": "MATERIAL",
+      "claim_defeated": "nothing here lets a build report witness itself",
+      "finding": "Nothing measures builder-witness separation. The participant field is checked only for being a non-empty string, and the artifact revision is never resolved against git. A receipt naming its own subject's builder, citing a revision that is not a commit, over one address that never moves, grades current at exit 0.",
+      "consequence": "The decision record says an observation authored by a hand that touched the artifact is void and that until now nothing measured it, then presents this grader as the mechanical consequence. It gives a partial one - probe drift - and measures authorship not at all.",
+      "what_would_have_defeated_this_finding": "resolving the revision against git and comparing the participant to who touched the artifact"
+    },
+    {
+      "id": "W125-D5",
+      "severity": "MATERIAL",
+      "claim_defeated": "the probes check establishes that probes still reach",
+      "finding": "A probe that declares one path, reads another that does not exist, swallows its own failure and reports success grades live at exit 0. So does a probe that measures nothing at all. The check establishes only that a declared path exists and that a constant name appears - the existence of a directory satisfies it.",
+      "consequence": "Disclosed honestly in five places, so a declared limit rather than a concealed one. But the check's name and the verify summary line both assert reaching, which it does not establish.",
+      "what_would_have_defeated_this_finding": "a name matching what it measures"
+    }
+  ],
+  "residuals": [
+    {
+      "id": "W125-R1",
+      "severity": "MATERIAL",
+      "finding": "Both new checks are vacuous at this head: the graded directories hold only READMEs, so each reports zero graded and passes. The only two cases that read real repository content are exactly the two that skip. Merging adds two permanently-green checks to verify until another branch's content lands. Trap T5 applies to those two skips."
+    },
+    {
+      "id": "W125-R2",
+      "severity": "NOTE",
+      "finding": "The grader sits inside the landing grant's scope while the receipts it grades sit outside it. Whether the grader should join them in the excluded paths is an open question the builder raised."
+    }
+  ],
+  "not_examined": [
+    "whether the telemetry field should be made required; the builder deliberately left that sequencing cost to Bdo"
+  ],
+  "standing_supported": "Does not support BUILT -> WITNESSED for 0a1944a. The mechanism is real and the records check does what it says. The central claim does not hold as shipped: the join is defeated two ways and two governed documents state a rule the code does not enforce, one of them flagged as overstated by the builder and shipped anyway. The session that built this has ended, so these are repairs someone must adopt: close or scope the in-directory decoy with a defeating case; either require the telemetry field or strike the unconditional sentences; and rename the check that asserts reach it does not establish. The second alone would make this witnessable - the rest of the honesty in this branch is unusually good.",
+  "judgement_items": [
+    "Should the telemetry field be required for any receipt that observes through a probe? Making it required turns every newly written probe red until its receipt exists, a sequencing cost the builder deliberately left to Bdo rather than take.",
+    "Should the grader join the receipts it grades in the grant's excluded paths?"
+  ]
+}

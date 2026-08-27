@@ -1,0 +1,56 @@
+{
+  "observer_id": "sov-witness (independent observation, Claude Opus 5 1M)",
+  "contributed_to_build": false,
+  "verdict": "CONFIRMED",
+  "concern": "landing gate absolute-path repair",
+  "checks": [
+    {
+      "command": "git status --porcelain -uall; git rev-parse HEAD; git diff --stat",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff -- scripts/sov_land.py",
+      "exit_code": 0
+    },
+    {
+      "command": "python scratchpad/attack2.py  # 26 paths graded end to end against contracts/standing-grants.json, status forced RATIFIED in memory only; all five previously-escaping paths now REFUSED, five legitimate in-scope paths still PERMITTED",
+      "exit_code": 0
+    },
+    {
+      "command": "python -c \"repo_relative probes: case-folded exclusions, doubled ..,  nested .., mixed ./.., leading backslash, UNC, \\\\?\\ prefix, sibling dir with root name as prefix, drive-relative C:x, empty, ., ..\"",
+      "exit_code": 0
+    },
+    {
+      "command": "python -c \"symlink probes on a scratch tree with sov_land.ROOT repointed: in-repo symlink to outside named absolutely and relatively, in-repo symlink to an excluded file\"",
+      "exit_code": 0
+    },
+    {
+      "command": "git ls-files -s | grep -c '^120000'  # 0 tracked symlinks in this repository",
+      "exit_code": 1
+    },
+    {
+      "command": "python -m unittest discover -s scripts/tests -p \"test_sov_land.py\" -v  # Ran 11 tests, OK",
+      "exit_code": 0
+    },
+    {
+      "command": "cp -r scripts contracts STATUS.yaml into scratchpad/revert2; revert only the relative branch of repo_relative in the copy; python -m unittest discover -s scripts/tests -p \"test_sov_land.py\"  # FAILED (failures=7)",
+      "exit_code": 1
+    },
+    {
+      "command": "grep -n 'authority\\._' scripts/sov_land.py  # no private reach remains",
+      "exit_code": 1
+    },
+    {
+      "command": "git diff --stat -- scripts/sovkernel/authority.py contracts/standing-grants.json  # empty: the oracle and the grant were not touched",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/lint.py  # 678 text files, 283 Python modules, 0 named debt",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/verify.py  # PASS: 36 checks in 9.612s wall; GRADE SILVER; 875 tooling tests OK (skipped=15)",
+      "exit_code": 0
+    }
+  ]
+}

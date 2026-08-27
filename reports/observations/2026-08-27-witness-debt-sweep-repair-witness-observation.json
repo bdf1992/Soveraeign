@@ -1,0 +1,147 @@
+{
+  "observer_id": "urn:soveraeign:actor:sov-witness/session-f444fd",
+  "contributed_to_build": false,
+  "verdict": "DEFEATED",
+  "concern": "PR #119 (docs/witness-debt-sweep) after repair at 9c7d8d5: do the two repairs hold when attacked rather than confirmed?",
+  "subject": {
+    "commits": [
+      "9c7d8d564c06ead455f230a02a6685939eacc099"
+    ],
+    "pull_request": 119,
+    "decisions": [],
+    "claims_under_test": [
+      "sov_standing.py reads a record's Standing supported line and fails closed when a record will not say",
+      "witness/ is a genuinely graded production root with its two oversized probes as named debt",
+      "exactly three subjects observed, none promoted"
+    ]
+  },
+  "observer_relation": {
+    "to_builder": "NONE",
+    "basis": "A second, separate witness. The first witness's findings shaped this repair, so that witness is inside the build and cannot judge it. This observer was instructed to defeat both repairs rather than confirm them, and to re-derive both original title claims from scratch rather than take the first witness's word."
+  },
+  "frozen_head": "9c7d8d564c06ead455f230a02a6685939eacc099",
+  "shared_tree_conditions": {
+    "trap": "CLAUDE.md T6",
+    "mitigation": "isolated worktree at 9c7d8d5; the primary tree was never measured in and was clean before removal"
+  },
+  "checks": [
+    {
+      "command": "python scripts/lint.py",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/verify.py",
+      "result": "PASS: 39 checks at 14.2s",
+      "exit_code": 0
+    }
+  ],
+  "reproduced": [
+    {
+      "id": "R119-1",
+      "claim": "witness/ is a genuinely graded production root",
+      "method": "wrote a deliberate 321-line throwaway under witness/probes/, ran lint, deleted it and confirmed a clean tree; separately dropped 'witness/' from PRODUCTION_ROOTS and re-ran check_python over the real 507-line probe",
+      "finding": "survived direct attack. The oversized file produced a true exit 1 naming file and line count; with the root entry removed the 507-line probe produced no defect and no warning at all, which proves the entry is load-bearing rather than decorative. lint walks the filesystem rather than git ls-files, so an untracked file is genuinely seen."
+    },
+    {
+      "id": "R119-2",
+      "claim": "the two named-debt entries name real files at real sizes and cannot silently absorb a fossil",
+      "method": "counted lines on disk for all three entries, removed an entry at runtime and re-ran, and ran the two new guard tests against a fabricated entry for a deleted module and an entry for an under-ceiling module",
+      "finding": "confirmed. Sizes match exactly; a 207-line probe is correctly absent; removing an entry turns its warning into a FAIL, so entries are load-bearing; both guards fail as declared. Qualification: a third entry naming a genuinely over-ceiling file passes both guards because no check pins the debt count. That needs a visible edit, so it is not silent, but it is unmeasured."
+    },
+    {
+      "id": "R119-3",
+      "claim": "exactly three subjects observed",
+      "method": "enumerated witness/, read each record heading, parsed the three receipts, diffed against the merge base",
+      "finding": "confirmed independently of the first witness. Three records, three receipts matching issues 7/65, 108 and 45, three probes, no fourth subject in the diff. All 23 observed_state_digests re-verified against the bytes at HEAD: none drifted, none missing."
+    },
+    {
+      "id": "R119-4",
+      "claim": "none promoted",
+      "method": "diffed STATUS.yaml against the merge base, grepped every status field, ran the gate",
+      "finding": "confirmed. STATUS.yaml is untouched by the change and every standing-bearing field reads a NOT_WITNESSED spelling. All three records state their own verdict as 'none'."
+    },
+    {
+      "id": "R119-5",
+      "claim": "nothing was smuggled into the change",
+      "method": "read the full 16-file merge-base diff and the 4-file repair commit, ran the docs check, scanned for secret shapes and vocabulary drift",
+      "finding": "confirmed. The two files that look unrelated are coherent: one KIND_RULES entry classifying witness records, and the regenerated documentation page whose own check passes. No secret shapes, no vocabulary outside OPEN/BUILT/WITNESSED/RATIFIED, and no oracle weakened."
+    }
+  ],
+  "dissented": [
+    {
+      "id": "R119-D1",
+      "severity": "BLOCKING",
+      "claim_defeated": "the gate fails closed when a record will not say what it supports",
+      "finding": "SUPPORTED_LINE is unanchored and captures the remainder of the label line. A record written '**Standing supported:**' with its verdict 'none.' on the following line captures the literal '**' as its standing, supports_a_standing() returns True, and a BUILT_WITNESSED claim is promoted. Reproduced verbatim.",
+      "consequence": "A record whose verdict is 'none' passes the gate. This is not a contrivance: witness/README.md's own shipped bullet is '- **Standing supported** - which transition, if any, the observation supports', so an author following the guidance the change ships lands on the defeating format.",
+      "what_would_have_defeated_this_finding": "an anchored pattern, or a capture that requires a standing token"
+    },
+    {
+      "id": "R119-D2",
+      "severity": "BLOCKING",
+      "claim_defeated": "trap T3 is respected at the read site the repair created",
+      "finding": "SUPPORTS_NOTHING denies only a capture beginning with 'none' or 'nothing'. A record stating 'Standing supported: NOT_WITNESSED.' or 'not witnessed.' is counted as supporting a standing and promotes a WITNESSED claim.",
+      "consequence": "The repository's own recorded trap is reproduced at the site the repair added. The whole-token and preceding-NOT discipline that claimed_standing() applies correctly on the STATUS.yaml side was not carried across to the new function. The STATUS.yaml side still holds: all six negated spellings read as no claim.",
+      "what_would_have_defeated_this_finding": "reusing claimed_standing()'s token discipline at the new site"
+    },
+    {
+      "id": "R119-D3",
+      "severity": "MATERIAL",
+      "claim_defeated": "the gate grades what the record says against what the field claims",
+      "finding": "It compares nothing. 'OPEN -> BUILT', 'n/a', 'asdf' and 'RATIFIED is refused' all satisfy a WITNESSED claim, and 'OPEN -> BUILT' also satisfies a RATIFIED claim. Neither the standing nor the subject the record names is compared to the field's.",
+      "consequence": "The module docstring says a record that observed the subject and declined to advance it must not count. A record saying exactly that - 'Standing supported: OPEN -> BUILT' - counts. A record naming a different subject entirely satisfies the field whose filename it matches.",
+      "what_would_have_defeated_this_finding": "comparing the named standing and subject to the claim"
+    },
+    {
+      "id": "R119-D4",
+      "severity": "MATERIAL",
+      "claim_defeated": "the change's documentation describes the change",
+      "finding": "witness/README.md still states in three places that the gate matches on filename and cannot check whether a record is any good, and the module docstring still says it checks that a record was deposited. The README lists 'Standing supported' as one of nine narrative contents and never tells an author it is machine-read, or in what format.",
+      "consequence": "The gate's input contract changed and the only document instructing its authors did not - in the same change. That is the defect class this concern exists to remove: a document standing in for the artifact.",
+      "what_would_have_defeated_this_finding": "a README describing the format the gate now parses"
+    }
+  ],
+  "residuals": [
+    {
+      "id": "R119-R1",
+      "severity": "MINOR",
+      "finding": "The gate prints '0 record(s) on file' while three records exist on disk. The count is of records supporting a standing, labelled as records on file."
+    },
+    {
+      "id": "R119-R2",
+      "severity": "MINOR",
+      "finding": "Build report against artifact: the repair commit message says verify's 41 checks all pass; checks.py declares 39 and verify emits 39. It says nine cases; the diff adds ten test methods."
+    },
+    {
+      "id": "R119-R3",
+      "severity": "MINOR",
+      "finding": "The new grading tests sit after the __main__ block in scripts/tests/test_lint.py. Under the gate this is harmless because the runner invokes unittest and collects all nineteen; run directly as a script the file executes eight of nineteen and the new tests are silently skipped. Pre-existing structure, but the repair put its evidence in that zone."
+    },
+    {
+      "id": "R119-R4",
+      "severity": "MATERIAL",
+      "finding": "witness/probes/ is 1026 lines of executable code that no check in the gate ever runs; it is now graded for size only. The three receipts' 23 digests are re-verified by no gate. The witness verified all 23 by hand and they hold."
+    },
+    {
+      "id": "R119-R5",
+      "severity": "MINOR",
+      "finding": "lint's production test excludes any path containing '/tests/', so a probe relocated under witness/tests/ would escape the ceiling. A general property of the exemption across all roots, not specific to this change."
+    },
+    {
+      "id": "R119-R6",
+      "severity": "MATERIAL",
+      "finding": "More evidence for the open decisions/0050 question. Six runs on this box with 25 concurrent python processes measured 16.0, 14.2, 13.9, 15.8, 13.9 and 14.1 seconds, so the exit code alternated between 1 and 0 on the budget line alone. All 39 checks passed with exit code 0 on every run; the only entry in the authoritative failure list on the slow runs was the budget."
+    },
+    {
+      "id": "R119-R7",
+      "severity": "MATERIAL",
+      "finding": "A reading hazard worth recording beside trap T2. Verify's stdout carries eight 'FAIL: 1 defects in the acceptance routing' lines and one 'FAIL: docs/surface.html is stale', all traced to the interior of tooling shards where they are defeating fixtures printing their own refusal. Reading FAIL out of stdout rather than the per-check exit verdict misreports this run entirely."
+    }
+  ],
+  "not_examined": [
+    "whether the three subjects should be promoted; all three records say none"
+  ],
+  "standing_supported": "none. This observation supports no transition. It does not support OPEN -> BUILT or BUILT -> WITNESSED for 9c7d8d5. Repair (b) is genuine and survived direct attack; repair (a) is defeated three ways and the branch returns to its builder inside the same concern. Today's tree is safe: all three live records are correctly refused and nothing is promoted, so this is a hole in the gate rather than a live false claim.",
+  "judgement_items": []
+}

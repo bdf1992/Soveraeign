@@ -1,0 +1,56 @@
+{
+  "observer_id": "sov-witness (independent observation, Claude Opus 5 1M)",
+  "contributed_to_build": false,
+  "verdict": "CONFIRMED",
+  "concern": "landing gate effect path as landed on main at 5c3a8ad (post-landing observation of two residual fixes)",
+  "checks": [
+    {
+      "command": "git log --oneline -3 main; git show --stat 5c3a8ad  # main at 5c3a8ad, seven files: sov_land.py, sovland/repo.py, sovland/tree.py, test_sov_land.py and three observation files. Nothing landed that was not described",
+      "exit_code": 0
+    },
+    {
+      "command": "RESIDUAL 1 as landed: read EveryReferenceResolves.modules()  # MODULES tuple is gone; the list is derived by globbing scripts/sovland/*.py excluding __init__ and prepending sov_land, so a new module extends coverage",
+      "exit_code": 0
+    },
+    {
+      "command": "RESIDUAL 1 defeating case, planted by me rather than read from the builder's output: scratch copy with a new sovland/newthing.py calling repo.does_not_exist_at_all AND sys.executable mistyped in tree.py  # FAILED, both named: ['sovland.newthing: repo.does_not_exist_at_all', 'sovland.tree: sys.exeuctable']",
+      "exit_code": 1
+    },
+    {
+      "command": "RESIDUAL 2 as landed: the __file__ test became isinstance(target, types.ModuleType), which is why the sys typo is now caught; sys has no __file__ and was previously skipped",
+      "exit_code": 0
+    },
+    {
+      "command": "RESIDUAL 3 honesty check: scratch copy with a local named repo shadowing the imported module  # FAILED with ['sovland.tree: repo.harmless'], so the false positive is genuinely still present and genuinely carried rather than silently altered",
+      "exit_code": 1
+    },
+    {
+      "command": "EVIDENCE INTEGRITY: python -c \"read every observation file committed in this landing\"  # all ten of mine intact, contributed_to_build false throughout, seven DISSENTED and three CONFIRMED preserved; the BUDGET RETRACTION entry survives verbatim in the file the commit cites. Nothing was softened by the participant that committed them",
+      "exit_code": 0
+    },
+    {
+      "command": "python -m unittest discover -s scripts/tests -p \"test_sov_land.py\"  # Ran 30 tests, OK on the landed state",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/sov_grant.py selfcheck  # PASS: 1 grant(s) valid, 34 authority cases graded",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/lint.py  # 744 text files, 318 Python modules, 0 named debt",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/verify.py three times on the landed state  # exit 0 each: 39 checks at 11.595s, 11.584s, 11.814s, GRADE SILVER",
+      "exit_code": 0
+    },
+    {
+      "command": "CARRIED RESIDUALS, recorded not repaired: the guard false-positives on a local name shadowing an imported module; _evaluate returns ten positional values and every round added one; land has still never run outside a temporary directory",
+      "exit_code": 0
+    },
+    {
+      "command": "PROCESS NOTE: this observation is of a change already landed. It cannot and does not authorise the landing, which the builder performed on their own judgement and said so; it records what is on main and that the two fixes do what they claim",
+      "exit_code": 0
+    }
+  ]
+}

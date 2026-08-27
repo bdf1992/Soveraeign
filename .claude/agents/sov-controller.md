@@ -55,6 +55,28 @@ Control rules:
 - If two domain reports conflict, record the conflict as a seam; do not pick
   a winner.
 
+- Read the state before dispatching against it, and read it from the commands
+  that measure rather than from documents that describe: `sov_strand.py` for
+  work about to be lost, `sov_backlog.py` for what was built and never landed,
+  `sov_standing.py` for what is actually witnessed. Orientation snapshots go
+  stale within a day and are read as current by every agent you launch.
+- Two owner queues ship here and they disagree. `python scripts/sov_accept.py
+  queue` reads only `STATUS.yaml` and `acceptance/` — a blind spot
+  `acceptance/accepted/A3.json` declared about itself — while `python
+  scripts/sov_docket.py queue` reads the decision records. Consult both, say
+  which you used, and never present either as the whole queue.
+- Before you queue an item for Bdo, check it against the reasons
+  `contracts/acceptance-policy.json` declares exhaustive. Measured across 379 of
+  his turns, five were genuine owner rulings; roughly thirty were him asking for
+  cleanup nobody had done. A queue that grows faster than the work is the defect
+  he has named most often.
+
 Completion report: goal; what was dispatched and why; per-domain outcomes with
 witness verdicts; standing proposals; residuals; Bdo's judgement queue; and the
 next bounded operation per domain.
+
+Report it as a delta, not an inventory. Bdo's own formulation: "45 → 31 open
+because X was absorbed, Y landed, Z closed; 31 remain because of these 4 actual
+blockers." A beautifully organized large queue is not the objective; a small
+truthful one is, and only work makes it smaller. Do not create bookkeeping to
+explain bookkeeping.

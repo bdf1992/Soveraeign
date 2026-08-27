@@ -223,9 +223,55 @@ accepted_repository_claims:
 # The O-numbers are kept so the documents that cite them still resolve.
 open_decisions: []
 
-owner_acceptance_queue: []
+owner_acceptance_queue:
+  - id: A13
+    packet: acceptance/A13.json
+    presented: The automation page has working switches, and the switch cannot be reached around
+    waits_on: seat:root
+    presented_by_seat: seat:session-control
+    at: 2026-08-27T00:00:00Z
+
+  - id: A12
+    packet: acceptance/A12.json
+    presented: One place to read whether your automations are alive, reading UNOBSERVED rather than green
+    waits_on: seat:root
+    presented_by_seat: seat:session-control
+    at: 2026-08-27T00:00:00Z
+
+  - id: A10
+    packet: acceptance/A10.json
+    presented: Three rules this repository stated in prose now have a mechanism behind them, starting with a build that could witness itself
+    waits_on: seat:root
+    presented_by_seat: seat:session-control
+    at: 2026-08-26T00:00:00Z
+
+  - id: A9
+    packet: acceptance/A9.json
+    presented: What an asset is - a governed identity holding no bytes, whose constituents carry their own content states, where a path is placement and a source is an observation
+    waits_on: seat:root
+    presented_by_seat: seat:session-control
+    at: 2026-08-27T00:00:00Z
+  - id: A14
+    packet: acceptance/A14.json
+    presented: The cold-start benchmark is a governed surface - 175 questions, a result contract, and run records that make two days comparable
+    waits_on: seat:root
+    presented_by_seat: seat:session-control
+    at: 2026-08-26T00:00:00Z
+
+  - id: A6
+    packet: acceptance/A6.json
+    presented: The AI-native standard now has an executable grader, and the substantive-operation judgement it needs is one only Bdo can make
+    waits_on: seat:root
+    presented_by_seat: seat:session-control
+    at: 2026-08-26T00:00:00Z
 
 owner_accepted:
+  - id: A5
+    packet: acceptance/accepted/A5.json
+    action: ACCEPT
+    by_seat: seat:root
+    at: 2026-08-26T16:34:35Z
+    claim: The orientation snapshot gate, and the ruling that its file counts read committed state rather than the working tree
   - id: A1
     packet: acceptance/accepted/A1.json
     action: ACCEPT

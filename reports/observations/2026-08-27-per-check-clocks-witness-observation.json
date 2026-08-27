@@ -1,0 +1,92 @@
+{
+  "observer_id": "urn:soveraeign:actor:sov-witness/session-f444fd",
+  "contributed_to_build": false,
+  "verdict": "REPRODUCED",
+  "concern": "PR #124 (feat/per-check-clocks): does the change time every check on a compute clock as well as a wall clock, and does it alter what the verify gate keys on?",
+  "subject": {
+    "commits": [
+      "3db7d3f9f65cb0331e4a39b0b48cafc40f2aafc1"
+    ],
+    "pull_request": 124,
+    "decisions": [
+      "decisions/0071-verification-budget-keys-on-compute.md"
+    ],
+    "claims_under_test": [
+      "every check reports both a wall and a compute clock",
+      "the gate still keys on aggregate wall time and nothing else",
+      "the compute clock is a second real measurement, not wall relabelled"
+    ]
+  },
+  "observer_relation": {
+    "to_builder": "NONE",
+    "basis": "This observer did not read, edit or advise on any commit in the branch. It was launched to witness after the branch was pushed, and worked only in detached worktrees it created."
+  },
+  "frozen_head": "3db7d3f9f65cb0331e4a39b0b48cafc40f2aafc1",
+  "shared_tree_conditions": {
+    "trap": "CLAUDE.md T6",
+    "mitigation": "every reading taken in a detached worktree built from the pull request head; the shared primary tree was never used for measurement"
+  },
+  "checks": [
+    {
+      "command": "python scripts/lint.py",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/verify.py",
+      "result": "PASS: 39 checks, GRADE SILVER at 14.315s wall / 22.391s cpu",
+      "exit_code": 0
+    }
+  ],
+  "reproduced": [
+    {
+      "id": "CLK-1",
+      "claim": "every check is timed on both clocks",
+      "method": "enumerated CHECKS at the frozen head (39), confirmed scripts/sovverify/checks.py is untouched by the branch so no per-check opt-in exists, then counted TIME lines across two full runs",
+      "finding": "39 of 39 carried both clocks in both runs; none read 'cpu unmeasured'. Universality is structural: there is no registration table a later check could omit itself from."
+    },
+    {
+      "id": "CLK-2",
+      "claim": "the grading input is unchanged",
+      "method": "read the diff of scripts/verify.py, then executed a probe importing verify from the worktree with a synthetic check and a varied BUDGET_SECONDS",
+      "finding": "decisive by execution: a check at 1.03s wall and 0.031s cpu exits 0 at budget 100.0 and exits 1 at budget 0.5. Wall crosses the ceiling with almost no compute spent. Compute is reported and recorded, never graded."
+    },
+    {
+      "id": "CLK-3",
+      "claim": "the compute clock is not wall time relabelled",
+      "method": "called clocks.run directly on a 1.0s sleeper and a 9M-iteration integer loop",
+      "finding": "sleeper 1.053s wall / 0.031s cpu (0.030x); burner 0.377s wall / 0.359s cpu (0.953x). The two numbers move independently and in opposite directions. Overhead benchmarked at +0.1% over plain subprocess.run."
+    },
+    {
+      "id": "CLK-4",
+      "claim": "the disputed 18.7-25.7s readings are host contention, not this branch",
+      "method": "interleaved control: a second frozen worktree at the merge-base origin/main (5951bc4), run alternately main, PR, main, PR on the same busy host",
+      "finding": "round 1 main 20.105s exit 1, PR 18.688s exit 1, both with all 39 checks green and only the budget line in the failure list. Round 2 minutes later main 13.724s exit 0, PR 14.068s exit 0. The phenomenon reproduces on main and is neither introduced nor removed by this branch."
+    }
+  ],
+  "residuals": [
+    {
+      "id": "CLK-R1",
+      "severity": "RESIDUAL",
+      "finding": "No end-to-end case pins that verify.main()'s exit code keys on wall and not on compute. test_verify_budget.py exercises grade() and budget_line() in isolation; the new tests call summary() with a pre-built failure list, so they test the report shape rather than the wiring that decides the verdict. Proven correct here by execution, so this is a missing guard against future drift. It matters because the branch also carries a live proposal to swap that exact input, and a later participant could make the swap with no case failing."
+    },
+    {
+      "id": "CLK-R2",
+      "severity": "RESIDUAL",
+      "finding": "Decision number 0071 is claimed twice across in-flight branches. This branch adds decisions/0071-verification-budget-keys-on-compute.md; origin/feat/console-human-workspace and origin/feat/surface-states-what-is-covered carry decisions/0071-precedent-before-invention.md. Verified separately that main's highest is 0066 and that the precedent-before-invention content already landed on main as 0066, so this branch's 0071 does not collide with main today; the hazard is the other two branches, neither of which has an open pull request."
+    },
+    {
+      "id": "CLK-R3",
+      "severity": "NOTE",
+      "finding": "The filename and H1 of decisions/0071 assert 'Key the verification budget on compute, not wall time' while the body recommends rejection on its own measurements. Status: PROPOSED disambiguates it for anyone who opens the file, so this is a naming hazard rather than a false claim, but a reader scanning decisions/ could take the filename for the outcome."
+    }
+  ],
+  "not_examined": [
+    "whether decisions/0071 should be adopted; that is Bdo's ruling and this observation does not bear on it"
+  ],
+  "standing_supported": "Supports BUILT -> WITNESSED for 3db7d3f. Ratifies nothing and settles nothing.",
+  "judgement_items": [
+    "decisions/0071 is PROPOSED and argues for its own rejection. Bdo rules.",
+    "CLK-4 is direct evidence for the decisions/0050 ceiling question: the same command on the same bytes returned exit 1 and exit 0 minutes apart on main itself."
+  ]
+}

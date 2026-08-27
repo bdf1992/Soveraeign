@@ -495,10 +495,139 @@ class TheBlockMustBeWhereItSaysItIs(unittest.TestCase):
         text = f"# observation{LF}{LF}{FENCE}witness{LF}verdict  NOT-YET{LF}{FENCE}{LF}"
         self.assertIsNone(self._reading(text))
 
-    def test_headings_and_blank_lines_may_precede_the_block(self):
-        text = (f"{LF}# Witness record{LF}## subject{LF}{LF}{FENCE}witness{LF}"
+    def test_the_title_heading_and_blank_lines_may_precede_the_block(self):
+        text = (f"{LF}# Witness record{LF}{LF}{FENCE}witness{LF}"
                 f"standing_supported  WITNESSED{LF}{FENCE}{LF}")
         self.assertEqual(self._reading(text), "WITNESSED")
+
+    def test_a_second_heading_before_the_block_means_there_is_no_block(self):
+        """This case previously asserted the opposite and blessed a defect. The
+        skip admitted an unbounded run of headings, so `## Example only:` above a
+        quoted block promoted over the record's own declaration further down. One
+        title heading is the bound; a record declares before it explains."""
+        text = (f"# Witness record{LF}## Example only{LF}{LF}{FENCE}witness{LF}"
+                f"standing_supported  WITNESSED{LF}{FENCE}{LF}")
+        self.assertIsNone(self._reading(text))
+
+
+class AnUnclosedBlockDoesNotRunOn(unittest.TestCase):
+    """The open was a position and the close was an unbounded forward search.
+
+    A fifth reading proved that on a shipped record: remove `witness/host-service.md`'s
+    closing fence, paste `witness/README.md` where a record would naturally quote
+    it, and the block ran to the README's own fence, swallowing the document and
+    reading the quoted value as the record's declaration. The record still said
+    Verdict NOT-YET and Standing supported: none, and the gate promoted it.
+
+    The body is now bounded by what it may contain and by how much: field lines
+    only, and few of them. Both halves are needed - a field line is a weak shape,
+    since `some prose here` matches it, and a cap alone would not stop a short
+    run-on.
+
+    The witness's own construction - break `witness/host-service.md`'s fence and
+    paste `witness/README.md` below it - did not reproduce here, on 91bd7ab or
+    now: the record's own field line and the quoted one are two declarations, and
+    two is ambiguous, so that shape was already refused for a different reason.
+    The class is real regardless, and the two cases below promote at 91bd7ab and
+    are refused here. What could not be reproduced is said rather than implied.
+    """
+
+    def _reading(self, text: str) -> str | None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "asset-service.md"
+            path.write_text(text, encoding="utf-8", newline=LF)
+            return sov_standing.supported_standing(path)
+
+    def test_an_unclosed_block_does_not_reach_a_later_fence(self):
+        """The defeat as reported: the record declares none, forgets its fence,
+        and quotes a block far below whose value is WITNESSED."""
+        text = (f"# Witness record{LF}{LF}{FENCE}witness{LF}"
+                f"standing_supported  none{LF}{LF}"
+                f"## Findings{LF}{LF}Every finding is written out at length here."
+                f"{LF}{LF}{FENCE}witness{LF}standing_supported  WITNESSED{LF}{FENCE}{LF}")
+        self.assertIsNone(self._reading(text))
+
+    def test_prose_inside_the_body_ends_it(self):
+        text = (f"# Witness record{LF}{LF}{FENCE}witness{LF}"
+                f"standing_supported  WITNESSED{LF}Some prose.{LF}{FENCE}{LF}")
+        self.assertIsNone(self._reading(text))
+
+    def test_a_blank_line_inside_the_body_ends_it(self):
+        text = (f"# Witness record{LF}{LF}{FENCE}witness{LF}"
+                f"standing_supported  WITNESSED{LF}{LF}{FENCE}{LF}")
+        self.assertIsNone(self._reading(text))
+
+    def test_a_body_past_the_cap_is_not_a_declaration(self):
+        fields = LF.join(f"field_{n}  value" for n in range(sov_standing.MAX_BLOCK_LINES))
+        text = (f"# Witness record{LF}{LF}{FENCE}witness{LF}{fields}{LF}"
+                f"standing_supported  WITNESSED{LF}{FENCE}{LF}")
+        self.assertIsNone(self._reading(text))
+
+    def test_the_cap_leaves_room_for_a_real_declaration(self):
+        text = (f"# Witness record{LF}{LF}{FENCE}witness{LF}verdict  NOT-YET{LF}"
+                f"observed  2026-08-27{LF}standing_supported  WITNESSED{LF}{FENCE}{LF}")
+        self.assertEqual(self._reading(text), "WITNESSED")
+
+    def test_an_empty_unclosed_block_does_not_adopt_a_quoted_one(self):
+        """Verified against 91bd7ab, the commit the finding was raised on: this
+        returns WITNESSED there and nothing here. It is the minimal form of the
+        defect - the open never closes, so the scan runs to the quoted block's
+        fence and adopts the quoted value as the record's own."""
+        text = (f"# Witness record{LF}{LF}{FENCE}witness{LF}{LF}## Findings{LF}{LF}"
+                f"{FENCE}witness{LF}standing_supported  WITNESSED{LF}{FENCE}{LF}")
+        self.assertIsNone(self._reading(text))
+
+    def test_an_unclosed_block_does_not_run_through_prose_to_a_field(self):
+        """Also verified as WITNESSED at 91bd7ab. Forty lines of prose then a
+        field line: the distance is the point, and no distance is now enough."""
+        prose = f"prose line{LF}" * 40
+        text = (f"# Witness record{LF}{LF}{FENCE}witness{LF}{prose}"
+                f"standing_supported  WITNESSED{LF}{FENCE}{LF}")
+        self.assertIsNone(self._reading(text))
+
+
+class TheClaimSideMustNotUnderRead(unittest.TestCase):
+    """The direction this gate's own argument names as the unsafe one.
+
+    `claimed_standing()` is liberal on purpose: over-reading a status value only
+    asks for a witness record that may not be needed, while under-reading lets a
+    claim reach the tree with nobody asking for evidence. The suite had one case
+    on the liberal axis and none on this one, and the implementation did not meet
+    the principle - a quoted value and a trailing comment are STATUS.yaml's own
+    idiom and both hid a claim completely.
+    """
+
+    def _claims(self, line: str) -> list[str]:
+        path = _status(line + LF)
+        return [claim.standing for claim in sov_standing.read_claims(path)]
+
+    def test_a_quoted_value_is_still_a_claim(self):
+        self.assertEqual(self._claims('asset_service_status: "BUILT_WITNESSED"'), ["WITNESSED"])
+        self.assertEqual(self._claims("asset_service_status: 'BUILT_RATIFIED'"), ["RATIFIED"])
+
+    def test_a_trailing_comment_does_not_hide_the_claim(self):
+        self.assertEqual(
+            self._claims("asset_service_status: BUILT_WITNESSED  # see witness/asset-service.md"),
+            ["WITNESSED"])
+
+    def test_an_indented_field_is_still_a_claim(self):
+        """The live file carries nested mappings, and an anchored pattern could
+        not see into them at all."""
+        self.assertEqual(self._claims("  asset_service_status: BUILT_WITNESSED"), ["WITNESSED"])
+
+    def test_a_negation_survives_every_one_of_those_forms(self):
+        """Over-reading is safe here; reading a denial as a claim is merely noisy
+        but reading it wrong in the other direction is not. T3 stays checked."""
+        for line in ('asset_service_status: "BUILT_SELF_TESTED_NOT_WITNESSED"',
+                     "asset_service_status: BUILT_SELF_TESTED_NOT_WITNESSED  # nothing yet",
+                     "  asset_service_status: BUILT_SELF_TESTED_NOT_WITNESSED"):
+            with self.subTest(line=line):
+                self.assertEqual(self._claims(line), [])
+
+    def test_the_live_status_file_is_read_the_same_way_by_both_paths(self):
+        """A control, so this class cannot pass vacuously: the real file still
+        yields no claim, and it is read through the same entry point."""
+        self.assertEqual(sov_standing.read_claims(), [])
 
 
 class TheTwoSidesFailInOppositeDirections(unittest.TestCase):

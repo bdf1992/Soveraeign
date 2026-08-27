@@ -27,12 +27,35 @@ from pathlib import Path
 import re
 import sys
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from sovstanding import records  # noqa: E402
+
 ROOT = Path(__file__).resolve().parent.parent
 STATUS = ROOT / "STATUS.yaml"
-WITNESS_DIR = ROOT / "witness"
+
+# Re-exported so a caller and every existing case keep one entry point, while
+# the two readings live in separate modules.
+WITNESS_DIR = records.WITNESS_DIR
+NOT_A_RECORD = records.NOT_A_RECORD
+WITNESS_MAY_SUPPORT = records.WITNESS_MAY_SUPPORT
+MAX_BLOCK_LINES = records.MAX_BLOCK_LINES
+SUPPORTED_VALUES = records.SUPPORTED_VALUES
+declared_block = records.declared_block
+declared_field = records.declared_field
+supported_standing = records.supported_standing
+witness_records = records.witness_records
 
 CLAIMS = ("WITNESSED", "RATIFIED")
-FIELD = re.compile(r"^([a-z0-9_]+_status):\s*(\S+)\s*$")
+FIELD = re.compile(r"^\s*([a-z0-9_]+_status):\s*(.+?)\s*$")
+
+# A trailing YAML comment and a quoted value are what an ordinary edit to
+# STATUS.yaml produces, and both hid a claim entirely: the value never reached
+# the token compare. Indented fields were invisible for the same reason, and
+# the live file carries 22 nested mappings. Liberal is the safe direction on
+# this side - over-reading asks for a witness record that may not be needed,
+# under-reading lets a claim through unasked.
+COMMENT_TAIL = re.compile(r"\s+#.*$")
 
 
 @dataclass(frozen=True)
@@ -63,6 +86,15 @@ def claimed_standing(value: str) -> str | None:
     return None
 
 
+def bare_value(value: str) -> str:
+    """A status value with YAML decoration removed, before it is read as a claim.
+
+    `WITNESSED  # see witness/asset-service.md` and `"WITNESSED"` are both the
+    file's own idiom and both hid the claim completely.
+    """
+    return COMMENT_TAIL.sub("", value).strip().strip("\"'").strip()
+
+
 def subject_of(field: str) -> str:
     """The subject a status field is about: `asset_service_status` -> `asset-service`."""
     stem = field[: -len("_status")] if field.endswith("_status") else field
@@ -79,129 +111,10 @@ def read_claims(status_path: Path = STATUS) -> list[Claim]:
         if not match:
             continue
         field, value = match.group(1), match.group(2)
-        standing = claimed_standing(value)
+        standing = claimed_standing(bare_value(value))
         if standing is not None:
             claims.append(Claim(field=field, subject=subject_of(field), value=value, standing=standing))
     return claims
-
-
-NOT_A_RECORD = {"readme", "index"}
-
-# A witness record carries a subject at most to WITNESSED. `AGENTS.md` reserves
-# ratification for a seat that settles JUDGEMENT, and `witness/README.md` says
-# the same: depositing a record makes advancing standing possible and never
-# performs it. A record declaring RATIFIED has over-reached, and the gate names
-# that rather than quietly declining to count it.
-WITNESS_MAY_SUPPORT = "WITNESSED"
-
-# The field is read from a declared position, never searched for in the document.
-#
-# The previous repair stripped fenced blocks, inline spans and HTML comments and
-# then searched what remained. A fourth reading walked four quotation forms past
-# it: a nested four-backtick fence, an unterminated fence, a blockquoted label,
-# and an indented one. That was the correct finding and the general one - there
-# is no finite list of ways markdown can quote, so stripping what looks like
-# quotation is enumeration wearing structure's clothes. It is the same mistake
-# the value half of this gate had already been repaired for, made again on the
-# other axis in the same commit.
-#
-# A position has no such tail. The block must be the first content in the file,
-# after an optional heading, and nothing after it is read at all. A record may
-# then quote anything, in any nesting, terminated or not, without touching what
-# it declares - which matters, because the most likely record to quote this gate
-# is a record about this gate.
-BLOCK_OPEN = "```witness"
-BLOCK_CLOSE = "```"
-STANDING_FIELD = "standing_supported"
-
-# The whole value must BE a standing. Scanning a value for one is what three
-# readings each defeated in a new way: `SELF_WITNESSED` splits into SELF and
-# WITNESSED under any tokeniser, so a scan reads a self-witness - the one
-# inversion `AGENTS.md` exists to forbid - as support for it. `PRE-WITNESSED`,
-# `WITNESSED subject to conditions` and `WITNESSED (retracted)` each defeated a
-# different hand-written denial list, and such a list has no end. Inside a plain
-# text block there is no emphasis to strip either, so `WITNESSED*` and its
-# footnote are simply not this word.
-SUPPORTED_VALUES = {"WITNESSED": "WITNESSED", "RATIFIED": "RATIFIED"}
-
-
-def declared_block(text: str) -> list[str] | None:
-    """The record's declaration block, or None if it does not open with one.
-
-    Position is the whole point. The block is the first content in the file, past
-    blank lines and an optional heading; anything else there means the record
-    declares nothing. An unterminated block is not a block.
-    """
-    lines = text.split("\n")
-    index = 0
-    while index < len(lines) and (not lines[index].strip() or lines[index].startswith("#")):
-        index += 1
-    if index >= len(lines) or lines[index].strip() != BLOCK_OPEN:
-        return None
-    index += 1
-    body: list[str] = []
-    while index < len(lines) and lines[index].strip() != BLOCK_CLOSE:
-        body.append(lines[index])
-        index += 1
-    return body if index < len(lines) else None
-
-
-def declared_field(text: str) -> str | None:
-    """The one `standing_supported` value the record's own block states.
-
-    Stated twice is stated ambiguously and counts as not stated: a record says
-    this once or it says nothing.
-    """
-    body = declared_block(text)
-    if body is None:
-        return None
-    found = [line.split(None, 1)[1] if len(line.split(None, 1)) > 1 else ""
-             for line in body if line.split(None, 1)[:1] == [STANDING_FIELD]]
-    return found[0] if len(found) == 1 else None
-
-
-def supported_standing(record: Path) -> str | None:
-    """The standing this record declares, or None if it declares none.
-
-    A filename is a declaration; what the record says is the artifact. This reads
-    one field from one declared position and compares its whole value against a
-    closed set. It does not read English and does not search the document.
-
-    Non-ASCII is refused before the comparison. Case folding is not identity -
-    the Turkish dotless i upper-cases to `I`, so a lookalike spelling would walk
-    straight through an exact match.
-    """
-    try:
-        text = record.read_text(encoding="utf-8")
-    except (OSError, UnicodeDecodeError):
-        return None
-    value = declared_field(text)
-    if value is None:
-        return None
-    value = value.strip()
-    if not value.isascii():
-        return None
-    return SUPPORTED_VALUES.get(value.upper())
-
-
-def witness_records(witness_dir: Path = WITNESS_DIR) -> dict[str, str]:
-    """Subject to the standing its record declares, for records that declare one.
-
-    The directory's own documentation is not an observation of anything. Counting
-    it would let the file that explains the convention satisfy a claim made under
-    that convention.
-    """
-    if not witness_dir.is_dir():
-        return {}
-    declared = {}
-    for path in sorted(witness_dir.glob("*.md")):
-        stem = path.stem.lower()
-        if stem in NOT_A_RECORD:
-            continue
-        standing = supported_standing(path)
-        if standing is not None:
-            declared[stem] = standing
-    return declared
 
 
 def refusal(claim: Claim, witness_dir: Path = WITNESS_DIR) -> str | None:
@@ -219,8 +132,8 @@ def refusal(claim: Claim, witness_dir: Path = WITNESS_DIR) -> str | None:
     declared = supported_standing(path)
     if declared is None:
         return (f"witness/{claim.subject}.md names no standing it supports; the"
-                " `Standing supported:` line must read exactly WITNESSED, once, on"
-                " the label's own line and outside any quoted block")
+                " record must open with a ```witness block holding"
+                " `standing_supported  WITNESSED` and nothing but field lines")
     if declared != WITNESS_MAY_SUPPORT:
         return (f"witness/{claim.subject}.md declares {declared}, which no witness"
                 " record may support; a record carries a subject to WITNESSED and"

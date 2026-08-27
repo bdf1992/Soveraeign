@@ -64,6 +64,13 @@ in order to do that grading themselves:
 standing_supported  WITNESSED
 ```
 
+  Close the block, put nothing but `name  value` field lines inside it, keep it
+  to a handful, and let the title heading be the only thing above it. Those are
+  bounds rather than style: a block left unclosed once ran on to a quoted example
+  far below and declared its value, and a second heading above the block once let
+  an example declare in place of the record. A block that breaks any of them
+  declares nothing, which is the right answer for a malformed declaration.
+
   That position is the whole contract, and it is what makes the rest of the
   record free. `scripts/sov_standing.py` reads this block and stops; it never
   searches the document. So a record may quote anything, at any nesting depth,

@@ -121,7 +121,16 @@ class TerminalRefusal(unittest.TestCase):
     """
 
     def test_a_present_terminal_is_available(self) -> None:
-        self.assertTrue(launchmod.terminal_available("powershell"))
+        """The positive control, against a terminal the running platform actually has.
+
+        This named `powershell`, which is on PATH on the host this launcher targets
+        and not on ubuntu-latest, so the case that proves the check can say yes
+        failed on every Linux runner. A test whose answer depends on which machine
+        ran it is not a control. `sh` stands in on POSIX; the assertion is
+        unchanged - a real executable resolves.
+        """
+        present = "powershell" if os.name == "nt" else "sh"
+        self.assertTrue(launchmod.terminal_available(present))
 
     def test_no_terminal_declared_is_not_a_missing_terminal(self) -> None:
         """A lane launched without a terminal opens its own console; that is legal."""

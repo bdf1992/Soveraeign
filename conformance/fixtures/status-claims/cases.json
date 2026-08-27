@@ -1,0 +1,165 @@
+{
+  "corpus_id": "soveraeign-status-claims-cases/v1",
+  "grades": "contracts/status-claims.json",
+  "note": "One controlled case per declared refusal, plus a positive case that must earn none. The lines and crosswalk entries are the oracle's own; no case reads STATUS.yaml, so a repair to the live file cannot quietly stop a refusal from being proved.",
+  "cases": [
+    {
+      "id": "positive-typed-status-claim",
+      "proves": "A field typed with the subject, kind and token-backed standing it actually carries earns no refusal.",
+      "expect": null,
+      "status_lines": [
+        "asset_service_status: BUILT_SELF_TESTED_NOT_WITNESSED"
+      ],
+      "crosswalk": [
+        {
+          "field": "asset_service_status",
+          "value": "BUILT_SELF_TESTED_NOT_WITNESSED",
+          "subject": "asset-service",
+          "claim_kind": "STATUS",
+          "artifact_standing": "BUILT",
+          "standing_source": "TOKEN",
+          "detail": "self-tested; no independent observation exists",
+          "reference": null
+        }
+      ]
+    },
+    {
+      "id": "defeating-field-untyped",
+      "proves": "A status field the crosswalk does not type is a defect, so the typing cannot silently fall behind the document.",
+      "expect": "FIELD_UNTYPED",
+      "status_lines": [
+        "new_service_status: CHARTERED_BOUNDARY_NOT_IMPLEMENTED"
+      ],
+      "crosswalk": []
+    },
+    {
+      "id": "defeating-entry-unmatched",
+      "proves": "A crosswalk entry naming a field and value the document no longer carries is a defect, so the typing cannot outlive what it types.",
+      "expect": "ENTRY_UNMATCHED",
+      "status_lines": [],
+      "crosswalk": [
+        {
+          "field": "retired_thing_status",
+          "value": "OWNER_ACCEPTED",
+          "subject": "retired-thing",
+          "claim_kind": "STATUS",
+          "artifact_standing": null,
+          "standing_source": "NONE",
+          "detail": "a claim the document has since dropped",
+          "reference": null
+        }
+      ]
+    },
+    {
+      "id": "defeating-claim-kind-collision",
+      "proves": "Two claims of the same kind about one subject stay a duplicate. Typing distinguishes a status from a ruling; it does not excuse writing one subject's status twice.",
+      "expect": "CLAIM_KIND_COLLISION",
+      "status_lines": [
+        "proofing_service_status: OWNER_ACCEPTED_BOUNDARY_NOT_IMPLEMENTED",
+        "proofing_service_status: OWNER_ACCEPTED_PHASE_I_CONTRACT"
+      ],
+      "crosswalk": [
+        {
+          "field": "proofing_service_status",
+          "value": "OWNER_ACCEPTED_BOUNDARY_NOT_IMPLEMENTED",
+          "subject": "proofing-service",
+          "claim_kind": "STATUS",
+          "artifact_standing": null,
+          "standing_source": "NONE",
+          "detail": "the owner accepted the boundary",
+          "reference": null
+        },
+        {
+          "field": "proofing_service_status",
+          "value": "OWNER_ACCEPTED_PHASE_I_CONTRACT",
+          "subject": "proofing-service",
+          "claim_kind": "STATUS",
+          "artifact_standing": null,
+          "standing_source": "NONE",
+          "detail": "a second status claim about the same subject",
+          "reference": null
+        }
+      ]
+    },
+    {
+      "id": "defeating-standing-not-in-ladder",
+      "proves": "Artifact standing stays the four-rung ladder AGENTS.md fixes. A new rung cannot be introduced by typing one.",
+      "expect": "STANDING_NOT_IN_LADDER",
+      "status_lines": [
+        "some_thing_status: SHIPPED_TO_PRODUCTION"
+      ],
+      "crosswalk": [
+        {
+          "field": "some_thing_status",
+          "value": "SHIPPED_TO_PRODUCTION",
+          "subject": "some-thing",
+          "claim_kind": "STATUS",
+          "artifact_standing": "SHIPPED",
+          "standing_source": "READING",
+          "detail": "a rung the ladder does not have",
+          "reference": null
+        }
+      ]
+    },
+    {
+      "id": "defeating-standing-token-absent-negated",
+      "proves": "The T3 trap fires. NOT_WITNESSED contains the token WITNESSED and asserts the opposite, so typing that value as WITNESSED from a token is refused.",
+      "expect": "STANDING_TOKEN_ABSENT",
+      "status_lines": [
+        "record_service_status: BUILT_SELF_TESTED_NOT_WITNESSED"
+      ],
+      "crosswalk": [
+        {
+          "field": "record_service_status",
+          "value": "BUILT_SELF_TESTED_NOT_WITNESSED",
+          "subject": "record-service",
+          "claim_kind": "STATUS",
+          "artifact_standing": "WITNESSED",
+          "standing_source": "TOKEN",
+          "detail": "a standing the value denies rather than asserts",
+          "reference": null
+        }
+      ]
+    },
+    {
+      "id": "defeating-leading-token-untyped",
+      "proves": "A value beginning with a ladder word must be typed from that token. Declaring READING there would let an author dodge the token check by calling a mechanical claim a reading.",
+      "expect": "LEADING_TOKEN_UNTYPED",
+      "status_lines": [
+        "another_thing_status: BUILT_AND_SELF_TESTED"
+      ],
+      "crosswalk": [
+        {
+          "field": "another_thing_status",
+          "value": "BUILT_AND_SELF_TESTED",
+          "subject": "another-thing",
+          "claim_kind": "STATUS",
+          "artifact_standing": "BUILT",
+          "standing_source": "READING",
+          "detail": "a token-backed standing declared as an unverifiable reading",
+          "reference": null
+        }
+      ]
+    },
+    {
+      "id": "defeating-ruling-typed-as-acceptance",
+      "proves": "A reversible default cannot be typed as owner acceptance. STATUS.yaml states RULED_ values are not owner acceptance and do not claim to be.",
+      "expect": "RULING_TYPED_AS_ACCEPTANCE",
+      "status_lines": [
+        "ticket_kind_vocabulary_status: RULED_O19"
+      ],
+      "crosswalk": [
+        {
+          "field": "ticket_kind_vocabulary_status",
+          "value": "RULED_O19",
+          "subject": "ticket-kind-vocabulary",
+          "claim_kind": "OWNER_ACCEPTANCE",
+          "artifact_standing": null,
+          "standing_source": "NONE",
+          "detail": "a reversible default presented as the root seat's acceptance",
+          "reference": "O19"
+        }
+      ]
+    }
+  ]
+}

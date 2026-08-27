@@ -37,6 +37,17 @@ CHECKS = (
           "reads STATUS.yaml and the witness records by separate paths and grades one against "
           "the other, so a standing claim cannot supply the record that would support it",
           ("STATUS.yaml", "scripts/sov_standing.py")),
+    Check("status claims are typed",
+          [sys.executable, "scripts/sov_status_claims.py", "check"], ROOT,
+          "reads STATUS.yaml line by line, not through a YAML parser that would collapse the "
+          "duplicated keys, and grades it against a crosswalk holding no copy of it; an "
+          "untyped field and a stale entry both fail",
+          ("STATUS.yaml", "contracts/status-claims.json")),
+    Check("status claim refusals fire",
+          [sys.executable, "scripts/sov_status_claims.py", "selfcheck"], ROOT,
+          "grades cases the oracle carries itself and never reads STATUS.yaml, so repairing the "
+          "live record cannot stop a refusal being proved; a refusal no case fires is a defect",
+          ("contracts/status-claims.json", "conformance/fixtures/status-claims/cases.json")),
     Check("owner queue", [sys.executable, "scripts/sov_accept.py", "audit"], ROOT,
           "fails when anything sits on the owner without a complete packet, reading the "
           "declared acceptance contract rather than any claim that a result is ready",

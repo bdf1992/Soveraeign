@@ -41,7 +41,12 @@ STATUS = ROOT / "STATUS.yaml"
 CORPUS = ROOT / "conformance" / "fixtures" / "status-claims" / "cases.json"
 
 FIELD = re.compile(r"^([a-z0-9_]+_status):\s*(\S+)\s*$")
-LOOSE = re.compile(r"^\s*[A-Za-z0-9_]+_status:")
+# Deliberately far looser than FIELD: anything key-shaped whose name ends in "status",
+# quoted or not, hyphenated or not, in any case, with or without a space before the
+# colon. A second witness passed four shapes the earlier pattern could not see -
+# `ai-native_status:`, `"quoted_status":`, `x_status :` and `FOO_STATUS:` - because it
+# was written against the two shapes the first witness reported.
+LOOSE = re.compile(r"^\s*[\"']?[A-Za-z0-9_-]*[Ss][Tt][Aa][Tt][Uu][Ss][\"']?\s*:")
 
 
 def load_contract(path: Path = CONTRACT) -> dict:
@@ -62,8 +67,9 @@ def read_fields(text: str) -> list[tuple[str, str]]:
 def unreadable_lines(text: str) -> list[str]:
     """Lines naming a status field the strict reader cannot parse.
 
-    Without this the reader silently defines its own scope: an indented field, or a value
-    carrying a space, would be invisible and would earn no `FIELD_UNTYPED`.
+    Without this the reader silently defines its own scope: a field it cannot parse would
+    be invisible and would earn no `FIELD_UNTYPED`. The detector is deliberately looser
+    than the reader, so the gap between them is a refusal rather than a blind spot.
     """
     return [line for line in text.splitlines() if LOOSE.match(line) and not FIELD.match(line)]
 
@@ -105,6 +111,10 @@ def selfcheck(corpus_path: Path = CORPUS, contract: dict | None = None) -> list[
                            "does not prove the one it names")
         else:
             exercised.add(expected)
+    # A positive case over an empty document and an empty crosswalk satisfies every rule
+    # and proves nothing; a second witness showed that such a corpus still passes.
+    if not any(c["expect"] is None and c["crosswalk"] and c["status_lines"] for c in cases):
+        defects.append("no positive case types a real entry; an empty one proves nothing")
     defects += [f"{code} is declared and no case proves it fires"
                 for code in sorted(declared - exercised)]
     defects += [f"{code} fires and the contract does not declare it"

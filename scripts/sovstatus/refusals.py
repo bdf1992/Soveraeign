@@ -4,31 +4,48 @@ Kept apart from `scripts/sov_status_claims.py` so the table can grow without dra
 reader and the command line past the module budget with it. The reader owns what counts as
 a status field; this owns what counts as a wrong entry.
 
-The governing idea is that nothing an entry declares is trusted where it can be derived.
-The subject is the field stem, the claim kind is fixed by the value's own prefix, and a
-standing must appear in the value as a whole token that is not denied. An independent
-witness defeated an earlier draft that let an entry declare a standing the value denied, so
-the only admissible source is now the token itself.
+Nothing an entry declares is trusted where it can be derived. The subject is the field
+stem. The claim kind is fixed by the value's own prefix. The standing is the value's
+leading token or nothing at all.
+
+That last rule is the third attempt, and the first two are why it is shaped this way. A
+first draft let an entry declare a standing from prose, and a witness declared `WITNESSED`
+on a value reading `NOT_WITNESSED`. A second draft compared the standing to a token and
+treated a preceding `NOT` as denial, and a second witness walked through
+`NOT_YET_WITNESSED`, `NEVER_WITNESSED`, `AWAITING_WITNESSED` and `BUILT-NOT_WITNESSED` -
+the last one because splitting on underscores alone hides a hyphenated negator entirely.
+
+Both drafts guarded the reported instance. A vocabulary of negations can always be extended
+by one word, so this draft asks a question with no vocabulary in it: is the standing the
+first thing the value says? A value that opens with `BUILT` is not denying `BUILT`, and a
+value that opens with anything else asserts no standing here whatever else it contains.
+Four interacting refusals collapse into that one biconditional.
 """
 
 from __future__ import annotations
 
 import re
 
-ACCEPTANCE_VALUE = re.compile(r"^OWNER_ACCEPTED_A\d")
+ACCEPTANCE_VALUE = re.compile(r"^OWNER_ACCEPTED_A(\d+)")
+PACKET_REFERENCE = re.compile(r"^A(\d+)$")
+SEPARATORS = re.compile(r"[^A-Za-z0-9]+")
 SUFFIX = "_status"
 SHAPE = {"field": str, "value": str, "subject": str, "claim_kind": str, "detail": str}
 
 
-def token_asserts(value: str, standing: str) -> bool:
-    """Whether `value` carries `standing` as a whole token that is not denied.
+def tokens(value: str) -> list[str]:
+    """The value's tokens, upper-cased, split on every non-alphanumeric run.
 
-    `NOT_WITNESSED` contains the token `WITNESSED` and asserts the opposite (CLAUDE.md T3),
-    so a token preceded by `NOT` is a denial rather than a claim.
+    Splitting on underscores alone let `BUILT-NOT_WITNESSED` read as two tokens, so a
+    negator written with a hyphen was never seen by a rule looking for one.
     """
-    tokens = value.upper().split("_")
-    return any(token == standing and (index == 0 or tokens[index - 1] != "NOT")
-               for index, token in enumerate(tokens))
+    return [token for token in SEPARATORS.split(value.upper()) if token]
+
+
+def leading_standing(value: str, ladder: set[str]) -> str | None:
+    """The standing a value asserts: its first token, if that token is a rung."""
+    found = tokens(value)
+    return found[0] if found and found[0] in ladder else None
 
 
 def derived_subject(field: str) -> str:
@@ -37,10 +54,18 @@ def derived_subject(field: str) -> str:
 
 
 def expected_kind(value: str) -> str:
-    """The only claim kind a value's own prefix admits. Total over every value."""
-    if value.startswith("RULED_"):
+    """The only claim kind a value's own prefix admits. Total over every value.
+
+    `OWNER_ACCEPTED_A<digit>` is the packet convention `STATUS.yaml` states in its own
+    comment: it "names the packet the root seat acted on". A bare `OWNER_ACCEPTED_...`
+    value is the document reporting that an acceptance happened, which is a status about
+    an act rather than the record of the act. Eighteen live fields turn on that reading and
+    it is Bdo's to overturn; see `decisions/0074`, Residuals.
+    """
+    upper = value.upper()
+    if upper.startswith("RULED_"):
         return "RULING"
-    if ACCEPTANCE_VALUE.match(value):
+    if ACCEPTANCE_VALUE.match(upper):
         return "OWNER_ACCEPTANCE"
     return "STATUS"
 
@@ -52,9 +77,9 @@ def malformed(_f: list[tuple[str, str]], entries: list[dict], _c: dict) -> list[
         bad = [k for k, kind in SHAPE.items() if not isinstance(entry.get(k), kind)]
         if bad:
             defects.append(f"ENTRY_MALFORMED: entry {index} lacks well-formed {', '.join(bad)}")
-        elif "artifact_standing" not in entry or "standing_source" not in entry:
+        elif "artifact_standing" not in entry or "reference" not in entry:
             defects.append(f"ENTRY_MALFORMED: entry {index} ({entry['field']}) omits a "
-                           "standing declaration")
+                           "standing or a reference")
     return defects
 
 
@@ -92,7 +117,7 @@ def collision(_f: list[tuple[str, str]], entries: list[dict], _c: dict) -> list[
     """CLAIM_KIND_COLLISION - the real duplicate, which typing does not excuse.
 
     Two identical entries share a subject and a kind, so this also refuses the same field
-    and value being typed twice; that needs no refusal of its own.
+    and value typed twice; that needs no refusal of its own.
     """
     seen: dict[tuple, int] = {}
     for entry in entries:
@@ -104,7 +129,7 @@ def collision(_f: list[tuple[str, str]], entries: list[dict], _c: dict) -> list[
 
 
 def kind_contradicts(_f: list[tuple[str, str]], entries: list[dict], contract: dict) -> list[str]:
-    """CLAIM_KIND_CONTRADICTS_VALUE - total in both directions, not just ruling against packet."""
+    """CLAIM_KIND_CONTRADICTS_VALUE - total in both directions, and case-insensitive."""
     defects = []
     for entry in entries:
         if entry.get("claim_kind") not in contract["claim_kinds"]:
@@ -117,55 +142,45 @@ def kind_contradicts(_f: list[tuple[str, str]], entries: list[dict], contract: d
     return defects
 
 
-def not_in_ladder(_f: list[tuple[str, str]], entries: list[dict], contract: dict) -> list[str]:
-    """STANDING_NOT_IN_LADDER - a rung cannot be minted by typing one."""
-    ladder = contract["artifact_standing_ladder"]
-    return [f"STANDING_NOT_IN_LADDER: {e.get('field')} declares standing "
-            f"{e.get('artifact_standing')!r}, which is not one of {', '.join(ladder)}"
-            for e in entries
-            if e.get("artifact_standing") is not None
-            and e.get("artifact_standing") not in ladder]
+def standing_not_leading(_f: list[tuple[str, str]], entries: list[dict],
+                         contract: dict) -> list[str]:
+    """STANDING_NOT_THE_LEADING_TOKEN - the whole standing rule, in both directions.
 
-
-def without_token(_f: list[tuple[str, str]], entries: list[dict], _c: dict) -> list[str]:
-    """STANDING_WITHOUT_TOKEN - the door the witness came through.
-
-    An earlier draft admitted an unverifiable `READING` source, and a standing declared
-    under it was never compared to the value. A standing the document does not carry as a
-    token is not asserted here at all.
+    A standing is declared if and only if the value's first token is a rung, and then it is
+    that rung. No negation vocabulary, so no negation vocabulary to be short by one.
     """
+    ladder = set(contract["artifact_standing_ladder"])
     defects = []
     for entry in entries:
-        standing, source = entry.get("artifact_standing"), entry.get("standing_source")
-        if standing is not None and source != "TOKEN":
-            defects.append(f"STANDING_WITHOUT_TOKEN: {entry.get('field')} declares standing "
-                           f"{standing} with source {source!r}; only a token asserts one")
-        elif standing is None and source == "TOKEN":
-            defects.append(f"STANDING_WITHOUT_TOKEN: {entry.get('field')} declares a TOKEN "
-                           "source and no standing to find")
+        asserted = leading_standing(entry.get("value", ""), ladder)
+        declared = entry.get("artifact_standing")
+        if declared != asserted:
+            defects.append(f"STANDING_NOT_THE_LEADING_TOKEN: {entry.get('field')} declares "
+                           f"{declared!r} and {entry.get('value')} leads with "
+                           f"{(tokens(entry.get('value', '')) or ['nothing'])[0]}, which "
+                           f"asserts {asserted!r}")
     return defects
 
 
-def token_absent(_f: list[tuple[str, str]], entries: list[dict], _c: dict) -> list[str]:
-    """STANDING_TOKEN_ABSENT - the token is missing, or the value denies it."""
-    return [f"STANDING_TOKEN_ABSENT: {e.get('field')} declares standing "
-            f"{e.get('artifact_standing')} from a token, and {e.get('value')} does not "
-            "assert it undenied"
-            for e in entries
-            if e.get("standing_source") == "TOKEN"
-            and isinstance(e.get("artifact_standing"), str)
-            and not token_asserts(e.get("value", ""), e["artifact_standing"])]
+def reference_contradicts(_f: list[tuple[str, str]], entries: list[dict], _c: dict) -> list[str]:
+    """REFERENCE_CONTRADICTS_VALUE - the packet id an entry names must be the one it carries.
 
-
-def leading_untyped(_f: list[tuple[str, str]], entries: list[dict], contract: dict) -> list[str]:
-    """LEADING_TOKEN_UNTYPED - a value that opens with a rung must be typed from it."""
-    ladder = set(contract["artifact_standing_ladder"])
-    return [f"LEADING_TOKEN_UNTYPED: {e.get('field')} begins with the ladder word "
-            f"{e.get('value', '').split('_')[0]} and declares source {e.get('standing_source')}"
-            for e in entries
-            if e.get("value", "").upper().split("_")[0] in ladder
-            and e.get("standing_source") != "TOKEN"]
+    `reference` is load-bearing for owner acceptance: the contract says it names the packet.
+    A field the contract calls load-bearing and grades nowhere is a declaration, which is
+    what this table exists to stop.
+    """
+    defects = []
+    for entry in entries:
+        carried = ACCEPTANCE_VALUE.match(entry.get("value", "").upper())
+        named = PACKET_REFERENCE.match(str(entry.get("reference") or ""))
+        if carried and (not named or named.group(1) != carried.group(1)):
+            defects.append(f"REFERENCE_CONTRADICTS_VALUE: {entry.get('field')} carries packet "
+                           f"A{carried.group(1)} and names {entry.get('reference')!r}")
+        elif named and not carried:
+            defects.append(f"REFERENCE_CONTRADICTS_VALUE: {entry.get('field')} names packet "
+                           f"{entry.get('reference')} and its value carries none")
+    return defects
 
 
 CHECKS = (malformed, untyped, unmatched, subject_not_derived, kind_undeclared, collision,
-          kind_contradicts, not_in_ladder, without_token, token_absent, leading_untyped)
+          kind_contradicts, standing_not_leading, reference_contradicts)

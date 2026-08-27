@@ -40,24 +40,18 @@
     "WITNESSED",
     "RATIFIED"
   ],
-  "standing_sources": {
-    "TOKEN": "The value carries the standing as a whole underscore-separated token that is not preceded by NOT. Mechanically checkable, and checked. This is the only source.",
-    "NONE": "The value asserts no ladder position, and the entry declares none. An earlier draft admitted a third source, READING, for a position read from prose without a token carrying it. An independent witness defeated it: READING admitted `artifact_standing: WITNESSED` on a value reading NOT_WITNESSED, which is the exact hazard this contract exists to refuse. An unverifiable source in a machine contract is a door, so it was removed rather than narrowed."
-  },
   "token_trap": "`NOT_WITNESSED` contains the token `WITNESSED` and asserts the opposite (CLAUDE.md T3). Tokens are compared whole and a token preceded by `NOT` is a denial. `PARTICIPANT_BINDING_OPEN` carries `OPEN` about a binding rather than about the subject's standing, which is why a token is honoured only where the entry declares `standing_source: TOKEN`, and why an entry whose value *begins* with a ladder word may not declare anything else.",
   "refusals": {
-    "ENTRY_MALFORMED": "A crosswalk entry missing a required field or carrying one of the wrong type. Checked first and alone, so a malformed entry is refused rather than raising.",
+    "ENTRY_MALFORMED": "An entry missing a required field or carrying one of the wrong type. Checked first and alone, so a malformed entry is refused rather than raising.",
     "FIELD_UNTYPED": "A `*_status` field and value in STATUS.yaml with no crosswalk entry.",
-    "FIELD_UNREADABLE": "A line naming a status field that the strict reader cannot parse - indented, or carrying a value with a space. Without this the reader silently defines its own scope and such a line earns no FIELD_UNTYPED because it is never seen.",
+    "FIELD_UNREADABLE": "A line naming a status field the strict reader cannot parse. The detector is deliberately looser than the reader, so the gap between them is a refusal rather than a blind spot.",
     "ENTRY_UNMATCHED": "A crosswalk entry whose field and value are not in STATUS.yaml.",
-    "SUBJECT_NOT_DERIVED": "A subject that is not the field stem with underscores hyphenated. The subject is derivable, so it is derived; declaring it freely allowed a collision to be dissolved by renaming one side of it.",
-    "CLAIM_KIND_UNDECLARED": "A claim kind outside the three this contract declares.",
-    "CLAIM_KIND_COLLISION": "Two entries share a subject and a claim kind. This is the real duplicate the flat namespace could not distinguish from two kinds of claim about one subject.",
-    "CLAIM_KIND_CONTRADICTS_VALUE": "The value's prefix and the declared kind disagree. Total in both directions: `RULED_` is a RULING, `OWNER_ACCEPTED_A<digit>` is an OWNER_ACCEPTANCE, everything else is a STATUS. It replaces a narrower rule that guarded only the ruling and acceptance pair and left an owner acceptance mistyped as a status unrefused.",
-    "STANDING_NOT_IN_LADDER": "An artifact standing outside the declared ladder.",
-    "STANDING_WITHOUT_TOKEN": "A standing declared with any source but TOKEN, or a TOKEN source with no standing to find. This is the door the witness came through: a standing the document does not carry as a token is not asserted here at all.",
-    "STANDING_TOKEN_ABSENT": "The declared standing is not a whole token of the value, or is negated by a preceding NOT.",
-    "LEADING_TOKEN_UNTYPED": "The value's first token is a ladder word and the entry does not declare TOKEN."
+    "SUBJECT_NOT_DERIVED": "A subject that is not the field stem with underscores hyphenated. Declaring it freely let a witness dissolve a real collision by renaming one side of it.",
+    "CLAIM_KIND_UNDECLARED": "A claim kind outside the three this contract declares. A typo here silently disabled the rule keyed on it.",
+    "CLAIM_KIND_COLLISION": "Two entries share a subject and a claim kind. This is the real duplicate the flat namespace could not distinguish from two kinds of claim about one subject, and it also refuses the same field and value typed twice.",
+    "CLAIM_KIND_CONTRADICTS_VALUE": "The value's prefix and the declared kind disagree. Total in both directions: `RULED_` is a RULING, `OWNER_ACCEPTED_A<digit>` is an OWNER_ACCEPTANCE, everything else is a STATUS.",
+    "STANDING_NOT_THE_LEADING_TOKEN": "The declared standing is not the value's leading token, or a value leading with a rung declares no standing. One biconditional replacing four interacting rules; see artifact_standing_rule.",
+    "REFERENCE_CONTRADICTS_VALUE": "An entry names a packet its value does not carry, or carries one it does not name. `reference` is load-bearing for owner acceptance, and a load-bearing field graded nowhere is a declaration."
   },
   "evolution": [
     "1 - typed crosswalk beside the hand-written file, which is this contract; nothing in STATUS.yaml changes and the eight duplicate keys stop being ambiguous.",
@@ -71,7 +65,6 @@
       "subject": "naming",
       "claim_kind": "STATUS",
       "artifact_standing": null,
-      "standing_source": "NONE",
       "detail": "the owner selected the working name; public release clearance is held",
       "reference": "O1"
     },
@@ -81,7 +74,6 @@
       "subject": "implementation",
       "claim_kind": "STATUS",
       "artifact_standing": null,
-      "standing_source": "NONE",
       "detail": "an experimental reference participant, not a product implementation",
       "reference": null
     },
@@ -91,7 +83,6 @@
       "subject": "conformance",
       "claim_kind": "STATUS",
       "artifact_standing": null,
-      "standing_source": "NONE",
       "detail": "the oracle controls execute; binding a participant to them is not done",
       "reference": null
     },
@@ -101,7 +92,6 @@
       "subject": "asset-service",
       "claim_kind": "STATUS",
       "artifact_standing": "BUILT",
-      "standing_source": "TOKEN",
       "detail": "self-tested; no independent observation exists",
       "reference": null
     },
@@ -111,7 +101,6 @@
       "subject": "record-service",
       "claim_kind": "STATUS",
       "artifact_standing": "BUILT",
-      "standing_source": "TOKEN",
       "detail": "self-tested; no independent observation exists",
       "reference": null
     },
@@ -121,7 +110,6 @@
       "subject": "proofing-service",
       "claim_kind": "STATUS",
       "artifact_standing": null,
-      "standing_source": "NONE",
       "detail": "the owner accepted the boundary; nothing behind it is built",
       "reference": null
     },
@@ -131,7 +119,6 @@
       "subject": "console-service",
       "claim_kind": "STATUS",
       "artifact_standing": "BUILT",
-      "standing_source": "TOKEN",
       "detail": "the continuity path is built and self-tested; the other surfaces are boundary only",
       "reference": null
     },
@@ -141,7 +128,6 @@
       "subject": "projection-service",
       "claim_kind": "STATUS",
       "artifact_standing": null,
-      "standing_source": "NONE",
       "detail": "the owner accepted the boundary; nothing behind it is built",
       "reference": null
     },
@@ -150,8 +136,7 @@
       "value": "PROPOSED_CONTRACT_BUILT_REGISTRY_READ_NO_ADMISSION_TRANSITION",
       "subject": "node-identity",
       "claim_kind": "STATUS",
-      "artifact_standing": "BUILT",
-      "standing_source": "TOKEN",
+      "artifact_standing": null,
       "detail": "the proposed contract is built and its registry read slice serves; no admission transition exists",
       "reference": null
     },
@@ -160,8 +145,7 @@
       "value": "PROPOSED_CONTRACT_BUILT_SELF_TESTED_NO_TRANSPORT",
       "subject": "federation-crossing",
       "claim_kind": "STATUS",
-      "artifact_standing": "BUILT",
-      "standing_source": "TOKEN",
+      "artifact_standing": null,
       "detail": "the proposed contract is built and self-tested; no transport carries it",
       "reference": null
     },
@@ -170,8 +154,7 @@
       "value": "PROPOSED_CONTRACT_BUILT_PUBLICATION_RECORDED_SEAT_SEAM_OPEN",
       "subject": "public-projection",
       "claim_kind": "STATUS",
-      "artifact_standing": "BUILT",
-      "standing_source": "TOKEN",
+      "artifact_standing": null,
       "detail": "the proposed contract is built and publication is recorded; the seat seam is open",
       "reference": "S19"
     },
@@ -181,7 +164,6 @@
       "subject": "gateway-service",
       "claim_kind": "STATUS",
       "artifact_standing": null,
-      "standing_source": "NONE",
       "detail": "chartered as a boundary; nothing behind it is built",
       "reference": null
     },
@@ -191,7 +173,6 @@
       "subject": "host-service",
       "claim_kind": "STATUS",
       "artifact_standing": "BUILT",
-      "standing_source": "TOKEN",
       "detail": "the read-health slice is built and self-tested; the rest is declared and unreachable; no independent observation exists",
       "reference": null
     },
@@ -201,7 +182,6 @@
       "subject": "observation-service",
       "claim_kind": "STATUS",
       "artifact_standing": null,
-      "standing_source": "NONE",
       "detail": "chartered as a boundary; nothing behind it is built",
       "reference": null
     },
@@ -211,7 +191,6 @@
       "subject": "service-manifest-contract",
       "claim_kind": "STATUS",
       "artifact_standing": "BUILT",
-      "standing_source": "TOKEN",
       "detail": "self-tested; no independent observation exists",
       "reference": null
     },
@@ -221,7 +200,6 @@
       "subject": "byom",
       "claim_kind": "STATUS",
       "artifact_standing": null,
-      "standing_source": "NONE",
       "detail": "the owner accepted the Phase-I contract",
       "reference": null
     },
@@ -231,7 +209,6 @@
       "subject": "local-model-adapter",
       "claim_kind": "STATUS",
       "artifact_standing": "BUILT",
-      "standing_source": "TOKEN",
       "detail": "self-tested; no independent observation exists",
       "reference": null
     },
@@ -241,7 +218,6 @@
       "subject": "ai-native-definition",
       "claim_kind": "STATUS",
       "artifact_standing": null,
-      "standing_source": "NONE",
       "detail": "a candidate for freeze; not frozen",
       "reference": null
     },
@@ -251,7 +227,6 @@
       "subject": "engineering-framework",
       "claim_kind": "STATUS",
       "artifact_standing": null,
-      "standing_source": "NONE",
       "detail": "the owner accepted the Phase-I reference baseline; the verify budget is graded under decision 0042",
       "reference": "decisions/0042"
     },
@@ -261,7 +236,6 @@
       "subject": "sdlc-loop",
       "claim_kind": "STATUS",
       "artifact_standing": null,
-      "standing_source": "NONE",
       "detail": "the owner accepted the loop on the acceptance-not-approval rule",
       "reference": null
     },
@@ -271,7 +245,6 @@
       "subject": "coordination-registrar",
       "claim_kind": "STATUS",
       "artifact_standing": "BUILT",
-      "standing_source": "TOKEN",
       "detail": "self-tested; no independent observation exists",
       "reference": null
     },
@@ -280,8 +253,7 @@
       "value": "OWNER_ACCEPTED_CONTEXT_PROFILE_BUILT_SELF_TESTED_NOT_WITNESSED",
       "subject": "sov-operating-agent",
       "claim_kind": "STATUS",
-      "artifact_standing": "BUILT",
-      "standing_source": "TOKEN",
+      "artifact_standing": null,
       "detail": "the owner accepted the context profile; it is built and self-tested with no independent observation",
       "reference": null
     },
@@ -291,7 +263,6 @@
       "subject": "ticket-kind-vocabulary",
       "claim_kind": "STATUS",
       "artifact_standing": null,
-      "standing_source": "NONE",
       "detail": "the owner accepted the vocabulary",
       "reference": null
     },
@@ -301,7 +272,6 @@
       "subject": "story-ticket-kind",
       "claim_kind": "STATUS",
       "artifact_standing": null,
-      "standing_source": "NONE",
       "detail": "the owner accepted the story ticket kind",
       "reference": null
     },
@@ -311,7 +281,6 @@
       "subject": "unblock-ticket-kind",
       "claim_kind": "STATUS",
       "artifact_standing": null,
-      "standing_source": "NONE",
       "detail": "the owner accepted the unblock ticket kind",
       "reference": null
     },
@@ -321,7 +290,6 @@
       "subject": "ticket-metadata-reader",
       "claim_kind": "STATUS",
       "artifact_standing": null,
-      "standing_source": "NONE",
       "detail": "the owner accepted the ruling; the readers are self-tested with no independent observation",
       "reference": null
     },
@@ -331,7 +299,6 @@
       "subject": "kernel-transition-contract",
       "claim_kind": "STATUS",
       "artifact_standing": null,
-      "standing_source": "NONE",
       "detail": "the owner accepted the compiled spec; SPEC.md moved under decision 0034",
       "reference": "decisions/0034"
     },
@@ -341,7 +308,6 @@
       "subject": "semantic-cold-start",
       "claim_kind": "STATUS",
       "artifact_standing": null,
-      "standing_source": "NONE",
       "detail": "the owner accepted the observation shape and it has been executed",
       "reference": null
     },
@@ -351,7 +317,6 @@
       "subject": "federation-harness",
       "claim_kind": "STATUS",
       "artifact_standing": null,
-      "standing_source": "NONE",
       "detail": "the owner accepted the harness as host plumbing; every schedule is disabled",
       "reference": null
     },
@@ -361,7 +326,6 @@
       "subject": "scheduled-runs",
       "claim_kind": "STATUS",
       "artifact_standing": null,
-      "standing_source": "NONE",
       "detail": "the owner accepted the pattern; every schedule is disabled",
       "reference": null
     },
@@ -371,7 +335,6 @@
       "subject": "verification-channels",
       "claim_kind": "STATUS",
       "artifact_standing": null,
-      "standing_source": "NONE",
       "detail": "the owner accepted the projection; the green channel was renamed",
       "reference": null
     },
@@ -381,7 +344,6 @@
       "subject": "lineage-corpus",
       "claim_kind": "STATUS",
       "artifact_standing": "BUILT",
-      "standing_source": "TOKEN",
       "detail": "self-tested; no independent observation exists",
       "reference": null
     },
@@ -391,7 +353,6 @@
       "subject": "lessons-loop",
       "claim_kind": "STATUS",
       "artifact_standing": null,
-      "standing_source": "NONE",
       "detail": "the owner accepted the loop; the loop itself is open",
       "reference": null
     },
@@ -401,7 +362,6 @@
       "subject": "specification",
       "claim_kind": "OWNER_ACCEPTANCE",
       "artifact_standing": null,
-      "standing_source": "NONE",
       "detail": "the root seat accepted the Phase-I logical specification",
       "reference": "A2"
     },
@@ -411,7 +371,6 @@
       "subject": "engineering-framework",
       "claim_kind": "OWNER_ACCEPTANCE",
       "artifact_standing": null,
-      "standing_source": "NONE",
       "detail": "the root seat accepted the Phase-I reference baseline",
       "reference": "A1"
     },
@@ -421,7 +380,6 @@
       "subject": "sdlc-loop",
       "claim_kind": "OWNER_ACCEPTANCE",
       "artifact_standing": null,
-      "standing_source": "NONE",
       "detail": "the root seat accepted acceptance-not-approval",
       "reference": "A3"
     },
@@ -431,7 +389,6 @@
       "subject": "external-effect",
       "claim_kind": "OWNER_ACCEPTANCE",
       "artifact_standing": null,
-      "standing_source": "NONE",
       "detail": "the root seat accepted that external effect is scoped rather than refused",
       "reference": "A4"
     },
@@ -441,7 +398,6 @@
       "subject": "classification",
       "claim_kind": "RULING",
       "artifact_standing": null,
-      "standing_source": "NONE",
       "detail": "ruled canonical for the phase",
       "reference": "O9"
     },
@@ -451,7 +407,6 @@
       "subject": "proofing-service",
       "claim_kind": "RULING",
       "artifact_standing": null,
-      "standing_source": "NONE",
       "detail": "ruled the second boundary; chartered and not implemented",
       "reference": "O11"
     },
@@ -461,7 +416,6 @@
       "subject": "byom",
       "claim_kind": "RULING",
       "artifact_standing": null,
-      "standing_source": "NONE",
       "detail": "ruled that the contract stands",
       "reference": "O12"
     },
@@ -470,8 +424,7 @@
       "value": "RULED_ENVELOPE_STANDS_O17_BUILT_SELF_TESTED",
       "subject": "sov-operating-agent",
       "claim_kind": "RULING",
-      "artifact_standing": "BUILT",
-      "standing_source": "TOKEN",
+      "artifact_standing": null,
       "detail": "ruled that the envelope stands; built and self-tested",
       "reference": "O17"
     },
@@ -481,7 +434,6 @@
       "subject": "ticket-kind-vocabulary",
       "claim_kind": "RULING",
       "artifact_standing": null,
-      "standing_source": "NONE",
       "detail": "ruled",
       "reference": "O19"
     },
@@ -491,7 +443,6 @@
       "subject": "kernel-transition-contract",
       "claim_kind": "RULING",
       "artifact_standing": null,
-      "standing_source": "NONE",
       "detail": "ruled",
       "reference": "O20"
     },
@@ -501,7 +452,6 @@
       "subject": "semantic-cold-start",
       "claim_kind": "RULING",
       "artifact_standing": null,
-      "standing_source": "NONE",
       "detail": "ruled; the task has been executed",
       "reference": "O8"
     },
@@ -511,7 +461,6 @@
       "subject": "product-ground",
       "claim_kind": "STATUS",
       "artifact_standing": null,
-      "standing_source": "NONE",
       "detail": "the owner accepted product ground revision GROUND-1 in epoch 1",
       "reference": null
     },
@@ -521,7 +470,6 @@
       "subject": "product-canon",
       "claim_kind": "STATUS",
       "artifact_standing": null,
-      "standing_source": "NONE",
       "detail": "the owner accepted canon revision 3; promises 13 and 14 are retired",
       "reference": null
     },
@@ -531,7 +479,6 @@
       "subject": "discovery-surface",
       "claim_kind": "STATUS",
       "artifact_standing": "BUILT",
-      "standing_source": "TOKEN",
       "detail": "served on CLI and MCP; the journey is not walkable end to end",
       "reference": null
     },
@@ -541,7 +488,6 @@
       "subject": "attribution-join",
       "claim_kind": "STATUS",
       "artifact_standing": "BUILT",
-      "standing_source": "TOKEN",
       "detail": "self-tested with one measured end-to-end trace",
       "reference": null
     }
@@ -551,6 +497,11 @@
     "GROUND-006"
   ],
   "derived_never_declared": "Every field an entry declares that can be derived from bytes the checker already holds is derived and compared, never trusted. `subject` is the field stem with underscores hyphenated; `claim_kind` is fixed by the value's own prefix; `artifact_standing` must be a whole undenied token of the value. An entry is a reading of the document, not a second place to assert something about it. Before this rule a subject could be renamed to dissolve a collision and a claim kind could be typo'd to disable a refusal.",
-  "witnessed_by": "reports/observations/2026-08-27-status-claims-typed-witness-observation.json - REPRODUCED_WITH_DEFECTS against commit 5dbe513. D1 (a false standing past the READING and NONE doors) and D2 (a declaration graded where it could be measured) are repaired here, with the unguarded STATUS direction and four further gaps the witness named. D3 is not repairable inside this concern and is recorded as a seam in decisions/0074.",
-  "refusals_note": "Each refusal must be provable alone: selfcheck requires a case to earn exactly the code it names. A refusal that cannot fire without another firing beside it is not a distinct rule, which is why the witness's duplicate-entry gap is answered by CLAIM_KIND_COLLISION rather than by a refusal of its own - two identical entries share a subject and a kind."
+  "witnessed_by": [
+    "reports/observations/2026-08-27-status-claims-typed-witness-observation.json - REPRODUCED_WITH_DEFECTS against 5dbe513; a false standing past the non-TOKEN doors, and a declaration graded where it could be measured.",
+    "reports/observations/2026-08-27-status-claims-second-witness-observation.json - REPRODUCED_WITH_DEFECTS against 964f414; the repair was real and the same defect shape recurred in three more places, each a guard written against the reported instance rather than the class."
+  ],
+  "refusals_note": "Each refusal must be provable alone: selfcheck requires a case to earn exactly the code it names. A refusal that cannot fire without another firing beside it is not a distinct rule.",
+  "artifact_standing_rule": "A standing is declared if and only if the value's first token is a rung of the ladder, and then it is that rung. Tokens split on every non-alphanumeric run, so a hyphen cannot hide one. There is no negation vocabulary because there is nothing to negate: a value opening with BUILT is not denying BUILT, and a value opening with anything else asserts no standing here whatever it contains later. Two earlier drafts each guarded the instance a witness reported - first an unverifiable prose source, then a NOT-aware token comparison that a second witness walked past through NOT_YET, NEVER, AWAITING and a hyphenated NOT. A vocabulary of negations can always be extended by one word.",
+  "owner_accepted_reading": "Eighteen live values begin `OWNER_ACCEPTED` without a packet digit and are typed STATUS. That follows STATUS.yaml's own comment - `OWNER_ACCEPTED_A*` \"names the packet the root seat acted on\" - so a bare `OWNER_ACCEPTED_...` value is the document reporting that an acceptance happened rather than the record of the act. A second witness flagged this as possibly a code defect. It is a reading, and it is Bdo's to overturn: if those eighteen are acceptances, the prefix rule and eighteen entries change together."
 }

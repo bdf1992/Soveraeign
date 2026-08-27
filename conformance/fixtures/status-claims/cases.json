@@ -1,12 +1,12 @@
 {
-  "corpus_id": "soveraeign-status-claims-cases/v2",
+  "corpus_id": "soveraeign-status-claims-cases/v3",
   "grades": "contracts/status-claims.json",
-  "note": "One controlled case per declared refusal, plus a positive case that must earn none. Each defeating case must earn EXACTLY the code it names: a case that fires for a second reason has not proved the one it is for, and two refusals that cannot be separated are one rule wearing two names. The lines and crosswalk entries are the oracle's own; no case reads STATUS.yaml, so a repair to the live file cannot quietly stop a refusal from being proved.",
-  "revision_note": "v2 answers an independent observation against commit 5dbe513 (reports/observations/2026-08-27-status-claims-typed-witness-observation.json). The witness got a false standing past v1 by declaring artifact_standing WITNESSED with a non-TOKEN source on a value reading NOT_WITNESSED, and dissolved a collision by renaming a subject. v1's seven cases became twelve, and v1's RULING_TYPED_AS_ACCEPTANCE was widened into a total rule after the witness typed an owner acceptance as a status unrefused.",
+  "note": "One controlled case per declared refusal, plus a positive case that must earn none. Each defeating case must earn EXACTLY the code it names: a case that fires for a second reason has not proved the one it is for, and two refusals that cannot be separated are one rule wearing two names. The lines and crosswalk entries are the oracle's own; no case reads STATUS.yaml, so a repair to the live file cannot quietly stop a refusal from being proved. The positive case must type a real entry - an empty document against an empty crosswalk satisfies every rule and proves nothing.",
+  "revision_note": "v3 answers a second independent observation against 964f414 (reports/observations/2026-08-27-status-claims-second-witness-observation.json). v2's standing rule compared a token and treated a preceding NOT as denial; the witness walked past it with NOT_YET_WITNESSED, NEVER_WITNESSED, AWAITING_WITNESSED and BUILT-NOT_WITNESSED, the last because splitting on underscores alone hides a hyphenated negator. v2's FIELD_UNREADABLE closed the two shapes v1's witness reported and not the class. Four standing refusals collapse into one biconditional here, and the negator cases below exist so the vocabulary question cannot come back.",
   "cases": [
     {
       "id": "positive-typed-status-claim",
-      "proves": "A field typed with the derived subject, the kind its value's prefix admits, and a token-backed standing earns no refusal.",
+      "proves": "A field typed with the derived subject, the kind its value's prefix admits, and the standing its value leads with earns no refusal.",
       "expect": null,
       "status_lines": [
         "asset_service_status: BUILT_SELF_TESTED_NOT_WITNESSED"
@@ -18,15 +18,33 @@
           "subject": "asset-service",
           "claim_kind": "STATUS",
           "artifact_standing": "BUILT",
-          "standing_source": "TOKEN",
           "detail": "self-tested; no independent observation exists",
           "reference": null
         }
       ]
     },
     {
+      "id": "positive-a-value-asserting-no-standing",
+      "proves": "A value that does not lead with a rung declares no standing, and that is the correct entry rather than a defect. PROPOSED_CONTRACT_BUILT says the contract is built; it does not put the subject at BUILT.",
+      "expect": null,
+      "status_lines": [
+        "node_identity_status: PROPOSED_CONTRACT_BUILT_REGISTRY_READ_NO_ADMISSION_TRANSITION"
+      ],
+      "crosswalk": [
+        {
+          "field": "node_identity_status",
+          "value": "PROPOSED_CONTRACT_BUILT_REGISTRY_READ_NO_ADMISSION_TRANSITION",
+          "subject": "node-identity",
+          "claim_kind": "STATUS",
+          "artifact_standing": null,
+          "detail": "the proposed contract is built and its registry read slice serves",
+          "reference": null
+        }
+      ]
+    },
+    {
       "id": "defeating-entry-malformed",
-      "proves": "An entry missing a required field is refused rather than raising. Before this, a missing artifact_standing raised KeyError and a null subject raised TypeError inside sorted().",
+      "proves": "An entry missing a required field is refused rather than raising. A missing standing raised KeyError and a null subject raised TypeError inside sorted().",
       "expect": "ENTRY_MALFORMED",
       "status_lines": [
         "asset_service_status: BUILT_SELF_TESTED_NOT_WITNESSED"
@@ -37,7 +55,6 @@
           "value": "BUILT_SELF_TESTED_NOT_WITNESSED",
           "subject": "asset-service",
           "claim_kind": "STATUS",
-          "standing_source": "TOKEN",
           "detail": "an entry that never declares a standing at all",
           "reference": null
         }
@@ -53,11 +70,15 @@
       "crosswalk": []
     },
     {
-      "id": "defeating-field-unreadable",
-      "proves": "A status field the strict reader cannot parse is named rather than skipped. An indented field would otherwise be invisible and earn no FIELD_UNTYPED, letting the reader define its own scope.",
+      "id": "defeating-field-unreadable-hyphenated-key",
+      "proves": "The detector catches the class, not the reported instances. A hyphenated key is invisible to the strict reader and plausible here - ai-native is repository vocabulary - and an earlier detector written against indentation and spaces could not see it.",
       "expect": "FIELD_UNREADABLE",
       "status_lines": [
-        "  nested_thing_status: OWNER_ACCEPTED"
+        "ai-native_status: OPEN",
+        "\"quoted_status\": OPEN",
+        "spaced_key_status : OPEN",
+        "SHOUTED_STATUS: OPEN",
+        "  indented_status: OPEN"
       ],
       "crosswalk": []
     },
@@ -73,7 +94,6 @@
           "subject": "retired-thing",
           "claim_kind": "STATUS",
           "artifact_standing": null,
-          "standing_source": "NONE",
           "detail": "a claim the document has since dropped",
           "reference": null
         }
@@ -93,7 +113,6 @@
           "subject": "byom-ruling",
           "claim_kind": "STATUS",
           "artifact_standing": null,
-          "standing_source": "NONE",
           "detail": "a subject renamed to escape a collision",
           "reference": null
         }
@@ -101,7 +120,7 @@
     },
     {
       "id": "defeating-claim-kind-undeclared",
-      "proves": "A kind outside the declared three is refused. A witness typo'd RULING as RULLING, which split the collision group and silently disabled the kind rules, because those compare kind strings literally.",
+      "proves": "A kind outside the declared three is refused. A witness typo'd RULING as RULLING, which split the collision group and silently disabled the rules keyed on the kind string.",
       "expect": "CLAIM_KIND_UNDECLARED",
       "status_lines": [
         "ticket_kind_vocabulary_status: RULED_O19"
@@ -113,7 +132,6 @@
           "subject": "ticket-kind-vocabulary",
           "claim_kind": "RULLING",
           "artifact_standing": null,
-          "standing_source": "NONE",
           "detail": "a typo that would disable the rules keyed on this field",
           "reference": "O19"
         }
@@ -134,7 +152,6 @@
           "subject": "proofing-service",
           "claim_kind": "STATUS",
           "artifact_standing": null,
-          "standing_source": "NONE",
           "detail": "the owner accepted the boundary",
           "reference": null
         },
@@ -144,7 +161,6 @@
           "subject": "proofing-service",
           "claim_kind": "STATUS",
           "artifact_standing": null,
-          "standing_source": "NONE",
           "detail": "a second status claim about the same subject",
           "reference": null
         }
@@ -152,7 +168,7 @@
     },
     {
       "id": "defeating-claim-kind-contradicts-value",
-      "proves": "The rule is total in both directions. A witness retyped an accepted packet value as a plain status and v1 admitted it, because v1 guarded only the ruling-and-acceptance pair. OWNER_ACCEPTANCE is irreversible and settled by seat:root; STATUS is neither.",
+      "proves": "The rule is total in both directions. A witness retyped an accepted packet value as a plain status and an earlier draft admitted it, because that draft guarded only the ruling-and-acceptance pair. OWNER_ACCEPTANCE is irreversible and settled by seat:root; STATUS is neither.",
       "expect": "CLAIM_KIND_CONTRADICTS_VALUE",
       "status_lines": [
         "specification_status: OWNER_ACCEPTED_A2_PHASE_I_LOGICAL_SPEC"
@@ -164,89 +180,75 @@
           "subject": "specification",
           "claim_kind": "STATUS",
           "artifact_standing": null,
-          "standing_source": "NONE",
           "detail": "an act of the root seat demoted to a reversible status",
           "reference": "A2"
         }
       ]
     },
     {
-      "id": "defeating-standing-not-in-ladder",
-      "proves": "Artifact standing stays the four-rung ladder AGENTS.md fixes. A new rung cannot be introduced by typing one.",
-      "expect": "STANDING_NOT_IN_LADDER",
+      "id": "defeating-standing-not-the-leading-token",
+      "proves": "The whole standing rule, and the reason it has no negation vocabulary. Every line here declares WITNESSED on a value that does not lead with it: the first is the T3 trap, and the rest are the synonyms and the hyphen a NOT-aware token comparison let through. A rule that asks what the value leads with is short by no words.",
+      "expect": "STANDING_NOT_THE_LEADING_TOKEN",
       "status_lines": [
-        "some_thing_status: SHIPPED_TO_PRODUCTION"
+        "a_status: NOT_WITNESSED",
+        "b_status: NOT_YET_WITNESSED",
+        "c_status: NEVER_WITNESSED",
+        "d_status: AWAITING_WITNESSED",
+        "e_status: BUILT-NOT_WITNESSED",
+        "f_status: PENDING_WITNESSED"
       ],
       "crosswalk": [
         {
-          "field": "some_thing_status",
-          "value": "SHIPPED_TO_PRODUCTION",
-          "subject": "some-thing",
-          "claim_kind": "STATUS",
-          "artifact_standing": "SHIPPED",
-          "standing_source": "TOKEN",
-          "detail": "a rung the ladder does not have",
+          "field": "a_status", "value": "NOT_WITNESSED", "subject": "a",
+          "claim_kind": "STATUS", "artifact_standing": "WITNESSED",
+          "detail": "the trap the whole contract is named for", "reference": null
+        },
+        {
+          "field": "b_status", "value": "NOT_YET_WITNESSED", "subject": "b",
+          "claim_kind": "STATUS", "artifact_standing": "WITNESSED",
+          "detail": "a deferral a NOT-aware comparison read as an assertion", "reference": null
+        },
+        {
+          "field": "c_status", "value": "NEVER_WITNESSED", "subject": "c",
+          "claim_kind": "STATUS", "artifact_standing": "WITNESSED",
+          "detail": "a negator outside the vocabulary", "reference": null
+        },
+        {
+          "field": "d_status", "value": "AWAITING_WITNESSED", "subject": "d",
+          "claim_kind": "STATUS", "artifact_standing": "WITNESSED",
+          "detail": "a deferral that reads as a denial to a person and not to a word list",
+          "reference": null
+        },
+        {
+          "field": "e_status", "value": "BUILT-NOT_WITNESSED", "subject": "e",
+          "claim_kind": "STATUS", "artifact_standing": "WITNESSED",
+          "detail": "a hyphen hid the NOT from a rule that split on underscores alone",
+          "reference": null
+        },
+        {
+          "field": "f_status", "value": "PENDING_WITNESSED", "subject": "f",
+          "claim_kind": "STATUS", "artifact_standing": "WITNESSED",
+          "detail": "and one more, because a vocabulary is always short by one",
           "reference": null
         }
       ]
     },
     {
-      "id": "defeating-standing-without-token",
-      "proves": "The exact bypass an independent witness demonstrated against v1: WITNESSED declared on a value reading NOT_WITNESSED, admitted because a non-TOKEN source was never compared to the value and the value does not begin with a ladder word. Thirty-three of forty-eight live entries begin with a non-ladder word, so the door was open for all of them.",
-      "expect": "STANDING_WITHOUT_TOKEN",
+      "id": "defeating-reference-contradicts-value",
+      "proves": "A packet id is graded, not declared. `reference` is load-bearing for owner acceptance - the contract says it names the packet - and a load-bearing field graded nowhere is exactly the declaration this table exists to stop.",
+      "expect": "REFERENCE_CONTRADICTS_VALUE",
       "status_lines": [
-        "sov_operating_agent_status: OWNER_ACCEPTED_CONTEXT_PROFILE_BUILT_SELF_TESTED_NOT_WITNESSED"
+        "specification_status: OWNER_ACCEPTED_A2_PHASE_I_LOGICAL_SPEC"
       ],
       "crosswalk": [
         {
-          "field": "sov_operating_agent_status",
-          "value": "OWNER_ACCEPTED_CONTEXT_PROFILE_BUILT_SELF_TESTED_NOT_WITNESSED",
-          "subject": "sov-operating-agent",
-          "claim_kind": "STATUS",
-          "artifact_standing": "WITNESSED",
-          "standing_source": "NONE",
-          "detail": "a standing asserted with nothing in the value behind it",
-          "reference": null
-        }
-      ]
-    },
-    {
-      "id": "defeating-standing-token-absent-negated",
-      "proves": "The T3 trap fires. NOT_WITNESSED contains the token WITNESSED and asserts the opposite, so typing that value as WITNESSED from a token is refused.",
-      "expect": "STANDING_TOKEN_ABSENT",
-      "status_lines": [
-        "record_service_status: BUILT_SELF_TESTED_NOT_WITNESSED"
-      ],
-      "crosswalk": [
-        {
-          "field": "record_service_status",
-          "value": "BUILT_SELF_TESTED_NOT_WITNESSED",
-          "subject": "record-service",
-          "claim_kind": "STATUS",
-          "artifact_standing": "WITNESSED",
-          "standing_source": "TOKEN",
-          "detail": "a standing the value denies rather than asserts",
-          "reference": null
-        }
-      ]
-    },
-    {
-      "id": "defeating-leading-token-untyped",
-      "proves": "A value beginning with a ladder word must be typed from that token. Declaring otherwise there would let an author call a mechanical claim something unverifiable and escape the token check.",
-      "expect": "LEADING_TOKEN_UNTYPED",
-      "status_lines": [
-        "another_thing_status: BUILT_AND_SELF_TESTED"
-      ],
-      "crosswalk": [
-        {
-          "field": "another_thing_status",
-          "value": "BUILT_AND_SELF_TESTED",
-          "subject": "another-thing",
-          "claim_kind": "STATUS",
+          "field": "specification_status",
+          "value": "OWNER_ACCEPTED_A2_PHASE_I_LOGICAL_SPEC",
+          "subject": "specification",
+          "claim_kind": "OWNER_ACCEPTANCE",
           "artifact_standing": null,
-          "standing_source": "NONE",
-          "detail": "a token-backed standing left undeclared",
-          "reference": null
+          "detail": "an entry naming a packet its value does not carry",
+          "reference": "A9"
         }
       ]
     }

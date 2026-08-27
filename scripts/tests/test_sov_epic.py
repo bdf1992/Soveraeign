@@ -272,13 +272,28 @@ class ProjectionTests(unittest.TestCase):
         self.assertEqual(document["source"]["root_issue"], projection.ROOT_ISSUE)
         result = survey.survey(REPO_ROOT, document, projection.villages(REPO_ROOT))
         self.assertEqual(
-            set(result["counts"]), {"issues", "open", "ready", "held", "unrouted", "stories"}
+            set(result["counts"]),
+            {
+                # dispatch buckets, which partition the workable issues
+                "ready",
+                "held",
+                "unrouted",
+                "owner_held",
+                # the two readings, which deliberately overlap those buckets
+                "dependency_held",
+                "no_domain_owner",
+                "issues",
+                "open",
+                "stories",
+            },
         )
         for entry in result["ready"]:
             self.assertEqual(entry["blocked_by"], [])
             self.assertIsNotNone(entry["domain"])
+            self.assertEqual(entry["readiness"], walk.REACHABLE)
         for entry in result["unrouted"]:
             self.assertIsNone(entry["domain"])
+            self.assertEqual(entry["routing"], walk.UNROUTED)
 
     def test_every_route_names_a_known_domain_and_evidence(self):
         known = json.loads((REPO_ROOT / ".claude" / "epic" / "villages.json").read_text("utf-8"))

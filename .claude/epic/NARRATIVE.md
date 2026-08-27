@@ -246,17 +246,18 @@ every consequential boundary (Security and Gates, `#13`), knows what exists
 and which version (Registry, `#14`), and hands machines short-lived,
 attenuated tokens (Capability Broker, `#15`).
 
-**Today:** contracted in places, built nowhere, and still unrouted. The
-`trust-and-control` village has zero harness domains. Identity (`#11`) and
-Registry (`#14`) are chartered services with code; every one of Identity's seven
-declared operations and twelve of Registry's thirteen are `PROPOSED`. Authority
-(`#12`) has a grant schema and a standing-grant registry and no service, and nine
-built Console operations declare an authority and check none. Security and Gates
-(`#13`) is enforced at each caller rather than owned anywhere, which is what
-those nine operations look like in practice. The Capability Broker (`#15`) has
-no artifact. This is still the widest gap between front and back: every counter's
-"Leans on" line passes through here, and no counter can know who is standing at
-it.
+**Today:** contracted in places, built nowhere, and half-undomained. Identity
+(`#11`) and Registry (`#14`) are chartered services with code and now route to
+the `trust` domain on the artifacts under `services/identity/` and
+`services/registry/`; every one of Identity's seven declared operations and
+twelve of Registry's thirteen are `PROPOSED`. Authority (`#12`) has a grant
+schema and a standing-grant registry and no service, and nine built Console
+operations declare an authority and check none. Security and Gates (`#13`) is
+enforced at each caller rather than owned anywhere, which is what those nine
+operations look like in practice. The Capability Broker (`#15`) has no
+artifact. Those three stay `unrouted`. This is still the widest gap between
+front and back: every counter's "Leans on" line passes through here, and no
+counter can know who is standing at it.
 
 ### The Inspectorate: `#9`, `#23`, `#26`, `#32`, `#49`, `#57`
 
@@ -329,8 +330,8 @@ Office. Not Phase I.
 Read front to back, the queue still has one shape, and the sentence for it has
 changed once. Every counter leans on The Permits Office, and The Permits Office
 leans on The Record. The technical tree says this today as "52 issues, 41 open,
-2 ready, 11 held, 21 unrouted" (`python scripts/sov_epic.py status`,
-2026-08-26).
+3 ready, 12 held, 19 unrouted" (`python scripts/sov_epic.py status`), which is
+the reading after the walk stopped folding `unrouted` into `held`.
 
 What changed is which floor is missing. The ledger now largely exists: the
 kernel's list of legal moves is compiled and parity-checked, the Record Service
@@ -357,10 +358,13 @@ None of these are decided here.
    `decisions/0033-close-the-founding-docket.md`). It is defeated by a story
    that dispatches work, or by an Owner reading that needs a new role value in
    `CLASSIFICATION.md`.
-4. **The Permits Office routing.** `trust-and-control` has no domain. Routing
-   it is a Control-tier ruling, defeated by a domain skill that cannot state
-   what it owns; until someone takes it, every front-office story stays told,
-   not walkable.
+4. **The rest of the Permits Office.** Identity and Registry now route to the
+   `trust` domain on the artifacts under `services/identity/` and
+   `services/registry/`. Authority (`#12`), Security and Gates (`#13`), and the
+   Capability Broker (`#15`) have no such artifact, so they stay `unrouted`.
+   That is not a decision queued here: writing the charter, contract, or tests
+   that would evidence a domain is ordinary work at this tier, and this item is
+   listed only because the office it describes is half-covered.
 
 ## How to add a story
 

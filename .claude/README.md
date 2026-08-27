@@ -95,6 +95,7 @@ skill + workflow, riding the same roles.
 | `conformance` | Oracle, scenarios, fresh-witness qualification | a participant binding |
 | `asset` | Asset Service lifecycle (`services/asset/`) | an independent witness, and the `core.py` split |
 | `proofing` | Proofing Service charter and contracts only | its contract and defeating fixtures |
+| `trust` | Identity and Registry Services (`services/identity/`, `services/registry/`) | an independent witness of the identity components and the registry resolve slice |
 | `console` | Console Service charter, contracts, and seed fixtures only (`services/console/`) | its contract and defeating fixtures |
 | `projection` | Asset Projection Service charter, parity ledger, and seed fixtures (`services/projection/`) | executable fixtures, then the asset `core.py` split |
 | `byom` | Model bindings, adapters, portability (PROD-I-9) | an independent witness of the adapter |
@@ -104,13 +105,39 @@ Nothing in this table waits on Bdo. Each entry names a missing precondition a
 tier can produce, which is what `decisions/0033-close-the-founding-docket.md`
 Ruling 1 asks a column like this to say.
 
-These nine domains do not cover the epic-of-epics issue tree. Twenty-two open
-bits and stubs are claimed by no domain skill, and the whole `trust-and-control`
-village - identity, authority, gates, registry, and the capability broker - has
-no domain at all. `epic/villages.json` leaves them deliberately unrouted rather
-than force-fitting them; `python scripts/sov_epic.py unrouted` lists them, and
-the walk reports each as unrouted work needing a domain, not as a question for
-Bdo.
+These ten domains do not cover the whole epic-of-epics issue tree. Twenty open
+bits and stubs are claimed by no domain skill. `epic/villages.json` leaves them
+unrouted rather than force-fitting them; `python scripts/sov_epic.py unrouted`
+lists them, and the walk reports each as unrouted work needing a domain, not as
+a question for Bdo. Writing the artifact that would route one is ordinary
+reversible work at this tier (`AGENTS.md`, Closure ownership).
+
+`trust` is the first domain added under that rule rather than by opinion.
+`services/identity/` and `services/registry/` already carry charters, service
+manifests, implementations, and tests - `scripts/verify.py` runs the identity
+cases as `Identity component tests` - so issues #11 and #14 route there on that
+evidence and are now visible as `HELD` by #8 rather than hidden behind a missing
+domain. The rest of `trust-and-control` has no such artifact: authority (#12),
+gates (#13), and the capability broker (#15) stay unrouted. So does #39, whose
+`infrastructure/` and `scripts/deployment.py` exist but which no domain skill
+claims. It and #7 are the only two unrouted issues with every `requires` edge
+satisfied, so they are the cheapest to route once something owns their artifacts.
+
+The walk keeps three states apart, because merging any two of them sends ordinary
+work to Bdo:
+
+| State | Means | Who moves it |
+| --- | --- | --- |
+| `HELD` | an unsatisfied `requires` edge | whichever tier can build the prerequisite |
+| `UNROUTED` | no repository artifact evidences a domain owner | whichever tier can write the charter, contract, or tests |
+| `OWNER_HELD` | an open `unblock` ticket asking the owner for a judgement | Bdo, and only here |
+
+Routing and readiness are independent readings, so an issue can be `UNROUTED` and
+`HELD` at once and both are reported. `epic/README.md` carries the detail.
+`python scripts/sov_epic.py owner-held` lists the tree's own owner-held tickets
+and only those: `STATUS.yaml` `owner_holds` and the judgement sections under
+`decisions/` are separate records, and an empty list there says nothing about
+them.
 
 ### Files
 
@@ -141,7 +168,10 @@ Bdo.
   skill matching the domain their prompt names.
 - `workflows/sov-<domain>.js` — domain process (Scope -> Build -> Witness):
   Scope runs sov-orchestrator, Build runs sov-worker, Witness runs
-  sov-witness.
+  sov-witness. Every one of the ten uses `judgement_items` for owner-held
+  boundaries only; `sov-epic.js` adds `held_by` and `unrouted_work` beside it so
+  a dependency or a missing domain cannot be filed upward by having nowhere else
+  to go.
 - `workflows/sov-loop.js` — one concern from selected to landed: Select
   (sov-controller names the concern and checks it against the standing grant's
   scope) -> Plan (sov-orchestrator) -> Build (sov-worker) -> Witness (an

@@ -20,12 +20,18 @@ def _horizon_rank(issue: Issue) -> int:
 
 
 def survey(root: Path, document: dict, routing: dict) -> dict:
-    """Reconcile the projection and select the reachable work."""
+    """Reconcile the projection and select the reachable work.
+
+    Open workable issues land in exactly one of four buckets - ``ready``,
+    ``held``, ``unrouted``, ``owner_held`` - and every entry also carries the two
+    independent readings ``routing`` and ``readiness`` (``walk.reading``). Only
+    ``owner_held`` waits on Bdo.
+    """
     schema = walk.load_issue_schema(root)
     label_projection = walk.load_label_projection(root)
     by_number = projection.issues(document)
     root_issue = document["source"]["root_issue"]
-    blockers = walk.readiness(by_number)
+    unmet = walk.readiness(by_number)
 
     contract, labels = [], []
     for number, issue in sorted(by_number.items()):
@@ -36,12 +42,13 @@ def survey(root: Path, document: dict, routing: dict) -> dict:
         for defect in walk.label_defects(issue, label_projection):
             labels.append(f"#{number}: {defect}")
 
-    ready, held, unrouted = [], [], []
+    ready, held, unrouted, owner_held = [], [], [], []
     for number, issue in sorted(by_number.items()):
         block = issue.metadata or {}
         if issue.state != "OPEN" or block.get("kind") not in WORKABLE_KINDS:
             continue
         domain = walk.route(issue, routing)
+        blockers = unmet.get(number, [])
         entry = {
             "issue": number,
             "title": issue.title,
@@ -50,11 +57,18 @@ def survey(root: Path, document: dict, routing: dict) -> dict:
             "horizon": block.get("horizon"),
             "standing": block.get("standing"),
             "domain": domain,
-            "blocked_by": blockers.get(number, []),
+            "blocked_by": blockers,
         }
-        if domain is None:
+        entry.update(walk.reading(domain, blockers))
+        # The buckets are a dispatch projection over the two readings above, in
+        # the order that decides who moves the issue next. Every entry still
+        # carries both readings, so an unrouted issue that is also held reports
+        # readiness HELD rather than hiding it behind the missing domain.
+        if walk.owner_held(issue):
+            owner_held.append(entry)
+        elif domain is None:
             unrouted.append(entry)
-        elif entry["blocked_by"]:
+        elif blockers:
             held.append(entry)
         else:
             ready.append(entry)
@@ -79,15 +93,24 @@ def survey(root: Path, document: dict, routing: dict) -> dict:
         )
 
     ready.sort(key=lambda e: (_horizon_rank(by_number[e["issue"]]), e["issue"]))
+    workable = ready + held + unrouted + owner_held
     return {
         "root_issue": root_issue,
         "synced_at": document["synced_at"],
+        # ``ready``/``held``/``unrouted``/``owner_held`` count the dispatch buckets and
+        # partition the workable issues. ``dependency_held`` and ``no_domain_owner``
+        # count the readings instead, and deliberately overlap the buckets: an issue in
+        # the unrouted bucket can still be dependency-held, and the bucket count alone
+        # would understate the dependency work by exactly those issues.
         "counts": {
             "issues": len(by_number),
             "open": sum(1 for i in by_number.values() if i.state == "OPEN"),
             "ready": len(ready),
             "held": len(held),
             "unrouted": len(unrouted),
+            "owner_held": len(owner_held),
+            "dependency_held": sum(1 for e in workable if e["readiness"] == walk.HELD),
+            "no_domain_owner": sum(1 for e in workable if e["routing"] == walk.UNROUTED),
             "stories": len(stories),
         },
         "contract_defects": contract,
@@ -96,5 +119,6 @@ def survey(root: Path, document: dict, routing: dict) -> dict:
         "ready": ready,
         "held": held,
         "unrouted": unrouted,
+        "owner_held": owner_held,
         "stories": stories,
     }

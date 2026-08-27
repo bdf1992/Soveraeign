@@ -8,6 +8,11 @@ the selfcheck reported success having exercised nothing at all.
 
 So: `check` runs this first, every time, and this refuses rather than passing when
 it derived nothing.
+
+The structural half moved to `sovsnapshot/shape.py` at the 300-line budget and is
+imported by name here, because `run` consulting it is the thing that matters and a
+caller replacing it is how that gets tested. Everything in this module grades a
+page; everything there grades the claim table itself.
 """
 
 from __future__ import annotations
@@ -16,6 +21,7 @@ from typing import NamedTuple
 
 from sovsnapshot import claims
 from sovsnapshot import grading
+from sovsnapshot.shape import derivations_read_the_commit  # noqa: F401  re-exported
 
 #: What a synthetic page states for a claim nothing could derive. Any integer is
 #: indistinguishable from a real count by looking at the page - an empty `reports/`
@@ -143,6 +149,9 @@ def run() -> int:
     mismatch = slots_match_claims()
     if mismatch:
         failures.append(f"the page cannot state every claim: {mismatch}")
+    referent = derivations_read_the_commit()
+    if referent:
+        failures.append(f"a claim does not read the commit at HEAD: {referent}")
     for claim in claims.CLAIMS:
         if claim.tolerance > claims.MAX_TOLERANCE:
             failures.append(f"{claim.name}: tolerance {claim.tolerance} exceeds the "

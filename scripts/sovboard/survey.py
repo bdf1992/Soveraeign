@@ -61,7 +61,7 @@ def _labelled_issues(export: list[dict[str, Any]]) -> list[dict[str, Any]]:
     part of the coordination surface that could drift with nothing watching. A closed
     ticket keeps its labels, keeps appearing under a standing filter, and keeps being
     read; #6, #7, and #51 each sat mislabelled and needed a hand-built action, because
-    the survey that exists to catch exactly that could not see them (decisions/0066).
+    the survey that exists to catch exactly that could not see them (decisions/0088).
     """
     return sorted(export, key=lambda item: item["number"])
 

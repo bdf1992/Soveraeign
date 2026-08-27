@@ -1,9 +1,9 @@
 {
   "packet_schema": "soveraeign-acceptance-packet/v1",
   "packet_id": "A9",
-  "claim": "The cold-start benchmark is now a surface rather than a script: 175 questions in four tiers with conjunctive gates, a result contract with 38 cases proving twelve refusals, a JSON manifest a fresh model can read without opening the source, an answer-stripped paper, run records that make yesterday and today comparable, a daily agent workflow and a disabled schedule. Seven independent witness passes each defeated it, all seventy-four findings one class - a check reading a declaration where it could compute or look up the value - and the seventh named the generator: the record supplied its own referents. What needs your judgement is two things: the AI-native assessment of this surface reads OPEN because earn_it is yours, and whether seven adversarial passes on one bounded concern was a resource commitment you would have authorised.",
+  "claim": "SPEC.md now says what an asset is, and the reference participant fails it. An asset is a governed identity holding no bytes; its constituents are parts with their own content states; a part is not a file; a path is placement on a version entry, not identity; a source is an observation, not state; and how bytes are stored sits below the contract. What needs your judgement is whether these six governed objects are the asset you mean. The corrections that produced them are yours from two passes over 2026-08-26 and 2026-08-27, including the reversal that moved logical_path off the part version once it became clear a rename was minting a new content state for content that had not changed.",
   "subject": {
-    "artifact": "contracts/coldstart-run.schema.json",
+    "artifact": "SPEC.md",
     "from_standing": "OPEN",
     "to_standing": "BUILT"
   },
@@ -18,90 +18,48 @@
   "visible_result": {
     "demo": [
       "python",
-      "scripts/sov_coldstart.py",
-      "selfcheck"
+      "services/asset/tests/test_asset_identity.py"
     ],
-    "shows": "the run-record contract graded against its own defeating cases, and the corpus checked for questions that cannot be scored",
-    "expect": "PASS: 34 run-record case(s), 11 refusal(s) all proven, corpus structurally sound. Then `python scripts/sov_coldstart.py describe` prints the surface manifest as JSON, and `python scripts/sov_coldstart.py --record run` takes a full reading in about two minutes. Expect the verdict UNPROVEN and a handful of DRIFT lines: 18 of the 49 tier 0 questions are prose only you can grade, so the tier 0 gate cannot be fully run without you, and the counts a repository moves daily drift by design. The MATCH and DRIFT totals are deliberately not stated here - they move every day, and a packet that pins them would read as a failure the first time you ran it. `python scripts/sov_coldstart.py history` shows the recorded runs and refuses to diff two runs taken under different coverage."
+    "shows": "the reference participant passing every test it owns while failing the definition written for it",
+    "expect": "17 tests, OK, in about 1.2s. That green is the claim. A probe of the twenty invariants the new objects state returns six HOLDS, six CONTRADICTED and eight ABSENT. The verdicts separate two facts: CONTRADICTED means the code has the concept and does the opposite, ABSENT means the concept does not exist so there is nothing to contradict. Trap T2 in the flesh - green means unchanged, not correct."
   },
   "evidence": [
     {
-      "address": "contracts/coldstart-run.schema.json",
+      "address": "SPEC.md",
       "digest": null,
-      "says": "the result shape: which corpus at which digest, which commit, which participant, what each tier scored, and standing pinned to BUILT by const"
+      "says": "six governed Information objects - Asset, AssetType, AssetVersion, AssetPart, AssetPartVersion, AssetVersionDiff - plus SourceObservation on the source plane, and an Operation granularity subsection under Interface parity. Before this branch the string 'Asset' did not occur anywhere in the file."
     },
     {
-      "address": "conformance/fixtures/coldstart/run-cases.json",
+      "address": "decisions/0077-asset-objects-in-the-spec.md",
       "digest": null,
-      "says": "34 cases proving all eleven refusals fire. D-001 is the obvious attack, an honest tier table with ADMISSIBLE written at the bottom; D-012, D-014, D-022 and D-029 are four the witnesses found - a table that supplies its own gate, a table with the tier 0 row deleted, a record whose owner verdict file never existed, and one whose verdict file names a grader in no principal registry"
+      "says": "four rulings, the twenty-invariant grade, four defeating cases, six defaults taken and six residuals. Written as the final state: no superseded wording is preserved underneath."
     },
     {
-      "address": "scripts/sovcoldstart/report.py",
+      "address": "CLASSIFICATION.md",
       "digest": null,
-      "says": "grade_row computes one tier's gate and result from its counts, tally builds the table, derive turns the table into a verdict; the printed card and the record grader call the same three, so there is one gate table and no second opinion about it"
+      "says": "five vocabulary terms and a note stating that an asset part is not a file and that payload storage form is not asset vocabulary. It no longer defines a part as a file or a part version by chunks."
     },
     {
-      "address": "scripts/sovcoldstart/records.py",
+      "address": "services/asset/src/soveraeign_asset_service/identity.py",
       "digest": null,
-      "says": "defects recomputes the verdict from the record's own numbers and refuses a record that states a different one; write refuses to write a defective record at all"
-    },
-    {
-      "address": "scripts/tests/test_coldstart_records.py",
-      "digest": null,
-      "says": "104 cases, including all six witnesses' attacks kept verbatim; scripts/tests/test_pinned_glob.py adds ten more that grade the glob matcher against git rather than against its own intent"
-    },
-    {
-      "address": "conformance/assessments/cold-start-benchmark.json",
-      "digest": null,
-      "says": "the AI-native reading: reachability PARTIAL, commitment PARTIAL, provenance PARTIAL, retraction NONE, one qualification PASS and eight UNPROVEN, earn_it OPEN"
-    },
-    {
-      "address": ".claude/workflows/sov-coldstart.js",
-      "digest": null,
-      "says": "the daily agent path: fetch the paper once, hand each section to a fresh agent told not to read any file, grade the merged answers, record both readings"
-    },
-    {
-      "address": "decisions/0078-cold-start-benchmark-as-a-governed-surface.md",
-      "digest": null,
-      "says": "three rulings, five scoring rules that were each an exploit first, the defaults taken, and four things this does not fix"
-    },
-    {
-      "address": "scripts/tests/test_fixture_coverage.py",
-      "digest": null,
-      "says": "ten mutations, each disabling one check and asserting the declared corpus notices; it found on its first run that no case reached the answers-shape check, which selfcheck had been reporting as proven"
-    },
-    {
-      "address": "python scripts/sov_coldstart.py --fast --record run",
-      "digest": null,
-      "says": "REFUSED to record this run: CORPUS_NOT_AT_REVISION - the corpus is not reachable from the commit the record names, so the run cannot be recorded until this concern lands"
+      "says": "'Identity follows the locator rather than the bytes'. That is the undeclared identity-equals-address equivalence CONTRACT.md C10 forbids, and it is why a renamed file mints a second asset today."
     }
   ],
-  "why_it_matters": "Every launched agent in this repository is oriented by CLAUDE.md, AGENTS.md and the session hooks before it reads a single file, and those pages go stale silently. sov_snapshot.py checks whether the page matches the repository; it cannot check what a fresh participant actually believes after reading it, which is the thing that decides whether an agent does the right thing in its first ten minutes. This measures that, records it, and can be pointed at a fresh agent daily. It also earned its keep during construction: adversarial readers asked to beat it found three places where a rule this repository states in prose had no mechanism behind it, which is packet A10.",
+  "why_it_matters": "The Asset Service is the one service with a real implementation, and the thing it is named after had no logical definition anywhere. Conformance had nothing to grade a participant against, so the participant could pass every test it owned while doing something nobody had written down. The gap also hid live defects: a rename produces two assets, a content state names exactly one origin, and the asset record stores a filesystem path. Writing the objects is what turns 'the asset service works' into a claim that can be false. Landing the definition before the fixtures is deliberate - the field names had to stay free through two correction passes, and they did.",
   "what_could_defeat_it": [
-    "A participant scoring ADMISSIBLE on answers it read out of corpus.json, and a change landing on that basis. The paper verb removes the reason to read the key; it cannot stop it, and that is recorded as not fixed rather than mitigated.",
-    "A daily run whose drift is dominated by counts that move for reasons no reader cares about. The corpus would then be measuring repository churn rather than orientation accuracy and tier 2 would need re-cutting.",
-    "A participant scoring well and then making an error the benchmark claims to cover. That would mean it measures recall rather than competence.",
-    "Evidence that the corpus itself encodes a rule wrongly. Tier 0 questions assert doctrine, so a wrong tier 0 expectation teaches every future participant the wrong rule with the full weight of a failed gate behind it."
+    "An asset type for which a plain rename genuinely should mint a new part rather than move the existing one. Ruling 3 would then have to be type-dependent rather than uniform.",
+    "A real need for File as a governed identity - a file appearing in several assets, holding its own version history, or carrying permissions independent of its asset. Ruling 1 keeps File a representation only until one of those is true.",
+    "A partial-result semantic a plan-level declaration cannot express, which would mean Ruling 4 needs a new terminal outcome rather than an OperationPlan field.",
+    "Measured evidence that separating part from part version costs more than it saves at the scale this node holds. ENGINEERING.md forbids generalized infrastructure for imagined scale, and the constituent layer is the part most exposed to that rule."
   ],
   "residuals": [
-    "Seven independent witness passes, seven defeats, seventy-four findings: 1, 7, 8, 16, 10, 11, 16. Four of the seven found a defect the previous pass's repair introduced. The seventh named the generator - the record supplied its own referents, so each repair bound one more by digest and the hole moved one field over - and decisions/0078 Rulings 4 and 5 are the shape change that follows from it. I stopped the passes there rather than taking an eighth, which is an ordinary resource judgement I made and you may disagree with.",
-    "The largest thing still open: selfcheck is the participant grading a fixture it ships with. AGENTS.md puts cross-participant cases in conformance/ with an oracle that does not import participant code; here the fixture is data under conformance/ and the grader is the thing graded. test_fixture_coverage.py narrows that and does not close it, and closing it means a second independent implementation of the record grader.",
-    "The daily workflow had never run. Three of its prompts told an agent to run a command with a sentence period on the end, which exits 2, so the whole path returned 'the paper could not be fetched'. reports/coldstart/ holds INTEGRITY records and no COMPETENCE record, because that path could not execute. Fixed, and still unexercised end to end: running it spends agent budget, which is your call rather than mine.",
-    "A peer session found four diagrams pinning a STATUS.yaml digest matching no committed version of the file, from a builder run in the shared tree. A run record had the same hole: two records under reports/coldstart/ name commit cc95d85 with different corpus digests. CORPUS_NOT_AT_REVISION now compares the digest against the corpus blob at the named commit, so no run can be recorded until this work is committed. That is the correct behaviour and it means the six existing records are not reproducible by anyone but this disk.",
-    "Five of the six records under reports/coldstart/ fail RUN_ID_NOT_DERIVED when read by today's checker, because run_identity gained a field after they were written. The identity scheme is not versioned, so changing it silently invalidates every record ever written. I have not repaired this: versioning the scheme changes the schema and re-derives all 38 fixture ids, which is real scope at the end of a presented concern. I left the six records in place rather than deleting them, because they are the evidence for the residual above.",
-    "The corpus ships its own answers inside the repository under test. Closing that means holding the key outside the tree, which is a change to where the corpus lives and is a separate concern.",
-    "57 of the 175 questions are prose that a string comparison cannot judge. They read UNGRADED until you write a verdict file, so an unattended daily run will normally record UNPROVEN. That is the honest state, not a fault, but it means the cadence measures the deterministic 118 and parks the rest.",
-    "Time to useful and intervention count are not measured, so cold_start_competence stays UNPROVEN in the assessment rather than moving to PASS.",
-    "contracts/ai-native-qualifications.json still evidences cold_start_competence with FOUND-009, which is about Sov's bounded agency and measures neither. Repointing it crosses into the contract decision 0070 owns and was left alone.",
-    "The selfcheck reaches verify.py through run_tooling_tests.py rather than as its own named check, because scripts/sovverify/checks.py is exactly at the 300-line module ceiling and four other live sessions hold that file. Splitting the check table is the verification domain's concern.",
-    "Two corpus expectations, E02 (skills on disk) and E04 (schedule declarations), drifted because this change added one of each. They were deliberately not rebased: rebasing to uncommitted state was a mistake made earlier in this concern and caught, so they stay drifted until the work lands.",
-    "The witness could not write its observation. The sov-witness role under .claude/agents/ carries no Write tool and it declined to use Bash to get around that, which is correct. So this concern has an independent reading and no independent record of one, and the builder transcribing that prose into a file is exactly the seam authority.py names. Whether a witness should hold Write is a harness question nobody has been asked.",
-    "python scripts/verify.py exits 1 on six checks, all red before this work. The builder's claim that none involves a path here was too flat: documentation reader and diagram provenance would be red anyway and this concern also contributes, because four of its .md files are in the published corpus and absent from the built page and its STATUS.yaml edit moves a digest diagrams/authority-typing.md declares.",
-    "The gate covering this contract grades bytes that are not in the repository. run_tooling_tests.py discovers test modules by globbing the filesystem, and every file in this concern is untracked, so a checkout of HEAD would pass with zero coverage of the run-record contract and say nothing about it. That resolves the moment the work lands, and until then the green is about this working tree only.",
-    "A third failing check this concern contributes to, which an earlier residual missed: repository tooling tests fails partly through test_sov_docs, which asserts the same sov_docs.cmd_check the documentation-reader failure already conceded. And all four stale diagrams are stale for the STATUS.yaml edit, not one.",
-    "The fifth pass found that SELF_GRADED checked two files agreed rather than that a second party graded, so a participant that wrote both files and named itself the grader passed. It is now resolved against contracts/principals.json under the ruling decisions/0070 already made. That is a floor: the registry grants nothing, and anyone who can write it can add an entry. decisions/0075, in packet A10, is what keeps that file outside the standing grant.",
-    "No owner verdict file exists, and the fixture that stood in for one is now a defeating case. Until you grade the 57 prose questions, every competence run records UNPROVEN by design, and 18 of those 57 are tier 0."
+    "No independent witness. This session wrote the objects, wrote the probe and ran it, so this is BUILT and self-tested; witnessed_by is null and the standing is capped below WITNESSED.",
+    "No conformance fixture exists for any of the twenty invariants. SPEC.md's own conformance boundary requires a positive and a defeating fixture per normative predicate, and those are the next bounded concern.",
+    "No service operation is declared for any object, so none is reachable through the CLI, the Gateway or MCP. The AI-native reachability score is unmoved.",
+    "OperationPlan carries no field declaring what a partial result means; repairing that crosses into the contracts boundary.",
+    "Six contradictions are unrepaired. identity.py is the first code change any of them implies.",
+    "The verification budget is marginal on the machine this was measured on: main alone runs 13.6-13.8s against a 15s ceiling with ten sessions sharing the box, and this branch measured 12.7-16.6s with identical check CPU. The wall-clock difference is contention rather than compute, and CI on a dedicated runner is the arbiter, not this measurement."
   ],
-  "on_accept": "The benchmark stands as the way cold-start orientation is measured here, the eleven refusals become the contract a run record is held to, and the daily schedule is available to enable whenever you want it firing. Judging earn_it on conformance/assessments/cold-start-benchmark.json is a separate act you can take at any time; until you do, the assessment reads OPEN by design.",
-  "on_reject": "Say which of the three rulings in decisions/0078 is wrong. Ruling 3, that the verdict is derived and never written, is the one everything else hangs on: without it a run record is a participant's opinion of itself. Reverting is deleting scripts/sovcoldstart/, scripts/sov_coldstart.py, two contracts, one fixture corpus, three harness files, two test modules and reports/coldstart/; nothing existing was weakened and no check was loosened."
+  "on_accept": "The six objects stand as the declared shape of an asset at PROPOSED, decisions/0077 moves from proposed to ruled, and the next bounded concern is the conformance fixtures - after which identity.py is repaired against Ruling 3 and the five remaining contradictions are worked in place.",
+  "on_reject": "Revert the single commit on docs/asset-object-semantics. That removes the objects, the vocabulary terms and the decision record together. Nothing else has to move, because no code changed, no operation became reachable and no standing entry was touched."
 }

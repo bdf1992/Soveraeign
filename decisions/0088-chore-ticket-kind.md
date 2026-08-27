@@ -1,4 +1,4 @@
-# 0066 · Chore as a ticket kind, and the projection the walk restated
+# 0088 · Chore as a ticket kind, and the projection the walk restated
 
 Status: `RULED AT CONTROL RESOLUTION · OWNER ACCEPTANCE OVER EVIDENCE`
 

@@ -211,7 +211,7 @@ become authoritative by convenience.
 **Today:** the newest and least settled line. Both issues are `unrouted`. The
 experimental QA sidecar (`#51`) is closed, and its cleanup (`#52`) was invisible
 to every queue until 2026-08-26 because no ticket kind fitted a removal; `chore`
-now does (`decisions/0066`), and it waits on `#47`. The RED engagement (`#57`) is
+now does (`decisions/0088`), and it waits on `#47`. The RED engagement (`#57`) is
 still open and its target pull request has since merged, so a confirmed finding
 would now demote landed work. Nothing to walk yet.
 
@@ -319,7 +319,7 @@ Office. Not Phase I.
 - `#1` to `#5`: the epic and its four villages. Structure, not a counter.
 - `#52`: housekeeping, and the ticket that named a gap in the vocabulary. It
   carried no metadata block from the day it was filed until 2026-08-26, because
-  no kind fitted a removal; `chore` was added for it (`decisions/0066`).
+  no kind fitted a removal; `chore` was added for it (`decisions/0088`).
 - `#53` to `#56`: closed. Noise in the tree, nothing in the story. `#51` was
   filed here as noise and is not: it proved a relation shape for the Pattern
   Room and now sits there.

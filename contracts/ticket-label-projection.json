@@ -5,7 +5,7 @@
     ".github/labels.yml",
     "contracts/issue-metadata.schema.json"
   ],
-  "note": "Declared derivation of the visible GitHub label set from soveraeign-ticket/v1 metadata. Labels are a projection of the metadata and never a second authority; a label that cannot be derived here is drift, and a metadata value with no declared label is an unmapped gap rather than a silently omitted one. One standing value projects to at most one label: the retired witness: axis said the same thing twice (decisions/0044). Its prefix stays governed below so a surviving witness: label reads as drift instead of going unseen. Every value the issue schema admits on a projected axis is mapped here; scripts/tests/test_sov_epic.py checks that direction, because a value the schema admits and this file omits makes a correctly labelled ticket report as contradicting itself (decisions/0066).",
+  "note": "Declared derivation of the visible GitHub label set from soveraeign-ticket/v1 metadata. Labels are a projection of the metadata and never a second authority; a label that cannot be derived here is drift, and a metadata value with no declared label is an unmapped gap rather than a silently omitted one. One standing value projects to at most one label: the retired witness: axis said the same thing twice (decisions/0044). Its prefix stays governed below so a surviving witness: label reads as drift instead of going unseen. Every value the issue schema admits on a projected axis is mapped here; scripts/tests/test_sov_epic.py checks that direction, because a value the schema admits and this file omits makes a correctly labelled ticket report as contradicting itself (decisions/0088).",
   "kind_to_type": {
     "epic-of-epics": "type: epic",
     "village": "type: village",

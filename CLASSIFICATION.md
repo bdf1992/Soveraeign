@@ -127,12 +127,13 @@ remains the standing term.
 | **Referent** | The real thing a representation addresses |
 | **Asset** | A governed enterprise identity with a version history |
 | **Payload** | Exact bytes under custody |
-| **Chunk** | An addressed unit of payload bytes |
 | **Source** | The addressed origin read or transformed |
 | **Asset version** | An immutable state of an asset |
-| **Asset type** | A declared schema an asset is held to |
-| **Asset part** | The identity of one file inside an asset, held apart from its path |
-| **Asset part version** | An immutable state of one part, addressed as chunks |
+| **Asset type** | A declared schema an asset is held to, including its constituent roles |
+| **Asset part** | A constituent identity within an asset, held apart from anything that expresses it |
+| **Asset part version** | An immutable content state of one constituent |
+| **Placement** | Where a constituent sits in one asset version |
+| **Source observation** | An attributed record that a source carried a content state |
 | **Reading** | An interpretation that leaves its source unchanged |
 | **View** | A presentation or projection of authoritative records |
 | **Recording** | A deposited result of a declared derivation |
@@ -146,6 +147,12 @@ remains the standing term.
 
 An asset is not its payload. Distinct assets may intentionally reference the
 same bytes while preserving distinct identity, use, permissions, and history.
+
+An asset part is not a file. A filename, a logical path, a locator and a source
+address are placement or observation about a part version; none of them is the
+part's identity. How a payload is stored - one blob, a manifest of chunks, or a
+later content-addressed form - sits below the asset contract and is not asset
+vocabulary. `SPEC.md` owns the objects; this table owns only the terms.
 
 An **asset collection** is not a **projection collection**. The first is curated:
 somebody decided each member belongs, and only a counter-record undoes it. The

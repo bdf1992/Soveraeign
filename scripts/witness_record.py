@@ -45,6 +45,8 @@ from sovwitness import Observation  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 GENESIS = "0" * 64
+LEGACY_DIGEST_PROFILE = "soveraeign-record-chain/v1"
+DIGEST_PROFILE = "soveraeign-record-chain/v2"
 # The chain rule as `services/record/CHARTER.md` states it: every entry carries
 # the digest of the entry before it. Restated here so the check recomputes the
 # chain instead of borrowing the participant's own arithmetic.
@@ -72,12 +74,26 @@ def record(store: Path, *args: str, expect: int = 0) -> dict[str, Any]:
 
 def recompute(previous: str, entry: dict[str, Any]) -> str:
     """Rebuild one link of the chain here, from the rule the charter states."""
-    material = [previous] + [
-        json.dumps(entry[field], sort_keys=True, separators=(",", ":"))
-        if field == "payload" else str(entry[field])
-        for field in CHAIN_MATERIAL[1:]
-    ]
-    return hashlib.sha256("|".join(material).encode("utf-8")).hexdigest()
+    profile = entry.get("digest_profile", LEGACY_DIGEST_PROFILE)
+    if profile == LEGACY_DIGEST_PROFILE:
+        material = [previous] + [
+            json.dumps(entry[field], sort_keys=True, separators=(",", ":"))
+            if field == "payload" else str(entry[field])
+            for field in CHAIN_MATERIAL[1:]
+        ]
+        encoded = "|".join(material).encode("utf-8")
+    elif profile == DIGEST_PROFILE:
+        encoded = json.dumps(
+            [profile, previous, entry["kind"], entry["subject"], entry["actor"],
+             entry["payload"]],
+            ensure_ascii=False,
+            allow_nan=False,
+            separators=(",", ":"),
+            sort_keys=True,
+        ).encode("utf-8")
+    else:
+        return "UNKNOWN_DIGEST_PROFILE"
+    return hashlib.sha256(encoded).hexdigest()
 
 
 def verify_chain(entries: list[dict[str, Any]]) -> list[str]:

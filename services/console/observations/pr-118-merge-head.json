@@ -1,0 +1,319 @@
+{
+  "artifact_revision": "521f7bd",
+  "case_id": "WITNESS-PR-118-MERGE-HEAD",
+  "observed": {
+    "artifact": {
+      "branch_head": "521f7bd022a23ee32a0ba3486b5a6be167741ae2",
+      "console_authority_commits": [
+        "da52d30 fix(console): decide which grant admits an operation, and name one fact once",
+        "36f0dc8 docs(console): record what the withdrawal exclusion costs the permits office",
+        "dcf337c fix(console): say only what one writer can be held to about a cited grant",
+        "9fdeea9 fix(console): repair what the adversarial pass confirmed against these claims",
+        "5228e83 fix(console): close what the re-attack defeated, and guard the claims it walked past",
+        "521f7bd fix(console): answer a malformed invocation, and land the observation that found it"
+      ],
+      "local_worktree_branch": "wt/pr118",
+      "merge_base_with_origin_main": "3360a26d7d3c91ea178c40be402606bedfd5a7ba",
+      "remote_ref_at_this_head": "origin/feat/console-authority-enforced-only",
+      "what_521f7bd_changed": {
+        "cli.py": "a _Parser subclass whose error() emits one JSON object at exit 1 and is passed to add_subparsers as parser_class",
+        "generated_artifacts": "capability-map.reference.json, node-interface.reference.json, docs/surface.html and the two bindings/mcp/observations files change only digests and ids; node-interface.reference.json is 161 digest and 133 record_digest lines plus two state digests, with no field added or removed. This cascade is not named in the commit message but is the manifest note bytes propagating, and scripts/verify.py grades those projections against their sources and passes.",
+        "services/console/contracts/service.json": "the note only",
+        "services/console/observations/pr-118-console-authority.json": "the prior observation, added",
+        "services/console/tests/test_cli_walk.py": "the missing-flag case now expects exit 1 and JSON",
+        "services/console/tests/test_declared_refusals.py": "NO_RECORD_BY_ID added, plus a case measuring both tables against the manifest"
+      },
+      "working_tree": "clean at start and at finish; git status --porcelain empty both times"
+    },
+    "claims": {
+      "0_the_subject_claim_underneath": {
+        "claim": "every BUILT console operation checks the authority the office table declares for it, at the exact scope",
+        "method": "one fresh journal per probe, 45 probes. For each of the 15 BUILT operations: call it as Mallory holding nothing; mint exactly the capability contracts/capability-offices.json declares for that operation at the scope the operation acts on; call it again; and on a separate fresh store mint the same capability at a scope that does not cover the subject and call it.",
+        "numbers": {
+          "admitted_on_the_exact_declared_grant": 15,
+          "built_operations": 15,
+          "probes_leaving_anything_on_stderr": 0,
+          "refused_the_same_capability_at_a_wrong_scope": 15,
+          "refused_ungranted_with_NO_LIVE_GRANT": 15
+        },
+        "verdict": "REPRODUCED"
+      },
+      "1_which_grant_admits": {
+        "defeating_cases_driven": {
+          "a_peer_node_revoking_a_local_grant": "REFUSED, NO_LIVE_GRANT, and the local grant still admits afterwards",
+          "a_second_revoke_authority_at_a_scope_that_admits_nothing": "does not satisfy the last-holder rule; still MISSING_PRECONDITION",
+          "only_live_grant_authority": "REFUSED, MISSING_PRECONDITION, exit 2",
+          "only_live_revoke_authority_is_the_target": "REFUSED, MISSING_PRECONDITION, exit 2",
+          "two_live_matches": "with two live open:channel grants over one scope, the receipt cites the second, never the first"
+        },
+        "method": "One 46-entry journal built entirely through the CLI, including two live grants over the same capability and scope, an effective revocation of the newer one, a second revoke:authority and its withdrawal, and one call of every other BUILT transition. Replayed with RecordService. For each COMMITTED receipt the live grant set was recomputed here at the position strictly before that receipt's own event, and the cited grant was compared against the last-in-append-order live grant sharing its node, operator, capability and scope. The operation's expected scope was never assumed; the comparison is against the cited grant's own four fields, so it holds without reading the service's scope table.",
+        "not_covered_by_the_claim": "the two bootstrap genesis receipts on every fresh node carry an empty authority_grant_ids. No grant admitted them, and the claim's wording is satisfied by an empty citation.",
+        "numbers": {
+          "citations_that_are_the_newest_live_matching_grant": 20,
+          "cited_grants_not_live_at_the_position_the_check_ran": 0,
+          "cited_grants_not_live_at_their_own_receipt": 0,
+          "committed_receipts": 23,
+          "empty_citation_receipts": 2,
+          "journal_entries": 46,
+          "positions_where_more_than_one_live_grant_matched": 8,
+          "receipts_carrying_a_citation": 21,
+          "revoke_receipts_citing_their_own_target": 0
+        },
+        "the_one_citation_that_is_not_the_newest": "receipt seq 18, console.revoke. The newest live revoke:authority at that position was the grant being withdrawn, so the receipt cites the next-newest. That is the exclusion rule firing, observed rather than asserted, and it is the only departure from newest-wins in the whole journal.",
+        "verdict": "REPRODUCED, bounded to a single writer"
+      },
+      "2_one_fact_one_refusal_code": {
+        "method": "16 CLI probes across the eight BUILT operations that name a record by id, each against an absent id and against a record the same store carries under node:peer, with a grant minted at the exact scope so authority was not what answered. Journal receipts read back with RecordService and compared key by key. Then 10 more probes across the seven BUILT operations that name no record by id. Manifest read as bytes.",
+        "numbers": {
+          "answers_that_were_not_one_json_object": 0,
+          "no_record_by_id_operations_that_produced_UNKNOWN_RECORD": 0,
+          "operations_declaring_FOREIGN_NODE_RECORD": 3,
+          "operations_declaring_UNKNOWN_RECORD": 8,
+          "operations_that_produced_it_against_an_absent_id": 8,
+          "probes": 26,
+          "probes_leaving_anything_on_stderr": 0,
+          "produced_codes_undeclared_on_their_operation": 0
+        },
+        "the_carve_out": "open-thread and publish-thread answer a peer's record with FOREIGN_NODE_RECORD at exit 2, not UNKNOWN_RECORD at exit 3. post does too once the session it is given is local and only the thread is foreign; my first probe handed post the peer's session as well, and the session read runs first, so it collapsed. All three are the operations that check authority before reading, all three declare both codes, and services/console/KNOWN-GAPS.md records the resulting cross-node existence oracle. So the claim as handed to me - one code, same detail for absent and for another node's - is true of the reads that run before a grant is shown and false of these three, by declared design.",
+        "the_collapse": "archive-thread, close-session, post, read-thread, revoke and withdraw-publication answer a peer's record with the same code, the same exit code and the same REFUSED receipt as an absent one. The receipt detail keys are identical - effect_class, message, reason_code - and only the id the caller itself typed differs.",
+        "two_surfaces": "ConsoleRoutes answers an unknown thread with UnknownRecord.reason_code, the same constant cli.py names; both paths reference the one class attribute rather than spelling the string. THREAD_UNKNOWN occurs seven times in the repository and every one is prose explaining its retirement or a test asserting its absence.",
+        "verdict": "REPRODUCED, with the carve-out the manifest declares and the claim as handed to me does not state"
+      },
+      "3_discovery_refuses_readably": {
+        "method": "461 capability-map inputs through the CLI: three path shapes (absent, a directory, the real map), the declared-stale flag, 3 top-level field drops and 27 wrong-typed substitutions at them, 20 row-field drops and null substitutions, 5 shape and endpoint malformations, 3 non-object top levels, 400 seeded deep mutations of the real map at 1 to 3 edits each, and 3 raw byte inputs (truncated JSON, empty, two NUL bytes).",
+        "numbers": {
+          "answers_that_were_not_one_json_object": 0,
+          "exit_codes_seen": {
+            "0": 168,
+            "2": 293
+          },
+          "inputs": 461,
+          "inputs_leaving_anything_on_stderr": 0,
+          "reason_codes_produced": {
+            "UNREADABLE": 293,
+            "none_answer_succeeded": 168
+          },
+          "undeclared_codes": 0
+        },
+        "the_map_is_not_read_before_the_grant": "an ungranted caller gets a byte-identical NO_LIVE_GRANT answer for a path that does not exist, a path that is a directory, the real map, and the declared-stale flag. Only after read:session scoped to the caller is minted do those four diverge into UNREADABLE, UNREADABLE, a successful answer and MISSING_PRECONDITION. cli.py passes a loader rather than bytes and discovery.discover calls console.authorize before invoking it, which the source shows and the four identical answers demonstrate.",
+        "verdict": "REPRODUCED"
+      },
+      "4_authority_before_the_read": {
+        "method": "eight ungranted CLI probes: console.revoke and console.open-thread, each against a real local subject, an invented one, a peer node's, and a string that is not an identifier at all.",
+        "numbers": {
+          "distinct_answers_per_operation": 1,
+          "identifier_leaks": 0,
+          "probes": 8
+        },
+        "result": "All four answers per operation are identical in exit code (2), outcome, reason_code (NO_LIVE_GRANT) and message text. The message names the capability and nothing else: no channel id, no grant id, no operator name, no domain, no node name appears in any of the eight answers. Source agrees - permits.withdraw calls require() before grant_record(), threads.open_thread calls console.authorize() before console.channel().",
+        "verdict": "REPRODUCED"
+      }
+    },
+    "commands": {
+      "python -m unittest discover -s tests, from services/console": {
+        "exit_code": 0,
+        "result": "OK",
+        "seconds": 6.322,
+        "tests": 186
+      },
+      "python conformance/run.py": {
+        "exit_code": 0,
+        "oracle_independence": "conformance/run.py and conformance/requirements.py import only the standard library and each other; no participant implementation is imported",
+        "result": "SUITE PASS cases=20 coverage_gaps=0; every declared defeating case fails as declared"
+      },
+      "python scripts/lint.py": {
+        "exit_code": 0,
+        "named_debt": "scripts/witness_infrastructure.py, 301 lines. Pre-existing and untouched by this branch. CLAUDE.md's snapshot says KNOWN_MODULE_DEBT is empty, which is stale here.",
+        "result": "PASS: repository hygiene (747 text files, 330 Python modules, 1 named debt)"
+      },
+      "python scripts/sov_service.py check": {
+        "exit_code": 0,
+        "result": "PASS: 10 service manifests, 133 declared operations, no defect"
+      },
+      "python scripts/verify.py": {
+        "checks": 39,
+        "exit_code": 0,
+        "gold_threshold_seconds": 6.0,
+        "grade": "SILVER",
+        "note": "SILVER on all three, comfortably inside the 15 s ceiling. A slipped grade is a reportable observation and not a failing gate (decisions/0050). CLAUDE.md's snapshot says 40 checks; this tree runs 39.",
+        "runs": 3,
+        "silver_threshold_seconds": 15.0,
+        "spread_seconds": 1.434,
+        "wall_seconds_measured_including_interpreter_start": [
+          13.743,
+          13.763,
+          12.329
+        ],
+        "wall_seconds_reported": [
+          13.605,
+          13.63,
+          12.196
+        ],
+        "work_seconds": [
+          40.932,
+          40.884,
+          38.213
+        ]
+      },
+      "python scripts/witness_console.py": {
+        "exit_code": 0,
+        "path_note": "read before being trusted. It does not import soveraeign_console_service, drives the CLI as a subprocess, and grades the child's returncode rather than parsing its prose. It is an independent path, and it does not cover usage errors.",
+        "result": "20/20 independent observations held"
+      }
+    },
+    "could_not_confirm": [
+      "the note's claim that four operations enforcing authority before 2026-08-25 never declared NO_LIVE_GRANT. At the merge base all 15 BUILT operations already declared it, so that repair is not in this branch's diff and I have no way to re-derive the four.",
+      "a stale citation on a journal whose digest chain is intact. Every one of the 41 I produced came with a broken chain.",
+      "whether the 8-in-20 and 9-in-20 rates the KNOWN-GAPS row states are reproducible as stated. My rates are method-dependent - 5 in 120 for the chain break with unpadded journals, 41 in 80 for both with a 120-entry pad and the revoker started first - so I confirm the phenomena and not the frequencies.",
+      "anything about behaviour under a second process on Windows generalising to another host. Every number here is one machine, one Python 3.12.10."
+    ],
+    "findings": [
+      {
+        "finding": "the note quotes the note it replaced as having said 'nine of the fifteen'. The note at 5228e83 never contained that phrase or the word fifteen. The quotation came from the prior observation's F1 and was written into the artifact without being checked against the bytes it describes.",
+        "id": "G1",
+        "severity": "SMALL, INSIDE THE CONCERN",
+        "where": "services/console/contracts/service.json, note"
+      },
+      {
+        "finding": "the note states that local_node_record is declared wherever a record is named by id. console.revoke names a grant by id and permits.withdraw enforces exactly that check - a peer-minted grant answers UNKNOWN_RECORD, which I drove - but the revoke entry does not declare local_node_record. list-publications and session-context declare it and name no record by id. No gate compares a declared precondition to the check that implements it.",
+        "id": "G2",
+        "severity": "SMALL, INSIDE THE CONCERN",
+        "where": "services/console/contracts/service.json, the revoke operation"
+      },
+      {
+        "finding": "the repair makes the two tables account for every BUILT operation, which I confirmed with five mutations. It still grades a declaration in one place: a sixteenth BUILT operation that reads a record by id, filed in NO_RECORD_BY_ID and declaring no UNKNOWN_RECORD, passes the whole module green - 23 tests, 0 failures. Nothing measures which operations actually produce the code.",
+        "id": "G3",
+        "severity": "SMALL, CHECK-WITNESSING",
+        "where": "services/console/tests/test_declared_refusals.py, NO_RECORD_BY_ID"
+      },
+      {
+        "finding": "262 lines at the merge base, 300 now. AGENTS.md says keep modules below 300; scripts/lint.py flags greater than 300, so this passes with zero margin and the next line added becomes named debt.",
+        "id": "G4",
+        "severity": "INFORMATIONAL, THIS BRANCH",
+        "where": "services/console/src/soveraeign_console_service/authority.py"
+      },
+      {
+        "finding": "--help prints usage text at exit 0 with empty stderr. The _Parser docstring declares that deliberately, but the module docstring still says every command writes one JSON object and that exit 0 means committed, so the two disagree about --help.",
+        "id": "G5",
+        "severity": "INFORMATIONAL",
+        "where": "services/console/src/soveraeign_console_service/cli.py, module docstring"
+      },
+      {
+        "finding": "nothing validates a file under services/*/observations/ against contracts/participant-observation.schema.json. The prior observation landed unchecked; it does validate, and so does this one, but only because each observer chose to check. verify_bootstrap.py lists the schema as a file that must exist, which is not the same as reading anything against it.",
+        "id": "G6",
+        "severity": "INFORMATIONAL",
+        "where": "the repository, not this branch"
+      },
+      {
+        "finding": "the commit reports the cli, manifest and test changes and does not mention that it also rewrites contracts/fixtures/node-interface.reference.json, contracts/fixtures/capability-map.reference.json, docs/surface.html and two bindings/mcp observation files. Those are the manifest note bytes propagating through generated digests - 161 digest and 133 record_digest lines with no field added or removed - and verify.py grades them against their sources and passes. Recorded because a reader of the message would not expect 592 changed lines under contracts/.",
+        "id": "G7",
+        "severity": "INFORMATIONAL",
+        "where": "521f7bd commit message"
+      }
+    ],
+    "judgement_items": [
+      "The identity seam is already held for Bdo in KNOWN-GAPS. Nothing here changes it and nothing here should be read as narrowing it.",
+      "The unguarded in-process exports row asks Bdo whether to declare a capability over them or to make them unreachable. Still open, still correctly stated as a question."
+    ],
+    "known_gaps_driven": {
+      "guarded_entry_points_unguarded_data": {
+        "observed": "with the CLI refusing Mallory read-thread for want of a grant, an in-process caller holding the service object gets Projection(console).thread_posts -> 1 post record, ConsoleService.body -> the 12 payload bytes 'secret bytes', and authority.held -> all 6 live grants. The row's account matches what I can drive.",
+        "verdict": "CONFIRMED"
+      },
+      "identity": {
+        "correction_to_the_row": "the row says the shipped default for --granted-by is Bdo. That is stale: the flag is required, and omitting it now answers USAGE_ERROR at exit 1. The row's conclusion is untouched, because typing the name costs nothing, which is what the walk above does. Repairing the prose is inside this concern.",
+        "one_thing_the_walk_does_not_give": "over the CLI, read-thread returns the post record with its content address and digest, not the payload bytes. The bytes come from the in-process export in the row below.",
+        "row_says": "every guard in this service is exactly as strong as an identity nothing verifies",
+        "terminal": "the row names an AUTHORITY_SEAM held for Bdo, not a filed ticket. That is a seam, correctly stated.",
+        "verdict": "CONFIRMED BY DRIVING IT, and not softened",
+        "walk": "Bdo opens a channel, a private thread, a session and posts secret bytes. Mallory is refused read-thread with NO_LIVE_GRANT. Mallory then types grant --operator Mallory --capability read:thread --scope <Bdo's thread> --granted-by Bdo, which exits 0 and records granted_by Bdo. Mallory reads the private thread and its one post, issues itself read:authority and lists all 8 live grants on the node. Declared operations only, one --node, no malformed input."
+      },
+      "two_writers": {
+        "an_honest_qualification": "in this reproduction the two failures co-occur exactly: 41 broken chains and 41 stale citations, and no trial produced one without the other. The row states them as two consequences of one window, which is consistent; but every stale citation I observed sits in a journal that is already unreadable, so I cannot attest a stale citation on an intact chain.",
+        "chain_break": "CONFIRMED. Design one, two ordinary processes on a fresh store across a stagger sweep: 5 of 120 trials left the journal unreadable with soveraeign_record_service.core.BrokenChain, all 5 at zero stagger (5 of 12). Both children exited 0 and printed a success record in every trial, broken ones included.",
+        "citation_of_a_revoked_grant": "CONFIRMED, which the prior observation could not reproduce. Design two widens the window rather than the odds: 120 padding entries are appended to the journal so each writer's reconstruct() takes longer, and the revoker is started first with the opener staggered into it. 41 of 80 trials produced a COMMITTED console.open-channel receipt citing a grant that a revocation strictly earlier in the same journal had already withdrawn, with both children exiting 0. The rate is stagger-dependent: 7 to 10 of 10 at -60 ms through 0 ms, and 0 of 10 at +10 ms or later, where the opener simply refuses.",
+        "owed_elsewhere": "the row routes this to the Record Service, and the source agrees: RecordService.append reads head() and commits in its own transaction, so nothing under services/console/ can close it.",
+        "uncaught_traceback": "CONFIRMED. Against a store whose chain is already broken, grants, open-channel and operations each exit 1 with zero bytes on stdout and a soveraeign_record_service.core.BrokenChain traceback on stderr. That is this CLI's own contract broken, and it is the one thing the module docstring says never happens."
+      }
+    },
+    "observer_relation": "SUBPROCESS_ONLY for every console call, with three declared exceptions. The Console Service was driven as python -m soveraeign_console_service.cli in a child process, PYTHONPATH covering services/console/src and services/record/src, cwd at the repository root. Nothing in this walk imported soveraeign_console_service to make a console call. The journal was replayed with soveraeign_record_service.RecordService directly. Grant liveness at a journal position was recomputed here from the authority-grant and authority-revocation payloads in append order; authority.check and authority.live_grants were never called. services/console/contracts/service.json and contracts/capability-offices.json were read as bytes and joined against what the CLI printed; no test module's own join was relied on for a claim. The three exceptions, stated: (a) the manifest-mutation probe imports services/console/tests/test_declared_refusals.py to substitute a mutated manifest and run its own cases, which is test code and not the implementation; (b) the KNOWN-GAPS unguarded-data row was driven in process because the row says those paths have no CLI surface; (c) module line counts were read off the files. This observer built none of this change, wrote no repository file except this observation, and ran no command that moves the branch, the index or the stash.",
+    "prior_observation_treated_as_a_claim": {
+      "agreements": [
+        "all four claims reproduce, and by an independent construction",
+        "the two bootstrap genesis receipts carry an empty authority_grant_ids",
+        "the --granted-by default clause in KNOWN-GAPS is stale",
+        "F4: authority.py sits at the module-size ceiling with no margin"
+      ],
+      "disagreements_or_corrections": [
+        "its F1 quotes the old note as saying 'nine of the fifteen'. The note at 5228e83 does not contain that phrase and does not contain the word fifteen at all. The repair copied the quotation into the artifact, so the new note now attributes to the old one a sentence it never carried.",
+        "it could not reproduce the two-writer citation window in 60 trials. It is reproducible: see known_gaps_driven.two_writers."
+      ],
+      "file": "services/console/observations/pr-118-console-authority.json",
+      "handling": "read as a claim, not as evidence. Every one of its four verdicts was re-derived here from the artifact by a participant that did not produce it and did not produce the repairs it caused.",
+      "records": "5228e83, which is not the head that merges",
+      "schema": "it validates against contracts/participant-observation.schema.json; checked by hand and with jsonschema"
+    },
+    "repairs_in_this_head": {
+      "a_malformed_invocation_answers_in_json": {
+        "help": "--help, -h and a subcommand --help print usage text at exit 0 with empty stderr. The _Parser docstring declares this on purpose. cli.py's own module docstring says exit 0 means committed and that every command writes one JSON object, so a machine caller sending --help gets a non-JSON answer at the success code. Small, and inside the concern.",
+        "method": "73 invocations of the shipped CLI as a subprocess. Every required flag of every one of the 15 subcommands omitted one at a time (32 invocations), each subcommand with no flags at all (15), plus an unknown subcommand, no subcommand, empty argv, a value outside choices, the same choice in lower case, an unknown flag in both spellings, an unknown root flag, a flag wanting a value at the end of argv (three places), positional junk before and after the subcommand, three forms of bare double dash, an ambiguous abbreviation, an abbreviated subcommand, a flag given twice, a malformed --node, an empty string subcommand, a bare dash, root flags with no command, and a non-ASCII subcommand.",
+        "numbers": {
+          "answered_with_one_json_object_outcome_USAGE_ERROR_at_exit_1_with_empty_stderr": 70,
+          "genuinely_malformed": 70,
+          "invocations": 73,
+          "invocations_exiting_2_with_empty_stdout": 0,
+          "invocations_leaving_a_traceback": 0,
+          "invocations_writing_anything_to_stderr": 0
+        },
+        "the_three_that_were_not_usage_errors": "a bare double dash before the subcommand, an unambiguous abbreviated flag (--read for --reader), and the same flag given twice. argparse accepts all three, so the CLI ran the operation and answered REFUSED at exit 2, which is correct. They are recorded because a machine caller that duplicates a flag gets the last value silently and one that abbreviates gets a match, and neither is declared anywhere.",
+        "vacuous_case": "there is no integer-typed argument in this CLI, so 'a non-integer where one is wanted' has nothing to attack. --root is type=Path, which accepts any string. The nearest reachable case, a flag wanting a value at the end of argv, answers USAGE_ERROR.",
+        "verdict": "REPRODUCED",
+        "witnessing_the_check": "the committed cases for this repair - test_declared_refusals.AUsageErrorIsStillOneJsonObject and the missing-flag case in test_cli_walk - call cli.main in process with stdout and stderr redirected. That does read the real bytes argparse writes, so it is not a declaration; but no committed test drives a malformed invocation as a subprocess, and scripts/witness_console.py, which is the subprocess harness, does not cover usage errors. The 73-invocation run above is the first subprocess reading of this repair."
+      },
+      "the_manifest_note": {
+        "counted_here": {
+          "at_standing_BUILT": 15,
+          "at_standing_PROPOSED": 11,
+          "declaring_FOREIGN_NODE_RECORD": 3,
+          "declaring_NO_LIVE_GRANT": 15,
+          "declaring_UNKNOWN_RECORD": 8,
+          "declaring_UNREADABLE": 1,
+          "declaring_capability_map_readable": 1,
+          "declaring_live_matching_grant": 9,
+          "declaring_local_node_record": 9,
+          "operations_in_the_manifest": 26
+        },
+        "defect_one_a_quotation_that_is_not_in_the_thing_quoted": "the new note says the old one said 'nine of the fifteen' two sentences after opening with twelve. The note at 5228e83 contains neither that phrase nor the word fifteen. It said 'the nine that declared one and checked none'. The error is the prior observation's F1; the repair took it as read and wrote it into the artifact, which is a build report witnessing itself at one remove. The count itself - twelve where the file declared fifteen - is real and is verified against git.",
+        "defect_two_a_rule_the_file_does_not_follow": "the note says local_node_record is declared wherever a record is named by id. console.revoke names a grant by id, and permits.withdraw refuses a grant whose node_id is not this node's - which I drove, getting UNKNOWN_RECORD for a peer-minted grant - yet the revoke entry declares grant_exists and not local_node_record. In the other direction list-publications and session-context declare local_node_record and name no record by id. Nothing in the repository validates a declared precondition against the check that implements it, so no gate sees this.",
+        "history_not_re_derivable_here": "the note says four operations that had enforced authority since before 2026-08-25 never declared NO_LIVE_GRANT. At the merge base 2430d67 all 15 BUILT operations already declared it, so that repair predates this branch and I cannot confirm the four from this diff.",
+        "statements_that_hold": [
+          "15 operations are BUILT",
+          "the nine that declared an authority and checked none carry live_matching_grant, and NO_LIVE_GRANT is on each of them (it is in fact on all 15)",
+          "FOREIGN_NODE_RECORD is declared on exactly three, and those three are the ones that produced it when driven",
+          "UNKNOWN_RECORD is declared on exactly eight, and those eight are the ones that produced it when driven",
+          "UNKNOWN_RECORD maps to MISSING_PRECONDITION in local_refusals",
+          "discover-operations declares UNREADABLE and capability_map_readable",
+          "scripts/sovkernel/manifests.py checks declared-refusal-is-known and never produced-refusal-is-declared, so nothing in the shared gate catches this class"
+        ],
+        "verdict": "REPRODUCED WITH TWO DEFECTS"
+      },
+      "the_test_that_measures_itself": {
+        "method": "the test module was imported and its MANIFEST substituted with mutated copies, then its own case re-run. The repository manifest was not touched.",
+        "mutations_that_turn_the_case_red": {
+          "a_BUILT_operation_removed_from_the_manifest": "fails",
+          "a_PROPOSED_operation_promoted_to_BUILT": "fails",
+          "a_by_id_operation_moved_into_NO_RECORD_BY_ID": "fails, naming the operation",
+          "a_sixteenth_BUILT_operation_added_to_the_manifest": "fails",
+          "an_operation_named_in_both_tables": "fails",
+          "unmutated_tree": "passes"
+        },
+        "residual": "the repaired case forces a new BUILT operation to be NAMED in one of two tables; it does not force it to be DRIVEN. A sixteenth BUILT operation that reads a record by id, filed in NO_RECORD_BY_ID and declaring no UNKNOWN_RECORD in the manifest, leaves the whole module green: I ran it, 23 tests, 0 failures, 0 errors. So the blind spot moved from 'invisible entirely' to 'invisible if filed in the wrong table'. Only ABSENT_ID's hand-written argument vectors are ever measured against behaviour, and membership of NO_RECORD_BY_ID is still a declaration a person writes.",
+        "the_partition_is_correct_as_it_stands": "all eight operations in ABSENT_ID produced UNKNOWN_RECORD when driven against an absent id; none of the seven in NO_RECORD_BY_ID produced it under ten probes, and none of the seven takes a record id on the CLI at all.",
+        "verdict": "REPRODUCED, and still reading a declaration in one place"
+      }
+    },
+    "standing_note": "This is an observation independent of the builder and independent of the participant that produced the observation at 5228e83. It proposes at most BUILT -> WITNESSED and settles nothing. A test may establish BUILT; it may not claim WITNESSED or RATIFIED. Only Bdo ratifies."
+  },
+  "participant_claim": "COMPLETED",
+  "participant_id": "console-service-reference"
+}

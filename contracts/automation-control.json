@@ -83,7 +83,8 @@
     "effect_class": "RESOURCE_CONSUMPTION",
     "why_at_all": "A page opened from disk has no process behind it, so its buttons cannot change anything. Controls on a page require something serving it. AGENTS.md says HTTP waits for a conformance case that requires it; the owner requiring a page with working controls is that case, and it is written into conformance/fixtures/automation-control/ rather than asserted here.",
     "not_external_world": "A socket bound to 127.0.0.1 reaches no third party and crosses no data boundary, so this is not the EXTERNAL_WORLD effect Phase I refuses. It is still a listening process on the owner's machine that writes repository files, so it binds loopback only, mints a token per run, prints it once, and refuses a request carrying the wrong one.",
-    "token_note": "The token is not authentication. It tells one local process from another and stops a page you happen to be visiting from posting into your console. Every operator on this box is the same operator as far as this server can tell, and the record says so rather than implying an identity it never checked."
+    "token_note": "The token is not authentication. It tells one local process from another and stops a page you happen to be visiting from posting into your console. Every operator on this box is the same operator as far as this server can tell, and the record says so rather than implying an identity it never checked.",
+    "does_not_share_a_port": "allow_reuse_address is off. A surface that writes repository files must not share a socket with anything, and on Windows the default would let it."
   },
   "refusals": {
     "UNKNOWN_SCHEDULE": "No declaration of that name is tracked.",
@@ -93,12 +94,29 @@
     "DECLARATION_REFUSED": "The declaration does not parse or does not validate, so there is no known state to move from. Repair the declaration before switching it.",
     "TARGET_MISSING": "The declared target does not exist, so enabling would arm a run that cannot execute. Disabling such a schedule is allowed and is usually the right move.",
     "NON_LOOPBACK_BIND": "The server was asked to listen on an address that is not 127.0.0.1.",
-    "BAD_TOKEN": "A request reached the console without the token minted for this run."
+    "BAD_TOKEN": "A request reached the console without the token minted for this run.",
+    "PORT_IN_USE": "The requested port is already listening, so the console did not start. The stdlib sets allow_reuse_address, and on Windows that permits binding a port another process actively holds - with no error and no defined winner for connections. This console did that: it bound a port an unrelated application held, printed a URL, and sent the operator to that application. A page of switches pointed at somebody else's server looks like it worked, which is what makes it the worst failure here."
   },
   "residuals": {
     "the_console_cannot_tell_operators_apart": "Anyone with the box is the owner as far as this server can see. It records the binding and the fact that the actor was local, and does not claim an identity it did not check. Real principal identity is a separate open concern.",
     "armed_is_not_running": "Nothing on this node ticks a schedule. Flipping a switch to on arms a declaration and starts nothing, because no host scheduler is registered - that was outside this work by instruction. An operator who reads on as running would be wrong, so the surface says armed.",
     "the_switch_is_dirty_until_someone_commits_it": "The operation writes the working tree and does not commit. Until someone lands it, the declaration on disk and the declaration at HEAD disagree, and the two readers already say which they read. That is the honest split and it is also a way to forget: a switch flipped and never committed is a decision this repository loses on the next clean checkout.",
     "no_schedule_is_on": "This table describes what it takes to arm one. When it was written every declaration on this node still read enabled: false, and no participant but Bdo can change that."
+  },
+  "refusal_layer": {
+    "note": "Which layer owns each refusal, and therefore what has to defeat it. An operation refusal is reachable from a fixture case and needs one. A transport refusal is a property of the socket and can only be defeated by standing a server up, so it needs a named test instead. This is declared rather than hardcoded in the test because a skip list inside a test grows quietly - PORT_IN_USE was added to this contract and the test that would have caught a missing case skipped it by name.",
+    "operation": [
+      "UNKNOWN_SCHEDULE",
+      "NOT_A_DIRECTION",
+      "GRANT_NOT_HELD",
+      "REASON_MISSING",
+      "DECLARATION_REFUSED",
+      "TARGET_MISSING"
+    ],
+    "transport": [
+      "NON_LOOPBACK_BIND",
+      "BAD_TOKEN",
+      "PORT_IN_USE"
+    ]
   }
 }

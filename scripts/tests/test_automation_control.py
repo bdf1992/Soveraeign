@@ -104,14 +104,32 @@ class DeclaredCorpus(Tree):
                 self.assertEqual(len(switchlog.read(self.root)),
                                  case["expect_log_lines"])
 
-    def test_every_declared_refusal_has_a_case(self) -> None:
+    def test_every_declared_refusal_is_assigned_a_layer(self) -> None:
+        """No refusal may sit outside the partition, because that is where a skip hides."""
+        layered = set(TABLE["refusal_layer"]["operation"] +
+                      TABLE["refusal_layer"]["transport"])
+        self.assertEqual(layered, set(TABLE["refusals"]))
+
+    def test_every_operation_refusal_has_a_corpus_case(self) -> None:
         """A refusal nothing exercises is prose, not a refusal."""
         reached = {case["expect_refusal"] for case in CORPUS["cases"]} - {None}
-        for code in TABLE["refusals"]:
-            if code in ("NON_LOOPBACK_BIND", "BAD_TOKEN"):
-                continue  # transport, not the operation; covered in ConsoleTransport
+        for code in TABLE["refusal_layer"]["operation"]:
             with self.subTest(code=code):
                 self.assertIn(code, reached)
+
+    def test_every_transport_refusal_is_asserted_somewhere_in_this_module(self) -> None:
+        """A socket refusal cannot come from a fixture, so a named test stands for it.
+
+        Each transport test asserts the declared code out of the refusal it triggers, so
+        the code appears in this file because something checks it. Deleting that test
+        fails here rather than quietly leaving the refusal undefended. The scan is only
+        as good as what it scans for: matching an exception class name would have passed
+        while no test looked at the code at all.
+        """
+        source = Path(__file__).read_text(encoding="utf-8")
+        missing = [code for code in TABLE["refusal_layer"]["transport"]
+                   if code not in source]
+        self.assertEqual(missing, [], f"transport refusals no test asserts: {missing}")
 
     def test_every_refusal_has_a_case_that_does_not_fire_it(self) -> None:
         """One case that fires proves nothing about what a check lets past."""
@@ -224,7 +242,7 @@ class TheRecord(Tree):
 
 
 class ConsoleTransport(Tree):
-    """The two refusals that belong to the transport rather than to the operation."""
+    """The refusals that belong to the socket rather than to the operation."""
 
     def serve(self):
         server, token = console.build_server(self.root)
@@ -240,8 +258,9 @@ class ConsoleTransport(Tree):
     def test_a_non_loopback_bind_is_refused_rather_than_warned_about(self) -> None:
         for host in ("0.0.0.0", "::", "192.168.1.10"):
             with self.subTest(host=host):
-                with self.assertRaises(console.NonLoopbackBind):
+                with self.assertRaises(console.NonLoopbackBind) as caught:
                     console.build_server(self.root, host=host)
+                self.assertTrue(str(caught.exception).startswith("NON_LOOPBACK_BIND"))
 
     def test_the_wrong_token_reaches_neither_the_page_nor_the_operation(self) -> None:
         self.declare(enabled=True)
@@ -251,10 +270,12 @@ class ConsoleTransport(Tree):
             with self.assertRaises(urllib.error.HTTPError) as caught:
                 urllib.request.urlopen(base + "/?t=wrong")
             self.assertEqual(caught.exception.code, 403)
+            self.assertIn("BAD_TOKEN", caught.exception.read().decode("utf-8"))
             with self.assertRaises(urllib.error.HTTPError) as caught:
                 self.post(base, {"token": "wrong", "schedule": "nightly-qa",
                                  "direction": "DISABLE", "reason": "from another page"})
             self.assertEqual(caught.exception.code, 403)
+            self.assertIn("BAD_TOKEN", caught.exception.read().decode("utf-8"))
             self.assertTrue(self.enabled_of(), "a wrong token still moved the switch")
         finally:
             server.shutdown()
@@ -280,6 +301,25 @@ class ConsoleTransport(Tree):
         finally:
             server.shutdown()
             server.server_close()
+
+    def test_a_port_that_is_already_listening_is_refused(self) -> None:
+        """Found by running it, not by reading it.
+
+        allow_reuse_address defaults to true in the stdlib, and on Windows that flag
+        permits binding a port another process is actively listening on - no error, and
+        no defined winner for incoming connections. This console did exactly that: it
+        bound a port an unrelated application already held, printed a URL, and sent the
+        operator to that application. A page of switches pointed at somebody else's
+        server is the worst failure this surface has, because it looks like it worked.
+        """
+        first, _ = console.build_server(self.root)
+        port = first.server_address[1]
+        try:
+            with self.assertRaises(console.PortInUse) as caught:
+                console.build_server(self.root, port=port)
+            self.assertTrue(str(caught.exception).startswith("PORT_IN_USE"))
+        finally:
+            first.server_close()
 
     def test_an_unknown_route_is_a_refusal_not_a_page(self) -> None:
         server, token, url = self.serve()

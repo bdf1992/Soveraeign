@@ -83,7 +83,7 @@ def command_console(args: argparse.Namespace) -> int:
     """Serve the health page with working switches, on loopback only."""
     try:
         console.serve(Path(args.root), port=args.port, open_browser=not args.no_open)
-    except console.NonLoopbackBind as refusal:
+    except (console.NonLoopbackBind, console.PortInUse) as refusal:
         print(str(refusal))
         return 1
     return 0

@@ -38,6 +38,25 @@ class NonLoopbackBind(RuntimeError):
     """Asked to listen somewhere other than 127.0.0.1. Refused rather than warned about."""
 
 
+class PortInUse(RuntimeError):
+    """The requested port already belongs to something else."""
+
+
+class Server(ThreadingHTTPServer):
+    """A console server that will not share its port.
+
+    ``allow_reuse_address`` defaults to true in the stdlib, and on Windows that flag
+    does not mean what it means on Unix: it permits binding a port another process is
+    actively listening on, with no error and no defined winner for incoming
+    connections. This console bound a port that already held an unrelated application,
+    printed a URL, and sent the operator to that application instead - a page with
+    switches on it, pointed at somebody else's server. Refusing to share is the only
+    safe setting for a surface that writes repository files.
+    """
+
+    allow_reuse_address = False
+
+
 def mint_token() -> str:
     return secrets.token_urlsafe(TOKEN_BYTES)
 
@@ -161,7 +180,13 @@ def build_server(root: Path, port: int = 0, host: str = LOOPBACK,
     minted = token or mint_token()
     handler = type("BoundHandler", (Handler,),
                    {"console": Console(root, minted, clock=clock)})
-    return ThreadingHTTPServer((host, port), handler), minted
+    try:
+        return Server((host, port), handler), minted
+    except OSError as error:
+        raise PortInUse(
+            f"PORT_IN_USE: {host}:{port} is already listening, so this console did not "
+            f"start ({error}). Pass a different --port, or omit it and the OS picks a "
+            "free one.") from None
 
 
 def url_for(server: ThreadingHTTPServer, token: str) -> str:

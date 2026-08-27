@@ -13,6 +13,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from tempfile import TemporaryDirectory
+import ast
 import importlib.util
 import json
 import sqlite3
@@ -155,6 +156,77 @@ class DeclaredSurface(unittest.TestCase):
         declared = {op["operation"] for op in manifest["operations"]}
         # `operations` is discovery over the manifest, not an operation on a record.
         self.assertEqual(set(cli._commands()) - declared - {"operations"}, set())
+
+
+class Independence(unittest.TestCase):
+    """The walk must not borrow the participant's arithmetic to check the participant.
+
+    This is the property every other claim the walk makes rests on, and until now
+    nothing enforced it. An independent witness proved the gap by editing
+    `sovwitness/record_chain.py` to import `digest_for_profile` from the service
+    and return it: the walk still printed 28/28 and exited 0, and the repository
+    would have kept citing that run as an independent observation of a function
+    agreeing with itself.
+
+    `scripts/tests/test_gateway_observe.py` has had the equivalent check for the
+    sibling verifier since it was written. This is that check, for this one.
+    """
+
+    #: The walk and every module it reaches for chain arithmetic. `record_tampers`
+    #: and `record_profiles` are here because both write forgeries and seed rows,
+    #: which is exactly where importing the service is most tempting.
+    OUTSIDE_THE_PARTICIPANT = (
+        Path("scripts") / "witness_record.py",
+        Path("scripts") / "sovwitness" / "record_chain.py",
+        Path("scripts") / "sovwitness" / "record_tampers.py",
+        Path("scripts") / "sovwitness" / "record_profiles.py",
+    )
+
+    #: The participant's package. The walk is allowed to *name* it - it launches
+    #: `python -m soveraeign_record_service.cli` as a subprocess and sets PYTHONPATH
+    #: for it - so a substring search over the source reports the walk's own correct
+    #: behaviour as a violation. The sibling check in `test_gateway_observe.py` can
+    #: use a substring only because that observer never names the package at all.
+    PARTICIPANT = "soveraeign_record_service"
+
+    def _imports(self, source: str) -> list[str]:
+        """Every module this file imports, including inside a function body.
+
+        Parsed rather than matched. The way this rule gets broken is a local import
+        in the middle of a function, which reads as ordinary code and which a
+        line-oriented check at the top of the file would never see.
+        """
+        found: list[str] = []
+        for node in ast.walk(ast.parse(source)):
+            if isinstance(node, ast.Import):
+                found.extend(alias.name for alias in node.names)
+            elif isinstance(node, ast.ImportFrom) and node.module:
+                found.append(node.module)
+        return found
+
+    def test_the_walk_imports_no_participant_implementation(self) -> None:
+        for relative in self.OUTSIDE_THE_PARTICIPANT:
+            imported = self._imports((ROOT / relative).read_text(encoding="utf-8"))
+            borrowed = [name for name in imported
+                        if name == self.PARTICIPANT or name.startswith(self.PARTICIPANT + ".")]
+            self.assertEqual(
+                borrowed, [],
+                f"{relative} imports {borrowed}; the walk recomputes the chain from "
+                "services/record/CHARTER.md and reaches the service only as a "
+                "subprocess, or it is not an independent observation")
+
+    def test_the_rule_can_see_an_import_hidden_inside_a_function(self) -> None:
+        """The check must catch the way it would actually be broken."""
+        hidden = ("def recompute(previous, entry):\n"
+                  f"    from {self.PARTICIPANT}.digest import digest_for_profile\n"
+                  "    return digest_for_profile(entry)\n")
+        self.assertIn(f"{self.PARTICIPANT}.digest", self._imports(hidden))
+        self.assertEqual(self._imports("import json\n"), ["json"])
+
+    def test_the_check_reads_files_that_exist(self) -> None:
+        """Otherwise a renamed module makes the check above pass by reading nothing."""
+        for relative in self.OUTSIDE_THE_PARTICIPANT:
+            self.assertTrue((ROOT / relative).is_file(), f"{relative} is not there")
 
 
 if __name__ == "__main__":

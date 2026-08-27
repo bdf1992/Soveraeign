@@ -25,10 +25,17 @@ import time
 import uuid
 
 from .digest import (
-    DIGEST_PROFILE, LEGACY_DIGEST_PROFILE, canonical as _canonical,
-    digest as _digest, digest_for_profile, legacy_canonical as _legacy_canonical,
-    legacy_digest as _legacy_digest,
+    BOUND_DIGEST_PROFILE, CURRENT_PROFILE, DIGEST_PROFILE, LEGACY_DIGEST_PROFILE,
+    canonical as _canonical, canonical_for, digest as _digest, digest_for_profile,
+    legacy_canonical as _legacy_canonical, legacy_digest as _legacy_digest,
+    refuse_non_finite as _refuse_non_finite,
 )
+from .errors import (
+    BrokenChain, DesignRecordRefused, ProfileNotAdopted, ProjectionNotAuthoritative,
+    UnknownEntry,
+)
+from .profiles import ProfileSurface, digest_for_row as _digest_for_profile
+from .projections import ProjectionSurface
 
 GENESIS = "0" * 64
 
@@ -44,36 +51,11 @@ DESIGN_SYSTEM_OF_RECORD = frozenset({
 ENTRY_KINDS = ("EVENT", "RECEIPT", "OBSERVATION", "COUNTER")
 
 
-class DesignRecordRefused(PermissionError):
-    """A governing document was offered as operational event storage."""
-
-
-class BrokenChain(RuntimeError):
-    """The journal no longer verifies against its own digest chain."""
-
-
-class ProjectionNotAuthoritative(RuntimeError):
-    """A projection was offered as the authoritative record."""
-
-
-class UnknownEntry(KeyError):
-    """The named entry is not in the journal."""
-
-
 def _now() -> float:
     return time.time()
 
 
-def _digest_for_profile(
-    profile: str, previous: str, kind: str, subject: str, actor: str, payload: Any
-) -> str:
-    try:
-        return digest_for_profile(profile, previous, kind, subject, actor, payload)
-    except ValueError as error:
-        raise BrokenChain(str(error)) from error
-
-
-class RecordService:
+class RecordService(ProjectionSurface, ProfileSurface):
     """An append-preserving operational journal over a local SQLite store."""
 
     def __init__(self, root: str | Path):
@@ -138,22 +120,57 @@ class RecordService:
         payload: dict[str, Any],
         source_address: str | None = None,
     ) -> dict[str, Any]:
-        """Append one entry and return it. Nothing in this class ever updates one."""
+        """Append one entry under the profile this store writes. Never updates one.
+
+        The store's profile, not whichever one the library considers current:
+        `profiles.py` says why, and `adopt_profile` is the way forward.
+        """
+        return self._append(self.writing_profile(), kind, subject, actor, payload,
+                            source_address)
+
+    def _append(
+        self,
+        profile: str,
+        kind: str,
+        subject: str,
+        actor: str,
+        payload: dict[str, Any],
+        source_address: str | None = None,
+    ) -> dict[str, Any]:
+        """Write one entry under an explicitly named profile.
+
+        Private because choosing the profile per call is exactly the freedom that
+        caused the damage. Two callers name it: `append`, which asks the store,
+        and `adopt_profile`, which is the act of changing the answer. Both validate
+        the profile before calling, so there is no guard for it here - one existed
+        and a witness proved it unreachable, which is the same finding this change
+        already acted on once in `reconstruct`. An unknown profile arriving anyway
+        raises from `digest_for_profile`.
+        """
         if kind not in ENTRY_KINDS:
             raise ValueError(f"unknown entry kind {kind!r}")
         if source_address is not None and Path(source_address).name in DESIGN_SYSTEM_OF_RECORD:
             raise DesignRecordRefused(
                 f"{source_address} governs system design and is not operational event storage"
             )
+        # Every profile refuses a non-finite number on a new row, including v1,
+        # whose encoder permits one. See `digest.refuse_non_finite`.
+        _refuse_non_finite(payload)
         previous = self.head()
         entry_id = f"entry_{uuid.uuid4().hex}"
-        digest = _digest(previous, kind, subject, actor, payload)
+        # Read the clock before hashing rather than at INSERT: under
+        # record-chain/v3 the moment is bound into the digest, so the value in
+        # the row and the value in the hash have to be the one reading.
+        recorded_at = _now()
+        digest = digest_for_profile(profile, previous, kind, subject, actor, payload,
+                                    entry_id=entry_id, source_address=source_address,
+                                    recorded_at=recorded_at)
         self.db.execute(
             "INSERT INTO journal(entry_id,kind,subject,actor,source_address,"
             "payload_json,recorded_at,prev_digest,entry_digest,digest_profile) "
             "VALUES(?,?,?,?,?,?,?,?,?,?)",
             (entry_id, kind, subject, actor, source_address,
-             _canonical(payload), _now(), previous, digest, DIGEST_PROFILE),
+             canonical_for(profile)(payload), recorded_at, previous, digest, profile),
         )
         self.db.commit()
         return self.entry(entry_id)
@@ -195,15 +212,37 @@ class RecordService:
         return [self.entry(row["entry_id"]) for row in rows]
 
     def reconstruct(self) -> list[dict[str, Any]]:
-        """Replay the journal, verifying every link before returning it."""
+        """Replay the journal, verifying every link and every payload encoding.
+
+        The digest binds the payload's parsed value, not the bytes the column
+        holds. Left there, byte-different but value-identical JSON went
+        undetected, and duplicate-key injection with it: a committed row two
+        readers read differently, endorsed by the chain. Requiring the stored
+        bytes to be their profile's canonical encoding closes that, and costs
+        nothing on a journal this service wrote, because it wrote them that way.
+        """
+        stored = {
+            row["entry_id"]: row["payload_json"]
+            for row in self.db.execute("SELECT entry_id,payload_json FROM journal")
+        }
         previous, replayed = GENESIS, []
         for entry in self.entries():
             expected = _digest_for_profile(
                 entry["digest_profile"], previous, entry["kind"], entry["subject"],
-                entry["actor"], entry["payload"]
+                entry["actor"], entry["payload"], entry_id=entry["entry_id"],
+                source_address=entry["source_address"], recorded_at=entry["recorded_at"],
             )
             if entry["prev_digest"] != previous or entry["entry_digest"] != expected:
                 raise BrokenChain(entry["entry_id"])
+            # No guard around `canonical_for`: it implements exactly the profiles
+            # `_digest_for_profile` does, so an unknown one has already refused
+            # above. A witness found the guard here unreachable, and dead code
+            # that looks like a refusal is worse than no code at all.
+            encode = canonical_for(entry["digest_profile"])
+            if stored.get(entry["entry_id"]) != encode(entry["payload"]):
+                raise BrokenChain(
+                    f"{entry['entry_id']}: payload bytes are not the canonical encoding "
+                    "of the value the digest binds")
             previous = entry["entry_digest"]
             replayed.append(entry)
         return replayed
@@ -216,54 +255,9 @@ class RecordService:
         return False
 
     # ---- projections -------------------------------------------------------
-
-    def drop_projections(self) -> None:
-        """Delete every projection. Only projections are ever deleted here."""
-        self.db.execute("DELETE FROM subject_projection")
-        self.db.commit()
-
-    def rebuild_projections(self) -> int:
-        """Rebuild every projection from the journal alone."""
-        self.drop_projections()
-        state: dict[str, dict[str, Any]] = {}
-        countered: set[str] = set()
-        for entry in self.reconstruct():
-            if entry["kind"] == "COUNTER":
-                countered.add(entry["payload"]["counters"])
-            row = state.setdefault(
-                entry["subject"],
-                {"entry_count": 0, "last_kind": entry["kind"], "countered": 0,
-                 "head_digest": GENESIS},
-            )
-            row["entry_count"] += 1
-            row["last_kind"] = entry["kind"]
-            row["head_digest"] = entry["entry_digest"]
-        for entry in self.entries():
-            if entry["entry_id"] in countered:
-                state[entry["subject"]]["countered"] += 1
-        self.db.executemany(
-            "INSERT INTO subject_projection VALUES(?,?,?,?,?)",
-            [(subject, row["entry_count"], row["last_kind"], row["countered"],
-              row["head_digest"]) for subject, row in state.items()],
-        )
-        self.db.commit()
-        return len(state)
-
-    def projection(self, subject: str) -> dict[str, Any]:
-        """Read one projection row. Rebuildable, never authoritative."""
-        row = self.db.execute(
-            "SELECT * FROM subject_projection WHERE subject=?", (subject,)
-        ).fetchone()
-        if row is None:
-            raise UnknownEntry(subject)
-        return dict(row)
-
-    def append_from_projection(self, *_: Any, **__: Any) -> None:
-        """Refuse the convenient shortcut of promoting a projection to the record."""
-        raise ProjectionNotAuthoritative(
-            "a projection is rebuildable and never authoritative; "
-            "re-enter the claim as a proposal through the transition contract"
-        )
+    #
+    # Everything derived from the journal lives in `projections.ProjectionSurface`,
+    # mixed into this class. What remains here is the journal itself.
 
 
 def open_service(root: str | Path) -> RecordService:

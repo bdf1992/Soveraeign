@@ -1,11 +1,12 @@
 {
-  "corpus_id": "soveraeign-status-claims-cases/v1",
+  "corpus_id": "soveraeign-status-claims-cases/v2",
   "grades": "contracts/status-claims.json",
-  "note": "One controlled case per declared refusal, plus a positive case that must earn none. The lines and crosswalk entries are the oracle's own; no case reads STATUS.yaml, so a repair to the live file cannot quietly stop a refusal from being proved.",
+  "note": "One controlled case per declared refusal, plus a positive case that must earn none. Each defeating case must earn EXACTLY the code it names: a case that fires for a second reason has not proved the one it is for, and two refusals that cannot be separated are one rule wearing two names. The lines and crosswalk entries are the oracle's own; no case reads STATUS.yaml, so a repair to the live file cannot quietly stop a refusal from being proved.",
+  "revision_note": "v2 answers an independent observation against commit 5dbe513 (reports/observations/2026-08-27-status-claims-typed-witness-observation.json). The witness got a false standing past v1 by declaring artifact_standing WITNESSED with a non-TOKEN source on a value reading NOT_WITNESSED, and dissolved a collision by renaming a subject. v1's seven cases became twelve, and v1's RULING_TYPED_AS_ACCEPTANCE was widened into a total rule after the witness typed an owner acceptance as a status unrefused.",
   "cases": [
     {
       "id": "positive-typed-status-claim",
-      "proves": "A field typed with the subject, kind and token-backed standing it actually carries earns no refusal.",
+      "proves": "A field typed with the derived subject, the kind its value's prefix admits, and a token-backed standing earns no refusal.",
       "expect": null,
       "status_lines": [
         "asset_service_status: BUILT_SELF_TESTED_NOT_WITNESSED"
@@ -24,11 +25,39 @@
       ]
     },
     {
+      "id": "defeating-entry-malformed",
+      "proves": "An entry missing a required field is refused rather than raising. Before this, a missing artifact_standing raised KeyError and a null subject raised TypeError inside sorted().",
+      "expect": "ENTRY_MALFORMED",
+      "status_lines": [
+        "asset_service_status: BUILT_SELF_TESTED_NOT_WITNESSED"
+      ],
+      "crosswalk": [
+        {
+          "field": "asset_service_status",
+          "value": "BUILT_SELF_TESTED_NOT_WITNESSED",
+          "subject": "asset-service",
+          "claim_kind": "STATUS",
+          "standing_source": "TOKEN",
+          "detail": "an entry that never declares a standing at all",
+          "reference": null
+        }
+      ]
+    },
+    {
       "id": "defeating-field-untyped",
       "proves": "A status field the crosswalk does not type is a defect, so the typing cannot silently fall behind the document.",
       "expect": "FIELD_UNTYPED",
       "status_lines": [
         "new_service_status: CHARTERED_BOUNDARY_NOT_IMPLEMENTED"
+      ],
+      "crosswalk": []
+    },
+    {
+      "id": "defeating-field-unreadable",
+      "proves": "A status field the strict reader cannot parse is named rather than skipped. An indented field would otherwise be invisible and earn no FIELD_UNTYPED, letting the reader define its own scope.",
+      "expect": "FIELD_UNREADABLE",
+      "status_lines": [
+        "  nested_thing_status: OWNER_ACCEPTED"
       ],
       "crosswalk": []
     },
@@ -51,12 +80,52 @@
       ]
     },
     {
+      "id": "defeating-subject-not-derived",
+      "proves": "The subject is derived from the field, not declared. A witness dissolved a real collision by renaming one side of it to byom-ruling; a derived subject cannot be renamed.",
+      "expect": "SUBJECT_NOT_DERIVED",
+      "status_lines": [
+        "byom_status: OWNER_ACCEPTED_PHASE_I_CONTRACT"
+      ],
+      "crosswalk": [
+        {
+          "field": "byom_status",
+          "value": "OWNER_ACCEPTED_PHASE_I_CONTRACT",
+          "subject": "byom-ruling",
+          "claim_kind": "STATUS",
+          "artifact_standing": null,
+          "standing_source": "NONE",
+          "detail": "a subject renamed to escape a collision",
+          "reference": null
+        }
+      ]
+    },
+    {
+      "id": "defeating-claim-kind-undeclared",
+      "proves": "A kind outside the declared three is refused. A witness typo'd RULING as RULLING, which split the collision group and silently disabled the kind rules, because those compare kind strings literally.",
+      "expect": "CLAIM_KIND_UNDECLARED",
+      "status_lines": [
+        "ticket_kind_vocabulary_status: RULED_O19"
+      ],
+      "crosswalk": [
+        {
+          "field": "ticket_kind_vocabulary_status",
+          "value": "RULED_O19",
+          "subject": "ticket-kind-vocabulary",
+          "claim_kind": "RULLING",
+          "artifact_standing": null,
+          "standing_source": "NONE",
+          "detail": "a typo that would disable the rules keyed on this field",
+          "reference": "O19"
+        }
+      ]
+    },
+    {
       "id": "defeating-claim-kind-collision",
-      "proves": "Two claims of the same kind about one subject stay a duplicate. Typing distinguishes a status from a ruling; it does not excuse writing one subject's status twice.",
+      "proves": "Two claims of one kind about one subject stay a duplicate. Typing distinguishes a status from a ruling; it does not excuse writing one subject's status twice. Two identical entries earn this too, which is why a separate duplicate-entry refusal would be the same rule twice.",
       "expect": "CLAIM_KIND_COLLISION",
       "status_lines": [
         "proofing_service_status: OWNER_ACCEPTED_BOUNDARY_NOT_IMPLEMENTED",
-        "proofing_service_status: OWNER_ACCEPTED_PHASE_I_CONTRACT"
+        "proofing_service_status: CHARTERED_BOUNDARY_NOT_IMPLEMENTED"
       ],
       "crosswalk": [
         {
@@ -71,13 +140,33 @@
         },
         {
           "field": "proofing_service_status",
-          "value": "OWNER_ACCEPTED_PHASE_I_CONTRACT",
+          "value": "CHARTERED_BOUNDARY_NOT_IMPLEMENTED",
           "subject": "proofing-service",
           "claim_kind": "STATUS",
           "artifact_standing": null,
           "standing_source": "NONE",
           "detail": "a second status claim about the same subject",
           "reference": null
+        }
+      ]
+    },
+    {
+      "id": "defeating-claim-kind-contradicts-value",
+      "proves": "The rule is total in both directions. A witness retyped an accepted packet value as a plain status and v1 admitted it, because v1 guarded only the ruling-and-acceptance pair. OWNER_ACCEPTANCE is irreversible and settled by seat:root; STATUS is neither.",
+      "expect": "CLAIM_KIND_CONTRADICTS_VALUE",
+      "status_lines": [
+        "specification_status: OWNER_ACCEPTED_A2_PHASE_I_LOGICAL_SPEC"
+      ],
+      "crosswalk": [
+        {
+          "field": "specification_status",
+          "value": "OWNER_ACCEPTED_A2_PHASE_I_LOGICAL_SPEC",
+          "subject": "specification",
+          "claim_kind": "STATUS",
+          "artifact_standing": null,
+          "standing_source": "NONE",
+          "detail": "an act of the root seat demoted to a reversible status",
+          "reference": "A2"
         }
       ]
     },
@@ -95,8 +184,28 @@
           "subject": "some-thing",
           "claim_kind": "STATUS",
           "artifact_standing": "SHIPPED",
-          "standing_source": "READING",
+          "standing_source": "TOKEN",
           "detail": "a rung the ladder does not have",
+          "reference": null
+        }
+      ]
+    },
+    {
+      "id": "defeating-standing-without-token",
+      "proves": "The exact bypass an independent witness demonstrated against v1: WITNESSED declared on a value reading NOT_WITNESSED, admitted because a non-TOKEN source was never compared to the value and the value does not begin with a ladder word. Thirty-three of forty-eight live entries begin with a non-ladder word, so the door was open for all of them.",
+      "expect": "STANDING_WITHOUT_TOKEN",
+      "status_lines": [
+        "sov_operating_agent_status: OWNER_ACCEPTED_CONTEXT_PROFILE_BUILT_SELF_TESTED_NOT_WITNESSED"
+      ],
+      "crosswalk": [
+        {
+          "field": "sov_operating_agent_status",
+          "value": "OWNER_ACCEPTED_CONTEXT_PROFILE_BUILT_SELF_TESTED_NOT_WITNESSED",
+          "subject": "sov-operating-agent",
+          "claim_kind": "STATUS",
+          "artifact_standing": "WITNESSED",
+          "standing_source": "NONE",
+          "detail": "a standing asserted with nothing in the value behind it",
           "reference": null
         }
       ]
@@ -123,7 +232,7 @@
     },
     {
       "id": "defeating-leading-token-untyped",
-      "proves": "A value beginning with a ladder word must be typed from that token. Declaring READING there would let an author dodge the token check by calling a mechanical claim a reading.",
+      "proves": "A value beginning with a ladder word must be typed from that token. Declaring otherwise there would let an author call a mechanical claim something unverifiable and escape the token check.",
       "expect": "LEADING_TOKEN_UNTYPED",
       "status_lines": [
         "another_thing_status: BUILT_AND_SELF_TESTED"
@@ -134,30 +243,10 @@
           "value": "BUILT_AND_SELF_TESTED",
           "subject": "another-thing",
           "claim_kind": "STATUS",
-          "artifact_standing": "BUILT",
-          "standing_source": "READING",
-          "detail": "a token-backed standing declared as an unverifiable reading",
-          "reference": null
-        }
-      ]
-    },
-    {
-      "id": "defeating-ruling-typed-as-acceptance",
-      "proves": "A reversible default cannot be typed as owner acceptance. STATUS.yaml states RULED_ values are not owner acceptance and do not claim to be.",
-      "expect": "RULING_TYPED_AS_ACCEPTANCE",
-      "status_lines": [
-        "ticket_kind_vocabulary_status: RULED_O19"
-      ],
-      "crosswalk": [
-        {
-          "field": "ticket_kind_vocabulary_status",
-          "value": "RULED_O19",
-          "subject": "ticket-kind-vocabulary",
-          "claim_kind": "OWNER_ACCEPTANCE",
           "artifact_standing": null,
           "standing_source": "NONE",
-          "detail": "a reversible default presented as the root seat's acceptance",
-          "reference": "O19"
+          "detail": "a token-backed standing left undeclared",
+          "reference": null
         }
       ]
     }

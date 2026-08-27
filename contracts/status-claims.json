@@ -41,19 +41,23 @@
     "RATIFIED"
   ],
   "standing_sources": {
-    "TOKEN": "The value carries the standing as a whole underscore-separated token that is not preceded by NOT. Mechanically checkable, and checked.",
-    "READING": "A ladder position read from the prose without a token carrying it. Not mechanically checkable; recorded as a reading so it is not mistaken for one.",
-    "NONE": "The value asserts no ladder position."
+    "TOKEN": "The value carries the standing as a whole underscore-separated token that is not preceded by NOT. Mechanically checkable, and checked. This is the only source.",
+    "NONE": "The value asserts no ladder position, and the entry declares none. An earlier draft admitted a third source, READING, for a position read from prose without a token carrying it. An independent witness defeated it: READING admitted `artifact_standing: WITNESSED` on a value reading NOT_WITNESSED, which is the exact hazard this contract exists to refuse. An unverifiable source in a machine contract is a door, so it was removed rather than narrowed."
   },
   "token_trap": "`NOT_WITNESSED` contains the token `WITNESSED` and asserts the opposite (CLAUDE.md T3). Tokens are compared whole and a token preceded by `NOT` is a denial. `PARTICIPANT_BINDING_OPEN` carries `OPEN` about a binding rather than about the subject's standing, which is why a token is honoured only where the entry declares `standing_source: TOKEN`, and why an entry whose value *begins* with a ladder word may not declare anything else.",
   "refusals": {
+    "ENTRY_MALFORMED": "A crosswalk entry missing a required field or carrying one of the wrong type. Checked first and alone, so a malformed entry is refused rather than raising.",
     "FIELD_UNTYPED": "A `*_status` field and value in STATUS.yaml with no crosswalk entry.",
+    "FIELD_UNREADABLE": "A line naming a status field that the strict reader cannot parse - indented, or carrying a value with a space. Without this the reader silently defines its own scope and such a line earns no FIELD_UNTYPED because it is never seen.",
     "ENTRY_UNMATCHED": "A crosswalk entry whose field and value are not in STATUS.yaml.",
-    "CLAIM_KIND_COLLISION": "Two entries share a subject and a claim kind. This is the real duplicate the flat namespace could not distinguish from three claims about one subject.",
+    "SUBJECT_NOT_DERIVED": "A subject that is not the field stem with underscores hyphenated. The subject is derivable, so it is derived; declaring it freely allowed a collision to be dissolved by renaming one side of it.",
+    "CLAIM_KIND_UNDECLARED": "A claim kind outside the three this contract declares.",
+    "CLAIM_KIND_COLLISION": "Two entries share a subject and a claim kind. This is the real duplicate the flat namespace could not distinguish from two kinds of claim about one subject.",
+    "CLAIM_KIND_CONTRADICTS_VALUE": "The value's prefix and the declared kind disagree. Total in both directions: `RULED_` is a RULING, `OWNER_ACCEPTED_A<digit>` is an OWNER_ACCEPTANCE, everything else is a STATUS. It replaces a narrower rule that guarded only the ruling and acceptance pair and left an owner acceptance mistyped as a status unrefused.",
     "STANDING_NOT_IN_LADDER": "An artifact standing outside the declared ladder.",
-    "STANDING_TOKEN_ABSENT": "`standing_source: TOKEN` where the declared standing is not a whole token of the value, or is negated by a preceding NOT.",
-    "LEADING_TOKEN_UNTYPED": "The value's first token is a ladder word and the entry does not declare `standing_source: TOKEN`. Closes the escape of declaring READING to dodge the token check.",
-    "RULING_TYPED_AS_ACCEPTANCE": "A `RULED_` value typed as OWNER_ACCEPTANCE, or an `OWNER_ACCEPTED_A` value typed as RULING. STATUS.yaml states these are different claims."
+    "STANDING_WITHOUT_TOKEN": "A standing declared with any source but TOKEN, or a TOKEN source with no standing to find. This is the door the witness came through: a standing the document does not carry as a token is not asserted here at all.",
+    "STANDING_TOKEN_ABSENT": "The declared standing is not a whole token of the value, or is negated by a preceding NOT.",
+    "LEADING_TOKEN_UNTYPED": "The value's first token is a ladder word and the entry does not declare TOKEN."
   },
   "evolution": [
     "1 - typed crosswalk beside the hand-written file, which is this contract; nothing in STATUS.yaml changes and the eight duplicate keys stop being ambiguous.",
@@ -545,5 +549,8 @@
   "grounded_in": [
     "GROUND-011",
     "GROUND-006"
-  ]
+  ],
+  "derived_never_declared": "Every field an entry declares that can be derived from bytes the checker already holds is derived and compared, never trusted. `subject` is the field stem with underscores hyphenated; `claim_kind` is fixed by the value's own prefix; `artifact_standing` must be a whole undenied token of the value. An entry is a reading of the document, not a second place to assert something about it. Before this rule a subject could be renamed to dissolve a collision and a claim kind could be typo'd to disable a refusal.",
+  "witnessed_by": "reports/observations/2026-08-27-status-claims-typed-witness-observation.json - REPRODUCED_WITH_DEFECTS against commit 5dbe513. D1 (a false standing past the READING and NONE doors) and D2 (a declaration graded where it could be measured) are repaired here, with the unguarded STATUS direction and four further gaps the witness named. D3 is not repairable inside this concern and is recorded as a seam in decisions/0074.",
+  "refusals_note": "Each refusal must be provable alone: selfcheck requires a case to earn exactly the code it names. A refusal that cannot fire without another firing beside it is not a distinct rule, which is why the witness's duplicate-entry gap is answered by CLAIM_KIND_COLLISION rather than by a refusal of its own - two identical entries share a subject and a kind."
 }

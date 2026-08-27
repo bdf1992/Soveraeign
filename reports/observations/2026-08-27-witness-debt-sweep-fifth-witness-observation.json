@@ -1,0 +1,146 @@
+{
+  "observer_id": "urn:soveraeign:actor:sov-witness/session-f444fd",
+  "contributed_to_build": false,
+  "verdict": "DEFEATED",
+  "concern": "PR #119 at 91bd7ab: does reading from a declared position end the defect class, and does the deliberate asymmetry between the two halves of the gate survive its own test?",
+  "subject": {
+    "commits": [
+      "91bd7ab"
+    ],
+    "pull_request": 119,
+    "decisions": [],
+    "claims_under_test": [
+      "the gate reads the declared block and stops, never searching the document",
+      "an unterminated block is not a block",
+      "a record may quote anything, at any nesting depth, without touching what it declares",
+      "the two sides fail in opposite directions, so the status side is liberal on purpose"
+    ]
+  },
+  "observer_relation": {
+    "to_builder": "NONE",
+    "basis": "The fifth separate witness. Four prior witnesses are inside the build. This one was instructed to attack the asymmetry argument on its own terms rather than accept or reject it, after this session had conceded the argument in correspondence."
+  },
+  "frozen_head": "91bd7ab",
+  "shared_tree_conditions": {
+    "trap": "CLAUDE.md T6",
+    "mitigation": "frozen detached worktree, removed at the end; the shared tree was never touched"
+  },
+  "checks": [
+    {
+      "command": "python scripts/lint.py",
+      "result": "PASS: 759 text files, 333 modules, 3 named debt",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/verify.py",
+      "result": "39/39 checks pass on all three runs with no check-level failure. Exit varied with load only: 14.213s exit 0 SILVER, 17.088s exit 1, 19.693s exit 1 on the budget line alone.",
+      "exit_code": 0
+    }
+  ],
+  "reproduced": [
+    {
+      "id": "W5-1",
+      "claim": "a block that says nothing, or none, does not promote",
+      "method": "twelve shapes: absent, empty, no value, whitespace value, none, NONE, verdict-only, field twice, field with colon, capitalised, list-prefixed, and a field whose name is a superstring",
+      "finding": "all twelve refuse. Field-name matching is exact on the first whitespace token, so no prefix or suffix spelling reaches the value comparison."
+    },
+    {
+      "id": "W5-2",
+      "claim": "a value that is not exactly a standing does not promote",
+      "method": "eleven values including trailing period, footnote marker, asterisk, SELF_ and PRE- compounds, negations, parenthetical retraction, doubled token, qualified verdict, continuation line, and RATIFIED",
+      "finding": "the whole-value whitelist held under everything. The value is taken as the entire line remainder, so any trailing token or punctuation defeats the lookup. RATIFIED is named as over-reach with its own message rather than silently ignored. This half is genuinely structural and matches the fourth reading."
+    },
+    {
+      "id": "W5-3",
+      "claim": "block parsing survives encoding hostility",
+      "method": "CRLF, CR-only, BOM at two positions, zero-width space, non-breaking space separator, Turkish dotless I, Cyrillic lookalike, undecodable bytes",
+      "finding": "correct in every case and in the safe direction. The ASCII guard fires before the case fold so no lookalike is rescued by folding; a BOM refuses rather than promotes; a non-breaking separator promotes correctly because the value read is still ASCII."
+    },
+    {
+      "id": "W5-4",
+      "claim": "the honest case still works",
+      "method": "a record declaring its own verdict in its own block, whose body carries all four forms that defeated the previous repair",
+      "finding": "promotes correctly. A record about this gate is writable. Prose-first, HTML comment, table, footnote, blockquote, tilde fence, nested four-backtick, mislabelled fence, a later block and a second block all refuse. This is a real improvement over the enumeration repairs."
+    },
+    {
+      "id": "W5-5",
+      "claim": "three subjects, none promoted, prose unchanged",
+      "method": "enumerated the records, ran the gate against the live STATUS.yaml, and diffed the records against the merge base",
+      "finding": "confirmed. The diff on each record is exactly four lines - the block - and not one word of prose changed. Block and prose agree: both say none. The README is excluded twice over, once by name and once because its documented block is not at position one."
+    }
+  ],
+  "dissented": [
+    {
+      "id": "W5-D1",
+      "severity": "BLOCKING",
+      "claim_defeated": "the gate reads the declared block and stops, never searching the document",
+      "finding": "The repair pinned where the block OPENS and left where it CLOSES as an unbounded forward search. The scan runs from the opening fence to the first later line that is a bare fence, with no limit. So an opening block that is not closed swallows the intervening document and reads a quoted value as the record's own declaration. In a synthetic case the value was read more than 600 lines below the opening fence.",
+      "consequence": "Proven end to end on the shipped witness/host-service.md: remove its closing fence, insert a section quoting witness/README.md verbatim where a record would naturally put it, and the gate promotes the real status field to WITNESSED and exits 0 - while the record's own words still read 'Verdict: NOT-YET', 'Standing supported: none for the subject as a whole' and 'This record declares nothing.' The value is taken from a verbatim quotation of the very document that instructs authors to quote it. This is the same defect class the four prior witnesses each found, at a fifth site.",
+      "what_would_have_defeated_this_finding": "bounding the close, or reading the block as a fixed number of lines from a fixed position"
+    },
+    {
+      "id": "W5-D2",
+      "severity": "MATERIAL",
+      "claim_defeated": "the suite can see the unterminated case",
+      "finding": "Two tests assert the unterminated-fence behaviour and both place the unterminated fence with nothing quotable after it, so neither can observe the leak.",
+      "consequence": "The defect class five witnesses have now found has no defeating fixture on this axis.",
+      "what_would_have_defeated_this_finding": "a case placing quotable content after an unterminated fence"
+    },
+    {
+      "id": "W5-D3",
+      "severity": "MATERIAL",
+      "claim_defeated": "the block is the first content past an optional heading",
+      "finding": "The skip loop admits an unbounded number of hash-prefixed lines carrying arbitrary human-readable text before the declared position. A line reading '## Example only: the block a record writes when it DOES advance a subject', followed by a WITNESSED block, promotes while the record's own block sits below it.",
+      "consequence": "The position is pinned but preceded by an arbitrary amount of unread prose that a human reader does read. A positive test blesses this.",
+      "what_would_have_defeated_this_finding": "permitting one heading line, not an unbounded run of them"
+    },
+    {
+      "id": "W5-D4",
+      "severity": "MINOR",
+      "claim_defeated": "the declaration is a fence a reader sees as a fence",
+      "finding": "The fence line is compared after stripping, so a four- or eight-space-indented fence is accepted as the declaration.",
+      "consequence": "Under CommonMark a four-space-indented line at the start of a document is an indented code block, so the backticks render literally: the gate reads a declaration where a reader sees a displayed example. The rendering half is read from the specification rather than observed.",
+      "what_would_have_defeated_this_finding": "comparing the fence line unstripped"
+    },
+    {
+      "id": "W5-D5",
+      "severity": "MATERIAL",
+      "claim_defeated": "the asymmetry argument survives its own test",
+      "finding": "The argument is coherent as a principle: the two sides fail in opposite directions, and under-reading a status value is the dangerous direction because a claim then passes unasked for evidence. But the reader under-reads on 15 valid-YAML spellings that resolve to a witnessed or ratified value. Two are what an ordinary edit produces: any quoting of the value, and a trailing YAML comment naming the supporting record.",
+      "consequence": "The live STATUS.yaml already uses comment lines and 22 nested mappings, so these sit in the file's own idiom rather than being exotic. The suite has one case for the liberal direction and none anywhere for the under-read the argument itself names as unsafe. The principle is right; the implementation does not meet it.",
+      "what_would_have_defeated_this_finding": "a case in the under-reading direction"
+    },
+    {
+      "id": "W5-D6",
+      "severity": "MINOR",
+      "claim_defeated": "the refusal message tells an author what to do",
+      "finding": "The message still describes the previous format - a labelled line outside any quoted block - while the parser now accepts only a named field inside the first declared block.",
+      "consequence": "An author who follows the message literally is refused again with the identical text.",
+      "what_would_have_defeated_this_finding": "a case asserting the message describes what the parser accepts"
+    }
+  ],
+  "residuals": [
+    {
+      "id": "W5-R1",
+      "severity": "MATERIAL",
+      "finding": "Confirmed independently and still unrepaired: all three receipts declare artifact_revision b3057c0 while all three records' prose declares the commit witnessed as 4b96ba1, and services/record changed materially between them - 264 insertions across six files, including a new digest module and its tests. One of the records itself files a vague-artifact-revision finding and instructs the reader to check that field for exactness rather than presence."
+    },
+    {
+      "id": "W5-R2",
+      "severity": "NOTE",
+      "finding": "Pre-existing and not introduced here: the standing check runs against the working tree rather than committed bytes, so in a tree several sessions write concurrently a green standing check is a statement about uncommitted bytes."
+    },
+    {
+      "id": "W5-R3",
+      "severity": "NOTE",
+      "finding": "Cosmetic: with three records on disk the gate prints zero records on file, because the count is of records declaring a promotable value."
+    }
+  ],
+  "not_examined": [
+    "whether the record prose should be restamped; the builder holds that editing another participant's observation would settle their output"
+  ],
+  "standing_supported": "none. Does not support BUILT -> WITNESSED for 91bd7ab. The value half is sound and resisted every mutation; the position half pinned the open and left the close unbounded, so the class survives at a fifth site and is reachable through the document the README instructs authors to quote. Nothing is mis-standing today.",
+  "judgement_items": [
+    "Five witness rounds have now been spent on this branch, each finding real defects and each closing what it was shown. That is the loop working, and it is also a cost. Whether to continue iterating or hold the branch and move the queue is a sequencing call worth making deliberately rather than by default."
+  ]
+}

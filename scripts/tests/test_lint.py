@@ -111,6 +111,47 @@ if __name__ == "__main__":
     unittest.main()
 
 
+class ExecutableRootsAreGraded(unittest.TestCase):
+    """Every directory holding executable non-test code must reach the ceiling.
+
+    `PRODUCTION_ROOTS` was a closed list nothing measured, so `witness/` arrived
+    carrying a 507-line and a 312-line probe that this check could not see. A
+    witness probe is repository code that runs and is not a test; it is graded.
+    """
+
+    def test_witness_is_a_production_root(self) -> None:
+        self.assertIn("witness/", lint.PRODUCTION_ROOTS)
+
+    def test_an_oversized_probe_is_a_defect_and_not_silence(self) -> None:
+        body = ("from __future__ import annotations\n"
+                + "x = 1\n" * (lint.MAX_PRODUCTION_LINES + 10)).encode("utf-8")
+        code, report = run_lint_over({"witness/probes/probe_big.py": body})
+        self.assertEqual(code, 1, "an oversized probe passed the ceiling")
+        self.assertIn("exceeds production limit", report)
+
+    def test_a_probe_under_the_ceiling_passes(self) -> None:
+        body = b"from __future__ import annotations\nx = 1\n"
+        code, report = run_lint_over({"witness/probes/probe_small.py": body})
+        self.assertEqual(code, 0, report)
+
+    def test_every_named_debt_still_names_a_file_that_exists(self) -> None:
+        """A debt entry for a deleted module records nothing and hides the list's age."""
+        missing = [name for name in lint.KNOWN_MODULE_DEBT
+                   if not (lint.ROOT / name).is_file()]
+        self.assertEqual(missing, [], f"debt named for absent modules: {missing}")
+
+    def test_every_named_debt_is_actually_over_the_ceiling(self) -> None:
+        """Debt that has been paid must leave the list, or the list stops meaning anything."""
+        paid = []
+        for name in lint.KNOWN_MODULE_DEBT:
+            path = lint.ROOT / name
+            if path.is_file():
+                lines = len(path.read_text(encoding="utf-8").splitlines())
+                if lines <= lint.MAX_PRODUCTION_LINES:
+                    paid.append(f"{name} ({lines} lines)")
+        self.assertEqual(paid, [], f"debt recorded for modules under the ceiling: {paid}")
+
+
 class DecisionNumbers(unittest.TestCase):
     """One decision number, one record. Two branches minting the next free number
     independently is how four collisions reached the tree before this check existed."""

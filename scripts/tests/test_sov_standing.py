@@ -32,8 +32,10 @@ def _status(body: str) -> Path:
     return Path(handle.name)
 
 
-def _record(directory: Path, name: str) -> None:
-    (directory / name).write_text("observation", encoding="utf-8", newline=LF)
+def _record(directory: Path, name: str, supports: str = "BUILT -> WITNESSED") -> None:
+    """A record that says what it supports, which is what the gate now reads."""
+    body = f"# observation{LF}{LF}**Standing supported: {supports}.**{LF}"
+    (directory / name).write_text(body, encoding="utf-8", newline=LF)
 
 
 class ClaimedStanding(unittest.TestCase):
@@ -117,6 +119,53 @@ class GateBehaviour(unittest.TestCase):
         path = _status("phase: FOUNDING" + LF + "note: WITNESSED appears here as prose" + LF)
         with tempfile.TemporaryDirectory() as empty:
             self.assertEqual(sov_standing.unsupported(path, Path(empty)), [])
+
+
+class RecordMustCarryTheStanding(unittest.TestCase):
+    """A filename is a declaration; what the record says is the artifact.
+
+    The gate built its record set from `p.stem.lower()` and read nothing else, so
+    depositing `witness/record-service.md` was enough to let
+    `record_service_status` claim WITNESSED however loudly the record refused it.
+    Every record on file today states "Standing supported: none", and all three
+    filenames map exactly onto status fields, so the branch that first filled the
+    directory also handed a later commit three free promotions.
+    """
+
+    def _gap_fields(self, claim: str, supports: str | None) -> list[str]:
+        path = _status(f"asset_service_status: {claim}" + LF)
+        with tempfile.TemporaryDirectory() as tmp:
+            if supports is None:
+                (Path(tmp) / "asset-service.md").write_text(
+                    "an observation that will not say what it supports",
+                    encoding="utf-8", newline=LF)
+            else:
+                _record(Path(tmp), "asset-service.md", supports=supports)
+            return [c.field for c in sov_standing.unsupported(path, Path(tmp))]
+
+    def test_a_record_supporting_nothing_does_not_support_a_claim(self):
+        self.assertEqual(self._gap_fields("BUILT_WITNESSED", "none"),
+                         ["asset_service_status"])
+
+    def test_the_refusal_survives_the_prose_that_follows_it(self):
+        """Records write "none." mid-sentence; the gate must read the verdict."""
+        self.assertEqual(
+            self._gap_fields("BUILT_WITNESSED",
+                             "none. This observation does not carry the subject"),
+            ["asset_service_status"])
+
+    def test_a_record_that_will_not_say_what_it_supports_supports_nothing(self):
+        """Fail closed: silence is not support."""
+        self.assertEqual(self._gap_fields("BUILT_WITNESSED", None),
+                         ["asset_service_status"])
+
+    def test_a_record_that_carries_the_standing_still_supports_it(self):
+        self.assertEqual(self._gap_fields("BUILT_WITNESSED", "BUILT -> WITNESSED"), [])
+
+    def test_the_directory_readme_is_still_not_a_record(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            _record(Path(tmp), "README.md")
+            self.assertEqual(sov_standing.witness_records(Path(tmp)), set())
 
 
 class LiveRepository(unittest.TestCase):

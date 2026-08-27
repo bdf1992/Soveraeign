@@ -86,16 +86,42 @@ def read_claims(status_path: Path = STATUS) -> list[Claim]:
 NOT_A_RECORD = {"readme", "index"}
 
 
+SUPPORTED_LINE = re.compile(r"standing supported:\s*(.+)", re.IGNORECASE)
+SUPPORTS_NOTHING = re.compile(r"^\W*(none|nothing)\b", re.IGNORECASE)
+
+
+def supports_a_standing(record: Path) -> bool:
+    """Whether this record's own text carries a subject past BUILT.
+
+    A filename is a declaration; what the record says is the artifact. Matching
+    on the stem alone meant depositing `witness/record-service.md` was enough to
+    let `record_service_status` claim WITNESSED, however loudly the record itself
+    said otherwise - and every record on file today states "Standing supported:
+    none". Read the line and fail closed when it is missing, because a record
+    that will not say what it supports supports nothing.
+    """
+    try:
+        text = record.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError):
+        return False
+    found = SUPPORTED_LINE.search(text)
+    if found is None:
+        return False
+    return not SUPPORTS_NOTHING.match(found.group(1).strip())
+
+
 def witness_records(witness_dir: Path = WITNESS_DIR) -> set[str]:
-    """Subjects that carry a witness record, by filename stem.
+    """Subjects whose record carries a standing, by filename stem.
 
     The directory's own documentation is not an observation of anything. Counting
     it would let a file that explains the convention satisfy a claim made under
-    that convention.
+    that convention. Nor is a record that observed the subject and declined to
+    advance it: it is evidence the claim is not yet earned, not evidence for it.
     """
     if not witness_dir.is_dir():
         return set()
-    stems = {p.stem.lower() for p in witness_dir.glob("*.md")}
+    stems = {p.stem.lower() for p in witness_dir.glob("*.md")
+             if supports_a_standing(p)}
     return stems - NOT_A_RECORD
 
 

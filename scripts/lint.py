@@ -20,12 +20,29 @@ MAX_PRODUCTION_LINES = 300
 # The module budget reached only `scripts/` and packaged `src/` trees, so an adapter,
 # binding, worker, or the oracle itself could grow past the limit unseen. Adding a root
 # here surfaces existing overruns; each is entered as named debt below, never grandfathered.
-PRODUCTION_ROOTS = ("scripts/", "adapters/", "bindings/", "workers/", "conformance/")
+PRODUCTION_ROOTS = ("scripts/", "adapters/", "bindings/", "workers/", "conformance/",
+                    "witness/")
+# witness/ entered 2026-08-27. A witness probe is executable repository code that is
+# not a test, and the roots were a closed list nothing measured, so the directory
+# arrived carrying two modules past the ceiling that this check could not see.
 # Retired 2026-08-23: core.py was split into store.py (custody and receipts),
 # authority.py (grants and sessions), runs.py (leased derivation), and
 # projections.py (rebuildable views). Re-entering a module here records debt; it
 # does not grandfather it.
 KNOWN_MODULE_DEBT: dict[str, str] = {
+    "witness/probes/probe_record_journal.py": (
+        "507 lines. Entered 2026-08-27 alongside witness/ itself, which no production root "
+        "covered, so the ceiling had never graded this directory at all. Not split on sight: "
+        "a receipt digests its probe as one address, so splitting puts the second half either "
+        "inside the digested set or outside it, and outside it is the drift PR #125's witness "
+        "recorded as an open residual - a probe whose logic lives beyond witness/ with nothing "
+        "measuring it. The split is the twelve check_* functions into a cases module, owed once "
+        "a receipt can digest a probe's whole import closure rather than one file"
+    ),
+    "witness/probes/probe_host_interface.py": (
+        "312 lines, twelve over. Same entry and the same reason as its sibling; the split is "
+        "the three grant-placement attempts into their own helper"
+    ),
     "scripts/witness_infrastructure.py": (
         "301 lines, one over. The overrun is main's host-portable custody lookup, which "
         "replaced a direct os.geteuid() call that cannot run on Windows; the correct "

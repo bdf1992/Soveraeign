@@ -5,15 +5,20 @@ writes no console state (`AGENTS.md`, Local orchestration harness). What it does
 hold is the first thing a starting session reads, so a wrong sentence there is a
 false claim about the record that every later turn inherits.
 
-The hook opens a console session before it asks for a briefing. The open commits
-a record; the briefing only reads one. These cases pin that a failed briefing is
-reported as a failed read and never as an empty record.
+The load-bearing cases drive `main`, because `main` is the function that printed
+the false sentence and `main` is what the hook event actually calls. A case that
+can only fail because a private helper does not exist yet proves the helper was
+added, not that the behaviour changed; those are kept, but they are not what the
+repair rests on.
 """
 
 from __future__ import annotations
 
 from pathlib import Path
+import contextlib
 import importlib.util
+import io
+import subprocess
 import sys
 import unittest
 
@@ -26,6 +31,13 @@ TRACEBACK = '''Traceback (most recent call last):
     raise BrokenChain(entry["entry_id"])
 soveraeign_record_service.core.BrokenChain: entry_80767935e18c488fb45502df9d5c385e'''
 
+FAULT = ("soveraeign_record_service.core.BrokenChain: "
+         "entry_80767935e18c488fb45502df9d5c385e")
+
+# The sentence this repair exists to delete. The pre-repair hook printed it after
+# committing an open-session event and its receipt.
+FALSE_CLAIM = "Nothing was recorded"
+
 
 def _hook():
     """Load the hook by path; `.claude/hooks` is not an importable package."""
@@ -36,89 +48,200 @@ def _hook():
     return module
 
 
-class TerseFailure(unittest.TestCase):
-    """A failure reaches session context as its last line, never its frames."""
-
-    def setUp(self) -> None:
-        self.hook = _hook()
-
-    def test_keeps_only_the_naming_line(self) -> None:
-        terse = self.hook._terse(RuntimeError(TRACEBACK))
-        self.assertEqual(
-            terse,
-            "soveraeign_record_service.core.BrokenChain: "
-            "entry_80767935e18c488fb45502df9d5c385e",
-        )
-
-    def test_drops_the_frames(self) -> None:
-        terse = self.hook._terse(RuntimeError(TRACEBACK))
-        self.assertNotIn("Traceback", terse)
-        self.assertNotIn("<frozen runpy>", terse)
-
-    def test_falls_back_to_the_type_when_there_is_no_message(self) -> None:
-        self.assertEqual(self.hook._terse(ValueError("   ")), "ValueError")
-
-
-class DegradedBriefing(unittest.TestCase):
-    """A briefing that cannot be built says so without claiming an empty record."""
-
-    def setUp(self) -> None:
-        self.hook = _hook()
-        self.failure = RuntimeError(TRACEBACK)
-
-    def test_names_the_session_it_opened(self) -> None:
-        text = self.hook._degraded("session_abc", True, self.failure)
-        self.assertIn("session_abc", text)
-        self.assertIn("opened and recorded", text)
-
-    def test_names_a_resumed_session_as_resumed(self) -> None:
-        text = self.hook._degraded("session_abc", False, self.failure)
-        self.assertIn("resumed from an earlier session", text)
-        self.assertNotIn("opened and recorded", text)
-
-    def test_never_claims_nothing_was_recorded(self) -> None:
-        """The defeating case: the sentence this repair exists to delete."""
-        for opened in (True, False):
-            text = self.hook._degraded("session_abc", opened, self.failure)
-            self.assertNotIn("Nothing was recorded", text)
-
-    def test_names_what_the_session_does_not_know(self) -> None:
-        text = self.hook._degraded("session_abc", True, self.failure)
-        self.assertIn("What this session does not know", text)
-        self.assertIn("BrokenChain", text)
-        self.assertNotIn("Traceback", text)
-
-
-class StartDegradesRatherThanRaising(unittest.TestCase):
-    """A read that fails must not take the whole hook down with it."""
+class HookHarness(unittest.TestCase):
+    """Drive the hook the way the SessionStart event does, over stubbed calls."""
 
     def setUp(self) -> None:
         self.hook = _hook()
         self.calls: list[str] = []
+        self.remembered: list[tuple[str, str]] = []
+        self.bindings: dict[str, str] = {}
+        self.hook._bindings = lambda: dict(self.bindings)
+        self.hook._remember = self._remember
+        # `run_main` feeds the hook its event on stdin, and the hook module shares
+        # one `subprocess` with every other test in this process. Both are put back
+        # afterwards; leaving either replaced fails modules that shell out.
+        self.addCleanup(setattr, sys, "stdin", sys.stdin)
+        self.addCleanup(setattr, subprocess, "run", subprocess.run)
 
-    def _console(self, *args: str) -> dict[str, str]:
+    def patch_run(self, fake) -> None:
+        """Replace `subprocess.run` for one case only."""
+        subprocess.run = fake
+
+    def _remember(self, host: str, console: str) -> None:
+        self.remembered.append((host, console))
+
+    def _console_opens_then_fails(self, *args: str) -> dict[str, str]:
+        """open-session commits a record; the briefing that follows cannot be read."""
         self.calls.append(args[0])
         if args[0] == "open-session":
             return {"session_id": "session_opened"}
         raise RuntimeError(TRACEBACK)
 
-    def test_a_failed_briefing_still_reports_the_open(self) -> None:
-        self.hook._console = self._console
-        self.hook._bindings = lambda: {"host-1": "session_bound"}
-        self.hook._remember = lambda *_: None
-        text = self.hook.start({"session_id": "host-1"})
-        self.assertIn("session_bound", text)
-        self.assertNotIn("Nothing was recorded", text)
-        self.assertEqual(self.calls, ["session-context"])
+    def run_main(self, action: str = "start", event: str = '{"session_id": "host-1"}') -> str:
+        sys.stdin = io.StringIO(event)
+        buffer = io.StringIO()
+        with contextlib.redirect_stdout(buffer):
+            code = self.hook.main(["console_session.py", action])
+        self.assertEqual(code, 0, "the hook must never break a session")
+        return buffer.getvalue()
 
-    def test_an_unbound_session_is_opened_before_the_briefing_is_asked(self) -> None:
-        self.hook._console = self._console
-        self.hook._bindings = lambda: {}
-        self.hook._remember = lambda *_: None
-        text = self.hook.start({"session_id": "host-2"})
-        self.assertEqual(self.calls, ["open-session", "session-context"])
-        self.assertIn("session_opened", text)
-        self.assertIn("opened and recorded", text)
+
+class TheFalseClaim(HookHarness):
+    """The defect itself, driven through the function that carried it."""
+
+    def test_a_failed_briefing_after_a_committed_open_does_not_claim_an_empty_record(
+            self) -> None:
+        """The pre-repair hook printed FALSE_CLAIM here, over a record it just wrote."""
+        self.hook._console = self._console_opens_then_fails
+        output = self.run_main()
+        self.assertEqual(self.calls, ["open-session", "session-context"],
+                         "the open is asked for before the briefing, and commits")
+        self.assertNotIn(FALSE_CLAIM, output)
+        self.assertIn("session_opened", output)
+
+    def test_the_briefing_failure_is_reported_as_a_failed_read(self) -> None:
+        self.hook._console = self._console_opens_then_fails
+        output = self.run_main()
+        self.assertIn("briefing", output.lower())
+        self.assertIn(FAULT, output)
+        self.assertIn("Nothing here says the journal lost anything", output)
+
+    def test_a_traceback_does_not_reach_the_starting_session(self) -> None:
+        self.hook._console = self._console_opens_then_fails
+        output = self.run_main()
+        self.assertNotIn("Traceback", output)
+        self.assertNotIn("<frozen runpy>", output)
+
+    def test_the_hook_exits_zero_even_when_everything_fails(self) -> None:
+        def refuse_everything(*_: str) -> dict[str, str]:
+            raise RuntimeError(TRACEBACK)
+
+        self.hook._console = refuse_everything
+        output = self.run_main()
+        self.assertNotIn(FALSE_CLAIM, output)
+
+
+class WhatResumedMayAssert(HookHarness):
+    """A session id from the binding map is not evidence the session exists.
+
+    `_bindings` documents itself as a host convenience and not a record. `end`
+    never removes an entry, so the map keeps naming sessions that are CLOSED with
+    their cursor already pinned, and it survives a store replaced underneath it.
+    Reporting such an id as "resumed" asserts the console still holds an open
+    session, which this hook has not checked. That is the same unbacked claim the
+    repair exists to stop making.
+    """
+
+    def setUp(self) -> None:
+        super().setUp()
+        self.bindings = {"host-1": "session_from_the_map"}
+        self.hook._console = self._console_opens_then_fails
+
+    def test_a_mapped_id_is_not_reported_as_a_resumed_session(self) -> None:
+        output = self.run_main()
+        self.assertIn("session_from_the_map", output)
+        self.assertNotIn("resumed from an earlier session", output)
+
+    def test_a_mapped_id_says_the_map_is_not_a_record(self) -> None:
+        output = self.run_main()
+        self.assertIn("not a record", output)
+        self.assertIn("unchecked here", output)
+
+    def test_nothing_is_opened_when_the_map_already_names_one(self) -> None:
+        self.run_main()
+        self.assertEqual(self.calls, ["session-context"])
+        self.assertEqual(self.remembered, [])
+
+    def test_an_opened_id_may_say_a_record_committed(self) -> None:
+        """The other half: what the hook opened itself, it may assert."""
+        self.bindings = {}
+        output = self.run_main()
+        self.assertIn("the console committed that record", output)
+
+
+class ARefusalIsNotASuccess(HookHarness):
+    """The CLI answers a refusal on stdout and exits non-zero.
+
+    Reading stdout alone cannot tell a refusal from a result, so a refused call
+    used to return the refusal dict and fail at whichever key the caller looked up
+    next. The session was told the cause was a missing dict key and never saw the
+    reason code.
+    """
+
+    def _run(self, code: int, stdout: str, stderr: str = ""):
+        self.patch_run(
+            lambda *_a, **_kw: subprocess.CompletedProcess([], code, stdout, stderr))
+        return self.hook._console("open-session")
+
+    def test_a_refusal_raises_and_carries_its_reason_code(self) -> None:
+        with self.assertRaises(self.hook.ConsoleRefused) as refused:
+            self._run(2, '{"outcome": "REFUSED", "reason_code": "NO_LIVE_GRANT"}')
+        self.assertEqual(refused.exception.reason_code, "NO_LIVE_GRANT")
+        self.assertEqual(refused.exception.command, "open-session")
+
+    def test_the_reason_code_reaches_the_session(self) -> None:
+        self.patch_run(lambda *_a, **_kw: subprocess.CompletedProcess(
+            [], 2, '{"outcome": "REFUSED", "reason_code": "NO_LIVE_GRANT"}', ""))
+        output = self.run_main()
+        self.assertIn("NO_LIVE_GRANT", output)
+        self.assertNotIn("'session_id'", output, "a KeyError is not the cause")
+
+    def test_a_zero_exit_is_still_read_as_a_result(self) -> None:
+        self.assertEqual(self._run(0, '{"session_id": "session_ok"}'),
+                         {"session_id": "session_ok"})
+
+    def test_a_non_json_failure_keeps_a_stable_reason_code(self) -> None:
+        with self.assertRaises(self.hook.ConsoleRefused) as refused:
+            self._run(1, "", "the store is locked")
+        self.assertEqual(refused.exception.reason_code, "REFUSED")
+        self.assertIn("the store is locked", str(refused.exception))
+
+
+class AKnownRecordIsNotHedged(HookHarness):
+    """A binding that will not write does not make the committed open unknown."""
+
+    def setUp(self) -> None:
+        super().setUp()
+
+        def refuse_to_remember(*_: str) -> None:
+            raise OSError("host-sessions.json is read-only")
+
+        self.hook._remember = refuse_to_remember
+        self.hook._console = self._console_opens_then_fails
+
+    def test_the_open_is_reported_as_committed(self) -> None:
+        output = self.run_main()
+        self.assertIn("session_opened", output)
+        self.assertIn("the console committed that record", output)
+        self.assertNotIn("unknown from here", output)
+
+    def test_the_cost_of_the_lost_binding_is_named(self) -> None:
+        output = self.run_main()
+        self.assertIn("will open a second one", output)
+        self.assertIn("host-sessions.json is read-only", output)
+
+
+class TerseFailure(unittest.TestCase):
+    """A failure reaches session context as the line naming the fault."""
+
+    def setUp(self) -> None:
+        self.hook = _hook()
+
+    def test_keeps_only_the_naming_line(self) -> None:
+        self.assertEqual(self.hook._terse(RuntimeError(TRACEBACK)), FAULT)
+
+    def test_a_trailing_warning_is_not_reported_as_the_cause(self) -> None:
+        """A warning emitted on exit lands after the fault and would win a naive scan."""
+        noisy = TRACEBACK + "\nsys:1: ResourceWarning: unclosed database"
+        self.assertEqual(self.hook._terse(RuntimeError(noisy)), FAULT)
+
+    def test_falls_back_to_the_type_when_there_is_no_message(self) -> None:
+        self.assertEqual(self.hook._terse(ValueError("   ")), "ValueError")
+
+    def test_a_failure_that_is_only_warnings_still_reports_something(self) -> None:
+        only = "sys:1: ResourceWarning: unclosed database"
+        self.assertEqual(self.hook._terse(RuntimeError(only)), only)
 
 
 if __name__ == "__main__":

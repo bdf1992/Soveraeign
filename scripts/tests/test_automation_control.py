@@ -105,9 +105,14 @@ class DeclaredCorpus(Tree):
                                  case["expect_log_lines"])
 
     def test_every_declared_refusal_is_assigned_a_layer(self) -> None:
-        """No refusal may sit outside the partition, because that is where a skip hides."""
-        layered = set(TABLE["refusal_layer"]["operation"] +
-                      TABLE["refusal_layer"]["transport"])
+        """No refusal may sit outside the partition, because that is where a skip hides.
+
+        Every layer, read out of the table rather than named here. An earlier version
+        listed the two layers that existed and a third arrived with the proposal
+        operation - the test then passed over two refusals it was written to catch.
+        """
+        layered = {code for key, codes in TABLE["refusal_layer"].items()
+                   if key != "note" for code in codes}
         self.assertEqual(layered, set(TABLE["refusals"]))
 
     def test_every_operation_refusal_has_a_corpus_case(self) -> None:

@@ -67,7 +67,7 @@
   },
   "bindings": {
     "human": {
-      "surface": "the served pages at http://127.0.0.1:<port>/ - one switch and one edit link per row, and a form at /new and /edit",
+      "surface": "the served pages at http://127.0.0.1:<port>/ - one switch and one edit link per row, and a form at /new and /edit, and an ask box in each open row",
       "reaches": "automation.set_switch, automation.create_schedule, automation.update_schedule"
     },
     "model": {
@@ -100,17 +100,23 @@
     "ALREADY_EXISTS": "Create never overwrites. Eleven sessions share this checkout and a form submitted twice must not replace a declaration somebody else is editing.",
     "NOT_EDITABLE": "The requested field is name or enabled. Both have their own answer, named in the refusal.",
     "INVALID_DECLARATION": "The resulting document does not load. The loader's own wording is reported and the previous bytes are restored.",
-    "EXTERNAL_WORLD_REFUSED": "Phase I refuses external-world effects. Caught before a file is written, with a code naming the boundary, rather than as a schema complaint to interpret."
+    "EXTERNAL_WORLD_REFUSED": "Phase I refuses external-world effects. Caught before a file is written, with a code naming the boundary, rather than as a schema complaint to interpret.",
+    "MODEL_UNAVAILABLE": "The local model could not be reached, or the adapter refused the binding. No fallback to another model or provider - a silent substitution is forbidden.",
+    "UNREADABLE_PROPOSAL": "The model's answer carried no JSON object this could read.",
+    "WRONG_SHAPE": "A proposed value is not the kind of thing that field holds.",
+    "NOTHING_UNDERSTOOD": "The request named no field this operation can change. Returned with the model's own sentence about why, rather than a guess at what was meant."
   },
   "residuals": {
     "the_console_cannot_tell_operators_apart": "Anyone with the box is the owner as far as this server can see. It records the binding and the fact that the actor was local, and does not claim an identity it did not check. Real principal identity is a separate open concern.",
     "armed_is_not_running": "Nothing on this node ticks a schedule. Flipping a switch to on arms a declaration and starts nothing, because no host scheduler is registered - that was outside this work by instruction. An operator who reads on as running would be wrong, so the surface says armed.",
     "the_switch_is_dirty_until_someone_commits_it": "The operation writes the working tree and does not commit. Until someone lands it, the declaration on disk and the declaration at HEAD disagree, and the two readers already say which they read. That is the honest split and it is also a way to forget: a switch flipped and never committed is a decision this repository loses on the next clean checkout.",
     "no_schedule_is_on": "This table describes what it takes to arm one. When it was written every declaration on this node still read enabled: false, and no participant but Bdo can change that.",
-    "a_form_cannot_write_a_workflow": "A schedule says when to run one workflow or skill, with what arguments and under what budget. It does not compose services, adapters or connections - that is what the workflow itself does, and a workflow is JavaScript under .claude/workflows/. So the form creates schedules over things that already exist and cannot create the thing being scheduled. Authoring a workflow from a surface is a separate and much larger concern, and nothing here starts it."
+    "a_form_cannot_write_a_workflow": "A schedule says when to run one workflow or skill, with what arguments and under what budget. It does not compose services, adapters or connections - that is what the workflow itself does, and a workflow is JavaScript under .claude/workflows/. So the form creates schedules over things that already exist and cannot create the thing being scheduled. Authoring a workflow from a surface is a separate and much larger concern, and nothing here starts it.",
+    "a_model_answer_is_not_evidence": "The proposal names which model produced it, in what time, under which data boundary. It is still a suggestion from a 4-billion-parameter model running on a desktop, and the surface says so by showing the fields it changed rather than applying them. Nobody has measured how often it is right, and this table does not claim it usually is.",
+    "the_adapter_is_not_packaged": "scripts/sovschedule/intent.py bootstraps sys.path to import adapters/ollama, which AGENTS.md forbids in production code. The alternative was a second, undeclared model crossing, which is worse. Named here and in decisions/0088 rather than left for a reader to find."
   },
   "refusal_layer": {
-    "note": "Which layer owns each refusal, and therefore what has to defeat it. An operation refusal is reachable from a fixture case and needs one. A transport refusal is a property of the socket, can only be defeated by standing a server up, and needs a named test instead. This is declared rather than hardcoded in a test because a skip list inside a test grows quietly - PORT_IN_USE was added to this contract and the test that would have caught a missing case skipped it by name.\n\nThe operation refusals are split across two corpora and two test modules: the switch ones in `cases`, the authoring ones in `authoring_cases`.",
+    "note": "Which layer owns each refusal, and therefore what has to defeat it. An operation refusal is reachable from a fixture case and needs one. A transport refusal is a property of the socket, can only be defeated by standing a server up, and needs a named test instead. This is declared rather than hardcoded in a test because a skip list inside a test grows quietly - PORT_IN_USE was added to this contract and the test that would have caught a missing case skipped it by name.\n\nThe operation refusals are split across two corpora and two test modules: the switch ones in `cases`, the authoring ones in `authoring_cases`.\n\nA third layer arrived with the proposal operation. Its refusals are defeated by cases that feed a canned model answer through a fake transport: the model itself is not a fixture and its output is not deterministic, so what is pinned is what this code does with an answer, never what an answer will be.",
     "operation": [
       "ALREADY_EXISTS",
       "DECLARATION_REFUSED",
@@ -128,6 +134,12 @@
       "NON_LOOPBACK_BIND",
       "BAD_TOKEN",
       "PORT_IN_USE"
+    ],
+    "proposal": [
+      "MODEL_UNAVAILABLE",
+      "UNREADABLE_PROPOSAL",
+      "WRONG_SHAPE",
+      "NOTHING_UNDERSTOOD"
     ]
   },
   "operations": {
@@ -154,6 +166,26 @@
     "no_delete": {
       "offered": false,
       "why": "Removing a declaration is not offered. An uncommitted one has no copy anywhere and the operator who typed it is the only thing that ever knew it existed. Switching it off is the reversible answer and leaves the record intact."
+    },
+    "automation.propose_edit": {
+      "changes": "nothing. It reads a declaration and answers with a suggestion",
+      "owner_when": "never - it writes nothing, so there is nothing to authorise",
+      "effect_class": "RESOURCE_CONSUMPTION",
+      "effect_class_note": "A model run on the owner's machine. Nothing is written and no third party is reached, so this proceeds unattended like any other reversible local work. What it spends is time and electricity.",
+      "why": "Bdo asked to request an edit in natural language. A model that could write a declaration directly would walk through the authority split this table exists to state - so it fills the form and a person saves. That is not caution about model quality; it is the same shape the switch already uses, where a model operator holding no seat gets a proposal rather than an effect.",
+      "model": {
+        "through": "adapters/ollama, binding urn:soveraeign:binding:ollama:qwen3-4b",
+        "data_boundary": "LOCAL_ONLY",
+        "data_boundary_note": "The model runs on this machine. No bytes reach a third party, so this is not the EXTERNAL_WORLD effect Phase I refuses. The adapter's own invocation record carries the model id, its version digest, the input digest and the tokens spent, and the console shows the model and the seconds beside every answer - an unattributed suggestion is the thing this avoids.",
+        "silent_fallback": "forbidden; an unreachable model is MODEL_UNAVAILABLE"
+      },
+      "what_is_checked_after": [
+        "every proposed field is one an edit may touch, or NOT_EDITABLE",
+        "every value is the kind of thing that field holds, or WRONG_SHAPE",
+        "the answer parses at all, or UNREADABLE_PROPOSAL",
+        "a partial nested object is completed from the current declaration before a person sees it, because a model asked to raise a budget answers with the budget alone and the schema requires both halves of limits"
+      ],
+      "worst_case": "A proposal a person reads and rejects. The model is not given a path to automation.update_schedule and there is nothing for it to hold: the proposal is returned to the browser and the save is a separate request with its own grant check, made by whoever is looking at it."
     }
   },
   "validation": {

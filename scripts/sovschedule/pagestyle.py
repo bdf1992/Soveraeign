@@ -86,4 +86,8 @@ tr.ed-row>td{background:#202024;border-top:0}
 .save .why{flex:1}
 details{margin-top:2rem;border-top:1px solid var(--line);padding-top:1rem}
 summary{cursor:pointer;color:#9a9aa4;font-size:.85rem}
+.ask{display:flex;gap:.5rem;align-items:center;padding:.1rem 0 .5rem}
+.ask .why{flex:1}
+label.f input.moved,label.f select.moved,label.f textarea.moved{border-color:#7a5d1f;
+ background:#2a2413}
 """

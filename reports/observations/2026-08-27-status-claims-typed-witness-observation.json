@@ -1,0 +1,244 @@
+{
+  "observer_id": "urn:soveraeign:actor:sov-witness/session-76666207",
+  "contributed_to_build": false,
+  "verdict": "REPRODUCED_WITH_DEFECTS",
+  "concern": "commit 5dbe513 on feat/status-claims-typed: does contracts/status-claims.json plus scripts/sov_status_claims.py actually type the 48 status fields of STATUS.yaml, fire all seven declared refusals, handle the NOT_WITNESSED token trap, and introduce no verify failure?",
+  "subject": {
+    "commits": ["5dbe5133cf41c50bd254d612564d690b960bbae3"],
+    "parent": "126430013d113cb002a6249b812de57588094709",
+    "branch": "feat/status-claims-typed",
+    "pull_request": null,
+    "decisions": [],
+    "paths_in_commit": [
+      "contracts/status-claims.json",
+      "scripts/sov_status_claims.py",
+      "conformance/fixtures/status-claims/cases.json",
+      "scripts/sovverify/checks.py"
+    ],
+    "claims_under_test": [
+      "check passes: 48 fields typed across 40 subjects",
+      "selfcheck passes: all seven declared refusals fire, positive case earns none",
+      "the check is not vacuous under perturbation",
+      "the crosswalk is honest about the NOT_WITNESSED token trap (T3)",
+      "all eight duplicated STATUS.yaml keys resolve to one subject holding two different claim kinds",
+      "lint passes and scripts/sovverify/checks.py is at or under 300 lines",
+      "the change adds no verify failures relative to parent 1264300",
+      "STATUS.yaml is byte-identical between 5dbe513 and its parent"
+    ]
+  },
+  "observer_relation": {
+    "to_builder": "NONE",
+    "basis": "Launched after the commit existed. Built two of its own detached worktrees (wit-commit at 5dbe513, wit-parent at 1264300) from the repository object store. Read no builder report, no acceptance packet, no completion summary. The decision record 0074 was available and was deliberately not used as evidence for any verdict; only committed bytes, and for finding SCT-D3 alone the builder worktree state as evidence about the referent of a check."
+  },
+  "frozen_head": "5dbe5133cf41c50bd254d612564d690b960bbae3",
+  "shared_tree_conditions": {
+    "trap": "CLAUDE.md T6",
+    "primary_tree_state": "C:/Users/bdf19/Desktop/Soveraeign was at 1264300 on feat/federation-harness-and-hardening with more than thirty modified paths including STATUS.yaml, CLAUDE.md, AGENTS.md and scripts/sovverify/checks.py. Unusable for measurement and not measured in.",
+    "mitigation": "Every reading taken in two purpose-built detached worktrees confirmed clean by git status --porcelain with empty output, immediately before and after the verify runs. Perturbation testing done in a separate file-copy sandbox so neither worktree was dirtied during measurement.",
+    "stability_recheck": "check and selfcheck were re-run after all other measurements; identical output, worktree still clean at 5dbe513. The verdict is attestable against a tree that did not move.",
+    "note": "An earlier git worktree add using a bash-style /c/ path silently created worktrees at a literal Windows path; these were removed and recreated before any reading was taken."
+  },
+  "checks": [
+    {
+      "command": "git rev-parse 5dbe513:STATUS.yaml ; git rev-parse 1264300:STATUS.yaml",
+      "result": "IDENTICAL",
+      "exit_code": 0,
+      "detail": "both resolve to blob 401fe0b53f2de0af1d55568fd0e5849534a51187"
+    },
+    {
+      "command": "python scripts/sov_status_claims.py check",
+      "cwd": "wit-commit (5dbe513, clean)",
+      "result": "PASS",
+      "exit_code": 0,
+      "output": "status claims: 48 typed against 40 subjects, no defects"
+    },
+    {
+      "command": "python scripts/sov_status_claims.py selfcheck",
+      "cwd": "wit-commit (5dbe513, clean)",
+      "result": "PASS",
+      "exit_code": 0,
+      "output": "status-claims selfcheck: 7 refusals each fire"
+    },
+    {
+      "command": "python scripts/lint.py",
+      "cwd": "wit-commit (5dbe513, clean)",
+      "result": "PASS",
+      "exit_code": 0,
+      "output": "PASS: repository hygiene (813 text files, 344 Python modules, 8 named debt), with 8 WARN lines, one per duplicated STATUS.yaml key"
+    },
+    {
+      "command": "python scripts/verify.py",
+      "cwd": "wit-parent (1264300, clean)",
+      "result": "FAIL",
+      "exit_code": 1,
+      "wall_seconds": 14.94,
+      "output": "FAIL: orientation snapshot, diagram provenance, Node Interface projection, documentation reader, operation surface page, repository tooling tests. 40 TIME lines. Ran 273 tests in the tooling shard."
+    },
+    {
+      "command": "python scripts/verify.py",
+      "cwd": "wit-commit (5dbe513, clean)",
+      "result": "FAIL",
+      "exit_code": 1,
+      "wall_seconds": 13.79,
+      "output": "FAIL: orientation snapshot, diagram provenance, Node Interface projection, documentation reader, operation surface page, repository tooling tests. 42 TIME lines. Ran 273 tests in the tooling shard."
+    },
+    {
+      "command": "newline count of scripts/sovverify/checks.py at both commits",
+      "result": "PASS",
+      "exit_code": 0,
+      "detail": "288 lines at 5dbe513 and 277 at the parent, a delta of 11 as declared, against a limit of 300, leaving 12 lines of headroom. All LF, zero CRLF."
+    },
+    {
+      "command": "independent perturbation battery: 23 mutations of the crosswalk and of STATUS.yaml in a file-copy sandbox, each run through sov_status_claims.py check",
+      "result": "MIXED",
+      "exit_code": null,
+      "detail": "all seven declared refusals fired by the hand of the witness; ten mutations producing a wrong or false crosswalk entry passed with exit 0"
+    }
+  ],
+  "reproduced": [
+    {
+      "id": "SCT-1",
+      "claim": "check passes: 48 fields typed across 40 subjects, no untyped field and no stale entry",
+      "method": "ran the subcommand in a clean detached worktree, then re-derived the numbers independently by applying the field regex of the module to STATUS.yaml bytes and counting distinct subjects in the crosswalk",
+      "finding": "CONFIRMED. STATUS.yaml carries exactly 48 column-zero status fields, all 48 field-and-value pairs distinct, and the crosswalk carries 48 entries over 40 distinct subjects. No line matching a looser status-field pattern is skipped by the module regex in the current file, measured at zero. The set of typed pairs and the set of file pairs are equal in both directions."
+    },
+    {
+      "id": "SCT-2",
+      "claim": "selfcheck passes and all seven declared refusals each fire on a controlled case, the positive case earning none",
+      "method": "ran selfcheck, then read the corpus and the selfcheck function to establish what bytes it reads",
+      "finding": "CONFIRMED, and the check is honest about its own referent. The corpus holds 8 cases: one positive and exactly one per declared refusal. selfcheck builds its fields from the status_lines carried by each case and grades against the crosswalk carried by each case, so it never opens STATUS.yaml. The claim that repairing the live record cannot stop a refusal being proved therefore holds. selfcheck also fails if a declared refusal is unexercised or an undeclared code fires, so the table cannot drift from the corpus in either direction."
+    },
+    {
+      "id": "SCT-3",
+      "claim": "the check is not vacuous",
+      "method": "perturbations built by the witness rather than the fixture of the builder: deleted a crosswalk entry; added an invented status line to STATUS.yaml; tampered with an entry value; added an entry with no matching line; merged two entries onto one subject and kind; set a standing outside the ladder; declared WITNESSED from a NOT_WITNESSED value; typed a RULED value as OWNER_ACCEPTANCE; typed an OWNER_ACCEPTED_A2 value as RULING",
+      "finding": "CONFIRMED for what the seven refusals cover. Every one of the seven fired under a perturbation the witness constructed, each with exit 1 and a named code: FIELD_UNTYPED, ENTRY_UNMATCHED, CLAIM_KIND_COLLISION, STANDING_NOT_IN_LADDER, STANDING_TOKEN_ABSENT, LEADING_TOKEN_UNTYPED, RULING_TYPED_AS_ACCEPTANCE. The check is genuinely wired to the artifact. Its coverage is nonetheless incomplete; see SCT-D1, SCT-D2, SCT-R2, SCT-R3 and SCT-R4."
+    },
+    {
+      "id": "SCT-4-scoped",
+      "claim": "an entry declaring standing_source TOKEN must have that standing present as a whole token not preceded by NOT",
+      "method": "set artifact_standing to WITNESSED with standing_source TOKEN on the live entry whose value is BUILT_SELF_TESTED_NOT_WITNESSED, then separately read the token_asserts function",
+      "finding": "CONFIRMED AS SCOPED. exit 1 with STANDING_TOKEN_ABSENT, reporting that the entry declares standing WITNESSED from a token and that BUILT_SELF_TESTED_NOT_WITNESSED does not assert it. token_asserts splits on underscore, compares whole tokens, and treats a preceding NOT as denial, which is the correct handling of CLAUDE.md T3. The guarantee holds only for entries declaring TOKEN and does not generalise to the statement that a false standing cannot pass. See SCT-D1."
+    },
+    {
+      "id": "SCT-5",
+      "claim": "all eight duplicated top-level keys resolve under the typing to one subject holding two different claim kinds, with no subject holding two of one kind",
+      "method": "counted duplicated top-level keys in STATUS.yaml bytes independently, then grouped crosswalk entries by subject and claim kind",
+      "finding": "CONFIRMED as a property of the file as written. STATUS.yaml has exactly 8 duplicated top-level keys and all 8 are status fields: byom, engineering_framework, kernel_transition_contract, proofing_service, sdlc_loop, semantic_cold_start, sov_operating_agent and ticket_kind_vocabulary. Each resolves to a single subject holding two distinct kinds, six as STATUS with RULING and two as STATUS with OWNER_ACCEPTANCE. No subject-and-kind pair occurs twice across all 48 entries. The property is real; that it is not enforced is SCT-D2."
+    },
+    {
+      "id": "SCT-6",
+      "claim": "lint passes and scripts/sovverify/checks.py is at or under 300 lines",
+      "method": "ran lint in the clean worktree, then counted newlines in the file bytes at both commits rather than trusting a line-counting cmdlet",
+      "finding": "CONFIRMED. lint exit 0. checks.py is 288 lines at 5dbe513 against a 300-line limit, up from 277 at the parent. Recorded because the alternative reading misleads: PowerShell Measure-Object -Line reports 279 for the same file because it drops blank lines, and the byte count is the reading that matters against a line-count contract."
+    },
+    {
+      "id": "SCT-7-as-stated",
+      "claim": "the change adds no verify failures, the parent already failing six checks on its own",
+      "method": "ran verify.py in two independent clean detached worktrees and diffed the parsed PASS and FAIL sets and the top-level failure summary lines",
+      "finding": "CONFIRMED AT CHECK GRANULARITY. Parent and commit produce the identical summary line naming orientation snapshot, diagram provenance, Node Interface projection, documentation reader, operation surface page and repository tooling tests. The set difference is empty in both directions. The check count moves from 40 to 42 and both new checks pass, at 0.052s and 0.049s. The tooling suite runs 273 tests in both. The six-failure parent baseline is accurate and independently reproduced. This is not the whole reading; see SCT-D3."
+    },
+    {
+      "id": "SCT-8",
+      "claim": "STATUS.yaml is byte-identical between 5dbe513 and its parent",
+      "method": "compared git blob object ids, which is a content hash rather than a diff",
+      "finding": "CONFIRMED. Both resolve to blob 401fe0b53f2de0af1d55568fd0e5849534a51187. The four paths in the commit are exactly the four declared; three are additions and checks.py is an 11-line insertion with no other edit."
+    }
+  ],
+  "dissented": [
+    {
+      "id": "SCT-D1",
+      "severity": "MATERIAL",
+      "claim_defeated": "the crosswalk is honest about T3, and no entry can get a false standing past the checker",
+      "finding": "A false standing passes cleanly through the READING and NONE doors. On the live entry sov_operating_agent_status, whose value is OWNER_ACCEPTED_CONTEXT_PROFILE_BUILT_SELF_TESTED_NOT_WITNESSED, setting artifact_standing to WITNESSED with standing_source READING gives exit 0 and the message that 48 are typed against 40 subjects with no defects. The same entry with artifact_standing RATIFIED and standing_source NONE also passes. The reason is that the token check inspects only entries declaring TOKEN, and LEADING_TOKEN_UNTYPED fires only when a ladder word is the first token of the value, which it is not here.",
+      "consequence": "The contract states that LEADING_TOKEN_UNTYPED closes the escape of declaring READING to dodge the token check. It closes it only for values beginning with a ladder word, and 33 of the 48 live entries do not begin with one, so for those the READING door is open. A crosswalk entry can assert WITNESSED about a subject whose own status line says NOT_WITNESSED, and the check that exists to type standing honestly reports no defect. standing_source NONE is worse than READING, because the vocabulary of the contract defines NONE as the value asserting no ladder position, so an entry declaring NONE together with a non-null artifact_standing is internally contradictory and still unrefused. No live entry currently uses READING, zero of 48, and no live entry has a non-null standing with a non-TOKEN source, so the hazard is unexploited today. The open door, not the current data, is the finding.",
+      "what_would_have_defeated_this_finding": "a refusal firing when a non-TOKEN source declares a standing that the value negates with NOT anywhere, or that the value contradicts with a different ladder token, plus an unconditional refusal for standing_source NONE carrying a non-null artifact_standing."
+    },
+    {
+      "id": "SCT-D2",
+      "severity": "MATERIAL",
+      "claim_defeated": "CLAIM_KIND_COLLISION enforces that the eight duplicated keys resolve to one subject holding two kinds",
+      "finding": "The collision check grades a hand-authored declaration where it could have measured. The subject field is free text in the crosswalk and nothing binds it to the field name. Renaming the subject of one byom entry from byom to byom-ruling dissolves the collision: exit 0, no defects. The same escape works through claim_kind, which is never validated against the claim_kinds vocabulary of the contract, so an invented kind or the typo RULLING splits the group and passes with exit 0. Measured independently: for all 48 live entries the subject equals the field with the status suffix removed and underscores replaced by hyphens, with zero exceptions, so the value is fully derivable from bytes the check already reads.",
+      "consequence": "This is the defect class the witnessing procedure names directly, a check that reads a declaration where it could have measured. The one-subject-two-kinds property that SCT-5 confirms is upheld by the hand of the builder rather than by the check that appears to enforce it, and the check would not notice a one-word edit breaking it. Because a mistyped claim_kind also silently disables RULING_TYPED_AS_ACCEPTANCE, which compares kind strings literally, one unvalidated field defeats two refusals at once.",
+      "what_would_have_defeated_this_finding": "deriving the subject from the field inside the checker and refusing any entry whose declared subject disagrees; or at minimum refusing any claim_kind outside the declared claim_kinds and any standing_source outside the declared standing_sources."
+    },
+    {
+      "id": "SCT-D3",
+      "severity": "MATERIAL",
+      "claim_defeated": "the change introduces nothing",
+      "finding": "The commit adds a new failing claim inside a check that was already red, and the check-level delta is empty only for that reason. At parent 1264300 the orientation snapshot fails two claims, commits and decision records. At 5dbe513 it fails three, the new one reading that verification checks are claimed as 40 by the page while the record holds 42. That claim reads the working tree rather than HEAD, by the NOT CHECKED disclosure of the check itself. Run in the worktree of the builder, which carries the uncommitted CLAUDE.md edit changing 40 to 42, the claim does not fail at all; run against the committed artifact in a clean worktree it fails. Both readings were taken and are reproducible.",
+      "consequence": "The committed tree is internally inconsistent: CLAUDE.md line 105 says verify runs 40 checks, the committed tree registers 42, and the snapshot check of the repository says so against the artifact while staying quiet against the desk of the builder. This is the trap the witnessing procedure names as the dominant local defect class, a check passing because every run was taken against a working tree holding a file that was never committed. The stated reason for withholding the edit, that CLAUDE.md sits outside the scope of the ratified standing landing grant, is a real boundary and not a mistake. The consequence is that this change cannot be landed consistently by the grant that would land it, which is a seam rather than a repair.",
+      "what_would_have_defeated_this_finding": "an orientation snapshot run against the committed artifact showing the same claim set at parent and at commit, or a verify run taken in a worktree the builder had not edited."
+    }
+  ],
+  "residuals": [
+    {
+      "id": "SCT-R1",
+      "severity": "MATERIAL",
+      "finding": "The committed contract points at a decision record that does not exist in the commit. contracts/status-claims.json sets its decision field to decisions/0074-typed-standing-and-the-node-graph.md and lists the same path in governed_by; git cat-file -e reports that the path does not exist in 5dbe513. The other three governed_by entries resolve. Nothing under scripts/ grades governed_by or decision references, so this passes silently and no verify check moved. The artifact declares itself PROPOSED under a governing document the repository does not contain."
+    },
+    {
+      "id": "SCT-R2",
+      "severity": "MINOR",
+      "finding": "RULING_TYPED_AS_ACCEPTANCE is a two-way check between a RULED value and an OWNER_ACCEPTED_A-digit value only, so mistyping either as STATUS is unrefused. Demonstrated: changing only claim_kind on specification_status from OWNER_ACCEPTANCE to STATUS, subject untouched, gives exit 0 and no defect. The contract gives OWNER_ACCEPTANCE reversible false and settled_by seat:root, and STATUS reversible true and settled_by null, so this silently demotes an irreversible owner acceptance to a reversible general status, which is the conflation the contract exists to prevent."
+    },
+    {
+      "id": "SCT-R3",
+      "severity": "MINOR",
+      "finding": "The reader silently defines its own scope. The field regex is anchored at column zero and requires a value with no spaces, so an indented status field, or a column-zero one whose value contains spaces, is invisible and earns no FIELD_UNTYPED; both perturbations gave exit 0. Measured: STATUS.yaml currently carries zero lines of either shape, so this is unexploited, but a future hand edit in either shape would be untyped rather than refused, and the file is hand-written by the account of the contract itself."
+    },
+    {
+      "id": "SCT-R4",
+      "severity": "MINOR",
+      "finding": "Matching is set-based in both directions, so cardinality is unchecked. Duplicating a crosswalk entry under a second subject passes with exit 0 and inflates the report to 49 typed against 41 subjects. One STATUS.yaml line can be typed as being about two different subjects with no refusal."
+    },
+    {
+      "id": "SCT-R5",
+      "severity": "MINOR",
+      "finding": "A malformed crosswalk entry crashes rather than refuses. Removing artifact_standing from an entry raises KeyError, and setting subject to null raises TypeError inside sorted. Both exit non-zero so the gate still fails closed, but the operator sees a traceback rather than a named refusal, and no schema validates entry shape. contracts/schemas/ does not exist in this repository, so no local convention is broken; the AGENTS.md requirement of JSON Schema Draft 2020-12 at machine boundaries is the standing rule this sits against."
+    },
+    {
+      "id": "SCT-R6",
+      "severity": "MINOR",
+      "finding": "No unit test module accompanies the new script. scripts/tests/ holds 65 test modules and none covers sov_status_claims.py; both verify runs report 273 tests run, identically. token_asserts, the function carrying the T3 handling, has no direct unit test and is exercised by exactly one selfcheck case. Step 4 of the AGENTS.md implementation order asks for focused unit tests for local mechanics and edge cases alongside the contract case."
+    },
+    {
+      "id": "SCT-R7",
+      "severity": "MINOR",
+      "finding": "selfcheck accepts a case that fires extra refusals. The comparison asks only whether the expected code is among those earned, so a defeating case passes while possibly firing for a reason other than the one it names. Only the positive case requires an empty set."
+    },
+    {
+      "id": "SCT-R8",
+      "severity": "INFORMATIONAL",
+      "finding": "conformance/fixtures/status-claims/cases.json is named in neither conformance/scenarios.json nor conformance/oracle-controls.json, and is read only by scripts/sov_status_claims.py. Four of the nine existing fixture directories, ai-native, board, closure and tickets, are equally unregistered, so this follows local practice rather than departing from it. Recorded so it is not mistaken for oracle coverage: the seven refusals are proved by a tool under scripts/ reading a fixture, not by the conformance oracle."
+    },
+    {
+      "id": "SCT-R9",
+      "severity": "INFORMATIONAL",
+      "finding": "scripts/sovverify/checks.py stands at 288 of 300 permitted lines after this change, leaving 12 lines of headroom in a file that grows by roughly 11 lines per registered check. The check after next crosses the limit."
+    },
+    {
+      "id": "SCT-R10",
+      "severity": "INFORMATIONAL",
+      "finding": "Both files declared as deliberately withheld are absent from the commit as described: decisions/0074-typed-standing-and-the-node-graph.md, and the CLAUDE.md edit from 40 to 42 checks. Both exist as working-tree state in the worktree of the builder at the same HEAD. Their absence was confirmed against the commit object rather than taken from any account of it. The consequences are SCT-D3 and SCT-R1."
+    }
+  ],
+  "not_examined": [
+    "whether any typed claim is true; this contract types what STATUS.yaml asserts, and the module docstring scopes itself to representation plainly and correctly",
+    "whether STATUS, OWNER_ACCEPTANCE and RULING are the right decomposition of what STATUS.yaml means; that is product judgement",
+    "the six pre-existing verify failures on their own merits; only the delta from parent to commit was graded",
+    "decisions/0074 as prose; it was read for context and used as evidence for nothing",
+    "whether the eight duplicated keys should be repaired in STATUS.yaml rather than typed beside it"
+  ],
+  "standing_supported": "Supports OPEN to BUILT for the four committed paths and no further. The artifact exists, runs, is wired to the bytes it grades, reads STATUS.yaml line by line rather than through a YAML parser that would collapse the very duplicates it types, and all seven declared refusals fire under perturbations built by the witness rather than by the builder. It does not support BUILT to WITNESSED as a complete result. SCT-D1 shows a false standing passing through the READING and NONE doors on 33 of 48 live entries, including a WITNESSED claim over a value that says NOT_WITNESSED, which is the specific hazard the change is named for. SCT-D2 shows the collision refusal grading a hand-authored subject that is mechanically derivable from data the check already holds. SCT-D3 shows the commit adding a failing claim to the orientation snapshot that is invisible from the worktree of the builder. The seven refusals are sound, and they are not the right seven.",
+  "judgement_items": [
+    {
+      "id": "SCT-J1",
+      "question": "This change cannot be landed consistently by the grant that would land it: registering two checks moves the count to 42, correcting CLAUDE.md line 105 is required for the orientation snapshot of the repository to be truthful about the artifact, and CLAUDE.md is excluded from grant:standing-landing-loop as a root governing document. Should the landing grant widen to cover a mechanical count on the orientation page, should the verification-checks claim of the snapshot read HEAD rather than the working tree, or should any check-registering change route to Bdo by construction?"
+    },
+    {
+      "id": "SCT-J2",
+      "question": "contracts/status-claims.json is committed as PROPOSED and declares itself governed by decisions/0074, which is not in the repository. Is a contract naming an absent governing decision admissible as BUILT, and should verify grade the governed_by paths of a contract for existence?"
+    }
+  ]
+}

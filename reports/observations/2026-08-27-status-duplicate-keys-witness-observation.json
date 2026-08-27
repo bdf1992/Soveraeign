@@ -1,0 +1,117 @@
+{
+  "observer_id": "urn:soveraeign:actor:sov-witness/session-f444fd",
+  "contributed_to_build": false,
+  "verdict": "REPRODUCED_WITH_ONE_DISSENT",
+  "concern": "PR #122 (chore/status-and-projection-bookkeeping): are exactly eight dead duplicate keys deleted from STATUS.yaml, and does lint now catch the next one?",
+  "subject": {
+    "commits": [
+      "8f7fe54673e82057d48a0eff56bcba2a50a0169a"
+    ],
+    "pull_request": 122,
+    "decisions": [
+      "decisions/0046-decision-queue-drain.md"
+    ],
+    "claims_under_test": [
+      "eight dead duplicate top-level keys are deleted",
+      "no standing changes; the parsed mapping is identical to main",
+      "lint now fails on a reintroduced duplicate"
+    ]
+  },
+  "observer_relation": {
+    "to_builder": "NONE",
+    "basis": "Launched after the branch was pushed. Worked only in detached worktrees it created, imported no repository code when counting keys, and read no builder correspondence. The builder discloses that its own helper read and shaped the change and is therefore inside the build; this run supplies the independent reading that was missing."
+  },
+  "frozen_head": "8f7fe54673e82057d48a0eff56bcba2a50a0169a",
+  "shared_tree_conditions": {
+    "trap": "CLAUDE.md T6",
+    "mitigation": "all readings taken in an isolated detached worktree at 8f7fe54; git status --porcelain empty before and after every reading"
+  },
+  "checks": [
+    {
+      "command": "python scripts/lint.py",
+      "result": "PASS: 750 text files, 330 Python modules, 41 YAML documents",
+      "exit_code": 0
+    },
+    {
+      "command": "python scripts/verify.py",
+      "result": "PASS: 39 checks, GRADE SILVER at 13.934s (external timer 14.079s)",
+      "exit_code": 0
+    }
+  ],
+  "reproduced": [
+    {
+      "id": "DUP-1",
+      "claim": "exactly eight duplicate top-level keys are deleted",
+      "method": "extracted STATUS.yaml at the merge parent and at the head, counted column-zero key lines with an independent regex, cross-read with PyYAML; imported no repository code",
+      "finding": "base 69 key lines / 61 distinct / 8 declared twice; head 61 / 61 / 0. Exactly eight, no more and no fewer, and none remain."
+    },
+    {
+      "id": "DUP-2",
+      "claim": "no standing changes",
+      "method": "safe_load of both files and a key-set plus value-by-value comparison",
+      "finding": "61 keys both sides, zero added, zero removed, zero value differences. The deleted spellings were genuinely inert: the parser had already been discarding every one."
+    },
+    {
+      "id": "DUP-3",
+      "claim": "lint now fails on a reintroduced duplicate, and the check is not vacuous",
+      "method": "live mutation in the isolated worktree: reinserted a duplicate key into the real STATUS.yaml, ran lint and verify, reverted, confirmed a clean tree; repeated on a second YAML file; confirmed the check does not exist at the merge parent",
+      "finding": "lint exit 1 naming the file, line and key; verify exit 1. The second mutation on a workflow file was also caught, so coverage is the whole YAML population rather than STATUS.yaml alone. The check reads the artifact's bytes from lint's own text walk, not a declaration, and verify grades it on subprocess return code rather than by scanning stdout for FAIL."
+    },
+    {
+      "id": "DUP-4",
+      "claim": "trap T3 still holds after the deletion",
+      "method": "read the trap output inside the witness's own verify run",
+      "finding": "HOLDS T3, 8 status fields spell a negated standing, consistent with the 9 -> 8 claim. The field whose deleted spelling carried NOT_WITNESSED has that fact moved into a comment above the surviving line."
+    }
+  ],
+  "dissented": [
+    {
+      "id": "DUP-D1",
+      "severity": "REAL",
+      "claim_defeated": "the diff leaves contracts/acceptance-routing.json coherent",
+      "finding": "The diff rewrites entries 0010-A and 0041 and leaves them contradicting each other. 0041's reason asserts that 0010's field reads RULED_ under decisions/0046 and that 'the two now stand alike', but 0041's action_if_confirmed says to present the boundary for acceptance and update both the status line and observation_service_status, while 0010-A's action_if_confirmed was left untouched at 'Update the status line.'",
+      "consequence": "The two entries the diff declares alike still route to different actions, and the weaker one now disagrees with its own reason. An operator reading 0010-A would do the lesser thing. No check catches it: verify passes, and sov_docket.py grades already_recorded_as as a substring and cannot see value drift inside these fields.",
+      "what_would_have_defeated_this_finding": "bringing 0010-A's action_if_confirmed into line with its rewritten reason, or recording why proofing's routing action differs from observation's"
+    }
+  ],
+  "residuals": [
+    {
+      "id": "DUP-R1",
+      "severity": "MATERIAL",
+      "finding": "A relayed claim that in five of eight the surviving value is a reversible default displacing an owner-accepted one is wrong on the count: it is six, not five. RULED_ survives over a discarded OWNER_ACCEPTED_ in six keys; the remaining two are OWNER_ACCEPTED against OWNER_ACCEPTED where the survivor adds a packet id. Two qualifications matter more than the count: the displacement is a property of main rather than of this change, because YAML last-wins had already made RULED_ the only value any program read and this diff changes zero parsed values; and the RULED_ reading is grounded in the record, since decisions/0046 states none of its rulings is an owner acceptance, and both acceptance/accepted/ and STATUS.yaml owner_accepted list only A1 through A4."
+    },
+    {
+      "id": "DUP-R2",
+      "severity": "MINOR",
+      "finding": "The head is six commits behind main and lacks main's worktrees entry in lint's SKIP_PARTS. Run at the head alone in a tree carrying agent worktrees, which is this repository's real local layout, lint fails with duplicate-key defects belonging to other branches. The witness merged current origin/main into the head in a scratch worktree: clean auto-merge, and on that merged state lint passes, the reintroduced-duplicate mutation is still caught, and verify passes at SILVER 13.855s. The state attested as landable is the merge, not the head in isolation."
+    },
+    {
+      "id": "DUP-R3",
+      "severity": "MINOR",
+      "finding": "check_duplicate_keys is a line reader and never parses YAML, so a file that does not parse at all still passes it. Demonstrated accidentally with a malformed edit lint reported clean. The docstring declares the reader is line-based and STATUS.yaml is parsed elsewhere in the gate, so nothing is currently mis-graded, but the PASS line's YAML document count reads stronger than what was measured."
+    },
+    {
+      "id": "DUP-R4",
+      "severity": "MINOR",
+      "finding": "Two harness files quote a console_service_status value STATUS.yaml no longer carries. Pre-existing and outside the eight, but the same class of drift this change repaired in three sibling skills."
+    },
+    {
+      "id": "DUP-R5",
+      "severity": "MINOR",
+      "finding": "A diagram quotes a classification_status value STATUS.yaml no longer carries. Pre-existing, disclosed by the builder, and invisible to sov_diagrams.py because that view declares only two sources."
+    },
+    {
+      "id": "DUP-R6",
+      "severity": "MINOR",
+      "finding": "accepted_repository_claims in STATUS.yaml still lists all six demoted subjects. Disclosed by the builder and left for Bdo, but named in a pull request body rather than presented at a seam; sov_accept.py audit reports zero open questions, so nothing in the gate holds it."
+    }
+  ],
+  "not_examined": [
+    "whether the six subjects should be presented, re-ruled, or removed from accepted_repository_claims"
+  ],
+  "standing_supported": "Supports OPEN -> BUILT for the duplicate-key deletion and the new lint check. Does not support BUILT -> WITNESSED while DUP-D1 stands. The defect is small and repairable in place inside this concern; repairing it makes this a clean witness.",
+  "judgement_items": [
+    "Does the record stand as RULED_ for the six subjects whose deleted duplicate said OWNER_ACCEPTED? The parsed value on main was already RULED_ and this change alters nothing a program reads, but the file now shows RULED_ with no visible counterclaim while accepted_repository_claims still lists the same six as accepted. That tension is now the only reading left in the file.",
+    "Should the six subjects be presented for acceptance as packets, ruled explicitly again, or removed from accepted_repository_claims? This reaches Bdo under product intent."
+  ]
+}

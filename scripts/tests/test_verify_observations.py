@@ -9,6 +9,7 @@ honestly rather than hiding growth behind concurrency.
 from __future__ import annotations
 
 from pathlib import Path
+from unittest.mock import patch
 import json
 import sys
 import tempfile
@@ -18,14 +19,21 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import verify  # noqa: E402
 from sovschedule import jsonshape  # noqa: E402
+from sovverify import clocks  # noqa: E402
 
 
 SCHEMA = json.loads((verify.ROOT / "contracts" / "observation.schema.json")
                     .read_bytes().decode("utf-8"))
 
 
-def _observation(check, exit_code=0):
-    return verify.observe(check, "run_test", exit_code, 0.5, "2026-08-23T00:00:00+00:00")
+def _reading(exit_code=0, cpu=0.25, source=clocks.POSIX_SOURCE):
+    """A constructed reading, so record shape is tested without spawning anything."""
+    return clocks.Reading(exit_code, "", 0.5, cpu, source)
+
+
+def _observation(check, exit_code=0, reading=None):
+    return verify.observe(check, "run_test", reading or _reading(exit_code),
+                          "2026-08-23T00:00:00+00:00")
 
 
 class DeclaredRelations(unittest.TestCase):
@@ -80,6 +88,89 @@ class ContractConformance(unittest.TestCase):
         first, second = verify.CHECKS[0], verify.CHECKS[1]
         self.assertNotEqual(_observation(first)["observation_id"],
                             _observation(second)["observation_id"])
+
+
+class PersistedClocks(unittest.TestCase):
+    """A per-check reading is only comparable against history if it is written down.
+
+    `observe` is the record the run already emitted, so both clocks are carried in
+    its `predicate_results` rather than in a second file with its own shape.
+    """
+
+    def test_a_record_carries_wall_cpu_ratio_and_how_cpu_was_taken(self):
+        results = _observation(verify.CHECKS[0])["predicate_results"]
+        self.assertEqual(results["elapsed_seconds"], 0.5)
+        self.assertEqual(results["cpu_seconds"], 0.25)
+        self.assertEqual(results["cpu_ratio"], 0.5)
+        self.assertEqual(results["cpu_source"], clocks.POSIX_SOURCE)
+
+    def test_the_clock_keys_are_typed_here_because_the_schema_does_not_type_them(self):
+        """`predicate_results` is `additionalProperties: true` by design, so passing
+        the contract says nothing about these four keys. Whoever adds a key owns its
+        shape; that is this case. Widening the shared kernel schema to name one
+        participant's predicates would be the wrong repair.
+        """
+        for reading in (_reading(), _reading(cpu=None, source=clocks.UNMEASURED + "x")):
+            results = verify.observe(verify.CHECKS[0], "run_test", reading,
+                                     "2026-08-23T00:00:00+00:00")["predicate_results"]
+            with self.subTest(measured=reading.measured):
+                self.assertIsInstance(results["elapsed_seconds"], float)
+                self.assertIsInstance(results["cpu_source"], str)
+                for key in ("cpu_seconds", "cpu_ratio"):
+                    value = results[key]
+                    self.assertTrue(value is None or isinstance(value, float), key)
+                    self.assertEqual(value is None, not reading.measured)
+
+    def test_an_unmeasured_cpu_is_recorded_as_null_and_never_as_the_wall_time(self):
+        """The defeating case: a missing number must not read as a fast check."""
+        unmeasured = _reading(cpu=None, source=clocks.UNMEASURED + "job-query-refused")
+        results = _observation(verify.CHECKS[0], reading=unmeasured)["predicate_results"]
+        self.assertIsNone(results["cpu_seconds"])
+        self.assertIsNone(results["cpu_ratio"])
+        self.assertNotEqual(results["cpu_seconds"], results["elapsed_seconds"])
+        self.assertEqual(results["cpu_source"], "unmeasured:job-query-refused")
+
+    def test_an_unmeasured_record_still_satisfies_the_contract(self):
+        unmeasured = _reading(cpu=None, source=clocks.UNMEASURED + "no-per-child-accounting")
+        record = _observation(verify.CHECKS[0], reading=unmeasured)
+        self.assertEqual(jsonshape.check(record, SCHEMA, SCHEMA), [])
+
+    def test_the_summary_reports_both_clocks_and_names_missing_ones(self):
+        measured = [(check, _reading()) for check in verify.CHECKS[:2]]
+        self.assertEqual(verify.cost_line(measured), "1.000s of check wall, 0.500s of check cpu")
+        mixed = measured + [(verify.CHECKS[2], _reading(cpu=None, source=clocks.UNMEASURED + "x"))]
+        self.assertIn("cpu unmeasured for 1 of 3", verify.cost_line(mixed))
+
+    def test_a_failing_run_still_reports_both_clocks(self):
+        """The defeating case for the old report, which stated cost only on PASS.
+
+        A run that just failed is exactly the one whose operator needs to know
+        whether the repository grew or the machine was busy.
+        """
+        results = [(check, _reading()) for check in verify.CHECKS[:2]]
+        lines = verify.summary(results, 18.4, ["verification budget (18.400s > 15.000s)"])
+        self.assertTrue(lines[0].startswith("FAIL: verification budget"))
+        self.assertEqual(lines[1], "COST: 2 checks in 18.400s wall; "
+                                   "1.000s of check wall, 0.500s of check cpu")
+
+    def test_a_passing_run_keeps_its_grade_and_standing_note(self):
+        results = [(check, _reading()) for check in verify.CHECKS[:2]]
+        lines = verify.summary(results, 4.0, [])
+        self.assertTrue(lines[0].startswith("PASS: 2 checks in 4.000s wall;"))
+        self.assertEqual(lines[1], verify.budget_line(4.0))
+        self.assertEqual(lines[2], verify.STANDING_NOTE)
+
+    def test_a_run_with_no_cpu_at_all_prints_no_cpu_figure(self):
+        """A summed 0.000s would read as a run that cost no compute."""
+        none = [(check, _reading(cpu=None, source=clocks.UNMEASURED + "x"))
+                for check in verify.CHECKS[:2]]
+        self.assertEqual(verify.cost_line(none),
+                         "1.000s of check wall, cpu unmeasured for all 2 checks")
+        self.assertNotIn("0.000s of check cpu", verify.cost_line(none))
+
+    def test_the_summary_never_calls_a_sum_of_wall_times_work(self):
+        """What the old line did. Summed wall carries the same contention as wall."""
+        self.assertNotIn("of work", verify.cost_line([(verify.CHECKS[0], _reading())]))
 
 
 class Digests(unittest.TestCase):
@@ -150,6 +241,45 @@ class BudgetReporting(unittest.TestCase):
     def test_checks_are_unique_by_name(self):
         names = [check.name for check in verify.CHECKS]
         self.assertEqual(len(names), len(set(names)))
+
+
+class DigestOverAnObservedAddress(unittest.TestCase):
+    """`digest()` states the bytes an observation claims to cover.
+
+    It is not a corpus walk. If a checkout of this repository ever sits under an
+    observed address, the record would name bytes the digest never hashed and
+    nothing would say so, which is why the prune is asserted here rather than
+    left to the two walkers that own the same entry.
+    """
+
+    @staticmethod
+    def _write(path: Path, text: str) -> None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text, encoding="utf-8", newline="\n")
+
+    def _tree(self, root: Path) -> None:
+        """One observed address holding a file, and a copy of it inside a worktree."""
+        self._write(root / "observed" / "real.txt", "evidence\n")
+        self._write(root / "observed" / "worktrees" / "agent-x" / "real.txt", "evidence\n")
+        self._write(root / "alone" / "real.txt", "evidence\n")
+
+    def test_a_checkout_under_an_observed_address_is_not_hashed(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            self._tree(root)
+            with patch.object(verify, "ROOT", root):
+                self.assertEqual(verify.digest("observed"), verify.digest("alone"))
+
+    def test_without_the_prune_the_copy_enters_the_manifest(self) -> None:
+        """The defeating case: drop the entry and the digest stops describing the address."""
+        without = verify.SKIP_PARTS - {"worktrees"}
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            self._tree(root)
+            with patch.object(verify, "ROOT", root):
+                pruned = verify.digest("observed")
+                with patch.object(verify, "SKIP_PARTS", without):
+                    self.assertNotEqual(verify.digest("observed"), pruned)
 
 
 if __name__ == "__main__":

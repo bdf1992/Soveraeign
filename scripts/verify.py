@@ -12,6 +12,11 @@ may never claim `WITNESSED` or `RATIFIED`.
 Checks are independent and run concurrently. Output is buffered and printed in
 declared order so a parallel run reads exactly like a serial one.
 
+Every check is timed on two clocks, wall and CPU, by `sovverify.clocks`. One
+aggregate wall time could not tell a repository that grew from a machine that was
+busy; per check, the pair can. The gate still keys on aggregate wall time and on
+nothing else - `decisions/0050` owns that budget.
+
 The table of what to run lives in `scripts/sovverify/checks.py`; this module owns
 only how a run is executed, observed, and graded.
 """
@@ -24,15 +29,22 @@ from hashlib import sha256
 from pathlib import Path
 import argparse
 import json
-import subprocess
 import sys
 import time
 import uuid
 
+from sovverify import clocks
 from sovverify.checks import CHECKS, ROOT, Check
 
 
-SKIP_PARTS = {".git", ".venv", "__pycache__", ".local"}
+# Filtered after the glob rather than pruned at descent, so this set costs a walk it
+# then discards. `worktrees` is here for the same reason it is in the other two walkers:
+# an agent checkout under `.claude/worktrees/` is a copy of this repository and would
+# enter a directory digest as though it were repository content. Latent today, because
+# no check declares an observed address that contains one. `lineage` and `node_modules`
+# are deliberately not added: the other two sets drop them from a document corpus and a
+# lint population, and a check that digests attributed evidence should see it.
+SKIP_PARTS = {".git", ".venv", "__pycache__", ".local", "worktrees"}
 BUDGET_GRADES = (("PLATINUM", 3.0), ("GOLD", 6.0), ("SILVER", 15.0))
 BUDGET_SECONDS = BUDGET_GRADES[-1][1]
 # Starting every repository check at once became slower as the suite grew: the
@@ -40,6 +52,9 @@ BUDGET_SECONDS = BUDGET_GRADES[-1][1]
 # Keep enough independent work in flight to hide startup/I/O without allowing
 # process count itself to become the critical path.
 MAX_CHECK_WORKERS = 8
+STANDING_NOTE = ("Standing note: self-tests establish BUILT evidence only. Nothing here is "
+                 "accepted; acceptance is an act taken by a seat over a presented result "
+                 "(contracts/acceptance-policy.json).")
 
 
 def digest(address: str) -> str:
@@ -58,7 +73,7 @@ def digest(address: str) -> str:
     return "sha256:" + manifest.hexdigest()
 
 
-def observe(check: Check, run_id: str, exit_code: int, elapsed: float, when: str) -> dict:
+def observe(check: Check, run_id: str, reading: clocks.Reading, when: str) -> dict:
     """One Observation of one check, per contracts/observation.schema.json."""
     addresses = [address for address in check.observes if (ROOT / address).exists()]
     identity = sha256(f"{run_id}\0{check.name}".encode("utf-8")).hexdigest()[:32]
@@ -70,9 +85,12 @@ def observe(check: Check, run_id: str, exit_code: int, elapsed: float, when: str
         "observed_state_addresses": addresses,
         "observed_state_digests": [digest(address) for address in addresses],
         "predicate_results": {
-            "exit_code": exit_code,
-            "outcome": "PASS" if exit_code == 0 else "FAIL",
-            "elapsed_seconds": round(elapsed, 3),
+            "exit_code": reading.exit_code,
+            "outcome": "PASS" if reading.exit_code == 0 else "FAIL",
+            "elapsed_seconds": round(reading.wall, 3),
+            "cpu_seconds": None if reading.cpu is None else round(reading.cpu, 3),
+            "cpu_ratio": None if reading.ratio is None else round(reading.ratio, 3),
+            "cpu_source": reading.cpu_source,
         },
         "observed_at": when,
         "subject": check.name,
@@ -103,11 +121,39 @@ def budget_line(wall: float) -> str:
     return f"GRADE: {earned} at {wall:.3f}s; {faster} needs {ceiling:.3f}s or less"
 
 
-def run_check(check: Check) -> tuple[Check, int, float, str]:
-    started = time.perf_counter()
-    result = subprocess.run(check.command, cwd=check.cwd, check=False,
-                            capture_output=True, text=True)
-    return check, result.returncode, time.perf_counter() - started, result.stdout + result.stderr
+def run_check(check: Check) -> tuple[Check, clocks.Reading]:
+    """Run one check on both clocks. Nothing about the command changes to be measured."""
+    return check, clocks.run(check.command, check.cwd)
+
+
+def cost_line(results: list[tuple[Check, clocks.Reading]]) -> str:
+    """Sum both clocks over the checks, and say plainly when a CPU number is missing.
+
+    The old report summed `perf_counter` per check and called the total "work",
+    which was a second wall figure carrying the same contention as the first.
+    """
+    measured = [reading for _, reading in results if reading.measured]
+    wall = f"{sum(reading.wall for _, reading in results):.3f}s of check wall"
+    if not measured:
+        # A summed 0.000s would read as a run that cost no compute at all.
+        return f"{wall}, cpu unmeasured for all {len(results)} checks"
+    line = f"{wall}, {sum(reading.cpu for reading in measured):.3f}s of check cpu"
+    missing = len(results) - len(measured)
+    return line if not missing else f"{line}; cpu unmeasured for {missing} of {len(results)}"
+
+
+def summary(results: list[tuple[Check, clocks.Reading]], wall: float,
+            failed: list[str]) -> list[str]:
+    """The closing lines of a run, cost included whether or not the gate refused.
+
+    A failing run is where the second clock earns its place: the question "did
+    the repository grow or was the machine busy" is asked hardest by a run that
+    just failed, and the old report answered it only on the passing path.
+    """
+    cost = f"{len(results)} checks in {wall:.3f}s wall; {cost_line(results)}"
+    if failed:
+        return [f"FAIL: {', '.join(failed)}", f"COST: {cost}"]
+    return [f"PASS: {cost}", budget_line(wall), STANDING_NOTE]
 
 
 def main(argv: list[str] | None = None, run_id: str | None = None,
@@ -127,10 +173,8 @@ def main(argv: list[str] | None = None, run_id: str | None = None,
         results = list(pool.map(run_check, CHECKS))
     wall = time.perf_counter() - started
 
-    observations = [observe(check, run_id, code, elapsed, when)
-                    for check, code, elapsed, _ in results]
-    work = sum(elapsed for _, _, elapsed, _ in results)
-    failed = [check.name for check, code, _, _ in results if code]
+    observations = [observe(check, run_id, reading, when) for check, reading in results]
+    failed = [check.name for check, reading in results if reading.exit_code]
 
     if args.observe:
         args.observe.parent.mkdir(parents=True, exist_ok=True)
@@ -141,22 +185,17 @@ def main(argv: list[str] | None = None, run_id: str | None = None,
         print(json.dumps(observations, indent=2, sort_keys=True))
         return 1 if failed else 0
 
-    for check, _, elapsed, output in results:
+    for check, reading in results:
         print(f"\n== {check.name} ==", flush=True)
-        print(output.rstrip("\n"), flush=True)
-        print(f"TIME: {check.name}: {elapsed:.3f}s", flush=True)
+        print(reading.output.rstrip("\n"), flush=True)
+        print(f"TIME: {check.name}: {reading.report()}", flush=True)
 
     if wall > BUDGET_SECONDS:
         failed.append(budget_line(wall))
-    if failed:
-        print(f"\nFAIL: {', '.join(failed)}")
-        return 1
-    print(f"\nPASS: {len(CHECKS)} checks in {wall:.3f}s wall, {work:.3f}s of work")
-    print(budget_line(wall))
-    print("Standing note: self-tests establish BUILT evidence only. Nothing here is "
-          "accepted; acceptance is an act taken by a seat over a presented result "
-          "(contracts/acceptance-policy.json).")
-    return 0
+    print("")
+    for line in summary(results, wall, failed):
+        print(line)
+    return 1 if failed else 0
 
 
 if __name__ == "__main__":

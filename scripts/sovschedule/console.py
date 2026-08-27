@@ -168,7 +168,19 @@ def url_for(server: ThreadingHTTPServer, token: str) -> str:
     return f"http://{LOOPBACK}:{server.server_address[1]}/?t={token}"
 
 
-def serve(root: Path, port: int = 0, open_browser: bool = True, out=print) -> None:
+def _say(message: str) -> None:
+    """Print and flush.
+
+    Plain ``print`` block-buffers when stdout is a pipe, so a console started from a
+    script or a task runner printed its URL only once the buffer filled - which is to
+    say never, since it prints five lines and then blocks in serve_forever. The URL is
+    the only way in, and a program that withholds its own entry point until it exits is
+    no use to whoever started it.
+    """
+    print(message, flush=True)
+
+
+def serve(root: Path, port: int = 0, open_browser: bool = True, out=_say) -> None:
     """Run the console until interrupted. The URL is printed once and carries the token."""
     server, token = build_server(root, port=port)
     address = url_for(server, token)

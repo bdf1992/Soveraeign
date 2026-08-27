@@ -149,14 +149,17 @@ class Staleness(TreeCase):
     def test_probe_drift_survives_a_respelt_address(self) -> None:
         """Classification is on the resolved path, so case cannot downgrade the verdict.
 
-        `Path.glob` and the filesystem are case-insensitive on Windows and not on
-        the Linux runner, so a case variant is a real address on one and a missing
-        one on the other. Both must read `STALE_PROBE`.
+        The filesystem is case-insensitive on Windows and not on the Linux runner,
+        so a case variant is a moved file on one host and a missing one on the
+        other. Both must read `STALE_PROBE`, which is why probe drift is decided
+        before the recomputed-nothing rule; deciding it after made the same receipt
+        read `STALE_PROBE` on Windows and `INVALID` on CI.
         """
         write(self.probe_path, GOOD_PROBE + "# edit" + LF)
         for spelling in ("witness/probes/probe_thing.py",
                          "Witness/probes/probe_thing.py",
-                         "witness/PROBES/probe_thing.py"):
+                         "witness/PROBES/probe_thing.py",
+                         "witness/probes/gone_entirely.py"):
             with self.subTest(spelling=spelling):
                 self.assertEqual(self.observing(spelling)["verdict"],
                                  record_grader.STALE_PROBE)

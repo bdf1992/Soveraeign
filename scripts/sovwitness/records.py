@@ -214,15 +214,22 @@ def grade(path: Path, root: Path) -> dict[str, Any]:
         probe_drift = probe_drift or is_witness_owned
         subject_drift = subject_drift or not is_witness_owned
 
-    if not result["graded"]:
-        return invalid("no address could be recomputed, so the receipt measures nothing "
-                       "against this tree")
+    # Probe drift is decided before the recomputed-nothing rule so that the verdict
+    # does not depend on the host's filesystem. A case-variant address is a real file
+    # on Windows and a missing one on the Linux runner; deciding drift first makes both
+    # read STALE_PROBE instead of splitting between STALE_PROBE and INVALID. Either
+    # would fail, but a check that names a different defect per platform is a check a
+    # reader cannot use.
     if probe_drift:
         result["verdict"] = STALE_PROBE
         result["defects"].append(
             "an address under witness/ moved: the receipt no longer describes the code "
             "that produced its results")
-    elif subject_drift:
+        return result
+    if not result["graded"]:
+        return invalid("no address could be recomputed, so the receipt measures nothing "
+                       "against this tree")
+    if subject_drift:
         result["verdict"] = STALE_SUBJECT
     return result
 

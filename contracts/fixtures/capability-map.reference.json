@@ -15,7 +15,7 @@
     "services/registry/contracts/service.json",
     "contracts/capability-offices.json"
   ],
-  "input_state_digest": "db943119f2f6f6fc292ed31a2d973aec47eb0747f1bc11cc88d5818246170f60",
+  "input_state_digest": "1bd99c822041e371f99a92a09b7ea54db3f5e06ba8b0ed6c7f6861bf3b01fecc",
   "capabilities": [
     {
       "capability_id": "asset.add-member",
@@ -497,7 +497,8 @@
         },
         {
           "transport": "CLI",
-          "activation": "DECLARED_NOT_ACTIVATED"
+          "activation": "ACTIVE",
+          "address": "python -m soveraeign_asset_service.cli drift"
         },
         {
           "transport": "MCP",

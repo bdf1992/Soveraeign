@@ -1,15 +1,15 @@
 {
-  "receipt_id": "receipt_a472c0189436fb86",
-  "event_id": "entry_62c897ffa5d147e2a25071e6ca254e4e",
+  "receipt_id": "receipt_8f2d19f886bef358",
+  "event_id": "entry_ab86070e4f864cca9a9d99c3ce2a95de",
   "event_type": "console.discover-operations",
   "actor_id": "sov",
   "interface_id": "bindings/mcp:console_operations",
   "input_addresses": [
     "contracts/fixtures/capability-map.reference.json"
   ],
-  "input_state_digest": "db943119f2f6f6fc292ed31a2d973aec47eb0747f1bc11cc88d5818246170f60",
+  "input_state_digest": "1bd99c822041e371f99a92a09b7ea54db3f5e06ba8b0ed6c7f6861bf3b01fecc",
   "authority_grant_ids": [
-    "grant_e2b44586b2974e07"
+    "grant_2ffedb4a6a2d4427"
   ],
   "precondition_results": [
     {
@@ -31,13 +31,13 @@
   "effect_class": "RECORD_LOCAL",
   "outcome": "COMMITTED",
   "emitted_record_addresses": [
-    "ce1cb9509f3d0b01c5261407e362517375042448f9e9b23fcdb0096e6a7e653b",
-    "a472c0189436fb861b1e95b71a8a2dffe1b8f1c26df0e524937e411132333979"
+    "0987755f46e5b86361bce2982ba9144f0b3e3cee483e65ab8e4ecdc8a3cf0508",
+    "8f2d19f886bef35846e1a2ab14f3eb201fc8874716e0f52a15245b97fd86d4fd"
   ],
   "observed_evidence_addresses": [
     "bindings/mcp/observations/journey-02-discovery.json"
   ],
-  "created_at": "2026-08-27T03:18:46Z",
+  "created_at": "2026-08-27T13:37:14Z",
   "serves_capability": "console.discover-operations",
   "consumed": [
     {
@@ -58,5 +58,5 @@
       "note": "a valuation of this usage at zero, not an absence of usage. RECORD_LOCAL and no monetary charge; the seconds were still spent"
     }
   ],
-  "receipt_digest": "684a655f400e1eb8e2d7cb47e966847a1e31b9b9aa4717df93740e542771a771"
+  "receipt_digest": "b487e31f8c00fd50d3b6780849e920a2b1af4e6c1e3971d611e7d2b125fbb198"
 }

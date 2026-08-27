@@ -25,7 +25,7 @@ import unittest
 sys.path.insert(0, str(Path(__file__).parents[1] / "src"))
 
 from soveraeign_asset_service import AssetService
-from soveraeign_asset_service.projections import ALTERED, BEHIND, UNSOURCED
+from soveraeign_asset_service.projections import ALTERED, BEHIND, UNRATIFIED, UNSOURCED
 
 FORGED_RECEIPT = "rcpt_forged"
 
@@ -152,6 +152,70 @@ class ProjectionDrift(unittest.TestCase):
 
     def test_an_empty_store_has_no_drift_rather_than_an_error(self) -> None:
         self.assertEqual(self.service.projection_drift(), [])
+
+    def test_a_ratification_that_cannot_be_resolved_still_rebuilds(self) -> None:
+        """An independent witness fired this decision's own stated defeater.
+
+        `_project_asset` ends `or UNRATIFIED`; the graph derivation did not, so an
+        unresolvable ratification derived None into a NOT NULL column. Drift
+        reported the disagreement and the rebuild meant to clear it raised
+        IntegrityError — a disagreement drift reports that a rebuild does not
+        clear, which is exactly what `decisions/0073` says would defeat it.
+
+        Reached here with a receipt event name no reader accepts, which is what a
+        third rename would produce.
+        """
+        hero, _campaign = self.ratified_pair()
+        self.service.db.execute(
+            "UPDATE receipts SET event='proposal.blessed' "
+            "WHERE event IN ('asset.ratify-proposal','proposal.ratify')")
+        self.service.db.commit()
+
+        drift = self.service.projection_drift()
+        self.assertTrue(drift, "an unresolvable ratification is not a silent no-op")
+        self.assertIn("graph_projection", {entry["table"] for entry in drift})
+
+        self.service.rebuild_projections()
+
+        self.assertEqual(self.service.projection_drift(), [],
+                         "the rebuild did not clear what drift reported")
+        self.assertEqual(self.service.db.execute(
+            "SELECT source_receipt FROM graph_projection").fetchone()[0], UNRATIFIED)
+        self.assertEqual(self.service.search("Campaign Hero"), [hero])
+
+    def test_a_counter_recorded_claim_is_still_projected_and_drift_is_silent(self) -> None:
+        """A fourth failure mode, reachable with no forgery. Pinned, not fixed.
+
+        `derived()` never reads the retractions table, and `retract` sets
+        `standing='COUNTERED'` only for relationships, so a retracted proposal
+        keeps standing RATIFIED and its text stays searchable. Drift is silent
+        because stored and derived agree on carrying the countered claim.
+
+        Not repaired here: excluding it changes what the view *means*, and making
+        `retract` reach `proposals.standing` changes a kernel transition. Both are
+        larger than this concern and `decisions/0073` routes the choice to Bdo.
+        This case exists so the gap cannot be forgotten or claimed away, and it
+        fails the moment either fix lands - which is when the record should change
+        with it.
+        """
+        hero = self.service.ingest(self.source("hero.txt", b"hero"), "Campaign Hero", "Bdo")
+        proposal = self.service.propose(hero["asset_id"], "claude-adapter",
+                                        {"description": "a claim later withdrawn"})
+        self.service.ratify(proposal, "Bdo")
+        self.service.rebuild_projections()
+        self.assertEqual(self.service.search("later withdrawn"), [hero["asset_id"]])
+
+        self.service.grant("Bdo", "Bdo", "retract:record", proposal)
+        self.service.retract("proposal", proposal, "Bdo", "the claim was wrong")
+
+        self.assertEqual(self.service.db.execute(
+            "SELECT standing FROM proposals WHERE id=?", (proposal,)).fetchone()[0],
+            "RATIFIED", "retract now reaches proposals; update this case and 0073")
+        self.assertEqual(self.service.projection_drift(), [],
+                         "drift now sees a counter-record; name the fourth defect")
+        self.service.rebuild_projections()
+        self.assertEqual(self.service.search("later withdrawn"), [hero["asset_id"]],
+                         "a rebuild now drops countered claims; update 0073")
 
     def test_a_ratification_written_under_the_older_event_name_is_still_found(self) -> None:
         """Found on a live store, where 153 assets were about to lose their receipts.

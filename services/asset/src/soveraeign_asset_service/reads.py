@@ -31,9 +31,17 @@ class ReadSurface:
     def projection_drift(self) -> list[dict[str, Any]]:
         """Every projected row that disagrees with the ledger. Writes nothing.
 
-        The non-destructive half of ``rebuild_projections``. A caller that needs
-        to know whether a view is trustworthy before reading it asks here, rather
-        than rebuilding, which would answer by destroying what it was asked about.
+        The non-destructive half of ``rebuild_projections``: it answers whether a
+        view matches what the ledger implies, without rebuilding, which would
+        answer by destroying what it was asked about.
+
+        It grades the view against the ledger and nothing else. It does not
+        establish that the view is trustworthy, and an earlier version of this
+        sentence said it did. A row forged straight into the `assets` table
+        derives cleanly and is reported as no drift, and a claim retracted by
+        counter-record stays projected because the derivation does not read
+        retractions - both are agreements between the view and the ledger about
+        something the ledger should not be carrying.
         """
         return self.projections.drift()
 

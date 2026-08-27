@@ -60,6 +60,7 @@
     "asset.ingest-asset": "python -m soveraeign_asset_service.cli ingest",
     "asset.read-collection": "python -m soveraeign_asset_service.cli collection",
     "asset.read-library-conformance": "python -m soveraeign_asset_service.cli conformance",
+    "asset.read-projection-drift": "python -m soveraeign_asset_service.cli drift",
     "asset.rebuild-projection": "python -m soveraeign_asset_service.cli rebuild",
     "asset.remove-member": "python -m soveraeign_asset_service.cli remove-member",
     "console.discover-operations": "python -m soveraeign_console_service.cli operations",

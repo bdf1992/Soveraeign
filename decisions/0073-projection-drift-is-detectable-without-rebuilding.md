@@ -77,16 +77,63 @@ Three disagreements are named separately because they have different causes:
   change and is left alone rather than half-corrected inside an unrelated
   concern.
 
+## What drift does not establish
+
+`drift` grades the view against the ledger and nothing else. It does not
+establish that the view is trustworthy, and `reads.py` said it did until an
+independent witness objected. Two things it is silent about, both by
+construction:
+
+- A row forged straight into the `assets` ledger derives cleanly, so drift
+  reports none. Drift compares a projection to its source; it does not
+  authenticate the source.
+- A claim retracted by counter-record stays projected. `derived()` never reads
+  the `retractions` table, and `retract` sets `standing='COUNTERED'` only for
+  relationships, so a retracted proposal keeps standing `RATIFIED` and its text
+  stays searchable. Stored and derived agree on carrying it, so drift is silent.
+  Reachable through the public API with no forgery at all.
+
 ## What would defeat this
 
-- A disagreement `drift` reports that a rebuild does not then clear.
-  `test_rebuilding_is_what_clears_drift` fails if the two derivations disagree.
-- Any write performed by `drift`. Pinned by `test_drift_writes_nothing_at_all`.
-- A projection failure mode outside the three named defects. That would mean the
-  vocabulary is incomplete rather than wrong, and the fix is a fourth name.
+- A disagreement `drift` reports that a rebuild does not then clear. An
+  independent witness fired exactly this: `_project_asset` ended `or UNRATIFIED`
+  and the graph derivation did not, so an unresolvable ratification derived
+  `None` into a NOT NULL column — drift reported it and the rebuild raised
+  `IntegrityError`. Repaired, and
+  `test_a_ratification_that_cannot_be_resolved_still_rebuilds` is the fixture the
+  legacy-name change should have carried.
+- Any write performed by `drift`. Pinned by `test_drift_writes_nothing_at_all`,
+  and confirmed by the witness on five instruments including file digest and
+  `total_changes`.
+- A projection failure mode outside the three named defects. The counter-record
+  case above is one, and it is pinned rather than fixed — see below.
+
+## What still waits on Bdo
+
+- **Does a counter-recorded claim get a fourth name?** Naming it
+  (`PROJECTION_COUNTERED`) means `derived()` reads retractions, which changes
+  what the view *means*. The alternative is that `retract` should reach
+  `proposals.standing` at all, which changes a kernel transition. Both are larger
+  than this concern, so
+  `test_a_counter_recorded_claim_is_still_projected_and_drift_is_silent` pins the
+  current behaviour and fails the moment either lands.
+- **Where does accepted vocabulary live?** `proposal.ratify` is now a name this
+  service honours, declared only in a Python constant.
+  `scripts/sovkernel/receipt_events.py` measures the names services *emit* and
+  nothing measures the names they *accept*, so a reader can honour an event the
+  node's vocabulary does not contain and no check notices. The rename at
+  `e384285` still carries no decision record.
 
 ## Standing
 
-`PROPOSED`. Built and self-tested: 146 Asset Service tests pass, 8 of them new.
-Self-tests establish `BUILT` and nothing here has been independently observed.
-Only Bdo ratifies.
+`PROPOSED`. Built and self-tested: 149 Asset Service tests pass.
+
+An independent witness examined this at `3db4f87`. It confirmed C1, C2, C3 and
+C5 — the defect was real, the three names are correctly distinguished, `drift`
+writes nothing on five separate instruments, and the legacy receipt name is
+resolved and survives a rebuild — and supported `BUILT -> WITNESSED` for those.
+It dissented from the unqualified form of C4 and from the trustworthiness claim
+in `reads.py`, and found the `cli_commands` omission. All three are repaired
+above. The change has not been re-witnessed since.
+
+Self-tests establish `BUILT`. Only Bdo ratifies.

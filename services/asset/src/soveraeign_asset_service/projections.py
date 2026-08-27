@@ -91,9 +91,14 @@ class Projections:
         edges: dict[str, tuple] = {}
         for relation in self.db.execute(
                 "SELECT * FROM relationships WHERE standing='EFFECTIVE'").fetchall():
+            # `or UNRATIFIED` matches what `_project_asset` does for a search row.
+            # Without it an unresolvable ratification derived None into a NOT NULL
+            # column: drift reported the disagreement and the rebuild meant to
+            # clear it crashed, which is this decision's own stated defeater.
             edges[relation["id"]] = (
                 relation["id"], relation["src_asset"], relation["predicate"],
-                relation["dst_asset"], self._ratify_receipt(relation["proposal_id"]))
+                relation["dst_asset"],
+                self._ratify_receipt(relation["proposal_id"]) or UNRATIFIED)
         return search, edges
 
     def rebuild(self, actor: str = "projector") -> dict[str, int]:

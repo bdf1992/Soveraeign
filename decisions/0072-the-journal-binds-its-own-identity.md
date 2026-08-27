@@ -34,9 +34,9 @@ digest binds. Every profile binds the *parsed value*, so without this a
 byte-different, value-identical payload passed unnoticed — including duplicate-key
 injection, where a JSON parser reads the last key, anything taking the first key
 reads another number, and one committed row is therefore read two ways with the
-chain endorsing both. All 412 entries in this repository's live journal are
-already canonical — verified with the byte rule applied over the raw rows — so
-the requirement costs no history.
+chain endorsing both. Every entry in this repository's live journal is already
+canonical — verified with the byte rule applied over the raw rows, at 412 entries
+and again at 420 — so the requirement costs no history.
 
 ## What defeated the previous arrangement
 
@@ -174,21 +174,33 @@ from the next row on.
 
 It did that to the live operator journal, and the exact shape matters because two
 independent readings used it to defeat the first repair. `.local/console` holds
-412 entries, and its profiles run:
+**exactly six** `v3` rows, and its profiles run:
 
-    v1   seq 1   - 404    404 rows
-    v3   seq 405 - 408      4 rows
-    v1   seq 409 - 410      2 rows
-    v3   seq 411 - 412      2 rows
+    v1   seq 1   - 404
+    v3   seq 405 - 408
+    v1   seq 409 - 410
+    v3   seq 411 - ...
+    v1   ... onward, still being written
 
-Eleven sessions share that working tree, so the v3 rows did not land *on top of*
-the v1 rows: an older checkout kept writing v1 in between. The journal is not
-damaged — a `v3`-aware reader verifies all 412 — but every session running an
-older checkout gets `BrokenChain` at `seq` 405, and the operator continuity
-surface has been down for all of them since.
+The row count is deliberately not stated. That store is live and several sessions
+share the tree, so any total written here is wrong within hours — three drafts of
+this record carried one and each was wrong by the next reading. It measured 412,
+then 414, then 420. What does not change is the shape: the `v3` rows did not land
+*on top of* the `v1` rows, because an older checkout kept writing `v1` in between
+and is still writing them.
+
+The journal is not damaged. A `v3`-aware reader verifies every row at every
+reading; a pre-profile reader stops at `seq` 405 and never reaches the later `v1`
+rows, so the operator continuity surface is down for every session on an older
+checkout.
 
     old reader on the live store   BrokenChain entry_80767935e18c488fb45502df9d5c385e
-    v3-aware reader, same bytes    412 entries verified
+    v3-aware reader, same bytes    every entry verified, 0 byte-rule failures
+
+The rows that fail a `v1`-only recomputation are exactly the rows labelled `v3`,
+with no residue. A peer session read the same six as tampering, having omitted the
+`digest_profile` column, and nearly filed an unexplained writer against the
+operator's own record.
 
 That is the same shape as the rule this record already rests on. A profile edited
 in place invalidates its own history; a profile adopted in place invalidates its
@@ -203,8 +215,8 @@ append. `test_an_old_reader_stops_exactly_at_the_adopted_entry` measures the
 consequence the adoption entry claims, rather than asserting it in prose.
 
 **The first repair read only the newest row, and two witnesses defeated it with
-this store.** Under that rule `.local/console` answers `v3`, because `seq` 412 is
-v3 — so the store the record argues from was one row-ordering away from proving
+this store.** Under that rule `.local/console` answered `v3` at the moment it was
+read, because its newest row was `v3` then — so the store the record argues from was one row-ordering away from proving
 its own fix wrong, and every fixture defending it built a homogeneous journal
 where the one row read is representative by construction. `writing_profile()` now
 takes the strongest profile any row carries. That is also the true property:
@@ -259,7 +271,7 @@ Two things followed from the same seam:
   here. It becomes readable again when this change lands and the shared checkout
   moves; until then eleven sessions have no operator continuity surface. The
   alternatives are landing an unwitnessed service into the shared tree or
-  rebuilding the store from empty and losing 412 entries of continuity, and
+  rebuilding the store from empty and losing every entry of continuity, and
   neither is a call this seat makes.
 - **Whether `custody.restore` should refuse a non-finite payload on a new row.**
   An independent witness built an export carrying a `v1` `NaN` row and restored it
@@ -274,7 +286,7 @@ Two things followed from the same seam:
 ## Standing
 
 `PROPOSED`. Built and self-tested: 58 Record Service tests pass, the independent
-walk holds 28/28, and 7 gateway observer tests pass.
+walk holds 32/32, and 14 witness plus 7 gateway observer tests pass.
 
 `python scripts/verify.py` fails no named check in any run. Its exit code carries
 the total wall clock on this branch, which straddles the 15-second ceiling
@@ -313,7 +325,7 @@ walk held 24 observations at that time. A check
 cited as evidence for a rule it did not exercise, which is the same defect one
 level down. The stage now re-encodes the target row's own payload with different
 spacing, so the parsed value is identical and the whole weight sits on the bytes.
-Forcing the byte rule off now yields 27/28 and exit 1; unmodified it is 28/28.
+Forcing the byte rule off now yields 31/32 and exit 1; unmodified it is 32/32.
 
 That is the fourth check in this concern found unable to fail — after one tamper
 value per column, a note asserted against the constant that generated it, and a
@@ -336,8 +348,38 @@ watching all 54 tests stay green:
 - `digest_for_row` turning an unimplemented profile into `BrokenChain` on the
   *read* path had none either; only the adopt path was covered.
 
-`TheRefusalsNothingExercised` carries the last two. That is seven checks in one
-concern that could not fail, all found by reading and none by building, which is
+`TheRefusalsNothingExercised` carries the last two.
+
+A fifth reading found three more, two of them introduced by the repair for the
+fourth:
+
+- **`adopt-profile`'s forward path had no case anywhere.** The walk stage written
+  to cover it ran against the walk's own store, which the current service writes,
+  so that store already carries the newest profile and a forward adoption is
+  impossible in it. The stage could exercise the report path and both refusals and
+  could never reach the operation — replacing its entire success branch with
+  garbage left the walk green. `record_profiles.py` now builds a pre-profile store
+  of its own and grades the move first, so the same mutation fails four named
+  observations.
+- **The walk's independence had no fixture**, which is the property every other
+  observation rests on. Editing `record_chain.py` to import the participant's own
+  digest function and return it left the walk at 28/28: a function agreeing with
+  itself, cited as an independent observation. `Independence` in
+  `scripts/tests/test_witness_record.py` now parses each module's imports rather
+  than matching text, because the walk legitimately *names* the participant to
+  launch it as a subprocess and a substring check reports that correct behaviour
+  as a violation. The sibling verifier has had this check since it was written.
+- **`services/record/CHARTER.md` still stated the newest-row rule** that two
+  readings had already defeated — and the charter is the document both independent
+  verifiers are told to reimplement from, so an outsider following it would rebuild
+  the defeated rule.
+
+Also taken: the unreachable profile guard in `_append`, which is the same shape as
+one this change had already removed from `reconstruct` on the stated principle
+that dead code looking like a refusal is worse than none.
+
+That is ten checks in one concern that could not fail, every one found by reading
+and none by building, and two of them written while repairing the last. That is
 the finding this record should be read for as much as for the digest.
 
 Both independent verifiers also gained the canonical rule. Without it they graded

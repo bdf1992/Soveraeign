@@ -118,8 +118,14 @@ profile. Verification never tries both algorithms, so compatibility cannot make 
 row pass under a weaker profile's rule.
 
 **Which profile a new row uses is the store's answer, not the library's.**
-`append` writes the profile of the store's newest entry, so an empty store starts
-at v3 and an existing one keeps its own however new the code opening it is. A
+`append` writes the strongest profile any row in the store already carries, so an
+empty store starts at v3 and an existing one keeps its own however new the code
+opening it is. Not the newest row's profile: several checkouts may share a store
+and write in whatever order they run, so the newest row names the last writer
+rather than the store. The maximum can only move forward, which is what is
+actually true — once a v3 row exists no v1-only reader verifies through it, and
+writing v1 again restores nobody. A profile in the store that this service does
+not implement refuses by name rather than being sorted anywhere. A
 store moves forward only through `adopt_profile`, which appends the first entry
 under the new profile and states in it what was superseded and that a reader
 implementing only the old profile stops verifying there. Superseded therefore

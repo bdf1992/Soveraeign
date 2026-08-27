@@ -147,7 +147,7 @@ class TheRefusalsNothingExercised(unittest.TestCase):
     An independent witness found both by mutation: making `digest_for_profile`'s
     v3 branch return the v2 digest instead of raising, and making `digest_for_row`
     fall back to the v1 arithmetic for a profile it does not implement, each left
-    all 54 record tests green. A refusal named in a governed record and defended by
+    all record tests green. A refusal named in a governed record and defended by
     nothing is the shape this whole concern keeps producing.
     """
 
@@ -222,9 +222,11 @@ class AStoreKeepsItsOwnProfile(unittest.TestCase):
     `append` used to write whichever profile the library named as current, so a
     newer service opening an older journal upgraded it from the next row on. The
     live operator journal `.local/console` is the worked example: six v3 rows
-    landed on 406 v1 rows and every session running the older checkout got
-    `BrokenChain` at the first of them, while the journal itself stayed intact and
-    verified completely under a v3-aware reader.
+    landed among v1 rows an older checkout was still writing, and every session on
+    that checkout got `BrokenChain` at the first of them, while the journal itself
+    stayed intact and verified completely under a v3-aware reader. No row count is
+    quoted here on purpose - that store is live and every count written down about
+    it has been wrong within a day.
     """
 
     def setUp(self) -> None:

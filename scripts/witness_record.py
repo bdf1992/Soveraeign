@@ -41,7 +41,10 @@ import time
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from sovwitness import Observation  # noqa: E402
-from sovwitness.record_chain import GENESIS, verify_chain  # noqa: E402
+from sovwitness.record_chain import (  # noqa: E402
+    CANONICAL, GENESIS, LEGACY_DIGEST_PROFILE, recompute, verify_chain,
+)
+from sovwitness.record_profiles import profile_is_reachable  # noqa: E402
 from sovwitness.record_tampers import detects_a_tamper  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -169,41 +172,6 @@ def _projections(observed: Observation, store: Path) -> None:
                   "the service declares the prohibition rather than only implementing it")
 
 
-def _profile_is_reachable(observed: Observation, store: Path) -> None:
-    """Asking a store what it writes must be answerable from outside, and must not write.
-
-    `adopt-profile` was declared and wired with no case of any kind: the service's
-    own tests reach `adopt_profile` in Python, and nothing proved the declared
-    operation was reachable, that reporting is free of effect, or that a refusal
-    comes back as JSON rather than a traceback. It is checked here rather than in
-    the service's tests because reachability is a claim about the declared path,
-    which is what this walk exists to exercise.
-    """
-    before = record(store, "reconstruct-journal")
-    reported = record(store, "adopt-profile")
-    after = record(store, "reconstruct-journal")
-    observed.note(reported.get("adopted") is False and bool(reported.get("writing_profile")),
-                  "a store answers which chain profile it writes",
-                  str(reported.get("writing_profile")))
-    unchanged = after["head"] == before["head"] and after["count"] == before["count"]
-    # The detail is computed from the outcome, not from `before`. Written the other
-    # way it printed "head unmoved" on the failure where the head had moved, which
-    # is a note that says the opposite of what it just measured.
-    observed.note(unchanged, "asking which profile a store writes does not change it",
-                  f"{before['count']} entries, head unmoved" if unchanged
-                  else f"{before['count']} -> {after['count']} entries")
-    standing_still = record(store, "adopt-profile", "--to", reported["writing_profile"],
-                            "--actor", "witness", expect=2)
-    observed.note(standing_still.get("reason_code") == "STALE_STATE",
-                  "adopting the profile a store already writes is refused by name",
-                  str(standing_still.get("reason_code")))
-    unknown = record(store, "adopt-profile", "--to", "soveraeign-record-chain/v99",
-                     "--actor", "witness", expect=2)
-    observed.note(unknown.get("reason_code") == "MISSING_PRECONDITION",
-                  "adopting a profile this service does not implement is refused by name",
-                  str(unknown.get("reason_code")))
-
-
 def _distinctness(observed: Observation, store: Path) -> None:
     """A governing document is refused as event storage, loudly and from outside."""
     refused = record(store, "append-entry", "--kind", "EVENT", "--subject", SUBJECT,
@@ -232,7 +200,7 @@ def observe(emit: Path | None = None) -> int:
         _retract(observed, store, entry, before)
         _projections(observed, store)
         detects_a_tamper(observed, store)
-        _profile_is_reachable(observed, store)
+        profile_is_reachable(observed, store, record)
         _distinctness(observed, store)
         final = record(store, "reconstruct-journal")
         settled = record(store, "read-entry", "--entry", receipt["entry_id"])

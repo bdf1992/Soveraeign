@@ -34,7 +34,7 @@ from .errors import (
     BrokenChain, DesignRecordRefused, ProfileNotAdopted, ProjectionNotAuthoritative,
     UnknownEntry,
 )
-from .profiles import PROFILE_ORDER, ProfileSurface, digest_for_row as _digest_for_profile
+from .profiles import ProfileSurface, digest_for_row as _digest_for_profile
 from .projections import ProjectionSurface
 
 GENESIS = "0" * 64
@@ -141,12 +141,14 @@ class RecordService(ProjectionSurface, ProfileSurface):
 
         Private because choosing the profile per call is exactly the freedom that
         caused the damage. Two callers name it: `append`, which asks the store,
-        and `adopt_profile`, which is the act of changing the answer.
+        and `adopt_profile`, which is the act of changing the answer. Both validate
+        the profile before calling, so there is no guard for it here - one existed
+        and a witness proved it unreachable, which is the same finding this change
+        already acted on once in `reconstruct`. An unknown profile arriving anyway
+        raises from `digest_for_profile`.
         """
         if kind not in ENTRY_KINDS:
             raise ValueError(f"unknown entry kind {kind!r}")
-        if profile not in PROFILE_ORDER:
-            raise ValueError(f"unknown record digest profile {profile!r}")
         if source_address is not None and Path(source_address).name in DESIGN_SYSTEM_OF_RECORD:
             raise DesignRecordRefused(
                 f"{source_address} governs system design and is not operational event storage"

@@ -223,7 +223,13 @@ accepted_repository_claims:
 # The O-numbers are kept so the documents that cite them still resolve.
 open_decisions: []
 
-owner_acceptance_queue: []
+owner_acceptance_queue:
+  - id: A9
+    packet: acceptance/A9.json
+    presented: What an asset is - a governed identity holding no bytes, whose constituents carry their own content states, where a path is placement and a source is an observation
+    waits_on: seat:root
+    presented_by_seat: seat:session-control
+    at: 2026-08-27T00:00:00Z
 
 owner_accepted:
   - id: A1

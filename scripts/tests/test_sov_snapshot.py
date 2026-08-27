@@ -707,6 +707,23 @@ class TheRecordIsTheCommitAtHead(unittest.TestCase):
                     # level the gate actually failed on for every session on the branch.
                     self.assertEqual(grading.drift(grading.grade(page, unmoved)), [])
 
+                fixture_git(root, "add", "-A")
+                self.assertEqual(fixture_git(root, "rev-parse", "HEAD"), head,
+                                 "staging moved HEAD, so the case below proves nothing")
+                with self.subTest("staged work moves no count either"):
+                    # The index is not the commit, and until now nothing separated
+                    # them: this fixture stages and commits in one step everywhere
+                    # else, so swapping `ls-tree HEAD` for `ls-files` at the call site
+                    # and in PERMITTED_ARGV together left every referent case green
+                    # and put the original defect one coordinated edit away. A third
+                    # reading found that. This is the only place the two are apart,
+                    # and it is what makes the allowlist a check rather than a
+                    # restatement of the call sites it is compared against.
+                    staged = self._committed_only(claims.derive_all().values)
+                    self.assertEqual(staged, self.FIRST)
+                with self.subTest("and the page is not drifted against the index either"):
+                    self.assertEqual(grading.drift(grading.grade(page, staged)), [])
+
                 landed = fixture_commit(root, "land the same work")
                 self.assertNotEqual(landed, head)
                 with self.subTest("landing the same work moves every count"):
@@ -859,15 +876,25 @@ class GitIsNeverAllowedToAnswerWithSomethingElse(unittest.TestCase):
                         committed._git(*argv)
                 self.assertEqual([], spawned, f"git {argv} was spawned before refusing")
 
-    def test_a_declared_vector_is_refused_by_nothing(self):
-        """The positive half. A guard that refused everything would pass the case above
-        and break every claim, so the three declared vectors are asserted to run."""
+    def test_a_declared_vector_reaches_git_unchanged(self):
+        """The positive half, observing rather than asserting membership.
+
+        This iterated the allowlist and asserted each member was in the allowlist,
+        which is true of any allowlist and stayed true under a mutant that edited
+        the call site and the allowlist together. It watches the spawn now, so it
+        says what vector git was actually handed.
+        """
         for argv in sorted(committed.PERMITTED_ARGV):
             with self.subTest(argv=argv):
-                with unittest.mock.patch.object(
-                        subprocess, "run",
-                        lambda *a, **k: subprocess.CompletedProcess(a[0], 0, b"", b"")):
+                spawned = []
+
+                def record(called, **_keywords):
+                    spawned.append(tuple(called))
+                    return subprocess.CompletedProcess(called, 0, b"", b"")
+
+                with unittest.mock.patch.object(subprocess, "run", record):
                     self.assertEqual(0, committed._git(*argv).returncode)
+                self.assertEqual([("git", *argv)], spawned)
 
     def test_every_vector_the_module_runs_is_declared(self):
         """The allowlist against the source, so a fourth call site cannot be added and
@@ -1161,6 +1188,44 @@ CLAIMS = (
     #: than merely escaping it. A second reading planted the three after them, which
     #: reach the record module for a `Path` and glob it.
     FOOLED = {
+        "the record module's private git wrapper": ('''
+from sovsnapshot import committed
+
+
+def _skills() -> int:
+    done = committed._git('ls-files', '-z', '--others', '--cached',
+                          '--', '.claude/skills')
+    names = done.stdout.decode('utf-8').split(chr(0))
+    return len({p.split('/')[2] for p in names if p})
+
+
+CLAIMS = (Claim("skills", r"(\\d+)\\s+skills", _skills),)
+''', "taken in"),
+        "the record module's own subprocess import": ('''
+from sovsnapshot import committed
+
+
+def _skills() -> int:
+    committed.entries('.claude/skills', 'skills')
+    done = committed.subprocess.run(
+        ['git', 'ls-files', '-z', '--full-name', '--', '.claude/skills'],
+        cwd='.', capture_output=True)
+    names = done.stdout.decode('utf-8').split(chr(0))
+    return len({p.split('/')[2] for p in names if p})
+
+
+    CLAIMS = (Claim("skills", r"(\\d+)\\s+skills", _skills),)
+''', "taken in"),
+        "a reader reached through getattr": ('''
+from sovsnapshot import committed
+
+
+def _skills() -> int:
+    return len(list(getattr(committed, 'ROOT').glob('.claude/skills/*')))
+
+
+CLAIMS = (Claim("skills", r"(\\d+)\\s+skills", _skills),)
+''', "resolved at run time"),
         "a local variable named committed": ('''
 from pathlib import Path
 
@@ -1357,6 +1422,28 @@ CLAIMS = (Claim("skills", r"(\\d+)\\s+skills", _skills),)
             said = shape.derivations_read_the_commit()
         self.assertIsNotNone(said)
         self.assertIn("grades nothing", said)
+
+    def test_an_ungraded_table_that_is_not_all_exceptions_says_only_that(self):
+        """The other half of the split, which shipped with no case of its own.
+
+        The message this replaced fired on any empty grading and then named the
+        exception list as the cause without establishing it. Deleting the
+        replacement left sixty tests green, which is the same vacuity one layer
+        along: a repair to a false sentence is a consequential behaviour and needs
+        a case like any other.
+        """
+        said = shape._exceptions_are_live([("skills", None), ("reports", None)], [])
+        joined = " ".join(said)
+        self.assertIn("does not explain", joined)
+        self.assertNotIn("every declared claim is a named working-tree exception", joined)
+
+    def test_a_table_of_only_exceptions_names_the_exceptions_as_the_cause(self):
+        """The half that was covered, kept beside the half that was not, so the two
+        messages are read against each other rather than one at a time."""
+        said = shape._exceptions_are_live([(name, None) for name in shape.WORKING_TREE], [])
+        joined = " ".join(said)
+        self.assertIn("every declared claim is a named working-tree exception", joined)
+        self.assertNotIn("does not explain", joined)
 
     def test_a_table_that_is_all_exceptions_is_reported_rather_than_passing(self):
         """The exceptions' own vacuity, one layer under the empty table's."""

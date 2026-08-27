@@ -13,8 +13,9 @@ how the defect survived nine review rounds. So the invariant is structural and i
 re-read from the bytes of `claims.py` on every run, and the two exceptions are
 named here rather than left to be recognised.
 
-An independent reading planted four shapes against the first version of this and
-a second reading three more, and watched every one of them pass, including a fall back to a glob through a local
+An independent reading planted four shapes against the first version of this,
+and a second reading three more. Every one of them passed, including a fall
+back to a glob through a local
 variable named `committed`, which defeated the invariant rather than escaping it.
 A second reading then took `committed.ROOT` - a `Path` exported by the module
 this treats as the record - and globbed the working tree with it while satisfying
@@ -27,7 +28,7 @@ from __future__ import annotations
 from pathlib import Path
 import ast
 
-from sovsnapshot import claims
+from sovsnapshot import claims, claimtable
 
 #: The module that is the record. Every route to a count ends here.
 RECORD = "committed"
@@ -48,9 +49,12 @@ READERS = (RECORD,)
 #: back, because running the record module's private wrapper counted as reading it.
 #: The wrapper refuses an undeclared vector itself now (`committed.PERMITTED_ARGV`)
 #: and is named here too, so a claim reaching only for it fails the invariant.
+#: `committed.subprocess` is the third spelling of one idea: the record module
+#: imports subprocess, so reaching that import read as reaching the record, and a
+#: third reading spawned `git ls-files` straight through it.
 #: Reaching one of these does not count as reaching the record, and reaching one
 #: anywhere in `claims.py` is reported.
-NOT_AN_ANSWER = ("ROOT", "_git")
+NOT_AN_ANSWER = ("ROOT", "_git", "subprocess")
 
 #: The claims Bdo's ruling on acceptance packet A5 left on the working tree,
 #: named so a third cannot join them quietly. Each counts something the repository
@@ -61,68 +65,15 @@ NOT_AN_ANSWER = ("ROOT", "_git")
 #: a name here that the table does not declare is an exception grading nothing.
 WORKING_TREE = ("verification checks", "declared operations")
 
-
-def _claim_table(tree: ast.Module) -> list[tuple[str, ast.expr | None]]:
-    """Each declared claim's name and the expression that derives it, from the source.
-
-    From the source and not from `claims.CLAIMS`, deliberately. The object is what
-    a test patches to plant a refusing derivation; the source is the file about to
-    be landed. Grading the declaration is what makes this a guard against
-    regression rather than a report on whichever test is running.
-
-    Module level only. `ast.walk` found a `CLAIMS` assigned anywhere, a nested one
-    included, and graded that instead of the table the module exports. A claim
-    whose derivation is passed by keyword is read as such rather than skipped: the
-    skip reported "the source declares 0 claims", which sends a reader to look for
-    a broken table when the table is fine and this reader is not.
-    """
-    for node in tree.body:
-        if not isinstance(node, ast.Assign):
-            continue
-        if not any(isinstance(t, ast.Name) and t.id == "CLAIMS" for t in node.targets):
-            continue
-        if not isinstance(node.value, (ast.Tuple, ast.List)):
-            return []
-        declared: list[tuple[str, ast.expr | None]] = []
-        for element in node.value.elts:
-            if not isinstance(element, ast.Call):
-                declared.append(("<not a Claim(...)>", None))
-                continue
-            first = element.args[0] if element.args else None
-            name = first.value if isinstance(first, ast.Constant) else "<unnamed>"
-            derive = element.args[2] if len(element.args) >= 3 else next(
-                (word.value for word in element.keywords if word.arg == "derive"), None)
-            declared.append((str(name), derive))
-        return declared
-    return []
-
-
-def _names_the_module(tree: ast.Module, name: str) -> str | None:
-    """Why `name` is not reliably the imported module here, if it is not.
-
-    The guard below reads the base of an attribute access and checks it is spelled
-    `committed`. Spelling is not binding, and an independent reading demonstrated
-    it: `committed = ROOT / ".claude" / "skills"` followed by `committed.glob("*")`
-    satisfied the invariant while doing the exact thing the invariant forbids. So
-    the name is established as the import, and established as never rebound or
-    shadowed anywhere in the file, before reaching it is allowed to mean anything.
-    """
-    if not any(isinstance(node, ast.Name) and node.id == name for node in ast.walk(tree)):
-        return None
-    if not any(isinstance(node, ast.ImportFrom)
-               and any((alias.asname or alias.name) == name for alias in node.names)
-               for node in tree.body):
-        return f"`{name}` is not imported at module level, so reaching it proves nothing"
-    for node in ast.walk(tree):
-        stored = (isinstance(node, ast.Name) and node.id == name
-                  and isinstance(node.ctx, ast.Store))
-        shadowed = ((isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
-                     and node.name == name)
-                    or (isinstance(node, ast.arg) and node.arg == name))
-        if stored or shadowed:
-            return (f"`{name}` is rebound or shadowed in this module, so an attribute "
-                    "reached on it is not necessarily the committed record")
-    return None
+#: Names that reach a value without ever naming it. `getattr(committed, "ROOT")` is
+#: an `ast.Call`, and every guard in this module reads attributes on names, so a
+#: third reading walked all three past `NOT_AN_ANSWER` that way. A claim counts
+#: things out of a declared record and has no business resolving a name at run
+#: time, so these are refused outright rather than resolved - the same choice the
+#: publication reach guard reached independently, for the same reason: a scan that
+#: resolves has to be as clever as the code, and one that refuses only has to be as
+#: clever as the rule.
+DYNAMIC_REACHES = ("getattr", "vars", "globals", "locals", "eval", "exec", "__import__")
 
 
 def derivations_read_the_commit() -> str | None:
@@ -144,22 +95,25 @@ def derivations_read_the_commit() -> str | None:
 
     What it does not prove, stated so silence is not read as confirmation. It
     establishes that each graded derivation reaches the committed record; it does
-    not establish that nothing else is reached. Four shapes have been demonstrated
-    against it, and two of them are closed:
+    not establish that nothing else is reached. Seven shapes have been demonstrated
+    against it across three readings. Six are closed and each has a case:
 
-    - a derivation that takes `committed.ROOT` and globs it, and
-    - a plain `pathlib` glob built from `committed.ROOT`.
+    - `committed.ROOT` taken and globbed, and a plain `pathlib` glob built from it;
+    - `committed._git` handed its own argument vector, which ran the record
+      module's private wrapper and counted as reading the record;
+    - `committed.subprocess`, the record module's own import, spawning git directly;
+    - `getattr(committed, "ROOT")`, which is an `ast.Call` and so is invisible to
+      every guard here, each of which reads an attribute on a name;
+    - a glob inside `except Underivable`, which a third reading planted and three
+      behavioural cases caught. This entry said it was open and it was not.
 
-    Both satisfied "reaches `committed`" while reading the working tree, and both
-    are now reported: `NOT_AN_ANSWER` names `ROOT` as a path rather than an answer,
-    so reaching it neither counts as reaching the record nor passes unremarked
-    anywhere in `claims.py`. Two remain open and are named rather than described in
-    general terms:
+    `NOT_AN_ANSWER` holds the three attributes that are paths, wrappers or imports
+    rather than answers, and `DYNAMIC_REACHES` refuses run-time name resolution
+    outright rather than resolving it. One shape remains open and is named rather
+    than described in general terms:
 
     - a derivation that calls `committed.tracked_paths()` and hands the counting to
-      a module-level helper that globs, and
-    - a derivation that reaches the record and then falls back to a glob inside
-      `except Underivable`.
+      a module-level helper that globs.
 
     A blocklist of filesystem calls would be the narrowness `LESSONS.md` L-0007
     names - it would catch the reach that has been seen and not the next one - so
@@ -168,7 +122,7 @@ def derivations_read_the_commit() -> str | None:
     """
     source = Path(claims.__file__).read_text(encoding="utf-8")
     tree = ast.parse(source)
-    table = _claim_table(tree)
+    table = claimtable.read(tree)
     stray = []
     if not table:
         # Without this the guard is satisfied by finding nothing, which is the
@@ -182,8 +136,9 @@ def derivations_read_the_commit() -> str | None:
     # one it never mentions would report a module for not using a module.
     used = tuple(reader for reader in READERS
                  if any(isinstance(n, ast.Name) and n.id == reader for n in ast.walk(tree)))
-    unbound = [why for reader in used if (why := _names_the_module(tree, reader))]
+    unbound = [why for reader in used if (why := claimtable.names_the_module(tree, reader))]
     stray.extend(unbound)
+    stray.extend(_dynamic_reaches(tree))
     functions = {node.name: node for node in ast.walk(tree)
                  if isinstance(node, ast.FunctionDef)}
     graded = []
@@ -277,6 +232,17 @@ def _paths_taken_off_the_record(tree: ast.Module) -> list[str]:
     return [f"{taken} taken in {Path(claims.__file__).name}; a reader's paths are not "
             "answers, and a derivation that globs one reads the working tree while "
             "satisfying this guard"]
+
+
+def _dynamic_reaches(tree: ast.Module) -> list[str]:
+    """Every run-time name resolution in this source, which no attribute scan can see."""
+    used = sorted({node.id for node in ast.walk(tree)
+                   if isinstance(node, ast.Name) and node.id in DYNAMIC_REACHES})
+    if not used:
+        return []
+    return [f"{used} used in {Path(claims.__file__).name}; a name resolved at run time "
+            "is invisible to every guard here, each of which reads an attribute on a "
+            "name"]
 
 
 def _reaches(node: ast.AST, names: tuple[str, ...]) -> bool:

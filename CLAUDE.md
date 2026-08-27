@@ -102,7 +102,7 @@ been receiving merged pull requests. This section is orientation, not standing.
 `STATUS.yaml`, the working tree, and the newest relevant report override it
 whenever they disagree.
 
-- `python scripts/verify.py` runs 41 checks and grades itself on wall
+- `python scripts/verify.py` runs 45 checks and grades itself on wall
   time (PLATINUM 3 s, GOLD 6 s, SILVER 15 s). Past 15 s the run still fails,
   which is `decisions/0050` and is what this trunk carries. A successor record,
   `decisions/0081`, would take the wall clock out of the exit code and move
@@ -114,7 +114,7 @@ whenever they disagree.
   host, so measure on a quiet box before calling an overrun a regression.
   `python scripts/lint.py` passes, carrying named debt for the duplicate keys
   in `STATUS.yaml` that `chore/status-and-projection-bookkeeping` removes.
-- 10 service boundaries under `services/`, 133 declared operations
+- 10 service boundaries under `services/`, 134 declared operations
   across 10 manifests. Asset and Record are built and self-tested; Console's
   continuity path is built and its other four surfaces are text; Gateway,
   Observation, Proofing, Projection, and Registry are boundary only.
@@ -122,7 +122,7 @@ whenever they disagree.
 - Conformance oracle (`conformance/`): executable, 20 controlled cases, every
   defeating fixture fails as declared. Participant binding still open.
 - Harness (`.claude/`): 5 agent definitions (four roles and the Sov binding),
-  24 skills, 22 workflows, the epic-tree walk, and scheduled-run gates with a
+  25 skills, 22 workflows, the epic-tree walk, and scheduled-run gates with a
   kernel-envelope ledger.
   Every shipped schedule is disabled. Executable harness workflows are
   admissible before their defeating fixtures exist, for host plumbing only
@@ -212,7 +212,7 @@ engineering baseline. Day two added the SDLC loop, Console, scheduled runs,
 Sov, the federation harness, defeating fixtures for receipts and proofing,
 LF line-ending enforcement, and the stack certification. At the end of day two
 the record held 26 commits, 17 decision records and 8 reports; it now holds
-461 commits, 79 decision records and 26 reports. The
+561 commits, 83 decision records and 27 reports. The
 first independently witnessed work landed on 2026-08-25; nothing is ratified.
 
 Those two sentences are checked. `python scripts/sov_snapshot.py` grades the

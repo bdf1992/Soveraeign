@@ -75,6 +75,13 @@ CHECKS = (
           "tests the oracle from outside itself, including cases proving it refuses reports "
           "it cannot read",
           ("conformance/tests",)),
+    Check("asset object cases",
+          [sys.executable, "scripts/sov_asset_objects.py", "selfcheck"], ROOT,
+          "judges a declared corpus of lawful and defeating worlds against predicates that "
+          "import no participant code, so an invariant is graded before any implementation "
+          "carries the objects and a defeating case that stops defeating fails the run",
+          ("SPEC.md", "conformance/asset_objects.py",
+           "conformance/fixtures/asset/object-cases.json")),
     Check("kernel transition contract", [sys.executable, "scripts/sov_kernel.py", "selfcheck"],
           ROOT,
           "judges a declared corpus of positive and defeating requests against the "

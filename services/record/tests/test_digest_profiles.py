@@ -11,8 +11,8 @@ import unittest
 sys.path.insert(0, str(Path(__file__).parents[1] / "src"))
 
 from soveraeign_record_service.core import (  # noqa: E402
-    DIGEST_PROFILE, GENESIS, LEGACY_DIGEST_PROFILE, BrokenChain, RecordService,
-    _digest, _legacy_canonical, _legacy_digest,
+    CURRENT_PROFILE, DIGEST_PROFILE, GENESIS, LEGACY_DIGEST_PROFILE, BrokenChain,
+    RecordService, _digest, _legacy_canonical, _legacy_digest,
 )
 from soveraeign_record_service.custody import (  # noqa: E402
     LEGACY_EXPORT_SCHEMA, restore, verify_export,
@@ -41,17 +41,24 @@ class DigestProfiles(unittest.TestCase):
         self.assertEqual(_legacy_digest(*left), _legacy_digest(*right))
         self.assertNotEqual(_digest(*left), _digest(*right))
 
-    def test_new_entries_carry_v2_and_never_fallback_to_v1(self) -> None:
-        service = self.service("new")
-        entry = service.append("EVENT", "subject", "actor", {"step": 1})
-        self.assertEqual(entry["digest_profile"], DIGEST_PROFILE)
-        service.db.execute(
-            "UPDATE journal SET digest_profile=? WHERE entry_id=?",
-            (LEGACY_DIGEST_PROFILE, entry["entry_id"]),
-        )
-        service.db.commit()
-        with self.assertRaises(BrokenChain):
-            service.reconstruct()
+    def test_new_entries_carry_the_current_profile_and_never_fall_back(self) -> None:
+        """Relabelling an entry to any weaker profile has to break it, not soften it.
+
+        The profile column decides which digest function verification uses, so a
+        row relabelled downward would otherwise be graded under a profile that
+        covers less than the one it was written with.
+        """
+        for weaker in (LEGACY_DIGEST_PROFILE, DIGEST_PROFILE):
+            service = self.service(f"new-{weaker[-2:]}")
+            entry = service.append("EVENT", "subject", "actor", {"step": 1})
+            self.assertEqual(entry["digest_profile"], CURRENT_PROFILE)
+            service.db.execute(
+                "UPDATE journal SET digest_profile=? WHERE entry_id=?",
+                (weaker, entry["entry_id"]),
+            )
+            service.db.commit()
+            with self.assertRaises(BrokenChain):
+                service.reconstruct()
 
     def test_opening_a_v1_store_marks_existing_rows_without_rewriting_them(self) -> None:
         root = self.root / "legacy"

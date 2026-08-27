@@ -17,6 +17,7 @@ from typing import Any
 GENESIS = "0" * 64
 LEGACY_DIGEST_PROFILE = "soveraeign-record-chain/v1"
 DIGEST_PROFILE = "soveraeign-record-chain/v2"
+BOUND_DIGEST_PROFILE = "soveraeign-record-chain/v3"
 EXPECTED_KINDS = (
     "gateway-request",
     "gateway-capability-resolution",
@@ -40,6 +41,14 @@ def _record_digest(profile: str, previous: str, row: dict[str, Any],
     elif profile == DIGEST_PROFILE:
         material = json.dumps(
             [profile, previous, row["kind"], row["subject"], row["actor"], payload],
+            sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False,
+        )
+    elif profile == BOUND_DIGEST_PROFILE:
+        # v3 additionally binds the identifier, the origin and the moment, so a
+        # row whose identity was rewritten no longer verifies as its own entry.
+        material = json.dumps(
+            [profile, previous, row["entry_id"], row["kind"], row["subject"],
+             row["actor"], row["source_address"], float(row["recorded_at"]), payload],
             sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False,
         )
     else:

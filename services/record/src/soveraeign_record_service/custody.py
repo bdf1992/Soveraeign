@@ -113,7 +113,8 @@ def verify_export(document: Any, *, expected_head: str | None = None) -> str:
         profile = LEGACY_DIGEST_PROFILE if legacy else entry["digest_profile"]
         expected = _digest_for_profile(
             profile, previous, entry["kind"], entry["subject"], entry["actor"],
-            entry["payload"]
+            entry["payload"], entry_id=entry["entry_id"],
+            source_address=entry["source_address"], recorded_at=entry["recorded_at"],
         )
         if entry["prev_digest"] != previous:
             raise BrokenChain(f"entry {position} does not follow its predecessor")

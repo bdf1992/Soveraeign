@@ -31,7 +31,6 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Any, Callable
 import argparse
-import hashlib
 import json
 import os
 import sqlite3
@@ -42,15 +41,11 @@ import time
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from sovwitness import Observation  # noqa: E402
+from sovwitness.record_chain import (  # noqa: E402
+    GENESIS, LEGACY_DIGEST_PROFILE, recompute, verify_chain,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
-GENESIS = "0" * 64
-LEGACY_DIGEST_PROFILE = "soveraeign-record-chain/v1"
-DIGEST_PROFILE = "soveraeign-record-chain/v2"
-# The chain rule as `services/record/CHARTER.md` states it: every entry carries
-# the digest of the entry before it. Restated here so the check recomputes the
-# chain instead of borrowing the participant's own arithmetic.
-CHAIN_MATERIAL = ("prev_digest", "kind", "subject", "actor", "payload")
 SUBJECT = "run-witness-1"
 WALKER = "witness/record@" + Path(__file__).name
 
@@ -70,40 +65,6 @@ def record(store: Path, *args: str, expect: int = 0) -> dict[str, Any]:
     if proc.returncode != expect:
         raise SystemExit(f"record exited {proc.returncode} for {args}\n{proc.stdout}{proc.stderr}")
     return json.loads(proc.stdout)
-
-
-def recompute(previous: str, entry: dict[str, Any]) -> str:
-    """Rebuild one link of the chain here, from the rule the charter states."""
-    profile = entry.get("digest_profile", LEGACY_DIGEST_PROFILE)
-    if profile == LEGACY_DIGEST_PROFILE:
-        material = [previous] + [
-            json.dumps(entry[field], sort_keys=True, separators=(",", ":"))
-            if field == "payload" else str(entry[field])
-            for field in CHAIN_MATERIAL[1:]
-        ]
-        encoded = "|".join(material).encode("utf-8")
-    elif profile == DIGEST_PROFILE:
-        encoded = json.dumps(
-            [profile, previous, entry["kind"], entry["subject"], entry["actor"],
-             entry["payload"]],
-            ensure_ascii=False,
-            allow_nan=False,
-            separators=(",", ":"),
-            sort_keys=True,
-        ).encode("utf-8")
-    else:
-        return "UNKNOWN_DIGEST_PROFILE"
-    return hashlib.sha256(encoded).hexdigest()
-
-
-def verify_chain(entries: list[dict[str, Any]]) -> list[str]:
-    """Return the entry ids whose reported digest does not match a recomputed one."""
-    previous, broken = GENESIS, []
-    for entry in entries:
-        if entry["prev_digest"] != previous or entry["entry_digest"] != recompute(previous, entry):
-            broken.append(entry["entry_id"])
-        previous = entry["entry_digest"]
-    return broken
 
 
 def _interrupt(store: Path) -> None:

@@ -25,9 +25,10 @@ import time
 import uuid
 
 from .digest import (
-    DIGEST_PROFILE, LEGACY_DIGEST_PROFILE, canonical as _canonical,
+    BOUND_DIGEST_PROFILE, COVERAGE, CURRENT_PROFILE, DIGEST_PROFILE,
+    LEGACY_DIGEST_PROFILE, bound_digest as _bound_digest, canonical as _canonical,
     digest as _digest, digest_for_profile, legacy_canonical as _legacy_canonical,
-    legacy_digest as _legacy_digest,
+    legacy_digest as _legacy_digest, uncovered,
 )
 
 GENESIS = "0" * 64
@@ -65,10 +66,22 @@ def _now() -> float:
 
 
 def _digest_for_profile(
-    profile: str, previous: str, kind: str, subject: str, actor: str, payload: Any
+    profile: str, previous: str, kind: str, subject: str, actor: str, payload: Any,
+    *, entry_id: str | None = None, source_address: str | None = None,
+    recorded_at: float | None = None,
 ) -> str:
+    """Recompute one entry's digest under its own profile, or refuse the profile.
+
+    The keyword arguments are what record-chain/v3 binds beyond v2. They are
+    optional in the signature so a v1 or v2 caller is unchanged, and required by
+    the v3 branch, which raises rather than grading an entry under a weaker
+    profile than the one it was written with.
+    """
     try:
-        return digest_for_profile(profile, previous, kind, subject, actor, payload)
+        return digest_for_profile(
+            profile, previous, kind, subject, actor, payload, entry_id=entry_id,
+            source_address=source_address, recorded_at=recorded_at,
+        )
     except ValueError as error:
         raise BrokenChain(str(error)) from error
 
@@ -147,13 +160,19 @@ class RecordService:
             )
         previous = self.head()
         entry_id = f"entry_{uuid.uuid4().hex}"
-        digest = _digest(previous, kind, subject, actor, payload)
+        # Read the clock before hashing rather than at INSERT: under
+        # record-chain/v3 the moment is bound into the digest, so the value in
+        # the row and the value in the hash have to be the one reading.
+        recorded_at = _now()
+        digest = _bound_digest(previous, kind, subject, actor, payload,
+                               entry_id=entry_id, source_address=source_address,
+                               recorded_at=recorded_at)
         self.db.execute(
             "INSERT INTO journal(entry_id,kind,subject,actor,source_address,"
             "payload_json,recorded_at,prev_digest,entry_digest,digest_profile) "
             "VALUES(?,?,?,?,?,?,?,?,?,?)",
             (entry_id, kind, subject, actor, source_address,
-             _canonical(payload), _now(), previous, digest, DIGEST_PROFILE),
+             _canonical(payload), recorded_at, previous, digest, CURRENT_PROFILE),
         )
         self.db.commit()
         return self.entry(entry_id)
@@ -200,7 +219,8 @@ class RecordService:
         for entry in self.entries():
             expected = _digest_for_profile(
                 entry["digest_profile"], previous, entry["kind"], entry["subject"],
-                entry["actor"], entry["payload"]
+                entry["actor"], entry["payload"], entry_id=entry["entry_id"],
+                source_address=entry["source_address"], recorded_at=entry["recorded_at"],
             )
             if entry["prev_digest"] != previous or entry["entry_digest"] != expected:
                 raise BrokenChain(entry["entry_id"])

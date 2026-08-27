@@ -77,7 +77,7 @@ Current representation profiles:
 | UUID use | **PROFILE** RFC 9562 UUIDv4 for generated randomness. A value such as `entry_<uuid-hex>` is an opaque typed identifier containing UUID entropy, not itself a UUID; domain identities and content addresses are not replaced by UUIDs |
 | Payload digests | **ADOPT** SHA-256 over exact bytes, rendered as lowercase `sha256:<64-hex>` where contracts carry an algorithm label; a digest is not an asset, source, version, or actor identity |
 | Structured hash input | **DEFER** RFC 8785 JCS until a cross-language boundary requires its full number and member-order semantics. Existing persisted forms remain named Soveraeign profiles; new hash inputs MUST name and version their byte representation |
-| Record chain | `soveraeign-record-chain/v1` is the readable legacy delimiter form; new entries use `soveraeign-record-chain/v2`, hashing an unambiguous compact JSON array with its profile identifier and recording the profile per entry |
+| Record chain | `soveraeign-record-chain/v1` is the readable legacy delimiter form; `soveraeign-record-chain/v2` hashes an unambiguous compact JSON array with its profile identifier; new entries use `soveraeign-record-chain/v3`, which additionally binds the entry identifier, source address and recorded moment. A profile is immutable once defined and every entry records its own; `digest.COVERAGE` states which journal columns each one protects and the record service tests prove it column by column |
 | Unicode in structured hash input | **DEVIATE** from implicit normalization: preserve the supplied code points, reject values that cannot encode as UTF-8, and never normalize opaque bytes |
 
 The bounded JSON Schema validator is not a claim of complete Draft 2020-12

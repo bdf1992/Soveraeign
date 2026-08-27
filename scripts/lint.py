@@ -15,7 +15,10 @@ TEXT_SUFFIXES = {".md", ".py", ".json", ".yaml", ".yml", ".toml"}
 TEXT_NAMES = {".cursorrules", ".env.example", ".gitattributes", ".gitignore"}
 # .local/ is gitignored runtime state (scheduled-run ledger and captures); it is never
 # repository text and may legitimately contain local paths from captured tool output.
-SKIP_PARTS = {".git", ".venv", "__pycache__", "lineage", ".local"}
+# worktrees/ holds whole checkouts of this repository that agents work in. Every file
+# under one is already checked where it really lives, and walking them cost this check
+# 27s against 410MB of duplicated trees.
+SKIP_PARTS = {".git", ".venv", "__pycache__", "lineage", ".local", "worktrees"}
 MAX_PRODUCTION_LINES = 300
 # The module budget reached only `scripts/` and packaged `src/` trees, so an adapter,
 # binding, worker, or the oracle itself could grow past the limit unseen. Adding a root

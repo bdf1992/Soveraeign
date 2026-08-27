@@ -1,0 +1,5435 @@
+{
+  "corpus_id": "soveraeign-asset-object-cases/v1",
+  "note": "Positive and defeating cases for the asset objects in SPEC.md, judged by conformance/asset_objects.py. Each case states a world; a key omitted is unknown rather than satisfied. Every defeating case is the base world with exactly one thing wrong, so a failing case names its invariant and nothing else. The oracle imports no participant code, so these grade the logical model and hold before any implementation carries the objects. decisions/0077 owns the rulings.",
+  "cases": [
+    {
+      "case_id": "AO-asset-holds-no-payload-POS",
+      "invariant": "asset-holds-no-payload",
+      "expect": "SATISFIED",
+      "proves": "an asset is a governed identity and never holds bytes",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-asset-holds-no-payload-DEF",
+      "invariant": "asset-holds-no-payload",
+      "expect": "VIOLATED",
+      "proves": "an asset carrying payload_address is bytes wearing an identity",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report",
+          "payload_address": "cas:sha256:aaa"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-asset-type-is-declared-POS",
+      "invariant": "asset-type-is-declared",
+      "expect": "SATISFIED",
+      "proves": "an asset names a declared type",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-asset-type-is-declared-DEF",
+      "invariant": "asset-type-is-declared",
+      "expect": "VIOLATED",
+      "proves": "an asset naming an undeclared type is refused TYPE_UNDECLARED",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-never-declared",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-descriptions-target-a-governed-subject-POS",
+      "invariant": "descriptions-target-a-governed-subject",
+      "expect": "SATISFIED",
+      "proves": "a description names the asset it describes",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-descriptions-target-a-governed-subject-DEF",
+      "invariant": "descriptions-target-a-governed-subject",
+      "expect": "VIOLATED",
+      "proves": "a description targeting a payload address describes bytes",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "cas:sha256:aaa",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-type-is-declared-once-POS",
+      "invariant": "type-is-declared-once",
+      "expect": "SATISFIED",
+      "proves": "one type is declared once",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-type-is-declared-once-DEF",
+      "invariant": "type-is-declared-once",
+      "expect": "VIOLATED",
+      "proves": "redeclaring an asset_type_id is refused STALE_STATE",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          },
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-media-type-is-not-authority-POS",
+      "invariant": "media-type-is-not-authority",
+      "expect": "SATISFIED",
+      "proves": "a declared type governs, an observed media type does not",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-media-type-is-not-authority-DEF",
+      "invariant": "media-type-is-not-authority",
+      "expect": "VIOLATED",
+      "proves": "an observed media type standing in for a declared type",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "application/pdf",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-required-roles-are-carried-POS",
+      "invariant": "required-roles-are-carried",
+      "expect": "SATISFIED",
+      "proves": "a version carries every required constituent role",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-required-roles-are-carried-DEF",
+      "invariant": "required-roles-are-carried",
+      "expect": "VIOLATED",
+      "proves": "a version omitting a required role is judged at record time",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-version-reaches-payload-through-parts-POS",
+      "invariant": "version-reaches-payload-through-parts",
+      "expect": "SATISFIED",
+      "proves": "a version holds an entry set and reaches bytes through it",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-version-reaches-payload-through-parts-DEF",
+      "invariant": "version-reaches-payload-through-parts",
+      "expect": "VIOLATED",
+      "proves": "a version carrying a payload assumes a single payload",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ],
+            "payload_address": "cas:sha256:bbb"
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-entries-resolve-POS",
+      "invariant": "entries-resolve",
+      "expect": "SATISFIED",
+      "proves": "every entry names a part of this asset and a state of that part",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-entries-resolve-DEF",
+      "invariant": "entries-resolve",
+      "expect": "VIOLATED",
+      "proves": "an entry naming an unknown part resolves to nothing",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-ghost",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-placement-lives-on-the-entry-POS",
+      "invariant": "placement-lives-on-the-entry",
+      "expect": "SATISFIED",
+      "proves": "every entry declares where its constituent sits",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-placement-lives-on-the-entry-DEF",
+      "invariant": "placement-lives-on-the-entry",
+      "expect": "VIOLATED",
+      "proves": "an entry with no placement cannot say where a part is",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1"
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-lineage-and-derivation-are-orthogonal-POS",
+      "invariant": "lineage-and-derivation-are-orthogonal",
+      "expect": "SATISFIED",
+      "proves": "lineage and derivation are separate fields",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-lineage-and-derivation-are-orthogonal-DEF",
+      "invariant": "lineage-and-derivation-are-orthogonal",
+      "expect": "VIOLATED",
+      "proves": "a stored exclusive role collapses two independent facts",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ],
+            "role": "REVISION"
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-digest-covers-the-entry-set-POS",
+      "invariant": "digest-covers-the-entry-set",
+      "expect": "SATISFIED",
+      "proves": "one entry set carries one content digest",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-digest-covers-the-entry-set-DEF",
+      "invariant": "digest-covers-the-entry-set",
+      "expect": "VIOLATED",
+      "proves": "two digests over one entry set make the address meaningless",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ]
+          },
+          {
+            "version_id": "v1-twin",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:different",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-part-is-not-a-file-POS",
+      "invariant": "part-is-not-a-file",
+      "expect": "SATISFIED",
+      "proves": "a part is a constituent identity carrying no path",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-part-is-not-a-file-DEF",
+      "invariant": "part-is-not-a-file",
+      "expect": "VIOLATED",
+      "proves": "a part carrying a logical path is a file wearing an identity",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source",
+            "logical_path": "source/annual-report.indd"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-part-role-is-type-governed-POS",
+      "invariant": "part-role-is-type-governed",
+      "expect": "SATISFIED",
+      "proves": "a part occupies a role its asset's type declares",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-part-role-is-type-governed-DEF",
+      "invariant": "part-role-is-type-governed",
+      "expect": "VIOLATED",
+      "proves": "a part in an undeclared role is arbitrary description",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "invoice"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-part-version-carries-no-placement-or-source-POS",
+      "invariant": "part-version-carries-no-placement-or-source",
+      "expect": "SATISFIED",
+      "proves": "a content state says what it is and not where it came from",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-part-version-carries-no-placement-or-source-DEF",
+      "invariant": "part-version-carries-no-placement-or-source",
+      "expect": "VIOLATED",
+      "proves": "a singular source on a content state makes provenance state",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            },
+            "source_id": "src-local"
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-representation-is-intrinsic-POS",
+      "invariant": "representation-is-intrinsic",
+      "expect": "SATISFIED",
+      "proves": "a representation carries only intrinsic facts",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-representation-is-intrinsic-DEF",
+      "invariant": "representation-is-intrinsic",
+      "expect": "VIOLATED",
+      "proves": "a filename in a representation is placement leaking down",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              },
+              "filename": "annual-report.pdf"
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-custody-is-a-reference-POS",
+      "invariant": "custody-is-a-reference",
+      "expect": "SATISFIED",
+      "proves": "a content state names an address, not a storage form",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-custody-is-a-reference-DEF",
+      "invariant": "custody-is-a-reference",
+      "expect": "VIOLATED",
+      "proves": "a chunk list on a content state puts storage in the contract",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            },
+            "chunks": [
+              {
+                "chunk_address": "cas:sha256:c1",
+                "offset": 0
+              }
+            ]
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-a-shared-payload-is-not-a-shared-record-POS",
+      "invariant": "a-shared-payload-is-not-a-shared-record",
+      "expect": "SATISFIED",
+      "proves": "two content states may hold identical bytes and stay distinct records",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-a-shared-payload-is-not-a-shared-record-DEF",
+      "invariant": "a-shared-payload-is-not-a-shared-record",
+      "expect": "VIOLATED",
+      "proves": "one part_version_id declared twice is one record, not two",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          },
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-observations-are-not-constitutive-POS",
+      "invariant": "observations-are-not-constitutive",
+      "expect": "SATISFIED",
+      "proves": "many observations may point at one content state",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-observations-are-not-constitutive-DEF",
+      "invariant": "observations-are-not-constitutive",
+      "expect": "VIOLATED",
+      "proves": "an observation of no content state observes nothing",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-ghost",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-diff-is-decided-by-identity-POS",
+      "invariant": "diff-is-decided-by-identity",
+      "expect": "SATISFIED",
+      "proves": "a move is the same content state in a new placement",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": []
+        }
+      }
+    },
+    {
+      "case_id": "AO-diff-is-decided-by-identity-DEF",
+      "invariant": "diff-is-decided-by-identity",
+      "expect": "VIOLATED",
+      "proves": "MOVED claimed across two content states on equal payload alone",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          },
+          {
+            "part_version_id": "pv-printable-2",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf"
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": [
+            {
+              "part_id": "part-printable",
+              "kind": "MOVED",
+              "from_part_version_id": "pv-printable-1",
+              "to_part_version_id": "pv-printable-2",
+              "from_placement": {
+                "logical_path": "annual-report.pdf"
+              },
+              "to_placement": {
+                "logical_path": "public/annual-report.pdf"
+              },
+              "resolution": "EXACT"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "case_id": "AO-rename-is-a-new-version-POS",
+      "invariant": "diff-is-decided-by-identity",
+      "expect": "SATISFIED",
+      "proves": "a rename is a new asset version over the same part version - same part, same content state, different composition state",
+      "world": {
+        "asset": {
+          "asset_id": "asset-annual-report",
+          "asset_type_id": "type-publication",
+          "label": "Annual Report"
+        },
+        "asset_types": [
+          {
+            "asset_type_id": "type-publication",
+            "label": "Publication",
+            "spec": {
+              "part_roles": [
+                {
+                  "part_role": "source",
+                  "required": true
+                },
+                {
+                  "part_role": "printable",
+                  "required": true
+                },
+                {
+                  "part_role": "thumbnail",
+                  "required": false
+                }
+              ],
+              "admitted_representations": [
+                "application/pdf",
+                "application/x-indesign"
+              ],
+              "required_description_fields": [
+                "title"
+              ]
+            }
+          }
+        ],
+        "parts": [
+          {
+            "part_id": "part-source",
+            "asset_id": "asset-annual-report",
+            "part_role": "source"
+          },
+          {
+            "part_id": "part-printable",
+            "asset_id": "asset-annual-report",
+            "part_role": "printable"
+          }
+        ],
+        "part_versions": [
+          {
+            "part_version_id": "pv-source-1",
+            "part_id": "part-source",
+            "payload_address": "cas:sha256:aaa",
+            "content_digest": "sha256:aaa",
+            "size": 4096,
+            "representation": {
+              "media_type": "application/x-indesign",
+              "format": "indd"
+            }
+          },
+          {
+            "part_version_id": "pv-printable-1",
+            "part_id": "part-printable",
+            "payload_address": "cas:sha256:bbb",
+            "content_digest": "sha256:bbb",
+            "size": 8192,
+            "representation": {
+              "media_type": "application/pdf",
+              "format": "pdf",
+              "dimensions": {
+                "pages": 48
+              }
+            }
+          }
+        ],
+        "versions": [
+          {
+            "version_id": "v1",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": null,
+            "derivation": null,
+            "content_digest": "sha256:v1",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "annual-report.pdf"
+                }
+              }
+            ]
+          },
+          {
+            "version_id": "v2",
+            "asset_id": "asset-annual-report",
+            "predecessor_version_id": "v1",
+            "derivation": null,
+            "content_digest": "sha256:v2",
+            "entries": [
+              {
+                "part_id": "part-source",
+                "part_version_id": "pv-source-1",
+                "placement": {
+                  "logical_path": "source/annual-report.indd"
+                }
+              },
+              {
+                "part_id": "part-printable",
+                "part_version_id": "pv-printable-1",
+                "placement": {
+                  "logical_path": "public/annual-report-2026.pdf"
+                }
+              }
+            ]
+          }
+        ],
+        "source_observations": [
+          {
+            "observation_id": "obs-1",
+            "source_id": "src-local",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T00:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          },
+          {
+            "observation_id": "obs-2",
+            "source_id": "src-archive",
+            "part_version_id": "pv-source-1",
+            "observed_at": "2026-08-27T01:00:00Z",
+            "observed_by": "Bdo",
+            "evidence": "digest match"
+          }
+        ],
+        "descriptions": [
+          {
+            "subject_id": "asset-annual-report",
+            "field": "title",
+            "value": "Annual Report"
+          }
+        ],
+        "diff": {
+          "from_version_id": "v1",
+          "to_version_id": "v2",
+          "changes": [
+            {
+              "part_id": "part-printable",
+              "kind": "MOVED",
+              "from_part_version_id": "pv-printable-1",
+              "to_part_version_id": "pv-printable-1",
+              "from_placement": {
+                "logical_path": "annual-report.pdf"
+              },
+              "to_placement": {
+                "logical_path": "public/annual-report-2026.pdf"
+              },
+              "resolution": "EXACT"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 [
   {
     "id": "CONF-I1-POS",
+    "predicates": ["PRED-I-1.1", "PRED-I-1.2", "TRANS-submit_proposal", "TRANS-admit"],
     "requirement": "PROD-I-1",
     "polarity": "positive",
     "expected_oracle": "PASS",
@@ -11,6 +12,7 @@
   },
   {
     "id": "CONF-I1-DEF",
+    "predicates": ["PRED-I-1.1", "PRED-I-1.2", "TRANS-submit_proposal", "TRANS-admit"],
     "requirement": "PROD-I-1",
     "polarity": "defeating",
     "expected_oracle": "FAIL",
@@ -21,6 +23,7 @@
   },
   {
     "id": "CONF-I2-POS",
+    "predicates": ["PRED-I-2.2", "PRED-I-2.3", "TRANS-read_source"],
     "requirement": "PROD-I-2",
     "polarity": "positive",
     "expected_oracle": "PASS",
@@ -31,6 +34,7 @@
   },
   {
     "id": "CONF-I2-DEF",
+    "predicates": ["PRED-I-2.2", "PRED-I-2.3", "TRANS-read_source"],
     "requirement": "PROD-I-2",
     "polarity": "defeating",
     "expected_oracle": "FAIL",
@@ -41,6 +45,7 @@
   },
   {
     "id": "CONF-I3-POS",
+    "predicates": ["PRED-I-3.1", "PRED-I-3.2", "TRANS-cross", "PARITY-2", "PARITY-5"],
     "requirement": "PROD-I-3",
     "polarity": "positive",
     "expected_oracle": "PASS",
@@ -52,6 +57,7 @@
   },
   {
     "id": "CONF-I3-DEF",
+    "predicates": ["PRED-I-3.1", "PRED-I-3.2", "TRANS-cross", "PARITY-2", "PARITY-5"],
     "requirement": "PROD-I-3",
     "polarity": "defeating",
     "expected_oracle": "FAIL",
@@ -63,6 +69,7 @@
   },
   {
     "id": "CONF-I4-POS",
+    "predicates": ["PRED-I-4.1", "PRED-I-4.2", "TRANS-retract"],
     "requirement": "PROD-I-4",
     "polarity": "positive",
     "expected_oracle": "PASS",
@@ -74,6 +81,7 @@
   },
   {
     "id": "CONF-I4-DEF",
+    "predicates": ["PRED-I-4.1", "PRED-I-4.2", "TRANS-retract"],
     "requirement": "PROD-I-4",
     "polarity": "defeating",
     "expected_oracle": "FAIL",
@@ -85,6 +93,7 @@
   },
   {
     "id": "CONF-I5-POS",
+    "predicates": ["PRED-I-5.1", "PRED-I-5.2", "TRANS-ratify"],
     "requirement": "PROD-I-5",
     "polarity": "positive",
     "expected_oracle": "PASS",
@@ -97,6 +106,7 @@
   },
   {
     "id": "CONF-I5-DEF",
+    "predicates": ["PRED-I-5.1", "PRED-I-5.2", "TRANS-ratify"],
     "requirement": "PROD-I-5",
     "polarity": "defeating",
     "expected_oracle": "FAIL",
@@ -108,6 +118,7 @@
   },
   {
     "id": "CONF-I5-GRANT-POS",
+    "predicates": ["PRED-I-5.1", "PRED-I-5.2", "PRED-I-5.3", "TRANS-ratify"],
     "requirement": "PROD-I-5",
     "polarity": "positive",
     "expected_oracle": "PASS",
@@ -123,6 +134,7 @@
   },
   {
     "id": "CONF-I5-GRANT-DEF",
+    "predicates": ["PRED-I-5.1", "PRED-I-5.2", "PRED-I-5.3", "TRANS-ratify"],
     "requirement": "PROD-I-5",
     "polarity": "defeating",
     "expected_oracle": "FAIL",
@@ -137,6 +149,7 @@
   },
   {
     "id": "CONF-I6-POS",
+    "predicates": ["PRED-I-6.1", "PRED-I-6.2"],
     "requirement": "PROD-I-6",
     "polarity": "positive",
     "expected_oracle": "PASS",
@@ -147,6 +160,7 @@
   },
   {
     "id": "CONF-I6-DEF",
+    "predicates": ["PRED-I-6.1", "PRED-I-6.2"],
     "requirement": "PROD-I-6",
     "polarity": "defeating",
     "expected_oracle": "FAIL",
@@ -157,6 +171,7 @@
   },
   {
     "id": "CONF-I7-POS",
+    "predicates": ["PRED-I-7.1", "PRED-I-7.2", "PRED-I-7.3"],
     "requirement": "PROD-I-7",
     "polarity": "positive",
     "expected_oracle": "PASS",
@@ -169,6 +184,7 @@
   },
   {
     "id": "CONF-I7-DEF",
+    "predicates": ["PRED-I-7.1", "PRED-I-7.2", "PRED-I-7.3"],
     "requirement": "PROD-I-7",
     "polarity": "defeating",
     "expected_oracle": "FAIL",
@@ -181,6 +197,7 @@
   },
   {
     "id": "CONF-I8-POS",
+    "predicates": ["PRED-I-8.1", "PRED-I-8.2", "PRED-I-8.3", "TRANS-attest"],
     "requirement": "PROD-I-8",
     "polarity": "positive",
     "expected_oracle": "PASS",
@@ -194,6 +211,7 @@
   },
   {
     "id": "CONF-I8-DEF",
+    "predicates": ["PRED-I-8.1", "PRED-I-8.2", "PRED-I-8.3", "TRANS-attest"],
     "requirement": "PROD-I-8",
     "polarity": "defeating",
     "expected_oracle": "FAIL",
@@ -206,6 +224,8 @@
   },
   {
     "id": "CONF-I9-POS",
+    "predicates": ["PRED-I-9.1", "PRED-I-9.2", "PRED-I-9.3", "PRED-I-9.4", "PRED-I-9.5",
+                    "TRANS-invoke_model", "PARITY-2", "PARITY-3", "PARITY-4", "PARITY-5"],
     "requirement": "PROD-I-9",
     "polarity": "positive",
     "expected_oracle": "PASS",
@@ -220,6 +240,8 @@
   },
   {
     "id": "CONF-I9-DEF",
+    "predicates": ["PRED-I-9.1", "PRED-I-9.2", "PRED-I-9.3", "PRED-I-9.4", "PRED-I-9.5",
+                    "TRANS-invoke_model", "PARITY-2", "PARITY-3", "PARITY-4", "PARITY-5"],
     "requirement": "PROD-I-9",
     "polarity": "defeating",
     "expected_oracle": "FAIL",

@@ -153,6 +153,37 @@ class ProjectionDrift(unittest.TestCase):
     def test_an_empty_store_has_no_drift_rather_than_an_error(self) -> None:
         self.assertEqual(self.service.projection_drift(), [])
 
+    def test_a_ratification_written_under_the_older_event_name_is_still_found(self) -> None:
+        """Found on a live store, where 153 assets were about to lose their receipts.
+
+        `.local/history-corpus` was ingested before commit e384285 renamed the
+        ratification receipt from `proposal.ratify` to `asset.ratify-proposal`.
+        Reading only the current name derived every one of those rows as
+        UNRATIFIED_LABEL, so a rebuild would have replaced a real receipt id with
+        "no receipt" - and the drift check would then have called the store clean,
+        because stored and derived would agree on the loss.
+        """
+        hero, _campaign = self.ratified_pair()
+        receipt = self.service.db.execute(
+            "SELECT id FROM search_projection JOIN receipts "
+            "ON receipts.id = search_projection.source_receipt "
+            "WHERE search_projection.asset_id = ?", (hero,)).fetchone()
+        self.assertIsNotNone(receipt, "the fixture did not source its row from a receipt")
+
+        # Rewrite the receipt under the name the service used before the rename.
+        self.service.db.execute(
+            "UPDATE receipts SET event='proposal.ratify' WHERE event='asset.ratify-proposal'")
+        self.service.db.commit()
+
+        self.assertEqual(self.service.projection_drift(), [],
+                         "the older receipt name reads as a different, missing receipt")
+        self.service.rebuild_projections()
+        rebuilt = self.service.db.execute(
+            "SELECT source_receipt FROM search_projection WHERE asset_id=?", (hero,)
+        ).fetchone()[0]
+        self.assertEqual(rebuilt, receipt[0],
+                         "a rebuild dropped the ratification this row was sourced from")
+
 
 if __name__ == "__main__":
     unittest.main()

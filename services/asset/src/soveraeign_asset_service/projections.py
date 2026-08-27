@@ -38,6 +38,17 @@ CREATE TABLE IF NOT EXISTS graph_projection(
 
 UNRATIFIED = "UNRATIFIED_LABEL"
 
+#: The receipt event a ratification writes, newest name first.
+#:
+#: `proposal.ratify` is what the service wrote before commit e384285 renamed it,
+#: and stores ingested before that still hold only the old name. Reading just the
+#: current one made every such row derive as UNRATIFIED_LABEL, so a rebuild would
+#: have replaced a real receipt id with "no receipt" on every asset in them - and
+#: the drift check would then have reported the store clean, because stored and
+#: derived would agree on the loss. A receipt name, like a chain profile, is
+#: history: the writer uses the current one and the reader accepts both.
+RATIFY_EVENTS = ("asset.ratify-proposal", "proposal.ratify")
+
 #: How a projected row can disagree with the ledger. Each names what is wrong with
 #: the row rather than only that something is, because the three have different
 #: causes: a view that has not been rebuilt, a row nothing supports, and a row
@@ -55,10 +66,15 @@ class Projections:
         self.db = store.db
 
     def _ratify_receipt(self, proposal_id: str) -> str | None:
-        """The newest ratification receipt for a proposal, which sources its projected row."""
+        """The newest ratification receipt for a proposal, which sources its projected row.
+
+        Accepts every name a ratification has been written under, because the store
+        holds what it holds. `RATIFY_EVENTS` says why.
+        """
+        placeholders = ",".join("?" for _ in RATIFY_EVENTS)
         row = self.db.execute(
-            "SELECT id FROM receipts WHERE event='asset.ratify-proposal' AND subject_id=? "
-            "ORDER BY created_at DESC LIMIT 1", (proposal_id,)).fetchone()
+            f"SELECT id FROM receipts WHERE event IN ({placeholders}) AND subject_id=? "
+            "ORDER BY created_at DESC LIMIT 1", (*RATIFY_EVENTS, proposal_id)).fetchone()
         return row["id"] if row else None
 
     def derived(self) -> tuple[dict[str, tuple], dict[str, tuple]]:

@@ -1,0 +1,185 @@
+{
+  "policy_id": "soveraeign-concern-admission/v1",
+  "status": "PROPOSED",
+  "title": "What a concern must answer to enter work, and to leave it",
+  "note": "Phase I admitted work by document location: every change had somewhere to go, and none had to name what it would close. That is how locally coherent work becomes globally non-closing. This table is the entry and the exit of one concern. An item missing a ready field stays visible inventory and does not enter work in progress; a concern missing a closed layer has stopped rather than finished. Neither half grants authority, and passing them proves nothing about whether the work was worth doing - that is the custody holder's judgement and, at the exit clause, the root seat's.",
+  "governed_by": [
+    "AGENTS.md",
+    "SDLC.md",
+    "contracts/closure-ownership.json",
+    "contracts/custody.schema.json",
+    "contracts/work-circuit.json",
+    "decisions/0055-closure-ownership.md",
+    "decisions/0085-custody-boards-and-the-work-circuit.md"
+  ],
+  "definition_of_ready": {
+    "note": "All twelve resolve before a concern leaves CANDIDATE for READY. An unresolved field is not a blocker to record the concern; it is a blocker to start it.",
+    "fields": [
+      {
+        "field": "root_refs",
+        "answers": "Which ground, requirement, predicate and governing contract justify this work?",
+        "refusal": "ROOTLESS_CONCERN"
+      },
+      {
+        "field": "custody_id",
+        "answers": "Which durable initiative remains accountable after this session ends?",
+        "refusal": "UNHELD_CONCERN"
+      },
+      {
+        "field": "holder_and_settler",
+        "answers": "Who carries the initiative, and which separate seat can settle it?",
+        "refusal": "SELF_SETTLED_CONCERN"
+      },
+      {
+        "field": "service_boundary",
+        "answers": "Which service or cross-cutting owner contains the change?",
+        "refusal": "UNBOUNDED_CONCERN"
+      },
+      {
+        "field": "effect_class_and_authority",
+        "answers": "What may this concern change, and under which grant?",
+        "refusal": "UNDECLARED_EFFECT"
+      },
+      {
+        "field": "entry_stage_and_target_stage",
+        "answers": "How far is the thing drawn now, and how far must this concern advance it?",
+        "refusal": "UNSTAGED_CONCERN"
+      },
+      {
+        "field": "closure_check",
+        "answers": "What command or observation proves the concern reached its terminal?",
+        "refusal": "UNCLOSEABLE_CONCERN"
+      },
+      {
+        "field": "defeating_case",
+        "answers": "What would show the closure claim is false?",
+        "refusal": "UNFALSIFIABLE_CLAIM"
+      },
+      {
+        "field": "dependency_refs",
+        "answers": "Which exact artifacts must exist first?",
+        "refusal": "UNRESOLVED_DEPENDENCY"
+      },
+      {
+        "field": "estimate_range_and_basis",
+        "answers": "What envelope is expected, and how mature is the estimate?",
+        "refusal": "MISSING_EXTENT"
+      },
+      {
+        "field": "isolation",
+        "answers": "Which registered session, worktree, branch and path claims contain the work?",
+        "refusal": "UNISOLATED_CONCERN"
+      },
+      {
+        "field": "cleanup_obligations",
+        "answers": "Which issue, branch, worktree, lease and projection must settle afterward?",
+        "refusal": "UNRETIRED_INVENTORY"
+      }
+    ]
+  },
+  "definition_of_closed": {
+    "note": "Six layers, each applicable or explicitly not. A concern is closed when its holder can demonstrate every applicable one. Landed is not closed and cleaned is not optional: a concern that emitted a branch, an issue and a worktree and retired none of them has moved its cost onto whoever comes next.",
+    "layers": [
+      {
+        "layer": "BUILT",
+        "demonstrates": "The change exists inside the declared boundary and its positive and defeating cases pass.",
+        "always_applicable": true
+      },
+      {
+        "layer": "ATTACKED",
+        "demonstrates": "Adversarial review ran against the exact revision; findings were repaired inside the concern unless they crossed a genuine seam.",
+        "always_applicable": true,
+        "note": "Repairing in place is the rule. Converting a finding into another ticket is the failure contracts/closure-ownership.json names."
+      },
+      {
+        "layer": "OBSERVED",
+        "demonstrates": "An independent participant reconstructed the claimed result.",
+        "always_applicable": false,
+        "applicable_when": "the target standing is WITNESSED or above",
+        "note": "A helper that read or edited the change is inside the build and can never supply this."
+      },
+      {
+        "layer": "LANDED",
+        "demonstrates": "The branch is merged, or explicitly retired after its unique work is proven contained elsewhere.",
+        "always_applicable": true
+      },
+      {
+        "layer": "SETTLED",
+        "demonstrates": "Receipts, custody progress, phase predicates, issues and acceptance state are recomputed from the landed revision.",
+        "always_applicable": true,
+        "note": "Recomputed, not asserted. A settlement written by the participant that landed the change is a report."
+      },
+      {
+        "layer": "CLEANED",
+        "demonstrates": "Leases end, child leases settle, worktrees release, obsolete branches close, and temporary artifacts are retired.",
+        "always_applicable": true
+      }
+    ]
+  },
+  "terminals": {
+    "note": "Three roles, three different endings. Conflating them is how a concern ends at a commit while the initiative it served stays open and nobody notices.",
+    "worker": "presents an evidenced working tree; it holds no landing authority and its terminal is presentation",
+    "branch_holder": "merges or retires the change and clears the integration inventory it created",
+    "custody_holder": "remains accountable until the target predicate and its settlement evidence close",
+    "phase": "closes on two readings - whether the window is over, and whether the exit was earned"
+  },
+  "operating_rules": {
+    "note": "Drawn from what Phase I did rather than from method. Each names the observation that produced it.",
+    "phase_gate_on_the_critical_path": {
+      "rule": "A merge may not claim phase progress unless the exact gate is recomputed from the landed revision.",
+      "learned_from": "The F2 gate read 0 of 44 for the whole phase and no landing ever refused because of it. A phase metric that neither admits nor refuses work is a report, not a gate."
+    },
+    "admit_through_exit_custody": {
+      "rule": "Work enters a phase because it serves a named exit custody, not because a document, issue or service has room for it.",
+      "learned_from": "Every Phase-I change had somewhere to go and none had to name what it would close."
+    },
+    "work_in_progress_ceiling": {
+      "rule": "One active unlanded concern per participant by default. A second requires a recorded exception.",
+      "ceiling": 1,
+      "learned_from": "Eleven concurrent sessions on one working tree, 39 unmerged branches, 9 open pull requests with 1 mergeable."
+    },
+    "one_owner_per_vocabulary_edge": {
+      "rule": "Every parent-child vocabulary edge needs one owner, one machine-readable mapping, and a check that refuses an orphaned term.",
+      "learned_from": "Controls declared PROD-I-1 while the gate credited PRED-I-1.1. Both sides looked complete from their own end."
+    },
+    "governance_must_shorten_a_path": {
+      "rule": "A new governance object either shortens a live path to closure or is refused as non-critical inventory.",
+      "learned_from": "78 decision records and 60 contracts against 0 credited predicate pairs."
+    },
+    "root_authority_is_not_root_custody": {
+      "rule": "The root seat holding judgement authority does not thereby hold custody of every unfinished concern.",
+      "learned_from": "Unresolved work rolled upward to Bdo by default because no initiative-level accountability survived a session ending."
+    },
+    "coordination_emissions_are_measured": {
+      "rule": "Branches, pull requests, issues, reports and worktrees emitted are counted alongside tokens and time. A run that emits without approaching closure becomes visibly pressured.",
+      "learned_from": "Construction and coordination emissions grew faster than terminal settlement."
+    },
+    "boards_are_derived": {
+      "rule": "A board is projected from authoritative records and is never a second System of Record.",
+      "learned_from": "A stored board goes stale silently, and the staleness is invisible precisely when the board looks busiest."
+    },
+    "re_estimate_after_the_first_slice": {
+      "rule": "Re-estimate once the first vertical slice closes, and compare only against receipt-backed actuals.",
+      "learned_from": "Every Phase-I estimate in this repository is a guess with no measured actual behind it."
+    },
+    "retrospective_per_custody": {
+      "rule": "A retrospective runs when a custody closes. A phase retrospective is then a composition of already-settled custody lessons.",
+      "learned_from": "One retrospective at the end of five days had to reconstruct what six days of sessions already knew."
+    }
+  },
+  "refusals": {
+    "ROOTLESS_CONCERN": "no ground, requirement or predicate justifies the work",
+    "UNHELD_CONCERN": "no custody remains accountable after the session ends",
+    "SELF_SETTLED_CONCERN": "the holder is also the settler",
+    "UNBOUNDED_CONCERN": "no service or cross-cutting owner contains the change",
+    "UNDECLARED_EFFECT": "no effect class or no authority named",
+    "UNSTAGED_CONCERN": "no entry or target stage on the circuit",
+    "UNCLOSEABLE_CONCERN": "no command or observation proves the terminal",
+    "UNFALSIFIABLE_CLAIM": "no stated observation would show the closure claim false",
+    "UNRESOLVED_DEPENDENCY": "a named prerequisite artifact does not exist",
+    "MISSING_EXTENT": "no estimate range, or no basis for it",
+    "UNISOLATED_CONCERN": "no registered session, worktree, branch or path claim contains the work",
+    "UNRETIRED_INVENTORY": "coordination objects were emitted and none is scheduled for retirement",
+    "STOPPED_NOT_CLOSED": "an applicable definition-of-closed layer is undemonstrated"
+  }
+}

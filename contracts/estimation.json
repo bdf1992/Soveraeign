@@ -1,0 +1,184 @@
+{
+  "estimation_schema": "soveraeign-estimation/v1",
+  "status": "PROPOSED",
+  "title": "What a unit of work costs, in the dimensions this node can actually measure",
+  "note": "An estimate here is a claim, and a claim gets a receipt. The point of the registry is not to predict better; it is to make the gap between claimed and measured cost a recorded observation rather than a feeling. GROUND-014 already says effort resolves to intention - any meaningful expenditure of time, tokens, tools or money traces up to the intention it served. This is the contract that makes the expenditure countable in the first place. A dimension that cannot name where its measured actual comes from is a dimension nobody will ever grade, and the registry says so out loud instead of carrying it as if it were real.",
+  "governed_by": [
+    "AGENTS.md",
+    "contracts/product-ground.json",
+    "contracts/work-circuit.json",
+    "contracts/work-lease.schema.json",
+    "decisions/0056-participation-substrate-leases-and-budgets.md",
+    "decisions/0085-custody-boards-and-the-work-circuit.md"
+  ],
+  "rules": {
+    "extensible": "A dimension is added to this registry, never to the schema. A consumer that meets an unknown dimension id reports UNKNOWN_DIMENSION rather than dropping it, so a dimension cannot be introduced silently on one side of a boundary.",
+    "estimate_is_a_claim": "An estimate carries the same standing rules as any other claim. The participant that estimated may record its own actual, and may not settle the variance; that is an observation, and an observation from inside the build is not one.",
+    "graded_needs_a_source": "A dimension declaring graded true must name an actual_source. Declaring a dimension gradeable with nowhere to read the actual is refused by UNGRADEABLE_DIMENSION.",
+    "ungraded_is_admissible": "A dimension may declare graded false. That is honest and is not a defect. It means the number orders work and is never checked against anything, and readers are told so rather than discovering it.",
+    "range_not_point": "Every estimate is a low and a high on the same unit. A single number hides whether the estimator knew the shape of the work, and the width of the range is the more useful reading.",
+    "no_quota": "The registry never states a target for any dimension. PROD-I-6 refuses invented quotas for judgement, and the same refusal is applied to every dimension here.",
+    "no_synthetic_score": "Dimensions stay separate. A dimension declaring derived_from - a velocity, a score, a cost-equivalent computed from others - destroys the only thing the split was for: knowing which dimension the work actually ran out of. Refused by SYNTHETIC_SCORE.",
+    "maturity_follows_the_circuit": "An estimate is only as honest as the stage of the thing it sizes. A ROOT_POINT has no extent by definition, so any delivery promise made there is invention. Declared in estimate_maturity below and refused by OVERCOMMITTED_ESTIMATE."
+  },
+  "dimensions": [
+    {
+      "id": "wall_clock_seconds",
+      "kind": "TIME",
+      "unit": "second",
+      "means": "Elapsed time from taking the work to presenting it, including waiting on a person.",
+      "graded": true,
+      "actual_source": "the work lease granted_at and its terminal state timestamp",
+      "required_from_stage": "HORIZONTAL_SURFACE"
+    },
+    {
+      "id": "compute_clock_seconds",
+      "kind": "TIME",
+      "unit": "second",
+      "means": "Time a model or a tool was actually executing, which is the part that costs something. Wall clock minus compute clock is waiting, and the two diverge most on work that is blocked rather than hard.",
+      "graded": true,
+      "actual_source": "receipt usage records under contracts/receipt.schema.json",
+      "required_from_stage": "HORIZONTAL_SURFACE"
+    },
+    {
+      "id": "tokens",
+      "kind": "CONSUMPTION",
+      "unit": "token",
+      "means": "Model tokens consumed across the concern, including every helper recruited under it.",
+      "graded": true,
+      "actual_source": "receipt usage records, summed over the lease and its child leases",
+      "required_from_stage": "HORIZONTAL_SURFACE"
+    },
+    {
+      "id": "tool_calls",
+      "kind": "CONSUMPTION",
+      "unit": "call",
+      "means": "Discrete tool invocations. A proxy for how much of the work was reading the world rather than changing it.",
+      "graded": true,
+      "actual_source": "receipt usage records",
+      "required_from_stage": "EXPLODED_SURFACE"
+    },
+    {
+      "id": "helper_recruitments",
+      "kind": "CONSUMPTION",
+      "unit": "participant",
+      "means": "Subagents or helper models recruited under this concern. Bounded by the ceiling in contracts/closure-ownership.json helper_policy.recruitment.",
+      "graded": true,
+      "actual_source": "child work leases naming this lease as recruiter",
+      "required_from_stage": "EXPLODED_SURFACE"
+    },
+    {
+      "id": "points",
+      "kind": "SCALE",
+      "unit": "point",
+      "means": "Relative complexity against a reference ticket. Carried because human planning uses it and it orders a board usefully.",
+      "graded": false,
+      "actual_source": null,
+      "ungraded_because": "Nothing measures a point after the fact. Grading it would mean comparing an estimate to itself. It orders work and settles nothing, and this registry says so rather than letting a reader assume the number was ever checked.",
+      "required_from_stage": "HORIZONTAL_SURFACE"
+    },
+    {
+      "id": "judgement_units",
+      "kind": "GOVERNANCE",
+      "unit": "ask",
+      "means": "Distinct occasions this work must stop and wait on a human seat. The scarcest dimension on this node and the one most worth estimating low.",
+      "graded": true,
+      "actual_source": "acceptance packets and seat messages addressed to an owner seat under this concern",
+      "required_from_stage": "ROOT_POINT"
+    },
+    {
+      "id": "crossings",
+      "kind": "GOVERNANCE",
+      "unit": "crossing",
+      "means": "Governed operations this work must cross. Each one owes a receipt, so this is also the count of receipts the work will produce.",
+      "graded": true,
+      "actual_source": "receipts naming this concern",
+      "required_from_stage": "VERTICAL_SLICE"
+    },
+    {
+      "id": "fixture_pairs",
+      "kind": "GOVERNANCE",
+      "unit": "pair",
+      "means": "Positive-and-defeating fixture pairs the work owes before it can advance. The dimension that most reliably predicted overrun on this node, because it is the part that gets deferred.",
+      "graded": true,
+      "actual_source": "conformance cases declaring this concern predicates, counted by polarity",
+      "required_from_stage": "VERTICAL_SLICE"
+    },
+    {
+      "id": "grants",
+      "kind": "GOVERNANCE",
+      "unit": "grant",
+      "means": "Typed authority grants the work needs and does not hold. A non-zero value is a prediction that the concern will reach an AUTHORITY_SEAM.",
+      "graded": true,
+      "actual_source": "authority grants issued naming this concern scope",
+      "required_from_stage": "ROOT_POINT"
+    },
+    {
+      "id": "branches_emitted",
+      "kind": "EMISSION",
+      "unit": "branch",
+      "means": "Branches this work creates. Counted because coordination inventory is a real cost paid by whoever comes next: 39 unmerged branches and 20 commits reachable from no remote is what that cost looks like unpaid.",
+      "graded": true,
+      "actual_source": "refs created under this concern, read from the branch registry",
+      "required_from_stage": "VERTICAL_SLICE"
+    },
+    {
+      "id": "pull_requests_emitted",
+      "kind": "EMISSION",
+      "unit": "pull_request",
+      "means": "Pull requests this work opens. A pull request is a presentation carrier and not a terminal; counting it stops it being mistaken for one.",
+      "graded": true,
+      "actual_source": "pull requests naming this concern, from the coordination registrar",
+      "required_from_stage": "VERTICAL_SLICE"
+    },
+    {
+      "id": "issues_emitted",
+      "kind": "EMISSION",
+      "unit": "issue",
+      "means": "Issues this work opens. An issue records work and is never work; a concern that emits several and closes none has moved rather than progressed.",
+      "graded": true,
+      "actual_source": "issues naming this concern, from the coordination registrar",
+      "required_from_stage": "VERTICAL_SLICE"
+    }
+  ],
+  "refusals": {
+    "UNKNOWN_DIMENSION": "an estimate names a dimension id this registry does not declare",
+    "UNGRADEABLE_DIMENSION": "a dimension declares graded true and names no actual_source",
+    "POINT_ESTIMATE": "an estimate gives one number where the contract requires a low and a high",
+    "INVERTED_RANGE": "an estimate whose low exceeds its high",
+    "MISSING_REQUIRED_DIMENSION": "a ticket at or past a dimension required_from_stage carries no estimate on it",
+    "SELF_SETTLED_VARIANCE": "the participant that produced the estimate settled its own variance",
+    "SYNTHETIC_SCORE": "a dimension declares derived_from, computing itself from other dimensions",
+    "OVERCOMMITTED_ESTIMATE": "an estimate declares a maturity the circuit stage does not admit"
+  },
+  "estimate_maturity": {
+    "note": "What kind of estimate is honest at each circuit position. A wide range at VERTICAL_SLICE is not a worse estimate than a tight one; it is a truer report of what is known. Narrowing it before the surface composes is a claim about certainty nobody has.",
+    "by_stage": [
+      {
+        "stage": "ROOT_POINT",
+        "admits": "DISCOVERY_ENVELOPE",
+        "means": "the cost of finding out, and no delivery promise"
+      },
+      {
+        "stage": "VERTICAL_SLICE",
+        "admits": "WIDE_RANGE",
+        "means": "remaining crossings and named unknowns, deliberately wide"
+      },
+      {
+        "stage": "HORIZONTAL_SURFACE",
+        "admits": "COMMITTED_RANGE",
+        "means": "a delivery range every graded dimension of which names a measurable actual source"
+      },
+      {
+        "stage": "EXPLODED_SURFACE",
+        "admits": "COMMITTED_RANGE",
+        "means": "as above"
+      },
+      {
+        "stage": "CAPABLE_NODE",
+        "admits": "COMMITTED_RANGE",
+        "means": "as above"
+      }
+    ]
+  }
+}

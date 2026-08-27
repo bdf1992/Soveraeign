@@ -1,0 +1,86 @@
+{
+  "collection_schema": "soveraeign-phase-collection/v1",
+  "status": "PROPOSED",
+  "note": "Phases and their terminals. Phase I closes on two readings rather than one: the operating window is over, and the exit was not earned. Recording both keeps the original definition historically intact, which is the whole point - a phase that ends by narrowing its definition until the evidence fits leaves a record saying it was earned, and no later reader can tell the difference. Every unmet clause names the exit custody that inherits it, because carried forward is not a terminal.",
+  "governed_by": [
+    "PRD.md",
+    "ROADMAP.md",
+    "contracts/phase.schema.json",
+    "contracts/custodies.json",
+    "decisions/0085-custody-boards-and-the-work-circuit.md"
+  ],
+  "phases": [
+    {
+      "phase_schema": "soveraeign-phase/v1",
+      "phase_id": "phase:i",
+      "title": "Phase I - the founding campaign",
+      "opened": "2026-08-22",
+      "closed": "2026-08-27",
+      "definition": [
+        {
+          "document": "PRD.md",
+          "digest": "sha256:f1157f2f1ebad6aab70a63752f9bd9169518eb6f0aefde21c7fd05e98d5f1440",
+          "owns": "the nine Phase-I requirements and the five-clause exit"
+        },
+        {
+          "document": "ROADMAP.md",
+          "digest": "sha256:2d547384606200517907a17c38747fff15f388640d5bf3c705bd278e2ac150f0",
+          "owns": "F0 through F6 and the evidence gate between them"
+        },
+        {
+          "document": "SPEC.md",
+          "digest": "sha256:ccc0f2b8ac8f15eb7a4f64d87fb17bf2d674918346b78cc6116e7600c75a7c50",
+          "owns": "the 44 normative predicates the first clause counts"
+        }
+      ],
+      "exit_clauses": [
+        {
+          "clause_id": "PHASE-I-X1",
+          "text": "every normative predicate has a positive and defeating fixture",
+          "verdict": "NOT_EARNED",
+          "reading": "python scripts/sov_f2_gate.py reads 0 of 44 credited pairs. Twenty conformance controls pass and declare requirement-level coverage; the gate credits predicate-level identifiers, and the join between the two vocabularies was never made.",
+          "held_by": "custody:phase-i/predicate-fixtures"
+        },
+        {
+          "clause_id": "PHASE-I-X2",
+          "text": "the applicable fixtures run through one human-facing binding and two materially different model bindings",
+          "verdict": "NOT_EARNED",
+          "reading": "Boundaries and one local adapter exist. adapters/ollama executes a model and grades its own output, so the crossing does not close, and no second model binding or human-facing binding runs the same transitions.",
+          "held_by": "custody:phase-i/binding-parity"
+        },
+        {
+          "clause_id": "PHASE-I-X3",
+          "text": "independent observation can reconstruct the receipts",
+          "verdict": "NOT_EARNED",
+          "reading": "The kernel observe_run transition has no service behind it and AI-NATIVE.md check 3 reads UNATTESTABLE on every service assessment. Observation semantics and witness tooling exist; clean independent reconstruction does not.",
+          "held_by": "custody:phase-i/receipt-reconstruction"
+        },
+        {
+          "clause_id": "PHASE-I-X4",
+          "text": "open judgement calls are visible",
+          "verdict": "SUBSTANTIALLY_EARNED",
+          "reading": "python scripts/sov_accept.py audit passes and fails the build if anything waits on an owner seat without a reason or a packet. Acceptance queues, decisions, seams and owner-held states are all visible. It is not EARNED because 29 owner-routed questions name no hold reason from the seven the policy declares exhaustive, so the router and the policy do not yet speak one vocabulary.",
+          "evidence": [
+            "scripts/sov_accept.py audit",
+            "STATUS.yaml owner_acceptance_queue",
+            "STATUS.yaml owner_holds"
+          ],
+          "held_by": "custody:phase-i/judgement-visibility"
+        },
+        {
+          "clause_id": "PHASE-I-X5",
+          "text": "the owner ratifies Phase-I operational acceptance",
+          "verdict": "NOT_REACHED",
+          "reading": "Cannot truthfully occur before the preceding evidence exists. Recording this as NOT_EARNED would suggest it was attempted and refused; it was never reachable.",
+          "held_by": "custody:phase-i/operational-acceptance"
+        }
+      ],
+      "execution_status": "CLOSED",
+      "acceptance_status": "NOT_EARNED",
+      "terminal": "CLOSED_INCOMPLETE",
+      "settled_by": "seat:root",
+      "succeeded_by": null,
+      "note": "Closed by Bdo's ruling of 2026-08-27. The ruling is that Phase I was productive as a founding campaign and unsuccessful as a closed qualification loop: the repository optimised the wrong unit of progress, and the exit predicates were never on the critical path of work. Nothing here promotes partial evidence into acceptance, and nothing narrows the definition to fit what was built. The successor campaign is deliberately unnamed: it is scoped after the residual custodies are attached, not before."
+    }
+  ]
+}

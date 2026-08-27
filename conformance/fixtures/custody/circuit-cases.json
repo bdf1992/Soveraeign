@@ -1,0 +1,1797 @@
+[
+  {
+    "id": "root-point-admitted",
+    "judge": "circuit",
+    "polarity": "positive",
+    "why": "A point with one subject and one resolving root is all ROOT_POINT asks. It has no extent and does not pretend to.",
+    "from_stage": "",
+    "to_stage": "ROOT_POINT",
+    "evidence": {
+      "subject": "kernel.invoke_model",
+      "roots": [
+        {
+          "reference": "PROD-I-9",
+          "resolves": true
+        }
+      ]
+    }
+  },
+  {
+    "id": "rootless-point",
+    "judge": "circuit",
+    "polarity": "defeating",
+    "why": "Work with no product ground behind it can only be prioritised on opinion.",
+    "from_stage": "",
+    "to_stage": "ROOT_POINT",
+    "evidence": {
+      "subject": "some.operation",
+      "roots": []
+    },
+    "expect_refusals": [
+      "ROOTLESS_POINT"
+    ]
+  },
+  {
+    "id": "root-that-does-not-resolve",
+    "judge": "circuit",
+    "polarity": "defeating",
+    "why": "A root recorded and unresolvable is worse than no root: it reads as traced.",
+    "from_stage": "",
+    "to_stage": "ROOT_POINT",
+    "evidence": {
+      "subject": "some.operation",
+      "roots": [
+        {
+          "reference": "PROD-I-44",
+          "resolves": false
+        }
+      ]
+    },
+    "expect_refusals": [
+      "ROOTLESS_POINT"
+    ]
+  },
+  {
+    "id": "vertical-slice-admitted",
+    "judge": "circuit",
+    "polarity": "positive",
+    "why": "The path traverses contract, service and conformance, and ends on a check somebody else can re-run.",
+    "from_stage": "ROOT_POINT",
+    "to_stage": "VERTICAL_SLICE",
+    "evidence": {
+      "path": [
+        {
+          "layer": "contract",
+          "emits": "DECLARATION"
+        },
+        {
+          "layer": "service",
+          "emits": "COMMIT"
+        },
+        {
+          "layer": "conformance",
+          "emits": "CHECK"
+        }
+      ]
+    }
+  },
+  {
+    "id": "open-path",
+    "judge": "circuit",
+    "polarity": "defeating",
+    "why": "GROUND-010. A path ending on a report has the participant that produced it as its only evidence, and every later stage inherits that.",
+    "from_stage": "ROOT_POINT",
+    "to_stage": "VERTICAL_SLICE",
+    "evidence": {
+      "path": [
+        {
+          "layer": "contract",
+          "emits": "DECLARATION"
+        },
+        {
+          "layer": "service",
+          "emits": "REPORT"
+        }
+      ]
+    },
+    "expect_refusals": [
+      "OPEN_PATH"
+    ]
+  },
+  {
+    "id": "horizontal-surface-admitted",
+    "judge": "circuit",
+    "polarity": "positive",
+    "why": "Two closed verticals, a shared boundary, and an estimate on the dimension the stage requires.",
+    "from_stage": "VERTICAL_SLICE",
+    "to_stage": "HORIZONTAL_SURFACE",
+    "required_dimensions": [
+      "points"
+    ],
+    "evidence": {
+      "composes": [
+        {
+          "address": "console.open-thread",
+          "stage": "VERTICAL_SLICE"
+        },
+        {
+          "address": "console.post",
+          "stage": "EXPLODED_SURFACE"
+        }
+      ],
+      "estimate": {
+        "dimensions": [
+          {
+            "dimension_id": "points",
+            "low": 3,
+            "high": 8
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "surface-over-open-paths",
+    "judge": "circuit",
+    "polarity": "defeating",
+    "why": "Composition multiplies the gap, and the join hides which half failed.",
+    "from_stage": "VERTICAL_SLICE",
+    "to_stage": "HORIZONTAL_SURFACE",
+    "required_dimensions": [
+      "points"
+    ],
+    "evidence": {
+      "composes": [
+        {
+          "address": "console.open-thread",
+          "stage": "VERTICAL_SLICE"
+        },
+        {
+          "address": "console.grant",
+          "stage": "ROOT_POINT"
+        }
+      ],
+      "estimate": {
+        "dimensions": [
+          {
+            "dimension_id": "points",
+            "low": 3,
+            "high": 8
+          }
+        ]
+      }
+    },
+    "expect_refusals": [
+      "SURFACE_OVER_OPEN_PATHS"
+    ]
+  },
+  {
+    "id": "missing-extent",
+    "judge": "circuit",
+    "polarity": "defeating",
+    "why": "HORIZONTAL_SURFACE is the stage at which the work can honestly be sized. Advancing without sizing it skips the only thing the stage adds.",
+    "from_stage": "VERTICAL_SLICE",
+    "to_stage": "HORIZONTAL_SURFACE",
+    "required_dimensions": [
+      "tokens",
+      "points"
+    ],
+    "evidence": {
+      "composes": [
+        {
+          "address": "console.open-thread",
+          "stage": "VERTICAL_SLICE"
+        },
+        {
+          "address": "console.post",
+          "stage": "VERTICAL_SLICE"
+        }
+      ],
+      "estimate": {
+        "dimensions": [
+          {
+            "dimension_id": "points",
+            "low": 3,
+            "high": 8
+          }
+        ]
+      }
+    },
+    "expect_refusals": [
+      "MISSING_EXTENT"
+    ]
+  },
+  {
+    "id": "exploded-surface-admitted",
+    "judge": "circuit",
+    "polarity": "positive",
+    "why": "Every operation declares its six parts, and what discovery advertises is what the endpoint checks.",
+    "from_stage": "HORIZONTAL_SURFACE",
+    "to_stage": "EXPLODED_SURFACE",
+    "evidence": {
+      "operations": [
+        {
+          "operation": "console.archive-thread",
+          "subject": "thread",
+          "verb": "UPDATE",
+          "endpoint": "console/threads/{id}/archive",
+          "preconditions": [
+            "thread exists",
+            "thread not archived"
+          ],
+          "commit": "thread.archived_at set",
+          "refusals": [
+            "NO_GRANT",
+            "ALREADY_ARCHIVED"
+          ]
+        }
+      ],
+      "discovers": [
+        "archive:thread"
+      ],
+      "enforces": [
+        "archive:thread"
+      ]
+    }
+  },
+  {
+    "id": "advertised-not-enforced",
+    "judge": "circuit",
+    "polarity": "defeating",
+    "why": "The live instance is nine BUILT console operations declaring an authority and checking none, console.grant among them. The surface looked complete from either side alone.",
+    "from_stage": "HORIZONTAL_SURFACE",
+    "to_stage": "EXPLODED_SURFACE",
+    "evidence": {
+      "operations": [
+        {
+          "operation": "console.grant",
+          "subject": "grant",
+          "verb": "CREATE",
+          "endpoint": "console/grants",
+          "preconditions": [
+            "principal exists"
+          ],
+          "commit": "grant recorded",
+          "refusals": [
+            "UNKNOWN_PRINCIPAL"
+          ]
+        }
+      ],
+      "discovers": [
+        "grant:issue"
+      ],
+      "enforces": []
+    },
+    "expect_refusals": [
+      "ADVERTISED_NOT_ENFORCED"
+    ]
+  },
+  {
+    "id": "reachable-and-undiscoverable",
+    "judge": "circuit",
+    "polarity": "defeating",
+    "why": "The other half of the same defect. An endpoint reachable and absent from discovery cannot be found by a participant arriving with no briefing, and is reachable anyway by one that guesses.",
+    "from_stage": "HORIZONTAL_SURFACE",
+    "to_stage": "EXPLODED_SURFACE",
+    "evidence": {
+      "operations": [
+        {
+          "operation": "console.revoke",
+          "subject": "grant",
+          "verb": "DELETE",
+          "endpoint": "console/grants/{id}",
+          "preconditions": [
+            "grant exists"
+          ],
+          "commit": "grant revoked",
+          "refusals": [
+            "UNKNOWN_GRANT"
+          ]
+        }
+      ],
+      "discovers": [],
+      "enforces": [
+        "grant:revoke"
+      ]
+    },
+    "expect_refusals": [
+      "ADVERTISED_NOT_ENFORCED"
+    ]
+  },
+  {
+    "id": "capable-node-admitted",
+    "judge": "circuit",
+    "polarity": "positive",
+    "why": "Admitted identity, a typed check and a receipt on every operation, and an observation from a participant with no build relation.",
+    "from_stage": "EXPLODED_SURFACE",
+    "to_stage": "CAPABLE_NODE",
+    "evidence": {
+      "identity": {
+        "admitted": true,
+        "node_id": "node:local-1"
+      },
+      "operations": [
+        {
+          "operation": "record.append",
+          "checks_authority": true,
+          "emits_receipt": true
+        }
+      ],
+      "observation": {
+        "observer": "principal:witness-2",
+        "build_relation": false
+      }
+    }
+  },
+  {
+    "id": "self-witnessed-node",
+    "judge": "circuit",
+    "polarity": "defeating",
+    "why": "A node that witnesses itself closed its circuit with itself at both ends.",
+    "from_stage": "EXPLODED_SURFACE",
+    "to_stage": "CAPABLE_NODE",
+    "evidence": {
+      "identity": {
+        "admitted": true,
+        "node_id": "node:local-1"
+      },
+      "operations": [
+        {
+          "operation": "record.append",
+          "checks_authority": true,
+          "emits_receipt": true
+        }
+      ],
+      "observation": {
+        "observer": "principal:builder-1",
+        "build_relation": true
+      }
+    },
+    "expect_refusals": [
+      "SELF_WITNESSED_NODE"
+    ]
+  },
+  {
+    "id": "inferred-node-identity",
+    "judge": "circuit",
+    "polarity": "defeating",
+    "why": "Operating successfully is not identity. This is the gap STATUS.yaml records as NO_ADMISSION_TRANSITION.",
+    "from_stage": "EXPLODED_SURFACE",
+    "to_stage": "CAPABLE_NODE",
+    "evidence": {
+      "identity": {
+        "admitted": false,
+        "node_id": "session-796628"
+      },
+      "operations": [
+        {
+          "operation": "record.append",
+          "checks_authority": true,
+          "emits_receipt": true
+        }
+      ],
+      "observation": {
+        "observer": "principal:witness-2",
+        "build_relation": false
+      }
+    },
+    "expect_refusals": [
+      "SELF_WITNESSED_NODE"
+    ]
+  },
+  {
+    "id": "skipped-stage",
+    "judge": "circuit",
+    "polarity": "defeating",
+    "why": "Each stage admission predicate is the previous stage evidence, so a surface claimed straight from a point is a claim about nothing.",
+    "from_stage": "ROOT_POINT",
+    "to_stage": "EXPLODED_SURFACE",
+    "evidence": {},
+    "expect_refusals": [
+      "SKIPPED_STAGE"
+    ]
+  },
+  {
+    "id": "unknown-stage",
+    "judge": "circuit",
+    "polarity": "defeating",
+    "why": "A stage name the circuit does not declare is reported, never treated as the nearest thing.",
+    "from_stage": "ROOT_POINT",
+    "to_stage": "DONE",
+    "evidence": {},
+    "expect_refusals": [
+      "UNKNOWN_STAGE"
+    ]
+  },
+  {
+    "id": "estimate-admitted",
+    "judge": "estimate",
+    "polarity": "positive",
+    "why": "A range on every required dimension, from a named estimator.",
+    "required": [
+      "points",
+      "tokens"
+    ],
+    "estimate": {
+      "estimate_schema": "soveraeign-estimate/v1",
+      "estimated_by": "principal:session-1",
+      "estimated_at": "2026-08-27T00:00:00Z",
+      "dimensions": [
+        {
+          "dimension_id": "points",
+          "low": 3,
+          "high": 8
+        },
+        {
+          "dimension_id": "tokens",
+          "low": 50000,
+          "high": 200000
+        }
+      ],
+      "maturity": "WIDE_RANGE"
+    }
+  },
+  {
+    "id": "unknown-dimension",
+    "judge": "estimate",
+    "polarity": "defeating",
+    "why": "A dimension the registry does not declare is reported rather than dropped, so it cannot appear on one side of a boundary only.",
+    "estimate": {
+      "estimate_schema": "soveraeign-estimate/v1",
+      "estimated_by": "principal:session-1",
+      "estimated_at": "2026-08-27T00:00:00Z",
+      "dimensions": [
+        {
+          "dimension_id": "vibes",
+          "low": 1,
+          "high": 5
+        }
+      ],
+      "maturity": "WIDE_RANGE"
+    },
+    "expect_refusals": [
+      "UNKNOWN_DIMENSION"
+    ]
+  },
+  {
+    "id": "inverted-range",
+    "judge": "estimate",
+    "polarity": "defeating",
+    "why": "A low above its high is not a wide estimate, it is a typo that orders a board wrongly.",
+    "estimate": {
+      "estimate_schema": "soveraeign-estimate/v1",
+      "estimated_by": "principal:session-1",
+      "estimated_at": "2026-08-27T00:00:00Z",
+      "dimensions": [
+        {
+          "dimension_id": "points",
+          "low": 21,
+          "high": 3
+        }
+      ],
+      "maturity": "WIDE_RANGE"
+    },
+    "expect_refusals": [
+      "INVERTED_RANGE"
+    ]
+  },
+  {
+    "id": "point-estimate",
+    "judge": "estimate",
+    "polarity": "defeating",
+    "why": "A single number hides whether the estimator knew the shape of the work. The width of the range is the more useful reading.",
+    "estimate": {
+      "estimate_schema": "soveraeign-estimate/v1",
+      "estimated_by": "principal:session-1",
+      "estimated_at": "2026-08-27T00:00:00Z",
+      "dimensions": [
+        {
+          "dimension_id": "points",
+          "low": 8
+        }
+      ],
+      "maturity": "WIDE_RANGE"
+    },
+    "expect_refusals": [
+      "POINT_ESTIMATE"
+    ]
+  },
+  {
+    "id": "missing-required-dimension",
+    "judge": "estimate",
+    "polarity": "defeating",
+    "why": "A ticket at or past a dimension's required stage owes an estimate on it.",
+    "required": [
+      "tokens"
+    ],
+    "estimate": {
+      "estimate_schema": "soveraeign-estimate/v1",
+      "estimated_by": "principal:session-1",
+      "estimated_at": "2026-08-27T00:00:00Z",
+      "dimensions": [
+        {
+          "dimension_id": "points",
+          "low": 3,
+          "high": 8
+        }
+      ],
+      "maturity": "WIDE_RANGE"
+    },
+    "expect_refusals": [
+      "MISSING_REQUIRED_DIMENSION"
+    ]
+  },
+  {
+    "id": "self-settled-variance",
+    "judge": "estimate",
+    "polarity": "defeating",
+    "why": "The estimator may record what it measured and may not settle what the gap means. That is an observation, and an observation from inside the build is not one.",
+    "estimate": {
+      "estimate_schema": "soveraeign-estimate/v1",
+      "estimated_by": "principal:session-1",
+      "estimated_at": "2026-08-27T00:00:00Z",
+      "dimensions": [
+        {
+          "dimension_id": "tokens",
+          "low": 1000,
+          "high": 2000,
+          "actual": 9000,
+          "actual_observed_by": "principal:session-1"
+        }
+      ],
+      "maturity": "WIDE_RANGE"
+    },
+    "expect_refusals": [
+      "SELF_SETTLED_VARIANCE"
+    ]
+  },
+  {
+    "id": "actual-on-an-ungraded-dimension",
+    "judge": "estimate",
+    "polarity": "defeating",
+    "why": "Nothing measures a story point after the fact. An actual on one would be the estimate compared to itself.",
+    "estimate": {
+      "estimate_schema": "soveraeign-estimate/v1",
+      "estimated_by": "principal:session-1",
+      "estimated_at": "2026-08-27T00:00:00Z",
+      "dimensions": [
+        {
+          "dimension_id": "points",
+          "low": 3,
+          "high": 8,
+          "actual": 5
+        }
+      ],
+      "maturity": "WIDE_RANGE"
+    },
+    "expect_refusals": [
+      "UNGRADEABLE_DIMENSION"
+    ]
+  },
+  {
+    "id": "custody-admitted",
+    "judge": "custody",
+    "polarity": "positive",
+    "why": "One resolving root, a runnable closure check, a settling seat that is not the holder, and an estimate on what ROOT_POINT requires.",
+    "seats": [
+      "seat:root",
+      "seat:session-control"
+    ],
+    "custody": {
+      "custody_schema": "soveraeign-custody/v1",
+      "status": "PROPOSED",
+      "custody_id": "custody:example",
+      "initiative": "An example initiative that closes on a command.",
+      "held_by": "seat:session-control",
+      "roots": [
+        {
+          "root_kind": "GROUND",
+          "reference": "GROUND-001"
+        }
+      ],
+      "circuit": "soveraeign-work-circuit/v1",
+      "entry_stage": "ROOT_POINT",
+      "target_stage": "VERTICAL_SLICE",
+      "closure": {
+        "check": {
+          "kind": "COMMAND",
+          "expression": "python scripts/verify.py"
+        },
+        "judgement_seat": "seat:root",
+        "defeated_by": "the command passing while the initiative is untouched"
+      },
+      "estimate": {
+        "estimate_schema": "soveraeign-estimate/v1",
+        "estimated_by": "principal:session-1",
+        "estimated_at": "2026-08-27T00:00:00Z",
+        "dimensions": [
+          {
+            "dimension_id": "judgement_units",
+            "low": 0,
+            "high": 1
+          },
+          {
+            "dimension_id": "grants",
+            "low": 0,
+            "high": 0
+          }
+        ],
+        "maturity": "DISCOVERY_ENVELOPE"
+      },
+      "members": [],
+      "depends_on": [],
+      "custody_kind": "DELIVERY",
+      "outside_phase_exit": "a fixture custody serving no real phase",
+      "serves_exit": null
+    }
+  },
+  {
+    "id": "uncloseable-custody",
+    "judge": "custody",
+    "polarity": "defeating",
+    "why": "Neither a machine check nor a settling seat. This is the shape the epic tree accumulated, and the reason twenty-one of its issues are unroutable.",
+    "seats": [
+      "seat:root",
+      "seat:session-control"
+    ],
+    "custody": {
+      "custody_schema": "soveraeign-custody/v1",
+      "status": "PROPOSED",
+      "custody_id": "custody:uncloseable",
+      "initiative": "Improve things generally.",
+      "held_by": "seat:session-control",
+      "roots": [
+        {
+          "root_kind": "GROUND",
+          "reference": "GROUND-001"
+        }
+      ],
+      "circuit": "soveraeign-work-circuit/v1",
+      "entry_stage": "ROOT_POINT",
+      "target_stage": "VERTICAL_SLICE",
+      "closure": {
+        "check": null,
+        "judgement_seat": null,
+        "defeated_by": "nothing, ever"
+      },
+      "estimate": {
+        "estimate_schema": "soveraeign-estimate/v1",
+        "estimated_by": "principal:session-1",
+        "estimated_at": "2026-08-27T00:00:00Z",
+        "dimensions": [
+          {
+            "dimension_id": "judgement_units",
+            "low": 0,
+            "high": 1
+          },
+          {
+            "dimension_id": "grants",
+            "low": 0,
+            "high": 0
+          }
+        ],
+        "maturity": "DISCOVERY_ENVELOPE"
+      },
+      "members": [],
+      "depends_on": [],
+      "custody_kind": "DELIVERY",
+      "outside_phase_exit": "a fixture custody serving no real phase",
+      "serves_exit": null
+    },
+    "expect_refusals": [
+      "UNCLOSEABLE_CUSTODY"
+    ]
+  },
+  {
+    "id": "self-held-custody",
+    "judge": "custody",
+    "polarity": "defeating",
+    "why": "A custody whose holder also settles its closure accepts its own work.",
+    "seats": [
+      "seat:root",
+      "seat:session-control"
+    ],
+    "custody": {
+      "custody_schema": "soveraeign-custody/v1",
+      "status": "PROPOSED",
+      "custody_id": "custody:self-held",
+      "initiative": "An initiative that grades itself.",
+      "held_by": "seat:root",
+      "roots": [
+        {
+          "root_kind": "GROUND",
+          "reference": "GROUND-001"
+        }
+      ],
+      "circuit": "soveraeign-work-circuit/v1",
+      "entry_stage": "ROOT_POINT",
+      "target_stage": "VERTICAL_SLICE",
+      "closure": {
+        "check": null,
+        "judgement_seat": "seat:root",
+        "defeated_by": "the holder accepting its own result"
+      },
+      "estimate": {
+        "estimate_schema": "soveraeign-estimate/v1",
+        "estimated_by": "principal:session-1",
+        "estimated_at": "2026-08-27T00:00:00Z",
+        "dimensions": [
+          {
+            "dimension_id": "judgement_units",
+            "low": 0,
+            "high": 1
+          },
+          {
+            "dimension_id": "grants",
+            "low": 0,
+            "high": 0
+          }
+        ],
+        "maturity": "DISCOVERY_ENVELOPE"
+      },
+      "members": [],
+      "depends_on": [],
+      "custody_kind": "DELIVERY",
+      "outside_phase_exit": "a fixture custody serving no real phase",
+      "serves_exit": null
+    },
+    "expect_refusals": [
+      "SELF_HELD_CUSTODY"
+    ]
+  },
+  {
+    "id": "target-below-entry",
+    "judge": "custody",
+    "polarity": "defeating",
+    "why": "A custody entering above its own target is finished and says otherwise.",
+    "seats": [
+      "seat:root",
+      "seat:session-control"
+    ],
+    "custody": {
+      "custody_schema": "soveraeign-custody/v1",
+      "status": "PROPOSED",
+      "custody_id": "custody:backwards",
+      "initiative": "An initiative that targets less than it already has.",
+      "held_by": "seat:session-control",
+      "roots": [
+        {
+          "root_kind": "GROUND",
+          "reference": "GROUND-001"
+        }
+      ],
+      "circuit": "soveraeign-work-circuit/v1",
+      "entry_stage": "EXPLODED_SURFACE",
+      "target_stage": "VERTICAL_SLICE",
+      "closure": {
+        "check": {
+          "kind": "COMMAND",
+          "expression": "python scripts/verify.py"
+        },
+        "judgement_seat": "seat:root",
+        "defeated_by": "nothing; the target is already met"
+      },
+      "estimate": {
+        "estimate_schema": "soveraeign-estimate/v1",
+        "estimated_by": "principal:session-1",
+        "estimated_at": "2026-08-27T00:00:00Z",
+        "dimensions": [
+          {
+            "dimension_id": "judgement_units",
+            "low": 0,
+            "high": 1
+          },
+          {
+            "dimension_id": "grants",
+            "low": 0,
+            "high": 0
+          },
+          {
+            "dimension_id": "crossings",
+            "low": 0,
+            "high": 1
+          },
+          {
+            "dimension_id": "fixture_pairs",
+            "low": 0,
+            "high": 1
+          },
+          {
+            "dimension_id": "points",
+            "low": 1,
+            "high": 2
+          },
+          {
+            "dimension_id": "wall_clock_seconds",
+            "low": 60,
+            "high": 600
+          },
+          {
+            "dimension_id": "compute_clock_seconds",
+            "low": 10,
+            "high": 60
+          },
+          {
+            "dimension_id": "tokens",
+            "low": 1000,
+            "high": 5000
+          },
+          {
+            "dimension_id": "tool_calls",
+            "low": 1,
+            "high": 10
+          },
+          {
+            "dimension_id": "helper_recruitments",
+            "low": 0,
+            "high": 1
+          }
+        ],
+        "maturity": "DISCOVERY_ENVELOPE"
+      },
+      "members": [],
+      "depends_on": [],
+      "custody_kind": "DELIVERY",
+      "outside_phase_exit": "a fixture custody serving no real phase",
+      "serves_exit": null
+    },
+    "expect_refusals": [
+      "TARGET_BELOW_ENTRY"
+    ]
+  },
+  {
+    "id": "unresolved-root",
+    "judge": "custody",
+    "polarity": "defeating",
+    "why": "A root recorded and unresolvable reads as traced to product ground when it is not.",
+    "seats": [
+      "seat:root",
+      "seat:session-control"
+    ],
+    "custody": {
+      "custody_schema": "soveraeign-custody/v1",
+      "status": "PROPOSED",
+      "custody_id": "custody:unrooted",
+      "initiative": "An initiative rooted in a record that does not exist.",
+      "held_by": "seat:session-control",
+      "roots": [
+        {
+          "root_kind": "DECISION",
+          "reference": "decisions/9999-does-not-exist.md"
+        }
+      ],
+      "circuit": "soveraeign-work-circuit/v1",
+      "entry_stage": "ROOT_POINT",
+      "target_stage": "VERTICAL_SLICE",
+      "closure": {
+        "check": {
+          "kind": "COMMAND",
+          "expression": "python scripts/verify.py"
+        },
+        "judgement_seat": "seat:root",
+        "defeated_by": "the root resolving after all"
+      },
+      "estimate": {
+        "estimate_schema": "soveraeign-estimate/v1",
+        "estimated_by": "principal:session-1",
+        "estimated_at": "2026-08-27T00:00:00Z",
+        "dimensions": [
+          {
+            "dimension_id": "judgement_units",
+            "low": 0,
+            "high": 1
+          },
+          {
+            "dimension_id": "grants",
+            "low": 0,
+            "high": 0
+          }
+        ],
+        "maturity": "DISCOVERY_ENVELOPE"
+      },
+      "members": [],
+      "depends_on": [],
+      "custody_kind": "DELIVERY",
+      "outside_phase_exit": "a fixture custody serving no real phase",
+      "serves_exit": null
+    },
+    "expect_refusals": [
+      "UNRESOLVED_ROOT"
+    ]
+  },
+  {
+    "id": "member-in-two-custodies",
+    "judge": "collection",
+    "polarity": "defeating",
+    "why": "Two participants each believe the other is carrying it, which is how work goes quiet without anybody deciding to drop it.",
+    "custodies": [
+      {
+        "custody_schema": "soveraeign-custody/v1",
+        "status": "PROPOSED",
+        "custody_id": "custody:first",
+        "initiative": "The first initiative claiming the shared member.",
+        "held_by": "seat:session-control",
+        "roots": [
+          {
+            "root_kind": "GROUND",
+            "reference": "GROUND-001"
+          }
+        ],
+        "circuit": "soveraeign-work-circuit/v1",
+        "entry_stage": "ROOT_POINT",
+        "target_stage": "VERTICAL_SLICE",
+        "closure": {
+          "check": {
+            "kind": "COMMAND",
+            "expression": "python scripts/verify.py"
+          },
+          "judgement_seat": "seat:root",
+          "defeated_by": "the other custody closing it first"
+        },
+        "estimate": {
+          "estimate_schema": "soveraeign-estimate/v1",
+          "estimated_by": "principal:session-1",
+          "estimated_at": "2026-08-27T00:00:00Z",
+          "dimensions": [
+            {
+              "dimension_id": "judgement_units",
+              "low": 0,
+              "high": 1
+            },
+            {
+              "dimension_id": "grants",
+              "low": 0,
+              "high": 0
+            }
+          ],
+          "maturity": "DISCOVERY_ENVELOPE"
+        },
+        "members": [
+          {
+            "member_kind": "SERVICE",
+            "address": "services/observation",
+            "stage": "ROOT_POINT"
+          }
+        ],
+        "depends_on": [],
+        "custody_kind": "DELIVERY",
+        "outside_phase_exit": "a fixture custody serving no real phase",
+        "serves_exit": null
+      },
+      {
+        "custody_schema": "soveraeign-custody/v1",
+        "status": "PROPOSED",
+        "custody_id": "custody:second",
+        "initiative": "The second initiative claiming the same member.",
+        "held_by": "seat:session-control",
+        "roots": [
+          {
+            "root_kind": "GROUND",
+            "reference": "GROUND-001"
+          }
+        ],
+        "circuit": "soveraeign-work-circuit/v1",
+        "entry_stage": "ROOT_POINT",
+        "target_stage": "VERTICAL_SLICE",
+        "closure": {
+          "check": {
+            "kind": "COMMAND",
+            "expression": "python scripts/verify.py"
+          },
+          "judgement_seat": "seat:root",
+          "defeated_by": "the other custody closing it first"
+        },
+        "estimate": {
+          "estimate_schema": "soveraeign-estimate/v1",
+          "estimated_by": "principal:session-1",
+          "estimated_at": "2026-08-27T00:00:00Z",
+          "dimensions": [
+            {
+              "dimension_id": "judgement_units",
+              "low": 0,
+              "high": 1
+            },
+            {
+              "dimension_id": "grants",
+              "low": 0,
+              "high": 0
+            }
+          ],
+          "maturity": "DISCOVERY_ENVELOPE"
+        },
+        "members": [
+          {
+            "member_kind": "SERVICE",
+            "address": "services/observation",
+            "stage": "ROOT_POINT"
+          }
+        ],
+        "depends_on": [],
+        "custody_kind": "DELIVERY",
+        "outside_phase_exit": "a fixture custody serving no real phase",
+        "serves_exit": null
+      }
+    ],
+    "expect_refusals": [
+      "MEMBER_IN_TWO_CUSTODIES"
+    ]
+  },
+  {
+    "id": "custody-cycle",
+    "judge": "collection",
+    "polarity": "defeating",
+    "why": "Each initiative waits on the next and none can start.",
+    "custodies": [
+      {
+        "custody_schema": "soveraeign-custody/v1",
+        "status": "PROPOSED",
+        "custody_id": "custody:alpha",
+        "initiative": "Alpha waits on beta.",
+        "held_by": "seat:session-control",
+        "roots": [
+          {
+            "root_kind": "GROUND",
+            "reference": "GROUND-001"
+          }
+        ],
+        "circuit": "soveraeign-work-circuit/v1",
+        "entry_stage": "ROOT_POINT",
+        "target_stage": "VERTICAL_SLICE",
+        "closure": {
+          "check": {
+            "kind": "COMMAND",
+            "expression": "python scripts/verify.py"
+          },
+          "judgement_seat": "seat:root",
+          "defeated_by": "beta closing without alpha"
+        },
+        "estimate": {
+          "estimate_schema": "soveraeign-estimate/v1",
+          "estimated_by": "principal:session-1",
+          "estimated_at": "2026-08-27T00:00:00Z",
+          "dimensions": [
+            {
+              "dimension_id": "judgement_units",
+              "low": 0,
+              "high": 1
+            },
+            {
+              "dimension_id": "grants",
+              "low": 0,
+              "high": 0
+            }
+          ],
+          "maturity": "DISCOVERY_ENVELOPE"
+        },
+        "members": [],
+        "depends_on": [
+          "custody:beta"
+        ],
+        "custody_kind": "DELIVERY",
+        "outside_phase_exit": "a fixture custody serving no real phase",
+        "serves_exit": null
+      },
+      {
+        "custody_schema": "soveraeign-custody/v1",
+        "status": "PROPOSED",
+        "custody_id": "custody:beta",
+        "initiative": "Beta waits on alpha.",
+        "held_by": "seat:session-control",
+        "roots": [
+          {
+            "root_kind": "GROUND",
+            "reference": "GROUND-001"
+          }
+        ],
+        "circuit": "soveraeign-work-circuit/v1",
+        "entry_stage": "ROOT_POINT",
+        "target_stage": "VERTICAL_SLICE",
+        "closure": {
+          "check": {
+            "kind": "COMMAND",
+            "expression": "python scripts/verify.py"
+          },
+          "judgement_seat": "seat:root",
+          "defeated_by": "alpha closing without beta"
+        },
+        "estimate": {
+          "estimate_schema": "soveraeign-estimate/v1",
+          "estimated_by": "principal:session-1",
+          "estimated_at": "2026-08-27T00:00:00Z",
+          "dimensions": [
+            {
+              "dimension_id": "judgement_units",
+              "low": 0,
+              "high": 1
+            },
+            {
+              "dimension_id": "grants",
+              "low": 0,
+              "high": 0
+            }
+          ],
+          "maturity": "DISCOVERY_ENVELOPE"
+        },
+        "members": [],
+        "depends_on": [
+          "custody:alpha"
+        ],
+        "custody_kind": "DELIVERY",
+        "outside_phase_exit": "a fixture custody serving no real phase",
+        "serves_exit": null
+      }
+    ],
+    "expect_refusals": [
+      "CUSTODY_CYCLE"
+    ]
+  },
+  {
+    "id": "flat-custody",
+    "judge": "custody",
+    "polarity": "defeating",
+    "why": "A delivery custody serving no exit clause and not saying it is outside the phase is the flat set the first draft of contracts/custodies.json got wrong: an exit obligation and a coordination cleanup carried as peers.",
+    "seats": [
+      "seat:root",
+      "seat:session-control"
+    ],
+    "custody": {
+      "custody_schema": "soveraeign-custody/v1",
+      "status": "PROPOSED",
+      "custody_kind": "DELIVERY",
+      "custody_id": "custody:flat",
+      "initiative": "An example initiative that closes on a command.",
+      "held_by": "seat:session-control",
+      "roots": [
+        {
+          "root_kind": "GROUND",
+          "reference": "GROUND-001"
+        }
+      ],
+      "circuit": "soveraeign-work-circuit/v1",
+      "entry_stage": "ROOT_POINT",
+      "target_stage": "VERTICAL_SLICE",
+      "closure": {
+        "check": {
+          "kind": "COMMAND",
+          "expression": "python scripts/verify.py"
+        },
+        "judgement_seat": "seat:root",
+        "defeated_by": "the command passing while the initiative is untouched"
+      },
+      "estimate": {
+        "estimate_schema": "soveraeign-estimate/v1",
+        "estimated_by": "principal:session-1",
+        "estimated_at": "2026-08-27T00:00:00Z",
+        "maturity": "DISCOVERY_ENVELOPE",
+        "dimensions": [
+          {
+            "dimension_id": "judgement_units",
+            "low": 0,
+            "high": 1
+          },
+          {
+            "dimension_id": "grants",
+            "low": 0,
+            "high": 0
+          }
+        ]
+      },
+      "members": [],
+      "depends_on": [],
+      "serves_exit": null,
+      "outside_phase_exit": null
+    },
+    "expect_refusals": [
+      "FLAT_CUSTODY"
+    ]
+  },
+  {
+    "id": "custody-both-inside-and-outside",
+    "judge": "custody",
+    "polarity": "defeating",
+    "why": "Naming an exit custody and a reason for being outside the exit at once means a reader cannot tell which is true, and the record admits both.",
+    "seats": [
+      "seat:root",
+      "seat:session-control"
+    ],
+    "custody": {
+      "custody_schema": "soveraeign-custody/v1",
+      "status": "PROPOSED",
+      "custody_kind": "DELIVERY",
+      "custody_id": "custody:both-ways",
+      "initiative": "An example initiative that closes on a command.",
+      "held_by": "seat:session-control",
+      "roots": [
+        {
+          "root_kind": "GROUND",
+          "reference": "GROUND-001"
+        }
+      ],
+      "circuit": "soveraeign-work-circuit/v1",
+      "entry_stage": "ROOT_POINT",
+      "target_stage": "VERTICAL_SLICE",
+      "closure": {
+        "check": {
+          "kind": "COMMAND",
+          "expression": "python scripts/verify.py"
+        },
+        "judgement_seat": "seat:root",
+        "defeated_by": "the command passing while the initiative is untouched"
+      },
+      "estimate": {
+        "estimate_schema": "soveraeign-estimate/v1",
+        "estimated_by": "principal:session-1",
+        "estimated_at": "2026-08-27T00:00:00Z",
+        "maturity": "DISCOVERY_ENVELOPE",
+        "dimensions": [
+          {
+            "dimension_id": "judgement_units",
+            "low": 0,
+            "high": 1
+          },
+          {
+            "dimension_id": "grants",
+            "low": 0,
+            "high": 0
+          }
+        ]
+      },
+      "members": [],
+      "depends_on": [],
+      "serves_exit": "custody:phase-i/predicate-fixtures",
+      "outside_phase_exit": "and also outside it"
+    },
+    "expect_refusals": [
+      "FLAT_CUSTODY"
+    ]
+  },
+  {
+    "id": "unknown-exit-custody",
+    "judge": "collection",
+    "polarity": "defeating",
+    "why": "Serving an exit custody that does not exist reads as parented and is not. The clause it claims to serve is still held by nobody.",
+    "custodies": [
+      {
+        "custody_schema": "soveraeign-custody/v1",
+        "status": "PROPOSED",
+        "custody_kind": "DELIVERY",
+        "custody_id": "custody:serves-a-ghost",
+        "initiative": "An example initiative that closes on a command.",
+        "held_by": "seat:session-control",
+        "roots": [
+          {
+            "root_kind": "GROUND",
+            "reference": "GROUND-001"
+          }
+        ],
+        "circuit": "soveraeign-work-circuit/v1",
+        "entry_stage": "ROOT_POINT",
+        "target_stage": "VERTICAL_SLICE",
+        "closure": {
+          "check": {
+            "kind": "COMMAND",
+            "expression": "python scripts/verify.py"
+          },
+          "judgement_seat": "seat:root",
+          "defeated_by": "the command passing while the initiative is untouched"
+        },
+        "estimate": {
+          "estimate_schema": "soveraeign-estimate/v1",
+          "estimated_by": "principal:session-1",
+          "estimated_at": "2026-08-27T00:00:00Z",
+          "maturity": "DISCOVERY_ENVELOPE",
+          "dimensions": [
+            {
+              "dimension_id": "judgement_units",
+              "low": 0,
+              "high": 1
+            },
+            {
+              "dimension_id": "grants",
+              "low": 0,
+              "high": 0
+            }
+          ]
+        },
+        "members": [],
+        "depends_on": [],
+        "serves_exit": "custody:phase-i/does-not-exist",
+        "outside_phase_exit": null
+      }
+    ],
+    "expect_refusals": [
+      "UNKNOWN_EXIT_CUSTODY"
+    ]
+  },
+  {
+    "id": "duplicate-exit-clause",
+    "judge": "collection",
+    "polarity": "defeating",
+    "why": "Two custodies on one clause means neither is the one accountable for it, which is the diffusion the whole layer exists to stop.",
+    "custodies": [
+      {
+        "custody_schema": "soveraeign-custody/v1",
+        "status": "PROPOSED",
+        "custody_kind": "EXIT",
+        "custody_id": "custody:exit-a",
+        "initiative": "An example initiative that closes on a command.",
+        "held_by": "seat:session-control",
+        "roots": [
+          {
+            "root_kind": "GROUND",
+            "reference": "GROUND-001"
+          }
+        ],
+        "circuit": "soveraeign-work-circuit/v1",
+        "entry_stage": "ROOT_POINT",
+        "target_stage": "VERTICAL_SLICE",
+        "closure": {
+          "check": {
+            "kind": "COMMAND",
+            "expression": "python scripts/verify.py"
+          },
+          "judgement_seat": "seat:root",
+          "defeated_by": "the command passing while the initiative is untouched"
+        },
+        "estimate": {
+          "estimate_schema": "soveraeign-estimate/v1",
+          "estimated_by": "principal:session-1",
+          "estimated_at": "2026-08-27T00:00:00Z",
+          "maturity": "DISCOVERY_ENVELOPE",
+          "dimensions": [
+            {
+              "dimension_id": "judgement_units",
+              "low": 0,
+              "high": 1
+            },
+            {
+              "dimension_id": "grants",
+              "low": 0,
+              "high": 0
+            }
+          ]
+        },
+        "members": [],
+        "depends_on": [],
+        "serves_exit": null,
+        "outside_phase_exit": null,
+        "phase": "phase:i",
+        "exit_clause": "PHASE-I-X1"
+      },
+      {
+        "custody_schema": "soveraeign-custody/v1",
+        "status": "PROPOSED",
+        "custody_kind": "EXIT",
+        "custody_id": "custody:exit-b",
+        "initiative": "An example initiative that closes on a command.",
+        "held_by": "seat:session-control",
+        "roots": [
+          {
+            "root_kind": "GROUND",
+            "reference": "GROUND-001"
+          }
+        ],
+        "circuit": "soveraeign-work-circuit/v1",
+        "entry_stage": "ROOT_POINT",
+        "target_stage": "VERTICAL_SLICE",
+        "closure": {
+          "check": {
+            "kind": "COMMAND",
+            "expression": "python scripts/verify.py"
+          },
+          "judgement_seat": "seat:root",
+          "defeated_by": "the command passing while the initiative is untouched"
+        },
+        "estimate": {
+          "estimate_schema": "soveraeign-estimate/v1",
+          "estimated_by": "principal:session-1",
+          "estimated_at": "2026-08-27T00:00:00Z",
+          "maturity": "DISCOVERY_ENVELOPE",
+          "dimensions": [
+            {
+              "dimension_id": "judgement_units",
+              "low": 0,
+              "high": 1
+            },
+            {
+              "dimension_id": "grants",
+              "low": 0,
+              "high": 0
+            }
+          ]
+        },
+        "members": [],
+        "depends_on": [],
+        "serves_exit": null,
+        "outside_phase_exit": null,
+        "phase": "phase:i",
+        "exit_clause": "PHASE-I-X1"
+      }
+    ],
+    "expect_refusals": [
+      "DUPLICATE_EXIT_CLAUSE"
+    ]
+  },
+  {
+    "id": "overcommitted-estimate",
+    "judge": "estimate",
+    "polarity": "defeating",
+    "why": "A ROOT_POINT has no extent by definition. A committed delivery range there is a promise about work nobody has drawn.",
+    "stage": "ROOT_POINT",
+    "estimate": {
+      "estimate_schema": "soveraeign-estimate/v1",
+      "estimated_by": "principal:session-1",
+      "estimated_at": "2026-08-27T00:00:00Z",
+      "maturity": "COMMITTED_RANGE",
+      "dimensions": [
+        {
+          "dimension_id": "tokens",
+          "low": 100000,
+          "high": 110000
+        }
+      ]
+    },
+    "expect_refusals": [
+      "OVERCOMMITTED_ESTIMATE"
+    ]
+  },
+  {
+    "id": "discovery-envelope-at-a-point",
+    "judge": "estimate",
+    "polarity": "positive",
+    "why": "The honest estimate at a ROOT_POINT is the cost of finding out.",
+    "stage": "ROOT_POINT",
+    "estimate": {
+      "estimate_schema": "soveraeign-estimate/v1",
+      "estimated_by": "principal:session-1",
+      "estimated_at": "2026-08-27T00:00:00Z",
+      "maturity": "DISCOVERY_ENVELOPE",
+      "dimensions": [
+        {
+          "dimension_id": "tokens",
+          "low": 5000,
+          "high": 200000
+        }
+      ]
+    }
+  },
+  {
+    "id": "synthetic-score",
+    "judge": "registry",
+    "polarity": "defeating",
+    "why": "A dimension computed from others destroys the only reading the split was for: which dimension the work actually ran out of.",
+    "registry": {
+      "velocity": {
+        "kind": "SCALE",
+        "unit": "point_per_hour",
+        "graded": true,
+        "actual_source": "computed",
+        "derived_from": [
+          "points",
+          "wall_clock_seconds"
+        ]
+      }
+    },
+    "expect_refusals": [
+      "SYNTHETIC_SCORE"
+    ]
+  },
+  {
+    "id": "phase-closed-incomplete-admitted",
+    "judge": "phase",
+    "polarity": "positive",
+    "why": "The ordinary honest terminal: the window is over, one clause was earned, the other was not and names the custody that inherits it.",
+    "phase": {
+      "phase_schema": "soveraeign-phase/v1",
+      "phase_id": "phase:fixture",
+      "title": "A fixture phase",
+      "opened": "2026-08-22",
+      "closed": "2026-08-27",
+      "definition": [
+        {
+          "document": "PRD.md",
+          "digest": "sha256:f1157f2f1ebad6aab70a63752f9bd9169518eb6f0aefde21c7fd05e98d5f1440",
+          "owns": "the exit this fixture pins"
+        }
+      ],
+      "exit_clauses": [
+        {
+          "clause_id": "FX-1",
+          "text": "one clause that was met",
+          "verdict": "EARNED",
+          "evidence": [
+            "python scripts/verify.py"
+          ]
+        },
+        {
+          "clause_id": "FX-2",
+          "text": "one clause that was not",
+          "verdict": "NOT_EARNED",
+          "held_by": "custody:fixture-holder"
+        }
+      ],
+      "execution_status": "CLOSED",
+      "acceptance_status": "NOT_EARNED",
+      "terminal": "CLOSED_INCOMPLETE",
+      "settled_by": "seat:root"
+    },
+    "custody_ids": [
+      "custody:fixture-holder"
+    ]
+  },
+  {
+    "id": "unpinned-definition",
+    "judge": "phase",
+    "polarity": "defeating",
+    "why": "A definition document that moved after the phase opened means the exit a reader checks is not the exit the phase opened with. This is how a phase ends by redefinition.",
+    "phase": {
+      "phase_schema": "soveraeign-phase/v1",
+      "phase_id": "phase:fixture",
+      "title": "A fixture phase",
+      "opened": "2026-08-22",
+      "closed": "2026-08-27",
+      "definition": [
+        {
+          "document": "PRD.md",
+          "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+          "owns": "the exit this fixture pins"
+        }
+      ],
+      "exit_clauses": [
+        {
+          "clause_id": "FX-1",
+          "text": "one clause that was met",
+          "verdict": "EARNED",
+          "evidence": [
+            "python scripts/verify.py"
+          ]
+        },
+        {
+          "clause_id": "FX-2",
+          "text": "one clause that was not",
+          "verdict": "NOT_EARNED",
+          "held_by": "custody:fixture-holder"
+        }
+      ],
+      "execution_status": "CLOSED",
+      "acceptance_status": "NOT_EARNED",
+      "terminal": "CLOSED_INCOMPLETE",
+      "settled_by": "seat:root"
+    },
+    "custody_ids": [
+      "custody:fixture-holder"
+    ],
+    "expect_refusals": [
+      "UNPINNED_DEFINITION"
+    ]
+  },
+  {
+    "id": "missing-definition-document",
+    "judge": "phase",
+    "polarity": "defeating",
+    "why": "A pinned document that is gone leaves the exit unverifiable rather than merely changed.",
+    "phase": {
+      "phase_schema": "soveraeign-phase/v1",
+      "phase_id": "phase:fixture",
+      "title": "A fixture phase",
+      "opened": "2026-08-22",
+      "closed": "2026-08-27",
+      "definition": [
+        {
+          "document": "NO-SUCH-DOCUMENT.md",
+          "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+        }
+      ],
+      "exit_clauses": [
+        {
+          "clause_id": "FX-1",
+          "text": "one clause that was met",
+          "verdict": "EARNED",
+          "evidence": [
+            "python scripts/verify.py"
+          ]
+        },
+        {
+          "clause_id": "FX-2",
+          "text": "one clause that was not",
+          "verdict": "NOT_EARNED",
+          "held_by": "custody:fixture-holder"
+        }
+      ],
+      "execution_status": "CLOSED",
+      "acceptance_status": "NOT_EARNED",
+      "terminal": "CLOSED_INCOMPLETE",
+      "settled_by": "seat:root"
+    },
+    "custody_ids": [
+      "custody:fixture-holder"
+    ],
+    "expect_refusals": [
+      "MISSING_DEFINITION_DOCUMENT"
+    ]
+  },
+  {
+    "id": "acceptance-without-clauses",
+    "judge": "phase",
+    "polarity": "defeating",
+    "why": "A phase reading EARNED while a clause does not is the exact failure the two-reading terminal exists to refuse: partial evidence promoted into acceptance.",
+    "phase": {
+      "phase_schema": "soveraeign-phase/v1",
+      "phase_id": "phase:fixture",
+      "title": "A fixture phase",
+      "opened": "2026-08-22",
+      "closed": "2026-08-27",
+      "definition": [
+        {
+          "document": "PRD.md",
+          "digest": "sha256:f1157f2f1ebad6aab70a63752f9bd9169518eb6f0aefde21c7fd05e98d5f1440",
+          "owns": "the exit this fixture pins"
+        }
+      ],
+      "exit_clauses": [
+        {
+          "clause_id": "FX-1",
+          "text": "one clause that was met",
+          "verdict": "EARNED",
+          "evidence": [
+            "python scripts/verify.py"
+          ]
+        },
+        {
+          "clause_id": "FX-2",
+          "text": "one clause that was not",
+          "verdict": "NOT_EARNED",
+          "held_by": "custody:fixture-holder"
+        }
+      ],
+      "execution_status": "CLOSED",
+      "acceptance_status": "EARNED",
+      "terminal": "ACCEPTED",
+      "settled_by": "seat:root"
+    },
+    "custody_ids": [
+      "custody:fixture-holder"
+    ],
+    "expect_refusals": [
+      "ACCEPTANCE_WITHOUT_CLAUSES"
+    ]
+  },
+  {
+    "id": "orphan-exit-clause",
+    "judge": "phase",
+    "polarity": "defeating",
+    "why": "An unmet clause naming a custody nobody declares is carried forward to nobody, which is not a terminal.",
+    "phase": {
+      "phase_schema": "soveraeign-phase/v1",
+      "phase_id": "phase:fixture",
+      "title": "A fixture phase",
+      "opened": "2026-08-22",
+      "closed": "2026-08-27",
+      "definition": [
+        {
+          "document": "PRD.md",
+          "digest": "sha256:f1157f2f1ebad6aab70a63752f9bd9169518eb6f0aefde21c7fd05e98d5f1440",
+          "owns": "the exit this fixture pins"
+        }
+      ],
+      "exit_clauses": [
+        {
+          "clause_id": "FX-1",
+          "text": "one clause that was met",
+          "verdict": "EARNED",
+          "evidence": [
+            "python scripts/verify.py"
+          ]
+        },
+        {
+          "clause_id": "FX-2",
+          "text": "one clause that was not",
+          "verdict": "NOT_EARNED",
+          "held_by": "custody:does-not-exist"
+        }
+      ],
+      "execution_status": "CLOSED",
+      "acceptance_status": "NOT_EARNED",
+      "terminal": "CLOSED_INCOMPLETE",
+      "settled_by": "seat:root"
+    },
+    "custody_ids": [
+      "custody:fixture-holder"
+    ],
+    "expect_refusals": [
+      "ORPHAN_EXIT_CLAUSE"
+    ]
+  },
+  {
+    "id": "terminal-mismatch",
+    "judge": "phase",
+    "polarity": "defeating",
+    "why": "The headline word is derived from the two statuses. Writing it independently lets the summary disagree with the record it summarises.",
+    "phase": {
+      "phase_schema": "soveraeign-phase/v1",
+      "phase_id": "phase:fixture",
+      "title": "A fixture phase",
+      "opened": "2026-08-22",
+      "closed": "2026-08-27",
+      "definition": [
+        {
+          "document": "PRD.md",
+          "digest": "sha256:f1157f2f1ebad6aab70a63752f9bd9169518eb6f0aefde21c7fd05e98d5f1440",
+          "owns": "the exit this fixture pins"
+        }
+      ],
+      "exit_clauses": [
+        {
+          "clause_id": "FX-1",
+          "text": "one clause that was met",
+          "verdict": "EARNED",
+          "evidence": [
+            "python scripts/verify.py"
+          ]
+        },
+        {
+          "clause_id": "FX-2",
+          "text": "one clause that was not",
+          "verdict": "NOT_EARNED",
+          "held_by": "custody:fixture-holder"
+        }
+      ],
+      "execution_status": "CLOSED",
+      "acceptance_status": "NOT_EARNED",
+      "terminal": "ACCEPTED",
+      "settled_by": "seat:root"
+    },
+    "custody_ids": [
+      "custody:fixture-holder"
+    ],
+    "expect_refusals": [
+      "TERMINAL_MISMATCH"
+    ]
+  },
+  {
+    "id": "self-settled-phase",
+    "judge": "phase",
+    "polarity": "defeating",
+    "why": "A closed phase with no settling seat has been ended by whoever worked it.",
+    "phase": {
+      "phase_schema": "soveraeign-phase/v1",
+      "phase_id": "phase:fixture",
+      "title": "A fixture phase",
+      "opened": "2026-08-22",
+      "closed": "2026-08-27",
+      "definition": [
+        {
+          "document": "PRD.md",
+          "digest": "sha256:f1157f2f1ebad6aab70a63752f9bd9169518eb6f0aefde21c7fd05e98d5f1440",
+          "owns": "the exit this fixture pins"
+        }
+      ],
+      "exit_clauses": [
+        {
+          "clause_id": "FX-1",
+          "text": "one clause that was met",
+          "verdict": "EARNED",
+          "evidence": [
+            "python scripts/verify.py"
+          ]
+        },
+        {
+          "clause_id": "FX-2",
+          "text": "one clause that was not",
+          "verdict": "NOT_EARNED",
+          "held_by": "custody:fixture-holder"
+        }
+      ],
+      "execution_status": "CLOSED",
+      "acceptance_status": "NOT_EARNED",
+      "terminal": "CLOSED_INCOMPLETE",
+      "settled_by": null
+    },
+    "custody_ids": [
+      "custody:fixture-holder"
+    ],
+    "expect_refusals": [
+      "SELF_SETTLED_PHASE"
+    ]
+  }
+]

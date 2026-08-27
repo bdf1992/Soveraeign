@@ -1,0 +1,115 @@
+{
+  "circuit_schema": "soveraeign-work-circuit/v1",
+  "status": "PROPOSED",
+  "title": "The work circuit: how one ticket matures from a point into an addressable node",
+  "note": "A ticket does not move OPEN -> BUILT -> WITNESSED -> RATIFIED. That is the standing of a claim about the ticket, and it says nothing about what the ticket has become. This circuit is the second axis: how far the thing itself has been drawn. A ticket enters as a named point and leaves as a surface that can be addressed, called, and held to account. Standing and stage are independent - a CAPABLE_NODE stage can sit at OPEN standing, and a ROOT_POINT can be RATIFIED as a point. Confusing the two is what let this repository accumulate ratified vocabulary over undrawn work.",
+  "governed_by": [
+    "AGENTS.md",
+    "PRD.md",
+    "SPEC.md",
+    "contracts/product-ground.json",
+    "contracts/closure-ownership.json",
+    "decisions/0085-custody-boards-and-the-work-circuit.md"
+  ],
+  "rules": {
+    "monotonic": "A ticket advances one stage at a time. Skipping a stage is refused by SKIPPED_STAGE, because each stage admission predicate is the previous stage evidence.",
+    "regression_allowed": "A ticket may fall back when a defeating case fires. Falling back is recorded, not hidden, and is the ordinary outcome of a real observation.",
+    "stage_is_not_standing": "Advancing a stage is a claim about the artifact and carries the same witness rule as any other claim: the participant that drew the stage may not settle it.",
+    "target_stage": "A custody declares the stage its initiative must reach. Not every initiative must reach CAPABLE_NODE, and declaring a target below the top is the ordinary case rather than an admission of failure."
+  },
+  "stages": [
+    {
+      "stage": "ROOT_POINT",
+      "ordinal": 1,
+      "means": "A named point of concern with an address and a root. It has no extent: nobody can yet say how big it is, and saying so would be invention.",
+      "admits_when": [
+        "the ticket names exactly one subject address",
+        "the ticket names at least one root - a product ground claim, a decision record, a Phase-I requirement, or an open seam"
+      ],
+      "evidence": "the subject address resolves, and every named root resolves to a real record",
+      "defeated_by": {
+        "case": "ROOTLESS_POINT",
+        "means": "a ticket that names no root, or names one that does not resolve",
+        "why": "work with no product ground behind it cannot be scoped, prioritised or abandoned on evidence, only on opinion",
+        "fixture": "conformance/fixtures/custody/circuit-cases.json#rootless-point"
+      }
+    },
+    {
+      "stage": "VERTICAL_SLICE",
+      "ordinal": 2,
+      "means": "The point drawn along a closed path: the thinnest end-to-end traversal of every layer the concern touches, returning to its origin as a re-runnable check.",
+      "admits_when": [
+        "the ticket names an ordered path of layers it traverses",
+        "the path is closed - the last layer produces evidence a machine can re-run against the first layer precondition"
+      ],
+      "evidence": "the declared check runs and its result is derived from the run, never written by the participant that ran it",
+      "defeated_by": {
+        "case": "OPEN_PATH",
+        "means": "a slice whose last layer emits a report rather than a check",
+        "why": "GROUND-010 - a report is not an observation. A path that ends in a self-report has not closed, and every later stage built over it inherits the gap",
+        "fixture": "conformance/fixtures/custody/circuit-cases.json#open-path"
+      }
+    },
+    {
+      "stage": "HORIZONTAL_SURFACE",
+      "ordinal": 3,
+      "means": "The slice given extent, and composed with sibling verticals into one surface. Extent is the estimate: the first stage at which the work can honestly be sized.",
+      "admits_when": [
+        "at least two closed verticals share a declared boundary",
+        "the ticket carries an estimate under soveraeign-estimate/v1 on every dimension the circuit requires"
+      ],
+      "evidence": "each composed vertical is independently at VERTICAL_SLICE or above, and the estimate validates",
+      "defeated_by": {
+        "case": "SURFACE_OVER_OPEN_PATHS",
+        "means": "a surface composed from verticals that are not themselves closed",
+        "why": "composition multiplies the gap. Two open paths joined into a surface produce one surface nobody can check, and the join hides which half failed",
+        "fixture": "conformance/fixtures/custody/circuit-cases.json#surface-over-open-paths"
+      }
+    },
+    {
+      "stage": "EXPLODED_SURFACE",
+      "ordinal": 4,
+      "means": "The surface opened into named endpoints behind a context-addressable boundary. A participant arriving with no briefing can discover what may be asked of it and reach exactly that.",
+      "admits_when": [
+        "every operation on the surface declares subject, verb, endpoint, preconditions, commit and refusals under soveraeign-service-manifest/v1",
+        "the boundary answers discovery from the capability projection rather than from a second hand-kept list",
+        "what discovery advertises and what the endpoint enforces are the same set"
+      ],
+      "evidence": "the discovery answer and the enforcement check are read through independent paths and agree",
+      "defeated_by": {
+        "case": "ADVERTISED_NOT_ENFORCED",
+        "means": "an endpoint discovery advertises with an authority the endpoint does not check, or an endpoint reachable but absent from discovery",
+        "why": "the live instance of this defect is nine BUILT console operations that declare an authority and check none, console.grant and console.revoke among them. The surface looked complete from either side alone",
+        "fixture": "conformance/fixtures/custody/circuit-cases.json#advertised-not-enforced"
+      }
+    },
+    {
+      "stage": "CAPABLE_NODE",
+      "ordinal": 5,
+      "means": "The exploded surface carrying identity, typed authority, receipts and continuity, so it can be addressed as a node or as a subnode of another node.",
+      "admits_when": [
+        "the surface holds an admitted node identity rather than an inferred one",
+        "every declared operation checks a typed, scoped, live grant",
+        "every crossing leaves a receipt naming actor, operation, authority, inputs, outputs and effect class",
+        "an independent participant that did not build it has observed it"
+      ],
+      "evidence": "an observation from a participant with no build relation to the node, resolved from the run record rather than declared by the observer",
+      "defeated_by": {
+        "case": "SELF_WITNESSED_NODE",
+        "means": "a node whose only observation comes from a participant inside its own build, or whose identity is inferred from operating successfully rather than admitted",
+        "why": "operating successfully is not authority and not identity. A node that witnesses itself has closed its own circuit with itself at both ends",
+        "fixture": "conformance/fixtures/custody/circuit-cases.json#self-witnessed-node"
+      }
+    }
+  ],
+  "refusals": {
+    "SKIPPED_STAGE": "a ticket advanced more than one stage in a single transition",
+    "ROOTLESS_POINT": "ROOT_POINT admission with no resolving root",
+    "OPEN_PATH": "VERTICAL_SLICE admission whose path ends in a self-report",
+    "SURFACE_OVER_OPEN_PATHS": "HORIZONTAL_SURFACE admission over verticals below VERTICAL_SLICE",
+    "MISSING_EXTENT": "HORIZONTAL_SURFACE admission with no estimate on a required dimension",
+    "ADVERTISED_NOT_ENFORCED": "EXPLODED_SURFACE admission where discovery and enforcement disagree",
+    "SELF_WITNESSED_NODE": "CAPABLE_NODE admission observed only from inside its own build",
+    "UNKNOWN_STAGE": "a stage name this circuit does not declare"
+  }
+}

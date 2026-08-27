@@ -1,0 +1,1543 @@
+{
+  "collection_schema": "soveraeign-custody-collection/v1",
+  "status": "PROPOSED",
+  "phase": "phase:i",
+  "serves_exit": "PRD.md Phase-I exit, pinned by digest in contracts/phases.json",
+  "title": "Phase I as five held exit clauses, with delivery work beneath them",
+  "note": "Hierarchical on purpose. An earlier draft of this file held ten flat peers and mixed abstraction levels - exit obligations, service work, coordination cleanup, and a future product capability - which reproduces at a new layer the failure it was built to fix. The five EXIT custodies mirror the five clauses of the Phase-I exit exactly. Every DELIVERY custody names the exit custody it serves, or is marked explicitly outside the phase exit with a reason. If an initiative cannot name the exit custody it serves, it is not Phase-I work. Every one collects work that already exists; none proposes an initiative nobody has started.",
+  "governed_by": [
+    "PRD.md",
+    "ROADMAP.md",
+    "contracts/phases.json",
+    "contracts/custody.schema.json",
+    "contracts/work-circuit.json",
+    "contracts/estimation.json",
+    "contracts/concern-admission.json",
+    "decisions/0085-custody-boards-and-the-work-circuit.md"
+  ],
+  "custodies": [
+    {
+      "custody_schema": "soveraeign-custody/v1",
+      "status": "PROPOSED",
+      "custody_id": "custody:phase-i/predicate-fixtures",
+      "custody_kind": "EXIT",
+      "initiative": "Every normative predicate the specification states carries a positive and a defeating fixture that actually runs.",
+      "held_by": "seat:session-control",
+      "roots": [
+        {
+          "root_kind": "PHASE",
+          "reference": "ROADMAP.md#F2",
+          "serves": "this clause is F2 exit, stated verbatim"
+        },
+        {
+          "root_kind": "REQUIREMENT",
+          "reference": "PROD-I-7",
+          "serves": "a fresh witness verifies from the artifact and addressed evidence alone, which is what a fixture pair supplies"
+        },
+        {
+          "root_kind": "GROUND",
+          "reference": "GROUND-010",
+          "serves": "a report is not an observation; a defeating fixture is the cheapest observation this node can afford"
+        }
+      ],
+      "circuit": "soveraeign-work-circuit/v1",
+      "entry_stage": "ROOT_POINT",
+      "target_stage": "HORIZONTAL_SURFACE",
+      "closure": {
+        "check": {
+          "kind": "COMMAND",
+          "expression": "python scripts/sov_f2_gate.py"
+        },
+        "judgement_seat": "seat:root",
+        "defeated_by": "a predicate credited as covered by a case whose declared polarity is never executed, or a case citing a predicate the specification no longer states"
+      },
+      "estimate": {
+        "estimate_schema": "soveraeign-estimate/v1",
+        "estimated_by": "principal:session-796628",
+        "estimated_at": "2026-08-27T00:00:00Z",
+        "basis": "The clause reads 0 of 44. Twenty controls exist and pass at the wrong granularity; the transition and parity families are undrawn.",
+        "maturity": "DISCOVERY_ENVELOPE",
+        "dimensions": [
+          {
+            "dimension_id": "grants",
+            "low": 0,
+            "high": 0
+          },
+          {
+            "dimension_id": "judgement_units",
+            "low": 1,
+            "high": 1
+          }
+        ]
+      },
+      "members": [],
+      "phase": "phase:i",
+      "exit_clause": "PHASE-I-X1",
+      "serves_exit": null,
+      "outside_phase_exit": null,
+      "depends_on": [],
+      "cleanup_obligations": [],
+      "note": "Held to settlement. The work under it is three delivery custodies; this record holds the clause, not the work."
+    },
+    {
+      "custody_schema": "soveraeign-custody/v1",
+      "status": "PROPOSED",
+      "custody_id": "custody:phase-i/binding-parity",
+      "custody_kind": "EXIT",
+      "initiative": "One human-facing binding and two materially different model bindings execute the same authoritative transitions and produce reconcilable receipts.",
+      "held_by": "seat:session-control",
+      "roots": [
+        {
+          "root_kind": "PHASE",
+          "reference": "ROADMAP.md#F4",
+          "serves": "F4 exit, stated verbatim"
+        },
+        {
+          "root_kind": "REQUIREMENT",
+          "reference": "PROD-I-9",
+          "serves": "bring your own model, including the provider-loss and silent-fallback refusals"
+        },
+        {
+          "root_kind": "GROUND",
+          "reference": "GROUND-013",
+          "serves": "the model is substitutable; changing which model runs changes nothing authoritative"
+        }
+      ],
+      "circuit": "soveraeign-work-circuit/v1",
+      "entry_stage": "ROOT_POINT",
+      "target_stage": "EXPLODED_SURFACE",
+      "closure": {
+        "check": {
+          "kind": "COMMAND",
+          "expression": "python conformance/run.py --scenario RUN-I9-BYOM"
+        },
+        "judgement_seat": "seat:root",
+        "defeated_by": "a binding that reaches an authoritative path the other bindings cannot, or a fallback between models that leaves no refusal on the record"
+      },
+      "estimate": {
+        "estimate_schema": "soveraeign-estimate/v1",
+        "estimated_by": "principal:session-796628",
+        "estimated_at": "2026-08-27T00:00:00Z",
+        "basis": "Boundaries and one local adapter exist; the adapter grades its own output so its path does not close. The second model binding and the human binding are undrawn.",
+        "maturity": "DISCOVERY_ENVELOPE",
+        "dimensions": [
+          {
+            "dimension_id": "grants",
+            "low": 2,
+            "high": 4
+          },
+          {
+            "dimension_id": "judgement_units",
+            "low": 1,
+            "high": 2
+          }
+        ]
+      },
+      "members": [],
+      "phase": "phase:i",
+      "exit_clause": "PHASE-I-X2",
+      "serves_exit": null,
+      "outside_phase_exit": null,
+      "depends_on": [
+        "custody:phase-i/predicate-fixtures"
+      ],
+      "cleanup_obligations": []
+    },
+    {
+      "custody_schema": "soveraeign-custody/v1",
+      "status": "PROPOSED",
+      "custody_id": "custody:phase-i/receipt-reconstruction",
+      "custody_kind": "EXIT",
+      "initiative": "An independent participant can reconstruct the receipts a run produced, without trusting the report of whoever produced them.",
+      "held_by": "seat:session-control",
+      "roots": [
+        {
+          "root_kind": "REQUIREMENT",
+          "reference": "PROD-I-7",
+          "serves": "independent qualification cannot be built on self-report"
+        },
+        {
+          "root_kind": "GROUND",
+          "reference": "GROUND-010",
+          "serves": "a report is not an observation"
+        },
+        {
+          "root_kind": "DECISION",
+          "reference": "decisions/0041-the-observation-service.md",
+          "serves": "charters the boundary and rules that independence is inferred from the record, never declared by the observer"
+        }
+      ],
+      "circuit": "soveraeign-work-circuit/v1",
+      "entry_stage": "ROOT_POINT",
+      "target_stage": "EXPLODED_SURFACE",
+      "closure": {
+        "check": {
+          "kind": "COMMAND",
+          "expression": "python scripts/sov_ainative.py --check 3"
+        },
+        "judgement_seat": "seat:root",
+        "defeated_by": "an observation admitted whose independence was asserted by the observer rather than resolved from the run record"
+      },
+      "estimate": {
+        "estimate_schema": "soveraeign-estimate/v1",
+        "estimated_by": "principal:session-796628",
+        "estimated_at": "2026-08-27T00:00:00Z",
+        "basis": "The kernel observe_run transition has no service behind it and AI-NATIVE.md check 3 reads UNATTESTABLE on every service assessment, so the absence is already measured.",
+        "maturity": "DISCOVERY_ENVELOPE",
+        "dimensions": [
+          {
+            "dimension_id": "grants",
+            "low": 1,
+            "high": 1
+          },
+          {
+            "dimension_id": "judgement_units",
+            "low": 0,
+            "high": 1
+          }
+        ]
+      },
+      "members": [],
+      "phase": "phase:i",
+      "exit_clause": "PHASE-I-X3",
+      "serves_exit": null,
+      "outside_phase_exit": null,
+      "depends_on": [],
+      "cleanup_obligations": []
+    },
+    {
+      "custody_schema": "soveraeign-custody/v1",
+      "status": "PROPOSED",
+      "custody_id": "custody:phase-i/judgement-visibility",
+      "custody_kind": "EXIT",
+      "initiative": "Every open judgement call is visible on a surface Bdo can read, and names a hold reason the acceptance policy declares.",
+      "held_by": "seat:session-control",
+      "roots": [
+        {
+          "root_kind": "REQUIREMENT",
+          "reference": "PROD-I-6",
+          "serves": "judgement requests queue without blocking unrelated operation, and the pending right stays visible"
+        },
+        {
+          "root_kind": "GROUND",
+          "reference": "GROUND-012",
+          "serves": "human judgement is a reserved and scarce input, not a gap waiting to be automated"
+        },
+        {
+          "root_kind": "DECISION",
+          "reference": "decisions/0045-acceptance-not-approval.md",
+          "serves": "the gate is acceptance over an evidenced result"
+        }
+      ],
+      "circuit": "soveraeign-work-circuit/v1",
+      "entry_stage": "HORIZONTAL_SURFACE",
+      "target_stage": "HORIZONTAL_SURFACE",
+      "closure": {
+        "check": {
+          "kind": "COMMAND",
+          "expression": "python scripts/sov_accept.py audit"
+        },
+        "judgement_seat": "seat:root",
+        "defeated_by": "a packet the audit passes whose named command does not run, or an owner-routed question naming no hold reason from the seven the policy declares exhaustive"
+      },
+      "estimate": {
+        "estimate_schema": "soveraeign-estimate/v1",
+        "estimated_by": "principal:session-796628",
+        "estimated_at": "2026-08-27T00:00:00Z",
+        "basis": "The audit passes and the queue mechanism works. What keeps this at SUBSTANTIALLY EARNED rather than EARNED is 29 owner-routed questions whose reasons the policy does not admit: the router and the policy do not speak one vocabulary.",
+        "maturity": "COMMITTED_RANGE",
+        "dimensions": [
+          {
+            "dimension_id": "branches_emitted",
+            "low": 0,
+            "high": 0
+          },
+          {
+            "dimension_id": "compute_clock_seconds",
+            "low": 1800,
+            "high": 14400
+          },
+          {
+            "dimension_id": "crossings",
+            "low": 0,
+            "high": 0
+          },
+          {
+            "dimension_id": "fixture_pairs",
+            "low": 2,
+            "high": 4
+          },
+          {
+            "dimension_id": "grants",
+            "low": 0,
+            "high": 0
+          },
+          {
+            "dimension_id": "issues_emitted",
+            "low": 0,
+            "high": 0
+          },
+          {
+            "dimension_id": "judgement_units",
+            "low": 5,
+            "high": 5
+          },
+          {
+            "dimension_id": "points",
+            "low": 5,
+            "high": 13
+          },
+          {
+            "dimension_id": "pull_requests_emitted",
+            "low": 0,
+            "high": 0
+          },
+          {
+            "dimension_id": "tokens",
+            "low": 50000,
+            "high": 400000
+          },
+          {
+            "dimension_id": "wall_clock_seconds",
+            "low": 3600,
+            "high": 604800
+          }
+        ]
+      },
+      "members": [],
+      "phase": "phase:i",
+      "exit_clause": "PHASE-I-X4",
+      "serves_exit": null,
+      "outside_phase_exit": null,
+      "depends_on": [],
+      "cleanup_obligations": [],
+      "note": "The only clause Bdo graded SUBSTANTIALLY_EARNED. It is not rounded up: the vocabulary gap between the router and the policy is a real and reachable defect."
+    },
+    {
+      "custody_schema": "soveraeign-custody/v1",
+      "status": "PROPOSED",
+      "custody_id": "custody:phase-i/operational-acceptance",
+      "custody_kind": "EXIT",
+      "initiative": "Bdo ratifies Phase-I operational acceptance over evidence the preceding four clauses produced.",
+      "held_by": "seat:session-control",
+      "roots": [
+        {
+          "root_kind": "REQUIREMENT",
+          "reference": "PROD-I-7",
+          "serves": "the witness emits a qualification record and queues the owner's operational acceptance decision"
+        },
+        {
+          "root_kind": "PHASE",
+          "reference": "ROADMAP.md#F6",
+          "serves": "clean-room operational qualification"
+        },
+        {
+          "root_kind": "DECISION",
+          "reference": "decisions/0045-acceptance-not-approval.md",
+          "serves": "acceptance is over a finished evidenced result, never permission to begin"
+        }
+      ],
+      "circuit": "soveraeign-work-circuit/v1",
+      "entry_stage": "ROOT_POINT",
+      "target_stage": "ROOT_POINT",
+      "closure": {
+        "check": null,
+        "judgement_seat": "seat:root",
+        "defeated_by": "an acceptance recorded before the evidence the other four clauses owe actually exists, which would be acceptance of a claim rather than of a result"
+      },
+      "estimate": {
+        "estimate_schema": "soveraeign-estimate/v1",
+        "estimated_by": "principal:session-796628",
+        "estimated_at": "2026-08-27T00:00:00Z",
+        "basis": "Not reachable until the other four close. Recording an estimate for the work would be invention; the judgement unit is the whole of it.",
+        "maturity": "DISCOVERY_ENVELOPE",
+        "dimensions": [
+          {
+            "dimension_id": "grants",
+            "low": 0,
+            "high": 0
+          },
+          {
+            "dimension_id": "judgement_units",
+            "low": 1,
+            "high": 1
+          }
+        ]
+      },
+      "members": [],
+      "phase": "phase:i",
+      "exit_clause": "PHASE-I-X5",
+      "serves_exit": null,
+      "outside_phase_exit": null,
+      "depends_on": [
+        "custody:phase-i/predicate-fixtures",
+        "custody:phase-i/binding-parity",
+        "custody:phase-i/receipt-reconstruction",
+        "custody:phase-i/judgement-visibility"
+      ],
+      "cleanup_obligations": [],
+      "note": "NOT_REACHED rather than NOT_EARNED. It was never attempted and never refused; recording it as not earned would suggest otherwise."
+    },
+    {
+      "custody_schema": "soveraeign-custody/v1",
+      "status": "PROPOSED",
+      "custody_id": "custody:oracle-predicate-join",
+      "custody_kind": "DELIVERY",
+      "initiative": "Every conformance control declares which specification predicates it exercises, so real coverage stops reading as zero.",
+      "held_by": "seat:session-control",
+      "roots": [
+        {
+          "root_kind": "PREDICATE",
+          "reference": "PRED-I-1.1",
+          "serves": "the requirement family the twenty controls already exercise at the wrong granularity"
+        },
+        {
+          "root_kind": "GROUND",
+          "reference": "GROUND-010",
+          "serves": "a defeating fixture is an observation; an unclaimed one observes nothing"
+        }
+      ],
+      "circuit": "soveraeign-work-circuit/v1",
+      "entry_stage": "VERTICAL_SLICE",
+      "target_stage": "HORIZONTAL_SURFACE",
+      "closure": {
+        "check": {
+          "kind": "COMMAND",
+          "expression": "python scripts/sov_f2_gate.py"
+        },
+        "judgement_seat": "seat:root",
+        "defeated_by": "a control declaring a predicate it does not actually exercise, which would credit coverage that no case proves"
+      },
+      "estimate": {
+        "estimate_schema": "soveraeign-estimate/v1",
+        "estimated_by": "principal:session-796628",
+        "estimated_at": "2026-08-27T00:00:00Z",
+        "basis": "Twenty controls exist, pass, and carry a closed check. Reading each and declaring which predicates it exercises is bounded work over artifacts already on disk. It moves the requirement family only; transitions and parity are untouched.",
+        "maturity": "WIDE_RANGE",
+        "dimensions": [
+          {
+            "dimension_id": "branches_emitted",
+            "low": 1,
+            "high": 1
+          },
+          {
+            "dimension_id": "crossings",
+            "low": 0,
+            "high": 0
+          },
+          {
+            "dimension_id": "fixture_pairs",
+            "low": 0,
+            "high": 12
+          },
+          {
+            "dimension_id": "grants",
+            "low": 0,
+            "high": 0
+          },
+          {
+            "dimension_id": "issues_emitted",
+            "low": 0,
+            "high": 0
+          },
+          {
+            "dimension_id": "judgement_units",
+            "low": 0,
+            "high": 0
+          },
+          {
+            "dimension_id": "pull_requests_emitted",
+            "low": 1,
+            "high": 1
+          }
+        ]
+      },
+      "members": [
+        {
+          "member_kind": "CONTRACT",
+          "address": "conformance/oracle-controls.json",
+          "stage": "VERTICAL_SLICE",
+          "standing": "BUILT",
+          "work_state": "READY",
+          "stage_observed_by": null,
+          "note": "twenty controls, all passing, none declaring a predicates array. This is the join the whole clause is stuck behind."
+        },
+        {
+          "member_kind": "CONTRACT",
+          "address": "conformance/scenarios.json",
+          "stage": "ROOT_POINT",
+          "standing": "OPEN",
+          "work_state": "CANDIDATE",
+          "stage_observed_by": null,
+          "note": "nine participant scenarios, no polarity, no predicates"
+        }
+      ],
+      "serves_exit": "custody:phase-i/predicate-fixtures",
+      "outside_phase_exit": null,
+      "phase": "phase:i",
+      "exit_clause": null,
+      "depends_on": [],
+      "required_authority": null,
+      "cleanup_obligations": [
+        "the branch this lands on",
+        "the pull request it opens"
+      ],
+      "note": "The shortest move on the board and the one Bdo's close sequence starts from."
+    },
+    {
+      "custody_schema": "soveraeign-custody/v1",
+      "status": "PROPOSED",
+      "custody_id": "custody:spec-fixtures",
+      "custody_kind": "DELIVERY",
+      "initiative": "The fourteen kernel transitions and five parity rows each acquire a positive and a defeating fixture.",
+      "held_by": "seat:session-control",
+      "roots": [
+        {
+          "root_kind": "PREDICATE",
+          "reference": "TRANS-capture_source",
+          "serves": "one of the fourteen transition rows carrying no fixture pair"
+        },
+        {
+          "root_kind": "PREDICATE",
+          "reference": "PARITY-1",
+          "serves": "one of the five parity rows carrying no fixture pair"
+        },
+        {
+          "root_kind": "PHASE",
+          "reference": "ROADMAP.md#F2",
+          "serves": "the remainder of the F2 exit after the requirement family is joined"
+        }
+      ],
+      "circuit": "soveraeign-work-circuit/v1",
+      "entry_stage": "ROOT_POINT",
+      "target_stage": "HORIZONTAL_SURFACE",
+      "closure": {
+        "check": {
+          "kind": "COMMAND",
+          "expression": "python scripts/sov_f2_gate.py"
+        },
+        "judgement_seat": "seat:root",
+        "defeated_by": "a transition fixture that exercises the declaration rather than the transition, which would pass without any participant crossing anything"
+      },
+      "estimate": {
+        "estimate_schema": "soveraeign-estimate/v1",
+        "estimated_by": "principal:session-796628",
+        "estimated_at": "2026-08-27T00:00:00Z",
+        "basis": "Nineteen rows with nothing behind them. This is the genuinely new fixture authoring and the largest piece of the clause.",
+        "maturity": "DISCOVERY_ENVELOPE",
+        "dimensions": [
+          {
+            "dimension_id": "grants",
+            "low": 0,
+            "high": 0
+          },
+          {
+            "dimension_id": "judgement_units",
+            "low": 0,
+            "high": 1
+          }
+        ]
+      },
+      "members": [
+        {
+          "member_kind": "DOCUMENT",
+          "address": "SPEC.md#transition-contract",
+          "stage": "ROOT_POINT",
+          "standing": "OPEN",
+          "work_state": "CANDIDATE",
+          "stage_observed_by": null,
+          "note": "fourteen transition rows, none carrying a fixture pair"
+        },
+        {
+          "member_kind": "DOCUMENT",
+          "address": "SPEC.md#parity",
+          "stage": "ROOT_POINT",
+          "standing": "OPEN",
+          "work_state": "CANDIDATE",
+          "stage_observed_by": null,
+          "note": "five parity rows, none carrying a fixture pair"
+        }
+      ],
+      "serves_exit": "custody:phase-i/predicate-fixtures",
+      "outside_phase_exit": null,
+      "phase": "phase:i",
+      "exit_clause": null,
+      "depends_on": [
+        "custody:oracle-predicate-join"
+      ],
+      "required_authority": null,
+      "cleanup_obligations": []
+    },
+    {
+      "custody_schema": "soveraeign-custody/v1",
+      "status": "PROPOSED",
+      "custody_id": "custody:authority-enforcement",
+      "custody_kind": "DELIVERY",
+      "initiative": "What a surface advertises about authority and what it checks at the endpoint are the same set.",
+      "held_by": "seat:session-control",
+      "roots": [
+        {
+          "root_kind": "PREDICATE",
+          "reference": "PRED-I-5.1",
+          "serves": "every consequential transition checks a live typed, scoped grant"
+        },
+        {
+          "root_kind": "GROUND",
+          "reference": "GROUND-003",
+          "serves": "authority is granted, typed, scoped, revocable and recorded; nothing acquires it by operating successfully"
+        },
+        {
+          "root_kind": "DECISION",
+          "reference": "decisions/0054-archiving-the-thread-needs-its-own-grant.md",
+          "serves": "the ruling that closed the last divergence, and the reading that found nine more"
+        }
+      ],
+      "circuit": "soveraeign-work-circuit/v1",
+      "entry_stage": "VERTICAL_SLICE",
+      "target_stage": "EXPLODED_SURFACE",
+      "closure": {
+        "check": {
+          "kind": "COMMAND",
+          "expression": "python scripts/sov_capability.py enforcement"
+        },
+        "judgement_seat": "seat:root",
+        "defeated_by": "an operation reported as enforcing that checks a grant it can also mint"
+      },
+      "estimate": {
+        "estimate_schema": "soveraeign-estimate/v1",
+        "estimated_by": "principal:session-796628",
+        "estimated_at": "2026-08-27T00:00:00Z",
+        "basis": "STATUS.yaml records nine built console operations declaring an authority and checking none, console.grant and console.revoke among them. The detection is closed; adding each check removes an ability from whoever can call it today.",
+        "maturity": "WIDE_RANGE",
+        "dimensions": [
+          {
+            "dimension_id": "branches_emitted",
+            "low": 1,
+            "high": 2
+          },
+          {
+            "dimension_id": "crossings",
+            "low": 9,
+            "high": 9
+          },
+          {
+            "dimension_id": "fixture_pairs",
+            "low": 9,
+            "high": 18
+          },
+          {
+            "dimension_id": "grants",
+            "low": 0,
+            "high": 0
+          },
+          {
+            "dimension_id": "issues_emitted",
+            "low": 0,
+            "high": 0
+          },
+          {
+            "dimension_id": "judgement_units",
+            "low": 1,
+            "high": 9
+          },
+          {
+            "dimension_id": "pull_requests_emitted",
+            "low": 1,
+            "high": 2
+          }
+        ]
+      },
+      "members": [
+        {
+          "member_kind": "OPERATION",
+          "address": "console.grant",
+          "stage": "VERTICAL_SLICE",
+          "standing": "BUILT",
+          "work_state": "CANDIDATE",
+          "stage_observed_by": null,
+          "note": "declares an authority, checks none; anyone reaching the service can write themselves a grant"
+        },
+        {
+          "member_kind": "OPERATION",
+          "address": "console.revoke",
+          "stage": "VERTICAL_SLICE",
+          "standing": "BUILT",
+          "work_state": "CANDIDATE",
+          "stage_observed_by": null
+        },
+        {
+          "member_kind": "CONTRACT",
+          "address": "contracts/capability-offices.json",
+          "stage": "HORIZONTAL_SURFACE",
+          "standing": "BUILT",
+          "work_state": "LANDED",
+          "stage_observed_by": null
+        }
+      ],
+      "serves_exit": "custody:phase-i/predicate-fixtures",
+      "outside_phase_exit": null,
+      "phase": "phase:i",
+      "exit_clause": null,
+      "depends_on": [],
+      "required_authority": "console:grant",
+      "cleanup_obligations": []
+    },
+    {
+      "custody_schema": "soveraeign-custody/v1",
+      "status": "PROPOSED",
+      "custody_id": "custody:kernel-transitions",
+      "custody_kind": "DELIVERY",
+      "initiative": "Every kernel transition the contract declares has an implementation behind it that a participant can actually cross.",
+      "held_by": "seat:session-control",
+      "roots": [
+        {
+          "root_kind": "PHASE",
+          "reference": "ROADMAP.md#F3",
+          "serves": "F3 is the minimal local kernel and these are its primitives"
+        },
+        {
+          "root_kind": "DECISION",
+          "reference": "decisions/0019-kernel-transition-contract.md",
+          "serves": "the contract that declares the fourteen"
+        },
+        {
+          "root_kind": "GROUND",
+          "reference": "GROUND-004",
+          "serves": "a participant acts by crossing a declared operation, not by having access"
+        }
+      ],
+      "circuit": "soveraeign-work-circuit/v1",
+      "entry_stage": "VERTICAL_SLICE",
+      "target_stage": "EXPLODED_SURFACE",
+      "closure": {
+        "check": {
+          "kind": "COMMAND",
+          "expression": "python scripts/sov_kernel.py parity"
+        },
+        "judgement_seat": "seat:root",
+        "defeated_by": "a transition the parity check reports as implemented whose implementation is reachable only from inside the service that declares it"
+      },
+      "estimate": {
+        "estimate_schema": "soveraeign-estimate/v1",
+        "estimated_by": "principal:session-796628",
+        "estimated_at": "2026-08-27T00:00:00Z",
+        "basis": "invoke_model is the named gap in PROD-I-9 and observe_run the named gap in decisions/0041. The other twelve are declared and partially realised inside the Asset and Record services.",
+        "maturity": "WIDE_RANGE",
+        "dimensions": [
+          {
+            "dimension_id": "branches_emitted",
+            "low": 2,
+            "high": 5
+          },
+          {
+            "dimension_id": "crossings",
+            "low": 14,
+            "high": 14
+          },
+          {
+            "dimension_id": "fixture_pairs",
+            "low": 14,
+            "high": 28
+          },
+          {
+            "dimension_id": "grants",
+            "low": 1,
+            "high": 3
+          },
+          {
+            "dimension_id": "issues_emitted",
+            "low": 0,
+            "high": 2
+          },
+          {
+            "dimension_id": "judgement_units",
+            "low": 0,
+            "high": 1
+          },
+          {
+            "dimension_id": "pull_requests_emitted",
+            "low": 2,
+            "high": 5
+          }
+        ]
+      },
+      "members": [
+        {
+          "member_kind": "CONTRACT",
+          "address": "contracts/kernel-transitions.json",
+          "stage": "VERTICAL_SLICE",
+          "standing": "BUILT",
+          "work_state": "LANDED",
+          "stage_observed_by": null
+        },
+        {
+          "member_kind": "OPERATION",
+          "address": "kernel.invoke_model",
+          "stage": "ROOT_POINT",
+          "standing": "OPEN",
+          "work_state": "CANDIDATE",
+          "stage_observed_by": null,
+          "note": "declared, no kernel implementation (PROD-I-9). adapters/ollama/invoke.py executes a model and grades its own output, which is an open path"
+        },
+        {
+          "member_kind": "OPERATION",
+          "address": "kernel.observe_run",
+          "stage": "ROOT_POINT",
+          "standing": "OPEN",
+          "work_state": "CANDIDATE",
+          "stage_observed_by": null,
+          "note": "no service behind it; see custody:independent-observation"
+        }
+      ],
+      "serves_exit": "custody:phase-i/binding-parity",
+      "outside_phase_exit": null,
+      "phase": "phase:i",
+      "exit_clause": null,
+      "depends_on": [
+        "custody:independent-observation"
+      ],
+      "required_authority": null,
+      "cleanup_obligations": []
+    },
+    {
+      "custody_schema": "soveraeign-custody/v1",
+      "status": "PROPOSED",
+      "custody_id": "custody:two-binding-proof",
+      "custody_kind": "DELIVERY",
+      "initiative": "A second model binding and a human-facing binding cross the same transitions the local adapter does, and their receipts reconcile.",
+      "held_by": "seat:session-control",
+      "roots": [
+        {
+          "root_kind": "REQUIREMENT",
+          "reference": "PROD-I-9",
+          "serves": "bring your own model"
+        },
+        {
+          "root_kind": "PREDICATE",
+          "reference": "PRED-I-9.1",
+          "serves": "two materially different model bindings expose the same named operations"
+        },
+        {
+          "root_kind": "GROUND",
+          "reference": "GROUND-013",
+          "serves": "the model is substitutable"
+        }
+      ],
+      "circuit": "soveraeign-work-circuit/v1",
+      "entry_stage": "ROOT_POINT",
+      "target_stage": "EXPLODED_SURFACE",
+      "closure": {
+        "check": {
+          "kind": "COMMAND",
+          "expression": "python conformance/run.py --scenario RUN-I9-BYOM"
+        },
+        "judgement_seat": "seat:root",
+        "defeated_by": "a fallback between models that leaves no refusal on the record"
+      },
+      "estimate": {
+        "estimate_schema": "soveraeign-estimate/v1",
+        "estimated_by": "principal:session-796628",
+        "estimated_at": "2026-08-27T00:00:00Z",
+        "basis": "One local adapter exists and settles nothing. This is the largest genuinely unstarted initiative in the set, and the one whose second model is Bdo's to choose.",
+        "maturity": "DISCOVERY_ENVELOPE",
+        "dimensions": [
+          {
+            "dimension_id": "grants",
+            "low": 2,
+            "high": 4
+          },
+          {
+            "dimension_id": "judgement_units",
+            "low": 1,
+            "high": 2
+          }
+        ]
+      },
+      "members": [
+        {
+          "member_kind": "SERVICE",
+          "address": "adapters/ollama",
+          "stage": "ROOT_POINT",
+          "standing": "BUILT",
+          "work_state": "CANDIDATE",
+          "stage_observed_by": null,
+          "note": "executes a model and grades its own output; the path does not close"
+        },
+        {
+          "member_kind": "CONTRACT",
+          "address": "contracts/model-binding.schema.json",
+          "stage": "VERTICAL_SLICE",
+          "standing": "BUILT",
+          "work_state": "LANDED",
+          "stage_observed_by": null
+        },
+        {
+          "member_kind": "ITEM",
+          "address": "PRD.md#two-binding-proof",
+          "stage": "ROOT_POINT",
+          "standing": "OPEN",
+          "work_state": "CANDIDATE",
+          "stage_observed_by": null
+        }
+      ],
+      "serves_exit": "custody:phase-i/binding-parity",
+      "outside_phase_exit": null,
+      "phase": "phase:i",
+      "exit_clause": null,
+      "depends_on": [
+        "custody:kernel-transitions"
+      ],
+      "required_authority": "kernel:invoke-model",
+      "cleanup_obligations": []
+    },
+    {
+      "custody_schema": "soveraeign-custody/v1",
+      "status": "PROPOSED",
+      "custody_id": "custody:independent-observation",
+      "custody_kind": "DELIVERY",
+      "initiative": "A run can be observed by a participant that did not produce it, so a build claim stops being the only evidence the node has.",
+      "held_by": "seat:session-control",
+      "roots": [
+        {
+          "root_kind": "GROUND",
+          "reference": "GROUND-010",
+          "serves": "a report is not an observation; this is the service that makes the difference real"
+        },
+        {
+          "root_kind": "DECISION",
+          "reference": "decisions/0041-the-observation-service.md",
+          "serves": "charters the boundary and rules how independence is resolved"
+        },
+        {
+          "root_kind": "PREDICATE",
+          "reference": "TRANS-observe_run",
+          "serves": "the transition with no service behind it"
+        }
+      ],
+      "circuit": "soveraeign-work-circuit/v1",
+      "entry_stage": "ROOT_POINT",
+      "target_stage": "EXPLODED_SURFACE",
+      "closure": {
+        "check": {
+          "kind": "COMMAND",
+          "expression": "python scripts/sov_ainative.py --check 3"
+        },
+        "judgement_seat": "seat:root",
+        "defeated_by": "an observation admitted whose independence was asserted by the observer rather than resolved from the run record"
+      },
+      "estimate": {
+        "estimate_schema": "soveraeign-estimate/v1",
+        "estimated_by": "principal:session-796628",
+        "estimated_at": "2026-08-27T00:00:00Z",
+        "basis": "Chartered boundary with no implementation. AI-NATIVE.md check 3 reads UNATTESTABLE on every service assessment, so the absence is already measured.",
+        "maturity": "DISCOVERY_ENVELOPE",
+        "dimensions": [
+          {
+            "dimension_id": "grants",
+            "low": 1,
+            "high": 1
+          },
+          {
+            "dimension_id": "judgement_units",
+            "low": 0,
+            "high": 1
+          }
+        ]
+      },
+      "members": [
+        {
+          "member_kind": "SERVICE",
+          "address": "services/observation",
+          "stage": "ROOT_POINT",
+          "standing": "OPEN",
+          "work_state": "CANDIDATE",
+          "stage_observed_by": null,
+          "note": "chartered boundary, not implemented"
+        },
+        {
+          "member_kind": "CONTRACT",
+          "address": "contracts/observation.schema.json",
+          "stage": "VERTICAL_SLICE",
+          "standing": "BUILT",
+          "work_state": "LANDED",
+          "stage_observed_by": null
+        },
+        {
+          "member_kind": "DECISION",
+          "address": "decisions/0069-witnessing-is-a-crossing-check.md",
+          "stage": "VERTICAL_SLICE",
+          "standing": "BUILT",
+          "work_state": "LANDED",
+          "stage_observed_by": null
+        }
+      ],
+      "serves_exit": "custody:phase-i/receipt-reconstruction",
+      "outside_phase_exit": null,
+      "phase": "phase:i",
+      "exit_clause": null,
+      "depends_on": [],
+      "required_authority": "observation:observe-run",
+      "cleanup_obligations": []
+    },
+    {
+      "custody_schema": "soveraeign-custody/v1",
+      "status": "PROPOSED",
+      "custody_id": "custody:record-custody",
+      "custody_kind": "DELIVERY",
+      "initiative": "One append-preserving journal holds the node's authoritative record, and it can be read from end to end without breaking.",
+      "held_by": "seat:session-control",
+      "roots": [
+        {
+          "root_kind": "GROUND",
+          "reference": "GROUND-001",
+          "serves": "an enterprise keeps custody of its memory; this is that claim taken literally"
+        },
+        {
+          "root_kind": "REQUIREMENT",
+          "reference": "PROD-I-2",
+          "serves": "remember: addressed payloads and sufficient reconstruction authority"
+        },
+        {
+          "root_kind": "REQUIREMENT",
+          "reference": "PROD-I-8",
+          "serves": "the Asset Service keeping its own tables is the named gap"
+        }
+      ],
+      "circuit": "soveraeign-work-circuit/v1",
+      "entry_stage": "VERTICAL_SLICE",
+      "target_stage": "CAPABLE_NODE",
+      "closure": {
+        "check": {
+          "kind": "COMMAND",
+          "expression": "python -m soveraeign_record_service.cli --root .local/console/journal verify"
+        },
+        "judgement_seat": "seat:root",
+        "defeated_by": "a journal that verifies while a service still holds authoritative state the journal does not carry"
+      },
+      "estimate": {
+        "estimate_schema": "soveraeign-estimate/v1",
+        "estimated_by": "principal:session-796628",
+        "estimated_at": "2026-08-27T00:00:00Z",
+        "basis": "The Record Service is built and self-tested. The live journal is broken at entry_80767935e18c488fb45502df9d5c385e, which every session-start briefing reports and no session has repaired, and the Asset Service still keeps its own SQLite tables.",
+        "maturity": "WIDE_RANGE",
+        "dimensions": [
+          {
+            "dimension_id": "branches_emitted",
+            "low": 1,
+            "high": 3
+          },
+          {
+            "dimension_id": "crossings",
+            "low": 3,
+            "high": 8
+          },
+          {
+            "dimension_id": "fixture_pairs",
+            "low": 6,
+            "high": 14
+          },
+          {
+            "dimension_id": "grants",
+            "low": 0,
+            "high": 1
+          },
+          {
+            "dimension_id": "issues_emitted",
+            "low": 0,
+            "high": 1
+          },
+          {
+            "dimension_id": "judgement_units",
+            "low": 0,
+            "high": 1
+          },
+          {
+            "dimension_id": "pull_requests_emitted",
+            "low": 1,
+            "high": 3
+          }
+        ]
+      },
+      "members": [
+        {
+          "member_kind": "SERVICE",
+          "address": "services/record",
+          "stage": "VERTICAL_SLICE",
+          "standing": "BUILT",
+          "work_state": "LANDED",
+          "stage_observed_by": null,
+          "note": "built, self-tested, not witnessed"
+        },
+        {
+          "member_kind": "ITEM",
+          "address": ".local/console/journal",
+          "stage": "ROOT_POINT",
+          "standing": "OPEN",
+          "work_state": "READY",
+          "stage_observed_by": null,
+          "note": "BrokenChain at entry_80767935e18c488fb45502df9d5c385e. A live defect, reported at every session start and repaired by nobody"
+        },
+        {
+          "member_kind": "DOCUMENT",
+          "address": "services/asset/KNOWN-GAPS.md",
+          "stage": "ROOT_POINT",
+          "standing": "OPEN",
+          "work_state": "CANDIDATE",
+          "stage_observed_by": null,
+          "note": "records the private-tables gap and also carries a stale repository-wide claim about model bindings"
+        }
+      ],
+      "serves_exit": "custody:phase-i/receipt-reconstruction",
+      "outside_phase_exit": null,
+      "phase": "phase:i",
+      "exit_clause": null,
+      "depends_on": [],
+      "required_authority": null,
+      "cleanup_obligations": [],
+      "note": "Bdo's nominated first thin qualification slice for the successor campaign: the service is built, the ground claim is GROUND-001, and the loop starts with something failing rather than something asserted."
+    },
+    {
+      "custody_schema": "soveraeign-custody/v1",
+      "status": "PROPOSED",
+      "custody_id": "custody:owner-queue-drain",
+      "custody_kind": "DELIVERY",
+      "initiative": "Nothing sits on the root seat that Bdo has not been given a runnable way to accept or reject, under a hold reason the policy admits.",
+      "held_by": "seat:session-control",
+      "roots": [
+        {
+          "root_kind": "REQUIREMENT",
+          "reference": "PROD-I-6",
+          "serves": "the pending right stays visible"
+        },
+        {
+          "root_kind": "GROUND",
+          "reference": "GROUND-012",
+          "serves": "human judgement is a reserved and scarce input"
+        },
+        {
+          "root_kind": "DECISION",
+          "reference": "decisions/0046-decision-queue-drain.md",
+          "serves": "the drain that made an unruled decision a standing default rather than a queue entry"
+        }
+      ],
+      "circuit": "soveraeign-work-circuit/v1",
+      "entry_stage": "HORIZONTAL_SURFACE",
+      "target_stage": "HORIZONTAL_SURFACE",
+      "closure": {
+        "check": {
+          "kind": "COMMAND",
+          "expression": "python scripts/sov_accept.py audit"
+        },
+        "judgement_seat": "seat:root",
+        "defeated_by": "a packet the audit passes whose named command does not run, or whose evidence a reader cannot reach without asking its author"
+      },
+      "estimate": {
+        "estimate_schema": "soveraeign-estimate/v1",
+        "estimated_by": "principal:session-796628",
+        "estimated_at": "2026-08-27T00:00:00Z",
+        "basis": "Six packets presented, the audit passing, and 29 owner-routed questions naming no admissible hold reason. The machinery is closed; the vocabulary gap is the work.",
+        "maturity": "COMMITTED_RANGE",
+        "dimensions": [
+          {
+            "dimension_id": "branches_emitted",
+            "low": 1,
+            "high": 1
+          },
+          {
+            "dimension_id": "compute_clock_seconds",
+            "low": 1800,
+            "high": 14400
+          },
+          {
+            "dimension_id": "crossings",
+            "low": 0,
+            "high": 0
+          },
+          {
+            "dimension_id": "fixture_pairs",
+            "low": 2,
+            "high": 4
+          },
+          {
+            "dimension_id": "grants",
+            "low": 0,
+            "high": 0
+          },
+          {
+            "dimension_id": "issues_emitted",
+            "low": 0,
+            "high": 0
+          },
+          {
+            "dimension_id": "judgement_units",
+            "low": 5,
+            "high": 5
+          },
+          {
+            "dimension_id": "points",
+            "low": 5,
+            "high": 13
+          },
+          {
+            "dimension_id": "pull_requests_emitted",
+            "low": 1,
+            "high": 1
+          },
+          {
+            "dimension_id": "tokens",
+            "low": 50000,
+            "high": 400000
+          },
+          {
+            "dimension_id": "wall_clock_seconds",
+            "low": 3600,
+            "high": 604800
+          }
+        ]
+      },
+      "members": [
+        {
+          "member_kind": "PACKET",
+          "address": "acceptance/A6.json",
+          "stage": "HORIZONTAL_SURFACE",
+          "standing": "BUILT",
+          "work_state": "PRESENTED",
+          "stage_observed_by": null
+        },
+        {
+          "member_kind": "PACKET",
+          "address": "acceptance/A7.json",
+          "stage": "HORIZONTAL_SURFACE",
+          "standing": "BUILT",
+          "work_state": "PRESENTED",
+          "stage_observed_by": null
+        },
+        {
+          "member_kind": "PACKET",
+          "address": "acceptance/A11.json",
+          "stage": "HORIZONTAL_SURFACE",
+          "standing": "BUILT",
+          "work_state": "PRESENTED",
+          "stage_observed_by": null,
+          "note": "the phase packet another session minted, carrying A8, A9 and A10"
+        }
+      ],
+      "serves_exit": "custody:phase-i/judgement-visibility",
+      "outside_phase_exit": null,
+      "phase": "phase:i",
+      "exit_clause": null,
+      "depends_on": [],
+      "required_authority": null,
+      "cleanup_obligations": [],
+      "note": "decisions/0084 rules that Bdo judges a phase over accumulated evidence rather than one artifact at a time, and A11 is the phase packet built on it. That record is committed nowhere - it exists only in the shared working tree - so it is named here and is deliberately not a root: a root that resolves only on one disk is the failure UNRESOLVED_ROOT names."
+    },
+    {
+      "custody_schema": "soveraeign-custody/v1",
+      "status": "PROPOSED",
+      "custody_id": "custody:trunk-reconciliation",
+      "custody_kind": "DELIVERY",
+      "initiative": "Work that was built reaches one trunk, or is retired on the record with a reason.",
+      "held_by": "seat:session-control",
+      "roots": [
+        {
+          "root_kind": "DECISION",
+          "reference": "decisions/0060-merged-branch-retirement.md",
+          "serves": "the disposition rule for a branch that has landed"
+        },
+        {
+          "root_kind": "DECISION",
+          "reference": "decisions/0064-standing-authorization-and-the-landing-loop.md",
+          "serves": "what refuses a landing is evidence, not permission"
+        },
+        {
+          "root_kind": "GROUND",
+          "reference": "GROUND-015",
+          "serves": "work survives the loss of a participant's context; a stranded commit is work that did not"
+        }
+      ],
+      "circuit": "soveraeign-work-circuit/v1",
+      "entry_stage": "VERTICAL_SLICE",
+      "target_stage": "VERTICAL_SLICE",
+      "closure": {
+        "check": {
+          "kind": "COMMAND",
+          "expression": "python scripts/sov_strand.py"
+        },
+        "judgement_seat": "seat:root",
+        "defeated_by": "a branch reported as retired whose commits are reachable from no trunk and from no retirement record"
+      },
+      "estimate": {
+        "estimate_schema": "soveraeign-estimate/v1",
+        "estimated_by": "principal:session-796628",
+        "estimated_at": "2026-08-27T00:00:00Z",
+        "basis": "Twenty commits exist only on this disk across four branches; 207 pushed commits across 39 branches are unmerged; 9 open pull requests with 1 mergeable. Both readings already run.",
+        "maturity": "WIDE_RANGE",
+        "dimensions": [
+          {
+            "dimension_id": "branches_emitted",
+            "low": 0,
+            "high": 1
+          },
+          {
+            "dimension_id": "crossings",
+            "low": 39,
+            "high": 43
+          },
+          {
+            "dimension_id": "fixture_pairs",
+            "low": 0,
+            "high": 2
+          },
+          {
+            "dimension_id": "grants",
+            "low": 0,
+            "high": 0
+          },
+          {
+            "dimension_id": "issues_emitted",
+            "low": 0,
+            "high": 0
+          },
+          {
+            "dimension_id": "judgement_units",
+            "low": 1,
+            "high": 5
+          },
+          {
+            "dimension_id": "pull_requests_emitted",
+            "low": 0,
+            "high": 1
+          }
+        ]
+      },
+      "members": [
+        {
+          "member_kind": "BRANCH",
+          "address": "rescue/human-collection-substrate",
+          "stage": "VERTICAL_SLICE",
+          "standing": "BUILT",
+          "work_state": "CANDIDATE",
+          "stage_observed_by": null,
+          "note": "9 stranded commits"
+        },
+        {
+          "member_kind": "BRANCH",
+          "address": "fix/continuity-hook-honest-failure",
+          "stage": "VERTICAL_SLICE",
+          "standing": "BUILT",
+          "work_state": "CANDIDATE",
+          "stage_observed_by": null,
+          "note": "8 stranded commits"
+        },
+        {
+          "member_kind": "BRANCH",
+          "address": "feat/status-claims-typed",
+          "stage": "VERTICAL_SLICE",
+          "standing": "BUILT",
+          "work_state": "CANDIDATE",
+          "stage_observed_by": null,
+          "note": "7 stranded commits"
+        }
+      ],
+      "serves_exit": null,
+      "outside_phase_exit": "Coordination cleanup. It serves no exit clause; it is required by the phase close sequence, which cannot disposition inventory it has not reconciled.",
+      "phase": "phase:i",
+      "exit_clause": null,
+      "depends_on": [],
+      "required_authority": "repository:land",
+      "cleanup_obligations": [
+        "every branch it retires",
+        "every pull request it closes",
+        "the worktrees those branches hold"
+      ]
+    },
+    {
+      "custody_schema": "soveraeign-custody/v1",
+      "status": "PROPOSED",
+      "custody_id": "custody:seam-drain",
+      "custody_kind": "DELIVERY",
+      "initiative": "Every carried seam is either closed with evidence or restated as a named initiative somebody holds.",
+      "held_by": "seat:session-control",
+      "roots": [
+        {
+          "root_kind": "SEAM",
+          "reference": "OPEN-SEAMS.md",
+          "serves": "the register itself; twenty-seven rows, two closed"
+        },
+        {
+          "root_kind": "GROUND",
+          "reference": "GROUND-011",
+          "serves": "standing does not collapse; a seam carried as prose has no standing at all"
+        }
+      ],
+      "circuit": "soveraeign-work-circuit/v1",
+      "entry_stage": "ROOT_POINT",
+      "target_stage": "VERTICAL_SLICE",
+      "closure": {
+        "check": {
+          "kind": "COMMAND",
+          "expression": "python scripts/sov_custody.py orphans --kind SEAM"
+        },
+        "judgement_seat": "seat:root",
+        "defeated_by": "a seam recorded as closed whose closing evidence is a document rather than a check"
+      },
+      "estimate": {
+        "estimate_schema": "soveraeign-estimate/v1",
+        "estimated_by": "principal:session-796628",
+        "estimated_at": "2026-08-27T00:00:00Z",
+        "basis": "Twenty-seven seams, two marked closed, twenty-two held by nobody. S9 is the live contradiction between the stated Phase-I boundary and a grant Bdo actually made, and restating it is his.",
+        "maturity": "DISCOVERY_ENVELOPE",
+        "dimensions": [
+          {
+            "dimension_id": "grants",
+            "low": 0,
+            "high": 0
+          },
+          {
+            "dimension_id": "judgement_units",
+            "low": 3,
+            "high": 10
+          }
+        ]
+      },
+      "members": [
+        {
+          "member_kind": "SEAM",
+          "address": "OPEN-SEAMS.md#S9",
+          "stage": "ROOT_POINT",
+          "standing": "OPEN",
+          "work_state": "CANDIDATE",
+          "stage_observed_by": null,
+          "note": "the stated boundary says no external effects in Phase I; Bdo granted one on 2026-08-23. The restatement is his and is drafted in decisions/0057"
+        },
+        {
+          "member_kind": "SEAM",
+          "address": "OPEN-SEAMS.md#S5",
+          "stage": "ROOT_POINT",
+          "standing": "OPEN",
+          "work_state": "CANDIDATE",
+          "stage_observed_by": null,
+          "note": "cold-start semantics; partly served by the benchmark in acceptance/A9"
+        },
+        {
+          "member_kind": "SEAM",
+          "address": "OPEN-SEAMS.md#S17",
+          "stage": "ROOT_POINT",
+          "standing": "OPEN",
+          "work_state": "CANDIDATE",
+          "stage_observed_by": null,
+          "note": "already named once as a real defect: a declared refusal that became unreachable"
+        }
+      ],
+      "serves_exit": null,
+      "outside_phase_exit": "Coordination cleanup. A seam may turn out to serve an exit clause, in which case it is re-parented rather than left here.",
+      "phase": "phase:i",
+      "exit_clause": null,
+      "depends_on": [],
+      "required_authority": null,
+      "cleanup_obligations": []
+    },
+    {
+      "custody_schema": "soveraeign-custody/v1",
+      "status": "PROPOSED",
+      "custody_id": "custody:session-as-node",
+      "custody_kind": "DELIVERY",
+      "initiative": "Every operating session is addressable as a node in its own right, or as a subnode of the node that launched it.",
+      "held_by": "seat:session-control",
+      "roots": [
+        {
+          "root_kind": "GROUND",
+          "reference": "GROUND-016",
+          "serves": "a node is whole at any size; one person's node is a first-class node"
+        },
+        {
+          "root_kind": "DECISION",
+          "reference": "decisions/0039-the-node-surface.md",
+          "serves": "opens the node and federation boundary and contracts node identity"
+        },
+        {
+          "root_kind": "CANON",
+          "reference": "JOURNEY-12",
+          "serves": "standing a node up is kept as a real gap"
+        }
+      ],
+      "circuit": "soveraeign-work-circuit/v1",
+      "entry_stage": "ROOT_POINT",
+      "target_stage": "CAPABLE_NODE",
+      "closure": {
+        "check": {
+          "kind": "COMMAND",
+          "expression": "python scripts/sov_node.py admit --session current"
+        },
+        "judgement_seat": "seat:root",
+        "defeated_by": "a session addressed as a node whose identity was inferred from the host session id rather than admitted through a transition"
+      },
+      "estimate": {
+        "estimate_schema": "soveraeign-estimate/v1",
+        "estimated_by": "principal:session-796628",
+        "estimated_at": "2026-08-27T00:00:00Z",
+        "basis": "The session registry mints a name and carries liveness for nine concurrent sessions today, and node identity is contracted and graded against fixtures. What is missing is the admission transition, which STATUS.yaml records as NO_ADMISSION_TRANSITION.",
+        "maturity": "DISCOVERY_ENVELOPE",
+        "dimensions": [
+          {
+            "dimension_id": "grants",
+            "low": 2,
+            "high": 4
+          },
+          {
+            "dimension_id": "judgement_units",
+            "low": 1,
+            "high": 3
+          }
+        ]
+      },
+      "members": [
+        {
+          "member_kind": "CONTRACT",
+          "address": "contracts/node-identity.schema.json",
+          "stage": "HORIZONTAL_SURFACE",
+          "standing": "BUILT",
+          "work_state": "LANDED",
+          "stage_observed_by": null,
+          "note": "contracted and graded against fixtures; no admission transition"
+        },
+        {
+          "member_kind": "ITEM",
+          "address": "scripts/sov_session.py",
+          "stage": "VERTICAL_SLICE",
+          "standing": "BUILT",
+          "work_state": "LANDED",
+          "stage_observed_by": null,
+          "note": "host plumbing, holds no standing. Registration alone makes a session addressable plumbing, not a node with standing"
+        },
+        {
+          "member_kind": "CONTRACT",
+          "address": "contracts/work-lease.schema.json",
+          "stage": "HORIZONTAL_SURFACE",
+          "standing": "BUILT",
+          "work_state": "LANDED",
+          "stage_observed_by": null
+        },
+        {
+          "member_kind": "CONTRACT",
+          "address": "contracts/principal.schema.json",
+          "stage": "HORIZONTAL_SURFACE",
+          "standing": "BUILT",
+          "work_state": "LANDED",
+          "stage_observed_by": null,
+          "note": "this session reports principal unidentified, which is the gap in one line"
+        }
+      ],
+      "serves_exit": null,
+      "outside_phase_exit": "A future product capability, not a Phase-I exit obligation. It becomes a node only after admission, typed authority, a parent relation, receipts and outside observation.",
+      "phase": null,
+      "exit_clause": null,
+      "depends_on": [
+        "custody:authority-enforcement",
+        "custody:record-custody"
+      ],
+      "required_authority": "node:admit",
+      "cleanup_obligations": []
+    }
+  ]
+}

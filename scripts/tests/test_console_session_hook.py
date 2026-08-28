@@ -307,3 +307,50 @@ class AGrantRefusalIsNotAHookFailure(HookHarness):
     def test_the_hook_still_exits_zero(self) -> None:
         self.hook._console = self._console_opens_then_fails
         self.run_main()  # run_main asserts the exit code
+
+
+class ASessionThatWasNeverOpened(HookHarness):
+    """The configuration soveraeign-53 found still open after the first repair.
+
+    An operator holding nothing on a store whose permits office belongs to someone
+    else refuses `grant` AND then refuses `open-session` for the same missing
+    capability. The first refusal was caught; the second sat outside the try and
+    escaped to main()'s catch-all, so the note explaining the first was built and
+    never printed. That is the common configuration, not the narrow one.
+
+    `_degraded` is the wrong report here and reusing it would be a new false claim:
+    every sentence in it depends on the open having committed.
+    """
+
+    def setUp(self) -> None:
+        super().setUp()
+
+        def refuse_the_grant() -> None:
+            raise self.hook.ConsoleRefused(
+                "grant", '{"reason_code": "NO_LIVE_GRANT", "outcome": "REFUSED"}', 2, "")
+
+        def refuse_everything(*args: str) -> dict[str, str]:
+            raise self.hook.ConsoleRefused(
+                args[0], '{"reason_code": "NO_LIVE_GRANT", "outcome": "REFUSED"}', 2, "")
+
+        self.hook._ensure_grants = refuse_the_grant
+        self.hook._console = refuse_everything
+
+    def test_the_grant_note_still_reaches_the_session(self) -> None:
+        """The defect exactly: the note was built and thrown away."""
+        out = self.run_main()
+        self.assertIn("grants were not established", out)
+        self.assertIn("NO_LIVE_GRANT", out)
+
+    def test_it_does_not_claim_a_record_that_was_never_written(self) -> None:
+        out = self.run_main()
+        self.assertIn("no session opened", out.lower())
+        self.assertIn("nothing was recorded", out)
+        self.assertNotIn("the console committed that record", out)
+
+    def test_it_names_what_the_session_loses(self) -> None:
+        out = self.run_main()
+        self.assertIn("will not appear to the next session", out)
+
+    def test_the_hook_still_exits_zero(self) -> None:
+        self.run_main()  # run_main asserts the exit code

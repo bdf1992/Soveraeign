@@ -245,6 +245,40 @@ def _degraded(console_session: str, opened: bool, failure: Exception,
     return "\n".join(lines)
 
 
+def _unopened(failure: Exception, notes: list[str] | None = None) -> str:
+    """Report a session that was never opened, which is not a failed briefing.
+
+    `_degraded` exists for a briefing that failed after the open committed, and
+    every sentence in it depends on that: it names a console session id and says
+    the record is intact. Neither is true here. Reusing it would assert a record
+    that was never written, which is the same false claim about the journal this
+    hook exists to stop making, pointed the other way.
+
+    This is the path soveraeign-53 found still open after the first repair. A store
+    whose permits office belongs to another operator refuses `grant` and then
+    refuses `open-session` for the same missing capability, and the second refusal
+    sat outside the try. The note explaining the first was built and never printed.
+    """
+    lines = [
+        "# Console continuity - no session opened",
+        "",
+        f"Operator `{OPERATOR}` through binding `{BINDING_ID}`. No console session "
+        "was opened for this host session.",
+        "",
+        f"The open did not commit: {_terse(failure)}",
+        "",
+        "So nothing was recorded, and this session has no continuity: it does not "
+        "know what landed while this operator was away, and its own work will not "
+        "appear to the next session either.",
+        "",
+        "This hook does not diagnose the console; the Console Service owns that rule. "
+        "The next start will try again and will open a session if the refusal is gone.",
+    ]
+    if notes:
+        lines.extend(["", *notes])
+    return "\n".join(lines)
+
+
 def start(event: dict[str, Any]) -> str:
     """Open or resume the console session for this host session, and brief it.
 
@@ -277,9 +311,12 @@ def start(event: dict[str, Any]) -> str:
     console_session = bindings.get(host_session)
     opened = False
     if console_session is None:
-        console_session = _console("open-session", "--operator", OPERATOR,
-                                   "--actor-kind", "MODEL",
-                                   "--binding", BINDING_ID)["session_id"]
+        try:
+            console_session = _console("open-session", "--operator", OPERATOR,
+                                       "--actor-kind", "MODEL",
+                                       "--binding", BINDING_ID)["session_id"]
+        except Exception as failure:  # no session exists, so there is nothing to brief
+            return _unopened(failure, notes)
         opened = True
         try:
             _remember(host_session, console_session)

@@ -2,10 +2,11 @@
 
 ```text
 source          PRD.md · SPEC.md · CONTRACT.md · STATUS.yaml
-source_digest   f1157f2f1ebad6aa · b58dc1ed68c2b999 · ff6873d56338933b · 1884947ed364f394
+source_digest   a6b8213a573f927f · b58dc1ed68c2b999 · ff6873d56338933b · 05f58ebdd6e0321f
 reader          hand-authored · v2
 fidelity        LOSSY
-omissions       the nine PROD-I requirement texts and their defeating cases;
+omissions       the predicate and defeating case behind each PROD-I requirement,
+                held by SPEC.md and conformance/scenarios.json;
                 per-operation evidence, held by service tests and observation records
 ```
 

@@ -1,0 +1,76 @@
+{
+  "packet_schema": "soveraeign-acceptance-packet/v1",
+  "packet_id": "A20",
+  "claim": "You said PRD.md is not a PRD. It is not, for two reasons, and only one of them is fixable by rewriting it. The first: its nine requirement sections restate the predicates SPEC.md already owns, so the document that was supposed to say what the product does for a person had been reduced to a second copy of the oracle's rules. That one this branch fixes. The second: PRD.md is the pinned definition of phase:i, which you closed on 2026-08-27 as CLOSED_INCOMPLETE with succeeded_by: None. Your own ruling reads that the exit predicates were never on the critical path of work, which is the same complaint you made today, one level up. So the rewrite on this branch is the right document written for a campaign that is over, and it cannot land until you say which phase it defines. Re-pinning a closed phase's definition is your act, not the loop's, and the check that refuses it is the one built to stop a phase ending by narrowing itself.",
+  "subject": {
+    "artifact": "PRD.md",
+    "from_standing": "OPEN",
+    "to_standing": "BUILT"
+  },
+  "presented_by_seat": "seat:session-control",
+  "accepted_by_seat": "seat:root",
+  "claim_type": "JUDGEMENT",
+  "built_by": {
+    "actor_id": "urn:soveraeign:actor:claude-interactive-session",
+    "actor_kind": "MODEL"
+  },
+  "witnessed_by": null,
+  "visible_result": {
+    "demo": [
+      "git",
+      "diff",
+      "main..docs/prd-rewrite",
+      "--",
+      "PRD.md"
+    ],
+    "shows": "the rewrite: nine identifiers kept, predicates and defeating cases removed as duplicates of SPEC.md, and each requirement joined to the participant it serves, the CANON.md promise it makes good, and the journey that proves it",
+    "expect": "PRD.md goes from 146 lines to 293. Then `python -m unittest scripts.tests.test_custody_boards` on this branch fails three cases with one cause: UNPINNED_DEFINITION, PRD.md moved off the digest phase:i was closed against. That failure is the finding, not a defect to repair."
+  },
+  "evidence": [
+    {
+      "address": "SPEC.md#L408-L471",
+      "digest": null,
+      "says": "Requirement predicates, one block per PROD-I-n, in more detail than the PRD carried. The old PRD's nine defeating cases were a thinner second statement of these, which AGENTS.md forbids as a competing authority"
+    },
+    {
+      "address": "contracts/phases.json",
+      "digest": null,
+      "says": "phase:i closed 2026-08-27, terminal CLOSED_INCOMPLETE, settled_by seat:root, succeeded_by None. Its definition pins PRD.md by digest, and the note states why: so a phase cannot end by narrowing its own definition until the evidence fits"
+    },
+    {
+      "address": "contracts/product-canon.json",
+      "digest": null,
+      "says": "fourteen promises and fourteen journeys, owner-accepted 2026-08-24. Two days after PRD.md was written and never joined to it. PROMISE-12 and PROMISE-16 are PHASE_I and no PROD-I requirement carries either"
+    },
+    {
+      "address": "services/asset/conformance/BASELINE.md",
+      "digest": null,
+      "says": "the per-requirement standing the rewrite's Today lines quote: PROD-I-2 PASS, the other eight FAIL"
+    },
+    {
+      "address": "conformance/requirements.py#L15",
+      "digest": null,
+      "says": "REQUIREMENTS is range(1, 10). Minting a tenth requirement changes the oracle, which is why the two uncovered promises are recorded under Coverage rather than turned into PROD-I-10 and PROD-I-11 on my own authority"
+    },
+    {
+      "address": "diagrams/requirement-lifecycle.md",
+      "digest": null,
+      "says": "its omissions line claimed PRD.md holds the defeating cases; corrected to name SPEC.md and conformance/scenarios.json. Three diagrams declared PRD.md as a source and were restamped; docs/documentation.html was rebuilt"
+    }
+  ],
+  "why_it_matters": "The chain CANON.md declares runs GROUND -> PROMISE -> JOURNEY -> PROD-I -> SPEC transition -> service -> run -> receipt. PROD-I is the rung where a product intention becomes something a build can be held to, and it was the only rung with no join written into it: no promise, no journey, no participant, and no data field in contracts/product-canon.json either. That is why the document read as a test plan. It had nothing above it and duplicated what was below it.",
+  "what_could_defeat_it": [
+    "A reading of the two exits side by side showing the rewrite narrowed phase:i's definition. I claim it did not: all five exit clauses and all nine requirement scopes carry forward unchanged in meaning, and only the duplicated predicates were removed. That claim is mine and has not been independently checked.",
+    "A decision that PRD.md should stay exactly as it is, because a closed phase's definition is history and history is not edited. That would make this branch wrong at the root and the right artifact a new document for the successor campaign.",
+    "A promise-to-requirement mapping you disagree with. The mapping in the rewrite is derived, not owner-accepted, and PROD-I-5 in particular is joined to PROMISE-03 and PROMISE-04 by inference rather than by anything either document says."
+  ],
+  "residuals": [
+    "Unwitnessed. Closure ownership requires the builder to launch an independent witness; this session was instructed not to launch agents, so the branch is presented on my own reading alone. Run `sov-qa` or the sov-witness agent against docs/prd-rewrite before treating any of it as WITNESSED.",
+    "PROMISE-12, work carrying across a session or model boundary, is a PHASE_I promise no requirement asks for, and the Console continuity path is already built and delivering it. JOURNEY-03.",
+    "PROMISE-16, deciding against an exact version and having someone else counter it, has no requirement either. GROUND.md says explicitly that proofing belongs in a journey and PRD.md; the journey exists, the requirement does not. JOURNEY-11.",
+    "PROMISE-03 and the measurement half of PROMISE-10 are carried thinly by PROD-I-7 rather than not at all. Recorded in the rewrite's Coverage section, not repaired.",
+    "diagrams/requirement-lifecycle.md says the operation surface reads 127 declared; verify.py reads 134. A pre-existing prose error the digest check cannot catch. Found, not fixed, because it has a different cause than this concern."
+  ],
+  "on_accept": "Say which phase PRD.md defines. If the successor campaign is being named now, the rewrite is re-aimed at it, the phase:i pin is left alone, and phase:i's PRD is preserved as its historical definition. If PRD.md is instead to be revised in place as a living document, re-pin contracts/phases.json against the new digest with the same measured justification the SPEC.md re-pin of 2026-08-27 used. Either way the Coverage section's two uncovered promises need your ruling: mint a requirement, record them as carried by an existing one, or move them out of phase.",
+  "on_reject": "Delete branch docs/prd-rewrite and its worktree at ../Soveraeign-prd. Nothing on main changed. The finding survives rejection of the rewrite: SPEC.md and PRD.md still state the same nine predicates twice, and CANON.md's promises still join to no requirement."
+}

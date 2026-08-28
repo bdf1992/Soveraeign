@@ -291,7 +291,8 @@ class GradedSetIsWhatReachesTheTarget(unittest.TestCase):
         for patch in patches:
             patch.start()
         try:
-            request, _result, _b, _a, _be, staged, carried, _fp, _bl, _bc = sov_land._evaluate(args)
+            (request, _result, _b, _a, _be, staged, carried, _fp, _bl, _bc,
+             _reading) = sov_land._evaluate(args)
         finally:
             for patch in patches:
                 patch.stop()
@@ -440,9 +441,11 @@ class TheGradedSetMustStillDescribeTheTree(unittest.TestCase):
             permitted = {"verdict": authority.PERMITTED, "code": None, "detail": "ok",
                          "grant_id": "grant:test", "considered": []}
 
-            def edit_during_checks(_skip):
+            def edit_during_checks(_skip, _paths=None):
+                # Signature follows tree.gather_checks: it takes the landing's
+                # paths and returns the checks plus the verify attribution.
                 (root / "kept.py").write_text("someone else" + chr(10), encoding="utf-8")
-                return {}
+                return {}, {}
 
             before = subprocess.run(["git", "rev-parse", "main"], cwd=root,
                                     capture_output=True, text=True).stdout

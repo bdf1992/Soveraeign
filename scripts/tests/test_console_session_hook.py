@@ -252,3 +252,58 @@ class TerseFailure(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class AGrantRefusalIsNotAHookFailure(HookHarness):
+    """`_ensure_grants` sits before start()'s try, so a refusal there escaped it.
+
+    Found by soveraeign-53 witnessing this branch: the case is a store whose permits
+    office was opened by another operator, where `grant` genuinely refuses. Every
+    other case in this file stubs `_ensure_grants` to nothing, which is right for
+    them and is exactly why this path went untested.
+
+    Grants are a precondition for recording, not for reading. A refusal must cost
+    the session its grants and nothing else - not its briefing, and above all not
+    the honest report, which is the whole point of this branch.
+    """
+
+    def setUp(self) -> None:
+        super().setUp()
+
+        def refuse_the_grant() -> None:
+            raise self.hook.ConsoleRefused(
+                "grant", '{"reason_code": "NO_LIVE_GRANT", "outcome": "REFUSED"}', 2, "")
+
+        self.hook._ensure_grants = refuse_the_grant
+
+    def test_the_session_is_still_briefed(self) -> None:
+        """The failure this repairs: main()'s catch-all replaced the whole report."""
+        self.hook._console = lambda *args: {"session_id": "session_opened"} \
+            if args[0] == "open-session" else {"entries": [], "unread": 0}
+        out = self.run_main()
+        self.assertNotIn("Console continuity unavailable", out)
+        self.assertIn("grants were not established", out)
+
+    def test_the_reason_code_reaches_the_session(self) -> None:
+        self.hook._console = lambda *args: {"session_id": "session_opened"} \
+            if args[0] == "open-session" else {"entries": [], "unread": 0}
+        self.assertIn("NO_LIVE_GRANT", self.run_main())
+
+    def test_the_note_says_what_it_costs(self) -> None:
+        self.hook._console = lambda *args: {"session_id": "session_opened"} \
+            if args[0] == "open-session" else {"entries": [], "unread": 0}
+        out = self.run_main()
+        self.assertIn("briefed without them", out)
+        self.assertIn("may refuse for the same reason", out)
+
+    def test_a_refused_grant_and_a_failed_briefing_both_report(self) -> None:
+        """Two independent failures. Neither may hide the other."""
+        self.hook._console = self._console_opens_then_fails
+        out = self.run_main()
+        self.assertIn("briefing could not be built", out)
+        self.assertIn("NO_LIVE_GRANT", out)
+        self.assertIn("Nothing here says the journal lost anything", out)
+
+    def test_the_hook_still_exits_zero(self) -> None:
+        self.hook._console = self._console_opens_then_fails
+        self.run_main()  # run_main asserts the exit code

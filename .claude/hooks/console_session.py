@@ -258,11 +258,24 @@ def start(event: dict[str, Any]) -> str:
     next start will not find the session and will open a second one.
     """
     host_session = event.get("session_id", "unknown")
-    _ensure_grants()
+    notes: list[str] = []
+    try:
+        _ensure_grants()
+    except ConsoleRefused as failure:
+        # Grants are a precondition for recording, not for reading, so a refusal
+        # here must not cost the session its briefing. It must also not vanish:
+        # this call sits before the try below, so an escaping refusal reached
+        # main()'s catch-all and the session got one flat line instead of the
+        # provenance, the record-is-intact sentence, and the read instructions.
+        # The refusal now travels as a note into whichever report is built.
+        notes.append(
+            f"Session grants were not established ({_terse(failure)}). This binding "
+            f"asked for {', '.join(NEEDED)} on the operator's own store. What follows "
+            "is briefed without them, and the open or close below may refuse for the "
+            "same reason.")
     bindings = _bindings()
     console_session = bindings.get(host_session)
     opened = False
-    notes: list[str] = []
     if console_session is None:
         console_session = _console("open-session", "--operator", OPERATOR,
                                    "--actor-kind", "MODEL",

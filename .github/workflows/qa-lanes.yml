@@ -115,7 +115,17 @@ jobs:
   mutation:
     name: red · mutation score
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # 120 mutants, one full `scripts/tests` run each. The cost is the cap times the
+    # suite, not the size of the diff, so it does not fall when a change is smaller:
+    # on 2026-08-27 a 60-file change and a 17-file one were both killed at exactly
+    # 20:00, while the reconciliation had finished at 16:54 hours earlier. What moved
+    # between them is the suite, which that day's landings grew from 43s to 51s
+    # measured locally. Raised to 35 rather than lowering --total-limit, because the
+    # cap is what makes the number evidence and a shorter run is a weaker gate, not a
+    # cheaper one. The real repair is a faster `scripts/tests`; until then this is the
+    # honest budget. Bdo ruled it, because contracts/standing-grants.json puts
+    # .github/ outside the landing grant's scope.
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
         with:

@@ -58,6 +58,12 @@ class HookHarness(unittest.TestCase):
         self.bindings: dict[str, str] = {}
         self.hook._bindings = lambda: dict(self.bindings)
         self.hook._remember = self._remember
+        # Grant bootstrapping is a different concern and shells out on its own.
+        # These cases are about what the hook says when a briefing fails, so the
+        # bootstrap is stubbed rather than asserted on. Left live, every expected
+        # call list here would also have to name whatever `NEEDED` currently holds,
+        # and would break again the next time a capability is added to it.
+        self.hook._ensure_grants = lambda: None
         # `run_main` feeds the hook its event on stdin, and the hook module shares
         # one `subprocess` with every other test in this process. Both are put back
         # afterwards; leaving either replaced fails modules that shell out.

@@ -244,7 +244,7 @@ def inside(rel: Any) -> Path | None:
     if not isinstance(rel, str) or not rel.strip():
         return None
     # Absoluteness and separators are platform-dependent, and a record is read on
-    # nodes that are not the one that wrote it. "C:/Users/somebody/answers.json" is
+    # nodes that are not the one that wrote it. "C:/nowhere/answers.json" is
     # absolute on Windows and a relative name on POSIX, so a single-flavour check
     # would resolve it inside the repository on Linux and verify a digest against a
     # file the record never meant. Refuse what either flavour calls absolute, and

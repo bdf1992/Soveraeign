@@ -13,6 +13,7 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+import json
 import os
 import subprocess
 import sys
@@ -21,7 +22,7 @@ import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from sovsession import claims, store  # noqa: E402
+from sovsession import claims, commands, store  # noqa: E402
 
 T0 = datetime(2026, 8, 23, 20, 0, 0, tzinfo=timezone.utc)
 TREE_A = "C:/repo"
@@ -182,7 +183,7 @@ class OutsideTheRepository(unittest.TestCase):
         self.assertTrue(claims.within_repo("scripts/verify.py"))
 
     def test_an_absolute_path_is_outside(self) -> None:
-        self.assertFalse(claims.within_repo("C:/Users/x/AppData/Local/Temp/note.md"))
+        self.assertFalse(claims.within_repo("C:/Temp/outside-the-repo/note.md"))
         self.assertFalse(claims.within_repo("/tmp/note.md"))
 
     def test_a_resource_is_always_inside(self) -> None:
@@ -245,6 +246,105 @@ class DecisionNumbers(StoreCase):
         on_disk = {int(name.name[:4]) for name in (root / "decisions").iterdir()
                    if name.name[:4].isdigit()}
         self.assertTrue(from_history >= on_disk or bool(from_history & on_disk))
+
+
+class SessionIdentity(unittest.TestCase):
+    """One process gets one registry name, and a launcher's name outranks a guess.
+
+    A hook knows the session id and nothing about why the session was started.
+    A launcher chose the name before the process existed and put that same name
+    on the worktree, the branch lane and the Claude display. When the hook's
+    derived name won, four of nine live sessions on this machine held two
+    registry rows apiece and nothing could join a lane to the process running
+    it.
+    """
+
+    def setUp(self) -> None:
+        self._saved = {key: os.environ.get(key)
+                       for key in ("SOV_SESSION", "CLAUDE_CODE_SESSION_ID")}
+        for key in self._saved:
+            os.environ.pop(key, None)
+        self.addCleanup(self._restore)
+
+    def _restore(self) -> None:
+        for key, value in self._saved.items():
+            if value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = value
+
+    def test_a_typed_name_wins_over_everything(self) -> None:
+        os.environ["SOV_SESSION"] = "fleet-alpha"
+        self.assertEqual(commands.session_name("typed", fallback="session-abc123"),
+                         "typed")
+
+    def test_the_launcher_name_beats_a_derived_one(self) -> None:
+        os.environ["SOV_SESSION"] = "fleet-alpha"
+        self.assertEqual(commands.session_name(fallback="session-abc123"),
+                         "fleet-alpha")
+
+    def test_a_derived_name_is_used_when_no_launcher_named_it(self) -> None:
+        os.environ["CLAUDE_CODE_SESSION_ID"] = "zzzzzzzz"
+        self.assertEqual(commands.session_name(fallback="session-abc123"),
+                         "session-abc123")
+
+    def test_an_inherited_id_names_a_session_nobody_named(self) -> None:
+        os.environ["CLAUDE_CODE_SESSION_ID"] = "abcdef123456"
+        self.assertEqual(commands.session_name(), "session-abcdef")
+
+    def test_an_unnamed_session_falls_back_to_its_pid(self) -> None:
+        self.assertEqual(commands.session_name(), "unnamed-" + str(os.getpid()))
+
+
+class HookIdentity(unittest.TestCase):
+    """The shipped SessionStart hook, run as the host runs it."""
+
+    HOOK = Path(__file__).resolve().parents[2] / ".claude" / "hooks" / "session_registry.py"
+
+    def setUp(self) -> None:
+        self._temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._temp.cleanup)
+        self.tree = Path(self._temp.name) / "tree"
+        self.tree.mkdir()
+        for args in (["init", "-b", "main"],
+                     ["config", "user.email", "t@example.invalid"],
+                     ["config", "user.name", "Test"]):
+            subprocess.run(["git", *args], cwd=self.tree, check=True,
+                           capture_output=True)
+        (self.tree / "README.md").write_text("x" + chr(10), encoding="utf-8")
+        subprocess.run(["git", "add", "README.md"], cwd=self.tree, check=True,
+                       capture_output=True)
+        subprocess.run(["git", "commit", "-m", "init"], cwd=self.tree, check=True,
+                       capture_output=True)
+
+    def _start(self, launcher_name: str | None) -> list[str]:
+        """Fire the hook's start mode and return the names it registered."""
+        env = dict(os.environ)
+        env.pop("SOV_SESSION", None)
+        if launcher_name:
+            env["SOV_SESSION"] = launcher_name
+        env["CLAUDE_CODE_SESSION_ID"] = "eeeeeeee-1111-2222-3333-444444444444"
+        payload = json.dumps({"cwd": str(self.tree),
+                              "session_id": "abc123def456789"})
+        subprocess.run([sys.executable, str(self.HOOK), "start"],
+                       input=payload, text=True, cwd=self.tree, env=env,
+                       capture_output=True, check=False)
+        directory = store.store_dir(self.tree)
+        return [str(record.get("session")) for record in
+                store.read(directory, store.SESSIONS_LOG)
+                if record.get("event") == "register"]
+
+    def test_the_hook_registers_the_name_the_launcher_chose(self) -> None:
+        self.assertEqual(self._start("fleet-alpha"), ["fleet-alpha"])
+
+    def test_the_hook_never_registers_a_second_alias(self) -> None:
+        """The defeat: one process, one row. A `session-` twin is the old defect."""
+        names = self._start("fleet-alpha")
+        self.assertNotIn("session-abc123", names)
+        self.assertEqual(len(names), 1)
+
+    def test_an_unlaunched_session_still_gets_its_derived_name(self) -> None:
+        self.assertEqual(self._start(None), ["session-abc123"])
 
 
 if __name__ == "__main__":

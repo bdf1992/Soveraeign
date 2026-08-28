@@ -203,7 +203,7 @@
       "expect": "AUTHORITY_REFUSED",
       "proves": "A grant declares repository-relative prefixes, so an absolute path is not comparable to one. The first sov-loop run fed exactly this and it was refused for the wrong reason - no prefix matched - which reads identically to a grant refusing the file. Naming the real reason is what tells a caller to normalise rather than to ask for a wider grant.",
       "grant_patch": {},
-      "request_patch": {"paths": ["C:/Users/bdf19/Desktop/Soveraeign/scripts/sov_land.py"]}
+      "request_patch": {"paths": ["C:/checkouts/Soveraeign/scripts/sov_land.py"]}
     },
     {
       "case_id": "D-008-path-outside-every-included-prefix",

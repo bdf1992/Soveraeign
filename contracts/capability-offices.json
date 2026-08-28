@@ -65,7 +65,8 @@
     "console.discover-operations": "python -m soveraeign_console_service.cli operations",
     "console.list-publications": "python -m soveraeign_console_service.cli list-publications",
     "console.publish-thread": "python -m soveraeign_console_service.cli publish-thread",
-    "console.withdraw-publication": "python -m soveraeign_console_service.cli withdraw-publication"
+    "console.withdraw-publication": "python -m soveraeign_console_service.cli withdraw-publication",
+    "record.adopt-profile": "python -m soveraeign_record_service.cli adopt-profile"
   },
   "mcp_tools": {
     "asset.ingest-asset": "asset_ingest",
@@ -1368,6 +1369,15 @@
       "office": "BACK",
       "counter": "record",
       "required_authority": "restore:journal",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "SYSTEM"
+      ]
+    },
+    "record.adopt-profile": {
+      "office": "BACK",
+      "counter": "record",
+      "required_authority": "adopt:profile",
       "effect_class": "RECORD_LOCAL",
       "actor_kinds": [
         "SYSTEM"

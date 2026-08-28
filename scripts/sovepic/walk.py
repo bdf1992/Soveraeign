@@ -6,10 +6,17 @@ Three independent readings, none of which settles anything:
 * projection - the visible GitHub labels against the block they project;
 * containment - the epic -> village -> bit/stub tree against the declared parents.
 
-Selection then reports which open issues are reachable work and which are held
-by an unsatisfied ``requires`` edge. Reachability is evidence about the tree,
-not a grant: an issue being ready says nothing about whether an open decision
-in ``STATUS.yaml`` admits the work.
+Selection then keeps three states apart, because merging any two of them sends
+ordinary work to the owner:
+
+* ``HELD`` - an unsatisfied ``requires`` edge;
+* ``UNROUTED`` - no repository artifact evidences a domain owner;
+* ``OWNER_HELD`` - an open ``unblock`` ticket asking the owner for a judgement.
+
+Routing and readiness are independent readings of the same issue: an issue can be
+``UNROUTED`` and ``HELD`` at once. Only ``OWNER_HELD`` waits on Bdo. Reachability
+is evidence about the tree, not a grant: an issue being ready says nothing about
+whether an open decision in ``STATUS.yaml`` admits the work.
 """
 
 from __future__ import annotations
@@ -28,6 +35,16 @@ LABEL_PROJECTION_PATH = Path("contracts") / "ticket-label-projection.json"
 SATISFYING_STANDINGS = frozenset(
     {"BUILT_SELF_TESTED_NOT_WITNESSED", "WITNESSED", "RATIFIED"}
 )
+
+# The three states this module refuses to conflate, plus the two values each of the
+# independent readings can take. ROUTED/UNROUTED answers who owns the work;
+# REACHABLE/HELD answers whether its prerequisites are satisfied; OWNER_HELD is a
+# third thing neither reading may imply.
+ROUTED = "ROUTED"
+UNROUTED = "UNROUTED"
+REACHABLE = "REACHABLE"
+HELD = "HELD"
+OWNER_HELD = "OWNER_HELD"
 
 
 def load_issue_schema(root: Path) -> dict:
@@ -178,6 +195,40 @@ def route(issue: Issue, routing: dict) -> str | None:
     if direct:
         return direct["domain"]
     return None
+
+
+def owner_held(issue: Issue) -> bool:
+    """True only for an unblock ticket that asks the owner for a judgement.
+
+    ``contracts/issue-metadata.schema.json`` is the authority, and it constrains
+    one direction only: a ``requested_provision`` of ``judgement`` must name
+    ``owner`` as its ``requested_from``. The converse does not hold, so the
+    provision is the discriminating key. An unblock ticket may lawfully ask the
+    owner for a fixture, a contract, an observation, a capability, or a grant;
+    none of those is a judgement and none of them is owner-held, because
+    producing them is work some tier can do. Reading ``requested_from`` instead
+    would file that ordinary work on Bdo's desk, which is the defect this module
+    exists to prevent. An unsatisfied dependency is HELD and a missing domain
+    owner is UNROUTED; neither reaches Bdo either.
+    """
+    block = issue.metadata or {}
+    if block.get("kind") != "unblock":
+        return False
+    return block.get("requested_provision") == "judgement"
+
+
+def reading(domain: str | None, blockers: list[str]) -> dict[str, str]:
+    """The two independent readings of one workable issue.
+
+    ``routing`` answers whether a repository artifact evidences a domain owner;
+    ``readiness`` answers whether every ``requires`` edge is satisfied. They are
+    never one field, because an issue with no domain owner can also be waiting on
+    a prerequisite, and reporting only the first hides the second.
+    """
+    return {
+        "routing": UNROUTED if domain is None else ROUTED,
+        "readiness": HELD if blockers else REACHABLE,
+    }
 
 
 def _satisfied(required: int, by_number: dict[int, Issue]) -> bool:

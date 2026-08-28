@@ -24,12 +24,16 @@ REQUIRED_TEXT = {
         "`ADOPT`, `PROFILE`, `DEFER`, `DEVIATE`, or\n`MONITOR`",
         "SOV-RFC3339-1",
         "soveraeign-record-chain/v2",
+        "soveraeign-record-chain/v3",
         "DEFER** RFC 8785 JCS",
     ),
     "services/record/src/soveraeign_record_service/digest.py": (
         'LEGACY_DIGEST_PROFILE = "soveraeign-record-chain/v1"',
         'DIGEST_PROFILE = "soveraeign-record-chain/v2"',
         "[DIGEST_PROFILE, previous, kind, subject, actor, payload]",
+        'BOUND_DIGEST_PROFILE = "soveraeign-record-chain/v3"',
+        "[BOUND_DIGEST_PROFILE, previous, entry_id, kind, subject, actor,",
+        "source_address, float(recorded_at), payload]",
     ),
     "services/record/src/soveraeign_record_service/core.py": (
         "digest_profile TEXT NOT NULL",

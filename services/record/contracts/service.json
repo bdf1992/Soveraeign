@@ -199,6 +199,23 @@
         "DIGEST_MISMATCH",
         "TRUNCATED_EXPORT"
       ]
+    },
+    {
+      "operation": "adopt-profile",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://record/adopt-profile",
+      "subject": "digest-chain",
+      "crud": "SUPERSEDE",
+      "requirement": "PROD-I-4",
+      "preconditions": [
+        "implemented_profile",
+        "moves_forward"
+      ],
+      "commit": "COMMITTED",
+      "refusals": [
+        "MISSING_PRECONDITION",
+        "STALE_STATE"
+      ]
     }
   ],
   "local_refusals": {

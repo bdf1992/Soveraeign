@@ -23,18 +23,28 @@ from sovsession import store
 from sovsession import worktrees as wtmod
 
 
-def session_name(explicit: str | None = None) -> str:
-    """This session's registry name: given, inherited, or derived from its id.
+def session_name(explicit: str | None = None, fallback: str | None = None) -> str:
+    """This session's registry name: given, chosen at launch, or derived from its id.
 
     Every subprocess a session launches inherits `CLAUDE_CODE_SESSION_ID`, so a
     hook and a hand-run command from the same session agree on who they are
     without any handshake.
+
+    `explicit` is a name a caller typed and must be honoured. `fallback` is a
+    name a caller derived because it had nothing better, and must lose to
+    `SOV_SESSION`: a launcher that names a session before starting it is the
+    only party that knows the name every other surface will use, and a derived
+    name that outranked it registered one process twice, once under the name
+    the launcher chose and once under a `session-` alias nobody could join to
+    it.
     """
     if explicit:
         return explicit
     override = os.environ.get("SOV_SESSION", "").strip()
     if override:
         return override
+    if fallback:
+        return fallback
     inherited = os.environ.get("CLAUDE_CODE_SESSION_ID", "").strip()
     if inherited:
         return "session-" + inherited[:6]

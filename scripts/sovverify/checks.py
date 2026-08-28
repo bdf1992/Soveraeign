@@ -79,6 +79,24 @@ REPOSITORY_CHECKS = (
           "recomputes each declared source digest from the file's bytes at the moment of "
           "the check; it never reads a diagram's own claim about being current",
           ("diagrams",)),
+    Check("witness receipts against the tree",
+          [sys.executable, "scripts/sov_witness_layer.py", "records"], ROOT,
+          "recomputes every digest a witness receipt declares from the subject's bytes at "
+          "the moment of the check; it reads no field in which a receipt states its own "
+          "freshness and never asks a subject whether it changed. Subject drift is reported "
+          "as debt because a receipt observes a named commit and never claimed to describe "
+          "the present; a receipt that digests nothing, or whose own probe moved, fails",
+          ("witness/observations", "scripts/sovwitness/records.py")),
+    Check("witness probes still reach",
+          [sys.executable, "scripts/sov_witness_layer.py", "probes"], ROOT,
+          "parses each probe and requires the repository paths its own source declares as "
+          "its reach to exist and to be used, so a probe aimed at a deleted subject fails "
+          "here rather than going on producing receipts. It grades no check the probe makes, "
+          "because a probe observes and never settles. The reach is the probe's own "
+          "declaration and this check says so: a probe naming a path it does not take is "
+          "caught by the receipt digesting the probe, not here. Executing the probes is "
+          "`sov_witness_layer.py run`, out of this budget at 12.7s",
+          ("witness/probes", "scripts/sovwitness/probes.py")),
     Check("conformance oracle controls", [sys.executable, "conformance/run.py"], ROOT,
           "the oracle derives every defect from observation records and never reads a "
           "participant verdict field, and never imports participant implementation code",
@@ -137,6 +155,27 @@ REPOSITORY_CHECKS = (
           "walks from SPEC.md requirements to the evidence records that claim them and "
           "refuses a standing whose predecessor standing is unreached",
           ("SPEC.md", "PRD.md")),
+    Check("lessons loop", [sys.executable, "scripts/sov_lessons.py", "check"], ROOT,
+          "parses LESSONS.md and grades each standing against the tree rather than against "
+          "the page's own summary of itself, and reads what counts as EFFECTIVE out of the "
+          "check table it is an entry in, so a lesson cannot assert a check that is not "
+          "running. The drain count does not refuse: decisions/0029 declined that on the "
+          "reasoning that failing on an eighth lesson makes capture costly exactly when "
+          "capture matters, and this closes the half of that residual which taxes nobody",
+          ("LESSONS.md", "contracts/lessons-loop.json", "decisions/0029-lessons-loop.md",
+           "scripts/sov_lessons.py")),
+    Check("phase progress floor", [sys.executable, "scripts/sov_phase_progress.py", "check"],
+          ROOT,
+          "re-reads SPEC.md and the conformance corpus at check time and grades the distance "
+          "between them against a recorded floor, so the number that defines the phase is one "
+          "something refuses on; it never reads a prior gate report or any claim that coverage "
+          "was added. The F2 gate itself is deliberately not the check: registering it would "
+          "refuse every run until the phase exit is earned, which teaches a reader to ignore "
+          "it. A fall refuses because a fall is attributable to the edit that caused it; a "
+          "stall is printed and recorded as debt, on the reasoning decisions/0081 used to take "
+          "the wall clock out of the exit code (reports/2026-08-27-phase-i-retro.md, finding 1)",
+          ("SPEC.md", "conformance/oracle-controls.json", "contracts/phase-progress.json",
+           "scripts/sov_f2_gate.py", "scripts/sov_phase_progress.py")),
     Check("semantic cold-start task", [sys.executable, "scripts/sov_witness.py", "semantic"],
           ROOT,
           "judges the custody round trip by digests the witness computes itself rather than "

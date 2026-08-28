@@ -19,14 +19,14 @@
     "observe_verify",
     "record_entries"
   ],
-  "capability_revision": "a7d9948482ddb9b5241223c94d90c7313e670b51e7e8d9660eaf765d89f635fe",
+  "capability_revision": "a82c897f08c6f165f8be4b929bd9dc28e284b3f268abc8010eaa52324ce77fb5",
   "counts": {
-    "declared": 133,
-    "reachable": 45,
+    "declared": 134,
+    "reachable": 46,
     "authority": {
       "HELD": 2,
       "NOT_HELD": 13,
-      "NOT_KNOWN_HERE": 118
+      "NOT_KNOWN_HERE": 119
     }
   },
   "freshness": {
@@ -38,7 +38,7 @@
     "a row here says the node declares the operation, never that it works",
     "reachability is what the projection recorded, not a call that succeeded",
     "HELD is read by capability name. A grant admits an exact scope, and one capability serves more than one kind of subject - read:thread scopes to a thread for read-thread and to the node for list-publications - so a HELD row can still refuse. The scopes held are listed on the row",
-    "118 capability(s) are governed by an authority store this service does not read"
+    "119 capability(s) are governed by an authority store this service does not read"
   ],
   "journal_entries_left_by_the_crossing": 2,
   "journal": [
@@ -47,7 +47,7 @@
       "kind": "EVENT",
       "subject": "discover-operations",
       "actor": "sov",
-      "entry_digest": "cfba0d04d033612a3b10533f7414f40709c0e9594e296393f7f86feaff3c8a89",
+      "entry_digest": "32762784b929251a2181709823c3da28cdbe833a2af5b09c2523f8577cd5bfee",
       "payload": {
         "arguments": {
           "operator_id": "<str:3>"
@@ -63,13 +63,13 @@
       "kind": "RECEIPT",
       "subject": "discover-operations",
       "actor": "sov",
-      "entry_digest": "b5bee478e4a9a3db72b0ea9bfc5e74eff29620e6ab1564303b44fa9899a513cf",
+      "entry_digest": "3526dc2ae8b6c037c497eae31a8ffc762736b02bfb4f9e0b0682556da775eca7",
       "payload": {
         "detail": {
-          "entry_id": "entry_60fbfc468bd7451a979b02343f592397",
+          "entry_id": "entry_8e0f6f4bc69f4c67997fff2815d8d374",
           "result": {
             "authoritative": false,
-            "capability_revision": "a7d9948482ddb9b5241223c94d90c7313e670b51e7e8d9660eaf765d89f635fe",
+            "capability_revision": "a82c897f08c6f165f8be4b929bd9dc28e284b3f268abc8010eaa52324ce77fb5",
             "map_status": "PROPOSED",
             "operator_id": "sov"
           }

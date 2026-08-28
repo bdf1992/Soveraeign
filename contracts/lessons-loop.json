@@ -1,0 +1,58 @@
+{
+  "contract": "lessons-loop",
+  "version": "1.0.0",
+  "status": "PROPOSED",
+  "source": "decisions/0029-lessons-loop.md",
+  "page": "LESSONS.md",
+  "purpose": "Grade the lessons page against the loop its own decision record declares, so a standing written on the page is a claim something can defeat.",
+  "warrant": "decisions/0029 closed with a named residual: 'Did not add a check enforcing the drain threshold.' This adds the half of that residual which can be enforced without taxing capture. reports/2026-08-27-phase-i-retro.md, finding 3: a record was correct and changed nothing, because a record is not a holder.",
+  "standings": {
+    "RECORDED": "written on the page; claims no authority",
+    "ADMITTED": "a fixture or check passes for it",
+    "RATIFIED": "Bdo settled it through a decision record",
+    "EFFECTIVE": "it runs inside scripts/verify.py or scripts/lint.py"
+  },
+  "landings": ["fixture", "decision", "lint", "known-gap", "seam", "drop"],
+  "drain": {
+    "threshold": 7,
+    "refuses": false,
+    "why_it_does_not_refuse": "decisions/0029 declined a check that fails on an eighth lesson, because it would make capture costly at exactly the moment capture matters. That reasoning is unchanged and this contract does not reverse it. The count is printed every run and recorded as debt past the threshold, which puts it in front of a reader without charging anyone for writing a lesson down."
+  },
+  "refusals": [
+    {
+      "code": "FALSE_EFFECTIVE",
+      "fires_when": "an entry stands EFFECTIVE and its landing names no path that scripts/verify.py or scripts/lint.py reaches",
+      "why_it_refuses": "EFFECTIVE is defined as running in one of those two, so the page would assert a check that is not there. A standing claim carrying no evidence is the defect the whole record exists to refuse."
+    },
+    {
+      "code": "FALSE_ADMITTED",
+      "fires_when": "an entry stands ADMITTED or above and declares a fixture or lint landing that names no path present in the tree",
+      "why_it_refuses": "ADMITTED means a fixture or check passes for it; a path that is not there cannot be passing"
+    },
+    {
+      "code": "UNDECLARED_LANDING",
+      "fires_when": "an entry states no Landing line",
+      "why_it_refuses": "the page says a lesson declares its landing when written, so an entry without one has no terminal and cannot be drained"
+    },
+    {
+      "code": "UNKNOWN_STANDING",
+      "fires_when": "an entry states a standing this contract does not declare",
+      "why_it_refuses": "a synonym for a standing is a second vocabulary, which AGENTS.md refuses"
+    },
+    {
+      "code": "UNKNOWN_LANDING",
+      "fires_when": "an entry declares a landing kind this contract does not list",
+      "why_it_refuses": "the same reason, for the terminal rather than the standing"
+    },
+    {
+      "code": "HEADER_DISAGREES",
+      "fires_when": "the page's own 'Standing now' line disagrees with its entries, or names a threshold this contract does not declare",
+      "why_it_refuses": "the page summarises itself and every launched agent reads the summary rather than counting; a drifted summary is the defect LESSONS.md L-0001 records about a different page"
+    },
+    {
+      "code": "UNNUMBERED_ENTRY",
+      "fires_when": "an entry heading does not carry an L-<nnnn> identifier, or two entries carry the same one",
+      "why_it_refuses": "a lesson is cited by identifier, and a duplicate makes a citation ambiguous"
+    }
+  ]
+}

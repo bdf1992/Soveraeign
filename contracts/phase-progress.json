@@ -1,0 +1,64 @@
+{
+  "contract": "phase-progress",
+  "version": "1.0.0",
+  "status": "PROPOSED",
+  "purpose": "Hold the phase gate reading to a floor it may not fall below, so that predicate coverage becomes a number something refuses on.",
+  "warrant": "reports/2026-08-27-phase-i-retro.md finding 1: the F2 gate ran for six days at 0/44 and nothing in the landing loop, the CI gate, or the orientation snapshot refused. A number nothing refuses on is a number nothing moves.",
+  "reader": {
+    "gate": "scripts/sov_f2_gate.py",
+    "grader": "scripts/sov_phase_progress.py",
+    "criterion": "every normative predicate stated in SPEC.md carries a positive and a defeating fixture in conformance/oracle-controls.json"
+  },
+  "floor": {
+    "total": 36,
+    "by_family": {"requirement": 24, "transition": 8, "parity": 4},
+    "set_at_commit": "11c3f1aed1ef622e1fbc162f14043ef31910c217",
+    "set_on": "2026-08-27",
+    "set_by": "seat:session-control",
+    "warrant": "The join declared on the 20 oracle controls, one predicate per oracle assertion whose failure is that predicate's failure. The eight predicates below the ceiling are absent on purpose and named in uncovered_on_purpose."
+  },
+  "uncovered_on_purpose": [
+    {"predicate": "PRED-I-2.1", "why": "no control rereads a source; the digest comparison is the non-mutation claim, not the reread claim"},
+    {"predicate": "PARITY-1", "why": "no control discovers legal operations; both bindings are handed the operation"},
+    {"predicate": "TRANS-capture_source", "why": "no control captures a source"},
+    {"predicate": "TRANS-make_effective", "why": "no control transitions a ratified claim to EFFECTIVE"},
+    {"predicate": "TRANS-begin_run", "why": "no control models a run lease"},
+    {"predicate": "TRANS-report_run", "why": "no control models an executor report"},
+    {"predicate": "TRANS-observe_run", "why": "no control models an observer independence relation"},
+    {"predicate": "TRANS-settle_run", "why": "no control models settlement"}
+  ],
+  "stall": {
+    "ceiling_commits": 40,
+    "measured_from": "floor.set_at_commit",
+    "refuses": false,
+    "why_it_does_not_refuse": "The participant who lands the commit that crosses the ceiling is not the participant who let the number sit still. decisions/0081 removed the wall clock from the exit code on the same reasoning: attribution without cause is a refusal aimed at whoever arrived next. The stall is printed with its commit count and recorded as debt.",
+    "why_commits_not_days": "A day count reads the host clock at the instant of the check. A commit count is derivable from the record and reads the same on every host."
+  },
+  "refusals": [
+    {
+      "code": "PREDICATE_REGRESSION",
+      "fires_when": "the gate reads fewer covered predicates than floor.total, or fewer in any family than floor.by_family",
+      "why_it_refuses": "coverage fell, which requires an edit to the corpus or the specification, so it is attributable to the change that made it fall"
+    },
+    {
+      "code": "UNKNOWN_PREDICATE",
+      "fires_when": "a control declares a predicate id SPEC.md does not state",
+      "why_it_refuses": "an id the specification does not contain is silently uncounted, so a typo reads as coverage nobody has"
+    },
+    {
+      "code": "FLOOR_ABOVE_CEILING",
+      "fires_when": "floor.total exceeds the number of predicates SPEC.md states",
+      "why_it_refuses": "a floor above the total can never be met and would refuse every run forever"
+    },
+    {
+      "code": "UNDECLARED_UNCOVERED",
+      "fires_when": "a predicate is uncovered and is not named in uncovered_on_purpose",
+      "why_it_refuses": "the gap between the floor and the total must be enumerated, or the floor records a number without recording what it excludes"
+    },
+    {
+      "code": "STALE_EXCLUSION",
+      "fires_when": "uncovered_on_purpose names a predicate that is now covered, or one SPEC.md does not state",
+      "why_it_refuses": "an exclusion that has stopped being true keeps a closed gap looking open"
+    }
+  ]
+}

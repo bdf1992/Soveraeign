@@ -97,18 +97,87 @@ names the exact profile used to hash it:
 
 - `soveraeign-record-chain/v1` is the legacy Python representation: compact,
   key-sorted JSON payload text joined with `prev_digest`, `kind`, `subject`, and
-  `actor` by `|`. Existing rows and version-1 exports retain it; no new row uses
-  it because field values containing `|` make the tuple ambiguous.
-- `soveraeign-record-chain/v2` is the current representation: UTF-8 bytes of
-  compact JSON for `[profile, prev_digest, kind, subject, actor, payload]`, with
-  object keys sorted, non-finite numbers refused, and Unicode code points
-  preserved. The profile string domain-separates the hash input.
+  `actor` by `|`. It is superseded because field values containing `|` make the
+  tuple ambiguous.
+- `soveraeign-record-chain/v2`: UTF-8 bytes of compact JSON for
+  `[profile, prev_digest, kind, subject, actor, payload]`, with object keys
+  sorted, non-finite numbers refused, and Unicode code points preserved. The
+  profile string domain-separates the hash input. It is superseded because it
+  binds none of the entry's own identity.
+- `soveraeign-record-chain/v3` is the current representation: the same compact
+  JSON with `entry_id`, `source_address` and `recorded_at` bound in, as
+  `[profile, prev_digest, entry_id, kind, subject, actor, source_address,
+  recorded_at, payload]`. Under v2 two entries could exchange their identifiers
+  and the chain still verified, so every receipt citing one could be repointed at
+  other content (`decisions/0072`).
 
 The entry digest is lowercase SHA-256 hex over those exact bytes. Opening a
-pre-profile database adds `digest_profile` and marks only the existing rows v1;
-new rows are explicitly v2. A version-1 export is read as v1, while a version-2
-export carries every row's profile. Verification never tries both algorithms,
-so compatibility cannot make a v2 row pass under the ambiguous v1 rule.
+pre-profile database adds `digest_profile` and marks only the existing rows v1.
+A version-1 export is read as v1, while a version-2 export carries every row's
+profile. Verification never tries both algorithms, so compatibility cannot make a
+row pass under a weaker profile's rule.
+
+**Which profile a new row uses is the store's answer, not the library's.**
+`append` writes the strongest profile any row in the store already carries, so an
+empty store starts at v3 and an existing one keeps its own however new the code
+opening it is. Not the newest row's profile: several checkouts may share a store
+and write in whatever order they run, so the newest row names the last writer
+rather than the store. The maximum can only move forward, which is what is
+actually true — once a v3 row exists no v1-only reader verifies through it, and
+writing v1 again restores nobody. A profile in the store that this service does
+not implement refuses by name rather than being sorted anywhere. A
+store moves forward only through `adopt_profile`, which appends the first entry
+under the new profile and states in it what was superseded and that a reader
+implementing only the old profile stops verifying there. Superseded therefore
+means "not chosen for a new store", not "never written again": a v1 journal keeps
+writing v1, with v1's weaker coverage, until somebody moves it.
+
+The reason is symmetrical with the reason profiles are immutable. Editing a
+profile in place invalidates its own history; adopting one in place invalidates
+its own readers. Both are silent, and the second has already happened here — six
+v3 rows appended to the live `.local/console` journal left every older checkout
+unable to read past them, over a journal that was never damaged
+(`decisions/0072`).
+
+Every profile binds the payload's *parsed value*, not the bytes the column holds,
+so verification separately requires those bytes to be the profile's canonical
+encoding of that value. Without it, byte-different but value-identical JSON went
+undetected — including duplicate-key injection, where one committed row is read
+two ways and the chain endorses both.
+
+The encodings differ, and an implementer reading only this page has to be able to
+tell them apart, because writing a row under the wrong one produces bytes that
+parse correctly and verify as tampered:
+
+- `record-chain/v1` stores `json.dumps(payload, sort_keys=True,
+  separators=(",", ":"))` — non-ASCII code points are **escaped**, and non-finite
+  numbers are permitted by the *encoder*, which is a known divergence: `NaN` and
+  `Infinity` are not valid JSON, every strict reader refuses them, and a v1 row
+  carrying one verifies here. It is a divergence rather than a forgery, since
+  changing a value still changes the digest.
+- `record-chain/v2` and `record-chain/v3` store the same form with
+  `ensure_ascii=False` and `allow_nan=False` — non-ASCII code points are
+  **preserved** and the encoder itself refuses non-finite numbers.
+
+`append` refuses a non-finite payload under **every** profile, v1 included. The
+encoder cannot carry that refusal, because v1 rows already exist carrying such a
+value and a profile that stopped accepting them would stop verifying its own
+history; the refusal is therefore made at admission, in
+`digest.refuse_non_finite`. `custody.restore` is the exception and is deliberate:
+it reproduces what an export holds, so a v1 row carrying `NaN` can still enter a
+new store — and `write_export` will then emit a file no strict JSON reader
+parses. Whether restore should refuse that is an open judgement recorded in
+`decisions/0072`, not a settled rule.
+
+A row's encoder is chosen by that row's own `digest_profile`, never by the schema
+of the document carrying it. Choosing by the export schema is what made a
+faithful restore of a v1 row holding a non-ASCII payload write bytes its own
+verification then refused.
+
+What no profile detects: an outsider with write access to the database file can
+append a well-formed entry, or rewrite the whole chain from genesis, and every
+verification here reports clean. Only a head held outside the store catches that,
+which is what `custody.verify_export` uses `expected_head` for.
 
 The rule is stated here because an outside observer has to recompute the chain
 without reading `core.py`; `scripts/witness_record.py` does exactly that.

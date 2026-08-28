@@ -1,0 +1,111 @@
+{
+  "artifact_revision": "b3057c0d986685eb8f943597e390b0aa4f8622b6",
+  "case_id": "WITNESS-DEBT-2026-08-26-RECORD-APPEND-PRESERVING",
+  "observed": {
+    "blue": {
+      "lint": "PASS, 728 text files, 313 Python modules, 1 named debt (scripts/witness_infrastructure.py at 301 lines, pre-existing)",
+      "trap_note": "CLAUDE.md T2 applies: verify exit 0 means unchanged, not conformant.",
+      "verify": "PASS, 39 checks in 12.058s wall, GRADE SILVER"
+    },
+    "consequential_claim": "The journal is append-preserving: no method updates or deletes a journal row, retraction appends a counter-record and leaves the original intact, and a rewritten history stops verifying rather than quietly replacing the real one.",
+    "note_on_core_py": "core.py is listed as read state because its bytes were digested for this receipt. Its contents were not read while the probe's digest recomputation was written; that rule was taken from CHARTER.md alone.",
+    "observed_at": "2026-08-27T03:57:48Z",
+    "observed_state_addresses": [
+      "services/record/CHARTER.md",
+      "services/record/contracts/service.json",
+      "services/record/src/soveraeign_record_service/cli.py",
+      "services/record/src/soveraeign_record_service/core.py",
+      "services/record/src/soveraeign_record_service/custody.py",
+      "services/record/src/soveraeign_record_service/digest.py",
+      "witness/probes/probe_record_journal.py"
+    ],
+    "observed_state_digests": [
+      "sha256:f6e2f217e92bcee8fe2e7702de0dd242e0608a4d5e210e497a9419bbcb56766a",
+      "sha256:8735c0cb46e72cdf4d134fbc2fb9e5704652bfa235bd54f27ef9f2cd1d6807fe",
+      "sha256:3e7a8437b891481e8b1c9eddf544341903d0814dac9ab4ab3de81eed67931d15",
+      "sha256:fa34473c6a1e9912cef635c0fcc9f4e9f75d3ccfbaa07176263302baf16e5e7e",
+      "sha256:29831840320d11024aa1d0ef86959db669ae16cca673ac5c2a30fb2b22a0fc32",
+      "sha256:4a792709e182d0cc69ab008d54c6f07e8963c830654de4a8d517358af1e34ca4",
+      "sha256:57484b10aff36e6990b1837ca58cf6a3ed4230fa869d5d3871ade794eb9c645b"
+    ],
+    "observer_id": "claude-opus-5[1m]/witness-debt-lane@2026-08-26",
+    "observer_independence_basis": "This session did not build services/record and did not edit it. Git authorship cannot establish builder identity here - every commit in this repository carries Bdo's identity, including those a model session authored - so independence rests on the reachable facts instead: the observation drives the service only as a subprocess through the CLI declared in services/record/contracts/service.json, never imports soveraeign_record_service, and recomputes the digest chain from the rule written in services/record/CHARTER.md rather than from core.py. The pre-existing walker scripts/witness_record.py was deliberately not read or run before the probe was written, so the two are not a common-source pair.",
+    "observer_relation": "DECLARED_SURFACE_SUBPROCESS_PLUS_INDEPENDENT_DIGEST_RECOMPUTATION",
+    "predicate_results": {
+      "chain_rule_is_the_declared_one": {
+        "detail": "Every seeded entry's stored digest was reproduced exactly by recomputing it from the rule CHARTER.md states for the profile each row declares: for soveraeign-record-chain/v2, sha256 over the UTF-8 bytes of compact JSON for [profile, prev_digest, kind, subject, actor, payload] with object keys sorted. The probe implements both declared profiles and refuses one it does not know rather than guessing. An outside reader can verify this journal from the documentation without the implementation.",
+        "held": true
+      },
+      "design_record_refused": {
+        "detail": "An entry sourced from SPEC.md, CONTRACT.md, STATUS.yaml, or AGENTS.md is refused with DESIGN_RECORD_REFUSED at exit 2. The design and operational Systems of Record do not merge through this door.",
+        "held": true
+      },
+      "entry_removal_is_caught": {
+        "detail": "A journal row deleted from the middle directly in SQLite makes reconstruct-journal refuse with DIGEST_MISMATCH at exit 2.",
+        "held": true
+      },
+      "export_of_a_broken_journal_refused": {
+        "detail": "With a payload rewritten in SQLite, export-journal refuses and writes no file. A broken chain is not copied.",
+        "held": true
+      },
+      "history_cannot_be_quietly_rewritten": {
+        "detail": "The columns the declared rule covers are derived from the profile the rows carry, not assumed: under soveraeign-record-chain/v2 that is prev_digest, kind, subject, actor, payload and the profile string itself. Rewriting the three it omits - entry_id, source_address and recorded_at - directly in SQLite left reconstruct-journal at exit 0 with a byte-identical head. AGENTS.md requires an attributable event to carry a timestamp and exact input addresses; the chain binds neither. Three stored columns sit outside the declared digest rule: entry_id, source_address, and recorded_at. Rewriting all three in SQLite leaves reconstruct-journal at exit 0. Escalated: inverting every entry's recorded_at so the journal reports the reverse chronological order, and rewriting every source_address to a fabricated lineage path, left the replay at exit 0 with a byte-identical head digest. The chain does exactly what the chain rule says; the charter sentence 'a rewritten history stops verifying rather than quietly replacing the real one' covers less of an entry than it reads as covering.",
+        "governing_rule": "AGENTS.md, State and execution: every consequential decision emits an attributable event with actor, operation, reason, timestamp, exact input addresses/digests. Timestamp and input address are two of the three fields outside the chain.",
+        "held": false,
+        "severity": "MATERIAL",
+        "what_would_discharge_it": "Either extend the digest rule to cover recorded_at, source_address, and entry_id and restate it in CHARTER.md, or narrow the charter sentence to name the covered fields and record the consequence of leaving the rest uncovered. Both are repairs, and a witness may not make either."
+      },
+      "no_mutation_on_the_reachable_surface": {
+        "detail": "The declared surface offers 11 operations and none of them is an UPDATE or DELETE against a journal entry, receipt, counter-record, or the digest chain.",
+        "held": true
+      },
+      "payload_rewrite_is_caught": {
+        "detail": "A payload rewritten directly in SQLite, behind the CLI, makes reconstruct-journal refuse with DIGEST_MISMATCH at exit 2.",
+        "held": true
+      },
+      "projection_is_rebuildable": {
+        "detail": "read-projection refuses with MISSING_PRECONDITION until a projection is built, rebuild-projections reproduces a byte-identical row after every projection is dropped, the journal head is unchanged across the cycle, and every projection read declares authoritative=false.",
+        "held": true
+      },
+      "restore_into_non_empty_refused": {
+        "detail": "restore-journal into a store that already holds entries refuses with MISSING_PRECONDITION at exit 2.",
+        "held": true
+      },
+      "retraction_preserves_the_original": {
+        "detail": "After counter-entry, the original entry is still readable through read-entry with its payload and its digest unchanged, and the chain still verifies.",
+        "held": true
+      },
+      "truncation_admission_is_accurate": {
+        "detail": "An export truncated by one entry, with both self-declared fields (head_digest and entry_count) rewritten to match the shorter document, verifies clean at exit 0 with no external head and is refused at exit 2 when the true head is supplied via --expect-head. The charter states this limitation exactly and does not overstate the guarantee.",
+        "held": true
+      }
+    },
+    "reproduction": "python witness/probes/probe_record_journal.py",
+    "standing_supported": "NONE. The evidence does not carry services/record from BUILT to WITNESSED. Ten of eleven sub-claims held under attack through an independent path; the eleventh is a material gap in the subject's own central claim. record_service_status stays BUILT_SELF_TESTED_NOT_WITNESSED and was not edited.",
+    "subject_paths": [
+      "services/record/"
+    ],
+    "subjects": [
+      "issue #7",
+      "issue #65"
+    ],
+    "uncovered": [
+      "Interrupted-write and crash-recovery behaviour. The charter claims a transaction that never commits leaves nothing behind; this observation did not stage a mid-transaction kill.",
+      "Concurrent writers. Nothing here tested two processes appending at once.",
+      "custody.py restore into an empty store from a valid export, end to end.",
+      "Whether rewriting entry_id orphans an existing counter-record's reference.",
+      "Any claim about durability of the storage medium, which the charter explicitly disclaims.",
+      "Issue #65 was treated as the same subject as #7: both point at services/record/ and no artifact distinguishes them. If they are meant to be separate subjects, this observation covers only the shared implementation."
+    ],
+    "verdict": "NOT-YET"
+  },
+  "participant_claim": "COMPLETED",
+  "participant_id": "record-service-reference",
+  "telemetry": {
+    "checks_failed": 1,
+    "checks_held": 10,
+    "checks_run": 11,
+    "probe": "witness/probes/probe_record_journal.py",
+    "reached_through": "soveraeign_record_service.cli as a subprocess"
+  }
+}

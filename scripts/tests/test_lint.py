@@ -111,8 +111,119 @@ class RepositoryTreeHoldsTheInvariant(unittest.TestCase):
         self.assertIn("lineage/** -text", text)
 
 
-if __name__ == "__main__":
-    unittest.main()
+class LocalAbsolutePaths(unittest.TestCase):
+    """`AGENTS.md` forbids committing a local absolute path; the check must see every
+    spelling of one.
+
+    The backslash form was the only Windows form matched, so `C:/Users/<name>/` —
+    what Git Bash, JSON documents and most tooling on this host actually write —
+    passed the check that exists to forbid it. Two were committed before this case.
+    """
+
+    # Assembled rather than written out: a literal home directory in this file
+    # would be a committed local absolute path, which is the thing under test.
+    HOME = "Users"
+    LINUX_HOME = "home"
+    SEP = chr(92)
+
+    @classmethod
+    def spellings(cls) -> dict[str, str]:
+        """Every shape of a home directory this repository may meet."""
+        return {
+            "macos": '"/' + cls.HOME + '/someone/Desktop/x"',
+            "linux": '"/' + cls.LINUX_HOME + '/someone/Desktop/x"',
+            "windows backslash":
+                '"C:' + cls.SEP + cls.HOME + cls.SEP + 'someone' + cls.SEP + '"',
+            "windows forward slash": '"C:/' + cls.HOME + '/someone/Desktop/x"',
+        }
+
+    def test_every_spelling_of_a_home_directory_is_refused(self) -> None:
+        for label, spelling in self.spellings().items():
+            with self.subTest(spelling=label):
+                code, report = run_lint_over(
+                    {"note.md": f"a path {spelling} in prose\n".encode("utf-8")})
+                self.assertEqual(code, 1, f"{label} passed the check that forbids it")
+                self.assertIn("local absolute user path", report)
+
+    def test_an_ordinary_absolute_path_is_not_a_home_directory(self) -> None:
+        code, report = run_lint_over(
+            {"note.md": b'a path "C:/Temp/outside/x" in prose\n'})
+        self.assertEqual(code, 0, report)
+
+    def test_the_repository_commits_none_of_them(self) -> None:
+        """The rule, read against the real tree rather than a fixture."""
+        offenders = []
+        for path in lint.repository_text_files():
+            try:
+                text = path.read_text(encoding="utf-8")
+            except (OSError, UnicodeDecodeError):
+                continue
+            if any(p.search(text) for p in lint.LOCAL_PATH_PATTERNS):
+                offenders.append(str(path.relative_to(lint.ROOT)))
+        self.assertEqual(offenders, [], f"local absolute paths committed: {offenders}")
+
+
+class ExecutableRootsAreGraded(unittest.TestCase):
+    """Every directory holding executable non-test code must reach the ceiling.
+
+    `PRODUCTION_ROOTS` was a closed list nothing measured, so `witness/` arrived
+    carrying a 507-line and a 312-line probe that this check could not see. A
+    witness probe is repository code that runs and is not a test; it is graded.
+    """
+
+    def test_witness_is_a_production_root(self) -> None:
+        self.assertIn("witness/", lint.PRODUCTION_ROOTS)
+
+    def test_an_oversized_probe_is_a_defect_and_not_silence(self) -> None:
+        body = ("from __future__ import annotations\n"
+                + "x = 1\n" * (lint.MAX_PRODUCTION_LINES + 10)).encode("utf-8")
+        code, report = run_lint_over({"witness/probes/probe_big.py": body})
+        self.assertEqual(code, 1, "an oversized probe passed the ceiling")
+        self.assertIn("exceeds production limit", report)
+
+    def test_a_probe_under_the_ceiling_passes(self) -> None:
+        body = b"from __future__ import annotations\nx = 1\n"
+        code, report = run_lint_over({"witness/probes/probe_small.py": body})
+        self.assertEqual(code, 0, report)
+
+    def test_every_named_debt_still_names_a_file_that_exists(self) -> None:
+        """A debt entry for a deleted module records nothing and hides the list's age."""
+        missing = [name for name in lint.KNOWN_MODULE_DEBT
+                   if not (lint.ROOT / name).is_file()]
+        self.assertEqual(missing, [], f"debt named for absent modules: {missing}")
+
+    def test_the_debt_list_is_pinned_to_its_length(self) -> None:
+        """The two guards below check each entry is real and unpaid. Neither
+        notices a third arriving, so a genuinely over-ceiling file could buy
+        silence from the ceiling by adding its own name.
+
+        The set is pinned, not the length. A witness pointed out that a count
+        measures the wrong thing: swapping one exempt module for another keeps
+        it at three and never touches the pinned line. Adding, removing, or
+        swapping an exemption now edits this list, which is the deliberate,
+        visible act an exemption should be. Change it when you mean to; do not
+        change it to make a run go green.
+        """
+        self.assertEqual(
+            sorted(lint.KNOWN_MODULE_DEBT), [
+                # scripts/witness_infrastructure.py left this list on 2026-08-25
+                # because it was actually split into witness_stages.py and now
+                # reads 103 lines. Paid, not hidden.
+                "witness/probes/probe_host_interface.py",
+                "witness/probes/probe_record_journal.py",
+            ],
+            "the debt list changed; if that was intended, say so here")
+
+    def test_every_named_debt_is_actually_over_the_ceiling(self) -> None:
+        """Debt that has been paid must leave the list, or the list stops meaning anything."""
+        paid = []
+        for name in lint.KNOWN_MODULE_DEBT:
+            path = lint.ROOT / name
+            if path.is_file():
+                lines = len(path.read_text(encoding="utf-8").splitlines())
+                if lines <= lint.MAX_PRODUCTION_LINES:
+                    paid.append(f"{name} ({lines} lines)")
+        self.assertEqual(paid, [], f"debt recorded for modules under the ceiling: {paid}")
 
 
 class DecisionNumbers(unittest.TestCase):
@@ -208,3 +319,7 @@ class ModuleSizeLimitIsEnforced(unittest.TestCase):
                 {"scripts/tests/test_big.py": self._module_of(lint.MAX_PRODUCTION_LINES + 1)}
             )
         self.assertEqual(code, 0, report)
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -30,9 +30,17 @@ A lesson awaiting Bdo is a PROD-I-6 pending-right record. It blocks nothing.
   it is a judgement. Also `lint`, `known-gap`, `seam`, `drop`. The lesson declares
   its landing when written.
 
-Standing now: **6 `RECORDED`**, threshold 7. L-0001 is `EFFECTIVE`.
-One more entry trips the drain, and three of the six declare `decision`
-landings that are Bdo's, so draining is not one concern.
+Standing now: **8 `RECORDED`**, threshold 7. L-0001, L-0008 and L-0009 are
+`EFFECTIVE`. The drain is due and is recorded as debt rather than refused:
+`decisions/0029` declined to fail a run on an eighth lesson, because that makes
+capture costly at exactly the moment capture matters. `python
+scripts/sov_lessons.py check` reads this page every run and refuses a standing
+the tree does not support; the count it prints is a debt reading, not a gate.
+
+Draining the eight is not one concern. L-0003, L-0005 and L-0006 each land in a
+different service from the others, and `AGENTS.md` mints a separate concern when
+work crosses a service boundary; four of the eight declare `decision` landings
+that are Bdo's.
 
 ## Entries
 
@@ -227,7 +235,101 @@ make for anyone.
   which is Bdo's to place.
 - Standing: `RECORDED`.
 
+### L-0008 · The number that defined the phase was never on the critical path
+
+`python scripts/sov_f2_gate.py` read the distance between `SPEC.md` and the
+conformance corpus for six days and returned non-zero the whole time. Nothing
+ran it. It was in no check table, no landing gate, and no orientation page, so
+the reading sat at 0 of 44 across 401 commits and refused nothing. The gate was
+not wrong and was never consulted; the defect is that a number nothing refuses
+on is a number nothing moves.
+
+Registering the gate itself is the wrong repair and was rejected: it would
+refuse every run until the phase exit is earned, which teaches a reader to
+ignore a red check. What landed is a floor. A fall refuses, because a fall
+needs an edit to the corpus or the specification and is attributable to it. A
+stall prints its commit count and records debt, on the reasoning
+`decisions/0081` used to take the wall clock out of the exit code.
+
+- Evidence: `reports/2026-08-27-phase-i-retro.md` finding 1;
+  `contracts/phase-progress.json`; `scripts/sov_phase_progress.py`;
+  `scripts/tests/test_phase_progress.py`.
+- Landing: `fixture` — landed 2026-08-27 as `scripts/sov_phase_progress.py`,
+  registered in `scripts/sovverify/checks.py` as "phase progress floor".
+- Standing: `EFFECTIVE`.
+
+### L-0009 · Coverage was produced at one granularity and read at another
+
+The oracle held 20 controls, all passing, each declaring a `requirement`. The
+gate reads *predicates*, one granularity below that, and credits a case only for
+what it declares in a machine-readable `predicates` array. None of the 20 had
+one, so real defeating-fixture-carrying coverage read as zero. Neither side was
+wrong from its own end, and joining the two vocabularies was nobody's job.
+
+The join itself was cheap — an afternoon reading controls already in the tree —
+and took the reading from 0 to 36 of 44 without adding a single fixture. What
+makes it stay true is that the eight remaining gaps are enumerated with reasons,
+so covering one forces its own exclusion to be deleted, and a predicate id the
+specification does not state now refuses instead of being silently uncounted.
+
+- Evidence: `conformance/oracle-controls.json` `predicates` arrays;
+  `contracts/phase-progress.json` `uncovered_on_purpose`; the `UNKNOWN_PREDICATE`
+  and `UNDECLARED_UNCOVERED` refusals.
+- Landing: `fixture` — landed 2026-08-27 in the same check as L-0008.
+- Standing: `EFFECTIVE`.
+
+### L-0010 · Governance outgrew the thing it governs
+
+78 decision records against 0 covered predicates. 60 contracts against 20
+conformance controls. Each record was defensible when written and several were
+commissioned directly; the aggregate is a system that documents faster than it
+demonstrates. The clearest instance is `decisions/0041`, which charters the
+Observation Service because `observe_run` has no service behind it and
+`AI-NATIVE.md` check 3 reads `UNATTESTABLE` everywhere. Four days later the
+charter is still a charter and check 3 still reads `UNATTESTABLE`. The record was
+correct and changed nothing, because a record is not a holder.
+
+What this does not claim is that the records were wrong or that fewer should have
+been written. The measurable thing is the ratio and its direction, and whether a
+ratio is a defect at all is a judgement about proportion.
+
+- Evidence: `reports/2026-08-27-phase-i-retro.md` finding 3;
+  `decisions/0041`; `services/observation/`; `python scripts/sov_docket.py`.
+- Landing: `decision` — whether a proportion between records and demonstrated
+  coverage is a governed constraint at all, and if so what holds it. It is a
+  claim about how much governance is too much, which is Bdo's to place.
+- Standing: `RECORDED`.
+
+### L-0011 · Product ground was accepted and then not used to route anything
+
+Sixteen ground claims were accepted on 2026-08-24 (`decisions/0052`), fixing
+revision GROUND-1 so later work could be attributed against them. Nothing since
+has required a unit of work to name which claim it serves. `PRD.md`, `ROADMAP.md`
+and `SPEC.md` contain zero occurrences of the string `GROUND-`, so the edge from
+a requirement to the claim it keeps does not exist in either direction. The
+ground became a document to cite rather than a key to route on.
+
+The repair is small and is not built: nine requirements, each naming the ground
+claim it serves, and a check that a requirement without one refuses. It is listed
+here rather than done because it edits `PRD.md`, which is a governing document
+this concern does not hold.
+
+- Evidence: `grep -c "GROUND-" PRD.md ROADMAP.md SPEC.md` reads 0, 0, 0;
+  `contracts/product-ground.json`; `decisions/0052`.
+- Landing: `fixture` — a Phase-I requirement that names no ground claim refuses.
+- Standing: `RECORDED`.
+
 ## Dropped
 
-None yet. A dropped entry stays listed here with its reason and the owning
-document it duplicated, so the same lesson is not relearned and re-proposed.
+A dropped entry stays listed here with its reason and the owning document it
+duplicated, so the same lesson is not relearned and re-proposed.
+
+- **Work was scoped by document, not by initiative.**
+  `reports/2026-08-27-phase-i-retro.md` finding 4. Dropped as a restatement:
+  `contracts/custody.schema.json` and `contracts/custodies.json` own this rule,
+  and `decisions/0085` records it. Recording it here as well would make the
+  inbox a second authority on a rule an owning document already holds.
+- **A concern ended at a landed commit, not at a closed path.**
+  `reports/2026-08-27-phase-i-retro.md` finding 5. Dropped for the same reason:
+  `contracts/work-circuit.json` owns it as the `OPEN_PATH` refusal, with
+  `adapters/ollama/invoke.py` as the live instance.

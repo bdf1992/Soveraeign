@@ -103,7 +103,8 @@ def _observation(request: dict[str, Any]) -> dict[str, Any] | None:
 
 def build_record(root: Path, request: dict[str, Any], result: dict[str, Any],
                  branch: str, outcome: str, *, merge_commit: str | None = None,
-                 refusal_detail: str | None = None) -> dict[str, Any]:
+                 refusal_detail: str | None = None,
+                 reading: dict[str, Any] | None = None) -> dict[str, Any]:
     """One landing, as the ledger keeps it. Pure: no clock beyond `recorded_at`, no I/O."""
     record: dict[str, Any] = {
         "ledger_schema": LEDGER_SCHEMA,
@@ -123,6 +124,7 @@ def build_record(root: Path, request: dict[str, Any], result: dict[str, Any],
         "observation": _observation(request),
         "spend": request.get("spend"),
         "merge_commit": merge_commit,
+        "verify_attribution": reading or None,
         "goal": _gate_reading(root),
     }
     body = json.dumps({k: v for k, v in record.items() if k != "recorded_at"},
@@ -133,7 +135,8 @@ def build_record(root: Path, request: dict[str, Any], result: dict[str, Any],
 
 def record(root: Path, request: dict[str, Any], result: dict[str, Any], branch: str,
            outcome: str, *, merge_commit: str | None = None,
-           refusal_detail: str | None = None, dry: bool = False) -> str:
+           refusal_detail: str | None = None, reading: dict[str, Any] | None = None,
+           dry: bool = False) -> str:
     """Append this landing and return the line to print. Never raises, never refuses.
 
     Under ``dry`` it reports the reading it would append and writes nothing, so
@@ -142,19 +145,25 @@ def record(root: Path, request: dict[str, Any], result: dict[str, Any], branch: 
     """
     try:
         entry = build_record(root, request, result, branch, outcome,
-                             merge_commit=merge_commit, refusal_detail=refusal_detail)
+                             merge_commit=merge_commit, refusal_detail=refusal_detail,
+                             reading=reading)
         goal = entry["goal"]
+        # Named `summary`, not `reading`: `reading` is the verify attribution this
+        # function was handed, and shadowing it here worked only because
+        # build_record had already consumed it. The next edit would not be so lucky.
         if goal["reading"] == "UNREAD":
-            reading = "gate unread"
+            summary = "gate unread"
         else:
-            reading = f"{goal['predicates_covered']}/{goal['predicates_total']} declared"
+            summary = f"{goal['predicates_covered']}/{goal['predicates_total']} declared"
+        if reading and reading.get("attribution"):
+            summary += f", verify {reading['attribution']}-attributed"
         if dry:
-            return f"landing ledger: would record {outcome} at {reading}"
+            return f"landing ledger: would record {outcome} at {summary}"
         path = ledger_path(root)
         path.parent.mkdir(parents=True, exist_ok=True)
         with path.open("a", encoding="utf-8", newline="\n") as handle:
             handle.write(json.dumps(entry, sort_keys=True) + "\n")
-        return f"landing ledger: recorded {entry['landing_id']} {outcome} at {reading}"
+        return f"landing ledger: recorded {entry['landing_id']} {outcome} at {summary}"
     except Exception as error:  # noqa: BLE001 - see the module docstring
         return f"landing ledger: not recorded ({type(error).__name__}: {error})"
 

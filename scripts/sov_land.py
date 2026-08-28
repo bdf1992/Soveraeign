@@ -29,6 +29,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from sovkernel import authority  # noqa: E402
+from sovland import isolation  # noqa: E402
 from sovland import ledger  # noqa: E402
 from sovland import preflight  # noqa: E402
 from sovland import repo  # noqa: E402
@@ -61,7 +62,7 @@ def build_request(args: argparse.Namespace, paths: list[str], checks: dict[str, 
 
 
 def _report(request: dict, result: dict, branch: str, ahead: int, behind: int,
-            staged: list, carried: list) -> None:
+            staged: list, carried: list, reading: dict | None = None) -> None:
     print(f"branch {branch} -> {request['branch']}: {ahead} commit(s) would move, "
           f"{behind} behind")
     print(f"graded paths ({len(request['paths'])}): "
@@ -74,13 +75,15 @@ def _report(request: dict, result: dict, branch: str, ahead: int, behind: int,
     observation = request["evidence"]["observation"]
     print("observation: " + (f"{observation.get('observer_id')} -> "
                              f"{observation.get('verdict')}" if observation else "none offered"))
+    for line in isolation.describe(reading) if reading else []:
+        print(line)
     print(f"\n{result['verdict']}: {result['code'] or result['grant_id']}")
     print(f"  {result['detail']}")
 
 
 def _evaluate(
     args: argparse.Namespace,
-) -> tuple[dict, dict, str, int, int, list, list, dict, dict, list]:
+) -> tuple[dict, dict, str, int, int, list, list, dict, dict, list, dict]:
     """Assemble and grade one landing, returning everything the caller reports.
 
     Ten positional values is past what a tuple should carry, and every round of
@@ -97,7 +100,8 @@ def _evaluate(
     # Taken before the checks, which are what make the window twelve seconds long.
     graded_as = tree.fingerprint(staged)
     graded_blobs = {q: repo.worktree_blob(q) for q in staged}
-    checks = tree.gather_checks(args.skip_checks)
+    checks, reading = tree.gather_checks(
+        args.skip_checks, set(staged) | set(carried))
     # A third reading, so drift caused by the checks themselves is named as
     # that rather than blamed on another session. verify.py contains
     # generated-artifact checks; the day one regenerates a file in the
@@ -107,7 +111,7 @@ def _evaluate(
     result = authority.evaluate(sov_grant.load_grants(), request)
     ahead, behind = repo._commit_span(args.target, branch)
     return (request, result, branch, ahead, behind, staged, carried, graded_as,
-            graded_blobs, by_checks)
+            graded_blobs, by_checks, reading)
 
 
 def _carried_note(result: dict, carried: list) -> None:
@@ -132,8 +136,8 @@ def _carried_note(result: dict, carried: list) -> None:
 def cmd_plan(args: argparse.Namespace) -> int:
     """Grade the landing and change nothing."""
     (request, result, branch, ahead, behind, staged, carried, graded_as,
-     graded_blobs, by_checks) = _evaluate(args)
-    _report(request, result, branch, ahead, behind, staged, carried)
+     graded_blobs, by_checks, reading) = _evaluate(args)
+    _report(request, result, branch, ahead, behind, staged, carried, reading)
     if result["verdict"] != authority.PERMITTED:
         _carried_note(result, carried)
     for path in tree.directory_paths(staged):
@@ -152,7 +156,7 @@ def cmd_plan(args: argparse.Namespace) -> int:
     # it. `plan` changes nothing, so this writes nothing and says so.
     print(ledger.record(ROOT, request, result, branch,
                         ledger.LANDED if result["verdict"] == authority.PERMITTED
-                        else ledger.REFUSED_AUTHORITY, dry=True))
+                        else ledger.REFUSED_AUTHORITY, dry=True, reading=reading))
     return 0 if result["verdict"] == authority.PERMITTED else 1
 
 
@@ -169,9 +173,10 @@ def cmd_land(args: argparse.Namespace) -> int:
     """
     outcome, code, facts = _land(args)
     if facts is not None:
-        request, result, branch, merge_commit, detail = facts
+        request, result, branch, merge_commit, detail, reading = facts
         print(ledger.record(ROOT, request, result, branch, outcome,
-                            merge_commit=merge_commit, refusal_detail=detail))
+                            merge_commit=merge_commit, refusal_detail=detail,
+                            reading=reading))
     return code
 
 
@@ -186,21 +191,21 @@ def _land(args: argparse.Namespace):
               "blanket stage would land another participant's work under this evidence.")
         return ledger.REFUSED_PREFLIGHT, 2, None
     (request, result, branch, ahead, behind, staged, carried, graded_as,
-     graded_blobs, by_checks) = _evaluate(args)
-    _report(request, result, branch, ahead, behind, staged, carried)
+     graded_blobs, by_checks, reading) = _evaluate(args)
+    _report(request, result, branch, ahead, behind, staged, carried, reading)
     # Authority first. A contested path used to be reported before the verdict,
     # so a landing the grant never covered came back as "held by another live
     # session" and the caller went to negotiate a collision instead of learning
     # they were not permitted. A refusal that names the wrong reason sends the
     # reader to fix the wrong thing.
-    facts = (request, result, branch, None, None)
+    facts = (request, result, branch, None, None, reading)
     if result["verdict"] != authority.PERMITTED:
         _carried_note(result, carried)
         return ledger.REFUSED_AUTHORITY, 1, facts
     detail = preflight.refusal(args, staged, behind, graded_as, by_checks)
     if detail is not None:
         return (ledger.REFUSED_PREFLIGHT, 2,
-                (request, result, branch, None, detail))
+                (request, result, branch, None, detail, reading))
 
     # Stage only what --path named. A carried path is already committed, and
     # adding one would sweep in whatever happens to be dirty there.
@@ -225,7 +230,7 @@ def _land(args: argparse.Namespace):
         repo._git("checkout", branch)
     print(f"\nLANDED on {args.target} under {result['grant_id']}")
     return (ledger.LANDED, 0,
-            (request, result, branch, repo.head_commit(args.target), None))
+            (request, result, branch, repo.head_commit(args.target), None, reading))
 
 
 def main(argv: list[str] | None = None) -> int:

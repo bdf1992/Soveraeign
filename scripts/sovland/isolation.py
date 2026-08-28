@@ -20,10 +20,22 @@ attributed control readings, so they accumulate and stay visible rather than
 being hidden by the thing that stopped blocking on them.
 
 The known weakness, stated rather than discovered later: attribution is only as
-good as each `Check.observes` tuple. A check whose declared addresses are
-incomplete can fail because of this change and be attributed `GLOBAL`. That is
-why nothing here deletes a reading - the ledger keeps every one, and a witness
-reads them against the diff.
+good as each `Check.observes` tuple, and nothing anywhere grades a tuple against
+what its check actually reads. `verify.py` does one thing with `observes` - it
+drops any address that does not exist on disk - so a check whose observed path
+was renamed quietly observes less, and a check whose implementation grows past
+its declared addresses never notices. Either way the check fails over paths this
+landing did touch, gets attributed `GLOBAL`, and stops refusing.
+
+The reason that is worse than an ordinary bug: the failure mode is silence, not a
+wrong answer. Nothing prints, so a drifted tuple can attribute `GLOBAL` forever
+with no one finding out. Asserting `observes` against the paths a check touches,
+even roughly, would convert a permanent blind spot into a maintained one; it is
+not done here, and until it is, this paragraph is the whole of the defence.
+
+That is why nothing here deletes a reading - the ledger keeps every one, and a
+witness reads them against the diff. Credit for widening this from "incomplete
+addresses" to "undetectable drift": soveraeign-df, reading the module cold.
 """
 
 from __future__ import annotations

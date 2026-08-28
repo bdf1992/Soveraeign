@@ -1,0 +1,242 @@
+{
+  "corpus_id": "soveraeign-status-claims-cases/v4",
+  "grades": "contracts/status-claims.json",
+  "note": "One controlled case per declared refusal, plus positive cases that must earn none. Each defeating case must earn EXACTLY the code it names: a case that fires for a second reason has not proved the one it is for, and two refusals that cannot be separated are one rule wearing two names. No case reads STATUS.yaml, so a repair to the live file cannot quietly stop a refusal from being proved, and a positive case must type a real entry - an empty document against an empty crosswalk satisfies every rule and proves nothing.",
+  "revision_note": "v4 answers a third independent observation against 7860b45. v3's standing rule asked what a value led with; the witness passed WITNESSED_RETRACTED, RATIFIED_NOT and -WITNESSED, the last because splitting on non-alphanumerics deletes a negator rather than seeing it, and showed the rule then refused the correct entry on five live fields. Its judgement was that a fourth patch would produce a fourth spelling. It is answered by removing the standing extraction rather than respelling it: scripts/sov_standing.py owns standing claims and checks what decides one. The second positive case is the value that defeated all three drafts, now earning nothing because there is no rule over prose left to fool.",
+  "cases": [
+    {
+      "id": "positive-typed-status-claim",
+      "proves": "A field typed with the derived subject and the kind its value's leading tokens admit earns no refusal. The crosswalk says which subject a line is about and which kind of claim it makes; it says nothing about standing, which scripts/sov_standing.py owns.",
+      "expect": null,
+      "status_lines": [
+        "asset_service_status: BUILT_SELF_TESTED_NOT_WITNESSED"
+      ],
+      "crosswalk": [
+        {
+          "field": "asset_service_status",
+          "value": "BUILT_SELF_TESTED_NOT_WITNESSED",
+          "subject": "asset-service",
+          "claim_kind": "STATUS",
+          "detail": "self-tested; no independent observation exists",
+          "reference": null
+        }
+      ]
+    },
+    {
+      "id": "positive-the-value-three-witnesses-fought-over",
+      "proves": "The value that defeated three standing rules in three spellings - a prose source read WITNESSED out of it, a NOT vocabulary was walked past it, and a leading-token rule refused the correct entry for it - is now simply a status about a subject. Nothing here reads a standing out of prose, so there is nothing left to fool.",
+      "expect": null,
+      "status_lines": [
+        "sov_operating_agent_status: OWNER_ACCEPTED_CONTEXT_PROFILE_BUILT_SELF_TESTED_NOT_WITNESSED"
+      ],
+      "crosswalk": [
+        {
+          "field": "sov_operating_agent_status",
+          "value": "OWNER_ACCEPTED_CONTEXT_PROFILE_BUILT_SELF_TESTED_NOT_WITNESSED",
+          "subject": "sov-operating-agent",
+          "claim_kind": "STATUS",
+          "detail": "the owner accepted the context profile; built and self-tested with no independent observation",
+          "reference": null
+        }
+      ]
+    },
+    {
+      "id": "defeating-entry-malformed",
+      "expect": "ENTRY_MALFORMED",
+      "proves": "An entry missing a required field is refused rather than raising. A null subject raised TypeError inside sorted().",
+      "status_lines": [
+        "asset_service_status: BUILT_SELF_TESTED_NOT_WITNESSED"
+      ],
+      "crosswalk": [
+        {
+          "field": "asset_service_status",
+          "value": "BUILT_SELF_TESTED_NOT_WITNESSED",
+          "subject": null,
+          "claim_kind": "STATUS",
+          "detail": "d",
+          "reference": null
+        }
+      ]
+    },
+    {
+      "id": "defeating-entry-unknown-key",
+      "expect": "ENTRY_UNKNOWN_KEY",
+      "proves": "The key set is closed. A witness put asserted_standing, settled_by, authority and a resurrected standing_source onto live entries and every one passed exit 0, because type-checking named keys never rejects an unnamed one. Any key outside the set is refused, whatever the size of the set.",
+      "status_lines": [
+        "asset_service_status: BUILT_SELF_TESTED_NOT_WITNESSED"
+      ],
+      "crosswalk": [
+        {
+          "field": "asset_service_status",
+          "value": "BUILT_SELF_TESTED_NOT_WITNESSED",
+          "subject": "asset-service",
+          "claim_kind": "STATUS",
+          "detail": "d",
+          "reference": null,
+          "asserted_standing": "RATIFIED",
+          "settled_by": "seat:root"
+        }
+      ]
+    },
+    {
+      "id": "defeating-field-untyped",
+      "expect": "FIELD_UNTYPED",
+      "proves": "A status field the crosswalk does not type is a defect, so the typing cannot fall behind the document.",
+      "status_lines": [
+        "new_service_status: CHARTERED_BOUNDARY_NOT_IMPLEMENTED"
+      ],
+      "crosswalk": []
+    },
+    {
+      "id": "defeating-field-unreadable-every-shape",
+      "expect": "FIELD_UNREADABLE",
+      "proves": "The detector takes the class, not the shapes the last witness reported. Two earlier drafts were each taught the previous witness's examples, and a list item, a flow mapping, a dotted key and a path-like key walked past the second. A bare `status:` key is deliberately absent from this list: it is not a status field, no entry could ever match it, and reporting it would be a false alarm whose only repair is editing STATUS.yaml, which this contract does not do.",
+      "status_lines": [
+        "- byom_status: OPEN",
+        "{byom_status: OPEN}",
+        "node.v1_status: OPEN",
+        "services/asset_status: OPEN",
+        "ai-native_status: OPEN",
+        "\"quoted_status\": OPEN",
+        "spaced_key_status : OPEN",
+        "SHOUTED_STATUS: OPEN",
+        "  indented_status: OPEN",
+        "spaced_value_status: BUILT AND TESTED"
+      ],
+      "crosswalk": []
+    },
+    {
+      "id": "defeating-entry-unmatched",
+      "expect": "ENTRY_UNMATCHED",
+      "proves": "A crosswalk entry naming a field and value the document no longer carries is a defect, so the typing cannot outlive what it types.",
+      "status_lines": [],
+      "crosswalk": [
+        {
+          "field": "retired_thing_status",
+          "value": "OWNER_ACCEPTED",
+          "subject": "retired-thing",
+          "claim_kind": "STATUS",
+          "detail": "a claim the document has since dropped",
+          "reference": null
+        }
+      ]
+    },
+    {
+      "id": "defeating-subject-not-derived",
+      "expect": "SUBJECT_NOT_DERIVED",
+      "proves": "The subject is derived from the field, not declared. A witness dissolved a real collision by renaming one side of it to byom-ruling.",
+      "status_lines": [
+        "byom_status: OWNER_ACCEPTED_PHASE_I_CONTRACT"
+      ],
+      "crosswalk": [
+        {
+          "field": "byom_status",
+          "value": "OWNER_ACCEPTED_PHASE_I_CONTRACT",
+          "subject": "byom-ruling",
+          "claim_kind": "STATUS",
+          "detail": "a subject renamed to escape a collision",
+          "reference": null
+        }
+      ]
+    },
+    {
+      "id": "defeating-claim-kind-undeclared",
+      "expect": "CLAIM_KIND_UNDECLARED",
+      "proves": "A kind outside the declared three is refused. A witness mistyped RULING as RULLING, which split the collision group and silently disabled the rules keyed on the kind string.",
+      "status_lines": [
+        "ticket_kind_vocabulary_status: RULED_O19"
+      ],
+      "crosswalk": [
+        {
+          "field": "ticket_kind_vocabulary_status",
+          "value": "RULED_O19",
+          "subject": "ticket-kind-vocabulary",
+          "claim_kind": "RULLING",
+          "detail": "a mistyped kind that would disable the rules keyed on it",
+          "reference": "O19"
+        }
+      ]
+    },
+    {
+      "id": "defeating-claim-kind-collision",
+      "expect": "CLAIM_KIND_COLLISION",
+      "proves": "Two claims of one kind about one subject stay a duplicate. Typing distinguishes a status from a ruling; it does not excuse writing one subject's status twice. Two identical entries earn this too, so a separate duplicate-entry refusal would be the same rule wearing two names.",
+      "status_lines": [
+        "proofing_service_status: OWNER_ACCEPTED_BOUNDARY_NOT_IMPLEMENTED",
+        "proofing_service_status: CHARTERED_BOUNDARY_NOT_IMPLEMENTED"
+      ],
+      "crosswalk": [
+        {
+          "field": "proofing_service_status",
+          "value": "OWNER_ACCEPTED_BOUNDARY_NOT_IMPLEMENTED",
+          "subject": "proofing-service",
+          "claim_kind": "STATUS",
+          "detail": "the owner accepted the boundary",
+          "reference": null
+        },
+        {
+          "field": "proofing_service_status",
+          "value": "CHARTERED_BOUNDARY_NOT_IMPLEMENTED",
+          "subject": "proofing-service",
+          "claim_kind": "STATUS",
+          "detail": "a second status claim about one subject",
+          "reference": null
+        }
+      ]
+    },
+    {
+      "id": "defeating-claim-kind-contradicts-value",
+      "expect": "CLAIM_KIND_CONTRADICTS_VALUE",
+      "proves": "Total in both directions, and tokenised rather than separator-literal, so a hyphen cannot demote a ruling to a reversible status. An earlier draft compared raw prefixes and read RULED-O19 as a STATUS.",
+      "status_lines": [
+        "classification_status: RULED-CANONICAL-FOR-PHASE-O9"
+      ],
+      "crosswalk": [
+        {
+          "field": "classification_status",
+          "value": "RULED-CANONICAL-FOR-PHASE-O9",
+          "subject": "classification",
+          "claim_kind": "STATUS",
+          "detail": "a ruling a separator-literal prefix read as a status",
+          "reference": "O9"
+        }
+      ]
+    },
+    {
+      "id": "defeating-reference-names-a-packet-not-carried",
+      "expect": "REFERENCE_CONTRADICTS_VALUE",
+      "proves": "A packet id is graded, not declared. `reference` is load-bearing for owner acceptance by the contract's own text, and a load-bearing field graded nowhere is exactly the declaration this table exists to stop.",
+      "status_lines": [
+        "specification_status: OWNER_ACCEPTED_A2_PHASE_I_LOGICAL_SPEC"
+      ],
+      "crosswalk": [
+        {
+          "field": "specification_status",
+          "value": "OWNER_ACCEPTED_A2_PHASE_I_LOGICAL_SPEC",
+          "subject": "specification",
+          "claim_kind": "OWNER_ACCEPTANCE",
+          "detail": "an entry naming a packet its value does not carry",
+          "reference": "A9"
+        }
+      ]
+    },
+    {
+      "id": "defeating-reference-invented-with-no-packet-in-the-value",
+      "expect": "REFERENCE_CONTRADICTS_VALUE",
+      "proves": "The other direction of the same rule, which the previous corpus declared and no case exercised - a witness found it covered by a unit test only.",
+      "status_lines": [
+        "gateway_service_status: CHARTERED_BOUNDARY_NOT_IMPLEMENTED"
+      ],
+      "crosswalk": [
+        {
+          "field": "gateway_service_status",
+          "value": "CHARTERED_BOUNDARY_NOT_IMPLEMENTED",
+          "subject": "gateway-service",
+          "claim_kind": "STATUS",
+          "detail": "a packet named by an entry whose value carries none",
+          "reference": "A3"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,318 @@
+{
+  "observer_id": "urn:soveraeign:actor:sov-witness/fourth-reading-landing-510f5b8",
+  "contributed_to_build": false,
+  "witness_ordinal": 4,
+  "verdict": "REPRODUCED_WITH_DEFECTS",
+  "concern": "Is the fourth answer to the status-claims concern fit to land? Three prior witnesses each graded an earlier commit REPRODUCED_WITH_DEFECTS and each broke the artifact-standing extraction in a new spelling. The builder's answer was not a fourth spelling: the extraction was deleted. This reading asks whether that deletion holds, whether it lost anything, and whether the change is landable on main.",
+  "subject": {
+    "graded_commit": "510f5b85f273760a67e2c407b8f8c2675e41496f",
+    "graded_branch": "feat/status-claims-on-main",
+    "base": "b5de995661edd743cfbac97529daf2cfcaa5167a",
+    "base_is": "main, tip",
+    "also_graded": "b1cbcc5723247facb0ac85d7473ab1a3d2340a53 on feat/federation-harness-and-hardening, against base 126430013d113cb002a6249b812de57588094709",
+    "why_two_subjects": "I was handed b1cbcc5 and had measured it in full when I was told it cannot reach main: it was branched from feat/federation-harness-and-hardening, which carries .github/labels.yml, and the landing gate refused it AUTHORITY_REFUSED because .github/ is outside grant:standing-landing-loop. The five commits were replayed onto main as feat/status-claims-on-main. I re-established the landing subject myself rather than accept the cherry-pick as clean, and every verdict below is stated against 510f5b8. Readings taken at b1cbcc5 are retained only where they still hold verbatim at 510f5b8, which I proved blob by blob.",
+    "ancestry_on_main": ["b5de995", "c21b783", "d0a02c1", "39eb2f4", "c2a8fcd", "510f5b8"],
+    "pull_request": null,
+    "decisions": [],
+    "paths_vs_base": [
+      "conformance/fixtures/status-claims/cases.json",
+      "contracts/status-claims.json",
+      "reports/observations/2026-08-27-status-claims-second-witness-observation.json",
+      "reports/observations/2026-08-27-status-claims-third-witness-observation.json",
+      "reports/observations/2026-08-27-status-claims-typed-witness-observation.json",
+      "scripts/sov_status_claims.py",
+      "scripts/sovstatus/__init__.py",
+      "scripts/sovstatus/refusals.py",
+      "scripts/sovverify/checks.py",
+      "scripts/tests/test_status_claims.py"
+    ],
+    "claims_under_test": [
+      "1 - the standing extraction is genuinely gone, not renamed or hidden",
+      "2 - the prior standing bypasses now earn no refusal, and that is correct rather than a weakening",
+      "3 - nothing that was working was lost; the eight duplicated keys still resolve to one subject holding two distinct claim kinds",
+      "4 - the entry key set is closed",
+      "5 - the unreadable-line detector takes the class and does not fire on a bare status key",
+      "6 - selfcheck passes; ten declared refusals each firing on a case earning exactly that code; positive cases not vacuous",
+      "7 - check passes: 48 fields, 40 subjects",
+      "8 - 28 unit tests pass, discovered by scripts/run_tooling_tests.py",
+      "9 - lint exit 0; every production module under 300 lines",
+      "10 - verify delta against the base is empty",
+      "11 - STATUS.yaml is byte-identical between base and commit",
+      "12 - the three committed observations are faithful",
+      "13 - the design claim: no entry can assert anything not derivable from the field name and the value string"
+    ]
+  },
+  "observer_relation": {
+    "to_builder": "NONE",
+    "basis": "Launched after 510f5b8 existed. Built four detached worktrees of my own from the object store (wt-head at b1cbcc5, wt-base at 1264300, wt-land at 510f5b8, w4-main-b5de995 at b5de995) plus three throwaway worktrees at 5dbe513, 964f414 and 7860b45 for the faithfulness check. I did not build, edit, review or advise on any file in this change. I read no builder report, acceptance packet or completion summary. decisions/0074 is not in the commit, was not read, and is evidence for nothing.",
+    "prior_witnesses": "I am the fourth witness and I read all three prior observations in full before measuring. They ARE committed at this commit, which is new; the first three each read a predecessor that was not. I used them as a list of claims to re-derive and never as evidence. Every bypass they describe was reconstructed by me from its own description; I ran no prior witness's harness.",
+    "helper_used": "none"
+  },
+  "frozen_head": "510f5b85f273760a67e2c407b8f8c2675e41496f",
+  "shared_tree_conditions": {
+    "trap": "CLAUDE.md T6",
+    "primary_tree_state": "the primary working tree moved underneath this session while I worked: f362656 on feat/federation-harness-and-hardening at the start, 1bef7ad with 113 dirty paths and 85 registered worktrees at the end. Unusable for measurement and not measured in.",
+    "mitigation": "Every reading taken in my own detached worktrees, confirmed clean by git status --porcelain returning zero lines before the first measurement and again after the last. The entire adversarial battery ran as pure calls to sov_status_claims.grade() and selfcheck() over synthesized input and deep copies of the loaded contract, so no file in any worktree was written during measurement. Synthetic corpora were written to a scratchpad directory outside every worktree.",
+    "stability_recheck": "check, selfcheck and the 28-test module re-run after all other measurements with identical output; wt-land still clean at 510f5b8 and w4-main-b5de995 still clean at b5de995. The verdict is attestable against a tree that did not move.",
+    "trap_6b_applied": "A scratchpad directory named wt-main already existed and held a worktree at 510f5b8 created by another process. I did not use it, did not measure in it, and created w4-main-b5de995 under a name of my own instead. Separately, the coordinator reported main measuring 21.9s, 15.0s and 19.8s wall, at or over the 15s budget. My three interleaved rounds measured main at 14.047s, 14.769s and 13.661s and the landing commit at 13.728s, 13.696s and 13.752s. No budget failure occurred on either side in any round. The earlier readings were machine load and are not attributed to anything.",
+    "trap_2_applied": "verify exits 0 on BOTH sides of this target, which is a change from the feature branch where it exited 1 on both. I did not read exit 0 as conformance: the 24 embedded FAIL lines inside the conformance check are the recorded defeating-fixture baseline and are byte-identical on both sides.",
+    "trap_3_applied": "Not applicable to the graded module: it performs no token containment of any kind, because the standing extraction is gone. T3 remains live in scripts/sov_standing.py, outside this commit; see W4-N2."
+  },
+  "checks": [
+    {
+      "command": "git diff --name-status b5de995 510f5b8",
+      "result": "10 PATHS, 9 ADDED 1 MODIFIED",
+      "exit_code": 0,
+      "detail": "No .github/, no STATUS.yaml, no CLAUDE.md, no root governing document, no decisions/, no lineage/. The cherry-picked branch is inside the scope of grant:standing-landing-loop where b1cbcc5 was not."
+    },
+    {
+      "command": "blob comparison of all 10 concern paths, b1cbcc5 vs 510f5b8",
+      "result": "9 IDENTICAL, 1 DIFFERS",
+      "exit_code": 0,
+      "detail": "scripts/sovverify/checks.py differs. I checked the applied EDIT rather than the resulting file: both sides add the identical 11 lines and remove zero lines. The files differ only because main's checks.py was already 18 lines shorter than the feature branch's (259 vs 277), a pre-existing divergence this change did not create. The cherry-pick is clean and I did not take that on report."
+    },
+    {
+      "command": "python scripts/sov_status_claims.py check",
+      "cwd": "wt-land (510f5b8, clean)",
+      "result": "PASS",
+      "exit_code": 0,
+      "output": "status claims: 48 typed against 40 subjects, no defects"
+    },
+    {
+      "command": "python scripts/sov_status_claims.py selfcheck",
+      "cwd": "wt-land (510f5b8, clean)",
+      "result": "PASS",
+      "exit_code": 0,
+      "output": "status-claims selfcheck: 10 refusals each fire"
+    },
+    {
+      "command": "python -m unittest scripts.tests.test_status_claims",
+      "cwd": "wt-land (510f5b8, clean)",
+      "result": "PASS",
+      "exit_code": 0,
+      "output": "Ran 28 tests in 0.010s - OK"
+    },
+    {
+      "command": "python scripts/lint.py",
+      "cwd": "wt-land (510f5b8, clean)",
+      "result": "PASS",
+      "exit_code": 0,
+      "output": "PASS: repository hygiene (764 text files, 336 Python modules, 1 named debt). The one named debt is scripts/witness_infrastructure.py at 301 lines, pre-existing on main and untouched here."
+    },
+    {
+      "command": "newline count of every changed module, read from bytes",
+      "result": "PASS",
+      "exit_code": 0,
+      "detail": "sov_status_claims.py 181, sovstatus/refusals.py 184, sovstatus/__init__.py 1, sovverify/checks.py 270, tests/test_status_claims.py 262 (not production). Limit 300. Zero CRLF, all newline-terminated. On this target checks.py has 30 lines of headroom rather than the 12 the first witness recorded on the feature branch."
+    },
+    {
+      "command": "python scripts/verify.py, three interleaved rounds, main then landing commit",
+      "result": "PASS BOTH SIDES, ALL THREE ROUNDS",
+      "exit_code": 0,
+      "detail": "main 39 checks at 14.047s / 14.769s / 13.661s; landing 41 checks at 13.728s / 13.696s / 13.752s. Both grade SILVER. The landing side was faster in three of three rounds. No verification budget failure on either side in any round."
+    },
+    {
+      "command": "check-name set difference, main vs landing commit",
+      "result": "EXACTLY TWO ADDED, NOTHING REMOVED",
+      "exit_code": 0,
+      "detail": "Added: 'status claims are typed' (0.070s) and 'status claim refusals fire' (0.102s). Removed: none. The name sets were identical across all three rounds on each side. The 24 embedded FAIL lines in the conformance check are byte-identical on both sides."
+    },
+    {
+      "command": "tooling shard test totals, summed across all four shards",
+      "result": "PASS",
+      "exit_code": 0,
+      "detail": "main 177+188+345+269 = 979; landing 174+188+380+265 = 1007; delta exactly +28, the new module. The last shard reads 265 on the landing side against 269 on main, which looks like a loss and is sharding rebalance; I summed rather than read the last line. Skip sets are identical, 15 each, all pre-existing custody and Windows skips. None of the 28 new tests skips."
+    },
+    {
+      "command": "git rev-parse <commit>:STATUS.yaml across all six commits",
+      "result": "IDENTICAL",
+      "exit_code": 0,
+      "detail": "1264300, 5dbe513, 964f414, 7860b45, 11610c1 and b1cbcc5 all resolve to blob 401fe0b53f2de0af1d55568fd0e5849534a51187. A content hash, not a diff."
+    },
+    {
+      "command": "independent adversarial battery: 33 prior standing hazards, 9 key-injection shapes, 35 reader shapes, 15 quiet-line controls, 13 corpus replays, 4 corpus-vacuity mutations, plus detail and reference channels",
+      "result": "NO NEW BYPASS OF ANY DECLARED RULE",
+      "exit_code": null,
+      "detail": "Every rule the code declares, it enforces. The findings below are prose that overclaims and a scope gap, not a rule that fails to fire."
+    }
+  ],
+  "reproduced": [
+    {
+      "id": "W4-1",
+      "claim": "1 - the standing extraction is genuinely gone, not renamed or hidden",
+      "method": "grepped both production modules for every standing token and inspected each hit; enumerated the key set of all 48 entries; enumerated the top-level keys of the contract; then tried to reintroduce a standing through nine differently-named keys",
+      "finding": "CONFIRMED, and it is a deletion rather than a rename. Every grep hit in scripts/sov_status_claims.py and scripts/sovstatus/refusals.py is inside a docstring or comment; no code path reads a standing. All 48 entries carry one identical six-key set - field, value, subject, claim_kind, detail, reference - with no standing-shaped key among them. The contract carries no artifact_standing_ladder, no standing_sources, no token_trap and no derived_never_declared; those four keys existed at 7860b45 and are gone. Reintroduction is refused: artifact_standing, asserted_standing, standing_source, settled_by, authority, reversible, witnessed_by, a bare standing, and an arbitrary key x each earn ENTRY_UNKNOWN_KEY on a live entry. The deleted field cannot be put back without the check saying so, which is what the third witness asked for as TW-B4."
+    },
+    {
+      "id": "W4-2",
+      "claim": "2 - the prior standing bypasses now earn no refusal, and that is correct rather than a weakening",
+      "method": "reconstructed 33 hazard values from the descriptions in the three observations - the whole SW-B1 negation family, the whole TW-B1 right-hand denial family, the TW-B2 non-alphanumeric family including BOM and zero-width space, and the TW-B3 under and over-claiming values - and graded each as an ordinary status line; then, separately, tested whether the standing question is still asked anywhere by reading scripts/sov_standing.py and running it",
+      "finding": "CONFIRMED, and the removal is not a check that stopped checking. All 33 earn no refusal, because no rule reads a standing. The load-bearing half is that the standing question survives elsewhere and survives in better shape. scripts/sov_standing.py runs under verify as the check named standing claims carry a witness, and it checks the fact that decides a standing - whether a witness record exists naming the subject - rather than what the prose spells. On exactly the family that broke all three drafts it fails CLOSED where the deleted rule failed OPEN: NOT_YET_WITNESSED, NEVER_WITNESSED, BUILT-NOT_WITNESSED, WITNESSED_RETRACTED, RATIFIED_NOT and RATIFIED_THEN_REVOKED are each read as a claim and would demand a witness record, whereas the deleted rule asserted a standing the value did not support. Its live verdict is PASS: no status field claims WITNESSED or RATIFIED, 0 records on file. I record the honest limit: the CLAIMS set of sov_standing is WITNESSED and RATIFIED only, so no check now records a BUILT position. Ten entries carried one at 7860b45. That information is gone from the record, and the third witness measured that five of the values the previous draft typed as carrying nothing plainly state BUILT while the rule refused the correction - so what is gone is a record that was wrong in five of fifteen places, was four commits old, and was read by nothing downstream. On balance a weaker rule beside the one that owns the question was the competing authority AGENTS.md forbids, and deleting it is the right call. See W4-J1, where I argue the other side."
+    },
+    {
+      "id": "W4-3",
+      "claim": "3 - nothing that was working was lost; the eight duplicated keys still resolve to one subject holding two distinct claim kinds",
+      "method": "wrote my own reader, deliberately looser than the module one on both key and value, counted duplicated column-zero keys independently, then grouped entries by subject and kind",
+      "finding": "CONFIRMED. STATUS.yaml carries exactly 8 duplicated column-zero keys and all 8 are status fields: byom, engineering_framework, kernel_transition_contract, proofing_service, sdlc_loop, semantic_cold_start, sov_operating_agent, ticket_kind_vocabulary. Each resolves to a single subject holding exactly two distinct kinds - six as STATUS with RULING, two as STATUS with OWNER_ACCEPTANCE. No subject-and-kind pair occurs twice among all 48 entries, and exactly 8 subjects hold more than one entry. This is the actual purpose of the contract and it is intact, and now enforced rather than merely satisfied: renaming a byom subject to dissolve the collision earns SUBJECT_NOT_DERIVED, an invented kind earns CLAIM_KIND_UNDECLARED, and a verbatim duplicate earns CLAIM_KIND_COLLISION."
+    },
+    {
+      "id": "W4-4",
+      "claim": "4 - the entry key set is closed",
+      "method": "added each named key and an arbitrary one to a live entry and graded",
+      "finding": "CONFIRMED. asserted_standing, settled_by, authority and standing_source - the four the third witness put on live entries at 7860b45 and watched pass - each earn ENTRY_UNKNOWN_KEY, as do artifact_standing, reversible, witnessed_by, a bare standing and a bare x. KEYS is a frozenset difference inside unknown_key, so the closure is over the set rather than over a list of names anyone has thought of, which is the shape that does not need a fifth patch. The corpus proves it with defeating-entry-unknown-key, which carries both asserted_standing and settled_by."
+    },
+    {
+      "id": "W4-5-scoped",
+      "claim": "5 - the unreadable-line detector takes the class and does not fire on a bare status key or a line no entry could match",
+      "method": "20 class members and 15 quiet-line controls, each graded against an empty crosswalk so a strict-readable line earns FIELD_UNTYPED, a loose-only line earns FIELD_UNREADABLE, and an invisible line earns nothing",
+      "finding": "CONFIRMED AS STATED, NOT AS THE PROSE CLAIMS. All nine shapes named in the claim - list item, flow mapping, dotted key, path-like key, quoted, hyphenated, shouted, indented, space-before-colon - earn FIELD_UNREADABLE, as do tab-indent, single-quote, mixed-case suffix, empty value, trailing comment, spaced value, comma-led and bracket-led. That is 20 of 20. The false-positive direction is genuinely repaired and this is the sharpest improvement over the third draft: a bare status key, a nested one, a shouted one, a quoted one, one in a list item and one with a space before the colon are all quiet, because LOOSE requires at least one character and an underscore before the suffix. The TW-B5 complaint that a bare status key was refused with no admissible repair is closed. The corpus case defeating-field-unreadable-every-shape carries ten shapes rather than one, which is a defeating fixture for the class rather than for an instance. The prose above it still overclaims; see W4-B2."
+    },
+    {
+      "id": "W4-6",
+      "claim": "6 - selfcheck passes; ten declared refusals each firing on a case earning exactly that code; positive cases not vacuous",
+      "method": "I did not read the verdict of selfcheck. I loaded the corpus myself, called grade on each case, collected the earned code set, compared it against each declared expectation and against the refusals table in both directions, then attacked the corpus with four mutations",
+      "finding": "CONFIRMED. 13 cases: two positive earning the empty set, eleven defeating cases each earning exactly one code and exactly the code it names. Declared 10, exercised 10, declared-not-exercised empty, exercised-not-declared empty. The positive cases are substantive, not vacuous - one types asset_service_status: BUILT_SELF_TESTED_NOT_WITNESSED and the other types the exact value three witnesses fought over. The vacuity guards fire: a corpus with no positive case is rejected, a corpus whose positive case has empty status_lines and an empty crosswalk is rejected, and dropping one defeating case is rejected by name. That closes SW-R3 and TW-R6, and the guard now lives inside selfcheck rather than in a unit test in another shard, which was the specific objection of the third witness. REFERENCE_CONTRADICTS_VALUE now has a case per branch - one where the value carries A2 and the entry names A9, one where the entry names A3 and the value carries no packet - which closes the TW-R2 finding that the corpus proved one branch of two."
+    },
+    {
+      "id": "W4-7",
+      "claim": "7 - check passes: 48 fields, 40 subjects",
+      "method": "re-derived with my own regex rather than the module one, then compared the file pair set against the crosswalk pair set in both directions, and separately cross-checked the strict reader against a full YAML parse of the same bytes",
+      "finding": "CONFIRMED, and confirmed by a second independent path. STATUS.yaml carries exactly 48 column-zero status fields, all 48 field-and-value pairs distinct; the crosswalk carries 48 entries over 40 distinct subjects; the two sets are equal in both directions with nothing on either side alone. A YAML parse of the same file yields exactly 40 top-level status-suffixed keys - 48 lines minus the 8 duplicates a parser collapses - and the key set of the strict reader and the key set of the parser are equal in both directions, with no nested status-suffixed key anywhere in the document. That is the measurement the third witness asked for as the defeating test of reader scope, and it agrees. The file carries no BOM, no CRLF and no non-ASCII byte."
+    },
+    {
+      "id": "W4-8",
+      "claim": "8 - 28 unit tests pass, discovered by scripts/run_tooling_tests.py",
+      "method": "ran the module directly, then read the discovery mechanism rather than trusting that a new file is picked up, then summed the shard totals on both sides",
+      "finding": "CONFIRMED. 28 tests, OK. Discovery is a glob over the test directory, a measurement rather than a declared list, so the module cannot be silently omitted. The shard module count moves from 62 on main to 63 on the landing commit and the summed test total from 979 to 1007, a delta of exactly 28, which is the independent evidence that the module entered the suite. Neither production module touches sys.path; only the test bootstrap does."
+    },
+    {
+      "id": "W4-9",
+      "claim": "9 - lint exit 0; every production module under 300 lines",
+      "method": "ran lint, then counted newline bytes rather than trusting a line-counting cmdlet, which under-reports by dropping blank lines",
+      "finding": "CONFIRMED. lint exit 0. sov_status_claims.py 181, sovstatus/refusals.py 184, sovverify/checks.py 270, all against a 300-line limit. Zero CRLF anywhere, every file newline-terminated. No named debt is added; the single named debt on this target is pre-existing. Note that on main the eight duplicate-key WARN lines the first three witnesses saw do not appear, because the lint on main does not carry that warning - the eight duplicates are still present in the file and are still what this contract types."
+    },
+    {
+      "id": "W4-10",
+      "claim": "10 - verify delta against the base is empty",
+      "method": "three interleaved rounds per side in two clean detached worktrees, parsing check-name sets, summary lines, embedded FAIL lines and shard totals; re-run before attributing any timing, as instructed and as two prior witnesses found necessary",
+      "finding": "CONFIRMED, and stronger on this target than on the feature branch. verify exits 0 on BOTH sides: main PASS with 39 checks, landing commit PASS with 41. The check-name delta is exactly the two checks this change registers, nothing removed, stable across all three rounds. The 24 embedded conformance FAIL lines are byte-identical on both sides. No budget failure occurred on either side in any round, and the landing side was faster than main in three of three. On the feature branch I separately confirmed the older reading: identical FAIL summary lines at 1264300 and b1cbcc5, 40 checks against 42, no budget failure on either side across two rounds. The one claim-granularity delta all three prior witnesses recorded - the orientation snapshot reading page says 40, record holds 42 - does not exist on this target at all; see W4-11."
+    },
+    {
+      "id": "W4-11",
+      "claim": "the withheld CLAUDE.md edit is not needed on this target",
+      "method": "grepped the sov_snapshot module on main for the verification-check claim, found no match, then tried to run it",
+      "finding": "CONFIRMED, and the reason is stronger than a missing claim: scripts/sov_snapshot.py does not exist on main at all. The orientation snapshot check is a feature-branch artifact. There is therefore no page-versus-record count claim on this target to go stale, and the CLAUDE.md 40-to-42 edit that was withheld for scope reasons is not merely unnecessary here, it has nothing to attach to. The seam three witnesses recorded as SCT-D3, SW-R8 and TW-R8 - that this change cannot be landed consistently by the grant that would land it - is dissolved by the change of target rather than repaired. CLAUDE.md carries the identical blob 119a141d at 1264300 and b1cbcc5, and is not in the landing diff at all."
+    },
+    {
+      "id": "W4-12",
+      "claim": "12 - the three committed observations are faithful",
+      "method": "read contributed_to_build on each, then built throwaway worktrees at 5dbe513, 964f414 and 7860b45 and reproduced one headline bypass per observation against the commit that observation names, including the control cases each reports as correctly refused",
+      "finding": "CONFIRMED. All three carry contributed_to_build false and verdict REPRODUCED_WITH_DEFECTS. At 5dbe513, SCT-D1 reproduces exactly: sov_operating_agent_status declaring WITNESSED with standing_source READING earns no refusal, and RATIFIED with source NONE earns no refusal, while the same entry declaring source TOKEN earns STANDING_TOKEN_ABSENT - the scoping the first witness described. At 964f414, SW-B1 reproduces exactly: NOT_YET_WITNESSED, NEVER_WITNESSED and BUILT-NOT_WITNESSED each pass while declaring WITNESSED, and the control NOT_WITNESSED is correctly refused. At 7860b45, TW-B1 and TW-B2 reproduce exactly: WITNESSED_RETRACTED, RATIFIED_NOT, RATIFIED_THEN_REVOKED and a hyphen-prefixed WITNESSED all pass while declaring the rung. The three observations describe what the artifacts actually did, including where they were careful to say a bypass was scoped rather than total. They are faithful and none of them overstates its finding."
+    },
+    {
+      "id": "W4-13-scoped",
+      "claim": "13 - the design claim: no entry can assert anything not derivable from the field name and the value string",
+      "method": "enumerated every channel an entry has and attacked each: the six declared keys, extra keys, ordering, duplication, and the two ungraded fields",
+      "finding": "CONFIRMED FOR EVERY CHANNEL THAT CAN NAME THE STATE OF A SUBJECT, and still false as an unqualified sentence. field and value are measured against STATUS.yaml in both directions, so an entry cannot invent a line. subject is derived from the field stem and compared. claim_kind is derived from the leading tokens of the value and compared, now tokenised rather than separator-literal so RULED-O19 types as a RULING, which closes TW-R1. An eighth key is refused. Duplication, subject renaming and kind flipping are each refused. What remains open is narrow and named: detail is free prose graded nowhere, and reference is graded only where the value carries or the reference names a packet. Both are recorded as W4-B3. The important change from the third reading is that the contract no longer claims otherwise - the derived_never_declared section that asserted totality has been deleted rather than left standing over code that did not do it, which is the right disposal."
+    }
+  ],
+  "dissented": [
+    {
+      "id": "W4-B1",
+      "severity": "MATERIAL",
+      "claim_defeated": "the extraction is gone (contracts/status-claims.json, what_this_types; scripts/sovstatus/refusals.py module docstring)",
+      "finding": "The deletion is complete in the code and incomplete in the prose, and the residue states something false about the committed artifact. Three sites still describe an artifact standing that no entry carries and no module reads. contracts/status-claims.json summary: a reader keeps its own line and gains a subject, a claim kind, and where a ladder position is asserted, an artifact standing. contracts/status-claims.json naming_screen: this contract is named for the field it types (status) and uses artifact_standing unqualified only for the existing ladder. scripts/sov_status_claims.py lines 12-15: which subject the claim is about, which kind of claim it is, and where a ladder position is asserted, which one. All three are false of this commit. The same file says the opposite, correctly, two keys away: closed_key_set states that an entry carries exactly field, value, subject, claim_kind, detail and reference, and what_this_types states that the extraction is removed and why.",
+      "consequence": "This is TW-B6 in its fourth spelling, and it is the meta-defect this whole concern has been fighting: the reported instances repaired, the class left open elsewhere. TW-B6 named token_trap and derived_never_declared; both were deleted. summary, naming_screen and the docstring of the reader itself were not named, and they carry the same stale rule. summary is the first prose a reader meets, so an agent reading this contract to learn the entry shape is told to write a key that unknown_key will refuse. The system does fail closed on it - ENTRY_UNKNOWN_KEY fires with a clear message - so the operational cost is small and self-correcting. The cost that is not self-correcting is a human reading a governing artifact in a month, which is the hazard LESSONS.md L-0001 records for this repository by name: a stale page was read as current by every launched agent, and the ruling was to correct the page rather than the tolerance. A contract whose subject is keeping status claims honest should not itself carry a false claim about its own shape.",
+      "what_would_have_defeated_this_finding": "deleting the ladder clause from summary and naming_screen and from the docstring of the reader in the same commit that deleted the field, which is three sentences and no design decision; or a check refusing a contract whose prose names a key no entry carries and no module reads, which is the measurement TW-B4 already asked for, run in the other direction."
+    },
+    {
+      "id": "W4-B2",
+      "severity": "MINOR",
+      "claim_defeated": "LOOSE takes any key ending in _status however it is written (scripts/sov_status_claims.py, LOOSE comment; contracts/status-claims.json, FIELD_UNREADABLE)",
+      "finding": "It takes the nine shapes claim 5 names and thirteen neighbours, and it is not however it is written. Sixteen shapes are invisible to both readers, earning neither FIELD_UNTYPED nor FIELD_UNREADABLE, and every one of them parses under PyYAML as a mapping with a status-suffixed key: an anchored key, ampersand anch byom_status colon OPEN; a tagged key, bang bang str byom_status colon OPEN; the explicit-key form, question mark byom_status on one line and colon OPEN on the next; a leading BOM before an otherwise ordinary key; a leading zero-width space; a key containing a space, my byom_status colon OPEN and byom service_status colon OPEN; a key containing a colon, a colon b_status colon OPEN; and keys containing plus, at, percent or parentheses. The bare _status colon OPEN is invisible too and cannot be matched by any entry, which is consistent with the design intent. Two shapes I tried are correctly ignored because YAML does not read them as status keys at all: byom_statuses, and a full-width Latin s inside the suffix.",
+      "consequence": "Materially less severe than the same finding in the previous three rounds, and I want to be exact about why rather than repeat a complaint the change has already earned down. With the standing gone, an invisible line can no longer produce a FALSE claim; the worst case is now an untyped field going silently untyped, so the record is quiet rather than wrong. All sixteen are absent from the live file, which carries no BOM, no CRLF and no non-ASCII byte, and the strict reader agrees exactly with a full YAML parse. The BOM and zero-width-space shapes are the ones worth naming, because they are invisible to the human editing the file and this is a Windows host whose own CLAUDE.md warns that the editor tools emit unwanted bytes. The finding is the prose, not the pattern: however it is written is a totality the regex does not have, and this is the fourth consecutive commit in which the description of this guard outruns its reach.",
+      "what_would_have_defeated_this_finding": "grading read_fields against a YAML parse of the same bytes and refusing any disagreement other than the eight known duplicate keys, which measures the scope of the reader instead of enumerating it - the repair both the second and third witnesses proposed; or narrowing the comment and the refusal text to name the shapes actually covered, which costs one sentence and makes the claim true."
+    },
+    {
+      "id": "W4-B3",
+      "severity": "MINOR",
+      "claim_defeated": "the design claim as an unqualified sentence: no entry can assert anything about a subject that is not derivable from the field name and the value string",
+      "finding": "Two channels remain. detail is free prose, type-checked as a string, read only by the show subcommand and graded by nothing: setting the detail of a live entry to the sentence this subject is RATIFIED by Bdo, or to the literal text artifact_standing colon WITNESSED, or to settled_by seat:root, irreversible, each passes with exit 0. reference is graded only in the packet direction: on any entry whose value carries no OWNER_ACCEPTED_A-digit, a reference of decisions/9999-does-not-exist.md, acceptance/accepted/A99.json, urn:soveraeign:grant:invented or the bare word RATIFIED passes with exit 0. And where the packet direction does apply, the reference is compared to another declaration rather than to the packet: a value of OWNER_ACCEPTED_A999_INVENTED with reference A999 is self-consistent and passes, while acceptance/accepted/A1.json through A5.json sit in the worktree the check already has open. That last is TW-R3 and it is unrepaired. Separately, reference is present-checked but not type-checked, so a dict, a list, an integer, 0 and False all pass ungraded, because reference_contradicts coerces with str of x or empty string.",
+      "consequence": "Minor rather than material, and I am deliberately grading it below where the second and third witnesses put it, because the change removed the sentence that made it a contradiction. derived_never_declared claimed every derivable field was derived; it is deleted, and no current contract prose claims detail or reference is graded beyond what the code does - the REFERENCE_CONTRADICTS_VALUE text is explicit that reference is load-bearing for owner acceptance specifically. So the code and the contract now agree, and the design claim is false only as a slogan stated outside the artifact. My own view is that detail is correctly out of scope: it is a human gloss, it names no ladder position anything reads, and grading English prose is the exact mistake this commit exists to stop making. reference is different, because the packets are on disk and the check could measure. One repaired half is real: PACKET_REFERENCE is anchored with backslash-A and backslash-Z, so a reference of A2 with a trailing newline fails closed rather than matching, which was the other half of TW-R3.",
+      "what_would_have_defeated_this_finding": "resolving reference against the filesystem when it matches the packet pattern, which is one existence check in a function that already has ROOT; and type-checking reference as string-or-null in SHAPE. Nothing needs doing about detail beyond leaving it undescribed as graded, which is already the case."
+    }
+  ],
+  "residuals": [
+    {
+      "id": "W4-R1",
+      "severity": "MATERIAL",
+      "finding": "The contract names a governing decision the repository does not hold, for the fourth reading running. contracts/status-claims.json sets decision and one governed_by entry to decisions/0074-typed-standing-and-the-node-graph.md, and it is absent from 510f5b8. The other three governed_by entries resolve, and grounded_in GROUND-011 and GROUND-006 resolve as ground identifiers in contracts/product-ground.json rather than as paths, so they are fine. Nothing under scripts/ grades the decision or governed_by paths of a contract for existence, so this passes silently and no check moved. The absence is deliberate and correct: decisions/ is excluded from grant:standing-landing-loop, so the record cannot ride along with the code. What is new at this commit is that the witnessed_by half is REPAIRED - all three observations it names are present in the commit, where at 964f414 and 7860b45 they were not. So a contract committed as PROPOSED now shows its witnesses and still cannot show its governing decision. This is a genuine seam, not an oversight, and it is the item I would put in front of Bdo."
+    },
+    {
+      "id": "W4-R2",
+      "severity": "MINOR",
+      "finding": "malformed is registered twice: grade calls it directly to decide the short-circuit, and it is also the first element of the CHECKS tuple that grade then iterates. It cannot double-report, because the iteration is only reached when the direct call returned empty and the function is pure. It is harmless and it reads as a mistake to the next person. Recorded so the next reader does not spend time on it."
+    },
+    {
+      "id": "W4-R3",
+      "severity": "MINOR",
+      "finding": "The malformed short-circuit still masks other defects in the same run, as its own docstring says: one malformed entry plus an untyped field plus a stale entry reports only ENTRY_MALFORMED. The gate fails closed in both states, so this is an operator-facing ordering cost rather than a bypass, and the tradeoff against raising a traceback is defensible. Unchanged from the second and third readings; recorded so nobody reads a single ENTRY_MALFORMED as the whole defect set."
+    },
+    {
+      "id": "W4-R4",
+      "severity": "MINOR",
+      "finding": "The claim_kinds vocabulary the checker validates against is supplied by the file it grades, and nothing compares it to CLASSIFICATION.md or SPEC.md. Unchanged from TW-R4, and narrower now that the ladder is gone: emptying claim_kinds no longer switches a standing rule off, it makes every entry earn CLAIM_KIND_UNDECLARED, which fails closed. Recorded because the alphabet of the oracle is still supplied by its subject, and because editing the contract is a governed act rather than an unnoticed one."
+    },
+    {
+      "id": "W4-N1",
+      "severity": "INFORMATIONAL",
+      "finding": "Both registered checks read the artifact rather than a report about it, which is the question the witnessing procedure asks first. The check named status claims are typed shells the committed script against the committed STATUS.yaml. The check named status claim refusals fire shells selfcheck against the committed corpus and never opens STATUS.yaml - I confirmed that by reading selfcheck, which builds its fields from the status_lines each case carries - so repairing the live record cannot stop a refusal being proved. Both declare their sources so diagram provenance can see them. The unit module is discovered by a directory glob, not a declared list. I found no check in this change that reads a declaration where it could have measured, except the packet reference recorded as W4-B3."
+    },
+    {
+      "id": "W4-N2",
+      "severity": "INFORMATIONAL",
+      "finding": "scripts/sov_standing.py, which this change makes the sole owner of the standing question, still splits on underscore only and treats a preceding NOT as denial - so it reads NOT_YET_WITNESSED as a WITNESSED claim and a hyphen-prefixed WITNESSED as no claim at all. It is outside this commit and I attribute none of it here. It matters only as the direction of failure, and the direction is safe: over-reading a claim makes it demand a witness record. Recorded because the argument for deleting the extraction rests on that module owning the question, so its behaviour is load-bearing for this verdict even though it is not part of this change."
+    },
+    {
+      "id": "W4-N3",
+      "severity": "INFORMATIONAL",
+      "finding": "No secret shape, credential, token or absolute local path appears anywhere in the diff between b5de995 and 510f5b8; the two grep hits were the word token in observation prose and the constant PACKET_TOKEN. On this target scripts/sovverify/checks.py lands at 270 of 300 lines rather than the 288 the first witness recorded on the feature branch, so the finding recorded as SCT-R9 and TW-R10, that the check after next crosses the limit, is relieved to 30 lines of headroom here."
+    },
+    {
+      "id": "W4-N4",
+      "severity": "INFORMATIONAL",
+      "finding": "Adversarial probes that did NOT break anything, recorded so the negative result is available rather than implied. Reintroducing any of nine standing-shaped keys: refused. Renaming a subject, inventing a claim_kind, flipping a kind, duplicating an entry, deleting an entry, inventing a value not in STATUS.yaml: all refused with the code that names the defect. All 33 prior standing hazard values: no refusal, correctly, because no rule reads a standing. 15 quiet-line controls including five spellings of a bare status key: no false positive. Four corpus-vacuity mutations: three rejected, the control accepted. A trailing newline on a packet reference: fails closed. An integer, a dict, a list and False as a reference: pass ungraded, which is W4-B3. I could not construct any input that makes an entry assert a false thing about the state of a subject."
+    }
+  ],
+  "not_examined": [
+    "whether any typed claim is true; this contract types what STATUS.yaml asserts and both the module docstring and what_this_types scope it to representation, correctly",
+    "whether STATUS, OWNER_ACCEPTANCE and RULING are the right decomposition, and whether the eighteen bare OWNER_ACCEPTED values are acceptances; the contract records that reading openly under owner_accepted_reading and names it as Bdo to overturn, which the third witness already accepted as the right disposal and I did not re-litigate",
+    "the 24 embedded conformance defeating-fixture FAIL lines on their own merits; only the delta was graded and it is empty",
+    "decisions/0074, which is not in the commit and was not read",
+    "the negation handling of scripts/sov_standing.py beyond establishing its direction of failure; it is outside this commit",
+    "any prior witness harness; every prior bypass was reconstructed from its own description"
+  ],
+  "landing_assessment": {
+    "target": "510f5b8 on feat/status-claims-on-main, base b5de995 (main)",
+    "scope": "The ten paths sit inside grant:standing-landing-loop. No .github/, no STATUS.yaml, no CLAUDE.md, no root governing document, no decisions/, no lineage/. This is the material improvement over b1cbcc5, which the gate refused AUTHORITY_REFUSED for carrying .github/labels.yml.",
+    "evidence_the_grant_requires": "verify PASS - confirmed, exit 0, three rounds. lint PASS - confirmed, exit 0. An independent observation from a participant that did not build the change - this document, contributed_to_build false.",
+    "withheld_artifact_1": "decisions/0074-typed-standing-and-the-node-graph.md. Correctly withheld: decisions/ is outside the grant. Consequence of landing without it: the contract lands as PROPOSED naming a governing decision the repository does not hold, in both its decision field and its governed_by list. Nothing grades those paths, so nothing goes red; the artifact simply asserts what it cannot show. This is a real debt and it is the one I would put to Bdo.",
+    "withheld_artifact_2": "the CLAUDE.md 40-to-42 edit. Not needed on this target and not merely unnecessary: scripts/sov_snapshot.py does not exist on main, so there is no verification-check count claim to go stale. Landing without it has no consequence at all here. The seam three prior witnesses recorded is dissolved by the change of target.",
+    "my_view": "The code is landable and I would land it after a three-sentence prose repair. Everything the grant requires as evidence is present and green, the scope objection that refused the previous target is gone, and the delta is exactly the two checks registered with nothing lost. What I am not willing to call clean is W4-B1: the commit whose central act is deleting the artifact standing still says, in its own contract summary, its own naming_screen, and the docstring of its own reader, that an entry carries one. That is false of the artifact, it contradicts the same file two keys away, and it is the fourth appearance of the exact pattern this concern has been fighting - the named instance repaired, the class left standing elsewhere. It costs three sentences and no design decision, and it is inside the scope of the grant that would land it, so there is no reason it cannot be fixed inside the concern rather than after it."
+  },
+  "standing_supported": "Supports OPEN to BUILT for the ten paths, and supports the narrower claim that the fourth answer is the right kind of answer. It does not support BUILT to WITNESSED, on one finding. What is genuinely settled: the standing extraction is deleted rather than respelled, and cannot be reintroduced without ENTRY_UNKNOWN_KEY firing; all 33 prior standing hazards earn no refusal and that is correct, because the standing question survives in scripts/sov_standing.py, which checks whether a witness record exists rather than what the prose spells, and which fails closed on exactly the family that broke all three drafts where the deleted rule failed open; the eight duplicated keys still resolve to one subject holding two distinct kinds and that property is now enforced rather than merely satisfied; the unreadable-line detector takes all nine named shapes and no longer refuses a bare status key it could not repair; selfcheck proves ten refusals with two substantive positive cases and rejects a vacuous corpus from inside the gate; and on this target verify PASSES on both sides with a delta of exactly the two checks registered, nothing removed, no budget failure, the landing side faster in three of three rounds. Three prior witnesses each broke the artifact-standing rule; I could not, because there is nothing left to break, and I do not consider that a hollow result - deleting a weaker rule that sat beside the one that owns the question is what AGENTS.md asks for, and it is the first answer in four that closed the class rather than an instance. The finding that withholds a clean verdict is W4-B1: the deletion is complete in the code and incomplete in the prose. The summary and naming_screen of contracts/status-claims.json, and the module docstring of the reader itself, still say an entry gains an artifact standing where a ladder position is asserted. No entry does, and closed_key_set in the same file says so correctly two keys away. That is TW-B6 in a fourth spelling, inside the one commit whose central act is the removal. It is three sentences, it needs no design decision, it is inside the scope of the grant, and it is cheaper to fix than to explain in a month.",
+  "judgement_items": [
+    {
+      "id": "W4-J1",
+      "question": "Arguing the other side of the deletion, as I was asked to: no check now records that anything is BUILT. The CLAIMS set of sov_standing.py is WITNESSED and RATIFIED only, so the ten BUILT positions the crosswalk carried at 7860b45 are gone from the typed record, and STATUS.yaml states BUILT in plain words in at least five places the previous draft refused to type. The counter is that the previous record was wrong in five of fifteen places and read by nothing. Is the typed record meant to become the place a BUILT position is derivable - which is what evolution step 2 of this contract describes, a standing change emitting a journal entry - or is artifact standing permanently the property of sov_standing.py alone, in which case the evolution section should say so?"
+    },
+    {
+      "id": "W4-J2",
+      "question": "contracts/status-claims.json is committed as PROPOSED and names decisions/0074-typed-standing-and-the-node-graph.md as its decision and in governed_by, and that record is absent because decisions/ is outside grant:standing-landing-loop. The witnessed_by half is now repaired, since the three observations it names are in the commit. Should verify grade the decision and governed_by paths of a contract for existence - which would make this commit red until 0074 lands, and would force every contract to land with its decision - or is a contract permitted to name its governing decision before the record exists?"
+    },
+    {
+      "id": "W4-J3",
+      "question": "This is the fourth reading and the fourth to find the prose of the artifact claiming more than its code does - first the standing rule itself three times, now the summary and the docstring of the reader describing a field the same commit deleted. Each instance has been repaired where named. Is a fifth cycle the right move for three sentences, or does the recurrence say that contract prose needs a mechanical check of its own, refusing a contract that names a key no entry carries and no module reads?"
+    }
+  ]
+}

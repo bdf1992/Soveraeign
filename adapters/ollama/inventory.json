@@ -9,8 +9,8 @@
     "runtime_id": "ollama",
     "runtime_version": "0.32.9",
     "host_id": "urn:soveraeign:host:local-node",
-    "captured_at": "2026-08-23T20:41:53.319761Z",
-    "response_digest": "sha256:22763d2e28d2b7f5ae5f0543738c448bb46be09b3461f0b57b89e9fe6314b0dc"
+    "captured_at": "2026-08-23T23:39:35.878444Z",
+    "response_digest": "sha256:d99949908e546f72b3c1c245455c2225e4ba079d69fac19dd8ab4780bc608ff3"
   },
   "models": [
     {
@@ -78,6 +78,36 @@
       "context_length": 2048,
       "capabilities": [
         "embedding"
+      ],
+      "remote_host": null
+    },
+    {
+      "model_id": "qwen3.5:4b",
+      "model_version": "sha256:2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+      "family": "qwen35",
+      "parameter_size": "4.7B",
+      "quantization_level": "Q4_K_M",
+      "context_length": 262144,
+      "capabilities": [
+        "completion",
+        "thinking",
+        "tools",
+        "vision"
+      ],
+      "remote_host": null
+    },
+    {
+      "model_id": "qwen3.5:9b",
+      "model_version": "sha256:6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+      "family": "qwen35",
+      "parameter_size": "9.7B",
+      "quantization_level": "Q4_K_M",
+      "context_length": 262144,
+      "capabilities": [
+        "completion",
+        "thinking",
+        "tools",
+        "vision"
       ],
       "remote_host": null
     },

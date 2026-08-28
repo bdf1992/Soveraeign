@@ -45,8 +45,17 @@ DEFAULT_WORKERS = 4
 # leaves margin. Note for whoever tunes this next: peers are not monotonic in the
 # weight across the whole range - weight 1 packs late and lands at 15, weight 2
 # at 20 - so a weight has to be measured rather than reasoned about.
-MODULE_WEIGHTS = {"test_sov_docs.py": 10, "test_verify_clocks.py": 7,
-                  "test_sov_branch.py": 10}
+#
+# Remeasured 2026-08-27 at 89 modules, and the point of remeasuring is that two
+# of the three entries had stopped buying anything: test_sov_branch at 10 gave
+# its shard 20 peers where dropping the entry also gave 20, and test_sov_docs at
+# 10 gave 19 where dropping it gave 17 - actively worse than no weight at all.
+# A weight is a measurement against a module population, so it expires when the
+# population grows. 20 and 18 give 14 and 16 against unweighted 17 and 20, which
+# is a real gap rather than the single peer the smallest working pair buys.
+# test_verify_clocks at 7 still works: 22 peers against 27 unweighted.
+MODULE_WEIGHTS = {"test_sov_docs.py": 20, "test_verify_clocks.py": 7,
+                  "test_sov_branch.py": 18}
 
 
 def test_modules() -> tuple[Path, ...]:

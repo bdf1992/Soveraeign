@@ -1,0 +1,318 @@
+{
+  "observer_id": "urn:soveraeign:actor:sov-witness/third-reading-7860b45",
+  "contributed_to_build": false,
+  "witness_ordinal": 3,
+  "verdict": "REPRODUCED_WITH_DEFECTS",
+  "concern": "commit 7860b45 on feat/status-claims-typed: does removing vocabulary from the standing rule answer the second witness's diagnosis - a guard written against the reported instance rather than the class - and does the design claim above it hold, that no crosswalk entry can assert anything about a subject that is not derivable from the field name and the value string?",
+  "subject": {
+    "commits": ["7860b4562b0a33d7d190dbdb57f058374907dd0c"],
+    "parent": "964f414e5a5c681afc099c97c2283e623f032276",
+    "base": "126430013d113cb002a6249b812de57588094709",
+    "ancestry": ["1264300", "5dbe513", "964f414", "7860b45"],
+    "branch": "feat/status-claims-typed",
+    "pull_request": null,
+    "decisions": [],
+    "paths_cumulative_vs_base": [
+      "conformance/fixtures/status-claims/cases.json",
+      "contracts/status-claims.json",
+      "scripts/sov_status_claims.py",
+      "scripts/sovstatus/__init__.py",
+      "scripts/sovstatus/refusals.py",
+      "scripts/sovverify/checks.py",
+      "scripts/tests/test_status_claims.py"
+    ],
+    "claims_under_test": [
+      "1 - every bypass from BOTH prior observations is closed",
+      "2 - selfcheck passes; 10 declared refusals, each firing on a case earning exactly that code",
+      "3 - check passes: 48 fields, 40 subjects",
+      "4 - 28 unit tests pass, discovered by scripts/run_tooling_tests.py",
+      "5 - lint exit 0; every production module under 300 lines",
+      "6 - verify delta against base 1264300 is empty",
+      "7 - STATUS.yaml is byte-identical across all four commits",
+      "8 - the design claim: no entry can assert anything not derivable from the field name and the value string"
+    ]
+  },
+  "observer_relation": {
+    "to_builder": "NONE",
+    "basis": "Launched after 7860b45 existed. Built two fresh detached worktrees of my own (w3-commit at 7860b45, w3-base at 1264300) from the object store and measured only there. I did not build, edit, review, or advise on any file in this commit. I read no builder report, acceptance packet, or completion summary. decisions/0074 is not in the commit, was not read, and is evidence for nothing.",
+    "prior_witnesses": "I am the third witness and I read both prior observations in full before measuring: the first (against 5dbe513) and the second (against 964f414), neither of which is committed at 7860b45. I used them as a list of claims to re-derive, never as evidence. All 19 previously demonstrated bypasses were reconstructed by me from their own descriptions and re-run against the live 48-entry crosswalk; I ran neither prior witness's harness."
+  },
+  "frozen_head": "7860b4562b0a33d7d190dbdb57f058374907dd0c",
+  "shared_tree_conditions": {
+    "trap": "CLAUDE.md T6",
+    "primary_tree_state": "the primary working tree was at d1037100 on feat/federation-harness-and-hardening with 96 modified or untracked paths, and 85 worktrees registered against this object store. Unusable for measurement and not measured in.",
+    "mitigation": "Two purpose-built detached worktrees, git status --porcelain returning zero lines at 7860b45 and 1264300 immediately before the first measurement and again after the last. The entire adversarial battery ran as pure calls to sov_status_claims.grade() and selfcheck() over synthesized inputs and deep copies of the loaded contract, so no file in either worktree was written during measurement. This observation was written only after the final stability recheck.",
+    "stability_recheck": "check, selfcheck and the 28-test module were re-run after all other measurements with identical output; both worktrees still clean at their frozen commits. The verdict is attestable against a tree that did not move.",
+    "trap_6b_applied": "Round 1 of the paired verify runs produced a top-level 'verification budget (19.855s > 15.000s)' failure at the BASE 1264300, which the commit did not have - the opposite side from the second witness, whose round-1 budget failure landed on the commit. I did not record it as anyone's defect. Round 2, interleaved so load hits both sides alike, produced character-identical summary lines at both commits. A budget failure that changes sides between witnesses is machine load. Withdrawn, and recorded because its landing on the base this time is direct evidence that the second witness was right to withdraw it too.",
+    "trap_2_applied": "verify.py exits 1 at both commits and was never read as conformance. The check-name delta, the tooling-test failure names, and the per-claim delta inside the already-red orientation snapshot were all parsed; only the last shows the change.",
+    "trap_3_applied": "The standing rule no longer does token containment at all, so T3's substring hazard is structurally absent from this module. It remains live in scripts/sov_standing.py, outside this commit; see TW-R5."
+  },
+  "checks": [
+    {
+      "command": "git rev-parse 1264300:STATUS.yaml 5dbe513:STATUS.yaml 964f414:STATUS.yaml 7860b45:STATUS.yaml",
+      "result": "IDENTICAL",
+      "exit_code": 0,
+      "detail": "all four resolve to blob 401fe0b53f2de0af1d55568fd0e5849534a51187. A content hash, not a diff."
+    },
+    {
+      "command": "python scripts/sov_status_claims.py check",
+      "cwd": "w3-commit (7860b45, clean)",
+      "result": "PASS",
+      "exit_code": 0,
+      "output": "status claims: 48 typed against 40 subjects, no defects"
+    },
+    {
+      "command": "python scripts/sov_status_claims.py selfcheck",
+      "cwd": "w3-commit (7860b45, clean)",
+      "result": "PASS",
+      "exit_code": 0,
+      "output": "status-claims selfcheck: 10 refusals each fire"
+    },
+    {
+      "command": "python -m unittest scripts.tests.test_status_claims",
+      "cwd": "w3-commit (7860b45, clean)",
+      "result": "PASS",
+      "exit_code": 0,
+      "output": "Ran 28 tests in 0.015s - OK"
+    },
+    {
+      "command": "python scripts/lint.py",
+      "cwd": "w3-commit (7860b45, clean)",
+      "result": "PASS",
+      "exit_code": 0,
+      "output": "PASS: repository hygiene (816 text files, 347 Python modules, 8 named debt), with 8 WARN lines, one per duplicated STATUS.yaml key"
+    },
+    {
+      "command": "newline count of every changed module, read from bytes rather than a line-counting cmdlet",
+      "result": "PASS",
+      "exit_code": 0,
+      "detail": "sov_status_claims.py 181, sovstatus/refusals.py 186, sovstatus/__init__.py 1, tests/test_status_claims.py 257, sovverify/checks.py 288. Zero CRLF, all newline-terminated. Limit 300."
+    },
+    {
+      "command": "python scripts/verify.py, round 1, interleaved base then commit",
+      "result": "FAIL both sides",
+      "exit_code": 1,
+      "output": "base: 40 TIME lines, 65 tooling modules, plus a 'verification budget (19.855s > 15.000s)' item. commit: 42 TIME lines, 66 tooling modules, no budget item. The budget item is machine load - see trap_6b_applied - and is withdrawn."
+    },
+    {
+      "command": "python scripts/verify.py, round 2, interleaved base then commit",
+      "result": "FAIL both sides",
+      "exit_code": 1,
+      "output": "Summary line character-identical at both: 'FAIL: orientation snapshot, diagram provenance, Node Interface projection, documentation reader, operation surface page, repository tooling tests'. 40 vs 42 TIME lines; 65 vs 66 tooling modules."
+    },
+    {
+      "command": "PASS/FAIL check-name set difference between base and commit",
+      "result": "EMPTY",
+      "exit_code": 0,
+      "detail": "comm -23 and comm -13 over the sorted unique check-name sets both return nothing. The two new checks pass."
+    },
+    {
+      "command": "python scripts/run_tooling_tests.py at both commits, failing test names compared",
+      "result": "IDENTICAL",
+      "exit_code": 1,
+      "detail": "Same three failing tests at base and commit: test_sov_snapshot.test_check_exits_zero_when_a_claim_cannot_be_derived, test_sov_surface.test_checked_interface_and_page_are_current, test_sov_docs.test_the_built_page_is_current, plus the same four staleness and routing FAIL lines. Pre-existing; this change adds no failing test."
+    },
+    {
+      "command": "python scripts/sov_snapshot.py at both commits, per-claim",
+      "result": "DELTA OF ONE CLAIM",
+      "exit_code": 1,
+      "detail": "base fails 2 claims (commits, decision records); commit fails 3, adding 'FAIL verification checks: page says 40, record holds 42'. See TW-R8."
+    },
+    {
+      "command": "independent adversarial battery: 7 blocks, 118 synthesized inputs, over post-positive negation, rung-word sense, Unicode and punctuation separators, kind-versus-standing asymmetry, packet references, reader scope in both directions, entry shape, corpus shape, and the ladder",
+      "result": "MIXED",
+      "exit_code": null,
+      "detail": "All 19 prior bypasses refused. Six new shapes pass with exit 0 while asserting something the value does not support, and two of them are compelled rather than merely permitted. See dissented."
+    }
+  ],
+  "reproduced": [
+    {
+      "id": "TW-1",
+      "claim": "claim 1 - every bypass from both prior observations is closed",
+      "method": "I reconstructed all 19 mutations from the two prior observations own descriptions, applied them to deep copies of the live 48-entry crosswalk or appended lines to the live STATUS.yaml text, and graded each through grade(). I ran neither prior harness.",
+      "finding": "CONFIRMED for every bypass that asserted something. SCT-D1: sov_operating_agent_status declaring WITNESSED, and declaring RATIFIED, both earn STANDING_NOT_THE_LEADING_TOKEN. SCT-D2: subject renamed to byom-ruling earns SUBJECT_NOT_DERIVED; claim_kind RULLING and ADVISORY earn CLAIM_KIND_UNDECLARED. SCT-R2: demoting specification_status to STATUS earns CLAIM_KIND_CONTRADICTS_VALUE. SCT-R4: a verbatim duplicate entry earns CLAIM_KIND_COLLISION. SCT-R5: deleting artifact_standing, nulling subject and deleting detail each earn ENTRY_MALFORMED rather than raising. SW-B1, the whole negation family: NOT_WITNESSED, NOT_YET_WITNESSED, NEVER_WITNESSED, AWAITING_WITNESSED, BUILT-NOT_WITNESSED, UN_WITNESSED, PENDING_WITNESSED and NO_WITNESSED all earn STANDING_NOT_THE_LEADING_TOKEN when the entry declares WITNESSED. SW-B2 case half: a lowercase value is now uppercased before the kind question, so ruled_open_until_bdo no longer types as STATUS. SW-B4 four shapes: ai-native_status, a quoted key, a space before the colon and FOO_STATUS all earn FIELD_UNREADABLE, as do an indented field, a value with a space and a trailing comment. Only one prior item still passes and it asserts nothing graded: re-adding the deleted key standing_source=READING to an entry earns no defect, which is TW-B4 rather than SCT-D1.",
+      "assessment": "The repair is real for the third time running. Removing the negation vocabulary genuinely kills the whole SW-B1 family at once rather than one word at a time, which is the right shape of answer to the second witness diagnosis."
+    },
+    {
+      "id": "TW-2",
+      "claim": "claim 2 - selfcheck passes; 10 declared refusals, each firing on a case earning exactly that code",
+      "method": "I did not read the selfcheck verdict. I loaded the corpus myself, called grade() on each case, collected the earned code set, and compared it against each declared expectation and against contract.refusals in both directions.",
+      "finding": "CONFIRMED. 12 cases: two positive earning the empty set, ten defeating cases each earning exactly one code and exactly the code it names. Declared refusals 10, exercised 10, declared-not-exercised empty, exercised-not-declared empty. selfcheck is bidirectional and rejects a defeating case that fires for a second reason. The refusal table shrank from 12 to 10 because four interacting standing refusals collapsed into one biconditional and two were retired with the standing_source field; that is a simplification, not a loss of coverage, and every retired code hazard is still refused under TW-1. Branch coverage inside one refusal is a separate matter; see TW-R2."
+    },
+    {
+      "id": "TW-3",
+      "claim": "claim 3 - check passes: 48 fields, 40 subjects",
+      "method": "re-derived with a regex I wrote independently of the module one, deliberately looser on both key and value; then compared the file pair set against the crosswalk pair set in both directions",
+      "finding": "CONFIRMED. STATUS.yaml carries exactly 48 column-zero status fields, all 48 field-and-value pairs distinct; the crosswalk carries 48 entries over 40 distinct subjects; the two sets are equal in both directions, with nothing on either side alone. Exactly 8 top-level keys are duplicated and all 8 are status fields. Scanning the whole file for any line carrying the word status before a colon that the strict reader misses returns exactly one hit, a prose comment at line 275 beginning with a hash, which no reader should type. Standing distribution: 10 non-null, every one of them BUILT, every one of them the value first token."
+    },
+    {
+      "id": "TW-4",
+      "claim": "claim 4 - 28 unit tests pass and are discovered by scripts/run_tooling_tests.py",
+      "method": "ran the module directly, then read the discovery mechanism rather than trusting that a new file is picked up",
+      "finding": "CONFIRMED. Ran 28 tests, OK, up from 23 at the parent. run_tooling_tests.py discovers by TEST_ROOT.glob(test_*.py), a measurement of the directory rather than a declared list, so a module cannot be silently omitted. The shard module count moves from 65 at the base to 66 at the commit, which is the independent evidence that this module actually entered the suite. Neither production module touches sys.path; only the test bootstrap does."
+    },
+    {
+      "id": "TW-5",
+      "claim": "claim 5 - lint exit 0 and every production module under 300 lines",
+      "method": "ran lint, then counted newline bytes rather than trusting a line-counting cmdlet, which under-reports by dropping blank lines",
+      "finding": "CONFIRMED. lint exit 0 with the eight expected duplicate-key WARN lines and no named debt added. sov_status_claims.py 181, sovstatus/refusals.py 186, sovverify/checks.py 288, all against a 300-line limit; the test module at 257 is not production. Zero CRLF bytes anywhere, every file newline-terminated. The split of the refusal table out of the reader is by owned responsibility - the reader owns what counts as a status field, the table owns what counts as a wrong entry - not by line count."
+    },
+    {
+      "id": "TW-6-scoped",
+      "claim": "claim 6 - the verify delta against base 1264300 is empty",
+      "method": "two interleaved verify runs per side in two clean detached worktrees; parsed the PASS and FAIL check-name sets, the top-level summary lines, the tooling shard failing test names, and the orientation snapshot per-claim output",
+      "finding": "CONFIRMED AT CHECK GRANULARITY, NOT AT CLAIM GRANULARITY, which is the reading both prior witnesses also reached. On round 2 the top-level summary lines are character-identical and the check-name set difference is empty in both directions. The three failing tooling tests are the same three at both commits. But inside the orientation snapshot, already red at the base, the failing claim count moves from two to three: the commit adds FAIL verification checks: page says 40, record holds 42. Recording the delta as empty is true of check names and of tooling tests, and false of claims. See TW-R8."
+    },
+    {
+      "id": "TW-7",
+      "claim": "claim 7 - STATUS.yaml is byte-identical across all four commits",
+      "method": "compared git blob object ids across the four commits, which is a content hash rather than a diff",
+      "finding": "CONFIRMED. All four resolve to blob 401fe0b53f2de0af1d55568fd0e5849534a51187. The cumulative change against the base touches exactly the seven declared paths and nothing else; the only edit to a pre-existing file is an eleven-line registration of two checks in scripts/sovverify/checks.py, which I read line by line. No secret shape, credential, token or absolute local path appears anywhere in the cumulative diff."
+    },
+    {
+      "id": "TW-8",
+      "claim": "the two registered checks read the artifact rather than a report about it",
+      "method": "read the registration in scripts/sovverify/checks.py and the code paths it shells",
+      "finding": "CONFIRMED. The check named status claims are typed shells the committed script against the committed STATUS.yaml. The check named status claim refusals fire shells it against the committed corpus and never opens STATUS.yaml, so repairing the live record cannot stop a refusal being proved; I verified that by reading selfcheck, which builds its fields from the status_lines each case carries. Both declare their sources, so diagram provenance can see them. I found no check in this change that reads a declaration where it could have measured, with the exceptions recorded as TW-R3 and TW-R4."
+    }
+  ],
+  "dissented": [
+    {
+      "id": "TW-B1",
+      "severity": "MATERIAL",
+      "claim_defeated": "there is no negation vocabulary because there is nothing to negate: a value opening with BUILT is not denying BUILT (contracts/status-claims.json, artifact_standing_rule)",
+      "finding": "The biconditional is blind to every denial standing to the right of the rung, and it does not merely permit the wrong answer - it forbids the right one. With the entry declaring the leading rung, all of these pass with exit 0 and no defect: WITNESSED_RETRACTED, WITNESSED_CLAIM_WITHDRAWN, WITNESSED_NOT_REALLY, WITNESSED_BY_NOBODY, WITNESSED_FALSELY, RATIFIED_THEN_REVOKED, RATIFIED_NOT, RATIFIED_IN_ERROR_COUNTER_RECORDED, RATIFIED_PENDING_REVERSAL, BUILT_THEN_DELETED. RATIFIED_NOT is the sharpest single input: the value carries the token NOT as a denial, the entry declares RATIFIED, and the check reports no defect. Then the compulsion: declaring artifact_standing null on any of them earns STANDING_NOT_THE_LEADING_TOKEN. There is no admissible entry for RATIFIED_THEN_REVOKED other than one asserting RATIFIED.",
+      "consequence": "The second witness diagnosis was that a guard is written against the reported instance rather than the class. The class is that the value denies the rung; the instances guarded were denials standing to the left of the rung. Removing the vocabulary removed the left-hand hole and left the right-hand one, and the biconditional then converts it from a permission into a requirement. Retraction is first-class in this repository - AGENTS.md says retraction adds a counter-record and never erases the original - so RATIFIED_THEN_COUNTER_RECORDED is an ordinary thing to write in a hand-written file, and the crosswalk would be required to type it RATIFIED. Unexploited today: no live value carries a denial after its leading rung, and the ten non-null standings are all BUILT led by BUILT.",
+      "what_would_have_defeated_this_finding": "a refusal when the leading rung of a value is followed anywhere by a token the contract has not declared as an admissible continuation, so an unknown neighbour fails closed; or a declared modifier vocabulary in which the leading-rung reading is only available when every later token is known."
+    },
+    {
+      "id": "TW-B2",
+      "severity": "MATERIAL",
+      "claim_defeated": "tokens split on every non-alphanumeric run, so a hyphen cannot hide one (contracts/status-claims.json, artifact_standing_rule, and the tokens() docstring)",
+      "finding": "Splitting on every non-alphanumeric run does not stop a negator hiding - it deletes any negator that is not ASCII alphanumeric, leaving the rung first. Every one of these passes with exit 0 while the entry declares the rung: -WITNESSED, !WITNESSED, ~WITNESSED, _WITNESSED, U+00AC WITNESSED, Cyrillic NE underscore WITNESSED, Cyrillic NET underscore WITNESSED, Greek OU underscore WITNESSED, and CJK U+975E underscore WITNESSED. A leading BOM (U+FEFF) before RATIFIED and a leading zero-width space (U+200B) before RATIFIED both assert RATIFIED. tokens(-WITNESSED) returns the single token WITNESSED and leading_standing returns WITNESSED.",
+      "consequence": "This is the previous draft defect inverted rather than removed. The second draft could not see BUILT-NOT_WITNESSED because a non-underscore attached the negator to its neighbour; this draft cannot see -WITNESSED because a non-alphanumeric negator is discarded entirely before the first token is chosen. The ASCII members of the family are the ones that matter: -WITNESSED and !WITNESSED are plausible hand shorthand for not witnessed in a file the contract itself says is hand-written, and both are one keystroke. I checked the control direction and it holds: NOT-WITNESSED, with the negator spelled out, is correctly refused, because NOT survives as its own token. The break needs the negator itself to be non-alphanumeric. Unexploited today: all 48 live values are ASCII and none leads with punctuation.",
+      "what_would_have_defeated_this_finding": "refusing any value carrying a byte outside the alphabet the contract declares for values - all 48 live values are ASCII uppercase, digits and underscore - so an unrecognised byte fails closed instead of vanishing; or choosing the leading token from the first run of the raw string rather than from a list that silently drops what precedes it."
+    },
+    {
+      "id": "TW-B3",
+      "severity": "MATERIAL",
+      "claim_defeated": "artifact_standing is the standing the value asserts (contracts/status-claims.json, artifact_standing_rule and derived_never_declared)",
+      "finding": "The rule decides on word order, not on what the value says, and it is wrong in both directions on live data. Under-claiming: five live values state a standing plainly, the crosswalk now records null, and declaring the true standing is REFUSED with STANDING_NOT_THE_LEADING_TOKEN. node_identity_status carries PROPOSED_CONTRACT_BUILT_REGISTRY_READ_NO_ADMISSION_TRANSPORT; federation_crossing_status carries PROPOSED_CONTRACT_BUILT_SELF_TESTED_NO_TRANSPORT; public_projection_status carries PROPOSED_CONTRACT_BUILT_PUBLICATION_RECORDED_SEAT_SET; sov_operating_agent_status carries OWNER_ACCEPTED_CONTEXT_PROFILE_BUILT_SELF_TESTED_NOT_WITNESSED and, on its second line, RULED_ENVELOPE_STANDS_O17_BUILT_SELF_TESTED. Each says a contract or profile is BUILT. Each is typed as asserting no ladder position at all, and cannot be typed otherwise. Over-claiming, in the same breath: a value leading with a rung word used in another sense must declare that rung. OPEN_QUESTION_FOR_BDO, OPEN_SEAM_S20_UNRESOLVED, OPEN_TO_ANY_PARTICIPANT and OPEN_SOURCE_LICENCE_UNDECIDED all pass declaring standing OPEN, and declaring null on any of them is refused.",
+      "consequence": "The token_trap section of the contract names exactly this hazard - PARTICIPANT_BINDING_OPEN carries OPEN about a binding rather than about the standing of the subject - and the new rule survives that one case only by the accident that OPEN sits last there. Move the same word to the front and the rule compels the false reading with no refusal available. Meanwhile the three entries the rule gets right for that reason (conformance_status, lessons_loop_status, ticket_metadata_reader_status) are right by word order rather than by meaning. Net on live data: of the eight entries carrying a rung token while declaring null, three are correct calls and five discard a standing the document really does carry. That is information the record held at 964f414 and does not hold at 7860b45.",
+      "what_would_have_defeated_this_finding": "a derivation that reads the grammar of the value rather than its first word - a declared prefix vocabulary (PROPOSED_, OWNER_ACCEPTED_, RULED_) stripped before the standing question is asked, so PROPOSED_CONTRACT_BUILT_... yields BUILT and OPEN_QUESTION_... yields nothing; or, failing that, narrowing artifact_standing_rule prose to say it types the leading word and not the assertion, and recording the five as a known scope."
+    },
+    {
+      "id": "TW-B4",
+      "severity": "MATERIAL",
+      "claim_defeated": "an entry is a reading of the document, not a second place to assert something about it; every field an entry declares that can be derived is derived and compared, never trusted (contracts/status-claims.json, derived_never_declared) - and the design claim under test, that no entry can assert anything not derivable from the field name and the value string",
+      "finding": "An entry can assert arbitrarily much, through three channels, and the check reports no defect. First, extra keys: SHAPE type-checks the five declared string keys and tests artifact_standing and reference for presence, and nothing anywhere rejects an eighth key. Adding any of these to a live entry passes with exit 0 - asserted_standing=RATIFIED, settled_by=seat:root, authority=GRANTED, reversible=false, witnessed_by=reports/observations/does-not-exist.json, and standing_source=READING, the very field this commit deleted. Second, detail: free prose, read only by the show subcommand, graded by nothing. Setting the detail of a live entry to the sentence this subject is RATIFIED by Bdo passes with exit 0. Third, reference: graded only where the value carries OWNER_ACCEPTED_A followed by a digit, or where the reference itself matches the packet pattern. Setting the reference of a live entry to decisions/9999-does-not-exist.md or to acceptance/accepted/A99.json passes with exit 0.",
+      "consequence": "The design claim I was asked to attack is false as written, and the derived_never_declared sentence overstates what the code does. It is true of exactly three fields - subject, claim_kind and artifact_standing - and the entry has seven fields and an unbounded number of possible extra ones. The sharpest form is that standing_source can be put straight back and the checker will not notice: the only guard against the removed field is scripts/tests/test_status_claims.py test_no_entry_carries_a_removed_field, which lives in the tooling shard, not in the check verify.py runs under the name status claims are typed. A guard for the gate, sitting outside the gate, is the shape of defect this table exists to refuse.",
+      "what_would_have_defeated_this_finding": "refusing any entry key outside the declared seven, which is one set difference in malformed(); plus either grading detail and reference or removing them from the entry, since a field the contract calls load-bearing and grades nowhere is a declaration by the standard of the table itself."
+    },
+    {
+      "id": "TW-B5",
+      "severity": "MATERIAL",
+      "claim_defeated": "LOOSE is deliberately far looser than FIELD: anything key-shaped whose name ends in status, quoted or not, hyphenated or not, in any case, with or without a space before the colon (scripts/sov_status_claims.py, LOOSE comment)",
+      "finding": "It is not anything key-shaped; it is the six shapes two witnesses reported, and it now also cries wolf. Invisible to BOTH readers, earning neither FIELD_UNTYPED nor FIELD_UNREADABLE, each confirmed against an empty crosswalk with exit 0: a YAML list item, dash space byom_status colon OPEN, indented or not; a dotted key, node.v1_status colon OPEN and v1.status colon OPEN; a slashed key, services/asset_status colon OPEN; a flow mapping, brace byom_status colon OPEN brace; an anchored key, ampersand anch byom_status colon OPEN; a tagged key, bang bang str byom_status colon OPEN; a bracketed key; a backticked key; a key containing a space, my status colon OPEN and byom service_status colon OPEN; a colon inside the key, a:b_status colon OPEN; a plus in the key; and a full-width Latin s inside the key. Fifteen of the seventeen shapes I tried are invisible. In the other direction the detector now produces false positives on legitimate YAML: any nested status key at any depth earns FIELD_UNREADABLE, as do a nested build_status, a nested ci-status, a quoted nested status, an uppercase STATUS colon FOUNDING, and a top-level bare status colon FOUNDING.",
+      "consequence": "This is the third consecutive commit in which this guard is written against the instances the previous witness happened to name. The list-item shape is not exotic - it is one of the two ways YAML expresses a sequence - and this file already holds sequence-valued keys. The false-positive direction is worse than noise, because a bare status colon FOUNDING is unrepairable inside the crosswalk: FIELD requires at least one character before the _status suffix, so read_fields cannot produce that pair, no entry can match it, and the only repair is editing STATUS.yaml - which the not_in_scope section of this very contract forbids, stating that the file is unchanged by this contract. A detector that can refuse a line the contract has promised not to fix has no admissible exit. Unexploited today: the live file carries zero lines of any of these shapes, in either direction.",
+      "what_would_have_defeated_this_finding": "grading read_fields against a YAML parse of the same bytes and refusing any disagreement other than the eight known duplicate keys, which measures the scope of the reader instead of guessing it; or a LOOSE pattern matching any line whose text before the first colon contains the case-insensitive substring status, so the strict reader must justify every exclusion, paired with an explicit allow-list for nested keys."
+    },
+    {
+      "id": "TW-B6",
+      "severity": "MATERIAL",
+      "claim_defeated": "the committed contract describes the rule the committed code applies",
+      "finding": "contracts/status-claims.json contradicts itself about its own standing rule, and two of its three descriptions are the rule of the previous draft. artifact_standing_rule states the new rule correctly. But token_trap, unedited in this commit, still reads: Tokens are compared whole and a token preceded by NOT is a denial ... which is why a token is honoured only where the entry declares standing_source: TOKEN, and why an entry whose value begins with a ladder word may not declare anything else. And derived_never_declared still reads: artifact_standing must be a whole undenied token of the value. Neither is true of this commit. The NOT-denial rule was deleted from the code; the string standing_source appears nowhere in scripts/sovstatus/refusals.py, nowhere in scripts/sov_status_claims.py, and on no crosswalk entry - I checked all 48 key sets and they are identical and seven-membered. The only surviving occurrence of standing_source in the whole contract is this stale sentence, presenting it as the live mechanism.",
+      "consequence": "A launched agent reading this contract to learn how standing is typed is told the mechanism the second witness already walked through, and is told a field exists that does not. Nothing under scripts/ grades contract prose against contract behaviour, so this passes silently and no verify check moved. It matters more here than it usually would, because the whole argument of artifact_standing_rule is that the previous rule was wrong, and the file still carries the previous rule two keys away as if it were current.",
+      "what_would_have_defeated_this_finding": "editing token_trap and derived_never_declared in the same commit that changed the rule; or a check refusing a contract that names a field no entry carries and no module reads, which is the same measurement TW-B4 asks for, run in the other direction."
+    }
+  ],
+  "residuals": [
+    {
+      "id": "TW-R1",
+      "severity": "MINOR",
+      "finding": "The reader still disagrees with itself about separators, which is the surviving half of SW-B2. expected_kind now upper-cases, so the letter-case half is genuinely repaired: ruled_open_until_bdo and owner_accepted_a2_packet now type correctly. But expected_kind matches the literal prefixes RULED_ and OWNER_ACCEPTED_A followed by a digit, while tokens() splits on every non-alphanumeric run. So within one entry the standing question is separator-insensitive and the kind question is not. These all pass with exit 0 typed as STATUS - reversible true, settled_by null - when they are rulings or acceptances: RULED-O19, RULED.O19, RULED-OPEN_UNTIL_BDO, a bare RULED, OWNER-ACCEPTED-A2_PACKET, OWNER_ACCEPTED-A2 and OWNER_ACCEPTED_A_2. The hyphenated acceptance form escapes the reference rule as well as the kind rule, because reference_contradicts uses the same regex to decide what packet the value carries. Minor rather than material because no live value is affected, and recorded because the module docstring makes separator-insensitivity its headline fix while applying it to only one of the two derivations."
+    },
+    {
+      "id": "TW-R2",
+      "severity": "MINOR",
+      "finding": "The new refusal has two branches and the corpus proves one. I instrumented reference_contradicts and replayed all 12 corpus cases: branch one, where the value carries a packet id and the reference disagrees, fires in exactly one case; branch two, where the reference names a packet and the value carries none, fires in zero. Branch two is covered only by scripts/tests/test_status_claims.py, in the tooling shard. The corpus is what verify.py runs under the name status claim refusals fire and what selfcheck grades, so the check that exists to prove every refusal fires proves half of the newest one. AGENTS.md asks for a defeating case per consequential behaviour, and the bidirectional test inside selfcheck is by code name, which cannot see a branch."
+    },
+    {
+      "id": "TW-R3",
+      "severity": "MATERIAL",
+      "finding": "The packet reference is compared to another declaration and never to the packet. reference_contradicts checks the packet id of the value against the packet id of the reference and stops. A value of OWNER_ACCEPTED_A999_X with reference A999 passes with exit 0 and no such packet exists; OWNER_ACCEPTED_A02_X with reference A02 passes self-consistently and the real file is A2.json. Meanwhile acceptance/accepted/A1.json through A5.json and acceptance/A6.json sit in the same worktree the check already reads, so this is a declaration graded where it could have been measured - the defect class the witnessing procedure names, appearing in the one refusal this commit added. Separately, PACKET_REFERENCE is anchored with dollar rather than backslash-Z, so a reference of A2 followed by a newline matches as A2; a trailing space is correctly refused. I checked the live data and it is truthful: A1 through A4 resolve to real packets, decisions/0034 and decisions/0042 resolve to real records, and the O-numbers and S19 are retired historical citations rather than paths."
+    },
+    {
+      "id": "TW-R4",
+      "severity": "MINOR",
+      "finding": "The ladder is a declaration the checker reads and nothing validates. artifact_standing_ladder is taken from the contract at face value. Emptying it entirely and setting all 48 artifact_standing values to null passes with exit 0: the biconditional becomes vacuously satisfied and the whole standing rule switches off with no refusal, in the file the rule is written in. Nothing compares the ladder to CLASSIFICATION.md or SPEC.md, which own the vocabulary. Minor because the mutation is self-consistency-checked in the other direction - adding a word to the ladder forces every entry leading with it to declare it, so a partial edit is caught - and because editing the contract is a governed act. It is still the case that the alphabet of the oracle is supplied by the thing it grades."
+    },
+    {
+      "id": "TW-R5",
+      "severity": "MINOR",
+      "finding": "Two live checks read the same bytes under two different rules. scripts/sov_standing.py claimed_standing reads the status fields of STATUS.yaml, splits on underscore only, takes the first ladder token found anywhere, and treats a preceding NOT as denial. scripts/sovstatus/refusals.py leading_standing reads the same fields and takes the first token only. Both run under verify.py. They disagree for any value carrying a rung after position zero: sov_standing reads PROPOSED_CONTRACT_WITNESSED as WITNESSED and status-claims reads it as nothing, and sov_standing still reads NOT_YET_WITNESSED as WITNESSED, which is the SW-B1 hazard alive in the older module. No live wrong answer today, because the CLAIMS set of sov_standing is only WITNESSED and RATIFIED and no live value carries either after position zero, so the two scopes do not currently overlap. Recorded because AGENTS.md says not to duplicate a rule in another file as a competing authority, and neither module cites the other. sov_standing.py is outside this commit and I am not attributing its behaviour to this change."
+    },
+    {
+      "id": "TW-R6",
+      "severity": "MINOR",
+      "finding": "The positive floor is raised and low. selfcheck now requires a case with expect null, a non-empty crosswalk and non-empty status_lines, and I confirmed it fires on the empty-crosswalk corpus the second witness constructed. But the shipped ten defeating cases plus a single positive case typing one trivial entry satisfies selfcheck with no defects, so the guard proves that one entry was typed rather than that the positive direction is exercised. Duplicating every defeating case also passes. Separately, a corpus case omitting status_lines raises KeyError rather than earning a refusal: the corpus has no shape check, which is the ENTRY_MALFORMED problem one level up."
+    },
+    {
+      "id": "TW-R7",
+      "severity": "MINOR",
+      "finding": "Entry-shape grading stops short in two places. The malformed short-circuit still masks the rest of the run, as its docstring says: one entry missing reference, plus an untyped field, plus a stale entry, plus a wrong standing, reports only ENTRY_MALFORMED; repairing that one entry reveals ENTRY_UNMATCHED, FIELD_UNTYPED and STANDING_NOT_THE_LEADING_TOKEN together. The gate fails closed in both states, so this is an operator-facing ordering cost rather than a bypass. And SHAPE tests artifact_standing and reference for presence but not type, so a reference of an empty dict passes entirely ungraded, since reference_contradicts coerces it to the empty string. An integer reference fails closed and is refused."
+    },
+    {
+      "id": "TW-R8",
+      "severity": "MATERIAL",
+      "finding": "SCT-D3 and SW-R8 are unrepaired and I confirm them a third time against the artifact. Registering two checks moves the record to 42 while CLAUDE.md line 105 in the same commit reads that verify runs 40 checks; CLAUDE.md is blob 119a141d746035dcd89e5928bd90c8d7043fd103 at both the base and the commit, unchanged. The orientation snapshot therefore fails two claims at 1264300 and three at 7860b45, the new one being FAIL verification checks: page says 40, record holds 42. The NOT CHECKED disclosure of the snapshot itself states that this claim reads the working tree rather than HEAD and explains why, so the check is green on the desk that produced the change and red against the artifact - the dominant local defect class. The withheld CLAUDE.md edit is outside the scope of grant:standing-landing-loop as a root governing document, so this remains a seam rather than a repair, and it is now three commits old."
+    },
+    {
+      "id": "TW-R9",
+      "severity": "MATERIAL",
+      "finding": "The contract cites three governing or witnessing artifacts the commit does not contain, up from two. The decision field and governed_by both name decisions/0074-typed-standing-and-the-node-graph.md, and git cat-file -e reports it absent from 7860b45. witnessed_by now names both prior witness observations, and neither is in the commit either. So a contract committed as PROPOSED declares itself witnessed by two records the repository does not hold, and governed by a decision the repository does not hold. Nothing under scripts/ grades the decision, governed_by or witnessed_by paths of a contract for existence, so this passes silently. The absences are deliberate and correct under the scope of the landing grant; the artifact as committed still asserts what it cannot show. Bearing on the design claim: witnessed_by is a standing assertion, in a file this very concern exists to keep honest."
+    },
+    {
+      "id": "TW-R10",
+      "severity": "INFORMATIONAL",
+      "finding": "scripts/sovverify/checks.py stands at 288 of 300 permitted lines and was not touched by this commit relative to its parent. The first witness recorded 12 lines of headroom in a file growing about 11 lines per registered check; that is unchanged, so the check after next crosses the limit."
+    },
+    {
+      "id": "TW-R11",
+      "severity": "INFORMATIONAL",
+      "finding": "Both deliberately withheld artifacts were confirmed absent from the commit object rather than taken from any account of them: decisions/0074-typed-standing-and-the-node-graph.md, absent, and the CLAUDE.md 40-to-42 edit, absent, with CLAUDE.md carrying the identical blob at base and commit. Their absence is noted and is not treated as an oversight. Their consequences are TW-R8 and TW-R9."
+    },
+    {
+      "id": "TW-R12",
+      "severity": "INFORMATIONAL",
+      "finding": "Unicode probes that did NOT break anything, recorded so the negative result is available. No character in U+0020 through U+2FFF upper-cases into text that manufactures a rung or the RULED prefix; I enumerated them all. The Turkish dotless i and the dotted capital I, the sharp s which upper-cases to SS, the long s which upper-cases to S, and the fi ligature all either leave the derivation unchanged or make it fail closed: RULE followed by sharp s upper-cases to RULESS_X and types as STATUS rather than smuggling a RULING through. Full-width Latin letters are treated as separators and fail closed. Combining marks split a token and fail closed. The only dangerous Unicode direction I found is TW-B2, where a non-ASCII negator is discarded and the rung becomes first."
+    }
+  ],
+  "not_examined": [
+    "whether any typed claim is true; this contract types what STATUS.yaml asserts and its docstring scopes itself to representation, correctly",
+    "whether STATUS, OWNER_ACCEPTANCE and RULING are the right decomposition, and whether the eighteen bare OWNER_ACCEPTED values are acceptances; the contract now records that reading openly under owner_accepted_reading and names it as Bdo to overturn, which is the right disposal of SW-B3, so I did not re-litigate it",
+    "the pre-existing verify and tooling failures on their own merits; only the delta from 1264300 to 7860b45 was graded, and it is the same three failing tests on both sides",
+    "decisions/0074, which is not in the commit and was not read",
+    "the negation handling of scripts/sov_standing.py beyond establishing that it differs from this module; it is outside this commit",
+    "either prior witness harness, which I did not run; every prior bypass was reconstructed from its description"
+  ],
+  "standing_supported": "Supports OPEN to BUILT for the seven paths, and supports the narrower claim that the findings of both prior witnesses are repaired: all 19 demonstrated bypasses are refused with named codes and no tracebacks. It does not support BUILT to WITNESSED. The third draft answers the second witness diagnosis correctly in method and incompletely in reach. Removing the negation vocabulary is the right kind of move - it kills the whole NOT_YET, NEVER, AWAITING and hyphenated family at once rather than one word at a time, which no extension of a word list would have done. But the biconditional is a rule about the first word of a value, not about what the value asserts, and the contract prose claims the second. Three consequences, all measured: a denial standing to the right of the rung is invisible, and the false standing is compelled rather than merely permitted (TW-B1); a non-alphanumeric negator is deleted rather than seen, which is the previous defect inverted (TW-B2); and five live values that plainly state BUILT are now typed as asserting nothing, with the true standing refused (TW-B3). Separately the design claim I was asked to attack is false as written: an entry can carry any extra key with no refusal, so the deleted standing_source can be put straight back, and detail and reference remain ungraded assertion channels (TW-B4). The scope guard of the reader is for the third time written against the reported instances, and now also refuses legitimate nested keys with no admissible repair (TW-B5). And the contract still carries the rule of the previous draft in two of its three descriptions, naming a field that no longer exists (TW-B6). None of the six is exploited by the committed data. All six are one hand edit away, in a file the contract itself says is hand-written.",
+  "judgement_items": [
+    {
+      "id": "TW-J1",
+      "question": "The standing rule now decides on word order. It compels artifact_standing OPEN for a hypothetical OPEN_QUESTION_FOR_BDO and refuses artifact_standing BUILT for the live PROPOSED_CONTRACT_BUILT_SELF_TESTED_NO_TRANSPORT, so five live values that state a standing are recorded as stating none. Is a crosswalk that under-reads the record in five places preferable to one that could over-read it in none, or should the derivation strip a declared prefix vocabulary - PROPOSED_, OWNER_ACCEPTED_, RULED_ - before asking the standing question?"
+    },
+    {
+      "id": "TW-J2",
+      "question": "Three drafts have now each closed the instances a witness named and left the class open in a new spelling - first prose sources, then a NOT vocabulary, now word order and non-alphanumeric bytes. Each repair was correct and each was reachable by the next reader. Is a fourth repair cycle inside this concern the right move, or is the recurrence evidence that the derivation needs a fail-closed default, refusing any value whose every token is not accounted for by a declared vocabulary, so that an unrecognised input refuses instead of being read as an assertion?"
+    },
+    {
+      "id": "TW-J3",
+      "question": "The derived_never_declared section says an entry is a reading of the document and not a second place to assert something about it, and an entry can currently carry any additional key, arbitrary prose in detail, and an unresolvable reference, all with exit 0. Closing the extra-key half is one set difference in malformed(). Closing detail and reference means either grading them against the filesystem - the acceptance packets and decision records are already in the tree - or removing them from the entry. Which does Bdo want, given that the packets exist and the check already has the worktree open?"
+    },
+    {
+      "id": "TW-J4",
+      "question": "This is the third witness reading and the third to record that the commit cannot be landed consistently by the grant that would land it: registering two checks moves the record to 42, CLAUDE.md line 105 says 40, and CLAUDE.md is excluded from grant:standing-landing-loop as a root governing document. The contract now also declares itself witnessed by two observation files that are likewise not in the tree. Should the landing grant widen to cover a mechanical count on the orientation page, should the verification-checks claim of the snapshot read HEAD rather than the working tree, or should any check-registering change route to Bdo by construction?"
+    }
+  ]
+}

@@ -51,6 +51,17 @@ REPOSITORY_CHECKS = (
           "reads STATUS.yaml and the witness records by separate paths and grades one against "
           "the other, so a standing claim cannot supply the record that would support it",
           ("STATUS.yaml", "scripts/sov_standing.py")),
+    Check("status claims are typed",
+          [sys.executable, "scripts/sov_status_claims.py", "check"], ROOT,
+          "reads STATUS.yaml line by line, not through a YAML parser that would collapse the "
+          "duplicated keys, and grades it against a crosswalk holding no copy of it; an "
+          "untyped field and a stale entry both fail",
+          ("STATUS.yaml", "contracts/status-claims.json")),
+    Check("status claim refusals fire",
+          [sys.executable, "scripts/sov_status_claims.py", "selfcheck"], ROOT,
+          "grades cases the oracle carries itself and never reads STATUS.yaml, so repairing the "
+          "live record cannot stop a refusal being proved; a refusal no case fires is a defect",
+          ("contracts/status-claims.json", "conformance/fixtures/status-claims/cases.json")),
     Check("owner queue", [sys.executable, "scripts/sov_accept.py", "audit"], ROOT,
           "fails when anything sits on the owner without a complete packet, reading the "
           "declared acceptance contract rather than any claim that a result is ready",
@@ -107,6 +118,13 @@ REPOSITORY_CHECKS = (
           "tests the oracle from outside itself, including cases proving it refuses reports "
           "it cannot read",
           ("conformance/tests",)),
+    Check("asset object cases",
+          [sys.executable, "scripts/sov_asset_objects.py", "selfcheck"], ROOT,
+          "judges a declared corpus of lawful and defeating worlds against predicates that "
+          "import no participant code, so an invariant is graded before any implementation "
+          "carries the objects and a defeating case that stops defeating fails the run",
+          ("SPEC.md", "conformance/asset_objects.py",
+           "conformance/fixtures/asset/object-cases.json")),
     Check("kernel transition contract", [sys.executable, "scripts/sov_kernel.py", "selfcheck"],
           ROOT,
           "judges a declared corpus of positive and defeating requests against the "

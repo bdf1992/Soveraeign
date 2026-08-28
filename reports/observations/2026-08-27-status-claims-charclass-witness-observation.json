@@ -1,0 +1,203 @@
+{
+  "observer_id": "urn:soveraeign:actor:sov-witness/fourth-reading-charclass-488070d",
+  "contributed_to_build": false,
+  "witness_ordinal": 4,
+  "reading": "fourth reading by the fourth witness; delta against 0bdb089",
+  "verdict": "CONTENT_REPRODUCED; VERIFICATION_BUDGET_UNATTESTABLE",
+  "verdict_note": "Split deliberately, at the builder's request and because it is the more useful answer. The content claims all reproduce and I record one non-blocking residual. Separately, the verify PASS the landing grant requires cannot be evidenced on this machine tonight, because the budget fails on main as well. That is an unmet precondition, not a defect in this change, and I do not fold it into the content grade.",
+  "concern": "commit 488070d on feat/status-claims-on-main replaces the enumeration K4-B1 defeated with a statement of the rule the LOOSE pattern already contains. Is the stated rule true, is it complete, and is there an eighth site?",
+  "subject": {
+    "graded_commit": "488070d",
+    "parent": "0bdb08989e73ed9e17e85fef8fc19da6eba6a9dd",
+    "base": "b5de995661edd743cfbac97529daf2cfcaa5167a",
+    "branch": "feat/status-claims-on-main",
+    "paths_in_this_commit": ["scripts/sov_status_claims.py"],
+    "claims_under_test": [
+      "C1 - prose only; the LOOSE pattern is untouched",
+      "C2 - the stated character-class rule is true",
+      "C3 - the three retained factual claims are true",
+      "C4 - no eighth site; the count and enumeration class stays closed",
+      "C5 - check, selfcheck, 28 tests, lint unmoved",
+      "C6 - the verify delta against main is exactly the two registered checks",
+      "C7 - the verification budget"
+    ]
+  },
+  "observer_relation": {
+    "to_builder": "NONE",
+    "basis": "I raised K4-B1 and named the character class as the shape a correct answer would take. The builder states he swept independently rather than taking it from my report; I did not verify his sweep and did not need to, because I ran my own from scratch against the committed pattern. I wrote no file. Measured only in w4-fix3 at 488070d and w4-main-b5de995 at b5de995, both clean before and after."
+  },
+  "frozen_head": "488070dc",
+  "shared_tree_conditions": {
+    "trap": "CLAUDE.md T6",
+    "mitigation": "Two clean detached worktrees of my own. The character sweep ran as pure calls against the imported pattern over synthesized lines; no file in either worktree was written during measurement.",
+    "box_state_at_measurement": "19 python processes, 58 registered worktrees.",
+    "stability_recheck": "check, selfcheck and the 28 tests re-run after all other measurement with identical output; both worktrees clean at their frozen commits."
+  },
+  "checks": [
+    {
+      "command": "ast.parse with docstrings stripped, dumped and compared, 0bdb089 vs 488070d",
+      "result": "IDENTICAL",
+      "exit_code": 0,
+      "detail": "Only scripts/sov_status_claims.py differs in bytes and it is AST-identical. The contract, the corpus and scripts/sovstatus/refusals.py are byte-identical."
+    },
+    {
+      "command": "the LOOSE source line compared across 510f5b8, 98aaf88, 0bdb089 and 488070d",
+      "result": "ONE DISTINCT LINE",
+      "exit_code": 0,
+      "detail": "Byte-identical at all four commits. Three commits have now re-described this pattern and none has touched it. This matters here because the commit claims to state what the pattern misses; the pattern it describes is provably the one I swept."
+    },
+    {
+      "command": "exhaustive two-direction character sweep against the committed pattern: every printable ASCII character plus a Cyrillic a, a Greek omicron, an accented e, a CJK ideograph, BOM and zero-width space, in three key positions, each line YAML-parsed to recover the key actually produced before judging visibility",
+      "result": "RULE TRUE IN 86 OF 87; THE ONE EXCEPTION ERRS SAFE",
+      "exit_code": null,
+      "detail": "87 synthesized lines produce a valid YAML mapping whose key genuinely contains an out-of-set character. 86 are invisible to both readers, as the rule states. The single exception is a colon inside the key producing ab_status:x_status, where LOOSE matches the leading ab_status: and the line earns FIELD_UNREADABLE. The rule predicts invisible and the code refuses, so the claim is pessimistic there rather than wrong in the dangerous direction. Every non-ASCII letter tested is invisible, as claimed."
+    },
+    {
+      "command": "converse sweep: is a key built only from in-set characters always visible?",
+      "result": "TWO EXCEPTIONS",
+      "exit_code": null,
+      "detail": "A leading dot and a leading slash are both in the stated body set and both make the key invisible, because the pattern requires the FIRST character to be a letter or digit before the body class applies. See the residual; the comment says body, which is accurate, and does not claim the converse."
+    },
+    {
+      "command": "python scripts/sov_status_claims.py check / selfcheck",
+      "cwd": "w4-fix3 (488070d, clean)",
+      "result": "PASS",
+      "exit_code": 0,
+      "output": "48 typed against 40 subjects, no defects; 10 refusals each fire"
+    },
+    {
+      "command": "python -m unittest scripts.tests.test_status_claims",
+      "result": "PASS",
+      "exit_code": 0,
+      "output": "Ran 28 tests - OK"
+    },
+    {
+      "command": "python scripts/lint.py",
+      "result": "PASS",
+      "exit_code": 0,
+      "output": "PASS: repository hygiene (764 text files, 336 Python modules, 1 named debt). sov_status_claims.py 192 lines, under 300, zero CRLF."
+    },
+    {
+      "command": "behaviour battery: 33 standing hazards, 9 key injections, 20 reader class members, 15 quiet controls, 13 corpus cases",
+      "result": "IDENTICAL TO THE PARENT",
+      "exit_code": null,
+      "detail": "0 hazards refused, 20 of 20 class members caught, 0 of 15 false positives, 13 of 13 corpus cases exact, declared-not-exercised and exercised-not-declared both empty."
+    },
+    {
+      "command": "mechanical prose sweep, 484 strings from every JSON value, every docstring via ast and every comment via tokenize, swept for ordinals and for numbers adjacent to an artifact noun",
+      "result": "CLEAN",
+      "exit_code": null,
+      "detail": "Every surviving ordinal is the narrative fourth spelling or fourth patch cycle, which is accurate. Four number-adjacent phrases remain and each checks out against measurement: Two entries share a subject and a claim kind, a correct statement of the collision rule; eighteen entries, measured 18 of 22; two refusals that cannot be separated are one rule wearing two names, a policy statement; and one key, correct. No eighth site."
+    },
+    {
+      "command": "python scripts/verify.py, three interleaved rounds per side, measured by me rather than taken from the handover",
+      "result": "BOTH SIDES FAIL THE BUDGET",
+      "exit_code": 1,
+      "detail": "main 23.692s, 21.942s, 22.358s; landing 22.697s, 23.821s, 26.406s; ceiling 15.000s. Check-name delta is exactly the two registered checks with nothing removed, and the FAIL sets are identical once the budget line is excluded. The two new checks cost 0.095s combined."
+    }
+  ],
+  "reproduced": [
+    {
+      "id": "C1",
+      "claim": "prose only; the LOOSE pattern is untouched",
+      "method": "AST comparison with docstrings stripped, then the LOOSE source line compared across all four commits of this repair sequence",
+      "finding": "CONFIRMED. One module differs in bytes and is AST-identical; everything else is byte-identical, including the contract, the corpus and the refusal table. The LOOSE line is byte-identical at 510f5b8, 98aaf88, 0bdb089 and 488070d. Three commits have re-described this pattern and none has changed it, so the pattern I swept is provably the one the comment describes."
+    },
+    {
+      "id": "C2",
+      "claim": "the stated character-class rule is true",
+      "method": "I did not check the builder's sweep. I ran my own from scratch: every printable ASCII character plus a Cyrillic a, Greek omicron, accented e, CJK ideograph, BOM and zero-width space, placed in three key positions, each line YAML-parsed to recover the key it actually produces before judging visibility, so a character consumed as a list marker or a quote delimiter is not counted as being in the key",
+      "finding": "CONFIRMED. Of 87 synthesized lines whose parsed key genuinely contains an out-of-set character, 86 are invisible to both readers exactly as the rule states, and every non-ASCII letter is among them. The single exception is a colon inside the key, which produces ab_status:x_status; LOOSE matches the leading ab_status: and the line earns FIELD_UNREADABLE. The rule predicts invisible and the code refuses, so it errs safe. This is a genuine improvement in kind over the enumeration it replaces: the previous sentence named 7 of 29 characters in one position, and this one covers the whole out-of-set class in every position, including the non-ASCII category no list had reached."
+    },
+    {
+      "id": "C3",
+      "claim": "the three retained factual claims are true",
+      "method": "re-measured each rather than carried forward",
+      "finding": "CONFIRMED. STATUS.yaml carries no BOM, no CRLF and no non-ASCII character, and unreadable_lines returns zero, so none of the missed forms occurs in it. A full PyYAML parse yields exactly the same top-level status-suffixed key set as the strict reader, with nothing on either side alone. And no standing is derived anywhere: the refusal module exposes no standing or ladder symbol, so the worst case of a missed line is a field going untyped rather than falsely typed."
+    },
+    {
+      "id": "C4",
+      "claim": "no eighth site; the count and enumeration class stays closed",
+      "method": "re-ran the mechanical prose sweep over the landing paths and checked every surviving numeric claim against measurement",
+      "finding": "CONFIRMED. 484 prose strings; every ordinal is the narrative fourth spelling or fourth patch cycle, both accurate; the four remaining number-adjacent phrases each check out. The two key-set statements repaired at 0bdb089 remain size-agnostic and true. There is no eighth site of the counting or enumerating habit."
+    },
+    {
+      "id": "C5",
+      "claim": "check, selfcheck, 28 tests, lint unmoved",
+      "method": "ran all four in a clean detached worktree and re-ran after all other measurement",
+      "finding": "CONFIRMED. check exit 0 with 48 typed against 40 subjects; selfcheck exit 0 with 10 refusals each firing; 28 tests OK; lint exit 0 with one pre-existing named debt. sov_status_claims.py 192 lines against a 300-line limit, zero CRLF. The behaviour battery is identical to the parent in every block."
+    },
+    {
+      "id": "C6",
+      "claim": "the verify delta against main is exactly the two registered checks",
+      "method": "three interleaved rounds per side, parsing check-name sets and the embedded FAIL baseline",
+      "finding": "CONFIRMED. Added exactly status claims are typed and status claim refusals fire; removed nothing; stable across rounds. Excluding the budget line, the FAIL sets are identical on both sides. The content half of the gate is complete and clean."
+    }
+  ],
+  "unattestable": [
+    {
+      "id": "C7",
+      "claim": "verify PASS, which grant:standing-landing-loop requires as landing evidence",
+      "method": "three interleaved rounds per side, measured by me, on a box carrying 19 python processes and 58 worktrees",
+      "finding": "UNATTESTABLE ON THIS MACHINE TONIGHT, AND NOT THIS COMMIT'S FAULT. main 23.692s, 21.942s, 22.358s; landing 22.697s, 23.821s, 26.406s; ceiling 15.000s. Both sides fail. Four things settle the attribution. Main carries none of this change and fails on its own. I measured these same two worktrees earlier this session at 14.180s and 13.630s for main and 13.741s and 13.785s for a sibling commit, all PASS - same commits, opposite verdict, hours apart. The two checks this change registers cost 0.095s combined, which cannot account for a 7 to 9 second move. And the ordering is unstable: the builder measured landing faster in two of three rounds and I measured it slower in two of three, on a spread that swamps the signal. The honest statement is that the budget is not measurable here tonight, in either direction. I record it as an unmet precondition rather than as a defect, and I decline to present any single favourable run as the reading - which is also what the builder declined to do, correctly.",
+      "what_would_settle_it": "one interleaved pair on a quiet box, or decisions/0081 landing and changing what the budget means. Neither is mine and neither is the builder's."
+    }
+  ],
+  "residuals": [
+    {
+      "id": "C-N1",
+      "severity": "MINOR",
+      "not_blocking": true,
+      "finding": "The stated rule is one-directional and two in-set characters also cause a miss. The comment says a key body is the ASCII letter, digit, underscore, dot, hyphen and slash set, and that is exactly right about the body: the pattern is a leading letter-or-digit followed by that class. Because the leading character is narrower than the body, a leading dot and a leading slash are both in the stated set and both make a valid YAML status key invisible. The shape worth naming is the second one: the comment lists path-like among the forms the reader TAKES, and services/asset_status is indeed taken, while /services/asset_status is invisible. An absolute path key differs from a relative one by a single character and the two land on opposite sides. I grade this MINOR and explicitly not a landing objection, and I want the difference from K4-B1 on the record rather than left to inference: that finding was an enumeration naming 7 of 29 characters in one position and missing an entire category; this is a true rule that does not extend to one character position. It is an order of magnitude smaller, it carries the same zero behavioural risk, and I do not think it justifies another cycle on its own. If the builder is editing this file for another reason, the closing words are that the key must also start with a letter or digit. If not, leaving it is a defensible call and I would not withhold for it."
+    },
+    {
+      "id": "C-N2",
+      "severity": "MATERIAL",
+      "not_blocking": false,
+      "finding": "Unchanged across all four of my readings and still the only item for Bdo: contracts/status-claims.json names decisions/0074-typed-standing-and-the-node-graph.md as its decision and in governed_by, and that record cannot land with the code because decisions/ sits outside grant:standing-landing-loop. Nothing grades those paths so nothing goes red; the artifact asserts what it cannot show. witnessed_by resolves - all three observations it names are in the commit."
+    },
+    {
+      "id": "C-N3",
+      "severity": "INFORMATIONAL",
+      "finding": "The corpus note still says One controlled case per declared refusal while the corpus carries 11 defeating cases for 10 refusals, because REFERENCE_CONTRADICTS_VALUE correctly has one case per branch. Unrepaired, unclaimed as repaired, and safe in direction. Recorded for completeness, not as an objection."
+    },
+    {
+      "id": "C-N4",
+      "severity": "INFORMATIONAL",
+      "finding": "Four commits have now been spent on comments and contract prose in this concern, and each round found something real. The trend is convergent rather than flat: five stale sentences at 98aaf88, two stale counts at 0bdb089, one enumeration short by 22 characters and a whole category at 488070d's parent, and now one character position. Each repair was correct and each was smaller than the last. Recorded because the shape of the sequence is itself evidence that the content has converged, and because the thing now blocking is a machine, not a defect."
+    }
+  ],
+  "not_examined": [
+    "whether any typed claim is true; unchanged in scope across all four of my readings",
+    "whether the eighteen bare OWNER_ACCEPTED values are acceptances; product judgement, recorded openly as Bdo's to overturn",
+    "decisions/0081, which is uncommitted and owner-directed; I did not read it and it is evidence for nothing here",
+    "decisions/0074, which is not in the commit and was not read",
+    "the builder's own character sweep, which I did not inspect; I ran mine from scratch against the committed pattern"
+  ],
+  "landing_assessment": {
+    "target": "488070d on feat/status-claims-on-main, base b5de995 (main)",
+    "scope": "Unchanged and inside grant:standing-landing-loop. Ten paths; this commit touches one and adds none.",
+    "content": "CLEAN. Every content claim reproduces. The change is prose-only with the graded pattern byte-identical across four commits, behaviour is unmoved under the full battery, the check delta is exactly the two registered checks with nothing removed, and the mechanical prose sweep finds no eighth site. One MINOR residual is recorded and explicitly does not block.",
+    "preconditions_the_grant_requires": {
+      "lint_PASS": "MET - exit 0.",
+      "independent_observation": "MET - this document, contributed_to_build false.",
+      "verify_PASS": "NOT EVIDENCED. Both sides fail the verification budget on this machine tonight, main included. This is a property of the box, not of the change, and it cannot be resolved by re-running until a favourable number appears."
+    },
+    "my_view": "I am not withholding on the residual and I want that unambiguous. The content is done, and I would confirm it on its own. What is missing is a precondition the grant names and that neither the builder nor I can produce tonight: verify PASS, on a machine where main itself takes 22 seconds against a 15 second ceiling. The builder was right to refuse to present a favourable run as the reading, and right that this is decisions/0081's argument rather than a question about this change. So: land it when an interleaved pair on a quiet box shows both sides green, or when 0081 settles what the budget means. Until one of those, the honest position is that the change is ready and the gate is not measurable - and those are two different sentences that should not be collapsed into one verdict."
+  },
+  "standing_supported": "Supports OPEN to BUILT for the ten paths and supports the content half of BUILT to WITNESSED without reservation. The rule now stated in place of the enumeration is true: I swept every printable ASCII character plus five non-ASCII cases in three key positions, recovering the parsed key before judging visibility, and of 87 lines whose key genuinely carries an out-of-set character 86 are invisible exactly as claimed, with the single exception erring safe by refusing rather than missing. Every non-ASCII letter is covered, which no list had reached. The three retained factual claims are each re-measured and true. The pattern itself is byte-identical across all four commits of this sequence, so three rounds of re-description have changed no behaviour, and the full battery confirms that independently. The prose sweep finds no eighth site and every surviving count checks out. It does not support BUILT to WITNESSED as a completed landing, and the reason is not a defect in the change: verify PASS is a precondition the landing grant names, and tonight it fails on main as well as on the commit, on a box carrying 19 python processes where I measured these same worktrees passing at under 14 seconds hours earlier. That is unattestable rather than failed, and stating it as a precondition rather than folding it into the content grade is the distinction this observation is written to preserve. The one content residual - that a leading dot or slash is in the stated body class and still makes a key invisible, so an absolute path key is missed where a relative one is refused - is recorded as MINOR, explicitly non-blocking, and an order of magnitude smaller than the finding it descends from.",
+  "judgement_items": [
+    {
+      "id": "C-J1",
+      "question": "The verification budget now fails on main itself on this machine, at 22 seconds against a 15 second ceiling, while the same commit passed at under 14 seconds earlier the same evening. Whether the gate passes therefore depends on when it runs. Does the landing grant's verify PASS requirement mean PASS on the machine at the moment of landing, or PASS on a quiet machine, and should a budget failure that reproduces identically on the base be admissible as evidence against a change at all?"
+    },
+    {
+      "id": "C-J2",
+      "question": "Unchanged: contracts/status-claims.json names decisions/0074 as its governing decision and that record cannot land with the code because decisions/ is outside grant:standing-landing-loop. Should verify grade a contract's decision and governed_by paths for existence, forcing a contract to land with its decision, or is a contract permitted to name its governing decision before the record exists?"
+    },
+    {
+      "id": "C-J3",
+      "question": "Four readings have each found prose claiming slightly more than the code supports, and each repair was correct, smaller than the last, and reachable by the next reader. The durable move each time was to state the rule that produces the behaviour rather than the examples a witness brought. Is that worth recording as a lesson - a claim about an artifact should be written against the rule that generates it, never against a sample - or has the sequence itself made the point well enough to leave in the record and stop?"
+    }
+  ]
+}

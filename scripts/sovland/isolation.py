@@ -12,12 +12,32 @@ record per check, and every record already carries the addresses that check read
 This reads those records and attributes each failure:
 
     a failing check whose declared addresses the landing touched   -> CHANGE
-    a failing check whose addresses the landing did not touch      -> GLOBAL
+    a failing check demonstrably failing over another session's
+      concurrent edit                                              -> GLOBAL
     a non-zero exit with no failing check at all                   -> HOST
+    any other failing check                                        -> CHANGE
 
 Only `CHANGE` refuses. `GLOBAL` and `HOST` are recorded in the landing ledger as
 attributed control readings, so they accumulate and stay visible rather than
 being hidden by the thing that stopped blocking on them.
+
+`GLOBAL` needs positive evidence, which is the correction soveraeign-fc's
+observation of 1f27591 forced. The first version read the absence of a declared
+overlap as proof the landing was innocent, and that is not proof: the check
+"bootstrap and locked evidence" declares `observes` as
+`("scripts/verify_bootstrap.py",)` while the script it runs reads a list of more
+than twenty required files. A landing that deleted `AGENT-BOOTSTRAP-PROMPT.md`
+made that check fail naming the deleted file, and this module attributed it
+`GLOBAL` and permitted the landing. Incomplete as committed - no rename, no
+drift, no elapsed time needed - and that file really did vanish from the shared
+tree the same night with nobody able to say who removed it.
+
+So the two permissive readings are now the two Bdo's ruling actually named, each
+resting on something observed rather than on something not found: `HOST` on every
+check having passed, `GLOBAL` on another session's uncommitted edit sitting
+inside what the failing check declares it read. A failure this module cannot
+positively account for refuses, which makes an incomplete `observes` tuple cost a
+landing instead of silently buying one.
 
 The known weakness, stated rather than discovered later: attribution is only as
 good as each `Check.observes` tuple, and nothing anywhere grades a tuple against
@@ -73,23 +93,34 @@ def _touches(addresses: list[str], paths: set[str]) -> list[str]:
 
 
 def attribute(observations: list[dict[str, Any]], exit_code: int,
-              paths: set[str]) -> dict[str, Any]:
-    """Attribute one verify run. Pure: no I/O, no clock, no subprocess."""
+              paths: set[str], foreign: set[str] | None = None) -> dict[str, Any]:
+    """Attribute one verify run. Pure: no I/O, no clock, no subprocess.
+
+    `paths` is what this landing carries. `foreign` is what some other participant
+    has left uncommitted in the tree and this landing does not carry - the positive
+    evidence a `GLOBAL` reading rests on. Omitting `foreign` means no failure can be
+    shown to be somebody else's, so every failing check attributes `CHANGE`; an
+    absent argument makes the gate stricter, never looser.
+    """
     failing = [row for row in observations
                if (row.get("predicate_results") or {}).get("outcome") == "FAIL"]
-    change, other = [], []
+    change, external = [], []
     for row in failing:
-        touched = _touches(row.get("observed_state_addresses") or [], paths)
-        entry = {"check": row.get("subject"),
-                 "addresses": row.get("observed_state_addresses") or [],
-                 "touched": touched}
-        (change if touched else other).append(entry)
+        addresses = row.get("observed_state_addresses") or []
+        touched = _touches(addresses, paths)
+        elsewhere = _touches(addresses, foreign or set())
+        entry = {"check": row.get("subject"), "addresses": addresses,
+                 "touched": touched, "foreign": elsewhere}
+        # Touched wins over foreign. A check reading both this landing's paths and
+        # another session's is a failure this landing may have caused, and the
+        # reading that refuses is the one to keep.
+        (change if touched or not elsewhere else external).append(entry)
 
     if exit_code == 0:
         verdict, attribution = "PASS", None
     elif change:
         verdict, attribution = "FAIL", CHANGE
-    elif failing:
+    elif external:
         verdict, attribution = "PASS", GLOBAL
     else:
         verdict, attribution = "PASS", HOST
@@ -100,8 +131,32 @@ def attribute(observations: list[dict[str, Any]], exit_code: int,
         "exit_code": exit_code,
         "checks_observed": len(observations),
         "change_scoped": change,
-        "readings": other,
+        "readings": external,
     }
+
+
+def foreign_paths(root: Path, paths: set[str]) -> set[str]:
+    """What some other participant has left uncommitted here and this landing omits.
+
+    This is the whole evidential basis for a `GLOBAL` reading, so it is read from
+    git rather than from anybody's report. A path this landing carries is never
+    foreign, however dirty it is: the landing is answerable for its own files.
+
+    Failing to read git returns the empty set, which attributes every failure to
+    the change. That is the strict direction on purpose.
+    """
+    done = subprocess.run(["git", "status", "--porcelain", "-z"],
+                          cwd=root, capture_output=True, text=True)
+    if done.returncode != 0:
+        return set()
+    dirty = set()
+    for entry in done.stdout.split("\0"):
+        if len(entry) > 3:
+            # Porcelain v1: two status columns, a space, then the path. A rename
+            # carries "old -> new" but -z splits those into separate entries, so
+            # the path is always the whole remainder.
+            dirty.add(entry[3:].replace("\\", "/").rstrip("/"))
+    return {p for p in dirty if p not in {q.replace("\\", "/") for q in paths}}
 
 
 def verify_reading(root: Path, paths: set[str]) -> dict[str, Any]:
@@ -124,7 +179,7 @@ def verify_reading(root: Path, paths: set[str]) -> dict[str, Any]:
                     "attribution": None, "exit_code": done.returncode,
                     "checks_observed": 0, "change_scoped": [], "readings": [],
                     "note": "observations unreadable; exit code taken as the verdict"}
-    return attribute(rows, done.returncode, paths)
+    return attribute(rows, done.returncode, paths, foreign_paths(root, paths))
 
 
 def describe(reading: dict[str, Any]) -> list[str]:
@@ -132,11 +187,18 @@ def describe(reading: dict[str, Any]) -> list[str]:
     lines = [f"verify: {reading['verify']}"
              + (f" ({reading['attribution']} attributed)" if reading["attribution"] else "")]
     for entry in reading.get("change_scoped", []):
-        lines.append(f"  REFUSES: {entry['check']} reads {entry['touched']}, "
-                     "which this landing changes")
+        if entry["touched"]:
+            lines.append(f"  REFUSES: {entry['check']} reads {entry['touched']}, "
+                         "which this landing changes")
+    for entry in reading.get("change_scoped", []):
+        if not entry["touched"]:
+            lines.append(f"  REFUSES: {entry['check']} failed over {entry['addresses']}, "
+                         "and nothing shows the failure belongs to another participant; "
+                         "an unattributable failure refuses rather than passing")
     for entry in reading.get("readings", []):
-        lines.append(f"  reading: {entry['check']} failed over "
-                     f"{entry['addresses']}, none of which this landing touches")
+        lines.append(f"  reading: {entry['check']} failed over {entry['addresses']}, "
+                     f"which another participant is holding uncommitted "
+                     f"({entry['foreign']}) and this landing does not carry")
     if reading["attribution"] == HOST:
         lines.append("  reading: the run exited non-zero with every check passing, "
                      "so the refusal was a ceiling on this host and not this change")

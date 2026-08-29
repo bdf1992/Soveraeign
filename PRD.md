@@ -6,8 +6,8 @@ Status: `PRODUCT SCOPE CANDIDATE` · artifact standing `OPEN`, not owner-accepte
 Owner: Bdo, root seat · Scope: the whole product, no phase · 2026-08-28
 
 Revision 1 was `Product Requirements — Founding and Phase I`. It is archived
-byte-identical at `PRD-PHASE-I.md`, where it remains a pinned definition of the
-closed `phase:i` in `contracts/phases.json`. Its nine requirements are not
+byte-identical at `archives/PRD-PHASE-I.md`, where it remains a pinned
+definition of the closed `phase:i` in `contracts/phases.json`. Its nine requirements are not
 retired: they are the first qualification profile under this document, below.
 
 `ROADMAP.md` is the current estimate of how the product gets built. This
@@ -84,7 +84,7 @@ forbids — and being that copy is how revision 1 stopped being a PRD.
 | The fixture that proves or defeats it | `conformance/` |
 | How and when the work happens | `ROADMAP.md`, P0–P9 |
 | Current standing and what waits on the owner | `STATUS.yaml` |
-| What a closed campaign committed to | `PRD-PHASE-I.md`, `contracts/phases.json` |
+| What a closed campaign committed to | `archives/PRD-PHASE-I.md`, `contracts/phases.json` |
 
 The admission test is Bdo's, ruled in `decisions/0052` and recorded in
 `CLASSIFICATION.md`: **would failing it mean the product is not done?** A
@@ -260,7 +260,7 @@ as carried by an existing criterion, or move out of scope — is Bdo's.
 ## The Phase I qualification profile
 
 **`Phase I · Local Sovereign Foundation`.** Nine criteria, `PROD-I-1` through
-`PROD-I-9`, carried forward intact from `PRD-PHASE-I.md`. They are not the
+`PROD-I-9`, carried forward intact from `archives/PRD-PHASE-I.md`. They are not the
 product and never were; they are the first profile the product is graded
 against, and later phases will earn later profiles.
 
@@ -491,8 +491,8 @@ it ended.
 
 `GROUND.md` · `CANON.md` · `SYSTEM.md` · `CONTRACT.md` · `CLASSIFICATION.md` ·
 `SPEC.md` · `AI-NATIVE.md` · `BYOM.md` · `ENGINEERING.md` · `SDLC.md` ·
-`ROADMAP.md` · `ROADMAP-F0-F6.md` · `OPEN-SEAMS.md` · `STATUS.yaml` ·
-`PRD-PHASE-I.md` · `contracts/phases.json` · `contracts/product-canon.json` ·
+`ROADMAP.md` · `archives/ROADMAP-F0-F6.md` · `OPEN-SEAMS.md` · `STATUS.yaml` ·
+`archives/PRD-PHASE-I.md` · `contracts/phases.json` · `contracts/product-canon.json` ·
 `contracts/product-ground.json` · `contracts/closure-ownership.json` ·
 `contracts/custodies.json` · `conformance/requirements.py` ·
 `services/asset/conformance/BASELINE.md` · `decisions/0052` · `decisions/0081`

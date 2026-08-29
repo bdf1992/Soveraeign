@@ -26,7 +26,7 @@ import re
 #: staying visible to ``sov_next``.
 #:
 #: `P` only. The archived `F0`-`F6` ladder carries no lanes and must not be made
-#: to: ``ROADMAP-F0-F6.md`` is pinned byte-for-byte in ``contracts/phases.json``
+#: to: ``archives/ROADMAP-F0-F6.md`` is pinned byte-for-byte in ``contracts/phases.json``
 #: as the definition the closed `phase:i` was graded against, so a check that
 #: demanded lanes there would demand editing a closed phase's definition.
 PHASE_HEADING = re.compile(r"^#{2,3} `?(P\d+)`? ·[^\n]*$", re.M)

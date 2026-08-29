@@ -58,6 +58,8 @@ KIND_RULES: tuple[tuple[str, str, str], ...] = (
     (r"infrastructure/[^/]+\.md$", "infrastructure", "How the node itself is provisioned and witnessed."),
     (r"\.github/[^/]+\.md$", "template", "A form the coordination surface fills in."),
     (r"(^|/)README\.md$", "readme", "Orientation for one directory."),
+    (r"^archives/[^/]+\.md$", "archived",
+     "A superseded governing document, kept byte-identical. Never current policy."),
     (r"^witness/[^/]+\.md$", "witness",
      "An observation of an artifact by something that did not build it."),
     (r"^[A-Z][A-Za-z0-9-]*\.md$", "governing", "Part of the design System of Record."),
@@ -85,6 +87,7 @@ BOUNDARIES: tuple[tuple[str, str], ...] = (
     ("workers/", "workers"),
     ("scripts/", "scripts"),
     ("acceptance/", "acceptance"),
+    ("archives/", "archives"),
     ("decisions/", "decisions"),
     ("lineage/", "lineage"),
 )

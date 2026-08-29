@@ -8,13 +8,13 @@ of how it gets there. The estimate is expected to be wrong in detail and revised
 often; the PRD is not.
 
 The previous decomposition, F0 through F6, is archived byte-identical at
-`ROADMAP-F0-F6.md`, where it remains a pinned definition of the closed `phase:i`
-in `contracts/phases.json`. It was a good ladder for getting out of ideation and
+`archives/ROADMAP-F0-F6.md`, where it remains a pinned definition of the
+closed `phase:i` in `contracts/phases.json`. It was a good ladder for getting out of ideation and
 the repository has overtaken it: F5 still reads "First enterprise service" while
 several services are implemented, and federation is listed as deferred while
 federation-crossing and node-identity contracts already exist experimentally.
 The name crosswalk is carried forward below, re-keyed onto this ladder;
-`ROADMAP-F0-F6.md` holds its original keying.
+`archives/ROADMAP-F0-F6.md` holds its original keying.
 
 ## What a phase is here
 
@@ -539,7 +539,7 @@ still resolves, so a rename breaks the check instead of the reader.
 
 Rows were re-keyed onto the `P` ladder on 2026-08-28 when `F0`-`F6` were
 archived. The jobs and the tickets did not change; only the phase each one is
-filed under. `ROADMAP-F0-F6.md` holds the original keying.
+filed under. `archives/ROADMAP-F0-F6.md` holds the original keying.
 
 | Phase | Epic ticket | Governing debt or objective | Drawn as |
 | --- | --- | --- | --- |
@@ -566,7 +566,7 @@ except the first sits in the roadmap's **Needed** lane rather than its **Never**
 each names what would earn it, so each is a known need with an unmet condition.
 Distributed consensus names no such condition and is the roadmap's Never.
 
-Carried forward from `ROADMAP-F0-F6.md`, still deferred:
+Carried forward from `archives/ROADMAP-F0-F6.md`, still deferred:
 
 - Distributed consensus.
 - A graphical production interface ahead of `P4`.

@@ -52,6 +52,7 @@
     {"path": "lineage/SOURCES.lock", "surface": "DERIVED", "builder": "services/asset/scripts/history_sources.py", "check": "scripts/verify_bootstrap.py", "why": "1647 lines of capture records over this repository's own commits, issues, pull requests and local session files. No emails, host paths or payloads survive the reader's guard; a public checkout cannot verify any of it."},
 
     {"path": "reports", "surface": "JOURNAL", "why": "Completion reports and independent observations. The record of what was done, not documentation of what the system is."},
+    {"path": "archives", "surface": "JOURNAL", "why": "Superseded governing documents, kept byte-identical because contracts/phases.json pins some of them by digest and a phase must end against the definition it opened with. Never edited and never read as current policy; archives/README.md states the rule."},
     {"path": "acceptance", "surface": "JOURNAL", "why": "Finished results presented to an owner seat, one packet per claim."},
 
     {"path": "experiments", "surface": "SCRATCH", "until": "The Console Service ships a built surface, at which point app.v1 through app.v5, fresh-a and fresh-c are superseded and removed.", "why": "Seven committed HTML drafts of one operator surface."},
@@ -92,10 +93,8 @@
     {"path": "LESSONS.md", "surface": "HUB", "why": "What the record cost to learn."},
     {"path": "NAMING.md", "surface": "HUB", "why": "Naming authority and collision screening."},
     {"path": "OPEN-SEAMS.md", "surface": "HUB", "why": "Contradictions that must remain visible."},
-    {"path": "PRD-PHASE-I.md", "surface": "JOURNAL", "why": "Revision 1 of the PRD, archived byte-identical 2026-08-28 and still the pinned definition of the closed phase:i in contracts/phases.json. A phase must end against the definition it opened with; never read as current requirements."},
     {"path": "PRD.md", "surface": "HUB", "why": "The whole product's requirements, priority and success measures."},
     {"path": "PUBLICATION.md", "surface": "HUB", "why": "The safety boundary this contract extends."},
-    {"path": "ROADMAP-F0-F6.md", "surface": "JOURNAL", "why": "The F0-F6 construction ladder, archived byte-identical 2026-08-28 and still a pinned definition of the closed phase:i. Superseded by the P0-P9 product phases; never read as the current plan."},
     {"path": "ROADMAP.md", "surface": "HUB", "why": "The P0-P9 product phases, their exit shapes, and the name crosswalk."},
     {"path": "SDLC.md", "surface": "HUB", "why": "The operating loop."},
     {"path": "SOV.md", "surface": "HUB", "why": "The portable operating-agent profile entry point."},

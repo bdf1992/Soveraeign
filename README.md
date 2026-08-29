@@ -202,9 +202,11 @@ thirty-six entrypoints grouped by the question each one answers.
 
 Then read, in this order:
 
-1. `AGENTS.md`, `SOV.md`, `CONTRIBUTING.md`, and `STATUS.yaml`.
-2. `SYSTEM.md`, `CONTRACT.md`, `PRD.md`, and `SPEC.md` as one governing set.
-3. `ENGINEERING.md` and `OPEN-SEAMS.md` before implementation.
+1. `GROUND.md` and `CANON.md` — what product this is, and what it undertakes.
+2. `AGENTS.md`, `SOV.md`, `CONTRIBUTING.md`, and `STATUS.yaml` — how work is
+   done here. These govern participants, not the product.
+3. `SYSTEM.md`, `CONTRACT.md`, `PRD.md`, and `SPEC.md` as one governing set.
+4. `ENGINEERING.md` and `OPEN-SEAMS.md` before implementation.
 
 Use the proposed reference baseline without treating it as owner-ratified or
 importing an ancestor implementation.

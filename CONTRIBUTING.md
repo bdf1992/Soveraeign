@@ -7,18 +7,16 @@ working path through it.
 
 ## Design System of Record
 
-Do not treat “System of Record” as “one file contains truth.” The repository's
-governing set has explicit ownership:
+Do not treat “System of Record” as “one file contains truth.” The governing set
+has explicit per-document ownership and `AGENTS.md` owns that list. Read it
+there rather than from a second copy kept here, which is how two copies drift.
 
-- `SYSTEM.md`: system boundary and operating model;
-- `CLASSIFICATION.md`: controlled vocabulary;
-- `CONTRACT.md`: invariants;
-- `PRD.md`: Phase-I requirements;
-- `SPEC.md`: logical model, transitions, predicates, and refusals;
-- `AI-NATIVE.md`: surface evaluation and qualification criteria;
-- `STATUS.yaml`: current standing, authority, and open decisions;
-- `ENGINEERING.md`: proposed reference stack and composition rules;
-- `SDLC.md`: operating tiers, verification dyad, and release gate.
+Two things are worth knowing before you open it. The set falls in two groups:
+`GROUND.md` and `CANON.md` say what product Soveraeign is and what it
+undertakes, and the rest say what Phase I must prove and how it is built. And
+neither group holds the rules you work under. Those are in `AGENTS.md` and in
+this file, which govern contributors to this repository and state no product
+claim.
 
 The operational System of Record preserves events and receipts with their
 standing. It can record disagreement, failure, and retraction without converting

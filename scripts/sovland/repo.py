@@ -36,6 +36,20 @@ def current_branch() -> str:
     return _git("rev-parse", "--abbrev-ref", "HEAD").strip()
 
 
+def head_commit(ref: str) -> str | None:
+    """The commit one ref points at, or None if it cannot be read.
+
+    The landing ledger records which merge commit a permitted landing produced,
+    so a later reader can reach the change from the record rather than inferring
+    it from a timestamp. Returns None rather than raising: a ledger field that
+    could abort a completed merge would be an accounting layer with a veto.
+    """
+    try:
+        return _git("rev-parse", ref).strip()
+    except RuntimeError:
+        return None
+
+
 def dirty_paths() -> list[str]:
     """Every path git reports as changed, in porcelain order."""
     lines = [line for line in _git("status", "--porcelain").splitlines() if line.strip()]

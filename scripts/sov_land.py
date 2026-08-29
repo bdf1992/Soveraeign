@@ -29,9 +29,16 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from sovkernel import authority  # noqa: E402
+from sovland import isolation  # noqa: E402
+from sovland import ledger  # noqa: E402
+from sovland import preflight  # noqa: E402
 from sovland import repo  # noqa: E402
 from sovland import tree  # noqa: E402
 import sov_grant  # noqa: E402
+
+#: The repository root, taken from the module that already resolves it, so the
+#: ledger is written beside the tree this landing actually grades.
+ROOT = repo.ROOT
 
 DEFAULT_TARGET = "main"
 
@@ -55,7 +62,7 @@ def build_request(args: argparse.Namespace, paths: list[str], checks: dict[str, 
 
 
 def _report(request: dict, result: dict, branch: str, ahead: int, behind: int,
-            staged: list, carried: list) -> None:
+            staged: list, carried: list, reading: dict | None = None) -> None:
     print(f"branch {branch} -> {request['branch']}: {ahead} commit(s) would move, "
           f"{behind} behind")
     print(f"graded paths ({len(request['paths'])}): "
@@ -68,13 +75,15 @@ def _report(request: dict, result: dict, branch: str, ahead: int, behind: int,
     observation = request["evidence"]["observation"]
     print("observation: " + (f"{observation.get('observer_id')} -> "
                              f"{observation.get('verdict')}" if observation else "none offered"))
+    for line in isolation.describe(reading) if reading else []:
+        print(line)
     print(f"\n{result['verdict']}: {result['code'] or result['grant_id']}")
     print(f"  {result['detail']}")
 
 
 def _evaluate(
     args: argparse.Namespace,
-) -> tuple[dict, dict, str, int, int, list, list, dict, dict, list]:
+) -> tuple[dict, dict, str, int, int, list, list, dict, dict, list, dict]:
     """Assemble and grade one landing, returning everything the caller reports.
 
     Ten positional values is past what a tuple should carry, and every round of
@@ -91,7 +100,8 @@ def _evaluate(
     # Taken before the checks, which are what make the window twelve seconds long.
     graded_as = tree.fingerprint(staged)
     graded_blobs = {q: repo.worktree_blob(q) for q in staged}
-    checks = tree.gather_checks(args.skip_checks)
+    checks, reading = tree.gather_checks(
+        args.skip_checks, set(staged) | set(carried))
     # A third reading, so drift caused by the checks themselves is named as
     # that rather than blamed on another session. verify.py contains
     # generated-artifact checks; the day one regenerates a file in the
@@ -101,7 +111,7 @@ def _evaluate(
     result = authority.evaluate(sov_grant.load_grants(), request)
     ahead, behind = repo._commit_span(args.target, branch)
     return (request, result, branch, ahead, behind, staged, carried, graded_as,
-            graded_blobs, by_checks)
+            graded_blobs, by_checks, reading)
 
 
 def _carried_note(result: dict, carried: list) -> None:
@@ -126,8 +136,8 @@ def _carried_note(result: dict, carried: list) -> None:
 def cmd_plan(args: argparse.Namespace) -> int:
     """Grade the landing and change nothing."""
     (request, result, branch, ahead, behind, staged, carried, graded_as,
-     graded_blobs, by_checks) = _evaluate(args)
-    _report(request, result, branch, ahead, behind, staged, carried)
+     graded_blobs, by_checks, reading) = _evaluate(args)
+    _report(request, result, branch, ahead, behind, staged, carried, reading)
     if result["verdict"] != authority.PERMITTED:
         _carried_note(result, carried)
     for path in tree.directory_paths(staged):
@@ -142,72 +152,60 @@ def cmd_plan(args: argparse.Namespace) -> int:
         print("\nHeld by another live session in this shared tree:")
         for line in held:
             print(f"  {line}")
+    # The reading a real landing would append, shown before a merge is spent on
+    # it. `plan` changes nothing, so this writes nothing and says so.
+    print(ledger.record(ROOT, request, result, branch,
+                        ledger.LANDED if result["verdict"] == authority.PERMITTED
+                        else ledger.REFUSED_AUTHORITY, dry=True, reading=reading))
     return 0 if result["verdict"] == authority.PERMITTED else 1
 
 
 def cmd_land(args: argparse.Namespace) -> int:
-    """Grade the landing and, if permitted, commit the named paths and merge."""
+    """Grade the landing, perform it if permitted, and append what it decided.
+
+    The append is the whole reason this wrapper exists. `_land` returns the exit
+    code and the terminal facts; this records them and then returns. A landing
+    that printed its verdict and forgot it is what let 598 commits accumulate
+    against a three-record ledger.
+
+    `_record` never raises and never changes the exit code, so the ledger cannot
+    turn a permitted landing into a refused one.
+    """
+    outcome, code, facts = _land(args)
+    if facts is not None:
+        request, result, branch, merge_commit, detail, reading = facts
+        print(ledger.record(ROOT, request, result, branch, outcome,
+                            merge_commit=merge_commit, refusal_detail=detail,
+                            reading=reading))
+    return code
+
+
+def _land(args: argparse.Namespace):
+    """Grade the landing and, if permitted, commit the named paths and merge.
+
+    Returns `(outcome, exit_code, facts)`. `facts` is None only when the landing
+    was refused before a request existed to record.
+    """
     if not args.path:
         print("REFUSED: land requires explicit --path arguments; this tree is shared and a "
               "blanket stage would land another participant's work under this evidence.")
-        return 2
+        return ledger.REFUSED_PREFLIGHT, 2, None
     (request, result, branch, ahead, behind, staged, carried, graded_as,
-     graded_blobs, by_checks) = _evaluate(args)
-    _report(request, result, branch, ahead, behind, staged, carried)
+     graded_blobs, by_checks, reading) = _evaluate(args)
+    _report(request, result, branch, ahead, behind, staged, carried, reading)
     # Authority first. A contested path used to be reported before the verdict,
     # so a landing the grant never covered came back as "held by another live
     # session" and the caller went to negotiate a collision instead of learning
     # they were not permitted. A refusal that names the wrong reason sends the
     # reader to fix the wrong thing.
+    facts = (request, result, branch, None, None, reading)
     if result["verdict"] != authority.PERMITTED:
         _carried_note(result, carried)
-        return 1
-    directories = tree.directory_paths(staged)
-    if directories:
-        print("\n"
-      "REFUSED: these name directories, and staging one commits every file "
-              "beneath it, including files this landing never enumerated and files "
-              "another session may hold:")
-        for path in directories:
-            print(f"  {path}")
-        print("Name the files. A landing that cannot enumerate what it stages cannot "
-              "honestly carry the evidence it presents.")
-        return 2
-    held = tree._held_elsewhere(staged)
-    if held:
-        print("\nREFUSED: paths held by another live session:")
-        for line in held:
-            print(f"  {line}")
-        return 2
-    if behind:
-        print(f"\nREFUSED: branch is {behind} commit(s) behind {args.target}; rebase or "
-              "update before merge (AGENTS.md, Branch and commit strategy).")
-        return 2
-
-    absent = tree.absent_paths(graded_as)
-    # A deleted path that git still tracks is not absent: `git add` on it exits 0
-    # and stages the removal, which is what landing a deletion means.
-    if absent:
-        print("\nREFUSED: these do not exist, so nothing was graded for them and "
-              "`git add` would fail rather than refuse:")
-        for path in absent:
-            print(f"  {path}")
-        return 2
-    moved = tree.drifted(graded_as, tree.fingerprint(staged))
-    if by_checks:
-        print("\nREFUSED: running verify and lint modified these paths, so the "
-              "checks changed the thing they were checking:")
-        for path in by_checks:
-            print(f"  {path}")
-        return 2
-    if moved:
-        print("\nREFUSED: these changed between grading and staging, so the evidence "
-              "this landing carries describes content it would not commit:")
-        for path in moved:
-            print(f"  {path}")
-        print("Re-run the gate. Several sessions share this working directory, and "
-              "`git add` stages the bytes on disk now, not the bytes that were graded.")
-        return 2
+        return ledger.REFUSED_AUTHORITY, 1, facts
+    detail = preflight.refusal(args, staged, behind, graded_as, by_checks)
+    if detail is not None:
+        return (ledger.REFUSED_PREFLIGHT, 2,
+                (request, result, branch, None, detail, reading))
 
     # Stage only what --path named. A carried path is already committed, and
     # adding one would sweep in whatever happens to be dirty there.
@@ -221,7 +219,9 @@ def cmd_land(args: argparse.Namespace) -> int:
         for path in wrong:
             print(f"  {path}")
         print("The index has been reset and nothing was committed. Re-run the gate.")
-        return 2
+        return (ledger.REFUSED_PREFLIGHT, 2,
+                (request, result, branch, None,
+                 "staged content that is not what was graded; the index was reset"))
     repo._git("commit", "-m", args.message)
     repo._git("checkout", args.target)
     try:
@@ -229,7 +229,8 @@ def cmd_land(args: argparse.Namespace) -> int:
     finally:
         repo._git("checkout", branch)
     print(f"\nLANDED on {args.target} under {result['grant_id']}")
-    return 0
+    return (ledger.LANDED, 0,
+            (request, result, branch, repo.head_commit(args.target), None, reading))
 
 
 def main(argv: list[str] | None = None) -> int:

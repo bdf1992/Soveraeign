@@ -19,6 +19,7 @@ import json
 import subprocess
 import sys
 
+from sovland import isolation
 from sovland import repo
 
 
@@ -28,14 +29,22 @@ def _run_check(name: str, argv: list[str]) -> str:
     return "PASS" if done.returncode == 0 else "FAIL"
 
 
-def gather_checks(skip: bool) -> dict[str, str]:
-    """Run the checks the grant names as preconditions."""
+def gather_checks(skip: bool, paths: set[str] | None = None) -> tuple[dict[str, str], dict]:
+    """Run the checks the grant names as preconditions, and attribute verify's result.
+
+    Returns `(checks, reading)`. `checks` is what the grant evaluator grades, the
+    same PASS/FAIL shape it has always taken. `reading` is the attribution
+    `sovland.isolation` produced, which the landing prints and the ledger keeps.
+
+    `paths` is what this landing stages and carries. Without it there is nothing
+    to attribute against, so verify is graded on its exit code exactly as before -
+    an absent argument makes the gate stricter, never looser.
+    """
     if skip:
-        return {}
-    return {
-        "lint": _run_check("lint", ["scripts/lint.py"]),
-        "verify": _run_check("verify", ["scripts/verify.py"]),
-    }
+        return {}, {}
+    reading = isolation.verify_reading(repo.ROOT, paths or set())
+    return ({"lint": _run_check("lint", ["scripts/lint.py"]),
+             "verify": reading["verify"]}, reading)
 
 
 def repo_relative(raw: str) -> str:

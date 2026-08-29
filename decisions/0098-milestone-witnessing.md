@@ -17,7 +17,12 @@ Blue combine to `PURPLE`, and `contracts/ticket-queue-policy.json` turns every
 The GitHub QA workflow then performs expensive adversarial work on every pull
 request.
 
-Those three statements collapse two different obligations:
+The same coupling reaches deeper than CI: `sov-loop` always launches a witness
+before landing and `grant:standing-landing-loop` requires an independent
+observation for every ordinary merge. Leaving those intact would merely move
+the bottleneck from the pull request to the landing gate.
+
+Those statements collapse two different obligations:
 
 1. **continuous engineering verification** — the positive path, declared
    defeating cases, unit/conformance tests, and repository verification that
@@ -54,8 +59,9 @@ required to establish this cadence.
 ### 3. Unwitnessed is not blocked
 
 A target at `BUILT_SELF_TESTED_NOT_WITNESSED` may continue to move in circuit
-stage, scope, and implementation state while its standing remains `BUILT`.
-Outstanding witness work is debt with an address, not a frozen frontier.
+stage, scope, implementation state, and ordinary landing while its standing
+remains `BUILT`. Outstanding witness work is debt with an address, not a frozen
+frontier.
 
 Witness becomes a gate only when the next requested transition consumes it,
 including:
@@ -69,7 +75,24 @@ including:
 This is the same shape as `AGENTS.md`'s blocked-edge rule: an unavailable edge
 never implies an unavailable frontier.
 
-### 4. A failed witness defeats the named claim, not unrelated work
+### 4. Ordinary landing is BUILT landing
+
+Bdo's direction amends the cadence of the already-ratified
+`grant:standing-landing-loop`. Its ordinary landing preconditions remain `verify`
+and `lint` PASS, but `requires_independent_observation` is no longer a
+per-increment precondition. The grant still carries no judgement authority and
+still cannot promote a claim to `WITNESSED` or `RATIFIED`.
+
+This distinction is load-bearing:
+
+> landed is where the bytes are; witnessed is what independent evidence says
+> about a named claim over those bytes.
+
+A participant may therefore land a self-tested BUILT increment and later include
+that immutable revision in a milestone verification engagement. Landing is not
+retroactively re-described as witness evidence.
+
+### 5. A failed witness defeats the named claim, not unrelated work
 
 A Red finding or defeating observation holds or demotes the milestone and the
 dependent descendants that rely on the defeated predicate. It does not
@@ -80,7 +103,7 @@ cannot witness itself. Nothing here changes `OPEN -> BUILT -> WITNESSED ->
 RATIFIED`, and nothing makes `WITNESSED` reachable without an independent
 record.
 
-### 5. Long-horizon obligations should not be permanent-red increment gates
+### 6. Long-horizon obligations should not be permanent-red increment gates
 
 Decision 0087 already rejected making the phase exit itself a check that would
 stay red for months, because a permanently red check teaches participants to
@@ -105,6 +128,10 @@ obligations unless their owning contract explicitly makes them immediate.
   it is actually queued.
 - `.github/workflows/qa-lanes.yml` keeps Blue on every pull request and moves the
   expensive Red/mutation pass to an explicit milestone dispatch.
+- `grant:standing-landing-loop` keeps `verify` and `lint` as ordinary landing
+  preconditions and no longer requires independent observation for every BUILT
+  increment.
+- `sov-loop` stops launching a witness unconditionally before each landing.
 - `.claude/skills/sdlc-qa/SKILL.md` teaches the same cadence without becoming a
   second authority.
 - `contracts/ticket-transitions.json`, `scripts/sov_standing.py`, historical
@@ -119,11 +146,13 @@ This decision is wrong if any of the following becomes possible:
    witness was deferred;
 2. a claim reaches `WITNESSED` without an independent witness receipt;
 3. a contractually witness-gated transition proceeds merely because ordinary
-   development is allowed to continue;
+   development or landing is allowed to continue;
 4. milestone Red cannot pin the exact bytes it attacked;
 5. a failed milestone witness silently leaves dependent claims promoted;
 6. witness work is deferred without an address until nobody can tell what is
-   still owed.
+   still owed;
+7. an ordinary landing is reported as independent evidence merely because the
+   landing grant is typed `VERIFICATION`.
 
 ## Source and authority
 
@@ -134,5 +163,9 @@ This decision is wrong if any of the following becomes possible:
   outside observation is required at `CAPABLE_NODE`.
 - `decisions/0087-lessons-enforced-and-the-phase-floor.md` — a long-horizon
   obligation should not become a permanently red per-change gate.
+- `decisions/0064-standing-authorization-and-the-landing-loop.md` and
+  `decisions/0065-standing-grant-ratified.md` — the prior landing-grant cadence
+  this owner-directed ruling amends without widening its capabilities, scope,
+  effect ceiling, or judgement authority.
 - `AGENTS.md` — blocked edge is not blocked frontier; a builder cannot witness
   its own work.

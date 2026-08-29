@@ -170,38 +170,45 @@ evidenced result, never permission to begin
 
 ## How we launch things and watch them
 
-- One concern, all the way: Workflow `sov-loop` with `{ objective: "...",
-  domain: "...", plan_only: true }`. It runs control, orchestration, work, an
-  independent witness, then `python scripts/sov_land.py`, the only place in the
-  repository that commits and merges. The gate grades the landing against
-  `contracts/standing-grants.json`. `grant:standing-landing-loop` is `RATIFIED`
-  (Bdo, 2026-08-25, `decisions/0065-standing-grant-ratified.md`): actor `sov`,
-  capabilities `repository.commit` and `repository.land`, scope excluding
-  `decisions/`, `STATUS.yaml`, `lineage/`, `.github/` and every root governing
-  document. What refuses a landing now is evidence, not permission: the grant
-  requires `verify` PASS, `lint` PASS, and an independent observation from a
-  participant that did not build the change
-  (`decisions/0064-standing-authorization-and-the-landing-loop.md`).
+- One ordinary concern, all the way to durable BUILT state: Workflow `sov-loop`
+  with `{ objective: "...", domain: "...", plan_only: true }`. It runs control,
+  orchestration, work, expected Blue verification, then `python
+  scripts/sov_land.py`, the one place in the repository that commits and merges.
+  `grant:standing-landing-loop` remains `RATIFIED` for actor `sov`, with
+  `repository.commit` and `repository.land`, but Bdo's 2026-08-28 ruling in
+  `decisions/0098-milestone-witnessing.md` changed its cadence: ordinary landing
+  requires `verify` PASS and `lint` PASS, not an independent witness. Landing
+  establishes no `WITNESSED` standing. Queue a `verification-engagement` over a
+  named immutable milestone when the next transition consumes outside
+  observation.
 - Whole stack: Workflow `sov-federation`, optionally
-  `{ domains: [...], objective: "...", sequential: true }`.
-- One domain: Workflow `sov-<domain>` with `{ objective: "..." }`; domains
-  are `governance`, `contracts`, `conformance`, `asset`, `proofing`,
-  `console`, `projection`, `byom`, `verification`.
-- Observe only: Workflow `sov-qa` witnesses the working tree and builds
-  nothing; `sov-baseline` reads readiness before a long run.
+  `{ domains: [...], objective: "...", sequential: true }`. The existing domain
+  workflow family still includes explicit Witness phases; treat those runs as
+  witness-bearing/milestone-style engagements rather than the default cadence
+  for ordinary increments until that family is separately collapsed onto the
+  new loop.
+- One domain ordinary increment: prefer `sov-loop` with `domain` set. Direct
+  `sov-<domain>` workflows retain their explicit Witness phase and therefore
+  opt into that extra verification work.
+- Observe only or witness a named target: Workflow `sov-qa` witnesses the
+  working tree and builds nothing; `sov-baseline` reads readiness before a long
+  run. Milestone Red in `.github/workflows/qa-lanes.yml` is dispatched explicitly
+  with `milestone`, `target_ref`, and `base_ref`.
 - Epic tree: `python scripts/sov_epic.py status | validate | next | unrouted`
   reads the checked-in projection; Workflow `sov-epic` walks it.
-- Ad hoc: Agent `sov-orchestrator` to plan, `sov-worker` to build one
-  operation, then `sov-witness` to verify. Name the domain in the prompt.
+- Ad hoc ordinary increment: Agent `sov-orchestrator` to plan and `sov-worker`
+  to build one operation; land at BUILT after expected checks. Add
+  `sov-witness` only when a named milestone or transition actually requires
+  independent observation. Name the domain in the prompt.
 - Unattended: `python scripts/sov_schedule.py validate | due | run <name>
   --dry-run | ledger`.
 
 Watching: `/workflows` shows a live run; completion reports land in
 `reports/`; scheduled runs append to `.local/schedules/ledger.ndjson`. A run
-leaves its changes uncommitted, so `git status` and `git diff` are the
-independent path to what it actually did. A `REPORTED` event is the
-executor's self-report; witness it with `sov-qa` or by hand before calling
-anything `WITNESSED`.
+leaves its changes uncommitted unless its declared landing operation admits the
+change, so `git status` and `git diff` remain an independent path to what it
+actually did. A `REPORTED` event is the executor's self-report; nothing is
+`WITNESSED` until an independent milestone observation says so.
 
 ## Historical orientation
 

@@ -399,8 +399,8 @@ does not name that exact revision. So a participant that edits the sentence is
 not making a reversible engineering choice, and one that leaves it is holding a
 document that reads falsely to the next reader.
 
-Observed 2026-08-28 on `docs/plane-separation-entry-points`, by the second of two
-independent witnesses. The first change on that branch quoted the sentence as its
+Observed 2026-08-28 on `docs/plane-separation-entry-points`, by the second of the
+four independent witnesses that observed that branch. The first change on that branch quoted the sentence as its
 own justification and then falsified it, which is the sharpest form of the
 problem: the document recorded the gap, and the record of the gap is what closing
 the gap breaks.

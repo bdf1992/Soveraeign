@@ -15,8 +15,9 @@ Two things are worth knowing before you open it. The set falls in two groups:
 `GROUND.md` and `CANON.md` say what product Soveraeign is and what it
 undertakes, and the rest say what Phase I must prove and how it is built. And
 neither group holds the rules you work under. Those are in `AGENTS.md` and in
-this file, which govern contributors to this repository and state no product
-claim.
+this file, which govern contributors to this repository and own no product
+claim. Product claims are drawn partly from `AGENTS.md`'s wording, but they are
+settled in `GROUND.md` and `CANON.md` and are the owner's, not this file's.
 
 The operational System of Record preserves events and receipts with their
 standing. It can record disagreement, failure, and retraction without converting

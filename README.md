@@ -139,6 +139,9 @@ independent witness or owner ratification.
 
 The founding set contains:
 
+- `GROUND.md` — the sixteen claims that say what product Soveraeign is;
+- `CANON.md` — who a node is for, what Soveraeign undertakes, and the journeys
+  an undertaking is reached by;
 - `SYSTEM.md` — the system boundary and operational model;
 - `CLASSIFICATION.md` — the proposed controlled vocabulary and identity tests;
 - `AI-NATIVE.md` — the falsifiable per-surface standard and verdict derivation;

@@ -1,0 +1,83 @@
+{
+  "contract_id": "soveraeign-roadmap-lanes/v1",
+  "status": "PROPOSED",
+  "governed_by": [
+    "ROADMAP.md",
+    "PRD.md",
+    "contracts/custodies.json",
+    "contracts/issue-metadata.schema.json"
+  ],
+  "note": "The four lanes every roadmap item carries, and the rule that they recurse. Bdo stated the shape on 2026-08-29; the readings filed under each lane in ROADMAP.md are drafted from the repository and are proposed. This contract grants nothing, holds no standing, and settles nothing: STATUS.yaml owns standing and contracts/custodies.json owns who is on the hook. It exists so scripts/sov_next.py can refuse a phase that has quietly dropped a lane, which is how the shape decays - not by anyone arguing against it, but by the next editor writing a flat list because the flat list is faster.",
+  "lanes": [
+    {
+      "lane": "NOW",
+      "means": "What is on the board: available, and workable from start to finish with what exists today.",
+      "admits": "An item a participant could pick up and carry to a terminal without waiting on anything that does not exist.",
+      "refuses": "Work in progress as such, work that is merely important, and work needing a thing not yet built. If it needs something that does not exist, it is not NOW.",
+      "may_be_empty": true,
+      "empty_means": "Nothing in this item can be finished with what exists. That is a reading worth stating, not an omission."
+    },
+    {
+      "lane": "NEXT",
+      "means": "What becomes available once NOW clears, and has already been chosen as the next target.",
+      "admits": "An item satisfying both conditions: released by NOW, and selected.",
+      "refuses": "An item that is merely unblocked but unchosen, and a chosen favourite that NOW does not release. Either one alone is not NEXT.",
+      "may_be_empty": true,
+      "empty_means": "Nothing has been chosen yet. Distinct from nothing being available."
+    },
+    {
+      "lane": "NEEDED",
+      "means": "A future item already known to be a need of ours, neither selected nor scheduled.",
+      "admits": "A known need with no chosen slot.",
+      "refuses": "A speculative want, and an item that has in fact been selected - selecting it moves it to NEXT.",
+      "may_be_empty": true,
+      "empty_means": "Everything known about this item is already in NOW or NEXT."
+    },
+    {
+      "lane": "NEVER",
+      "means": "What will never be allowed to creep into this item's scope. A constraint, not a plan.",
+      "admits": "A scope edge, most usefully the boundary against the neighbouring item that would otherwise absorb this one.",
+      "refuses": "Deferral dressed as exclusion. 'Not yet' belongs in NEEDED; NEVER is 'never in this item', which includes 'never before the thing that earns it'.",
+      "may_be_empty": false,
+      "empty_means": "Refused. A scope with no stated edge has no edge, and this lane is the one that does the most work: an item usually fails by absorbing its neighbour rather than by running out of effort."
+    }
+  ],
+  "recursion": {
+    "rule": "The four lanes apply at every level. The roadmap has them, each phase has them, each item inside a lane has them, and so on down to whatever grain someone is working at.",
+    "scope": "An item's lanes are scoped to that item, never to its parent. P1's NOW is the NOW of the service fabric, not of the repository.",
+    "never_tightens": "A child's NEVER may be tighter than its parent's and may not be looser, because a child cannot admit what its parent excluded.",
+    "floor": "In practice the recursion bottoms out where contracts/custodies.json and the ticket queue take over. That is a practical floor, not a limit on the rule."
+  },
+  "invariants": {
+    "one_lane_per_level": "An item sits in exactly one lane at one level. Appearing in two is a defect, not a spanning state; the spanning values in the ticket horizon vocabulary belong to a ticket's own forecast and never to a lane.",
+    "moving_is_an_edit": "Moving an item between lanes edits an estimate. It changes no standing and emits no event.",
+    "no_standing": "This contract and ROADMAP.md carry no standing. A lane placement is never evidence that anything was built, witnessed, or accepted."
+  },
+  "ticket_horizon_crosswalk": {
+    "note": "NOW and NEXT already exist in this repository as values of the ticket horizon field (contracts/issue-metadata.schema.json). They are not the same object and the words must not fork: a lane is a container on an item, and a horizon is one ticket's own forecast of when it lands. This table says which lane a ticket's horizon puts it in when a lane is being assembled from tickets. It is a reading direction only; nothing derives the roadmap from the epic tree today.",
+    "NOW": "NOW",
+    "NEXT": "NEXT",
+    "NOW_TO_NEXT": "NOW",
+    "NOW_TO_SCALE_TRUST": "NOW",
+    "NEXT_TO_SCALE_TRUST": "NEXT",
+    "ON_SCALE_TRUST": "NEEDED",
+    "spanning_resolves_to_the_earlier_lane": "A spanning horizon names where a ticket starts, so it reads into the earlier lane. Reading it into the later one would make a lane understate what is already on the board.",
+    "no_horizon_maps_to_NEVER": "By construction. A ticket in NEVER is a ticket that should not exist, so there is no horizon value for it and adding one would make the exclusion schedulable."
+  },
+  "checked_by": {
+    "command": "python scripts/sov_next.py --strict",
+    "refusals": {
+      "ROADMAP_PHASE_MISSING_LANE": "A phase section in ROADMAP.md does not carry all four lanes.",
+      "ROADMAP_EMPTY_NEVER": "A phase's NEVER lane is present but says nothing.",
+      "ROADMAP_LANE_VOCABULARY_DRIFT": "ROADMAP.md and this contract no longer name the same four lanes."
+    },
+    "not_checked": "The truth of a placement. Whether a NOW item can really be finished with what exists is judgement over evidence, and no parser settles it. The check proves the shape is present, never that the reading is right."
+  },
+  "what_would_defeat_this": [
+    "a NOW item that turns out to need something that does not exist, which means the lane definition is being read as 'next up' rather than 'finishable'",
+    "a NEXT item nobody chose, which means the second condition is decorative",
+    "a NEVER row that is really a deferral, which means the lane has collapsed into NEEDED and stopped constraining anything",
+    "a child NEVER looser than its parent's, which is the scope creep the lane exists to catch arriving through the recursion itself",
+    "the lanes being derived from the epic tree while this contract still calls the crosswalk a reading direction"
+  ]
+}

@@ -2,7 +2,8 @@
 """Reconcile every signpost that claims to say what happens next.
 
 Five documents name the next action in five vocabularies. This reads all of
-them, resolves the ``ROADMAP.md`` name crosswalk, and prints one answer with
+them, resolves the ``ROADMAP.md`` name crosswalk, grades the four-lane shape
+that roadmap declares, and prints one answer with
 every alias it travels under. It settles nothing: where the declared gate and
 the reachable work name different jobs, that disagreement is reported rather
 than resolved, because choosing between them is judgement and judgement is
@@ -20,6 +21,8 @@ from pathlib import Path
 import argparse
 import json
 import re
+
+import roadmap_lanes
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -143,7 +146,8 @@ def closed_unsettled(issues: dict) -> list[str]:
 def resolve(rows: list[dict[str, str]], ready: list[dict[str, str]],
             phases: dict[str, str], roadmap_text: str, root: Path = ROOT,
             issues: dict | None = None) -> list[str]:
-    """Defects: a crosswalk row that no longer resolves, or a signpost conflict."""
+    """Defects: a crosswalk row that no longer resolves, a lane a phase dropped,
+    or a signpost conflict."""
     defects = []
     ready_numbers = {row["number"] for row in ready}
     for row in rows:
@@ -166,6 +170,9 @@ def resolve(rows: list[dict[str, str]], ready: list[dict[str, str]],
             defects.append(f"crosswalk row {row['phase']} draws to missing {drawn.group(1)}")
     if "split `core.py`" not in roadmap_text:
         defects.append("crosswalk no longer names the ENGINEERING.md module debt")
+    # The lane shape is graded for presence only. Whether a Now item can really be
+    # finished with what exists is judgement over evidence, which no parser settles.
+    defects.extend(str(defect) for defect in roadmap_lanes.grade(roadmap_text))
     # An empty frontier is deliberately not a defect. Every open ticket being
     # held is a legitimate state, and a gate that fails on it teaches operators
     # to clear the alarm unread. It is reported under "reachable work" instead.
@@ -246,13 +253,14 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  {defect}")
 
     if defects:
-        print(f"\nFAIL: {len(defects)} crosswalk row(s) no longer resolve")
+        print(f"\nFAIL: {len(defects)} signpost defect(s)")
         return 1 if args.strict else 0
     if conflict:
-        print("\nPASS: every crosswalk row resolves. A declared-gate disagreement "
+        print("\nPASS: crosswalk and lanes resolve. A declared-gate disagreement "
               "stands; that is owner judgement, not a defect.")
         return 0
-    print("\nPASS: every crosswalk row resolves and no signpost disagrees")
+    print("\nPASS: every crosswalk row resolves, every phase carries its four "
+          "lanes, and no signpost disagrees")
     return 0
 
 

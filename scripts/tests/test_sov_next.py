@@ -1,8 +1,14 @@
-"""Cases for the signpost reconciler.
+"""Cases for the signpost reconciler and the roadmap lane grader it calls.
 
 Every check has a positive case and a case proving the required refusal, per
 `AGENTS.md` Testing and verification. Nothing here reaches the network or the
 coordination surface.
+
+The lane cases live here rather than in a module of their own because the
+tooling suite partitions by module and a ninetieth module repacks every shard:
+measured, it moved two multi-second readers onto the shard already holding a
+third and put the suite past its catastrophic ceiling. The grader is reached
+through ``sov_next``, so this is also where its cases belong.
 """
 
 from __future__ import annotations
@@ -14,7 +20,10 @@ import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+import roadmap_lanes  # noqa: E402
 import sov_next  # noqa: E402
+
+ROOT = Path(__file__).resolve().parents[2]
 
 
 ROADMAP = """# Phased Attack Plan
@@ -220,6 +229,155 @@ class StaleViews(unittest.TestCase):
         self._view("0000000000000000")
         (self.root / "SPEC.md").unlink()
         self.assertEqual(sov_next.stale_views(self.root), [("view.md", ["SPEC.md (missing)"])])
+
+
+ADMISSIBLE = """# Product Roadmap
+
+## Now, next, needed, never
+
+- **Now** - prose about the lane, which is not a phase and is not graded.
+
+## The phases
+
+### `P0` · Ground and govern
+
+**Result.** A product result.
+
+**Now.** The census.
+
+**Next.** The exit custodies.
+
+**Needed.** A fresh-reader test.
+
+**Never.** New product scope.
+
+**Exits when** a fresh reader can determine what the product is.
+
+### `P1` · Local service fabric
+
+**Result.** Another product result.
+
+**Now.** Normalizing the manifests.
+
+**Next.** The Gateway crossing.
+
+**Needed.** The record crossing.
+
+**Never.** Transport off the node.
+
+## Deferred until earned
+
+Text.
+"""
+
+
+class Parsing(unittest.TestCase):
+    """Only a backticked phase heading opens a graded section."""
+
+    def test_every_phase_section_is_found(self):
+        self.assertEqual(sorted(roadmap_lanes.phase_sections(ADMISSIBLE)), ["P0", "P1"])
+
+    def test_prose_about_the_lanes_is_not_a_phase(self):
+        """`## Now, next, needed, never` discusses the lanes; it does not carry them."""
+        self.assertNotIn("Now, next, needed, never", roadmap_lanes.phase_sections(ADMISSIBLE))
+
+    def test_a_section_stops_at_the_next_heading(self):
+        section = roadmap_lanes.phase_sections(ADMISSIBLE)["P1"]
+        self.assertNotIn("Deferred until earned", section)
+
+    def test_lanes_carry_their_own_prose(self):
+        lanes = roadmap_lanes.lanes_in(roadmap_lanes.phase_sections(ADMISSIBLE)["P0"])
+        self.assertEqual(lanes["Never"], "New product scope.")
+
+    def test_exits_when_is_not_read_as_a_lane(self):
+        """`**Exits when**` carries no full stop before the close, so it opens no lane."""
+        lanes = roadmap_lanes.lanes_in(roadmap_lanes.phase_sections(ADMISSIBLE)["P0"])
+        self.assertNotIn("Exits", lanes)
+
+    def test_a_lane_stops_at_the_next_bold_paragraph(self):
+        """The last lane must not swallow `**Exits when**`, or an emptied Never reads full."""
+        lanes = roadmap_lanes.lanes_in(roadmap_lanes.phase_sections(ADMISSIBLE)["P0"])
+        self.assertNotIn("Exits when", lanes["Never"])
+
+    def test_an_empty_never_is_refused_even_when_a_bold_paragraph_follows(self):
+        broken = ADMISSIBLE.replace("**Never.** New product scope.", "**Never.** ")
+        codes = {defect.code for defect in roadmap_lanes.grade(broken)}
+        self.assertIn("ROADMAP_EMPTY_NEVER", codes)
+
+
+class Refusals(unittest.TestCase):
+    """Each declared refusal fires against a controlled mutation, and only then."""
+
+    def _codes(self, text):
+        return {defect.code for defect in roadmap_lanes.grade(text)}
+
+    def test_the_admissible_control_is_quiet(self):
+        self.assertEqual(roadmap_lanes.grade(ADMISSIBLE), [])
+
+    def test_a_dropped_lane_is_refused(self):
+        broken = ADMISSIBLE.replace("**Never.** Transport off the node.\n", "")
+        self.assertIn("ROADMAP_PHASE_MISSING_LANE", self._codes(broken))
+
+    def test_the_defect_names_the_phase_that_dropped_it(self):
+        broken = ADMISSIBLE.replace("**Never.** Transport off the node.\n", "")
+        detail = [d.detail for d in roadmap_lanes.grade(broken)
+                  if d.code == "ROADMAP_PHASE_MISSING_LANE"]
+        self.assertEqual(detail, ["P1 carries no Never lane"])
+
+    def test_an_empty_never_is_refused(self):
+        broken = ADMISSIBLE.replace("**Never.** New product scope.", "**Never.** ")
+        self.assertIn("ROADMAP_EMPTY_NEVER", self._codes(broken))
+
+    def test_an_empty_now_is_not_refused(self):
+        """A phase whose Now is empty is making a reading, so only Never is required."""
+        thin = ADMISSIBLE.replace("**Now.** The census.", "**Now.** ")
+        self.assertNotIn("ROADMAP_EMPTY_NEVER", self._codes(thin))
+
+    def test_a_renamed_lane_is_refused_as_drift(self):
+        broken = ADMISSIBLE.replace("**Now.**", "**Soon.**")
+        self.assertIn("ROADMAP_LANE_VOCABULARY_DRIFT", self._codes(broken))
+
+    def test_a_roadmap_with_no_phases_raises_no_drift(self):
+        """Drift is about phases disagreeing with the contract, not about their absence."""
+        self.assertEqual(roadmap_lanes.grade("# Product Roadmap\n"), [])
+
+    def test_selfcheck_proves_every_refusal_fires(self):
+        self.assertEqual(roadmap_lanes.selfcheck(), [])
+
+    def test_every_declared_refusal_has_a_case_here(self):
+        source = Path(__file__).read_bytes().decode("utf-8")
+        for code in roadmap_lanes.REFUSALS:
+            self.assertIn(code, source, f"{code} is declared and never exercised")
+
+
+class Contract(unittest.TestCase):
+    """The contract and the document it governs stay in step."""
+
+    def test_the_contract_declares_the_four_lanes(self):
+        self.assertEqual(roadmap_lanes.contract_lanes(), ["Now", "Next", "Needed", "Never"])
+
+    def test_never_is_the_only_lane_that_may_not_be_empty(self):
+        optional = roadmap_lanes.lanes_that_may_be_empty()
+        self.assertEqual(set(roadmap_lanes.contract_lanes()) - optional, {"Never"})
+
+    def test_the_horizon_crosswalk_covers_every_ticket_horizon(self):
+        """NOW and NEXT already name ticket horizons; the two vocabularies must not fork."""
+        import json
+
+        schema = json.loads(
+            (ROOT / "contracts" / "issue-metadata.schema.json").read_bytes().decode("utf-8"))
+        declared = set(schema["properties"]["horizon"]["enum"])
+        crosswalk = roadmap_lanes.load_contract()["ticket_horizon_crosswalk"]
+        self.assertEqual(declared - set(crosswalk), set())
+
+    def test_the_committed_roadmap_carries_every_lane(self):
+        text = (ROOT / "ROADMAP.md").read_bytes().decode("utf-8")
+        self.assertEqual(roadmap_lanes.grade(text), [])
+
+    def test_the_committed_roadmap_still_has_phases_to_grade(self):
+        """A grader that parses no phase would pass an empty document silently."""
+        text = (ROOT / "ROADMAP.md").read_bytes().decode("utf-8")
+        self.assertEqual(len(roadmap_lanes.phase_sections(text)), 10)
 
 
 if __name__ == "__main__":

@@ -80,10 +80,13 @@ are recorded rather than asserted. Silence about them is not confirmation.
 Soveraeign is a locally sovereign, AI-native enterprise environment in which
 human and model operators share one world. Two records define it:
 
-- the design System of Record: `SYSTEM.md`, `CLASSIFICATION.md`,
+- the design System of Record, in two groups. `GROUND.md` and `CANON.md` say
+  what product this is and what it undertakes. `SYSTEM.md`, `CLASSIFICATION.md`,
   `CONTRACT.md`, `PRD.md`, `SPEC.md`, `AI-NATIVE.md`, `STATUS.yaml`,
-  `ENGINEERING.md`, and `SDLC.md`, each owning one kind of rule (`AGENTS.md`,
-  Design System of Record);
+  `ENGINEERING.md`, and `SDLC.md` say what Phase I must prove and how it is
+  built. Each owns one kind of rule (`AGENTS.md`, Design System of Record).
+  `AGENTS.md`, `CONTRIBUTING.md`, and this file are in neither group: they
+  govern participants working here, never the product;
 - the operational System of Record: an append-preserving record of addressed
   inputs, events, standing changes, observations, receipts, and
   counter-records. SQLite stores it; it is not the semantic authority.
@@ -248,6 +251,8 @@ it as current (`LESSONS.md` L-0001). Correct the page rather than the tolerance.
 | --- | --- |
 | Which tier settles a decision | `decisions/0033-close-the-founding-docket.md`, Ruling 1 |
 | What genuinely waits on Bdo | `STATUS.yaml`, `owner_holds` |
+| What product this is, and what it undertakes | `GROUND.md`, then `CANON.md` |
+| Whether a rule is about the product or about working here | `AGENTS.md`, Design System of Record |
 | A term or enum | `CLASSIFICATION.md`, then `SPEC.md` |
 | Whether a surface is AI-native | `AI-NATIVE.md` |
 | Harness layout and invocation | `.claude/README.md` |

@@ -17,7 +17,10 @@
 > | `python scripts/verify_bootstrap.py` checks a fresh checkout | `scripts/README.md`, Not entrypoints |
 >
 > A cold agent starts at [`AGENTS.md`](AGENTS.md), then [`SOV.md`](SOV.md) and
-> [`STATUS.yaml`](STATUS.yaml). A person starts at [`README.md`](README.md).
+> [`STATUS.yaml`](STATUS.yaml). What the product is, and what it undertakes, is
+> read from [`GROUND.md`](GROUND.md) and [`CANON.md`](CANON.md) and is never
+> inferred from the documents that govern how a participant works here. A person
+> starts at [`README.md`](README.md).
 
 Copy everything below this line into a capable coding agent after attaching or
 extracting this ZIP.

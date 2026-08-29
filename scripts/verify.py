@@ -14,8 +14,10 @@ declared order so a parallel run reads exactly like a serial one.
 
 Every check is timed on two clocks, wall and CPU, by `sovverify.clocks`. One
 aggregate wall time could not tell a repository that grew from a machine that was
-busy; per check, the pair can. The gate still keys on aggregate wall time and on
-nothing else - `decisions/0050` owns that budget.
+busy; per check, the pair can. The aggregate wall time is graded and recorded as
+debt; it never reaches the exit code, which `decisions/0081` settled by
+superseding `decisions/0050`. One timing condition still refuses: a single check
+past thirty seconds.
 
 The table of what to run lives in `scripts/sovverify/checks.py`; this module owns
 only how a run is executed, observed, and graded.

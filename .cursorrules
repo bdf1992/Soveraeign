@@ -1,9 +1,13 @@
 # Soveraeign repository rules
 
-Read and obey `/AGENTS.md`; it is normative. The design System of Record is the
-owned set `/SYSTEM.md`, `/CLASSIFICATION.md`, `/CONTRACT.md`, `/PRD.md`,
-`/SPEC.md`, `/STATUS.yaml`, and `/ENGINEERING.md`. Do not duplicate their rules
-into competing authorities.
+Read and obey `/AGENTS.md`; it is normative, and it owns the list of which
+document owns which rule. The set falls in two groups: `/GROUND.md` and
+`/CANON.md` say what product this is and what it undertakes; `/SYSTEM.md`,
+`/CLASSIFICATION.md`, `/CONTRACT.md`, `/PRD.md`, `/SPEC.md`, `/AI-NATIVE.md`,
+`/STATUS.yaml`, `/ENGINEERING.md`, and `/SDLC.md` say what Phase I must prove
+and how it is built. `/AGENTS.md`, `/CONTRIBUTING.md`, and this file are in
+neither group: they govern contributors here and own no product claim. Do not
+duplicate their rules into competing authorities.
 
 - Bdo owns product intent, naming, judgement, and phase gates.
 - Model output, tool success, credentials, and green tests confer no authority.

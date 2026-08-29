@@ -43,7 +43,9 @@ For every fresh task:
    grant references where required, and the maximum admitted effect class.
 3. Load the owning governing documents plus only the relevant contract, fixture,
    service, decision, and issue. A consequential repository change still requires
-   the complete governing set named by `AGENTS.md`.
+   the complete governing set named by `AGENTS.md`. What the product is and what
+   it undertakes is read from `GROUND.md` and `CANON.md`, never inferred from
+   `AGENTS.md` or this file, which govern how a participant works here.
 4. Declare material omissions, stale or unavailable sources, the expected
    independent observation, and the refusal or counteraction boundary.
 5. Work one named operation. Observe through a path that does not rely only on

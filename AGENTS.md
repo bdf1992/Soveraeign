@@ -5,13 +5,24 @@ rules for its subtree, but it may not weaken this contract. `CONTRIBUTING.md`
 explains the same workflow for human contributors; `ENGINEERING.md` defines the
 current technical baseline.
 
-Before a consequential change, read `STATUS.yaml`, `SYSTEM.md`,
-`CLASSIFICATION.md`, `CONTRACT.md`, `PRD.md`, `SPEC.md`, `AI-NATIVE.md`,
-`ENGINEERING.md`, `SDLC.md`, and `OPEN-SEAMS.md`.
+Before a consequential change, read `STATUS.yaml`, `GROUND.md`, `CANON.md`,
+`SYSTEM.md`, `CLASSIFICATION.md`, `CONTRACT.md`, `PRD.md`, `SPEC.md`,
+`AI-NATIVE.md`, `ENGINEERING.md`, `SDLC.md`, and `OPEN-SEAMS.md`.
 
 ## Design System of Record
 
-The governing documents form one design System of Record with explicit roles:
+The governing documents form one design System of Record with explicit roles,
+in two groups. Two of them say what product this is; the rest say what this
+phase must prove and how it is built. Answering a product question from the
+second group, or a phase question from the first, is a category error.
+
+What the product is. Owner-accepted, slow to change, revised rather than edited:
+
+- `GROUND.md` owns the sixteen claims that say what product Soveraeign is;
+- `CANON.md` owns who a node is for, what Soveraeign undertakes, and the
+  principal journeys an undertaking is reached by.
+
+What this phase must prove, and how it is built:
 
 - `SYSTEM.md` owns the system boundary and operating model;
 - `CLASSIFICATION.md` owns architectural, information-role, and
@@ -26,6 +37,17 @@ The governing documents form one design System of Record with explicit roles:
 - `ENGINEERING.md` owns the proposed reference implementation baseline;
 - `SDLC.md` owns the operating loop: tiers, dyads, concern registry, skill
   axes, workflow templates, and the Red-gated release requirement.
+
+This file and `CONTRIBUTING.md` are in neither group. They govern how a
+participant works in this repository: authority, closure, evidence, style,
+branches, and boundaries. They own no product claim and no Phase-I requirement,
+and a rule about the product is settled in `GROUND.md` or `CANON.md`, never
+here. Being a source a claim was drawn from is not owning it: `GROUND.md`
+grounds seven of its sixteen claims partly in named sections of this file, and
+`CANON.md` grounds `PROMISE-12` the same way. Those claims are the owner's and
+live there; the wording here can change without changing them. Keeping that line
+is what stops this repository's own working rules from being read as things
+Soveraeign promises the people who use a node.
 
 Do not duplicate a rule in another file as a competing authority. Link to the
 owning document and record genuine conflicts in `OPEN-SEAMS.md`.

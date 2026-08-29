@@ -12,8 +12,9 @@ a CPU heading, or a zero where no measurement was taken, would read as a fast
 check and be worse than reporting nothing at all.
 
 These cases spawn real children, so they are kept small on purpose: the module is
-budgeted at roughly half a second inside a gate that fails past fifteen
-(`decisions/0050`).
+budgeted at roughly half a second inside a gate that grades the aggregate wall
+time as debt and refuses only a single check past thirty seconds
+(`decisions/0081`).
 """
 
 from __future__ import annotations

@@ -203,6 +203,176 @@
     "RECRUITMENT_UNBOUNDED": "helpers were spent past the declared per-concern ceiling and presented as ordinary closure, with no owner-accepted resource commitment behind them",
     "HOST_LIMIT_AS_OWNER_QUESTION": "a capability the host withheld is routed to the owner as judgement, when what is missing is a tool and not a ruling"
   },
+  "reachable_operations": {
+    "WIP_EXCEEDED": [
+      {
+        "operation": "carry the unlanded concern to its terminal: chase its checks, repair its findings, rebase it, and land it",
+        "tool": "report"
+      },
+      {
+        "operation": "settle the landed concern and retire its execution state under contracts/ticket-settlement.json",
+        "tool": "report"
+      },
+      {
+        "operation": "ask an orchestrator to lease the new concern to a participant that is not at ceiling",
+        "tool": "report",
+        "needs_other_participant": true
+      }
+    ],
+    "ABSORBABLE_FOLLOW_ON": [
+      {
+        "operation": "implement the follow-on inside the concern in hand",
+        "tool": "edit"
+      },
+      {
+        "operation": "add the case that proves the follow-on's behaviour, positive and defeating",
+        "tool": "run_tests"
+      },
+      {
+        "operation": "re-run the absorption test and, if a predicate genuinely crosses, name which of service, effect class, or authority it crosses",
+        "tool": "read"
+      }
+    ],
+    "HELPER_AS_WITNESS": [
+      {
+        "operation": "launch an independent witness - a participant that did not read or edit this change - and receive its observation; launching it is the builder's own step, not another participant's",
+        "tool": null
+      },
+      {
+        "operation": "cite the editing helper's reading as what it is - a second reading inside the build",
+        "tool": "report"
+      },
+      {
+        "operation": "name the dependency at DEPENDENCY_SEAM when the invocation genuinely cannot launch a witness, asking for the capability and not a ruling",
+        "tool": "report"
+      }
+    ],
+    "RECRUITMENT_UNBOUNDED": [
+      {
+        "operation": "reduce the concern to a slice the declared ceiling can close",
+        "tool": "edit"
+      },
+      {
+        "operation": "ask the owner at EFFECT_SEAM to accept the resource commitment before spending further helpers",
+        "tool": "report",
+        "needs_other_participant": true
+      }
+    ],
+    "HOST_LIMIT_AS_OWNER_QUESTION": [
+      {
+        "operation": "do the second reading in-session: the reading is what was needed, not the tool",
+        "tool": "read"
+      },
+      {
+        "operation": "report the host and the missing tool by name, never as a rule of this system",
+        "tool": "report"
+      },
+      {
+        "operation": "ask for the helper tool as a capability at DEPENDENCY_SEAM, of a tier that can change how the session is launched",
+        "tool": "report",
+        "needs_other_participant": true
+      }
+    ],
+    "ROUTINE_DECISION": [
+      {
+        "operation": "settle it: routine_decisions belongs to whoever holds the concern",
+        "tool": "edit"
+      },
+      {
+        "operation": "take the reversible default and record it under Defaults taken in the change description",
+        "tool": "report"
+      },
+      {
+        "operation": "recruit a helper if the hesitation is genuinely about wanting a second reading",
+        "tool": "recruit_helper"
+      }
+    ],
+    "SEAM_UNDECLARED": [
+      {
+        "operation": "read admissible_seams and name the one this handoff actually crosses",
+        "tool": "read"
+      },
+      {
+        "operation": "carry the concern further and re-judge once the remainder is irreducible",
+        "tool": "edit"
+      },
+      {
+        "operation": "report the concern as gated on a named transition when no seam fits, because a handoff that names no seam is reachable work",
+        "tool": "report"
+      }
+    ],
+    "JUDGEMENT_NOT_OWNER": [
+      {
+        "operation": "address the judgement to the owner seat and to no other",
+        "tool": "report"
+      },
+      {
+        "operation": "check what is actually wanted: a grant, contract, fixture, capability, or observation is asked of another tier",
+        "tool": "read"
+      },
+      {
+        "operation": "settle it yourself when it is on routine_decisions",
+        "tool": "edit"
+      }
+    ],
+    "PROVISION_UNROUTED": [
+      {
+        "operation": "read the named seam's provisions and requested_from, then route the ask to a tier that can serve it",
+        "tool": "read"
+      },
+      {
+        "operation": "name the seam that admits this provision instead",
+        "tool": "report"
+      },
+      {
+        "operation": "split the handoff when it carries two provisions that route differently",
+        "tool": "report"
+      }
+    ],
+    "REACHABLE_ALTERNATIVE": [
+      {
+        "operation": "take the reachable route the claim already names",
+        "tool": "edit"
+      },
+      {
+        "operation": "report the concern as gated on a named transition rather than blocked",
+        "tool": "report"
+      },
+      {
+        "operation": "re-judge once that route is exhausted and reachable_alternative is genuinely NONE",
+        "tool": "report"
+      }
+    ],
+    "HELPER_NOT_RECRUITED": [
+      {
+        "operation": "recruit the helper: the tool is available and recruitment below the ceiling needs no one's permission",
+        "tool": "recruit_helper"
+      },
+      {
+        "operation": "read the helper's finding and repair it in place",
+        "tool": "edit"
+      },
+      {
+        "operation": "re-judge once the reading is done and the remainder is still not the participant's own",
+        "tool": "report"
+      }
+    ],
+    "LOOP_INCOMPLETE": [
+      {
+        "operation": "take the skipped step: the refusal names it and the tool it needs, and that tool is available in this invocation by definition of this refusal",
+        "tool": null
+      },
+      {
+        "operation": "name the host and the missing tool as a capability ask at DEPENDENCY_SEAM when a step's tool is genuinely absent",
+        "tool": "report"
+      },
+      {
+        "operation": "re-judge once every step whose tool this invocation grants has been taken",
+        "tool": "report"
+      }
+    ]
+  },
+  "reachable_operations_note": "What each refusal leaves reachable. A refusal that says only why is a dead end, and a participant that meets one has no next move but to stop or to ask again in a different shape. Each code here names the operations that clear it, so a refused handoff returns work rather than a wall. tool names the declared tool the operation needs; null means no single tool - the refusal itself names what is required, or nothing beyond a decision is. needs_other_participant marks an operation the refused participant cannot take alone; every code must also leave at least one that it can, which is the invariant that stops this table from becoming a politer dead end. Checked by scripts/sovclosure/reachable.py against conformance/fixtures/closure/reachable-operations-cases.json.",
   "tools": [
     "read",
     "edit",

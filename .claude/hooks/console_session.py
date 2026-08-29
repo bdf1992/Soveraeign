@@ -27,6 +27,7 @@ from pathlib import Path
 from typing import Any
 import json
 import os
+import re
 import subprocess
 import sys
 
@@ -36,6 +37,34 @@ BINDINGS = STORE / "host-sessions.json"
 OPERATOR = os.environ.get("SOVERAEIGN_OPERATOR", "sov")
 BINDING_ID = "claude-code"
 TIMEOUT_SECONDS = 20
+
+# A warning printed as the process exits lands after the line that names the fault.
+# Reporting it as the cause sends the session after the wrong thing. Python writes
+# a warning as `source:lineno: SomeWarning: text`, so the class name is matched in
+# that position rather than anywhere in the line.
+_WARNING = re.compile(r":\s\w*Warning:")
+
+
+class ConsoleRefused(RuntimeError):
+    """The console refused the call and said why in a stable code.
+
+    The CLI writes a refusal as JSON on stdout and exits non-zero. Reading stdout
+    alone cannot tell a refusal from a result, so the reason code never reached the
+    session and the refusal surfaced as whichever key the caller looked up next.
+    The code is what a reader can act on, so it is what this carries.
+    """
+
+    def __init__(self, command: str, stdout: str, code: int, stderr: str) -> None:
+        try:
+            payload = json.loads(stdout)
+        except ValueError:
+            payload = {}
+        self.command = command
+        self.reason_code = payload.get("reason_code") or "REFUSED"
+        detail = stderr or payload.get("outcome") or ""
+        super().__init__(
+            f"console {command} refused: {self.reason_code}"
+            + (f" ({detail})" if detail else ""))
 
 
 def _console(*args: str) -> dict[str, Any]:
@@ -49,6 +78,9 @@ def _console(*args: str) -> dict[str, Any]:
     result = subprocess.run(
         [sys.executable, "-m", "soveraeign_console_service.cli", "--root", str(STORE), *args],
         cwd=ROOT, env=env, capture_output=True, text=True, timeout=TIMEOUT_SECONDS)
+    if result.returncode != 0:
+        raise ConsoleRefused(args[0], result.stdout, result.returncode,
+                             result.stderr.strip())
     if not result.stdout.strip():
         raise RuntimeError(result.stderr.strip() or "the console returned nothing")
     return json.loads(result.stdout)
@@ -95,7 +127,8 @@ def _remember(host_session: str, console_session: str) -> None:
                                    indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
-def _render(context: dict[str, Any], console_session: str) -> str:
+def _render(context: dict[str, Any], console_session: str,
+            notes: list[str] | None = None) -> str:
     """Write the continuity briefing that becomes the starting session's context."""
     lines = [
         "# Console continuity",
@@ -135,21 +168,168 @@ def _render(context: dict[str, Any], console_session: str) -> str:
     lines.append("Read a thread or post into one with the `sov-continuity` skill. "
                  "A post that makes a claim needs a proposal id; the console refuses it "
                  "otherwise.")
+    if notes:
+        lines.extend(["", *notes])
+    return "\n".join(lines)
+
+
+def _terse(failure: Exception) -> str:
+    """The line naming the fault: not the traceback, and not a trailing warning.
+
+    Whatever this hook prints becomes context for the session that is starting.
+    A pasted traceback spends that context on frames the session cannot act on and
+    buries the one line that names the fault (`AGENTS.md`, Context hygiene). The
+    fault is usually the last line, but a warning emitted as the process exits
+    lands after it and would be reported as the cause. Warnings are skipped. A
+    failure that is nothing but warnings falls back to its last line rather than
+    inventing a cause it cannot see.
+    """
+    lines = [line.strip() for line in str(failure).strip().splitlines() if line.strip()]
+    if not lines:
+        return type(failure).__name__
+    for line in reversed(lines):
+        if _WARNING.search(line) or line.startswith(("Traceback", "File ")):
+            continue
+        return line
+    return lines[-1]
+
+
+def _provenance(opened: bool) -> str:
+    """What is actually known about where this console session id came from.
+
+    An id this hook just opened is backed by a call the console answered, so that
+    record committed. An id read from the binding map is backed by the map, which
+    `_bindings` calls a host convenience and not a record: it outlives the session
+    it names, because `end` never removes an entry, and it outlives a store that
+    was replaced underneath it. Calling that "resumed" asserts the console still
+    holds the session and that it is open, and this hook has checked neither. That
+    is the same unbacked claim the hook exists to stop making.
+    """
+    if opened:
+        return "opened by this hook, so the console committed that record"
+    return ("carried from this host binding map, which is a convenience and not a "
+            "record; whether the console still holds it, and whether it is open, "
+            "is unchecked here")
+
+
+def _degraded(console_session: str, opened: bool, failure: Exception,
+              notes: list[str] | None = None) -> str:
+    """Report a briefing this hook could not build, without misreporting the record.
+
+    The session is opened and bound before the briefing is asked for, so a briefing
+    that fails does not mean nothing was recorded. Saying so anyway is a false claim
+    about the journal, which is the one thing host plumbing must never make. Report
+    what is known, name what is not, and leave the diagnosis to the owning service.
+    """
+    lines = [
+        "# Console continuity - briefing unavailable",
+        "",
+        f"Operator `{OPERATOR}` through binding `{BINDING_ID}`. "
+        f"Console session `{console_session}`, {_provenance(opened)}.",
+        "",
+        f"The briefing could not be built: {_terse(failure)}",
+        "",
+        "What this session does not know: what landed while this operator was away, "
+        "and which threads are open. Nothing here says the journal lost anything.",
+        "",
+        "This hook does not diagnose the journal; the Record Service owns that rule. "
+        "Read it with `python -m soveraeign_record_service.cli --root .local/console/journal`, "
+        "with `services/record/src` and `services/console/src` on PYTHONPATH.",
+        "",
+        "A session close pins the read position the next session starts from. If the "
+        "close fails the same way, that position does not advance and the next session "
+        "sees this same gap.",
+    ]
+    if notes:
+        lines.extend(["", *notes])
+    return "\n".join(lines)
+
+
+def _unopened(failure: Exception, notes: list[str] | None = None) -> str:
+    """Report a session that was never opened, which is not a failed briefing.
+
+    `_degraded` exists for a briefing that failed after the open committed, and
+    every sentence in it depends on that: it names a console session id and says
+    the record is intact. Neither is true here. Reusing it would assert a record
+    that was never written, which is the same false claim about the journal this
+    hook exists to stop making, pointed the other way.
+
+    This is the path soveraeign-53 found still open after the first repair. A store
+    whose permits office belongs to another operator refuses `grant` and then
+    refuses `open-session` for the same missing capability, and the second refusal
+    sat outside the try. The note explaining the first was built and never printed.
+    """
+    lines = [
+        "# Console continuity - no session opened",
+        "",
+        f"Operator `{OPERATOR}` through binding `{BINDING_ID}`. No console session "
+        "was opened for this host session.",
+        "",
+        f"The open did not commit: {_terse(failure)}",
+        "",
+        "So nothing was recorded, and this session has no continuity: it does not "
+        "know what landed while this operator was away, and its own work will not "
+        "appear to the next session either.",
+        "",
+        "This hook does not diagnose the console; the Console Service owns that rule. "
+        "The next start will try again and will open a session if the refusal is gone.",
+    ]
+    if notes:
+        lines.extend(["", *notes])
     return "\n".join(lines)
 
 
 def start(event: dict[str, Any]) -> str:
-    """Open or resume the console session for this host session, and brief it."""
+    """Open or resume the console session for this host session, and brief it.
+
+    Opening and briefing are separate failures. The open commits a record; the
+    briefing only reads one. A briefing that cannot be built degrades to a report
+    naming what is unknown, rather than taking the whole hook down with it.
+
+    A binding that cannot be written is the same shape read the other way: the
+    record has already committed and this hook holds the id, so it says so rather
+    than reporting the open as unknown. It also says what that costs, because the
+    next start will not find the session and will open a second one.
+    """
     host_session = event.get("session_id", "unknown")
-    _ensure_grants()
+    notes: list[str] = []
+    try:
+        _ensure_grants()
+    except ConsoleRefused as failure:
+        # Grants are a precondition for recording, not for reading, so a refusal
+        # here must not cost the session its briefing. It must also not vanish:
+        # this call sits before the try below, so an escaping refusal reached
+        # main()'s catch-all and the session got one flat line instead of the
+        # provenance, the record-is-intact sentence, and the read instructions.
+        # The refusal now travels as a note into whichever report is built.
+        notes.append(
+            f"Session grants were not established ({_terse(failure)}). This binding "
+            f"asked for {', '.join(NEEDED)} on the operator's own store. What follows "
+            "is briefed without them, and the open or close below may refuse for the "
+            "same reason.")
     bindings = _bindings()
     console_session = bindings.get(host_session)
+    opened = False
     if console_session is None:
-        console_session = _console("open-session", "--operator", OPERATOR,
-                                   "--actor-kind", "MODEL",
-                                   "--binding", BINDING_ID)["session_id"]
-        _remember(host_session, console_session)
-    return _render(_console("session-context", "--reader", OPERATOR), console_session)
+        try:
+            console_session = _console("open-session", "--operator", OPERATOR,
+                                       "--actor-kind", "MODEL",
+                                       "--binding", BINDING_ID)["session_id"]
+        except Exception as failure:  # no session exists, so there is nothing to brief
+            return _unopened(failure, notes)
+        opened = True
+        try:
+            _remember(host_session, console_session)
+        except OSError as failure:  # the record committed; only the convenience failed
+            notes.append(
+                f"The host binding was not saved ({_terse(failure)}). Console session "
+                f"`{console_session}` exists and this session is using it, but the next "
+                "start will not find it and will open a second one.")
+    try:
+        return _render(_console("session-context", "--reader", OPERATOR),
+                       console_session, notes)
+    except Exception as failure:  # a briefing is a read; losing it loses no record
+        return _degraded(console_session, opened, failure, notes)
 
 
 def end(event: dict[str, Any]) -> str:
@@ -171,8 +351,9 @@ def main(argv: list[str]) -> int:
     try:
         output = {"start": start, "end": end}[action](event)
     except Exception as failure:  # never break a session over a missing convenience
-        print(f"Console continuity unavailable ({type(failure).__name__}: {failure}). "
-              "Nothing was recorded.")
+        print(f"Console continuity unavailable ({_terse(failure)}). "
+              f"Whether the {action} committed a record is unknown from here; "
+              "read the journal rather than assuming either way.")
         return 0
     if output:
         print(output)

@@ -12,11 +12,20 @@ WIP ceiling, and the order refusals are reported in all live in the contract,
 so changing what is admissible is a contract change with a fixture behind it
 rather than an edit to this evaluator.
 
+A refusal names what to do next as well as what was wrong. The contract's
+``reachable_operations`` table declares, for every refusal code, the operations
+that clear it, and no code may leave the refused participant with nothing it can
+take alone. ``scripts/sovclosure/reachable.py`` owns reading and grading that
+table.
+
 ``selfcheck`` grades the declared corpus in
 ``conformance/fixtures/closure/handoff-cases.json``; every refusal code in the
-contract has at least one case proving it fires. ``judge`` grades one claim
-file. ``loop`` prints the declared loop for a participant that wants to read
-it. Nothing here contacts a network, writes standing, or grants anything.
+contract has at least one case proving it fires. It also grades the
+reachable-operations table against
+``conformance/fixtures/closure/reachable-operations-cases.json``. ``judge``
+grades one claim file. ``next`` prints what clears one refusal code. ``loop``
+prints the declared loop for a participant that wants to read it. Nothing here
+contacts a network, writes standing, or grants anything.
 """
 
 from __future__ import annotations
@@ -27,8 +36,15 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts"))
+
+from sovclosure.reachable import corpus_defects, operations_for, table_defects  # noqa: E402
+from sovclosure.rules import RULES  # noqa: E402
+
 CONTRACT = ROOT / "contracts" / "closure-ownership.json"
 CORPUS = ROOT / "conformance" / "fixtures" / "closure" / "handoff-cases.json"
+REACHABLE_CORPUS = (ROOT / "conformance" / "fixtures" / "closure"
+                    / "reachable-operations-cases.json")
 
 PERMITTED = "PERMITTED"
 REFUSED = "REFUSED"
@@ -39,157 +55,23 @@ def load_contract(path: Path = CONTRACT) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def _helper(claim: dict) -> dict:
-    return claim.get("helper") or {}
-
-
-def _wip_exceeded(claim: dict, table: dict) -> str | None:
-    open_concerns = claim.get("open_unlanded_concerns")
-    if open_concerns is None:
-        return None
-    ceiling = table["wip_policy"]["max_unlanded_concerns_per_participant"]
-    if open_concerns > ceiling:
-        return f"{open_concerns} unlanded concerns against a ceiling of {ceiling}"
-    return None
-
-
-def _absorbable_follow_on(claim: dict, table: dict) -> str | None:
-    follow_on = claim.get("follow_on")
-    if not follow_on:
-        return None
-    predicates = table["absorption_test"]["predicates"]
-    if all(follow_on.get(name) for name in predicates):
-        return "crosses no service, effect class, or authority boundary"
-    return None
-
-
-def _helper_as_witness(claim: dict, _table: dict) -> str | None:
-    helper = _helper(claim)
-    if helper.get("role") == "editing" and helper.get("offered_as_witness"):
-        return "an editing helper is inside the build and cannot be its independent observation"
-    return None
-
-
-def _routine_decision(claim: dict, table: dict) -> str | None:
-    asks = (claim.get("asks") or "").strip().lower()
-    for routine in table["routine_decisions"]:
-        if asks == routine.lower():
-            return f"{routine!r} is the participant's own to settle"
-    return None
-
-
-def _seam_undeclared(claim: dict, table: dict) -> str | None:
-    seam = claim.get("seam")
-    if not seam:
-        return "no seam is named"
-    if seam not in table["admissible_seams"]:
-        return f"{seam} is not one of {', '.join(sorted(table['admissible_seams']))}"
-    return None
-
-
-def _judgement_not_owner(claim: dict, _table: dict) -> str | None:
-    if claim.get("provision") == "judgement" and claim.get("requested_from") != "owner":
-        return f"judgement asked of {claim.get('requested_from')!r}"
-    return None
-
-
-def _provision_unrouted(claim: dict, table: dict) -> str | None:
-    seam = table["admissible_seams"][claim["seam"]]
-    provision = claim.get("provision")
-    if provision not in seam["provisions"]:
-        return f"{claim['seam']} cannot ask for {provision!r}"
-    asked = claim.get("requested_from")
-    if asked not in seam["requested_from"]:
-        return f"{claim['seam']} cannot be served by {asked!r}"
-    return None
-
-
-def _reachable_alternative(claim: dict, _table: dict) -> str | None:
-    alternative = claim.get("reachable_alternative")
-    if alternative != "NONE":
-        return f"a reachable route forward: {alternative}"
-    return None
-
-
-def _helper_not_recruited(claim: dict, table: dict) -> str | None:
-    if claim.get("provision") != "observation":
-        return None
-    if _helper(claim).get("recruited"):
-        return None
-    recruit_tool = _step_tool(table, "recruit_helper")
-    if recruit_tool in claim.get("tools_available", []):
-        return "a helper was recruitable and was not recruited"
-    return None
-
-
-def _step_tool(table: dict, step_name: str) -> str:
-    for step in table["loop"]:
-        if step["step"] == step_name:
-            return step["tool"]
-    raise KeyError(step_name)
-
-
-def _loop_incomplete(claim: dict, table: dict) -> str | None:
-    taken = claim.get("loop_steps_taken", [])
-    available = claim.get("tools_available", [])
-    for step in table["loop"]:
-        if not step["required"] or step["step"] in taken:
-            continue
-        if step["tool"] in available:
-            return f"{step['step']!r} was skipped while {step['tool']!r} was available"
-    return None
-
-
-def _recruitment_unbounded(claim: dict, table: dict) -> str | None:
-    spent = _helper(claim).get("invocations")
-    if spent is None:
-        return None
-    recruitment = table["helper_policy"]["recruitment"]
-    ceiling = recruitment["per_concern_ceiling"]
-    if spent <= ceiling or _helper(claim).get("resource_commitment_accepted"):
-        return None
-    return (f"{spent} helper invocations against a per-concern ceiling of {ceiling},"
-            f" with no accepted {recruitment['above_ceiling_reason']}")
-
-
-def _host_limit_as_owner_question(claim: dict, _table: dict) -> str | None:
-    helper = _helper(claim)
-    if not (helper.get("blocked_by_host") and helper.get("capability_requested")):
-        return None
-    if claim.get("requested_from") != "owner" or claim.get("provision") != "judgement":
-        return None
-    return "the host withheld the helper tool; a missing capability is not an owner ruling"
-
-
-RULES = {
-    "WIP_EXCEEDED": _wip_exceeded,
-    "ABSORBABLE_FOLLOW_ON": _absorbable_follow_on,
-    "HELPER_AS_WITNESS": _helper_as_witness,
-    "RECRUITMENT_UNBOUNDED": _recruitment_unbounded,
-    "HOST_LIMIT_AS_OWNER_QUESTION": _host_limit_as_owner_question,
-    "ROUTINE_DECISION": _routine_decision,
-    "SEAM_UNDECLARED": _seam_undeclared,
-    "JUDGEMENT_NOT_OWNER": _judgement_not_owner,
-    "PROVISION_UNROUTED": _provision_unrouted,
-    "REACHABLE_ALTERNATIVE": _reachable_alternative,
-    "HELPER_NOT_RECRUITED": _helper_not_recruited,
-    "LOOP_INCOMPLETE": _loop_incomplete,
-}
-
-
 def judge(claim: dict, table: dict | None = None) -> dict:
     """Grade one handoff claim and return its verdict.
 
     Returns ``{"verdict": PERMITTED}`` or ``{"verdict": REFUSED, "refusal":
-    <code>, "because": <reason>}``. The first refusal in the contract's
-    declared evaluation order is the one reported.
+    <code>, "because": <reason>, "reachable_operations": [...]}``. The first
+    refusal in the contract's declared evaluation order is the one reported,
+    and it carries the operations that clear it, annotated against the tools
+    the claim says this invocation granted.
     """
     table = table or load_contract()
     for code in table["evaluation_order"]:
         because = RULES[code](claim, table)
         if because:
             return {"verdict": REFUSED, "refusal": code, "because": because,
-                    "means": table["refusals"][code]}
+                    "means": table["refusals"][code],
+                    "reachable_operations": operations_for(
+                        table, code, claim.get("tools_available", []))}
     return {"verdict": PERMITTED, "seam": claim["seam"],
             "means": table["admissible_seams"][claim["seam"]]["means"]}
 
@@ -210,21 +92,33 @@ def selfcheck(corpus_path: Path = CORPUS) -> list[str]:
             defects.append(
                 f"{case['case_id']}: expected refusal {case['refusal']},"
                 f" got {verdict['refusal']}")
+            continue
+        if case["expect"] == REFUSED and not verdict["reachable_operations"]:
+            defects.append(
+                f"{case['case_id']}: refused with {verdict['refusal']} and no operation"
+                " that clears it")
     covered = {c["refusal"] for c in corpus["cases"] if c["expect"] == REFUSED}
     for code in table["refusals"]:
         if code not in covered:
             defects.append(f"{code}: declared in the contract with no case proving it fires")
+    defects.extend(table_defects(table))
+    defects.extend(corpus_defects(
+        table, json.loads(REACHABLE_CORPUS.read_text(encoding="utf-8"))))
     return defects
 
 
 def _cmd_selfcheck(_args: argparse.Namespace) -> int:
     defects = selfcheck()
     corpus = json.loads(CORPUS.read_text(encoding="utf-8"))
+    reachable = json.loads(REACHABLE_CORPUS.read_text(encoding="utf-8"))
     for defect in defects:
         print(f"DEFECT {defect}")
     if defects:
         return 1
-    print(f"closure ownership: {len(corpus['cases'])} declared cases judged as declared")
+    print(f"closure ownership: {len(corpus['cases'])} declared cases judged as declared,"
+          f" {len(reachable['table_cases'])} proving every refusal leaves an operation"
+          f" reachable, {len(reachable['availability_cases'])} proving the annotation reads"
+          " against the tools an invocation granted")
     return 0
 
 
@@ -238,7 +132,50 @@ def _cmd_judge(args: argparse.Namespace) -> int:
     else:
         print(f"REFUSED  {verdict['refusal']}: {verdict['because']}")
         print(f"         {verdict['means']}")
+        print()
+        _print_operations(verdict["reachable_operations"])
     return 0 if verdict["verdict"] == PERMITTED else 1
+
+
+def _print_operations(operations: list[dict]) -> None:
+    """Print the operations that clear a refusal, marking what is reachable now."""
+    print("Reachable next operations:")
+    for operation in operations:
+        if operation["available"]:
+            mark = "  - "
+        elif operation["needs_other_participant"]:
+            mark = "  ~ "
+        else:
+            mark = "  x "
+        tool = operation["tool"] or "-"
+        print(f"{mark}{operation['operation']}  [{tool}]")
+    print("  -  reachable now    ~  needs another participant    x  needs a tool this"
+          " invocation did not grant")
+    if not any(operation["available"] for operation in operations):
+        print()
+        print("Nothing here is reachable with the tools this invocation granted. That is a"
+              " missing capability, not a ruling: ask for the tool at DEPENDENCY_SEAM, of a"
+              " tier that can change how the session is launched.")
+
+
+def _cmd_next(args: argparse.Namespace) -> int:
+    table = load_contract()
+    if args.refusal not in table["refusals"]:
+        print(f"unknown refusal {args.refusal!r};"
+              f" declared: {', '.join(sorted(table['refusals']))}")
+        return 1
+    granted = args.tools or table["tools"]
+    operations = operations_for(table, args.refusal, granted)
+    if args.as_json:
+        print(json.dumps(operations, indent=2))
+        return 0
+    print(f"{args.refusal}: {table['refusals'][args.refusal]}")
+    if not args.tools:
+        print(f"tools assumed: every declared tool ({', '.join(table['tools'])});"
+              " name --tool to read this against what your invocation actually granted")
+    print()
+    _print_operations(operations)
+    return 0
 
 
 def _cmd_loop(_args: argparse.Namespace) -> int:
@@ -267,6 +204,14 @@ def main(argv: list[str] | None = None) -> int:
     grade.add_argument("--json", action="store_true", dest="as_json",
                        help="emit the verdict as JSON")
     grade.set_defaults(func=_cmd_judge)
+
+    ahead = subparsers.add_parser("next", help="print the operations that clear one refusal")
+    ahead.add_argument("refusal", help="a refusal code declared in the contract")
+    ahead.add_argument("--tool", action="append", default=[], dest="tools",
+                       help="a tool this invocation granted; repeat for each")
+    ahead.add_argument("--json", action="store_true", dest="as_json",
+                       help="emit the operations as JSON")
+    ahead.set_defaults(func=_cmd_next)
 
     show = subparsers.add_parser("loop", help="print the declared closure loop")
     show.set_defaults(func=_cmd_loop)

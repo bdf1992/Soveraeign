@@ -100,8 +100,9 @@ participant that wrote it.
 ## Blockers
 
 - No harness role may merge or commit, so this domain's terminal is a disposition
-  report, not a drained backlog. The landing is done by the interactive
-  participant or under the standing grant, with an independent observation
-  (`contracts/standing-grants.json`, `requires_independent_observation`).
+  report, not a drained backlog. Ordinary BUILT landing is done by the
+  interactive participant or under the standing grant after the required Blue
+  checks. Independent witness is queued separately when a named milestone or
+  later transition consumes it (`decisions/0098-milestone-witnessing.md`).
 - Several sessions write this tree at once (`CLAUDE.md`, trap T6). The survey is
   a snapshot; re-run it before acting on it.

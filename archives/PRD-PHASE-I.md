@@ -31,11 +31,16 @@ standing defined in `SPEC.md`.
 
 ### PROD-I-1 · Propose
 
-A fresh model session can submit a proposal at a recorded cost. The result is
-an attributed, addressed, `LEFT`-signed candidate that claims no authority.
+A fresh model session can submit a proposal at a recorded cost, and the result
+reaches a named operator surface where a human can read it and act on it. The
+result is an attributed, addressed, `LEFT`-signed candidate that states the
+authority it would need. The session asserts that authority; the record does not
+grant it, because an instanced session holds no continuous identity a grant can
+attach to.
 
-Defeating case: a proposal missing author, cost, source, or proposal standing is
-admitted.
+Defeating cases: a proposal missing author, cost, source, or proposal standing is
+admitted; a proposal is admitted without reaching an operator surface; an
+instanced session's asserted authority is honored as held authority.
 
 ### PROD-I-2 · Remember
 

@@ -1,7 +1,7 @@
 {
   "packet_schema": "soveraeign-acceptance-packet/v1",
   "packet_id": "A20",
-  "claim": "The product definition layer is rebuilt to your specification of 2026-08-28. PRD.md is now the umbrella product document - twenty-two bounded product areas, custody and closure as a top-level requirement, and no phase in it. ROADMAP.md is the separate estimate of how the product gets built, P0 through P9, each exiting on a demonstrated product result rather than component percentages. Both previous documents are archived byte-identical at archives/PRD-PHASE-I.md and archives/ROADMAP-F0-F6.md, where they remain the pinned definitions of the closed phase:i, so nothing about how Phase I ended moved. PROD-I-1 through PROD-I-9 survive intact as the first qualification profile, Phase I / Local Sovereign Foundation. What needs your judgement is the coverage finding: thirteen of the twenty-two areas serve no promise in CANON.md, and three of those are undertakings that want one minted.",
+  "claim": "The product definition layer is rebuilt to your specification of 2026-08-28. PRD.md is now the umbrella product document - twenty-two bounded product areas, custody and closure as a top-level requirement, and no phase in it. ROADMAP.md is the separate estimate of how the product gets built, P0 through P9, each exiting on a demonstrated product result rather than component percentages. Both previous documents are archived at archives/PRD-PHASE-I.md and archives/ROADMAP-F0-F6.md, where they remain the pinned definitions of the closed phase:i. The roadmap archive is byte-identical to what main carried. The PRD archive is not, and deliberately: it was cut before PROD-I-1 was rewritten under A22, and the two branches collided at the merge. It carries the rewritten text, at the same digest main pinned. Freezing the pre-rewrite bytes would have put the weaker definition beyond reach of any later edit, under the rule that nothing in archives/ is edited - a closed phase's definition narrowing by an accident of branch order, which is what that pin exists to refuse. Nothing about how Phase I ended moved; PROD-I-1 got harder and gained two defeating cases. PROD-I-1 through PROD-I-9 survive intact as the first qualification profile, Phase I / Local Sovereign Foundation. What needs your judgement is the coverage finding: thirteen of the twenty-two areas serve no promise in CANON.md, and three of those are undertakings that want one minted.",
   "subject": {
     "artifact": "PRD.md",
     "from_standing": "OPEN",
@@ -21,7 +21,7 @@
       "scripts/verify.py"
     ],
     "shows": "48 checks pass on branch docs/prd-rewrite, including the six gates that read these two documents structurally: the phase pin, service manifest contract, specification traceability, signpost reconciliation, publication surface, and diagram provenance",
-    "expect": "PASS: 48 checks. Then `python scripts/sov_next.py` reads the re-keyed name crosswalk and passes. Then read PRD.md, ROADMAP.md, and the two archived files - both byte-identical to what main carried."
+    "expect": "PASS: 48 checks. Then `python scripts/sov_next.py` reads the re-keyed name crosswalk and passes. Then read PRD.md, ROADMAP.md, and the two archived files. The roadmap archive is byte-identical to what main carried; the PRD archive carries A22's PROD-I-1 rewrite, at the digest main pinned for it."
   },
   "evidence": [
     {
@@ -36,13 +36,13 @@
     },
     {
       "address": "archives/PRD-PHASE-I.md",
-      "digest": "sha256:f1157f2f1ebad6aab70a63752f9bd9169518eb6f0aefde21c7fd05e98d5f1440",
-      "says": "revision 1, unaltered, at the digest contracts/phases.json pinned when you closed phase:i"
+      "digest": "sha256:807f33f48d2d56ea936119409de7fe07ffd464f844338bd3eb4f1c2087afd8a0",
+      "says": "the Phase-I requirements document at the digest contracts/phases.json pins, carrying A22's PROD-I-1 rewrite. Unaltered since that rewrite; not identical to the revision this branch archived, because this branch archived it first and main strengthened it afterwards"
     },
     {
       "address": "archives/ROADMAP-F0-F6.md",
       "digest": "sha256:2d547384606200517907a17c38747fff15f388640d5bf3c705bd278e2ac150f0",
-      "says": "the F0-F6 ladder, unaltered, at its pinned digest. Both archives mean the phase still ends against the definition it opened with and neither pin needed re-justifying"
+      "says": "the F0-F6 ladder, unaltered, at its pinned digest. The archives mean the phase still ends against a definition no later editor can narrow, which is why the PRD archive had to take the stronger of the two texts rather than the earlier one"
     },
     {
       "address": "scripts/sov_next.py",

@@ -273,9 +273,13 @@ advance it.
 ### PROD-I-1 · Propose
 
 A model session that has never run here before enters a proposal carrying its
-author, its sources, its cost and no authority.
-Evidences `PROMISE-04`, `PROMISE-07` · predicate `SPEC.md` PROD-I-1 · fixture
-`CONF-I1` · today `FAIL`: no content address, no source addresses, no cost.
+author, its sources and its cost, claiming no authority it holds, and that
+proposal reaches a named operator surface where a human can read it and act. An
+instanced session asserts the authority it would need; the record does not grant
+it, because a session holds no continuous identity a grant can attach to.
+Evidences `PROMISE-04`, `PROMISE-07` · predicate `SPEC.md` PROD-I-1 · fixtures
+`CONF-I1`, `CONF-I1-SURFACE-DEF`, `CONF-I1-CLAIM-DEF` · today `FAIL`: no content
+address, no source addresses, no cost.
 
 ### PROD-I-2 · Remember
 

@@ -1,0 +1,147 @@
+{
+  "contract_id": "soveraeign-roadmap-lanes/v1",
+  "status": "PROPOSED",
+  "governed_by": [
+    "ROADMAP.md",
+    "PRD.md",
+    "contracts/custodies.json",
+    "contracts/issue-metadata.schema.json"
+  ],
+  "note": "The four lanes every roadmap item carries, and the rule that they recurse. Bdo stated the shape on 2026-08-28; the readings filed under each lane in ROADMAP.md are drafted from the repository and are proposed. This contract grants nothing, holds no standing, and settles nothing: STATUS.yaml owns standing and contracts/custodies.json owns who is on the hook. It exists so scripts/sov_next.py can refuse a subject that has quietly dropped a lane, which is how the shape decays - not by anyone arguing against it, but by the next editor writing a flat list because the flat list is faster.",
+  "lanes": [
+    {
+      "lane": "NOW",
+      "means": "What is on the board: available, and workable from start to finish with what exists today.",
+      "admits": "An item a participant could pick up and carry to a terminal without waiting on anything that does not exist.",
+      "refuses": "Work in progress as such, work that is merely important, and work needing a thing not yet built. Startable is not the test: an item that can be begun and not finished belongs in NEEDED until the thing it waits on exists.",
+      "may_be_empty": true,
+      "empty_means": "Nothing in this item can be finished with what exists. That is a reading worth stating, not an omission, and it is stated rather than left to be inferred."
+    },
+    {
+      "lane": "NEXT",
+      "means": "What becomes available once this item's own NOW clears, and has already been chosen as the next target.",
+      "admits": "An item satisfying both conditions: released by this item's NOW, and selected.",
+      "refuses": "An item that is merely unblocked but unchosen; a chosen favourite that NOW does not release; and an item released by a sibling's NOW rather than by this item's own, because a lane is scoped to the item that carries it.",
+      "may_be_empty": true,
+      "empty_means": "Nothing has been chosen yet. Distinct from nothing being available."
+    },
+    {
+      "lane": "NEEDED",
+      "means": "A future item already known to be a need of ours, neither selected nor scheduled.",
+      "admits": "A known need with no chosen slot.",
+      "refuses": "A speculative want, and an item that has in fact been selected - selecting it moves it to NEXT.",
+      "may_be_empty": true,
+      "empty_means": "Everything known about this item is already in NOW or NEXT.",
+      "what_this_does_not_say": "Whether a thing held out until something is learned is a NEEDED or a NEVER. An earlier draft admitted it here in one clause while NEVER declined to draw the line, which answered the open question in the lane that was not being watched. Neither lane draws it now. ROADMAP.md carries the question to Bdo."
+    },
+    {
+      "lane": "NEVER",
+      "means": "What is held out of this item's scope. Bdo's words: usually a never. It holds by default and it is not a claim that it is permanent.",
+      "admits": "A scope edge, most usefully the boundary against the neighbouring item that would otherwise absorb this one.",
+      "how_it_leaves": "Discovery moves it, and only into NEEDED. Nothing else moves one - not a preference, not a date, not the phase number arriving. That much is Bdo's. The reading that NOW is the only lane producing findings is the builder's derivation and is marked under lane_transitions.drafted_by_builder; it is not restated here.",
+      "refuses": "An exclusion whose release is a schedule rather than a finding. Also refuses a restatement of the item's own exit condition, which reads as an edge and does no independent work.",
+      "may_be_empty": false,
+      "empty_means": "Refused. A scope with no stated edge has no edge, and this lane is the one that does the most work: an item usually fails by absorbing its neighbour rather than by running out of effort.",
+      "what_this_does_not_say": "Whether an exclusion that names what would earn it belongs here or in NEEDED. Under Bdo's correction every never is conditional, so 'it names what would earn it' cannot be the line between the two lanes, and no line is drawn here. ROADMAP.md carries the question to him; an earlier draft of this field answered it in passing, which a witness caught on 2026-08-28."
+    }
+  ],
+  "lane_transitions": {
+    "note": "Bdo's correction of 2026-08-28, after the first witness read NEVER as a permanent refusal and reported every conditional exclusion as a misfiled deferral. His words: 'Never is Usually a never. It means discovery selects it and pressures it from what is needed based on what was now.' What is his: NEVER holds by default, is not permanent, and leaves only by discovery pressuring it into NEEDED. What is the builder's, drafted and unratified: every key below marked drafted_by_builder, and the reading that 'selects' belongs to the NEEDED-to-NEXT move rather than to the NEVER exit.",
+    "discovery_happens_in_now": "NOW is the only lane being worked, so it is the only lane that produces findings. Everything that moves, moves because of something learned there. DRAFTED BY THE BUILDER from 'based on what was now'; it is a substantive claim about how work happens and Bdo has not ruled on it.",
+    "never_to_needed": "Discovery under NOW pressures an exclusion out of NEVER into NEEDED. That is the only way out of NEVER.",
+    "needed_to_next": "Selecting a known need moves it to NEXT.",
+    "next_to_now": "NEXT becomes NOW when this item's own NOW clears.",
+    "why_never_cannot_skip_needed": "An exclusion that jumps straight to NOW or NEXT is scope creep taking a shorter path. Passing through NEEDED puts the admission on the page as a known need before anyone works it, which is the whole reason the exclusion was written down.",
+    "unchecked": "None of these transitions is checked. A lane change is an edit to prose, and whether a finding really pressured an exclusion is judgement. What is checked is that the four lanes are present and that NEVER is not empty.",
+    "drafted_by_builder": [
+      "discovery_happens_in_now",
+      "needed_to_next",
+      "next_to_now",
+      "why_never_cannot_skip_needed"
+    ],
+    "drafted_by_builder_note": "Every key named here is drafted from Bdo's sentence rather than in it, and he has not ruled on any of them. The list is checked: a key that loses its marker, or a marked key dropped from this list, fails scripts/tests/test_sov_next.py. An earlier draft marked the derivation in one field and restated it unmarked in NEVER.how_it_leaves, which is the third time this contract answered an open question in the field nobody was watching."
+  },
+  "never_minimum_words": 2,
+  "recursion": {
+    "rule": "The four lanes apply at every level. The roadmap has them, each phase has them, each item inside a lane has them, and so on down to whatever grain someone is working at.",
+    "scope": "An item's lanes are scoped to that item. P1's NOW is the NOW of the service fabric, not of the repository, and a NEXT released by a sibling's NOW rather than by this item's own is misfiled.",
+    "never_inherits": "A parent's NEVER binds its children: a child may add exclusions and may not admit what its parent excluded.",
+    "never_inherits_is_unchecked": "Nothing enforces it and nothing here can. A NEVER is a prose paragraph, there is no ordering on prose, and the relation would need NEVERs represented as enumerated typed exclusions before any parser could compare a child's with its parent's. Recorded as a stated limit rather than left to look enforced. Raised by the first witness of this contract, 2026-08-28.",
+    "floor": "In practice the recursion bottoms out where contracts/custodies.json and the ticket queue take over. That is a practical floor, not a limit on the rule."
+  },
+  "invariants": {
+    "one_lane_per_level": "An item sits in exactly one lane at one level, and a subject opens each lane exactly once. Two subjects claiming the same work in their NOW is the same defect one level up; that one is not checked, because deciding which subject owns a piece of work is judgement rather than parsing.",
+    "one_paragraph_per_lane": "A lane's prose is its own paragraph. It ends at the blank line, or at the next line opening with emphasis, a heading, a table or a fence. A bullet list or a quoted passage after a lane is read as PART of it, deliberately: a bulleted edge is a real edge, and nothing in the text tells a continuation apart from an unrelated list. The admitted cost is that an emptied lane above a bullet list reads as full; scripts/tests/test_sov_next.py pins that so it stays a choice rather than a surprise.",
+    "moving_is_an_edit": "Moving an item between lanes edits an estimate. It changes no standing and emits no event.",
+    "no_standing": "This contract and ROADMAP.md carry no standing. A lane placement is never evidence that anything was built, witnessed, or accepted."
+  },
+  "graded_subjects": {
+    "phases": "Every heading of the form `Pn` · Title, cross-checked against the roadmap's own phase table so a mistyped heading is named rather than quietly dropping a phase from the population.",
+    "admitted_non_lane_openers": [
+      "Result"
+    ],
+    "extra": [
+      {
+        "heading": "The roadmap's own lanes",
+        "subject": "the roadmap itself",
+        "strip_blockquote": false,
+        "why": "The roadmap is the outermost item the recursion covers, so it is graded like any other."
+      },
+      {
+        "heading": "The shape recurses",
+        "subject": "the worked child inside P1's Now",
+        "strip_blockquote": true,
+        "why": "The document's only instance of the recursion one level down. Ungraded, it was the one place the shape could rot while the check stayed green."
+      }
+    ]
+  },
+  "ticket_horizon_crosswalk": {
+    "note": "NOW and NEXT already exist in this repository as values of the ticket horizon field (contracts/issue-metadata.schema.json). They are not the same object and the words must not fork: a lane is a container on an item, and a horizon is one ticket's own forecast of when it lands. This table says which lane a ticket's horizon puts it in when a lane is being assembled from tickets. It is a reading direction only; nothing derives the roadmap from the epic tree today.",
+    "NOW": "NOW",
+    "NEXT": "NEXT",
+    "NOW_TO_NEXT": "NOW",
+    "NOW_TO_SCALE_TRUST": "NOW",
+    "NEXT_TO_SCALE_TRUST": "NEXT",
+    "ON_SCALE_TRUST": "NEEDED",
+    "spanning_resolves_to_the_earlier_lane": "A spanning horizon names where a ticket starts, so it reads into the earlier lane. Reading it into the later one would make a lane understate what is already on the board.",
+    "no_horizon_maps_to_NEVER": "By construction. A ticket in NEVER is a ticket that should not exist, so there is no horizon value for it and adding one would make the exclusion schedulable.",
+    "selection_is_not_in_the_horizon_vocabulary": "A horizon forecasts when a ticket lands and never records that anyone chose it, so a horizon of NEXT satisfies only the first of NEXT's two conditions. Any lane assembled from tickets by this table would smuggle the second. Inert today because nothing derives a lane from the epic tree; it must be closed before anything does. Raised by the first witness of this contract, 2026-08-28.",
+    "on_scale_trust_is_scheduled_in_one_sense": "ON_SCALE_TRUST names a horizon someone assigned, and NEEDED is defined as neither selected nor scheduled. The disagreement is real and the mapping stands: the horizon records a forecast, not a slot on a board, and NEEDED is the only lane left once NEVER is excluded by construction."
+  },
+  "checked_by": {
+    "command": "python scripts/sov_next.py --strict",
+    "refusals": {
+      "ROADMAP_SUBJECT_MISSING_LANE": "A graded subject does not carry all four lanes.",
+      "ROADMAP_EMPTY_NEVER": "A Never lane carries fewer than never_minimum_words of substance. Two, not more: the rule refuses a lane opened and abandoned - a lone full stop, a stray dash - and never grades how well an edge is written, which is a reading.",
+      "ROADMAP_LANE_DECLARED_TWICE": "One subject opens the same lane twice, which lets the second mask the first.",
+      "ROADMAP_UNDECLARED_LANE": "A subject opens a lane-shaped paragraph that is neither a declared lane nor an admitted non-lane opener.",
+      "ROADMAP_PHASE_NOT_GRADED": "The phase table names a phase with no graded section.",
+      "ROADMAP_SUBJECT_NOT_FOUND": "An extra graded subject is declared by heading text and no such heading exists. Without it a rename silently stopped grading the recursion while the gate this document advertises stayed green.",
+      "ROADMAP_SUBJECT_HEADING_AMBIGUOUS": "Two headings answer to one declared subject, so which is graded depends on document order.",
+      "ROADMAP_CARRIES_NO_PHASES": "The graded roadmap names no phase at all. The scope guard that keeps laneless documents out of the check was open by default, and a witness walked the live document out through it: unbackticking the phase table and changing the heading separator emptied both of its inputs and silenced every other refusal over twelve subjects. The gate now says which document it is grading, and sov_next refuses a crosswalk row whose phase cell names a phase it cannot read - the two halves used to fail to the same edit.",
+      "ROADMAP_PHASE_LINE_UNREADABLE": "A heading or table row names a phase this reader cannot resolve. Refusing the empty roster closed the escape at zero only: a witness left P0 and P1 readable, unbackticked the other eight, and the whole check went quiet over four subjects instead of twelve."
+    },
+    "not_checked": [
+      "The truth of a placement. Whether a NOW item can really be finished with what exists is judgement over evidence, and no parser settles it. The check proves the shape is present, never that the reading is right.",
+      "Every lane transition. Whether a finding really pressured an exclusion out of NEVER, whether a NEXT was actually chosen by anyone, and whether two subjects have filed the same work under both their NOWs. Each is a reading, and each is listed under what_would_defeat_this so a reviewer knows where to look.",
+      "Whether a child's NEVER is looser than its parent's. See recursion.never_inherits_is_unchecked.",
+      "Whether a lane renders as a reader sees it. Four things that render as nothing are removed before words are counted - an HTML comment, an HTML tag, an inline link or image target, and a reference link's label - and fenced code is blanked before lanes are read. That is a list, not a rule: an earlier draft claimed the rule and a witness found an HTML tag and a reference link both counting.",
+      "Whether the phase roster is the right one. Emptying it is refused, and so is a heading or table row that names a phase this reader cannot resolve, but a phase renamed consistently in both the table and its heading is simply a different roster. Nothing outside ROADMAP.md names P0-P9; contracts/phases.json pins the archived F-ladder and not this one."
+    ]
+  },
+  "what_would_defeat_this": [
+    "a NOW item that turns out to need something that does not exist, which means the lane definition is being read as 'next up' rather than 'finishable'",
+    "a NOW item justified by a green check, since a passing grader is evidence the work is done rather than evidence it remains",
+    "a NEXT item nobody chose, which means the second condition is decorative",
+    "a NEXT item released by a sibling's NOW rather than by its own, which is the scoping rule failing quietly",
+    "an exclusion that left NEVER without a finding behind it, which is scope creep wearing the shape of a decision",
+    "an exclusion that reached NOW or NEXT without passing through NEEDED, which is the same creep on a shorter path",
+    "a NEVER whose release is a date or a phase number rather than something learned",
+    "a NEVER that restates the item's own exit condition, which reads as an edge and does no independent work",
+    "two subjects filing the same work under both their NOWs, which means nobody owns it",
+    "a child NEVER looser than its parent's, which is the scope creep the lane exists to catch arriving through the recursion itself",
+    "the lanes being derived from the epic tree while this contract still calls the crosswalk a reading direction",
+    "the lane check going quiet on the live document, for any reason other than the document carrying its four lanes",
+    "a claim in this contract about what the reader removes or blanks that is a rule rather than the list it actually is"
+  ]
+}

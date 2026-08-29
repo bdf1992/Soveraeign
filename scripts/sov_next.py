@@ -2,7 +2,8 @@
 """Reconcile every signpost that claims to say what happens next.
 
 Five documents name the next action in five vocabularies. This reads all of
-them, resolves the ``ROADMAP.md`` name crosswalk, and prints one answer with
+them, resolves the ``ROADMAP.md`` name crosswalk, grades the four-lane shape
+that roadmap declares, and prints one answer with
 every alias it travels under. It settles nothing: where the declared gate and
 the reachable work name different jobs, that disagreement is reported rather
 than resolved, because choosing between them is judgement and judgement is
@@ -20,6 +21,8 @@ from pathlib import Path
 import argparse
 import json
 import re
+
+import roadmap_lanes
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -39,9 +42,17 @@ def declared_gate(status_text: str) -> str | None:
 
 
 def roadmap_phases(roadmap_text: str) -> dict[str, str]:
-    """Phase id -> heading text, from the ROADMAP section headings."""
+    """Phase id -> heading text, from the ROADMAP section headings.
+
+    Both ladders are accepted: `F0`-`F6` from the archived roadmap and `P0`-`P9`
+    from the current one, at heading level two or three, with or without the
+    backticks the newer document uses. Multi-digit, matching ``roadmap_document``:
+    reading one digit here and many there made a `P10` unreadable to this reader
+    and readable to that one, so the unreadable-token refusal fired on a token
+    that was correctly written.
+    """
     phases = {}
-    for match in re.finditer(r"^## (F\d)\s*·\s*(.+?)\s*$", roadmap_text, re.M):
+    for match in re.finditer(r"^#{2,3} `?([FP]\d+)`?\s*·\s*(.+?)\s*$", roadmap_text, re.M):
         phases[match.group(1)] = match.group(2)
     return phases
 
@@ -59,7 +70,7 @@ def crosswalk(roadmap_text: str) -> list[dict[str, str]]:
         cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
         if len(cells) != 4 or all(set(cell) <= {"-", ":"} for cell in cells):
             continue
-        phase = re.search(r"`(F\d)`", cells[0])
+        phase = re.search(r"`([FP]\d+)`", cells[0])
         ticket = re.search(r"`#(\d+)`", cells[1])
         rows.append({
             "phase": phase.group(1) if phase else "",
@@ -137,13 +148,21 @@ def closed_unsettled(issues: dict) -> list[str]:
 
 def resolve(rows: list[dict[str, str]], ready: list[dict[str, str]],
             phases: dict[str, str], roadmap_text: str, root: Path = ROOT,
-            issues: dict | None = None) -> list[str]:
-    """Defects: a crosswalk row that no longer resolves, or a signpost conflict."""
+            issues: dict | None = None, graded_roadmap: bool = False) -> list[str]:
+    """Defects: a crosswalk row that no longer resolves, a lane a phase dropped,
+    or a signpost conflict."""
     defects = []
     ready_numbers = {row["number"] for row in ready}
     for row in rows:
         if row["phase"] and row["phase"] not in phases:
             defects.append(f"crosswalk names phase {row['phase']}, absent from ROADMAP.md")
+        if not row["phase"] and re.search(r"\b[FP]\d+\b", row["phase_label"]):
+            # The cell names a phase and this reader cannot read it. Skipping such
+            # a row let one mutation pass both this check and the lane grader at
+            # once, because both resolve a phase through the same backticks.
+            defects.append(
+                f"crosswalk row {row['phase_label']} names a phase this reader cannot "
+                "resolve; a phase token must be backticked")
         if not row["ticket"]:
             defects.append(f"crosswalk row {row['phase_label']} names no epic ticket")
         if issues is not None and row["ticket"]:
@@ -161,6 +180,10 @@ def resolve(rows: list[dict[str, str]], ready: list[dict[str, str]],
             defects.append(f"crosswalk row {row['phase']} draws to missing {drawn.group(1)}")
     if "split `core.py`" not in roadmap_text:
         defects.append("crosswalk no longer names the ENGINEERING.md module debt")
+    # The lane shape is graded for presence only. Whether a Now item can really be
+    # finished with what exists is judgement over evidence, which no parser settles.
+    defects.extend(str(defect) for defect in
+                   roadmap_lanes.grade(roadmap_text, must_carry_phases=graded_roadmap))
     # An empty frontier is deliberately not a defect. Every open ticket being
     # held is a legitimate state, and a gate that fails on it teaches operators
     # to clear the alarm unread. It is reported under "reachable work" instead.
@@ -186,7 +209,8 @@ def main(argv: list[str] | None = None) -> int:
     ready = epic_ready(issues)
     stale = stale_views(ROOT)
     unsettled = closed_unsettled(issues)
-    defects = resolve(rows, ready, phases, roadmap_text, issues=issues)
+    defects = resolve(rows, ready, phases, roadmap_text, issues=issues,
+                      graded_roadmap=True)
 
     by_ticket = {row["ticket"]: row for row in rows}
     conflict = None
@@ -241,13 +265,14 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  {defect}")
 
     if defects:
-        print(f"\nFAIL: {len(defects)} crosswalk row(s) no longer resolve")
+        print(f"\nFAIL: {len(defects)} signpost defect(s)")
         return 1 if args.strict else 0
     if conflict:
-        print("\nPASS: every crosswalk row resolves. A declared-gate disagreement "
+        print("\nPASS: crosswalk and lanes resolve. A declared-gate disagreement "
               "stands; that is owner judgement, not a defect.")
         return 0
-    print("\nPASS: every crosswalk row resolves and no signpost disagrees")
+    print("\nPASS: every crosswalk row resolves, every phase carries its four "
+          "lanes, and no signpost disagrees")
     return 0
 
 

@@ -28,7 +28,9 @@ What this phase must prove, and how it is built:
 - `CLASSIFICATION.md` owns architectural, information-role, and
   operating-loop vocabulary;
 - `CONTRACT.md` owns invariants;
-- `PRD.md` owns Phase-I requirements;
+- `PRD.md` owns the product's requirements, priority, and success measures;
+  `archives/PRD-PHASE-I.md` is its archived first revision and the pinned definition of
+  the closed `phase:i`, not current policy;
 - `SPEC.md` owns logical objects, transitions, predicates, and refusals;
 - `AI-NATIVE.md` owns surface evaluation and qualification criteria;
 - `STATUS.yaml` owns current authority, standing, and open decisions;
@@ -377,6 +379,7 @@ itself: `decisions/0026-federation-harness.md` (proposed).
 | `/workers` | Scoped leased execution and reports | Self-settlement or self-witnessing |
 | `/scripts` | Verification and bounded repository maintenance | Product business logic |
 | `/acceptance` | Finished results presented to an owner seat, one packet per claim | Standing changes, which land in the owning document |
+| `/archives` | Superseded governing documents, kept byte-identical | Any current rule; an edit here rewrites what was committed to |
 | `/decisions` | Consequential choices, status, rationale, consequences | Mutable runtime state |
 | `/lineage` | Attributed ancestry and immutable historical evidence | Current policy by implication |
 

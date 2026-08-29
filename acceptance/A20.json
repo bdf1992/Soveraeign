@@ -1,0 +1,77 @@
+{
+  "packet_schema": "soveraeign-acceptance-packet/v1",
+  "packet_id": "A20",
+  "claim": "The product definition layer is rebuilt to your specification of 2026-08-28. PRD.md is now the umbrella product document - twenty-two bounded product areas, custody and closure as a top-level requirement, and no phase in it. ROADMAP.md is the separate estimate of how the product gets built, P0 through P9, each exiting on a demonstrated product result rather than component percentages. Both previous documents are archived at archives/PRD-PHASE-I.md and archives/ROADMAP-F0-F6.md, where they remain the pinned definitions of the closed phase:i. The roadmap archive is byte-identical to what main carried. The PRD archive is not, and deliberately: it was cut before PROD-I-1 was rewritten under A22, and the two branches collided at the merge. It carries the rewritten text, at the same digest main pinned. Freezing the pre-rewrite bytes would have put the weaker definition beyond reach of any later edit, under the rule that nothing in archives/ is edited - a closed phase's definition narrowing by an accident of branch order, which is what that pin exists to refuse. Nothing about how Phase I ended moved; PROD-I-1 got harder and gained two defeating cases. PROD-I-1 through PROD-I-9 survive intact as the first qualification profile, Phase I / Local Sovereign Foundation. What needs your judgement is the coverage finding: thirteen of the twenty-two areas serve no promise in CANON.md, and three of those are undertakings that want one minted.",
+  "subject": {
+    "artifact": "PRD.md",
+    "from_standing": "OPEN",
+    "to_standing": "BUILT"
+  },
+  "presented_by_seat": "seat:session-control",
+  "accepted_by_seat": "seat:root",
+  "claim_type": "JUDGEMENT",
+  "built_by": {
+    "actor_id": "urn:soveraeign:actor:claude-interactive-session",
+    "actor_kind": "MODEL"
+  },
+  "witnessed_by": null,
+  "visible_result": {
+    "demo": [
+      "python",
+      "scripts/verify.py"
+    ],
+    "shows": "48 checks pass on branch docs/prd-rewrite, including the six gates that read these two documents structurally: the phase pin, service manifest contract, specification traceability, signpost reconciliation, publication surface, and diagram provenance",
+    "expect": "PASS: 48 checks. Then `python scripts/sov_next.py` reads the re-keyed name crosswalk and passes. Then read PRD.md, ROADMAP.md, and the two archived files. The roadmap archive is byte-identical to what main carried; the PRD archive carries A22's PROD-I-1 rewrite, at the digest main pinned for it."
+  },
+  "evidence": [
+    {
+      "address": "PRD.md",
+      "digest": null,
+      "says": "the umbrella document: your product outcome verbatim, the twenty-two areas with what each establishes and where it stands, custody and closure as its own top-level requirement, the fourteen promises as the user-facing requirement register with proposed priority, and the nine PROD-I criteria as a named qualification profile"
+    },
+    {
+      "address": "ROADMAP.md",
+      "digest": null,
+      "says": "P0 through P9 with your estimates carried as estimates, each phase stating its product result, remaining work and exit shape. Where a repository counter disagrees with an estimate it is recorded under that phase rather than silently reconciled - P1 reads 55-65% against an operation surface of 5 reachable of 134"
+    },
+    {
+      "address": "archives/PRD-PHASE-I.md",
+      "digest": "sha256:807f33f48d2d56ea936119409de7fe07ffd464f844338bd3eb4f1c2087afd8a0",
+      "says": "the Phase-I requirements document at the digest contracts/phases.json pins, carrying A22's PROD-I-1 rewrite. Unaltered since that rewrite; not identical to the revision this branch archived, because this branch archived it first and main strengthened it afterwards"
+    },
+    {
+      "address": "archives/ROADMAP-F0-F6.md",
+      "digest": "sha256:2d547384606200517907a17c38747fff15f388640d5bf3c705bd278e2ac150f0",
+      "says": "the F0-F6 ladder, unaltered, at its pinned digest. The archives mean the phase still ends against a definition no later editor can narrow, which is why the PRD archive had to take the stronger of the two texts rather than the earlier one"
+    },
+    {
+      "address": "scripts/sov_next.py",
+      "digest": null,
+      "says": "the name crosswalk reader accepted only `F\\d` phase keys, in the heading parser and the table-cell parser both. Widened to `[FP]\\d` so the crosswalk still resolves against the live roadmap rather than silently losing its phase check; the four rows are re-keyed onto P0 and P1 and the jobs and tickets are unchanged"
+    },
+    {
+      "address": "contracts/publication-surface.json",
+      "digest": null,
+      "says": "both archives classified JOURNAL - kept deliberately, never routed to as documentation - which is the surface that says an archived requirement must not be read as a current one. The stale reasons on PRD.md and ROADMAP.md are corrected"
+    }
+  ],
+  "why_it_matters": "You said the PRD was too narrow while the repository already held service boundaries, capability discovery, a Record Service, node identity, federation contracts, BYOM and operating-agent infrastructure. That is now the document's scope rather than its blind spot. Separating the durable definition from the current estimate also fixes the failure mode that closed phase:i: a roadmap that exits on component percentages taught the repository to optimise components, and every phase here exits on something a person or an agent can demonstrably do instead.",
+  "what_could_defeat_it": [
+    "The coverage finding. Thirteen areas serve no promise. I read ten of them as structure rather than undertaking - services, components, composition, identity, authority, workflow, boards, external effects, security, accounting - and three as genuine undertakings wanting a promise: custody and closure, skills, and grounding. If that split is wrong, either the canon needs to grow much further or this document holds product intent the accepted layer above it does not.",
+    "Grounding is entirely new. It appears in no contract and no service; every other area was read out of the repository. It enters the product here on your table alone.",
+    "The priority ordering. Mine, from reach data and dependency. PROMISE-11 is P0 because the delegation argument rests on it and GROUND-010 is already recorded as a claim the node cannot keep.",
+    "Re-keying the crosswalk. F3 to P1, F2 to P0, F4 to P1 is my mapping. The two-binding proof landing in P1 is the weakest of the three, because no phase in the ladder has model substitutability as its result.",
+    "Twenty-two areas may be too fine. If two areas keep needing the same contract they are one area, which the document says about itself under Assumptions."
+  ],
+  "residuals": [
+    "Unwitnessed. This session was instructed not to launch agents, so no independent participant has read any of it. Run sov-qa or sov-witness against docs/prd-rewrite before treating any of it as WITNESSED.",
+    "Security, reliability and accounting are product areas with no requirements written. Isolation, recovery, disaster drills, tenancy and operational objectives appear in ROADMAP.md at P5 and P8 and nowhere in the PRD. Recorded in the document rather than papered over.",
+    "Custody and closure is a top-level requirement with no counter behind it. No work item currently carries a custodian through a handoff, and the resolve-into-another-admissible-operation behaviour is described and unbuilt.",
+    "PROMISE-12 and PROMISE-16 still have no acceptance criterion. conformance/requirements.py enumerates exactly nine.",
+    "The provider-loss drill named in the success metrics does not exist. PROMISE-02 is the product's central claim and nothing tests it by removing the providers.",
+    "Both archives live in archives/ with a README stating the rule that nothing there is edited. The directory is new; AGENTS.md gains a boundaries row for it and contracts/publication-surface.json classifies it JOURNAL.",
+    "contracts/phases.json grades judgement visibility SUBSTANTIALLY_EARNED while the canon reads zero of five operations reachable for the same promise. Recorded, not resolved."
+  ],
+  "on_accept": "PRD.md and ROADMAP.md move OPEN -> BUILT and the branch lands by your hand; both are root governing documents outside the standing landing grant. Then the coverage finding: whether custody and closure, skills, and grounding get promises minted in CANON.md, and whether the other ten areas are structure as I read them. Then the priority ordering, the problem statement, and whether success may be measured as evidence rather than usage. Separately, which roadmap phase opens next - phase:i is closed with succeeded_by null and five residual custodies PROPOSED.",
+  "on_reject": "Delete branch docs/prd-rewrite and the worktree at ../Soveraeign-prd. Nothing on main changed. Three findings survive rejection of the documents: PRD.md and SPEC.md stated the same nine predicates twice; six phase fixtures were pinned by digest to a document free to move underneath them; and the name crosswalk reader was hardcoded to one phase ladder."
+}

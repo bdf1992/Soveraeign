@@ -1,0 +1,45 @@
+name: closure salvage verification budget
+
+on:
+  push:
+    branches: [closure/reconstruct-verification-budget]
+    paths:
+      - .github/workflows/closure-salvage-verification-budget.yml
+
+permissions:
+  contents: write
+
+jobs:
+  cherry-pick:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Cherry-pick the one unique worktree commit onto current main
+        env:
+          SOURCE_SHA: 839b7fee0cfc36c38d8a4f1aebcd286f608bc096
+        run: |
+          git config user.name "Soveraeign closure"
+          git config user.email "noreply@github.com"
+          git fetch origin "$SOURCE_SHA"
+          if git cherry-pick "$SOURCE_SHA"; then
+            echo "SALVAGE_CHERRY_PICK=APPLIED" >> "$GITHUB_ENV"
+          else
+            echo "SALVAGE_CHERRY_PICK=CONFLICT"
+            echo "## Conflict files"
+            git diff --name-only --diff-filter=U
+            echo "## Status"
+            git status --short
+            echo "## Combined conflict diff"
+            git diff --cc || true
+            git cherry-pick --abort
+            exit 1
+          fi
+
+      - name: Push reconstructed branch
+        run: |
+          test "$SALVAGE_CHERRY_PICK" = APPLIED
+          git push origin HEAD:closure/reconstruct-verification-budget

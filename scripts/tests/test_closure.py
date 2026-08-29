@@ -22,6 +22,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import sov_closure  # noqa: E402
+from sovclosure import reachable  # noqa: E402
 
 CONTRACT = json.loads((ROOT / "contracts" / "closure-ownership.json").read_text("utf-8"))
 CORPUS = json.loads(
@@ -216,6 +217,35 @@ class SettlementPolicy(unittest.TestCase):
         self.assertTrue(adoption["prospective"])
         self.assertTrue(adoption["historical_missing_source_is_not_a_defect_by_itself"])
         self.assertIn("Do not mint cleanup tickets", adoption["historical_rule"])
+
+
+class AnnotationVocabulary(unittest.TestCase):
+    """Pin the grader's own vocabulary, which the fixture corpus is written in.
+
+    ``availability_cases`` grades ``operations_for`` through ``state_of``, so a
+    drift that changed both would satisfy the corpus while changing what a
+    participant is told. These assertions sit outside that vocabulary and are
+    built by hand, so the coordinated drift has to survive two oracles rather
+    than one.
+    """
+
+    def test_another_participant_s_work_marked_available_has_its_own_state(self):
+        self.assertEqual(
+            reachable.state_of({"needs_other_participant": True, "available": True}),
+            "OTHER_PARTICIPANT_BUT_AVAILABLE")
+
+    def test_another_participant_s_work_is_never_the_available_state(self):
+        self.assertEqual(
+            reachable.state_of({"needs_other_participant": True, "available": False}),
+            "OTHER_PARTICIPANT")
+
+    def test_the_participant_s_own_work_reads_from_availability(self):
+        self.assertEqual(
+            reachable.state_of({"needs_other_participant": False, "available": True}),
+            "AVAILABLE")
+        self.assertEqual(
+            reachable.state_of({"needs_other_participant": False, "available": False}),
+            "UNAVAILABLE")
 
 
 if __name__ == "__main__":

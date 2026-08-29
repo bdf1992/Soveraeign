@@ -1,0 +1,56 @@
+name: present A23 temp
+
+on:
+  push:
+    branches:
+      - sov/milestone-witness-queue
+    paths:
+      - .github/workflows/present-a23-temp.yml
+
+permissions:
+  contents: write
+
+jobs:
+  present:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: sov/milestone-witness-queue
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Present A23 in the owner queue
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("STATUS.yaml")
+          text = path.read_text(encoding="utf-8")
+          if "  - id: A23\n" in text:
+              raise SystemExit(0)
+          marker = "owner_acceptance_queue:\n"
+          if marker not in text:
+              raise SystemExit("owner_acceptance_queue marker not found")
+          entry = (
+              "owner_acceptance_queue:\n"
+              "  - id: A23\n"
+              "    packet: acceptance/A23.json\n"
+              "    presented: Independent witness queues at named milestones while ordinary self-tested work can land and continue at BUILT\n"
+              "    waits_on: seat:root\n"
+              "    presented_by_seat: seat:session-control\n"
+              "    at: 2026-08-29T04:44:00Z\n\n"
+          )
+          path.write_text(text.replace(marker, entry, 1), encoding="utf-8")
+          PY
+      - name: Commit the presentation record
+        run: |
+          if git diff --quiet -- STATUS.yaml; then
+            echo "A23 already presented"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add STATUS.yaml
+          git commit -m "docs(acceptance): present A23 to root seat"
+          git push origin HEAD:sov/milestone-witness-queue

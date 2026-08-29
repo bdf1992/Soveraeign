@@ -2,7 +2,7 @@
   "table_id": "soveraeign-verification-budget/v1",
   "status": "PROPOSED",
   "governed_by": "decisions/0081-verification-budget-stops-blocking.md",
-  "note": "Where performance pressure sits, and what it is allowed to do. A wall-clock reading is a property of the host at that instant, not of the repository, so it grades and records debt and never refuses a landing. Pressure moves to per-check ceilings, which attribute an overrun to the check that owns it instead of to whoever touched the repository next. Only a single check past catastrophic_check_seconds refuses, because that is a regression no host load explains. This table grants nothing and settles nothing; scripts/verify.py reads it and conformance/fixtures/verification-budget/cases.json defeats it.",
+  "note": "Where performance pressure sits, and what it is allowed to do. A wall-clock reading is a property of the host at that instant, not of the repository, so it grades and records debt and never refuses a landing. Pressure moves to per-check ceilings, which attribute an overrun to the check that owns it instead of to whoever touched the repository next. A single check past catastrophic_check_seconds is a suspected catastrophe. When catastrophic_confirm_alone is true, the verifier re-runs that check after the shared pool drains and refuses only if the isolated reading also crosses the ceiling. This preserves hard pressure on genuine pathological regressions without treating pooled host contention as proof of code failure. This table grants nothing and settles nothing; scripts/verify.py reads it and conformance/fixtures/verification-budget/cases.json defeats it.",
   "wall_clock": {
     "blocks": false,
     "grades": [
@@ -41,7 +41,8 @@
     }
   },
   "catastrophic_check_seconds": 30.0,
-  "catastrophic_note": "One check past this refuses the run with exit 1. It is the only timing condition that blocks, and it is set far above any measured check so that host load cannot reach it: the slowest check on 2026-08-27 was 11.701s under eleven concurrent sessions. A check that reaches 30s has changed, not been crowded.",
+  "catastrophic_confirm_alone": true,
+  "catastrophic_note": "A pooled check past 30 seconds raises a suspected catastrophe. It is re-run alone after the shared pool drains, and only an isolated reading also past 30 seconds refuses the run. This confirmation became necessary when #148/C0027 observed byte-identical PR #151 code first fail solely because Asset Service reference tests measured 36.667s and Console Service reference tests 32.151s on a hosted Python 3.11 runner, then pass on an immediate rerun with no code change. The original 30-second ceiling remains intact: a check that stays past it in isolation still blocks.",
   "measured": {
     "at": "2026-08-27",
     "host": "Windows, eleven live sessions sharing one working tree",

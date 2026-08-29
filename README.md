@@ -190,8 +190,11 @@ python scripts/sov_next.py   # what happens next, and where the signposts disagr
 python scripts/sov_traps.py  # facts about this repository that answer confidently and wrongly
 ```
 
-`verify.py` grades itself `PLATINUM` at three seconds, `GOLD` at six, `SILVER`
-at fifteen, and fails only past fifteen (`decisions/0050`). `sov_next.py`
+`verify.py` grades itself `PLATINUM` at three seconds, `GOLD` at six, and
+`SILVER` at fifteen. Past fifteen it records debt rather than failing, because a
+wall-clock reading measures the host at that instant and not the repository; the
+pressure sits on per-check ceilings instead (`decisions/0081`, superseding
+`decisions/0050`). `sov_next.py`
 reconciles five signposts and prints one answer with every alias the job travels
 under; where the declared gate and the reachable work name different jobs it
 reports the disagreement rather than resolving it, because that choice is owner

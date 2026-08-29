@@ -145,7 +145,7 @@ def closed_unsettled(issues: dict) -> list[str]:
 
 def resolve(rows: list[dict[str, str]], ready: list[dict[str, str]],
             phases: dict[str, str], roadmap_text: str, root: Path = ROOT,
-            issues: dict | None = None) -> list[str]:
+            issues: dict | None = None, graded_roadmap: bool = False) -> list[str]:
     """Defects: a crosswalk row that no longer resolves, a lane a phase dropped,
     or a signpost conflict."""
     defects = []
@@ -153,6 +153,13 @@ def resolve(rows: list[dict[str, str]], ready: list[dict[str, str]],
     for row in rows:
         if row["phase"] and row["phase"] not in phases:
             defects.append(f"crosswalk names phase {row['phase']}, absent from ROADMAP.md")
+        if not row["phase"] and re.search(r"\b[FP]\d+\b", row["phase_label"]):
+            # The cell names a phase and this reader cannot read it. Skipping such
+            # a row let one mutation pass both this check and the lane grader at
+            # once, because both resolve a phase through the same backticks.
+            defects.append(
+                f"crosswalk row {row['phase_label']} names a phase this reader cannot "
+                "resolve; a phase token must be backticked")
         if not row["ticket"]:
             defects.append(f"crosswalk row {row['phase_label']} names no epic ticket")
         if issues is not None and row["ticket"]:
@@ -172,7 +179,8 @@ def resolve(rows: list[dict[str, str]], ready: list[dict[str, str]],
         defects.append("crosswalk no longer names the ENGINEERING.md module debt")
     # The lane shape is graded for presence only. Whether a Now item can really be
     # finished with what exists is judgement over evidence, which no parser settles.
-    defects.extend(str(defect) for defect in roadmap_lanes.grade(roadmap_text))
+    defects.extend(str(defect) for defect in
+                   roadmap_lanes.grade(roadmap_text, must_carry_phases=graded_roadmap))
     # An empty frontier is deliberately not a defect. Every open ticket being
     # held is a legitimate state, and a gate that fails on it teaches operators
     # to clear the alarm unread. It is reported under "reachable work" instead.
@@ -198,7 +206,8 @@ def main(argv: list[str] | None = None) -> int:
     ready = epic_ready(issues)
     stale = stale_views(ROOT)
     unsettled = closed_unsettled(issues)
-    defects = resolve(rows, ready, phases, roadmap_text, issues=issues)
+    defects = resolve(rows, ready, phases, roadmap_text, issues=issues,
+                      graded_roadmap=True)
 
     by_ticket = {row["ticket"]: row for row in rows}
     conflict = None

@@ -15,7 +15,9 @@ recording. An empty Never is not a reading, because a scope with no stated
 edge has no edge.
 
 This module owns the contract and the refusals. ``roadmap_document`` owns how
-the document is read.
+the document is read, including the control sample the selfcheck mutates: a
+grader that hand-wrote its own Markdown control would encode the heading grammar
+a second time and diverge from the parser without either noticing.
 """
 
 from __future__ import annotations
@@ -30,6 +32,7 @@ from roadmap_document import (
     lanes_in,
     phase_sections,
     table_phases,
+    control,
     words,
 )
 
@@ -55,6 +58,9 @@ REFUSALS = {
     "ROADMAP_SUBJECT_HEADING_AMBIGUOUS":
         "Two headings answer to one declared subject, so which one is graded depends on "
         "document order.",
+    "ROADMAP_CARRIES_NO_PHASES":
+        "The graded roadmap names no phase at all, so every lane check would pass over "
+        "an empty population.",
 }
 
 
@@ -146,18 +152,34 @@ def _lanes(label: str, section: str, contract: dict) -> list[Defect]:
     return defects
 
 
-def grade(roadmap_text: str, contract: dict | None = None) -> list[Defect]:
-    """Grade one roadmap's lane shape. Presence only; the readings are not judged."""
+def grade(roadmap_text: str, contract: dict | None = None,
+          *, must_carry_phases: bool = False) -> list[Defect]:
+    """Grade one roadmap's lane shape. Presence only; the readings are not judged.
+
+    ``must_carry_phases`` is how the gate says which document this is, and the
+    gate passes it. A text carrying no `P` phase is otherwise out of scope: the
+    archived F-ladder and the fixtures the signpost reconciler uses are both
+    legitimately laneless, and demanding lanes of them would refuse a document
+    that never claimed the shape.
+
+    That escape was open by default in an earlier draft, and a witness walked
+    through it: stripping the backticks from the phase table and replacing the
+    heading separator emptied both of the guard's inputs and silenced all seven
+    refusals over twelve subjects. The draft's comment claimed ``sov_next``
+    caught that; it did not, because the same edit made every crosswalk phase
+    token unreadable and unreadable rows were skipped. Both halves are closed:
+    the gate opts in here, and ``sov_next`` now refuses a row whose phase cell
+    names a phase it cannot read.
+    """
     contract = contract if contract is not None else load_contract()
 
-    # A text carrying no `P` phase at all is not the document this grades: the
-    # archived F-ladder and the small fixtures the signpost reconciler uses are
-    # both legitimately laneless. Demanding the contract's extra subjects of them
-    # would refuse a document that never claimed the shape. If the live roadmap
-    # ever loses every phase, `sov_next` still refuses it - its crosswalk rows
-    # name phases that would then resolve to nothing.
     if not phase_sections(roadmap_text) and not table_phases(roadmap_text):
-        return []
+        if not must_carry_phases:
+            return []
+        return [Defect(
+            "ROADMAP_CARRIES_NO_PHASES",
+            "the graded roadmap names no phase in a heading or a table, so every "
+            "lane check would pass over an empty population")]
 
     defects = _population(roadmap_text, contract)
     for label, section in graded_subjects(roadmap_text, contract).items():
@@ -165,56 +187,12 @@ def grade(roadmap_text: str, contract: dict | None = None) -> list[Defect]:
     return defects
 
 
-CONTROL = """## The phases
-
-| Phase | Product result | Estimate |
-| --- | --- | ---: |
-| `P0` Control | A product result | 50% |
-
-### `P0` · Control
-
-**Result.** A product result.
-
-{lanes}
-
-*Repository reading.* A reading that follows the lanes.
-
-**Exits when** it does.
-
-### The shape recurses
-
-Prose about the recursion.
-
-> **A worked child.**
->
-{quoted}
-
-### The roadmap's own lanes
-
-{lanes}
-"""
-
-
-def control(contract: dict) -> str:
-    """A whole small roadmap carrying every graded subject the contract declares.
-
-    Including the blockquoted child: without it the strip_blockquote path has no
-    controlled case, and the extras are exercised only against the live document.
-    It also ends its phase on an italic paragraph, which is the follower shape
-    that defeated the first two drafts of the empty-Never rule.
-    """
-    sentences = [f"**{lane}.** A sentence of four words." for lane in contract_lanes(contract)]
-    return CONTROL.format(
-        lanes="\n\n".join(sentences),
-        quoted="\n>\n".join(f"> {sentence}" for sentence in sentences))
-
-
 def selfcheck() -> list[str]:
     """Prove every declared refusal fires alone against a controlled mutation."""
     contract = load_contract()
     declared = contract_lanes(contract)
     last, first = declared[-1], declared[0]
-    admissible = control(contract)
+    admissible = control(declared)
     sentence = f"**{last}.** A sentence of four words."
     failures = []
     if grade(admissible, contract):
@@ -239,9 +217,19 @@ def selfcheck() -> list[str]:
             "### The roadmap's own lanes\n\nText.\n\n### The roadmap's own lanes", 1),
     }
     for code, mutated in cases.items():
-        fired = {defect.code for defect in grade(mutated, contract)}
+        fired = {defect.code for defect in grade(mutated, contract, must_carry_phases=True)}
         if code not in fired:
             failures.append(f"{code} did not fire against its controlled mutation")
         elif fired != {code}:
             failures.append(f"{code} fired with {sorted(fired - {code})}; it must fire alone")
+
+    # The escape a witness walked through: emptying both of the scope guard's
+    # inputs at once silenced every other refusal over an empty population.
+    emptied = admissible.replace("| `P0` Control", "| P0 Control").replace(
+        "### `P0` · Control", "### P0 - Control")
+    fired = {defect.code for defect in grade(emptied, contract, must_carry_phases=True)}
+    if fired != {"ROADMAP_CARRIES_NO_PHASES"}:
+        failures.append(f"ROADMAP_CARRIES_NO_PHASES did not fire alone; got {sorted(fired)}")
+    if grade(emptied, contract):
+        failures.append("a laneless text is graded even where the caller made no claim")
     return failures

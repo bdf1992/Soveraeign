@@ -28,10 +28,11 @@
     {
       "lane": "NEEDED",
       "means": "A future item already known to be a need of ours, neither selected nor scheduled.",
-      "admits": "A known need with no chosen slot, including a need whose unlock condition is known but unmet.",
+      "admits": "A known need with no chosen slot.",
       "refuses": "A speculative want, and an item that has in fact been selected - selecting it moves it to NEXT.",
       "may_be_empty": true,
-      "empty_means": "Everything known about this item is already in NOW or NEXT."
+      "empty_means": "Everything known about this item is already in NOW or NEXT.",
+      "what_this_does_not_say": "Whether a thing held out until something is learned is a NEEDED or a NEVER. An earlier draft admitted it here in one clause while NEVER declined to draw the line, which answered the open question in the lane that was not being watched. Neither lane draws it now. ROADMAP.md carries the question to Bdo."
     },
     {
       "lane": "NEVER",
@@ -45,13 +46,19 @@
     }
   ],
   "lane_transitions": {
-    "note": "Bdo's correction of 2026-08-28, after the first witness read NEVER as a permanent refusal and reported every conditional exclusion as a misfiled deferral. It is not a refusal. The four lanes are a cycle, and NOW drives it.",
-    "discovery_happens_in_now": "NOW is the only lane being worked, so it is the only lane that produces findings. Everything that moves, moves because of something learned there.",
+    "note": "Bdo's correction of 2026-08-28, after the first witness read NEVER as a permanent refusal and reported every conditional exclusion as a misfiled deferral. His words: 'Never is Usually a never. It means discovery selects it and pressures it from what is needed based on what was now.' What is his: NEVER holds by default, is not permanent, and leaves only by discovery pressuring it into NEEDED. What is the builder's, drafted and unratified: every key below marked drafted_by_builder, and the reading that 'selects' belongs to the NEEDED-to-NEXT move rather than to the NEVER exit.",
+    "discovery_happens_in_now": "NOW is the only lane being worked, so it is the only lane that produces findings. Everything that moves, moves because of something learned there. DRAFTED BY THE BUILDER from 'based on what was now'; it is a substantive claim about how work happens and Bdo has not ruled on it.",
     "never_to_needed": "Discovery under NOW pressures an exclusion out of NEVER into NEEDED. That is the only way out of NEVER.",
     "needed_to_next": "Selecting a known need moves it to NEXT.",
     "next_to_now": "NEXT becomes NOW when this item's own NOW clears.",
     "why_never_cannot_skip_needed": "An exclusion that jumps straight to NOW or NEXT is scope creep taking a shorter path. Passing through NEEDED puts the admission on the page as a known need before anyone works it, which is the whole reason the exclusion was written down.",
-    "unchecked": "None of these transitions is checked. A lane change is an edit to prose, and whether a finding really pressured an exclusion is judgement. What is checked is that the four lanes are present and that NEVER is not empty."
+    "unchecked": "None of these transitions is checked. A lane change is an edit to prose, and whether a finding really pressured an exclusion is judgement. What is checked is that the four lanes are present and that NEVER is not empty.",
+    "drafted_by_builder": [
+      "discovery_happens_in_now",
+      "needed_to_next",
+      "next_to_now",
+      "why_never_cannot_skip_needed"
+    ]
   },
   "never_minimum_words": 2,
   "recursion": {
@@ -109,14 +116,16 @@
       "ROADMAP_UNDECLARED_LANE": "A subject opens a lane-shaped paragraph that is neither a declared lane nor an admitted non-lane opener.",
       "ROADMAP_PHASE_NOT_GRADED": "The phase table names a phase with no graded section.",
       "ROADMAP_SUBJECT_NOT_FOUND": "An extra graded subject is declared by heading text and no such heading exists. Without it a rename silently stopped grading the recursion while the gate this document advertises stayed green.",
-      "ROADMAP_SUBJECT_HEADING_AMBIGUOUS": "Two headings answer to one declared subject, so which is graded depends on document order."
+      "ROADMAP_SUBJECT_HEADING_AMBIGUOUS": "Two headings answer to one declared subject, so which is graded depends on document order.",
+      "ROADMAP_CARRIES_NO_PHASES": "The graded roadmap names no phase at all. The scope guard that keeps laneless documents out of the check was open by default, and a witness walked the live document out through it: unbackticking the phase table and changing the heading separator emptied both of its inputs and silenced every other refusal over twelve subjects. The gate now says which document it is grading, and sov_next refuses a crosswalk row whose phase cell names a phase it cannot read - the two halves used to fail to the same edit."
     },
     "not_checked": [
       "The truth of a placement. Whether a NOW item can really be finished with what exists is judgement over evidence, and no parser settles it. The check proves the shape is present, never that the reading is right.",
       "Every lane transition. Whether a finding really pressured an exclusion out of NEVER, whether a NEXT was actually chosen by anyone, and whether two subjects have filed the same work under both their NOWs. Each is a reading, and each is listed under what_would_defeat_this so a reviewer knows where to look.",
       "Whether a child's NEVER is looser than its parent's. See recursion.never_inherits_is_unchecked.",
-      "Whether the phase population is right. The table and the headings are both in this one document and both editable in one pass, so two coordinated edits remove a phase from the check. Nothing outside the document names P0-P9; contracts/phases.json pins the archived F-ladder and not this one. Recorded rather than left to look anchored.",
-      "Whether a Never renders. Words inside an HTML comment are removed before counting, because a comment shows a reader nothing; no other rendering question is asked."
+      "Whether a Never renders. Words inside an HTML comment are removed before counting, because a comment shows a reader nothing; no other rendering question is asked.",
+      "Whether the phase roster is right. The table and the headings are both in ROADMAP.md, so an edit to both still changes which phases are graded - it can no longer empty the roster, because that is refused, but it can rename one. Nothing outside the document names P0-P9; contracts/phases.json pins the archived F-ladder and not this one.",
+      "Whether a lane renders as a reader sees it. HTML comments and link targets are removed before words are counted and fenced code is blanked before lanes are read; no other rendering question is asked."
     ]
   },
   "what_would_defeat_this": [
@@ -130,6 +139,7 @@
     "a NEVER that restates the item's own exit condition, which reads as an edge and does no independent work",
     "two subjects filing the same work under both their NOWs, which means nobody owns it",
     "a child NEVER looser than its parent's, which is the scope creep the lane exists to catch arriving through the recursion itself",
-    "the lanes being derived from the epic tree while this contract still calls the crosswalk a reading direction"
+    "the lanes being derived from the epic tree while this contract still calls the crosswalk a reading direction",
+    "the lane check going quiet on the live document, for any reason other than the document carrying its four lanes"
   ]
 }

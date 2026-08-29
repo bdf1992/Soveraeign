@@ -452,6 +452,44 @@ class LaneRefusals(unittest.TestCase):
         broken = ADMISSIBLE.replace("### The roadmap's own lanes", "### Something else")
         self.assertIn("ROADMAP_SUBJECT_NOT_FOUND", self._codes(broken))
 
+    def _emptied(self):
+        """Both of the scope guard's inputs removed at once, which silenced everything."""
+        return ADMISSIBLE.replace("| `P0` Ground", "| P0 Ground").replace(
+            "### `P0` · Ground and govern", "### P0 - Ground and govern")
+
+    def test_emptying_the_phase_population_is_refused_at_the_gate(self):
+        """A witness walked out through the guard: two edits, twelve subjects, silence."""
+        codes = {defect.code for defect
+                 in roadmap_lanes.grade(self._emptied(), must_carry_phases=True)}
+        self.assertEqual(codes, {"ROADMAP_CARRIES_NO_PHASES"})
+
+    def test_the_same_text_is_out_of_scope_where_no_caller_claimed_it(self):
+        self.assertEqual(roadmap_lanes.grade(self._emptied()), [])
+
+    def test_the_crosswalk_also_refuses_an_unreadable_phase_token(self):
+        """The guard's escape and its stated backstop failed to the same edit."""
+        broken = ROADMAP.replace("| `F3` Minimal", "| F3 Minimal")
+        rows = sov_next.crosswalk(broken)
+        defects = sov_next.resolve(rows, [], sov_next.roadmap_phases(broken), broken,
+                                   root=Path(tempfile.mkdtemp()))
+        self.assertIn("cannot resolve", " ".join(defects))
+
+    def test_a_never_written_as_a_bullet_list_is_a_stated_edge(self):
+        """Terminating a lane on `-` graded a good edge under the code for an empty one."""
+        lanes = roadmap_document.lanes_in(
+            "**Never.** Three of them:\n- one thing\n- two things\n")
+        self.assertIn("one thing", lanes["Never"][0])
+
+    def test_a_link_target_is_not_a_stated_edge(self):
+        """`[](http://a-b-c)` renders as nothing and used to count five words."""
+        self.assertEqual(roadmap_document.words("[](https://example.com/a-b-c)"), 0)
+        self.assertEqual(roadmap_document.words("[a visible label](https://x.example/y)"), 3)
+
+    def test_a_lane_inside_a_fence_does_not_satisfy_the_shape(self):
+        """A fence shows a reader an example of a lane, not one."""
+        fenced = "```text\n**Never.** only inside a fence\n```\n"
+        self.assertEqual(roadmap_document.lanes_in(fenced), {})
+
     def test_selfcheck_proves_every_refusal_fires_alone(self):
         self.assertEqual(roadmap_lanes.selfcheck(), [])
 

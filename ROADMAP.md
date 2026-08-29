@@ -36,7 +36,12 @@ Every phase below carries four lanes. They are Bdo's shape, added to this
 document on 2026-08-28, and they separate four questions that a single
 "remaining" list runs together. `contracts/roadmap-lanes.json` is the machine
 copy, and `python scripts/sov_next.py --strict` fails when a subject is missing
-a lane, so the shape cannot quietly rot back into a list.
+a lane, so the shape cannot quietly rot back into a list. What that check proves
+is presence and never truth: whether a Now item can really be finished with what
+exists is judgement over evidence, and no parser settles it. It also reads the
+phase roster out of this document's own table and headings, so an edit to both
+can still rename a phase — it can no longer empty the roster, which a witness
+demonstrated on 2026-08-28 and which is now refused by name.
 
 - **Now** - what is on the board: available, and workable from start to finish
   with what exists today. Not what is in progress, and not what is most
@@ -48,8 +53,7 @@ a lane, so the shape cannot quietly rot back into a list.
   release; and neither is something a sibling's Now would release.
 - **Needed** - a future item already known to be a need of ours, and neither
   selected nor scheduled. This is where honest future work waits without being
-  promoted by enthusiasm, including a need whose unlock condition is known and
-  unmet.
+  promoted by enthusiasm.
 - **Never** - what is held out of this item's scope. Usually a never: it holds
   by default and it is not a claim to be permanent. It is the lane that does
   the most work, because a phase fails by absorbing its neighbour more often
@@ -57,10 +61,17 @@ a lane, so the shape cannot quietly rot back into a list.
 
 ### How something leaves Never
 
-Discovery moves it, and only into Needed. Now is the only lane being worked, so
-it is the only lane that produces findings; what is learned there is what
-pressures an exclusion out of Never. Nothing else moves one - not a preference,
-not a date, not the phase number arriving.
+Discovery moves it, and only into Needed. Nothing else moves one - not a
+preference, not a date, not the phase number arriving. That much is Bdo's, in
+these words: *"Never is Usually a never. It means discovery selects it and
+pressures it from what is needed based on what was now."*
+
+The reading that follows is drafted from that sentence and he has not ruled on
+it: Now is the only lane being worked, so it is the only lane that produces
+findings, and what is learned there is the only thing that pressures an
+exclusion out of Never. It is a claim about how work happens, not a restatement,
+and it is the fourth of the readings under *Standing* this document cannot
+settle for itself.
 
 The lanes are a cycle rather than a list, and Now drives it. Discovery under Now
 pressures Never into Needed; selecting a known need moves it to Next; Next
@@ -143,8 +154,9 @@ alongside rather than after, because packaging a node is largely independent of
 what the node can do.
 
 **Needed.** `P4`, and `P6` through `P9`, plus every row under *Deferred until
-earned* below. Known needs of ours, none scoped. `P6` is the first whose entry
-is an owner decision rather than an engineering one.
+earned* below except the first, which this roadmap's Never holds. Known needs of
+ours, none scoped. `P6` is the first whose entry is an owner decision rather than
+an engineering one.
 
 **Never.** Distributed consensus. A phase that exits on component percentages
 rather than a demonstrated result. And this document acquiring standing: it is
@@ -398,7 +410,8 @@ unhealthy, and upgrade or version migration.
 Tenancy, high availability and scale are `P8`, and admitting them here is how a
 personal node quietly becomes a server nobody asked for. Nor a container or an
 orchestrator: the roadmap holds those out until a conformance case needs one, and
-a phase cannot admit what the roadmap above it excludes.
+this phase adds the exclusion rather than inheriting it — the roadmap files them
+under Needed, so nothing above forbids them and `P5` is choosing to.
 
 **Exits when** a node can be stood up from the artifact, survive a restart and a
 restore from backup with its record intact, and report its own health honestly —
@@ -559,8 +572,11 @@ Carried forward from `ROADMAP-F0-F6.md`, still deferred:
 
 `PRODUCT PHASES CANDIDATE`. The ten phases, their results and their exit shapes
 are Bdo's, stated on 2026-08-28. The four lanes, the rule that they recurse, and
-the rule that discovery under Now is the only thing that moves an exclusion out
-of Never are Bdo's, stated on 2026-08-28. The per-phase lane contents, the
+the rule that an exclusion leaves Never only by discovery pressuring it into
+Needed are Bdo's, stated on 2026-08-28. The derivation around that rule - that
+Now is the only lane producing findings, and the ordering of the other three
+transitions - is drafted from his sentence and marked as such in
+`contracts/roadmap-lanes.json`. The per-phase lane contents, the
 repository readings, and the exit-condition wording are drafted from the
 repository and are proposed. Nothing here is owner-accepted, and this document
 changes no standing in `STATUS.yaml`.
@@ -590,11 +606,24 @@ own exit conditions as their Never, which the first witness had caught only in
 `P4` and `P9`, and that `P0`'s and `P5`'s Now items named no closed population.
 Each is repaired above.
 
-Three readings this document cannot settle for itself, each carried to Bdo:
+A third witness graded that repair and found the scope guard could be walked
+through: emptying the phase table and the phase headings together silenced all
+seven refusals over twelve subjects, and the comment claiming `sov_next` caught
+that was false, because the same edit made every crosswalk phase token
+unreadable and unreadable rows were skipped. Both halves are closed. It also
+found the Never-or-Needed question answered in `NEEDED` one field over from
+where the previous repair declined to answer it, this roadmap's Needed sweeping
+in a row its own Never holds, `P5` citing inheritance over an item nothing above
+it excludes, and three shapes the grader read wrongly: a Never written as a
+bullet list graded as abandoned, a link target counted as words a reader can
+see, and a lane inside a code fence satisfying the shape.
+
+Four readings this document cannot settle for itself, each carried to Bdo:
 whether "already chosen" in a Next lane may mean chosen by this document rather
 than by him; whether the twenty orphan seam rows are `P2`'s work as filed here;
-and whether an exclusion that names what would earn it belongs in Never or, as
-filed here, in Needed.
+whether an exclusion that names what would earn it belongs in Never or, as filed
+here, in Needed; and whether "Now is the only lane that produces findings" says
+what he meant, or is a derivation that must stay marked as drafted.
 
 What would defeat it:
 

@@ -40,11 +40,21 @@ LANE_OPENER = re.compile(r"^\*\*([A-Z][a-z]+)\.\*\*(?=[ \n])", re.M)
 #: Blockquote markers, stripped before parsing a subject that declares them.
 BLOCKQUOTE = re.compile(r"^> ?", re.M)
 
-#: A line that starts a new block: emphasis, heading, quote, table, list, fence.
-#: A lane ends here as well as at the blank line, because Markdown lazy
-#: continuation makes ``**Never.** .`` and a following italic line one paragraph,
-#: and the emptied lane then borrowed the follower's words.
-BLOCK_START = re.compile(r"^(?:\*|#|>|\||-\s|`{3})", re.M)
+#: A fenced code block. Blanked before lanes are scanned: a lane that exists only
+#: inside a fence shows a reader an example of a lane rather than being one.
+CODE_FENCE = re.compile(r"^```.*?^```", re.S | re.M)
+
+#: A line that starts a new block and therefore ends a lane: emphasis, heading,
+#: table, fence. A lane ends here as well as at the blank line, because Markdown
+#: lazy continuation makes ``**Never.** .`` and a following italic line one
+#: paragraph, and the emptied lane then borrowed the follower's words.
+#:
+#: ``-`` and ``>`` are deliberately absent. A Never written as a bullet list or a
+#: quoted passage is a well-stated edge, and terminating on those graded it as an
+#: abandoned lane - reporting a good edge under the code for an empty one. The
+#: cost of leaving them out is that a bullet list following a lane is read as part
+#: of it; this document uses ``-`` for bullets and opens none after a lane.
+BLOCK_START = re.compile(r"^(?:\*|#|\||`{3})", re.M)
 
 #: HTML comments, removed before words are counted. A comment renders as nothing,
 #: so its words are not a stated edge however many of them there are.
@@ -126,11 +136,15 @@ def lanes_in(section: str) -> dict[str, list[str]]:
     be one paragraph, so a lane that spans two is graded on the first and its
     continuation is not counted.
 
+    Fenced code is blanked first, so a lane that exists only inside a fence does
+    not satisfy the shape. A fence shows a reader an example of a lane, not one.
+
     The value is a list because a lane opening twice is a defect the caller
     refuses. Returning the last one silently is what let a duplicate mask an
     emptied original.
     """
     found: dict[str, list[str]] = {}
+    section = CODE_FENCE.sub(lambda match: "\n" * match.group().count("\n"), section)
     for match in LANE_OPENER.finditer(section):
         rest = section[match.end():]
         bounds = [len(rest)]
@@ -147,9 +161,61 @@ def lanes_in(section: str) -> dict[str, list[str]]:
 def words(prose: str) -> int:
     """Words of substance, so a lone full stop does not read as a stated edge.
 
-    HTML comments are removed first: they render as nothing, so their words are
-    not a stated edge however many of them there are. Whoever sets the threshold
-    should keep it low - it exists to refuse a lane opened and abandoned, never
-    to grade how well an edge is written, because that is a reading.
+    What renders as nothing is removed first and does not count: HTML comments,
+    and the target of a link or image, which is why ``[](http://a-b-c)`` read as
+    five words of stated edge. A link's visible label survives, because a reader
+    sees it. Whoever sets the threshold should keep it low - it exists to refuse a
+    lane opened and abandoned, never to grade how well an edge is written, which
+    is a reading.
     """
-    return len(re.findall(r"[0-9A-Za-z][0-9A-Za-z'-]*", HTML_COMMENT.sub("", prose)))
+    visible = HTML_COMMENT.sub("", prose)
+    visible = re.sub(r"!?\[([^\]]*)\]\([^)]*\)", r"\1", visible)
+    return len(re.findall(r"[0-9A-Za-z][0-9A-Za-z'-]*", visible))
+
+
+#: A whole small roadmap in the shape this module reads, for a caller to mutate.
+#: It lives here rather than beside the refusals because it is Markdown, and the
+#: grader claimed to know none: a control that encodes the heading grammar a
+#: second time diverges silently from PHASE_HEADING and then proves a syntax the
+#: parser no longer reads.
+CONTROL = """## The phases
+
+| Phase | Product result | Estimate |
+| --- | --- | ---: |
+| `P0` Control | A product result | 50% |
+
+### `P0` · Control
+
+**Result.** A product result.
+
+{lanes}
+
+*Repository reading.* A reading that follows the lanes.
+
+**Exits when** it does.
+
+### The shape recurses
+
+Prose about the recursion.
+
+> **A worked child.**
+>
+{quoted}
+
+### The roadmap's own lanes
+
+{lanes}
+"""
+
+
+def control(lane_names: list[str], sentence: str = "A sentence of four words.") -> str:
+    """A control roadmap carrying every graded subject a caller could declare.
+
+    Including the blockquoted child: without it the strip_blockquote path has no
+    controlled case and is exercised only against the live document. The phase
+    also ends on an italic paragraph, which is the follower shape that defeated
+    the first two drafts of the empty-Never rule.
+    """
+    lanes = [f"**{name}.** {sentence}" for name in lane_names]
+    return CONTROL.format(lanes="\n\n".join(lanes),
+                          quoted="\n>\n".join(f"> {lane}" for lane in lanes))

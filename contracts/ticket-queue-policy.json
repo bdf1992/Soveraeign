@@ -49,7 +49,7 @@
   },
   "next_action": {
     "DEMOTED": "repair against the defeating observation and re-enter at PROPOSED",
-    "BUILT_SELF_TESTED_NOT_WITNESSED": "run the Red lane and seek an independent witness",
+    "BUILT_SELF_TESTED_NOT_WITNESSED": "continue reachable work toward the declared target; when a named milestone consumes independent witness, take its verification-engagement rather than treating unwitnessed standing as a global block",
     "CHARTERED_NOT_IMPLEMENTED": "build the smallest change that satisfies the visible case",
     "DECLARED_NOT_IMPLEMENTED": "write the charter and the machine-checkable contract",
     "PROPOSED": "declare the owned boundary in the repository",
@@ -66,6 +66,7 @@
     "issue_number"
   ],
   "unblock_note": "An unblock request is takeable work: it is served by the tier it names in requested_from, and it sorts up because the ticket it holds counts toward unblocks. Blocked is never a ticket status; it is a held-by edge to an unblock ticket (AGENTS.md, Blocked edge is not blocked frontier).",
+  "witness_note": "BUILT is a valid continuing engineering standing, not an instruction to stop. Blue remains continuous inside the work unit. Independent Red work is queued as verification-engagement at a named milestone. Once queued, verification-engagement remains high-ranked because it gates the milestone that asked for it; before that boundary exists, outstanding witness standing alone does not make the concern blocked.",
   "provision_routes": {
     "grant": [
       "orchestrator",
@@ -94,5 +95,5 @@
   },
   "provision_routes_note": "Which tiers may serve each provision. Declared data, not authority: serving a grant or judgement still needs the live grant the kernel checks at the transition.",
   "acceptance_note": "WITNESSED is not a waiting room. A witnessed claim is written up as an acceptance packet and presented to the seat one edge up; nothing sits on an owner without a packet (contracts/acceptance-policy.json).",
-  "kind_rank_note": "Every dispatchable kind is ranked. An unranked kind falls back to 99 and sorts below everything without saying so, which is what happened to verification-engagement between decisions 0018 and 0066: a Red engagement gates a release and was sorting last. The rank is only a tiebreaker - blocked, horizon, what a ticket unblocks, and standing all sort first - so it says what to prefer between equally urgent tickets, not what matters most. A chore sorts last on that tiebreak because it maintains a surface rather than advancing one."
+  "kind_rank_note": "Every dispatchable kind is ranked. An unranked kind falls back to 99 and sorts below everything without saying so, which is what happened to verification-engagement between decisions 0018 and 0066: a Red engagement gates a named milestone and was sorting last. The rank is only a tiebreaker - blocked, horizon, what a ticket unblocks, and standing all sort first - so it says what to prefer between equally urgent tickets, not what matters most. A chore sorts last on that tiebreak because it maintains a surface rather than advancing one."
 }

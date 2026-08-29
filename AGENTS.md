@@ -17,7 +17,9 @@ The governing documents form one design System of Record with explicit roles:
 - `CLASSIFICATION.md` owns architectural, information-role, and
   operating-loop vocabulary;
 - `CONTRACT.md` owns invariants;
-- `PRD.md` owns Phase-I requirements;
+- `PRD.md` owns the product's requirements, priority, and success measures;
+  `PRD-PHASE-I.md` is its archived first revision and the pinned definition of
+  the closed `phase:i`, not current policy;
 - `SPEC.md` owns logical objects, transitions, predicates, and refusals;
 - `AI-NATIVE.md` owns surface evaluation and qualification criteria;
 - `STATUS.yaml` owns current authority, standing, and open decisions;

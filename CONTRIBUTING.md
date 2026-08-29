@@ -13,7 +13,7 @@ governing set has explicit ownership:
 - `SYSTEM.md`: system boundary and operating model;
 - `CLASSIFICATION.md`: controlled vocabulary;
 - `CONTRACT.md`: invariants;
-- `PRD.md`: Phase-I requirements;
+- `PRD.md`: the product's requirements;
 - `SPEC.md`: logical model, transitions, predicates, and refusals;
 - `AI-NATIVE.md`: surface evaluation and qualification criteria;
 - `STATUS.yaml`: current standing, authority, and open decisions;

@@ -1,7 +1,7 @@
 {
   "collection_schema": "soveraeign-phase-collection/v1",
   "status": "PROPOSED",
-  "note": "Phases and their terminals. Phase I closes on two readings rather than one: the operating window is over, and the exit was not earned. Recording both keeps the original definition historically intact, which is the whole point - a phase that ends by narrowing its definition until the evidence fits leaves a record saying it was earned, and no later reader can tell the difference. Every unmet clause names the exit custody that inherits it, because carried forward is not a terminal. Repinned 2026-08-27 for SPEC.md, which moved when main and the federation branch were reconciled and main's asset-object rewrite landed (702a70e). The pin exists so a phase cannot end by narrowing its own definition, so the move was measured rather than assumed: SPEC.md owns the 44 normative predicates the first clause counts, and `python scripts/sov_f2_gate.py` reads 44 before and after. The definition did not narrow; the document it lives in changed around it.",
+  "note": "Phases and their terminals. Phase I closes on two readings rather than one: the operating window is over, and the exit was not earned. Recording both keeps the original definition historically intact, which is the whole point - a phase that ends by narrowing its definition until the evidence fits leaves a record saying it was earned, and no later reader can tell the difference. Every unmet clause names the exit custody that inherits it, because carried forward is not a terminal. Repinned 2026-08-27 for SPEC.md, which moved when main and the federation branch were reconciled and main's asset-object rewrite landed (702a70e). The pin exists so a phase cannot end by narrowing its own definition, so the move was measured rather than assumed: SPEC.md owns the 44 normative predicates the first clause counts, and `python scripts/sov_f2_gate.py` reads 44 before and after. The definition did not narrow; the document it lives in changed around it. The PRD.md entry was repointed 2026-08-28 at Bdo's direction to PRD-PHASE-I.md, which carries the same bytes and therefore the same digest: the root PRD.md is now the whole-product requirements document and defines no phase, so what this phase closed against was archived rather than edited. Nothing in the definition moved.",
   "governed_by": [
     "PRD.md",
     "ROADMAP.md",
@@ -18,7 +18,7 @@
       "closed": "2026-08-27",
       "definition": [
         {
-          "document": "PRD.md",
+          "document": "PRD-PHASE-I.md",
           "digest": "sha256:f1157f2f1ebad6aab70a63752f9bd9169518eb6f0aefde21c7fd05e98d5f1440",
           "owns": "the nine Phase-I requirements and the five-clause exit"
         },

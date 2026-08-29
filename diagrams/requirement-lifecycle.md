@@ -2,7 +2,7 @@
 
 ```text
 source          PRD.md · SPEC.md · CONTRACT.md · STATUS.yaml
-source_digest   a6b8213a573f927f · b58dc1ed68c2b999 · ff6873d56338933b · 05f58ebdd6e0321f
+source_digest   82f45c1cc286e928 · b58dc1ed68c2b999 · ff6873d56338933b · c0e56d3fb79eaedd
 reader          hand-authored · v2
 fidelity        LOSSY
 omissions       the predicate and defeating case behind each PROD-I requirement,

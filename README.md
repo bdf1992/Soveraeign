@@ -147,7 +147,7 @@ The founding set contains:
 - `services/asset/` — the Asset Service charter, contract, reference participant, and tests;
 - `services/proofing/` — the proposed sibling review-and-approval service boundary;
 - `CONTRACT.md` — invariants implementations must preserve;
-- `PRD.md` — the normalized Phase-I requirements;
+- `PRD.md` — the product's requirements, priority, and success measures;
 - `SPEC.md` — the proposed stack-neutral Phase-I logical specification;
 - `ROADMAP.md` — evidence-gated construction phases and the name crosswalk;
 - `SDLC.md` — the operating loop: tiers, dyads, and the Red-gated release requirement;

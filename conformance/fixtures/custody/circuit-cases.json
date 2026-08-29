@@ -1489,7 +1489,7 @@
       "closed": "2026-08-27",
       "definition": [
         {
-          "document": "PRD.md",
+          "document": "PRD-PHASE-I.md",
           "digest": "sha256:f1157f2f1ebad6aab70a63752f9bd9169518eb6f0aefde21c7fd05e98d5f1440",
           "owns": "the exit this fixture pins"
         }
@@ -1532,7 +1532,7 @@
       "closed": "2026-08-27",
       "definition": [
         {
-          "document": "PRD.md",
+          "document": "PRD-PHASE-I.md",
           "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
           "owns": "the exit this fixture pins"
         }
@@ -1623,7 +1623,7 @@
       "closed": "2026-08-27",
       "definition": [
         {
-          "document": "PRD.md",
+          "document": "PRD-PHASE-I.md",
           "digest": "sha256:f1157f2f1ebad6aab70a63752f9bd9169518eb6f0aefde21c7fd05e98d5f1440",
           "owns": "the exit this fixture pins"
         }
@@ -1669,7 +1669,7 @@
       "closed": "2026-08-27",
       "definition": [
         {
-          "document": "PRD.md",
+          "document": "PRD-PHASE-I.md",
           "digest": "sha256:f1157f2f1ebad6aab70a63752f9bd9169518eb6f0aefde21c7fd05e98d5f1440",
           "owns": "the exit this fixture pins"
         }
@@ -1715,7 +1715,7 @@
       "closed": "2026-08-27",
       "definition": [
         {
-          "document": "PRD.md",
+          "document": "PRD-PHASE-I.md",
           "digest": "sha256:f1157f2f1ebad6aab70a63752f9bd9169518eb6f0aefde21c7fd05e98d5f1440",
           "owns": "the exit this fixture pins"
         }
@@ -1761,7 +1761,7 @@
       "closed": "2026-08-27",
       "definition": [
         {
-          "document": "PRD.md",
+          "document": "PRD-PHASE-I.md",
           "digest": "sha256:f1157f2f1ebad6aab70a63752f9bd9169518eb6f0aefde21c7fd05e98d5f1440",
           "owns": "the exit this fixture pins"
         }

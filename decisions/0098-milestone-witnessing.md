@@ -1,6 +1,6 @@
 # 0098 · Witness milestones, not every increment
 
-Status: `OWNER-DIRECTED · POLICY CHANGE PROPOSED`
+Status: `OWNER-DIRECTED · CONTRACT WORDING PROPOSED`
 
 Bdo ruled on 2026-08-28 that ordinary work should not stop after every built
 increment to wait for independent QA. Expected tests remain part of every unit

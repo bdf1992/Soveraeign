@@ -1,0 +1,79 @@
+{
+  "packet_schema": "soveraeign-acceptance-packet/v1",
+  "packet_id": "A23",
+  "claim": "Independent witnessing is now a queued operation over named immutable milestones: ordinary work keeps continuous Blue verification and may land and continue at BUILT, while WITNESSED, CAPABLE_NODE, and any other transition that explicitly consumes independent observation still refuse without it.",
+  "subject": {
+    "artifact": "SDLC witness cadence and grant:standing-landing-loop",
+    "from_standing": "OWNER-DIRECTED_CONTRACT_WORDING_PROPOSED",
+    "to_standing": "OWNER_ACCEPTED"
+  },
+  "presented_by_seat": "seat:session-control",
+  "accepted_by_seat": "seat:root",
+  "claim_type": "JUDGEMENT",
+  "built_by": {
+    "actor_id": "urn:soveraeign:actor:chatgpt-interactive-session",
+    "actor_kind": "MODEL"
+  },
+  "witnessed_by": null,
+  "visible_result": {
+    "demo": [
+      "python",
+      "scripts/tests/test_milestone_witness_cadence.py"
+    ],
+    "shows": "the cadence split at its load-bearing boundaries: ordinary landing is admitted with verify and lint but no observation, a grant that explicitly requires observation still refuses the same request, BUILT to WITNESSED still requires independent witness and PURPLE receipts, CAPABLE_NODE still requires outside observation, and the queue no longer turns every BUILT concern into immediate Red work",
+    "expect": "five tests pass. On PR #147 at head dcb1802336aad6fe5c1795f64f2c59105e3abbd0, full verify, ticket contract, hygiene repair, gateway reference, gateway independent-observation candidate, and qa lanes all pass. In the ordinary qa-lanes PR run, both Blue jobs pass and every milestone Red job is skipped; the standing transition guard passes separately."
+  },
+  "evidence": [
+    {
+      "address": "decisions/0098-milestone-witnessing.md",
+      "digest": null,
+      "says": "records the owner-directed cadence change, the generalized queue-then-gate rule, the ordinary BUILT landing distinction, and seven defeating cases"
+    },
+    {
+      "address": "SDLC.md",
+      "digest": null,
+      "says": "Blue is continuous, Red is a separately queued milestone operation, PURPLE is scoped to the named milestone target, and unwitnessed standing does not freeze reachable engineering work"
+    },
+    {
+      "address": "contracts/standing-grants.json",
+      "digest": null,
+      "says": "grant:standing-landing-loop retains its actor, capabilities, scope, budget, effect ceiling, validity, verify check, and lint check; only the per-increment requires_independent_observation precondition changes to false, with WITNESSED explicitly left outside ordinary landing"
+    },
+    {
+      "address": ".claude/workflows/sov-loop.js",
+      "digest": null,
+      "says": "the ordinary control-to-land path no longer launches a witness unconditionally and reports its successful terminal as LANDED_BUILT_NOT_WITNESSED"
+    },
+    {
+      "address": ".github/workflows/qa-lanes.yml",
+      "digest": null,
+      "says": "ordinary pull requests run Blue and the standing transition guard; milestone Red and mutation are explicit workflow_dispatch operations pinned to milestone, target_ref, and base_ref"
+    },
+    {
+      "address": "scripts/tests/test_milestone_witness_cadence.py",
+      "digest": null,
+      "says": "five focused checks prove both sides of the split, including that a boundary declaring independent observation still refuses without it"
+    },
+    {
+      "address": "https://github.com/bdf1992/Soveraeign/pull/147",
+      "digest": "dcb1802336aad6fe5c1795f64f2c59105e3abbd0",
+      "says": "the finished integration surface; final-head CI passed verify, ticket contract, hygiene repair, both gateway checks, and qa lanes before this packet was added"
+    }
+  ],
+  "why_it_matters": "The old cadence made independent witness the next operation after every self-tested increment and also a prerequisite for every ordinary landing. That turns a valuable independent QA operation into a throughput lock and confuses an outstanding evidence obligation with a blocked work frontier. The new cadence preserves continuous tests and the full WITNESSED evidence bar while letting Scale, Scope, State, and ordinary BUILT landings continue until a named milestone or transition actually consumes outside observation. It also applies an existing Soveraeign lesson consistently: long-horizon obligations should remain visible and addressed without becoming permanently red per-change gates.",
+  "what_could_defeat_it": [
+    "A normal work unit can now land without the positive, defeating, verify, or lint evidence it previously owed. The implementation says the opposite; finding such a route defeats this cadence.",
+    "A claim can reach WITNESSED, a CAPABLE_NODE can be admitted, or another explicitly observation-gated transition can proceed without a distinct independent observation. The focused test preserves all three boundaries it can presently read.",
+    "Milestone witness debt becomes easy to defer without a named verification-engagement and immutable target, so 'later' becomes invisible rather than queued work.",
+    "Accumulating many BUILT increments before Red makes failures too expensive to localize or repair, in which case milestone size or trigger policy is too coarse even if the cadence distinction remains sound.",
+    "The remaining direct sov-domain workflow family keeps being used as the ordinary path and therefore silently recreates per-increment witness despite the generic sov-loop change."
+  ],
+  "residuals": [
+    "The direct .claude/workflows/sov-<domain>.js family and sov-federation still contain explicit Witness phases. CLAUDE.md now classifies those as witness-bearing or milestone-style paths and names sov-loop as the ordinary increment path. Collapsing the duplicated workflow family is intentionally a separate concern rather than part of this bounded cadence migration.",
+    "verification-engagement remains target_pr plus target_head shaped. An integration PR/head can carry a named milestone today; a first-class milestone or custody target is not introduced here.",
+    "witnessed_by is null for this packet. The finished branch has strong Blue/conformance evidence and independent GitHub execution of those checks, but this session built the policy change and does not promote its own result to WITNESSED. Owner acceptance here is judgement over the cadence and boundary, not a claim that the policy artifact has earned independent witness standing.",
+    "The owner action is still required. The earlier 'go' authorized and directed the work before the finished result existed; acceptance-not-approval means this packet presents the completed result rather than treating that prior direction as post-result acceptance."
+  ],
+  "on_accept": "Decision 0098 and the milestone-queued witness cadence stand as owner-accepted policy. PR #147 may land as the implementation of that ruling. Ordinary self-tested increments may land at BUILT under grant:standing-landing-loop without per-increment witness; no WITNESSED or RATIFIED claim is implied, and named milestone witness remains separately owed wherever a consuming transition requires it.",
+  "on_reject": "Do not merge PR #147. Restore the standing landing grant's independent-observation precondition and the ordinary sov-loop Witness phase, then either keep per-increment witness as policy or redirect to a narrower cadence rule named by the root seat."
+}

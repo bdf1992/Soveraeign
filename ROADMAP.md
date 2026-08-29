@@ -1,7 +1,7 @@
 # Product Roadmap
 
 Status: `PRODUCT PHASES CANDIDATE` · artifact standing `OPEN`, not owner-accepted
-Owner: Bdo, root seat · Drafted 2026-08-28 · lanes added 2026-08-29
+Owner: Bdo, root seat · Drafted 2026-08-28 · lanes added 2026-08-28
 
 `PRD.md` says what Soveraeign must become. This document is the current estimate
 of how it gets there. The estimate is expected to be wrong in detail and revised
@@ -33,32 +33,61 @@ is the right one.
 ## Now, next, needed, never
 
 Every phase below carries four lanes. They are Bdo's shape, added to this
-document on 2026-08-29, and they separate four questions that a single
+document on 2026-08-28, and they separate four questions that a single
 "remaining" list runs together. `contracts/roadmap-lanes.json` is the machine
-copy, and `python scripts/sov_next.py --strict` fails when a phase is missing a
-lane, so the shape cannot quietly rot back into a list.
+copy, and `python scripts/sov_next.py --strict` fails when a subject is missing
+a lane, so the shape cannot quietly rot back into a list.
 
 - **Now** - what is on the board: available, and workable from start to finish
   with what exists today. Not what is in progress, and not what is most
-  important. If it needs something that does not exist yet, it is not Now.
-- **Next** - what becomes available once Now clears, *and* has already been
-  chosen as the next target. Both conditions. An item that is merely unblocked
-  is not Next, and neither is a favourite that Now does not release.
+  important. Startable is not the test: an item that can be begun and not
+  finished waits in Needed until the thing it needs exists.
+- **Next** - what becomes available once *this item's own* Now clears, and has
+  already been chosen as the next target. Both conditions. An item that is
+  merely unblocked is not Next; neither is a favourite that Now does not
+  release; and neither is something a sibling's Now would release.
 - **Needed** - a future item already known to be a need of ours, and neither
   selected nor scheduled. This is where honest future work waits without being
-  promoted by enthusiasm.
-- **Never** - what will never be allowed to creep into this item's scope. It is
-  a constraint rather than a plan, and it is the lane that does the most work:
-  a phase usually fails by absorbing the next one, not by running out of effort.
+  promoted by enthusiasm, including a need whose unlock condition is known and
+  unmet.
+- **Never** - what is held out of this item's scope. Usually a never: it holds
+  by default and it is not a claim to be permanent. It is the lane that does
+  the most work, because a phase fails by absorbing its neighbour more often
+  than by running out of effort.
+
+### How something leaves Never
+
+Discovery moves it, and only into Needed. Now is the only lane being worked, so
+it is the only lane that produces findings; what is learned there is what
+pressures an exclusion out of Never. Nothing else moves one - not a preference,
+not a date, not the phase number arriving.
+
+The lanes are a cycle rather than a list, and Now drives it. Discovery under Now
+pressures Never into Needed; selecting a known need moves it to Next; Next
+becomes Now when this item's own Now clears. An exclusion that jumps straight to
+Now or Next is scope creep on a shorter path: passing through Needed is what
+puts the admission on the page as a known need before anyone works it, which is
+the whole reason the exclusion was written down.
+
+None of that is checked. A lane change is an edit to prose, and whether a
+finding really pressured an exclusion is judgement.
+
+### What the lanes do not claim
 
 An empty Now or Next is a reading, not an omission. A phase whose Now is empty
 is saying that nothing in it can be finished with what exists, which is worth
-knowing and is stated here rather than left to be inferred. A Never is never
-empty, because a scope with no stated edge has no edge.
+knowing and is stated rather than left to be inferred. A Never is never empty,
+because a scope with no stated edge has no edge.
 
-An item sits in exactly one lane at one level. Moving it between lanes is an
-edit to an estimate, not a change of standing: `STATUS.yaml` owns standing and
-`contracts/custodies.json` owns who is on the hook for a piece of work.
+An item sits in exactly one lane at one level, and a subject opens each lane
+once. Moving an item between lanes is an edit to an estimate, not a change of
+standing: `STATUS.yaml` owns standing and `contracts/custodies.json` owns who is
+on the hook for a piece of work.
+
+This document is a candidate, so "already chosen" in a Next lane means chosen by
+this document and not yet ruled on by Bdo. Where he has chosen, the phase says
+so by name. That distinction is the second of the three readings under
+*Standing* that this document cannot settle for itself.
 
 ### The shape recurses
 
@@ -69,25 +98,35 @@ depth, so it is stated once here instead of restated per level.
 
 An item's lanes are scoped to that item. `P1`'s Now is the Now of the service
 fabric, not of the repository, and the Now of an item inside `P1` is narrower
-again. A child's Never may be tighter than its parent's; it may not be looser,
-because a child cannot admit what its parent excluded.
+again. A parent's Never binds its children: a child may add exclusions and may
+not admit what its parent excluded.
 
-Worked one level down, inside `P1`'s Now:
+Nothing enforces that last rule and nothing here can. A Never is a prose
+paragraph, there is no ordering on prose, and comparing a child's with its
+parent's would need Nevers written as enumerated typed exclusions first. It is
+recorded as a stated limit rather than left to look enforced.
 
-> **Normalize the service interfaces.**
+Worked one level down, inside `P1`'s Now. The lanes below are graded like any
+other subject, because the document's only instance of the recursion is the one
+place the shape could rot while the check stayed green:
+
+> **Replicate the Gateway route pattern.**
 >
-> *Now* - bring the ten `service.json` manifests to one declared shape, which
-> `python scripts/sov_service.py check` already grades.
+> **Now.** Carry the built `RECORD_LOCAL` in-process route to a second
+> service-owned operation. `services/gateway/KNOWN-GAPS.md` names the remaining
+> work as adding same-class routes mechanically, so the shape to copy exists.
 >
-> *Next* - activate the declared operations the normalized shape makes
-> reachable. The surface reads 134 declared and 5 reachable.
+> **Next.** A third route in a second service family, which is what
+> `services/gateway/KNOWN-GAPS.md` says must happen before the convention is
+> treated as generic substrate. Released by the second route, and chosen here.
 >
-> *Needed* - a manifest version and a migration path, once a second participant
-> reads the same manifests.
+> **Needed.** A canonical `gateway-request.schema.json` with positive and
+> defeating fixtures. Known need; the envelope is executable in `core.py` and
+> has no standalone schema.
 >
-> *Never* - a manifest that describes an operation the service cannot perform.
-> A declared surface is not a built one, and the manifest never becomes the
-> place that claim gets made.
+> **Never.** Service-specific logic inside Gateway. A route that needs the door
+> to know something about the service behind it is not a route; it is the
+> service leaking through, and the gap table refuses it by name.
 
 Below that grain the lanes are carried by `contracts/custodies.json` and the
 ticket queue rather than by this document, which is why the recursion stated
@@ -95,17 +134,21 @@ here has a floor in practice and none in principle.
 
 ### The roadmap's own lanes
 
-- **Now** - `P0` and `P1`. Each has items that can be finished with what exists,
-  and each gates everything above it.
-- **Next** - `P2`, then `P3`. Chosen, and each opens as the phase below it
-  clears. `P5` runs alongside rather than after, because packaging a node is
-  largely independent of what the node can do.
-- **Needed** - `P4`, and `P6` through `P9`. Known needs of ours, none scoped.
-  `P6` is the first whose entry is an owner decision rather than an engineering
-  one.
-- **Never** - the rows under *Deferred until earned* below. Each is an ordering
-  constraint rather than a refusal, which is what a Never is here: not "we will
-  not", but "never before the thing that earns it".
+**Now.** `P0` and `P1`. Each has items that can be finished with what exists,
+and each gates everything above it.
+
+**Next.** `P2`, then `P3`. Each opens as the phase below it clears. `P5` runs
+alongside rather than after, because packaging a node is largely independent of
+what the node can do.
+
+**Needed.** `P4`, and `P6` through `P9`, plus every row under *Deferred until
+earned* below. Known needs of ours, none scoped. `P6` is the first whose entry
+is an owner decision rather than an engineering one.
+
+**Never.** Distributed consensus. A phase that exits on component percentages
+rather than a demonstrated result. And this document acquiring standing: it is
+an estimate, and the day it starts settling what is built rather than
+describing it, `STATUS.yaml` has a rival.
 
 ## The phases
 
@@ -140,23 +183,30 @@ evidence, and who may decide what.
 `GROUND.md`, `CANON.md`, `CONTRACT.md`, `CLASSIFICATION.md`, `SPEC.md`,
 `ENGINEERING.md` and `SDLC.md` are in place; ground and canon are owner-accepted.
 
-**Now.** The census: grounding what is in the repository against what a
-governing document actually accounts for, and reconciling newer rules against
-older documents. Workable from start to finish today -
-`python scripts/sov_custody.py orphans` already names 20 declared items no
-custody holds, every one of them an `OPEN-SEAMS.md` row.
+**Now.** Reconciling governing prose that a newer ruling moved past. Finishable
+because the drift is findable by reading: this document's own paragraph on
+service implementation was wrong about two services when it was written, and
+`.claude/skills/sov-governance/SKILL.md` still routes readers to `F0`-`F6` and
+to ten open seams. The sweep ends when a reading of the governing set turns up
+nothing a later record contradicts.
 
 **Next.** The five `phase:i` exit custodies, attached and `PROPOSED` in
-`contracts/custodies.json`, each driven to a stated terminal. Selected; it opens
-as the census stops turning up items nobody holds.
+`contracts/custodies.json`, each driven to a stated terminal. Released by the
+reconciliation, because a custody whose exit clause cites a superseded document
+inherits the superseded reading.
 
-**Needed.** A fresh-reader test that is run rather than asserted. The cold-start
-benchmark (`scripts/sov_coldstart.py`) is the instrument that exists; pointing it
-at the whole governing set is not scoped.
+**Needed.** Two things, neither scoped. A census instrument that reads the
+repository rather than the declared list - `python scripts/sov_custody.py
+orphans` answers "declared work no custody holds" and this phase's exit asks
+"anything at all no governing document accounts for", which is the wider
+question. And a fresh-reader test that is run rather than asserted; the
+cold-start benchmark (`scripts/sov_coldstart.py`) is the instrument that exists,
+pointed at one corpus rather than the governing set.
 
 **Never.** New product scope. `P0` settles what the product is and never decides
 what to build next, and it never accepts its own documents - acceptance is the
-root seat's act over a presented result.
+root seat's act over a presented result. Attaching the twenty orphan seam rows
+is `P2`'s Now, not this phase's, even though this phase's exit needs it done.
 
 **Exits when** a fresh reader can determine what the product is, what it
 promises, and what would defeat any claim in the governing set, without asking a
@@ -168,17 +218,21 @@ document accounts for.
 **Result.** A service uses another service's capability through a declared
 crossing, under identity, policy and authority, and the record holds the receipt.
 
-**Now.** Normalizing the service interfaces so the ten manifests declare one
-shape. The manifest contract exists and grades itself -
-`python scripts/sov_service.py check` reads 10 manifests and 134 declared
-operations - so this is workable from start to finish today.
+**Now.** Replicating the Gateway route. One reusable `RECORD_LOCAL` in-process
+vertical is built and self-tested for `sov://asset/ingest-asset`, with authority
+checked at the door and absence defaulting to refusal;
+`services/gateway/KNOWN-GAPS.md` names the remaining work as adding same-class
+service-owned routes mechanically. The pattern exists, so carrying it to a
+second operation runs from start to finish today.
 
-**Next.** The Gateway crossing: identity, policy and authority checked at the
-boundary rather than advertised at it. Chartered, not implemented; it opens once
-the manifests agree on a shape worth checking.
+**Next.** The record crossing that holds the receipt. Released by the second
+route, because one route cannot show whether a receipt shape generalises and two
+can. Chosen here, not yet ruled on.
 
-**Needed.** The record crossing that holds the receipt, and the removal of the
-direct shortcuts that currently bypass all of it.
+**Needed.** Removing the direct shortcuts that bypass the door - above all
+`bindings/mcp/gateway.py`, which is still an older ingress with its own
+resolution, authority and journal behaviour. And a canonical request schema with
+its defeating fixtures. Both known, neither scoped.
 
 **Never.** Transport off the node. A second node, a wire between hosts, remote
 capability resolution - those are `P7`. A fabric that reaches another node is not
@@ -202,8 +256,10 @@ receipt
 It does not exit because Gateway is 80%, Asset 90% and Record 85%.
 
 *Repository reading.* The operation surface currently reads 134 declared and 5
-reachable, and Gateway, Observation, Projection and Registry are boundaries with
-no implementation. That is a lower reading than 55–65% and the two are measuring
+reachable. Observation and Projection are boundaries with no implementation;
+Gateway and Registry are not - `services/README.md` records a first in-process
+route built and self-tested for Gateway and a read-only resolve slice for
+Registry. That is a lower reading than 55–65% and the two are measuring
 different things: the estimate counts contracts and design settled, the surface
 counts operations a caller can actually reach.
 
@@ -213,15 +269,18 @@ counts operations a caller can actually reach.
 terminates in a named way rather than disappearing.
 
 **Now.** Attaching the twenty declared items no custody holds, so that work
-stops being visible and unheld at the same time.
+stops being visible and unheld at once. `python scripts/sov_custody.py orphans`
+names all twenty and every one is an `OPEN-SEAMS.md` row, so the population is
+closed and the work finishes.
 
-**Next.** The work-to-run joins and the closure receipt: a run that names the
-work it served, and a terminal that is recorded rather than inferred from
-silence.
+**Next.** The closure receipt: a terminal that is recorded rather than inferred
+from silence. Released by the attachment, because a receipt closes a custody and
+until the twenty have custodians there is nothing for it to close. Chosen here,
+not yet ruled on.
 
-**Needed.** The custody primitive as a first-class object, actionable refusals
-that name the next admissible operation, and an end-to-end circuit
-qualification.
+**Needed.** The work-to-run joins, the custody primitive as a first-class object,
+actionable refusals that name the next admissible operation, and an end-to-end
+circuit qualification.
 
 **Never.** A second System of Record. A board is projected from authoritative
 records and never stores its own truth (`contracts/concern-admission.json`,
@@ -234,9 +293,11 @@ an unavailable transition produces a named next admissible operation rather than
 an unexplained blocked state.
 
 *Repository reading.* `contracts/custodies.json`, `contracts/closure-ownership.json`
-and `scripts/sov_closure.py` exist; `custody` appears across 39 files under
-`contracts/` and `services/`. The vocabulary is further along than the
-mechanism.
+and `scripts/sov_closure.py` exist, and `custody` appears as a whole word in 64
+files under `contracts/` and `services/`. The vocabulary is further along than
+the mechanism. The count read 39 when this paragraph was written on 2026-08-28
+and no pattern reproduces it; 64 is `grep -rlw` over those two directories,
+measured 2026-08-28.
 
 ### `P3` · Composable skills
 
@@ -245,17 +306,22 @@ finds the skill that covers it, resolves the services and assets it needs, and
 carries the work.
 
 **Now.** A skill contract and registry: what a skill declares, what it depends
-on, and what evidence it owes. Twenty-five skills sit under `.claude/skills` with
-no contract between them, so this is startable today and does not wait on `P1`.
+on, and what evidence it owes. Twenty-five skills sit under `.claude/skills`
+with no contract between them, and the work is a schema plus a grader over a
+closed population - the same shape `contracts/service.json` already has over the
+ten service manifests. It finishes, and it does not wait on `P1`.
 
-**Next.** Capability resolution - a skill resolving the services and assets it
-names, against the surface `P1` normalizes.
+**Next.** Capability resolution: a skill resolving the services and assets it
+names against the registry this phase's Now produces. Released by that registry
+and by nothing else. Chosen here, not yet ruled on.
 
 **Needed.** Dependencies, versions, declared evidence requirements, and skill
 mutation tests.
 
-**Never.** File count as progress. Fifty `SKILL.md` files exit nothing. A skill
-also never carries authority of its own; it composes operations that do.
+**Never.** Authority. A skill composes operations that carry authority and never
+carries any itself, so a skill can never be the reason something was permitted.
+That is the edge against `P1`, where authority actually lives; counting
+`SKILL.md` files is a bad measure but it is a warning, not a boundary.
 
 **Exits when** a fresh agent given *"prepare this asset for review"* can
 discover the appropriate skill, resolve the available services and assets, carry
@@ -281,9 +347,10 @@ choosable here.
 **Needed.** The board intermediate representation, cards, real asset rendering,
 circuitry, gestures, and custody and evidence views.
 
-**Never.** Authority of its own. Every gesture resolves to a declared operation
-and every object to an addressed system object, so the interface holds no
-permission the kernel lacks and creates no state the record does not have.
+**Never.** Deciding anything. The board renders what `P2`'s custodies and
+receipts already hold; it is not where work is chosen, admitted or closed. A
+gesture with no declared operation behind it is a gap in `P2` to be reported,
+never a capability this phase adds to cover for one.
 
 **Exits when** every object on a board resolves to an addressed system object
 and every gesture resolves to a declared operation, so the interface holds no
@@ -294,15 +361,20 @@ authority of its own and creates no parallel state.
 **Result.** One node is a thing a person can install, use daily, recover, and
 trust.
 
-**Now.** Packaging, and a node that survives a restart with its record intact.
-Both are largely independent of what the node can do, which is why this phase's
-estimate already runs ahead of the ones beneath it.
+**Now.** Packaging: a node stood up from the artifact rather than from this
+checkout. `infrastructure/` already declares the node envelope as data with a
+dependency-free planner that materializes and verifies it, and
+`scripts/node_runtime.py` proves the listener and health seam, so the remaining
+work is bounded and independent of what the node can do - which is why this
+phase's estimate runs ahead of the ones beneath it.
 
-**Next.** Backup and restore, proved by restoring rather than by describing the
-procedure.
+**Next.** Surviving a restart with the record intact. Released by packaging,
+because a restart is only meaningful against something that was stood up rather
+than something that was already running. Chosen here, not yet ruled on.
 
-**Needed.** Security boundaries, lifecycle and persistent services, health that
-reports honestly when the answer is unhealthy, and upgrade or version migration.
+**Needed.** Backup and restore proved by restoring, lifecycle and persistent
+services, security boundaries, health that reports honestly when the answer is
+unhealthy, and upgrade or version migration.
 
 **Never.** A second user or a second node. One node, one person, recoverable.
 Tenancy, high availability and scale are `P8`, and admitting them here is how a
@@ -366,16 +438,19 @@ self-tested, with no transport. `PROMISE-15` is the canon's only `LATER` promise
 
 **Result.** More than one person, more than one node, under real conditions.
 
-**Now.** Nothing.
+**Now.** Nothing. Every item here is measured against a load, a failure drill
+or a second operator, and none of the three exists to measure against.
 
-**Next.** Nothing selected.
+**Next.** Nothing selected. `P5` has to produce a node that can be stood up
+before anything can be stood up twice.
 
 **Needed.** High availability, scale, observability, tenancy and isolation, key
 and secret management, disaster recovery, performance, and operational service
 objectives.
 
-**Never.** Performance work ahead of semantic conformance, and any optimization
-that makes a refusal cheaper to skip than to honour.
+**Never.** An optimization that makes a refusal cheaper to skip than to honour,
+and distributed consensus - which the roadmap excludes outright, and which
+needing tenancy here does not reopen.
 
 **Exits when** the node survives a deliberate failure drill — including the loss
 of every model provider — without losing custody, and the drill is repeatable.
@@ -385,15 +460,18 @@ of every model provider — without losing custody, and the drill is repeatable.
 **Result.** Other people extend Soveraeign without Soveraeign vouching for them
 by accident.
 
-**Now.** Nothing.
+**Now.** Nothing. There is no third party, and no package format for one to
+publish into.
 
-**Next.** Nothing selected.
+**Next.** Nothing selected. `P8` has to settle isolation before anything
+untrusted is admitted at all.
 
 **Needed.** Packaging standards, compatibility, signing, distribution,
 registries, and certification.
 
-**Never.** Vouching by accident. Installing a third-party thing never grants it
-authority, and removing it leaves the node exactly as it was.
+**Never.** Relaxing what `P5` and `P8` settled about authority and isolation. A
+third-party package is admitted through the same grants as anything else, and
+"it came from the registry" never becomes a reason to widen one.
 
 **Exits when** a third-party skill or service can be installed, its authority
 scoped, its provenance checked, and its removal leave the node exactly as it was.
@@ -441,9 +519,10 @@ together.
 
 ## Deferred until earned
 
-This is the roadmap's own **Never** lane, kept under the name the F0-F6 ladder
-gave it. Every row is an ordering constraint rather than a refusal: never before
-the thing that earns it.
+Held out until something is learned that pressures them back in. Every row here
+except the first sits in the roadmap's **Needed** lane rather than its **Never**:
+each names what would earn it, so each is a known need with an unmet condition.
+Distributed consensus names no such condition and is the roadmap's Never.
 
 Carried forward from `ROADMAP-F0-F6.md`, still deferred:
 
@@ -456,15 +535,33 @@ Carried forward from `ROADMAP-F0-F6.md`, still deferred:
 ## Standing
 
 `PRODUCT PHASES CANDIDATE`. The ten phases, their results and their exit shapes
-are Bdo's, stated on 2026-08-28. The four lanes and the rule that they recurse
-are Bdo's, stated on 2026-08-29. The per-phase lane contents, the repository
-readings, and the exit-condition wording are drafted from the repository and are
-proposed. Nothing here is owner-accepted, and this document changes no standing
-in `STATUS.yaml`.
+are Bdo's, stated on 2026-08-28. The four lanes, the rule that they recurse, and
+the rule that discovery under Now is the only thing that moves an exclusion out
+of Never are Bdo's, stated on 2026-08-28. The per-phase lane contents, the
+repository readings, and the exit-condition wording are drafted from the
+repository and are proposed. Nothing here is owner-accepted, and this document
+changes no standing in `STATUS.yaml`.
 
 The lanes replaced one **Remaining** paragraph per phase rather than sitting
 beside one. A flat list and the lanes that decompose it would be two answers to
 one question, and the flat one would go stale first.
+
+The lane contents were rewritten on 2026-08-28 after an independent witness
+found six of them not holding to the definitions above: `P1`'s Next called the
+Gateway crossing unimplemented when a route is built and self-tested, `P1`'s Now
+cited a passing check as evidence that work remained, `P3`'s Now said "startable"
+where the lane requires finishable, `P3`'s Next was released by `P1`'s Now rather
+than its own, `P0` and `P2` both claimed the same twenty orphan items, and `P4`
+and `P9` restated their own exit conditions as their Never. Each is repaired
+above. The witness also read Never as a permanent refusal and reported every
+conditional exclusion as misfiled; Bdo corrected that reading, and *How something
+leaves Never* is his answer.
+
+Three readings this document cannot settle for itself, each carried to Bdo:
+whether "already chosen" in a Next lane may mean chosen by this document rather
+than by him; whether the twenty orphan seam rows are `P2`'s work as filed here;
+and whether an exclusion that names what would earn it belongs in Never or, as
+filed here, in Needed.
 
 What would defeat it:
 
@@ -473,6 +570,14 @@ What would defeat it:
 - an estimate presented as a measurement, or a repository reading that
   contradicts an estimate without saying so;
 - a phase in this ladder that serves no product area in `PRD.md`;
-- a Now item that cannot in fact be finished with what exists today;
-- a Next item that nothing in Now releases, or that nobody has actually chosen;
+- a Now item that cannot in fact be finished with what exists today, or one
+  justified by a passing check, since a green grader is evidence that work is
+  done rather than evidence that it remains;
+- a Next item that this item's own Now does not release, or that nobody chose;
+- an exclusion that left Never with no finding behind it, or that reached Now or
+  Next without passing through Needed;
+- a Never whose release is a date or a phase number rather than something
+  learned;
+- a Never that restates the phase's own exit condition, and so does no
+  independent work;
 - an empty Never, or a child Never looser than the Never above it.

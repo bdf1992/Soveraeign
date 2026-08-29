@@ -61,10 +61,16 @@ demonstrated on 2026-08-28 and which is now refused by name.
 
 ### How something leaves Never
 
-Discovery moves it, and only into Needed. Nothing else moves one - not a
-preference, not a date, not the phase number arriving. That much is Bdo's, in
-these words: *"Never is Usually a never. It means discovery selects it and
-pressures it from what is needed based on what was now."*
+Discovery moves it, and only into Needed. His words, in full:
+
+> Never is Usually a never. It means discovery selects it and pressures it from
+> what is needed based on what was now.
+
+What is unambiguously his: Never holds by default, it is not permanent, and
+discovery is what moves it, into Needed. The three exclusions this document
+draws around that - not a preference, not a date, not the phase number arriving
+- are read out of "discovery" being the only mover, and they are the builder's
+reading of his sentence rather than words in it.
 
 The reading that follows is drafted from that sentence and he has not ruled on
 it: Now is the only lane being worked, so it is the only lane that produces
@@ -606,8 +612,20 @@ own exit conditions as their Never, which the first witness had caught only in
 `P4` and `P9`, and that `P0`'s and `P5`'s Now items named no closed population.
 Each is repaired above.
 
-A third witness graded that repair and found the scope guard could be walked
-through: emptying the phase table and the phase headings together silenced all
+A fourth witness graded the third repair and found the guard closed at zero
+only: leaving two phases readable and unbackticking the other eight took the
+population from twelve subjects to four and the whole check went quiet. A
+heading or table row that names a phase this reader cannot resolve is now
+refused by name. It also found the derivation restated unmarked in the contract's
+Never lane, one field over from where the previous repair had marked it - the
+third time a question this document carries open was answered in the field
+nobody was watching. And three reader defects, two of them introduced by the
+repair beside them: a stray unclosed code fence silenced every lane after it, an
+HTML tag and a reference link counted as words a reader can see, and the claim
+that the module split was total was false.
+
+A third witness graded the second repair and found the scope guard could be
+walked through: emptying the phase table and the phase headings together silenced all
 seven refusals over twelve subjects, and the comment claiming `sov_next` caught
 that was false, because the same edit made every crosswalk phase token
 unreadable and unreadable rows were skipped. Both halves are closed. It also
@@ -618,12 +636,16 @@ it excludes, and three shapes the grader read wrongly: a Never written as a
 bullet list graded as abandoned, a link target counted as words a reader can
 see, and a lane inside a code fence satisfying the shape.
 
-Four readings this document cannot settle for itself, each carried to Bdo:
+Six readings this document cannot settle for itself, each carried to Bdo:
 whether "already chosen" in a Next lane may mean chosen by this document rather
 than by him; whether the twenty orphan seam rows are `P2`'s work as filed here;
 whether an exclusion that names what would earn it belongs in Never or, as filed
-here, in Needed; and whether "Now is the only lane that produces findings" says
-what he meant, or is a derivation that must stay marked as drafted.
+here, in Needed; whether "Now is the only lane that produces findings" says what
+he meant, or is a derivation that must stay marked as drafted; whether "not a
+preference, not a date, not the phase number arriving" is his exclusion or the
+builder's reading of it; and whether "a phase fails by absorbing its neighbour
+more often than by running out of effort", which sits inside what this section
+attributes to him, is his.
 
 What would defeat it:
 

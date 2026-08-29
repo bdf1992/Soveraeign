@@ -14,10 +14,13 @@ saying that nothing in it can be finished yet, which is a reading worth
 recording. An empty Never is not a reading, because a scope with no stated
 edge has no edge.
 
-This module owns the contract and the refusals. ``roadmap_document`` owns how
-the document is read, including the control sample the selfcheck mutates: a
-grader that hand-wrote its own Markdown control would encode the heading grammar
-a second time and diverge from the parser without either noticing.
+This module owns the contract and the refusals; ``roadmap_document`` owns how
+the document is read, including the control sample the selfcheck mutates. The
+split is not total and the earlier claim that it was is withdrawn: ``selfcheck``
+below writes Markdown, because every mutation it makes is a Markdown edit. It
+writes the heading, table-row and lane-opener grammars a second time, so a change
+to ``PHASE_HEADING`` and to ``CONTROL`` together breaks ``selfcheck`` rather than
+passing it - loudly, which is the bound on the harm, not its absence.
 """
 
 from __future__ import annotations
@@ -32,6 +35,7 @@ from roadmap_document import (
     lanes_in,
     phase_sections,
     table_phases,
+    unreadable_phase_lines,
     control,
     words,
 )
@@ -61,6 +65,9 @@ REFUSALS = {
     "ROADMAP_CARRIES_NO_PHASES":
         "The graded roadmap names no phase at all, so every lane check would pass over "
         "an empty population.",
+    "ROADMAP_PHASE_LINE_UNREADABLE":
+        "A heading or table row names a phase this reader cannot resolve, which takes it "
+        "out of the graded population without emptying it.",
 }
 
 
@@ -100,6 +107,10 @@ def _population(roadmap_text: str, contract: dict) -> list[Defect]:
     """Defects about which subjects exist at all, before any lane is read."""
     defects = []
     subjects = graded_subjects(roadmap_text, contract)
+    for line in unreadable_phase_lines(roadmap_text):
+        defects.append(Defect(
+            "ROADMAP_PHASE_LINE_UNREADABLE",
+            f"{line!r} names a phase this reader cannot resolve"))
     for label in table_phases(roadmap_text):
         if label not in subjects:
             defects.append(Defect(
@@ -209,9 +220,13 @@ def selfcheck() -> list[str]:
             f"**{first}.** A sentence of four words.",
             f"**{first}.** A sentence of four words.\n\n**Soon.** A sentence of four words.",
             1),
-        "ROADMAP_PHASE_NOT_GRADED": admissible.replace("### `P0` · Control", "### P0 - Control"),
+        # Delete the heading rather than mistyping it: a mistyped one is also an
+        # unreadable phase line, and both refusals fire together and correctly.
+        "ROADMAP_PHASE_NOT_GRADED": admissible.replace("### `P0` · Control\n\n", ""),
         "ROADMAP_SUBJECT_NOT_FOUND": admissible.replace(
             "### The shape recurses", "### How the shape recurses"),
+        "ROADMAP_PHASE_LINE_UNREADABLE": admissible.replace(
+            "| `P0` Control", "| P0 Control", 1),
         "ROADMAP_SUBJECT_HEADING_AMBIGUOUS": admissible.replace(
             "### The roadmap's own lanes",
             "### The roadmap's own lanes\n\nText.\n\n### The roadmap's own lanes", 1),

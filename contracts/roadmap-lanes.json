@@ -38,7 +38,7 @@
       "lane": "NEVER",
       "means": "What is held out of this item's scope. Bdo's words: usually a never. It holds by default and it is not a claim that it is permanent.",
       "admits": "A scope edge, most usefully the boundary against the neighbouring item that would otherwise absorb this one.",
-      "how_it_leaves": "Discovery moves it, and only into NEEDED. Work under NOW is the only work being done, so it is the only place the evidence comes from: what is learned there pressures an exclusion out of this lane. Nothing else moves one - not a preference, not a date, not the phase number arriving.",
+      "how_it_leaves": "Discovery moves it, and only into NEEDED. Nothing else moves one - not a preference, not a date, not the phase number arriving. That much is Bdo's. The reading that NOW is the only lane producing findings is the builder's derivation and is marked under lane_transitions.drafted_by_builder; it is not restated here.",
       "refuses": "An exclusion whose release is a schedule rather than a finding. Also refuses a restatement of the item's own exit condition, which reads as an edge and does no independent work.",
       "may_be_empty": false,
       "empty_means": "Refused. A scope with no stated edge has no edge, and this lane is the one that does the most work: an item usually fails by absorbing its neighbour rather than by running out of effort.",
@@ -58,7 +58,8 @@
       "needed_to_next",
       "next_to_now",
       "why_never_cannot_skip_needed"
-    ]
+    ],
+    "drafted_by_builder_note": "Every key named here is drafted from Bdo's sentence rather than in it, and he has not ruled on any of them. The list is checked: a key that loses its marker, or a marked key dropped from this list, fails scripts/tests/test_sov_next.py. An earlier draft marked the derivation in one field and restated it unmarked in NEVER.how_it_leaves, which is the third time this contract answered an open question in the field nobody was watching."
   },
   "never_minimum_words": 2,
   "recursion": {
@@ -70,7 +71,7 @@
   },
   "invariants": {
     "one_lane_per_level": "An item sits in exactly one lane at one level, and a subject opens each lane exactly once. Two subjects claiming the same work in their NOW is the same defect one level up; that one is not checked, because deciding which subject owns a piece of work is judgement rather than parsing.",
-    "one_paragraph_per_lane": "A lane's prose is its own paragraph and ends at the blank line, or at the next line that starts a block. Bounding on the next bold paragraph let a lane swallow an italic follower; bounding on the blank line alone still let it swallow one placed on the very next line, because Markdown treats that as the same paragraph. A lane that spans two paragraphs is graded on the first, and there is no separate refusal for the shape: a continuation paragraph and a legitimate following paragraph read alike, so telling them apart would be a guess.",
+    "one_paragraph_per_lane": "A lane's prose is its own paragraph. It ends at the blank line, or at the next line opening with emphasis, a heading, a table or a fence. A bullet list or a quoted passage after a lane is read as PART of it, deliberately: a bulleted edge is a real edge, and nothing in the text tells a continuation apart from an unrelated list. The admitted cost is that an emptied lane above a bullet list reads as full; scripts/tests/test_sov_next.py pins that so it stays a choice rather than a surprise.",
     "moving_is_an_edit": "Moving an item between lanes edits an estimate. It changes no standing and emits no event.",
     "no_standing": "This contract and ROADMAP.md carry no standing. A lane placement is never evidence that anything was built, witnessed, or accepted."
   },
@@ -117,15 +118,15 @@
       "ROADMAP_PHASE_NOT_GRADED": "The phase table names a phase with no graded section.",
       "ROADMAP_SUBJECT_NOT_FOUND": "An extra graded subject is declared by heading text and no such heading exists. Without it a rename silently stopped grading the recursion while the gate this document advertises stayed green.",
       "ROADMAP_SUBJECT_HEADING_AMBIGUOUS": "Two headings answer to one declared subject, so which is graded depends on document order.",
-      "ROADMAP_CARRIES_NO_PHASES": "The graded roadmap names no phase at all. The scope guard that keeps laneless documents out of the check was open by default, and a witness walked the live document out through it: unbackticking the phase table and changing the heading separator emptied both of its inputs and silenced every other refusal over twelve subjects. The gate now says which document it is grading, and sov_next refuses a crosswalk row whose phase cell names a phase it cannot read - the two halves used to fail to the same edit."
+      "ROADMAP_CARRIES_NO_PHASES": "The graded roadmap names no phase at all. The scope guard that keeps laneless documents out of the check was open by default, and a witness walked the live document out through it: unbackticking the phase table and changing the heading separator emptied both of its inputs and silenced every other refusal over twelve subjects. The gate now says which document it is grading, and sov_next refuses a crosswalk row whose phase cell names a phase it cannot read - the two halves used to fail to the same edit.",
+      "ROADMAP_PHASE_LINE_UNREADABLE": "A heading or table row names a phase this reader cannot resolve. Refusing the empty roster closed the escape at zero only: a witness left P0 and P1 readable, unbackticked the other eight, and the whole check went quiet over four subjects instead of twelve."
     },
     "not_checked": [
       "The truth of a placement. Whether a NOW item can really be finished with what exists is judgement over evidence, and no parser settles it. The check proves the shape is present, never that the reading is right.",
       "Every lane transition. Whether a finding really pressured an exclusion out of NEVER, whether a NEXT was actually chosen by anyone, and whether two subjects have filed the same work under both their NOWs. Each is a reading, and each is listed under what_would_defeat_this so a reviewer knows where to look.",
       "Whether a child's NEVER is looser than its parent's. See recursion.never_inherits_is_unchecked.",
-      "Whether a Never renders. Words inside an HTML comment are removed before counting, because a comment shows a reader nothing; no other rendering question is asked.",
-      "Whether the phase roster is right. The table and the headings are both in ROADMAP.md, so an edit to both still changes which phases are graded - it can no longer empty the roster, because that is refused, but it can rename one. Nothing outside the document names P0-P9; contracts/phases.json pins the archived F-ladder and not this one.",
-      "Whether a lane renders as a reader sees it. HTML comments and link targets are removed before words are counted and fenced code is blanked before lanes are read; no other rendering question is asked."
+      "Whether a lane renders as a reader sees it. Four things that render as nothing are removed before words are counted - an HTML comment, an HTML tag, an inline link or image target, and a reference link's label - and fenced code is blanked before lanes are read. That is a list, not a rule: an earlier draft claimed the rule and a witness found an HTML tag and a reference link both counting.",
+      "Whether the phase roster is the right one. Emptying it is refused, and so is a heading or table row that names a phase this reader cannot resolve, but a phase renamed consistently in both the table and its heading is simply a different roster. Nothing outside ROADMAP.md names P0-P9; contracts/phases.json pins the archived F-ladder and not this one."
     ]
   },
   "what_would_defeat_this": [
@@ -140,6 +141,7 @@
     "two subjects filing the same work under both their NOWs, which means nobody owns it",
     "a child NEVER looser than its parent's, which is the scope creep the lane exists to catch arriving through the recursion itself",
     "the lanes being derived from the epic tree while this contract still calls the crosswalk a reading direction",
-    "the lane check going quiet on the live document, for any reason other than the document carrying its four lanes"
+    "the lane check going quiet on the live document, for any reason other than the document carrying its four lanes",
+    "a claim in this contract about what the reader removes or blanks that is a rule rather than the list it actually is"
   ]
 }

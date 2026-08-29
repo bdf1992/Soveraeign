@@ -427,9 +427,30 @@ class LaneRefusals(unittest.TestCase):
         self.assertNotIn("ROADMAP_UNDECLARED_LANE", self._codes(ADMISSIBLE))
 
     def test_a_mistyped_heading_is_named_rather_than_dropping_the_phase(self):
-        """Before the table cross-check this was caught only by a magic phase count."""
+        """Before the table cross-check this was caught only by a magic phase count.
+
+        Two refusals fire and both are right: the table names a phase with no
+        section, and a heading names a phase this reader cannot resolve.
+        """
         broken = ADMISSIBLE.replace("### `P0` · Ground and govern", "### P0 - Ground and govern")
-        self.assertEqual(self._codes(broken), {"ROADMAP_PHASE_NOT_GRADED"})
+        self.assertEqual(self._codes(broken),
+                         {"ROADMAP_PHASE_NOT_GRADED", "ROADMAP_PHASE_LINE_UNREADABLE"})
+
+    def test_removing_part_of_the_roster_is_refused(self):
+        """Refusing the empty roster closed the escape at zero only: a witness took
+        eight of ten phases out and the whole check went quiet."""
+        broken = ADMISSIBLE.replace("| `P0` Ground", "| P0 Ground")
+        self.assertIn("ROADMAP_PHASE_LINE_UNREADABLE", self._codes(broken))
+
+    def test_the_defect_quotes_the_line_it_could_not_read(self):
+        broken = ADMISSIBLE.replace("| `P0` Ground", "| P0 Ground")
+        detail = [d.detail for d in roadmap_lanes.grade(broken)
+                  if d.code == "ROADMAP_PHASE_LINE_UNREADABLE"]
+        self.assertIn("P0 Ground and govern", " ".join(detail))
+
+    def test_a_line_that_names_no_phase_is_not_refused(self):
+        """The crosswalk's `— service-internal` row names none and must stay quiet."""
+        self.assertEqual(roadmap_document.unreadable_phase_lines(ADMISSIBLE), [])
 
     def test_a_renamed_extra_heading_is_refused_by_the_gate(self):
         """It used to be caught only by a unit test, while `--strict` stayed green."""
@@ -480,15 +501,38 @@ class LaneRefusals(unittest.TestCase):
             "**Never.** Three of them:\n- one thing\n- two things\n")
         self.assertIn("one thing", lanes["Never"][0])
 
-    def test_a_link_target_is_not_a_stated_edge(self):
+    def test_an_emptied_never_above_a_bullet_list_reads_as_full(self):
+        """The admitted cost of the line above, pinned so it is a choice and not a surprise.
+
+        A bullet list or a quoted passage after a lane is read as part of it,
+        because a bulleted edge is a real edge and there is no way to tell the
+        two apart from the text. `contracts/roadmap-lanes.json` records it.
+        """
+        lanes = roadmap_document.lanes_in("**Never.** .\n- an excluded thing\n")
+        self.assertIn("excluded", lanes["Never"][0])
+
+    def test_a_link_or_image_target_is_not_a_stated_edge(self):
         """`[](http://a-b-c)` renders as nothing and used to count five words."""
-        self.assertEqual(roadmap_document.words("[](https://example.com/a-b-c)"), 0)
+        for invisible in ("[](https://example.com/a-b-c)",
+                          '<span class="a-b-c-d"></span>',
+                          '<img src="one-two-three-four">'):
+            with self.subTest(invisible=invisible):
+                self.assertEqual(roadmap_document.words(invisible), 0)
+
+    def test_visible_text_survives_the_stripping(self):
         self.assertEqual(roadmap_document.words("[a visible label](https://x.example/y)"), 3)
+        self.assertEqual(roadmap_document.words("![alt text here](a-b.png)"), 3)
 
     def test_a_lane_inside_a_fence_does_not_satisfy_the_shape(self):
         """A fence shows a reader an example of a lane, not one."""
-        fenced = "```text\n**Never.** only inside a fence\n```\n"
-        self.assertEqual(roadmap_document.lanes_in(fenced), {})
+        for fence in ("```", "~~~", "````"):
+            with self.subTest(fence=fence):
+                fenced = f"{fence}text\n**Never.** only inside a fence\n{fence}\n"
+                self.assertEqual(roadmap_document.lanes_in(fenced), {})
+
+    def test_an_unclosed_fence_runs_to_the_end_rather_than_being_ignored(self):
+        """One stray fence put every lane after it inside code while the check stayed green."""
+        self.assertEqual(roadmap_document.lanes_in("```\n**Never.** after a stray fence\n"), {})
 
     def test_selfcheck_proves_every_refusal_fires_alone(self):
         self.assertEqual(roadmap_lanes.selfcheck(), [])
@@ -526,6 +570,17 @@ class LaneContract(unittest.TestCase):
         self.assertNotIn("until something is learned", never["admits"])
         self.assertIn("what_this_does_not_say", never)
 
+    def test_the_drafted_keys_carry_their_marker(self):
+        """The one field recording what is not Bdo's had nothing checking it."""
+        transitions = roadmap_lanes.load_contract()["lane_transitions"]
+        for key in transitions["drafted_by_builder"]:
+            self.assertIn(key, transitions, f"{key} is marked drafted and does not exist")
+        self.assertIn("DRAFTED BY THE BUILDER", transitions["discovery_happens_in_now"])
+
+    def test_the_drafted_claim_is_not_restated_unmarked(self):
+        """It was marked in one field and repeated in NEVER, which nothing marked."""
+        self.assertNotIn("only place the evidence comes from", self._never()["how_it_leaves"])
+
     def _never(self):
         return [lane for lane in roadmap_lanes.load_contract()["lanes"]
                 if lane["lane"] == "NEVER"][0]
@@ -539,7 +594,9 @@ class LaneContract(unittest.TestCase):
         self.assertEqual(declared - set(crosswalk), set())
 
     def test_the_committed_roadmap_carries_every_lane(self):
-        self.assertEqual(roadmap_lanes.grade(self._roadmap()), [])
+        """Graded the way the gate grades it. Defaulted open, this would stay green
+        on a roadmap that had lost its phases entirely."""
+        self.assertEqual(roadmap_lanes.grade(self._roadmap(), must_carry_phases=True), [])
 
     def test_every_phase_the_table_names_is_graded(self):
         """Measured against the document's own table, not against a literal count."""

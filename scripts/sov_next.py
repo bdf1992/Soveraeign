@@ -46,10 +46,13 @@ def roadmap_phases(roadmap_text: str) -> dict[str, str]:
 
     Both ladders are accepted: `F0`-`F6` from the archived roadmap and `P0`-`P9`
     from the current one, at heading level two or three, with or without the
-    backticks the newer document uses.
+    backticks the newer document uses. Multi-digit, matching ``roadmap_document``:
+    reading one digit here and many there made a `P10` unreadable to this reader
+    and readable to that one, so the unreadable-token refusal fired on a token
+    that was correctly written.
     """
     phases = {}
-    for match in re.finditer(r"^#{2,3} `?([FP]\d)`?\s*·\s*(.+?)\s*$", roadmap_text, re.M):
+    for match in re.finditer(r"^#{2,3} `?([FP]\d+)`?\s*·\s*(.+?)\s*$", roadmap_text, re.M):
         phases[match.group(1)] = match.group(2)
     return phases
 
@@ -67,7 +70,7 @@ def crosswalk(roadmap_text: str) -> list[dict[str, str]]:
         cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
         if len(cells) != 4 or all(set(cell) <= {"-", ":"} for cell in cells):
             continue
-        phase = re.search(r"`([FP]\d)`", cells[0])
+        phase = re.search(r"`([FP]\d+)`", cells[0])
         ticket = re.search(r"`#(\d+)`", cells[1])
         rows.append({
             "phase": phase.group(1) if phase else "",

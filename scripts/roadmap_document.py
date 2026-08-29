@@ -34,15 +34,26 @@ PHASE_HEADING = re.compile(r"^#{2,3} `?(P\d+)`? ·[^\n]*$", re.M)
 #: A row of the phase table: ``| `P0` Ground and govern | ... |``.
 PHASE_TABLE_ROW = re.compile(r"^\| `(P\d+)` ", re.M)
 
+#: A heading or table row that names a phase and does not parse as one. Both
+#: readers of the roster resolve a phase through the same backticks and the same
+#: separator, so an edit to those removed phases from the population in silence.
+#: Emptying the roster outright is refused; this is what refuses emptying part of
+#: it, which is the same defect one degree smaller and passed without it.
+NEAR_MISS_HEADING = re.compile(r"^#{2,4} .*?\bP\d+\b.*$", re.M)
+NEAR_MISS_TABLE_ROW = re.compile(r"^\|[^|]*\bP\d+\b[^|]*\|", re.M)
+
 #: A lane opener at the head of its own paragraph: ``**Never.** ...``.
 LANE_OPENER = re.compile(r"^\*\*([A-Z][a-z]+)\.\*\*(?=[ \n])", re.M)
 
 #: Blockquote markers, stripped before parsing a subject that declares them.
 BLOCKQUOTE = re.compile(r"^> ?", re.M)
 
-#: A fenced code block. Blanked before lanes are scanned: a lane that exists only
-#: inside a fence shows a reader an example of a lane rather than being one.
-CODE_FENCE = re.compile(r"^```.*?^```", re.S | re.M)
+#: A fenced code block, backtick or tilde, closed or left open to the end of the
+#: section. Blanked before lanes are scanned: a lane inside a fence shows a reader
+#: an example of a lane rather than being one. An earlier draft matched balanced
+#: triple backticks only, so a tilde fence and - worse - one stray unclosed fence
+#: put every lane after it inside code while the check stayed green.
+CODE_FENCE = re.compile(r"^(?P<f>`{3,}|~{3,}).*?(?:^(?P=f)`*~*[^\S\n]*$|\Z)", re.S | re.M)
 
 #: A line that starts a new block and therefore ends a lane: emphasis, heading,
 #: table, fence. A lane ends here as well as at the blank line, because Markdown
@@ -85,6 +96,26 @@ def table_phases(roadmap_text: str) -> list[str]:
     for match in PHASE_TABLE_ROW.finditer(roadmap_text):
         seen.setdefault(match.group(1), None)
     return list(seen)
+
+
+def unreadable_phase_lines(roadmap_text: str) -> list[str]:
+    """Headings and table rows that name a phase this reader cannot resolve.
+
+    The roster lives in one document and both of its readers resolve a phase
+    through the same backticks and the same separator, so an edit to those took
+    phases out of the population without anything noticing. Refusing the empty
+    roster closed that at zero only: taking eight of ten still passed. A line
+    that says ``P4`` and does not parse is now named instead.
+    """
+    readable = {match.group() for match in PHASE_HEADING.finditer(roadmap_text)}
+    readable |= {match.group() for match in PHASE_TABLE_ROW.finditer(roadmap_text)}
+    lines = []
+    for pattern in (NEAR_MISS_HEADING, NEAR_MISS_TABLE_ROW):
+        for match in pattern.finditer(roadmap_text):
+            line = match.group()
+            if not any(hit.startswith(line) or line.startswith(hit) for hit in readable):
+                lines.append(line.strip())
+    return lines
 
 
 def extras(roadmap_text: str, contract: dict) -> list[tuple[dict, list]]:
@@ -161,15 +192,21 @@ def lanes_in(section: str) -> dict[str, list[str]]:
 def words(prose: str) -> int:
     """Words of substance, so a lone full stop does not read as a stated edge.
 
-    What renders as nothing is removed first and does not count: HTML comments,
-    and the target of a link or image, which is why ``[](http://a-b-c)`` read as
-    five words of stated edge. A link's visible label survives, because a reader
-    sees it. Whoever sets the threshold should keep it low - it exists to refuse a
-    lane opened and abandoned, never to grade how well an edge is written, which
-    is a reading.
+    Four things that render as nothing are removed first, each because it was
+    found counting: an HTML comment; an HTML tag, so a class name is not an edge;
+    the target of an inline link or image; and the label of a reference link. A
+    link's or an image's visible text survives, because a reader sees it.
+
+    This is a list, not a rule, and a shorter draft claimed to be the rule. There
+    is no general test for what Markdown renders, so the contract records the list
+    rather than the claim. Whoever sets the threshold should keep it low - it
+    exists to refuse a lane opened and abandoned, never to grade how well an edge
+    is written, which is a reading.
     """
     visible = HTML_COMMENT.sub("", prose)
+    visible = re.sub(r"<[^>]*>", "", visible)
     visible = re.sub(r"!?\[([^\]]*)\]\([^)]*\)", r"\1", visible)
+    visible = re.sub(r"!?\[([^\]]*)\]\[[^\]]*\]", r"\1", visible)
     return len(re.findall(r"[0-9A-Za-z][0-9A-Za-z'-]*", visible))
 
 

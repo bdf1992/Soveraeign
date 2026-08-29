@@ -2,7 +2,7 @@
 
 ```text
 source          PRD.md · SPEC.md · CONTRACT.md · STATUS.yaml
-source_digest   f1157f2f1ebad6aa · b58dc1ed68c2b999 · ff6873d56338933b · 5e7338cf029f155b
+source_digest   807f33f48d2d56ea · b58dc1ed68c2b999 · ff6873d56338933b · 3bfc67d5e1444602
 reader          hand-authored · v2
 fidelity        LOSSY
 omissions       the nine PROD-I requirement texts and their defeating cases;

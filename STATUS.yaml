@@ -226,6 +226,13 @@ open_decisions: []
 owner_acceptance_queue:
   - id: A22
     packet: acceptance/A22.json
+    presented: A proposal is not finished until a human can see it, and the model's authority claim is void because the session is an instance - but Phase I is closed and its PRD.md pin had to move
+    waits_on: seat:root
+    presented_by_seat: seat:session-control
+    at: 2026-08-28T00:00:00Z
+
+  - id: A23
+    packet: acceptance/A23.json
     presented: The seven documents an agent or contributor reads first now name the product plane, and say plainly that they themselves own no product claim
     waits_on: seat:root
     presented_by_seat: seat:session-control

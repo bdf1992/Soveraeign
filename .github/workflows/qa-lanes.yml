@@ -1,30 +1,48 @@
 name: qa lanes
 
-# The verification dyad from SDLC.md, run per pull request.
+# The verification dyad from SDLC.md runs at two cadences.
 #
-#   blue   is the canonical PR root-verification producer; its Python matrix
-#          builds the positive path and its declared cases, and a pass establishes
-#          BUILT evidence and nothing further
-#   red    screens adversarially; its output is PROPOSED findings, never CONFIRMED,
-#          because a finding counts only after independent reproduction
-#   purple gates any standing advance past BUILT on a settled engagement receipt
+#   blue       runs per pull request. It proves the declared positive and
+#              defeating cases and establishes BUILT evidence only.
+#   red        is dispatched over a named milestone and immutable target. Its
+#              output is screening evidence and PROPOSED findings; it is not an
+#              independent witness receipt by itself.
+#   standing   guards any requested standing transition. A PR may continue
+#              ordinary engineering at BUILT without running Red; a request to
+#              reach WITNESSED must already carry the independent receipts the
+#              transition contract requires.
 #
-# No job here ratifies. Ratification reaches the repository through CODEOWNERS review
-# on STATUS.yaml and decisions/, which is owner judgement, not a check.
+# No job here ratifies. Ratification reaches the repository through owner
+# acceptance, not a check.
 
 on:
   pull_request:
+  workflow_dispatch:
+    inputs:
+      milestone:
+        description: Named milestone or surface being attacked
+        required: true
+        type: string
+      target_ref:
+        description: Immutable target commit, tag, or branch to inspect
+        required: true
+        type: string
+      base_ref:
+        description: Comparison point preceding the milestone
+        required: true
+        type: string
 
 permissions:
   contents: read
 
 concurrency:
-  group: qa-lanes-${{ github.ref }}
+  group: qa-lanes-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   blue:
     name: blue · construction (${{ matrix.python-version }})
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     strategy:
@@ -47,10 +65,12 @@ jobs:
             echo "Python ${{ matrix.python-version }} is one supported reading of the same root observation."
             echo 'The Blue matrix establishes `BUILT` evidence only when every supported reading passes.'
             echo 'It is not a witness and it is not a ratification.'
+            echo 'Remaining at BUILT does not stop later reachable engineering work.'
           } >> "$GITHUB_STEP_SUMMARY"
 
   blue-required:
     name: blue · construction
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 1
     needs: [blue]
@@ -58,136 +78,12 @@ jobs:
       - name: Publish the protected-branch check
         run: echo 'Both supported Python readings completed successfully.'
 
-  generative-red:
-    name: red · generative screening
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    # Gated at the job so an unconfigured lane renders as SKIPPED, not as a pass.
-    # It previously exited zero after writing a refusal to the step summary, which
-    # made a refusal and a real screening indistinguishable in the check list -
-    # the defect named in decisions/0025. Generative screening stays optional; the
-    # blocking adversarial gate is `mutation`, which needs no key.
-    if: vars.SOV_RED_LANE_ENABLED == 'true'
-    permissions:
-      contents: read
-      pull-requests: write
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Refuse an enabled lane with no key
-        env:
-          RED_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: |
-          if [ -z "$RED_KEY" ]; then
-            echo 'RED_LANE_MISCONFIGURED - SOV_RED_LANE_ENABLED is true but ANTHROPIC_API_KEY is absent.' >&2
-            echo 'Failing rather than reporting a pass for screening that never ran.' >&2
-            exit 1
-          fi
-
-      - name: Adversarial screening pass
-        uses: anthropics/claude-code-action@v1
-        with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          prompt: |
-            Hold the RED stance defined in SDLC.md over this pull request's diff.
-
-            You receive the contract, the claimed invariants, and the built artifact.
-            Do not read the author's tests, plan, or assumptions as evidence that the
-            behavior is correct, and do not import participant implementation code
-            into your reasoning about the oracle.
-
-            Attempt to defeat the change. Look specifically for refusal bypasses,
-            authority escalation, stale-source use, provenance gaps, retraction that
-            erases history, projections treated as authoritative, effect classes
-            widened without a decision, and any defeat the builder did not anticipate.
-
-            Report each candidate as a PROPOSED finding with an identifier of the form
-            RED-<issue>-<nnn>, a one-line summary, and the exact reproduction steps.
-            State plainly that these are proposals: a finding counts only after it
-            reproduces under observation independent of you, and only after it lands
-            as a permanent defeating fixture in the conformance corpus.
-
-            Do not claim a finding is confirmed. Do not claim the change is witnessed.
-            Do not approve the pull request.
-
-  mutation:
-    name: red · mutation score
-    runs-on: ubuntu-latest
-    # 120 mutants, one full `scripts/tests` run each. The cost is the cap times the
-    # suite, not the size of the diff, so it does not fall when a change is smaller:
-    # on 2026-08-27 a 60-file change and a 17-file one were both killed at exactly
-    # 20:00, while the reconciliation had finished at 16:54 hours earlier. What moved
-    # between them is the suite, which that day's landings grew from 43s to 51s
-    # measured locally. Raised to 35 rather than lowering --total-limit, because the
-    # cap is what makes the number evidence and a shorter run is a weaker gate, not a
-    # cheaper one. The real repair is a faster `scripts/tests`; until then this is the
-    # honest budget. Bdo ruled it, because contracts/standing-grants.json puts
-    # .github/ outside the landing grant's scope.
-    timeout-minutes: 35
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Fetch the comparison point
-        run: git fetch --no-tags origin "${{ github.base_ref || 'main' }}"
-
-      - name: Prove the scorer discriminates before trusting its number
-        run: python scripts/sov_mutate.py selfcheck
-
-      - name: Score the mutants this change admits
-        run: |
-          python scripts/sov_mutate.py run             --changed             --base "origin/${{ github.base_ref || 'main' }}"             --limit 40             --total-limit 120
-
-      - name: Record what the score means
-        if: always()
-        run: |
-          {
-            echo '## Red lane, mechanical'
-            echo
-            echo 'A mutation score is evidence about the *tests*, not about the code.'
-            echo 'A surviving mutant names a behaviour the suite does not assert.'
-            echo
-            echo 'This gate needs no key and cannot fail open: the scorer must first'
-            echo 'demonstrate that it kills an asserted mutant and spares an unasserted'
-            echo 'one, and a run that cannot prove it restored the tree refuses rather'
-            echo 'than reporting a score.'
-            echo
-            echo 'Mutants per file are capped at 40 and the cap is reported, never silent.'
-            echo 'A run is capped at 120 mutants. Large diffs sample paths evenly across'
-            echo 'the full ordered target set and report every omitted path.'
-            echo 'No threshold is enforced yet - `decisions/0025` leaves the number to Bdo,'
-            echo 'because a floor invented before a baseline would be asserted, not measured.'
-          } >> "$GITHUB_STEP_SUMMARY"
-
-  red:
-    name: red · adversarial screening
-    runs-on: ubuntu-latest
-    timeout-minutes: 1
-    needs: [generative-red, mutation]
-    if: ${{ !cancelled() && needs.mutation.result == 'success'
-            && needs.generative-red.result != 'failure' }}
-    steps:
-      - name: Publish the protected-branch check
-        run: |
-          echo 'Mechanical adversarial screening passed.'
-          echo 'Optional generative screening was either successful or not enabled.'
-
-  purple:
-    name: purple · release gate
+  standing:
+    name: purple · standing transition guard
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [blue-required, red, mutation]
-    # `red` is opt-in and renders as skipped when unconfigured, which must not
-    # skip the gate behind it. A red that is enabled and *fails* still stops here.
-    if: ${{ !cancelled() && needs.blue-required.result == 'success'
-            && needs.mutation.result == 'success' && needs.red.result != 'failure' }}
+    needs: [blue-required]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -208,10 +104,114 @@ jobs:
         if: always()
         run: |
           {
-            echo '## Purple gate'
+            echo '## Standing transition guard'
             echo
-            echo 'A pull request that proposes no standing change passes this gate and'
-            echo 'establishes `BUILT` evidence only. A pull request that proposes an'
-            echo 'advance past `BUILT` must carry a settled engagement receipt with an'
-            echo 'independent witness. `RATIFIED` is unreachable here by design.'
+            echo 'This pull request runs Blue, not milestone Red.'
+            echo 'A PR that proposes no standing change establishes `BUILT` evidence only.'
+            echo 'A request to advance to `WITNESSED` must carry an already settled'
+            echo 'independent witness and PURPLE receipt. Ordinary work may continue at BUILT.'
+            echo '`RATIFIED` remains unreachable here by design.'
           } >> "$GITHUB_STEP_SUMMARY"
+
+  milestone-generative-red:
+    name: milestone · red generative screening
+    if: github.event_name == 'workflow_dispatch' && vars.SOV_RED_LANE_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_ref }}
+          fetch-depth: 0
+
+      - name: Refuse an enabled lane with no key
+        env:
+          RED_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -z "$RED_KEY" ]; then
+            echo 'RED_LANE_MISCONFIGURED - SOV_RED_LANE_ENABLED is true but ANTHROPIC_API_KEY is absent.' >&2
+            echo 'Failing rather than reporting a pass for screening that never ran.' >&2
+            exit 1
+          fi
+
+      - name: Adversarial milestone screening pass
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            Hold the RED stance defined in SDLC.md over the named milestone
+            "${{ inputs.milestone }}" at target ref "${{ inputs.target_ref }}".
+
+            The checkout is the immutable target you are attacking. Work from the
+            governing contracts, claimed invariants, and built artifact. Do not use
+            the builder's tests, plan, or assumptions as evidence and do not import
+            participant implementation code into your oracle.
+
+            Attempt to defeat the accumulated milestone surface. Look for refusal
+            bypasses, authority escalation, stale-source use, provenance gaps,
+            retraction that erases history, projections treated as authoritative,
+            effect classes widened without a decision, and any defeat the builders
+            did not anticipate.
+
+            Report candidate findings as PROPOSED with exact reproduction steps.
+            Do not claim a finding is confirmed, do not claim this workflow is the
+            independent witness receipt, and do not claim the milestone is WITNESSED.
+
+  milestone-mutation:
+    name: milestone · red mutation score
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_ref }}
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch the milestone comparison point
+        run: git fetch --no-tags origin "${{ inputs.base_ref }}"
+
+      - name: Prove the scorer discriminates before trusting its number
+        run: python scripts/sov_mutate.py selfcheck
+
+      - name: Score the Python surface accumulated by this milestone
+        run: |
+          python scripts/sov_mutate.py run \
+            --changed \
+            --base "${{ inputs.base_ref }}" \
+            --limit 40 \
+            --total-limit 120
+
+      - name: Record what the score means
+        if: always()
+        run: |
+          {
+            echo '## Milestone Red lane, mechanical'
+            echo
+            echo "Milestone: ${{ inputs.milestone }}"
+            echo "Target: ${{ inputs.target_ref }}"
+            echo "Comparison: ${{ inputs.base_ref }}"
+            echo
+            echo 'A mutation score is evidence about the tests, not a witness receipt.'
+            echo 'A surviving mutant names behaviour the suite does not assert.'
+            echo 'No threshold is invented here; the score is evidence for the engagement.'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  milestone-red:
+    name: milestone · red screening
+    if: ${{ always() && github.event_name == 'workflow_dispatch'
+            && needs.milestone-mutation.result == 'success'
+            && needs.milestone-generative-red.result != 'failure' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    needs: [milestone-generative-red, milestone-mutation]
+    steps:
+      - name: Publish milestone screening result
+        run: |
+          echo 'Milestone adversarial screening completed.'
+          echo 'Optional generative Red was either successful or not enabled.'
+          echo 'This is input to a verification-engagement, not independent settlement.'

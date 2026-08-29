@@ -197,7 +197,8 @@ python scripts/sov_traps.py  # facts about this repository that answer confident
 `SILVER` at fifteen. Past fifteen it records debt rather than failing, because a
 wall-clock reading measures the host at that instant and not the repository; the
 pressure sits on per-check ceilings instead (`decisions/0081`, superseding
-`decisions/0050`). `sov_next.py`
+`decisions/0050`). One timing condition still refuses: a single check past
+thirty seconds. `sov_next.py`
 reconciles five signposts and prints one answer with every alias the job travels
 under; where the declared gate and the reachable work name different jobs it
 reports the disagreement rather than resolving it, because that choice is owner

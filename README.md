@@ -139,6 +139,9 @@ independent witness or owner ratification.
 
 The founding set contains:
 
+- `GROUND.md` — the sixteen claims that say what product Soveraeign is;
+- `CANON.md` — who a node is for, what Soveraeign undertakes, and the journeys
+  an undertaking is reached by;
 - `SYSTEM.md` — the system boundary and operational model;
 - `CLASSIFICATION.md` — the proposed controlled vocabulary and identity tests;
 - `AI-NATIVE.md` — the falsifiable per-surface standard and verdict derivation;
@@ -190,8 +193,12 @@ python scripts/sov_next.py   # what happens next, and where the signposts disagr
 python scripts/sov_traps.py  # facts about this repository that answer confidently and wrongly
 ```
 
-`verify.py` grades itself `PLATINUM` at three seconds, `GOLD` at six, `SILVER`
-at fifteen, and fails only past fifteen (`decisions/0050`). `sov_next.py`
+`verify.py` grades itself `PLATINUM` at three seconds, `GOLD` at six, and
+`SILVER` at fifteen. Past fifteen it records debt rather than failing, because a
+wall-clock reading measures the host at that instant and not the repository; the
+pressure sits on per-check ceilings instead (`decisions/0081`, superseding
+`decisions/0050`). One timing condition still refuses: a single check past
+thirty seconds. `sov_next.py`
 reconciles five signposts and prints one answer with every alias the job travels
 under; where the declared gate and the reachable work name different jobs it
 reports the disagreement rather than resolving it, because that choice is owner
@@ -202,9 +209,11 @@ thirty-six entrypoints grouped by the question each one answers.
 
 Then read, in this order:
 
-1. `AGENTS.md`, `SOV.md`, `CONTRIBUTING.md`, and `STATUS.yaml`.
-2. `SYSTEM.md`, `CONTRACT.md`, `PRD.md`, and `SPEC.md` as one governing set.
-3. `ENGINEERING.md` and `OPEN-SEAMS.md` before implementation.
+1. `GROUND.md` and `CANON.md` — what product this is, and what it undertakes.
+2. `AGENTS.md`, `SOV.md`, `CONTRIBUTING.md`, and `STATUS.yaml` — how work is
+   done here. These govern participants, not the product.
+3. `SYSTEM.md`, `CONTRACT.md`, `PRD.md`, and `SPEC.md` as one governing set.
+4. `ENGINEERING.md` and `OPEN-SEAMS.md` before implementation.
 
 Use the proposed reference baseline without treating it as owner-ratified or
 importing an ancestor implementation.

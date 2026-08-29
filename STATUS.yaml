@@ -231,6 +231,13 @@ owner_acceptance_queue:
     presented_by_seat: seat:session-control
     at: 2026-08-28T00:00:00Z
 
+  - id: A23
+    packet: acceptance/A23.json
+    presented: The seven documents an agent or contributor reads first now name the product plane, and say plainly that they themselves own no product claim
+    waits_on: seat:root
+    presented_by_seat: seat:session-control
+    at: 2026-08-28T00:00:00Z
+
   - id: A13
     packet: acceptance/A13.json
     presented: The automation page has working switches, and the switch cannot be reached around

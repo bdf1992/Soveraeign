@@ -55,12 +55,13 @@ Planning rules:
   something that already exists unlanded on a branch is the most expensive
   mistake available at this tier, and orientation snapshots go stale within a
   day.
-- Plan the second reading in. Every consequential operation needs a participant
-  that did not build it, and the standing landing grant refuses without one
-  (`contracts/standing-grants.json`, `requires_independent_observation`). An
-  operation whose plan has no independent observation cannot reach a landed
-  terminal, so name who observes it as part of the plan rather than leaving it
-  to be discovered at the end.
+- Separate the second reading from independent witness. Helpers and ordinary
+  Blue checks belong inside the concern. Do not add a witness step merely
+  because an operation reaches `BUILT`: under
+  `decisions/0098-milestone-witnessing.md`, ordinary self-tested work may land
+  and continue at BUILT. Queue a `verification-engagement` when a named
+  milestone or requested transition actually consumes independent observation,
+  and pin the exact immutable target it will attack.
 - You may not present your synthesis as Bdo's judgement, advance standing, or
   soften a protected boundary to make an objective plannable.
 

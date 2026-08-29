@@ -224,8 +224,8 @@ accepted_repository_claims:
 open_decisions: []
 
 owner_acceptance_queue:
-  - id: A21
-    packet: acceptance/A21.json
+  - id: A22
+    packet: acceptance/A22.json
     presented: The seven documents an agent or contributor reads first now name the product plane, and say plainly that they themselves own no product claim
     waits_on: seat:root
     presented_by_seat: seat:session-control

@@ -419,7 +419,7 @@ Readings two and three need Bdo, because each changes an `OWNER-ACCEPTED`
 artifact or builds a check that grades one. Reading one needs nobody: if the
 sentence is scoped to the acceptance act, it is already correct and this seam
 closes with a note. Saying so is the point of filing it rather than repairing it.
-`acceptance/A21.json` presents the change that raised it.
+`acceptance/A22.json` presents the change that raised it.
 
 Numbering note: minted as S28 on 2026-08-28 off `main`, which carries S25.
 Another session working tree held an uncommitted S27 at the time, and no

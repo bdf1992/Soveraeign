@@ -1,7 +1,7 @@
 {
   "packet_schema": "soveraeign-acceptance-packet/v1",
   "packet_id": "A20",
-  "claim": "The product definition layer is rebuilt to your specification of 2026-08-28. PRD.md is now the umbrella product document - twenty-two bounded product areas, custody and closure as a top-level requirement, and no phase in it. ROADMAP.md is the separate estimate of how the product gets built, P0 through P9, each exiting on a demonstrated product result rather than component percentages. Both previous documents are archived byte-identical at PRD-PHASE-I.md and ROADMAP-F0-F6.md, where they remain the pinned definitions of the closed phase:i, so nothing about how Phase I ended moved. PROD-I-1 through PROD-I-9 survive intact as the first qualification profile, Phase I / Local Sovereign Foundation. What needs your judgement is the coverage finding: thirteen of the twenty-two areas serve no promise in CANON.md, and three of those are undertakings that want one minted.",
+  "claim": "The product definition layer is rebuilt to your specification of 2026-08-28. PRD.md is now the umbrella product document - twenty-two bounded product areas, custody and closure as a top-level requirement, and no phase in it. ROADMAP.md is the separate estimate of how the product gets built, P0 through P9, each exiting on a demonstrated product result rather than component percentages. Both previous documents are archived byte-identical at archives/PRD-PHASE-I.md and archives/ROADMAP-F0-F6.md, where they remain the pinned definitions of the closed phase:i, so nothing about how Phase I ended moved. PROD-I-1 through PROD-I-9 survive intact as the first qualification profile, Phase I / Local Sovereign Foundation. What needs your judgement is the coverage finding: thirteen of the twenty-two areas serve no promise in CANON.md, and three of those are undertakings that want one minted.",
   "subject": {
     "artifact": "PRD.md",
     "from_standing": "OPEN",
@@ -35,12 +35,12 @@
       "says": "P0 through P9 with your estimates carried as estimates, each phase stating its product result, remaining work and exit shape. Where a repository counter disagrees with an estimate it is recorded under that phase rather than silently reconciled - P1 reads 55-65% against an operation surface of 5 reachable of 134"
     },
     {
-      "address": "PRD-PHASE-I.md",
+      "address": "archives/PRD-PHASE-I.md",
       "digest": "sha256:f1157f2f1ebad6aab70a63752f9bd9169518eb6f0aefde21c7fd05e98d5f1440",
       "says": "revision 1, unaltered, at the digest contracts/phases.json pinned when you closed phase:i"
     },
     {
-      "address": "ROADMAP-F0-F6.md",
+      "address": "archives/ROADMAP-F0-F6.md",
       "digest": "sha256:2d547384606200517907a17c38747fff15f388640d5bf3c705bd278e2ac150f0",
       "says": "the F0-F6 ladder, unaltered, at its pinned digest. Both archives mean the phase still ends against the definition it opened with and neither pin needed re-justifying"
     },
@@ -69,7 +69,7 @@
     "Custody and closure is a top-level requirement with no counter behind it. No work item currently carries a custodian through a handoff, and the resolve-into-another-admissible-operation behaviour is described and unbuilt.",
     "PROMISE-12 and PROMISE-16 still have no acceptance criterion. conformance/requirements.py enumerates exactly nine.",
     "The provider-loss drill named in the success metrics does not exist. PROMISE-02 is the product's central claim and nothing tests it by removing the providers.",
-    "Both archives sit at the repository root because no archive convention exists. My choice, trivially reversible.",
+    "Both archives live in archives/ with a README stating the rule that nothing there is edited. The directory is new; AGENTS.md gains a boundaries row for it and contracts/publication-surface.json classifies it JOURNAL.",
     "contracts/phases.json grades judgement visibility SUBSTANTIALLY_EARNED while the canon reads zero of five operations reachable for the same promise. Recorded, not resolved."
   ],
   "on_accept": "PRD.md and ROADMAP.md move OPEN -> BUILT and the branch lands by your hand; both are root governing documents outside the standing landing grant. Then the coverage finding: whether custody and closure, skills, and grounding get promises minted in CANON.md, and whether the other ten areas are structure as I read them. Then the priority ordering, the problem statement, and whether success may be measured as evidence rather than usage. Separately, which roadmap phase opens next - phase:i is closed with succeeded_by null and five residual custodies PROPOSED.",

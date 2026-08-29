@@ -17,7 +17,8 @@ aggregate wall time could not tell a repository that grew from a machine that wa
 busy; per check, the pair can. The aggregate wall time is graded and recorded as
 debt; it never reaches the exit code, which `decisions/0081` settled by
 superseding `decisions/0050`. One timing condition still refuses: a single check
-past thirty seconds.
+that crosses the catastrophic ceiling both in the pooled run and again when
+re-read alone.
 
 The table of what to run lives in `scripts/sovverify/checks.py`; this module owns
 only how a run is executed, observed, and graded.
@@ -124,6 +125,36 @@ def run_check(check: Check) -> tuple[Check, clocks.Reading]:
     return check, clocks.run(check.command, check.cwd)
 
 
+def confirm_alone(catastrophes: list[budget.Catastrophe],
+                  results: list[tuple[Check, clocks.Reading]]) -> list[budget.Catastrophe]:
+    """Re-read each suspected catastrophe with nothing else running.
+
+    A per-check wall time measured inside the shared pool still carries host and
+    scheduling contention. Refusal is stronger than attribution, so when the
+    contract requires confirmation we re-run only the suspects, serially, after
+    the pooled run has completed. Passing runs pay no extra cost.
+    """
+    if not catastrophes or not budget.confirms_alone(BUDGET_TABLE):
+        return catastrophes
+    by_name = {check.name: check for check, _ in results}
+    confirmed: list[budget.Catastrophe] = []
+    for entry in catastrophes:
+        check = by_name.get(entry.check)
+        if check is None:
+            # Fail closed if a future caller supplies a suspect that cannot be
+            # re-run: standing on the original reading is safer than silently
+            # clearing a catastrophe because confirmation wiring broke.
+            confirmed.append(entry._replace(alone=entry.seconds))
+            continue
+        print(f"\n== re-reading {entry.check} alone ==", flush=True)
+        _, reading = run_check(check)
+        print(reading.output.rstrip("\n"), flush=True)
+        print(f"TIME: {entry.check} alone: {reading.report()}", flush=True)
+        confirmed.append(entry._replace(alone=reading.wall))
+    return [entry if entry.alone is not None else entry._replace(alone=entry.seconds)
+            for entry in confirmed]
+
+
 def cost_line(results: list[tuple[Check, clocks.Reading]]) -> str:
     """Sum both clocks over the checks, and say plainly when a CPU number is missing.
 
@@ -188,11 +219,20 @@ def main(argv: list[str] | None = None, run_id: str | None = None,
         print(reading.output.rstrip("\n"), flush=True)
         print(f"TIME: {check.name}: {reading.report()}", flush=True)
 
-    debts, catastrophes = budget.judge(
-        [(check.name, reading.wall) for check, reading in results], BUDGET_TABLE)
-    # A catastrophe is a timing reading no host load explains, so it joins the
-    # semantic failures. Ordinary overruns never do: they are attributed below.
-    failed.extend(entry.line() for entry in catastrophes)
+    timings = [(check.name, reading.wall) for check, reading in results]
+    debts, catastrophes = budget.judge(timings, BUDGET_TABLE)
+    catastrophes = confirm_alone(catastrophes, results)
+    refusing = budget.refusing(catastrophes, BUDGET_TABLE)
+    failed.extend(entry.line() for entry in refusing)
+
+    for entry in catastrophes:
+        if entry in refusing:
+            continue
+        print(f"CROWDED: {entry.line()}", flush=True)
+
+    debts = sorted(debts + budget.demoted(catastrophes, refusing, BUDGET_TABLE),
+                   key=lambda entry: entry.seconds, reverse=True)
+
     print("")
     for line in summary(results, wall, failed):
         print(line)

@@ -36,11 +36,12 @@
     {
       "lane": "NEVER",
       "means": "What is held out of this item's scope. Bdo's words: usually a never. It holds by default and it is not a claim that it is permanent.",
-      "admits": "A scope edge, most usefully the boundary against the neighbouring item that would otherwise absorb this one; and a thing held out until something is learned.",
+      "admits": "A scope edge, most usefully the boundary against the neighbouring item that would otherwise absorb this one.",
       "how_it_leaves": "Discovery moves it, and only into NEEDED. Work under NOW is the only work being done, so it is the only place the evidence comes from: what is learned there pressures an exclusion out of this lane. Nothing else moves one - not a preference, not a date, not the phase number arriving.",
       "refuses": "An exclusion whose release is a schedule rather than a finding. Also refuses a restatement of the item's own exit condition, which reads as an edge and does no independent work.",
       "may_be_empty": false,
-      "empty_means": "Refused. A scope with no stated edge has no edge, and this lane is the one that does the most work: an item usually fails by absorbing its neighbour rather than by running out of effort."
+      "empty_means": "Refused. A scope with no stated edge has no edge, and this lane is the one that does the most work: an item usually fails by absorbing its neighbour rather than by running out of effort.",
+      "what_this_does_not_say": "Whether an exclusion that names what would earn it belongs here or in NEEDED. Under Bdo's correction every never is conditional, so 'it names what would earn it' cannot be the line between the two lanes, and no line is drawn here. ROADMAP.md carries the question to him; an earlier draft of this field answered it in passing, which a witness caught on 2026-08-28."
     }
   ],
   "lane_transitions": {
@@ -62,7 +63,7 @@
   },
   "invariants": {
     "one_lane_per_level": "An item sits in exactly one lane at one level, and a subject opens each lane exactly once. Two subjects claiming the same work in their NOW is the same defect one level up; that one is not checked, because deciding which subject owns a piece of work is judgement rather than parsing.",
-    "one_paragraph_per_lane": "A lane's prose is its own paragraph and ends at the blank line. A lane bounded by the next bold paragraph swallowed an italic follower, which let an emptied NEVER read as full.",
+    "one_paragraph_per_lane": "A lane's prose is its own paragraph and ends at the blank line, or at the next line that starts a block. Bounding on the next bold paragraph let a lane swallow an italic follower; bounding on the blank line alone still let it swallow one placed on the very next line, because Markdown treats that as the same paragraph. A lane that spans two paragraphs is graded on the first, and there is no separate refusal for the shape: a continuation paragraph and a legitimate following paragraph read alike, so telling them apart would be a guess.",
     "moving_is_an_edit": "Moving an item between lanes edits an estimate. It changes no standing and emits no event.",
     "no_standing": "This contract and ROADMAP.md carry no standing. A lane placement is never evidence that anything was built, witnessed, or accepted."
   },
@@ -106,12 +107,16 @@
       "ROADMAP_EMPTY_NEVER": "A Never lane carries fewer than never_minimum_words of substance. Two, not more: the rule refuses a lane opened and abandoned - a lone full stop, a stray dash - and never grades how well an edge is written, which is a reading.",
       "ROADMAP_LANE_DECLARED_TWICE": "One subject opens the same lane twice, which lets the second mask the first.",
       "ROADMAP_UNDECLARED_LANE": "A subject opens a lane-shaped paragraph that is neither a declared lane nor an admitted non-lane opener.",
-      "ROADMAP_PHASE_NOT_GRADED": "The phase table names a phase with no graded section."
+      "ROADMAP_PHASE_NOT_GRADED": "The phase table names a phase with no graded section.",
+      "ROADMAP_SUBJECT_NOT_FOUND": "An extra graded subject is declared by heading text and no such heading exists. Without it a rename silently stopped grading the recursion while the gate this document advertises stayed green.",
+      "ROADMAP_SUBJECT_HEADING_AMBIGUOUS": "Two headings answer to one declared subject, so which is graded depends on document order."
     },
     "not_checked": [
       "The truth of a placement. Whether a NOW item can really be finished with what exists is judgement over evidence, and no parser settles it. The check proves the shape is present, never that the reading is right.",
       "Every lane transition. Whether a finding really pressured an exclusion out of NEVER, whether a NEXT was actually chosen by anyone, and whether two subjects have filed the same work under both their NOWs. Each is a reading, and each is listed under what_would_defeat_this so a reviewer knows where to look.",
-      "Whether a child's NEVER is looser than its parent's. See recursion.never_inherits_is_unchecked."
+      "Whether a child's NEVER is looser than its parent's. See recursion.never_inherits_is_unchecked.",
+      "Whether the phase population is right. The table and the headings are both in this one document and both editable in one pass, so two coordinated edits remove a phase from the check. Nothing outside the document names P0-P9; contracts/phases.json pins the archived F-ladder and not this one. Recorded rather than left to look anchored.",
+      "Whether a Never renders. Words inside an HTML comment are removed before counting, because a comment shows a reader nothing; no other rendering question is asked."
     ]
   },
   "what_would_defeat_this": [

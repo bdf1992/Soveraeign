@@ -22,6 +22,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import json
 
+import roadmap_document  # noqa: E402
 import roadmap_lanes  # noqa: E402
 import sov_next  # noqa: E402
 
@@ -264,6 +265,20 @@ ADMISSIBLE = """# Product Roadmap
 
 **Exits when** a fresh reader can determine what the product is.
 
+### The shape recurses
+
+Prose about the recursion, carrying no lanes of its own.
+
+> **A worked child.**
+>
+> **Now.** The child's own now.
+>
+> **Next.** The child's own next.
+>
+> **Needed.** The child's own need.
+>
+> **Never.** The child's own edge.
+
 ### The roadmap's own lanes
 
 **Now.** `P0`, which gates the rest.
@@ -284,18 +299,32 @@ class LaneParsing(unittest.TestCase):
     """What opens a graded subject, and where a lane's prose ends."""
 
     def _subjects(self):
-        return roadmap_lanes.graded_subjects(ADMISSIBLE)
+        return roadmap_lanes.subjects_of(ADMISSIBLE)
 
-    def test_a_phase_and_the_roadmap_are_both_graded_subjects(self):
-        """The rule claims to hold at every level, so the outer level is graded too."""
-        self.assertEqual(sorted(self._subjects()), ["P0", "the roadmap itself"])
+    def test_every_declared_subject_is_graded(self):
+        """The rule claims to hold at every level, so the outer levels are graded too."""
+        self.assertEqual(sorted(self._subjects()),
+                         ["P0", "the roadmap itself", "the worked child inside P1's Now"])
+
+    def test_a_blockquoted_child_is_read_through_its_quote_markers(self):
+        lanes = roadmap_document.lanes_in(self._subjects()["the worked child inside P1's Now"])
+        self.assertEqual(lanes["Never"], ["The child's own edge."])
+
+    def test_without_stripping_the_child_would_go_unread(self):
+        """The defeating case for strip_blockquote: `> **Never.**` opens no lane."""
+        quoted = "> **Now.** The child's own now.\n"
+        self.assertEqual(roadmap_document.lanes_in(quoted), {})
+
+    def test_the_quote_title_is_not_read_as_a_lane(self):
+        lanes = roadmap_document.lanes_in(self._subjects()["the worked child inside P1's Now"])
+        self.assertEqual(sorted(lanes), ["Needed", "Never", "Next", "Now"])
 
     def test_prose_about_the_lanes_is_not_a_subject(self):
         self.assertNotIn("Now, next, needed, never", self._subjects())
 
     def test_a_bullet_does_not_open_a_lane(self):
         """`- **Now** - ...` in the definitions must not read as a lane paragraph."""
-        self.assertEqual(roadmap_lanes.lanes_in("- **Now** - a bullet.\n"), {})
+        self.assertEqual(roadmap_document.lanes_in("- **Now** - a bullet.\n"), {})
 
     def test_a_subject_stops_at_the_next_heading(self):
         self.assertNotIn("Deferred until earned", self._subjects()["the roadmap itself"])
@@ -309,11 +338,11 @@ class LaneParsing(unittest.TestCase):
 
     def test_exits_when_is_not_read_as_a_lane(self):
         """`**Exits when**` carries no full stop before the close, so it opens no lane."""
-        self.assertNotIn("Exits", roadmap_lanes.lanes_in(self._subjects()["P0"]))
+        self.assertNotIn("Exits", roadmap_document.lanes_in(self._subjects()["P0"]))
 
     def test_a_multi_digit_phase_heading_is_matched(self):
         """`[FP]\\d` made a `P10` section invisible to the grader and to the count."""
-        self.assertIn("P10", roadmap_lanes.phase_sections("### `P10` · Later\n\ntext\n"))
+        self.assertIn("P10", roadmap_document.phase_sections("### `P10` · Later\n\ntext\n"))
 
     def test_the_archived_f_ladder_is_deliberately_not_graded(self):
         """`ROADMAP-F0-F6.md` is pinned as a closed phase's definition and carries no lanes.
@@ -323,12 +352,12 @@ class LaneParsing(unittest.TestCase):
         inside a document `contracts/phases.json` pins byte for byte.
         """
         both = "## F2 · Old ladder\n\ntext\n\n### `P3` · New ladder\n\ntext\n"
-        self.assertEqual(sorted(roadmap_lanes.phase_sections(both)), ["P3"])
+        self.assertEqual(sorted(roadmap_document.phase_sections(both)), ["P3"])
         self.assertEqual(sorted(sov_next.roadmap_phases(both)), ["F2", "P3"])
         self.assertEqual([d for d in roadmap_lanes.grade(both) if "F2" in d.detail], [])
 
     def _subjects_lane(self, subject, lane):
-        return roadmap_lanes.lanes_in(self._subjects()[subject])[lane][0]
+        return roadmap_document.lanes_in(self._subjects()[subject])[lane][0]
 
 
 class LaneRefusals(unittest.TestCase):
@@ -361,6 +390,19 @@ class LaneRefusals(unittest.TestCase):
                                             f"**Never.** {filler}")
                 self.assertIn("ROADMAP_EMPTY_NEVER", self._codes(broken))
 
+    def test_a_follower_on_the_very_next_line_is_not_borrowed(self):
+        """Markdown lazy continuation made this one paragraph, so the lane read as full."""
+        broken = ADMISSIBLE.replace(
+            "**Never.** New product scope.",
+            "**Never.** .\n*Repository reading.* New product scope is excluded here.")
+        self.assertIn("ROADMAP_EMPTY_NEVER", self._codes(broken))
+
+    def test_an_html_comment_is_not_a_stated_edge(self):
+        """A comment renders as nothing, so its words are not an edge a reader can see."""
+        broken = ADMISSIBLE.replace("**Never.** New product scope.",
+                                    "**Never.** <!-- new product scope is excluded -->")
+        self.assertIn("ROADMAP_EMPTY_NEVER", self._codes(broken))
+
     def test_an_empty_now_is_not_refused(self):
         """A subject whose Now is empty is making a reading, so only Never is required."""
         thin = ADMISSIBLE.replace("**Now.** The census sweep.", "**Now.**")
@@ -389,8 +431,26 @@ class LaneRefusals(unittest.TestCase):
         broken = ADMISSIBLE.replace("### `P0` · Ground and govern", "### P0 - Ground and govern")
         self.assertEqual(self._codes(broken), {"ROADMAP_PHASE_NOT_GRADED"})
 
-    def test_a_roadmap_with_no_phases_and_no_table_is_quiet(self):
+    def test_a_renamed_extra_heading_is_refused_by_the_gate(self):
+        """It used to be caught only by a unit test, while `--strict` stayed green."""
+        broken = ADMISSIBLE.replace("### The shape recurses", "### How the shape recurses")
+        self.assertEqual(self._codes(broken), {"ROADMAP_SUBJECT_NOT_FOUND"})
+
+    def test_two_headings_answering_to_one_subject_are_refused(self):
+        broken = ADMISSIBLE.replace(
+            "### The roadmap's own lanes",
+            "### The roadmap's own lanes\n\nText.\n\n### The roadmap's own lanes", 1)
+        self.assertIn("ROADMAP_SUBJECT_HEADING_AMBIGUOUS", self._codes(broken))
+
+    def test_a_text_carrying_no_phase_is_out_of_scope_rather_than_defective(self):
+        """The archived F-ladder and these fixtures are legitimately laneless."""
         self.assertEqual(roadmap_lanes.grade("# Product Roadmap\n"), [])
+        self.assertEqual(roadmap_lanes.grade(ROADMAP), [])
+
+    def test_a_document_that_does_carry_phases_must_carry_its_subjects(self):
+        """The scope guard must not become a way to switch the whole check off."""
+        broken = ADMISSIBLE.replace("### The roadmap's own lanes", "### Something else")
+        self.assertIn("ROADMAP_SUBJECT_NOT_FOUND", self._codes(broken))
 
     def test_selfcheck_proves_every_refusal_fires_alone(self):
         self.assertEqual(roadmap_lanes.selfcheck(), [])
@@ -419,9 +479,18 @@ class LaneContract(unittest.TestCase):
 
     def test_never_is_not_declared_permanent(self):
         """It holds by default; it is not a claim to be permanent."""
-        never = [lane for lane in roadmap_lanes.load_contract()["lanes"]
-                 if lane["lane"] == "NEVER"][0]
+        never = self._never()
         self.assertIn("how_it_leaves", never)
+
+    def test_the_contract_does_not_settle_what_the_document_asks_bdo(self):
+        """`admits` once closed the Never-or-Needed question the document carries open."""
+        never = self._never()
+        self.assertNotIn("until something is learned", never["admits"])
+        self.assertIn("what_this_does_not_say", never)
+
+    def _never(self):
+        return [lane for lane in roadmap_lanes.load_contract()["lanes"]
+                if lane["lane"] == "NEVER"][0]
 
     def test_the_horizon_crosswalk_covers_every_ticket_horizon(self):
         """NOW and NEXT already name ticket horizons; the two vocabularies must not fork."""
@@ -437,13 +506,13 @@ class LaneContract(unittest.TestCase):
     def test_every_phase_the_table_names_is_graded(self):
         """Measured against the document's own table, not against a literal count."""
         text = self._roadmap()
-        subjects = roadmap_lanes.graded_subjects(text)
-        for phase in roadmap_lanes.table_phases(text):
+        subjects = roadmap_lanes.subjects_of(text)
+        for phase in roadmap_document.table_phases(text):
             self.assertIn(phase, subjects)
 
     def test_every_extra_subject_the_contract_names_resolves(self):
         """A renamed heading would silently stop grading the recursion."""
-        subjects = roadmap_lanes.graded_subjects(self._roadmap())
+        subjects = roadmap_lanes.subjects_of(self._roadmap())
         for extra in roadmap_lanes.load_contract()["graded_subjects"]["extra"]:
             self.assertIn(extra["subject"], subjects)
 

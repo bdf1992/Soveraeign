@@ -89,6 +89,18 @@ class Delivery(unittest.TestCase):
                 observed["delivery"][field] = "   "
                 self.assertIn(f"delivery missing {field}", predicates.i1_delivery(observed))
 
+    def test_padding_around_a_real_value_still_states_it(self):
+        """The other side of the whitespace rule, which nothing else holds down.
+
+        Without this the blank test alone is satisfied by rejecting any padded value,
+        so an over-strict rewrite refusing ` console:thread-1 ` would pass the suite.
+        """
+        for field in ("surface_id", "operator_id", "receipt_id"):
+            with self.subTest(field=field):
+                observed = observation()
+                observed["delivery"][field] = f"  {observed['delivery'][field]}  "
+                self.assertEqual([], predicates.i1_delivery(observed))
+
     def test_a_receipt_for_another_proposal_does_not_deliver_this_one(self):
         observed = observation()
         observed["delivery"]["proposal_id"] = "p-somebody-else"

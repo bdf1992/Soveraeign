@@ -224,6 +224,13 @@ accepted_repository_claims:
 open_decisions: []
 
 owner_acceptance_queue:
+  - id: A23
+    packet: acceptance/A23.json
+    presented: Independent witness queues at named milestones while ordinary self-tested work can land and continue at BUILT
+    waits_on: seat:root
+    presented_by_seat: seat:session-control
+    at: 2026-08-29T04:44:00Z
+
   - id: A22
     packet: acceptance/A22.json
     presented: A proposal is not finished until a human can see it, and the model's authority claim is void because the session is an instance - but Phase I is closed and its PRD.md pin had to move

@@ -377,3 +377,52 @@ collection seam, already cited by number in `CLASSIFICATION.md`, `decisions/0057
 the librarian skill, was found holding S22 too. Same convention: the seam nobody
 cites by number is the one that moves.
 
+## S28 · An accepted document records that nothing was changed to accommodate it
+
+`GROUND.md` closes with "No governing document was modified to accommodate this."
+It was true when Bdo accepted the ground on 2026-08-24 and it is a fair record of
+that act: the acceptance changed no other document. The ambiguity is scope, not
+tense. Read as a claim about the acceptance act it stays true; read as a claim
+about the repository's wiring it is now false, because seven entry points name
+`GROUND.md` and `CANON.md` as of this branch. The sentence is the evidence that
+they did not for four days, and it is also the thing that closing the gap
+breaks.
+
+The seam is that the repair is not the builder's to make. `GROUND.md` is
+`OWNER-ACCEPTED` at revision `GROUND-1`, and its own rules make editing it a
+typed act: a rendering re-issues with no change of meaning, a revision means
+meaning changed. Striking a stale sentence is a rendering, `GROUND-1.1` to
+`GROUND-1.2`. `decisions/0052-owner-ruling-on-the-product-ground.md` records that
+`contracts/product-ground.json` carries the acceptance and that the acceptance
+check refuses an artifact calling itself accepted while the acceptance record
+does not name that exact revision. So a participant that edits the sentence is
+not making a reversible engineering choice, and one that leaves it is holding a
+document that reads falsely to the next reader.
+
+Observed 2026-08-28 on `docs/plane-separation-entry-points`, by the second of two
+independent witnesses. The first change on that branch quoted the sentence as its
+own justification and then falsified it, which is the sharpest form of the
+problem: the document recorded the gap, and the record of the gap is what closing
+the gap breaks.
+
+Three readings, and this seam does not settle which. The sentence is scoped to
+the acceptance act, needs no repair, and should simply be read in the past tense.
+Or an accepted document should not carry present-tense claims about the rest of
+the repository at all, and the sentence belongs in the decision record where the
+act is recorded. Or this is ordinary staleness and wants the treatment the
+orientation snapshot in `CLAUDE.md` already gets, where `scripts/sov_snapshot.py`
+grades the page against the record rather than trusting it. The third is the only
+reading that generalises and also the most expensive: it means a check that reads
+accepted documents for claims about the tree.
+
+Readings two and three need Bdo, because each changes an `OWNER-ACCEPTED`
+artifact or builds a check that grades one. Reading one needs nobody: if the
+sentence is scoped to the acceptance act, it is already correct and this seam
+closes with a note. Saying so is the point of filing it rather than repairing it.
+`acceptance/A21.json` presents the change that raised it.
+
+Numbering note: minted as S28 on 2026-08-28 off `main`, which carries S25.
+Another session working tree held an uncommitted S27 at the time, and no
+reservation command exists for seam numbers the way `scripts/sov_session.py
+reserve-decision` exists for decision numbers. S16 carries the allocation seam
+this keeps demonstrating.

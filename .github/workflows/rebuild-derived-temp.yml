@@ -4,11 +4,13 @@ on:
   push:
     branches:
       - sov/milestone-witness-queue
-    paths:
-      - .github/workflows/rebuild-derived-temp.yml
 
 permissions:
   contents: write
+
+concurrency:
+  group: rebuild-derived-milestone-witness
+  cancel-in-progress: true
 
 jobs:
   rebuild:

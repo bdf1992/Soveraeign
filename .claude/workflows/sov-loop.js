@@ -1,21 +1,21 @@
 export const meta = {
   name: 'sov-loop',
-  description: 'One concern through control, orchestration, work, independent witness, and the landing gate',
-  whenToUse: 'The ordinary way to move one bounded concern from selected to landed. Every other workflow in this repository stops at an uncommitted tree and a queue pointed at Bdo; this one ends at the landing gate, which either commits and merges under contracts/standing-grants.json or refuses with the reason. Use sov-federation for multi-domain sweeps and sov-qa to observe without building.',
+  description: 'One concern through control, orchestration, work, Blue verification, and the landing gate',
+  whenToUse: 'The ordinary way to move one bounded concern from selected to a landed BUILT result. Independent witness is not launched per increment; named milestones queue verification-engagement separately under SDLC.md and decisions/0098. Use sov-qa or the milestone verification path when the next transition actually consumes independent observation.',
   phases: [
     { title: 'Select', detail: 'controller names the one concern and its scope' },
     { title: 'Plan', detail: 'orchestrator turns it into one bounded operation' },
-    { title: 'Build', detail: 'worker executes it and reports the paths it changed' },
-    { title: 'Witness', detail: 'an independent witness that did not build observes the result' },
-    { title: 'Land', detail: 'the landing gate grades the request against the standing grant' },
+    { title: 'Build', detail: 'worker executes it, runs expected tests, and reports the paths it changed' },
+    { title: 'Land', detail: 'the landing gate requires Blue checks and grades the request against the standing grant' },
   ],
 }
 
 // args: { objective: string, domain?: string, target?: string, plan_only?: boolean }
 //
-// The gate, not this script, is what decides whether anything lands. A workflow
-// cannot grant itself authority, so every phase here is evidence-gathering and
-// the last step hands that evidence to scripts/sov_land.py to be refused or not.
+// The gate, not this script, decides whether anything lands. A workflow cannot
+// grant itself authority. Ordinary landing establishes a durable BUILT increment;
+// it does not establish WITNESSED standing. Milestone witness is a separate queued
+// operation under decisions/0098-milestone-witnessing.md.
 
 const DOMAINS = ['governance', 'contracts', 'conformance', 'asset', 'proofing', 'console', 'projection', 'byom', 'verification']
 
@@ -64,18 +64,6 @@ const BUILD = {
   },
 }
 
-const WITNESS = {
-  type: 'object',
-  required: ['verdict', 'observations', 'residuals', 'observation_file'],
-  properties: {
-    verdict: { type: 'string' },
-    observations: { type: 'array', items: { type: 'string' } },
-    residuals: { type: 'array', items: { type: 'string' } },
-    observation_file: { type: 'string' },
-    judgement_items: { type: 'array', items: { type: 'string' } },
-  },
-}
-
 const LAND = {
   type: 'object',
   required: ['exit_code', 'verdict', 'detail', 'command'],
@@ -98,7 +86,7 @@ const selected = await agent(
   'You hold the Control tier for one concern in Soveraeign. Objective: ' + objective + '. '
   + (domain ? 'Domain: ' + domain + '. ' : 'Pick the single owning domain from: ' + DOMAINS.join(', ') + '. ')
   + 'Read AGENTS.md and contracts/standing-grants.json. Name exactly one bounded concern that serves the objective. '
-  + 'Then decide whether the whole concern falls inside the standing grant scope: the grant admits services/, contracts/, conformance/, scripts/, .claude/, adapters/, bindings/, workers/, and diagrams/, and excludes decisions/, lineage/, STATUS.yaml, and every root governing document. '
+  + 'Then decide whether the whole concern falls inside the standing grant scope: the grant admits services/, contracts/, conformance/, scripts/, .claude/, adapters/, bindings/, workers/, diagrams/, and docs/, and excludes decisions/, lineage/, STATUS.yaml, .github/, and every root governing document. '
   + 'Set in_grant_scope false and list out_of_scope_paths if the concern would have to touch anything excluded - that concern is still worth doing, it just ends at an acceptance packet for Bdo instead of at a merge. '
   + 'Do not build anything. Return the concern, domain, rationale, in_grant_scope, out_of_scope_paths, and the paths you expect to change.',
   { agentType: 'sov-controller', schema: CONCERN, phase: 'Select', label: 'select' })
@@ -117,7 +105,8 @@ const plan = await agent(
   'You hold the Orchestration tier. Turn this concern into exactly one bounded operation: ' + selected.concern + '. '
   + 'Read .claude/skills/sov-' + selected.domain + '/SKILL.md, then AGENTS.md, then the owning contract and fixture the skill names. '
   + 'Follow the implementation order in AGENTS.md: name the operation and owned lifecycle, then the contract and its positive and defeating case, then the smallest change. '
-  + 'You plan only; you do not build, witness, or dispatch. Return the operation, the exact files, the effect class, the checks that must pass, the defeating case that must fail as declared, and any blockers.',
+  + 'You plan only; you do not build, witness, or dispatch. Return the operation, the exact files, the effect class, the checks that must pass, the defeating case that must fail as declared, and any blockers. '
+  + 'Do not insert an independent-witness step merely because the concern will reach BUILT. If the objective names a milestone or requests WITNESSED standing, record that as a separate verification-engagement boundary.',
   { agentType: 'sov-orchestrator', schema: PLAN, phase: 'Plan', label: 'plan:' + selected.domain })
 
 if (!plan) {
@@ -134,7 +123,7 @@ const built = await agent(
   + 'Files: ' + (plan.files || []).join(', ') + '. Effect class: ' + plan.effect_class + '. '
   + 'Read .claude/skills/sov-' + selected.domain + '/SKILL.md and AGENTS.md first. Write the defeating case (' + plan.defeating_case + ') and prove it fails as declared before you call the work done. '
   + 'Run python scripts/lint.py and python scripts/verify.py from the repository root and report their real exit codes; do not report a check you did not run. '
-  + 'Do not commit, merge, push, or edit decisions/ or STATUS.yaml. Do not witness your own work. '
+  + 'Do not commit, merge, push, or edit decisions/ or STATUS.yaml. Do not claim your own work is independently witnessed. '
   + 'Return every path you changed, a one-paragraph summary, the checks you ran with exit codes, and every residual you know about.',
   { agentType: 'sov-worker', schema: BUILD, phase: 'Build', label: 'build:' + selected.domain })
 
@@ -143,36 +132,19 @@ if (!built) {
 }
 log('Built: ' + (built.changed_paths || []).length + ' path(s) changed')
 
-phase('Witness')
-invocations += 1
-const witnessed = await agent(
-  'You are the independent observation for work you did not do and must not touch. Concern: ' + selected.concern + '. '
-  + 'The builder reports it changed: ' + (built.changed_paths || []).join(', ') + '. Treat that as a claim, not evidence. '
-  + 'Read git status and git diff yourself, read the owning contract and the defeating fixture, and run python scripts/verify.py and python scripts/lint.py observing the real exit codes. '
-  + 'Confirm the defeating case actually fails as declared; a fixture that passes when it should fail is a DISSENTED verdict, not a residual. '
-  + 'Then write your observation to reports/observations/ as JSON with exactly these fields: observer_id (your agent label), contributed_to_build (false - and if that is not true, say so and set verdict DISSENTED), verdict (CONFIRMED or DISSENTED), concern, and checks. '
-  + 'You must not edit, fix, build, or commit anything outside that one observation file. '
-  + 'Return the verdict, what you independently confirmed, residuals, the path you wrote the observation to, and any judgement items only Bdo can settle.',
-  { agentType: 'sov-witness', schema: WITNESS, phase: 'Witness', label: 'witness:' + selected.domain })
-
-if (!witnessed) {
-  return { error: 'witness returned no observation; nothing may land unwitnessed', concern: selected, build: built }
-}
-log('Witness: ' + witnessed.verdict)
-
 phase('Land')
-const mode = planOnly || !selected.in_grant_scope || witnessed.verdict !== 'CONFIRMED' ? 'plan' : 'land'
+const mode = planOnly || !selected.in_grant_scope ? 'plan' : 'land'
 if (mode === 'plan') {
-  log('Rehearsing the gate only: ' + (planOnly ? 'plan_only was set' : (!selected.in_grant_scope ? 'concern is outside the grant' : 'witness verdict is ' + witnessed.verdict)))
+  log('Rehearsing the gate only: ' + (planOnly ? 'plan_only was set' : 'concern is outside the grant'))
 }
 
 const pathArgs = (built.changed_paths || []).map(function (p) { return '--path ' + p }).join(' ')
 invocations += 1
 const landed = await agent(
   'Run the landing gate and report exactly what it said. You did not build this change and you do not decide whether it lands; the gate does. '
+  + 'Ordinary landing establishes a durable BUILT increment. It does not establish WITNESSED standing and therefore needs no per-increment witness receipt under decisions/0098. '
   + 'Run this command from the repository root and nothing else that writes:\n\n'
   + '  python scripts/sov_land.py ' + mode + ' ' + pathArgs
-  + ' --observation ' + (witnessed.observation_file || 'MISSING')
   + ' --target ' + target
   + ' --spend ' + (invocations + 1)
   + ' --message "' + (selected.domain + ': ' + selected.concern).replace(/"/g, "'") + '"\n\n'
@@ -181,8 +153,8 @@ const landed = await agent(
 
 const gate = landed || { exit_code: null, verdict: 'UNKNOWN', detail: 'the gate agent returned nothing', command: 'python scripts/sov_land.py ' + mode }
 
-const residuals = [].concat(built.residuals || [], witnessed.residuals || [])
-const judgementQueue = [].concat(witnessed.judgement_items || [])
+const residuals = [].concat(built.residuals || [])
+const judgementQueue = []
 if (!selected.in_grant_scope) {
   judgementQueue.push('Acceptance: ' + selected.concern + ' touches ' + (selected.out_of_scope_paths || []).join(', ') + ', which the standing grant excludes.')
 }
@@ -196,11 +168,11 @@ return {
   concern: selected,
   plan: plan,
   build: { summary: built.summary, changed_paths: built.changed_paths, checks_run: built.checks_run },
-  witness: { verdict: witnessed.verdict, observations: witnessed.observations, observation_file: witnessed.observation_file },
+  witness: { status: 'DEFERRED_TO_NAMED_MILESTONE', required_for_this_landing: false },
   gate: gate,
   mode: mode,
   agent_invocations: invocations,
   residuals: residuals,
   judgement_queue: judgementQueue,
-  standing: gate.exit_code === 0 ? 'LANDED_BUILT_AND_WITNESSED_NOT_RATIFIED' : 'HELD_AT_THE_GATE',
+  standing: gate.exit_code === 0 ? 'LANDED_BUILT_NOT_WITNESSED' : 'HELD_AT_THE_GATE',
 }

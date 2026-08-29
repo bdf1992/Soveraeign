@@ -1,25 +1,20 @@
-"""Checks for the verification budget after decisions/0081.
+"""Checks for the verification budget after decisions/0081 and #148/C0027.
 
-The rule under test inverted. Before, the structural case was that an overrun
-entered the failure list, and this file existed so anyone could see if the budget
-had become a suggestion. Now the case is the opposite: a wall-clock reading must
-NOT refuse, because it measures the host at that instant and not the repository,
-and an overrun on one check must be attributed to that check rather than to
-whoever touched the repository next.
-
-That leaves a real hazard, which `Pressure` covers: a budget that blocks nothing
-applies no pressure and a suite grows without limit. Two things answer it - the
-catastrophic per-check ceiling, which does refuse, and the requirement that debt
-is computed, counted and named rather than passed over in silence.
+Wall-clock readings never refuse because they describe a host at an instant, and
+ordinary per-check overruns remain attributed debt. Catastrophic pressure still
+exists, but a pooled per-check wall time is now only a suspicion: when the table
+requires confirmation, the check must cross the catastrophic ceiling again when
+re-read alone before verification may refuse the run.
 
 Cases are driven from conformance/fixtures/verification-budget/cases.json, which
-holds the declared positive and defeating corpus; this file adds only the
-structural cases a fixture cannot state.
+holds the declared positive and defeating corpus; this file adds structural
+wiring cases a fixture cannot state by itself.
 """
 
 from __future__ import annotations
 
 from pathlib import Path
+from unittest.mock import patch
 import json
 import sys
 import unittest
@@ -51,6 +46,17 @@ class DeclaredCorpus(unittest.TestCase):
                 self.assertEqual([list(entry) for entry in catastrophes],
                                  [list(row) for row in case["expect_catastrophes"]])
 
+    def test_confirmation_cases_declare_what_actually_refuses(self) -> None:
+        for case in FIXTURES["confirmation_cases"]:
+            with self.subTest(case=case["case_id"]):
+                catastrophes = [budget.Catastrophe(*row) for row in case["catastrophes"]]
+                refusing = budget.refusing(catastrophes, TABLE)
+                demoted = budget.demoted(catastrophes, refusing, TABLE)
+                self.assertEqual([list(entry) for entry in refusing],
+                                 [list(row) for row in case["expect_refusing"]])
+                self.assertEqual([list(entry) for entry in demoted],
+                                 [list(row) for row in case["expect_demoted_debts"]])
+
     def test_the_corpus_carries_a_case_for_each_outcome(self) -> None:
         """A corpus that never produced a catastrophe would prove nothing blocks."""
         outcomes = {
@@ -58,6 +64,9 @@ class DeclaredCorpus(unittest.TestCase):
             "ungraded": any(c["expect_grade"] is None for c in FIXTURES["cases"]),
             "debt": any(c["expect_debts"] for c in FIXTURES["cases"]),
             "catastrophe": any(c["expect_catastrophes"] for c in FIXTURES["cases"]),
+            "confirmed_refusal": any(c["expect_refusing"] for c in FIXTURES["confirmation_cases"]),
+            "cleared_suspicion": any(not c["expect_refusing"]
+                                     for c in FIXTURES["confirmation_cases"]),
         }
         self.assertEqual(outcomes, dict.fromkeys(outcomes, True))
 
@@ -84,15 +93,38 @@ class WallClockNeverRefuses(unittest.TestCase):
 
 
 class Pressure(unittest.TestCase):
-    """The hazard the change creates: a budget that blocks nothing applies nothing."""
+    """Catastrophic pressure survives without mistaking pooled contention for proof."""
 
-    def test_one_catastrophic_check_still_refuses(self) -> None:
+    def test_past_the_catastrophic_ceiling_creates_a_suspicion(self) -> None:
         ceiling = float(TABLE["catastrophic_check_seconds"])
         _, catastrophes = budget.judge([("anything", ceiling + 0.001)], TABLE)
         self.assertEqual(len(catastrophes), 1)
+        self.assertIsNone(catastrophes[0].alone)
+
+    def test_confirmation_is_declared(self) -> None:
+        self.assertTrue(TABLE["catastrophic_confirm_alone"])
+        self.assertTrue(budget.confirms_alone(TABLE))
+
+    def test_unconfirmed_pooled_overrun_does_not_refuse(self) -> None:
+        ceiling = float(TABLE["catastrophic_check_seconds"])
+        _, catastrophes = budget.judge([("anything", ceiling + 5.0)], TABLE)
+        self.assertEqual(budget.refusing(catastrophes, TABLE), [])
+
+    def test_confirmed_isolated_overrun_still_refuses(self) -> None:
+        ceiling = float(TABLE["catastrophic_check_seconds"])
+        catastrophe = budget.Catastrophe("anything", ceiling + 5.0, ceiling,
+                                        ceiling + 1.0)
+        self.assertEqual(budget.refusing([catastrophe], TABLE), [catastrophe])
+
+    def test_cleared_catastrophe_returns_as_attributed_debt(self) -> None:
+        catastrophe = budget.Catastrophe("Asset Service reference tests", 36.667, 30.0, 12.0)
+        refused = budget.refusing([catastrophe], TABLE)
+        self.assertEqual(refused, [])
+        self.assertEqual(budget.demoted([catastrophe], refused, TABLE),
+                         [budget.Debt("Asset Service reference tests", 36.667, 4.0)])
 
     def test_the_catastrophic_ceiling_is_far_above_any_named_ceiling(self) -> None:
-        """It must be unreachable by host load, or it becomes the old gate again."""
+        """Confirmation fixes contention; the catastrophic threshold still stays exceptional."""
         named = list(TABLE["check_ceilings"]["named"].values())
         self.assertGreater(float(TABLE["catastrophic_check_seconds"]), max(named) * 5)
 
@@ -115,8 +147,36 @@ class Pressure(unittest.TestCase):
         self.assertEqual(sorted(set(TABLE["check_ceilings"]["named"]) - names), [])
 
 
+class ConfirmationWiring(unittest.TestCase):
+    """The root verifier really performs the isolation the budget contract requires."""
+
+    class Reading:
+        wall = 12.0
+        output = "isolated output\n"
+
+        @staticmethod
+        def report() -> str:
+            return "12.000s wall"
+
+    def test_confirm_alone_reruns_each_suspect_after_the_pool(self) -> None:
+        check = next(check for check in CHECKS if check.name == "Asset Service reference tests")
+        suspect = budget.Catastrophe(check.name, 36.667, 30.0)
+        pooled = [(check, self.Reading())]
+        with patch.object(verify, "run_check", return_value=(check, self.Reading())) as rerun:
+            confirmed = verify.confirm_alone([suspect], pooled)
+        rerun.assert_called_once_with(check)
+        self.assertEqual(confirmed, [suspect._replace(alone=12.0)])
+        self.assertFalse(confirmed[0].confirmed())
+
+    def test_missing_check_fails_closed_instead_of_clearing_the_suspicion(self) -> None:
+        suspect = budget.Catastrophe("no longer registered", 31.0, 30.0)
+        confirmed = verify.confirm_alone([suspect], [])
+        self.assertEqual(confirmed[0].alone, 31.0)
+        self.assertTrue(confirmed[0].confirmed())
+
+
 class NoDrift(unittest.TestCase):
-    """The table is the single declaration; verify.py restates none of it."""
+    """The table is the single declaration; verify.py restates none of its thresholds."""
 
     def test_verify_derives_its_bands_from_the_table(self) -> None:
         self.assertEqual(list(verify.BUDGET_GRADES), budget.grades(TABLE))

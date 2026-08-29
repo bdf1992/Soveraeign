@@ -226,7 +226,7 @@ open_decisions: []
 owner_acceptance_queue:
   - id: A20
     packet: acceptance/A20.json
-    presented: PRD.md is now the whole product's requirements document and defines no phase; revision 1 is archived byte-identical and still pins phase:i
+    presented: PRD.md is the umbrella product document and ROADMAP.md is the separate P0-P9 estimate; both predecessors archived byte-identical and still pinning phase:i
     waits_on: seat:root
     presented_by_seat: seat:session-control
     at: 2026-08-28T00:00:00Z

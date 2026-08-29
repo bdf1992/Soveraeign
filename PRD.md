@@ -1,55 +1,95 @@
-# Product Requirements
+# Soveraeign Product Requirements
 
-Status: `PROPOSED · REVISION 2 · NOT OWNER-ACCEPTED`
-Owner: Bdo, root seat · Drafted by Claude, 2026-08-28 · Applies to: the whole
-product, no phase
+## A Locally Sovereign Enterprise Operating Environment for Humans, Agents, Services, and Skills
 
-This document describes Soveraeign as a product. It is not scoped to a campaign.
-Revision 1 was `Product Requirements — Founding and Phase I`; it is archived
-byte-identical at `PRD-PHASE-I.md`, where it remains the pinned definition of
-`phase:i` in `contracts/phases.json`. Read that file for what Phase I committed
-to and how it closed; read this one for what the product is required to do.
+Status: `PRODUCT SCOPE CANDIDATE` · artifact standing `OPEN`, not owner-accepted
+Owner: Bdo, root seat · Scope: the whole product, no phase · 2026-08-28
 
-## What this document owns, and what it does not
+Revision 1 was `Product Requirements — Founding and Phase I`. It is archived
+byte-identical at `PRD-PHASE-I.md`, where it remains a pinned definition of the
+closed `phase:i` in `contracts/phases.json`. Its nine requirements are not
+retired: they are the first qualification profile under this document, below.
 
-It owns the product's requirements: what Soveraeign must let a person or a model
-actually do, how important each one is, how you would know it works, and what is
-deliberately not being built.
+`ROADMAP.md` is the current estimate of how the product gets built. This
+document is what it must become. The roadmap is expected to be revised often;
+this is not.
 
-It does not restate rules other documents own. Each requirement below points at
-the document that carries its predicate and the fixture that defeats a false
-claim. A rule copied here would be a second authority for the same rule, which
-`AGENTS.md` forbids — and being that copy is how revision 1 stopped being a PRD.
+## Product outcome
+
+Soveraeign is a locally sovereign enterprise operating environment in which
+humans, agents, skills, services, and federated nodes can perform useful work
+through the same governed system.
+
+The product provides a composable network of independently bounded services for
+identity, assets, records, discovery, policy, authority, routing, observation,
+models, workflows, automation, interfaces, and other enterprise capabilities.
+Services may use capabilities provided by other services without absorbing their
+state, policy, or authority.
+
+Skills compose those capabilities with versioned assets, instructions, tools,
+policies, and evidence requirements to describe how domain work can be performed.
+
+Agents and human operators execute that work under explicit custody. Custody
+gives an operator authority and responsibility to carry its work toward closure:
+complete it, repair what prevents completion, gather the required evidence,
+redirect through another admissible operation, refuse safely, or return the
+smallest genuinely unresolved remainder.
+
+Every consequential crossing remains attributable and reconstructable. The
+system can answer:
+
+- what happened;
+- who or what acted;
+- under what custody and authority;
+- which skill, service, operation, asset, model, policy, and version
+  participated;
+- what crossed each boundary;
+- what evidence supports the result;
+- what remains unresolved;
+- and what operation can happen next.
+
+A personal deployment and an enterprise deployment use the same fundamental node
+model. A node may begin as one person's locally operated environment, grow into
+a network of services and operators, and later federate with other sovereign
+nodes without surrendering custody of its authoritative record to a model
+vendor, cloud provider, or external platform.
+
+The long-term product is not a collection of applications surrounding an AI
+assistant. It is an operating environment in which enterprise capabilities are
+discoverable and composable, agents can competently use them, work carries
+custody from intent to closure, and the resulting system remains inspectable by
+the humans responsible for it.
+
+*Owner-directed, stated by Bdo 2026-08-28.*
+
+## What this document owns
+
+The enduring product requirements: what Soveraeign must let a person, an agent,
+a service or a peer node actually do; which of those matter more; how anyone
+would know it works; and what is deliberately not being built.
+
+It does not restate rules other documents own. Each requirement points at the
+document carrying its predicate and the fixture that defeats a false claim. A
+rule copied here becomes a second authority for the same rule, which `AGENTS.md`
+forbids — and being that copy is how revision 1 stopped being a PRD.
 
 | Not owned here | Owned by |
 | --- | --- |
 | What kind of product this is, permanently | `GROUND.md`, sixteen claims |
-| The exact wording of what the product undertakes | `CANON.md`, promises and journeys |
+| The exact wording of what the product undertakes to a person | `CANON.md` |
 | The system boundary and operating model | `SYSTEM.md` |
 | The invariants | `CONTRACT.md` |
 | Vocabulary, standing ladders, artifact lifecycle | `CLASSIFICATION.md` |
-| The predicate each requirement must satisfy | `SPEC.md` |
+| The predicate a requirement must satisfy | `SPEC.md` |
 | The fixture that proves or defeats it | `conformance/` |
-| The order the work is attempted in | `ROADMAP.md`, F0–F6 |
+| How and when the work happens | `ROADMAP.md`, P0–P9 |
 | Current standing and what waits on the owner | `STATUS.yaml` |
 | What a closed campaign committed to | `PRD-PHASE-I.md`, `contracts/phases.json` |
 
-The admission test for anything on this page is Bdo's, ruled in
-`decisions/0052` and recorded in `CLASSIFICATION.md`, Two requirement ladders:
-**would failing it mean the product is not done?** A statement that would make
-Soveraeign a *different product* if it changed belongs one level up, in
-`GROUND.md`.
-
-## Summary
-
-Soveraeign is a locally sovereign environment in which a person and the models
-they choose operate one governed record. Both act through the same state, the
-same permissions, the same transitions, the same evidence and the same history.
-Compute is borrowed from wherever is convenient; custody of the record, the
-authority over it, and the ability to keep operating are not.
-
-The first deployment is one person's node on one machine. The same node contract
-supports a team later without the personal case having been a reduced edition.
+The admission test is Bdo's, ruled in `decisions/0052` and recorded in
+`CLASSIFICATION.md`: **would failing it mean the product is not done?** A
+statement that would make Soveraeign a *different product* if it changed belongs
+one level up, in `GROUND.md`.
 
 ## Problem statement
 
@@ -58,8 +98,8 @@ bad options.
 
 **Adopt a provider's platform,** and the operational memory, the permission
 model, the audit trail and the continuity of the business come to live inside
-someone else's system. Changing providers becomes a migration. Losing one
-becomes an outage of the enterprise, not of a vendor.
+someone else's system. Changing providers becomes a migration; losing one
+becomes an outage of the enterprise rather than of a vendor.
 
 **Bolt an assistant onto existing software,** and the model is not an operator
 at all. It drafts, suggests and summarizes beside a system it cannot act in.
@@ -69,214 +109,171 @@ Removing it removes a convenience rather than a capability, which is the test
 Underneath both sits the same unsolved problem: **nothing distinguishes a model
 that did the work from a model that says it did.** A confident report, a
 successful execution, a green build and an agreed-with answer all arrive looking
-identical. Without a way to tell them apart, delegation to a model cannot be
-scaled past what one person can personally re-check — and that ceiling, not
-model capability, is what limits how much work can actually be handed over.
+identical. Without a way to tell them apart, delegation cannot scale past what
+one person can personally re-check — and that ceiling, not model capability, is
+what limits how much work can actually be handed over.
 
 Soveraeign's claim is that these are one problem. A record that can say who did
 what, under whose authority, over exactly what state, and whether anyone
 independent confirmed it, is the same record that makes the provider
-substitutable — because everything that matters is held locally in a form no
+substitutable, because everything that matters is held locally in a form no
 provider defines.
 
-*Derived from `GROUND.md` (each claim's "what changing it would mean" line),
-`SYSTEM.md` Scope, and `AI-NATIVE.md` Definition. Marked proposed: the problem a
-product solves is owner-held intent, and this is a reading of accepted material
-rather than a statement Bdo has made in these words.*
+*Derived from `GROUND.md`, `SYSTEM.md` Scope and `AI-NATIVE.md` Definition, not
+stated by Bdo in these words. Proposed.*
 
-## Goals
+## Custody and closure
 
-The product's undertakings are the promises in `CANON.md`, owner-accepted
-2026-08-24. They are stated there and registered here; this document adds
-priority, acceptance and current state to each rather than restating it.
+The requirement that ties agents, services, workflows, skills, boards and
+records together, and the reason a blocked state is not an acceptable terminal.
 
-## Users
+> **Every accepted unit of work has a current custodian. The custodian has
+> bounded authority to carry that work toward closure. When the requested
+> transition is unavailable, the system helps resolve the reason into another
+> admissible operation. A work item may terminate successfully, refused,
+> superseded, absorbed, retired, or unresolved, but it may not disappear into an
+> unexplained blocked state.**
 
-Ten participants, defined in `CANON.md`, Who this is for. Owner is deliberately
-not among them: it is a context that sets which binding and projection a person
-arrives through, over whatever role they hold (`decisions/0020`).
+*Owner-directed, stated by Bdo 2026-08-28. Top-level and not delegated to agent
+governance, because it constrains services and interfaces as much as operators.*
 
-| Participant | What they came here to do |
-| --- | --- |
-| `human-operator` | Do domain work without learning the node's internals first; see what happened while away; decide what only a person can decide |
-| `model-operator` | Discover the legal operations from the artifact alone; act inside a live grant; be refused legibly outside one |
-| `model-bringer` | Keep custody of the record while changing which model runs; know what each model consumed |
-| `agent` | Choose among reachable operations without widening its own authority; escalate without stalling everything else |
-| `worker` | One bounded task, one unambiguous input state, a lease that fences it against a newer holder |
-| `witness` | Reach the durable output without relying on the executor's account of it; record a dissent that stays visible |
-| `domain-owner` | A mandate narrow enough to finish; a resource envelope with a visible remainder; a witness who is not themselves |
-| `node-owner` | Stand a node up and know it is theirs; grow or federate without migrating authority elsewhere |
-| `external-system` | Be reached only through a declared crossing that leaves a receipt |
-| `peer-node` | Cross into another node without either absorbing the other |
+Six named terminals — succeeded, refused, superseded, absorbed, retired,
+unresolved — and no seventh. `BLOCKED` is a claim to be proven, not a resting
+place: it must name the operation, the blocked transition, the missing
+precondition, the governing rule, the required authority, the unblock condition,
+and that no reachable alternative exists (`AGENTS.md`, Blocked edge is not
+blocked frontier).
 
-## User journeys
+*Standing.* `contracts/closure-ownership.json` and `contracts/custodies.json`
+exist, `scripts/sov_closure.py` grades a handoff, and custody appears across 39
+files under `contracts/` and `services/`. The vocabulary is well ahead of the
+mechanism: no work item currently carries a custodian through a handoff, and the
+resolve-into-another-admissible-operation behaviour is described and unbuilt.
+`CANON.md` has no promise for this, which is discussed under Coverage below.
 
-Fourteen, defined in `CANON.md`, How a promise becomes usable. A journey is one
-participant's complete intention, not a screen. `python scripts/sov_canon.py
-trace JOURNEY-nn` walks one down to the operations it needs and says which are
-reachable, which are declared and unbuilt, and which no service declares at all.
+## Product areas
 
-Two are walkable today: `JOURNEY-03`, picking up work left in another session,
-and `JOURNEY-04`, putting something under governed custody. The other twelve are
-one to eight operations short. That table is the scope conversation this
-document exists to make possible, and it is regenerated rather than copied here.
+Twenty-two bounded areas. None of them is the product; each is a capability of
+it. The Asset Service is not a product, Gateway is not a product, skills are not
+the product, boards are not the product, federation is not the product.
+
+`Serves` names the `CANON.md` promises an area makes good, where one exists.
+`Standing` is read from `STATUS.yaml` and the operation surface and moves as the
+node changes.
+
+| Area | What this document establishes | Serves | Standing |
+| --- | --- | --- | --- |
+| **Node** | The sovereign unit of operation, custody, continuity, deployment and eventual federation. A node is whole at any size. | 02, 15 | contract built, no admission transition |
+| **Services** | Independently bounded capabilities with owned state, contracts, declared operations and declared refusals. | — | 11 boundaries, 140 declared operations, 5 reachable |
+| **Components** | Internal decomposition of a service without creating accidental parallel authority. | — | undeclared |
+| **Composition** | Service A uses Service B through a declared capability and a receipted crossing, absorbing none of its state, policy or authority. | — | declared, unreached |
+| **Assets** | Versioned, addressable things with provenance, relationships and custody. | 05, 16 | built, self-tested |
+| **Skills** | Versioned compositions of assets, knowledge, services, tools and completion rules that describe how domain work is performed. | — | harness skills exist, no product contract |
+| **Agents and operators** | Actors that discover capabilities and carry bounded work toward closure under an explicit grant. | 01, 04 | profile accepted, not live |
+| **Custody and closure** | Who owns the current work, what closure means, and what happens when a transition cannot occur. | — | contracts built, mechanism open |
+| **Gateway and discovery** | How an operator finds and reaches available capabilities without being told by a person who already knows. | 03 | chartered boundary, not implemented |
+| **Identity** | Who is acting, and how identity stays attributable across a crossing. | — | contract built, registry read only |
+| **Authority and policy** | What an actor may do, scoped independently of which model or intelligence it is running. | — | typed grants built, one ratified |
+| **Record** | The durable account of consequential actions, receipts, observations and counter-records. | 07, 08 | built, self-tested, not the kernel's |
+| **Evidence** | What supports a claim, and how independent witnessing works. | 11 | witness tooling exists, no observation service |
+| **Grounding** | Whether an asset, file, service or claim can explain its place in the system. | — | **new; no contract, no implementation** |
+| **Models and BYOM** | Replaceable model compute without provider ownership of authoritative state. | 01, 06 | contract accepted, `invoke_model` unimplemented |
+| **Workflow and automation** | Durable compositions that execute work repeatedly. | — | pattern accepted, every schedule disabled |
+| **Boards and interfaces** | Human-visible projections of real system objects, paths, custody and evidence, holding no authority of their own. | — | console continuity path built, four surfaces text |
+| **Federation** | Governed crossings between independently sovereign nodes. | 15 | contract built, no transport |
+| **External effects** | How the system acts safely on systems outside itself. | — | refused in Phase I; adapters declared |
+| **Security and reliability** | Isolation, access, durability, recovery, failure behaviour and operational expectations. | — | secret rules enforced; no drill, no recovery path |
+| **Accounting** | Cost, usage, attribution, work, time, model and resource accounting. | — | seven resource words defined; receipts cannot record consumption |
+| **Qualification** | How the product proves it works rather than claiming completion. | 10, 11 | oracle executable, participant binding open |
+
+### Coverage: thirteen areas serve no promise
+
+Thirteen of the twenty-two areas above make good no promise in `CANON.md`. That
+is a real gap and it resolves two different ways, which should not be conflated.
+
+**Most are structure, not undertaking.** *Services*, *Components*,
+*Composition*, *Identity*, *Authority and policy*, *Workflow*, *Boards*,
+*External effects*, *Security and reliability* and *Accounting* are how the
+product is built rather than what it undertakes to a person. A PRD legitimately
+holds both kinds. They need requirements here; they do not need promises minted
+above them.
+
+**Three are genuine undertakings with no promise, and want one.**
+
+- **Custody and closure.** "Your work will not vanish into an unexplained
+  blocked state" is said to a person and belongs in the canon.
+- **Skills.** "You can hand the node a domain instruction and it will know how
+  the work is done" is an undertaking, not an architecture.
+- **Grounding.** "Anything in the node can explain its place in the system" is
+  an undertaking. It is also entirely new: `grounding` appears in no contract or
+  service today and would be the first area introduced by this document rather
+  than read out of the repository.
+
+Minting a promise is `CANON.md`'s business and Bdo's act. This document records
+the three rather than assuming them.
 
 ## Requirements
 
-The requirements **are** the promises. Minting a second identifier for the same
-undertaking would create exactly the ladder collision `CLASSIFICATION.md` warns
-about, and `CANON.md`'s promises are already owner-accepted, already
-product-wide, and already carry a phase marker.
-
-`PROD-I-1` through `PROD-I-9` are not retired and not renamed. They are the
-Phase-I *acceptance set* — nine predicates with fixtures — and each appears below
-under the requirement it evidences. `conformance/requirements.py` still
-enumerates exactly those nine.
+The user-facing requirements **are** `CANON.md`'s promises, owner-accepted
+2026-08-24. Minting a parallel identifier for the same undertaking would create
+the second requirement ladder `CLASSIFICATION.md` warns about. This document
+adds what a PRD adds — priority, area, acceptance and current reach — rather
+than restating them.
 
 Priority is `P0` when the product is not the product without it, `P1` when the
-product works but cannot be trusted without it, `P2` when it is genuinely
-wanted later. **Priority is proposed, not accepted.** Nothing in this repository
-has ever ranked one requirement above another, and that absence is the most
-likely mechanism behind the ruling that closed Phase I: work went where it went
-because nothing said what mattered more.
+product works but cannot be trusted without it, `P2` when it is genuinely wanted
+later. **Priority is proposed, not accepted.** Nothing in this repository has
+ever ranked one requirement above another, and that absence is the likeliest
+mechanism behind the ruling that closed `phase:i` for optimising the wrong unit
+of progress.
 
-| # | Requirement | Pri | Phase | Evidenced by | State |
+| # | Requirement | Area | Pri | Criterion | Reach |
 | --- | --- | --- | --- | --- | --- |
-| `PROMISE-04` | One world | P0 | now | `PROD-I-3` | 8 of 11 operations reachable |
-| `PROMISE-07` | Every crossing returns a receipt | P0 | now | `PROD-I-4` | 13 reachable, 1 missing |
-| `PROMISE-02` | Custody stays here | P0 | now | `PROD-I-9` | 2 of 4, 4 missing |
-| `PROMISE-03` | You can find out what can be asked | P0 | now | `PROD-I-7` (thin) | 2 of 9 |
-| `PROMISE-11` | Delegate and check | P0 | now | `PROD-I-7`, `PROD-I-8` | 1 of 7 |
-| `PROMISE-05` | You can find out why | P1 | now | `PROD-I-2` | 10 of 11 |
-| `PROMISE-08` | Correction never erases | P1 | now | `PROD-I-4` | 4 of 9 |
-| `PROMISE-09` | Your judgement is the scarce thing | P1 | now | `PROD-I-6` | 0 of 5 |
-| `PROMISE-01` | Bring your own participant | P1 | now | `PROD-I-9` | 18 of 25, 5 missing |
-| `PROMISE-06` | The model is swappable | P1 | now | `PROD-I-9` | 2 of 2, 2 missing |
-| `PROMISE-10` | Useful from the artifact alone | P2 | now | `PROD-I-7` | 2 of 7 |
-| `PROMISE-12` | Work carries across a boundary | P2 | now | **none** | delivered |
-| `PROMISE-16` | Decide against exact state | P2 | now | **none** | 1 of 8 |
-| `PROMISE-15` | Cross to another node | P2 | later | none needed yet | 2 reachable |
+| `PROMISE-04` | One world | Agents | P0 | `PROD-I-3` | 8 of 11 |
+| `PROMISE-07` | Every crossing returns a receipt | Record | P0 | `PROD-I-4` | 13, 1 missing |
+| `PROMISE-02` | Custody stays here | Node | P0 | `PROD-I-9` | 2 of 4, 4 missing |
+| `PROMISE-03` | You can find out what can be asked | Gateway | P0 | `PROD-I-7` (thin) | 2 of 9 |
+| `PROMISE-11` | Delegate and check | Evidence | P0 | `PROD-I-7`, `PROD-I-8` | 1 of 7 |
+| `PROMISE-05` | You can find out why | Assets | P1 | `PROD-I-2` | 10 of 11 |
+| `PROMISE-08` | Correction never erases | Record | P1 | `PROD-I-4` | 4 of 9 |
+| `PROMISE-09` | Your judgement is the scarce thing | Boards | P1 | `PROD-I-6` | 0 of 5 |
+| `PROMISE-01` | Bring your own participant | Models | P1 | `PROD-I-9` | 18 of 25, 5 missing |
+| `PROMISE-06` | The model is swappable | Models | P1 | `PROD-I-9` | 2 of 2, 2 missing |
+| `PROMISE-10` | Useful from the artifact alone | Qualification | P2 | `PROD-I-7` | 2 of 7 |
+| `PROMISE-12` | Work carries across a boundary | Boards | P2 | **none** | delivered |
+| `PROMISE-16` | Decide against exact state | Assets | P2 | **none** | 1 of 8 |
+| `PROMISE-15` | Cross to another node | Federation | P2 | none yet | 2 reachable |
 
-Reach figures are from `python scripts/sov_canon.py promises` and move as the
-node changes; treat the column as a pointer to that command, not as a fact this
-document holds.
+Reach is from `python scripts/sov_canon.py promises` and moves; treat the column
+as a pointer to that command rather than a fact this document holds.
 
-### P0 · The product is not the product without these
+`PROMISE-11`, delegate and check, is placed `P0` because the whole delegation
+argument rests on it and `GROUND.md` already records `GROUND-010` as a claim the
+node cannot presently keep. It is simultaneously the furthest from met. If one
+priority call in this table is wrong, it is most likely that one.
 
-**`PROMISE-04` · One world.** People and models act through the same records,
-permissions, transitions, evidence and history. Neither gets a private door. A
-surface that reaches authoritative state without crossing a declared operation
-fails this outright.
-*Acceptance:* `SPEC.md` PROD-I-3 and Interface parity ·
-`conformance/scenarios.json` CONF-I3 · today the reference participant fails it:
-no second binding and no fully declared crossing exist.
+`PROMISE-12` and `PROMISE-16` have no criterion. `conformance/requirements.py`
+enumerates exactly nine, so minting a tenth changes the oracle as well as this
+document, and which of the three admissible resolutions applies — mint, record
+as carried by an existing criterion, or move out of scope — is Bdo's.
 
-**`PROMISE-07` · Every crossing returns a receipt,** including the ones that
-refuse, fail, or leave a judgement unresolved. A refusal is a result, not an
-absence of one.
-*Acceptance:* `SPEC.md` PROD-I-4 · CONF-I4 · today the original and counter both
-survive but the counter receipt does not link the receipt it counters.
+## The Phase I qualification profile
 
-**`PROMISE-02` · Custody stays here.** Custody of the record, the authority over
-it, and the ability to keep operating stay with the node. Losing a provider
-costs that provider, not the enterprise. This is the requirement the word
-sovereign refers to.
-*Acceptance:* `SPEC.md` PROD-I-9, provider-loss clause · CONF-I9 · `JOURNEY-12`,
-standing up a node, needs two operations no service declares.
+**`Phase I · Local Sovereign Foundation`.** Nine criteria, `PROD-I-1` through
+`PROD-I-9`, carried forward intact from `PRD-PHASE-I.md`. They are not the
+product and never were; they are the first profile the product is graded
+against, and later phases will earn later profiles.
 
-**`PROMISE-03` · You can find out what can be asked** of this node, by whom, and
-over what, without being told by a person who already knows. This is what makes
-a model an operator rather than a guest.
-*Acceptance:* carried thinly by `SPEC.md` PROD-I-7, which is about qualifying
-the requirements rather than discovering operations. `GROUND-006` already cites
-PROD-I-7 for this. **A first-class predicate for discovery does not exist and is
-the clearest gap in the acceptance set.**
-
-**`PROMISE-11` · Delegate and check.** Bounded work can be handed to someone or
-something else and the result checked through a path they did not control. A
-build never witnesses itself.
-*Acceptance:* `SPEC.md` PROD-I-7 and PROD-I-8 · CONF-I7, CONF-I8 · `GROUND.md`
-records this as a claim the node cannot presently keep. Runtime attestation is
-not implemented and no clean-room witness run exists. Of the five P0
-requirements this is the furthest from met and the one the whole delegation
-argument rests on.
-
-### P1 · Works, but cannot be trusted without these
-
-**`PROMISE-05` · You can find out why** anything is what it is: its source, its
-version, who read it, what was left out, and what it cost.
-*Acceptance:* `SPEC.md` PROD-I-2 · CONF-I2 · the only requirement the reference
-participant currently passes.
-
-**`PROMISE-08` · Correction never erases.** What the node did can be corrected
-without pretending it never happened and without a false claim that consumed
-resources came back.
-*Acceptance:* `SPEC.md` PROD-I-4 · CONF-I4.
-
-**`PROMISE-09` · Your judgement is the scarce thing.** Requests for a person's
-decision queue without stopping unrelated work, and where judgement was spent is
-visible. No invented quota.
-*Acceptance:* `SPEC.md` PROD-I-6 · CONF-I6 · a missing judgement currently
-refuses on the spot instead of leaving a visible pending right. Note a
-disagreement worth resolving: `contracts/phases.json` grades judgement
-visibility `SUBSTANTIALLY_EARNED` while the canon reads zero of five operations
-reachable. The two are measuring different things and neither is wrong.
-
-**`PROMISE-01` · Bring your own participant** into a node you control, discover
-what it may do under its actual authority, do substantive governed work, and
-inspect the resulting history without surrendering custody to the model or its
-provider.
-*Acceptance:* `SPEC.md` PROD-I-9 · CONF-I9 · `model.invoke` and
-`model.declare-binding` are declared by no service.
-`contracts/kernel-transitions.json` declares `invoke_model` and no kernel
-implements it.
-
-**`PROMISE-06` · The model is swappable.** Changing which model runs changes
-quality, latency and cost and changes nothing about state, standing, authority,
-receipts or contracts. An unavailable model refuses visibly; substitution is
-never silent.
-*Acceptance:* `SPEC.md` PROD-I-9 · CONF-I9 · the two-binding proof below.
-
-### P2 · Genuinely wanted, genuinely later
-
-**`PROMISE-10` · Useful from the artifact alone,** and how long that took is
-measured rather than assumed. The cold-start benchmark exists and is a governed
-surface; the measurement has no fixture that fails when it is absent.
-*Acceptance:* `SPEC.md` PROD-I-7 · CONF-I7.
-
-**`PROMISE-12` · Work carries across a boundary** — a new session, a new
-operator, a new model, tomorrow. **Delivered.** The Console continuity path is
-built and self-tested, `JOURNEY-03` is walkable, and no requirement ever asked
-for it. Registering it here is the repair.
-
-**`PROMISE-16` · Decide against exact state:** decide against an exact version
-rather than the thing in general, have the decision attached to that version,
-and have someone who was not you inspect or counter it. This is the Proofing
-Service. `GROUND.md` says explicitly that proofing belongs in a journey and this
-document; `JOURNEY-11` exists and the requirement did not until now.
-*Acceptance:* no predicate covers it. Proofing is a boundary with one of eight
-operations reachable.
-
-**`PROMISE-15` · Cross to another node** without either node absorbing the
-other. Marked `LATER` in the canon so the product world is whole while this
-document deliberately does not require it yet.
-
-## The acceptance set
-
-Nine named criteria, `PROD-I-1` through `PROD-I-9`. They are what the
-requirements above are graded against, and they are the identifiers the service
-manifests, the conformance oracle, the traceability table and the epic tree all
-address. Each names the requirement it evidences and points at the document that
-states the predicate; the predicate itself is `SPEC.md`'s and the defeating
-fixture is `conformance/`'s, and restating either here is what ended revision 1.
-
-`Today` is the reference participant's standing from
-`services/asset/conformance/BASELINE.md`. This document may not advance it.
+They keep their identifiers, their predicates in `SPEC.md`, and their fixtures
+in `conformance/`. The service manifests, the oracle, the SPEC traceability
+table and the epic tree all address them. `Today` is the reference participant's
+standing from `services/asset/conformance/BASELINE.md`; this document may not
+advance it.
 
 ### PROD-I-1 · Propose
 
-A model session that has never run here before can enter a proposal that carries
-its author, its sources, its cost and no authority.
+A model session that has never run here before enters a proposal carrying its
+author, its sources, its cost and no authority.
 Evidences `PROMISE-04`, `PROMISE-07` · predicate `SPEC.md` PROD-I-1 · fixture
 `CONF-I1` · today `FAIL`: no content address, no source addresses, no cost.
 
@@ -318,11 +315,11 @@ today `FAIL`: refuses on the spot instead of leaving a pending right.
 
 ### PROD-I-7 · Independent qualification
 
-Someone who was not here can find the authority, run the suite, reconstruct the
-evidence and reach a verdict with no oral explanation.
-Evidences `PROMISE-10`, `PROMISE-11`, and thinly `PROMISE-03` · predicate
-`SPEC.md` PROD-I-7 · fixture `CONF-I7` · today `FAIL`: no clean-room witness run
-and no competence measurement exist.
+Someone who was not here finds the authority, runs the suite, reconstructs the
+evidence and reaches a verdict with no oral explanation.
+Evidences `PROMISE-10`, `PROMISE-11`, thinly `PROMISE-03` · predicate `SPEC.md`
+PROD-I-7 · fixture `CONF-I7` · today `FAIL`: no clean-room witness run and no
+competence measurement exist.
 
 ### PROD-I-8 · Joint sign
 
@@ -334,55 +331,58 @@ today `FAIL`: general runtime attestation is not implemented.
 ### PROD-I-9 · Bring your own model
 
 From one unchanged node, two materially different model bindings attempt the
-same named operation through the same transitions, checks and receipts, each run
+same named operation through the same transitions, checks and receipts, each
 recording what it used and what it cost. Provider loss costs the provider.
 Evidences `PROMISE-01`, `PROMISE-02`, `PROMISE-06` · predicate `SPEC.md`
 PROD-I-9 · fixture `CONF-I9` · today `FAIL`: no model-binding contract and no
 two-model portability run.
 
-**Two requirements have no criterion.** `PROMISE-12` is delivered and was never
-graded; `PROMISE-16` is a boundary with no predicate.
-`conformance/requirements.py` enumerates exactly nine, so minting a tenth changes
-the oracle as well as this document. Which of the three admissible resolutions
-applies — mint, record as carried, or move out of scope — is Bdo's.
+### The two-binding proof
 
-## The two-binding proof
+One human-facing binding and two materially different model bindings run the
+same authoritative transitions and return compatible receipts; one model arrives
+through the BYOM contract. Three bindings in total, because either half alone is
+cheap and the pair is not. This profile's hardest criterion, and it evidences
+`PROMISE-01`, `PROMISE-04` and `PROMISE-06` together.
 
-One human-facing binding and two materially different model bindings must run
-the same authoritative transitions and return compatible receipts. One of the
-two models arrives through the BYOM contract. Three bindings in total: it is
-same-world parity and two-model substitutability proved at once, because either
-alone is cheap and the pair is not. This is the single hardest acceptance in the
-document and it evidences `PROMISE-01`, `PROMISE-04` and `PROMISE-06` together.
+### Later profiles
+
+Each roadmap phase past `P0` earns its own profile, and none exists yet. The
+shape is set here: named criteria with predicates in `SPEC.md` and fixtures in
+`conformance/`, addressed by identifier, never advanced by the document that
+declares them.
 
 ## Success metrics
 
 Usage metrics would be theatre on a node with one human and some models. These
-are evidence metrics, and every one is computable today from something that
-already exists. **Proposed, not accepted** — whether the standard's metrics
-section may be satisfied this way is Bdo's call.
+are evidence metrics, each computable from something that already exists.
+**Proposed, not accepted** — whether the standard's metrics section may be
+satisfied this way is Bdo's call.
 
 | Measure | Read by | Today | Target |
 | --- | --- | --- | --- |
-| Journeys walkable end to end | `sov_canon.py trace` | 2 of 14 | every `now`-phase journey |
-| Declared operations reachable | the operation surface | 5 of 140 | every operation a `now` journey needs |
-| Requirements with an independent observation | `sov_standing.py` | 0 | every P0 |
-| Promises carried by no requirement | this document | 0, after this revision | stays 0 |
+| Journeys walkable end to end | `sov_canon.py trace` | 2 of 14 | every in-scope journey |
+| Declared operations reachable | the operation surface | 5 of 140 | every operation a live journey needs |
+| Requirements independently observed | `sov_standing.py` | 0 | every P0 |
+| Promises carried by no criterion | this document | 2 | 0 |
+| Product areas serving no requirement | this document | 0 | stays 0 |
 | Reference participant conformance | the asset baseline | 1 of 9 | 9 of 9 |
-| Time for a fresh participant to become useful | the cold-start benchmark | measured daily | falling, drift explained |
-| Node operable with every provider removed | a drill, does not exist | unmeasured | passes |
+| Work items closed with a named terminal | does not exist | unmeasured | all |
+| Time for a fresh participant to be useful | the cold-start benchmark | measured daily | falling, drift explained |
+| Node operable with every provider removed | a drill; does not exist | unmeasured | passes |
 
-The last row is the honest gap: `PROMISE-02` is the product's central claim and
-nothing currently tests it by actually removing the providers.
+The last two rows are the honest gaps. Custody and closure is a top-level
+requirement with no counter behind it, and `PROMISE-02` is the product's central
+claim with nothing that tests it by actually removing the providers.
 
 ## Non-functional requirements
 
-Real and long-standing, and never collected in one place before. Stated here in
-one line each; the owning document is authority.
+Long-standing, and never collected in one place before. One line each; the
+owning document is authority.
 
 - **Local-first.** Tests use temporary directories, fixed inputs, bounded waits
   and no network. No external-world effect without a declared adapter, a data
-  boundary, and a receipt (`AGENTS.md`).
+  boundary and a receipt (`AGENTS.md`).
 - **Dependency restraint.** Python 3.11+, standard library by default. A runtime
   dependency requires a named boundary, an observed need, declared failure
   behaviour and a decision record (`ENGINEERING.md`).
@@ -393,118 +393,131 @@ one line each; the owning document is authority.
 - **Data boundary.** Every model crossing declares its mode. Silent provider
   fallback is forbidden (`BYOM.md`).
 - **Secrets.** Never committed, never printed in logs, receipts, exceptions,
-  prompts, fixtures or snapshots. Only opaque credential references (`AGENTS.md`).
+  prompts, fixtures or snapshots. Only opaque credential references.
 - **Portability.** No provider SDK type may enter a kernel or service contract.
 - **Storage.** SQLite for the reference record, content-addressed filesystem for
-  payload bytes. Search, graph and UI stores are rebuildable projections unless
-  a contract says otherwise.
+  payload bytes. Search, graph and interface stores are rebuildable projections
+  unless a contract says otherwise.
 - **Module budget.** Production modules under 300 lines, split by owned
   responsibility. Named debt is recorded rather than grandfathered.
+
+Security, reliability and accounting are product areas above with requirements
+still to be written. Isolation, recovery, disaster drills, tenancy and
+operational objectives are named in `ROADMAP.md` at `P5` and `P8` and have no
+requirement here yet. That is a gap, recorded rather than papered over.
 
 ## Surfaces
 
 Human and model bindings may present different projections and must resolve the
-same transitions, authority checks and receipts (`SPEC.md`, Interface parity).
-Phase-I surfaces are a CLI and declared machine interfaces; a graphical
-production interface is out of scope. The Console Service owns the operator
-surface — sessions, threads, posts, notifications, judgement requests, and
-declared dashboard and activity projections — and its continuity path is the
-only part built.
+same transitions, authority checks and receipts (`SPEC.md`, Interface parity). A
+board or interface holds no authority of its own: every object on it resolves to
+an addressed system object and every gesture to a declared operation. Today the
+surfaces are a CLI and declared machine interfaces; the Console Service owns the
+operator surface and only its continuity path is built.
 
 ## Dependencies and constraints
 
-- Every requirement above depends on the kernel transitions in
-  `contracts/kernel-transitions.json`. `invoke_model` is declared and
-  unimplemented, which blocks `PROMISE-01` and `PROMISE-06` at the same point.
-- `PROMISE-11` depends on an observation service that does not exist:
-  `observe_run` has no service behind it and `AI-NATIVE.md` check 3 reads
-  `UNATTESTABLE` on every service assessment.
-- `PROMISE-16` depends on the Proofing Service, and Proofing depends on Asset
-  version identity, which exists.
-- Five service boundaries — Gateway, Observation, Proofing, Projection, Registry
-  — are declared with no implementation.
-- `ENGINEERING.md` owns the growth triggers that decide when HTTP, queues,
+- Every model requirement depends on `invoke_model`, declared in
+  `contracts/kernel-transitions.json` and implemented by no kernel. It blocks
+  `PROMISE-01` and `PROMISE-06` at the same point.
+- Evidence depends on an observation service that does not exist: `observe_run`
+  has no service behind it, and `AI-NATIVE.md` check 3 reads `UNATTESTABLE` on
+  every service assessment.
+- Composition depends on Gateway, Identity and Authority crossings; four of the
+  eleven service boundaries are declared with no implementation.
+- Skills depend on a skill contract that does not exist. The `.claude/` harness
+  skills are host plumbing holding no standing and are not the product's skills.
+- `ENGINEERING.md` owns the growth triggers deciding when HTTP, queues,
   containers or a remote database become admissible. None has fired.
 
 ## Assumptions
 
 - One person and their models are a sufficient first market; a node whole at any
   size is not a reduced edition (`GROUND-016`).
-- Local models will remain capable enough to make provider substitution real
-  rather than nominal. Unproven and load-bearing for `PROMISE-02`.
-- The governing document set can carry product meaning without a database in
-  front of it. This has already strained once — the disconnection this revision
-  repairs went unnoticed for four days.
+- Local models will stay capable enough to make provider substitution real
+  rather than nominal. Unproven, and load-bearing for `PROMISE-02`.
 - Independent observation can be automated well enough to be routine. If it
-  cannot, `PROMISE-11` reduces to a human re-checking everything, and the
+  cannot, `PROMISE-11` reduces to a human re-checking everything and the
   delegation argument fails.
+- The governing document set can carry product meaning without a database in
+  front of it. This has strained once already: the disconnection between
+  `CANON.md` and this document went unnoticed for four days.
+- Twenty-two areas is a decomposition, not a discovery. If two of them keep
+  needing the same contract, they are one area.
 
 ## Risks and open questions
 
-`OPEN-SEAMS.md` is the register — nineteen seams open, one closed. The ones that
-bear on requirements:
+`OPEN-SEAMS.md` is the register — nineteen open, one closed. Bearing on
+requirements:
 
 - **The witness gap.** `GROUND-010` is a claim the node cannot presently keep,
-  said so in the accepted Ground itself. Highest-consequence open item.
-- **Two things are named gateway** (S18), a naming collision caught before both
-  halves exist.
-- **Unattestable effectiveness** (S4) and **cold-start semantics** (S5) both
-  gate `PROMISE-10`.
-- **Phase I closed incomplete** with no successor named
-  (`contracts/phases.json`). Five residual custodies are attached and
-  `PROPOSED`. Which campaign comes next is Bdo's to set and this document does
-  not presume it.
-- **Prioritization above is proposed and unaccepted.** If it is wrong, the
-  requirement register is misleading in the most consequential way a PRD can be.
+  said so in the accepted Ground. Highest-consequence open item, and `P0`
+  requirement `PROMISE-11` sits on it.
+- **Scope has widened faster than the canon.** Thirteen product areas serve no
+  promise, three of which are genuine undertakings. If the canon does not grow,
+  this document holds product intent the accepted layer above it does not.
+- **Grounding is new.** It appears in no contract or service and enters the
+  product here. It is the one area not read out of the repository.
+- **Priority is proposed and unaccepted.** If it is wrong, the register misleads
+  in the most consequential way a PRD can.
+- **`phase:i` closed incomplete** with `succeeded_by` null and five residual
+  custodies `PROPOSED`. Which roadmap phase opens next is Bdo's to set.
+- **Two things are named gateway** (S18); **unattestable effectiveness** (S4)
+  and **cold-start semantics** (S5) both gate `PROMISE-10`.
 
 ## Release plan
 
-This document does not schedule. `ROADMAP.md` owns the sequence, F0 through F6,
-and `contracts/phases.json` owns what each campaign committed to and how it
-ended. `phase:i` is closed `CLOSED_INCOMPLETE`; `succeeded_by` is null.
+This document does not schedule. `ROADMAP.md` owns the ladder, `P0` through
+`P9`, each exiting on a demonstrated product result rather than component
+percentages. `contracts/phases.json` owns what a campaign committed to and how
+it ended.
 
 ## Out of scope
 
-- A graphical production interface.
-- Automated external-world effects.
-- World rollback.
-- Distributed consensus. Federation between nodes is `LATER`, not never.
+- A graphical production interface ahead of `P4`.
+- Automated external-world effects ahead of `P6`, which is an owner decision
+  rather than an engineering one.
+- World rollback. Retraction adds a counter-record and never claims consumed
+  resources came back.
+- Distributed consensus.
 - A universal ontology or a frozen encoding.
 - Importing a predecessor implementation wholesale.
 - Optimizing performance ahead of semantic conformance.
 - Treating the chosen name as evidence of maturity or public clearance.
-- Treating any one subsystem — Gauge, Definition, Atlas, Asset — as the product.
+- Treating any one area — Asset, Gateway, Skills, Boards, Federation — as the
+  product.
 
 ## References
 
 `GROUND.md` · `CANON.md` · `SYSTEM.md` · `CONTRACT.md` · `CLASSIFICATION.md` ·
-`SPEC.md` · `AI-NATIVE.md` · `BYOM.md` · `ENGINEERING.md` · `ROADMAP.md` ·
-`SDLC.md` · `OPEN-SEAMS.md` · `STATUS.yaml` · `PRD-PHASE-I.md` ·
-`contracts/phases.json` · `contracts/product-canon.json` ·
-`contracts/product-ground.json` · `conformance/requirements.py` ·
+`SPEC.md` · `AI-NATIVE.md` · `BYOM.md` · `ENGINEERING.md` · `SDLC.md` ·
+`ROADMAP.md` · `ROADMAP-F0-F6.md` · `OPEN-SEAMS.md` · `STATUS.yaml` ·
+`PRD-PHASE-I.md` · `contracts/phases.json` · `contracts/product-canon.json` ·
+`contracts/product-ground.json` · `contracts/closure-ownership.json` ·
+`contracts/custodies.json` · `conformance/requirements.py` ·
 `services/asset/conformance/BASELINE.md` · `decisions/0052` · `decisions/0081`
 
 ## Standing
 
-`PROPOSED`. Nothing here is owner-accepted until Bdo accepts it. `PRD.md` is a
-root governing document and sits outside the standing landing grant
-(`contracts/standing-grants.json`), so this revision lands by his hand and not by
-the loop.
+`PRODUCT SCOPE CANDIDATE`, artifact standing `OPEN`. `PRD.md` is a root
+governing document and sits outside the standing landing grant
+(`contracts/standing-grants.json`), so this lands by Bdo's hand and not by the
+loop. It changes no standing in `STATUS.yaml`.
 
-Carried forward unchanged in meaning from revision 1: the two-binding proof and
-the out-of-scope list. Moved out: the nine predicates and their defeating cases,
-which `SPEC.md` and `conformance/` already owned. Added: a problem statement,
-success metrics, prioritization, non-functional requirements, surfaces,
-dependencies, assumptions, risks, and the joins to `GROUND.md` and `CANON.md`
-that revision 1 never had.
+Owner-directed: the title, the subtitle, the product outcome, the twenty-two
+areas, and the custody and closure requirement, all stated by Bdo on 2026-08-28.
+Drafted from the repository and proposed: the problem statement, the priority
+ordering, the success metrics, the per-area standing readings, and the coverage
+finding.
 
-What would defeat this revision:
+What would defeat this document:
 
-- a requirement here that fails the admission test — failing it would not mean
-  the product is unfinished;
-- a requirement that is not a promise in `CANON.md`, which would mean product
-  intent was invented below the layer that holds it;
-- a `CANON.md` promise absent from the register above;
+- a requirement that fails the admission test — failing it would not mean the
+  product is unfinished;
+- a product area that no requirement serves, or a requirement that belongs to no
+  area;
+- a user-facing undertaking here that `CANON.md` does not promise, which would
+  mean product intent was invented below the layer that holds it;
 - a predicate or defeating case restated here rather than cited, which is the
   defect that ended revision 1;
 - a priority ordering Bdo rejects, which is the most likely correction and the

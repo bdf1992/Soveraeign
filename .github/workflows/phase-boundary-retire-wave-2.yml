@@ -1,0 +1,118 @@
+name: phase boundary retire wave 2
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/phase-boundary-retire-wave-2.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase-boundary-retire-wave-2
+  cancel-in-progress: false
+
+jobs:
+  retire:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build exact wave-2 closure batch
+        env:
+          ACTIONS_PATH: ${{ runner.temp }}/phase-boundary-retire-wave-2.json
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          branches = [
+              "backup/plane-separation-pre-rewrite",
+              "claude/console-terminal-interfaces-5d0lzg",
+              "claude/federation-architecture-redesign-hkaltp",
+              "claude/pre-acceptance-ownership-sovereignty-x7r0h9",
+              "claude/ui-primitives-service-nav-rfqg7t",
+              "feat/console-human-workspace",
+              "feat/f2-control-loop",
+              "feat/f2-integration",
+              "feat/surface-states-what-is-covered",
+              "fix/continuity-hook-honest-failure",
+              "merge/main-into-federation",
+              "rescue/stash-0",
+              "sov/milestone-witness-queue",
+          ]
+          assert len(branches) == 13
+          assert len(set(branches)) == 13
+          assert "main" not in branches
+
+          actions = []
+          for index, branch in enumerate(branches, 1):
+              actions.append({
+                  "id": f"phase-boundary-wave2-delete-{index:03d}",
+                  "kind": "BRANCH_DELETE",
+                  "target": branch,
+                  "argument": branch,
+                  "effect_class": "EXTERNAL_WORLD",
+                  "evidence": "Issue #148 C0023/C0025/C0026 records the evidence-backed terminal disposition",
+                  "rule": "Issue #148 phase-boundary closure: durable meaning lives in main, owning tickets, closed PRs, or stronger surviving carriers rather than stale refs",
+                  "recommendation": "delete this exact remote ref",
+              })
+          Path(os.environ["ACTIONS_PATH"]).write_text(
+              json.dumps(actions, indent=2) + "\n", encoding="utf-8", newline="\n"
+          )
+          print(f"prepared {len(actions)} exact wave-2 retirement actions")
+          PY
+
+      - name: Retire through repository GitHub write crossing
+        id: apply
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ACTIONS_PATH: ${{ runner.temp }}/phase-boundary-retire-wave-2.json
+          RECEIPTS_PATH: ${{ runner.temp }}/phase-boundary-retire-wave-2.receipts.json
+        run: |
+          python adapters/github/apply.py \
+            --repo "$GITHUB_REPOSITORY" \
+            --actions "$ACTIONS_PATH" \
+            --receipts "$RECEIPTS_PATH"
+
+      - name: Publish exact actions and receipts
+        if: always()
+        env:
+          ACTIONS_PATH: ${{ runner.temp }}/phase-boundary-retire-wave-2.json
+          RECEIPTS_PATH: ${{ runner.temp }}/phase-boundary-retire-wave-2.receipts.json
+        run: |
+          echo "## Phase-boundary retirement wave 2" >> "$GITHUB_STEP_SUMMARY"
+          echo "Issue #148 C0023/C0025/C0026 is the durable disposition record." >> "$GITHUB_STEP_SUMMARY"
+          echo "### Actions" >> "$GITHUB_STEP_SUMMARY"
+          echo '```json' >> "$GITHUB_STEP_SUMMARY"
+          cat "$ACTIONS_PATH" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo "### Receipts" >> "$GITHUB_STEP_SUMMARY"
+          echo '```json' >> "$GITHUB_STEP_SUMMARY"
+          if [ -f "$RECEIPTS_PATH" ]; then cat "$RECEIPTS_PATH"; else echo '[]'; fi >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Require every wave-2 retirement to be APPLIED
+        if: always()
+        env:
+          RECEIPTS_PATH: ${{ runner.temp }}/phase-boundary-retire-wave-2.receipts.json
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          path = Path(os.environ["RECEIPTS_PATH"])
+          if not path.exists():
+              raise SystemExit("wave-2 retirement produced no receipt file")
+          receipts = json.loads(path.read_text(encoding="utf-8"))
+          failed = [r for r in receipts if r.get("outcome") != "APPLIED"]
+          print(f"{len(receipts) - len(failed)}/{len(receipts)} wave-2 retirement actions APPLIED")
+          if failed:
+              for item in failed:
+                  print(item)
+              raise SystemExit(1)
+          PY

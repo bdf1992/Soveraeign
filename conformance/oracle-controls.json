@@ -32,7 +32,8 @@
         "surface_id": "console:thread_02c3d2d8b98140f8",
         "operator_id": "bdo",
         "receipt_id": "rcpt-i1-1",
-        "readable_by_operator": true
+        "readable_by_operator": true,
+        "proposal_id": "p1"
       },
       "authority_claim": {
         "asserted": true,
@@ -71,7 +72,8 @@
         "surface_id": "console:thread_02c3d2d8b98140f8",
         "operator_id": "bdo",
         "receipt_id": "rcpt-i1-1",
-        "readable_by_operator": true
+        "readable_by_operator": true,
+        "proposal_id": "p2"
       },
       "authority_claim": {
         "asserted": true,
@@ -115,9 +117,7 @@
       }
     },
     "predicates": [
-      "PRED-I-1.2",
-      "TRANS-admit",
-      "TRANS-cross"
+      "TRANS-admit"
     ]
   },
   {
@@ -147,7 +147,8 @@
         "surface_id": "console:thread_02c3d2d8b98140f8",
         "operator_id": "bdo",
         "receipt_id": "rcpt-i1-4",
-        "readable_by_operator": true
+        "readable_by_operator": true,
+        "proposal_id": "p4"
       },
       "authority_claim": {
         "asserted": true,
@@ -158,7 +159,6 @@
       }
     },
     "predicates": [
-      "PRED-I-1.1",
       "TRANS-submit_proposal",
       "TRANS-admit"
     ]

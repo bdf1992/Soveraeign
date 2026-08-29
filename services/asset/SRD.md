@@ -102,7 +102,7 @@ cannot be reconstructed; an incomplete reader is admitted instead of refused;
 or output-only success conceals later source corruption
 (`conformance/PROD-I-2-BUILD.md`, Residuals).
 
-### SVC-ASSET-4 · A proposal claims no authority
+### SVC-ASSET-4 · A proposal's authority claim is recorded, never honored
 
 Standing: `BUILT`, incompletely. Serves `PROD-I-1`.
 
@@ -113,8 +113,17 @@ full `PROD-I-1` defeating case: `conformance/BASELINE.md` records `PROD-I-1 ·
 Propose: FAIL` — "proposal lacks content address, source addresses, and cost
 record."
 
-Defeating case (per `PRD.md`, already observed against this participant): a
-proposal missing author, cost, source, or proposal standing is admitted.
+`PROD-I-1` was rewritten on 2026-08-28 and this clause has not caught up. Two
+of its three defeating cases are unserved here: the participant delivers a
+proposal to no operator surface, and it records no authority claim at all, so
+the distinction between asserting authority and being granted it is not one
+this service can currently express. Both are unmeasured rather than failing —
+`BASELINE.md` predates the rewrite.
+
+Defeating cases (per `PRD.md`; only the first is observed against this
+participant): a proposal missing author, cost, source, or proposal standing is
+admitted; a proposal is admitted without reaching an operator surface; an
+instanced session's asserted authority is honored as held authority.
 
 ### SVC-ASSET-5 · Ratification requires a live matching human grant
 

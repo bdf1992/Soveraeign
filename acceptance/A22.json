@@ -1,0 +1,68 @@
+{
+  "packet_schema": "soveraeign-acceptance-packet/v1",
+  "packet_id": "A22",
+  "claim": "PROD-I-1 now says what you said it should: a proposal is not finished until it reaches a named operator surface, and the model does assert authority but the assertion is void because the session is an instance. The old text claimed the candidate 'claims no authority', which the repository's own positive control had contradicted since before this change - CONF-I1-POS has always carried required_authority_type on the proposal. Two things need your judgement, and neither is whether the rewrite is correct. First: Phase I closed on 2026-08-27 and contracts/phases.json pins PRD.md so a closed phase cannot narrow its own definition. I moved that pin. Should a closed phase carry a requirement edited after its terminal, or should the successor campaign carry it? Second: the two new clauses are not registered as SPEC.md predicates, so PRD.md now requires something SPEC.md does not state. Registering them honestly moves the F2 gate from 44 predicates to 46 and from 8 open to 10, which makes the exit visibly further away.",
+  "subject": {
+    "artifact": "PRD.md",
+    "from_standing": "OPEN",
+    "to_standing": "BUILT"
+  },
+  "presented_by_seat": "seat:session-control",
+  "accepted_by_seat": "seat:root",
+  "claim_type": "JUDGEMENT",
+  "built_by": {
+    "actor_id": "urn:soveraeign:actor:claude-interactive-session",
+    "actor_kind": "MODEL"
+  },
+  "witnessed_by": null,
+  "visible_result": {
+    "demo": [
+      "python",
+      "conformance/run.py"
+    ],
+    "shows": "the two defeating cases that did not exist before, each failing for its own reason",
+    "expect": "CONF-I1-SURFACE-DEF fails with 'admitted proposal never reached an operator surface'. CONF-I1-CLAIM-DEF fails with \"an instanced session's asserted authority was honored\" and 'a grant was attached to an instanced session'. CONF-I1-POS passes with 0 defects and CONF-I1-DEF still fails with exactly its original three missing-field defects. SUITE PASS at 22 cases, 0 coverage gaps. Trap T2 applies: that green means the corpus is internally consistent, not that any participant satisfies PROD-I-1. No participant is bound - sov_f2_gate reads bound_participants_ok false."
+  },
+  "evidence": [
+    {
+      "address": "PRD.md",
+      "digest": null,
+      "says": "PROD-I-1 rewritten. The result must reach a named operator surface where a human can read it and act on it; the candidate states the authority it would need; the session asserts that authority and the record does not grant it, because an instanced session holds no continuous identity a grant can attach to. Three defeating cases where there was one."
+    },
+    {
+      "address": "conformance/requirements.py",
+      "digest": null,
+      "says": "i1_delivery and i1_authority_claim. Nine refusal branches, every one killed by an isolating test - the mutation probe run after repair reports 0 surviving branches, where the witness's first run found 5 survivors."
+    },
+    {
+      "address": "conformance/tests/test_prod_i1.py",
+      "digest": null,
+      "says": "new. 13 cases, each spoiling exactly one field of an otherwise clean observation, so each refusal is reached on its own rather than incidentally by a control that trips several at once."
+    },
+    {
+      "address": "contracts/phases.json",
+      "digest": null,
+      "says": "the PRD.md pin moved, and the note records why the obvious warrant does not hold: sov_f2_gate never opens PRD.md, so its unchanged 44/36/8 proves nothing about this document. The witness demonstrated this by gutting PROD-I-1 to one sentence and reading identical numbers. The warrant given instead is that PROD-I-1 appears in no exit clause."
+    },
+    {
+      "address": "services/asset/SRD.md",
+      "digest": null,
+      "says": "SVC-ASSET-4 retitled and corrected. It still carried the retired 'A proposal claims no authority' clause and cited a PRD.md defeating case that no longer reads that way. Two of the three current defeating cases are unserved by the participant, and the clause now says so."
+    }
+  ],
+  "why_it_matters": "The requirement was satisfiable by depositing a record nobody ever read. That is the failure mode the whole system is built against - a model produces something, the record says it happened, and no human is in the loop at any point. Requiring an operator surface puts the human back in the path by contract rather than by hope. The authority half matters for a different reason: the old text described a wish rather than a rule. Saying the candidate 'claims no authority' asks the model to be well-behaved. Saying the session asserts authority and the record refuses to honor it, because an instance has no identity a grant can attach to, is something a check can enforce - and the check now refuses the escape hatch of a session declaring itself CONTINUOUS to keep a grant.",
+  "what_could_defeat_it": [
+    "A reading where the rewritten PROD-I-1 makes any Phase I exit clause easier. I could not find one and the witness could not either, but neither of us is the owner of that judgement.",
+    "The position that a closed phase's definition should never move at all, in which case the correct shape is a Phase II requirement and contracts/phases.json should be reverted to the 2026-08-27 pin.",
+    "A participant binding that shows i1_delivery grades nothing real. Today it grades the participant's own report: a fabricated surface_id passes, and readable_by_operator is the participant answering the question the requirement asks. The one relation the record can check for itself - that the receipt names the proposal under test - is enforced; the rest waits on a bound participant."
+  ],
+  "residuals": [
+    "witnessed_by is null. An independent sov-witness pass refused to support BUILT -> WITNESSED on the first commit of this branch and returned five findings: coverage backfilled onto predicates the new controls did not defeat, a false measurement claim written into contracts/phases.json, five refusal branches with no isolating fixture, checks that graded the participant's self-report, and unrepaired drift in services/asset/SRD.md. All five are repaired here and a second pass is required before this packet claims any standing.",
+    "PRD.md requires something SPEC.md does not state. The two new clauses are not registered as normative predicates, so the F2 gate cannot see them. Registering them as PRED-I-1.3 and PRED-I-1.4 moves the reading to 46 total and 10 open, and moves SPEC.md, which is itself pinned in the same phase record.",
+    "No participant is bound, so whether an admitted proposal actually reaches a human is unattestable. The requirement is stated and checkable in shape only.",
+    "services/asset/conformance/BASELINE.md predates the rewrite and has not been re-run against it. SVC-ASSET-4 records this rather than repairing it, because re-baselining the participant is Asset Service work, not requirements work.",
+    "python scripts/verify.py exits 1 on this host at 33-41s against the 30s catastrophic ceiling, on origin/main as well as on this branch. It is host load on a box running seven sessions, not this change, but scripts/sov_land.py runs verify before its gate, so the landing gate will refuse until the host is quieter or the ceiling is revisited."
+  ],
+  "on_accept": "The pin stands as moved and Phase I carries the rewritten PROD-I-1. If you also want the predicates registered, that is a second bounded concern that moves SPEC.md and the 44 that PHASE-I-X1 counts.",
+  "on_reject": "Revert contracts/phases.json to the 2026-08-27 PRD.md pin and carry the new PROD-I-1 as a successor-phase requirement instead. The conformance work, the tests, and the Asset SRD correction stand either way - none of them depend on which phase owns the requirement."
+}

@@ -1,255 +1,803 @@
 [
   {
     "id": "CONF-I1-POS",
-    "predicates": ["PRED-I-1.1", "PRED-I-1.2", "TRANS-submit_proposal", "TRANS-admit"],
+    "predicates": [
+      "PRED-I-1.1",
+      "PRED-I-1.2",
+      "TRANS-submit_proposal",
+      "TRANS-admit"
+    ],
     "requirement": "PROD-I-1",
     "polarity": "positive",
     "expected_oracle": "PASS",
     "observed": {
-      "proposal": {"proposal_id": "p1", "actor_id": "model-1", "actor_kind": "MODEL", "content_address": "sha256:p1", "source_addresses": ["sha256:s1"], "cost_record": {"unit": "token", "amount": 42}, "required_authority_type": "JUDGEMENT", "scope": "asset:a1", "standing": "RECORDED"},
-      "admitted": true
+      "proposal": {
+        "proposal_id": "p1",
+        "actor_id": "model-1",
+        "actor_kind": "MODEL",
+        "content_address": "sha256:p1",
+        "source_addresses": [
+          "sha256:s1"
+        ],
+        "cost_record": {
+          "unit": "token",
+          "amount": 42
+        },
+        "required_authority_type": "JUDGEMENT",
+        "scope": "asset:a1",
+        "standing": "RECORDED"
+      },
+      "admitted": true,
+      "delivery": {
+        "surface_id": "console:thread_02c3d2d8b98140f8",
+        "operator_id": "bdo",
+        "receipt_id": "rcpt-i1-1",
+        "readable_by_operator": true
+      },
+      "authority_claim": {
+        "asserted": true,
+        "asserted_authority_type": "JUDGEMENT",
+        "actor_continuity": "INSTANCE",
+        "honored": false,
+        "grant_id": null
+      }
     }
   },
   {
     "id": "CONF-I1-DEF",
-    "predicates": ["PRED-I-1.1", "PRED-I-1.2", "TRANS-submit_proposal", "TRANS-admit"],
+    "predicates": [
+      "PRED-I-1.1",
+      "PRED-I-1.2",
+      "TRANS-submit_proposal",
+      "TRANS-admit"
+    ],
     "requirement": "PROD-I-1",
     "polarity": "defeating",
     "expected_oracle": "FAIL",
     "observed": {
-      "proposal": {"proposal_id": "p2", "actor_id": "model-1", "actor_kind": "MODEL", "content_address": "sha256:p2", "source_addresses": [], "cost_record": null, "required_authority_type": "JUDGEMENT", "scope": "asset:a1", "standing": "ADMITTED"},
-      "admitted": true
+      "proposal": {
+        "proposal_id": "p2",
+        "actor_id": "model-1",
+        "actor_kind": "MODEL",
+        "content_address": "sha256:p2",
+        "source_addresses": [],
+        "cost_record": null,
+        "required_authority_type": "JUDGEMENT",
+        "scope": "asset:a1",
+        "standing": "ADMITTED"
+      },
+      "admitted": true,
+      "delivery": {
+        "surface_id": "console:thread_02c3d2d8b98140f8",
+        "operator_id": "bdo",
+        "receipt_id": "rcpt-i1-1",
+        "readable_by_operator": true
+      },
+      "authority_claim": {
+        "asserted": true,
+        "asserted_authority_type": "JUDGEMENT",
+        "actor_continuity": "INSTANCE",
+        "honored": false,
+        "grant_id": null
+      }
     }
   },
   {
+    "id": "CONF-I1-SURFACE-DEF",
+    "requirement": "PROD-I-1",
+    "polarity": "defeating",
+    "expected_oracle": "FAIL",
+    "observed": {
+      "proposal": {
+        "proposal_id": "p3",
+        "actor_id": "model-1",
+        "actor_kind": "MODEL",
+        "content_address": "sha256:p3",
+        "source_addresses": [
+          "sha256:s1"
+        ],
+        "cost_record": {
+          "unit": "token",
+          "amount": 42
+        },
+        "required_authority_type": "JUDGEMENT",
+        "scope": "asset:a1",
+        "standing": "RECORDED"
+      },
+      "admitted": true,
+      "delivery": null,
+      "authority_claim": {
+        "asserted": true,
+        "asserted_authority_type": "JUDGEMENT",
+        "actor_continuity": "INSTANCE",
+        "honored": false,
+        "grant_id": null
+      }
+    },
+    "predicates": [
+      "PRED-I-1.2",
+      "TRANS-admit",
+      "TRANS-cross"
+    ]
+  },
+  {
+    "id": "CONF-I1-CLAIM-DEF",
+    "requirement": "PROD-I-1",
+    "polarity": "defeating",
+    "expected_oracle": "FAIL",
+    "observed": {
+      "proposal": {
+        "proposal_id": "p4",
+        "actor_id": "model-1",
+        "actor_kind": "MODEL",
+        "content_address": "sha256:p4",
+        "source_addresses": [
+          "sha256:s1"
+        ],
+        "cost_record": {
+          "unit": "token",
+          "amount": 42
+        },
+        "required_authority_type": "JUDGEMENT",
+        "scope": "asset:a1",
+        "standing": "RECORDED"
+      },
+      "admitted": true,
+      "delivery": {
+        "surface_id": "console:thread_02c3d2d8b98140f8",
+        "operator_id": "bdo",
+        "receipt_id": "rcpt-i1-4",
+        "readable_by_operator": true
+      },
+      "authority_claim": {
+        "asserted": true,
+        "asserted_authority_type": "JUDGEMENT",
+        "actor_continuity": "INSTANCE",
+        "honored": true,
+        "grant_id": "grant:invented-by-generation"
+      }
+    },
+    "predicates": [
+      "PRED-I-1.1",
+      "TRANS-submit_proposal",
+      "TRANS-admit"
+    ]
+  },
+  {
     "id": "CONF-I2-POS",
-    "predicates": ["PRED-I-2.2", "PRED-I-2.3", "TRANS-read_source"],
+    "predicates": [
+      "PRED-I-2.2",
+      "PRED-I-2.3",
+      "TRANS-read_source"
+    ],
     "requirement": "PROD-I-2",
     "polarity": "positive",
     "expected_oracle": "PASS",
     "observed": {
-      "source_before_digest": "sha256:source", "source_after_digest": "sha256:source",
-      "recording": {"source_id": "s1", "source_digest": "sha256:source", "reader_id": "reader", "reader_version": "1", "configuration_digest": "sha256:config", "payload_digest": "sha256:output", "fidelity": "LOSSY", "omissions": ["color-profile"]}
+      "source_before_digest": "sha256:source",
+      "source_after_digest": "sha256:source",
+      "recording": {
+        "source_id": "s1",
+        "source_digest": "sha256:source",
+        "reader_id": "reader",
+        "reader_version": "1",
+        "configuration_digest": "sha256:config",
+        "payload_digest": "sha256:output",
+        "fidelity": "LOSSY",
+        "omissions": [
+          "color-profile"
+        ]
+      }
     }
   },
   {
     "id": "CONF-I2-DEF",
-    "predicates": ["PRED-I-2.2", "PRED-I-2.3", "TRANS-read_source"],
+    "predicates": [
+      "PRED-I-2.2",
+      "PRED-I-2.3",
+      "TRANS-read_source"
+    ],
     "requirement": "PROD-I-2",
     "polarity": "defeating",
     "expected_oracle": "FAIL",
     "observed": {
-      "source_before_digest": "sha256:source", "source_after_digest": "sha256:mutated",
-      "recording": {"source_id": "s1", "source_digest": "sha256:source", "reader_id": "reader", "reader_version": null, "configuration_digest": "sha256:config", "payload_digest": "sha256:output", "fidelity": "LOSSY", "omissions": []}
+      "source_before_digest": "sha256:source",
+      "source_after_digest": "sha256:mutated",
+      "recording": {
+        "source_id": "s1",
+        "source_digest": "sha256:source",
+        "reader_id": "reader",
+        "reader_version": null,
+        "configuration_digest": "sha256:config",
+        "payload_digest": "sha256:output",
+        "fidelity": "LOSSY",
+        "omissions": []
+      }
     }
   },
   {
     "id": "CONF-I3-POS",
-    "predicates": ["PRED-I-3.1", "PRED-I-3.2", "TRANS-cross", "PARITY-2", "PARITY-5"],
+    "predicates": [
+      "PRED-I-3.1",
+      "PRED-I-3.2",
+      "TRANS-cross",
+      "PARITY-2",
+      "PARITY-5"
+    ],
     "requirement": "PROD-I-3",
     "polarity": "positive",
     "expected_oracle": "PASS",
     "observed": {
-      "human": {"transition_contract": "kernel-v1", "direct_write": false, "receipt_id": "r-human"},
-      "model": {"transition_contract": "kernel-v1", "direct_write": false, "receipt_id": "r-model"},
-      "crossing": {"source_id": "s1", "source_version": "v1", "projection_id": "view-v1", "omissions": [], "destination_id": "model-context"}
+      "human": {
+        "transition_contract": "kernel-v1",
+        "direct_write": false,
+        "receipt_id": "r-human"
+      },
+      "model": {
+        "transition_contract": "kernel-v1",
+        "direct_write": false,
+        "receipt_id": "r-model"
+      },
+      "crossing": {
+        "source_id": "s1",
+        "source_version": "v1",
+        "projection_id": "view-v1",
+        "omissions": [],
+        "destination_id": "model-context"
+      }
     }
   },
   {
     "id": "CONF-I3-DEF",
-    "predicates": ["PRED-I-3.1", "PRED-I-3.2", "TRANS-cross", "PARITY-2", "PARITY-5"],
+    "predicates": [
+      "PRED-I-3.1",
+      "PRED-I-3.2",
+      "TRANS-cross",
+      "PARITY-2",
+      "PARITY-5"
+    ],
     "requirement": "PROD-I-3",
     "polarity": "defeating",
     "expected_oracle": "FAIL",
     "observed": {
-      "human": {"transition_contract": "kernel-v1", "direct_write": false, "receipt_id": "r-human"},
-      "model": {"transition_contract": "model-special", "direct_write": true, "receipt_id": null},
-      "crossing": {"source_id": null, "source_version": null, "projection_id": "chat", "omissions": null, "destination_id": "model-context"}
+      "human": {
+        "transition_contract": "kernel-v1",
+        "direct_write": false,
+        "receipt_id": "r-human"
+      },
+      "model": {
+        "transition_contract": "model-special",
+        "direct_write": true,
+        "receipt_id": null
+      },
+      "crossing": {
+        "source_id": null,
+        "source_version": null,
+        "projection_id": "chat",
+        "omissions": null,
+        "destination_id": "model-context"
+      }
     }
   },
   {
     "id": "CONF-I4-POS",
-    "predicates": ["PRED-I-4.1", "PRED-I-4.2", "TRANS-retract"],
+    "predicates": [
+      "PRED-I-4.1",
+      "PRED-I-4.2",
+      "TRANS-retract"
+    ],
     "requirement": "PROD-I-4",
     "polarity": "positive",
     "expected_oracle": "PASS",
     "observed": {
-      "original_record_present": true, "counter_record_present": true,
-      "effect_class": "RECORD_LOCAL", "claims_world_rollback": false,
-      "receipt": {"outcome": "COUNTERED", "target_receipt_id": "r-original"}
+      "original_record_present": true,
+      "counter_record_present": true,
+      "effect_class": "RECORD_LOCAL",
+      "claims_world_rollback": false,
+      "receipt": {
+        "outcome": "COUNTERED",
+        "target_receipt_id": "r-original"
+      }
     }
   },
   {
     "id": "CONF-I4-DEF",
-    "predicates": ["PRED-I-4.1", "PRED-I-4.2", "TRANS-retract"],
+    "predicates": [
+      "PRED-I-4.1",
+      "PRED-I-4.2",
+      "TRANS-retract"
+    ],
     "requirement": "PROD-I-4",
     "polarity": "defeating",
     "expected_oracle": "FAIL",
     "observed": {
-      "original_record_present": false, "counter_record_present": false,
-      "effect_class": "EXTERNAL_WORLD", "claims_world_rollback": true,
+      "original_record_present": false,
+      "counter_record_present": false,
+      "effect_class": "EXTERNAL_WORLD",
+      "claims_world_rollback": true,
       "receipt": null
     }
   },
   {
     "id": "CONF-I5-POS",
-    "predicates": ["PRED-I-5.1", "PRED-I-5.2", "TRANS-ratify"],
+    "predicates": [
+      "PRED-I-5.1",
+      "PRED-I-5.2",
+      "TRANS-ratify"
+    ],
     "requirement": "PROD-I-5",
     "polarity": "positive",
     "expected_oracle": "PASS",
     "observed": {
       "attempts": [
-        {"actor_kind": "MODEL", "authority_type": "VERIFICATION", "claim_type": "VERIFICATION", "grant_live": true, "scope_matches": true, "budget_available": true, "outcome": "COMMITTED", "receipt_id": "r1"},
-        {"actor_kind": "MODEL", "authority_type": "VERIFICATION", "claim_type": "JUDGEMENT", "grant_live": true, "scope_matches": true, "budget_available": true, "outcome": "REFUSED", "receipt_id": "r2"}
+        {
+          "actor_kind": "MODEL",
+          "authority_type": "VERIFICATION",
+          "claim_type": "VERIFICATION",
+          "grant_live": true,
+          "scope_matches": true,
+          "budget_available": true,
+          "outcome": "COMMITTED",
+          "receipt_id": "r1"
+        },
+        {
+          "actor_kind": "MODEL",
+          "authority_type": "VERIFICATION",
+          "claim_type": "JUDGEMENT",
+          "grant_live": true,
+          "scope_matches": true,
+          "budget_available": true,
+          "outcome": "REFUSED",
+          "receipt_id": "r2"
+        }
       ]
     }
   },
   {
     "id": "CONF-I5-DEF",
-    "predicates": ["PRED-I-5.1", "PRED-I-5.2", "TRANS-ratify"],
+    "predicates": [
+      "PRED-I-5.1",
+      "PRED-I-5.2",
+      "TRANS-ratify"
+    ],
     "requirement": "PROD-I-5",
     "polarity": "defeating",
     "expected_oracle": "FAIL",
     "observed": {
       "attempts": [
-        {"actor_kind": "MODEL", "authority_type": "VERIFICATION", "claim_type": "JUDGEMENT", "grant_live": true, "scope_matches": true, "budget_available": true, "outcome": "COMMITTED", "receipt_id": null}
+        {
+          "actor_kind": "MODEL",
+          "authority_type": "VERIFICATION",
+          "claim_type": "JUDGEMENT",
+          "grant_live": true,
+          "scope_matches": true,
+          "budget_available": true,
+          "outcome": "COMMITTED",
+          "receipt_id": null
+        }
       ]
     }
   },
   {
     "id": "CONF-I5-GRANT-POS",
-    "predicates": ["PRED-I-5.1", "PRED-I-5.2", "PRED-I-5.3", "TRANS-ratify"],
+    "predicates": [
+      "PRED-I-5.1",
+      "PRED-I-5.2",
+      "PRED-I-5.3",
+      "TRANS-ratify"
+    ],
     "requirement": "PROD-I-5",
     "polarity": "positive",
     "expected_oracle": "PASS",
     "observed": {
       "attempts": [
-        {"actor_kind": "MODEL", "authority_type": "VERIFICATION", "claim_type": "VERIFICATION", "grant_live": true, "scope_matches": true, "budget_available": true, "outcome": "COMMITTED", "receipt_id": "r-live"},
-        {"actor_kind": "MODEL", "authority_type": "VERIFICATION", "claim_type": "JUDGEMENT", "grant_live": true, "scope_matches": true, "budget_available": true, "outcome": "REFUSED", "receipt_id": "r-judgement"},
-        {"actor_kind": "MODEL", "authority_type": "VERIFICATION", "claim_type": "VERIFICATION", "grant_live": false, "scope_matches": true, "budget_available": true, "outcome": "REFUSED", "receipt_id": "r-revoked"},
-        {"actor_kind": "MODEL", "authority_type": "VERIFICATION", "claim_type": "VERIFICATION", "grant_live": true, "scope_matches": false, "budget_available": true, "outcome": "REFUSED", "receipt_id": "r-out-of-scope"},
-        {"actor_kind": "MODEL", "authority_type": "VERIFICATION", "claim_type": "VERIFICATION", "grant_live": true, "scope_matches": true, "budget_available": false, "outcome": "REFUSED", "receipt_id": "r-over-budget"}
+        {
+          "actor_kind": "MODEL",
+          "authority_type": "VERIFICATION",
+          "claim_type": "VERIFICATION",
+          "grant_live": true,
+          "scope_matches": true,
+          "budget_available": true,
+          "outcome": "COMMITTED",
+          "receipt_id": "r-live"
+        },
+        {
+          "actor_kind": "MODEL",
+          "authority_type": "VERIFICATION",
+          "claim_type": "JUDGEMENT",
+          "grant_live": true,
+          "scope_matches": true,
+          "budget_available": true,
+          "outcome": "REFUSED",
+          "receipt_id": "r-judgement"
+        },
+        {
+          "actor_kind": "MODEL",
+          "authority_type": "VERIFICATION",
+          "claim_type": "VERIFICATION",
+          "grant_live": false,
+          "scope_matches": true,
+          "budget_available": true,
+          "outcome": "REFUSED",
+          "receipt_id": "r-revoked"
+        },
+        {
+          "actor_kind": "MODEL",
+          "authority_type": "VERIFICATION",
+          "claim_type": "VERIFICATION",
+          "grant_live": true,
+          "scope_matches": false,
+          "budget_available": true,
+          "outcome": "REFUSED",
+          "receipt_id": "r-out-of-scope"
+        },
+        {
+          "actor_kind": "MODEL",
+          "authority_type": "VERIFICATION",
+          "claim_type": "VERIFICATION",
+          "grant_live": true,
+          "scope_matches": true,
+          "budget_available": false,
+          "outcome": "REFUSED",
+          "receipt_id": "r-over-budget"
+        }
       ]
     }
   },
   {
     "id": "CONF-I5-GRANT-DEF",
-    "predicates": ["PRED-I-5.1", "PRED-I-5.2", "PRED-I-5.3", "TRANS-ratify"],
+    "predicates": [
+      "PRED-I-5.1",
+      "PRED-I-5.2",
+      "PRED-I-5.3",
+      "TRANS-ratify"
+    ],
     "requirement": "PROD-I-5",
     "polarity": "defeating",
     "expected_oracle": "FAIL",
     "observed": {
       "attempts": [
-        {"actor_kind": "MODEL", "authority_type": "VERIFICATION", "claim_type": "VERIFICATION", "grant_live": true, "scope_matches": true, "budget_available": true, "outcome": "COMMITTED", "receipt_id": "r-live"},
-        {"actor_kind": "MODEL", "authority_type": "VERIFICATION", "claim_type": "JUDGEMENT", "grant_live": true, "scope_matches": true, "budget_available": true, "outcome": "REFUSED", "receipt_id": "r-judgement"},
-        {"actor_kind": "MODEL", "authority_type": "VERIFICATION", "claim_type": "VERIFICATION", "grant_live": false, "scope_matches": true, "budget_available": true, "outcome": "COMMITTED", "receipt_id": "r-revoked-committed"},
-        {"actor_kind": "MODEL", "authority_type": "VERIFICATION", "claim_type": "VERIFICATION", "grant_live": true, "scope_matches": false, "budget_available": true, "outcome": "REFUSED", "receipt_id": null}
+        {
+          "actor_kind": "MODEL",
+          "authority_type": "VERIFICATION",
+          "claim_type": "VERIFICATION",
+          "grant_live": true,
+          "scope_matches": true,
+          "budget_available": true,
+          "outcome": "COMMITTED",
+          "receipt_id": "r-live"
+        },
+        {
+          "actor_kind": "MODEL",
+          "authority_type": "VERIFICATION",
+          "claim_type": "JUDGEMENT",
+          "grant_live": true,
+          "scope_matches": true,
+          "budget_available": true,
+          "outcome": "REFUSED",
+          "receipt_id": "r-judgement"
+        },
+        {
+          "actor_kind": "MODEL",
+          "authority_type": "VERIFICATION",
+          "claim_type": "VERIFICATION",
+          "grant_live": false,
+          "scope_matches": true,
+          "budget_available": true,
+          "outcome": "COMMITTED",
+          "receipt_id": "r-revoked-committed"
+        },
+        {
+          "actor_kind": "MODEL",
+          "authority_type": "VERIFICATION",
+          "claim_type": "VERIFICATION",
+          "grant_live": true,
+          "scope_matches": false,
+          "budget_available": true,
+          "outcome": "REFUSED",
+          "receipt_id": null
+        }
       ]
     }
   },
   {
     "id": "CONF-I6-POS",
-    "predicates": ["PRED-I-6.1", "PRED-I-6.2"],
+    "predicates": [
+      "PRED-I-6.1",
+      "PRED-I-6.2"
+    ],
     "requirement": "PROD-I-6",
     "polarity": "positive",
     "expected_oracle": "PASS",
     "observed": {
-      "pending_right": {"persistent": true, "visible": true, "outcome": "UNRESOLVED", "receipt_id": "r-pending"},
-      "unrelated_operation_outcome": "COMMITTED", "judgement_spend_derived_from_receipts": true, "invented_quota": false
+      "pending_right": {
+        "persistent": true,
+        "visible": true,
+        "outcome": "UNRESOLVED",
+        "receipt_id": "r-pending"
+      },
+      "unrelated_operation_outcome": "COMMITTED",
+      "judgement_spend_derived_from_receipts": true,
+      "invented_quota": false
     }
   },
   {
     "id": "CONF-I6-DEF",
-    "predicates": ["PRED-I-6.1", "PRED-I-6.2"],
+    "predicates": [
+      "PRED-I-6.1",
+      "PRED-I-6.2"
+    ],
     "requirement": "PROD-I-6",
     "polarity": "defeating",
     "expected_oracle": "FAIL",
     "observed": {
-      "pending_right": {"persistent": false, "visible": false, "outcome": null, "receipt_id": null},
-      "unrelated_operation_outcome": "BLOCKED", "judgement_spend_derived_from_receipts": false, "invented_quota": true
+      "pending_right": {
+        "persistent": false,
+        "visible": false,
+        "outcome": null,
+        "receipt_id": null
+      },
+      "unrelated_operation_outcome": "BLOCKED",
+      "judgement_spend_derived_from_receipts": false,
+      "invented_quota": true
     }
   },
   {
     "id": "CONF-I7-POS",
-    "predicates": ["PRED-I-7.1", "PRED-I-7.2", "PRED-I-7.3"],
+    "predicates": [
+      "PRED-I-7.1",
+      "PRED-I-7.2",
+      "PRED-I-7.3"
+    ],
     "requirement": "PROD-I-7",
     "polarity": "positive",
     "expected_oracle": "PASS",
     "observed": {
-      "clean_checkout": true, "oral_explanation_used": false, "authority_located": true,
-      "conformance_executed": true, "evidence_reconstructed": true,
-      "semantic_task_observed": true, "time_to_safe_competence_seconds": 540,
-      "interventions": [], "owner_acceptance": "PENDING"
+      "clean_checkout": true,
+      "oral_explanation_used": false,
+      "authority_located": true,
+      "conformance_executed": true,
+      "evidence_reconstructed": true,
+      "semantic_task_observed": true,
+      "time_to_safe_competence_seconds": 540,
+      "interventions": [],
+      "owner_acceptance": "PENDING"
     }
   },
   {
     "id": "CONF-I7-DEF",
-    "predicates": ["PRED-I-7.1", "PRED-I-7.2", "PRED-I-7.3"],
+    "predicates": [
+      "PRED-I-7.1",
+      "PRED-I-7.2",
+      "PRED-I-7.3"
+    ],
     "requirement": "PROD-I-7",
     "polarity": "defeating",
     "expected_oracle": "FAIL",
     "observed": {
-      "clean_checkout": true, "oral_explanation_used": true, "authority_located": false,
-      "conformance_executed": false, "evidence_reconstructed": false,
-      "semantic_task_observed": false, "time_to_safe_competence_seconds": null,
-      "interventions": ["owner explained hidden setup"], "owner_acceptance": "ACCEPTED"
+      "clean_checkout": true,
+      "oral_explanation_used": true,
+      "authority_located": false,
+      "conformance_executed": false,
+      "evidence_reconstructed": false,
+      "semantic_task_observed": false,
+      "time_to_safe_competence_seconds": null,
+      "interventions": [
+        "owner explained hidden setup"
+      ],
+      "owner_acceptance": "ACCEPTED"
     }
   },
   {
     "id": "CONF-I8-POS",
-    "predicates": ["PRED-I-8.1", "PRED-I-8.2", "PRED-I-8.3", "TRANS-attest"],
+    "predicates": [
+      "PRED-I-8.1",
+      "PRED-I-8.2",
+      "PRED-I-8.3",
+      "TRANS-attest"
+    ],
     "requirement": "PROD-I-8",
     "polarity": "positive",
     "expected_oracle": "PASS",
     "observed": {
-      "ratification_before": "RATIFIED", "ratification_after": "RATIFIED", "validator_changed_authority": false,
+      "ratification_before": "RATIFIED",
+      "ratification_after": "RATIFIED",
+      "validator_changed_authority": false,
       "attestations": [
-        {"validator_id": "validator", "validator_version": "1", "input_digest": "sha256:old", "run_id": "run1", "outcome": "REPRODUCED", "evidence_addresses": ["obs:1"]},
-        {"validator_id": "validator", "validator_version": "1", "input_digest": "sha256:new", "run_id": "run2", "outcome": "DISSENTED", "evidence_addresses": ["obs:2"]}
+        {
+          "validator_id": "validator",
+          "validator_version": "1",
+          "input_digest": "sha256:old",
+          "run_id": "run1",
+          "outcome": "REPRODUCED",
+          "evidence_addresses": [
+            "obs:1"
+          ]
+        },
+        {
+          "validator_id": "validator",
+          "validator_version": "1",
+          "input_digest": "sha256:new",
+          "run_id": "run2",
+          "outcome": "DISSENTED",
+          "evidence_addresses": [
+            "obs:2"
+          ]
+        }
       ]
     }
   },
   {
     "id": "CONF-I8-DEF",
-    "predicates": ["PRED-I-8.1", "PRED-I-8.2", "PRED-I-8.3", "TRANS-attest"],
+    "predicates": [
+      "PRED-I-8.1",
+      "PRED-I-8.2",
+      "PRED-I-8.3",
+      "TRANS-attest"
+    ],
     "requirement": "PROD-I-8",
     "polarity": "defeating",
     "expected_oracle": "FAIL",
     "observed": {
-      "ratification_before": "RATIFIED", "ratification_after": "REVOKED_BY_VALIDATOR", "validator_changed_authority": true,
+      "ratification_before": "RATIFIED",
+      "ratification_after": "REVOKED_BY_VALIDATOR",
+      "validator_changed_authority": true,
       "attestations": [
-        {"validator_id": "validator", "validator_version": null, "input_digest": "sha256:new", "run_id": "run-old", "outcome": "REPRODUCED", "evidence_addresses": []}
+        {
+          "validator_id": "validator",
+          "validator_version": null,
+          "input_digest": "sha256:new",
+          "run_id": "run-old",
+          "outcome": "REPRODUCED",
+          "evidence_addresses": []
+        }
       ]
     }
   },
   {
     "id": "CONF-I9-POS",
-    "predicates": ["PRED-I-9.1", "PRED-I-9.2", "PRED-I-9.3", "PRED-I-9.4", "PRED-I-9.5",
-                    "TRANS-invoke_model", "PARITY-2", "PARITY-3", "PARITY-4", "PARITY-5"],
+    "predicates": [
+      "PRED-I-9.1",
+      "PRED-I-9.2",
+      "PRED-I-9.3",
+      "PRED-I-9.4",
+      "PRED-I-9.5",
+      "TRANS-invoke_model",
+      "PARITY-2",
+      "PARITY-3",
+      "PARITY-4",
+      "PARITY-5"
+    ],
     "requirement": "PROD-I-9",
     "polarity": "positive",
     "expected_oracle": "PASS",
     "observed": {
       "bindings": [
-        {"binding_id": "local-qwen", "adapter_id": "ollama-adapter", "provider_id": "owner-runtime", "provider_kind": "LOCAL", "model_id": "qwen", "model_version": "3", "runtime_id": "ollama", "runtime_version": "1", "host_id": "personal-node", "interface_contract_id": "model-operator-v1", "operation_id": "describe-asset", "authority_contract_id": "kernel-v1", "state_before_digest": "sha256:state", "input_projection_id": "asset-view-v1", "omissions": [], "data_boundary": "LOCAL_ONLY", "usage": {"tokens": 20}, "cost": {"currency": "USD", "amount": 0}, "receipt_id": "r-local", "result_id": "proposal-local", "result_standing": "PROPOSAL", "owner_supplied": true, "direct_write": false},
-        {"binding_id": "remote-model", "adapter_id": "remote-adapter", "provider_id": "remote-provider", "provider_kind": "REMOTE", "model_id": "model-b", "model_version": "2", "runtime_id": "provider-api", "runtime_version": "2026-08", "host_id": "remote-host", "interface_contract_id": "model-operator-v1", "operation_id": "describe-asset", "authority_contract_id": "kernel-v1", "state_before_digest": "sha256:state", "input_projection_id": "asset-view-redacted-v1", "omissions": ["private-notes"], "data_boundary": "REDACTED_REMOTE", "usage": {"tokens": 18}, "cost": {"currency": "USD", "amount": 0.01}, "receipt_id": "r-remote", "result_id": "proposal-remote", "result_standing": "PROPOSAL", "owner_supplied": false, "direct_write": false}
+        {
+          "binding_id": "local-qwen",
+          "adapter_id": "ollama-adapter",
+          "provider_id": "owner-runtime",
+          "provider_kind": "LOCAL",
+          "model_id": "qwen",
+          "model_version": "3",
+          "runtime_id": "ollama",
+          "runtime_version": "1",
+          "host_id": "personal-node",
+          "interface_contract_id": "model-operator-v1",
+          "operation_id": "describe-asset",
+          "authority_contract_id": "kernel-v1",
+          "state_before_digest": "sha256:state",
+          "input_projection_id": "asset-view-v1",
+          "omissions": [],
+          "data_boundary": "LOCAL_ONLY",
+          "usage": {
+            "tokens": 20
+          },
+          "cost": {
+            "currency": "USD",
+            "amount": 0
+          },
+          "receipt_id": "r-local",
+          "result_id": "proposal-local",
+          "result_standing": "PROPOSAL",
+          "owner_supplied": true,
+          "direct_write": false
+        },
+        {
+          "binding_id": "remote-model",
+          "adapter_id": "remote-adapter",
+          "provider_id": "remote-provider",
+          "provider_kind": "REMOTE",
+          "model_id": "model-b",
+          "model_version": "2",
+          "runtime_id": "provider-api",
+          "runtime_version": "2026-08",
+          "host_id": "remote-host",
+          "interface_contract_id": "model-operator-v1",
+          "operation_id": "describe-asset",
+          "authority_contract_id": "kernel-v1",
+          "state_before_digest": "sha256:state",
+          "input_projection_id": "asset-view-redacted-v1",
+          "omissions": [
+            "private-notes"
+          ],
+          "data_boundary": "REDACTED_REMOTE",
+          "usage": {
+            "tokens": 18
+          },
+          "cost": {
+            "currency": "USD",
+            "amount": 0.01
+          },
+          "receipt_id": "r-remote",
+          "result_id": "proposal-remote",
+          "result_standing": "PROPOSAL",
+          "owner_supplied": false,
+          "direct_write": false
+        }
       ],
-      "unavailable_model": {"binding_id": "remote-model", "outcome": "REFUSED", "reason": "MODEL_UNAVAILABLE", "receipt_id": "r-unavailable", "silent_fallback": false},
+      "unavailable_model": {
+        "binding_id": "remote-model",
+        "outcome": "REFUSED",
+        "reason": "MODEL_UNAVAILABLE",
+        "receipt_id": "r-unavailable",
+        "silent_fallback": false
+      },
       "local_record_operable": true
     }
   },
   {
     "id": "CONF-I9-DEF",
-    "predicates": ["PRED-I-9.1", "PRED-I-9.2", "PRED-I-9.3", "PRED-I-9.4", "PRED-I-9.5",
-                    "TRANS-invoke_model", "PARITY-2", "PARITY-3", "PARITY-4", "PARITY-5"],
+    "predicates": [
+      "PRED-I-9.1",
+      "PRED-I-9.2",
+      "PRED-I-9.3",
+      "PRED-I-9.4",
+      "PRED-I-9.5",
+      "TRANS-invoke_model",
+      "PARITY-2",
+      "PARITY-3",
+      "PARITY-4",
+      "PARITY-5"
+    ],
     "requirement": "PROD-I-9",
     "polarity": "defeating",
     "expected_oracle": "FAIL",
     "observed": {
       "bindings": [
-        {"binding_id": "provider-only", "adapter_id": "provider-special", "provider_id": "remote-provider", "provider_kind": "REMOTE", "model_id": "model-b", "model_version": null, "runtime_id": "provider-api", "runtime_version": "2026-08", "host_id": "remote-host", "interface_contract_id": "provider-private", "operation_id": "describe-asset", "authority_contract_id": "provider-auth", "state_before_digest": "sha256:provider-state", "input_projection_id": "unknown", "omissions": null, "data_boundary": null, "usage": null, "cost": null, "receipt_id": null, "result_id": "authoritative-provider-result", "result_standing": "EFFECTIVE", "owner_supplied": false, "direct_write": true}
+        {
+          "binding_id": "provider-only",
+          "adapter_id": "provider-special",
+          "provider_id": "remote-provider",
+          "provider_kind": "REMOTE",
+          "model_id": "model-b",
+          "model_version": null,
+          "runtime_id": "provider-api",
+          "runtime_version": "2026-08",
+          "host_id": "remote-host",
+          "interface_contract_id": "provider-private",
+          "operation_id": "describe-asset",
+          "authority_contract_id": "provider-auth",
+          "state_before_digest": "sha256:provider-state",
+          "input_projection_id": "unknown",
+          "omissions": null,
+          "data_boundary": null,
+          "usage": null,
+          "cost": null,
+          "receipt_id": null,
+          "result_id": "authoritative-provider-result",
+          "result_standing": "EFFECTIVE",
+          "owner_supplied": false,
+          "direct_write": true
+        }
       ],
-      "unavailable_model": {"binding_id": "provider-only", "outcome": "COMMITTED", "reason": null, "receipt_id": null, "silent_fallback": true},
+      "unavailable_model": {
+        "binding_id": "provider-only",
+        "outcome": "COMMITTED",
+        "reason": null,
+        "receipt_id": null,
+        "silent_fallback": true
+      },
       "local_record_operable": false
     }
   }

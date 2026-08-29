@@ -29,6 +29,35 @@ def check_i1(observed: dict[str, Any]) -> list[str]:
         defects.append("incomplete proposal was admitted")
     if proposal.get("standing") not in {"RECORDED", "ADMITTED"}:
         defects.append("proposal entered with authoritative standing")
+    defects.extend(i1_delivery(observed))
+    defects.extend(i1_authority_claim(observed))
+    return defects
+
+
+def i1_delivery(observed: dict[str, Any]) -> list[str]:
+    """Defects in PROD-I-1 delivery: an admitted proposal must reach a readable surface."""
+    if not observed.get("admitted"):
+        return []
+    delivery = observed.get("delivery") or {}
+    if not delivery:
+        return ["admitted proposal never reached an operator surface"]
+    required = ("surface_id", "operator_id", "receipt_id")
+    defects = [f"delivery missing {field}" for field in missing(delivery, required)]
+    if delivery.get("readable_by_operator") is not True:
+        defects.append("proposal reached a surface the operator cannot read")
+    return defects
+
+
+def i1_authority_claim(observed: dict[str, Any]) -> list[str]:
+    """Defects in PROD-I-1 authority: an instance asserts, and the record never honors."""
+    claim = observed.get("authority_claim") or {}
+    if not claim:
+        return ["proposal carries no authority claim to grade"]
+    defects: list[str] = []
+    if claim.get("honored"):
+        defects.append("an instanced session's asserted authority was honored")
+    if claim.get("actor_continuity") == "INSTANCE" and claim.get("grant_id"):
+        defects.append("a grant was attached to an instanced session")
     return defects
 
 

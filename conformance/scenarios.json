@@ -3,117 +3,295 @@
     "id": "RUN-I1-PROPOSE",
     "requirement": "PROD-I-1",
     "polarity": "participant",
-    "given": ["a fresh model operator", "one addressed source", "a metered model invocation"],
-    "desired": ["an attributed proposal with recorded cost and no authority claim"],
-    "gap": ["model output may be admitted without source, cost, or proposal standing"],
-    "requirements": ["record actor, actor kind, content address, sources, cost, scope, required authority, and standing"],
-    "forced_conditions": ["omit no required field", "do not infer authority from generation"],
-    "fitness_directive": "Deposit a complete non-authoritative proposal and expose its receipt.",
+    "given": [
+      "a fresh model operator",
+      "one addressed source",
+      "a metered model invocation",
+      "a named operator surface a human reads"
+    ],
+    "desired": [
+      "an attributed proposal with recorded cost, delivered to a named operator surface",
+      "an authority assertion that is recorded and not honored"
+    ],
+    "gap": [
+      "model output may be admitted without source, cost, or proposal standing",
+      "an admitted proposal may never reach a human",
+      "an instanced session's authority assertion may be honored as held authority"
+    ],
+    "requirements": [
+      "record actor, actor kind, content address, sources, cost, scope, required authority, and standing",
+      "deliver the proposal to a named operator surface and return a delivery receipt",
+      "record the asserted authority without attaching a grant to an instanced session"
+    ],
+    "forced_conditions": [
+      "omit no required field",
+      "do not infer authority from generation",
+      "do not admit the proposal without a surface delivery receipt"
+    ],
+    "fitness_directive": "Deposit a complete non-authoritative proposal, put it in front of a named operator, and expose both receipts.",
     "work_item": "submit one model proposal",
-    "watched_delta": ["proposal record", "standing", "cost record", "receipt"]
+    "watched_delta": [
+      "proposal record",
+      "standing",
+      "cost record",
+      "receipt",
+      "surface delivery receipt",
+      "authority claim disposition"
+    ]
   },
   {
     "id": "RUN-I2-REMEMBER",
     "requirement": "PROD-I-2",
     "polarity": "participant",
-    "given": ["an exact addressed source", "a declared lossy reader"],
-    "desired": ["a derivative whose complete path home is reconstructable"],
-    "gap": ["source mutation or incomplete reader identity can make derivation unverifiable"],
-    "requirements": ["source survives", "reader version and configuration resolve", "lossy omissions are recoverable"],
-    "forced_conditions": ["derive a new recording", "reread source byte-identical"],
+    "given": [
+      "an exact addressed source",
+      "a declared lossy reader"
+    ],
+    "desired": [
+      "a derivative whose complete path home is reconstructable"
+    ],
+    "gap": [
+      "source mutation or incomplete reader identity can make derivation unverifiable"
+    ],
+    "requirements": [
+      "source survives",
+      "reader version and configuration resolve",
+      "lossy omissions are recoverable"
+    ],
+    "forced_conditions": [
+      "derive a new recording",
+      "reread source byte-identical"
+    ],
     "fitness_directive": "Produce and reconstruct a provenance-bearing recording without modifying its source.",
     "work_item": "read and derive one source",
-    "watched_delta": ["source digests before and after", "recording lineage"]
+    "watched_delta": [
+      "source digests before and after",
+      "recording lineage"
+    ]
   },
   {
     "id": "RUN-I3-CROSS",
     "requirement": "PROD-I-3",
     "polarity": "participant",
-    "given": ["one human binding", "one model binding", "one authoritative record"],
-    "desired": ["the model uses a human-deposited fact through the same transition contract"],
-    "gap": ["a binding may bypass the kernel or hide projection omissions"],
-    "requirements": ["same transition contract", "no direct writes", "source, version, projection, omissions, destination, and receipts visible"],
-    "forced_conditions": ["use two genuinely different bindings"],
+    "given": [
+      "one human binding",
+      "one model binding",
+      "one authoritative record"
+    ],
+    "desired": [
+      "the model uses a human-deposited fact through the same transition contract"
+    ],
+    "gap": [
+      "a binding may bypass the kernel or hide projection omissions"
+    ],
+    "requirements": [
+      "same transition contract",
+      "no direct writes",
+      "source, version, projection, omissions, destination, and receipts visible"
+    ],
+    "forced_conditions": [
+      "use two genuinely different bindings"
+    ],
     "fitness_directive": "Cross useful state between human and model without semantic or authority fork.",
     "work_item": "perform one two-binding crossing",
-    "watched_delta": ["binding calls", "authoritative records", "reconciled receipts"]
+    "watched_delta": [
+      "binding calls",
+      "authoritative records",
+      "reconciled receipts"
+    ]
   },
   {
     "id": "RUN-I4-RETRACT",
     "requirement": "PROD-I-4",
     "polarity": "participant",
-    "given": ["an effective record-local relationship and its receipt"],
-    "desired": ["an authorized counteraction preserving the original act"],
-    "gap": ["retraction may erase history or claim world rollback"],
-    "requirements": ["original remains", "counter-record remains", "effect class is explicit", "counter receipt links prior receipt"],
-    "forced_conditions": ["retract after the relationship affected a projection"],
+    "given": [
+      "an effective record-local relationship and its receipt"
+    ],
+    "desired": [
+      "an authorized counteraction preserving the original act"
+    ],
+    "gap": [
+      "retraction may erase history or claim world rollback"
+    ],
+    "requirements": [
+      "original remains",
+      "counter-record remains",
+      "effect class is explicit",
+      "counter receipt links prior receipt"
+    ],
+    "forced_conditions": [
+      "retract after the relationship affected a projection"
+    ],
     "fitness_directive": "Counter current record effect while preserving reconstructable history.",
     "work_item": "retract one effective relationship",
-    "watched_delta": ["original record", "counter-record", "projection rebuild", "receipt chain"]
+    "watched_delta": [
+      "original record",
+      "counter-record",
+      "projection rebuild",
+      "receipt chain"
+    ]
   },
   {
     "id": "RUN-I5-AUTHORITY",
     "requirement": "PROD-I-5",
     "polarity": "participant",
-    "given": ["a model with verification authority", "one verification claim", "one judgement claim"],
-    "desired": ["verification may commit and judgement must refuse"],
-    "gap": ["a broad machine grant may silently ratify judgement"],
-    "requirements": ["live typed scope and budget checked", "both outcomes receipted"],
-    "forced_conditions": ["the same model attempts both claims"],
+    "given": [
+      "a model with verification authority",
+      "one verification claim",
+      "one judgement claim"
+    ],
+    "desired": [
+      "verification may commit and judgement must refuse"
+    ],
+    "gap": [
+      "a broad machine grant may silently ratify judgement"
+    ],
+    "requirements": [
+      "live typed scope and budget checked",
+      "both outcomes receipted"
+    ],
+    "forced_conditions": [
+      "the same model attempts both claims"
+    ],
     "fitness_directive": "Enforce authority by claim type rather than actor confidence or convenience.",
     "work_item": "attempt two differently typed ratifications",
-    "watched_delta": ["grant checks", "claim standings", "receipts"]
+    "watched_delta": [
+      "grant checks",
+      "claim standings",
+      "receipts"
+    ]
   },
   {
     "id": "RUN-I6-JUDGEMENT",
     "requirement": "PROD-I-6",
     "polarity": "participant",
-    "given": ["one operation awaiting human judgement", "one unrelated authorized operation"],
-    "desired": ["the pending right remains visible while unrelated work commits"],
-    "gap": ["judgement may block the loop or disappear from reports"],
-    "requirements": ["persistent unresolved receipt", "receipt-derived spend", "no invented quota"],
-    "forced_conditions": ["the owner does not answer during the run"],
+    "given": [
+      "one operation awaiting human judgement",
+      "one unrelated authorized operation"
+    ],
+    "desired": [
+      "the pending right remains visible while unrelated work commits"
+    ],
+    "gap": [
+      "judgement may block the loop or disappear from reports"
+    ],
+    "requirements": [
+      "persistent unresolved receipt",
+      "receipt-derived spend",
+      "no invented quota"
+    ],
+    "forced_conditions": [
+      "the owner does not answer during the run"
+    ],
     "fitness_directive": "Preserve scarce judgement as visible queued work without global blocking.",
     "work_item": "queue one judgement and continue one unrelated operation",
-    "watched_delta": ["pending right", "unrelated outcome", "judgement receipts"]
+    "watched_delta": [
+      "pending right",
+      "unrelated outcome",
+      "judgement receipts"
+    ]
   },
   {
     "id": "RUN-I7-QUALIFY",
     "requirement": "PROD-I-7",
     "polarity": "participant",
-    "given": ["a clean checkout", "a fresh witness", "no predecessor access or oral explanation"],
-    "desired": ["safe operation, conformance execution, evidence reconstruction, and measured competence time"],
-    "gap": ["schema validity or hidden setup may masquerade as competence"],
-    "requirements": ["authority located", "semantic task observed", "interventions recorded", "owner acceptance remains pending"],
-    "forced_conditions": ["witness begins cold"],
+    "given": [
+      "a clean checkout",
+      "a fresh witness",
+      "no predecessor access or oral explanation"
+    ],
+    "desired": [
+      "safe operation, conformance execution, evidence reconstruction, and measured competence time"
+    ],
+    "gap": [
+      "schema validity or hidden setup may masquerade as competence"
+    ],
+    "requirements": [
+      "authority located",
+      "semantic task observed",
+      "interventions recorded",
+      "owner acceptance remains pending"
+    ],
+    "forced_conditions": [
+      "witness begins cold"
+    ],
     "fitness_directive": "Qualify the artifact from its own instructions without self-ratification.",
     "work_item": "perform one clean-room qualification",
-    "watched_delta": ["qualification record", "time", "interventions", "evidence addresses"]
+    "watched_delta": [
+      "qualification record",
+      "time",
+      "interventions",
+      "evidence addresses"
+    ]
   },
   {
     "id": "RUN-I8-ATTEST",
     "requirement": "PROD-I-8",
     "polarity": "participant",
-    "given": ["a ratified executable claim", "original inputs", "changed current inputs"],
-    "desired": ["original reproduction and current dissent or fresh reproduction are independently recorded"],
-    "gap": ["historical reproduction may be copied forward or validator may overwrite authority"],
-    "requirements": ["validator and version named", "exact inputs and run named", "evidence addressed", "ratification unchanged"],
-    "forced_conditions": ["change an input after the first attestation"],
+    "given": [
+      "a ratified executable claim",
+      "original inputs",
+      "changed current inputs"
+    ],
+    "desired": [
+      "original reproduction and current dissent or fresh reproduction are independently recorded"
+    ],
+    "gap": [
+      "historical reproduction may be copied forward or validator may overwrite authority"
+    ],
+    "requirements": [
+      "validator and version named",
+      "exact inputs and run named",
+      "evidence addressed",
+      "ratification unchanged"
+    ],
+    "forced_conditions": [
+      "change an input after the first attestation"
+    ],
     "fitness_directive": "Re-run the claim against current inputs and preserve the distinction between ratification and attestation.",
     "work_item": "attest before and after an input change",
-    "watched_delta": ["two attestations", "current effectiveness", "historical ratification"]
+    "watched_delta": [
+      "two attestations",
+      "current effectiveness",
+      "historical ratification"
+    ]
   },
   {
     "id": "RUN-I9-BYOM",
     "requirement": "PROD-I-9",
     "polarity": "participant",
-    "given": ["one unchanged personally owned local node", "one owner-supplied model", "one materially different model", "one named domain operation"],
-    "desired": ["both models use the same operator, kernel, authority, provenance, and receipt contracts"],
-    "gap": ["provider-specific state, hidden model identity, silent fallback, or remote dependency may capture the node"],
-    "requirements": ["exact binding and runtime identity", "declared data boundary", "distinct attributed results", "usage and cost", "receipted unavailable-model refusal", "continued local record operation"],
-    "forced_conditions": ["execute through both bindings", "make one model unavailable", "do not change authoritative input state"],
+    "given": [
+      "one unchanged personally owned local node",
+      "one owner-supplied model",
+      "one materially different model",
+      "one named domain operation"
+    ],
+    "desired": [
+      "both models use the same operator, kernel, authority, provenance, and receipt contracts"
+    ],
+    "gap": [
+      "provider-specific state, hidden model identity, silent fallback, or remote dependency may capture the node"
+    ],
+    "requirements": [
+      "exact binding and runtime identity",
+      "declared data boundary",
+      "distinct attributed results",
+      "usage and cost",
+      "receipted unavailable-model refusal",
+      "continued local record operation"
+    ],
+    "forced_conditions": [
+      "execute through both bindings",
+      "make one model unavailable",
+      "do not change authoritative input state"
+    ],
     "fitness_directive": "Change the model without changing the governed system or surrendering local continuity.",
     "work_item": "perform one operation across two model bindings and one provider-loss refusal",
-    "watched_delta": ["binding records", "model results", "receipts", "local record operability"]
+    "watched_delta": [
+      "binding records",
+      "model results",
+      "receipts",
+      "local record operability"
+    ]
   }
 ]

@@ -81,6 +81,14 @@ class Delivery(unittest.TestCase):
                 del observed["delivery"][field]
                 self.assertIn(f"delivery missing {field}", predicates.i1_delivery(observed))
 
+    def test_whitespace_does_not_state_a_delivery_field(self):
+        """A blank identifier is the same defect as an absent one, and harder to see."""
+        for field in ("surface_id", "operator_id", "receipt_id"):
+            with self.subTest(field=field):
+                observed = observation()
+                observed["delivery"][field] = "   "
+                self.assertIn(f"delivery missing {field}", predicates.i1_delivery(observed))
+
     def test_a_receipt_for_another_proposal_does_not_deliver_this_one(self):
         observed = observation()
         observed["delivery"]["proposal_id"] = "p-somebody-else"
@@ -128,6 +136,19 @@ class AuthorityClaim(unittest.TestCase):
         observed["authority_claim"]["honored"] = True
         self.assertEqual(["an instanced session's asserted authority was honored"],
                          predicates.i1_authority_claim(observed))
+
+    def test_only_a_stated_false_counts_as_not_honored(self):
+        """`honored` is read as an assertion, not for truthiness.
+
+        Without this, the refusal weakens from `is not False` to `is True` and nothing
+        notices, because a stated non-boolean is caught by no other case.
+        """
+        for value in (True, "yes", "false", 0, 1, [], None):
+            with self.subTest(honored=value):
+                observed = observation()
+                observed["authority_claim"]["honored"] = value
+                self.assertIn("an instanced session's asserted authority was honored",
+                              predicates.i1_authority_claim(observed))
 
     def test_a_session_cannot_escape_by_declaring_itself_continuous(self):
         observed = observation()

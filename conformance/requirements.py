@@ -16,7 +16,16 @@ REQUIREMENTS = {f"PROD-I-{number}" for number in range(1, 10)}
 
 
 def missing(mapping: dict[str, Any], fields: tuple[str, ...]) -> list[str]:
-    return [field for field in fields if field not in mapping or mapping[field] in (None, "", [])]
+    """The declared fields a mapping does not actually state.
+
+    A string of spaces is not a stated value. Without that reading a participant
+    satisfies any required identifier by sending whitespace, which is the same defect
+    as omitting it and harder to see.
+    """
+    def unstated(value: Any) -> bool:
+        return value in (None, "", []) or (isinstance(value, str) and not value.strip())
+
+    return [field for field in fields if field not in mapping or unstated(mapping[field])]
 
 
 def check_i1(observed: dict[str, Any]) -> list[str]:

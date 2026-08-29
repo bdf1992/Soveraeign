@@ -214,9 +214,12 @@ REPOSITORY_CHECKS = (
           "grades declared handoff claims against the table rather than against the judgement of "
           "the participant that wrote them, and refuses a contract that declares a refusal no case "
           "proves fires; the evaluator holds no copy of the table, so admitting a new seam or "
-          "raising the work-in-progress ceiling is a contract change with a case behind it",
+          "raising the work-in-progress ceiling is a contract change with a case behind it. It "
+          "also refuses a refusal that leaves nothing reachable: every code must name an "
+          "operation that clears it, and at least one the refused participant can take alone",
           ("contracts/closure-ownership.json",
-           "conformance/fixtures/closure/handoff-cases.json")),
+           "conformance/fixtures/closure/handoff-cases.json",
+           "conformance/fixtures/closure/reachable-operations-cases.json")),
     Check("standing authority grants", [sys.executable, "scripts/sov_grant.py", "selfcheck"],
           ROOT,
           "grades a declared corpus of requests against grants the corpus itself carries, so "

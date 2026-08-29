@@ -1,0 +1,248 @@
+{
+  "corpus_id": "soveraeign-closure-reachable-operations-cases/v1",
+  "note": "Controlled cases for the reachable_operations table in contracts/closure-ownership.json. Two things are graded here and they are separate. table_cases grade the declaration - whether every refusal names an operation that clears it, and one the refused participant can take alone. availability_cases grade the annotation - whether an operation reads as available against the tools an invocation actually granted. One case in each set grades the live contract; the rest work on the fixture tables below, because a case that passed only because the live contract happened to be shaped a certain way would prove nothing. A patch replaces the base key it names outright; a key it omits is inherited.",
+  "base": {
+    "refusals": {
+      "ALPHA_REFUSAL": "a fixture refusal, not a declared one",
+      "BETA_REFUSAL": "a second fixture refusal, not a declared one"
+    },
+    "tools": [
+      "read",
+      "edit",
+      "report"
+    ],
+    "reachable_operations": {
+      "ALPHA_REFUSAL": [
+        {"operation": "read the owning contract", "tool": "read"}
+      ],
+      "BETA_REFUSAL": [
+        {"operation": "take the step the refusal names", "tool": null},
+        {"operation": "obtain an independent observation", "tool": null,
+         "needs_other_participant": true}
+      ]
+    }
+  },
+  "table_cases": [
+    {
+      "case_id": "RO-001-the-live-contract-leaves-every-refusal-reachable",
+      "target": "live",
+      "expect": "CLEAN",
+      "proves": "Every refusal the contract declares names at least one operation that clears it, and at least one the refused participant can take alone. This is the invariant the table exists for."
+    },
+    {
+      "case_id": "RO-002-a-table-that-satisfies-the-invariant",
+      "target": "base",
+      "expect": "CLEAN",
+      "proves": "The fixture table itself is admissible, so a defect in a later case is attributable to that case's patch and not to a base that was already broken."
+    },
+    {
+      "case_id": "RO-003-an-operation-needing-another-participant-beside-one-that-does-not",
+      "target": "base",
+      "patch": {
+        "reachable_operations": {
+          "ALPHA_REFUSAL": [
+            {"operation": "repair it in place", "tool": "edit"},
+            {"operation": "obtain an independent observation", "tool": null,
+             "needs_other_participant": true}
+          ],
+          "BETA_REFUSAL": [
+            {"operation": "read the owning contract", "tool": "read"}
+          ]
+        }
+      },
+      "expect": "CLEAN",
+      "proves": "Naming an operation the participant cannot take alone is admissible and ordinary - some remainders genuinely need another participant. What the invariant forbids is a code where every operation is one of those."
+    },
+    {
+      "case_id": "RO-101-a-refusal-with-no-reachable-operations-declared",
+      "target": "base",
+      "patch": {
+        "reachable_operations": {
+          "ALPHA_REFUSAL": [
+            {"operation": "read the owning contract", "tool": "read"}
+          ]
+        }
+      },
+      "expect": "DEFECT",
+      "defect_contains": "BETA_REFUSAL: declared in refusals with no reachable operations",
+      "proves": "A refusal code can be added without anyone saying what clears it. That is the dead end this table was built to refuse, so the build fails rather than shipping a wall."
+    },
+    {
+      "case_id": "RO-102-a-refusal-whose-operation-list-is-empty",
+      "target": "base",
+      "patch": {
+        "reachable_operations": {
+          "ALPHA_REFUSAL": [
+            {"operation": "read the owning contract", "tool": "read"}
+          ],
+          "BETA_REFUSAL": []
+        }
+      },
+      "expect": "DEFECT",
+      "defect_contains": "BETA_REFUSAL: reachable_operations is empty",
+      "proves": "An empty list is a declaration that nothing clears the refusal. It is refused separately from an absent one, because the two are different mistakes: one forgot the code, the other answered it with nothing."
+    },
+    {
+      "case_id": "RO-103-a-refusal-every-operation-of-which-needs-another-participant",
+      "target": "base",
+      "patch": {
+        "reachable_operations": {
+          "ALPHA_REFUSAL": [
+            {"operation": "read the owning contract", "tool": "read"}
+          ],
+          "BETA_REFUSAL": [
+            {"operation": "ask an orchestrator to lease it elsewhere", "tool": "report",
+             "needs_other_participant": true},
+            {"operation": "obtain an independent observation", "tool": null,
+             "needs_other_participant": true}
+          ]
+        }
+      },
+      "expect": "DEFECT",
+      "defect_contains": "BETA_REFUSAL: every reachable operation needs another participant",
+      "proves": "A list of operations the refused participant cannot take is a dead end with better manners. This is the strong form of the invariant and the case that gives the table teeth."
+    },
+    {
+      "case_id": "RO-104-an-operation-naming-a-tool-the-contract-does-not-declare",
+      "target": "base",
+      "patch": {
+        "reachable_operations": {
+          "ALPHA_REFUSAL": [
+            {"operation": "launch an independent witness", "tool": "launch_witness"}
+          ],
+          "BETA_REFUSAL": [
+            {"operation": "take the step the refusal names", "tool": null}
+          ]
+        }
+      },
+      "expect": "DEFECT",
+      "defect_contains": "ALPHA_REFUSAL: operation 0 names undeclared tool 'launch_witness'",
+      "proves": "An operation is only reachable if the tool it needs is one the contract declares. A tool named here and nowhere else cannot be checked against what an invocation granted, so the annotation would silently read as unavailable forever."
+    },
+    {
+      "case_id": "RO-105-a-reachable-operation-for-a-refusal-the-contract-does-not-declare",
+      "target": "base",
+      "patch": {
+        "reachable_operations": {
+          "ALPHA_REFUSAL": [
+            {"operation": "read the owning contract", "tool": "read"}
+          ],
+          "BETA_REFUSAL": [
+            {"operation": "take the step the refusal names", "tool": null}
+          ],
+          "GAMMA_REFUSAL": [
+            {"operation": "repair it in place", "tool": "edit"}
+          ]
+        }
+      },
+      "expect": "DEFECT",
+      "defect_contains": "GAMMA_REFUSAL: reachable_operations names a refusal the contract does not declare",
+      "proves": "A retired refusal code leaves its operations behind. They read as live guidance for a refusal that can no longer fire, so the table is required to hold no entry the refusals list does not."
+    },
+    {
+      "case_id": "RO-106-an-operation-with-no-text",
+      "target": "base",
+      "patch": {
+        "reachable_operations": {
+          "ALPHA_REFUSAL": [
+            {"operation": "   ", "tool": "read"}
+          ],
+          "BETA_REFUSAL": [
+            {"operation": "take the step the refusal names", "tool": null}
+          ]
+        }
+      },
+      "expect": "DEFECT",
+      "defect_contains": "ALPHA_REFUSAL: operation 0 has no operation text",
+      "proves": "An entry that satisfies the count and says nothing is not a reachable operation. The invariant is about what a participant can actually do next, which requires the operation to be stated."
+    }
+  ],
+  "availability_note": "The annotation, graded apart from the declaration. A refusal returns its operations marked against the tools the invocation granted, so the participant reads what is reachable now rather than what is reachable in principle. Each case names the state expected of every operation in order: AVAILABLE; UNAVAILABLE for an operation whose tool this invocation did not grant; OTHER_PARTICIPANT for one the refused participant cannot take alone; and OTHER_PARTICIPANT_BUT_AVAILABLE, which nothing should ever return, for an annotation that stopped reading the flag. That fourth state exists because the first three would have hidden it: an operation needing another participant renders the same either way, so an annotation ignoring the flag would pass a corpus that only recorded the rendering. An annotation that drifts permissive fails AV-002, AV-102 and AV-103 by name, and one that drifts restrictive fails AV-001 and AV-104. The corpus grades what the annotation returns, not how it was computed, and two drifts are known to survive it. A substring tool match passes because neither these four tool names nor the contract's six have any substring relation, so no case can distinguish it from an exact match; adding a contrived pair of names to catch it would be testing the test rather than the table. A drift coordinated across both operations_for and state_of would also pass, because the corpus is written entirely in state_of's vocabulary; AnnotationVocabulary in scripts/tests/test_closure.py pins that vocabulary by hand from outside the fixture, so such a drift has to survive two oracles. The substring match is recorded rather than closed; the coordinated drift is partly closed by that second oracle.",
+  "availability_base": {
+    "refusals": {
+      "MIXED_REFUSAL": "a fixture refusal covering every shape an operation can take: a tool named or none, and the participant's own work or another participant's"
+    },
+    "tools": [
+      "read",
+      "edit",
+      "report",
+      "run_verify"
+    ],
+    "reachable_operations": {
+      "MIXED_REFUSAL": [
+        {"operation": "read the owning contract", "tool": "read"},
+        {"operation": "repair it in place", "tool": "edit"},
+        {"operation": "take the step the refusal names", "tool": null},
+        {"operation": "obtain an independent observation", "tool": null,
+         "needs_other_participant": true},
+        {"operation": "ask an orchestrator to lease the concern elsewhere", "tool": "report",
+         "needs_other_participant": true},
+        {"operation": "re-judge the handoff once the remainder is irreducible", "tool": "edit",
+         "needs_other_participant": false}
+      ]
+    }
+  },
+  "availability_cases": [
+    {
+      "case_id": "AV-001-one-tool-granted-of-two-named",
+      "code": "MIXED_REFUSAL",
+      "tools_available": ["read"],
+      "expect": ["AVAILABLE", "UNAVAILABLE", "AVAILABLE", "OTHER_PARTICIPANT",
+                 "OTHER_PARTICIPANT",
+                 "UNAVAILABLE"],
+      "proves": "The ordinary reading. An operation whose tool was granted is available, one whose tool was not is not, and the participant is told which is which rather than being handed a list it cannot act on."
+    },
+    {
+      "code": "MIXED_REFUSAL",
+      "case_id": "AV-002-nothing-granted",
+      "tools_available": [],
+      "expect": ["UNAVAILABLE", "UNAVAILABLE", "AVAILABLE", "OTHER_PARTICIPANT",
+                 "OTHER_PARTICIPANT",
+                 "UNAVAILABLE"],
+      "proves": "An operation that names no tool needs no grant, so it stays available to an invocation that was given nothing. This is what keeps a refusal from being a wall for a participant with a thin tool set."
+    },
+    {
+      "case_id": "AV-003-tools-omitted-entirely",
+      "code": "MIXED_REFUSAL",
+      "expect": ["UNAVAILABLE", "UNAVAILABLE", "AVAILABLE", "OTHER_PARTICIPANT",
+                 "OTHER_PARTICIPANT",
+                 "UNAVAILABLE"],
+      "proves": "A claim that declares no tools_available is read as an invocation that granted nothing, the same way every other rule in the closure evaluator reads it. Absent is absent, never satisfied."
+    },
+    {
+      "case_id": "AV-101-a-tool-granted-that-no-operation-names",
+      "code": "MIXED_REFUSAL",
+      "tools_available": ["run_verify"],
+      "expect": ["UNAVAILABLE", "UNAVAILABLE", "AVAILABLE", "OTHER_PARTICIPANT",
+                 "OTHER_PARTICIPANT",
+                 "UNAVAILABLE"],
+      "proves": "Granting an unrelated tool makes nothing available that was not already. An annotation matching loosely - on any granted tool rather than the one the operation names - would mark the first two available here."
+    },
+    {
+      "case_id": "AV-102-the-exact-tool-of-another-participant's-operation-granted",
+      "code": "MIXED_REFUSAL",
+      "tools_available": ["report"],
+      "expect": ["UNAVAILABLE", "UNAVAILABLE", "AVAILABLE", "OTHER_PARTICIPANT",
+                 "OTHER_PARTICIPANT",
+                 "UNAVAILABLE"],
+      "proves": "Holding exactly the tool that another participant's operation names does not make that operation the refused participant's to take. This is the shape every needs_other_participant operation in the live contract has - a named tool, someone else's work - and an annotation that read the flag only for operations naming no tool would pass every other case here and mark this one reachable now."
+    },
+    {
+      "case_id": "AV-103-every-tool-granted-does-not-reach-another-participant's-work",
+      "code": "MIXED_REFUSAL",
+      "tools_available": ["read", "edit", "report", "run_verify"],
+      "expect": ["AVAILABLE", "AVAILABLE", "AVAILABLE", "OTHER_PARTICIPANT",
+                 "OTHER_PARTICIPANT",
+                 "AVAILABLE"],
+      "proves": "needs_other_participant is not a tool question. However much an invocation grants, an operation the refused participant cannot take alone never reads as available, and an annotation that let tools override the flag fails here."
+    },
+    {
+      "case_id": "AV-104-the-live-contract-leaves-a-fully-tooled-participant-something-to-do",
+      "target": "live",
+      "expect": "EVERY_CODE_HAS_AN_AVAILABLE_OPERATION",
+      "tools_available": ["read", "edit", "run_tests", "run_verify", "report",
+                          "recruit_helper"],
+      "proves": "Against the tool set the repository's own handoff corpus declares, every refusal in the live contract leaves at least one operation the participant can take right now. The declaration invariant only proves an operation exists; this proves one is reachable with the tools a participant actually holds."
+    }
+  ]
+}

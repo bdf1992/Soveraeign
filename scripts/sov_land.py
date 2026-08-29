@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
-"""The landing gate: the one place a witnessed change becomes a commit on main.
+"""The landing gate: the one place an admitted BUILT change becomes durable on main.
 
-Every workflow in this repository ends with an uncommitted working tree and a
-queue pointed at the owner. This is the step that was missing. It assembles a
-landing request from the real tree, grades it through
-`scripts/sov_grant.py`'s evaluator against `contracts/standing-grants.json`, and
-either performs the commit and the merge or refuses with the kernel's own
-refusal code and the sentence that earned it.
+Every workflow in this repository ends with an uncommitted working tree until a
+landing operation carries it to the target. This gate assembles a request from
+the real tree, grades it through `scripts/sov_grant.py`'s evaluator against
+`contracts/standing-grants.json`, and either performs the commit and merge or
+refuses with the kernel's own refusal code and the sentence that earned it.
 
 `plan` changes nothing and is the default: it prints the verdict, the paths, and
 how many commits a merge would actually move. `land` performs it. Neither ever
@@ -14,8 +13,11 @@ stages the whole tree - paths are named explicitly, because sessions in this
 repository share one working directory and a blanket stage would land another
 participant's work under this one's evidence.
 
-Nothing here ratifies anything. A landed commit is `BUILT` plus an independent
-observation; standing still moves only by Bdo's acceptance.
+Nothing here witnesses or ratifies anything. Under
+`decisions/0098-milestone-witnessing.md`, ordinary landing requires the standing
+grant's expected Blue checks and may leave the result at `BUILT`. Independent
+witness is separately queued over named milestone targets when a later
+transition consumes it.
 """
 
 from __future__ import annotations
@@ -37,7 +39,12 @@ DEFAULT_TARGET = "main"
 
 
 def build_request(args: argparse.Namespace, paths: list[str], checks: dict[str, str]) -> dict:
-    """Assemble the landing request the evaluator will grade."""
+    """Assemble the landing request the evaluator will grade.
+
+    `--observation` remains accepted because another grant or an explicitly
+    witness-gated landing may require it. The current ordinary landing grant
+    does not treat an observation as a precondition for BUILT landing.
+    """
     observation = None
     if args.observation:
         observation = json.loads(Path(args.observation).read_text(encoding="utf-8"))
@@ -85,17 +92,9 @@ def _evaluate(
     branch = repo.current_branch()
     staged = [tree.repo_relative(p) for p in (args.path if args.path else repo.dirty_paths())]
     carried = [tree.repo_relative(p) for p in repo.carried_paths(args.target, branch)]
-    # The graded set is everything that reaches the target: what this landing is
-    # about to stage, plus every path the merge already carries. Grading only the
-    # first is what let an excluded path onto main without ever being asked about.
-    # Taken before the checks, which are what make the window twelve seconds long.
     graded_as = tree.fingerprint(staged)
     graded_blobs = {q: repo.worktree_blob(q) for q in staged}
     checks = tree.gather_checks(args.skip_checks)
-    # A third reading, so drift caused by the checks themselves is named as
-    # that rather than blamed on another session. verify.py contains
-    # generated-artifact checks; the day one regenerates a file in the
-    # landing set, every landing refuses and the reason should be findable.
     by_checks = tree.drifted(graded_as, tree.fingerprint(staged))
     request = build_request(args, sorted(set(staged) | set(carried)), checks)
     result = authority.evaluate(sov_grant.load_grants(), request)
@@ -105,18 +104,13 @@ def _evaluate(
 
 
 def _carried_note(result: dict, carried: list) -> None:
-    """When the refusal is about a path the merge carries, say what the way out is.
-
-    A branch that has ever committed an excluded path can never land, because the
-    carried set is permanent. That is fail-closed and correct, and it is a dead
-    end unless the escape is stated where the refusal is read.
-    """
+    """When the refusal is about a path the merge carries, say what the way out is."""
     detail = result.get("detail") or ""
     offending = [p for p in carried if p and p in detail]
     if not offending:
         return
     print("\n"
-      "That path is carried by the merge, not staged by this landing, so no "
+          "That path is carried by the merge, not staged by this landing, so no "
           "change to --path will clear it. The branch has committed something the "
           "grant excludes and cannot reach the target as it stands. Branch from the "
           "target and replay only the admissible commits, or present the excluded "
@@ -131,8 +125,7 @@ def cmd_plan(args: argparse.Namespace) -> int:
     if result["verdict"] != authority.PERMITTED:
         _carried_note(result, carried)
     for path in tree.directory_paths(staged):
-        print(f"\n"
-      f"Note: {path} is a directory; `land` refuses it, because staging it "
+        print(f"\nNote: {path} is a directory; `land` refuses it, because staging it "
               "would commit every file beneath it.")
     if not args.path:
         print("\nNo --path given, so the whole dirty tree was graded. `land` requires "
@@ -154,18 +147,12 @@ def cmd_land(args: argparse.Namespace) -> int:
     (request, result, branch, ahead, behind, staged, carried, graded_as,
      graded_blobs, by_checks) = _evaluate(args)
     _report(request, result, branch, ahead, behind, staged, carried)
-    # Authority first. A contested path used to be reported before the verdict,
-    # so a landing the grant never covered came back as "held by another live
-    # session" and the caller went to negotiate a collision instead of learning
-    # they were not permitted. A refusal that names the wrong reason sends the
-    # reader to fix the wrong thing.
     if result["verdict"] != authority.PERMITTED:
         _carried_note(result, carried)
         return 1
     directories = tree.directory_paths(staged)
     if directories:
-        print("\n"
-      "REFUSED: these name directories, and staging one commits every file "
+        print("\nREFUSED: these name directories, and staging one commits every file "
               "beneath it, including files this landing never enumerated and files "
               "another session may hold:")
         for path in directories:
@@ -185,8 +172,6 @@ def cmd_land(args: argparse.Namespace) -> int:
         return 2
 
     absent = tree.absent_paths(graded_as)
-    # A deleted path that git still tracks is not absent: `git add` on it exits 0
-    # and stages the removal, which is what landing a deletion means.
     if absent:
         print("\nREFUSED: these do not exist, so nothing was graded for them and "
               "`git add` would fail rather than refuse:")
@@ -209,14 +194,11 @@ def cmd_land(args: argparse.Namespace) -> int:
               "`git add` stages the bytes on disk now, not the bytes that were graded.")
         return 2
 
-    # Stage only what --path named. A carried path is already committed, and
-    # adding one would sweep in whatever happens to be dirty there.
     repo._git("add", "--", *staged)
     wrong = tree.staged_wrong(staged, graded_blobs)
     if wrong:
         repo._git("reset", "--", *staged)
-        print("\n"
-      "REFUSED: what git staged is not what was graded, so the commit would "
+        print("\nREFUSED: what git staged is not what was graded, so the commit would "
               "not contain the content this landing carries evidence for:")
         for path in wrong:
             print(f"  {path}")
@@ -228,7 +210,8 @@ def cmd_land(args: argparse.Namespace) -> int:
         repo._git("merge", "--no-ff", branch, "-m", f"merge: {args.message}")
     finally:
         repo._git("checkout", branch)
-    print(f"\nLANDED on {args.target} under {result['grant_id']}")
+    print(f"\nLANDED BUILT on {args.target} under {result['grant_id']}")
+    print("Standing note: this landing does not establish WITNESSED evidence.")
     return 0
 
 
@@ -241,8 +224,8 @@ def main(argv: list[str] | None = None) -> int:
         cmd = sub.add_parser(name, help=help_text)
         cmd.add_argument("--path", action="append", default=[],
                          help="a repository path this concern changed; repeatable")
-        cmd.add_argument("--observation", help="path to the witness observation JSON")
-        cmd.add_argument("--message", default="chore: land a witnessed change",
+        cmd.add_argument("--observation", help="optional observation evidence when the covering grant requires one")
+        cmd.add_argument("--message", default="chore: land a built change",
                          help="commit message for the landing")
         cmd.add_argument("--actor", default="sov", help="the actor exercising the grant")
         cmd.add_argument("--target", default=DEFAULT_TARGET, help="the branch to land on")

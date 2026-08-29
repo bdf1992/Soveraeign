@@ -5,7 +5,15 @@ property of the host at the instant it was taken, not of the repository, so it
 grades and records debt and never refuses. Pressure moves to per-check ceilings,
 which attribute an overrun to the check that owns it rather than to whoever
 touched the repository next. One condition still blocks — a single check past
-`catastrophic_check_seconds` — because no host load explains it.
+its catastrophic ceiling — because a check that has changed is a defect.
+
+That ceiling used to be one absolute number, and an absolute number decays: it
+was set far above the slowest check of the day, the suite grew, and it began
+refusing runs for growing rather than for regressing. It is now derived from
+each check's own measured baseline, so the comparison it makes stays the one it
+claims to make. A refusal is also confirmed by re-running the check alone, since
+a reading taken while forty-seven other checks share the pool is not a clean
+measurement of anything.
 
 `contracts/verification-budget.json` is the declaration; nothing here restates a
 number it owns.
@@ -33,15 +41,31 @@ class Debt(NamedTuple):
 
 
 class Catastrophe(NamedTuple):
-    """One check past the blocking ceiling. The only timing condition that refuses."""
+    """One check past its blocking ceiling. The only timing condition that refuses.
+
+    ``alone`` is the isolated re-reading, taken with nothing else running, or
+    ``None`` while the catastrophe is still only suspected. A suspicion is not a
+    refusal: the run refuses on the isolated reading, because that is the one
+    measuring the check rather than the pool it shared.
+    """
 
     check: str
     seconds: float
     ceiling: float
+    alone: float | None = None
+
+    def confirmed(self) -> bool:
+        """True when an isolated reading was taken and it is also over the ceiling."""
+        return self.alone is not None and self.alone > self.ceiling
 
     def line(self) -> str:
-        return (f"{self.check} took {self.seconds:.3f}s, past the {self.ceiling:.3f}s "
-                f"catastrophic ceiling")
+        first = (f"{self.check} took {self.seconds:.3f}s, past its {self.ceiling:.3f}s "
+                 f"catastrophic ceiling")
+        if self.alone is None:
+            return first
+        if self.confirmed():
+            return f"{first}, and {self.alone:.3f}s when re-run alone"
+        return f"{first}, but {self.alone:.3f}s when re-run alone: crowded, not changed"
 
 
 def load(path: Path | None = None) -> dict[str, Any]:
@@ -91,21 +115,54 @@ def ceiling_for(check: str, table: dict[str, Any]) -> float:
     return float(ceilings["named"].get(check, ceilings["default_seconds"]))
 
 
+def baseline_for(check: str, table: dict[str, Any]) -> float | None:
+    """The check's measured baseline, or None when it was too fast to have one."""
+    baseline = table["catastrophic"]["baselines"].get(check)
+    return None if baseline is None else float(baseline)
+
+
+def catastrophic_for(check: str, table: dict[str, Any]) -> float:
+    """The ceiling past which this check refuses the run.
+
+    Derived from what the check is measured to cost, so a suite that grows moves
+    its own ceiling when the baseline is next taken, while a check that triples
+    against a current baseline still refuses. A check too fast to carry a
+    baseline answers to the unbaselined ceiling: it has no measured cost to
+    multiply, and it is not thereby exempt.
+    """
+    catastrophic = table["catastrophic"]
+    floor = float(catastrophic["floor_seconds"])
+    baseline = baseline_for(check, table)
+    if baseline is None:
+        return max(floor, float(catastrophic["unbaselined_seconds"]))
+    # Rounded to the precision the report prints. Sub-millisecond precision on a
+    # ceiling is not a real distinction, and carrying it makes a declared fixture
+    # value read as wrong against a float that differs in the twelfth decimal.
+    return max(floor, round(baseline * float(catastrophic["factor"]), 3))
+
+
+def confirms_alone(table: dict[str, Any]) -> bool:
+    """Whether a suspected catastrophe must be re-read alone before it refuses."""
+    return bool(table["catastrophic"].get("confirm_alone"))
+
+
 def judge(timings: list[tuple[str, float]],
           table: dict[str, Any]) -> tuple[list[Debt], list[Catastrophe]]:
     """Grade every check against its own ceiling.
 
     Returns debts and catastrophes separately because they resolve differently:
     debt is recorded and attributed, catastrophe refuses the run. A check is
-    never both — past the catastrophic ceiling it is only a catastrophe, so one
+    never both — past its catastrophic ceiling it is only a catastrophe, so one
     regression is not reported twice.
+
+    Catastrophes come back unconfirmed, carrying no isolated reading. Whether
+    they refuse is decided after that reading is taken, by ``refusing``.
     """
-    blocking = float(table["catastrophic_check_seconds"])
     debts: list[Debt] = []
     catastrophes: list[Catastrophe] = []
     for name, seconds in timings:
-        if seconds > blocking:
-            catastrophes.append(Catastrophe(name, seconds, blocking))
+        if seconds > catastrophic_for(name, table):
+            catastrophes.append(Catastrophe(name, seconds, catastrophic_for(name, table)))
             continue
         ceiling = ceiling_for(name, table)
         if seconds > ceiling:
@@ -113,6 +170,84 @@ def judge(timings: list[tuple[str, float]],
     debts.sort(key=lambda entry: entry.seconds, reverse=True)
     catastrophes.sort(key=lambda entry: entry.seconds, reverse=True)
     return debts, catastrophes
+
+
+def refusing(catastrophes: list[Catastrophe], table: dict[str, Any]) -> list[Catastrophe]:
+    """The catastrophes that actually refuse the run.
+
+    With confirmation on, only those whose isolated re-reading was also over.
+    With it off, all of them: a table that declares no confirmation step is
+    taking the crowded reading at face value, which is its own choice to make.
+
+    ``blocks`` is read here rather than described: a declared switch that
+    switches nothing is worse than no switch, because a reader takes it for the
+    rule.
+    """
+    if not table["catastrophic"].get("blocks", True):
+        return []
+    if not confirms_alone(table):
+        return list(catastrophes)
+    return [entry for entry in catastrophes if entry.confirmed()]
+
+
+def demoted(catastrophes: list[Catastrophe], refused: list[Catastrophe],
+            table: dict[str, Any]) -> list[Debt]:
+    """Debt for suspects the isolated reading cleared.
+
+    ``judge`` skips debt for a catastrophe so one regression is not reported
+    twice. That reasoning held while every catastrophe refused. One that clears
+    refuses nothing, so without this its overrun would vanish from the accounting
+    entirely — the slowest check in the run owing nothing on the one path where
+    it was slowest.
+    """
+    cleared = [entry for entry in catastrophes if entry not in refused]
+    return [Debt(entry.check, entry.seconds, ceiling_for(entry.check, table))
+            for entry in cleared
+            if entry.seconds > ceiling_for(entry.check, table)]
+
+
+def baseline_drift(timings: list[tuple[str, float]], table: dict[str, Any]) -> list[str]:
+    """Checks whose reading has parted company with their recorded baseline.
+
+    Read in both directions, for two different reasons.
+
+    Under: a baseline is what every derived ceiling is computed from, so one set
+    too high raises a ceiling and nothing else notices. Nothing here refuses —
+    the run cannot tell an inflated baseline from a check that genuinely got
+    faster — but a number nobody would defend stops being invisible.
+
+    Over: the cliff catches a check that triples, and the thing worth knowing is
+    that a check costs materially more than it did. That is a continuous
+    comparison, not a cliff, and it is the reading that would name a regression
+    on the run it lands rather than two doublings later.
+
+    What this cannot see is stated in the contract and bears repeating: a
+    baseline inflated just far enough to admit a reading it should have refused
+    sits inside the band this is silent on. Visibility is not a guard.
+    """
+    drift = table["catastrophic"]["baseline_drift"]
+    under = float(drift["under_factor"])
+    over = float(drift["over_factor"])
+    floor = float(drift["floor_seconds"])
+    lines = []
+    for name, seconds in timings:
+        baseline = baseline_for(name, table)
+        if baseline is None or seconds <= 0:
+            continue
+        # The same reason the cliff has a floor and 28 checks carry no baseline:
+        # a ratio taken on a fifth of a second is scheduling noise, and a report
+        # that cries wolf on a loaded run teaches a reader to skim it.
+        if baseline < floor:
+            continue
+        if baseline > seconds * under:
+            lines.append(f"{name}: measured {seconds:.3f}s against a {baseline:.3f}s "
+                         f"baseline, which derives its {catastrophic_for(name, table):.3f}s "
+                         f"ceiling; the baseline may be stale or too high")
+        elif seconds > baseline * over:
+            lines.append(f"{name}: measured {seconds:.3f}s against a {baseline:.3f}s "
+                         f"baseline, {seconds / baseline:.2f}x; it costs materially more "
+                         f"than when the baseline was taken")
+    return lines
 
 
 def report(debts: list[Debt], wall_line: str, table: dict[str, Any]) -> list[str]:

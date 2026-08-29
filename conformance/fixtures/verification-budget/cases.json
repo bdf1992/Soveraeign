@@ -1,6 +1,6 @@
 {
   "corpus_id": "soveraeign-verification-budget-cases/v1",
-  "note": "Positive and defeating cases for contracts/verification-budget.json. The rule under test is decisions/0074: a wall-clock reading records debt and never refuses, a check over its own ceiling is attributed and never refuses, and exactly one timing condition blocks - a single check past catastrophic_check_seconds. B-004 through B-007 are the defeating cases: each is a way the old global gate would have refused a run that this table must let pass, or a way the new table could quietly stop applying pressure at all. Times are in seconds and are inputs to the judge, not measurements of anything.",
+  "note": "Positive and defeating cases for contracts/verification-budget.json. The rule under test is decisions/0081: a wall-clock reading records debt and never refuses, a check over its own ceiling is attributed and never refuses, and exactly one timing condition blocks - a single check past its catastrophic ceiling. That ceiling is now derived from the check's own measured baseline rather than from one absolute number, because an absolute number is chosen relative to a measurement and then stops tracking it: 30s was set when the slowest check read 11.701s, and it began refusing runs once the suite grew into it. Times are in seconds and are inputs to the judge, not measurements of anything.",
   "cases": [
     {
       "case_id": "B-001-a-quiet-run-earns-a-band-and-owes-nothing",
@@ -51,22 +51,86 @@
       "proves": "The measured 2026-08-27 state. Both checks owe debt, both are named, and neither refuses the run - so a change to an unrelated fast check lands while the debt stays visible against its owner."
     },
     {
-      "case_id": "B-006-a-single-catastrophic-check-does-refuse",
-      "wall": 40.0,
-      "timings": [["Asset Service reference tests", 31.0]],
+      "case_id": "B-006-a-check-past-its-own-derived-ceiling-does-refuse",
+      "wall": 70.0,
+      "timings": [["Asset Service reference tests", 60.0]],
       "expect_grade": null,
       "expect_debts": [],
-      "expect_catastrophes": [["Asset Service reference tests", 31.0, 30.0]],
-      "proves": "The one timing condition that still blocks. Without this case the table would apply no hard pressure anywhere and a suite could grow without limit."
+      "expect_catastrophes": [["Asset Service reference tests", 60.0, 49.98, null]],
+      "proves": "A suspicion is raised where one is due. Asset's baseline is 16.66s, so its ceiling is 49.98s and 60.0s is past it. This case grades budget.judge, which only suspects; whether a suspicion refuses is C-001's subject and the exit code is the unit suite's. Without this the table would suspect nothing anywhere and a suite could grow without limit. The catastrophe arrives unconfirmed - the fourth field is the isolated reading, not yet taken."
     },
     {
       "case_id": "B-007-a-catastrophe-is-not-also-reported-as-debt",
-      "wall": 40.0,
-      "timings": [["Asset Service reference tests", 31.0], ["repository tooling tests", 10.1]],
+      "wall": 70.0,
+      "timings": [["Asset Service reference tests", 60.0], ["repository tooling tests", 10.1]],
       "expect_grade": null,
       "expect_debts": [["repository tooling tests", 10.1, 3.0]],
-      "expect_catastrophes": [["Asset Service reference tests", 31.0, 30.0]],
+      "expect_catastrophes": [["Asset Service reference tests", 60.0, 49.98, null]],
       "proves": "One regression is reported once. The catastrophic check is over its 4.0s ceiling too, and must not appear in both lists; its sibling's ordinary debt is unaffected."
+    },
+    {
+      "case_id": "B-008-the-suite-at-its-measured-cost-owes-debt-and-does-not-refuse",
+      "wall": 33.0,
+      "timings": [["repository tooling tests", 32.13]],
+      "expect_grade": null,
+      "expect_debts": [["repository tooling tests", 32.13, 3.0]],
+      "expect_catastrophes": [],
+      "proves": "The case this change exists for. 32.13s is what the tooling check measured on 2026-08-29 at 89 modules and 1854 tests, and under the old 30s absolute it refused the run - for having grown, which is the one thing the ceiling was never meant to punish. Its debt against the 3.0s aspiration Bdo set is untouched and still visible; what changed is that growth is attributed rather than blocking."
+    },
+    {
+      "case_id": "B-009-the-same-suite-tripled-against-its-baseline-still-refuses",
+      "wall": 101.0,
+      "timings": [["repository tooling tests", 100.0]],
+      "expect_grade": null,
+      "expect_debts": [],
+      "expect_catastrophes": [["repository tooling tests", 100.0, 96.39, null]],
+      "proves": "The defeating case for B-008. Deriving the ceiling from a baseline must not mean nothing can ever refuse: at three times its measured cost the same check still blocks. This is what stops the repair from being a way of turning the gate off."
+    },
+    {
+      "case_id": "B-010-a-check-with-no-baseline-answers-to-the-unbaselined-ceiling",
+      "wall": 40.0,
+      "timings": [["some new check nobody named", 31.0]],
+      "expect_grade": null,
+      "expect_debts": [],
+      "expect_catastrophes": [["some new check nobody named", 31.0, 30.0, null]],
+      "proves": "A check with no measured baseline has no cost to multiply, and is not thereby exempt. It answers to the unbaselined ceiling, which is the old absolute - so a new check cannot be added at half a minute and pass unnoticed while it waits for a baseline."
+    },
+    {
+      "case_id": "B-011-a-small-check-is-judged-against-the-floor-not-its-own-baseline",
+      "wall": 12.0,
+      "timings": [["charting derivation tests", 5.0]],
+      "expect_grade": "SILVER",
+      "expect_debts": [["charting derivation tests", 5.0, 0.5]],
+      "expect_catastrophes": [],
+      "proves": "This check's baseline is 0.17s, so three times it is 0.51s - a ceiling that would refuse the run on ordinary scheduling noise. The floor is what stops a derived ceiling collapsing onto a small number. 5.0s is thirty times its baseline and is still only debt, which is the honest reading: a check this small cannot be measured precisely enough to refuse on."
+    }
+  ],
+  "confirmation_note": "The second half of the rule. A per-check wall time taken inside a parallel run carries whatever was scheduled beside it, so a suspected catastrophe is re-read with nothing else running and the run refuses only on that isolated reading. These cases grade budget.refusing, which decides what actually blocks, rather than budget.judge, which only decides what is suspected. The fourth field of a catastrophe is that isolated reading: null while unconfirmed.",
+  "confirmation_cases": [
+    {
+      "case_id": "C-001-a-suspicion-the-isolated-reading-confirms",
+      "catastrophes": [["repository tooling tests", 100.0, 96.39, 99.0]],
+      "expect_refusing": ["repository tooling tests"],
+      "proves": "Run alone, with nothing competing for the pool, the check is still past its ceiling. Nothing about the host explains that, so it refuses - which is the whole point of the condition and must survive the confirmation step."
+    },
+    {
+      "case_id": "C-002-a-suspicion-the-isolated-reading-clears",
+      "catastrophes": [["repository tooling tests", 100.0, 96.39, 34.0]],
+      "expect_refusing": [],
+      "proves": "The defeating case for the whole confirmation step. The crowded reading was over the ceiling and the isolated one is nowhere near it, so the check was waiting rather than working. This is 'changed, not crowded' actually tested rather than asserted, and without it the derived ceiling would still refuse on a scheduling accident."
+    },
+    {
+      "case_id": "C-003-a-suspicion-nobody-re-read",
+      "catastrophes": [["repository tooling tests", 100.0, 96.39, null]],
+      "expect_refusing": [],
+      "proves": "An unconfirmed suspicion does not refuse. A reading taken beside forty-seven other checks is not evidence a check changed, and the run says CROWDED rather than failing on it. This case states the rule; it does not guard the wiring, because deleting the confirmation step leaves every suspicion unconfirmed and this case still green. TheGateReachesTheExitCode in scripts/tests/test_verify_budget.py is what turns red for that, by running the whole path to the exit code."
+    },
+    {
+      "case_id": "C-004-confirmation-switched-off-takes-the-crowded-reading",
+      "confirm_alone": false,
+      "catastrophes": [["repository tooling tests", 100.0, 96.39, null]],
+      "expect_refusing": ["repository tooling tests"],
+      "proves": "A table that declares no confirmation step is choosing to refuse on the crowded reading, and the evaluator honours that rather than silently keeping a step the contract turned off. The switch is real in both positions, which is what makes C-003 a statement about the contract and not about the code."
     }
   ]
 }

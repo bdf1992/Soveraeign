@@ -122,6 +122,44 @@ def run_check(check: Check) -> tuple[Check, clocks.Reading]:
     return check, clocks.run(check.command, check.cwd)
 
 
+def confirm_alone(catastrophes: list[budget.Catastrophe],
+                  results: list[tuple[Check, clocks.Reading]]) -> list[budget.Catastrophe]:
+    """Re-read each suspected catastrophe with nothing else running.
+
+    The suite runs its checks in a pool, so a per-check wall time carries
+    whatever was scheduled beside it. That is tolerable for attributing debt and
+    not for refusing a run, which is the most expensive thing this harness does.
+    So the suspects are re-run one at a time, after every other check has
+    finished, and the isolated reading is what decides.
+
+    Only the suspects are re-run, so a passing run costs nothing extra.
+    """
+    if not catastrophes or not budget.confirms_alone(BUDGET_TABLE):
+        return catastrophes
+    by_name = {check.name: check for check, _ in results}
+    confirmed = []
+    for entry in catastrophes:
+        check = by_name.get(entry.check)
+        if check is None:
+            # Unreachable today, and it must not fail open if it ever is. An
+            # entry left with no isolated reading is discarded by `refusing`, so
+            # a suspect nobody could re-read would silently stop refusing.
+            # Standing on the reading we do have is the safe direction.
+            confirmed.append(entry._replace(alone=entry.seconds))
+            continue
+        print(f"\n== re-reading {entry.check} alone ==", flush=True)
+        reading = clocks.run(check.command, check.cwd)
+        print(f"TIME: {entry.check} alone: {reading.report()}", flush=True)
+        confirmed.append(entry._replace(alone=reading.wall))
+    # A suspect that leaves here with no isolated reading is discarded by
+    # `refusing`, so any future reason to skip a re-read - a cap on how many to
+    # take, a timeout, an early return - would fail open and no case bounded by
+    # a fixed number of suspects could see it. Standing on the reading there is
+    # makes every such skip fail closed instead, whatever its shape.
+    return [entry if entry.alone is not None else entry._replace(alone=entry.seconds)
+            for entry in confirmed]
+
+
 def cost_line(results: list[tuple[Check, clocks.Reading]]) -> str:
     """Sum both clocks over the checks, and say plainly when a CPU number is missing.
 
@@ -186,11 +224,27 @@ def main(argv: list[str] | None = None, run_id: str | None = None,
         print(reading.output.rstrip("\n"), flush=True)
         print(f"TIME: {check.name}: {reading.report()}", flush=True)
 
-    debts, catastrophes = budget.judge(
-        [(check.name, reading.wall) for check, reading in results], BUDGET_TABLE)
-    # A catastrophe is a timing reading no host load explains, so it joins the
-    # semantic failures. Ordinary overruns never do: they are attributed below.
-    failed.extend(entry.line() for entry in catastrophes)
+    timings = [(check.name, reading.wall) for check, reading in results]
+    debts, catastrophes = budget.judge(timings, BUDGET_TABLE)
+    catastrophes = confirm_alone(catastrophes, results)
+    # A catastrophe is a check that changed, so it joins the semantic failures.
+    # Ordinary overruns never do: they are attributed below. A suspicion that did
+    # not survive being re-read alone is neither, and says so in its own line -
+    # and gets its ordinary debt back, because it is now refusing nothing.
+    refusing = budget.refusing(catastrophes, BUDGET_TABLE)
+    failed.extend(entry.line() for entry in refusing)
+    for entry in catastrophes:
+        if entry in refusing:
+            continue
+        # CROWDED is a claim about the isolated reading, not about whether the
+        # entry refuses. With `blocks` off a confirmed catastrophe also lands
+        # here, and labelling that one crowded would contradict its own sentence.
+        label = "CROWDED" if not entry.confirmed() else "NOT BLOCKING"
+        print(f"{label}: {entry.line()}", flush=True)
+    debts = sorted(debts + budget.demoted(catastrophes, refusing, BUDGET_TABLE),
+                   key=lambda entry: entry.seconds, reverse=True)
+    for line in budget.baseline_drift(timings, BUDGET_TABLE):
+        print(f"BASELINE: {line}", flush=True)
     print("")
     for line in summary(results, wall, failed):
         print(line)

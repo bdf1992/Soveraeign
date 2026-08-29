@@ -2,7 +2,7 @@
   "table_id": "soveraeign-verification-budget/v1",
   "status": "PROPOSED",
   "governed_by": "decisions/0081-verification-budget-stops-blocking.md",
-  "note": "Where performance pressure sits, and what it is allowed to do. A wall-clock reading is a property of the host at that instant, not of the repository, so it grades and records debt and never refuses a landing. Pressure moves to per-check ceilings, which attribute an overrun to the check that owns it instead of to whoever touched the repository next. Only a single check past catastrophic_check_seconds refuses, because that is a regression no host load explains. This table grants nothing and settles nothing; scripts/verify.py reads it and conformance/fixtures/verification-budget/cases.json defeats it.",
+  "note": "Where performance pressure sits, and what it is allowed to do. A wall-clock reading is a property of the host at that instant, not of the repository, so it grades and records debt and never refuses a landing. Pressure moves to per-check ceilings, which attribute an overrun to the check that owns it instead of to whoever touched the repository next. Only a single check past its own catastrophic ceiling refuses, and only when a second reading taken with nothing else running agrees. This table grants nothing and settles nothing; scripts/verify.py reads it and conformance/fixtures/verification-budget/cases.json defeats it.",
   "wall_clock": {
     "blocks": false,
     "grades": [
@@ -40,8 +40,57 @@
       "semantic cold-start task": 1.0
     }
   },
-  "catastrophic_check_seconds": 30.0,
-  "catastrophic_note": "One check past this refuses the run with exit 1. It is the only timing condition that blocks, and it is set far above any measured check so that host load cannot reach it: the slowest check on 2026-08-27 was 11.701s under eleven concurrent sessions. A check that reaches 30s has changed, not been crowded.",
+  "catastrophic": {
+    "blocks": true,
+    "factor": 3.0,
+    "floor_seconds": 10.0,
+    "confirm_alone": true,
+    "unbaselined_seconds": 30.0,
+    "note": "What a refusal means, and how it stays meaning that. The rule is unchanged: one check past its catastrophic ceiling refuses the run, because a check that has changed is a defect and not a busy afternoon. What changed is how the ceiling is found. It used to be one absolute number, 30s, chosen because the slowest check then measured 11.701s and 30 was far above it. That relationship is the whole justification and it decays: on 2026-08-27 the tooling check was 65 modules at 11.701s, and by 2026-08-29 it was 89 modules and 1854 tests at about 32s, so the suite grew into a ceiling that was never raised to meet it and refused runs for growing. A ceiling derived from each check's own measured baseline does not decay that way: adding tests moves the baseline when it is next taken, while a check that triples against a current baseline still refuses. Three times, not twice - at factor 3.0 a check that doubles is debt and not a refusal, which is the cost of this shape and is stated rather than left for a reader to work out.",
+    "ceiling_rule": "max(floor_seconds, baseline * factor) for a check with a baseline; max(floor_seconds, unbaselined_seconds) for one without.",
+    "factor_note": "3.0 against a measured spread of 1.44x. Across three full runs on 2026-08-29 the tooling check read 27.683s, 32.132s and 37.558s for identical bytes, and a worst observed reading of 1.59x baseline on a contended host, so a factor under about 1.75 would refuse on scheduling alone. 3.0 is roughly double the observed spread. What it catches is a tripling: a check that doubles against its baseline is attributed as debt and does not refuse, so Asset regressing from 16.66s to 45s would now be reported rather than blocked. That is a real loss against the old absolute and it is the price of a ceiling that does not decay. A tighter factor is admissible on this evidence - the worst reading over baseline observed across four runs is 1.59x - and is a judgement about how much headroom a contended host needs, which is why the number is declared here rather than computed.",
+    "confirm_alone_note": "A per-check wall time inside a parallel run is not a clean measurement of that check: 48 checks share a thread pool, so a reading carries whatever happened to be scheduled beside it. Normalising a run against its own median does not remove that - after dividing by the median, checks on 2026-08-29 still deviated by up to 2.10x. So before refusing, the check is run once more with nothing else running, and the run refuses only if the isolated reading is also over. That is the 'changed, not crowded' test done with the instrument pointed at one thing. It costs one extra run of every suspect, and only on the path that was about to refuse. A run that suspects ten checks re-reads ten.",
+    "baseline_drift": {
+      "under_factor": 2.0,
+      "over_factor": 2.0,
+      "floor_seconds": 0.5,
+      "blocks": false,
+      "note": "A reading and its baseline parting company, reported and never refused. Under: a baseline set too high raises a derived ceiling and nothing else in the table notices, so a run names any check measuring under half its baseline. Over: the cliff only catches a tripling, and what a reader wants to know is that a check costs materially more than it did, which is a continuous comparison rather than a cliff. Neither refuses, because a run cannot tell an inflated baseline from a check that got faster, nor a regression from a loaded afternoon.",
+      "floor_note": "A baseline below this is not compared at all. The two smallest baselines in the table, 0.21s and 0.22s, produced false readings of 2.28x and 2.44x on one loaded run of unchanged bytes - scheduling noise on checks too small to measure, which is the same reason the cliff carries floor_seconds and the same reason 28 checks under 0.15s carry no baseline. Without a floor the over-direction reintroduces in the report exactly the property decisions/0081 took out of the exit code: a number that measures the host at that instant.",
+      "what_it_cannot_see": "The band that matters most for inflation. A ceiling admits a reading R when the baseline is at least R/3; this speaks only above 2R. Everything in [R/3, 2R] is silent, and a baseline raised just far enough to admit a reading it should have refused lives there. This makes gross inflation visible to a reader who is looking; it is not a guard, and calling it one would be the failure it was added to answer. The guard is a check that grades each baseline against the run's own reading and refuses, which is not built.",
+      "thresholds_measured": "Measured over nine runs of this tree on 2026-08-29 - two by the builder, seven by the independent witness. Over that sample, with the 0.5s floor applied, no check drifts in either direction: the worst ratios are 1.88x over (automation health) and 1.69x under (kernel participant parity). Without the floor the sample is not silent, which is how the floor came to be here. This sentence names its sample deliberately: the two thresholds before it were each written from one run and stated as general, and each was false. Naming it is also what let the witness find that the six-run figure of 1.58x under was 1.69x over nine - the margin on the over side is 0.12, not the 0.42 a reader of the narrower sample would infer, and automation health sits 6% below the threshold on a real check.",
+      "regressions_named": "Both regressions this change newly admits past the cliff are named by the over-direction at the honest baseline: Asset 16.66s to 45s reads 2.70x, Console 14.31s to 45s reads 3.14x. That is the point of the over-direction - the cliff catches a tripling, and a reader wants to know about a doubling."
+    },
+    "baselines_measured": {
+      "at": "2026-08-29",
+      "host": "Windows 11, five live sessions sharing one working tree",
+      "how": "median of three full verify runs, per check, from --observe records",
+      "floor_note": "28 of 48 checks measured under 0.15s and carry no baseline. Windows job accounting quantizes to 15.625ms, so a ratio taken on those is noise; they answer to floor_seconds alone."
+    },
+    "baselines": {
+      "repository tooling tests": 32.13,
+      "Asset Service reference tests": 16.66,
+      "Console Service reference tests": 14.31,
+      "Record Service reference tests": 4.46,
+      "Record Service independent witness": 3.23,
+      "automation health": 2.91,
+      "MCP gateway binding": 2.14,
+      "repository hygiene": 2.0,
+      "Host Service reference tests": 1.19,
+      "documentation reader": 0.54,
+      "participant against its baseline": 0.51,
+      "kernel participant parity": 0.5,
+      "semantic cold-start task": 0.36,
+      "operation surface page": 0.32,
+      "Node Interface projection": 0.23,
+      "Sov context profile": 0.22,
+      "orientation snapshot": 0.21,
+      "conformance oracle tests": 0.2,
+      "local model adapter": 0.19,
+      "charting derivation tests": 0.17
+    },
+    "defeated_by": "A baseline that stops describing the check. These are loaded-host readings taken on one machine on one day; a faster host makes every ceiling generous and a slower one makes them tight. If a real regression lands and no check refuses, the factor is too high or the baselines are stale. If a run refuses with no change to the check that refused, they are too low or the confirm-alone step is not isolating what it claims to."
+  },
   "measured": {
     "at": "2026-08-27",
     "host": "Windows, eleven live sessions sharing one working tree",

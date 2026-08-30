@@ -1,5 +1,16 @@
 {
   "schema": "soveraeign-clarity-coverage/v1",
   "skill": "clarity/v1",
-  "reviews": {}
+  "reviews": {
+    "README.md": {
+      "artifact_digest": "sha256:16f9722d18bd2ecfe0d1d526c6dea51b7ad6d7a3b7546b47c497280aa6b4038b",
+      "basis": [],
+      "changed": true
+    },
+    "SYSTEM.md": {
+      "artifact_digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
+      "basis": [],
+      "changed": true
+    }
+  }
 }

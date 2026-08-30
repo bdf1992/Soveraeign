@@ -4,109 +4,120 @@ Status: `PROVISIONAL SYNTHESIS`
 
 ## Scope
 
-This project is a locally owned enterprise operating environment in which
-humans and models are native operators of the same governed world.
+Soveraeign is a locally owned operating environment where people and models work on the
+same governed state.
 
-“Algorithmic” means operational claims are represented through inspectable
-objects, typed authority, executable transitions, observable outcomes, and
-receipts. It does not mean replacing judgement with automation.
+People may use screens. Models may use structured bindings. Both resolve to the same
+operations, authority checks, records, evidence, and history.
 
-“AI-native” means model participation is part of the operator model rather than
-an accessory beside a human-only application. Humans may receive screens and
-models may receive structured surfaces, but both resolve to the same state,
-actions, constraints, authority checks, and history.
+The node keeps custody of its authoritative record, authority, operation, and continuity.
+It may borrow remote compute, including remote models, without making the provider the
+owner of those functions.
 
-“Local enterprise” means the enterprise retains custody of its memory,
-authority, operation, and continuity. External compute may eventually be used,
-but it cannot silently become the owner of those functions.
+"Algorithmic" means consequential work is represented in inspectable state with declared
+inputs, explicit authority, executable transitions, observable results, and receipts. It
+does not mean replacing human judgement with automation.
 
-## Ownership and model portability
+"AI-native" means model participation is part of the operating model itself. A model does
+not work through a privileged side channel or a human-only imitation of the system.
 
-Personal, team, and enterprise deployments use the same node contract. A
-personal node is a first-class Soveraeign Node owned and administered by one
-person, not a reduced edition. It may grow to more participants or federate
-without migrating its authority or record into a provider-owned system.
+## Nodes, owners, and models
 
-Bring Your Own Model is the intended model practice. The node owner selects a
-compatible local or remote model through a declared model binding and adapter.
-Model identity, version, runtime, host, capabilities, data boundary, usage, and
-cost are recorded configuration. Swapping models cannot change authoritative
-state, standing, authority, receipts, or service contracts.
+Personal, team, and enterprise deployments use the same node contract. A one-person node
+is a complete Soveraeign Node. Adding participants or federating later must not require
+moving its authority or record into a provider-owned system.
 
-**Sov** is the main operating-agent profile carried by a compatible underlying
-model. Sov gives that model bounded agency over its own attention, context,
-legal-operation selection, refusal, and handoff. It grants no authority and
-owns no authoritative state. The node remains sovereign over its world; exact
-model and host identity remain attributed configuration for each invocation.
+Bring Your Own Model is the intended model practice. The owner selects a compatible local
+or remote model through a declared Model Binding and Model Adapter. Each invocation
+records the model, version, runtime, host, capabilities, data boundary, usage, and cost.
 
-Local sovereignty concerns custody and continuity, not a ban on remote compute.
-If a remote model is used, the crossing is explicit and governed. If it becomes
-unavailable, local record operation continues and the failed invocation returns
-a receipt.
+Changing models may change quality, latency, cost, context limits, and available
+capabilities. It must not change authoritative state, standing, grants, receipts, or
+service contracts. An unavailable model refuses visibly rather than silently switching to
+another model.
 
-## Operational model
+**Sov** is the portable operating profile a compatible model can load. Sov helps the model
+choose attention, context, legal operations, refusal, and handoff. Loading the profile
+grants no authority and creates no authoritative state.
 
-1. A payload is captured as an addressed source.
+## How state changes
+
+The logical flow is:
+
+1. Capture a payload as an addressed source.
 2. A declared reader interprets the source without changing it.
-3. A declared derivation may deposit a provenance-bearing recording.
-4. A recording or proposal is merely recorded until it passes admission.
-5. Admission produces a mark and receipt but grants no truth.
-6. A typed right may ratify a claim within its authority.
-7. The runtime may attest whether the ratified claim presently reproduces.
-8. Effective state conditions operation.
-9. Operations produce independently observable receipts.
-10. Correction or retraction changes effective state without erasing history.
+3. A derivation may produce a recording with provenance.
+4. A recording or proposal begins as recorded, not authoritative.
+5. Admission marks that the proposal passed the admission gate. It does not make the
+   proposal true.
+6. A holder of the required typed authority may ratify the claim.
+7. Runtime attestation checks whether the ratified claim currently reproduces.
+8. Effective state may condition later operations.
+9. Operations leave receipts and can be checked through an independent observation path.
+10. Correction or retraction changes what applies now without erasing what happened.
 
-## Primary state distinctions
+## Distinctions the system must preserve
 
-| Dimension | Required distinctions |
+| Dimension | Distinctions |
 | --- | --- |
 | Standing | recorded · admitted · ratified · effective |
 | Data | payload · source · reading · view · recording · proposal · receipt · witness |
 | Identity | identity · address · digest · label · route · handle |
 | Event | attempted · committed · failed · refused · countered · unresolved |
 | Effect | record-local · resource consumption · external-world mutation |
-| Sign | proposal authority · ratification authority · runtime attestation |
+| Authority signal | proposal authority · ratification authority · runtime attestation |
 
-No representation may collapse these distinctions merely because two roles
-happen to use the same value.
+Two fields may contain the same value without becoming the same kind of thing. A digest is
+not an identity. A report is not an observation. A recorded proposal is not effective
+state.
 
-## Initial subsystems
+## Main parts
 
-The logical system is expected to require the following subsystems, but Phase I
-implements only what its conformance scenarios prove necessary:
+The logical system needs these responsibilities. They do not all need to be separate
+services.
 
-- **Record substrate:** immutable payloads, revisioned records, provenance, and
-  reconstruction authority.
-- **Runtime kernel:** admission, transition, observation, settlement, receipt,
-  and retraction semantics.
-- **Authority:** typed, scoped, revocable hands and ratification rules.
-- **Attestation:** reproduction, dissent, and unattestable outcomes without
-  authority inflation.
-- **Atlas:** addressable views, routes, crossings, and declared projections.
-- **Observation:** independent evidence about world state and operation results.
-- **Gauge:** per-surface AI-native evaluation with reachability as a gate.
-- **Definition and pedagogy:** revisioned concepts, disagreement, expiry, and
-  cold-start competence.
-- **Interfaces:** human and model bindings over one kernel contract.
-- **Adapters:** explicit boundaries to existing enterprise systems.
-- **Federation:** later governed crossing between sovereign local nodes.
+- **Record:** keeps immutable payloads, revisioned records, provenance, and enough history
+  to reconstruct what happened.
+- **Runtime kernel:** applies admission, transition, observation, settlement, receipt, and
+  retraction rules.
+- **Authority:** represents typed, scoped, revocable grants and the rules for ratification.
+- **Attestation:** records reproduction, dissent, and outcomes that cannot be attested
+  without turning runtime success into authority.
+- **Discovery and projections:** expose addressable views, routes, available operations,
+  and rebuildable read models.
+- **Observation:** checks world state and operation results through a path the executor did
+  not control.
+- **AI-native evaluation:** grades named operations for reachability and the stronger
+  Soveraeign qualification in `AI-NATIVE.md`.
+- **Definitions and learning:** keep concepts revisioned and make a fresh participant able
+  to understand the node from its artifacts.
+- **Bindings:** present the same declared operations to people and models.
+- **Adapters:** translate between Soveraeign and named external systems without moving
+  authority into the adapter.
+- **Federation:** later allows governed exchange between complete nodes without either node
+  absorbing the other.
 
-## Phase-I system boundary
+The older names `Atlas` and `Gauge` may appear in historical or classification material.
+Here the responsibility is named directly unless that shorter label preserves a required
+machine distinction.
 
-Phase I is local-only and refuses uncontained external effects. It must prove:
+## Phase-I boundary
+
+Phase I is closed and recorded as `CLOSED_INCOMPLETE`. Its historical target was a local
+system that refused uncontained external effects and proved:
 
 - metered proposals;
 - immutable, reconstructable memory;
-- a provenance-preserving human/model crossing;
+- provenance across human/model use;
 - gated admission and record retraction;
 - typed authority;
-- non-blocking founder judgement accounting;
-- fresh-witness reconstruction;
+- owner judgement that does not stop unrelated work;
+- reconstruction by a fresh witness;
 - runtime attestation after ratification;
-- same-world parity between human and model bindings; and
-- model portability across two materially different model bindings, including
-  one owner-supplied through BYOM.
+- human/model use of the same governed state; and
+- portability across two materially different model bindings, including one supplied by
+  the owner.
 
-Phase I does not prove distributed consensus, world rollback, autonomous
-external action, enterprise-wide integration, or federation.
+Phase I did not prove distributed consensus, rollback of external-world effects,
+autonomous external action, enterprise-wide integration, or federation. Its terminal
+status records that the full qualification exit was not earned.

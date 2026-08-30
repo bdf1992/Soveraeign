@@ -1,241 +1,186 @@
 # Soveraeign
 
-**A local-first operating environment where people and AI systems work through
-the same governed enterprise state.**
+**A local-first system where people and AI work through the same records, permissions,
+operations, and history.**
 
-Soveraeign is an attempt to make AI a native enterprise operator without making
-the enterprise dependent on an AI provider. Humans and models receive different
-interfaces, but they act through the same records, permissions, transitions,
-evidence, and history.
+Soveraeign is built for work shared by people and models. They may use different
+interfaces, but neither gets a separate copy of the enterprise or a private path around
+its rules.
 
-The enterprise keeps custody of its operational memory and authority. A model
-may propose, inspect, verify, and act within a delegated scope; it cannot turn
-its own confidence, output, or successful execution into authority.
+The node keeps its authoritative records and permissions under the owner's control. A
+model can inspect, propose, build, verify, and act when a live grant allows it. Producing
+a good answer or successfully running code does not create authority.
 
-## AI-native, precisely
+## What the product is trying to guarantee
 
-An enterprise surface is **AI-native** when a model can reach and perform a
-substantive domain operation through the system's declared interfaces while
-remaining inside the same authoritative state, constraints, and history as a
-human operator—and the resulting operation is attributable, inspectable, and
-correctable.
+The stable product claims live in `GROUND.md`. In plain language:
 
-The verdict is applied to a **named operation on a surface**, not loosely to an
-entire company or product. At minimum:
+- the owner keeps custody of the record, authority, operation, and continuity;
+- people and models act on the same governed state;
+- authority comes from explicit grants, never confidence or capability;
+- meaningful work happens through declared operations with known inputs, limits, and
+  expected results;
+- important actions bind to exact source state and leave durable receipts;
+- a fresh participant can discover what it may do from the artifact itself;
+- refusal and failure are recorded results, not missing information;
+- corrections preserve what happened instead of rewriting history;
+- executors do not get to certify their own success;
+- drafts, accepted claims, and currently effective state remain distinct;
+- human judgement is reserved for the transitions that actually require it;
+- models are replaceable without moving authoritative state into the provider;
+- work and resource use can be traced back to the product intent that justified them;
+- work survives a new session, operator, model, or day; and
+- a one-person node is a complete node, not a reduced edition.
 
-- the operation must be reachable through a declared machine-usable path;
-- commitment, provenance, or retraction must be materially present;
-- and removing the AI path must remove substantive domain capability rather
-  than a decorative assistant.
+`CANON.md` turns those product claims into promises and user journeys. Requirements,
+services, and implementation sit below that.
 
-Soveraeign holds itself to a stricter bar: same-world human/model parity, typed
-authority, independent observation, complete receipts, effect honesty,
-cold-start competence, two-binding proof, and local sovereignty.
+## What AI-native means here
 
-**[Read the complete AI-Native Standard →](AI-NATIVE.md)**
+Soveraeign calls a named operation AI-native when a model can discover and perform that
+operation through a declared machine-usable interface while using the same authoritative
+state, rules, and history as a human operator.
 
-## Local, personal, and BYOM
+A chat box or generated suggestion is not enough. The model path must expose real domain
+capability, and the system must preserve evidence about what the model read, what it did,
+what authority it used, and how the result can be corrected.
 
-The first intended deployment is a personally owned local node. The same node
-contract can later support a team or enterprise without turning personal use
-into a separate edition or surrendering the record to a central provider.
+Soveraeign's own bar is stricter than that minimum. It also requires full reachability,
+typed authority, independent observation, complete receipts, honest treatment of
+external effects, cold-start use, human/model parity, model portability, and local
+custody.
 
-Soveraeign practices **Bring Your Own Model**: an owner can bind a compatible
-local or remote model while keeping the same authoritative state, service
-contracts, typed authority, provenance, receipts, and retraction rules. Every
-run declares its exact model, runtime, host, data boundary, usage, and cost.
+See [`AI-NATIVE.md`](AI-NATIVE.md) for the exact scoring and qualification rules.
 
-**[Read the Local, Personal, and BYOM pattern →](BYOM.md)**
+## Local use and Bring Your Own Model
 
-## Sov, the main operating agent
+The first deployment target is a personally owned local node. The same node contract can
+later support more people or federation without moving its authority or record into a
+provider-owned system.
 
-**Sov** is the portable agency profile loaded by the current underlying model.
-It gives the model room to direct its own bounded participation — attention,
-context selection, legal next actions, refusal, and handoff — without turning
-the profile, prompt, provider, or model into authority. The node still owns its
-world; every consequential operation still requires a typed live grant.
+Bring Your Own Model means the owner can bind a compatible local or remote model without
+changing the node's authoritative state, service contracts, grants, receipts, or
+retraction rules. Each invocation records the model, runtime, host, data boundary, usage,
+and cost.
 
-**[Load the Sov operating profile →](SOV.md)**
+Remote compute is allowed. Remote ownership of the node is not.
 
-## Why this exists
+See [`BYOM.md`](BYOM.md).
 
-Most software still assumes one kind of operator: a persistent, accountable
-human using screens designed for human perception. AI is then attached beside
-that system as a chat box, copilot, or automation layer.
+## Sov
 
-That arrangement can be useful, but it is not AI-native. The model sees a
-partial imitation of the enterprise, works through exceptional paths, and
-leaves humans to reconstruct what happened afterward.
+**Sov** is the portable operating profile for a model working inside Soveraeign. It helps
+the model choose context, select permitted operations, refuse, and hand work off.
 
-Soveraeign changes the operator model instead. It asks what an enterprise system
-must become when both people and models are expected to operate it directly,
-safely, and accountably.
+Loading Sov grants nothing. Every consequential operation still needs a live typed grant,
+and the node remains the authority over its own state.
 
-## The governing loop
+See [`SOV.md`](SOV.md).
+
+## How governed work moves
+
+The system keeps several steps separate on purpose:
 
 ```text
 source
-→ declared reading
-→ derived recording or proposal
-→ admission
-→ typed ratification
-→ runtime attestation
-→ effective operation
-→ independent observation
-→ receipt
-→ correction or retraction
-→ revised enterprise state
+-> reading
+-> recording or proposal
+-> admission
+-> ratification
+-> runtime attestation
+-> effective state
+-> operation
+-> independent observation
+-> receipt
+-> correction or retraction
 ```
 
-Each step is distinct:
+A source can be read without being changed. A proposal can exist without being accepted.
+An accepted claim can stop being effective. An executor can report success without an
+independent observer confirming it. A correction can change current state without
+pretending the original event never happened.
 
-- A source can be read without being changed.
-- A recording can exist without being admitted.
-- An admitted proposal can remain unratified.
-- A ratified claim can stop applying to the present state.
-- An operation can report success without independent observation confirming it.
-- A record can be retracted without pretending its external effects were undone.
+Those distinctions are part of the product, not implementation detail.
 
-These distinctions are the foundation of the system—not implementation detail.
+## Current state
 
-## What “algorithmic” means here
+Phase I is closed. `contracts/phases.json` records the terminal state as
+`CLOSED_INCOMPLETE`: the phase ended without earning its qualification exit. No successor
+phase is active.
 
-Soveraeign is algorithmic because consequential work is expressed through
-inspectable state, declared inputs, typed authority, executable transitions,
-observable outcomes, and attributable receipts.
+That result is intentional. The repository keeps partial implementation evidence without
+rounding it up to acceptance. Opening the next phase remains an explicit owner action.
+Candidate future work, including issue #173, is not current phase authority merely because
+it exists.
 
-It does **not** mean removing human judgement. Human judgement is the scarce
-resource the system protects: machines should perform the work that can be
-verified, while decisions that genuinely require a person remain visible,
-bounded, and assigned.
-
-## What Phase I established — and did not
-
-Phase I is closed. `contracts/phases.json` records its terminal as
-`CLOSED_INCOMPLETE`: the operating window ended, the qualification exit was not
-earned, and no successor phase is named. Its pinned first requirements remain in
-`archives/PRD-PHASE-I.md` and `archives/ROADMAP-F0-F6.md`; they are historical
-definition, not current work authority.
-
-The closure campaign preserves that result rather than rounding partial evidence
-up to acceptance. The next construction aperture, if and when the root seat opens
-a successor phase, is issue #173: prove and freeze one deliberately small,
-Record-backed, independently observed vertical with one human and two materially
-different model bindings before broad architecture expands again.
-
-## Current repository state
-
-This repository is **between phases**. Historical Phase I is terminal
-`CLOSED_INCOMPLETE`; no successor phase is active. Issue #148 is the boundary
-closure ledger. The repository contains substantial governing and self-tested
-implementation evidence, but independent operational qualification remains
-narrow and owner acceptance is never inferred from implementation.
-
-The governing and operating set contains:
-
-- `GROUND.md` — the sixteen claims that say what product Soveraeign is;
-- `CANON.md` — who a node is for, what Soveraeign undertakes, and the journeys
-  an undertaking is reached by;
-- `SYSTEM.md` — the system boundary and operational model;
-- `CLASSIFICATION.md` — the proposed controlled vocabulary and identity tests;
-- `AI-NATIVE.md` — the falsifiable per-surface standard and verdict derivation;
-- `BYOM.md` — the personal-local ownership and model-portability pattern;
-- `ENGINEERING.md` — the minimal reference stack and composable kernel primitives;
-- `services/asset/` — the Asset Service charter, contract, reference participant, and tests;
-- `services/proofing/` — the proposed sibling review-and-approval service boundary;
-- `CONTRACT.md` — invariants implementations must preserve;
-- `PRD.md` — the product's requirements, priority, and success measures;
-- `SPEC.md` — the current stack-neutral logical contract; the closed Phase-I
-  definition is pinned separately in `contracts/phases.json`;
-- `ROADMAP.md` — evidence-gated construction phases and the name crosswalk;
-- `SDLC.md` — the operating loop: tiers, dyads, and the Red-gated release requirement;
-- `services/console/` — the proposed third sibling operator-surface boundary;
-- `diagrams/` — rebuildable views of the corpus, each declaring its source digests;
-- `STATUS.yaml` — machine-readable authority, standing, and open decisions;
-- `OPEN-SEAMS.md` — contradictions that must remain visible;
-- `decisions/` — consequential choices and their authority;
-- `conformance/` — executable positive and defeating logical controls;
-- `lineage/`, when present — predecessor standings and immutable source evidence;
-- `AGENTS.md` — the normative operating contract for model contributors;
-- `SOV.md` and `bindings/sov/` — the portable main operating-agent profile;
-- `CONTRIBUTING.md` — the contribution workflow for humans and models;
-- `.cursorrules` — a concise editor-facing mirror of the root rules.
-
-## What this is not
-
-Soveraeign is not:
-
-- a chatbot or generic agent framework;
-- a model-owned memory layer;
-- a knowledge graph presented as an enterprise;
-- an ERP rewrite undertaken all at once;
-- a universal ontology or frozen encoding;
-- a simulation standing in for real operation;
-- a merger of the predecessor repositories;
-- or a claim that external-world effects can always be rolled back.
-
-Previous work is preserved as evidence and lineage. It enters the current
-system only through an explicit invariant, decision, conformance case, schema,
-or reviewed implementation adoption.
+`STATUS.yaml` is the machine-readable source for current standing and owner-held items.
+Issue #148 is the Phase-I boundary-closure ledger.
 
 ## Start here
 
-Run it before you read it. Python 3.11 or newer, no dependencies to install.
+Python 3.11 or newer is enough for the repository checks.
 
 ```sh
-python scripts/verify.py     # the required gate; graded on wall time, not just pass/fail
-python scripts/sov_next.py   # what happens next, and where the signposts disagree
-python scripts/sov_traps.py  # facts about this repository that answer confidently and wrongly
+python scripts/verify.py
+python scripts/sov_next.py
+python scripts/sov_traps.py
 ```
 
-`verify.py` grades itself `PLATINUM` at three seconds, `GOLD` at six, and
-`SILVER` at fifteen. Past fifteen it records debt rather than failing, because a
-wall-clock reading measures the host at that instant and not the repository; the
-pressure sits on per-check ceilings instead (`decisions/0081`, superseding
-`decisions/0050`). One timing condition still refuses: a single check past
-thirty seconds. `sov_next.py`
-reconciles five signposts and prints one answer with every alias the job travels
-under; where the declared gate and the reachable work name different jobs it
-reports the disagreement rather than resolving it, because that choice is owner
-judgement.
+`verify.py` is the required gate. It runs the repository-owned checks and records timing.
+The total wall time earns `PLATINUM`, `GOLD`, or `SILVER`; a slow host does not by itself
+make the repository semantically wrong. Per-check catastrophic limits still refuse.
 
-[`scripts/README.md`](scripts/README.md) indexes the whole command surface —
-thirty-six entrypoints grouped by the question each one answers.
+`sov_next.py` compares the repository's current signposts instead of guessing what should
+happen next. `sov_traps.py` checks repository facts that have repeatedly produced confident
+but wrong answers.
 
-Then read, in this order:
+[`scripts/README.md`](scripts/README.md) indexes the repository commands.
 
-1. `GROUND.md` and `CANON.md` — what product this is, and what it undertakes.
-2. `AGENTS.md`, `SOV.md`, `CONTRIBUTING.md`, and `STATUS.yaml` — how work is
-   done here. These govern participants, not the product.
-3. `SYSTEM.md`, `CONTRACT.md`, `PRD.md`, and `SPEC.md` as one governing set.
-4. `ENGINEERING.md` and `OPEN-SEAMS.md` before implementation.
+Then read:
 
-Use the proposed reference baseline without treating it as owner-ratified or
-importing an ancestor implementation.
+1. `GROUND.md` and `CANON.md` for the product itself.
+2. `AGENTS.md`, `SOV.md`, `CONTRIBUTING.md`, and `STATUS.yaml` for how participants work
+   here.
+3. `SYSTEM.md`, `CONTRACT.md`, `PRD.md`, and `SPEC.md` for the system rules.
+4. `ENGINEERING.md` and `OPEN-SEAMS.md` before implementation work.
 
-Writing a binding or an adapter is a different path:
-[`bindings/INTEGRATING.md`](bindings/INTEGRATING.md).
+## Document map
 
-## Immediate objective
+| Path | What it owns |
+| --- | --- |
+| `GROUND.md` | The stable claims that define the product |
+| `CANON.md` | Participants, promises, and product journeys |
+| `SYSTEM.md` | System boundary and operating model |
+| `CONTRACT.md` | Invariants implementations must preserve |
+| `CLASSIFICATION.md` | Canonical architecture and lifecycle vocabulary |
+| `PRD.md` | Current product requirements and success measures |
+| `SPEC.md` | Logical objects, transitions, predicates, and refusals |
+| `AI-NATIVE.md` | AI-native evaluation and Soveraeign qualification |
+| `BYOM.md` | Local ownership and model portability |
+| `ENGINEERING.md` | Current replaceable implementation choices |
+| `SDLC.md` | Repository delivery and evidence loop |
+| `STATUS.yaml` | Current authority, standing, and open owner items |
+| `OPEN-SEAMS.md` | Known contradictions that must stay visible |
+| `AGENTS.md` | Rules for model contributors |
+| `CONTRIBUTING.md` | Working contribution path for people and models |
+| `SOV.md`, `bindings/sov/` | Portable Sov profile and host bindings |
+| `services/` | Service contracts, implementations, and tests |
+| `conformance/` | Positive and defeating semantic cases |
+| `decisions/` | Consequential choices and their rationale |
+| `diagrams/` | Rebuildable views derived from declared sources |
 
-Finish the phase boundary without silently opening its successor:
+## What this is not
 
-- keep current-reader documents, host prompts, issue horizons, and executable
-  policy projections consistent with the recorded Phase-I terminal;
-- preserve unresolved root judgements as a small explicit docket rather than
-  executable branch or phase debris;
-- finish the retrospective and exact-main closure receipt in issue #148;
-- leave successor-phase opening as an explicit root-seat act.
+Soveraeign is not a chatbot, a generic agent framework, a model-owned memory layer, an
+ERP rewrite, a universal ontology, a simulation standing in for operation, or a promise
+that external effects can always be undone.
 
-After that opening, issue #173 is the first construction gate: close one minimal
-witnessed kernel vertical before broad service or architecture expansion. The
-next code change must satisfy a visible contract or defeating case; it must not
-manufacture product meaning merely to create work.
+Previous work may be kept as evidence or lineage. It enters the current system only
+through an explicit claim, decision, contract, test, schema, or reviewed implementation.
 
 ## Publication boundary
 
-The public repository contains the canonical synthesis, contracts, logical
-testbed, and reference participant. The historical evidence archive and
-ancestor registry are not published by default. When absent, verification
-reports the archive as unavailable rather than claiming its source hashes were
-checked. See `PUBLICATION.md`.
+The public repository contains the current synthesis, contracts, logical testbed, and
+reference implementation. Historical evidence and ancestor material are not published by
+default. When they are absent, verification reports them as unavailable rather than
+claiming they were checked. See `PUBLICATION.md`.

@@ -50,7 +50,7 @@ jobs:
           python scripts/sov_clarity.py check
           python scripts/sov_diagrams.py grade
           python scripts/sov_docs.py check
-          python -m unittest discover -s scripts/tests -p 'test_sov_clarity.py' -v
+          PYTHONPATH=scripts python -m unittest discover -s scripts/tests -p 'test_sov_clarity.py' -v
           python scripts/lint.py
 
       - name: Commit exact result and retire helpers

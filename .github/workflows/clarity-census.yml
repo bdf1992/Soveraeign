@@ -1,0 +1,63 @@
+name: clarity census
+
+on:
+  push:
+    branches:
+      - closure/phase-i-zero-state
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  census:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Measure clarity campaign
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          python scripts/sov_clarity.py scope > /tmp/clarity-scope.txt 2>&1
+          scope_rc=$?
+          python scripts/sov_clarity.py status > /tmp/clarity-status.txt 2>&1
+          status_rc=$?
+          python scripts/sov_clarity.py next > /tmp/clarity-next.txt 2>&1
+          next_rc=$?
+          set -e
+
+          {
+            echo '## Clean-zero clarity census'
+            echo
+            echo "Observed branch head: \`${GITHUB_SHA}\`"
+            echo
+            echo '### Scope'
+            echo '```text'
+            cat /tmp/clarity-scope.txt
+            echo '```'
+            echo
+            echo '### Status'
+            echo '```text'
+            cat /tmp/clarity-status.txt
+            echo '```'
+            echo
+            echo '### Next target'
+            echo '```text'
+            cat /tmp/clarity-next.txt
+            echo '```'
+            echo
+            echo "Exit codes: scope=${scope_rc}, status=${status_rc}, next=${next_rc}."
+            echo 'This is a census receipt, not completion or phase-opening authority.'
+          } > /tmp/clarity-census.md
+
+          gh issue comment 148 --repo "$GITHUB_REPOSITORY" --body-file /tmp/clarity-census.md
+          test "$scope_rc" -eq 0
+          test "$status_rc" -eq 0
+          test "$next_rc" -eq 0

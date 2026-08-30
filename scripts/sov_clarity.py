@@ -8,15 +8,22 @@ from hashlib import sha256
 import json
 from pathlib import Path
 
+from sovclarity.scope import (
+    campaigns,
+    clarity_candidates,
+    default_basis,
+    eligible,
+    exemption_map,
+    scanned_candidates,
+    scope_errors,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT_PATH = ROOT / "contracts" / "clarity.json"
 DIGEST_PREFIX = "sha256:"
 
-
 def load(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
-
 
 def save(path: Path, value: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -26,111 +33,11 @@ def save(path: Path, value: dict) -> None:
         newline="\n",
     )
 
-
 def digest(path: Path) -> str:
     return DIGEST_PREFIX + sha256(path.read_bytes()).hexdigest()
 
-
-def rel(path: Path) -> str:
-    return path.relative_to(ROOT).as_posix()
-
-
-def glob_files(patterns: list[str]) -> set[str]:
-    found: set[str] = set()
-    for pattern in patterns:
-        found.update(rel(path) for path in ROOT.glob(pattern) if path.is_file())
-    return found
-
-
-def path_is_under(path: str, declared: str) -> bool:
-    declared = declared.rstrip("/")
-    return path == declared or path.startswith(declared + "/")
-
-
-def publication_contract(contract: dict) -> dict:
-    path = ROOT / contract["scope"]["publication_contract"]
-    return load(path)
-
-
-def publication_surface(path: str, publication: dict) -> str | None:
-    matches = [
-        item
-        for item in publication.get("paths", [])
-        if path_is_under(path, item["path"])
-    ]
-    if not matches:
-        return None
-    matches.sort(key=lambda item: len(item["path"]), reverse=True)
-    return matches[0]["surface"]
-
-
-def scanned_candidates(contract: dict) -> set[str]:
-    scope = contract["scope"]
-    included = glob_files(scope["candidate_include"])
-    excluded = glob_files(scope.get("candidate_exclude", []))
-    return included - excluded
-
-
-def scope_errors(contract: dict) -> list[str]:
-    publication = publication_contract(contract)
-    known_surfaces = set(publication.get("surfaces", {}))
-    errors: list[str] = []
-    for path in sorted(scanned_candidates(contract)):
-        surface = publication_surface(path, publication)
-        if surface is None:
-            errors.append(
-                f"{path}: human-facing text has no publication-surface classification"
-            )
-        elif surface not in known_surfaces:
-            errors.append(f"{path}: unknown publication surface {surface!r}")
-    return errors
-
-
-def clarity_candidates(contract: dict) -> set[str]:
-    publication = publication_contract(contract)
-    included_surfaces = set(contract["scope"]["include_surfaces"])
-    return {
-        path
-        for path in scanned_candidates(contract)
-        if publication_surface(path, publication) in included_surfaces
-    }
-
-
-def exemption_map(contract: dict) -> dict[str, str]:
-    candidates = clarity_candidates(contract)
-    exemptions: dict[str, str] = {}
-    for rule in contract["scope"].get("exemptions", []):
-        reason = rule["reason"].strip()
-        for path in glob_files(rule["include"]) & candidates:
-            exemptions[path] = reason
-    return exemptions
-
-
-def eligible(contract: dict) -> set[str]:
-    return clarity_candidates(contract) - set(exemption_map(contract))
-
-
-def campaign_files(contract: dict) -> dict[str, list[str]]:
-    remaining = set(eligible(contract))
-    grouped: dict[str, list[str]] = {}
-    for name in contract["campaign_order"]:
-        campaign = contract["campaigns"][name]
-        matched = glob_files(campaign["include"])
-        matched -= glob_files(campaign.get("exclude", []))
-        selected = sorted(remaining & matched)
-        grouped[name] = selected
-        remaining -= set(selected)
-    grouped["_unassigned"] = sorted(remaining)
-    return grouped
-
-
-def campaigns(contract: dict) -> dict[str, list[str]]:
-    return campaign_files(contract)
-
-
 def coverage_path(contract: dict) -> Path:
     return ROOT / contract["coverage_file"]
-
 
 def coverage(contract: dict) -> dict:
     path = coverage_path(contract)
@@ -141,7 +48,6 @@ def coverage(contract: dict) -> dict:
         "skill": contract["skill"],
         "reviews": {},
     }
-
 
 def review_state(path: str, review: dict | None) -> str:
     if review is None:
@@ -155,27 +61,20 @@ def review_state(path: str, review: dict | None) -> str:
             return "BASIS_STALE"
     return "CURRENT"
 
-
 def state_map(contract: dict, record: dict) -> dict[str, str]:
     reviews = record.get("reviews", {})
-    exemptions = exemption_map(contract)
-    states = {path: "EXEMPT" for path in sorted(exemptions)}
-    states.update(
-        {
-            path: review_state(path, reviews.get(path))
-            for path in sorted(eligible(contract))
-        }
-    )
+    states = {path: "EXEMPT" for path in sorted(exemption_map(contract))}
+    states.update({
+        path: review_state(path, reviews.get(path))
+        for path in sorted(eligible(contract))
+    })
     return dict(sorted(states.items()))
-
 
 def pct(a: int, b: int) -> float:
     return 100.0 if b == 0 else 100.0 * a / b
 
-
 def status(contract: dict, record: dict) -> None:
-    reviews = record.get("reviews", {})
-    grouped = campaigns(contract)
+    reviews, grouped = record.get("reviews", {}), campaigns(contract)
     states = state_map(contract, record)
     print("Clarity coverage\n")
     for name in contract["campaign_order"]:
@@ -188,23 +87,18 @@ def status(contract: dict, record: dict) -> None:
         )
     if grouped["_unassigned"]:
         print(f"{'UNASSIGNED':<12} {len(grouped['_unassigned']):>3}")
-
-    eligible_paths = eligible(contract)
-    total = len(eligible_paths)
-    reviewed = sum(path in reviews for path in eligible_paths)
-    current = sum(states[path] == "CURRENT" for path in eligible_paths)
-    stale = reviewed - current
-    exempt = len(exemption_map(contract))
+    paths = eligible(contract)
+    reviewed = sum(path in reviews for path in paths)
+    current = sum(states[path] == "CURRENT" for path in paths)
     print("")
-    print(f"coverage         {pct(reviewed, total):6.1f}%")
+    print(f"coverage         {pct(reviewed, len(paths)):6.1f}%")
     print(f"freshness        {pct(current, reviewed):6.1f}%")
-    print(f"current coverage {pct(current, total):6.1f}%")
+    print(f"current coverage {pct(current, len(paths)):6.1f}%")
     print("")
     print(f"CURRENT     {current:>4}")
-    print(f"STALE       {stale:>4}")
-    print(f"UNCHECKED   {total - reviewed:>4}")
-    print(f"EXEMPT      {exempt:>4}")
-
+    print(f"STALE       {reviewed - current:>4}")
+    print(f"UNCHECKED   {len(paths) - reviewed:>4}")
+    print(f"EXEMPT      {len(exemption_map(contract)):>4}")
 
 def valid_digest(value: object) -> bool:
     if not isinstance(value, str) or not value.startswith(DIGEST_PREFIX):
@@ -212,28 +106,12 @@ def valid_digest(value: object) -> bool:
     body = value[len(DIGEST_PREFIX):]
     return len(body) == 64 and all(char in "0123456789abcdef" for char in body)
 
-
-def path_matches_any(path: str, patterns: list[str]) -> bool:
-    return path in glob_files(patterns)
-
-
-def default_basis(contract: dict, path: str) -> list[str]:
-    exact = contract.get("basis_by_path", {})
-    if path in exact:
-        return exact[path]
-    for rule in contract.get("basis_by_pattern", []):
-        if path_matches_any(path, rule["include"]):
-            return rule["basis"]
-    return []
-
-
 def registry_errors(contract: dict, record: dict) -> list[str]:
-    errors: list[str] = []
-    errors.extend(scope_errors(contract))
-    grouped = campaigns(contract)
-    for path in grouped["_unassigned"]:
-        errors.append(f"{path}: clarity candidate is not assigned to a campaign")
-
+    errors = list(scope_errors(contract))
+    errors.extend(
+        f"{path}: clarity candidate is not assigned to a campaign"
+        for path in campaigns(contract)["_unassigned"]
+    )
     if record.get("schema") != "soveraeign-clarity-coverage/v1":
         errors.append("coverage schema must be soveraeign-clarity-coverage/v1")
     if record.get("skill") != contract["skill"]:
@@ -241,15 +119,15 @@ def registry_errors(contract: dict, record: dict) -> list[str]:
     reviews = record.get("reviews")
     if not isinstance(reviews, dict):
         return errors + ["reviews must be an object keyed by repository path"]
-
-    allowed = eligible(contract)
-    exemptions = exemption_map(contract)
+    allowed, exemptions = eligible(contract), exemption_map(contract)
     for path, review in reviews.items():
         if path not in allowed:
-            if path in exemptions:
-                errors.append(f"{path}: exempt artifacts must not carry review receipts")
-            else:
-                errors.append(f"{path}: review is outside the declared clarity scope")
+            kind = (
+                "exempt artifacts must not carry review receipts"
+                if path in exemptions
+                else "review is outside the declared clarity scope"
+            )
+            errors.append(f"{path}: {kind}")
             continue
         if not isinstance(review, dict):
             errors.append(f"{path}: review must be an object")
@@ -277,10 +155,8 @@ def registry_errors(contract: dict, record: dict) -> list[str]:
                 errors.append(f"{path}: invalid digest for basis {source!r}")
     return errors
 
-
 def do_scope(contract: dict) -> int:
-    errors = scope_errors(contract)
-    exemptions = exemption_map(contract)
+    errors, exemptions = scope_errors(contract), exemption_map(contract)
     grouped = campaigns(contract)
     print("Clarity scope\n")
     print(f"scanned       {len(scanned_candidates(contract)):>4}")
@@ -292,23 +168,20 @@ def do_scope(contract: dict) -> int:
         print("\nExemptions")
         for path in sorted(exemptions):
             print(f"- {path}: {exemptions[path]}")
-    if errors:
+    defects = errors + [
+        f"{path}: clarity candidate is not assigned to a campaign"
+        for path in grouped["_unassigned"]
+    ]
+    if defects:
         print("\nScope errors")
-        for error in errors:
-            print(f"ERROR: {error}")
-        return 1
-    if grouped["_unassigned"]:
-        print("\nUnassigned")
-        for path in grouped["_unassigned"]:
-            print(f"ERROR: {path}")
+        for defect in defects:
+            print(f"ERROR: {defect}")
         return 1
     print("\nPASS: every current prose candidate is eligible or explicitly exempt")
     return 0
 
-
 def do_next(contract: dict, record: dict) -> int:
-    states = state_map(contract, record)
-    grouped = campaigns(contract)
+    states, grouped = state_map(contract, record), campaigns(contract)
     for wanted in ("TEXT_STALE", "BASIS_STALE", "UNCHECKED"):
         for campaign in contract["campaign_order"]:
             for path in grouped[campaign]:
@@ -320,13 +193,9 @@ def do_next(contract: dict, record: dict) -> int:
     print("All eligible clarity reviews are current.")
     return 0
 
-
 def do_record(
-    contract: dict,
-    record: dict,
-    path_text: str,
-    basis_args: list[str] | None,
-    changed: bool,
+    contract: dict, record: dict, path_text: str,
+    basis_args: list[str] | None, changed: bool,
 ) -> int:
     artifact = (ROOT / path_text).resolve()
     try:
@@ -335,10 +204,8 @@ def do_record(
         raise SystemExit("path must stay inside the repository")
     if path in exemption_map(contract):
         raise SystemExit(f"{path} is explicitly exempt from clarity review")
-    if path not in eligible(contract):
-        raise SystemExit(f"{path} is outside the declared clarity scope")
-    if not artifact.is_file():
-        raise SystemExit(f"{path} does not exist")
+    if path not in eligible(contract) or not artifact.is_file():
+        raise SystemExit(f"{path} is outside the declared clarity scope or missing")
     basis_paths = basis_args if basis_args is not None else default_basis(contract, path)
     basis = []
     for source in basis_paths:
@@ -357,18 +224,13 @@ def do_record(
     print(f"changed: {'yes' if changed else 'no'}")
     return 0
 
-
-def stale_items(contract: dict, record: dict) -> list[str]:
-    return [
+def do_check(contract: dict, record: dict) -> int:
+    errors = registry_errors(contract, record)
+    stale = [
         f"{path}: {state}"
         for path, state in state_map(contract, record).items()
         if state in {"TEXT_STALE", "BASIS_STALE"}
     ]
-
-
-def do_check(contract: dict, record: dict) -> int:
-    errors = registry_errors(contract, record)
-    stale = stale_items(contract, record)
     for error in errors:
         print(f"ERROR: {error}")
     for item in stale:
@@ -378,23 +240,20 @@ def do_check(contract: dict, record: dict) -> int:
     print("PASS: clarity scope and receipts are well-formed and current")
     return 0
 
-
 def do_gate(contract: dict, record: dict) -> int:
     if do_check(contract, record):
         return 1
-    states = state_map(contract, record)
     incomplete = [
         f"{path}: {state}"
-        for path, state in states.items()
+        for path, state in state_map(contract, record).items()
         if state not in {"CURRENT", "EXEMPT"}
     ]
+    for item in incomplete:
+        print(f"INCOMPLETE: {item}")
     if incomplete:
-        for item in incomplete:
-            print(f"INCOMPLETE: {item}")
         return 1
     print("PASS: clarity current coverage is 100%")
     return 0
-
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
@@ -410,7 +269,6 @@ def build_parser() -> argparse.ArgumentParser:
     record.add_argument("--basis", action="append")
     record.add_argument("--changed", action="store_true")
     return parser
-
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
@@ -433,7 +291,6 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "gate":
         return do_gate(contract, record)
     raise AssertionError(args.command)
-
 
 if __name__ == "__main__":
     raise SystemExit(main())

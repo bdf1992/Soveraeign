@@ -66,7 +66,7 @@
           "path": "CONTRACT.md"
         },
         {
-          "digest": "sha256:4ef61f91044a584e05d0b01498c3a83cf3bb1d34903852201238011af0c4fddf",
+          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
           "path": "SPEC.md"
         }
       ],
@@ -84,7 +84,7 @@
           "path": "CONTRACT.md"
         },
         {
-          "digest": "sha256:4ef61f91044a584e05d0b01498c3a83cf3bb1d34903852201238011af0c4fddf",
+          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
           "path": "SPEC.md"
         }
       ],
@@ -250,7 +250,7 @@
       "changed": false
     },
     "SPEC.md": {
-      "artifact_digest": "sha256:4ef61f91044a584e05d0b01498c3a83cf3bb1d34903852201238011af0c4fddf",
+      "artifact_digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
       "basis": [
         {
           "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
@@ -265,7 +265,7 @@
           "path": "CLASSIFICATION.md"
         }
       ],
-      "changed": true
+      "changed": false
     },
     "STATUS.yaml": {
       "artifact_digest": "sha256:96d9e073a61bfdccf1e213c087fa6c8c677336a688777816eb18404da8c13348",

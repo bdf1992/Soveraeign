@@ -28,7 +28,8 @@
     "EXTERNAL_EFFECT_UNAUTHORIZED": "The request declares EXTERNAL_WORLD and names no authorized scope.",
     "EXTERNAL_EFFECT_OUT_OF_SCOPE": "The named scope does not carry the requested verb or target.",
     "EXTERNAL_EFFECT_VERB_REFUSED": "The verb is refused by name in the authorization contract.",
-    "EXTERNAL_EFFECT_WITHOUT_RECEIPT": "The request names no receipt, so the attempt would leave no record."
+    "EXTERNAL_EFFECT_WITHOUT_RECEIPT": "The request names no receipt, so the attempt would leave no record.",
+    "EXTERNAL_EFFECT_PRECONDITION_UNMET": "The named scope carries the verb and the request does not discharge every precondition that verb carries."
   },
   "order": [
     "OPEN",
@@ -43,67 +44,36 @@
     {
       "from": "OPEN",
       "to": "PROPOSED",
-      "actor_kinds": [
-        "HUMAN",
-        "MODEL"
-      ],
-      "requires_evidence": [
-        "obligation",
-        "priors",
-        "closure_contract"
-      ],
+      "actor_kinds": ["HUMAN", "MODEL"],
+      "requires_evidence": ["obligation", "priors", "closure_contract"],
       "description": "A drafted ticket states its obligation, its priors, and the closure contract that would defeat it."
     },
     {
       "from": "PROPOSED",
       "to": "DECLARED_NOT_IMPLEMENTED",
-      "actor_kinds": [
-        "HUMAN",
-        "MODEL"
-      ],
-      "requires_evidence": [
-        "boundary_pointer"
-      ],
+      "actor_kinds": ["HUMAN", "MODEL"],
+      "requires_evidence": ["boundary_pointer"],
       "description": "The owned boundary is named in the repository before any implementation begins."
     },
     {
       "from": "DECLARED_NOT_IMPLEMENTED",
       "to": "CHARTERED_NOT_IMPLEMENTED",
-      "actor_kinds": [
-        "HUMAN",
-        "MODEL"
-      ],
-      "requires_evidence": [
-        "charter_pointer",
-        "contract_pointer"
-      ],
+      "actor_kinds": ["HUMAN", "MODEL"],
+      "requires_evidence": ["charter_pointer", "contract_pointer"],
       "description": "A charter and a machine-checkable contract exist for the declared boundary."
     },
     {
       "from": "CHARTERED_NOT_IMPLEMENTED",
       "to": "BUILT_SELF_TESTED_NOT_WITNESSED",
-      "actor_kinds": [
-        "HUMAN",
-        "MODEL",
-        "WORKER"
-      ],
-      "requires_evidence": [
-        "closure_contract_complete",
-        "blue_receipt"
-      ],
+      "actor_kinds": ["HUMAN", "MODEL", "WORKER"],
+      "requires_evidence": ["closure_contract_complete", "blue_receipt"],
       "description": "Blue lane only. A passing self-test establishes BUILT evidence and nothing further."
     },
     {
       "from": "BUILT_SELF_TESTED_NOT_WITNESSED",
       "to": "WITNESSED",
-      "actor_kinds": [
-        "HUMAN",
-        "MODEL"
-      ],
-      "requires_evidence": [
-        "witness_receipt",
-        "purple_receipt"
-      ],
+      "actor_kinds": ["HUMAN", "MODEL"],
+      "requires_evidence": ["witness_receipt", "purple_receipt"],
       "requires_distinct_actor": true,
       "requires_purple": true,
       "description": "An independent witness observed the artifact and the verification dyad combined to PURPLE."
@@ -111,110 +81,64 @@
     {
       "from": "WITNESSED",
       "to": "RATIFIED",
-      "actor_kinds": [
-        "HUMAN"
-      ],
+      "actor_kinds": ["HUMAN"],
       "requires_owner": true,
-      "requires_evidence": [
-        "acceptance_packet",
-        "owner_ratification"
-      ],
+      "requires_evidence": ["acceptance_packet", "owner_ratification"],
       "description": "An owner seat accepts a presented result. The packet under acceptance/ carries the claim, the demo, the evidence, and what would defeat it; the owner action is recorded against it (contracts/acceptance-policy.json)."
     },
     {
       "from": "PROPOSED",
       "to": "DEMOTED",
-      "actor_kinds": [
-        "HUMAN",
-        "MODEL"
-      ],
-      "requires_evidence": [
-        "demotion_pointer",
-        "defeating_observation"
-      ],
+      "actor_kinds": ["HUMAN", "MODEL"],
+      "requires_evidence": ["demotion_pointer", "defeating_observation"],
       "description": "A defeating observation demotes standing and preserves the original record."
     },
     {
       "from": "DECLARED_NOT_IMPLEMENTED",
       "to": "DEMOTED",
-      "actor_kinds": [
-        "HUMAN",
-        "MODEL"
-      ],
-      "requires_evidence": [
-        "demotion_pointer",
-        "defeating_observation"
-      ],
+      "actor_kinds": ["HUMAN", "MODEL"],
+      "requires_evidence": ["demotion_pointer", "defeating_observation"],
       "description": "A defeating observation demotes standing and preserves the original record."
     },
     {
       "from": "CHARTERED_NOT_IMPLEMENTED",
       "to": "DEMOTED",
-      "actor_kinds": [
-        "HUMAN",
-        "MODEL"
-      ],
-      "requires_evidence": [
-        "demotion_pointer",
-        "defeating_observation"
-      ],
+      "actor_kinds": ["HUMAN", "MODEL"],
+      "requires_evidence": ["demotion_pointer", "defeating_observation"],
       "description": "A defeating observation demotes standing and preserves the original record."
     },
     {
       "from": "BUILT_SELF_TESTED_NOT_WITNESSED",
       "to": "DEMOTED",
-      "actor_kinds": [
-        "HUMAN",
-        "MODEL"
-      ],
-      "requires_evidence": [
-        "demotion_pointer",
-        "defeating_observation"
-      ],
+      "actor_kinds": ["HUMAN", "MODEL"],
+      "requires_evidence": ["demotion_pointer", "defeating_observation"],
       "description": "A defeating observation demotes standing and preserves the original record."
     },
     {
       "from": "WITNESSED",
       "to": "DEMOTED",
-      "actor_kinds": [
-        "HUMAN",
-        "MODEL"
-      ],
-      "requires_evidence": [
-        "demotion_pointer",
-        "defeating_observation"
-      ],
+      "actor_kinds": ["HUMAN", "MODEL"],
+      "requires_evidence": ["demotion_pointer", "defeating_observation"],
       "description": "A later defeating observation demotes a prior witness standing."
     },
     {
       "from": "RATIFIED",
       "to": "DEMOTED",
-      "actor_kinds": [
-        "HUMAN"
-      ],
+      "actor_kinds": ["HUMAN"],
       "requires_owner": true,
-      "requires_evidence": [
-        "demotion_pointer",
-        "defeating_observation"
-      ],
+      "requires_evidence": ["demotion_pointer", "defeating_observation"],
       "description": "Only the owner may demote a ratified claim."
     },
     {
       "from": "DEMOTED",
       "to": "PROPOSED",
-      "actor_kinds": [
-        "HUMAN",
-        "MODEL"
-      ],
-      "requires_evidence": [
-        "repair_pointer",
-        "demotion_pointer"
-      ],
+      "actor_kinds": ["HUMAN", "MODEL"],
+      "requires_evidence": ["repair_pointer", "demotion_pointer"],
       "description": "Repair re-enters the lifecycle at proposal; it does not restore the prior standing."
     }
   ],
   "owner_seats": "contracts/seat-registry.json",
   "owner_seats_note": "Owner is a seat, not a person (decisions/0020). owner_actor_ids is the projection of the actors currently occupying seats that settle JUDGEMENT; today that is the root seat's occupant. Read the registry, not this list, when the question is who owns whom.",
   "external_effect_authorization": "contracts/external-effect-authorization.json",
-  "external_effect_note": "EXTERNAL_WORLD was once refused by class, which kept irreversible acts behind an owner and ordinary coordination behind one too. The class refusal is gone. An external effect is refused unless the request names a scope contracts/external-effect-authorization.json carries, a verb that scope admits, and the receipt the attempt will leave. Every verb in refused_verbs stays refused whatever scope is claimed."
+  "external_effect_note": "EXTERNAL_WORLD was once refused by class, which kept irreversible acts behind an owner and ordinary coordination behind one too. The class refusal is gone. An external effect is refused unless the request names a scope contracts/external-effect-authorization.json carries, a verb that scope admits, the receipt the attempt will leave, and the evidence discharging every precondition that scope puts on that verb. Every verb in refused_verbs stays refused whatever scope is claimed."
 }

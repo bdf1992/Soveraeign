@@ -1,0 +1,157 @@
+---
+name: clarity
+description: Rewrite project prose into plain, specific human language while preserving the claims and machine-defined distinctions the repository depends on. Use for "clarity", "unslop", "deslop", "plain language", "rewrite root docs", "AI writing cleanup", "terminology cleanup", or "clarity coverage".
+---
+
+# clarity
+
+## Purpose
+
+Rewrite human-facing project text from the claims it needs to communicate.
+
+This skill is adapted from Cursor's `pstack/skills/unslop` skill. Keep its main
+discipline: scan for AI writing patterns, rewrite, preserve meaning, add human
+voice, then audit the result. Soveraeign adds one repository rule: preserve the
+project's actual claim, not inherited wording merely because it already exists.
+
+A clarity pass may rewrite a whole section. It may reorder explanation. It may
+delete a term that earlier drafts repeated. It must not invent product meaning or
+quietly change a contract.
+
+## Process
+
+1. Read the artifact and the governing sources behind its claims.
+2. Identify the concrete claims the artifact must communicate.
+3. Scan for the writing patterns below.
+4. Discard inherited wording when it gets in the way.
+5. Rewrite in plain language.
+6. Restore specialized terms only when they preserve a real distinction.
+7. Use one term for one concept.
+8. Keep machine identifiers exact.
+9. Prefer named actors, mechanisms, states, and observable results over metaphor.
+10. Split sentences that carry more than one important claim.
+11. Remove repetition unless it helps a reader find the owning rule.
+12. Check the rewrite against the sources that govern its meaning.
+13. Ask:
+    - What still sounds AI-written?
+    - What only makes sense to someone who already knows this repository?
+14. Fix both.
+15. Record the completed review with `python scripts/sov_clarity.py record <path>`.
+
+A reviewed artifact counts as covered even when no edit was needed.
+
+## Patterns to remove
+
+### Empty weight
+
+Cut puffery, promotional language, generic conclusions, vague attribution, and
+formulaic "despite challenges" prose. Replace adjectives with the mechanism or
+evidence that earns them.
+
+### AI vocabulary
+
+Prefer the plain word. Watch for words such as "crucial", "delve", "intricate",
+"landscape", "pivotal", "showcase", "tapestry", "underscore", and "vibrant".
+Do not replace one inflated synonym with another.
+
+### Fancy ways to say "is"
+
+Prefer "is", "has", or the verb that names the actual action. "Serves as" and
+"stands as" usually hide a simpler sentence.
+
+### Rhetorical templates
+
+Remove "not just X, but Y", forced groups of three, false "from X to Y" ranges,
+and synonym cycling. Real enumerations and machine classifications keep their
+natural number of members.
+
+### Filler and hedging
+
+Cut phrases such as "in order to", "due to the fact that", and "it is important
+to note". Collapse stacked hedges to the smallest honest uncertainty.
+
+### Dense sentences
+
+Use one important claim per sentence. Prefer active voice when the actor matters.
+Cut adverbs that prop up weak verbs.
+
+### Abstract technical metaphor
+
+Treat words such as "substrate", "surface", "primitive", "vector", "locus",
+"scaffolding", "paradigm", and similar abstractions as smoke detectors, not a
+blind blacklist.
+
+Keep a specialized term only when all three are true:
+
+1. it preserves a distinction the project needs;
+2. replacing it with a common word would lose that distinction; and
+3. the distinction is defined or enforced somewhere concrete.
+
+If those conditions do not hold, use ordinary language.
+
+### Style tells
+
+Use sentence-case headings. Avoid decorative formatting, excessive bolding,
+chatbot phrases, canned enthusiasm, and punctuation used as a substitute for
+sentence structure. Punctuation is not forbidden by type; clarity is the test.
+
+## Repository rules
+
+Do not casually rename:
+
+- machine identifiers;
+- contract fields;
+- enum values;
+- operation names;
+- refusal codes;
+- schema terms with defined semantics.
+
+Do not invent a new synonym for an existing project concept. If the canonical
+term is `grant`, use `grant`.
+
+Historical and archived artifacts keep their historical language. Current reader
+documents use current language.
+
+When a root definition changes, update dependent reader text rather than keeping
+a second, drifting explanation.
+
+## Coverage
+
+`contracts/clarity.json` declares what counts. `.clarity/coverage.json` records
+completed reviews by content digest.
+
+Use:
+
+```sh
+python scripts/sov_clarity.py status
+python scripts/sov_clarity.py next
+python scripts/sov_clarity.py record README.md --changed
+python scripts/sov_clarity.py check
+```
+
+Coverage and freshness are different:
+
+- coverage = reviewed eligible artifacts / eligible artifacts;
+- freshness = currently valid reviews / reviewed artifacts;
+- current coverage = currently valid reviews / eligible artifacts.
+
+A review becomes `TEXT_STALE` when the artifact changes. It becomes
+`BASIS_STALE` when a recorded governing source changes. `UNCHECKED` means the
+skill has not reviewed the artifact. `CURRENT` means the current bytes match the
+review receipt.
+
+`check` refuses malformed or stale receipts. It does not refuse merely because
+coverage is incomplete. That lets the cleanup advance progressively without
+allowing a file that claims review to drift silently.
+
+## Report
+
+Report:
+
+- files reviewed;
+- files changed;
+- terms removed or normalized when that matters;
+- terms deliberately kept because they preserve a real distinction;
+- clarity coverage;
+- clarity freshness;
+- next target.

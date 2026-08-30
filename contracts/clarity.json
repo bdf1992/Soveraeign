@@ -1,0 +1,96 @@
+{
+  "schema": "soveraeign-clarity/v1",
+  "skill": "clarity/v1",
+  "coverage_file": ".clarity/coverage.json",
+  "campaign_order": [
+    "root",
+    "agents",
+    "services",
+    "bindings"
+  ],
+  "campaigns": {
+    "root": {
+      "include": [
+        "*.md"
+      ],
+      "exclude": []
+    },
+    "agents": {
+      "include": [
+        ".claude/**/*.md"
+      ],
+      "exclude": [
+        ".claude/worktrees/**"
+      ]
+    },
+    "services": {
+      "include": [
+        "services/**/README.md"
+      ],
+      "exclude": []
+    },
+    "bindings": {
+      "include": [
+        "bindings/**/*.md"
+      ],
+      "exclude": []
+    }
+  },
+  "global_exclude": [
+    "archives/**",
+    "lineage/**",
+    "docs/**",
+    "node_modules/**"
+  ],
+  "basis_by_path": {
+    "README.md": [
+      "GROUND.md",
+      "CANON.md",
+      "SYSTEM.md",
+      "STATUS.yaml"
+    ],
+    "SYSTEM.md": [
+      "GROUND.md",
+      "CANON.md",
+      "CONTRACT.md",
+      "CLASSIFICATION.md"
+    ],
+    "AI-NATIVE.md": [
+      "SYSTEM.md",
+      "CONTRACT.md",
+      "SPEC.md"
+    ],
+    "BYOM.md": [
+      "SYSTEM.md",
+      "CONTRACT.md",
+      "SPEC.md"
+    ],
+    "ENGINEERING.md": [
+      "SYSTEM.md",
+      "CONTRACT.md",
+      "SPEC.md"
+    ],
+    "AGENTS.md": [
+      "GROUND.md",
+      "CANON.md",
+      "SYSTEM.md",
+      "CONTRACT.md",
+      "STATUS.yaml"
+    ],
+    "CONTRIBUTING.md": [
+      "AGENTS.md",
+      "STATUS.yaml"
+    ],
+    "SOV.md": [
+      "AGENTS.md",
+      "SYSTEM.md",
+      "CONTRACT.md",
+      "STATUS.yaml"
+    ],
+    "CLAUDE.md": [
+      "AGENTS.md",
+      "SOV.md",
+      "STATUS.yaml"
+    ]
+  }
+}

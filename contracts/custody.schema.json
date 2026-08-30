@@ -55,7 +55,7 @@
     "held_by": {
       "type": "string",
       "pattern": "^seat:[a-z0-9][a-z0-9-]*$",
-      "description": "The seat carrying this initiative to its target stage. Resolves against contracts/seat-registry.json."
+      "description": "The seat carrying this initiative to its target stage. Resolves against contracts/seat-registry.json. When terminal is present this remains historical attribution; it is no longer a current assignment."
     },
     "roots": {
       "type": "array",
@@ -70,6 +70,7 @@
       "description": "The stage this initiative must reach. Declaring a target below CAPABLE_NODE is ordinary; a contract mapping may honestly stop at HORIZONTAL_SURFACE and a service boundary at EXPLODED_SURFACE."
     },
     "closure": {"$ref": "#/$defs/closure"},
+    "terminal": {"$ref": "#/$defs/terminal"},
     "required_authority": {
       "type": ["string", "null"],
       "pattern": "^[a-z][a-z0-9-]*[:.][a-z][a-z0-9-]*$",
@@ -178,6 +179,23 @@
           "type": "string",
           "minLength": 1,
           "description": "The observation that would show this custody closed when it had not. Required, because a closure condition with no stated defeat is a condition nobody can argue with."
+        }
+      }
+    },
+    "terminal": {
+      "description": "An explicit end to this custody. Contract standing remains in status; terminal records what happened to the custody instance. EXIT custodies end EARNED or CLOSED_UNMET. DELIVERY custodies end SETTLED when their target predicates were evidenced and settled, or RETIRED when the historical delivery vehicle ends without claiming its target. Successors reissue surviving work explicitly; carried forward by implication is not a terminal.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["outcome", "closed_at", "basis", "successors"],
+      "properties": {
+        "outcome": {"enum": ["EARNED", "CLOSED_UNMET", "SETTLED", "RETIRED"]},
+        "closed_at": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},
+        "basis": {"type": "string", "minLength": 1},
+        "successors": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1},
+          "description": "Explicit addresses that now carry surviving work. Empty is admissible when nothing survives, especially a phase-only acceptance that cannot be attempted retroactively."
         }
       }
     },

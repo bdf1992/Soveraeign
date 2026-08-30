@@ -1793,5 +1793,166 @@
     "expect_refusals": [
       "SELF_SETTLED_PHASE"
     ]
+  },
+  {
+    "id": "closed-phase-custody-left-live",
+    "judge": "custody",
+    "polarity": "defeating",
+    "why": "A closed campaign cannot keep assigning work merely because its historical holder field still exists.",
+    "custody": {
+      "custody_schema": "soveraeign-custody/v1",
+      "status": "PROPOSED",
+      "custody_id": "custody:phase-i/predicate-fixtures",
+      "custody_kind": "EXIT",
+      "initiative": "Every normative predicate the specification states carries a positive and a defeating fixture that actually runs.",
+      "held_by": "seat:session-control",
+      "roots": [
+        {
+          "root_kind": "PHASE",
+          "reference": "ROADMAP.md#F2",
+          "serves": "this clause is F2 exit, stated verbatim"
+        },
+        {
+          "root_kind": "REQUIREMENT",
+          "reference": "PROD-I-7",
+          "serves": "a fresh witness verifies from the artifact and addressed evidence alone, which is what a fixture pair supplies"
+        },
+        {
+          "root_kind": "GROUND",
+          "reference": "GROUND-010",
+          "serves": "a report is not an observation; a defeating fixture is the cheapest observation this node can afford"
+        }
+      ],
+      "circuit": "soveraeign-work-circuit/v1",
+      "entry_stage": "ROOT_POINT",
+      "target_stage": "HORIZONTAL_SURFACE",
+      "closure": {
+        "check": {
+          "kind": "COMMAND",
+          "expression": "python scripts/sov_f2_gate.py"
+        },
+        "judgement_seat": "seat:root",
+        "defeated_by": "a predicate credited as covered by a case whose declared polarity is never executed, or a case citing a predicate the specification no longer states"
+      },
+      "estimate": {
+        "estimate_schema": "soveraeign-estimate/v1",
+        "estimated_by": "principal:session-796628",
+        "estimated_at": "2026-08-27T00:00:00Z",
+        "basis": "The clause reads 0 of 44. Twenty controls exist and pass at the wrong granularity; the transition and parity families are undrawn.",
+        "maturity": "DISCOVERY_ENVELOPE",
+        "dimensions": [
+          {
+            "dimension_id": "grants",
+            "low": 0,
+            "high": 0
+          },
+          {
+            "dimension_id": "judgement_units",
+            "low": 1,
+            "high": 1
+          }
+        ]
+      },
+      "members": [],
+      "phase": "phase:i",
+      "exit_clause": "PHASE-I-X1",
+      "serves_exit": null,
+      "outside_phase_exit": null,
+      "depends_on": [],
+      "cleanup_obligations": [],
+      "note": "Held to settlement. The work under it is three delivery custodies; this record holds the clause, not the work."
+    },
+    "seats": [
+      "seat:session-control",
+      "seat:root"
+    ],
+    "expect_refusals": [
+      "CLOSED_PHASE_CUSTODY_LIVE"
+    ]
+  },
+  {
+    "id": "exit-custody-uses-delivery-terminal",
+    "judge": "custody",
+    "polarity": "defeating",
+    "why": "Calling an unmet phase clause SETTLED would collapse exit truth into delivery completion.",
+    "custody": {
+      "custody_schema": "soveraeign-custody/v1",
+      "status": "PROPOSED",
+      "custody_id": "custody:phase-i/predicate-fixtures",
+      "custody_kind": "EXIT",
+      "initiative": "Every normative predicate the specification states carries a positive and a defeating fixture that actually runs.",
+      "held_by": "seat:session-control",
+      "roots": [
+        {
+          "root_kind": "PHASE",
+          "reference": "ROADMAP.md#F2",
+          "serves": "this clause is F2 exit, stated verbatim"
+        },
+        {
+          "root_kind": "REQUIREMENT",
+          "reference": "PROD-I-7",
+          "serves": "a fresh witness verifies from the artifact and addressed evidence alone, which is what a fixture pair supplies"
+        },
+        {
+          "root_kind": "GROUND",
+          "reference": "GROUND-010",
+          "serves": "a report is not an observation; a defeating fixture is the cheapest observation this node can afford"
+        }
+      ],
+      "circuit": "soveraeign-work-circuit/v1",
+      "entry_stage": "ROOT_POINT",
+      "target_stage": "HORIZONTAL_SURFACE",
+      "closure": {
+        "check": {
+          "kind": "COMMAND",
+          "expression": "python scripts/sov_f2_gate.py"
+        },
+        "judgement_seat": "seat:root",
+        "defeated_by": "a predicate credited as covered by a case whose declared polarity is never executed, or a case citing a predicate the specification no longer states"
+      },
+      "estimate": {
+        "estimate_schema": "soveraeign-estimate/v1",
+        "estimated_by": "principal:session-796628",
+        "estimated_at": "2026-08-27T00:00:00Z",
+        "basis": "The clause reads 0 of 44. Twenty controls exist and pass at the wrong granularity; the transition and parity families are undrawn.",
+        "maturity": "DISCOVERY_ENVELOPE",
+        "dimensions": [
+          {
+            "dimension_id": "grants",
+            "low": 0,
+            "high": 0
+          },
+          {
+            "dimension_id": "judgement_units",
+            "low": 1,
+            "high": 1
+          }
+        ]
+      },
+      "members": [],
+      "phase": "phase:i",
+      "exit_clause": "PHASE-I-X1",
+      "serves_exit": null,
+      "outside_phase_exit": null,
+      "depends_on": [],
+      "cleanup_obligations": [],
+      "note": "Held to settlement. The work under it is three delivery custodies; this record holds the clause, not the work.",
+      "terminal": {
+        "outcome": "SETTLED",
+        "closed_at": "2026-08-27",
+        "basis": "PHASE-I-X1 is NOT_EARNED in contracts/phases.json; the exit custody ends with the closed phase rather than carrying the clause forward.",
+        "successors": [
+          "issue:#26",
+          "issue:#173"
+        ]
+      }
+    },
+    "seats": [
+      "seat:session-control",
+      "seat:root"
+    ],
+    "expect_refusals": [
+      "INVALID_CUSTODY_TERMINAL"
+    ]
   }
 ]

@@ -103,6 +103,7 @@ def build(custody: dict[str, Any], with_derived: bool = True) -> dict[str, Any]:
         "exit_clause": custody.get("exit_clause"),
         "initiative": custody.get("initiative"),
         "held_by": custody.get("held_by"),
+        "terminal": custody.get("terminal"),
         "entry_stage": entry,
         "target_stage": target,
         "lowest_member_stage": reached,
@@ -121,7 +122,14 @@ def build(custody: dict[str, Any], with_derived: bool = True) -> dict[str, Any]:
 def render(board: dict[str, Any]) -> str:
     """The board as text, with the evidence a reader needs to disagree with it."""
     lines: list[str] = []
-    lines.append(f"{board['custody_id']}   held by {board['held_by']}")
+    terminal = board.get("terminal") or {}
+    if terminal:
+        lines.append(
+            f"{board['custody_id']}   terminal {terminal.get('outcome')} "
+            f"at {terminal.get('closed_at')}   historical holder {board['held_by']}"
+        )
+    else:
+        lines.append(f"{board['custody_id']}   held by {board['held_by']}")
     lines.append(f"  {board['initiative']}")
     lines.append("")
     lines.append(f"  circuit  entry {board['entry_stage']} -> target {board['target_stage']}"
@@ -183,7 +191,12 @@ def summary(custodies: list[dict[str, Any]]) -> str:
     first draft of the custody set took, and mixing an exit obligation with a
     coordination cleanup as peers is what that draft got wrong.
     """
-    width = max([len(str(record.get("custody_id"))) for record in custodies] + [7]) + 2
+    width = max([
+        len(str(record.get("custody_id")))
+        + (len(str((record.get("terminal") or {}).get("outcome"))) + 3
+           if record.get("terminal") else 0)
+        for record in custodies
+    ] + [7]) + 2
     lines = [f"{len(custodies)} custodies "
              f"({sum(1 for r in custodies if r.get('custody_kind') == 'EXIT')} exit, "
              f"{sum(1 for r in custodies if r.get('custody_kind') == 'DELIVERY')} delivery)",
@@ -192,7 +205,9 @@ def summary(custodies: list[dict[str, Any]]) -> str:
 
     def row(record: dict[str, Any], indent: str) -> str:
         board = build(record, with_derived=False)
-        label = indent + str(board["custody_id"])
+        outcome = str((record.get("terminal") or {}).get("outcome") or "")
+        suffix = f" [{outcome}]" if outcome else ""
+        label = indent + str(board["custody_id"]) + suffix
         return (f"  {label:<{width}} {board['entry_stage']:<19} "
                 f"{board['target_stage']:<19} {board['stages_to_target']:>5}  "
                 f"{sum(len(column) for column in board['columns'].values())}")

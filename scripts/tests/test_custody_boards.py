@@ -292,6 +292,37 @@ class ShippedCustodies(unittest.TestCase):
                       {code for code, _ in modelmod.grade_collection(records)})
 
 
+class CustodyTerminals(unittest.TestCase):
+    """A closed campaign is history, not a live assignment surface."""
+
+    def setUp(self) -> None:
+        self.records = modelmod.custodies()
+
+    def test_every_closed_phase_custody_has_a_terminal(self) -> None:
+        historical = [row for row in self.records if row.get("phase") == "phase:i"]
+        self.assertEqual(len(historical), 15)
+        self.assertTrue(all(row.get("terminal") for row in historical))
+
+    def test_exit_and_delivery_terminal_vocabularies_do_not_cross(self) -> None:
+        exit_row = copy.deepcopy(next(row for row in self.records if row["custody_kind"] == "EXIT"))
+        exit_row["terminal"]["outcome"] = "SETTLED"
+        self.assertIn("INVALID_CUSTODY_TERMINAL", {code for code, _ in modelmod.grade(exit_row)})
+        delivery = copy.deepcopy(next(row for row in self.records if row.get("phase") == "phase:i" and row["custody_kind"] == "DELIVERY"))
+        delivery["terminal"]["outcome"] = "CLOSED_UNMET"
+        self.assertIn("INVALID_CUSTODY_TERMINAL", {code for code, _ in modelmod.grade(delivery)})
+
+    def test_a_closed_phase_custody_without_terminal_is_refused(self) -> None:
+        row = copy.deepcopy(next(row for row in self.records if row.get("phase") == "phase:i"))
+        row.pop("terminal")
+        self.assertIn("CLOSED_PHASE_CUSTODY_LIVE", {code for code, _ in modelmod.grade(row)})
+
+    def test_future_phase_null_custody_remains_live(self) -> None:
+        row = next(row for row in self.records if row["custody_id"] == "custody:session-as-node")
+        self.assertIsNone(row.get("phase"))
+        self.assertIsNone(row.get("terminal"))
+        self.assertNotIn("CLOSED_PHASE_CUSTODY_LIVE", {code for code, _ in modelmod.grade(row)})
+
+
 class Hierarchy(unittest.TestCase):
     """Exit custodies hold clauses; delivery custodies name what they serve."""
 

@@ -37,10 +37,15 @@ SCHEMA = ROOT / "contracts" / "custody.schema.json"
 ESTIMATE_SCHEMA = ROOT / "contracts" / "estimate.schema.json"
 COLLECTION = ROOT / "contracts" / "custodies.json"
 SEATS = ROOT / "contracts" / "seat-registry.json"
+PHASES = ROOT / "contracts" / "phases.json"
 
 ESTIMATE_REF = "https://soveraeign.local/contracts/estimate.schema.json"
 
 REFUSALS = {
+    "CLOSED_PHASE_CUSTODY_LIVE":
+        "A custody still belongs to a phase whose execution window is closed but names no terminal, so historical accountability still reads as current assignment.",
+    "INVALID_CUSTODY_TERMINAL":
+        "EXIT and DELIVERY custodies have different terminal vocabularies; using the wrong one changes whether an unmet obligation is being claimed as earned or settled.",
     "UNCLOSEABLE_CUSTODY":
         "The custody declares neither a machine check nor a seat that settles it, so "
         "nothing can ever close it.",
@@ -63,6 +68,16 @@ REFUSALS = {
     "DUPLICATE_EXIT_CLAUSE":
         "Two exit custodies hold the same clause, so neither is the one accountable for it.",
 }
+
+
+def _closed_phase_ids() -> set[str]:
+    """Phase ids whose operating window is already closed."""
+    document = json.loads(PHASES.read_bytes().decode("utf-8"))
+    return {
+        str(phase.get("phase_id"))
+        for phase in document.get("phases") or []
+        if phase.get("execution_status") == "CLOSED"
+    }
 
 
 class Defect(NamedTuple):
@@ -132,6 +147,25 @@ def grade(custody: dict[str, Any], seats: set[str] | None = None) -> list[Defect
     closure = custody.get("closure") or {}
     check = closure.get("check")
     seat = closure.get("judgement_seat")
+    terminal = custody.get("terminal")
+    phase = custody.get("phase")
+
+    if phase and phase in _closed_phase_ids() and not terminal:
+        defects.append(Defect(
+            "CLOSED_PHASE_CUSTODY_LIVE",
+            f"{custody.get('custody_id')} belongs to closed {phase} and names no terminal",
+        ))
+    if terminal:
+        outcome = terminal.get("outcome")
+        allowed = {
+            "EXIT": {"EARNED", "CLOSED_UNMET"},
+            "DELIVERY": {"SETTLED", "RETIRED"},
+        }.get(str(custody.get("custody_kind")), set())
+        if outcome not in allowed:
+            defects.append(Defect(
+                "INVALID_CUSTODY_TERMINAL",
+                f"{custody.get('custody_id')} is {custody.get('custody_kind')} but terminates {outcome}",
+            ))
 
     if not check and not seat:
         defects.append(Defect(

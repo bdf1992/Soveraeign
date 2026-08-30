@@ -20,7 +20,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Correct the machine-checked orientation count
+      - name: Correct the machine-checked orientation decision count
         shell: bash
         run: |
           python - <<'PY'
@@ -44,9 +44,13 @@ jobs:
         run: |
           python scripts/sov_docs.py build
           python scripts/sov_docs.py check
-      - name: Recheck the exact failures from protected CI
+      - name: Recheck A19 semantics and repository hygiene
         run: |
-          python scripts/sov_snapshot.py
+          # Do not run sov_snapshot.py in this full-history helper: while historical
+          # refs still exist it counts commits reachable from all refs, unlike the
+          # protected PR's shallow merge checkout. Branch-zero/governance cleanup owns
+          # that separate stale-orientation problem. The A19-caused decision count is
+          # corrected above and protected verify will grade it in its own environment.
           python scripts/sov_closure.py selfcheck
           python scripts/lint.py
       - name: Remove one-shot helper and commit only derived consequences

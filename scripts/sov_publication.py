@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Grade the tracked tree against the surface each path is declared to occupy.
+"""Grade the repository index against the surface each path is declared to occupy.
 
 `PUBLICATION.md` owns what may never be published and stops there. Generated
 output, one host's harness, the work journal and scratch were never classified,
@@ -8,11 +8,17 @@ so they accumulated in a public repository and a newcomer reads them as product.
 top-level path, the routes that must reach a reader, and the entrypoint index.
 This performs the reading.
 
+Publication evidence is read from the Git index, not from unstaged working-tree
+bytes. `git ls-files` defines the indexed population and `git cat-file blob :path`
+defines the indexed content of declarations and documents. The one deliberate
+working-tree read is the fail-closed shadow check: a local Python module capable of
+shadowing one of this grader's imports is itself grounds to refuse the run.
+
 Findings carry a holder. A finding held by `sov` is a defect and fails `check`;
 a finding held by `owner` is reported and does not fail, because a declared gate
 stops one transition and not the frontier (`AGENTS.md`, Authority). Nothing here
 grants authority, changes standing, or decides whether a path should be public:
-it reports where the tree and the declaration disagree.
+it reports where the indexed tree and the declaration disagree.
 """
 
 from __future__ import annotations
@@ -26,30 +32,87 @@ import subprocess
 
 
 ROOT = Path(__file__).resolve().parents[1]
-CONTRACT = ROOT / "contracts" / "publication-surface.json"
+CONTRACT = "contracts/publication-surface.json"
 SOV = "sov"
 OWNER = "owner"
+_CONTENT: dict[str, str | None] = {}
+
+# These imports are permitted dependencies of the grader. A same-named module under
+# scripts/ would be imported before the standard-library copy for
+# `python scripts/sov_publication.py check`; that is local executable input, not
+# publication evidence, so its presence refuses the run.
+PERMITTED_IMPORTS = frozenset({"argparse", "fnmatch", "json", "os", "pathlib", "subprocess"})
 
 
 class ContractError(Exception):
     """The declaration cannot be read, which is a defect and not a finding."""
 
 
-def load(path: Path = CONTRACT) -> dict:
-    try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except FileNotFoundError:
-        raise ContractError(f"{path.relative_to(ROOT)} is missing") from None
-    except json.JSONDecodeError as error:
-        raise ContractError(f"{path.relative_to(ROOT)} is not JSON: {error}") from None
+def _git(*argv: str) -> subprocess.CompletedProcess[str]:
+    """The publication grader's only process-spawn boundary."""
+    return subprocess.run(["git", *argv], cwd=ROOT, capture_output=True, text=True)
+
+
+def _document(value: str | Path) -> str:
+    """Normalize a repository path without consulting the working tree."""
+    path = Path(value)
+    if path.is_absolute():
+        try:
+            path = path.relative_to(ROOT)
+        except ValueError as error:
+            raise ContractError(f"{path} is outside the repository") from error
+    return path.as_posix()
 
 
 def tracked() -> list[str]:
-    """Every tracked path, as git reports it, with forward slashes."""
-    result = subprocess.run(["git", "ls-files"], cwd=ROOT, capture_output=True, text=True)
+    """Every indexed path, as git reports it, with forward slashes."""
+    result = _git("ls-files")
     if result.returncode != 0:
         raise ContractError("git ls-files failed; this must run inside the repository")
     return [line for line in result.stdout.splitlines() if line]
+
+
+def content(document: str | Path) -> str | None:
+    """Return the blob the index holds for a document, never its unstaged bytes."""
+    name = _document(document)
+    if name not in _CONTENT:
+        result = _git("cat-file", "blob", f":{name}")
+        _CONTENT[name] = result.stdout if result.returncode == 0 else None
+    return _CONTENT[name]
+
+
+def load(path: str | Path = CONTRACT) -> dict:
+    """Load the publication declaration from the index and fail closed."""
+    name = _document(path)
+    text = content(name)
+    if text is None:
+        raise ContractError(f"{name} is not in the repository index")
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError as error:
+        raise ContractError(f"{name} is not JSON: {error}") from None
+
+
+def published(target: str, held: set[str]) -> bool:
+    """Whether the index holds this file or a file beneath this declared directory."""
+    return target in held or any(item.startswith(target + "/") for item in held)
+
+
+def shadowing_modules() -> list[str]:
+    """Return local modules that could replace a permitted import.
+
+    This is intentionally a working-tree read. Unstaged bytes must never contribute
+    publication evidence, but an unstaged executable module that can change how the
+    grader reads the index is an integrity defect and therefore fails closed.
+    """
+    scripts = ROOT / "scripts"
+    found: list[str] = []
+    for name in sorted(PERMITTED_IMPORTS):
+        head = name.split(".")[0]
+        for candidate in (scripts / f"{head}.py", scripts / head / "__init__.py"):
+            if candidate.exists():
+                found.append(candidate.relative_to(ROOT).as_posix())
+    return found
 
 
 def top_level(paths: list[str]) -> set[str]:
@@ -62,7 +125,7 @@ def finding(check: str, holder: str, path: str, detail: str) -> dict[str, str]:
 
 
 def coverage(contract: dict, paths: list[str]) -> list[dict[str, str]]:
-    """Every tracked top-level path must be classified, so the tree cannot grow unclassified."""
+    """Every indexed top-level path must be classified, so the tree cannot grow unclassified."""
     declared = {entry["path"].split("/", 1)[0] for entry in contract["paths"]}
     return [finding("UNCLASSIFIED", SOV, name,
                     "tracked and absent from contracts/publication-surface.json")
@@ -70,7 +133,7 @@ def coverage(contract: dict, paths: list[str]) -> list[dict[str, str]]:
 
 
 def surfaces(contract: dict, paths: list[str]) -> list[dict[str, str]]:
-    """Each entry must satisfy the rule its own surface declares."""
+    """Each entry must satisfy the rule its own surface declares using indexed membership."""
     tracked_set = set(paths)
     found: list[dict[str, str]] = []
     for entry in contract["paths"]:
@@ -89,9 +152,10 @@ def surfaces(contract: dict, paths: list[str]) -> list[dict[str, str]]:
                 if not target:
                     found.append(finding("DERIVED_UNCHECKED", SOV, path,
                                          f"generated output declaring no {role}"))
-                elif not (ROOT / target).exists():
+                elif not published(target, tracked_set):
                     found.append(finding("DERIVED_UNCHECKED", SOV, path,
-                                         f"declares {role} {target}, which is not a file"))
+                                         f"declares {role} {target}, which the repository index "
+                                         f"does not hold"))
         if surface == "SCRATCH" and not entry.get("until"):
             found.append(finding("SCRATCH_OPEN_ENDED", SOV, path,
                                  "kept in the tree with nothing declared that retires it"))
@@ -102,29 +166,22 @@ def surfaces(contract: dict, paths: list[str]) -> list[dict[str, str]]:
 
 
 def reaches(text: str, document: str, required: str) -> bool:
-    """Whether the document reaches the required path, repo-relative or relative to itself.
-
-    A link written from inside a directory is a real reference to the file it resolves
-    to. Grading only the repository-relative spelling refuses a document for being
-    correctly written, which pushes an author toward a spelling that satisfies the
-    matcher rather than the reader.
-    """
+    """Whether the indexed document reaches the required path in either valid spelling."""
     here = os.path.dirname(document)
     relative = os.path.relpath(required, here).replace(os.sep, "/") if here else required
     return required in text or relative in text
 
 
 def routes(contract: dict) -> list[dict[str, str]]:
-    """An entry document must name what its audience needs and must not name a stale pointer."""
+    """An indexed entry document must name what its audience needs and no stale pointer."""
     found: list[dict[str, str]] = []
     for route in contract["routes"]:
         document = route["document"]
-        target = ROOT / document
-        if not target.is_file():
+        text = content(document)
+        if text is None:
             found.append(finding("ROUTE_MISSING", SOV, document,
-                                 f"the {route['audience']} route has no entry document"))
+                                 f"the {route['audience']} route has no indexed entry document"))
             continue
-        text = target.read_text(encoding="utf-8")
         owner_held = set(route.get("owner_held", ()))
         for required in route["must_name"]:
             if reaches(text, document, required):
@@ -140,15 +197,14 @@ def routes(contract: dict) -> list[dict[str, str]]:
 
 
 def entrypoints(contract: dict, paths: list[str]) -> list[dict[str, str]]:
-    """Every command-line entrypoint must appear in the index, or nobody else can reach it."""
+    """Every command-line entrypoint must appear in the indexed entrypoint index."""
     declared = contract.get("entrypoint_index")
     if not declared:
         return []
-    index = ROOT / declared["index"]
-    if not index.is_file():
+    text = content(declared["index"])
+    if text is None:
         return [finding("INDEX_MISSING", SOV, declared["index"],
-                        "no index exists for the node's command-line surface")]
-    text = index.read_text(encoding="utf-8")
+                        "no indexed entrypoint index exists for the node's command-line surface")]
     pattern = declared["pattern"]
     names = sorted({Path(item).name for item in paths
                     if fnmatch.fnmatch(Path(item).name, pattern)})
@@ -158,16 +214,15 @@ def entrypoints(contract: dict, paths: list[str]) -> list[dict[str, str]]:
 
 
 def retired(contract: dict) -> list[dict[str, str]]:
-    """A document describing a completed operation must be marked, or it reads as current."""
+    """A completed-operation document must carry its marker in the indexed content."""
     found: list[dict[str, str]] = []
     for entry in contract.get("retired", ()):
-        document = entry["document"]
-        target = ROOT / document
-        if not target.is_file():
+        text = content(entry["document"])
+        if text is None:
             continue
-        head = target.read_text(encoding="utf-8").split("\n", 12)[:12]
+        head = text.split("\n", 12)[:12]
         if not any(entry["marker"] in line for line in head):
-            found.append(finding("STALE_UNMARKED", entry.get("holder", SOV), document,
+            found.append(finding("STALE_UNMARKED", entry.get("holder", SOV), entry["document"],
                                  f"describes an operation completed {entry['completed']} and "
                                  f"carries no {entry['marker']} marker in its opening lines"))
     return found
@@ -199,11 +254,13 @@ def selfcheck() -> int:
                           ["scripts/lint.py"]), None),
         ("DERIVED output with no builder is refused",
          lambda: surfaces({"paths": [{"path": "docs/x.html", "surface": "DERIVED",
-                                      "check": "scripts/lint.py"}]}, []), "DERIVED_UNCHECKED"),
-        ("DERIVED output whose check is not a file is refused",
+                                      "check": "scripts/lint.py"}]},
+                          ["scripts/lint.py"]), "DERIVED_UNCHECKED"),
+        ("DERIVED output whose check is not indexed is refused",
          lambda: surfaces({"paths": [{"path": "docs/x.html", "surface": "DERIVED",
                                       "builder": "scripts/lint.py",
-                                      "check": "scripts/nope.py"}]}, []), "DERIVED_UNCHECKED"),
+                                      "check": "scripts/nope.py"}]},
+                          ["scripts/lint.py"]), "DERIVED_UNCHECKED"),
         ("SCRATCH with nothing that retires it is refused",
          lambda: surfaces({"paths": [{"path": "experiments", "surface": "SCRATCH"}]}, []),
          "SCRATCH_OPEN_ENDED"),
@@ -259,6 +316,10 @@ def main() -> int:
     args = parser.parse_args()
     if args.command == "selfcheck":
         return selfcheck()
+    shadows = shadowing_modules()
+    if shadows:
+        print("FAIL: publication grader import boundary is shadowed by " + ", ".join(shadows))
+        return 1
     try:
         contract = load()
         paths = tracked()

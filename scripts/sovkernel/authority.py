@@ -27,7 +27,6 @@ PERMITTED = "PERMITTED"
 REFUSED = "REFUSED"
 
 AUTHORITY_REFUSED = "AUTHORITY_REFUSED"
-EFFECT_CLASS_REFUSED = "EFFECT_CLASS_REFUSED"
 MISSING_PRECONDITION = "MISSING_PRECONDITION"
 OBSERVATION_MISSING = "OBSERVATION_MISSING"
 OBSERVER_NOT_INDEPENDENT = "OBSERVER_NOT_INDEPENDENT"
@@ -35,11 +34,6 @@ OBSERVER_NOT_INDEPENDENT = "OBSERVER_NOT_INDEPENDENT"
 #: Heavier classes contain lighter ones. A grant's ceiling admits every class at
 #: or below its own index and refuses everything above it.
 EFFECT_ORDER = ("RECORD_LOCAL", "RESOURCE_CONSUMPTION", "EXTERNAL_WORLD")
-
-#: Phase FOUNDING admits no external-world effect. `STATUS.yaml` and
-#: `contracts/kernel-transitions.json` both carry this; it is restated as a
-#: constant only so the evaluator refuses without needing a file.
-PHASE_REFUSED_EFFECT_CLASSES = ("EXTERNAL_WORLD",)
 
 #: JUDGEMENT authority may be issued by the owner and by nobody else.
 JUDGEMENT_ISSUER = "bdo"
@@ -170,11 +164,6 @@ def evaluate(grants: list[dict], request: dict) -> dict[str, Any]:
     not.
     """
     now = _instant(request["at"], "at")
-    declared = request.get("effect_class")
-    if declared in PHASE_REFUSED_EFFECT_CLASSES:
-        return _refused(EFFECT_CLASS_REFUSED,
-                        f"{declared} is refused in the current phase", [])
-
     considered: list[dict] = []
     covering: dict | None = None
     for grant in grants:

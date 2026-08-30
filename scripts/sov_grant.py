@@ -121,9 +121,8 @@ def _uncovered_codes() -> list[str]:
     """Every refusal code the evaluator can report needs a case proving it fires."""
     corpus = _read(CORPUS)
     expected = {case["expect"] for case in corpus["cases"]}
-    reportable = {authority.AUTHORITY_REFUSED, authority.EFFECT_CLASS_REFUSED,
-                  authority.MISSING_PRECONDITION, authority.OBSERVATION_MISSING,
-                  authority.OBSERVER_NOT_INDEPENDENT}
+    reportable = {authority.AUTHORITY_REFUSED, authority.MISSING_PRECONDITION,
+                  authority.OBSERVATION_MISSING, authority.OBSERVER_NOT_INDEPENDENT}
     return sorted(reportable - expected)
 
 

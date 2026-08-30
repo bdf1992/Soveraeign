@@ -1,48 +1,88 @@
 {
-  "schema": "soveraeign-clarity/v1",
+  "schema": "soveraeign-clarity/v2",
   "skill": "clarity/v1",
   "base_modifier": "unslop/v1",
   "coverage_file": ".clarity/coverage.json",
+  "scope": {
+    "publication_contract": "contracts/publication-surface.json",
+    "include_surfaces": [
+      "HUB",
+      "HOST"
+    ],
+    "candidate_include": [
+      "**/*.md",
+      ".cursorrules"
+    ],
+    "candidate_exclude": [
+      ".claude/worktrees/**",
+      "node_modules/**"
+    ],
+    "exemptions": [
+      {
+        "include": [
+          "decisions/**/*.md"
+        ],
+        "reason": "Decision records preserve the language, authority context, and provenance of the act they record. Clarity reviews current projections of those decisions rather than rewriting the historical record."
+      }
+    ]
+  },
   "campaign_order": [
     "root",
-    "agents",
+    "participants",
     "services",
-    "bindings"
+    "bindings",
+    "operations",
+    "repository"
   ],
   "campaigns": {
     "root": {
       "include": [
-        "*.md"
+        "*.md",
+        ".cursorrules"
       ],
       "exclude": []
     },
-    "agents": {
+    "participants": {
       "include": [
-        ".claude/**/*.md"
+        ".claude/**/*.md",
+        ".github/**/*.md"
       ],
-      "exclude": [
-        ".claude/worktrees/**"
-      ]
+      "exclude": []
     },
     "services": {
       "include": [
-        "services/**/README.md"
+        "services/**/*.md"
       ],
       "exclude": []
     },
     "bindings": {
       "include": [
-        "bindings/**/*.md"
+        "bindings/**/*.md",
+        "adapters/**/*.md"
+      ],
+      "exclude": []
+    },
+    "operations": {
+      "include": [
+        "infrastructure/**/*.md",
+        "workers/**/*.md",
+        "witness/**/*.md",
+        "scripts/**/*.md",
+        "conformance/**/*.md",
+        "contracts/**/*.md",
+        "docs/**/*.md",
+        "lineage/**/*.md"
+      ],
+      "exclude": []
+    },
+    "repository": {
+      "include": [
+        "**/*.md",
+        ".cursorrules"
       ],
       "exclude": []
     }
   },
-  "global_exclude": [
-    "archives/**",
-    "lineage/**",
-    "docs/**",
-    "node_modules/**"
-  ],
   "basis_by_path": {
     "README.md": [
       "GROUND.md",
@@ -92,6 +132,112 @@
       "AGENTS.md",
       "SOV.md",
       "STATUS.yaml"
+    ],
+    "CANON.md": [
+      "GROUND.md"
+    ],
+    "CLASSIFICATION.md": [
+      "GROUND.md",
+      "CANON.md"
+    ],
+    "CONTRACT.md": [
+      "GROUND.md",
+      "CANON.md"
+    ],
+    "PRD.md": [
+      "GROUND.md",
+      "CANON.md"
+    ],
+    "SPEC.md": [
+      "SYSTEM.md",
+      "CONTRACT.md",
+      "CLASSIFICATION.md"
+    ],
+    "ROADMAP.md": [
+      "PRD.md",
+      "STATUS.yaml",
+      "contracts/phases.json"
+    ],
+    "OPEN-SEAMS.md": [
+      "SYSTEM.md",
+      "CONTRACT.md",
+      "STATUS.yaml"
+    ],
+    "SDLC.md": [
+      "AGENTS.md",
+      "CONTRACT.md",
+      "STATUS.yaml"
+    ],
+    "NAMING.md": [
+      "CANON.md",
+      "CLASSIFICATION.md"
     ]
-  }
+  },
+  "basis_by_pattern": [
+    {
+      "include": [
+        ".claude/**/*.md"
+      ],
+      "basis": [
+        "AGENTS.md",
+        "STATUS.yaml"
+      ]
+    },
+    {
+      "include": [
+        ".github/**/*.md"
+      ],
+      "basis": [
+        "AGENTS.md",
+        "CONTRIBUTING.md",
+        "STATUS.yaml"
+      ]
+    },
+    {
+      "include": [
+        "services/**/*.md"
+      ],
+      "basis": [
+        "SYSTEM.md",
+        "CONTRACT.md",
+        "SPEC.md"
+      ]
+    },
+    {
+      "include": [
+        "bindings/**/*.md",
+        "adapters/**/*.md"
+      ],
+      "basis": [
+        "SYSTEM.md",
+        "CONTRACT.md",
+        "SPEC.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "include": [
+        "infrastructure/**/*.md",
+        "workers/**/*.md",
+        "witness/**/*.md"
+      ],
+      "basis": [
+        "SYSTEM.md",
+        "CONTRACT.md",
+        "SPEC.md",
+        "STATUS.yaml"
+      ]
+    },
+    {
+      "include": [
+        "scripts/**/*.md",
+        "conformance/**/*.md",
+        "docs/**/*.md"
+      ],
+      "basis": [
+        "AGENTS.md",
+        "STATUS.yaml"
+      ]
+    }
+  ]
 }

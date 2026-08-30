@@ -19,6 +19,10 @@ already exists. A clarity pass may rewrite a whole section, reorder explanation,
 or delete terminology that earlier drafts accumulated. It must not invent
 product meaning or quietly change a contract.
 
+For phase-boundary cleanup, treat the corpus as a rebase from zero. Every current
+human-facing artifact must be reconsidered. "No edit needed" is a valid result
+only after the artifact has been actively reviewed.
+
 ## Process
 
 1. Read the artifact and the governing sources behind its claims.
@@ -81,19 +85,52 @@ documents use current language.
 When a root definition changes, update dependent reader text rather than keeping
 a second, drifting explanation.
 
+## Scope
+
+`contracts/clarity.json` declares the review population. Its scope is anchored to
+`contracts/publication-surface.json` so the denominator cannot be made convenient
+by naming only the files already cleaned.
+
+Current prose on `HUB` and `HOST` publication surfaces is considered for clarity.
+Derived output, journals, scratch material, local state, and other non-current
+surfaces are outside the prose campaign. Machine-defined text is not rewritten
+merely to increase coverage.
+
+An artifact may be `EXEMPT` only through an explicit rule with a reason. Exemption
+is visible in `scope` and `status`; it is not counted as reviewed. Historical
+decision records are the first explicit exemption because rewriting the language
+of the act would alter provenance. Current projections of those decisions remain
+eligible.
+
+Use `python scripts/sov_clarity.py scope` to prove that every scanned current
+prose artifact has a publication classification and is either eligible or
+explicitly exempt.
+
+## Basis
+
+Exact `basis_by_path` entries take precedence. Pattern rules provide default
+governing sources for repeated surfaces such as services, bindings, host
+instructions, and operational documentation.
+
+A receipt records the digests of its basis. If one of those sources changes, the
+artifact becomes `BASIS_STALE` even when its own bytes did not move.
+
+Do not add a basis merely to make the graph dense. Use the smallest set that
+actually governs the artifact's claims.
+
 ## Coverage
 
-`contracts/clarity.json` declares what counts and declares `unslop/v1` as the
-required base modifier. `.clarity/coverage.json` records completed reviews by
-content digest.
+`.clarity/coverage.json` records completed reviews by content digest.
 
 Use:
 
 ```sh
+python scripts/sov_clarity.py scope
 python scripts/sov_clarity.py status
 python scripts/sov_clarity.py next
 python scripts/sov_clarity.py record README.md --changed
 python scripts/sov_clarity.py check
+python scripts/sov_clarity.py gate
 ```
 
 Coverage and freshness are different:
@@ -102,23 +139,32 @@ Coverage and freshness are different:
 - freshness = currently valid reviews / reviewed artifacts;
 - current coverage = currently valid reviews / eligible artifacts.
 
-A review becomes `TEXT_STALE` when the artifact changes. It becomes
-`BASIS_STALE` when a recorded governing source changes. `UNCHECKED` means the
-skill has not reviewed the artifact. `CURRENT` means the current bytes match the
-review receipt.
+States are:
 
-`check` refuses malformed or stale receipts. It does not refuse merely because
-coverage is incomplete. That lets the cleanup advance progressively without
-allowing a file that claims review to drift silently.
+- `CURRENT` — the artifact and recorded basis still match the reviewed bytes;
+- `TEXT_STALE` — the artifact changed after review;
+- `BASIS_STALE` — a governing source changed after review;
+- `UNCHECKED` — the artifact is eligible but has not been reviewed;
+- `EXEMPT` — the artifact is deliberately outside review for a recorded reason.
+
+`check` refuses malformed scope, malformed receipts, and stale reviews. It does
+not refuse merely because eligible files remain unchecked. This lets a campaign
+advance progressively.
+
+`gate` is the terminal form. It requires every eligible artifact to be `CURRENT`
+and every non-reviewed candidate to be explicitly `EXEMPT`. A phase-boundary
+clarity campaign is not complete until `gate` passes.
 
 ## Report
 
 Report:
 
+- scope size and exemptions;
 - files reviewed;
 - files changed;
 - terms removed or normalized when that matters;
 - terms deliberately kept because they preserve a real distinction;
 - clarity coverage;
 - clarity freshness;
+- current coverage;
 - next target.

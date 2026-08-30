@@ -20,7 +20,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Keep authority module within its owned line budget
+      - name: Keep authority module at its original line count
         shell: bash
         run: |
           python - <<'PY'
@@ -35,20 +35,19 @@ jobs:
           text = text.replace(helper, '', 1)
 
           old = 'from soveraeign_console_service.refusals import AuthorityRefused\n'
-          new = ('from soveraeign_console_service.refusals import '
-                 'AuthorityRefused, require_issuer_name\n')
+          new = 'from soveraeign_console_service.refusals import AuthorityRefused, issuer_name\n'
           if text.count(old) != 1:
               raise SystemExit('refusal import marker drifted')
           text = text.replace(old, new, 1)
 
           old = '''    granted_by = _issuer(granted_by)\n    return {\"grant_id\": f\"grant_{uuid.uuid4().hex[:16]}\", \"node_id\": node_id,\n            \"operator_id\": operator_id, \"capability\": capability, \"scope\": scope,\n            \"granted_by\": granted_by, \"granted_at\": granted_at, \"standing\": \"RECORDED\"}\n'''
-          new = '''    return {\"grant_id\": f\"grant_{uuid.uuid4().hex[:16]}\", \"node_id\": node_id,\n            \"operator_id\": operator_id, \"capability\": capability, \"scope\": scope,\n            \"granted_by\": require_issuer_name(granted_by), \"granted_at\": granted_at,\n            \"standing\": \"RECORDED\"}\n'''
+          new = '''    return {\"grant_id\": f\"grant_{uuid.uuid4().hex[:16]}\", \"node_id\": node_id,\n            \"operator_id\": operator_id, \"capability\": capability, \"scope\": scope,\n            \"granted_by\": issuer_name(granted_by), \"granted_at\": granted_at, \"standing\": \"RECORDED\"}\n'''
           if text.count(old) != 1:
               raise SystemExit('grant payload marker drifted')
           text = text.replace(old, new, 1)
 
           old = '''    revoked_by = _issuer(revoked_by)\n    return {\"grant_id\": grant_id, \"node_id\": node_id, \"revoked_by\": revoked_by,\n            \"revoked_at\": revoked_at, \"standing\": \"RECORDED\"}\n'''
-          new = '''    return {\"grant_id\": grant_id, \"node_id\": node_id,\n            \"revoked_by\": require_issuer_name(revoked_by), \"revoked_at\": revoked_at,\n            \"standing\": \"RECORDED\"}\n'''
+          new = '''    return {\"grant_id\": grant_id, \"node_id\": node_id, \"revoked_by\": issuer_name(revoked_by),\n            \"revoked_at\": revoked_at, \"standing\": \"RECORDED\"}\n'''
           if text.count(old) != 1:
               raise SystemExit('revocation payload marker drifted')
           text = text.replace(old, new, 1)
@@ -57,7 +56,7 @@ jobs:
           refusal_path = Path('services/console/src/soveraeign_console_service/refusals.py')
           text = refusal_path.read_text(encoding='utf-8')
           marker = '''        self.scope = scope\n\n\nclass ModelClaimWithoutProposal(ConsoleRefusal):\n'''
-          addition = '''        self.scope = scope\n\n\ndef require_issuer_name(named: str) -> str:\n    \"\"\"Normalize a required authority issuer or refuse an unattributable record.\"\"\"\n    issuer = named.strip()\n    if not issuer:\n        raise AuthorityRefused(\n            \"a grant must name who issued it; an empty issuer is not a name\")\n    return issuer\n\n\nclass ModelClaimWithoutProposal(ConsoleRefusal):\n'''
+          addition = '''        self.scope = scope\n\n\ndef issuer_name(named: str) -> str:\n    \"\"\"Normalize a required authority issuer or refuse an unattributable record.\"\"\"\n    issuer = named.strip()\n    if not issuer:\n        raise AuthorityRefused(\n            \"a grant must name who issued it; an empty issuer is not a name\")\n    return issuer\n\n\nclass ModelClaimWithoutProposal(ConsoleRefusal):\n'''
           if text.count(marker) != 1:
               raise SystemExit('refusal insertion marker drifted')
           text = text.replace(marker, addition, 1)

@@ -1,6 +1,6 @@
 {
   "corpus_id": "soveraeign-authority-grant-cases/v1",
-  "note": "Positive and defeating cases for contracts/authority-grant.schema.json and the evaluator in scripts/sovkernel/authority.py. Three cases prove a live grant covers a request; thirty-three prove a refusal, and every refusal code the evaluator can report has at least one case proving it actually fires. Each case is a patch over base_grant and base_request, so what a case says is exactly what it changes; a field a case does not mention is the base value, and a field neither mentions is absent rather than satisfied.",
+  "note": "Positive and defeating cases for contracts/authority-grant.schema.json and the evaluator in scripts/sovkernel/authority.py. Four cases prove a live grant covers a request; thirty-three prove a refusal, and every refusal code the evaluator can report has at least one case proving it actually fires. Each case is a patch over base_grant and base_request, so what a case says is exactly what it changes; a field a case does not mention is the base value, and a field neither mentions is absent rather than satisfied.",
   "base_grant": {
     "grant_schema": "soveraeign-authority-grant/v1",
     "status": "RATIFIED",
@@ -245,10 +245,17 @@
       "request_patch": {"capability": "standing.ratify"}
     },
     {
-      "case_id": "D-013-external-world-effect-refused-by-phase",
-      "expect": "EFFECT_CLASS_REFUSED",
-      "proves": "Phase FOUNDING admits no external-world effect, and the phase refuses before any grant is consulted. No grant can be written that gets around it.",
+      "case_id": "P-004-scoped-external-world-effect-covered",
+      "expect": "PERMITTED",
+      "proves": "External-world effects are scoped rather than globally refused. A ratified grant whose explicit effect ceiling reaches EXTERNAL_WORLD still has to satisfy the same actor, capability, scope, budget, check, and independent-observation requirements as every other grant.",
       "grant_patch": {"effect_ceiling": "EXTERNAL_WORLD"},
+      "request_patch": {"effect_class": "EXTERNAL_WORLD"}
+    },
+    {
+      "case_id": "D-013b-external-world-effect-above-grant-ceiling",
+      "expect": "AUTHORITY_REFUSED",
+      "proves": "Scoped does not mean unrestricted. The base RESOURCE_CONSUMPTION grant cannot cover an EXTERNAL_WORLD request, so external effects still require a grant whose declared ceiling explicitly reaches them.",
+      "grant_patch": {},
       "request_patch": {"effect_class": "EXTERNAL_WORLD"}
     },
     {

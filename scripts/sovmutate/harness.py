@@ -45,6 +45,7 @@ class Score:
     command: tuple[str, ...]
     mutants: list[Mutant] = field(default_factory=list)
     skipped: int = 0
+    scoped_out: int = 0
 
     @property
     def generated(self) -> int:
@@ -94,14 +95,26 @@ def score_file(
     command: tuple[str, ...] = DEFAULT_COMMAND,
     timeout: int = DEFAULT_TIMEOUT,
     limit: int | None = None,
+    lines: set[int] | None = None,
 ) -> Score:
-    """Score one file by applying each mutant in turn and running the suite."""
+    """Score one file by applying each in-scope mutant in turn and running the suite.
+
+    ``lines`` narrows mutation to sites whose source line is in the supplied set.
+    The PR gate uses that to score the behavior the diff actually changes instead
+    of charging a touched file for unrelated historical branches elsewhere in it.
+    """
     original = path.read_bytes()
     before = _digest(original)
     source = original.decode("utf-8")
     found = operators.sites(source)
-    selected = found if limit is None else found[:limit]
-    score = Score(target=str(path), command=command, skipped=len(found) - len(selected))
+    eligible = found if lines is None else [site for site in found if site.line in lines]
+    selected = eligible if limit is None else eligible[:limit]
+    score = Score(
+        target=str(path),
+        command=command,
+        skipped=len(eligible) - len(selected),
+        scoped_out=len(found) - len(eligible),
+    )
 
     try:
         for site in selected:
@@ -123,9 +136,15 @@ def score_file(
 
 def render(score: Score) -> str:
     """Human-readable report for one scored file."""
+    scope = []
+    if score.skipped:
+        scope.append(f"{score.skipped} beyond limit")
+    if score.scoped_out:
+        scope.append(f"{score.scoped_out} outside diff scope")
+    suffix = f" ({'; '.join(scope)})" if scope else ""
     lines = [
         f"target          : {score.target}",
-        f"mutants         : {score.generated}" + (f" ({score.skipped} beyond limit)" if score.skipped else ""),
+        f"mutants         : {score.generated}{suffix}",
         f"killed          : {score.killed}",
         f"survived        : {len(score.survived)}",
         f"MUTATION SCORE  : {score.percent:.1f}%",

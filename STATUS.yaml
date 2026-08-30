@@ -222,31 +222,12 @@ accepted_repository_claims:
 #   python scripts/sov_accept.py queue     what is waiting on which seat
 #   python scripts/sov_accept.py audit     fails the build if anything waits without a reason
 #
-# The O-numbers are kept so the documents that cite them still resolve.
+# The remaining queue is a non-blocking successor/product docket. None of these
+# five items keeps historical phase:i open, authorizes a successor phase, or is
+# part of the Phase-I boundary closure.
 open_decisions: []
 
 owner_acceptance_queue:
-  - id: A20
-    packet: acceptance/A20.json
-    presented: PRD.md is the umbrella product document and ROADMAP.md is the separate P0-P9 estimate; both predecessors archived and still pinning phase:i, the PRD archive carrying the PROD-I-1 rewrite A22 presents
-    waits_on: seat:root
-    presented_by_seat: seat:session-control
-    at: 2026-08-28T00:00:00Z
-
-  - id: A22
-    packet: acceptance/A22.json
-    presented: A proposal is not finished until a human can see it, and the model's authority claim is void because the session is an instance - but Phase I is closed and its PRD.md pin had to move
-    waits_on: seat:root
-    presented_by_seat: seat:session-control
-    at: 2026-08-28T00:00:00Z
-
-  - id: A23
-    packet: acceptance/A23.json
-    presented: The seven documents an agent or contributor reads first now name the product plane, and say plainly that they themselves own no product claim
-    waits_on: seat:root
-    presented_by_seat: seat:session-control
-    at: 2026-08-28T00:00:00Z
-
   - id: A13
     packet: acceptance/A13.json
     presented: The automation page has working switches, and the switch cannot be reached around
@@ -261,19 +242,13 @@ owner_acceptance_queue:
     presented_by_seat: seat:session-control
     at: 2026-08-27T00:00:00Z
 
-  - id: A10
-    packet: acceptance/A10.json
-    presented: Three rules this repository stated in prose now have a mechanism behind them, starting with a build that could witness itself
-    waits_on: seat:root
-    presented_by_seat: seat:session-control
-    at: 2026-08-26T00:00:00Z
-
   - id: A9
     packet: acceptance/A9.json
     presented: What an asset is - a governed identity holding no bytes, whose constituents carry their own content states, where a path is placement and a source is an observation
     waits_on: seat:root
     presented_by_seat: seat:session-control
     at: 2026-08-27T00:00:00Z
+
   - id: A14
     packet: acceptance/A14.json
     presented: The cold-start benchmark is a governed surface - 175 questions, a result contract, and run records that make two days comparable
@@ -326,12 +301,42 @@ owner_accepted:
     at: 2026-08-23T21:31:30Z
     claim: External effects admitted inside declared scopes (was O7 and O16b)
 
+# Boundary dispositions are terminal classifications, not additional acceptances.
+# REDIRECT preserves the useful evidence while moving the unresolved choice out of
+# historical Phase-I closure. SUPERSEDED means current main already embodies the
+# substantive effect differently/better.
+owner_dispositions:
+  - id: A10
+    packet: acceptance/accepted/A10.json
+    action: REDIRECT
+    by_seat: seat:root
+    at: 2026-08-30T00:00:00Z
+    claim: Preserve self-bounding authority and independent-observation invariants; re-derive the exact successor implementation rather than ratifying stale decision-0075 bytes.
+  - id: A20
+    packet: acceptance/accepted/A20.json
+    action: REDIRECT
+    by_seat: seat:root
+    at: 2026-08-30T00:00:00Z
+    claim: Preserve PRD, roadmap, and coverage findings as zero-state strategy input; priorities, promises, and roadmap opening are successor strategy rather than Phase-I closure.
+  - id: A22
+    packet: acceptance/accepted/A22.json
+    action: REDIRECT
+    by_seat: seat:root
+    at: 2026-08-30T00:00:00Z
+    claim: Keep phase:i pinned to the exact PRD bytes present at its 2026-08-27 terminal; post-terminal PROD-I-1 strengthening survives as successor evidence.
+  - id: A23
+    packet: acceptance/accepted/A23.json
+    action: SUPERSEDED
+    by_seat: seat:root
+    at: 2026-08-30T00:00:00Z
+    claim: Merged PR #183 physically represents the entry-plane/product-plane separation across the active reader surfaces; the stale packet requires no acceptance.
+
 owner_holds:
   - id: O1
     reason: PUBLICATION
     blocks: repository.publish_public
     question: Does public release have sufficient legal, domain, package, and product collision clearance?
-    reachable_alternative: Every Phase-I engineering task proceeds under the working name; no agent claims clearance.
+    reachable_alternative: Every engineering and strategy task proceeds under the working name; no agent claims clearance.
 
 # O1-O22 were founding-docket identifiers, retired rather than reserved: a ruling is
 # demoted by a defeating observation recorded in a new decision, never by reopening an

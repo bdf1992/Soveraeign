@@ -148,9 +148,18 @@ def command_reconcile(args: argparse.Namespace) -> int:
                     built = boardmod.build(custody, with_derived=False)
                     children = [c["custody_id"] for c in records.values()
                                 if c.get("serves_exit") == held]
-                    print(f"     held by {held}, standing at "
-                          f"{built['lowest_member_stage'] or built['entry_stage']}, "
-                          f"targeting {built['target_stage']}")
+                    terminal = custody.get("terminal") or {}
+                    if terminal:
+                        print(
+                            f"     terminal {terminal.get('outcome')} at "
+                            f"{terminal.get('closed_at')}; historical holder {custody['held_by']}"
+                        )
+                        if terminal.get("successors"):
+                            print(f"     successors: {', '.join(terminal['successors'])}")
+                    else:
+                        print(f"     held by {held}, standing at "
+                              f"{built['lowest_member_stage'] or built['entry_stage']}, "
+                              f"targeting {built['target_stage']}")
                     if children:
                         print(f"     delivery: {', '.join(children)}")
             rows.append(clause["verdict"])

@@ -3,8 +3,8 @@
   "status": "PROPOSED",
   "phase": "phase:i",
   "serves_exit": "PRD.md Phase-I exit, pinned by digest in contracts/phases.json",
-  "title": "Phase I as five held exit clauses, with delivery work beneath them",
-  "note": "Hierarchical on purpose. An earlier draft of this file held ten flat peers and mixed abstraction levels - exit obligations, service work, coordination cleanup, and a future product capability - which reproduces at a new layer the failure it was built to fix. The five EXIT custodies mirror the five clauses of the Phase-I exit exactly. Every DELIVERY custody names the exit custody it serves, or is marked explicitly outside the phase exit with a reason. If an initiative cannot name the exit custody it serves, it is not Phase-I work. Every one collects work that already exists; none proposes an initiative nobody has started.",
+  "title": "Historical Phase I custody record \u2014 closed incomplete with explicit successors",
+  "note": "Historical record. Phase I closed on 2026-08-27 as CLOSED_INCOMPLETE / NOT_EARNED. A terminal on a custody ends the old assignment; held_by then records who carried it historically. Surviving work is reissued only through the terminal successor addresses below. Hierarchical on purpose. An earlier draft of this file held ten flat peers and mixed abstraction levels - exit obligations, service work, coordination cleanup, and a future product capability - which reproduces at a new layer the failure it was built to fix. The five EXIT custodies mirror the five clauses of the Phase-I exit exactly. Every DELIVERY custody names the exit custody it serves, or is marked explicitly outside the phase exit with a reason. If an initiative cannot name the exit custody it serves, it is not Phase-I work. Every one collects work that already exists; none proposes an initiative nobody has started.",
   "governed_by": [
     "PRD.md",
     "ROADMAP.md",
@@ -77,7 +77,16 @@
       "outside_phase_exit": null,
       "depends_on": [],
       "cleanup_obligations": [],
-      "note": "Held to settlement. The work under it is three delivery custodies; this record holds the clause, not the work."
+      "note": "Held to settlement. The work under it is three delivery custodies; this record holds the clause, not the work.",
+      "terminal": {
+        "outcome": "CLOSED_UNMET",
+        "closed_at": "2026-08-27",
+        "basis": "PHASE-I-X1 is NOT_EARNED in contracts/phases.json; the exit custody ends with the closed phase rather than carrying the clause forward.",
+        "successors": [
+          "issue:#26",
+          "issue:#173"
+        ]
+      }
     },
     {
       "custody_schema": "soveraeign-custody/v1",
@@ -141,7 +150,16 @@
       "depends_on": [
         "custody:phase-i/predicate-fixtures"
       ],
-      "cleanup_obligations": []
+      "cleanup_obligations": [],
+      "terminal": {
+        "outcome": "CLOSED_UNMET",
+        "closed_at": "2026-08-27",
+        "basis": "PHASE-I-X2 is NOT_EARNED in contracts/phases.json; successor parity work is explicitly reissued instead of inheriting this phase custody.",
+        "successors": [
+          "issue:#30",
+          "issue:#173"
+        ]
+      }
     },
     {
       "custody_schema": "soveraeign-custody/v1",
@@ -203,7 +221,16 @@
       "serves_exit": null,
       "outside_phase_exit": null,
       "depends_on": [],
-      "cleanup_obligations": []
+      "cleanup_obligations": [],
+      "terminal": {
+        "outcome": "CLOSED_UNMET",
+        "closed_at": "2026-08-27",
+        "basis": "PHASE-I-X3 is NOT_EARNED in contracts/phases.json; independent observation/reconstruction remains successor work, not a live Phase-I assignment.",
+        "successors": [
+          "issue:#9",
+          "issue:#173"
+        ]
+      }
     },
     {
       "custody_schema": "soveraeign-custody/v1",
@@ -311,7 +338,16 @@
       "outside_phase_exit": null,
       "depends_on": [],
       "cleanup_obligations": [],
-      "note": "The only clause Bdo graded SUBSTANTIALLY_EARNED. It is not rounded up: the vocabulary gap between the router and the policy is a real and reachable defect."
+      "note": "The only clause Bdo graded SUBSTANTIALLY_EARNED. It is not rounded up: the vocabulary gap between the router and the policy is a real and reachable defect.",
+      "terminal": {
+        "outcome": "CLOSED_UNMET",
+        "closed_at": "2026-08-27",
+        "basis": "PHASE-I-X4 is SUBSTANTIALLY_EARNED but not EARNED in contracts/phases.json; the residual judgement-routing vocabulary is handled outside the closed phase.",
+        "successors": [
+          "issue:#148",
+          "issue:#67"
+        ]
+      }
     },
     {
       "custody_schema": "soveraeign-custody/v1",
@@ -376,7 +412,13 @@
         "custody:phase-i/judgement-visibility"
       ],
       "cleanup_obligations": [],
-      "note": "NOT_REACHED rather than NOT_EARNED. It was never attempted and never refused; recording it as not earned would suggest otherwise."
+      "note": "NOT_REACHED rather than NOT_EARNED. It was never attempted and never refused; recording it as not earned would suggest otherwise.",
+      "terminal": {
+        "outcome": "CLOSED_UNMET",
+        "closed_at": "2026-08-27",
+        "basis": "PHASE-I-X5 is NOT_REACHED in contracts/phases.json. It was never attempted or refused and cannot be retroactively attempted after the phase terminal.",
+        "successors": []
+      }
     },
     {
       "custody_schema": "soveraeign-custody/v1",
@@ -482,7 +524,16 @@
         "the branch this lands on",
         "the pull request it opens"
       ],
-      "note": "The shortest move on the board and the one Bdo's close sequence starts from."
+      "note": "The shortest move on the board and the one Bdo's close sequence starts from.",
+      "terminal": {
+        "outcome": "RETIRED",
+        "closed_at": "2026-08-30",
+        "basis": "The Phase-I delivery vehicle ends with the closed campaign; current conformance coverage is reissued through the successor harness/kernel aperture.",
+        "successors": [
+          "issue:#26",
+          "issue:#173"
+        ]
+      }
     },
     {
       "custody_schema": "soveraeign-custody/v1",
@@ -566,7 +617,16 @@
         "custody:oracle-predicate-join"
       ],
       "required_authority": null,
-      "cleanup_obligations": []
+      "cleanup_obligations": [],
+      "terminal": {
+        "outcome": "RETIRED",
+        "closed_at": "2026-08-30",
+        "basis": "The Phase-I all-predicates fixture campaign is not carried forward wholesale; the successor vertical owns only the fixtures required to close its bounded kernel path.",
+        "successors": [
+          "issue:#26",
+          "issue:#173"
+        ]
+      }
     },
     {
       "custody_schema": "soveraeign-custody/v1",
@@ -680,7 +740,18 @@
       "exit_clause": null,
       "depends_on": [],
       "required_authority": "console:grant",
-      "cleanup_obligations": []
+      "cleanup_obligations": [],
+      "terminal": {
+        "outcome": "RETIRED",
+        "closed_at": "2026-08-30",
+        "basis": "This Phase-I delivery custody no longer assigns current work; remaining authority/gate/reachability concerns are explicitly owned by successor issues.",
+        "successors": [
+          "issue:#12",
+          "issue:#13",
+          "issue:#165",
+          "issue:#173"
+        ]
+      }
     },
     {
       "custody_schema": "soveraeign-custody/v1",
@@ -797,7 +868,15 @@
         "custody:independent-observation"
       ],
       "required_authority": null,
-      "cleanup_obligations": []
+      "cleanup_obligations": [],
+      "terminal": {
+        "outcome": "RETIRED",
+        "closed_at": "2026-08-30",
+        "basis": "The historical fourteen-transition Phase-I campaign is retired; issue #173 re-derives the smaller executable kernel aperture instead of inheriting this custody.",
+        "successors": [
+          "issue:#173"
+        ]
+      }
     },
     {
       "custody_schema": "soveraeign-custody/v1",
@@ -888,7 +967,16 @@
         "custody:kernel-transitions"
       ],
       "required_authority": "kernel:invoke-model",
-      "cleanup_obligations": []
+      "cleanup_obligations": [],
+      "terminal": {
+        "outcome": "RETIRED",
+        "closed_at": "2026-08-30",
+        "basis": "The old Phase-I binding proof is retired; broad parity remains #30 and the minimum proving slice is #173.",
+        "successors": [
+          "issue:#30",
+          "issue:#173"
+        ]
+      }
     },
     {
       "custody_schema": "soveraeign-custody/v1",
@@ -977,7 +1065,16 @@
       "exit_clause": null,
       "depends_on": [],
       "required_authority": "observation:observe-run",
-      "cleanup_obligations": []
+      "cleanup_obligations": [],
+      "terminal": {
+        "outcome": "RETIRED",
+        "closed_at": "2026-08-30",
+        "basis": "The Phase-I delivery vehicle is retired; independent observation remains explicit successor work in #9 and a mandatory invariant of #173.",
+        "successors": [
+          "issue:#9",
+          "issue:#173"
+        ]
+      }
     },
     {
       "custody_schema": "soveraeign-custody/v1",
@@ -1094,7 +1191,17 @@
       "depends_on": [],
       "required_authority": null,
       "cleanup_obligations": [],
-      "note": "Bdo's nominated first thin qualification slice for the successor campaign: the service is built, the ground claim is GROUND-001, and the loop starts with something failing rather than something asserted."
+      "note": "Bdo's nominated first thin qualification slice for the successor campaign: the service is built, the ground claim is GROUND-001, and the loop starts with something failing rather than something asserted.",
+      "terminal": {
+        "outcome": "RETIRED",
+        "closed_at": "2026-08-30",
+        "basis": "The Phase-I Record custody vehicle is retired rather than silently carried. The Record-backed Asset/Observation crossing is reissued through #173.",
+        "successors": [
+          "issue:#8",
+          "issue:#9",
+          "issue:#173"
+        ]
+      }
     },
     {
       "custody_schema": "soveraeign-custody/v1",
@@ -1229,7 +1336,15 @@
       "depends_on": [],
       "required_authority": null,
       "cleanup_obligations": [],
-      "note": "decisions/0084 rules that Bdo judges a phase over accumulated evidence rather than one artifact at a time, and A11 is the phase packet built on it. That record is committed nowhere - it exists only in the shared working tree - so it is named here and is deliberately not a root: a root that resolves only on one disk is the failure UNRESOLVED_ROOT names."
+      "note": "decisions/0084 rules that Bdo judges a phase over accumulated evidence rather than one artifact at a time, and A11 is the phase packet built on it. That record is committed nowhere - it exists only in the shared working tree - so it is named here and is deliberately not a root: a root that resolves only on one disk is the failure UNRESOLVED_ROOT names.",
+      "terminal": {
+        "outcome": "RETIRED",
+        "closed_at": "2026-08-30",
+        "basis": "The old Phase-I queue-drain vehicle is retired. Boundary owner packets are explicitly classified in #148 and successor product judgement remains separate.",
+        "successors": [
+          "issue:#148"
+        ]
+      }
     },
     {
       "custody_schema": "soveraeign-custody/v1",
@@ -1349,7 +1464,13 @@
         "every branch it retires",
         "every pull request it closes",
         "the worktrees those branches hold"
-      ]
+      ],
+      "terminal": {
+        "outcome": "SETTLED",
+        "closed_at": "2026-08-30",
+        "basis": "Phase-boundary closure #148 C0056 exact-SHA retired every auxiliary ref; independent repository readback shows one protected main branch and zero open PRs.",
+        "successors": []
+      }
     },
     {
       "custody_schema": "soveraeign-custody/v1",
@@ -1435,7 +1556,15 @@
       "exit_clause": null,
       "depends_on": [],
       "required_authority": null,
-      "cleanup_obligations": []
+      "cleanup_obligations": [],
+      "terminal": {
+        "outcome": "RETIRED",
+        "closed_at": "2026-08-30",
+        "basis": "The Phase-I seam-drain vehicle is retired. Current-governance/fresh-reader seam cleanup is explicitly owned by #148 rather than inherited through phase:i.",
+        "successors": [
+          "issue:#148"
+        ]
+      }
     },
     {
       "custody_schema": "soveraeign-custody/v1",

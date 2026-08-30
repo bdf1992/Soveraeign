@@ -1,26 +1,86 @@
 {
-  "schema": "soveraeign-clarity-coverage/v1",
-  "skill": "clarity/v1",
   "reviews": {
     "AI-NATIVE.md": {
       "artifact_digest": "sha256:a00c6064b52f599708f8b300fb6e59384782cc4645a636093892798ae8bb4b74",
-      "basis": [],
+      "basis": [
+        {
+          "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
+          "path": "SYSTEM.md"
+        },
+        {
+          "digest": "sha256:ff6873d56338933b04fd9929bb74a9d273fd5d3ed586a5125fb7ffd40b3da4f5",
+          "path": "CONTRACT.md"
+        },
+        {
+          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "path": "SPEC.md"
+        }
+      ],
       "changed": true
     },
     "BYOM.md": {
       "artifact_digest": "sha256:64669747db6b40c4b8ce1cac954b56089d232d70790df611006ffcc13dcfb2e6",
-      "basis": [],
+      "basis": [
+        {
+          "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
+          "path": "SYSTEM.md"
+        },
+        {
+          "digest": "sha256:ff6873d56338933b04fd9929bb74a9d273fd5d3ed586a5125fb7ffd40b3da4f5",
+          "path": "CONTRACT.md"
+        },
+        {
+          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "path": "SPEC.md"
+        }
+      ],
       "changed": true
     },
     "README.md": {
       "artifact_digest": "sha256:16f9722d18bd2ecfe0d1d526c6dea51b7ad6d7a3b7546b47c497280aa6b4038b",
-      "basis": [],
+      "basis": [
+        {
+          "digest": "sha256:20a43ff96c3f99f98fe90b612a49c4f60f9318bfebb4be61e3882a9dfbe27bb4",
+          "path": "GROUND.md"
+        },
+        {
+          "digest": "sha256:124afb14a568acf9a41dc29940fd04d331c35d735e156d9ca344b8e9015221d9",
+          "path": "CANON.md"
+        },
+        {
+          "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
+          "path": "SYSTEM.md"
+        },
+        {
+          "digest": "sha256:96d9e073a61bfdccf1e213c087fa6c8c677336a688777816eb18404da8c13348",
+          "path": "STATUS.yaml"
+        }
+      ],
       "changed": true
     },
     "SYSTEM.md": {
       "artifact_digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
-      "basis": [],
+      "basis": [
+        {
+          "digest": "sha256:20a43ff96c3f99f98fe90b612a49c4f60f9318bfebb4be61e3882a9dfbe27bb4",
+          "path": "GROUND.md"
+        },
+        {
+          "digest": "sha256:124afb14a568acf9a41dc29940fd04d331c35d735e156d9ca344b8e9015221d9",
+          "path": "CANON.md"
+        },
+        {
+          "digest": "sha256:ff6873d56338933b04fd9929bb74a9d273fd5d3ed586a5125fb7ffd40b3da4f5",
+          "path": "CONTRACT.md"
+        },
+        {
+          "digest": "sha256:b034a56c7cf9000098a22014d6376497433a93427dcd7dc4d138fd43815fdffe",
+          "path": "CLASSIFICATION.md"
+        }
+      ],
       "changed": true
     }
-  }
+  },
+  "schema": "soveraeign-clarity-coverage/v1",
+  "skill": "clarity/v1"
 }

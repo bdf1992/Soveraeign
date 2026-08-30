@@ -1,6 +1,7 @@
 {
   "schema": "soveraeign-clarity/v1",
   "skill": "clarity/v1",
+  "base_modifier": "unslop/v1",
   "coverage_file": ".clarity/coverage.json",
   "campaign_order": [
     "root",

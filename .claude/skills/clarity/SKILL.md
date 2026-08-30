@@ -1,28 +1,29 @@
 ---
 name: clarity
-description: Rewrite project prose into plain, specific human language while preserving the claims and machine-defined distinctions the repository depends on. Use for "clarity", "unslop", "deslop", "plain language", "rewrite root docs", "AI writing cleanup", "terminology cleanup", or "clarity coverage".
+description: Audit and rewrite persisted project prose into plain, specific human language while preserving the claims and machine-defined distinctions the repository depends on. Use for "clarity", "deslop", "plain language", "rewrite root docs", "terminology cleanup", or "clarity coverage".
 ---
 
 # clarity
 
 ## Purpose
 
-Rewrite human-facing project text from the claims it needs to communicate.
+Audit persisted human-facing project text and record the result.
 
-This skill is adapted from Cursor's `pstack/skills/unslop` skill. Keep its main
-discipline: scan for AI writing patterns, rewrite, preserve meaning, add human
-voice, then audit the result. Soveraeign adds one repository rule: preserve the
-project's actual claim, not inherited wording merely because it already exists.
+`clarity` requires `unslop/v1`. `unslop` is the default output modifier; this
+skill adds claim recovery, source checking, repository-wide terminology control,
+and digest-backed coverage. A clarity review is incomplete if the text has not
+also passed the unslop modifier.
 
-A clarity pass may rewrite a whole section. It may reorder explanation. It may
-delete a term that earlier drafts repeated. It must not invent product meaning or
-quietly change a contract.
+Preserve the project's actual claim, not inherited wording merely because it
+already exists. A clarity pass may rewrite a whole section, reorder explanation,
+or delete terminology that earlier drafts accumulated. It must not invent
+product meaning or quietly change a contract.
 
 ## Process
 
 1. Read the artifact and the governing sources behind its claims.
 2. Identify the concrete claims the artifact must communicate.
-3. Scan for the writing patterns below.
+3. Apply `unslop/v1` to the human-facing prose.
 4. Discard inherited wording when it gets in the way.
 5. Rewrite in plain language.
 6. Restore specialized terms only when they preserve a real distinction.
@@ -42,38 +43,9 @@ A reviewed artifact counts as covered even when no edit was needed.
 
 ## Patterns to remove
 
-### Empty weight
-
-Cut puffery, promotional language, generic conclusions, vague attribution, and
-formulaic "despite challenges" prose. Replace adjectives with the mechanism or
-evidence that earns them.
-
-### AI vocabulary
-
-Prefer the plain word. Watch for words such as "crucial", "delve", "intricate",
-"landscape", "pivotal", "showcase", "tapestry", "underscore", and "vibrant".
-Do not replace one inflated synonym with another.
-
-### Fancy ways to say "is"
-
-Prefer "is", "has", or the verb that names the actual action. "Serves as" and
-"stands as" usually hide a simpler sentence.
-
-### Rhetorical templates
-
-Remove "not just X, but Y", forced groups of three, false "from X to Y" ranges,
-and synonym cycling. Real enumerations and machine classifications keep their
-natural number of members.
-
-### Filler and hedging
-
-Cut phrases such as "in order to", "due to the fact that", and "it is important
-to note". Collapse stacked hedges to the smallest honest uncertainty.
-
-### Dense sentences
-
-Use one important claim per sentence. Prefer active voice when the actor matters.
-Cut adverbs that prop up weak verbs.
+The base pattern pass belongs to `unslop/v1`. Clarity applies those rules and
+then asks whether project-specific language itself is carrying unnecessary
+complexity.
 
 ### Abstract technical metaphor
 
@@ -89,13 +61,10 @@ Keep a specialized term only when all three are true:
 
 If those conditions do not hold, use ordinary language.
 
-### Style tells
+### Canonical terms
 
-Use sentence-case headings. Avoid decorative formatting, excessive bolding,
-chatbot phrases, canned enthusiasm, and punctuation used as a substitute for
-sentence structure. Punctuation is not forbidden by type; clarity is the test.
-
-## Repository rules
+Do not invent a new synonym for an existing project concept. If the canonical
+term is `grant`, use `grant`.
 
 Do not casually rename:
 
@@ -106,9 +75,6 @@ Do not casually rename:
 - refusal codes;
 - schema terms with defined semantics.
 
-Do not invent a new synonym for an existing project concept. If the canonical
-term is `grant`, use `grant`.
-
 Historical and archived artifacts keep their historical language. Current reader
 documents use current language.
 
@@ -117,8 +83,9 @@ a second, drifting explanation.
 
 ## Coverage
 
-`contracts/clarity.json` declares what counts. `.clarity/coverage.json` records
-completed reviews by content digest.
+`contracts/clarity.json` declares what counts and declares `unslop/v1` as the
+required base modifier. `.clarity/coverage.json` records completed reviews by
+content digest.
 
 Use:
 

@@ -32,15 +32,16 @@ What the product is. Owner-accepted, slow to change, revised rather than edited:
 - `CANON.md` owns who a node is for, what Soveraeign undertakes, and the
   principal journeys an undertaking is reached by.
 
-What this phase must prove, and how it is built:
+What the current system requires, and how it is built:
 
 - `SYSTEM.md` owns the system boundary and operating model;
 - `CLASSIFICATION.md` owns architectural, information-role, and
   operating-loop vocabulary;
 - `CONTRACT.md` owns invariants;
 - `PRD.md` owns the product's requirements, priority, and success measures;
-  `archives/PRD-PHASE-I.md` is its archived first revision and the pinned definition of
-  the closed `phase:i`, not current policy;
+  `archives/PRD-PHASE-I-TERMINAL.txt` preserves the exact PRD bytes the closed
+  `phase:i` ended against. `archives/PRD-PHASE-I.md` is later strengthened historical
+  evidence; neither archive is current policy;
 - `SPEC.md` owns logical objects, transitions, predicates, and refusals;
 - `AI-NATIVE.md` owns surface evaluation and qualification criteria;
 - `STATUS.yaml` owns current authority, standing, and open decisions;
@@ -50,7 +51,7 @@ What this phase must prove, and how it is built:
 
 This file and `CONTRIBUTING.md` are in neither group. They govern how a
 participant works in this repository: authority, closure, evidence, style,
-branches, and boundaries. They own no product claim and no Phase-I requirement,
+branches, and boundaries. They own no product claim or product requirement,
 and a rule about the product is settled in `GROUND.md` or `CANON.md`, never
 here. Being a source a claim was drawn from is not owning it: `GROUND.md`
 grounds seven of its sixteen claims partly in named sections of this file, and
@@ -285,7 +286,7 @@ SQLite is the current storage mechanism; it is not the semantic authority.
 
 ## Technical baseline
 
-- Use Python 3.11 or newer for the Phase-I reference implementation.
+- Use Python 3.11 or newer for the retained local reference implementation.
 - Prefer the Python standard library. A runtime dependency requires a named
   boundary, an observed need, failure behavior, and a decision record.
 - Keep the local reference record in SQLite and immutable payload bytes in the
@@ -328,7 +329,7 @@ dependency or a substitute for repository verification.
 
 ## Testing and verification
 
-- Use dependency-free `unittest` for the Phase-I reference participant.
+- Use dependency-free `unittest` for the retained local reference participant.
 - Put local unit tests beside their service under `services/<domain>/tests/`.
 - Put cross-participant semantic cases in `conformance/`; the oracle must not
   import participant implementation code.

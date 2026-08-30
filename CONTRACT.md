@@ -1,6 +1,6 @@
 # Founding Contract
 
-Status: `PROPOSED FOR OWNER RATIFICATION`
+Status: `C1-C15 ACCEPTED · C16 PROPOSED UNDER DECISION 0066`
 
 This document is normative.
 

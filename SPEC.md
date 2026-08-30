@@ -1,11 +1,13 @@
-# Phase-I Logical Specification
+# Logical Specification
 
-Status: `PROPOSED · STACK-NEUTRAL · OWNER FREEZE PENDING`
+Status: `CURRENT STACK-NEUTRAL CONTRACT · A2 ACCEPTED THE PHASE-I SPEC; LATER EDITS KEEP THEIR RECORDED STANDING`
 
-This specification implements the Phase-I requirements in `PRD.md`. It fixes
-logical objects, roles, states, transitions, predicates, receipts, and refusal
-behavior. It does not select storage, encoding, language, transport, process,
-container, graph, model provider, or repository layout.
+This is the current stack-neutral logical contract. It fixes logical objects,
+roles, states, transitions, predicates, receipts, and refusal behavior without
+selecting storage, encoding, language, transport, process, container, graph,
+model provider, or repository layout. The retained `PROD-I-*` predicates are the
+first qualification profile; the exact closed Phase-I definition remains pinned
+by `contracts/phases.json`.
 
 ## Operating profile
 
@@ -22,8 +24,8 @@ container, graph, model provider, or repository layout.
 
 ### Local operation
 
-Phase I must run from a clean local artifact without Claude, GitHub, an external
-graph database, or another network service. Optional integrations either
+The retained local reference profile must run from a clean artifact without
+Claude, GitHub, an external graph database, or another network service. Optional integrations either
 operate through declared adapters or refuse as `UNCONFIGURED` with a receipt.
 
 The first operating profile is a personally owned node. It uses the same
@@ -33,7 +35,7 @@ node ownership.
 
 ### Fault model
 
-| Fault | Phase-I obligation |
+| Fault | Logical obligation |
 | --- | --- |
 | Process restart | committed records remain reconstructable |
 | Partial write | no partially committed record becomes effective |

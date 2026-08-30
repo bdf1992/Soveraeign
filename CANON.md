@@ -9,7 +9,7 @@ Soveraeign undertakes to make possible for them, and the principal journeys by w
 undertaking becomes something someone can actually use.
 
 It sits between `GROUND.md` and `PRD.md`. `GROUND.md` says what product this is;
-`CONTRACT.md` says what may never stop being true; `PRD.md` says what Phase I must prove.
+`CONTRACT.md` says what may never stop being true; `PRD.md` says what the product currently requires and how qualification is measured.
 Between them there was nothing, so a requirement had no parent and an operation had no
 reason. This is that layer and nothing more.
 
@@ -39,8 +39,8 @@ standing up your own node is for.
 
 One consequence worth seeing: `GROUND-016` is now carried by `PROMISE-15` alone, which is
 `LATER`. That is admissible — the check requires a ground claim to be carried, not carried
-in this phase — and it means the only `PHASE_I` reading of "a node is whole at any size"
-today is `JOURNEY-12`'s gap list.
+in this phase — and it means that inside the historical `PHASE_I` bucket, "a node is whole at any
+size" is represented only by `JOURNEY-12`'s gap list.
 
 ## What CANON-2 changed
 
@@ -141,8 +141,9 @@ was invented above the layer that holds it, and the check refuses one.
 reachability and ground claims. `python scripts/sov_canon.py ground` prints it the other
 way up.
 
-`PHASE_I` means the promise is in scope now. `LATER` means the canon names it so the
-product world is whole while `PRD.md` deliberately does not require it yet.
+`PHASE_I` is the historical first-qualification bucket retained for traceability.
+`LATER` means outside that first profile. Neither token names the active campaign;
+`STATUS.yaml` currently records `phase: NONE_ACTIVE`.
 
 ### `PROMISE-01` — bring your own participant into a sovereign node · `PHASE_I`
 
@@ -249,8 +250,9 @@ Derives from `GROUND-015`.
 
 > You can cross to another authorized node without either node absorbing the other.
 
-Named so the product world is whole. `PRD.md` keeps federation a Phase-I non-goal and
-this canon does not move it. Derives from `GROUND-016`.
+Named so the product world is whole. The first qualification profile treated
+federation as a non-goal, and this canon does not promote it into the active work
+queue. Derives from `GROUND-016`.
 
 ### `PROMISE-16` — decide against exact state · `PHASE_I`
 

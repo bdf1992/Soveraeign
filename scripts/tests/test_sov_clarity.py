@@ -48,6 +48,43 @@ class ClarityCoverageTests(unittest.TestCase):
             actual = [item["path"] for item in review.get("basis", [])]
             self.assertEqual(expected, actual, path)
 
+
+    def test_zero_state_requires_only_the_declared_reader_set(self) -> None:
+        contract = sov_clarity.load(sov_clarity.CONTRACT_PATH)
+        record = sov_clarity.coverage(contract)
+
+        required = sov_clarity.zero_required(contract)
+        self.assertTrue(required)
+        self.assertEqual(len(required), len(set(required)))
+        self.assertTrue(set(required) <= sov_clarity.eligible(contract))
+        self.assertEqual(
+            [],
+            sov_clarity.zero_errors(
+                contract,
+                sov_clarity.state_map(contract, record),
+                sov_clarity.eligible(contract),
+                sov_clarity.registry_errors(contract, record),
+            ),
+        )
+
+        required_only = {
+            "schema": "soveraeign-clarity-coverage/v1",
+            "skill": contract["skill"],
+            "reviews": {path: record["reviews"][path] for path in required},
+        }
+        states = sov_clarity.state_map(contract, required_only)
+        self.assertEqual(
+            [],
+            sov_clarity.zero_errors(
+                contract, states, sov_clarity.eligible(contract),
+                sov_clarity.registry_errors(contract, required_only),
+            ),
+        )
+        self.assertTrue(any(
+            state == "UNCHECKED" and path not in required
+            for path, state in states.items()
+        ))
+
     def test_unchecked_files_do_not_fake_failure_or_coverage(self) -> None:
         contract = sov_clarity.load(sov_clarity.CONTRACT_PATH)
         record = {

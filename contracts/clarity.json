@@ -1,5 +1,5 @@
 {
-  "schema": "soveraeign-clarity/v2",
+  "schema": "soveraeign-clarity/v3",
   "skill": "clarity/v1",
   "base_modifier": "unslop/v1",
   "coverage_file": ".clarity/coverage.json",
@@ -11,7 +11,8 @@
     ],
     "candidate_include": [
       "**/*.md",
-      ".cursorrules"
+      ".cursorrules",
+      "STATUS.yaml"
     ],
     "candidate_exclude": [
       ".claude/worktrees/**",
@@ -38,7 +39,8 @@
     "root": {
       "include": [
         "*.md",
-        ".cursorrules"
+        ".cursorrules",
+        "STATUS.yaml"
       ],
       "exclude": []
     },
@@ -146,7 +148,8 @@
     ],
     "PRD.md": [
       "GROUND.md",
-      "CANON.md"
+      "CANON.md",
+      "STATUS.yaml"
     ],
     "SPEC.md": [
       "SYSTEM.md",
@@ -171,6 +174,10 @@
     "NAMING.md": [
       "CANON.md",
       "CLASSIFICATION.md"
+    ],
+    ".cursorrules": [
+      "AGENTS.md",
+      "STATUS.yaml"
     ]
   },
   "basis_by_pattern": [
@@ -239,5 +246,25 @@
         "STATUS.yaml"
       ]
     }
-  ]
+  ],
+  "zero_state": {
+    "description": "Closure-ready reader zero: every human-facing candidate is publication-classified, and the small set that can define or orient current authority is actively clarity-reviewed. Other current prose may remain UNCHECKED and is measured by the full corpus gate.",
+    "required_current": [
+      "README.md",
+      "AGENTS.md",
+      "SOV.md",
+      "STATUS.yaml",
+      "GROUND.md",
+      "CANON.md",
+      "SYSTEM.md",
+      "CONTRACT.md",
+      "PRD.md",
+      "ROADMAP.md",
+      "SPEC.md",
+      "CONTRIBUTING.md",
+      "OPEN-SEAMS.md",
+      ".cursorrules",
+      "CLAUDE.md"
+    ]
+  }
 }

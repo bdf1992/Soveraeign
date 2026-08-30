@@ -13,8 +13,8 @@ there rather than from a second copy kept here, which is how two copies drift.
 
 Two things are worth knowing before you open it. The set falls in two groups:
 `GROUND.md` and `CANON.md` say what product Soveraeign is and what it
-undertakes, and the rest say what the active campaign must prove and how the
-system is built. Phase I is closed; its pinned definition lives under
+undertakes. The rest define the current system, requirements, evidence rules,
+standing, and retained implementation baseline. Phase I is closed; its pinned definition lives under
 `archives/` and `contracts/phases.json`, not in the current work queue. And
 neither group holds the rules you work under. Those are in `AGENTS.md` and in
 this file, which govern contributors to this repository and own no product

@@ -151,9 +151,14 @@ States are:
 not refuse merely because eligible files remain unchecked. This lets a campaign
 advance progressively.
 
-`gate` is the terminal form. It requires every eligible artifact to be `CURRENT`
-and every non-reviewed candidate to be explicitly `EXEMPT`. A phase-boundary
-clarity campaign is not complete until `gate` passes.
+`zero` is the closure-ready form. It requires complete publication classification
+and requires every artifact in `zero_state.required_current` to be `CURRENT`.
+Unchecked non-critical prose remains visible in the coverage count but does not
+block a clean repository/authority/reader zero.
+
+`gate` remains the stronger editorial terminal. It requires every eligible artifact
+to be `CURRENT` and every non-reviewed candidate to be explicitly `EXEMPT`. Use it
+when the objective is full-corpus clarity rather than phase-boundary closure.
 
 ## Report
 

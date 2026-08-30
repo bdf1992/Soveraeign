@@ -17,14 +17,15 @@ from sovclarity.scope import (
     scanned_candidates,
     scope_errors,
 )
+from sovclarity.zero import errors as zero_errors
+from sovclarity.zero import report as zero_report
+from sovclarity.zero import required_paths as zero_required
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT_PATH = ROOT / "contracts" / "clarity.json"
 DIGEST_PREFIX = "sha256:"
-
 def load(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
-
 def save(path: Path, value: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
@@ -32,10 +33,8 @@ def save(path: Path, value: dict) -> None:
         encoding="utf-8",
         newline="\n",
     )
-
 def digest(path: Path) -> str:
     return DIGEST_PREFIX + sha256(path.read_bytes()).hexdigest()
-
 def coverage_path(contract: dict) -> Path:
     return ROOT / contract["coverage_file"]
 
@@ -263,6 +262,7 @@ def build_parser() -> argparse.ArgumentParser:
     commands.add_parser("scope", help="show and validate the clarity denominator")
     commands.add_parser("next", help="print the next stale or unchecked artifact")
     commands.add_parser("check", help="validate scope and refuse stale receipts")
+    commands.add_parser("zero", help="require closure-ready current reader coverage")
     commands.add_parser("gate", help="require 100% current clarity coverage")
     record = commands.add_parser("record", help="record a completed clarity review")
     record.add_argument("path")
@@ -288,6 +288,9 @@ def main(argv: list[str] | None = None) -> int:
         return do_record(contract, record, args.path, args.basis, args.changed)
     if args.command == "check":
         return do_check(contract, record)
+    if args.command == "zero":
+        states = state_map(contract, record)
+        return zero_report(contract, states, eligible(contract), registry_errors(contract, record))
     if args.command == "gate":
         return do_gate(contract, record)
     raise AssertionError(args.command)

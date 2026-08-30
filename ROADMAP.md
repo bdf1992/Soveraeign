@@ -4,12 +4,13 @@ Status: `PRODUCT PHASES CANDIDATE` · artifact standing `OPEN`, not owner-accept
 Owner: Bdo, root seat · Drafted 2026-08-28 · lanes added 2026-08-28
 
 `PRD.md` says what Soveraeign must become. This document is a candidate estimate
-of how it gets there; A20 still asks the root seat whether this decomposition is
-the accepted forward product model. Historical `Now`/`Next` lane text below is
-therefore forecast, not the live work queue. While `STATUS.yaml` says
-`phase: NONE_ACTIVE`, issue #148 is the boundary-closure ledger and no product
-phase is active. If a successor is opened, #173 is the first proposed construction
-gate. The estimate is expected to be wrong in detail and revised often; the PRD is not.
+of how it gets there. A20 was redirected at the Phase-I boundary, so this
+decomposition is zero-state strategy input rather than an accepted forward model.
+Historical `Now`/`Next` lane text below is forecast, not the live work queue.
+While `STATUS.yaml` says `phase: NONE_ACTIVE`, issue #148 is the closure ledger and
+no product phase is active. Issue #173 is one candidate successor aperture and gains
+no priority or authority merely by existing. The estimate is expected to be wrong
+in detail and revised often; the PRD is not.
 
 The previous decomposition, F0 through F6, is archived byte-identical at
 `archives/ROADMAP-F0-F6.md`, where it remains a pinned definition of the

@@ -47,6 +47,12 @@
       "why": "27 skills, 22 workflows, 8 disabled schedules and 5 agents for one vendor's CLI, in a repository whose thesis is provider neutrality. Kept as evidence the system is operable by a model; whether it stays public is Bdo's call."
     },
     {
+      "path": ".claude/drafts",
+      "surface": "SCRATCH",
+      "until": "A draft is promoted into a current governed artifact or retained only as historical work evidence.",
+      "why": "Dated work orders and proposal packets. They may explain how a concern was approached, but they are not current host instructions or product documentation."
+    },
+    {
       "path": ".clarity",
       "surface": "HUB",
       "why": "Machine-checkable clarity review coverage. It records which human-facing artifacts were reviewed and invalidates those receipts when their bytes move."
@@ -334,8 +340,8 @@
     },
     {
       "path": "AGENT-BOOTSTRAP-PROMPT.md",
-      "surface": "HUB",
-      "why": "Retired below. Kept classified so the tree stays fully covered while its disposition is open."
+      "surface": "JOURNAL",
+      "why": "Retired founding instruction preserved as historical evidence. The file itself carries a RETIRED marker and current reader routes must not point to it."
     }
   ],
   "routes": [

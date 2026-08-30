@@ -59,7 +59,7 @@ jobs:
       - name: Rebuild derived projections
         run: |
           python scripts/sov_interface.py build
-          python scripts/sov_diagrams.py build
+          python scripts/sov_diagrams.py stamp
           python scripts/sov_docs.py build
 
       - name: Verify exact repaired tree

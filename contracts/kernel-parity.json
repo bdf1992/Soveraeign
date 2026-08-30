@@ -56,10 +56,10 @@
         },
         {
           "fact": "a declared precondition on an admitted verb must be discharged",
-          "participant_refusal": "EXTERNAL_EFFECT_PRECONDITION_UNMET",
+          "participant_refusal": "EXTERNAL_EFFECT_UNAUTHORIZED",
           "kernel_refusal": "EXTERNAL_EFFECT_UNAUTHORIZED",
           "kernel_transition": "cross",
-          "note": "Both sides read scopes[].preconditions from the same authorization contract and refuse the same move, and they are written separately so this check compares two implementations rather than one shared function. The participant names the finer code the contract declares; the kernel keeps the single code it already uses for every way an effect can fall outside its authorization. A finer participant vocabulary over one kernel refusal is permitted, as it already is for ratification."
+          "note": "Both sides read scopes[].preconditions from the same authorization contract, drive the same admitted verb without its required proof, and use the same authorization refusal rather than inventing a second vocabulary for one failed boundary."
         }
       ]
     },

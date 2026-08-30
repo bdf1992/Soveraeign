@@ -1,0 +1,67 @@
+name: clarity review export
+
+on:
+  push:
+    branches:
+      - closure/phase-i-zero-state
+
+permissions:
+  contents: write
+
+jobs:
+  export:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: closure/phase-i-zero-state
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Export unchecked prose in bounded batches
+        run: |
+          python - <<'PY'
+          import importlib.util
+          import sys
+          from pathlib import Path
+
+          root = Path.cwd()
+          sys.path.insert(0, str(root / 'scripts'))
+          spec = importlib.util.spec_from_file_location('sov_clarity', root / 'scripts' / 'sov_clarity.py')
+          mod = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(mod)
+          contract = mod.load(mod.CONTRACT_PATH)
+          record = mod.coverage(contract)
+          states = mod.state_map(contract, record)
+          paths = [p for p, state in states.items() if state == 'UNCHECKED']
+          outdir = root / '.clarity' / 'review-batches'
+          outdir.mkdir(parents=True, exist_ok=True)
+          limit = 140000
+          batches, current, size = [], [], 0
+          for path in paths:
+              body = (root / path).read_text(encoding='utf-8')
+              entry = f'===== FILE: {path} =====\n{body}\n===== END FILE: {path} =====\n'
+              if current and size + len(entry) > limit:
+                  batches.append(''.join(current))
+                  current, size = [], 0
+              current.append(entry)
+              size += len(entry)
+          if current:
+              batches.append(''.join(current))
+          for i, content in enumerate(batches, 1):
+              (outdir / f'batch-{i:02d}.txt').write_text(content, encoding='utf-8', newline='\n')
+          (outdir / 'index.txt').write_text(
+              f'unchecked={len(paths)}\nbatches={len(batches)}\n' + '\n'.join(paths) + '\n',
+              encoding='utf-8', newline='\n')
+          print(f'exported {len(paths)} unchecked files into {len(batches)} batches')
+          PY
+      - name: Commit review batches and retire exporter
+        run: |
+          rm .github/workflows/clarity-review-export.yml
+          git config user.name 'soveraeign-clarity'
+          git config user.email 'actions@users.noreply.github.com'
+          git add .clarity/review-batches .github/workflows/clarity-review-export.yml
+          git commit -m 'chore(clarity): stage unchecked review corpus'
+          git push origin HEAD:closure/phase-i-zero-state

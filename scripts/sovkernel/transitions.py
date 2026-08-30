@@ -19,6 +19,14 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 import json
+import unicodedata
+
+#: Unicode's Other category, which no address is made of: control, format (where U+200B
+#: ZERO WIDTH SPACE and U+FEFF live), surrogate, private use, unassigned. A lone
+#: surrogate is not UTF-8 encodable, so admitting one crashes the receipt recording it.
+#: Assigned letters and symbols that merely render blank in some fonts (U+3164, U+2800)
+#: are admitted: which glyphs a font draws is not this boundary's to decide.
+UNREADABLE_CATEGORIES = frozenset({"Cc", "Cf", "Cn", "Co", "Cs"})
 
 
 @dataclass(frozen=True)
@@ -149,6 +157,52 @@ def _check_authority(request: dict[str, Any], entry: dict[str, Any]) -> Decision
 SETTLING_OUTCOMES = ("COMMITTED", "FAILED", "UNRESOLVED", "COUNTERED")
 
 
+def _addresses_a_proof(address: Any) -> bool:
+    """Whether this value is a string carrying a character a reader could follow.
+
+    ``str.strip()`` removes whitespace and stops there, so ``"\\u200b"`` survived the
+    emptiness test while rendering as nothing. The rule is one character outside both
+    whitespace and Unicode's Other category, and it grades the receipt address as well
+    as the evidence because the contract demands the same of both.
+    """
+    if not isinstance(address, str):
+        return False
+    return any(
+        not char.isspace() and unicodedata.category(char) not in UNREADABLE_CATEGORIES
+        for char in address
+    )
+
+
+def _discharged(scope: dict, authorization: dict) -> bool:
+    """Whether the request discharges, by id, every precondition its verb carries.
+
+    A precondition binds the verbs it names rather than the whole scope. The kernel
+    cannot read the live remote the statements are about; it refuses the effect unless
+    the request names each precondition and the evidence discharging it, and refuses an
+    attestation naming a precondition the verb does not carry.
+
+    Evidence must be a string with visible content: a precondition is discharged by an
+    address a reader can follow, so a bare ``true`` is the caller vouching for itself and
+    a number or a list addresses nothing. ``evaluate`` is reachable without the crossing
+    schema having run, so the shape is refused here as well as there. Emptiness is
+    decided by ``_addresses_a_proof``, because ``str.strip`` leaves a zero-width space.
+    """
+    verb = authorization.get("verb")
+    declared = {
+        precondition["id"]
+        for precondition in scope.get("preconditions", [])
+        if verb in precondition.get("verbs", [])
+    }
+    discharged = authorization.get("preconditions_discharged")
+    if discharged is None:
+        discharged = {}
+    if not isinstance(discharged, dict):
+        return False
+    for name in declared:
+        if not _addresses_a_proof(discharged.get(name)):
+            return False
+    return not set(discharged) - declared
+
 
 def _authorized(table: dict, request: dict) -> bool:
     """Whether a declared scope admits this external effect, with a receipt.
@@ -156,17 +210,23 @@ def _authorized(table: dict, request: dict) -> bool:
     SPEC.md no longer refuses ``EXTERNAL_WORLD`` by class. The question is
     whether ``contracts/external-effect-authorization.json`` carries the scope,
     whether that scope carries the verb, whether the verb is refused by name,
-    and whether the attempt will leave a record.
+    whether the attempt will leave a record, and whether every precondition the
+    scope declares on that verb is discharged.
     """
     contract = table.get("_authorization") or {}
-    authorization = request.get("authorization") or {}
-    verb = authorization.get("verb")
-    if not verb or verb in contract.get("refused_verbs", {}):
+    authorization = request.get("authorization")
+    if not isinstance(authorization, dict):
         return False
-    scope = contract.get("scopes", {}).get(authorization.get("scope"))
+    verb = authorization.get("verb")
+    if not isinstance(verb, str) or not verb or verb in contract.get("refused_verbs", {}):
+        return False
+    named = authorization.get("scope")
+    scope = contract.get("scopes", {}).get(named) if isinstance(named, str) else None
     if scope is None or verb not in scope.get("verbs", []):
         return False
-    return bool(authorization.get("receipt"))
+    if not _addresses_a_proof(authorization.get("receipt")):
+        return False
+    return _discharged(scope, authorization)
 
 
 def evaluate(
@@ -191,7 +251,8 @@ def evaluate(
         return _refuse(
             "EXTERNAL_EFFECT_UNAUTHORIZED",
             "an external effect outside every declared scope, using a verb refused by name, "
-            "or leaving no receipt (contracts/external-effect-authorization.json)",
+            "leaving no receipt, or not discharging a precondition its verb carries "
+            "(contracts/external-effect-authorization.json)",
         )
 
     outcome = request.get("requested_outcome")

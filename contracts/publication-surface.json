@@ -40,90 +40,343 @@
     }
   },
   "paths": [
-    {"path": ".claude", "surface": "HOST", "host": "claude-code", "why": "22 skills, 20 workflows, 8 disabled schedules and 5 agents for one vendor's CLI, in a repository whose thesis is provider neutrality. Kept as evidence the system is operable by a model; whether it stays public is Bdo's call."},
-    {"path": "CLAUDE.md", "surface": "HOST", "host": "claude-code", "why": "The Claude Code repository entry point. Defers to AGENTS.md and SOV.md and is not itself governing."},
-    {"path": ".cursorrules", "surface": "HOST", "host": "cursor", "why": "An editor-facing mirror of the root rules."},
-
-    {"path": "docs/documentation.html", "surface": "DERIVED", "builder": "scripts/sov_docs.py", "check": "scripts/sov_docs.py", "why": "2.9MB rendered by sov_docs.py from docs/ingest.json. Checked byte-for-byte by verify.py."},
-    {"path": "docs/surface.html", "surface": "DERIVED", "builder": "scripts/sov_surface.py", "check": "scripts/sov_surface.py", "why": "Rebuilt from the capability map and service manifests; checked byte-for-byte by verify.py."},
-    {"path": "docs/ingest.json", "surface": "DERIVED", "builder": "scripts/sov_docs.py", "check": "scripts/sov_docs.py", "why": "The Asset Service custody record the documentation page renders beside each document."},
-    {"path": "diagrams", "surface": "DERIVED", "builder": "scripts/sov_diagrams.py", "check": "scripts/sov_diagrams.py", "why": "Each view declares the source digests it read; sov_diagrams.py grades them and runs inside verify.py."},
-    {"path": "lineage/recordings", "surface": "DERIVED", "builder": "services/asset/scripts/ingest_history.py", "check": "services/asset/tests/test_ingest_history.py", "why": "153 manifests carrying digests only. Their payload bytes live in a git-ignored local store and the session sources exist on one machine, so a stranger can neither verify nor rebuild them. Kept until the public-projection question is settled."},
-    {"path": "lineage/SOURCES.lock", "surface": "DERIVED", "builder": "services/asset/scripts/history_sources.py", "check": "scripts/verify_bootstrap.py", "why": "1647 lines of capture records over this repository's own commits, issues, pull requests and local session files. No emails, host paths or payloads survive the reader's guard; a public checkout cannot verify any of it."},
-
-    {"path": "reports", "surface": "JOURNAL", "why": "Completion reports and independent observations. The record of what was done, not documentation of what the system is."},
-    {"path": "archives", "surface": "JOURNAL", "why": "Superseded governing documents, kept byte-identical because contracts/phases.json pins some of them by digest and a phase must end against the definition it opened with. Never edited and never read as current policy; archives/README.md states the rule."},
-    {"path": "acceptance", "surface": "JOURNAL", "why": "Finished results presented to an owner seat, one packet per claim."},
-
-    {"path": "experiments", "surface": "SCRATCH", "until": "The Console Service ships a built surface, at which point app.v1 through app.v5, fresh-a and fresh-c are superseded and removed.", "why": "Seven committed HTML drafts of one operator surface."},
-    {"path": "charting", "surface": "SCRATCH", "until": "The skill-contract model is either adopted into contracts/ or removed.", "why": "A model and derivation for skill contracts with its own experiments/ subdirectory."},
-
-    {"path": "contracts", "surface": "HUB", "why": "Shared kernel and crossing schemas."},
-    {"path": "services", "surface": "HUB", "why": "Ten bounded service lifecycles, their charters, contracts and tests."},
-    {"path": "conformance", "surface": "HUB", "why": "The independent oracle and its positive and defeating cases."},
-    {"path": "scripts", "surface": "HUB", "why": "Verification and bounded repository maintenance, including every sov_* entrypoint a reader operates the node through."},
-    {"path": "decisions", "surface": "HUB", "why": "Consequential choices and their authority. A reader needs these; they are policy."},
-    {"path": "bindings", "surface": "HUB", "why": "Human and model realizations of the transition contract."},
-    {"path": "adapters", "surface": "HUB", "why": "Translation to named external systems."},
-    {"path": "infrastructure", "surface": "HUB", "why": "Declared Phase-I topology and runtime image."},
-    {"path": "workers", "surface": "HUB", "why": "Scoped leased execution boundary."},
-    {"path": "witness", "surface": "HUB", "why": "Independent observation boundary."},
-    {"path": ".github", "surface": "HUB", "why": "CI gates, CODEOWNERS, labels and the pull request template."},
-    {"path": "docs", "surface": "HUB", "why": "The node's own reader. Individual generated pages inside are classified DERIVED above."},
-    {"path": "lineage", "surface": "HUB", "why": "Attributed ancestry. Manifests and the lock only; lineage/evidence/ is never tracked."},
-
-    {"path": ".local", "surface": "LOCAL", "why": "22MB of session registries, schedule ledgers, history corpus and registrar bodies. Rebuildable, machine-specific, already ignored."},
-    {"path": ".soveraeign", "surface": "LOCAL", "why": "Local node state and payload custody."},
-    {"path": ".env", "surface": "LOCAL", "why": "Credentials. .env.example carries names and safe descriptions only."},
-
-    {"path": ".env.example", "surface": "HUB", "why": "Names and safe descriptions of required configuration."},
-    {"path": ".gitattributes", "surface": "HUB", "why": "Pins LF; scripts/lint.py checks working-tree bytes against it."},
-    {"path": ".gitignore", "surface": "HUB", "why": "The mechanical half of the LOCAL rule declared here."},
-
-    {"path": "AGENTS.md", "surface": "HUB", "why": "The normative operating contract, and the agent route's entry document."},
-    {"path": "README.md", "surface": "HUB", "why": "The person route's entry document."},
-    {"path": "AI-NATIVE.md", "surface": "HUB", "why": "Surface evaluation and qualification criteria."},
-    {"path": "BYOM.md", "surface": "HUB", "why": "The local, personal and model-portability pattern."},
-    {"path": "CANON.md", "surface": "HUB", "why": "Product promises."},
-    {"path": "CLASSIFICATION.md", "surface": "HUB", "why": "Controlled vocabulary and identity tests."},
-    {"path": "CONTRACT.md", "surface": "HUB", "why": "Invariants."},
-    {"path": "CONTRIBUTING.md", "surface": "HUB", "why": "The contribution workflow for humans and models."},
-    {"path": "ENGINEERING.md", "surface": "HUB", "why": "The reference implementation baseline."},
-    {"path": "GROUND.md", "surface": "HUB", "why": "Sixteen claims saying what product this is."},
-    {"path": "LESSONS.md", "surface": "HUB", "why": "What the record cost to learn."},
-    {"path": "NAMING.md", "surface": "HUB", "why": "Naming authority and collision screening."},
-    {"path": "OPEN-SEAMS.md", "surface": "HUB", "why": "Contradictions that must remain visible."},
-    {"path": "PRD.md", "surface": "HUB", "why": "The whole product's requirements, priority and success measures."},
-    {"path": "PUBLICATION.md", "surface": "HUB", "why": "The safety boundary this contract extends."},
-    {"path": "ROADMAP.md", "surface": "HUB", "why": "The P0-P9 product phases, their exit shapes, and the name crosswalk."},
-    {"path": "SDLC.md", "surface": "HUB", "why": "The operating loop."},
-    {"path": "SOV.md", "surface": "HUB", "why": "The portable operating-agent profile entry point."},
-    {"path": "SPEC.md", "surface": "HUB", "why": "Logical objects, transitions, predicates and refusals."},
-    {"path": "STATUS.yaml", "surface": "HUB", "why": "Current authority, standing and owner holds."},
-    {"path": "SYSTEM.md", "surface": "HUB", "why": "The system boundary and operating model."},
-
-    {"path": "AGENT-BOOTSTRAP-PROMPT.md", "surface": "HUB", "why": "Retired below. Kept classified so the tree stays fully covered while its disposition is open."}
+    {
+      "path": ".claude",
+      "surface": "HOST",
+      "host": "claude-code",
+      "why": "27 skills, 22 workflows, 8 disabled schedules and 5 agents for one vendor's CLI, in a repository whose thesis is provider neutrality. Kept as evidence the system is operable by a model; whether it stays public is Bdo's call."
+    },
+    {
+      "path": ".clarity",
+      "surface": "HUB",
+      "why": "Machine-checkable clarity review coverage. It records which human-facing artifacts were reviewed and invalidates those receipts when their bytes move."
+    },
+    {
+      "path": "CLAUDE.md",
+      "surface": "HOST",
+      "host": "claude-code",
+      "why": "The Claude Code repository entry point. Defers to AGENTS.md and SOV.md and is not itself governing."
+    },
+    {
+      "path": ".cursorrules",
+      "surface": "HOST",
+      "host": "cursor",
+      "why": "An editor-facing mirror of the root rules."
+    },
+    {
+      "path": "docs/documentation.html",
+      "surface": "DERIVED",
+      "builder": "scripts/sov_docs.py",
+      "check": "scripts/sov_docs.py",
+      "why": "2.9MB rendered by sov_docs.py from docs/ingest.json. Checked byte-for-byte by verify.py."
+    },
+    {
+      "path": "docs/surface.html",
+      "surface": "DERIVED",
+      "builder": "scripts/sov_surface.py",
+      "check": "scripts/sov_surface.py",
+      "why": "Rebuilt from the capability map and service manifests; checked byte-for-byte by verify.py."
+    },
+    {
+      "path": "docs/ingest.json",
+      "surface": "DERIVED",
+      "builder": "scripts/sov_docs.py",
+      "check": "scripts/sov_docs.py",
+      "why": "The Asset Service custody record the documentation page renders beside each document."
+    },
+    {
+      "path": "diagrams",
+      "surface": "DERIVED",
+      "builder": "scripts/sov_diagrams.py",
+      "check": "scripts/sov_diagrams.py",
+      "why": "Each view declares the source digests it read; sov_diagrams.py grades them and runs inside verify.py."
+    },
+    {
+      "path": "lineage/recordings",
+      "surface": "DERIVED",
+      "builder": "services/asset/scripts/ingest_history.py",
+      "check": "services/asset/tests/test_ingest_history.py",
+      "why": "153 manifests carrying digests only. Their payload bytes live in a git-ignored local store and the session sources exist on one machine, so a stranger can neither verify nor rebuild them. Kept until the public-projection question is settled."
+    },
+    {
+      "path": "lineage/SOURCES.lock",
+      "surface": "DERIVED",
+      "builder": "services/asset/scripts/history_sources.py",
+      "check": "scripts/verify_bootstrap.py",
+      "why": "1647 lines of capture records over this repository's own commits, issues, pull requests and local session files. No emails, host paths or payloads survive the reader's guard; a public checkout cannot verify any of it."
+    },
+    {
+      "path": "reports",
+      "surface": "JOURNAL",
+      "why": "Completion reports and independent observations. The record of what was done, not documentation of what the system is."
+    },
+    {
+      "path": "archives",
+      "surface": "JOURNAL",
+      "why": "Superseded governing documents, kept byte-identical because contracts/phases.json pins some of them by digest and a phase must end against the definition it opened with. Never edited and never read as current policy; archives/README.md states the rule."
+    },
+    {
+      "path": "acceptance",
+      "surface": "JOURNAL",
+      "why": "Finished results presented to an owner seat, one packet per claim."
+    },
+    {
+      "path": "experiments",
+      "surface": "SCRATCH",
+      "until": "The Console Service ships a built surface, at which point app.v1 through app.v5, fresh-a and fresh-c are superseded and removed.",
+      "why": "Seven committed HTML drafts of one operator surface."
+    },
+    {
+      "path": "charting",
+      "surface": "SCRATCH",
+      "until": "The skill-contract model is either adopted into contracts/ or removed.",
+      "why": "A model and derivation for skill contracts with its own experiments/ subdirectory."
+    },
+    {
+      "path": "contracts",
+      "surface": "HUB",
+      "why": "Shared kernel and crossing schemas."
+    },
+    {
+      "path": "services",
+      "surface": "HUB",
+      "why": "Ten bounded service lifecycles, their charters, contracts and tests."
+    },
+    {
+      "path": "conformance",
+      "surface": "HUB",
+      "why": "The independent oracle and its positive and defeating cases."
+    },
+    {
+      "path": "scripts",
+      "surface": "HUB",
+      "why": "Verification and bounded repository maintenance, including every sov_* entrypoint a reader operates the node through."
+    },
+    {
+      "path": "decisions",
+      "surface": "HUB",
+      "why": "Consequential choices and their authority. A reader needs these; they are policy."
+    },
+    {
+      "path": "bindings",
+      "surface": "HUB",
+      "why": "Human and model realizations of the transition contract."
+    },
+    {
+      "path": "adapters",
+      "surface": "HUB",
+      "why": "Translation to named external systems."
+    },
+    {
+      "path": "infrastructure",
+      "surface": "HUB",
+      "why": "Declared Phase-I topology and runtime image."
+    },
+    {
+      "path": "workers",
+      "surface": "HUB",
+      "why": "Scoped leased execution boundary."
+    },
+    {
+      "path": "witness",
+      "surface": "HUB",
+      "why": "Independent observation boundary."
+    },
+    {
+      "path": ".github",
+      "surface": "HUB",
+      "why": "CI gates, CODEOWNERS, labels and the pull request template."
+    },
+    {
+      "path": "docs",
+      "surface": "HUB",
+      "why": "The node's own reader. Individual generated pages inside are classified DERIVED above."
+    },
+    {
+      "path": "lineage",
+      "surface": "HUB",
+      "why": "Attributed ancestry. Manifests and the lock only; lineage/evidence/ is never tracked."
+    },
+    {
+      "path": ".local",
+      "surface": "LOCAL",
+      "why": "22MB of session registries, schedule ledgers, history corpus and registrar bodies. Rebuildable, machine-specific, already ignored."
+    },
+    {
+      "path": ".soveraeign",
+      "surface": "LOCAL",
+      "why": "Local node state and payload custody."
+    },
+    {
+      "path": ".env",
+      "surface": "LOCAL",
+      "why": "Credentials. .env.example carries names and safe descriptions only."
+    },
+    {
+      "path": ".env.example",
+      "surface": "HUB",
+      "why": "Names and safe descriptions of required configuration."
+    },
+    {
+      "path": ".gitattributes",
+      "surface": "HUB",
+      "why": "Pins LF; scripts/lint.py checks working-tree bytes against it."
+    },
+    {
+      "path": ".gitignore",
+      "surface": "HUB",
+      "why": "The mechanical half of the LOCAL rule declared here."
+    },
+    {
+      "path": "AGENTS.md",
+      "surface": "HUB",
+      "why": "The normative operating contract, and the agent route's entry document."
+    },
+    {
+      "path": "README.md",
+      "surface": "HUB",
+      "why": "The person route's entry document."
+    },
+    {
+      "path": "AI-NATIVE.md",
+      "surface": "HUB",
+      "why": "Surface evaluation and qualification criteria."
+    },
+    {
+      "path": "BYOM.md",
+      "surface": "HUB",
+      "why": "The local, personal and model-portability pattern."
+    },
+    {
+      "path": "CANON.md",
+      "surface": "HUB",
+      "why": "Product promises."
+    },
+    {
+      "path": "CLASSIFICATION.md",
+      "surface": "HUB",
+      "why": "Controlled vocabulary and identity tests."
+    },
+    {
+      "path": "CONTRACT.md",
+      "surface": "HUB",
+      "why": "Invariants."
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "surface": "HUB",
+      "why": "The contribution workflow for humans and models."
+    },
+    {
+      "path": "ENGINEERING.md",
+      "surface": "HUB",
+      "why": "The reference implementation baseline."
+    },
+    {
+      "path": "GROUND.md",
+      "surface": "HUB",
+      "why": "Sixteen claims saying what product this is."
+    },
+    {
+      "path": "LESSONS.md",
+      "surface": "HUB",
+      "why": "What the record cost to learn."
+    },
+    {
+      "path": "NAMING.md",
+      "surface": "HUB",
+      "why": "Naming authority and collision screening."
+    },
+    {
+      "path": "OPEN-SEAMS.md",
+      "surface": "HUB",
+      "why": "Contradictions that must remain visible."
+    },
+    {
+      "path": "PRD.md",
+      "surface": "HUB",
+      "why": "The whole product's requirements, priority and success measures."
+    },
+    {
+      "path": "PUBLICATION.md",
+      "surface": "HUB",
+      "why": "The safety boundary this contract extends."
+    },
+    {
+      "path": "ROADMAP.md",
+      "surface": "HUB",
+      "why": "The P0-P9 product phases, their exit shapes, and the name crosswalk."
+    },
+    {
+      "path": "SDLC.md",
+      "surface": "HUB",
+      "why": "The operating loop."
+    },
+    {
+      "path": "SOV.md",
+      "surface": "HUB",
+      "why": "The portable operating-agent profile entry point."
+    },
+    {
+      "path": "SPEC.md",
+      "surface": "HUB",
+      "why": "Logical objects, transitions, predicates and refusals."
+    },
+    {
+      "path": "STATUS.yaml",
+      "surface": "HUB",
+      "why": "Current authority, standing and owner holds."
+    },
+    {
+      "path": "SYSTEM.md",
+      "surface": "HUB",
+      "why": "The system boundary and operating model."
+    },
+    {
+      "path": "AGENT-BOOTSTRAP-PROMPT.md",
+      "surface": "HUB",
+      "why": "Retired below. Kept classified so the tree stays fully covered while its disposition is open."
+    }
   ],
   "routes": [
     {
       "audience": "person",
       "document": "README.md",
-      "must_name": ["LICENSE", "scripts/README.md", "CONTRIBUTING.md", "PUBLICATION.md"],
-      "must_not_name": ["AGENT-BOOTSTRAP-PROMPT.md"],
-      "owner_held": ["LICENSE"],
+      "must_name": [
+        "LICENSE",
+        "scripts/README.md",
+        "CONTRIBUTING.md",
+        "PUBLICATION.md"
+      ],
+      "must_not_name": [
+        "AGENT-BOOTSTRAP-PROMPT.md"
+      ],
+      "owner_held": [
+        "LICENSE"
+      ],
       "why": "A stranger arriving at a public repository needs the licence that says whether they may use it, the index of the commands the node is operated through, how to contribute, and what is deliberately absent."
     },
     {
       "audience": "agent",
       "document": "AGENTS.md",
-      "must_name": ["SOV.md", "bindings/sov/profile.json", "STATUS.yaml", "OPEN-SEAMS.md"],
-      "must_not_name": ["AGENT-BOOTSTRAP-PROMPT.md"],
+      "must_name": [
+        "SOV.md",
+        "bindings/sov/profile.json",
+        "STATUS.yaml",
+        "OPEN-SEAMS.md"
+      ],
+      "must_not_name": [
+        "AGENT-BOOTSTRAP-PROMPT.md"
+      ],
       "why": "A cold model must reach the portable profile and the current standing without reading a stale founding prompt first."
     },
     {
       "audience": "machine",
       "document": "bindings/README.md",
-      "must_name": ["adapters/README.md", "bindings/INTEGRATING.md"],
+      "must_name": [
+        "adapters/README.md",
+        "bindings/INTEGRATING.md"
+      ],
       "must_not_name": [],
       "why": "Three adapters and three bindings exist and no document says how to add one, so the system is extensible only by the person who built it."
     }

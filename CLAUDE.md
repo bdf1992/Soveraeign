@@ -130,7 +130,7 @@ whenever they disagree.
 - Conformance oracle (`conformance/`): executable, 20 controlled cases, every
   defeating fixture fails as declared. Participant binding still open.
 - Harness (`.claude/`): 5 agent definitions (four roles and the Sov binding),
-  25 skills, 22 workflows, the epic-tree walk, and scheduled-run gates with a
+  27 skills, 22 workflows, the epic-tree walk, and scheduled-run gates with a
   kernel-envelope ledger.
   Every shipped schedule is disabled. Executable harness workflows are
   admissible before their defeating fixtures exist, for host plumbing only

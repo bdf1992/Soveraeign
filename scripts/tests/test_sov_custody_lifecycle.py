@@ -16,6 +16,13 @@ class CustodyLifecycleTests(unittest.TestCase):
         self.assertIn("Temporary active possession", roles["LEASE"]["means"])
         self.assertNotEqual(roles["CUSTODY"]["owned_by"], roles["LEASE"]["owned_by"])
 
+    def test_lifecycle_keeps_integration_before_settlement(self) -> None:
+        steps = [row["step"] for row in lifecycle.read()["flow"]]
+        self.assertEqual(
+            ["ADMIT", "TAKE", "WORK", "INTEGRATE", "RECONCILE", "RELEASE_ATTENTION"],
+            steps,
+        )
+
     def test_queue_is_projection_not_owner(self) -> None:
         queue = lifecycle.read()["queue_projection"]
         self.assertFalse(queue["owns_work"])

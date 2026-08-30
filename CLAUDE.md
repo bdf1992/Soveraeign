@@ -34,10 +34,14 @@ artifact about the result. `AGENTS.md`, Closure ownership, owns the rule:
 settle ordinary reversible engineering choices; recruit a helper subagent when
 a second reading would help, without asking; repair findings in place; keep one
 branch and one pull request per concern; absorb follow-on work that stays
-inside the same service, effect class, and authority; and hand off only at one
-of five named seams. A helper that read or edited a change is inside the build
-and can never witness it. `python scripts/sov_closure.py loop` prints the
-table; `judge` grades a handoff before it is sent.
+inside the same service, effect class, and authority; launch its own independent
+witness when the host exposes that capability; carry the branch through
+`python scripts/sov_land.py`; and hand off only at one of five named seams. A
+helper that read or edited a change is inside the build and can never witness
+it. "A build cannot witness itself" is the reason to launch the witness, never
+a terminal at an uncommitted tree. `python scripts/sov_closure.py loop` prints
+the table; `judge` grades a handoff before it is sent
+(`decisions/0100-launch-your-own-witness.md`).
 
 Host capabilities do not imply authority. Use only the model, tools, permissions,
 and live grants visible in the current invocation; never infer them from this file

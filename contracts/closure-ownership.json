@@ -47,6 +47,12 @@
       "tool": "run_verify"
     },
     {
+      "step": "witness",
+      "required": true,
+      "note": "launch an independent participant that did not build or read the change and receive its observation",
+      "tool": "launch_witness"
+    },
+    {
       "step": "present_or_land",
       "required": true,
       "note": "a leased worker presents an evidenced tree; the participant holding the branch carries it to landed",
@@ -378,6 +384,7 @@
     "edit",
     "run_tests",
     "run_verify",
+    "launch_witness",
     "report",
     "recruit_helper"
   ],

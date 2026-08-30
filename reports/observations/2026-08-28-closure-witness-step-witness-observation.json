@@ -1,0 +1,87 @@
+{
+  "observer": "sov-witness (independent; did not build or edit any observed file)",
+  "carried_by": "session-216160 (the builder), FORWARDED verbatim from the witness agent's printed observation",
+  "timestamp": "2026-08-28",
+  "witnessed_tree": {
+    "branch": "feat/federation-harness-and-hardening",
+    "head": "d00675a89981ae98e59dda3c1235c71168d0f0ae",
+    "note": "Shared tree with many uncommitted files from other concerns (trap T6). The six claimed paths are all held by session-216160 only, and their digests were identical at first read and at pinning, so the bytes witnessed did not move."
+  },
+  "claims": [
+    {
+      "claim": "1. Contract declares a required witness step (tool launch_witness) between verify and present_or_land, and launch_witness is in the tools vocabulary",
+      "verdict": "HOLDS",
+      "evidence": "Read contracts/closure-ownership.json directly: loop[6] is {step: witness, required: true, tool: launch_witness} between verify and present_or_land, launch_witness is in tools, and the git diff against HEAD shows exactly those two hunks and nothing else in the file."
+    },
+    {
+      "claim": "2. selfcheck passes with 25 cases; C-114 refused LOOP_INCOMPLETE; C-001 stays PERMITTED; no prior case changed verdict",
+      "verdict": "HOLDS",
+      "evidence": "python scripts/sov_closure.py selfcheck printed '25 declared cases judged as declared' (exit 0); the fixture diff shows only the 13-to-14 refusal count, C-001 gaining the witness step and launch_witness tool while staying PERMITTED, and the new C-114 (REFUSED, LOOP_INCOMPLETE) - no other case's declaration was touched."
+    },
+    {
+      "claim": "3. unittest scripts.tests.test_closure passes and test_every_required_step_is_checked_not_only_the_first exercises the new step",
+      "verdict": "HOLDS",
+      "evidence": "25 tests OK (exit 0); the test iterates CONTRACT['loop'] and drops each required step from C-001 under a subTest asserting LOOP_INCOMPLETE names it, so with the contract now declaring witness the new step is exercised without any edit - and git shows scripts/tests/test_closure.py unmodified."
+    },
+    {
+      "claim": "4. scripts/sov_closure.py was not edited; the new behavior is contract data",
+      "verdict": "HOLDS",
+      "evidence": "git diff --stat HEAD and git status are both empty for scripts/sov_closure.py (and no sovclosure/ package exists); _loop_incomplete reads table['loop'] and the claim's tools_available, so the step is judged from data."
+    },
+    {
+      "claim": "5. AGENTS.md, CONTRIBUTING.md, and CLAUDE.md state the loop with the new step and defer to AGENTS.md as owner",
+      "verdict": "HOLDS",
+      "evidence": "All three on-disk files carry 'launch an independent witness' in the loop sentence; CONTRIBUTING.md says 'AGENTS.md, Closure ownership, is normative' and CLAUDE.md says 'AGENTS.md, Closure ownership, owns the rule', so no competing authority is created."
+    },
+    {
+      "claim": "6. decisions/0100-launch-your-own-witness.md exists, describes exactly these changes, and claims PROPOSED only",
+      "verdict": "HOLDS",
+      "evidence": "The record exists, its status line reads 'OWNER-DIRECTED . PROPOSED', and its What-changed section matches the contract, fixture, and three-document diffs - though it does not mention the second AGENTS.md hunk recorded under unclaimed_findings."
+    },
+    {
+      "claim": "7. python scripts/lint.py passes",
+      "verdict": "HOLDS",
+      "evidence": "Exit 0, 'PASS: repository hygiene (1061 text files, 469 Python modules, 8 named debt)'; the STATUS.yaml duplicate-key WARNs and one SyntaxWarning are pre-existing and non-failing."
+    },
+    {
+      "claim": "8. The five verify failures are the pre-existing ones from decisions/0098's open residuals, none caused by these six files, with the deliberate 79-vs-78 snapshot nuance",
+      "verdict": "HOLDS WITH QUALIFICATION",
+      "evidence": "verify exits 1 with exactly 'orientation snapshot, acceptance routing, diagram provenance, documentation reader, repository tooling tests', matching 0098's Open residuals list verbatim; sov_snapshot fails on the single count 'page says 79, record holds 78' (78 tracked decision records, 0100 untracked) while 45 checks, 424 commits, 23 skills, 21 workflows, and 25 reports all pass - the qualification is that the orientation-snapshot failure's sole remaining cause is now this concern's deliberate post-commit count, which self-resolves when 0100 is committed, whereas at HEAD the page failed on many counts (44/383/74/24/22/20)."
+    }
+  ],
+  "commands": [
+    {"command": "git status --porcelain; git rev-parse HEAD", "exit_code": 0},
+    {"command": "python scripts/sov_session.py who <each of the six paths>", "exit_code": 0, "result": "all six held by session-216160 only"},
+    {"command": "git diff --stat HEAD -- scripts/sov_closure.py scripts/tests/test_closure.py", "exit_code": 0, "result": "empty; both unmodified"},
+    {"command": "python scripts/sov_closure.py selfcheck", "exit_code": 0, "result": "25 declared cases judged as declared"},
+    {"command": "python -m unittest scripts.tests.test_closure", "exit_code": 0, "result": "Ran 25 tests, OK"},
+    {"command": "python scripts/lint.py", "exit_code": 0, "result": "PASS"},
+    {"command": "python scripts/sov_snapshot.py", "exit_code": 1, "result": "single FAIL: decision records 79 vs 78"},
+    {"command": "python scripts/verify.py", "exit_code": 1, "result": "FAIL: orientation snapshot, acceptance routing, diagram provenance, documentation reader, repository tooling tests; DEBT 21.5s, 6 checks over ceiling"},
+    {"command": "python scripts/sov_land.py pin --path <six paths>", "exit_code": 0}
+  ],
+  "unclaimed_findings": [
+    "AGENTS.md's working-tree diff contains a second hunk the claim and decisions/0100 do not declare: the Testing and verification bullet is rewritten from the 0050 wall-clock-fails language to the 0081 per-check-ceiling language, plus the sov_land landing sentence. The content matches committed decisions/0081 and the description already on HEAD's CLAUDE.md, so it aligns AGENTS.md with settled policy rather than changing it, but committing AGENTS.md whole carries this hunk under a decision record that does not mention it. Attribution is unestablished: AGENTS.md was already modified before this witnessing session began, and sov_session records only the current holder.",
+    "The fixture's other PERMITTED cases (C-002 through C-011) stay permitted only because launch_witness is absent from their tools_available - the excusal rule doing its work, observed as deliberate design, not a defect.",
+    "Verify's timing state on this tree: no wall-clock grade at 21.5s and six checks over their ceilings, all pre-existing and attributed, none refusing."
+  ],
+  "residuals": [
+    "The tree-wide verify is exit 1 for the five failures 0098 owns elsewhere; a landing through scripts/sov_land.py would be refused by the standing grant's verify PASS requirement until those are repaired, independent of this concern's soundness.",
+    "The orientation-snapshot failure will persist as exactly one count (decision records) until decisions/0100 is committed, then clear - deliberate and disclosed by the builder.",
+    "decisions/0055's seven-step loop text is superseded but unedited, disclosed in 0100's residuals as a historical record."
+  ],
+  "observed_files": {
+    "AGENTS.md": "sha256:de350bbaee60aa9c079aee8d24dd5034ce4bf28fbebf10d320e3d8271725c947",
+    "CLAUDE.md": "sha256:cf43589c3b1c6fabccebf3555def5a1f59cd283abb53410405c988d3f280acbe",
+    "CONTRIBUTING.md": "sha256:736c39e1c7f43bb9805707ae5fba21b7f1a9806fdd034b8a71dff7dd5db62fe4",
+    "conformance/fixtures/closure/handoff-cases.json": "sha256:88d8b31686b078937bd72e89ac5094b7b75e34447a644726e68fae5862d9a7ec",
+    "contracts/closure-ownership.json": "sha256:615bec0f77bc9fffe3b4a02c558a4349154ce317353b42d44bcd0a06dcb8e18b",
+    "decisions/0100-launch-your-own-witness.md": "sha256:ec444c6e9cbbd127541f24f0432812c97e784ab30a9a8aad5afd5ee62fd44b14"
+  },
+  "builder_note_after_observation": "The undeclared AGENTS.md hunk the witness surfaced was claimed into decisions/0100's What-changed section after this observation was taken, which changes the digests of decisions/0100 and nothing else the observation graded. The witness's per-claim verdicts stand against the pinned bytes.",
+  "standing_supported": "BUILT -> WITNESSED for the closure-witness-step concern (the six pinned files); this observation is not a settlement and not a ratification.",
+  "judgement_items": [
+    "Should the unclaimed AGENTS.md testing-section hunk (0081 alignment) be claimed into decisions/0100's What-changed, or committed separately under the concern that owns the 0081 alignment, before AGENTS.md is committed whole?"
+  ],
+  "overall_verdict": "Fit to commit on feat/federation-harness-and-hardening. Every executable claim reproduced from the artifact: the step is contract data, the evaluator and tests are untouched, the defeating case fires, the documents defer to the owning contract, and the one snapshot count that fails is the disclosed off-by-one that the commit itself resolves. The single repair worth making before the commit is deciding what to do with the undeclared AGENTS.md testing-section hunk; that goes back to the builder, not into a ticket. A landing, as distinct from a commit, remains gated by the five verify failures owned elsewhere."
+}

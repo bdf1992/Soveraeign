@@ -1,0 +1,60 @@
+{
+  "packet_schema": "soveraeign-acceptance-packet/v1",
+  "packet_id": "A19",
+  "claim": "The closure loop now declares the step whose absence let a session stop at an uncommitted tree: a builder launches its own independent witness (contract step 'witness', tool 'launch_witness') before presenting or landing, skipping it while able to launch is refused as LOOP_INCOMPLETE, and the corrected reading - 'a build cannot witness itself' names a dependency to serve, not a terminal, and the landing gate is invoked by whoever holds the branch - is stated in AGENTS.md, CONTRIBUTING.md, and CLAUDE.md, all committed on feat/federation-harness-and-hardening as 8da93a2 with an independent witness observation deposited.",
+  "subject": {
+    "artifact": "contracts/closure-ownership.json",
+    "from_standing": "OPEN",
+    "to_standing": "WITNESSED"
+  },
+  "presented_by_seat": "seat:session-control",
+  "accepted_by_seat": "seat:root",
+  "claim_type": "JUDGEMENT",
+  "built_by": {
+    "actor_id": "urn:soveraeign:actor:claude-interactive-session",
+    "actor_kind": "MODEL"
+  },
+  "witnessed_by": {
+    "actor_id": "urn:soveraeign:actor:sov-witness",
+    "actor_kind": "MODEL"
+  },
+  "visible_result": {
+    "demo": [
+      "python scripts/sov_closure.py loop",
+      "python scripts/sov_closure.py selfcheck",
+      "python -m unittest scripts.tests.test_closure",
+      "python scripts/sov_snapshot.py"
+    ],
+    "shows": "loop prints 'witness' as a required step needing launch_witness between verify and present_or_land. selfcheck grades the corpus including C-114, the defeating case where a builder with launch_witness available hands back an unwitnessed uncommitted tree and is refused LOOP_INCOMPLETE. The unittest per-step test derives from the contract, so the new step is exercised with no test edit. The snapshot proves the corrected CLAUDE.md counts match the record post-commit.",
+    "expect": "selfcheck: 25 declared cases judged as declared. unittest: 25 tests OK. snapshot: 10 of 10 snapshot claim(s) match the record."
+  },
+  "evidence": [
+    {"address": "contracts/closure-ownership.json",
+     "says": "the witness step as contract data; the evaluator scripts/sov_closure.py is untouched, per the contract-is-data rule"},
+    {"address": "conformance/fixtures/closure/handoff-cases.json",
+     "says": "C-114 refused LOOP_INCOMPLETE; C-001 takes the step and stays PERMITTED; every prior case's verdict unchanged"},
+    {"address": "decisions/0100-launch-your-own-witness.md",
+     "says": "the ruling, its defeaters, and the claimed carried hunk aligning AGENTS.md's testing section with committed decisions/0081"},
+    {"address": "reports/observations/2026-08-28-closure-witness-step-witness-observation.json",
+     "says": "the independent observation: eight claims graded HOLDS (one with a disclosed qualification that self-resolved at commit), plus the unclaimed AGENTS.md hunk the builder then claimed by name"},
+    {"address": "AGENTS.md",
+     "says": "the owning statement: the loop names the step, and launching the witness is the builder's own move"},
+    {"address": "CLAUDE.md",
+     "says": "the host binding states the corrected reading and the snapshot counts now match the record"}
+  ],
+  "why_it_matters": "A session reported 'everything is uncommitted in the shared tree, since I can't witness my own build and landing belongs to the standing loop' as a terminal, which hands the owner work the session could finish. The gap was real: the declared loop had no witness step, so a builder that finished verify found no step telling it custody continued. Agents now hold custody and charge over their work to the landed result by contract, not by exhortation, and the failure mode is a named refusal with a fixture proving it fires.",
+  "what_could_defeat_it": [
+    "a measured pattern of witness launches that add cost without ever defeating a claim, making the step ceremony",
+    "witness runs too expensive for routine concerns on hosts where the tool is routinely present, which would move the pressure into helper_policy-style budget terms",
+    "builders launching cosmetic witnesses that rubber-stamp, which would need a quality predicate rather than a presence predicate",
+    "any previously declared corpus case changing verdict under the new contract, which would mean the step rewrote history rather than extending it"
+  ],
+  "residuals": [
+    "decisions/0055's seven-step loop text is superseded but unedited; it is a historical record and 0100 says so",
+    "whether the step binds a Sov-loaded operator follows the same open residual as the rest of closure ownership (decisions/0055)",
+    "reaching main travels with the trunk reconciliation (merge/one-trunk-reconciliation); this branch carries grant-excluded paths and can never pass the standing landing gate, which is the gate working as designed",
+    "four verify failures remain on this shared tree - acceptance routing, diagram provenance, documentation reader, repository tooling tests - all pre-existing, owned elsewhere per decisions/0098, and untouched by this change; the fifth, orientation snapshot, was repaired by this concern"
+  ],
+  "on_accept": "Record ACCEPT through python scripts/sov_accept.py accept A19 --seat seat:root --actor urn:soveraeign:actor:bdo; decisions/0100's status line records the ratification, the packet moves to acceptance/accepted/, and the corrected doctrine is the operative closure rule for every participant working under AGENTS.md.",
+  "on_reject": "git revert 8da93a2 restores the prior loop, fixtures, documents, and snapshot counts in one commit; delete acceptance/A19.json; decisions/0100 is struck to REJECTED with the reason, and the memory note steering future sessions toward witness-launching is deleted."
+}

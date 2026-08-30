@@ -1,6 +1,6 @@
 {
   "corpus_id": "soveraeign-closure-handoff-cases/v1",
-  "note": "Positive and defeating cases for contracts/closure-ownership.json. 11 cases prove a genuine seam is admitted; 13 prove a refusal, and every refusal code in the contract has at least one case proving it actually fires. A case declares the whole claim, so a field omitted is absent rather than satisfied.",
+  "note": "Positive and defeating cases for contracts/closure-ownership.json. 11 cases prove a genuine seam is admitted; 14 prove a refusal, and every refusal code in the contract has at least one case proving it actually fires. A case declares the whole claim, so a field omitted is absent rather than satisfied.",
   "cases": [
     {
       "case_id": "C-001-acceptance-of-an-evidenced-result",
@@ -21,13 +21,15 @@
           "run_tests",
           "run_verify",
           "report",
-          "recruit_helper"
+          "recruit_helper",
+          "launch_witness"
         ],
         "loop_steps_taken": [
           "inspect",
           "implement",
           "test",
           "verify",
+          "witness",
           "present_or_land"
         ],
         "helper": {
@@ -887,6 +889,44 @@
           "offered_as_witness": false,
           "blocked_by_host": true,
           "capability_requested": true
+        },
+        "reachable_alternative": "NONE"
+      }
+    },
+    {
+      "case_id": "C-114-an-uncommitted-tree-handed-back-because-a-build-cannot-witness-itself",
+      "expect": "REFUSED",
+      "refusal": "LOOP_INCOMPLETE",
+      "proves": "The builder could launch an independent witness and did not, then presented an uncommitted tree with 'a build cannot witness itself' as the reason to stop. That rule is the reason to launch the participant that can witness; the landing gate is invoked by whoever holds the branch, and the standing loop is one caller of it, not its owner.",
+      "claim": {
+        "claim_schema": "soveraeign-closure-handoff/v1",
+        "concern": "asset-core-split",
+        "handoff_kind": "owner_question",
+        "asks": "acceptance of an unwitnessed uncommitted working tree",
+        "seam": "ACCEPTANCE_SEAM",
+        "provision": "judgement",
+        "requested_by": "worker",
+        "requested_from": "owner",
+        "tools_available": [
+          "read",
+          "edit",
+          "run_tests",
+          "run_verify",
+          "report",
+          "recruit_helper",
+          "launch_witness"
+        ],
+        "loop_steps_taken": [
+          "inspect",
+          "implement",
+          "test",
+          "verify",
+          "present_or_land"
+        ],
+        "helper": {
+          "recruited": true,
+          "role": "editing",
+          "offered_as_witness": false
         },
         "reachable_alternative": "NONE"
       }

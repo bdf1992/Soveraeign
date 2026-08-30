@@ -135,8 +135,9 @@ seat's own, needs no packet, and is refused if presented upward.
 
 A participant that accepts a bounded concern carries it to a landed result. The
 default loop is: inspect, implement, test, recruit a helper, repair, verify,
-then present or land. A leased worker's terminal is a presented, evidenced
-working tree; for the participant holding the branch it is a landed change.
+launch an independent witness, then present or land. A leased worker's terminal
+is a presented, evidenced working tree; for the participant holding the branch
+it is a landed change.
 
 An issue, a branch, a pull request, a review finding, a TODO, or a question for
 the owner records work. None of them is work, and a concern is not advanced by
@@ -155,7 +156,11 @@ is the shortest remaining path to the result.
   reading would help, and do it without asking. Use it to challenge defects,
   missing tests, scope drift, unnecessary abstraction, and assumed authority.
   A helper that read or edited the change is inside the build and can never
-  witness it; independent observation stays a separate participant.
+  witness it; independent observation stays a separate participant. Launching
+  that separate participant is the builder's own required step whenever the
+  invocation can launch one. "A build cannot witness itself" is the reason to
+  launch the witness, never a reason to stop at an uncommitted tree, and the
+  landing gate is invoked by whoever holds the branch.
 - Repair findings in place. A review finding, a failing check, or a defect the
   helper surfaced is fixed inside the concern, not converted into another
   ticket.
@@ -325,8 +330,15 @@ dependency or a substitute for repository verification.
 - The required local and CI command is `python scripts/verify.py`. Its wall
   time after Python starts is graded, not pass/fail: `PLATINUM` at three
   seconds or less, `GOLD` at six, `SILVER` at fifteen. Past fifteen seconds
-  nothing is earned and the run fails. A slipped grade is a reportable
-  observation, not a failing gate (`decisions/0050`).
+  the run records debt; wall clock alone does not fail the repository
+  (`decisions/0081`, superseding `decisions/0050`).
+- Performance pressure sits on per-check ceilings in
+  `contracts/verification-budget.json`. A pooled check past thirty seconds is
+  a suspect and is rerun serially; only an isolated check still past thirty
+  seconds refuses. Ordinary attributed overruns remain debt.
+- What blocks a landing is semantic failure. `scripts/sov_land.py` runs verify
+  and lint before its gate, so the landing rule follows the verified semantics,
+  not the host's aggregate wall clock.
 
 ## Context hygiene
 

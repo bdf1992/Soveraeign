@@ -203,9 +203,10 @@ framework abstractions.
 ## Carrying a concern to closure
 
 A contributor who takes a bounded concern carries it to a landed result:
-inspect, implement, test, recruit a helper, repair, verify, then present or
-land. `AGENTS.md`, Closure ownership, is normative; this is the working path
-through it, and `contracts/closure-ownership.json` is the table both read.
+inspect, implement, test, recruit a helper, repair, verify, launch an
+independent witness, then present or land. `AGENTS.md`, Closure ownership, is
+normative; this is the working path through it, and
+`contracts/closure-ownership.json` is the table both read.
 
 The coordination surface above exists to make work legible, not to stand in
 for it. An issue, a branch, a pull request, a review finding, a TODO, or a
@@ -220,7 +221,10 @@ progress only when it is the shortest remaining path to the result.
   asking anyone. Point it at the defect you cannot see, the missing test, the
   scope drift, the abstraction you did not need, and the authority you assumed.
   Then repair what it finds. A helper that read or edited the change is inside
-  your build and can never witness it.
+  your build and can never witness it, so launch a separate witness that did
+  not touch the change. That launch is your own step; "I cannot witness my own
+  build" is the reason to make it, never a reason to stop at an uncommitted
+  tree.
 - Repair review findings and failing checks inside the concern. A finding
   turned into a second ticket has moved the defect away from the work that owns
   it.

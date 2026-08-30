@@ -34,10 +34,14 @@ artifact about the result. `AGENTS.md`, Closure ownership, owns the rule:
 settle ordinary reversible engineering choices; recruit a helper subagent when
 a second reading would help, without asking; repair findings in place; keep one
 branch and one pull request per concern; absorb follow-on work that stays
-inside the same service, effect class, and authority; and hand off only at one
-of five named seams. A helper that read or edited a change is inside the build
-and can never witness it. `python scripts/sov_closure.py loop` prints the
-table; `judge` grades a handoff before it is sent.
+inside the same service, effect class, and authority; launch its own independent
+witness when the host exposes that capability; carry the branch through
+`python scripts/sov_land.py`; and hand off only at one of five named seams. A
+helper that read or edited a change is inside the build and can never witness
+it. "A build cannot witness itself" is the reason to launch the witness, never
+a terminal at an uncommitted tree. `python scripts/sov_closure.py loop` prints
+the table; `judge` grades a handoff before it is sent
+(`decisions/0100-launch-your-own-witness.md`).
 
 Host capabilities do not imply authority. Use only the model, tools, permissions,
 and live grants visible in the current invocation; never infer them from this file
@@ -215,7 +219,7 @@ engineering baseline. Day two added the SDLC loop, Console, scheduled runs,
 Sov, the federation harness, defeating fixtures for receipts and proofing,
 LF line-ending enforcement, and the stack certification. At the end of day two
 the record held 26 commits, 17 decision records and 8 reports; it now holds
-621 commits, 86 decision records and 29 reports. The
+621 commits, 87 decision records and 29 reports. The
 first independently witnessed work landed on 2026-08-25; nothing is ratified.
 
 Those two sentences are checked. `python scripts/sov_snapshot.py` grades the

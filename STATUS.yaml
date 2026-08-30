@@ -287,6 +287,12 @@ owner_acceptance_queue:
     at: 2026-08-26T00:00:00Z
 
 owner_accepted:
+  - id: A19
+    packet: acceptance/accepted/A19.json
+    action: ACCEPT
+    by_seat: seat:root
+    at: 2026-08-28T18:04:42Z
+    claim: The closure loop requires a builder with launch capability to launch an independent witness before presenting or landing; inability is a dependency, not a terminal.
   - id: A5
     packet: acceptance/accepted/A5.json
     action: ACCEPT

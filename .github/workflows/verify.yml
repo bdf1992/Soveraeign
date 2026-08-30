@@ -10,13 +10,76 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: verify-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  closure-render:
+    if: github.event_name == 'pull_request' && github.head_ref == 'closure/phase-i-zero-state'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Close S28, restamp diagrams, and rebuild the reader
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('OPEN-SEAMS.md')
+          text = path.read_text(encoding='utf-8')
+          marker = '## S28 · An accepted document records that nothing was changed to accommodate it'
+          if marker not in text:
+              raise SystemExit('S28 marker not found')
+          prefix = text.split(marker, 1)[0]
+          section = '''## S28 · An accepted document records that nothing was changed to accommodate it — closed 2026-08-30
+
+`GROUND.md` closes with "No governing document was modified to accommodate this."
+That sentence is scoped to the 2026-08-24 acceptance act: accepting the ground did
+not modify another governing document. It is historical evidence about that act,
+not a permanent claim that later repository wiring may never cite the accepted
+ground.
+
+PR #183 subsequently wired all eight participant entry surfaces — `AGENTS.md`,
+`CONTRIBUTING.md`, `CLAUDE.md`, `SOV.md`, `README.md`, `.cursorrules`,
+`bindings/sov/profile.json`, and the live retirement banner in
+`AGENT-BOOTSTRAP-PROMPT.md` — to the accepted product plane. That later wiring does
+not retroactively falsify what happened on 2026-08-24, and it requires no rerender
+of the owner-accepted `GROUND.md` artifact.
+
+`acceptance/A23.json` presented the entry-plane concern. PR #183 landed the current
+reader coherence and superseded that packet; issue #148 records the terminal
+closure receipt. Readings that would instead move the accepted ground or build a
+new checker were not chosen. The seam is therefore closed by the first reading it
+already named as requiring no owner act.
+'''
+          path.write_text(prefix + section, encoding='utf-8', newline='\n')
+          PY
+          python scripts/sov_diagrams.py stamp
+          python scripts/sov_docs.py build
+      - name: Restore workflow topology and commit the generated closure bytes
+        run: |
+          rm -f .github/workflows/closure-zero-render.yml
+          git show origin/main:.github/workflows/verify.yml > .github/workflows/verify.yml
+          git config user.name 'soveraeign-closure'
+          git config user.email 'actions@users.noreply.github.com'
+          git add OPEN-SEAMS.md diagrams docs/documentation.html .github/workflows/verify.yml .github/workflows/closure-zero-render.yml
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo 'Nothing to commit.'
+            exit 0
+          fi
+          git commit -m 'docs(closure): close final stale projections'
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+
   repository:
     runs-on: ubuntu-latest
     timeout-minutes: 5

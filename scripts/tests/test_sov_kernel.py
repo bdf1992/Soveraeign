@@ -65,7 +65,6 @@ class Derivation(unittest.TestCase):
             projection.derive("# Spec\n\nNo transition table here.\n")
 
     def test_a_table_header_with_no_rows_refuses_rather_than_reporting_agreement(self):
-        """Deriving zero transitions would make every authored row look like drift."""
         with self.assertRaises(ValueError):
             projection.derive("## Transition contract\n\n"
                               "| Transition | Preconditions | Commit | Refusal |\n"
@@ -91,7 +90,6 @@ class Invariants(unittest.TestCase):
                       " ".join(projection.invariants(self._derived(commit=""))))
 
     def test_a_transition_with_no_refusal_path_at_all_is_a_defect(self):
-        """A transition that cannot refuse is a transition that cannot gate."""
         defects = projection.invariants(
             self._derived(refusals=[], reasoned_refusal_admitted=False))
         self.assertIn("no refusal path", " ".join(defects))
@@ -119,7 +117,6 @@ class Drift(unittest.TestCase):
         self.assertEqual(projection.conflicts(self.derived, self.compiled), [])
 
     def test_a_normalised_precondition_is_not_drift(self):
-        """The authored table states field names on purpose; SPEC states prose."""
         self.compiled["transitions"][0]["preconditions"] = ["something", "entirely", "other"]
         self.assertEqual(projection.conflicts(self.derived, self.compiled), [])
 
@@ -135,7 +132,6 @@ class Drift(unittest.TestCase):
                       " ".join(projection.conflicts(self.derived, self.compiled)))
 
     def test_a_refusal_code_dropped_from_the_contract_is_reported(self):
-        """The direction that matters: the kernel would accept what SPEC refuses."""
         self.compiled["transitions"][0]["refusals"] = ["UNREADABLE"]
         self.assertIn("SPEC.md names refusal DIGEST_MISMATCH; the kernel table omits it",
                       " ".join(projection.conflicts(self.derived, self.compiled)))
@@ -146,9 +142,46 @@ class Drift(unittest.TestCase):
                       " ".join(projection.conflicts(self.derived, self.compiled)))
 
     def test_an_extra_code_under_an_open_reasoned_refusal_is_admitted(self):
-        """Naming a specific code for an open reasoned refusal is what SPEC invites."""
         self.compiled["transitions"][1]["refusals"] = ["AUTHORITY_REFUSED"]
         self.assertEqual(projection.conflicts(self.derived, self.compiled), [])
+
+
+class ExternalAuthorization(unittest.TestCase):
+    def setUp(self):
+        self.table = kernel.load_table(ROOT)
+        self.base = {
+            "request_schema": "soveraeign-kernel-transition/v1",
+            "transition": "cross",
+            "actor_id": "model/orchestrator",
+            "actor_kind": "MODEL",
+            "effect_class": "EXTERNAL_WORLD",
+            "reason": "malformed authorization regression",
+            "declared": {
+                "source_address": "src-1",
+                "reader_declaration": "reader-1",
+                "omissions": ["none"],
+                "authority_grant_id": "grant-1",
+                "destination_address": "dst-1",
+            },
+        }
+
+    def test_malformed_authorization_refuses_instead_of_raising(self):
+        malformed = [
+            ["truthy", "non-mapping"],
+            {"scope": "coordination.issue_metadata", "verb": ["set_body"],
+             "receipt": "receipt/x"},
+            {"scope": ["coordination.issue_metadata"], "verb": "set_body",
+             "receipt": "receipt/x"},
+            {"scope": "coordination.issue_metadata", "verb": "set_body", "receipt": 7},
+            {"scope": "coordination.issue_metadata", "verb": "set_body", "receipt": "\u200b"},
+            {"scope": "coordination.issue_metadata", "verb": "set_body",
+             "receipt": "receipt/x", "preconditions_discharged": ["not", "a", "mapping"]},
+        ]
+        for authorization in malformed:
+            with self.subTest(authorization=authorization):
+                decision = kernel.evaluate({**self.base, "authorization": authorization}, self.table)
+                self.assertFalse(decision.permitted)
+                self.assertEqual(decision.reason_code, "EXTERNAL_EFFECT_UNAUTHORIZED")
 
 
 class AgainstTheRepository(unittest.TestCase):

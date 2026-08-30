@@ -20,6 +20,12 @@ from sovmutate import diffscope, harness, operators, suites  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 
+
+def suite_for(path: Path) -> tuple[tuple[str, ...], Path] | None:
+    """Backward-compatible public route to the mutation suite owner."""
+    return suites.suite_for(path, ROOT)
+
+
 SELFCHECK_SOURCE = """
 def asserted(value):
     if value > 10:

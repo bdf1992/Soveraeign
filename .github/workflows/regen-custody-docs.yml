@@ -1,0 +1,35 @@
+name: regenerate custody documentation projection
+
+on:
+  push:
+    branches:
+      - closure/phase-i-zero-state
+
+permissions:
+  contents: write
+
+jobs:
+  regenerate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: closure/phase-i-zero-state
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Rebuild derived documentation
+        run: python scripts/sov_docs.py build
+      - name: Remove one-shot workflow
+        run: rm .github/workflows/regen-custody-docs.yml
+      - name: Commit exact derived wake
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add docs/documentation.html .github/workflows/regen-custody-docs.yml
+          git diff --cached --exit-code && exit 1 || true
+          git commit -m "docs: regenerate lifecycle documentation"
+          git pull --rebase origin closure/phase-i-zero-state
+          git push origin HEAD:closure/phase-i-zero-state

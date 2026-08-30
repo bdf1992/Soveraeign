@@ -1,0 +1,382 @@
+name: clarity root repair
+
+on:
+  push:
+    branches:
+      - closure/phase-i-zero-state
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: closure/phase-i-zero-state
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Repair root representation
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          import re
+
+          root = Path('.')
+
+          def read(path):
+              return Path(path).read_text(encoding='utf-8')
+
+          def write(path, text):
+              Path(path).write_text(text, encoding='utf-8', newline='\n')
+
+          def replace_once(path, old, new):
+              text = read(path)
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f'{path}: expected one match, found {count}: {old[:80]!r}')
+              write(path, text.replace(old, new, 1))
+
+          # The denominator includes the human-readable state file explicitly.
+          clarity_path = Path('contracts/clarity.json')
+          clarity = json.loads(clarity_path.read_text(encoding='utf-8'))
+          for value in ('STATUS.yaml',):
+              if value not in clarity['scope']['candidate_include']:
+                  clarity['scope']['candidate_include'].append(value)
+              if value not in clarity['campaigns']['root']['include']:
+                  clarity['campaigns']['root']['include'].append(value)
+          clarity['basis_by_path']['.cursorrules'] = ['AGENTS.md', 'STATUS.yaml']
+          clarity['basis_by_path']['CLASSIFICATION.md'] = [
+              'GROUND.md', 'CANON.md', 'SYSTEM.md', 'STATUS.yaml'
+          ]
+          clarity['basis_by_path']['ENGINEERING.md'] = [
+              'SYSTEM.md', 'CONTRACT.md', 'SPEC.md', 'services/asset/KNOWN-GAPS.md'
+          ]
+          clarity['basis_by_path']['PRD.md'] = [
+              'GROUND.md', 'CANON.md', 'SPEC.md', 'STATUS.yaml'
+          ]
+          clarity['basis_by_path']['PUBLICATION.md'] = [
+              'AGENTS.md', 'contracts/publication-surface.json'
+          ]
+          clarity['basis_by_path']['LESSONS.md'] = [
+              'AGENTS.md', 'SPEC.md', 'decisions/0029-lessons-loop.md'
+          ]
+          clarity_path.write_text(json.dumps(clarity, indent=2) + '\n', encoding='utf-8')
+
+          # The founding prompt is historical evidence, not a live root instruction.
+          bootstrap = Path('AGENT-BOOTSTRAP-PROMPT.md')
+          archived = Path('archives/AGENT-BOOTSTRAP-PROMPT.md')
+          if bootstrap.exists():
+              if archived.exists():
+                  raise SystemExit('archive bootstrap target already exists')
+              archived.write_bytes(bootstrap.read_bytes())
+              bootstrap.unlink()
+
+          publication_path = Path('contracts/publication-surface.json')
+          publication = json.loads(publication_path.read_text(encoding='utf-8'))
+          publication['paths'] = [
+              item for item in publication['paths']
+              if item['path'] != 'AGENT-BOOTSTRAP-PROMPT.md'
+          ]
+          publication['retired'] = [
+              item for item in publication.get('retired', [])
+              if item['document'] != 'AGENT-BOOTSTRAP-PROMPT.md'
+          ]
+          publication_path.write_text(json.dumps(publication, indent=2) + '\n', encoding='utf-8')
+
+          replace_once(
+              '.cursorrules',
+              '`/STATUS.yaml`, `/ENGINEERING.md`, and `/SDLC.md` say what the active campaign\n'
+              'must prove and how the system is built.',
+              '`/STATUS.yaml`, `/ENGINEERING.md`, and `/SDLC.md` define the current system,\n'
+              'requirements, evidence rules, standing, and retained implementation baseline.'
+          )
+
+          replace_once(
+              'AGENTS.md',
+              'The governing documents form one design System of Record with explicit roles,\n'
+              'in two groups. Two of them say what product this is; the rest say what this\n'
+              'phase must prove and how it is built. Answering a product question from the\n'
+              'second group, or a phase question from the first, is a category error.',
+              'The governing documents form one design System of Record with explicit roles.\n'
+              'Two documents say what product this is; the rest define the current system,\n'
+              'requirements, evidence rules, standing, and retained implementation baseline.\n'
+              'Historical phase commitments remain in their archived definitions. Do not answer\n'
+              'a product-identity question from an implementation or campaign document.'
+          )
+          replace_once(
+              'AGENTS.md',
+              'What this phase must prove, and how it is built:',
+              'What the current system requires, and how it is built:'
+          )
+          replace_once(
+              'AGENTS.md',
+              'They own no product claim and no Phase-I requirement,',
+              'They own no product claim or product requirement,'
+          )
+          replace_once(
+              'AGENTS.md',
+              'Use Python 3.11 or newer for the Phase-I reference implementation.',
+              'Use Python 3.11 or newer for the retained local reference implementation.'
+          )
+          replace_once(
+              'AGENTS.md',
+              'Use dependency-free `unittest` for the Phase-I reference participant.',
+              'Use dependency-free `unittest` for the retained local reference participant.'
+          )
+
+          replace_once(
+              'CONTRIBUTING.md',
+              '`GROUND.md` and `CANON.md` say what product Soveraeign is and what it\n'
+              'undertakes, and the rest say what the active campaign must prove and how the\n'
+              'system is built.',
+              '`GROUND.md` and `CANON.md` say what product Soveraeign is and what it\n'
+              'undertakes. The rest define the current system, requirements, evidence rules,\n'
+              'standing, and retained implementation baseline.'
+          )
+
+          replace_once('ENGINEERING.md', '## Composing larger motion', '## Composing operations')
+          replace_once(
+              'ENGINEERING.md',
+              'The current Asset Service `core.py` exceeds this limit and is named debt. Do not\n'
+              'add behavior to it before splitting storage, receipts/authority, and asset\n'
+              'lifecycle responsibilities without changing semantics.\n\n',
+              ''
+          )
+
+          classification = read('CLASSIFICATION.md')
+          marker = '## Source and policy boundary\n'
+          before, found, _ = classification.partition(marker)
+          if not found:
+              raise SystemExit('CLASSIFICATION.md: source boundary heading missing')
+          classification_tail = '''## Source and policy boundary\n\nCurrent product meaning comes from `GROUND.md` and `CANON.md`. `SYSTEM.md`,\n`CONTRACT.md`, `SPEC.md`, and accepted decision records define the current system\nand its constraints. Historical predecessor documents remain lineage evidence;\nthey do not become current policy merely because a present term descends from\nthem.\n\nThe concrete `Service`/`Component` normalization, the initial\nAsset/Proofing/Console/Asset Projection split, the Root/Kernel construction\nvocabulary, and the operating-loop role and stance vocabulary remain proposed\npolicy where their recorded standing says so. `STATUS.yaml` owns that current\nstanding.\n'''
+          write('CLASSIFICATION.md', before + classification_tail)
+
+          replace_once('SPEC.md', '# Phase-I Logical Specification', '# Logical Specification')
+          replace_once(
+              'SPEC.md',
+              'This specification implements the Phase-I requirements in `PRD.md`. It fixes\n'
+              'logical objects, roles, states, transitions, predicates, receipts, and refusal\n'
+              'behavior. It does not select storage, encoding, language, transport, process,\n'
+              'container, graph, model provider, or repository layout.',
+              'This is the current stack-neutral logical contract. It fixes logical objects,\n'
+              'roles, states, transitions, predicates, receipts, and refusal behavior without\n'
+              'selecting storage, encoding, language, transport, process, container, graph,\n'
+              'model provider, or repository layout. The retained `PROD-I-*` predicates are the\n'
+              'first qualification profile; the exact closed Phase-I definition is pinned in\n'
+              '`archives/PRD-PHASE-I.md` and `contracts/phases.json`.'
+          )
+          replace_once(
+              'SPEC.md',
+              'Phase I must run from a clean local artifact without Claude, GitHub, an external\n'
+              'graph database, or another network service.',
+              'The retained local reference profile must run from a clean artifact without\n'
+              'Claude, GitHub, an external graph database, or another network service.'
+          )
+          replace_once('SPEC.md', '| Fault | Phase-I obligation |', '| Fault | Logical obligation |')
+          spec = read('SPEC.md')
+          head, found, _ = spec.partition('## Traceability\n')
+          if not found:
+              raise SystemExit('SPEC.md: traceability heading missing')
+          trace = '''## Traceability\n\nCurrent traceability runs through the governing chain rather than through\npredecessor document names:\n\n```text\nGROUND.md -> CANON.md -> PRD.md -> SPEC.md -> conformance/\n```\n\n`GROUND.md` owns product identity, `CANON.md` owns durable undertakings, `PRD.md`\nselects requirements and qualification profiles, this document owns their logical\npredicates, and `conformance/` carries positive and defeating cases. Exact\nhistorical source addresses and digests remain in `lineage/`; ancestry is evidence\nand never current policy by implication.\n'''
+          write('SPEC.md', head + trace)
+
+          replace_once(
+              'SDLC.md',
+              'the admitted effect envelope for the current phase.',
+              "the admitted effect envelope for the concern's current operation."
+          )
+          replace_once(
+              'SDLC.md',
+              '- `Release Skill` — release notes, documentation, and marketing drafts as\n'
+              '  `RECORD_LOCAL` artifacts, plus the visible refusal of every\n'
+              '  `EXTERNAL_WORLD` publication step while `no_external_effects_in_phase_i`\n'
+              '  and open decision O1 stand.',
+              '- `Release Skill` — release notes, documentation, and marketing drafts as\n'
+              '  `RECORD_LOCAL` artifacts. Publication or another `EXTERNAL_WORLD` step uses\n'
+              '  the current external-effect authorization, a live grant, and an attributable\n'
+              '  receipt; everything outside that scope refuses visibly.'
+          )
+          replace_once('SDLC.md', 'Phase-I templates:', 'Current templates:')
+          replace_once(
+              'SDLC.md',
+              '1. A Red engagement runs under a typed grant naming its target surfaces,\n'
+              '   effect class (Phase I: `RECORD_LOCAL` only, isolated environments, no\n'
+              '   authoritative writes), budget, and exit criterion.',
+              '1. A Red engagement runs under a typed grant naming its target surfaces,\n'
+              '   effect class, budget, and exit criterion. Its observation environment is\n'
+              '   isolated, and the engagement receives no undeclared authoritative write path.'
+          )
+          sdlc = read('SDLC.md')
+          old_accept = '''This loop is `BUILT` when the governing documents register it, repository\nverification passes, and the binding skeleton exists at proposal standing. It\nis `WITNESSED` only after its own release gate is exercised against a real\nconcern; a bounded, owner-directed provisional exercise is admitted for that\nwitnessing before ratification. It is `RATIFIED` only when Bdo accepts the\ntiers, dyads, registry derivation, and Red-gated release requirement recorded\nas open decision O13. O13 therefore gates activation — the loop becoming the\nrequired process — not the provisional exercise that witnesses it.\n'''
+          new_accept = '''The three tiers, stance dyads, concern-registry derivation, and Red-gated\nrelease requirement were accepted under decision 0024's O13 ruling and later\nrecorded through the A3 acceptance path. Decision 0033 retired the O1-O22\nidentifier space, so O13 is not an open gate. That acceptance does not let a\nbuilder witness itself, does not make every engagement witnessed, and does not\nlet machine evidence ratify owner judgement.\n'''
+          if old_accept not in sdlc:
+              raise SystemExit('SDLC.md: stale acceptance block not found')
+          write('SDLC.md', sdlc.replace(old_accept, new_accept, 1))
+
+          replace_once(
+              'NAMING.md',
+              'does not assert that the product has passed Phase-I operational qualification.',
+              'does not assert operational qualification or public clearance.'
+          )
+
+          replace_once(
+              'LESSONS.md',
+              'A lesson awaiting Bdo is a PROD-I-6 pending-right record. It blocks nothing.',
+              'A lesson waiting on owner judgement blocks only the transition that needs that\njudgement. It does not block unrelated work.'
+          )
+          replace_once(
+              'LESSONS.md',
+              'Standing now: **8 `RECORDED`**, threshold 7.',
+              'The live count is read by `python scripts/sov_lessons.py check`; the drain threshold is seven.'
+          )
+          replace_once(
+              'LESSONS.md',
+              'Draining the eight is not one concern.',
+              'Draining the current queue is not one concern.'
+          )
+
+          replace_once(
+              'PRD.md',
+              '`Standing` is read from `STATUS.yaml` and the operation surface and moves as the\nnode changes.',
+              'The final column below is the 2026-08-28 drafting snapshot. It is preserved for\norientation only; `STATUS.yaml` and the operation surface own the current reading.'
+          )
+          replace_once(
+              'PRD.md',
+              '| Area | What this document establishes | Serves | Standing |',
+              '| Area | What this document establishes | Serves | Draft snapshot (2026-08-28) |'
+          )
+          replace_once(
+              'PRD.md',
+              '| # | Requirement | Area | Pri | Criterion | Reach |',
+              '| # | Requirement | Area | Pri | Criterion | Draft reach (2026-08-28) |'
+          )
+          replace_once(
+              'PRD.md',
+              'Reach is from `python scripts/sov_canon.py promises` and moves; treat the column\n'
+              'as a pointer to that command rather than a fact this document holds.',
+              'The draft reach column preserves the 2026-08-28 reading. Run\n'
+              '`python scripts/sov_canon.py promises` for the current result; this document does\n'
+              'not own that moving state.'
+          )
+          prd = read('PRD.md').replace(' · today `', ' · draft snapshot `')
+          prd = prd.replace('| Measure | Read by | Today | Target |',
+                            '| Measure | Read by | Draft snapshot (2026-08-28) | Target |')
+          prd = prd.replace('`OPEN-SEAMS.md` is the register — nineteen open, one closed. Bearing on\nrequirements:',
+                            '`OPEN-SEAMS.md` is the live register. The following seams bear directly on\nrequirements:')
+          prd = prd.replace('Composition depends on Gateway, Identity and Authority crossings; four of the\n  eleven service boundaries are declared with no implementation.',
+                            'Composition depends on Gateway, Identity and Authority crossings; some declared\n  service boundaries remain unimplemented. Read their current standing from `STATUS.yaml`.')
+          write('PRD.md', prd)
+
+          roadmap = read('ROADMAP.md')
+          old = '''`PRD.md` says what Soveraeign must become. This document is a candidate estimate\nof how it gets there; A20 still asks the root seat whether this decomposition is\nthe accepted forward product model. Historical `Now`/`Next` lane text below is\ntherefore forecast, not the live work queue. While `STATUS.yaml` says\n`phase: NONE_ACTIVE`, issue #148 is the boundary-closure ledger and no product\nphase is active. If a successor is opened, #173 is the first proposed construction\ngate. The estimate is expected to be wrong in detail and revised often; the PRD is not.\n'''
+          new = '''`PRD.md` says what Soveraeign must become. This document is a candidate estimate\nof how it gets there. A20 was redirected during the Phase-I boundary closure, so\nthis roadmap is not accepted merely by remaining in the tree. Historical\n`Now`/`Next` lane text below is forecast, not the live work queue. While\n`STATUS.yaml` says `phase: NONE_ACTIVE`, issue #148 is the boundary-closure ledger\nand no product phase is active. If the root seat opens a successor, #173 is the\nfirst proposed construction gate. The estimate is expected to change often; the\nPRD is not.\n'''
+          if old not in roadmap:
+              raise SystemExit('ROADMAP.md: opening block not found')
+          roadmap = roadmap.replace(old, new, 1)
+          marker = '## The phases\n\n'
+          note = ('Repository counts and implementation readings below are drafting snapshots unless a\n'
+                  'paragraph explicitly names a command as the live source. Do not use a copied count\n'
+                  'as current standing.\n\n')
+          if marker not in roadmap:
+              raise SystemExit('ROADMAP.md: phases heading missing')
+          roadmap = roadmap.replace(marker, marker + note, 1)
+          write('ROADMAP.md', roadmap)
+
+          # Rendering-only cleanup of accepted product wording: identifiers and meaning stay fixed.
+          replace_once('GROUND.md', 'Rendering: `GROUND-1.1`', 'Rendering: `GROUND-1.2`')
+          replace_once(
+              'GROUND.md',
+              'Ground is not minted per service, feature, operation or requirement. Sixteen claims carry\n'
+              '102 declared operations. That ratio is the point.',
+              'Ground is not minted per service, feature, operation or requirement. Sixteen claims carry\n'
+              '102 declared operations. Keeping this layer small lets many operations derive from a few\n'
+              'durable product claims.'
+          )
+          replace_once(
+              'GROUND.md',
+              'These are separate planes and collapsing them is the mistake this\nlayer exists to prevent:',
+              'These are separate planes. Keeping them separate prevents accepted meaning from being\nmistaken for current state or evidence:'
+          )
+          replace_once(
+              'GROUND.md',
+              'Three levels, and conflating them is how attribution rots.',
+              'These three levels stay separate because attribution depends on stable meaning.'
+          )
+          replace_once(
+              'GROUND.md',
+              'Each of these was considered and rejected as belonging below this altitude.',
+              'Each of these was considered and placed in a lower-level document instead.'
+          )
+          product_ground = json.loads(Path('contracts/product-ground.json').read_text(encoding='utf-8'))
+          product_ground['rendering'] = 'GROUND-1.2'
+          Path('contracts/product-ground.json').write_text(
+              json.dumps(product_ground, indent=2) + '\n', encoding='utf-8'
+          )
+
+          replace_once('CANON.md', 'Rendering: `CANON-3.0`', 'Rendering: `CANON-3.1`')
+          replace_once(
+              'CANON.md',
+              'Between them there was nothing, so a requirement had no parent and an operation had no\n'
+              'reason. This is that layer and nothing more.',
+              'This layer gives requirements and operations an explicit product reason without becoming\n'
+              'a second requirements document.'
+          )
+          replace_once(
+              'CANON.md',
+              'Three levels, and conflating them is how attribution rots. `GROUND.md` owns the rule; the\ncanon follows it.',
+              'These levels stay separate because attribution depends on stable meaning. `GROUND.md` owns\nthe rule; the canon follows it.'
+          )
+          replace_once(
+              'CANON.md',
+              '| **Rendering** | the artifact is re-issued with no change of meaning | `CANON-2.0` |\n'
+              '| **Revision** | meaning changes: a promise or journey added, retired, or reworded to say something different | `CANON-2` |',
+              '| **Rendering** | the artifact is re-issued with no change of meaning | `CANON-3.1` |\n'
+              '| **Revision** | meaning changes: a promise or journey added, retired, or reworded to say something different | `CANON-3` |'
+          )
+          replace_once(
+              'CANON.md',
+              'Every promise records how it got the right to be here. This is not standing and not\nconfidence; it is the direction the authority ran.',
+              'Every promise records the source that justifies its inclusion. This is provenance, not\nstanding or confidence.'
+          )
+          canon = read('CANON.md').replace('domain altitude wearing canon clothes',
+                                           'too specific for product canon')
+          write('CANON.md', canon)
+          product_canon = json.loads(Path('contracts/product-canon.json').read_text(encoding='utf-8'))
+          product_canon['rendering'] = 'CANON-3.1'
+          Path('contracts/product-canon.json').write_text(
+              json.dumps(product_canon, indent=2) + '\n', encoding='utf-8'
+          )
+
+          # STATUS.yaml is both machine state and a human entry surface. Keep the parser's
+          # effective values, remove duplicate shadow keys and obsolete explanatory blocks.
+          status = read('STATUS.yaml')
+          _, sep, rest = status.partition('# Bdo accepted the product ground')
+          if not sep:
+              raise SystemExit('STATUS.yaml: product-ground marker missing')
+          prefix = '''schema_version: 1\nartifact: soveraeign-founding-repository\nproduct_name: Soveraeign\nrepository_name: Soveraeign\ncategory: locally-sovereign-algorithmic-ai-native-enterprise-environment\n# contracts/phases.json owns phase history. Phase I is CLOSED_INCOMPLETE, no\n# successor is active, and only seat:root may open one.\nphase: NONE_ACTIVE\nnaming_status: OWNER_SELECTED_WORKING_NAME_PUBLIC_CLEARANCE_HELD_O1\nimplementation_status: EXPERIMENTAL_REFERENCE_PARTICIPANT\nconformance_status: EXECUTABLE_ORACLE_CONTROLS_PARTICIPANT_BINDING_OPEN\nasset_service_status: BUILT_SELF_TESTED_NOT_WITNESSED\nrecord_service_status: BUILT_SELF_TESTED_NOT_WITNESSED\nproofing_service_status: RULED_SECOND_BOUNDARY_O11_CHARTERED_NOT_IMPLEMENTED\nconsole_service_status: BUILT_CONTINUITY_PATH_SELF_TESTED_REMAINDER_BOUNDARY\nprojection_service_status: OWNER_ACCEPTED_BOUNDARY_NOT_IMPLEMENTED\nnode_identity_status: PROPOSED_CONTRACT_BUILT_REGISTRY_READ_NO_ADMISSION_TRANSITION\nfederation_crossing_status: PROPOSED_CONTRACT_BUILT_SELF_TESTED_NO_TRANSPORT\npublic_projection_status: PROPOSED_CONTRACT_BUILT_PUBLICATION_RECORDED_SEAT_SEAM_OPEN\ngateway_service_status: CHARTERED_BOUNDARY_NOT_IMPLEMENTED\nhost_service_status: BUILT_READ_HEALTH_SELF_TESTED_REMAINDER_DECLARED_NOT_WITNESSED\nobservation_service_status: CHARTERED_BOUNDARY_NOT_IMPLEMENTED\nservice_manifest_contract_status: BUILT_SELF_TESTED_NOT_WITNESSED\nbyom_status: RULED_CONTRACT_STANDS_O12\nlocal_model_adapter_status: BUILT_SELF_TESTED_NOT_WITNESSED\nai_native_definition_status: FREEZE_CANDIDATE\nengineering_framework_status: OWNER_ACCEPTED_A1_PHASE_I_REFERENCE_BASELINE\nsdlc_loop_status: OWNER_ACCEPTED_A3_ACCEPTANCE_NOT_APPROVAL\ncoordination_registrar_status: BUILT_SELF_TESTED_NOT_WITNESSED\nsov_operating_agent_status: RULED_ENVELOPE_STANDS_O17_BUILT_SELF_TESTED\nticket_kind_vocabulary_status: RULED_O19\nstory_ticket_kind_status: OWNER_ACCEPTED\nunblock_ticket_kind_status: OWNER_ACCEPTED\nticket_metadata_reader_status: OWNER_ACCEPTED_RULING_READERS_SELF_TESTED_NOT_WITNESSED\nkernel_transition_contract_status: RULED_O20\nsemantic_cold_start_status: RULED_O8_TASK_EXECUTED\nfederation_harness_status: OWNER_ACCEPTED_HOST_PLUMBING_SCHEDULES_DISABLED\nscheduled_runs_status: OWNER_ACCEPTED_PATTERN_EVERY_SCHEDULE_DISABLED\nverification_channels_status: OWNER_ACCEPTED_PROJECTION_GREEN_RENAMED\nlineage_corpus_status: BUILT_SELF_TESTED_NOT_WITNESSED\nlessons_loop_status: OWNER_ACCEPTED_LOOP_OPEN\nspecification_status: OWNER_ACCEPTED_A2_PHASE_I_LOGICAL_SPEC\nexternal_effect_status: OWNER_ACCEPTED_A4_SCOPED_NOT_REFUSED\nclassification_status: RULED_CANONICAL_FOR_PHASE_O9\n\n'''
+          write('STATUS.yaml', prefix + '# Bdo accepted the product ground' + rest)
+          PY
+
+          git add -A
+          python scripts/sov_clarity.py scope
+          python scripts/sov_clarity.py check
+          python scripts/verify.py
+
+      - name: Commit verified repair and remove helper
+        run: |
+          rm .github/workflows/clarity-root-repair.yml
+          git add -A
+          git config user.name 'soveraeign-clarity'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'docs(clarity): rebase root prose for clean zero'
+          git pull --rebase origin closure/phase-i-zero-state
+          git push origin HEAD:closure/phase-i-zero-state

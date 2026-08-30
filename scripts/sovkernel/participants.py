@@ -34,9 +34,6 @@ def asset(root: Path) -> dict[str, str]:
     """Drive the real Asset Service and record what it refused."""
     AssetService, StaleLease = _open_asset_service(root)
     observed: dict[str, str] = {}
-    # ignore_cleanup_errors: SQLite on Windows holds the file until the handle is
-    # released, and a temp directory that will not delete must not fail a check
-    # about transition semantics.
     with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
         store = Path(tmp)
         service = AssetService(store / "state")
@@ -82,8 +79,6 @@ def console(root: Path) -> dict[str, str]:
     from soveraeign_record_service import RecordService  # noqa: E402
 
     observed: dict[str, str] = {}
-    # ignore_cleanup_errors for the same reason the Asset Service driver uses it:
-    # SQLite on Windows holds the file until the handle is released.
     with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
         store = Path(tmp)
         record = RecordService(store / "journal")
@@ -94,8 +89,6 @@ def console(root: Path) -> dict[str, str]:
             service.grant("Bdo", "open:thread", channel["channel_id"], "Bdo")
             thread = service.open_thread("Bdo", channel["channel_id"], "parity")
             service.grant("model/sov", "post:message", thread["thread_id"], "Bdo")
-            # Opening a session is guarded as of 2026-08-25. Both participants hold
-            # it so that the refusal below is still the post's, not the session's.
             for operator in ("model/sov", "model/stranger"):
                 service.grant(operator, "open:session", operator, "Bdo")
 
@@ -147,9 +140,6 @@ def ticket(root: Path) -> dict[str, str]:
             "builder_actor_id": "model/worker-a",
             "evidence": {"witness_receipt": "obs-1", "purple_receipt": "purple-1"},
         }),
-        # A HUMAN who is not the owner, so the request reaches the authority check
-        # rather than being refused earlier at the actor-kind gate. The fact under
-        # test is about authority, not about what kind of thing the actor is.
         "an actor without judgement authority may not ratify": decide({
             **base,
             "from": "WITNESSED",
@@ -167,5 +157,18 @@ def ticket(root: Path) -> dict[str, str]:
             "effect_class": "EXTERNAL_WORLD",
             "evidence": {"obligation": "#6", "priors": "SPEC.md",
                          "closure_contract": "#6#closure"},
+        }),
+        "a declared precondition on an admitted verb must be discharged": decide({
+            **base,
+            "from": "OPEN",
+            "to": "PROPOSED",
+            "actor_id": "model/orchestrator",
+            "actor_kind": "MODEL",
+            "effect_class": "EXTERNAL_WORLD",
+            "evidence": {"obligation": "#6", "priors": "SPEC.md",
+                         "closure_contract": "#6#closure"},
+            "authorization": {"scope": "coordination.issue_metadata", "verb": "set_body",
+                              "target": "github.com/bdf1992/Soveraeign#29",
+                              "receipt": "receipt/coordination/2026-08-26-0004"},
         }),
     }

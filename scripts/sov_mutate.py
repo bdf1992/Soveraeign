@@ -10,15 +10,17 @@ command with its own budget, run as its own gate.
     python scripts/sov_mutate.py selfcheck
 
 `selfcheck` is the harness answering the question it exists to ask of everyone
-else: it proves the scorer kills a mutant an asserting suite should catch and
-spares one nothing asserts. A scorer that cannot demonstrate both is not
-evidence about any other suite.
+else: it proves the scorer kills a mutant an asserting suite should catch,
+spares one nothing asserts, and that diff-scoped scoring reaches only mutable
+sites on lines the change actually touched. A scorer that cannot demonstrate
+those properties is not evidence about any other suite.
 """
 
 from __future__ import annotations
 
 from pathlib import Path
 import argparse
+import re
 import subprocess
 import sys
 import tempfile
@@ -29,6 +31,12 @@ from sovmutate import harness, operators  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 SKIP_PARTS = ("tests", "lineage", ".git", "sovmutate")
+HUNK = re.compile(r"^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@")
+
+
+class DiffScopeError(RuntimeError):
+    """The changed-file or changed-line scope could not be derived honestly."""
+
 
 # Which suite actually exercises a file. Running the wrong suite scores zero and
 # reads as "nothing asserts this", which is a false alarm rather than a finding -
@@ -44,6 +52,18 @@ SUITES = (
     (str(Path("services/host")), ("-m", "unittest", "discover", "-s", "tests", "-q"), ROOT / "services" / "host"),
     (str(Path("adapters/host")), ("-m", "unittest", "discover", "-s", "tests", "-q"), ROOT / "services" / "host"),
     (str(Path("services/registry")), ("-m", "unittest", "scripts.tests.test_registry_horizontal", "-q"), ROOT),
+    (str(Path("scripts/sov_mutate.py")), ("scripts/sov_mutate.py", "selfcheck"), ROOT),
+    (str(Path("scripts/sovmutate")), ("scripts/sov_mutate.py", "selfcheck"), ROOT),
+    (str(Path("scripts/sov_capability.py")), ("-m", "unittest", "scripts.tests.test_capability_map", "-q"), ROOT),
+    (str(Path("scripts/sovkernel/capability_map.py")), ("-m", "unittest", "scripts.tests.test_capability_map", "-q"), ROOT),
+    (str(Path("scripts/sovschedule")), (
+        "-m", "unittest",
+        "scripts.tests.test_automation_authoring",
+        "scripts.tests.test_automation_control",
+        "scripts.tests.test_automation_health",
+        "scripts.tests.test_automation_intent",
+        "-q",
+    ), ROOT),
     ("scripts", ("-m", "unittest", "discover", "-s", "scripts/tests", "-q"), ROOT),
 )
 
@@ -58,6 +78,7 @@ def suite_for(path: Path) -> tuple[tuple[str, ...], Path] | None:
         if relative == prefix or relative.startswith(prefix + "\\") or relative.startswith(prefix + "/"):
             return (sys.executable,) + argv, cwd
     return None
+
 
 SELFCHECK_SOURCE = """
 def asserted(value):
@@ -91,7 +112,9 @@ def _changed_files(base: str) -> list[Path]:
         cwd=str(ROOT), capture_output=True, text=True, check=False,
     )
     if result.returncode != 0:
-        return []
+        raise DiffScopeError(
+            f"git diff could not derive changed Python files against {base}: "
+            f"{result.stderr.strip() or f'exit {result.returncode}'}")
     files = []
     for name in result.stdout.split("\n"):
         name = name.strip()
@@ -104,6 +127,37 @@ def _changed_files(base: str) -> list[Path]:
             continue
         files.append(path)
     return files
+
+
+def _parse_changed_lines(diff: str) -> set[int]:
+    """New-side line numbers named by zero-context unified-diff hunks."""
+    changed: set[int] = set()
+    for row in diff.splitlines():
+        match = HUNK.match(row)
+        if match is None:
+            continue
+        start = int(match.group(1))
+        count = int(match.group(2) or "1")
+        changed.update(range(start, start + count))
+    return changed
+
+
+def _changed_lines(base: str, path: Path, root: Path = ROOT) -> set[int]:
+    """The new-side lines in ``path`` changed against ``base``."""
+    try:
+        relative = path.resolve().relative_to(root.resolve())
+    except ValueError as exc:
+        raise DiffScopeError(f"{path} is outside mutation root {root}") from exc
+    shown = str(relative).replace("\\", "/")
+    result = subprocess.run(
+        ["git", "diff", "--unified=0", "--no-color", f"{base}...HEAD", "--", shown],
+        cwd=str(root), capture_output=True, text=True, check=False,
+    )
+    if result.returncode != 0:
+        raise DiffScopeError(
+            f"git diff could not derive changed lines for {shown} against {base}: "
+            f"{result.stderr.strip() or f'exit {result.returncode}'}")
+    return _parse_changed_lines(result.stdout)
 
 
 def _budgeted_targets(
@@ -141,12 +195,14 @@ def _budgeted_targets(
 
 
 def command_run(args: argparse.Namespace) -> int:
-    """Score one target, or every Python file the branch changed."""
+    """Score one target, or mutable sites on changed lines in changed Python files."""
+    line_scope: dict[Path, set[int]] = {}
     if args.changed:
         targets = _changed_files(args.base)
         if not targets:
             print(f"NOTHING TO SCORE: no production Python changed against {args.base}")
             return 0
+        line_scope = {path: _changed_lines(args.base, path) for path in targets}
     elif args.target:
         target = Path(args.target)
         targets = [target if target.is_absolute() else ROOT / target]
@@ -179,7 +235,11 @@ def command_run(args: argparse.Namespace) -> int:
         suite = suite_for(path)
         assert suite is not None
         command, cwd = suite
-        score = harness.score_file(path, cwd, command=command, limit=file_limit)
+        scoped_lines = line_scope.get(path)
+        if scoped_lines is not None:
+            print(f"DIFF SCOPE: {path.relative_to(ROOT)} has {len(scoped_lines)} changed new-side line(s)")
+        score = harness.score_file(
+            path, cwd, command=command, limit=file_limit, lines=scoped_lines)
         print(harness.render(score))
         print()
         total_killed += score.killed
@@ -191,7 +251,7 @@ def command_run(args: argparse.Namespace) -> int:
         print(f"UNSCORED: whole-run cap sampled out {path}; not counted in the channel")
 
     if total_generated == 0:
-        print("NOTHING TO SCORE: the selected files admit no mutants")
+        print("NOTHING TO SCORE: changed lines admit no mutants from the current operator set")
         return 0
 
     percent = 100.0 * total_killed / total_generated
@@ -204,7 +264,7 @@ def command_run(args: argparse.Namespace) -> int:
 
 
 def command_selfcheck(_args: argparse.Namespace) -> int:
-    """Prove the scorer discriminates: it must kill one mutant and spare another."""
+    """Prove the scorer discriminates and honors changed-line scope."""
     with tempfile.TemporaryDirectory() as tmp:
         workspace = Path(tmp)
         subject = workspace / "subject.py"
@@ -212,12 +272,16 @@ def command_selfcheck(_args: argparse.Namespace) -> int:
         (workspace / "test_subject.py").write_text(SELFCHECK_SUITE, encoding="utf-8", newline="\n")
         command = (sys.executable, "-m", "unittest", "discover", "-s", ".", "-q")
         score = harness.score_file(subject, workspace, command=command)
+        asserted_lines = {3, 4, 5}
+        focused = harness.score_file(subject, workspace, command=command, lines=asserted_lines)
 
-    asserted_lines = {3, 4, 5}
     killed_in_asserted = [m for m in score.mutants if m.killed and m.site.line in asserted_lines]
     survived_in_unasserted = [m for m in score.survived if m.site.line not in asserted_lines]
 
     print(harness.render(score))
+    print()
+    print("focused diff-scope control:")
+    print(harness.render(focused))
     print()
     defects = []
     if not killed_in_asserted:
@@ -226,12 +290,25 @@ def command_selfcheck(_args: argparse.Namespace) -> int:
         defects.append("scorer spared no mutant in the unasserted function; it cannot be trusted to report a gap")
     if score.percent == 100.0:
         defects.append("scorer reported a perfect score against a suite that asserts only half the subject")
+    if not focused.mutants:
+        defects.append("diff-scoped scorer selected no mutant from the asserted lines")
+    if focused.survived:
+        defects.append("diff-scoped scorer spared a mutant on the fully asserted changed-line control")
+    if any(mutant.site.line not in asserted_lines for mutant in focused.mutants):
+        defects.append("diff-scoped scorer mutated a site outside the supplied changed-line set")
+    if focused.scoped_out == 0:
+        defects.append("diff-scoped scorer did not report excluding the unasserted function")
+
+    parsed = _parse_changed_lines(
+        "@@ -3,2 +3,3 @@\n-old\n+new\n@@ -10 +11,0 @@\n-gone\n@@ -15 +15,2 @@\n+a\n+b\n")
+    if parsed != {3, 4, 5, 15, 16}:
+        defects.append(f"zero-context diff parser returned {sorted(parsed)}, not [3, 4, 5, 15, 16]")
 
     for defect in defects:
         print(f"FAIL: {defect}", file=sys.stderr)
     if defects:
         return 1
-    print("PASS: the scorer kills what is asserted and spares what is not")
+    print("PASS: the scorer discriminates and diff scope reaches only changed lines")
     return 0
 
 
@@ -250,12 +327,14 @@ def command_sites(args: argparse.Namespace) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="sov-mutate", description=__doc__)
+    parser = argparse.ArgumentParser(prog="sov-mutate", description=__doc__.splitlines()[0])
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     run = subparsers.add_parser("run", help=command_run.__doc__)
     run.add_argument("--target", help="file to score")
-    run.add_argument("--changed", action="store_true", help="score every production Python file changed against --base")
+    run.add_argument(
+        "--changed", action="store_true",
+        help="score mutable sites on changed lines of production Python files against --base")
     run.add_argument("--base", default="origin/main", help="comparison point for --changed")
     run.add_argument("--limit", type=int, default=None, help="cap mutants per file")
     run.add_argument("--total-limit", type=int, default=None,
@@ -276,7 +355,7 @@ def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
         return args.handler(args)
-    except harness.RestoreFailure as exc:
+    except (harness.RestoreFailure, DiffScopeError) as exc:
         print(f"REFUSED: {exc}", file=sys.stderr)
         return 3
 

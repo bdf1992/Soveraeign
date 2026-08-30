@@ -20,6 +20,17 @@ class ClarityCoverageTests(unittest.TestCase):
         }
         self.assertEqual({}, stale)
 
+    def test_reviewed_files_carry_their_declared_basis(self) -> None:
+        contract = sov_clarity.load(sov_clarity.CONTRACT_PATH)
+        record = sov_clarity.coverage(contract)
+        reviews = record["reviews"]
+
+        for path, expected in contract.get("basis_by_path", {}).items():
+            if path not in reviews:
+                continue
+            actual = [item["path"] for item in reviews[path].get("basis", [])]
+            self.assertEqual(expected, actual, path)
+
     def test_unchecked_files_do_not_fake_failure_or_coverage(self) -> None:
         contract = sov_clarity.load(sov_clarity.CONTRACT_PATH)
         record = {

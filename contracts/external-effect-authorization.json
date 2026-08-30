@@ -32,8 +32,22 @@
       "reversible_by": "applying the inverse verb; the original value is recorded in the receipt before the write, and a body is restored by writing the recorded prior body back",
       "note": "The ordinary board work: labels, project fields, open/closed state, comments, and the issue body. The body carried the authoritative metadata block while every label was only its projection, so until decision 0067 a scope existed for writing the projection and none for writing the source: an agent could relabel a ticket to match a block it was refused permission to correct. A body write that would produce a block the schema refuses is itself refused, so this verb cannot manufacture a defective ticket.",
       "preconditions": [
-        "the body being written parses as soveraeign-ticket/v1 and validates against contracts/issue-metadata.schema.json",
-        "the body as it stood before the write is recorded in the receipt"
+        {
+          "id": "body_validates",
+          "verbs": [
+            "set_body"
+          ],
+          "statement": "the body being written parses as soveraeign-ticket/v1 and validates against contracts/issue-metadata.schema.json",
+          "discharged_by": "adapters/github/proofs.py::body_write_basis"
+        },
+        {
+          "id": "prior_body_recorded",
+          "verbs": [
+            "set_body"
+          ],
+          "statement": "the body as it stood before the write is recorded in the receipt",
+          "discharged_by": "adapters/github/proofs.py::body_write_basis"
+        }
       ]
     },
     "coordination.branch_write": {
@@ -52,14 +66,70 @@
         "delete_merged_head_branch"
       ],
       "preconditions": [
-        "GitHub currently reports the named pull request merged",
-        "the pull request head ref exactly equals the branch being deleted",
-        "the pull request head SHA exactly equals the merge event head SHA",
-        "the pull request head repository is bdf1992/Soveraeign",
-        "the pull request base ref exactly equals the merge event base ref",
-        "the repository default branch is not the branch being deleted",
-        "the live branch ref still points exactly at the merged pull request head SHA",
-        "no open pull request currently uses the head branch as its base"
+        {
+          "id": "pull_request_merged",
+          "verbs": [
+            "delete_merged_head_branch"
+          ],
+          "statement": "GitHub currently reports the named pull request merged",
+          "discharged_by": "adapters/github/proofs.py::automatic_branch_basis"
+        },
+        {
+          "id": "head_ref_is_the_branch",
+          "verbs": [
+            "delete_merged_head_branch"
+          ],
+          "statement": "the pull request head ref exactly equals the branch being deleted",
+          "discharged_by": "adapters/github/proofs.py::automatic_branch_basis"
+        },
+        {
+          "id": "head_sha_is_the_merged_sha",
+          "verbs": [
+            "delete_merged_head_branch"
+          ],
+          "statement": "the pull request head SHA exactly equals the merge event head SHA",
+          "discharged_by": "adapters/github/proofs.py::automatic_branch_basis"
+        },
+        {
+          "id": "head_repository_is_this_repository",
+          "verbs": [
+            "delete_merged_head_branch"
+          ],
+          "statement": "the pull request head repository is bdf1992/Soveraeign",
+          "discharged_by": "adapters/github/proofs.py::automatic_branch_basis"
+        },
+        {
+          "id": "base_ref_is_the_merge_base",
+          "verbs": [
+            "delete_merged_head_branch"
+          ],
+          "statement": "the pull request base ref exactly equals the merge event base ref",
+          "discharged_by": "adapters/github/proofs.py::automatic_branch_basis"
+        },
+        {
+          "id": "branch_is_not_the_default_branch",
+          "verbs": [
+            "delete_merged_head_branch"
+          ],
+          "statement": "the repository default branch is not the branch being deleted",
+          "discharged_by": "adapters/github/proofs.py::automatic_branch_basis"
+        },
+        {
+          "id": "live_ref_is_still_the_merged_sha",
+          "verbs": [
+            "delete_merged_head_branch"
+          ],
+          "statement": "the live branch ref still points exactly at the merged pull request head SHA",
+          "discharged_by": "adapters/github/proofs.py::automatic_branch_basis"
+        },
+        {
+          "id": "no_open_pull_request_bases_on_it",
+          "verbs": [
+            "delete_merged_head_branch"
+          ],
+          "statement": "no open pull request currently uses the head branch as its base",
+          "discharged_by": "adapters/github/proofs.py::automatic_branch_basis"
+        }
       ],
       "reversible_by": "recreating the ref at the recorded merged head SHA; merged commits and the pull-request record remain addressable",
       "note": "Retires completed execution inventory only. Behindness, age, silence, containment guesses, and caller assertions do not authorize deletion. A reused or advanced ref, protected default branch, or open stacked child makes retirement refuse."
@@ -82,6 +152,7 @@
     "EXTERNAL_EFFECT_OUT_OF_SCOPE": "The named scope does not carry the requested verb or target.",
     "EXTERNAL_EFFECT_VERB_REFUSED": "The verb is named in refused_verbs.",
     "EXTERNAL_EFFECT_WITHOUT_RECEIPT": "The request carries no receipt address, so the attempt would leave no record.",
-    "EXTERNAL_EFFECT_PRECONDITION_UNMET": "The named scope carries the verb, and a declared precondition on it does not hold."
-  }
+    "EXTERNAL_EFFECT_PRECONDITION_UNMET": "The named scope carries the verb and the request does not discharge every precondition that verb carries: one is unnamed, its evidence is empty, or the request discharges a precondition the verb does not carry."
+  },
+  "precondition_model": "A precondition binds the verbs it names, not the whole scope: a body write answers the body preconditions and a label write is never asked for them. Every precondition declared here is decided by reading the live remote, which the authorization boundary cannot do, so the boundary and the proof hold one half each. The boundary refuses EXTERNAL_EFFECT_PRECONDITION_UNMET unless the request discharges, by id, every precondition its verb carries and names the evidence that discharged it. The discharged_by proof is what performs the read and refuses there. Neither half is a boundary alone: a proof the boundary does not demand is skipped by any caller that does not run it, and an attestation with no proof behind it is a caller vouching for itself. Declaring a precondition and reading it nowhere is the third and worst state, because the contract then reads as a guard that is not one. What is true as of this writing, and is not yet the join this paragraph describes: the two halves exist and are not wired to each other. adapters/github/apply.py is the only module permitted to write to GitHub, and it calls the discharged_by proofs directly through its own authority_basis dispatch. It builds no authorization block, carries no preconditions_discharged, and consults neither scripts/sovticket/transitions.py nor scripts/sovkernel/transitions.py. So a transition request is now refused unless it discharges, and the adapter still writes without asking. Read this section as the shape the crossing must take, not as a description of an enforced write path; wiring the adapter to the boundary is unbuilt and is named here so the gap is not mistaken for enforcement."
 }

@@ -4,50 +4,23 @@
 
 ## Who Claude is here
 
-Claude participates in Soveraeign alongside Bdo. Both can use, launch, observe,
-and improve the system; neither silently occupies one of its operating tiers.
+Claude Code is one host binding for Soveraeign. An interactive Claude session is
+not Sov and does not silently occupy Controller, Orchestrator, Worker, or Witness.
+Those are explicit launched roles.
 
-- Claude is a sovereign user of Soveraeign: it may direct its attention, model
-  the problem, offer frontier-level advice, act within a live grant, and refuse
-  incoherent work. It is not sovereign over Bdo or the node, and it is not Sov.
-- `SOV.md` and `bindings/sov/` define a portable profile that a launched agent
-  can load through `.claude/agents/sov.md`. An interactive Claude session does
-  not implicitly load that profile or acquire an operating seat.
-- Controller, Orchestrator, Worker, and Witness are explicit seats. Claude and
-  Bdo may launch them, watch them, and inspect their reports while remaining
-  independent participants outside those launched roles.
-- A system gate also gates Claude. Claude should identify the wall and use its
-  available capabilities to prepare or provision the nearest lawful unblocking
-  move; it must not occupy a tier in-session merely to route around the gate.
-  A gate is a missing precondition, not a missing permission: Proofing is an
-  accepted boundary with no implementation, so a request to implement it begins
-  with the contract and its defeating fixtures rather than an invented end
-  state.
-- When Claude edits the repository directly, `AGENTS.md` governs that work as
-  it governs any agent: authority arrives by grant, a build cannot witness
-  itself, and only Bdo ratifies judgement.
+`AGENTS.md` governs direct repository work. Host capabilities do not create
+authority: use only the tools, permissions, model, and live grants present in the
+current invocation. A gate is a missing precondition, not permission to invent a
+different path around it.
 
-Claude Code is one host binding, not Sov's semantic owner.
+Carry a concern to a landed result when the host exposes the required capability.
+Settle ordinary reversible choices, repair findings in place, use a helper for a
+second reading when useful, and keep independent witness separate from anyone who
+built or edited the change. `python scripts/sov_closure.py loop` prints the closure
+rules and `python scripts/sov_land.py` owns the governed landing path.
 
-Claude carries a concern it accepts to a landed result rather than to an
-artifact about the result. `AGENTS.md`, Closure ownership, owns the rule:
-settle ordinary reversible engineering choices; recruit a helper subagent when
-a second reading would help, without asking; repair findings in place; keep one
-branch and one pull request per concern; absorb follow-on work that stays
-inside the same service, effect class, and authority; launch its own independent
-witness when the host exposes that capability; carry the branch through
-`python scripts/sov_land.py`; and hand off only at one of five named seams. A
-helper that read or edited a change is inside the build and can never witness
-it. "A build cannot witness itself" is the reason to launch the witness, never
-a terminal at an uncommitted tree. `python scripts/sov_closure.py loop` prints
-the table; `judge` grades a handoff before it is sent
-(`decisions/0100-launch-your-own-witness.md`).
-
-Host capabilities do not imply authority. Use only the model, tools, permissions,
-and live grants visible in the current invocation; never infer them from this file
-or silently substitute another model. Launched agents inherit the session model
-today; no tier is
-pinned (a resource-consumption choice still open for Bdo).
+Human-facing output uses `.claude/skills/unslop/SKILL.md` by default. Persisted
+covered prose also needs a `clarity` review and receipt.
 
 ## Known traps
 
@@ -82,28 +55,14 @@ authority; silence from an offline checker is still not confirmation.
 
 ## What the system is
 
-Soveraeign is a locally sovereign, AI-native enterprise environment in which
-human and model operators share one world. Two records define it:
+Read `GROUND.md` and `CANON.md` for the product, then `SYSTEM.md` for the operating
+model. `AGENTS.md`, `CONTRIBUTING.md`, and this file govern participants; they do
+not own product claims.
 
-- the design System of Record, in two groups. `GROUND.md` and `CANON.md` say
-  what product this is and what it undertakes. `SYSTEM.md`, `CLASSIFICATION.md`,
-  `CONTRACT.md`, `PRD.md`, `SPEC.md`, `AI-NATIVE.md`, `STATUS.yaml`,
-  `ENGINEERING.md`, and `SDLC.md` say what the active campaign must prove and
-  how the system is built. Closed Phase-I definitions are pinned under
-  `archives/` and `contracts/phases.json`. Each current document owns one kind of
-  rule (`AGENTS.md`, Design System of Record).
-  `AGENTS.md`, `CONTRIBUTING.md`, and this file are in neither group: they
-  govern participants working here, never the product;
-- the operational System of Record: an append-preserving record of addressed
-  inputs, events, standing changes, observations, receipts, and
-  counter-records. SQLite stores it; it is not the semantic authority.
-
-Every governed design claim carries artifact standing,
-`OPEN -> BUILT -> WITNESSED -> RATIFIED`; operational records use the distinct
-standing defined in `SPEC.md`. Every consequential transition needs a typed,
-scoped, live grant. Historical Phase I is terminal `CLOSED_INCOMPLETE` and names
-no successor. Until the root seat opens one, `STATUS.yaml` projects
-`phase: NONE_ACTIVE` and `next_gate: SUCCESSOR_PHASE_OPENING`.
+Operational state preserves addressed inputs, events, standing changes,
+observations, receipts, and counter-records. SQLite is the current storage
+mechanism, not semantic authority. Consequential transitions require typed live
+grants. Phase I is terminal `CLOSED_INCOMPLETE`; no successor phase is active.
 
 ## Repository snapshot (informational)
 

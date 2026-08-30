@@ -9,6 +9,16 @@ Before a consequential change, read `STATUS.yaml`, `GROUND.md`, `CANON.md`,
 `SYSTEM.md`, `CLASSIFICATION.md`, `CONTRACT.md`, `PRD.md`, `SPEC.md`,
 `AI-NATIVE.md`, `ENGINEERING.md`, `SDLC.md`, and `OPEN-SEAMS.md`.
 
+## Human-facing output
+
+Apply `.claude/skills/unslop/SKILL.md` to human-facing prose by default. Plain
+words, direct verbs, named mechanisms, and canonical project terms are the base
+style. Do not preserve inflated wording merely because an earlier draft used it.
+
+For persisted prose covered by `contracts/clarity.json`, unslop is necessary but
+not sufficient. A completed `clarity` review also checks the artifact against the
+sources that govern its meaning and records both content and basis digests.
+
 ## Design System of Record
 
 The governing documents form one design System of Record with explicit roles,

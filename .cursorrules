@@ -11,6 +11,7 @@ neither group: they govern contributors here and own no product claim. Do not
 duplicate their rules into competing authorities.
 
 - Bdo owns product intent, naming, judgement, and phase gates.
+- Apply `.claude/skills/unslop/SKILL.md` to human-facing prose by default; persisted covered prose also requires a `clarity` review.
 - Model output, tool success, credentials, and green tests confer no authority.
 - Preserve `OPEN -> BUILT -> WITNESSED -> RATIFIED`; never self-witness.
 - Write the contract plus positive and defeating fixture before business logic.

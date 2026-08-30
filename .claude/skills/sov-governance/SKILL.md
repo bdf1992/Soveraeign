@@ -30,25 +30,23 @@ enable external effects.
 
 ## Key files
 
-- `AGENTS.md`, `STATUS.yaml` - read before any consequential change
-- `SYSTEM.md`, `CONTRACT.md` (C1-C15), `CLASSIFICATION.md`, `PRD.md`,
-  `SPEC.md`, `OPEN-SEAMS.md` (S1-S10), `NAMING.md`, `PUBLICATION.md`,
-  `ROADMAP.md` (F0-F6)
-- `decisions/0001-founding-boundary.md` ... `decisions/0012-engineering-baseline.md`
+- `AGENTS.md`, `STATUS.yaml`, `contracts/phases.json` - read before any consequential change
+- `SYSTEM.md`, `CONTRACT.md`, `CLASSIFICATION.md`, `PRD.md`, `SPEC.md`,
+  `OPEN-SEAMS.md`, `NAMING.md`, `PUBLICATION.md`, and current `ROADMAP.md`
+- `decisions/` and `acceptance/` for consequential choices and root packets;
+  archived Phase-I definitions live under `archives/` and are not current policy
 - `scripts/verify.py`, `scripts/lint.py`
 
 ## Standing and constraints
 
-STATUS.yaml: `phase: FOUNDING`, `next_gate: EVIDENCE_PRODUCING_EXECUTION`,
-`naming_status: OWNER_SELECTED_WORKING_NAME_PUBLIC_CLEARANCE_EXTERNAL`,
-`classification_status: OWNER_ACCEPTED_CANONICAL_VOCABULARY`,
-`specification_status: OWNER_ACCEPTED_PHASE_I_LOGICAL_SPEC_WITH_SOVEREIGNTY_CLARIFICATION`.
+`contracts/phases.json` records Phase I as `CLOSED_INCOMPLETE` with
+`succeeded_by: null`. Until the root seat opens a successor, `STATUS.yaml`
+projects `phase: NONE_ACTIVE` and `next_gate: SUCCESSOR_PHASE_OPENING`.
 
 `open_decisions` is empty and the `O<n>` identifiers are retired
-(`decisions/0033-close-the-founding-docket.md`). One acceptance hold remains:
-
-- `PUBLIC-CLEARANCE` blocks public release only. It blocks no Phase-I
-  engineering, and `STATUS.yaml` states both halves on purpose.
+(`decisions/0033-close-the-founding-docket.md`). The current owner docket lives
+in `owner_acceptance_queue`; the separate `PUBLIC-CLEARANCE` hold blocks public
+release only and does not block repository-local closure or successor engineering.
 
 This domain settles what evidence can settle and records what would defeat each
 ruling. It never publishes, never claims legal clearance, and never presents its

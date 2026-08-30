@@ -27,9 +27,6 @@ CONTRACTS = ROOT / "contracts"
 TABLE_PATH = CONTRACTS / "capability-offices.json"
 SCHEMA_PATH = CONTRACTS / "capability-map.schema.json"
 MAP_PATH = CONTRACTS / "fixtures" / "capability-map.reference.json"
-PHASE = "FOUNDING"
-
-
 def _load(path: Path) -> Any:
     with path.open(encoding="utf-8") as handle:
         return json.load(handle)
@@ -54,7 +51,8 @@ def _derived_from() -> list[str]:
 
 
 def _rebuild() -> dict[str, Any]:
-    return build(_manifests(), _load(TABLE_PATH), phase=PHASE, derived_from=_derived_from())
+    table = _load(TABLE_PATH)
+    return build(_manifests(), table, phase=str(table["phase"]), derived_from=_derived_from())
 
 
 def _open_endpoints(row: dict[str, Any]) -> list[str]:
@@ -151,7 +149,7 @@ def command_offices(args: argparse.Namespace) -> int:
         if policy["external"]:
             flags.append("external")
         refused = transport in table["external_transports_refused_in_phase"]
-        state = "REFUSED in this phase" if refused else "admissible"
+        state = "REFUSED by current table" if refused else "admissible"
         print(f"  {transport:<12} {state:<22} {', '.join(flags) or 'internal'}")
     return 0
 

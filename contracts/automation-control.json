@@ -82,7 +82,7 @@
     "refuses_any_other_bind": true,
     "effect_class": "RESOURCE_CONSUMPTION",
     "why_at_all": "A page opened from disk has no process behind it, so its buttons cannot change anything. Controls on a page require something serving it. AGENTS.md says HTTP waits for a conformance case that requires it; the owner requiring a page with working controls is that case, and it is written into conformance/fixtures/automation-control/ rather than asserted here.",
-    "not_external_world": "A socket bound to 127.0.0.1 reaches no third party and crosses no data boundary, so this is not the EXTERNAL_WORLD effect Phase I refuses. It is still a listening process on the owner's machine that writes repository files, so it binds loopback only, mints a token per run, prints it once, and refuses a request carrying the wrong one.",
+    "not_external_world": "A socket bound to 127.0.0.1 reaches no third party and crosses no data boundary, so this operation is RESOURCE_CONSUMPTION rather than EXTERNAL_WORLD. It is still a listening process on the owner's machine that writes repository files, so it binds loopback only, mints a token per run, prints it once, and refuses a request carrying the wrong one. The classification follows the boundary itself, not a phase-wide prohibition.",
     "token_note": "The token is not authentication. It tells one local process from another and stops a page you happen to be visiting from posting into your console. Every operator on this box is the same operator as far as this server can tell, and the record says so rather than implying an identity it never checked.",
     "does_not_share_a_port": "allow_reuse_address is off. A surface that writes repository files must not share a socket with anything, and on Windows the default would let it."
   },
@@ -100,7 +100,7 @@
     "ALREADY_EXISTS": "Create never overwrites. Eleven sessions share this checkout and a form submitted twice must not replace a declaration somebody else is editing.",
     "NOT_EDITABLE": "The requested field is name or enabled. Both have their own answer, named in the refusal.",
     "INVALID_DECLARATION": "The resulting document does not load. The loader's own wording is reported and the previous bytes are restored.",
-    "EXTERNAL_WORLD_REFUSED": "Phase I refuses external-world effects. Caught before a file is written, with a code naming the boundary, rather than as a schema complaint to interpret.",
+    "EXTERNAL_WORLD_REFUSED": "The unattended scheduler does not admit external-world declarations. Caught before a file is written, with a code naming that scheduler boundary, rather than as a schema complaint to interpret.",
     "MODEL_UNAVAILABLE": "The local model could not be reached, or the adapter refused the binding. No fallback to another model or provider - a silent substitution is forbidden.",
     "UNREADABLE_PROPOSAL": "The model's answer carried no JSON object this could read.",
     "WRONG_SHAPE": "A proposed value is not the kind of thing that field holds.",

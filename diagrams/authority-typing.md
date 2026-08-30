@@ -2,7 +2,7 @@
 
 ```text
 source          STATUS.yaml · PRD.md · CONTRACT.md
-source_digest   ca6899b0249ec0a0 · 46bf731e4489f976 · ff6873d56338933b
+source_digest   555b4eafd72aeb77 · 46bf731e4489f976 · ff6873d56338933b
 reader          hand-authored · v2
 fidelity        LOSSY
 omissions       AuthorityGrant field shape (contracts/);
@@ -53,5 +53,5 @@ it may not convert that engineering confidence into owner acceptance.
 The founding `O1`–`O22` docket is retired; those identifiers are not live open
 questions anymore. `STATUS.yaml` currently records no open founding decisions.
 The external public-clearance hold is distinct and blocks public release only,
-not Phase-I engineering. Any new owner-held question must be routed through its
+not repository-local boundary closure or successor engineering once opened. Any new owner-held question must be routed through its
 current decision record rather than resurrecting an `O<n>` identifier.

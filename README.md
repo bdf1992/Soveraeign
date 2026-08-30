@@ -109,35 +109,29 @@ resource the system protects: machines should perform the work that can be
 verified, while decisions that genuinely require a person remain visible,
 bounded, and assigned.
 
-## What the first operational version must prove
+## What Phase I established — and did not
 
-Phase I is qualified when an independent fresh witness can use the repository
-alone to demonstrate that:
+Phase I is closed. `contracts/phases.json` records its terminal as
+`CLOSED_INCOMPLETE`: the operating window ended, the qualification exit was not
+earned, and no successor phase is named. Its pinned first requirements remain in
+`archives/PRD-PHASE-I.md` and `archives/ROADMAP-F0-F6.md`; they are historical
+definition, not current work authority.
 
-1. A model can submit an attributed proposal with its cost recorded.
-2. Sources and derived records are immutable, addressed, and reconstructable.
-3. A human and a model can exchange useful state with provenance intact.
-4. Admission is gated and record retraction preserves history.
-5. Authority is typed, scoped, recorded, revocable, and correctly refused.
-6. Pending human judgement remains visible without blocking unrelated work.
-7. Ratified executable claims receive reproducible runtime attestations.
-8. Human and model interfaces use the same authoritative kernel semantics.
-9. Two different model bindings can perform the same named operation without a
-   provider-specific authority path or loss of local continuity.
-
-Passing tests is necessary but not sufficient. The evidence must be
-reconstructable by an independent witness, and Bdo retains the judgement call
-on whether Phase I is operationally accepted.
+The closure campaign preserves that result rather than rounding partial evidence
+up to acceptance. The next construction aperture, if and when the root seat opens
+a successor phase, is issue #173: prove and freeze one deliberately small,
+Record-backed, independently observed vertical with one human and two materially
+different model bindings before broad architecture expands again.
 
 ## Current repository state
 
-This repository is in **founding**. It now contains a proposed stack-neutral
-logical specification, an executable conformance oracle, and an experimental
-Asset Service reference participant. It contains no production runtime and
-makes no production stack choice. These artifacts are built evidence, not an
-independent witness or owner ratification.
+This repository is **between phases**. Historical Phase I is terminal
+`CLOSED_INCOMPLETE`; no successor phase is active. Issue #148 is the boundary
+closure ledger. The repository contains substantial governing and self-tested
+implementation evidence, but independent operational qualification remains
+narrow and owner acceptance is never inferred from implementation.
 
-The founding set contains:
+The governing and operating set contains:
 
 - `GROUND.md` — the sixteen claims that say what product Soveraeign is;
 - `CANON.md` — who a node is for, what Soveraeign undertakes, and the journeys
@@ -151,7 +145,8 @@ The founding set contains:
 - `services/proofing/` — the proposed sibling review-and-approval service boundary;
 - `CONTRACT.md` — invariants implementations must preserve;
 - `PRD.md` — the product's requirements, priority, and success measures;
-- `SPEC.md` — the proposed stack-neutral Phase-I logical specification;
+- `SPEC.md` — the current stack-neutral logical contract; the closed Phase-I
+  definition is pinned separately in `contracts/phases.json`;
 - `ROADMAP.md` — evidence-gated construction phases and the name crosswalk;
 - `SDLC.md` — the operating loop: tiers, dyads, and the Red-gated release requirement;
 - `services/console/` — the proposed third sibling operator-surface boundary;
@@ -223,25 +218,19 @@ Writing a binding or an adapter is a different path:
 
 ## Immediate objective
 
-Close the founding layer without promoting implementation into policy:
+Finish the phase boundary without silently opening its successor:
 
-- reconcile the canonical documents against the locked evidence;
-- resolve stale revision references;
-- preserve unresolved semantic disagreements;
-- review and ratify or strike `CLASSIFICATION.md` and `SPEC.md`;
-- bind the executable conformance observations to the reference Asset Service;
-- preserve known participant failures instead of weakening the oracle;
-- implement the shared kernel the bindings resolve through.
+- keep current-reader documents, host prompts, issue horizons, and executable
+  policy projections consistent with the recorded Phase-I terminal;
+- preserve unresolved root judgements as a small explicit docket rather than
+  executable branch or phase debris;
+- finish the retrospective and exact-main closure receipt in issue #148;
+- leave successor-phase opening as an explicit root-seat act.
 
-These are two lanes, not one ordered list. The document lane closes the
-founding layer; the code lane is blocked behind the shared kernel, which is the
-only reachable ticket in the epic tree. `STATUS.yaml` declares the document
-gate; `scripts/sov_next.py` reports the reachable code work and names the
-disagreement. Neither lane is ranked here — ordering them is owner judgement,
-and this file does not hold it.
-
-The next code change must satisfy an already-visible conformance failure. It
-must not decide what the product means.
+After that opening, issue #173 is the first construction gate: close one minimal
+witnessed kernel vertical before broad service or architecture expansion. The
+next code change must satisfy a visible contract or defeating case; it must not
+manufacture product meaning merely to create work.
 
 ## Publication boundary
 

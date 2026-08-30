@@ -15,9 +15,10 @@ That inversion is the point. A failure here does not mean something broke; it
 means something was fixed, and the corresponding entry in CLAUDE.md must be
 deleted. The warning cannot outlive the hazard.
 
-Traps that need network access are recorded but not asserted, because
-`AGENTS.md` forbids external effects in Phase I and unattended runs carry no
-`gh`. They are listed as ATTENDED so nobody mistakes silence for confirmation.
+Traps that need network access are recorded but not asserted because this checker
+is deliberately offline and unattended runs carry no `gh`. External effects in
+other operations are scoped by live authority rather than refused by phase. They
+are listed as ATTENDED so nobody mistakes silence for confirmation.
 """
 
 from __future__ import annotations
@@ -119,7 +120,7 @@ def main(argv: list[str] | None = None) -> int:
         if trap.check is None:
             attended += 1
             print(f"ATTENDED {trap.id}: {trap.summary}")
-            print("         not asserted here - needs network, which Phase I refuses")
+            print("         not asserted here - needs attended network observation outside this offline checker")
             continue
         still, evidence = trap.check()
         if still:

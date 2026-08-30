@@ -51,7 +51,7 @@ def input_state_digest(manifests: dict[str, dict[str, Any]], table: dict[str, An
 
 def _endpoints(service_id: str, capability_id: str, standing: str,
                table: dict[str, Any], built: bool) -> list[dict[str, Any]]:
-    """One endpoint per declared transport, activated no further than the phase allows.
+    """One endpoint per declared transport, activated no further than the policy table allows.
 
     A CLI endpoint goes ``ACTIVE`` only for a capability some command actually
     implements. A service owning a CLI does not put every one of its operations
@@ -222,7 +222,7 @@ def _office_defects(document: dict[str, Any], table: dict[str, Any]) -> list[str
 
 
 def _transport_defects(document: dict[str, Any], table: dict[str, Any]) -> list[str]:
-    """No serving before BUILT, and no external transport in a phase that refuses it."""
+    """No serving before BUILT, and no external transport the current policy table refuses."""
     policy = table.get("transport_policy", {})
     refused = set(table.get("external_transports_refused_in_phase", []))
     defects: list[str] = []
@@ -237,7 +237,7 @@ def _transport_defects(document: dict[str, Any], table: dict[str, Any]) -> list[
                                f"service stands at {capability.get('service_standing')}")
             if transport in refused and activation != REFUSED:
                 defects.append(f"EXTERNAL_TRANSPORT_ACTIVATED: {label} carries {transport} "
-                               f"as {activation}, which this phase refuses")
+                               f"as {activation}, which the current policy table refuses")
             if (capability.get("office") == "BACK" and activation == ACTIVE
                     and policy.get(transport, {}).get("operator_facing")):
                 defects.append(f"BACK_OFFICE_EXPOSED: {label} is back-office work served "

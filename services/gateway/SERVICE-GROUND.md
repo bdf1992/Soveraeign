@@ -67,11 +67,11 @@ coverage, not replace it.
 
 ### G-GW-6 — a network transport does not open itself
 
-HTTP stays inactive and refused while Phase I stands, regardless of what runtime health checks or
-listeners exist underneath it (`CHARTER.md` "What it does not do";
-`contracts/capability-offices.json` `transport_policy.HTTP`, `external_transports_refused_in_phase`).
-No root `GROUND-<nnn>` claim names transport activation directly; this claim is this service's own
-reading of the Phase-I boundary rather than a specialization.
+HTTP stays inactive and refused until this service has an explicitly built and admitted external
+transport, regardless of what runtime health checks or listeners exist underneath it
+(`CHARTER.md` "What it does not do"; `contracts/capability-offices.json`
+`transport_policy.HTTP`). No root `GROUND-<nnn>` claim names transport activation directly;
+this is the Gateway's own fail-closed service boundary, not a phase-wide effect rule.
 
 Defeated by: an HTTP-addressed request reaching routing. `test_http_stays_refused_in_phase_one`
 is the current guard. Who would custody a credential if this ever changes is not answered here —

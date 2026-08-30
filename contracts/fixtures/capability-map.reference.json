@@ -1,7 +1,7 @@
 {
   "map_schema": "soveraeign-capability-map/v1",
   "status": "PROPOSED",
-  "phase": "FOUNDING",
+  "phase": "NONE_ACTIVE",
   "derived_from": [
     "services/asset/contracts/service.json",
     "services/console/contracts/service.json",
@@ -15,7 +15,7 @@
     "services/registry/contracts/service.json",
     "contracts/capability-offices.json"
   ],
-  "input_state_digest": "a82c897f08c6f165f8be4b929bd9dc28e284b3f268abc8010eaa52324ce77fb5",
+  "input_state_digest": "b39ef40ae2040d4a491191fc2703cbce9e95d309da28b9b68a8c6b41f51ffe0d",
   "capabilities": [
     {
       "capability_id": "asset.add-member",

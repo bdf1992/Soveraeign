@@ -2,7 +2,7 @@
 
 ```text
 source          PRD.md · SPEC.md · CONTRACT.md · STATUS.yaml
-source_digest   46bf731e4489f976 · b58dc1ed68c2b999 · ff6873d56338933b · ca6899b0249ec0a0
+source_digest   46bf731e4489f976 · b58dc1ed68c2b999 · ff6873d56338933b · 555b4eafd72aeb77
 reader          hand-authored · v2
 fidelity        LOSSY
 omissions       the nine PROD-I requirement texts and their defeating cases;
@@ -39,10 +39,10 @@ not preapproval**.
 The current repository makes this distinction concrete. Asset and Record remain
 built/self-tested rather than self-witnessed. Host `read-health` is also built
 and self-tested, while its Node Interface fact is explicitly `observed: false`.
-The engineering framework itself is owner-accepted as the Phase-I reference
-baseline; that acceptance does not convert every implementation beneath it into
+The engineering framework itself is owner-accepted as the historical Phase-I
+reference baseline; that acceptance does not convert every implementation beneath it into
 witnessed behavior.
 
-The derived operation surface currently says 127 declared, 5 reachable, and 0
-observed. That is not a health score. It is three independent layers of fact,
+The derived operation surface currently says 134 declared, 134 bound, 46 policy-active,
+5 reachable, and 0 observed. That is not a health score. These are independent layers of fact,
 and the lifecycle must not collapse them into one percentage.

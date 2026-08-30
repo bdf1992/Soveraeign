@@ -1,10 +1,11 @@
 # Engineering Baseline and Composable Primitives
 
-Status: `OWNER-DIRECTED FRAMEWORK · TECHNICAL BASELINE PROPOSED`
+Status: `OWNER-ACCEPTED A1 REFERENCE BASELINE · CURRENT REPLACEABLE MECHANISM PROFILE`
 
-This document defines the minimum Phase-I construction kit. It does not replace
-the stack-neutral logical specification. It chooses a small reference stack and
-names the primitives from which services may compose larger governed workflows.
+This document defines the retained local construction kit first selected for Phase
+I. The phase is closed; the mechanism profile remains current until a proved
+replacement changes it. It does not replace the stack-neutral logical specification
+and adds no authority by technology choice.
 
 ## Two Systems of Record
 
@@ -18,7 +19,7 @@ and counter-records. It records what happened and under what authority. It does
 not collapse recorded, admitted, ratified, effective, disputed, failed, or
 countered claims into one undifferentiated “truth.”
 
-SQLite is the Phase-I storage mechanism for that record. Search tables, graph
+SQLite is the retained reference storage mechanism for that record. Search tables, graph
 stores, indexes, caches, and UI views are projections rebuilt from the record.
 
 ## Selection rule
@@ -87,7 +88,7 @@ boundary profiles them; naming one MUST NOT imply compliance.
 
 ## Minimal reference stack
 
-| Concern | Phase-I choice | Boundary |
+| Concern | Reference choice | Boundary |
 | --- | --- | --- |
 | Language | Python 3.11+ | Reference implementation only; logical contracts remain language-neutral |
 | Runtime dependencies | Python standard library first | New dependencies require a decision and named port or adapter |
@@ -97,7 +98,7 @@ boundary profiles them; naming one MUST NOT imply compliance.
 | Machine contracts | JSON Schema Draft 2020-12 | Schema validity is not semantic fitness |
 | Human control files | Markdown and small YAML fixtures | YAML is not a parallel runtime contract |
 | Local surface | Python API and CLI | Human and model bindings use the same kernel operations |
-| Tests and lint | `unittest` and dependency-free repository scripts | Local, deterministic, network-free; wall time graded PLATINUM/GOLD/SILVER at 3/6/15 s, failing past 15 (`decisions/0050`) |
+| Tests and lint | `unittest` and dependency-free repository scripts | Local, deterministic, network-free; total wall time graded at 3/6/15 s, with pooled >30 s checks rerun alone and only isolated >30 s catastrophic (`decisions/0081`, `contracts/verification-budget.json`) |
 | Search and graph | Rebuildable local projections | External systems integrate through adapters later |
 | Model execution | Declared Model Binding plus Model Adapter | BYOM; no provider-derived authority or silent fallback |
 
@@ -252,8 +253,8 @@ replaceable boundary resolving an observed failure while preserving the kernel.
 
 ## Acceptance
 
-The framework is `BUILT` when the root instruction surfaces agree, the
-dependency-free lint and verification loop enforce their invariants inside the
-graded budget, and existing conformance and participant tests still run. It is
-`RATIFIED` only when Bdo accepts the exact Phase-I technology choices and
-composition rules.
+A1 owner-accepted this reference baseline for Phase I. That acceptance does not
+promote every implementation to witnessed standing, and it does not make a
+mechanism semantically authoritative. Per O2b, a proved replacement behind the
+same contract may change the mechanism without reopening the closed phase; a
+semantic or product change still follows its owning authority.

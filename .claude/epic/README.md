@@ -8,10 +8,10 @@ projection holds no standing, and reconciling it settles nothing.
 ## Why a projection and not a live read
 
 GitHub is the coordination surface and the issue body remains the compressed
-specification (`CONTRIBUTING.md`, Issue coordination contract). Reading it is
-an external crossing. An unattended scheduled run has no business making one:
-`no_external_effects_in_phase_i` stands, and the scheduled-run tool whitelist
-in `scripts/sovschedule/runner.py` deliberately does not carry `gh`.
+specification (`CONTRIBUTING.md`, Issue coordination contract). Reading it live is
+an external crossing. This unattended projection walker deliberately does not make
+one: the scheduled-run tool whitelist in `scripts/sovschedule/runner.py` carries no
+`gh`, so refresh remains a separate attended/scoped coordination action.
 
 So the crossing happens once, attended, and lands in the repository:
 

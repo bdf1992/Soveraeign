@@ -3,7 +3,9 @@ artifact: soveraeign-founding-repository
 product_name: Soveraeign
 repository_name: Soveraeign
 category: locally-sovereign-algorithmic-ai-native-enterprise-environment
-phase: FOUNDING
+# `contracts/phases.json` is authoritative for phase history. Phase I is terminal
+# CLOSED_INCOMPLETE and names no successor; only seat:root may open one.
+phase: NONE_ACTIVE
 naming_status: OWNER_SELECTED_WORKING_NAME_PUBLIC_CLEARANCE_HELD_O1
 implementation_status: EXPERIMENTAL_REFERENCE_PARTICIPANT
 conformance_status: EXECUTABLE_ORACLE_CONTROLS_PARTICIPANT_BINDING_OPEN
@@ -438,4 +440,6 @@ protected_boundaries:
   - no_refused_verb_reachable_through_any_scope
   - no_claim_that_an_external_effect_was_rolled_back
 
-next_gate: EVIDENCE_PRODUCING_EXECUTION
+# Boundary closure remains under issue #148. Construction under a successor phase
+# begins only after the explicit root opening act.
+next_gate: SUCCESSOR_PHASE_OPENING

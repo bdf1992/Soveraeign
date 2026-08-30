@@ -1,6 +1,6 @@
-# Phase-I Local Infrastructure
+# Historical Phase-I Local Infrastructure
 
-Status: `ARCHITECTURE REVIEW CANDIDATE · TOPOLOGY ACCEPTANCE PENDING · O14 OPEN`
+Status: `BUILT/SELF-TESTED PHASE-I CUSTODY/DEPLOYMENT EVIDENCE · BROAD TOPOLOGY ACCEPTANCE NOT CLAIMED`
 
 This directory is the smallest infrastructure-as-code surface required to give
 Soveraeign requirement work a reproducible local custody boundary. It declares
@@ -51,7 +51,8 @@ directories.
 
 ## Phase-I envelope
 
-`phase-i.local.json` declares:
+This is the pinned historical Phase-I infrastructure envelope, not the current
+phase or authority policy. `phase-i.local.json` declares:
 
 - local custody with no required network or provider;
 - separate record, payload, projection, receipt, and work paths;
@@ -106,4 +107,4 @@ performs independent state and bundle inspection, exercises defeating cases,
 and emits a candidate receipt outside the repository. A manual read-only GitHub
 Actions workflow exposes the same procedure for an independently identified
 witness. Neither the runner nor CI can promote its own output to `WITNESSED`,
-accept topology issue #39, or ratify O14.
+accept topology issue #39, open a successor phase, or mint owner standing.

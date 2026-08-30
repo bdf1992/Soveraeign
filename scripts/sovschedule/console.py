@@ -13,8 +13,9 @@ your console; that is origin separation, not authentication, and the switch log 
 the actor as a local operator rather than naming a person it never checked.
 
 Effect class is ``RESOURCE_CONSUMPTION``: a listening socket on the owner's machine.
-Nothing crosses a data boundary and no third party is reachable, so this is not the
-``EXTERNAL_WORLD`` effect Phase I refuses.
+Nothing crosses a data boundary and no third party is reachable, so this is not an
+``EXTERNAL_WORLD`` effect. That classification follows the boundary itself, not a
+phase-wide prohibition.
 """
 
 from __future__ import annotations

@@ -1,24 +1,10 @@
 #!/usr/bin/env python3
-"""Grade the repository index against the surface each path is declared to occupy.
+"""Grade indexed repository publication evidence against its declared surface.
 
-`PUBLICATION.md` owns what may never be published and stops there. Generated
-output, one host's harness, the work journal and scratch were never classified,
-so they accumulated in a public repository and a newcomer reads them as product.
-`contracts/publication-surface.json` declares a surface for every tracked
-top-level path, the routes that must reach a reader, and the entrypoint index.
-This performs the reading.
-
-Publication evidence is read from the Git index, not from unstaged working-tree
-bytes. `git ls-files` defines the indexed population and `git cat-file blob :path`
-defines the indexed content of declarations and documents. The one deliberate
-working-tree read is the fail-closed shadow check: a local Python module capable of
-shadowing one of this grader's imports is itself grounds to refuse the run.
-
-Findings carry a holder. A finding held by `sov` is a defect and fails `check`;
-a finding held by `owner` is reported and does not fail, because a declared gate
-stops one transition and not the frontier (`AGENTS.md`, Authority). Nothing here
-grants authority, changes standing, or decides whether a path should be public:
-it reports where the indexed tree and the declaration disagree.
+Membership and document bytes come from the Git index, never unstaged working-tree
+content. The only working-tree reach is a fail-closed check for local modules that
+could shadow the grader's permitted imports. Findings held by `sov` fail `check`;
+owner-held findings remain visible without becoming delegated authority.
 """
 
 from __future__ import annotations
@@ -36,25 +22,19 @@ CONTRACT = "contracts/publication-surface.json"
 SOV = "sov"
 OWNER = "owner"
 _CONTENT: dict[str, str | None] = {}
-
-# These imports are permitted dependencies of the grader. A same-named module under
-# scripts/ would be imported before the standard-library copy for
-# `python scripts/sov_publication.py check`; that is local executable input, not
-# publication evidence, so its presence refuses the run.
 PERMITTED_IMPORTS = frozenset({"argparse", "fnmatch", "json", "os", "pathlib", "subprocess"})
 
 
 class ContractError(Exception):
-    """The declaration cannot be read, which is a defect and not a finding."""
+    """The declaration cannot be read."""
 
 
 def _git(*argv: str) -> subprocess.CompletedProcess[str]:
-    """The publication grader's only process-spawn boundary."""
+    """The grader's only process-spawn boundary."""
     return subprocess.run(["git", *argv], cwd=ROOT, capture_output=True, text=True)
 
 
 def _document(value: str | Path) -> str:
-    """Normalize a repository path without consulting the working tree."""
     path = Path(value)
     if path.is_absolute():
         try:
@@ -65,7 +45,6 @@ def _document(value: str | Path) -> str:
 
 
 def tracked() -> list[str]:
-    """Every indexed path, as git reports it, with forward slashes."""
     result = _git("ls-files")
     if result.returncode != 0:
         raise ContractError("git ls-files failed; this must run inside the repository")
@@ -73,7 +52,7 @@ def tracked() -> list[str]:
 
 
 def content(document: str | Path) -> str | None:
-    """Return the blob the index holds for a document, never its unstaged bytes."""
+    """Return the blob the index holds for a document."""
     name = _document(document)
     if name not in _CONTENT:
         result = _git("cat-file", "blob", f":{name}")
@@ -82,7 +61,6 @@ def content(document: str | Path) -> str | None:
 
 
 def load(path: str | Path = CONTRACT) -> dict:
-    """Load the publication declaration from the index and fail closed."""
     name = _document(path)
     text = content(name)
     if text is None:
@@ -94,17 +72,11 @@ def load(path: str | Path = CONTRACT) -> dict:
 
 
 def published(target: str, held: set[str]) -> bool:
-    """Whether the index holds this file or a file beneath this declared directory."""
     return target in held or any(item.startswith(target + "/") for item in held)
 
 
 def shadowing_modules() -> list[str]:
-    """Return local modules that could replace a permitted import.
-
-    This is intentionally a working-tree read. Unstaged bytes must never contribute
-    publication evidence, but an unstaged executable module that can change how the
-    grader reads the index is an integrity defect and therefore fails closed.
-    """
+    """Return working-tree modules that could replace a permitted import."""
     scripts = ROOT / "scripts"
     found: list[str] = []
     for name in sorted(PERMITTED_IMPORTS):
@@ -125,7 +97,6 @@ def finding(check: str, holder: str, path: str, detail: str) -> dict[str, str]:
 
 
 def coverage(contract: dict, paths: list[str]) -> list[dict[str, str]]:
-    """Every indexed top-level path must be classified, so the tree cannot grow unclassified."""
     declared = {entry["path"].split("/", 1)[0] for entry in contract["paths"]}
     return [finding("UNCLASSIFIED", SOV, name,
                     "tracked and absent from contracts/publication-surface.json")
@@ -133,14 +104,12 @@ def coverage(contract: dict, paths: list[str]) -> list[dict[str, str]]:
 
 
 def surfaces(contract: dict, paths: list[str]) -> list[dict[str, str]]:
-    """Each entry must satisfy the rule its own surface declares using indexed membership."""
-    tracked_set = set(paths)
+    held = set(paths)
     found: list[dict[str, str]] = []
     for entry in contract["paths"]:
         path, surface = entry["path"], entry["surface"]
         if surface == "LOCAL":
-            leaked = sorted(item for item in tracked_set
-                            if item == path or item.startswith(path + "/"))
+            leaked = sorted(item for item in held if item == path or item.startswith(path + "/"))
             if leaked:
                 found.append(finding("LOCAL_TRACKED", SOV, path,
                                      f"declared operator-machine only, yet {len(leaked)} tracked "
@@ -152,10 +121,10 @@ def surfaces(contract: dict, paths: list[str]) -> list[dict[str, str]]:
                 if not target:
                     found.append(finding("DERIVED_UNCHECKED", SOV, path,
                                          f"generated output declaring no {role}"))
-                elif not published(target, tracked_set):
+                elif not published(target, held):
                     found.append(finding("DERIVED_UNCHECKED", SOV, path,
                                          f"declares {role} {target}, which the repository index "
-                                         f"does not hold"))
+                                         "does not hold"))
         if surface == "SCRATCH" and not entry.get("until"):
             found.append(finding("SCRATCH_OPEN_ENDED", SOV, path,
                                  "kept in the tree with nothing declared that retires it"))
@@ -166,14 +135,12 @@ def surfaces(contract: dict, paths: list[str]) -> list[dict[str, str]]:
 
 
 def reaches(text: str, document: str, required: str) -> bool:
-    """Whether the indexed document reaches the required path in either valid spelling."""
     here = os.path.dirname(document)
     relative = os.path.relpath(required, here).replace(os.sep, "/") if here else required
     return required in text or relative in text
 
 
 def routes(contract: dict) -> list[dict[str, str]]:
-    """An indexed entry document must name what its audience needs and no stale pointer."""
     found: list[dict[str, str]] = []
     for route in contract["routes"]:
         document = route["document"]
@@ -197,7 +164,6 @@ def routes(contract: dict) -> list[dict[str, str]]:
 
 
 def entrypoints(contract: dict, paths: list[str]) -> list[dict[str, str]]:
-    """Every command-line entrypoint must appear in the indexed entrypoint index."""
     declared = contract.get("entrypoint_index")
     if not declared:
         return []
@@ -205,23 +171,20 @@ def entrypoints(contract: dict, paths: list[str]) -> list[dict[str, str]]:
     if text is None:
         return [finding("INDEX_MISSING", SOV, declared["index"],
                         "no indexed entrypoint index exists for the node's command-line surface")]
-    pattern = declared["pattern"]
     names = sorted({Path(item).name for item in paths
-                    if fnmatch.fnmatch(Path(item).name, pattern)})
+                    if fnmatch.fnmatch(Path(item).name, declared["pattern"])})
     return [finding("ENTRYPOINT_UNINDEXED", SOV, name,
                     f"an entrypoint absent from {declared['index']}")
             for name in names if name not in text]
 
 
 def retired(contract: dict) -> list[dict[str, str]]:
-    """A completed-operation document must carry its marker in the indexed content."""
     found: list[dict[str, str]] = []
     for entry in contract.get("retired", ()):
         text = content(entry["document"])
         if text is None:
             continue
-        head = text.split("\n", 12)[:12]
-        if not any(entry["marker"] in line for line in head):
+        if not any(entry["marker"] in line for line in text.split("\n", 12)[:12]):
             found.append(finding("STALE_UNMARKED", entry.get("holder", SOV), entry["document"],
                                  f"describes an operation completed {entry['completed']} and "
                                  f"carries no {entry['marker']} marker in its opening lines"))
@@ -240,61 +203,50 @@ def render(found: list[dict[str, str]]) -> None:
 
 
 def selfcheck() -> int:
-    """Prove every declared refusal fires, so an empty finding list means something."""
+    """Prove each declared refusal still discriminates."""
     cases = (
-        ("an unclassified tracked path is refused",
-         lambda: coverage({"paths": []}, ["strange/thing.md"]), "UNCLASSIFIED"),
-        ("a classified tracked path is admitted",
-         lambda: coverage({"paths": [{"path": "strange"}]}, ["strange/thing.md"]), None),
-        ("a LOCAL path with tracked files is refused",
-         lambda: surfaces({"paths": [{"path": "scripts", "surface": "LOCAL"}]},
-                          ["scripts/lint.py"]), "LOCAL_TRACKED"),
-        ("a LOCAL path with no tracked files is admitted",
-         lambda: surfaces({"paths": [{"path": ".local", "surface": "LOCAL"}]},
-                          ["scripts/lint.py"]), None),
-        ("DERIVED output with no builder is refused",
-         lambda: surfaces({"paths": [{"path": "docs/x.html", "surface": "DERIVED",
-                                      "check": "scripts/lint.py"}]},
-                          ["scripts/lint.py"]), "DERIVED_UNCHECKED"),
-        ("DERIVED output whose check is not indexed is refused",
-         lambda: surfaces({"paths": [{"path": "docs/x.html", "surface": "DERIVED",
-                                      "builder": "scripts/lint.py",
-                                      "check": "scripts/nope.py"}]},
-                          ["scripts/lint.py"]), "DERIVED_UNCHECKED"),
-        ("SCRATCH with nothing that retires it is refused",
-         lambda: surfaces({"paths": [{"path": "experiments", "surface": "SCRATCH"}]}, []),
-         "SCRATCH_OPEN_ENDED"),
-        ("a HOST path naming no host is refused",
-         lambda: surfaces({"paths": [{"path": ".claude", "surface": "HOST"}]}, []),
-         "HOST_UNDECLARED"),
-        ("a route with no entry document is refused",
-         lambda: routes({"routes": [{"audience": "x", "document": "NOPE.md",
-                                     "must_name": [], "must_not_name": []}]}), "ROUTE_MISSING"),
-        ("a route that does not name what it must is refused",
-         lambda: routes({"routes": [{"audience": "x", "document": "CONTRACT.md",
-                                     "must_name": ["zzz-not-present"],
-                                     "must_not_name": []}]}), "ROUTE_GAP"),
-        ("a link relative to the document's own directory reaches its target",
-         lambda: routes({"routes": [{"audience": "x", "document": "bindings/README.md",
-                                     "must_name": ["bindings/INTEGRATING.md"],
-                                     "must_not_name": []}]}), None),
-        ("a route still pointing at a stale document is refused",
-         lambda: routes({"routes": [{"audience": "x", "document": "README.md",
-                                     "must_name": [],
-                                     "must_not_name": ["AGENTS.md"]}]}), "ROUTE_STALE"),
-        ("a missing entrypoint index is refused",
-         lambda: entrypoints({"entrypoint_index": {"index": "scripts/NOPE.md",
-                                                   "pattern": "sov_*.py"}}, []), "INDEX_MISSING"),
-        ("an entrypoint absent from the index is refused",
-         lambda: entrypoints({"entrypoint_index": {"index": "CONTRACT.md",
-                                                   "pattern": "sov_*.py"}},
-                             ["scripts/sov_nowhere.py"]), "ENTRYPOINT_UNINDEXED"),
-        ("a retired document with no marker is refused",
-         lambda: retired({"retired": [{"document": "CONTRACT.md", "marker": "RETIRED",
-                                       "completed": "2026-01-01"}]}), "STALE_UNMARKED"),
-        ("a retired document that no longer exists is admitted",
-         lambda: retired({"retired": [{"document": "GONE.md", "marker": "RETIRED",
-                                       "completed": "2026-01-01"}]}), None),
+        ("unclassified path", lambda: coverage({"paths": []}, ["strange/thing.md"]), "UNCLASSIFIED"),
+        ("classified path", lambda: coverage({"paths": [{"path": "strange"}]},
+                                              ["strange/thing.md"]), None),
+        ("LOCAL tracked", lambda: surfaces({"paths": [{"path": "scripts", "surface": "LOCAL"}]},
+                                            ["scripts/lint.py"]), "LOCAL_TRACKED"),
+        ("LOCAL absent", lambda: surfaces({"paths": [{"path": ".local", "surface": "LOCAL"}]},
+                                           ["scripts/lint.py"]), None),
+        ("DERIVED no builder", lambda: surfaces(
+            {"paths": [{"path": "docs/x.html", "surface": "DERIVED", "check": "scripts/lint.py"}]},
+            ["scripts/lint.py"]), "DERIVED_UNCHECKED"),
+        ("DERIVED missing check", lambda: surfaces(
+            {"paths": [{"path": "docs/x.html", "surface": "DERIVED",
+                        "builder": "scripts/lint.py", "check": "scripts/nope.py"}]},
+            ["scripts/lint.py"]), "DERIVED_UNCHECKED"),
+        ("SCRATCH open", lambda: surfaces(
+            {"paths": [{"path": "experiments", "surface": "SCRATCH"}]}, []), "SCRATCH_OPEN_ENDED"),
+        ("HOST unnamed", lambda: surfaces(
+            {"paths": [{"path": ".claude", "surface": "HOST"}]}, []), "HOST_UNDECLARED"),
+        ("route missing", lambda: routes(
+            {"routes": [{"audience": "x", "document": "NOPE.md",
+                         "must_name": [], "must_not_name": []}]}), "ROUTE_MISSING"),
+        ("route gap", lambda: routes(
+            {"routes": [{"audience": "x", "document": "CONTRACT.md",
+                         "must_name": ["zzz-not-present"], "must_not_name": []}]}), "ROUTE_GAP"),
+        ("relative route", lambda: routes(
+            {"routes": [{"audience": "x", "document": "bindings/README.md",
+                         "must_name": ["bindings/INTEGRATING.md"], "must_not_name": []}]}), None),
+        ("stale route", lambda: routes(
+            {"routes": [{"audience": "x", "document": "README.md",
+                         "must_name": [], "must_not_name": ["AGENTS.md"]}]}), "ROUTE_STALE"),
+        ("index missing", lambda: entrypoints(
+            {"entrypoint_index": {"index": "scripts/NOPE.md", "pattern": "sov_*.py"}}, []),
+         "INDEX_MISSING"),
+        ("entrypoint missing", lambda: entrypoints(
+            {"entrypoint_index": {"index": "CONTRACT.md", "pattern": "sov_*.py"}},
+            ["scripts/sov_nowhere.py"]), "ENTRYPOINT_UNINDEXED"),
+        ("retired unmarked", lambda: retired(
+            {"retired": [{"document": "CONTRACT.md", "marker": "RETIRED",
+                          "completed": "2026-01-01"}]}), "STALE_UNMARKED"),
+        ("retired absent", lambda: retired(
+            {"retired": [{"document": "GONE.md", "marker": "RETIRED",
+                          "completed": "2026-01-01"}]}), None),
     )
     failures = 0
     for name, run, expected in cases:
@@ -321,8 +273,7 @@ def main() -> int:
         print("FAIL: publication grader import boundary is shadowed by " + ", ".join(shadows))
         return 1
     try:
-        contract = load()
-        paths = tracked()
+        contract, paths = load(), tracked()
     except ContractError as error:
         print(f"FAIL: {error}")
         return 1
@@ -336,9 +287,7 @@ def main() -> int:
     verdict = "FAIL" if held else "PASS"
     print(f"{verdict}: {len(contract['paths'])} declared path(s), {len(found)} finding(s), "
           f"{len(held)} held by sov, {len(owned)} held by the owner")
-    if args.command == "check":
-        return 1 if held else 0
-    return 0
+    return 1 if args.command == "check" and held else 0
 
 
 if __name__ == "__main__":

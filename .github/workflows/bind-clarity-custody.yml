@@ -20,6 +20,19 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Refresh the checked orientation count
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('CLAUDE.md')
+          text = path.read_text(encoding='utf-8')
+          old = 'it now holds\n685 commits, 87 decision records and 29 reports.'
+          new = 'it now holds\n764 commits, 87 decision records and 29 reports.'
+          if text.count(old) != 1:
+              raise SystemExit(f'expected one stale snapshot sentence, found {text.count(old)}')
+          path.write_text(text.replace(old, new), encoding='utf-8', newline='\n')
+          PY
+          python scripts/sov_clarity.py record CLAUDE.md --changed
       - name: Bind the queued clarity obligation
         run: |
           python - <<'PY'
@@ -139,7 +152,7 @@ jobs:
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add contracts/custodies.json docs/documentation.html .github/workflows/bind-clarity-custody.yml
+          git add CLAUDE.md .clarity/coverage.json contracts/custodies.json docs/documentation.html .github/workflows/bind-clarity-custody.yml
           git diff --cached --exit-code && exit 1 || true
           git commit -m "chore(custody): queue full clarity corpus"
           git pull --rebase origin closure/phase-i-zero-state

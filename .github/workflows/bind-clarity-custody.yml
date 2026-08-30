@@ -72,6 +72,27 @@ jobs:
                   'judgement_seat': 'seat:root',
                   'defeated_by': 'coverage reaches 100% by excluding current prose, retaining stale basis digests, or recording review without actually reconsidering the artifact claim'
               },
+              'estimate': {
+                  'estimate_schema': 'soveraeign-estimate/v1',
+                  'estimated_by': 'principal:closure-controller',
+                  'estimated_at': '2026-08-30T22:18:00Z',
+                  'basis': 'The obligation is known but intentionally unleased. The denominator is measured at 138 eligible artifacts with 120 unchecked. ROOT_POINT permits only the cost of finding out, so this estimate claims no delivery time or batch count.',
+                  'maturity': 'DISCOVERY_ENVELOPE',
+                  'dimensions': [
+                      {
+                          'dimension_id': 'grants',
+                          'low': 0,
+                          'high': 0,
+                          'note': 'The queued obligation predicts no new authority grant; later work must still use whatever repository-write authority its lease requires.'
+                      },
+                      {
+                          'dimension_id': 'judgement_units',
+                          'low': 0,
+                          'high': 1,
+                          'note': 'Ordinary review is mechanical; at most one owner judgement is expected if the terminal itself needs settlement.'
+                      }
+                  ]
+              },
               'members': [
                   {
                       'member_kind': 'TICKET',

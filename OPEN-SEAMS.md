@@ -380,7 +380,7 @@ cites by number is the one that moves.
 It was true when Bdo accepted the ground on 2026-08-24 and it is a fair record of
 that act: the acceptance changed no other document. The ambiguity is scope, not
 tense. Read as a claim about the acceptance act it stays true; read as a claim
-about the repository's wiring it is now false, because seven entry points name
+about the repository's wiring it is now false, because eight entry points name
 `GROUND.md` and `CANON.md` as of this branch. The sentence is the evidence that
 they did not for four days, and it is also the thing that closing the gap
 breaks.
@@ -416,7 +416,7 @@ Readings two and three need Bdo, because each changes an `OWNER-ACCEPTED`
 artifact or builds a check that grades one. Reading one needs nobody: if the
 sentence is scoped to the acceptance act, it is already correct and this seam
 closes with a note. Saying so is the point of filing it rather than repairing it.
-`acceptance/A22.json` presents the change that raised it.
+Closed 2026-08-30 under reading one. The sentence remains a historical claim about the 2026-08-24 acceptance act. PR #183 later wired all eight entry surfaces without revising the accepted `GROUND-1` artifact. The entry-plane packet is now recorded as superseded in `acceptance/accepted/A23.json`.
 
 Numbering note: minted as S28 on 2026-08-28 off `main`, which carries S25.
 Another session working tree held an uncommitted S27 at the time, and no

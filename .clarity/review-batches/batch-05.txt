@@ -1,0 +1,2516 @@
+===== FILE: SPEC.md =====
+# Phase-I Logical Specification
+
+Status: `PROPOSED · STACK-NEUTRAL · OWNER FREEZE PENDING`
+
+This specification implements the Phase-I requirements in `PRD.md`. It fixes
+logical objects, roles, states, transitions, predicates, receipts, and refusal
+behavior. It does not select storage, encoding, language, transport, process,
+container, graph, model provider, or repository layout.
+
+## Operating profile
+
+### Trust model
+
+- The host provides execution and persistence mechanisms but does not receive
+  ratification authority merely by running the system.
+- Human and model operators are untrusted outside explicitly recorded grants.
+- Model output is always a proposal, recording, report, or observation; its
+  fluency never changes standing.
+- Stored artifacts are trusted only to the degree that their addresses,
+  digests, provenance, and required attestations verify.
+- The runtime may attest reproduction. It may not ratify judgement.
+
+### Local operation
+
+Phase I must run from a clean local artifact without Claude, GitHub, an external
+graph database, or another network service. Optional integrations either
+operate through declared adapters or refuse as `UNCONFIGURED` with a receipt.
+
+The first operating profile is a personally owned node. It uses the same
+contracts as later team or enterprise profiles. Model computation may be local
+or remote, but the authoritative record, authority, and continuity remain under
+node ownership.
+
+### Fault model
+
+| Fault | Phase-I obligation |
+| --- | --- |
+| Process restart | committed records remain reconstructable |
+| Partial write | no partially committed record becomes effective |
+| Power loss | recovery distinguishes committed from attempted work |
+| Corrupt payload | digest verification refuses the reading |
+| Missing dependency | affected operation refuses or becomes `UNATTESTABLE` |
+| Stale input or lease | settlement refuses and preserves the attempt |
+| Concurrent author | precondition or fencing failure refuses stale settlement |
+| External service loss | local custody, authority, and record operation continue |
+
+Media durability beyond detectable corruption is an infrastructure concern and
+is not claimed by the logical specification.
+
+### Effects
+
+Every consequential operation declares exactly one effect class:
+
+- `RECORD_LOCAL` — changes only governed record state; countering is supported.
+- `RESOURCE_CONSUMPTION` — consumes time, compute, storage, money, or another
+  resource; the record can be countered but consumption is not reversed.
+- `EXTERNAL_WORLD` — mutates a system outside the local record. Admitted only
+  inside a scope `contracts/external-effect-authorization.json` declares, using
+  a verb that scope carries, leaving a receipt for the attempt. Every other
+  external effect is refused, including every verb the authorization refuses by
+  name. An isolated test double whose observed effect is record-local is not an
+  external effect. Consumption and external change are never claimed to be
+  rolled back, only compensated forward.
+
+## Logical roles
+
+The terms below follow `CLASSIFICATION.md`. A value may fill more than one role
+only through a declared equivalence.
+
+### Identity roles
+
+`identity`, `address`, `digest`, `label`, `route`, and `handle` are distinct.
+Coincidental equality never merges their semantics.
+
+### Information objects
+
+#### `Source`
+
+Required fields:
+
+```text
+source_id, source_address, payload_digest, payload_size,
+captured_at, captured_by
+```
+
+The bytes resolved by `source_address` must match `payload_digest` before a
+reading begins.
+
+The six governed asset objects sit on one plane of five, and a fact belongs to
+the narrowest identity for which it stays true. **Governed** says what the thing
+is and what constitutes its state. **Representation** says what kind of content
+state this is. **Placement** says where a constituent appears in one whole state.
+**Source** says where a thing was observed or obtained. **Custody** says where
+the exact bytes are.
+
+A file is a representation and a placement, not an identity every asset must
+hold, and no object below acquires a file's properties by having been captured
+from one. Metadata is likewise not an object class: a metadata statement targets
+the narrowest governed or observed subject for which it remains true, and
+governed descriptions continue to travel through `submit_proposal` and `ratify`
+rather than through a generic bag.
+
+#### `Asset`
+
+```text
+asset_id, asset_type_id, label, created_at, created_by
+```
+
+An asset is a governed identity, not bytes. It holds no payload of its own:
+every byte an asset carries is reached through a part version and that version's
+custody reference. Descriptive facts that stay true when every byte, path and
+representation changes belong to the asset; facts true only of one whole state
+belong to an `AssetVersion`. An `asset_type_id` naming no declared `AssetType`
+is refused `TYPE_UNDECLARED`.
+
+#### `AssetType`
+
+```text
+asset_type_id, label, spec, declared_at, declared_by
+
+spec: part_roles: [ part_role, required: true | false ],
+      admitted_representations, required_description_fields
+```
+
+A declared schema an asset is held to. It declares the constituent roles a
+version must carry and which are optional, which representations are admitted,
+and which descriptive fields a description supplies. A type is declared before
+an asset names it. A media type, a filename suffix and a magic-number reading
+are evidence a declaration may cite; none is authority, and none may stand in
+for a declared type. Redeclaring an `asset_type_id` is refused `STALE_STATE`.
+
+#### `AssetVersion`
+
+```text
+version_id, asset_id, predecessor_version_id, entries, content_digest,
+derivation: null | derivation_record,
+created_at, created_by
+
+entry: part_id, part_version_id, placement
+
+placement: logical_path
+```
+
+An immutable state of a whole asset: which constituents it contained, the exact
+content state of each, and where each was placed. The entry count is not bounded
+at one, and no transition may assume a single payload. `content_digest` is
+computed over the entry set, so a version has one address without any
+constituent losing its own.
+
+Placement belongs to the entry and never to the part version. Where a
+constituent sits is a fact about one composition, not about a content state, so
+moving a constituent produces a new asset version over the same part version and
+never a new content state.
+
+Lineage and derivation are orthogonal and are never collapsed into one exclusive
+value. `predecessor_version_id` says which state this version supersedes;
+`derivation` says which versions it was produced from. A version may carry both,
+either or neither, and `ORIGINAL`, `REVISION` and `DERIVATIVE` are read off those
+two fields rather than stored as a mutually exclusive role.
+
+A version is judged against its asset's `AssetType` when it is recorded, not when
+it is read back. Changing, adding, removing or moving any entry produces a new
+version and leaves the predecessor's entries resolvable (C15).
+
+#### `AssetPart`
+
+```text
+part_id, asset_id, part_role, declared_at
+```
+
+A constituent identity inside one asset - the source, the printable, the
+transcript. `part_role` is the stable type-governed slot this constituent
+occupies, declared by the asset's `AssetType` and not arbitrary description. A
+part is not a file: a filename, a logical path, a locator and a source address
+are placement or observation, and none of them is the part's identity (C10).
+
+A part identity is preserved across a known rename. A rename changes a placement
+or a source locator and does not by itself mint a part, a content state or an
+asset.
+
+Resolution binds captured bytes to a part and is an attributed act, never a
+derivation. A matching digest, an unchanged locator and a source observation are
+evidence a resolution may cite; no one of them constitutes identity, and byte
+equality never does. Where the evidence does not make one part unique,
+resolution takes a declared default, records the evidence it used and that it
+defaulted, never blocks the operation, and never becomes a judgement claim; a
+counter-record overrides it.
+
+#### `AssetPartVersion`
+
+```text
+part_version_id, part_id, payload_address, content_digest, size,
+representation, created_at, created_by
+
+representation: media_type, format, encoding, dimensions, declared_properties
+```
+
+An immutable content state of one constituent, resolving to exactly one addressed
+payload. `representation` carries only what is intrinsic to that content state;
+anything true of where it sits belongs to a placement, and anything true of where
+it came from belongs to a `SourceObservation`. `payload_address` and
+`content_digest` are a custody reference and nothing more: whether that address
+resolves to a single blob, to a manifest of chunks or to some later
+content-addressed form is decided below this contract and never changes an asset
+version. A read refuses `PAYLOAD_ABSENT` or `DIGEST_MISMATCH` when the address
+does not resolve or does not agree with `content_digest`.
+
+A part version belongs to its part and therefore to one asset. Two part versions
+in different assets may carry the same `payload_address`; that is shared custody
+of immutable bytes, not shared identity and not a shared record.
+
+#### `SourceObservation`
+
+```text
+observation_id, source_id, part_version_id, observed_at, observed_by, evidence
+```
+
+An attributed record that a declared `Source` was observed to carry this content
+state. Many observations may point at one part version: the same bytes reached
+through a local path, an archive, an object store and another asset's import are
+four observations of one content state, not four content states.
+
+An observation is provenance and never constitutive. A source that moves,
+renames, disappears or mutates changes no part version, no part and no asset.
+`Source` already occupies this plane; `source_address` and the capture digest
+stay there and are not restated here.
+
+#### `AssetVersionDiff`
+
+```text
+from_version_id, to_version_id, changes
+
+change: part_id,
+        kind: ADDED | REMOVED | MOVED | CHANGED | MOVED_AND_CHANGED,
+        from_part_version_id, to_part_version_id,
+        from_placement, to_placement,
+        resolution: EXACT | DEFAULTED
+```
+
+The difference between two versions of one asset. It is a projection under the
+Projection rule below: derivable from the two entry sets and part identities
+alone, rebuilt rather than trusted, and never an authoritative record.
+
+Every kind is decided by identity, never by bytes. `MOVED` is the same
+`part_version_id` under a different placement; `CHANGED` is a different
+`part_version_id` under the same placement; `MOVED_AND_CHANGED` is both.
+`ADDED` and `REMOVED` are a `part_id` present on one side only. An equal
+`payload_address` never establishes that two entries are the same thing moving,
+because two content states may legitimately hold identical bytes. Because part
+identity is separate from every path that names it, a diff reporting a rename as
+a removal plus an addition is wrong, not merely coarse. `resolution` reports how
+the part behind the change was bound: `DEFAULTED` only where the evidence did not
+make one part unique.
+
+#### `Reader`
+
+```text
+reader_id, reader_version, configuration_digest,
+output_role, fidelity: EXACT | LOSSY,
+omissions: [] | versioned_omission_definition
+```
+
+An `EXACT` reader declares no omissions. A `LOSSY` reader directly declares
+omissions or resolves a versioned definition from which they are
+deterministically recoverable.
+
+#### `Recording`
+
+```text
+recording_id, source_id, source_digest, reader_id, reader_version,
+configuration_digest, payload_address, payload_digest,
+fidelity, omissions, produced_at, produced_by, standing
+```
+
+A recording never replaces or mutates its source.
+
+#### `Proposal`
+
+```text
+proposal_id, actor_id, actor_kind: HUMAN | MODEL,
+content_address, source_addresses, cost_record,
+required_authority_type, scope, created_at, standing
+```
+
+A new proposal begins `RECORDED` and claims no authority.
+
+#### `AuthorityGrant`
+
+```text
+grant_id, issuer_id, actor_id,
+authority_type: VERIFICATION | JUDGEMENT,
+capability, scope, budget, valid_from, valid_until,
+revoked_at | null
+```
+
+An authority check evaluates type, capability, scope, budget, time, and
+revocation at the attempted transition.
+
+#### `ModelBinding`
+
+```text
+binding_id, adapter_id,
+provider_id, provider_kind: LOCAL | REMOTE,
+model_id, model_version,
+runtime_id, runtime_version, host_id,
+interface_contract_id, capabilities,
+data_boundary: LOCAL_ONLY | REDACTED_REMOTE | REMOTE_ALLOWED,
+input_projection_id, omissions,
+usage_meter, cost_meter,
+fallback_policy: NONE | EXPLICIT,
+created_at
+```
+
+Model and provider identity are configuration, not authority. A binding grants
+no capability by existing; every invocation still checks the actor's scoped
+authority and operation plan. `EXPLICIT` fallback requires a new attributed
+invocation and receipt naming the replacement binding.
+
+#### `OperationPlan`
+
+```text
+operation_id, operation_type, requester_id, interface_id,
+input_addresses, input_digests, readings, configuration_digest,
+required_capabilities, preconditions, expected_observations,
+effect_class, limits, refusal_behavior, created_at
+```
+
+No consequential run begins without a complete plan.
+
+#### `EventEnvelope`
+
+```text
+event_id, operation_id,
+event_phase: ATTEMPTED | REPORTED | OBSERVED | SETTLED | COUNTERED,
+actor_id, actor_kind: HUMAN | MODEL | WORKER | SYSTEM,
+reason, occurred_at,
+inputs: [{address, digest}], outputs: [{address, digest}],
+authority_grant_ids, effect_class,
+outcome: ATTEMPTED | COMMITTED | FAILED | REFUSED | COUNTERED | UNRESOLVED,
+receipt_id | null
+```
+
+Every consequential human or model decision emits an event envelope. An attempt
+may have a null `receipt_id` until it reaches a terminal outcome; settlement,
+refusal, failure, unresolved work, and counteraction resolve a durable receipt.
+The envelope does not replace the more specific domain record.
+
+#### `Run`
+
+```text
+run_id, operation_id, actor_id, worker_id | null,
+input_state_digest, lease_fence | null, lease_expires_at | null,
+started_at, completed_at | null,
+outcome: ATTEMPTED | COMMITTED | FAILED | REFUSED | UNRESOLVED,
+emitted_record_addresses
+```
+
+Executor completion is a report, not settlement.
+
+#### `Observation`
+
+```text
+observation_id, run_id, observer_id, observer_relation,
+observed_state_addresses, observed_state_digests,
+predicate_results, observed_at
+```
+
+`observer_relation` must state how the observer avoids relying solely on the
+executor's report.
+
+#### `Attestation`
+
+```text
+attestation_id, claim_id, validator_id, validator_version,
+input_addresses, input_digests, run_id,
+outcome: REPRODUCED | DISSENTED | UNATTESTABLE,
+evidence_addresses, created_at
+```
+
+Attestation changes no authority sign. `DISSENTED` or `UNATTESTABLE` remains
+visible when current effectiveness is evaluated.
+
+#### `Receipt`
+
+Every attempted crossing and every consequential operation eventually returns
+one terminal receipt:
+
+```text
+receipt_id, event_id, event_type, actor_id, interface_id,
+input_addresses, input_state_digest, authority_grant_ids,
+precondition_results, effect_class,
+outcome: COMMITTED | FAILED | REFUSED | COUNTERED | UNRESOLVED,
+reason_code | null, emitted_record_addresses,
+observed_evidence_addresses, prior_receipt_id | null,
+created_at, receipt_digest
+```
+
+The receipt is attributable and addressable even when the outcome is refusal,
+failure, unresolved judgement, dissent, or counteraction.
+
+#### `Retraction`
+
+```text
+retraction_id, target_record_id, target_receipt_id,
+actor_id, authority_grant_id, reason,
+effect_class, counter_record_id, created_at
+```
+
+Retraction preserves the original record and receipt. For non-record-local
+effects it states what remains consumed or changed and makes no rollback claim.
+
+#### `QualificationRecord`
+
+```text
+qualification_id, artifact_revision, witness_id,
+host_description, started_at, completed_at,
+scenario_results, evidence_addresses,
+time_to_safe_competence, interventions,
+owner_acceptance: PENDING | ACCEPTED | STRUCK
+```
+
+The witness may deposit this record. Only the owner may change
+`owner_acceptance` from `PENDING`.
+
+## Historical standing and current effectiveness
+
+Standing values are `RECORDED`, `ADMITTED`, `RATIFIED`, and `EFFECTIVE`.
+They do not collapse:
+
+1. `RECORDED` establishes attributable existence.
+2. `ADMITTED` records that an admission gate passed.
+3. `RATIFIED` records a typed authority decision.
+4. `EFFECTIVE` means the ratified record currently conditions operation.
+
+Historical ratification is never deleted. A dissenting attestation,
+superseding record, expiration, or authorized retraction may stop a record from
+conditioning current operation while preserving its history.
+
+## Transition contract
+
+Every transition checks the declared pre-state. Each attempted operation emits
+exactly one terminal receipt; intermediate run transitions append attributable
+events but do not create extra terminal outcomes. A stale pre-state cannot
+settle.
+
+| Transition | Preconditions | Commit | Refusal |
+| --- | --- | --- | --- |
+| `capture_source` | readable bytes; address and digest available | create immutable `Source` | `UNREADABLE` or `DIGEST_MISMATCH` |
+| `read_source` | source digest verifies; reader fully declared | emit `Recording`; source unchanged | `SOURCE_CHANGED` or `READER_UNDECLARED` |
+| `submit_proposal` | actor, cost, source, scope, and required authority declared | record proposal as `RECORDED` | `INCOMPLETE_PROPOSAL` |
+| `admit` | admission predicates pass against exact proposal state | preserve `RECORDED`; add `ADMITTED` event | `ADMISSION_REFUSED` or `STALE_STATE` |
+| `ratify` | proposal admitted; live matching authority grant | preserve history; add `RATIFIED` event | `AUTHORITY_REFUSED` or `STALE_STATE` |
+| `attest` | ratified executable claim; declared validator and exact inputs | emit one attestation outcome | `VALIDATOR_UNDECLARED` |
+| `make_effective` | ratified; required attestation policy satisfied; no current counter | add `EFFECTIVE` event | `DISSENTED`, `UNATTESTABLE`, or `POLICY_REFUSED` |
+| `begin_run` | complete plan; capability, budget, input, and effect gates pass | emit `ATTEMPTED`; issue lease if delegated | reasoned refusal |
+| `report_run` | current lease and fence; declared output records | store executor report; do not settle | `STALE_LEASE` |
+| `observe_run` | independent observer relation; expected predicates declared | emit observation | `OBSERVER_NOT_INDEPENDENT` |
+| `settle_run` | current input state; satisfactory observation | `COMMITTED`, `FAILED`, or `UNRESOLVED` receipt | `STALE_STATE` or `OBSERVATION_MISSING` |
+| `retract` | live matching retraction authority; target and effect known | emit counter-record and `COUNTERED` receipt | `AUTHORITY_REFUSED` |
+| `cross` | declared source, reader/projection, omissions, authority, destination | destination record and receipt | reasoned refusal |
+| `invoke_model` | declared binding, operation plan, authority, input projection, data boundary, usage and cost meters | proposal, recording, report, or observation plus receipt | `MODEL_UNAVAILABLE`, `MODEL_INCOMPATIBLE`, `DATA_BOUNDARY_REFUSED`, or reasoned refusal |
+
+No interface, adapter, worker, projection, or graph store may bypass these
+transitions to change authoritative state.
+
+## Requirement predicates
+
+### PROD-I-1 · Propose
+
+- Every accepted proposal has actor, actor kind, source, cost, scope, required
+  authority, address, and `RECORDED` standing.
+- Missing fields defeat admission.
+
+### PROD-I-2 · Remember
+
+- A source rereads byte-identical by digest.
+- Every recording resolves its exact source, reader version, configuration,
+  fidelity, and recoverable omissions.
+- Reading never mutates source bytes.
+
+### PROD-I-3 · Cross
+
+- Human and model bindings resolve the same authoritative transition contract.
+- A crossing identifies source, version, reader or projection, omissions,
+  destination, and receipt.
+
+### PROD-I-4 · Gate and retract
+
+- Admission, refusal, action, failure, unresolved judgement, attestation,
+  retraction, and counteraction are receipted.
+- Retraction preserves the original occurrence and distinguishes effect class.
+
+### PROD-I-5 · Typed authority
+
+- Every consequential transition checks a live typed, scoped, budgeted grant.
+- `VERIFICATION` authority cannot ratify a `JUDGEMENT` claim.
+- Revoked, expired, out-of-scope, and over-budget grants refuse visibly.
+
+### PROD-I-6 · Founder judgement budget
+
+- Missing judgement produces a persistent pending-right record and
+  `UNRESOLVED` receipt without blocking unrelated operation.
+- Judgement use is reported from actual receipts; no quota is invented.
+
+### PROD-I-7 · Independent qualification
+
+- A fresh witness receives only the declared artifact and host assumptions.
+- The witness can locate authority, run conformance, reconstruct evidence, and
+  record time and interventions without oral explanation.
+- Qualification remains pending until owner acceptance.
+
+### PROD-I-8 · Joint sign
+
+- A ratified executable claim has an attestation naming validator, version,
+  exact inputs, run, outcome, and evidence.
+- Changed inputs cannot inherit `REPRODUCED` from a historical run.
+- Attestation never changes ratification authority.
+
+### PROD-I-9 · Bring your own model
+
+- Two materially different model bindings expose the same named operation and
+  use the same kernel transitions, authority checks, and receipt contract.
+- Each run records binding, adapter, provider, model, version, runtime, host,
+  input projection, omissions, data boundary, usage, and cost.
+- Changing models creates distinct attributed results; it does not silently
+  merge outputs or change authoritative state.
+- An unavailable model returns a reasoned receipt. Any fallback is a separately
+  attributed explicit invocation.
+- Provider loss cannot remove local record custody or non-model operation.
+
+## Interface parity
+
+Human and model bindings may present different projections, but they must:
+
+- discover the same legal operations and required inputs;
+- invoke the same transitions and authority checks;
+- receive compatible receipts and reason codes;
+- expose provenance and omissions appropriate to their projection;
+- and lack direct authoritative storage writes.
+
+Parity is tested by equivalent operations and reconciled receipts, not by
+pixel or response-format identity.
+
+### Operation granularity
+
+An operation's subject count is not bounded at one. One declared act over four
+hundred subjects is one plan, one authority check, and one terminal receipt
+carrying four hundred emitted record addresses - never four hundred operations.
+An interface that requires a separate confirmation per subject for a single
+declared act has not met parity, whichever binding it serves. A model given one
+instruction and a human working one surface are held to the same rule.
+
+A plan declares before the act begins what a partial result means: whether a
+refused subject refuses the whole operation and commits nothing, or whether each
+subject's outcome is recorded and the operation settles on the terms declared.
+The terminal outcome describes the operation and never a subject. `OperationPlan`
+carries no field for that declaration today, so a multi-subject plan cannot yet
+state its own partial-result terms.
+
+## Projection rule
+
+Search indexes, graph stores, caches, dashboards, and model context packages are
+rebuildable projections. Each projected value resolves to authoritative source
+records and declares omissions. Projection-originated edits return as proposals
+through the transition contract.
+
+## Conformance boundary
+
+Every normative predicate above requires a positive and a defeating fixture.
+Fixtures observe state, authority checks, receipts, and effects rather than
+requiring a particular mechanism. Passing self-authored unit tests establishes
+`BUILT`; an independent run is required for `WITNESSED`; Bdo's recorded decision
+is required for `RATIFIED`.
+
+## Traceability
+
+| Specification area | Requirement | Source ground |
+| --- | --- | --- |
+| Proposal and standing | PROD-I-1, I-4 | SUBSTRATE R3; ANCHOR A2, A5 |
+| Source and derivation | PROD-I-2 | SUBSTRATE R1, R2, R5 |
+| Shared crossing | PROD-I-3 | SUBSTRATE V1, R5; ANCHOR A3 |
+| Authority | PROD-I-5, I-6 | SUBSTRATE R4; ANCHOR A4, A10 |
+| Observation and receipts | PROD-I-4, I-8 | SUBSTRATE R3, R6; ANCHOR A2 |
+| Cold-start qualification | PROD-I-7 | SUBSTRATE V5, T1; ANCHOR A6 |
+| Personal-local model portability | PROD-I-9 | SUBSTRATE V1-V3, R2-R5; ANCHOR A3, A8 |
+| Node and federation boundary | later phase | ANCHOR A8; PRODUCT §5 |
+
+Exact historical source addresses and digests remain in `lineage/` and are not
+duplicated into this normative layer.
+
+===== END FILE: SPEC.md =====
+===== FILE: adapters/README.md =====
+# Adapters
+
+Adapters translate between a Soveraeign service contract and a named external
+system. They do not acquire authority from the external system and cannot make
+an external graph, model response, repository, or media tool authoritative.
+
+Initial declared adapter boundaries:
+
+| Adapter | Input standing | Allowed output |
+| --- | --- | --- |
+| Model provider | addressed source or declared projection within its data boundary | proposal, recording, usage/cost receipt, refusal |
+| GitHub (read) | repository, commit, and path address; issue, pull request, and branch refs | captured source with exact revision provenance, and a capture receipt |
+| GitHub (write) | one owner-approved board action: a label on an issue, or a merged branch ref | an `EXTERNAL_WORLD` receipt per attempt, including refusals and failures |
+| Local host | process execution environment | normalized read-only host snapshot or refusal |
+| Graph | canonical relationship records | rebuildable projection and traversal results |
+| Media tool | exact asset version + declared operation | derivative recording and worker report |
+
+Loss or absence of an adapter must produce a visible refusal or
+`UNATTESTABLE` result without removing local custody or authority.
+
+Claude, a local Ollama-compatible runtime, or another owner-selected provider is
+an implementation of the same Model Adapter role. Provider-specific features
+may be declared capabilities; they cannot create a second authority path.
+
+`adapters/ollama/` is the first implementation of the Model provider row: two
+declared bindings over locally hosted models, positive and defeating fixtures,
+and a check suite in `scripts/verify.py`. It checks declarations and records
+against a captured runtime inventory, and it executes `invoke_model` against the
+local runtime through `adapters/ollama/invoke.py`, producing the record rather
+than reading a declared one (PROD-I-9). Standing: `BUILT`, self-tested, not
+witnessed with dissent: an independent observer found the custody refusal defeasible
+(`reports/2026-08-23-local-model-adapter-witness.md`). Standing of the pattern:
+`decisions/0027-local-model-adapter.md` (proposed).
+
+`adapters/host/` implements the read-only Local host row for
+`sov://host/read-health`. It reports the process execution boundary without a shell,
+mutation, elevation, or hostname disclosure. Its success supplies data to the Host
+Service; it grants no authority and does not independently observe its own reading.
+
+===== END FILE: adapters/README.md =====
+===== FILE: adapters/github/README.md =====
+# GitHub Registrar
+
+The declared crossing between this node and the GitHub coordination surface. It has
+two halves that never call each other: `export.py` reads and `apply.py` writes.
+It extends the `GitHub` adapter row in `adapters/README.md` from source capture to
+coordination capture: issues, their metadata blocks, labels, and pull requests.
+
+Nothing else in the repository may call the GitHub API. Verification, projection,
+transition judgement, and board survey read the registrar's export from disk and run
+offline. That split is the point: a check that needs the network cannot run in the
+day-zero budget, cannot run in a sealed CI job, and cannot be reproduced by a fresh
+witness.
+
+## Two crossings, declared separately
+
+The registrar has a read half and a write half, and they are declared apart because they
+carry different effect classes and different risks.
+
+| Crossing | Module | Effect class | What it moves |
+| --- | --- | --- | --- |
+| `COORDINATION_CAPTURE` | `export.py` | `RECORD_LOCAL` | GitHub to disk: issues, bodies, labels, pull requests |
+| `COORDINATION_WRITE` | `apply.py` | `EXTERNAL_WORLD` | disk to GitHub: label catalogue, merged-head retirement, and issue bodies |
+
+The write half exists because the board was a projection nobody projected. Colours,
+descriptions, and the containment tree were declared in the repository and never reached
+the surface, so the surface drifted from its own contract with no way to close the gap
+except by hand (`decisions/0044-github-coordination-write-crossing.md`).
+
+## What it is and is not
+
+The registrar is a **projection of a coordination surface in both directions**: it reads
+what GitHub says, and it writes back only what a local declaration already determined.
+Under `AGENTS.md`, Directory boundaries, an adapter may not own standing, ratification,
+settlement, or hidden fallback, and it receives no authority by operating successfully.
+
+- It **captures** what GitHub currently says, with exact provenance.
+- It **never** decides standing. `scripts/sov_ticket.py` evaluates; the owning
+  governing documents hold the answer.
+- It **never** writes ratification. `CODEOWNERS` protects governed paths but is not
+  itself the owner's judgement surface; ratification requires an explicit recorded
+  root-seat action, not a label, bot, or repository write credential.
+- Absence of GitHub produces a visible refusal, never a silent fallback to a cached or
+  assumed board.
+
+### `COORDINATION_CAPTURE` — `export.py`
+
+| Field | Declaration |
+| --- | --- |
+| Data-boundary mode | `LOCAL_READ_ONLY` — issue and pull request text leaves GitHub inbound; nothing crosses outbound |
+| Input projection | issue number, title, state, body, label names; the label catalogue's name, colour, and description; pull request number, title, state, head ref, body, draft flag, last update; branch names |
+| Authority | none granted, none accepted |
+| Effect class | `RECORD_LOCAL` on the capture; the crossing itself consumes a rate-limited external resource |
+| Receipt | every export records source repository, captured-at timestamp, item count, and content digest |
+| Refusal | `REGISTRAR_UNAVAILABLE`, `REGISTRAR_UNAUTHENTICATED`, `REGISTRAR_EMPTY` |
+
+### `COORDINATION_WRITE` — `apply.py`
+
+| Field | Declaration |
+| --- | --- |
+| Admitted actions | `LABEL_ADD`, `LABEL_REMOVE`, `LABEL_CREATE`, `BRANCH_DELETE`, `BODY_SET`. An action kind absent from that table is refused by name; the crossing never falls through to a generic GitHub call |
+| Data-boundary mode | `DECLARED_PROJECTION_OUTBOUND` — label values are derivable from `.github/labels.yml` and `contracts/ticket-label-projection.json`; a body is authored in the repository and must satisfy `contracts/issue-metadata.schema.json` before it crosses. No payload bytes, no evidence, no repository source, no credential |
+| Output projection | label name, colour, description; a merged pull request's head ref; an issue body in full |
+| Authority | the invoking operator's, named in the receipt and scoped to this surface. The crossing grants none and accepts none. Labels take one owner approval per action; `BRANCH_DELETE` and `BODY_SET` each name a basis that `proofs.py` re-proves against live state immediately before the write |
+| Effect class | `EXTERNAL_WORLD`. Writing is opt-in: without `--apply` the tool prints the plan and stops |
+| Receipt | `.local/registrar/apply.receipt.json` records the crossing, target repository, start and finish, source export, every action, and each outcome. A body write additionally records the prior body's snapshot path and digest, and the replacement's digest |
+| Counteraction | `.local/registrar/bodies-before/` holds each body as it stood immediately before its write, recorded by the proof rather than by the caller. A rewrite is reversible by writing the snapshot back; a label deletion is not, which is why only labels the catalogue explicitly retires may be deleted |
+| Refusal | the capture refusals, plus `REGISTRAR_REFUSED` for an action no declaration derives, `BODY_BLOCK_REFUSED` for a replacement the ticket contract will not admit, `BODY_SOURCE_MISSING`, `BODY_SOURCE_EMPTY`, and `AUTHORITY_BASIS_UNKNOWN` |
+
+What it will not do, by construction: open, close, comment on, assign, or milestone an
+issue; label one outside the governed axes; land a body the ticket contract refuses or a
+blank one; delete a label the catalogue does not name in its `retire:` section; write
+standing, ratification, or settlement in any form. A label is a projection, and a
+projection that starts deciding things is a second authority. Typing `standing:
+WITNESSED` into a block is not witnessing it: the evidence rules in `AGENTS.md` decide
+whether the claim is true, whoever is permitted to write the word.
+
+`plan.py` renders the `sov:relations` block from a ticket's own metadata and plans the
+containment edge. The relations half now has an executor in `BODY_SET`; the containment
+edge still has none, and GitHub's native sub-issue link is set by hand.
+
+## Operating it
+
+```bash
+python adapters/github/export.py --repo <owner>/<name> --out .local/registrar/tickets.json
+python scripts/sov_ticket.py validate --export .local/registrar/tickets.json
+python scripts/sov_ticket.py labels   --export .local/registrar/tickets.json --strict
+python scripts/sov_ticket.py queue    --export .local/registrar/tickets.json --limit 20
+```
+
+Writing back runs from the same export, and always in two steps. The first prints the
+plan; the second performs it.
+
+```bash
+python adapters/github/apply.py --repo <owner>/<name> --export .local/registrar/tickets.json
+python adapters/github/apply.py --repo <owner>/<name> --export .local/registrar/tickets.json --apply
+python adapters/github/apply.py --repo <owner>/<name> --export .local/registrar/tickets.json --only labels --apply
+```
+
+Then capture again and judge the result through the read path, which is independent of
+the code that performed the write. A run that reports success and a re-capture that still
+shows drift means the write did not do what it said.
+
+The export lands under `.local/`, which is gitignored runtime state. A captured board
+is an observation with a timestamp, not a record; committing one would create a second
+copy of a surface that changes without us.
+
+Authentication is whatever credential the `gh` CLI already resolves for the invoking
+user. The registrar holds no credential, reads no token from the environment, and
+records none in the export or the receipt.
+
+## The write crossing
+
+`apply.py` is the only module permitted to write to GitHub. It exists because a drift
+report that nobody can act on is not a control surface, and because handing the owner
+a finding without a recommended action moves the expensive half of the work onto them
+(`decisions/0057-board-management-role.md`).
+
+It is deliberately self-contained. The module holding write authority should be
+readable in one file without following an import into shared plumbing, so it repeats
+the eight-line `gh` runner rather than sharing one with `export.py`.
+
+| Field | Declaration |
+| --- | --- |
+| Data-boundary mode | `OWNER_APPROVED_WRITE` — one approval per action, at the moment of the action |
+| Admitted actions | `LABEL_ADD`, `LABEL_REMOVE`, `LABEL_CREATE`, `BRANCH_DELETE`, and nothing else |
+| Authority | none held; an approval accompanies each action and expires with it |
+| Effect class | `EXTERNAL_WORLD` |
+| Receipt | one per attempt, recording the exact command, outcome, and reason code |
+| Refusal | `NO_APPROVAL`, `ACTION_NOT_ADMITTED`, `MALFORMED_TARGET`, `CROSSING_UNAVAILABLE`, `CROSSING_REJECTED` |
+
+```bash
+python scripts/sov_board.py review
+python scripts/sov_board.py apply --batch .local/board/batch.json --approve <id>,<id> --dry-run
+python scripts/sov_board.py apply --batch .local/board/batch.json --approve <id>,<id>
+```
+
+Three things it will not do. It will not run without an approved action list, so no
+schedule can drive it. It will not admit a fifth verb; closing an issue or a pull
+request is a judgement and is reported for a human instead. It will not stop at the
+first failure, because a partial run is the normal case and the receipt list is the
+record of what actually happened.
+
+The retired Phase-I blanket refusal no longer governs this crossing. The write half
+remains `EXTERNAL_WORLD` and can act only inside its declared action table with the
+invoking operator's explicit scoped authority and receipts; `OPEN-SEAMS.md` S9 records
+the closure of the old contradiction.
+
+## The MCP seam
+
+An MCP server over this coordination surface is the same crossing with a different
+transport. It is queued, not built. Two rules bind it in advance:
+
+1. It exposes the registrar's declared projection and refusals — not the raw GitHub
+   API. A tool that hands a model arbitrary GitHub write access has replaced a declared
+   adapter with an undeclared one.
+2. It is a transport, never a second authority path. An MCP call may capture, propose,
+   and refuse. It may not settle, witness, or ratify.
+
+The gateway seam that would host it is open work; see `decisions/0016-github-coordination-registrar.md`
+and the deployment topology ticket on the board. Until a two-node crossing case exists,
+the registrar stays a local read.
+
+===== END FILE: adapters/github/README.md =====
+===== FILE: adapters/host/README.md =====
+# Local Host Adapter
+
+This adapter translates the current process execution environment into the Host
+Service's normalized health snapshot. It uses Python's standard library and read-only
+operating-system files. It never invokes a shell, elevates privilege, mutates the host,
+or grants SOV authority.
+
+`PROCESS_EXECUTION_HOST` is an explicit boundary claim: the adapter may be running on a
+physical machine, virtual machine, or inside a container, and it does not pretend to
+know which physical chassis ultimately carries the process. Hostname is omitted because
+it is neither required for health nor a declared Soveraeign host identity.
+
+Fields that cannot be read portably are returned as `null` and named in
+`limitations`. The Host Service decides whether a snapshot satisfies its contract and
+owns every terminal receipt.
+
+===== END FILE: adapters/host/README.md =====
+===== FILE: adapters/ollama/README.md =====
+# Local Model Adapter (Ollama-compatible runtime)
+
+Standing: `BUILT`, witnessed, **dissented**. An independent observer reproduced every
+literal claim below and still refused the transition, because the custody refusal this
+adapter exists to make can be defeated three ways — a one-field edit to `inventory.json`
+that no check notices, a capture from a non-loopback endpoint that is nonetheless stamped
+local, and an invocation record that selects its own data boundary. Read
+`reports/2026-08-23-local-model-adapter-witness.md` before relying on anything here. The
+defects are open; the text below has not been rewritten around them, so where this README
+and that report disagree, the report is what was observed.
+
+Every artifact here is a proposal into open decision O12 (`STATUS.yaml`), which gates
+`model_binding.ratify_contract`. Nothing in this directory ratifies a binding, grants
+authority, settles a run, or writes authoritative state.
+
+This adapter translates a Soveraeign `Model Binding` to a locally hosted
+Ollama-compatible runtime. `adapters/README.md` already named the Model provider row;
+this is the first implementation of that row, and it exists because O12 asks Bdo to
+ratify "the exact binding fields, data-boundary modes, and two-model Phase-I fixture" —
+a question that is easier to answer against two working bindings than against prose.
+
+## What is here
+
+| Artifact | What it is |
+| --- | --- |
+| `capture.py` | The adapter's one crossing: reads the loopback runtime and projects `inventory.json`. Attended; nothing in `scripts/verify.py` calls it. |
+| `inventory.json` | The recorded runtime inventory. Information role `PROJECTION`, rebuildable by re-running `capture.py`. |
+| `adapter.py` | The checks: binding against the recorded runtime, invocation record against its binding, and parity across two invocations. |
+| `validate.py` | Command line over those checks. Exit 0 accepted, 2 refused with a reason code, 1 unreadable. |
+| `bindings/` | Two declared bindings — `qwen3:4b` and `gpt-oss:20b` — both `LOCAL` / `LOCAL_ONLY`. |
+| `fixtures/` | Two positive invocations and fourteen defeating cases, each declared in the test table. |
+| `tests/` | 13 tests. Establishes `BUILT`; it cannot claim `WITNESSED`. |
+
+## The refusal a tag cannot make
+
+The recorded inventory holds `gpt-oss:20b` and `gpt-oss:20b-cloud`. Their declared
+family, parameter size, quantisation, context length, and capabilities are identical.
+They differ in one field: `remote_host`, which for the second is `https://ollama.com:443`.
+Both answer on the same loopback port and both appear in the same listing.
+
+So a binding that named the second model, declared `provider_kind: LOCAL` and
+`data_boundary: LOCAL_ONLY`, and was checked against its tag would pass while sending
+the operation's input off the machine. Every check here reads the recorded inventory
+instead, and `_check_custody` refuses that binding with `DATA_BOUNDARY_REFUSED`. This is
+the `no silent provider fallback` rule in `AGENTS.md` and the "unavailable model silently
+falls back" defeating case of `FOUND-008` meeting a concrete runtime.
+
+## Refusal reason codes
+
+Declared by `SPEC.md` for `invoke_model`:
+
+- `MODEL_UNAVAILABLE` — the model, its recorded version, or the runtime version is not
+  the one the inventory holds; or the invocation names a binding that is not declared.
+- `MODEL_INCOMPATIBLE` — a capability the binding claims that the model does not hold,
+  a capability the invocation requests that the binding does not carry, a binding the
+  shared schema rejects, or a parity pair that ran one model twice.
+- `DATA_BOUNDARY_REFUSED` — a remote-served model under `LOCAL` custody or a
+  `LOCAL_ONLY` boundary, or an invocation whose input crossed under `LOCAL_ONLY`.
+
+Proposed here as reasoned refusals, and queued for Bdo (`invoke_model` admits a reasoned
+refusal, but this code set is not ratified):
+
+- `SILENT_FALLBACK_REFUSED` — a model other than the bound one ran. An `EXPLICIT`
+  fallback policy does not lift this: it permits a new attributed invocation naming the
+  replacement binding, not a substitution inside the original invocation.
+- `PROVENANCE_INCOMPLETE` — an invocation field, an executed provenance field, or a
+  usage or cost meter is absent or empty.
+- `PROVENANCE_CONTRADICTED` — the declaration and the record disagree: a foreign adapter,
+  a `REMOTE` declaration over a locally recorded model, a runtime or host that is not the
+  recorded one, model output entering as anything but `PROPOSAL` or `RECORDING`, or a
+  parity pair whose interface contract, required authority, operation, input, or
+  requested capability differs.
+
+## The invocation record is adapter-local
+
+`contracts/model-binding.schema.json` is the shared contract and this adapter validates
+every binding against it directly. The **invocation record** is different: no kernel
+contract for it exists, and minting one under `/contracts` would create a second semantic
+authority before Bdo has ruled. So its field set lives in `adapter.py`
+(`INVOCATION_FIELDS`) and is offered as proposal input to O12 — the shape `invoke_model`
+would need to record if the transition were implemented, not a contract anything else may
+rely on.
+
+## Running it
+
+```bash
+python adapters/ollama/capture.py                 # attended; rewrites inventory.json
+python adapters/ollama/validate.py bindings       # check every declared binding
+python adapters/ollama/validate.py binding  adapters/ollama/fixtures/<name>.json
+python adapters/ollama/validate.py invocation adapters/ollama/fixtures/<name>.json
+python adapters/ollama/validate.py parity \
+    adapters/ollama/fixtures/invocation-qwen3-4b.json \
+    adapters/ollama/fixtures/invocation-gpt-oss-20b.json
+python -m unittest discover -s adapters/ollama/tests -v
+```
+
+`python scripts/verify.py` runs the test suite as the `local model adapter` check.
+
+## Executing a model
+
+`run.py` performs the invocation and prints the record it produced. Exit codes match
+`validate.py`: 0 accepted, 2 refused with a reason code, 1 the input could not be read.
+Effect class is `RESOURCE_CONSUMPTION` — these commands spend wall clock and memory on
+owner-owned hardware, and they need the runtime to be up.
+
+```bash
+python adapters/ollama/run.py run urn:soveraeign:binding:ollama:qwen3-4b \
+    --prompt "Name the capital of France in one word." \
+    --operation operation_byom_smoke --authority grant:propose:smoke --show-output
+
+python adapters/ollama/run.py parity \
+    urn:soveraeign:binding:ollama:qwen3-4b \
+    urn:soveraeign:binding:ollama:gpt-oss-20b \
+    --prompt "Name the capital of France in one word." \
+    --operation operation_byom_parity_live --authority grant:propose:asset-description \
+    --out adapters/ollama/observations/parity-live.json
+```
+
+`observations/parity-live.json` is a captured run of the second command, kept because a
+portability claim from two real models is worth more than the same claim from two
+hand-written fixtures. Both models answered, the input digest and the required authority
+were identical across them, and `authority_changed_with_model` was false. It is a
+recording of one run on one host, not a general result, and it holds no standing.
+
+Two things the execution path enforces that the checks alone cannot. The binding's
+declared omissions are applied to the input before anything is sent, and an input
+carrying one is refused rather than quietly stripped — a redacted prompt would address a
+digest over text the caller never wrote. And the outcome is graded from the runtime's
+`done_reason`: a model cut off mid-answer records `UNRESOLVED` with a reason code, never
+`COMMITTED`. That case is not hypothetical. `qwen3:4b` spent an entire 64-token budget on
+hidden thinking and returned an empty answer, which an earlier version of this code
+recorded as a committed run.
+
+## What this does not do
+
+- It does not settle anything it executes. `invoke.py` runs the model and produces the
+  record; the kernel still decides whether that record commits, and the run holds no
+  standing on its own.
+- It does not prove `FOUND-006` human/model binding parity. There is no human-facing
+  binding here; `bindings/console/interface.json` declares one and holds no code.
+- It does not cover the `FOUND-008` case "provider loss makes the local record
+  inoperable". That is a property of the node, not of this adapter, and no check here
+  observes it.
+- It grants nothing. An `ACCEPTED` result says a declaration and a recorded runtime do
+  not contradict each other. Authority still arrives by grant at the operation boundary.
+
+## Judgement queued for Bdo
+
+1. Are the three proposed reasoned-refusal codes above the right set, and do they belong
+   in `contracts/kernel-transitions.json` beside the declared three?
+2. Does the invocation record belong under `/contracts` as a kernel contract, or does it
+   stay adapter-local until a second adapter needs it?
+3. `cost_meter` records `monetary_rate: 0` with `wall_clock_seconds` metered separately.
+   Is a locally hosted model's cost zero for budget purposes, or does wall clock spend
+   against a run's limits?
+4. Is a recorded inventory the right authority for a custody check, or must a binding be
+   re-checked against the live runtime at invocation time — and if so, what refuses when
+   the runtime is absent?
+5. Does `capture.py` reading a loopback port count as `RECORD_LOCAL`, as recorded here,
+   or does any socket read need a declared crossing?
+
+===== END FILE: adapters/ollama/README.md =====
+===== FILE: bindings/INTEGRATING.md =====
+# Adding a binding or an adapter
+
+Three bindings and three adapters exist. This says how to add the next one, from
+what those six actually do rather than from what the boundary documents hoped
+they would.
+
+Nothing here grants authority. Following it produces a `BUILT` artifact that
+still cannot witness itself (`AGENTS.md`, Evidence and standing).
+
+## Which one are you writing
+
+The two get confused because both sit between this node and something outside
+it. The distinction is what they translate:
+
+| | Binding | Adapter |
+| --- | --- | --- |
+| Translates | one authoritative transition contract, for a kind of **operator** | one service contract, to a named **external system** |
+| Examples here | `bindings/mcp/` (model operators over MCP), `bindings/console/` (a human at the judgement surface), `bindings/sov/` (the portable agent profile) | `adapters/ollama/` (a model runtime), `adapters/github/` (a repository host), `adapters/host/` (the process execution environment) |
+| Owns | a projection of state, choices, authority, provenance and receipts | a crossing, its data boundary, and its receipt |
+| Must never | introduce private standing, authority, transitions, or direct storage writes | acquire authority from the external system, or fall back silently to another provider |
+
+A model provider is an adapter, not a binding. `bindings/mcp/` is a binding
+because MCP is how an operator reaches this node; `adapters/ollama/` is an
+adapter because Ollama is a system this node reaches out to. Getting this wrong
+is the most common way a change lands in the wrong directory.
+
+## The order of work
+
+This is `AGENTS.md`, Implementation order, applied to a crossing. Steps 2 and 3
+are the ones people skip, and skipping them is what makes a new adapter
+unreviewable.
+
+1. **Name the operation and the service that owns its lifecycle.** An adapter
+   without an owning service has nowhere to send a receipt.
+2. **Add the contract row.** For an adapter, a row in the table in
+   `adapters/README.md` naming input standing and allowed output. For a model
+   binding, a document validating against
+   `contracts/model-binding.schema.json` — nineteen required fields, listed
+   below.
+3. **Write the defeating fixture before the implementation.** At minimum one
+   case that must be refused, and it must fail before your code exists.
+   `adapters/ollama/fixtures/` carries fourteen; the smallest useful set is
+   one positive and one defeating.
+4. **Write the smallest implementation that satisfies the visible case.**
+5. **Add focused unit tests** under `<your directory>/tests/`.
+6. **Wire the check into `scripts/verify.py`** by adding a `Check` in
+   `scripts/sovverify/checks.py` naming what it reads and what it does not
+   prove. An adapter with no check in the gate is not integrated; it is
+   present.
+7. **Record the standing** in `decisions/` and, if it changes,
+   `STATUS.yaml`.
+
+## What a model binding declares
+
+`contracts/model-binding.schema.json` requires all nineteen:
+
+```text
+binding_id      adapter_id       provider_id      provider_kind
+model_id        model_version    runtime_id       runtime_version
+host_id         interface_contract_id             capabilities
+data_boundary   input_projection_id               omissions
+usage_meter     cost_meter       fallback_policy  authority_source
+created_at
+```
+
+Two of them carry the rules that matter. `provider_kind` is `LOCAL` or
+`REMOTE`. `data_boundary` is `LOCAL_ONLY`, `REDACTED_REMOTE`, or
+`REMOTE_ALLOWED`, and it states where the operation's input may go — not where
+the model happens to be running.
+
+`adapters/ollama/` exists because those two fields can be declared truthfully
+and still be wrong. Its recorded inventory holds `gpt-oss:20b` and
+`gpt-oss:20b-cloud` with identical family, parameter size, quantisation,
+context length and capabilities; they differ in one field, `remote_host`. Both
+answer on the same loopback port. A binding naming the second, declaring
+`LOCAL` and `LOCAL_ONLY`, and checked against its tag would pass while sending
+input off the machine. Every check there reads the recorded inventory instead.
+
+Copy that pattern: check the crossing against a recorded observation of the
+external system, never against what the binding says about itself.
+
+## What will refuse you
+
+These are not style preferences. Each has a defeating fixture somewhere in the
+tree.
+
+- **Operating successfully grants nothing.** A model, adapter, credential,
+  process or provider receives no authority by working. Every consequential
+  transition needs a typed, scoped, live grant at the operation boundary.
+- **No provider SDK type may enter a kernel or service contract.** Translate at
+  the adapter edge.
+- **No silent provider fallback.** Absence of the external system produces a
+  visible refusal or an `UNATTESTABLE` result. It never quietly becomes a
+  different provider, and it never removes local custody.
+- **A refusal leaves the same trace a success does.** `bindings/mcp/gateway.py`
+  appends an `EVENT` before executing and a `RECEIPT` carrying `COMMITTED`,
+  `REFUSED` or `FAILED` after, on every path.
+- **A receipt never claims the world was rolled back.** Retraction adds a
+  counter-record. `RESOURCE_CONSUMPTION` and `EXTERNAL_WORLD` effects are not
+  undone by it.
+- **Your tests establish `BUILT` and nothing more.** They cannot claim
+  `WITNESSED` or `RATIFIED`, and the participant that wrote the adapter cannot
+  observe it.
+
+## Three worked examples, smallest first
+
+| Read | For |
+| --- | --- |
+| `adapters/host/` | The minimum shape. One read-only crossing, standard library only, unreadable fields returned as `null` and named in `limitations`. No shell, no elevation, no mutation. |
+| `bindings/mcp/` | The dispatch pattern. One path for every operation — resolve the endpoint from `manifest.json` or refuse `UNKNOWN_OPERATION`, check the tier, journal, execute, journal — rather than one wrapper per operation. |
+| `adapters/ollama/` | The full treatment: two declared bindings, a captured runtime inventory, fourteen defeating fixtures, thirteen tests, and a check in `verify.py`. Also read `reports/2026-08-23-local-model-adapter-witness.md`, where an independent observer reproduced every claim and still refused the transition. That report is what a witness of your adapter will look like. |
+
+## What is not settled
+
+- The shared transition contract is not frozen. `bindings/README.md` long said
+  no binding was admitted until it was, while three bindings shipped; that
+  sentence cited O10 and O18, retired in `decisions/0024` and `decisions/0033`.
+  Build against the current contracts and record the standing you claim.
+- No binding parity proof exists. `bindings/README.md` requires a human binding
+  and a model binding performing equivalent operations with reconciled
+  receipts, demonstrated across two materially different models. That is
+  PROD-I-9 and it is open.
+- `invoke_model` is declared in `contracts/kernel-transitions.json` with no
+  kernel implementation. `adapters/ollama/invoke.py` executes against the local
+  runtime and grades its own output; it settles nothing.
+- No external-world effect has ever put bytes in front of a third party in
+  Phase I. If your adapter would be the first, that is an owner-held
+  transition, not an engineering one (`contracts/acceptance-policy.json`).
+
+===== END FILE: bindings/INTEGRATING.md =====
+===== FILE: bindings/README.md =====
+# Operator Bindings
+
+Bindings realize one authoritative transition contract for different operator
+types. Human and model bindings may present different projections, but neither
+may introduce private standing, authority, transitions, or direct storage
+writes.
+
+The first parity proof must show equivalent operations through:
+
+- a human-facing binding that exposes state, choices, authority, provenance,
+  and receipts intelligibly;
+- a model-facing binding that exposes the same material as typed structure;
+- reconciled receipts proving both invoked the same kernel behavior.
+
+The model side must be demonstrated with two materially different configured
+models. One must be supplied by the node owner through `BYOM.md`; changing the
+binding cannot create a provider-specific state or authority path.
+
+The shared transition contract is not frozen. That was once written here as a
+bar on implementing any binding at all, gated on O10 and O18; both identifiers
+were retired (`decisions/0024-open-decision-drain.md`,
+`decisions/0033-close-the-founding-docket.md`) and three bindings shipped past
+it. What the unfrozen contract actually costs is narrower: a binding built now
+records the standing it claims and carries the risk that the contract moves
+under it. It does not wait.
+
+## Adding one
+
+[`INTEGRATING.md`](INTEGRATING.md) is the path: which of the two things you are
+writing, the order of work, what a binding must declare, what will refuse you,
+and three worked examples. Adapters translate to a named external system rather
+than to an operator type and live under [`adapters/`](../adapters/README.md),
+which carries their declared boundary table.
+
+## Sov
+
+[`SOV.md`](../SOV.md) names the main operating agent. `bindings/sov/` is its
+owner-directed provisional context profile: a provider-neutral entry point,
+machine-readable profile, bounded session declaration, and positive/defeating
+checks. It grants no authority and does not claim that live binding parity or
+the operator Gateway exists.
+
+## Console
+
+[`services/console/CHARTER.md`](../services/console/CHARTER.md) charters the
+Console Service. `bindings/console/` declares the Human Binding interface for
+its first slice, the owner's judgement surface: `interface.json` names the
+operations the binding invokes, maps `resolve-judgement` to the `SPEC.md`
+`ratify` transition, and states what the binding must expose under the five
+requirements above. It is a declaration only, standing `PROPOSED`: it holds no
+code and grants no authority. Implementing it is admissible under the paragraph
+above; what it lacks is an implementation, not a permission.
+
+===== END FILE: bindings/README.md =====
+===== FILE: bindings/console/README.md =====
+# Console Human Binding (declared, not implemented)
+
+`interface.json` declares the interface the Console Service Human Binding
+realizes: `urn:soveraeign:interface:console-owner-cli-v1`, binding kind
+`HUMAN`, standing `PROPOSED`. It is the binding the console seed fixtures
+call `HB-CLI` (`services/console/conformance/008-*.yaml`, `009-*.yaml`).
+
+This directory holds a declaration and nothing else. There is no code here,
+no Python module, and no realization. Read the admission statement at the end
+before reading anything else as a promise.
+
+## What it realizes
+
+The first console slice in `services/console/CHARTER.md` ("First slice: the
+owner's judgement surface"): the surface through which the owner receives a
+judgement request, answers it, and has the answer land as a record that can
+carry `RATIFIED` standing. The binding realizes the console's `human-binding`
+port (`services/console/contracts/service.json`) over the shared transition
+contract (`SPEC.md`, Transition contract).
+
+Realization target: a local CLI over the Python API, the `Local surface` row
+of `ENGINEERING.md` (Python API and CLI; human and model bindings use the
+same kernel operations). No HTTP, no UI framework, and no graphical interface
+claim. Every effect the binding can cause is `RECORD_LOCAL`.
+
+## Operations
+
+Each binding operation maps to a console manifest operation and, where one
+applies, to a `SPEC.md` transition row. Reads are manifest operations and are
+receipted like writes.
+
+| Binding operation | Manifest operation | `SPEC.md` transition | Record | Refusals |
+| --- | --- | --- | --- | --- |
+| `open-session` | `open-session` | none (console proposal) | operator-session `OPEN` | reasoned refusal |
+| `list-pending-judgement-requests` | `list-pending-judgement-requests` | none (console proposal) | judgement-request, lifecycle `QUEUED`, addressed to the operator | reasoned refusal |
+| `show-judgement-request` | `show-judgement-request` | none (console proposal) | one judgement-request with question, evidence, and `decision_ref` resolved | reasoned refusal |
+| `resolve-judgement` | `resolve-judgement` | `ratify` | judgement-resolution; request `QUEUED -> RESOLVED`; successor receipt | `AUTHORITY_REFUSED`, `STALE_STATE`; `REFUSED` for a `MODEL` actor |
+| `acknowledge-notification` | `acknowledge-notification` | none (console proposal) | notification `ISSUED -> ACKNOWLEDGED` | reasoned refusal |
+| `show-receipt` | `show-receipt` | none (console proposal) | one Receipt in the `SPEC.md` Receipt shape | reasoned refusal |
+| `close-session` | `close-session` | none (console proposal) | operator-session `OPEN -> CLOSED` | reasoned refusal |
+
+Notes on the table:
+
+- The pending list is read from judgement-request records on a record read
+  path, never from notification records or a projection-view (CONS-008). A
+  setting, session state, unread cursor, or dashboard role never changes its
+  membership.
+- `resolve-judgement` is the `SPEC.md` Transition contract row `ratify`:
+  preconditions "proposal admitted; live matching authority grant"; commit
+  "preserve history; add `RATIFIED` event"; refusal `AUTHORITY_REFUSED` or
+  `STALE_STATE`. `contracts/kernel-transitions.json` carries the same row as
+  a rebuildable projection under `transitions.ratify`; `SPEC.md` is the
+  authority. The request's question is the Proposal being ratified, and the
+  answer lands as a judgement-resolution record with `resolver_kind` `HUMAN`,
+  the grant checked, its receipt, and `unresolved_receipt_id` naming the
+  conditioned operation's `UNRESOLVED` receipt (CONS-009). A `MODEL` actor's
+  attempt is `REFUSED` and records no resolution (CONS-002).
+
+## Obligations
+
+`bindings/README.md` requires a human-facing binding to expose state,
+choices, authority, provenance, and receipts intelligibly. For this binding:
+
+| Obligation | The CLI must expose | Resolves to |
+| --- | --- | --- |
+| State | session lifecycle; each pending request's lifecycle, `loop_mode`, and standing; the conditioned operation's current receipt outcome (`UNRESOLVED` while `QUEUED`); notification lifecycle | operator-session, judgement-request, judgement-resolution, notification, and Receipt records; never a projection-view |
+| Choices | the legal operations for the current actor and their required inputs; for `resolve-judgement`, the decision vocabulary `ACCEPTED`, `STRUCK`, `DEFERRED` and the optional rationale | this declaration's `operations`; `service.json` `operations`; `judgement-resolution.decision` |
+| Authority | before an attempt, the authority the resolution will check (`required_authority_type` `JUDGEMENT`, `capability` `resolve-judgement`, `scope` the request's `request_id`); after it, the grant named in the receipt's `authority_grant_ids` and the resolution's `resolver_grant_id` | judgement-request fields; `Receipt.authority_grant_ids`; `judgement-resolution.resolver_grant_id`; `SPEC.md` `AuthorityGrant` |
+| Provenance | the request's address and digest; `question_address` and `question_digest` with the rendered question checked against them; `evidence_addresses`; `decision_ref`; requester id and kind; a notification's `source_address` and `source_digest`; a resolution's `rationale_address` and digest | judgement-request, notification, and judgement-resolution fields |
+| Receipts | every invocation's receipt by id with outcome, `reason_code`, `interface_id` equal to this interface, `authority_grant_ids`, `effect_class`, and `prior_receipt_id`; a refusal as its `REFUSED` receipt, never an error string alone | `SPEC.md` Receipt; `contracts/receipt.schema.json`; `judgement-resolution.receipt_id`; `notification.receipt_id` |
+
+The binding holds, infers, caches, and widens no grant. It introduces no
+private standing, authority, or transition, and writes no storage directly.
+
+## Parity with the Model Binding
+
+A Model Binding over the console's `model-binding` port reads the same
+records as typed JSON structure: the same judgement-request with the same
+address and digest, the same receipts and reason codes. The two pending lists
+differ in rendering only and are compared by digest (CONS-008).
+`resolve-judgement` is `REFUSED` for a `MODEL` actor; a model may draft a
+recommendation into the thread but may not resolve. Parity is proven by
+equivalent operations and reconciled receipts (`SPEC.md`, Interface parity),
+not by this declaration.
+
+## Admission
+
+This is a declared interface, not an implementation. Per the admission rule in
+`bindings/README.md`, no binding implementation is admitted until the shared
+transition contract is frozen (`STATUS.yaml` O10) or Bdo explicitly
+authorizes a provisional Human Binding target for the Console Service
+(`STATUS.yaml` O18). The protected boundary
+`no_runtime_code_before_logical_spec_and_defeating_fixtures` applies to this
+binding as it applies to the service. Until one of those decisions is ruled,
+this directory contains no code and `interface.json` realizes nothing.
+
+## Open questions queued for Bdo
+
+- Whether the refusal `reason_code` for a `MODEL` attempt at
+  `resolve-judgement` is `AUTHORITY_REFUSED` or a console-specific name
+  (CONS-002).
+- The decision vocabulary `ACCEPTED`, `STRUCK`, `DEFERRED` is a console
+  proposal not yet defined by `SPEC.md` (`judgement-resolution.schema.json`).
+
+===== END FILE: bindings/console/README.md =====
+===== FILE: bindings/mcp/README.md =====
+# MCP Gateway
+
+Standing: `BUILT_SELF_TESTED_NOT_WITNESSED`. Declared as `PROPOSED` in
+`manifest.json`; nothing here is witnessed or ratified.
+
+A Model Context Protocol server over stdio that exposes this node's built
+services to any MCP-capable model client. It is a Model Binding
+(`AGENTS.md`, Directory boundaries): it executes within grants and never
+ratifies, settles, or witnesses.
+
+## Why a gateway and not a set of wrappers
+
+A tool call already carries what an operation boundary needs — a caller, a named
+operation, typed arguments, and a return. So there is one dispatch path in
+`gateway.py`, not one wrapper per operation:
+
+1. resolve the endpoint from `manifest.json`, or refuse `UNKNOWN_OPERATION`;
+2. check the tier's preconditions;
+3. append an `EVENT` to the Record Service journal;
+4. execute;
+5. append a `RECEIPT` carrying `COMMITTED`, `REFUSED`, or `FAILED`.
+
+A refusal leaves the same trace a success does. The journal is the operational
+System of Record, so the gateway writes there rather than inventing storage.
+
+## Tiers
+
+| Tier | Session | Grant | Journal |
+| --- | --- | --- | --- |
+| `read` | no | no | nothing |
+| `observe` | yes | no | `EVENT`, `OBSERVATION`, `RECEIPT` |
+| `act` | yes | see below | `EVENT`, `RECEIPT` |
+
+Every `act` endpoint declares which layer holds its gate:
+
+- `gateway` — the gateway requires the caller to hold the declared capability;
+- `service-enforced` — the service owns the check, and the gateway adds no
+  second rule it has no bootstrap for. `authority_grant` is this: the first
+  grant of a store has nothing that could already cover it, which is what the
+  Authority layer's root-issuer rule exists to close;
+- `bootstrap` — establishes the session the others require, so it cannot itself
+  require one. Only `authority_open_session`.
+
+## The manifest is the tool list
+
+`gateway.py` builds its MCP tool descriptors from `manifest.json` and refuses to
+start when the two disagree in either direction — a declared endpoint nothing
+implements, or an implemented endpoint nothing declares. That check runs before
+any store opens, so a refused start costs no file handle and creates no state.
+
+This is why `services/projection` and `services/proofing` are absent. Both
+declare operations and both stand `PROPOSED`, so exposing them would turn a
+written-but-unbuilt service into a tool that errors at call time. Adding an
+endpoint is a manifest entry plus a handler; the startup check makes forgetting
+either half loud.
+
+## Running it
+
+```
+python bindings/mcp/server.py --state-root .soveraeign --actor Bdo
+```
+
+To attach a client, point it at that command over stdio. For Claude Code:
+
+```
+claude mcp add soveraeign -- python bindings/mcp/server.py --state-root .soveraeign --actor Bdo
+```
+
+The first call is always `authority_open_session`. Every later act-tier call
+runs under the returned session, and closing it withdraws every grant issued
+under it.
+
+## Boundaries
+
+- Standard library only. MCP on stdio is JSON-RPC 2.0 line by line, so no
+  runtime dependency and no provider SDK type reaches a service contract.
+- Local pipes only. It opens no socket and reaches no network, so it adds no
+  external-world effect (`STATUS.yaml`, `no_external_effects_in_phase_i`).
+- Journalled arguments are shapes, not payloads: `<str:6>`, never the value
+  (`AGENTS.md`, Context hygiene).
+
+## Open seam
+
+`services/gateway/contracts/service.json` declares a Gateway Service owning
+`transport-binding` and a `bind-transport` operation, standing `PROPOSED`. This
+binding is a stdio transport that currently enforces its own gates rather than
+being admitted through that operation. Whether a transport binding must be
+admitted by the Gateway Service before it serves is Bdo's to rule; it blocks
+nothing today because both are local and neither is ratified.
+
+===== END FILE: bindings/mcp/README.md =====
+===== FILE: bindings/sov/README.md =====
+# Sov Context Profile
+
+Sov is the portable, provider-neutral context profile for Soveraeign's main
+operating agent. Start with [`SOV.md`](../../SOV.md).
+
+This directory owns only the realization of that profile:
+
+- `profile.json` identifies Sov and its context, agency, state, and activation
+  boundaries;
+- `profile.schema.json` and `session.schema.json` describe the two local JSON
+  surfaces;
+- `validate.py` checks profile invariants and request-only session declarations;
+- `fixtures/` contains one admitted declaration and one defeating declaration;
+- `tests/` independently invokes the checker over both cases.
+
+The profile points to policy owned by `AGENTS.md`, `SYSTEM.md`, `CONTRACT.md`,
+`SPEC.md`, and `SDLC.md`. It does not restate itself into authority. On any
+divergence, the owning governing document prevails.
+
+## Current limit
+
+The checker answers whether a context declaration is structurally ready. It
+does not resolve a live authority grant and never authorizes an operation. It
+admits inspection declarations with no effect class and refuses consequential
+effect claims until
+issues #14, #16, #25, and #30 provide the live Registry, Gateway, shared-contract,
+and operator-binding boundaries.
+
+Run the focused checks with:
+
+```bash
+python -m unittest discover -s bindings/sov/tests -v
+```
+
+===== END FILE: bindings/sov/README.md =====
+===== FILE: conformance/README.md =====
+# Phase-I Conformance Testbed
+
+Status: `EXECUTABLE ORACLE · COVERAGE PROPOSED`
+
+The conformance suite evaluates externally visible records, authority results,
+receipts, and effects. It does not require a storage engine, framework,
+transport, service topology, or internal API.
+
+`oracle-controls.json` contains a good observation and a causally defeating
+observation for each Phase-I requirement. Those embedded observations test the
+oracle itself; they are not participant scenarios.
+
+`scenarios.json` freezes one strategy-neutral participant narrative for each
+requirement. A real participant binds by executing those narratives and
+producing a JSON document with the same case IDs and an `observed` object for
+each case:
+
+```bash
+python conformance/run.py
+python conformance/run.py --cases conformance/scenarios.json \
+  --observations path/to/participant-observations.json
+```
+
+The second form does not trust a participant's pass/fail claim. The runner
+derives defects from the observation records.
+
+## Observation contract
+
+Every participant observation must contain:
+
+```json
+{
+  "case_id": "CONF-I1-POS",
+  "observed": {}
+}
+```
+
+The requirement-specific fields are demonstrated in `oracle-controls.json`. Values are
+logical evidence summaries and addresses; they are not prescribed storage
+schemas. A participant may attach richer telemetry, but the oracle considers
+only contract fields.
+
+## How a report is read
+
+The runner indexes observations by `case_id` before evaluating any of them, and refuses
+a report it cannot read exactly as submitted rather than resolving the ambiguity itself:
+
+- the report must be a JSON array of observation objects;
+- every entry must carry a non-empty string `case_id`;
+- every entry must carry an `observed` object;
+- no `case_id` may appear twice.
+
+The duplicate rule is the load-bearing one. Indexing used to be last-wins, so an honest
+failing observation followed by a fabricated passing one under the same `case_id`
+produced `SUITE PASS` with no signal that a choice had been made. A repeated `case_id`
+now refuses the whole run: which observation counts is not the submitter's to decide.
+
+The same reading applies to the case file, so a duplicated control id is refused too.
+
+These are runner mechanics — the shape a report must have to be read at all. They do not
+settle which document owns the observation crossing's fields; that question is open.
+
+## Result meanings
+
+- `PASS` — the observation contains no detected contract violation.
+- `FAIL` — one or more semantic defects were observed.
+- `INVALID` — the case or participant report cannot be evaluated. A whole run reports
+  `SUITE INVALID` with the reason and exits non-zero when the report cannot be read.
+
+Passing the bundled controls proves that the oracle distinguishes the included
+positive and defeating narratives. It does not witness an implementation.
+Implementation standing remains `BUILT` until an independent witness runs the
+suite against real participant observations.
+
+===== END FILE: conformance/README.md =====
+===== FILE: conformance/observations/README.md =====
+# Witness observations
+
+Recorded observations from independent runs. An observation is evidence of what
+a witness saw. It is not a claim of standing, and it never ratifies.
+
+## FOUND-007 · fresh witness cold start
+
+`FOUND-007-observation.json`, against revision
+`bbeb5d6a235e61e13237a3f9b0a04654434280f7`.
+
+**The first execution of this scenario.** It had been declared `SEED` since the
+founding and had never been run, which is why `SPEC.md` had never reached
+`WITNESSED` and why the owner kept being asked to ratify a document standing at
+`PROPOSED` — a move the transition contract refuses everywhere else as
+`SKIPPED_STANDING`.
+
+Reproduce it:
+
+```
+git clone --depth 1 <repository> fresh && cd fresh
+python conformance/run.py
+python conformance/run.py --cases conformance/observations/FOUND-007-cases.json \
+    --observations conformance/observations/FOUND-007-observation.json
+```
+
+### What the run established
+
+A clean checkout, no predecessor repository, and no oral explanation were
+sufficient to locate authority (two holders, two authority types), enumerate the
+open decisions and protected boundaries, execute the Phase-I conformance suite,
+and reconstruct every verdict independently of the runner's own summary: 18
+controls, 9 requirements carrying both polarities, zero verdict mismatches, zero
+empty payloads, and no requirement whose positive and defeating fixtures are the
+same. Elapsed machine time, 6 seconds.
+
+The absent `lineage/` corpus did not defeat the run. `PUBLICATION.md` keeps it
+unpublished and permits a document to cite the type and clause of its source
+ground without publishing the archive, provided a public checkout reports locked
+evidence as unavailable rather than claiming a verification it could not
+perform. `verify_bootstrap.py` reports exactly that.
+
+### What the run refused
+
+The oracle rejected the observation with one defect:
+
+```
+FAIL WIT-007-2026-08-23 PROD-I-7 defects=1
+     qualification lacks semantic_task_observed
+```
+
+That is correct, and it is the finding. `PROD-I-7` requires a watched task whose
+success a fresh witness can judge. No such task is declared. The conformance
+suite establishes structural conformance - `check_i1` and `check_i2` are
+required-field presence - and `FOUND-007` names "schema validity is reported as
+semantic competence" as a defeating case. Reporting `semantic_task_observed` as
+true would have been that defeat.
+
+### What this means for standing
+
+`SPEC.md` has earned `BUILT` and cannot yet earn `WITNESSED`. The gate is not
+owner judgement. It is `O8`, "What observation completes semantic cold-start
+beyond schema validity?", which has been open since the founding and is the
+question that would declare the missing task.
+
+`O10` cannot be legitimately ruled before that. This scenario remains `SEED`
+because it has been executed and not yet satisfied.
+
+## FOUND-007 · second run, after the semantic task existed
+
+`FOUND-007-rerun-observation.json`, against revision
+`ec0427ad08b0` on a clean clone of `main`.
+
+The first run was refused for the right reason. Decision 0021 declared the
+semantic cold-start task, `FOUND-010`, and `custody.py` implemented the
+`read-version` operation the service contract had always claimed. With a task to
+observe, the same procedure was performed again from a fresh clone: authority
+located, conformance suite executed, every verdict reconstructed, and the
+semantic task run and held.
+
+```
+PASS  WIT-007-2026-08-23-B  PROD-I-7  defects=0
+```
+
+`PROD-I-7`, independent qualification, is satisfied. `SPEC.md` is therefore
+proposed at `WITNESSED`, which is a proposal supported by this observation and
+not a ratification: a witness can support a standing proposal and can never
+ratify one.
+
+Read the suite line on that run carefully. `SUITE FAIL cases=1 coverage_gaps=8`
+is not a failure of this case. Submitting one participant observation leaves the
+other eight requirements without one, and the runner reports that absence as
+missing coverage. The case itself passed with zero defects.
+
+**O10 is now legitimately askable.** It was not before, and that was the whole
+problem: the owner was being asked to ratify a document that had skipped two
+standings, which this repository refuses everywhere else as `SKIPPED_STANDING`.
+
+===== END FILE: conformance/observations/README.md =====
+===== FILE: contracts/README.md =====
+# Shared Contracts
+
+Status: `PROPOSED · STACK-NEUTRAL`
+
+These schemas compile the logical fields in `SPEC.md` into portable validation
+surfaces. They constrain records crossing service and participant boundaries;
+they do not prescribe storage tables, programming-language classes, transport,
+or deployment topology.
+
+| Contract | Purpose |
+| --- | --- |
+| `service-manifest.schema.json` | declares a service boundary, ownership, dependencies, operations, Kernel contracts used, and forbidden shortcuts; decisions/0062 proposes reading each manifest as that service's authored Kernel Binding |
+| `operation-plan.schema.json` | declares consequential work before execution |
+| `receipt.schema.json` | records the terminal outcome of a crossing or transition |
+| `participant-observation.schema.json` | carries implementation observations into the conformance oracle |
+| `observation.schema.json` | records independent evidence of what occurred: what an observer looked at, how it avoided relying solely on the executor's report, and which predicates held (`SPEC.md` `Observation`) |
+| `model-binding.schema.json` | declares an owner-selected local or remote model without granting provider authority |
+| `event-envelope.schema.json` | records who decided or acted, why, exact inputs and outputs, authority, effects, and outcome |
+| `source.schema.json` | identifies captured bytes by address, digest, and size so a reading can verify its input before it begins (`SPEC.md` `Source`) |
+| `recording.schema.json` | records a reading of a source: exact source digest, reader version and configuration, fidelity, and recoverable omissions; it never replaces or mutates its source (`SPEC.md` `Recording`) |
+| `seat-registry.schema.json` | PROPOSED (decisions/0020): the ownership topology as a rebuildable projection — seats, owner edges, what each settles, attributable occupancy claims |
+| `seat-message.schema.json` | PROPOSED (decisions/0035): the envelope one seat speaks to another in — who speaks, from which seat, to which seat, what kind of statement, the highest standing it proposes, and what it carries onward; the body is deliberately unconstrained |
+| `seat-etiquette.json` | the relationship table `seat-message.schema.json` is graded against: which acts each seat type may speak, in which direction, and how far each may propose standing |
+| `work-lease.schema.json` | PROPOSED (decisions/0056): one concern actively possessed by one attributable machine principal, under a grant, inside a multidimensional budget, against a stated closure condition; it grants nothing |
+| `node-identity.schema.json` | PROPOSED (decisions/0039): who a node is and which seat settles for it, for itself and every peer a local seat has admitted; it cannot express a grant, so a peer's self-description can never arrive as permission |
+| `federation-crossing.schema.json` | PROPOSED (decisions/0039, clarified by 0051): one record offered across the surfaces of two nodes and what the receiving node did about it; it carries attribution and evidence, never sender authority or standing — an admitted record enters the receiving node at `RECORDED` |
+| `public-projection.schema.json` | PROPOSED (decisions/0039): the outward read model of a node, derived from threads an operator marked public; inbound is an addressed input that queues, never a record the surface admits by itself |
+| `kernel-paradigms.schema.json` | PROPOSED (decisions/0062): shape of the registry that resolves stable service-manifest Kernel contract ids to the governing sources defining each paradigm |
+| `kernel-paradigms.json` | PROPOSED (decisions/0062): addressable index of the current standing, typed-authority, operation, observation, receipt, retraction, and attestation Kernel paradigms; the indexed sources remain authoritative |
+| `kernel-closure.schema.json` | PROPOSED (decisions/0062): shape of the rebuildable Node-wide projection showing service bindings, paradigm participation, type ownership, transition usage, and explicitly unmapped operations |
+| `kernel-transitions.json` | the authored executable traversal projection compiled from the `SPEC.md` transition contract, with preconditions and refusals; drift checks keep it aligned with the specification |
+| `transition.schema.json` | a request to perform one declared transition, with the pre-state, lease, observation, and authority it is checked against |
+| `kernel-parity.json` | executable/declarative correspondence evidence between participant refusal behavior and the Kernel transition rule it realizes; parity is distinct from manifest binding |
+| `principal.schema.json` | PROPOSED (decisions/0048): registered identities with a derived grade - controller, hop distance, crossing class - gating eligibility, never authority |
+
+## Kernel definitions, bindings, and projections
+
+`SPEC.md` remains the principal stack-neutral logical source for the Shared Kernel.
+`CLASSIFICATION.md` supplies the proposed canonical vocabulary used to read it. A
+Kernel paradigm is an indexed coherent slice of that grammar; a service manifest
+binds a service to the paradigms and types it participates in; and the Kernel Closure
+is a derived view across all those manifests.
+
+The direction of authority is intentionally one-way:
+
+`governing sources -> paradigm index -> service manifest bindings -> derived closure`
+
+The arrow never reverses. Editing or passing the closure cannot change a service
+manifest, grant authority, promote standing, or alter a governing Kernel source.
+`python scripts/sov_kernel.py binding-check` checks the authored service bindings
+against one another, and `python scripts/sov_kernel.py closure` emits the derived
+closure as JSON for humans and agents.
+
+## Named gap and reuse
+
+`Reader` has no schema of its own: its fields (`reader_id`, `reader_version`,
+`configuration_digest`, `fidelity`, `omissions`) are carried by `Recording`,
+which is the record that crosses a boundary. `participant-observation` and
+`receipt` do not carry reader, fidelity, or omissions, so neither can stand in
+for a reading; that gap is why a `Recording` schema (the brief's plain word:
+recording manifest) exists rather than a widened existing contract. `Source` is
+compiled so that `lineage/SOURCES.lock` entries have a declared shape. `SPEC.md`
+is accepted as the Phase-I logical specification (`decisions/0024-open-decision-drain.md`,
+O10), so these three compile an accepted object rather than anticipate one; each
+still needs its own defeating fixture before it carries evidence.
+
+The coordination files in this directory (`ticket-transition.schema.json`,
+`ticket-transitions.json`, `ticket-queue-policy.json`,
+`ticket-label-projection.json`, `issue-metadata.schema.json`) are owned by
+`decisions/0016-github-coordination-registrar.md` as extended by decisions
+0018, 0022, and 0032. They are coordination contracts, not Kernel definitions.
+The Kernel transition table is different: it is an authored executable projection of
+the accepted `SPEC.md` transition contract (`decisions/0019`, `0024`) and is checked
+for drift rather than treated as the whole Kernel.
+
+A schema-valid record can still be semantically unfit. Binding checks, conformance
+fixtures, executable parity, and independent observation remain distinct evidence.
+
+===== END FILE: contracts/README.md =====
+===== FILE: infrastructure/README.md =====
+# Historical Phase-I Local Infrastructure
+
+Status: `BUILT/SELF-TESTED PHASE-I CUSTODY/DEPLOYMENT EVIDENCE · BROAD TOPOLOGY ACCEPTANCE NOT CLAIMED`
+
+This directory is the smallest infrastructure-as-code surface required to give
+Soveraeign requirement work a reproducible local custody boundary. It declares
+the node envelope as data and uses a dependency-free planner to materialize and
+verify it.
+
+It does not select a cloud, container runtime, HTTP framework, queue product,
+graph database, identity provider, or model provider. A provisional
+customer-owned Kubernetes renderer makes the deployment boundary inspectable;
+it does not contact a cluster or select an ingress, operator, Helm chart, or
+managed service.
+
+## Operations
+
+```bash
+python scripts/infrastructure.py validate
+python scripts/infrastructure.py plan --root /path/to/node
+python scripts/infrastructure.py apply --root /path/to/node
+python scripts/infrastructure.py verify --root /path/to/node
+python scripts/custody_activation.py --root /path/to/node \
+  --expected-uid "$(id -u)" --expected-gid "$(id -g)"
+python scripts/deployment.py validate
+python scripts/deployment.py plan --target local
+python scripts/deployment.py plan --target customer-kubernetes
+python scripts/deployment.py render --target customer-kubernetes \
+  --image registry.example/soveraeign@sha256:<64-hex-digest> \
+  --custody-claim customer-owned-claim
+```
+
+`plan` is observation-only. `apply` may create an empty node root and its
+declared directories, then writes an attributable manifest receipt. It refuses
+to adopt a non-empty unmanaged root. Reapplying the same manifest is
+idempotent. Concurrent applies are fenced by an exclusive local lock. `verify`
+detects missing paths, symlinks, incomplete applies, receipt drift, and unsafe
+permissions.
+
+Custody activation is a separate startup gate. Its default `VERIFY_ONLY`
+policy refuses an empty, unmanaged, drifted, incomplete, or incorrectly owned
+root. `VERIFY_OR_INITIALIZE_EMPTY` must be selected explicitly and may only
+materialize an empty root. A successful activation establishes one persistent
+custody identity and appends a machine-readable receipt under
+`receipts/custody-activations`; subsequent activations must preserve that
+identity.
+
+No destroy operation is supplied: authoritative state and payload custody must
+not become deletable merely because a provisioning tool created their
+directories.
+
+## Phase-I envelope
+
+This is the pinned historical Phase-I infrastructure envelope, not the current
+phase or authority policy. `phase-i.local.json` declares:
+
+- local custody with no required network or provider;
+- separate record, payload, projection, receipt, and work paths;
+- external effects refused;
+- projections explicitly non-authoritative;
+- private owner-only filesystem permissions.
+
+The manifest is infrastructure configuration, not an authority grant or an
+operational System of Record.
+
+## Portable deployment topology
+
+`phase-i.topology.json` carries one node shape across local and customer-owned
+Kubernetes profiles. Gateway is the only rendered Service and remains
+cluster-internal. Broker and Queue stay in-process and non-authoritative.
+Federation stays disabled. The node stays at one replica until a concurrent
+write case earns fencing or compare-and-set.
+
+The Kubernetes command loads `phase-i.local.json`, embeds the complete manifest,
+pins its canonical SHA-256 and five-path mapping in pod configuration, and adds
+a non-root init container. The node container cannot start until that init
+container verifies or explicitly initializes the customer PVC and writes an
+activation receipt. Both containers run as UID/GID `65532` and mount the same
+custody root. The default rendered policy is verify-only; a customer may
+deliberately render first-use initialization with:
+
+```bash
+python scripts/deployment.py render --target customer-kubernetes \
+  --image registry.example/soveraeign@sha256:<64-hex-digest> \
+  --custody-claim customer-owned-claim \
+  --custody-activation-policy VERIFY_OR_INITIALIZE_EMPTY
+```
+
+The Kubernetes command emits a JSON `List` to standard output. Kubernetes
+accepts JSON directly, but applying it is deliberately an external owner action.
+The repository never invokes `kubectl`. It also does not provision storage: the
+customer supplies an existing claim whose storage class, backup, and reclaim
+policy they control. The bundle contains no Secret, Ingress, public Service,
+cloud resource, or destroy path, and requires an image pinned by digest.
+
+The pinned image must contain Python 3.11 and
+`/opt/soveraeign/scripts/custody_activation.py`. A separate runtime-image
+contract still has to establish the node entrypoint, a listener on port 8080,
+startup/readiness semantics, and health behavior. Until that binding exists,
+this remains a provisional deployment compiler rather than a deployable node.
+
+## Independent witness
+
+`WITNESS.md` defines the fresh Red protocol. Its runner imports neither
+infrastructure implementation module, verifies a clean exact-commit checkout,
+performs independent state and bundle inspection, exercises defeating cases,
+and emits a candidate receipt outside the repository. A manual read-only GitHub
+Actions workflow exposes the same procedure for an independently identified
+witness. Neither the runner nor CI can promote its own output to `WITNESSED`,
+accept topology issue #39, open a successor phase, or mint owner standing.
+
+===== END FILE: infrastructure/README.md =====
+===== FILE: infrastructure/WITNESS.md =====
+# Infrastructure witness protocol
+
+Status: `BUILT PROTOCOL · NOT YET INDEPENDENTLY EXECUTED`
+
+This protocol lets a fresh Red participant reproduce the local custody,
+custody-activation, and customer-Kubernetes claims without importing any of
+those implementation modules. It
+produces a candidate receipt; it cannot grant itself `WITNESSED` standing and
+cannot ratify O2 or O14.
+
+## Witness boundary
+
+The witness must use a clean checkout at the exact reviewed commit, must not be
+the author of the implementation under review, and must declare a stable
+witness identity. Bdo decides whether that identity and observation are
+sufficiently independent.
+
+Run from the repository root:
+
+```bash
+python scripts/witness_infrastructure.py \
+  --witness-id <fresh-red-identity> \
+  --expected-commit "$(git rev-parse HEAD)" \
+  --declare-independent \
+  --output /tmp/soveraeign-infrastructure-witness.json
+```
+
+The output must remain outside the repository. Review it, then attach the exact
+file to issues #37 and #39 or record its content digest and durable evidence
+address. Do not copy a passing receipt into `STATUS.yaml` as owner judgement.
+
+## Observed cases
+
+The runner independently checks:
+
+- clean checkout and exact commit identity;
+- the complete repository verifier;
+- observation-only local planning;
+- local custody paths, permissions, and manifest-digest receipt;
+- default refusal of an empty PVC-shaped root, explicit initialization,
+  machine-readable activation receipt, and custody identity continuity across
+  restart;
+- refusal of wrong manifest digest, missing paths, unwritable ownership, and a
+  stale identity or infrastructure receipt through the defeating fixtures;
+- refusal of unmanaged roots and observation of receipt, manifest, permission,
+  and symlink drift plus the real concurrent-apply fixture;
+- a rendered Kubernetes bundle with a pinned image, customer-owned claim,
+  single writer, hardened pod, ClusterIP Gateway, disabled Federation,
+  observe-only patrol, and default-deny egress;
+- exact embedding of `phase-i.local.json`, its independently computed digest,
+  its five-path mapping, the UID/GID `65532` activation gate, and activation
+  receipt location;
+- refusal of mutable images, invalid claims, public Services, extra replicas,
+  and premature Federation;
+- refusal of a force-added ignored synthetic secret.
+
+The runner records digests of command output rather than copying full logs into
+the receipt. It performs only `RECORD_LOCAL` effects in temporary directories.
+
+## What it does not establish
+
+- cryptographic proof of witness identity;
+- owner ratification;
+- a live cluster deployment;
+- production fitness;
+- an image entrypoint, listener, readiness probe, startup contract, or health
+  semantics for port 8080;
+- Gateway operation safety;
+- Broker, Queue, or Federation activation.
+
+The Gateway remains unearned while Asset Service authority, receipt,
+independent-observation, and two-binding gaps remain open.
+
+Passing this protocol repairs the local-to-Kubernetes custody seam. It still
+does not accept issue #39 or ratify O14; Bdo retains both judgements.
+
+===== END FILE: infrastructure/WITNESS.md =====
+===== FILE: lineage/README.md =====
+# Lineage
+
+Attributed ancestry for Soveraeign. This directory commits manifests and the
+source lock only; it never commits payload bytes.
+
+- `SOURCES.lock` is a JSON enumeration of history sources: git commits (SHA and
+  subject; author names and emails are deliberately never captured), GitHub
+  pull requests and issues (number, title, state, read read-only through `gh`),
+  and Claude Code session files (session id, byte size, SHA-256 of the raw
+  bytes; a digest of raw bytes reveals no content, and the host directory is
+  never recorded). Each entry carries the SPEC.md `Source` fields:
+  `source_id`, `source_address`, `payload_digest`, `payload_size`,
+  `captured_at`, `captured_by` (an actor name, never an email).
+- Sanitized payload bytes live in the local, uncommitted Asset Service
+  content-addressed store. They are rebuildable by re-running the reader:
+  `python services/asset/scripts/history_sources.py --sessions-dir <host
+  sessions directory>` (or set `SOVERAEIGN_SESSIONS_DIR`). Session entries are
+  point-in-time captures; a live session file grows after capture.
+- `lineage/evidence/` holds immutable attributed input when present. Evidence
+  files are never edited (`decisions/0003-evidence-boundary.md`); this
+  enumeration does not touch them.
+
+`scripts/verify_bootstrap.py` checks the lock structurally and refuses a lock
+that leaks an email address or an absolute host path. The reader itself refuses
+to write such a lock (`services/asset/scripts/history_sources.py`).
+
+Standing: the lock is a capture record at proposal standing. Evidence grants no
+authority; nothing here is ratified by existing.
+
+===== END FILE: lineage/README.md =====
+===== FILE: scripts/README.md =====
+# Command surface
+
+Thirty-six `sov_*.py` entrypoints plus the two verification commands. This is the
+whole of how the node is operated from a terminal, and it is the index
+`contracts/publication-surface.json` requires: an entrypoint absent from this
+page is unreachable by anyone who did not write it.
+
+Every command reads local files. None reaches the network unless its own
+documentation says so. Nothing here grants authority, and no command settles its
+own output — `AGENTS.md` owns that rule and these tools are subject to it.
+
+Run any of them with `--help` for exact arguments.
+
+## Start here
+
+| Command | Answers |
+| --- | --- |
+| `python scripts/verify.py` | Does the repository pass? The required local and CI gate, graded on wall time (`decisions/0050`). |
+| `python scripts/lint.py` | Is the repository text clean — endings, module size, secret shapes, absolute host paths? |
+| `python scripts/sov_next.py` | What happens next? Reconciles five signposts and reports disagreements rather than resolving them. |
+| `python scripts/sov_traps.py` | Are the hazards recorded in `CLAUDE.md` still real? Fails when one stops being true. |
+
+## Where the work stands
+
+| Command | Subcommands | Answers |
+| --- | --- | --- |
+| `sov_docket.py` | `check` `holds` `queue` `unrouted` | The owner's queue, rebuilt from the decision records rather than hand-written. |
+| `sov_accept.py` | `audit` `present` `queue` `rulings` | The owner gate: what is presented for acceptance and what sits on a seat without a packet. |
+| `sov_epic.py` | `status` `validate` `next` `unrouted` `sync` `report` | The epic-of-epics issue tree, from its checked-in projection. |
+| `sov_backlog.py` | — | Every branch that never reached the trunk, so a disposition can be judged. |
+| `sov_strand.py` | — | Work left lying around. Fails when any commit exists only on this disk. |
+| `sov_branch.py` | `ledger` `retire` `worktrees` | Branch, worktree and merge management across many checked-out trees. |
+| `sov_lease.py` | `take` `status` `close` `release` `fail` `draw` `helper` `selfcheck` | Who is holding which concern, under what envelope. |
+| `sov_unblock.py` | `draft` `list` | Files a proven stall as an unblock request. `BLOCKED` is a claim that must be proven. |
+
+## What the system claims to be
+
+| Command | Subcommands | Answers |
+| --- | --- | --- |
+| `sov_canon.py` | `ground` `promises` `facts` `trace` `rollup` `check` | Product ground and canon, traced down to what is reachable. |
+| `sov_spec.py` | `trace` | What the logical specification has actually earned. |
+| `sov_service.py` | `check` `crud` `endpoints` | The declared service surface, judged. |
+| `sov_capability.py` | `show` `build` `check` `offices` `events` | Which office answers which operation, and how. |
+| `sov_kernel.py` | `table` `check` `parity` `drift` `closure` `binding-check` `selfcheck` | Shared Kernel projections and conformance. |
+| `sov_node.py` | `status` `peers` `validate` | This node's identity and the peers it has admitted. |
+| `sov_owners.py` | `status` `check` | The domain owner register. |
+| `sov_interface.py` | `show` `build` `check` `invoke` `prove` | The derived Node Interface a model reader receives. |
+| `sov_surface.py` | `render` `check` `try` | The same Node Interface rendered for a person. |
+
+## Authority, standing and landing
+
+| Command | Subcommands | Answers |
+| --- | --- | --- |
+| `sov_grant.py` | `list` `check` `selfcheck` | The standing authority grants, and whether one request is inside them. |
+| `sov_standing.py` | — | Refuses a standing claim in `STATUS.yaml` that no witness record supports. |
+| `sov_closure.py` | `loop` `judge` `selfcheck` | Whether a handoff is a genuine seam or a concern being abandoned. |
+| `sov_custody.py` | `list` `board` `circuit` `estimate` `reconcile` `orphans` `selfcheck` | Who is on the hook for an initiative, how far it has been drawn, and what it was estimated to cost. |
+| `sov_land.py` | — | The landing gate. The only place a witnessed change becomes a commit on `main`. |
+| `sov_witness.py` | `semantic` | The semantic task a fresh witness can judge without reading the code. |
+
+## Evidence and drift
+
+| Command | Subcommands | Answers |
+| --- | --- | --- |
+| `sov_publication.py` | `audit` `check` `queue` `selfcheck` | Which surface each tracked path occupies, and where the tree and the declaration disagree. |
+| `sov_diagrams.py` | `grade` `stamp` `selfcheck` | Whether each diagram still reads the source bytes it claims to have read. |
+| `sov_snapshot.py` | `check` `selfcheck` | Whether the orientation snapshot in `CLAUDE.md` still matches the record. |
+| `sov_docs.py` | `ingest` `build` `check` | The node's own documentation reader, with each document's custody shown beside it. |
+| `sov_baseline.py` | — | Holds the Asset Service to its recorded conformance baseline. |
+| `sov_mutate.py` | `sites` `run` `selfcheck` | How much the test suite actually asserts, by mutating what it tests. |
+| `sov_trace.py` | `up` | One measured execution, walked up to the product intention that justified it. |
+| `sov_f2_gate.py` | — | The F2 milestone gate, exactly as `SPEC.md` states it. |
+
+## Coordination and scheduling
+
+| Command | Subcommands | Answers |
+| --- | --- | --- |
+| `sov_session.py` | `list` `who` `brief` `new` `claim` `release` `end` `reserve-decision` `heartbeat` `guard` `contested` `prune` `principal` `worktree` `register` `selfcheck` | Which live sessions share this tree and who holds which path. Git answers what changed, never who is changing it. |
+| `sov_board.py` | `review` `apply` `selfcheck` | The coordination surface: survey it, then apply what is approved. |
+| `sov_ticket.py` | `transition` `selfcheck` | The ticket coordination contract. |
+| `sov_schedule.py` | `validate` `list` `due` `run` `tick` `ledger` `task-command` | Scheduled runs of harness workflows. Every shipped schedule is disabled. |
+
+## Not entrypoints
+
+`scripts/sov*/` packages hold the implementations these commands drive;
+`scripts/tests/` holds their tests, run by `scripts/run_tooling_tests.py` inside
+`verify.py`. `scripts/verify_bootstrap.py` checks a fresh checkout's structure
+and evidence digests before anything else runs.
+
+`AGENTS.md` fixes what this directory may own: verification and bounded
+repository maintenance, never product business logic.
+
+===== END FILE: scripts/README.md =====
+===== FILE: services/README.md =====
+# Services
+
+Services are bounded enterprise capabilities inside a local Soveraeign Node.
+They share the kernel's standing, authority, transition, observation, receipt,
+and retraction semantics; no service creates a private authority system.
+
+## Current boundaries
+
+| Service | Standing | Owns |
+| --- | --- | --- |
+| `asset/` | experimental reference participant | asset identity, payload custody, versions, derivation lineage, discovery, asset-use records, and the organizational layer: collection types, asset collections, membership, and library conformance |
+| `record/` | experimental reference participant | the append-preserving journal, terminal receipts, counter-records, the digest chain, subject projections, and journal export and restore (`decisions/0049`) |
+| `identity/` | placement provisional; challenge component built | the challenge lifecycle: mint, deliver, present, expire (`decisions/0048` ID-12..14). Whether identity is a service at all is open at judgement 3 |
+| `console/` | built in part, remainder chartered | operator sessions, channels, threads, posts, notifications, judgement requests, authority grants, operator settings, and dashboard and activity projections |
+| `gateway/` | proposed boundary; first IN_PROCESS route pattern built and self-tested | the node's door: requests admitted, capabilities resolved, authority checked, routes recorded, receipts returned, transports bound |
+| `host/` | built read-health slice; mutating operations declared and unreachable | normalized host readings and the lifecycle of requested scans, restart/power, driver, and utility operations behind a Host Port |
+| `registry/` | built read-only resolve slice; broader registry charter remains | versioned name resolution, source-owned registry entries and relations, owner records, rebuildable indexes, and drift findings |
+| `observation/` | chartered, not implemented | independent observation: observer registrations, declared predicates, observation requests, independence checks, observations, and attestations. Not the log - the journal is the Record Service's |
+| `proofing/` | chartered, not implemented | version-pinned review sessions, annotations, rounds, and decision history |
+| `projection/` | chartered, not implemented | projection collections, text, graph, and vector configurations, builds, retrieval receipts, context packages, and fidelity observations over asset records; parity target in `PARITY.md` |
+
+A service's repository implementation and its standing are separate facts. A participant can
+exist under `src/` and pass its own tests while its manifest remains `PROPOSED`; tests are
+evidence for a standing transition, not the transition itself.
+
+## Construction view: root, vertical, horizontal, surface, node
+
+This is a construction vocabulary, not a new structural scale. `CLASSIFICATION.md` still owns
+`System > Federation > Node > Service > Component`.
+
+Two dimensions must not be collapsed:
+
+- **Kernel** is the available grammar of operation, not a geometric or structural level. It
+  defines the admissible typology (what kinds may exist), topology (how those kinds may relate),
+  legal traversal and transitions, and the invariants that may never collapse. Nodes, services,
+  operations, and crossings instantiate that grammar; they do not redefine it by convenience.
+- **Root** is the irreducible local settlement locus for one Node. Geometrically, the point. A
+  root seat may settle judgement or verification for its Node, but the Root is not the Node and
+  does not travel across a federation crossing.
+- **Vertical** is one declared operation carried end to end through the Kernel: request,
+  resolution, authority, service execution, terminal receipt. A completed vertical closes back
+  on durable evidence rather than ending at an executor return. Geometrically, a closed path.
+- **Horizontal** is several service-owned verticals composed inside one Node through shared
+  resolution, authority, record, and routing semantics. Horizontal growth adds capabilities
+  without turning Gateway into a domain service or giving any service private Kernel rules.
+- **Surface** is the addressable actor- and crossing-facing boundary of that horizontal
+  composition. Console and bindings may realize actor-facing pieces; Gateway may realize a
+  governed crossing seam; projections may describe what is exposed. Exposure creates no new
+  authority.
+- **Node** is the filled locally sovereign operating volume: Root, durable record, services,
+  runtime and custody, history, and crossing policy bounded by its Surface.
+
+The structural construction is therefore:
+
+`Root -> Vertical -> Horizontal -> Surface -> Node`
+
+with **Kernel governing every term in the expression rather than preceding them**.
+
+The useful geometric progression is `point -> closed path -> extent -> sphere -> ball`: Root is
+the point; verticals close paths; horizontal composition gives extent; Surface is the sphere;
+Node is the filled ball. Kernel defines which shapes, relations, and traversals are legal at
+every stage.
+
+A federation crossing relates Node surfaces, not roots. Each receiving Node resolves and admits
+the crossing under its own Kernel and settles its own side against its own Root. A peer's root
+identity or evidence can cross; the peer Root's authority cannot silently become local
+authority.
+
+The current Gateway/Asset slice proves one Vertical. `sov://asset/read-asset` is the next boring
+same-service repetition. `sov://registry/resolve` is the stronger Horizontal proof because it
+adds a second service family without adding Registry-specific logic to Gateway. After those
+survive the same route contract, a Node composition root can assemble identity, Root topology,
+Record, authority, Registry, Gateway, and service-owned routes without becoming a god-service.
+
+## The declared surface
+
+Every service declares its operations in `contracts/service.json` against
+`contracts/service-manifest.schema.json`. Each operation states the record it acts on, the
+append-preserving CRUD verb it realizes, its logical endpoint, the preconditions it checks,
+what a commit produces, and every refusal it may return
+(`decisions/0040-the-declared-service-surface.md`).
+
+A logical endpoint is `sov://<service>/<operation>`. It names what is being asked for and
+never how the bytes arrive; `contracts/capability-offices.json` binds transports to it.
+
+```
+python scripts/sov_service.py check       # judge every manifest
+python scripts/sov_service.py endpoints   # every declared logical endpoint
+python scripts/sov_service.py crud        # CRUD coverage per service
+```
+
+`CREATE` appends. `READ` derives without writing. `SUPERSEDE` adds a later version and keeps
+the earlier one. `COUNTER` adds a counter-record and erases nothing. `REBUILD` recomputes a
+projection only. There is no `UPDATE` and no `DELETE`.
+
+Each service directory may contain:
+
+- `CHARTER.md` — semantic boundary and proving narrative;
+- `contracts/` — interface and assessment contracts;
+- `src/` — a reference participant only after fixtures exist;
+- `tests/` — participant tests that establish `BUILT` evidence, never witness themselves;
+- `KNOWN-GAPS.md` — observed differences from the charter and governing specification.
+
+`contracts/service.json` is the service's specification. There is no per-service
+`SPEC.md`: the root `SPEC.md` owns the kernel, and a second prose authority per service
+would restate rules nothing could check.
+
+Deployment does not define service identity or node identity. One process may host several
+services, and one service may later use several processes, without changing the classification
+contract. Likewise, a second process is not a second node. A distinct Node requires its own
+durable record, local settlement Root, and governed crossing Surface.
+
+===== END FILE: services/README.md =====
+===== FILE: services/asset/CHARTER.md =====
+# Asset Service Charter
+
+Status: `PROPOSED VERTICAL-SLICE BOUNDARY`
+
+## Role in Soveraeign
+
+The **Asset Service** is a bounded service within Soveraeign responsible
+for the custody, description, transformation, relationship, discovery, and
+governed use of enterprise assets.
+
+It may also be deployed as a local service and serve as one concrete reference
+binding of the broader Soveraeign stack. “Microservice” describes a deployment
+and failure boundary; it does not grant the service separate authority or make
+its internal database the product's source of truth.
+
+## Source-grounded boundary
+
+- `ANCHOR.md` A1 defines the product as the working system rather than any one
+  instrument within it.
+- `PRD-PRODUCT(1).md` explicitly treats these instruments as subsystems and requires Phase-I
+  runtime, configuration, interfaces, and minimum infrastructure assumptions.
+- `PRODUCT(1).md` §5 defines the destination as a distributed federation of
+  sovereign local-first nodes joined by governed crossings.
+- `PRD-PRODUCT(1).md` Phase II says federation begins with a real second node,
+  not a platform launch.
+- `FREEZE-LEDGER(1).md` defers operational messaging and routing until node two
+  exists.
+- `HANDOFF-SPEC.md` requires the logical specification to remain stack-neutral.
+
+Therefore the Asset Service may prove one real stack slice now while keeping the service,
+database, graph, transport, and deployment mechanisms replaceable.
+
+## Initial deployment identity
+
+For the first vertical slice, the Asset Service is:
+
+- one asset service inside one sovereign local Soveraeign node;
+- one local content-addressed asset store;
+- one canonical record and receipt ledger;
+- one shared transition API for human and model bindings;
+- one or more disposable search and graph projections;
+- local workers acting through leased, scoped operations;
+- adapter ports for Claude, GitHub, media tools, and future federation.
+
+It is not yet:
+
+- a federation;
+- a second sovereign node;
+- the whole Soveraeign product;
+- a frozen technology choice;
+- or an authority island with rules different from the common kernel.
+
+## When it could become a node
+
+The asset service may later qualify as a sovereign node only if it:
+
+1. owns a durable local record rather than only a cache or projection;
+2. can operate safely when external integrations are absent;
+3. declares its own authority, resource, trust, and fault envelopes;
+4. exports and admits state only through governed crossings;
+5. preserves source, standing, receipt, and retraction semantics across those
+   crossings;
+6. and actually interoperates with a distinct second node.
+
+Until then, `FederationPort` is an interface seam whose operations refuse as
+`UNCONFIGURED`, leaving a receipt. It is not a simulated federation.
+
+## Authoritative versus derived stores
+
+| Concern | Initial mechanism | Standing |
+| --- | --- | --- |
+| Asset bytes | local content-addressed files | authoritative payload custody |
+| Assets, versions, operations, authority, receipts | SQLite ledger | canonical reference binding |
+| Search | SQLite FTS projection | derived and rebuildable |
+| Relationships and lineage traversal | SQLite edge projection; optional NetworkX | derived and rebuildable |
+| External graph database | optional `GraphProjection` adapter | never authoritative |
+| Claude analysis | proposal-producing adapter | evidence/candidate, never authority |
+| GitHub import | exact repository/commit/path source adapter | external source provenance |
+| Federation | inactive governed-crossing port | deferred until node two |
+
+Graph-originated edits must return as proposals through the canonical transition
+path before they can affect effective state.
+
+## First proving operation
+
+From a clean local checkout:
+
+1. ingest an original asset and preserve its exact bytes;
+2. request a declared derivative for a named enterprise use;
+3. allow a scoped worker to claim and execute the operation through a fenced
+   lease;
+4. independently observe the output rather than trusting the worker report;
+5. allow a model adapter to propose metadata and relationships;
+6. ratify only through typed authority;
+7. rebuild search and graph projections from canonical receipts;
+8. expose the same effective asset state to human and model bindings;
+9. retract one effective relationship or use without erasing the history;
+10. reproduce the same effective projections after a clean rebuild.
+
+This operation is evaluated under `AI-NATIVE.md`. The presence of Claude, an
+API, workers, or a graph database does not itself earn the verdict.
+
+The code in this directory is an experimental reference participant. Its current
+self-tests establish `BUILT` evidence only. `KNOWN-GAPS.md` records where it
+does not yet satisfy `SPEC.md`; it must not be represented as F3-qualified.
+
+## One-hour implementation constraint
+
+The first pass optimizes for semantic reach rather than production breadth:
+
+- standard-library local custody and ledger;
+- one real end-to-end asset operation;
+- deterministic adapters when live integrations are unavailable;
+- explicit `UNATTESTABLE` or `UNCONFIGURED` outcomes instead of simulated
+  success;
+- positive and defeating fixtures;
+- no cloud dependency, external mutation, federation claim, or stack freeze.
+
+===== END FILE: services/asset/CHARTER.md =====
+===== FILE: services/asset/JOURNEYS.md =====
+# Asset Service Journeys
+
+Status: `PROPOSED · BUILT AT MOST · NOT WITNESSED · NOT RATIFIED`
+
+This is the piece `decisions/0093-service-srd-spec-ground.md` names as having
+no root-level analog. Each journey below is the abstract path a caller takes
+through
+this service — discover, authority-check, invoke, report/observe, receipt,
+and sometimes retract or reconstruct — stated as it actually behaves in the
+current reference participant, not as `CHARTER.md` aspires for it to behave.
+`COMPLETES` means the journey reaches a terminal, receipted outcome as
+described. `DEAD-ENDS-AT-<step>` means it does not, and names the exact gap
+and its citation. Naming an open custody or ownership question here does not
+assign, resolve, or answer it — it routes to a decision record the ordinary
+way (`decisions/0067`, "What this is not").
+
+## J1 · Discover what this service will let a caller do
+
+**Path:** read `services/asset/contracts/service.json` alone, with no oral
+briefing.
+
+**COMPLETES.** The manifest declares all seventeen operations with logical
+endpoint, subject, CRUD kind, preconditions, commit outcome, and refusal set,
+plus an `undeclared_events` list explaining why ten adjacent lifecycle phases
+are not themselves callable operations. This is `GROUND-006` exercised
+directly: "a participant arriving with no briefing can determine what it may
+do."
+
+## J2 · Capture an original asset
+
+**Path:** discover `ingest-asset` → hold a live grant → invoke → receipt →
+reread to verify.
+
+**COMPLETES**, through two different reachable routes with different reach
+today:
+
+- Direct Python API/CLI: `service.json`'s stated preconditions
+  (`payload_bytes_readable`, `declared_label`, `declared_locator`,
+  `live_grant`) gate the call; `custody.py` and `store.py` verify the digest
+  on ingest and on every later read.
+- Gateway-routed: `services/gateway/CHARTER.md`'s built walking skeleton is
+  exactly this path — `IN_PROCESS -> sov://asset/ingest-asset -> Asset
+  Service -> terminal receipt` — proven both ways in
+  `tests/test_walking_skeleton.py`: "without a covering grant, ... leaves
+  durable Gateway refusal evidence and the Asset Service does not execute;
+  with a live exact grant, the same logical endpoint reaches the Asset-owned
+  route."
+
+**Named scope, not a dead end:** `routes.py`'s `AssetRoutes.OPERATIONS =
+("ingest-asset", "read-version")` is the entire Gateway-routed surface today.
+The other fifteen declared operations, including every organizational and
+proposal operation, are reachable only through the direct Python API/CLI, not
+through the Gateway path this journey otherwise completes.
+
+## J3 · Reread a captured version and detect drift
+
+**Path:** discover `read-version` → invoke → digest verification → receipt.
+
+**COMPLETES.** `custody.py` refuses `DIGEST_MISMATCH`, `SOURCE_UNREACHABLE`,
+`SOURCE_CHANGED`, and `VERSION_UNKNOWN` rather than returning stale or
+corrupted content. This is the one Phase-I requirement the participant oracle
+currently passes: `conformance/BASELINE.md` records `PROD-I-2 · Remember:
+PASS` — "declared derivative recordings reconstruct exact source, reader
+artifact/version, replay configuration, output, fidelity, and recoverable
+omissions."
+
+## J4 · Request and reconstruct a derived recording
+
+**Path:** declare a complete `ReaderDeclaration` → `request-derivative`
+leases a worker → the worker reports → an independent party observes → the
+run settles → a caller reconstructs the recording later.
+
+**DEAD-ENDS-AT-observe.** The declaration, leasing, reporting, and
+reconstruction steps all complete and are evidenced
+(`conformance/PROD-I-2-BUILD.md`: "Observation settles a derivative only
+after reconstructing that complete path; output-only success cannot conceal
+later source corruption"; 96 passing unit tests including incomplete-reader,
+source-corruption, and tampered-output cases). But the independent-observer
+step `SPEC.md`'s `observe_run` requires is not a callable Asset Service
+operation at all: `service.json`'s `undeclared_events` names
+`operation.observe` as out of scope because "`decisions/0041` charters the
+Observation Service to own independent observation," and that service is
+boundary-only today. `KNOWN-GAPS.md`'s "Observer independence" row records
+the sharper defect in what does exist: "Any named actor can call `observe`,
+including the worker" — the executor-only settlement `GROUND-010` forbids is
+not yet structurally prevented.
+
+## J5 · Propose a description, then ratify it
+
+**Path:** `propose-description` (human or model actor) → `ratify-proposal`
+(human actor, live matching grant) → `EFFECTIVE`.
+
+**DEAD-ENDS-AT-admit.** `KNOWN-GAPS.md`'s "Admission standing" row: "Proposal
+ratification updates `RECORDED` directly to `RATIFIED`" — the four-step
+ladder `CLASSIFICATION.md` and `SPEC.md` both fix (`RECORDED → ADMITTED →
+RATIFIED → EFFECTIVE`) collapses its middle step in this participant.
+Separately, the proposal itself does not yet satisfy `PROD-I-1`'s defeating
+case: `conformance/BASELINE.md` records `PROD-I-1 · Propose: FAIL` —
+"proposal lacks content address, source addresses, and cost record" — and
+`PROD-I-5 · Typed authority: FAIL` — "the participant cannot demonstrate the
+paired typed verification grant and commit."
+
+## J6 · Retrieve an asset's provenance and lineage
+
+**Path:** `read-asset` (also reads `asset-relationship` and
+`derivation-lineage`) → `read-version-history` → `rebuild-projection` for a
+fresh traversal.
+
+**COMPLETES for immediate lineage; DEAD-ENDS-AT-multi-hop-traversal for
+depth.** Reading an asset's direct relationships and version history is
+built and receipted. But `KNOWN-GAPS.md`'s "Search and graph projections" row
+states the traversal itself "is a `LIKE` substring scan with no ranking and a
+one-hop `neighbors()`" against a chartered target of "ranked text search,
+bounded multi-hop traversal, and per-hit source resolution" that belongs to
+the Asset Projection Service, not this one (`OPEN-SEAMS.md` S14 names the
+same gap as two owners of the asset projections, unresolved until
+`decisions/0021` is ruled).
+
+## J7 · Retract an effective relationship or use record
+
+**Path:** `retract-record` or `remove-member` under a live retraction grant
+and a declared reason → `COUNTERED` receipt, original preserved.
+
+**COMPLETES**, with a named residual short of full linkage. The core claim —
+history is never erased — holds: `conformance/BASELINE.md` confirms "original
+and counter-record survive." What is missing is that "the counter receipt
+does not link the prior receipt" (same source), so a caller can find both
+records but cannot yet walk from one directly to the other through the
+receipt chain alone.
+
+## J8 · File an asset into a typed collection and read library conformance
+
+**Path:** `declare-collection-type` → `declare-collection` → `add-member` →
+`read-library-conformance` (or `read-collection`).
+
+**COMPLETES for the first declaration of a type; DEAD-ENDS-AT-type-migration
+for changing one under existing members.** The curatorial layer and its
+three-way conformance verdict are built and evidenced
+(`librarian.py`; `decisions/0063-asset-collections-and-the-librarian.md`).
+But `KNOWN-GAPS.md`'s "Collection type migration" row: "a collection type
+cannot be redeclared: a second declaration is refused `STALE_STATE`, so a
+schema change under existing members has no path at all" — the required
+behavior (a superseding version, every member re-judged, the earlier version
+preserved) is named and not yet built (`decisions/0057`, Defaults taken).
+
+## J9 · Cross between a human binding and a model binding on the same record
+
+**Path:** a human actor and a model actor each invoke the same declared
+operation and receive compatible receipts.
+
+**DEAD-ENDS-AT-second-binding.** `KNOWN-GAPS.md`'s "Two bindings" row: "Only
+a Python API/CLI participant exists... Human and model bindings must use the
+same transition contract." `conformance/BASELINE.md` confirms at the
+requirement level: `PROD-I-3 · Cross: FAIL` — "no second binding or fully
+declared crossing exists." The `actor_kind: HUMAN | MODEL` distinction is
+present in the data model (`SPEC.md`'s `Proposal`) but no second physically
+distinct binding has been built to exercise it.
+
+## J10 · The service's own lifecycle becomes the Record Service's journal
+
+**Path:** a consequential decision or state transition in this service is
+reconstructable independently of any current projection, through the
+append-preserving Event Envelope the Record Service is chartered to own.
+
+**DEAD-ENDS-AT-journal-migration.** `KNOWN-GAPS.md`'s "Operational journal"
+row: "Mutable lifecycle tables and partial receipts do not yet implement the
+complete append-preserving Event Envelope," citing `CONTRACT.md` C15 and
+`SPEC.md`'s `EventEnvelope`. Today's authoritative store for this service is
+its own SQLite ledger (`store.py`; `CHARTER.md`'s Authoritative versus
+derived stores table: "Assets, versions, operations, authority, receipts |
+SQLite ledger | canonical reference binding"), not the Record Service's
+journal, even though `STATUS.yaml` records
+`record_service_status: BUILT_SELF_TESTED_NOT_WITNESSED` — a sibling service
+chartered for exactly this now exists and this service has not yet migrated
+onto it. This is the same gap the root `CLAUDE.md` snapshot glosses in
+passing as "the Asset Service still keeps its own SQLite tables"; its own
+citation in `KNOWN-GAPS.md` is `C15` and `SPEC.md`'s `EventEnvelope`, not a
+`PROD-I-<n>` tag, and that discrepancy in labeling is noted here rather than
+silently resolved one way or the other.
+
+## Open custody and ownership questions
+
+Each of these is a question this service's own boundary cannot answer, and
+naming it here does not answer it either.
+
+1. **Does a source's access credential (for example, a GitHub personal
+   access token needed to re-fetch a private repository, commit, or path)
+   ever pass through or sit beside this service's payload custody?**
+   `CHARTER.md` names `github-source` among this service's adapter ports and
+   `service.json` lists it under `ports`. Separately, `README.md` and
+   `recording.py` are explicit that the *derivative-recording replay
+   configuration* is designed to hold "opaque credential references rather
+   than usable secrets" and a "secret-free replay configuration." Neither
+   `CHARTER.md`, `KNOWN-GAPS.md`, nor `service.json` says anything about
+   whether the *source-capture* path — `ingest-asset` from a GitHub locator —
+   has the same guarantee, or where a fetch credential for that source would
+   live if one were needed. This is silent in every document read for this
+   exercise, not answered either way.
+
+2. **Who migrates this service's own lifecycle onto the Record Service's
+   append-preserving journal — this service reaching out, or the Record
+   Service reaching in?** Named as a dead end in J10 above. `KNOWN-GAPS.md`
+   states the required behavior but not an owner for closing the gap, and
+   `STATUS.yaml` records both services as `BUILT_SELF_TESTED_NOT_WITNESSED`
+   independently, with no cross-reference between their statuses.
+
+3. **Who owns issuing and revoking authority grants for this service — this
+   service's own `authority.py`, or a separate permits surface?**
+   `service.json`'s `undeclared_events` states this as open in its own words:
+   "whether the Console or a separate permits surface owns authority-grant is
+   open (`services/gateway/CHARTER.md`, `services/console/KNOWN-GAPS.md`)."
+   Cited verbatim rather than restated, because restating it risks quietly
+   picking a side.
+
+4. **Who keeps `rebuild-projection` and this service's own two projection
+   tables once the Asset Projection Service is ratified?**
+   `OPEN-SEAMS.md` S14 states this plainly: "Which service keeps
+   `rebuild-projection` for the Asset Service's own two tables after
+   ratification is Bdo's call." Explicitly owner-gated, not this service's
+   or this document's to decide.
+
+===== END FILE: services/asset/JOURNEYS.md =====
+===== FILE: services/asset/KNOWN-GAPS.md =====
+# Asset Service Reference Gaps
+
+Status: `OBSERVED AGAINST PROPOSED SPEC · NOT OWNER-RATIFIED`
+
+The reference participant proves a useful local walk, but it does not yet pass
+the full Phase-I logical contract.
+
+| Gap | Observed behavior | Required behavior | Contract |
+| --- | --- | --- | --- |
+| Admission standing | Proposal ratification updates `RECORDED` directly to `RATIFIED` | Admission must be a visible separate transition | C4; SPEC `admit`/`ratify` |
+| Effectiveness | A ratified relationship becomes effective immediately | Current effectiveness must follow the applicable attestation and policy gate | C4-C5; PROD-I-8 |
+| Authority envelope | Grants carry actor, capability, and scope only | Type, issuer authority, budget, validity, and revocation must be enforced | C3; PROD-I-5 |
+| Observer independence | Any named actor can call `observe`, including the worker | Observer relation must prevent executor-only settlement | C7; SPEC `Observation` |
+| Receipt completeness | Receipts omit exact input state, authority grants, preconditions, effect class, and digest | Required receipt fields must be present for every terminal outcome | C6-C8 |
+| Reader execution evidence | A declared recording verifies the exact reader artifact, configuration, source, and output, but not that the worker semantically executed that reader | Model binding and observation must attest execution without promoting worker self-report | C2, C7; PROD-I-2 |
+| Atomic commit | Blob writes and ledger commits are not one recoverable protocol | Partial-write recovery must distinguish committed from attempted state | SPEC fault model |
+| Two bindings | Only a Python API/CLI participant exists | Human and model bindings must use the same transition contract | C1; PROD-I-3 |
+| Attestation | Byte observation exists, but general claim attestation does not | `REPRODUCED`, `DISSENTED`, and `UNATTESTABLE` must be recorded | C5; PROD-I-8 |
+| Judgement queue | Missing authority refuses synchronously | Judgement-dependent work must remain visible and non-blocking | PROD-I-6 |
+| Model portability | No Model Binding or Model Adapter participant exists | Two materially different models must use one kernel contract with exact identity, data-boundary, usage, cost, and provider-loss receipts | PROD-I-9; BYOM.md |
+| Operational journal | Mutable lifecycle tables and partial receipts do not yet implement the complete append-preserving Event Envelope | Every consequential decision and state transition must remain reconstructable independently of current projections | C15; SPEC `EventEnvelope` |
+| Collection type migration | A collection type cannot be redeclared: a second declaration is refused `STALE_STATE`, so a schema change under existing members has no path at all | A superseding type version, with every member re-judged against it and the earlier version preserved | ENGINEERING; `decisions/0057`, Defaults taken |
+| Metadata field types | A required field accepts any JSON value; only a declared controlled vocabulary constrains one, and a field with no vocabulary is satisfied by an empty string | A declared value type per field, checked when a description is recorded rather than only when it is read back | `decisions/0057`, Ruling 1 |
+| Search and graph projections | `CHARTER.md` names an SQLite FTS projection and lineage traversal; the build is a `LIKE` substring scan with no ranking and a one-hop `neighbors()` | Ranked text search, bounded multi-hop traversal, and per-hit source resolution belong to the chartered Asset Projection Service (`services/projection/`, `decisions/0021`); these two tables are a compatibility path | SPEC Projection rule; PROD-I-3; OPEN-SEAMS S14 |
+
+These are participant defects or unimplemented requirements, not reasons to
+relax the logical oracle.
+
+===== END FILE: services/asset/KNOWN-GAPS.md =====
+===== FILE: services/asset/README.md =====
+# Soveraeign Asset Service
+
+Status: `EXPERIMENTAL REFERENCE PARTICIPANT · NOT PRODUCTION`
+
+This directory is the first executable stack-slice experiment for Soveraeign: a local
+asset service with immutable bytes, a canonical event ledger, authority-aware
+operations, worker leases, independent observation, receipts, retraction,
+search, graph projection, and a refused-until-configured federation seam.
+
+It also holds the organizational layer an operator works in: collection types
+that declare a metadata schema, typed collections curated against it, membership
+that is countered rather than deleted, and a conformance read that judges every
+member and names every asset filed nowhere
+(`decisions/0063-asset-collections-and-the-librarian.md`).
+
+```bash
+cd services/asset/src
+python -m soveraeign_asset_service.cli --root ../../../.soveraeign-asset conformance --markdown
+```
+
+A conformance verdict is derived on every call and never stored. It separates a
+ratified description (`CONFORMING`) from one nobody ratified
+(`CLAIMED_UNRATIFIED`) from one nothing carries (`MISSING_FIELD`); the middle
+one is a claim and never counts as conformance.
+
+It is intentionally dependency-free. Its tests are implementation self-reports:
+they establish `BUILT`, not `WITNESSED`, `RATIFIED`, or Phase-I qualification.
+
+```bash
+cd services/asset
+python -m unittest discover -s tests -v
+PYTHONPATH=src python scripts/demo.py
+```
+
+The graph is a rebuildable SQLite projection, not authoritative state. A later
+`GraphProjection` adapter may target Neo4j Community or another local graph
+service without changing the asset contract.
+
+Derivative recordings are created only for requests carrying a complete
+`ReaderDeclaration`. The declaration names the reader and version, supplies a
+versioned artifact and secret-free replay configuration, and declares
+exact-or-lossy fidelity plus recoverable omissions. The service deposits the
+reader, configuration, source, and output in its local CAS. The recording can
+be reconstructed by recording or output-version ID without exposing local
+filesystem paths. Legacy derivative runs remain versions, not recordings; they
+cannot be passed off as reconstructable. This is the substrate for later local
+model enrichment; no model output is admitted or ratified by this mechanism.
+Configurations use opaque credential references rather than usable secrets.
+
+This layer verifies what reader material a worker declared; it does not yet
+attest that the worker semantically executed that artifact. That remains an
+observation/model-binding obligation rather than authority granted by storage.
+
+The proving narrative is described in `CHARTER.md` and evaluated by
+`../../AI-NATIVE.md`. Known differences from the proposed logical specification
+are recorded in `KNOWN-GAPS.md`; those gaps must be fixed in the participant,
+not hidden by weakening the conformance oracle.
+
+===== END FILE: services/asset/README.md =====

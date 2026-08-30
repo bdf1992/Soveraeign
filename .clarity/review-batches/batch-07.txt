@@ -1,0 +1,2445 @@
+===== FILE: services/gateway/SERVICE-SPEC.md =====
+# Gateway Service Logical Specification
+
+Status: `BUILT (self-report by the drafting session) · NOT WITNESSED · NOT RATIFIED`
+
+A service-scoped projection of `SPEC.md` under `decisions/0093-service-srd-spec-ground.md`. This
+file cites `contracts/kernel-transitions.json` and `services/gateway/contracts/service.json`
+rather than re-deriving their contents. Where this document and either contract disagree, the
+contract governs and this document is stale.
+
+## Owned domain records
+
+`contracts/service.json` `owns` names six record kinds. None has a standalone JSON Schema yet
+(`KNOWN-GAPS.md` "Request contract", "Receipt contract"); the fields below are the ones the
+reference implementation actually writes, in
+`services/gateway/src/soveraeign_gateway_service/evidence.py`.
+
+- **`gateway-request`** — the received envelope, recorded before any refusal can occur
+  (`evidence.record_request`): `request_id`, `actor_kind`, `transport`, `scope`,
+  `argument_names`, `envelope_fields`.
+- **`capability-resolution`** — the resolved logical endpoint against the authored manifest and
+  capability projection (`evidence.record_resolution`): `request_id`, `capability_id`,
+  `service_id`, `operation`, `effect_class`, `transport`, `route_address`,
+  `capability_map_digest`.
+- **`authority-check`** — the authority decision (`evidence.record_authority`): `request_id`,
+  `resolution_entry_id`, `actor_kind`, `required_authority`, `scope`, `decision`, and
+  (when present) `authority_grant_id` or `diagnostic_code`.
+- **`routing-record`** — the record of invoking the bound service-owned route
+  (`evidence.record_routing`): `request_id`, `request_entry_id`, `resolution_entry_id`,
+  `authority_entry_id`, `capability_id`, `service_id`, `operation`, `transport`,
+  `route_address`, `authority_grant_id`, `effect_class`, `scope`.
+- **`gateway-receipt`** — Gateway's own crossing-evidence record plus the owning service's
+  terminal receipt carried unchanged (`evidence.record_return`, `evidence.refuse`,
+  `evidence.fail`): `request_id`, `routing_entry_id`, `terminal_receipt_id`, `terminal_outcome`
+  on success; `reason_code`, `failure_class` (`GOVERNED_REFUSAL` or `OPERATIONAL_FAULT`), `stage`
+  on refusal or fault. Whether `gateway-receipt` is a distinct owned record, a kernel receipt
+  form, or unnecessary beyond this crossing evidence is unsettled (`KNOWN-GAPS.md` "Receipt
+  contract").
+- **`transport-binding`** — which transport (`IN_PROCESS`, `CLI`, `MCP`, `HTTP`) is activated for
+  an operation, governed by `contracts/capability-offices.json` `transport_policy`.
+
+## Service-local states
+
+Gateway does not hold sibling-service domain state (`CHARTER.md` "Authoritative versus derived").
+Its own crossing records are the authoritative account of what crossed the door; everything it
+says about a routed operation's standing, effect class, or transport activation is derived from
+authored service/capability inputs. Its own crossing carries these observed outcomes, a
+restriction of `SPEC.md`'s `Receipt` outcome enum to what the reference implementation and its
+tests actually exercise:
+
+`ATTEMPTED | COMMITTED | REFUSED | FAILED`
+
+`COUNTERED` and `UNRESOLVED` are declared at the kernel level (`SPEC.md` `Receipt`) but no
+Gateway crossing evidence, fixture, or test in `services/gateway/tests/test_gateway_slice.py`
+exercises either yet; do not read their absence here as a claim that Gateway refuses them.
+
+## Legal transitions
+
+`contracts/service.json` declares nine operations against subjects `gateway-request`,
+`capability-resolution`, `authority-check`, `routing-record`, and `gateway-receipt`:
+`accept-request`, `resolve-capability`, `check-authority`, `route-request`, `return-receipt`,
+`refuse-request`, `bind-transport`, `list-endpoints`, `read-receipt`. Each operation's
+preconditions, commit value, and refusals are declared there and are not restated here.
+
+`route-request` is the one operation the manifest ties to a named kernel transition
+(`kernel_transition: "cross"`). `contracts/kernel-transitions.json` `cross` requires
+`source_address`, `reader_declaration`, `omissions`, `authority_grant_id`, `destination_address`,
+commits to `COMMITTED`, and refuses `READER_UNDECLARED` or `AUTHORITY_REFUSED`. Gateway's
+`route-request` narrows this to: the resolved capability address is the source, the checked
+actor and live grant are the authority evidence, and the bound service-owned route is the
+destination.
+
+Only one of the nine declared operations is realized by the reference implementation's caller
+path today. `Gateway.dispatch()` in
+`services/gateway/src/soveraeign_gateway_service/core.py` performs
+`_accept → _resolve → _check_authority → _admit_route → (owning service call) → return/refuse`
+as one call for one presented `sov://` address; it does not expose `list-endpoints` or
+`read-receipt` as separately invocable operations (see `JOURNEYS.md` for the caller-facing
+consequence of this gap).
+
+## Refusal reason codes
+
+`contracts/service.json` `local_refusals` maps Gateway-local refusal names to the kernel
+vocabulary in `contracts/kernel-transitions.json`:
+
+| Gateway-local | Kernel refusal |
+| --- | --- |
+| `ENDPOINT_UNKNOWN` | `MISSING_PRECONDITION` |
+| `GRANT_NOT_COVERED` | `AUTHORITY_REFUSED` |
+| `MALFORMED_REQUEST` | `INCOMPLETE_PROPOSAL` |
+| `RECEIPT_MISSING` | `OBSERVATION_MISSING` |
+| `SERVICE_UNREACHABLE` | `UNREADABLE` |
+| `TRANSPORT_NOT_ACTIVATED` | `POLICY_REFUSED` |
+| `TRANSPORT_REFUSED_IN_PHASE` | `POLICY_REFUSED` |
+
+The reference implementation (`core.py`) also emits diagnostic codes not present in this table —
+`ACTOR_KIND_NOT_ADMITTED`, `AUTHORITY_CHECK_FAILED`, `INVALID_GRANT_REFERENCE`,
+`SERVICE_EXECUTION_FAILED` — attached to a `GatewayRefusal` or `GatewayFault` object
+(`services/gateway/src/soveraeign_gateway_service/contract.py`) and carried in the `diagnostic_code`
+field of the recorded evidence. These are implementation-level detail under the two governing
+`failure_class` values, `GOVERNED_REFUSAL` and `OPERATIONAL_FAULT` — not yet reconciled into
+`contracts/service.json`'s declared `local_refusals` table. Treat that reconciliation as an open
+contract gap, not a silent extension of the contract.
+
+## Persistence and authority notes
+
+Gateway's own crossing records persist through the Record Service's append-preserving journal
+(`depends_on: record:append-preserving-journal`, `contracts/service.json`;
+`services/gateway/src/soveraeign_gateway_service/evidence.py` calls `RecordService.append` /
+`RecordService.receipt`). Gateway holds no SQLite tables or payload store of its own.
+
+Authority is read, never held or issued. Gateway checks Console-owned grant records
+(`depends_on: console:authority-grant`; `KNOWN-GAPS.md` "Authority source"). If an Authority
+Service later supersedes Console's current grant surface, `KNOWN-GAPS.md` records that "Gateway
+must remain a reader either way" — long-term ownership of the grant store itself is unsettled and
+is not this service's decision (see `JOURNEYS.md` open questions).
+
+`contracts/service.json` `forbids` names what Gateway may never do regardless of implementation
+detail: settling a routed operation, observing what it routed, holding authoritative service
+state, issuing authority, silent transport fallback, external transport in Phase I, and reaching
+a service except through its logical endpoint.
+
+## Contract standing
+
+`contracts/service.json` `standing: "PROPOSED"` applies to the manifest and to every one of its
+nine operations. A self-tested reference implementation exists for the `route-request` /
+`return-receipt` path against one operation (`sov://asset/ingest-asset`); implementation and
+passing tests are evidence, not a change to the manifest's declared standing
+(`decisions/0040-the-declared-service-surface.md`, Ruling 5, as cited in `KNOWN-GAPS.md`).
+
+===== END FILE: services/gateway/SERVICE-SPEC.md =====
+===== FILE: services/gateway/SRD.md =====
+# Gateway Service Requirements Document
+
+Status: `BUILT (self-report by the drafting session) · NOT WITNESSED · NOT RATIFIED`
+
+This is a service-scoped projection of `PRD.md` under `decisions/0093-service-srd-spec-ground.md`.
+It states what the Gateway Service owes the callers that depend on it. It is not a new
+requirement ladder: every `SVC-GATEWAY-<n>` below either serves a named `PROD-I-<n>` or narrows
+`CHARTER.md`'s route contract to a checkable claim. `CHARTER.md` remains this service's
+authoritative role statement; this document does not compete with it.
+
+## Product outcome
+
+Give every declared service operation in the node one transport-neutral crossing point that
+resolves the logical endpoint, checks the caller's authority, routes to the owning service, and
+returns that service's terminal receipt unchanged — refusing legibly, with a durable record,
+whenever any step cannot proceed (`CHARTER.md` "Role in Soveraeign", "The route").
+
+## Callers
+
+The Gateway's caller is not a human end user; per `SYSTEM.md`/`AGENTS.md` framing and
+`decisions/0067`, its caller is the node itself, expressed through:
+
+- a human operator, acting through a binding that composes a `sov://` request (`contracts/service.json`
+  `ports: human-binding`). No dedicated human-facing Gateway binding exists yet; today this shape is
+  exercised only by `services/gateway/tests/test_gateway_slice.py` constructing envelopes directly.
+- a model operator, acting the same way (`ports: model-binding`), exercised by the same test file
+  under `actor_kind: "MODEL"`.
+- the owning service whose route Gateway invokes and whose terminal receipt it carries back
+  unchanged — the Asset Service today, for `sov://asset/ingest-asset` (`CHARTER.md` "The route").
+  This party is the target of a crossing Gateway performs, not an inbound caller of Gateway.
+- the older MCP ingress (`bindings/mcp/gateway.py`), which presently has its own resolution,
+  authority, and journal behavior and does not yet call this service
+  (`KNOWN-GAPS.md` "The MCP binding").
+- a federated node (`ports: federation`), a declared port with no negotiation behavior defined
+  (`KNOWN-GAPS.md` "Capability negotiation").
+
+## Requirements
+
+Each requirement below carries its own `OPEN → BUILT → WITNESSED → RATIFIED` standing per
+`PRD.md`. `BUILT` here is this drafting session's self-report against the evidence cited; it is
+not independent witness.
+
+### SVC-GATEWAY-1 · Resolve a declared address
+
+A caller presents one transport-neutral `sov://<service>/<operation>` address. Gateway resolves
+it against the authored service manifest and the capability projection, verifies the projection's
+input-state digest, and rederives the selected row from authored inputs before trusting it. It
+does not invent an address or infer a missing route (`CHARTER.md` "What a logical endpoint is",
+route step 2). Serves `PROD-I-3`.
+
+Defeating case: an unknown or undeclared endpoint is answered as if it existed rather than
+refused — guarded by `test_unknown_sov_operation_is_not_invented`.
+
+Standing: `BUILT`.
+
+### SVC-GATEWAY-2 · Check exact authority before routing
+
+Gateway requires the declared actor kind and an exact live grant covering the operation's
+authority and request scope before it routes. Absence of a covering grant is a durable refusal;
+the routed service is never reached (`CHARTER.md` route step 3). Serves `PROD-I-5`.
+
+Defeating case: a request without a covering grant still reaches the Asset Service — guarded by
+`test_authority_refusal_is_durable_and_asset_never_sees_the_call`.
+
+Standing: `BUILT`.
+
+### SVC-GATEWAY-3 · Distinguish refusal from operational failure
+
+A typed authority denial is recorded as `AUTHORITY_REFUSED`. An authority-reader exception, a
+service exception, or a receipt-attribution mismatch is recorded as `FAILED` evidence, never
+counterfeited as a denial (`CHARTER.md` "The route", step 3; "Governed refusal is distinct from
+operational failure"). Serves `PROD-I-5`, `GROUND-008`.
+
+Defeating case: a reader exception is recorded as though the actor lacked authority — guarded by
+`test_authority_reader_failure_is_not_counterfeited_as_denial`.
+
+Standing: `BUILT`.
+
+### SVC-GATEWAY-4 · Return the owning service's receipt unchanged
+
+Gateway invokes a bound service-owned route and returns that service's terminal receipt
+unchanged and attributed to the checked actor. It manufactures no second success receipt and
+does not promote a service refusal to a success (`CHARTER.md` "Authoritative versus derived").
+Serves `PROD-I-3`, `PROD-I-4`.
+
+Defeating case: the returned receipt's actor does not match the checked actor, or a service-level
+refusal is returned as a success — guarded by `test_terminal_receipt_actor_must_match_checked_actor`
+and `test_service_terminal_refusal_is_returned_unchanged_not_promoted_to_success`.
+
+Standing: `BUILT`.
+
+### SVC-GATEWAY-5 · One door for a human actor and a model actor
+
+A human-attributed and a model-attributed request for the same operation take the identical
+kernel path and receive service receipts that differ only by actor. Serves `PROD-I-3`, and is
+groundwork toward the two-binding proof (`AI-NATIVE.md` check 7 as cited in `KNOWN-GAPS.md`
+"Two-binding proof").
+
+Defeating case: actor kind changes which path or authority logic applies beyond the declared
+check — guarded by `test_human_and_model_take_same_kernel_path_and_get_service_receipts_unchanged`.
+
+Standing: `BUILT` for same-participant human/model parity. The full two-binding proof — a
+distinct human binding and two materially different model bindings driving this same door — is
+`OPEN` (`KNOWN-GAPS.md` "Two-binding proof").
+
+### SVC-GATEWAY-6 · Refuse smuggled attribution and stale state
+
+Gateway rejects a client-attributed actor override, a stale or tampered capability-projection
+row, and a receipt whose actor does not match the checked actor, before authority or service
+execution proceeds. Serves `PROD-I-5`, `GROUND-005`.
+
+Defeating case: a spoofed actor or a tampered projection row still reaches routing — guarded by
+`test_gateway_rejects_client_attribution_override_before_authority_or_service` and
+`test_capability_projection_tamper_fails_closed_even_with_fresh_input_digest`.
+
+Standing: `BUILT`.
+
+### SVC-GATEWAY-7 · Every crossing leaves a record
+
+Every accepted request, resolution, authority decision, and routing/refusal/failure outcome
+leaves durable, attributable Gateway evidence — distinct from the routed service's own receipt
+(`CHARTER.md` "Authoritative versus derived"; `evidence.py`). Serves `PROD-I-4`, `GROUND-007`.
+
+Defeating case: a malformed request or a refusal leaves no request record — guarded by
+`test_malformed_request_has_request_record_before_refusal`.
+
+Standing: `BUILT`.
+
+### SVC-GATEWAY-8 · External transport stays unadmitted until explicitly built
+
+HTTP stays inactive and refused regardless of whether underlying node-runtime health checks or
+listeners exist; only the currently bound local transports are admitted (`CHARTER.md` "What it
+does not do"; `contracts/capability-offices.json` `transport_policy.HTTP`). The historical
+Phase-I non-goal is preserved in the archive, but current refusal is the Gateway's own
+unbuilt/unadmitted transport boundary rather than a phase-wide effect ban.
+
+Defeating case: an HTTP-addressed request reaches routing — guarded by
+`test_http_stays_refused_in_phase_one`.
+
+Standing: `BUILT`.
+
+### SVC-GATEWAY-9 · A second same-class route without service-specific logic
+
+A second service-owned route of the same effect/transport class can be bound behind Gateway
+without adding domain-specific logic to Gateway itself (`CHARTER.md` "Relationship to node
+composition"; `KNOWN-GAPS.md` "Route coverage", "Replication test before abstraction").
+
+Defeating case: not yet exercisable — only one route (`sov://asset/ingest-asset`) exists. The
+replication test is the named next step, not evidence that already passed.
+
+Standing: `OPEN`.
+
+### SVC-GATEWAY-10 · Independent witness of a routed crossing
+
+A party that did not build or route the call can independently verify what crossed the door.
+Serves `PROD-I-7`.
+
+Defeating case: not yet stateable — `KNOWN-GAPS.md` "Independent observation" records that
+"the Gateway cannot witness itself and there is no fresh independent Gateway witness receipt."
+
+Standing: `OPEN`.
+
+## Non-goals for this service
+
+Carried from `CHARTER.md` "What it does not do" and stated here as requirement boundaries, not
+gaps to close:
+
+- Settling a sibling service's operation, or manufacturing a second success receipt for one.
+- Witnessing an operation it routed.
+- Issuing or widening authority.
+- Owning capability definitions or repairing the capability projection in place.
+- Falling back to an undeclared transport or route.
+- Opening an external transport before that transport is explicitly built, admitted, scoped, and receipted.
+- Becoming the Node's composition root. Gateway is one service inside the locally sovereign Node
+  (`CHARTER.md` "Relationship to node composition"; see `JOURNEYS.md` open questions).
+
+===== END FILE: services/gateway/SRD.md =====
+===== FILE: services/host/CHARTER.md =====
+# Host Service Charter
+
+Standing: `BUILT` participant with one bounded `read-health` operation. Every
+mutating host operation remains `PROPOSED` and unreachable.
+
+## Role in Soveraeign
+
+The Host Service owns the node's governed view of operating-system state and the
+lifecycle of requested host work. It is the only service allowed to turn an admitted
+Soveraeign host operation into a call through a Host Port.
+
+The service does not acquire authority from an administrator account, root token,
+service manager, package manager, or operating-system ACL. Those are mechanisms on the
+far side of the port. Human, Model, and later System callers still enter through the
+same Node Interface and Gateway, and every call requires a live SOV grant for its exact
+capability and scope.
+
+## First slice
+
+`sov://host/read-health` reads the execution host through an injected adapter and
+returns a Host-owned terminal receipt. The current standard-library adapter reports
+the process execution boundary, not an assumed physical machine. It does not execute a
+shell command, elevate privilege, change host state, or expose the host name.
+
+The receipt carries a normalized snapshot with platform, processor, memory, uptime,
+and boot identity fields. Unsupported fields are `null` and named in `limitations`;
+they are never silently invented. Adapter absence and malformed boundary identity are
+service-owned refusals. An unexpected adapter fault is a service-owned failure. The
+Gateway returns each terminal receipt unchanged.
+
+Human and Model bindings discover and invoke the same operation record. Actor-kind
+admission is not a grant: the Gateway rechecks `read:host-health` against the requested
+scope on every dispatch.
+
+## Declared surface
+
+The manifest also declares network reading, scanning, restart requests, restart,
+power-off, suspend, driver inventory and updates, and utility inventory and changes.
+They are topology only. No adapter method, route, transport, or policy-active endpoint
+exists for them yet.
+
+Scheduling is not Host Service state. The Automation Service owns *when* a restart or
+scan is requested; the Host Service owns whether the requested effect is admissible and
+how it is attempted. A future restart is two-phase: record the pre-restart boot id and
+request, then settle only after an independent post-boot observation sees a different
+boot id. An executor return cannot establish that a restart occurred.
+
+## Owned records
+
+- `host-health` — one normalized reading of the adapter's execution boundary;
+- `network-state` — a future normalized network reading;
+- `driver-inventory` — a future inventory of driver identity and version;
+- `utility-inventory` — a future inventory of managed utilities;
+- `host-operation` — a requested or attempted scan, restart, power, driver, or utility
+  operation with its operation plan and lifecycle;
+- `host-receipt` — the terminal receipt for a Host Service operation.
+
+## Defeating cases
+
+- an OS credential is accepted as SOV authority;
+- a caller reaches the adapter around the Gateway or live grant check;
+- a client supplies actor attribution inside domain arguments;
+- the adapter reports a container or process boundary as the physical host;
+- unsupported health fields are fabricated instead of declared unavailable;
+- a shell command or arbitrary command string becomes a host operation;
+- a mutating declared operation becomes reachable because an adapter implements it;
+- a restart executor report settles the restart without a changed boot-id observation;
+- a scheduled restart makes Automation the owner of the host effect;
+- adapter loss removes the Node's record, authority, or non-host operation.
+
+## Deferred
+
+Network monitoring, malware and integrity scanning, restart execution, power
+management, driver changes, utility management, privilege brokerage, and every remote
+host transport remain deferred. Each advances through contract, positive and defeating
+fixtures, adapter capability, policy activation, exact route, and independent
+observation; registration alone opens none of them.
+
+===== END FILE: services/host/CHARTER.md =====
+===== FILE: services/host/JOURNEYS.md =====
+# Host Service Journeys
+
+Status: `BUILT` (drafted under `decisions/0093-service-srd-spec-ground.md`; self-report only)
+
+This document has no analog in the root pattern (`decisions/0067`). It enumerates the abstract
+journeys a caller takes through the Host Service — `discover → authority-check → invoke →
+receipt → provenance`, the shape `services/host/README.md` already draws as
+`Human or Model Binding -> Node Interface -> Gateway -> Host Service -> Host Port` — and states
+plainly, per journey, whether it completes or dead-ends, citing the charter or `KNOWN-GAPS.md`
+standing that makes it so.
+
+Naming an open question in this document does not assign, resolve, or make it Host's to
+decide (`decisions/0067`, What this is not). It routes to a decision record the ordinary way.
+
+## Journey: read the execution host — `sov://host/read-health`
+
+**COMPLETES.** `host_service_status` in `STATUS.yaml`:
+`BUILT_READ_HEALTH_SELF_TESTED_REMAINDER_DECLARED_NOT_WITNESSED`.
+
+1. **Discover.** `services/host/README.md` gives the discovery command:
+   `python scripts/sov_interface.py show host.read-health --binding MODEL`. (Whether this
+   operation also surfaces through `console.discover-operations`, the capability projection
+   `STATUS.yaml`'s `discovery_surface_status` describes, is not checked here — named as
+   unverified rather than assumed.)
+2. **Authority-check.** The Gateway requires a live `read:host-health` grant scoped to
+   `host:local`. `test_missing_grant_refuses_before_the_adapter` proves an ungranted actor is
+   refused `AUTHORITY_REFUSED` with the adapter never called (`adapter.calls == 0`). A grant is
+   issued through `ConsoleService.grant(actor, "read:host-health", "host:local", "Bdo")` and
+   rechecked on every dispatch, not cached — proven for both an `actor_kind` of `HUMAN` and one
+   of `MODEL` in `test_human_and_model_use_same_route_and_service_receipt`.
+3. **Invoke.** The Gateway resolves the logical endpoint, confirms a bound service-owned route
+   exists (`HostRoutes.OPERATIONS = ("read-health",)`), and calls `HostRoutes.call`, which
+   refuses `MALFORMED_HOST_REQUEST` if the caller supplied any domain argument at all — the
+   contract for this operation declares zero required and zero optional arguments
+   (`routes.py`). `HostService.read_health` then calls the injected adapter.
+4. **Adapter.** The standard-library adapter (`adapters/host/local_host_adapter.py`) reads
+   `platform`, `os.cpu_count()`, `os.getloadavg()`, `/proc/meminfo`, `/proc/uptime`, and
+   `/proc/sys/kernel/random/boot_id` — no shell execution, no privilege elevation, no
+   credential of any kind.
+5. **Receipt.** `HostService` validates the returned snapshot's shape defensively
+   (`snapshot_defect`) rather than trusting the adapter's self-report, then emits one terminal
+   receipt through `RecordService`: outcome `COMMITTED`, `host_id` the configured
+   `"host:local"` identity (never the OS hostname), `observation_status`
+   `"UNATTESTED_ADAPTER_READING"` (an explicit admission this reading is not independent
+   observation).
+6. **Provenance.** The Gateway returns that exact receipt unchanged, attributed to the checked
+   actor — `test_human_and_model_use_same_route_and_service_receipt` asserts the returned
+   object equals `self.record.entry(returned["entry_id"])` and carries the checked actor's
+   name, not a client-supplied one (a separate test, `test_client_attribution_override_refuses_before_the_adapter`,
+   proves a client-supplied `actor` argument is refused `MALFORMED_REQUEST` before the adapter
+   runs at all).
+
+This journey completes with self-tested, not independently witnessed, evidence
+(`KNOWN-GAPS.md`: "Passing participant tests establishes `BUILT` evidence for `read-health`
+only. It does not witness the result, ratify the service, or advance any deferred
+operation.").
+
+## Journey: request an OS restart — `sov://host/restart`
+
+**DEAD-ENDS**, directly tested. `test_declared_restart_is_not_policy_active_or_routed` drives
+the identical request shape used for `read-health` — same actor, same live grant path, only
+`logical_endpoint` changed to `sov://host/restart` — and gets back `REFUSED`
+`TRANSPORT_NOT_ACTIVATED`, with the adapter never called (`adapter.calls == 0`).
+
+Where it stops: the Gateway's own route step (`services/gateway/CHARTER.md`: "route request —
+require an activated transport, an admitted Phase-I effect class, and a bound service-owned
+route"). `HostRoutes.OPERATIONS` names only `("read-health",)`; no route exists to bind for
+`restart`. Even reaching that far assumes preconditions `contracts/service.json` also declares
+and nothing satisfies: `restart_request_admitted`, `current_boot_id_matches_request`, and
+`power_adapter_configured`. `KNOWN-GAPS.md` Power row: "Declared only | Explicit confirmation
+policy, privilege port, effect authorization, and post-effect observation." `restart` also
+carries `"effect_class": "EXTERNAL_WORLD"` in `contracts/capability-offices.json` — a wider
+class than the `RECORD_LOCAL` class `read-health` is scoped to.
+
+## Journey: request a scan — `sov://host/request-scan`
+
+**DEAD-ENDS**, inferred rather than directly tested. No test in `services/host/tests/` drives
+`sov://host/request-scan` specifically. The inference rests on the same structural fact that
+produced the directly-tested `restart` result: `HostRoutes.OPERATIONS` binds only
+`read-health`, and the Gateway's route step refuses `TRANSPORT_NOT_ACTIVATED` uniformly for any
+logical endpoint with no bound service-owned route, regardless of which operation it names —
+that refusal happens before any operation-specific code runs. `contracts/service.json`
+declares preconditions nothing satisfies (`complete_operation_plan`, `scanner_adapter_configured`,
+`resource_budget_available`); `KNOWN-GAPS.md` Scanning row: "Declared only | Scanner adapter,
+definitions provenance, resource budget, result record, and observer."
+
+## Journey: install a utility — `sov://host/install-utility`
+
+**DEAD-ENDS**, inferred the same way as `request-scan` — same unbound-route structural fact,
+not a dedicated test. `contracts/service.json` preconditions: `complete_operation_plan`,
+`live_matching_grant`, `utility_manager_adapter_configured`, `source_provenance_declared` — none
+satisfied. `KNOWN-GAPS.md` Utilities row: "Inventory and mutation operations declared only |
+Package-manager adapters, source policy, dependency plan, rollback limits, and observation."
+This is also the journey closest to the open custody question below: `install-utility` is one
+of the operations that would need the privilege mechanism `KNOWN-GAPS.md`'s Privilege row
+describes as not existing at all.
+
+## Open custody and ownership questions
+
+Questions this service's own boundary cannot answer — named rather than silently absorbed or
+silently answered by inventing an owner (`decisions/0067`).
+
+1. **Who custodies the credential a future privilege broker would need?** `KNOWN-GAPS.md`'s
+   Privilege row calls for "a typed, least-privilege mechanism that consumes SOV authorization
+   without becoming authority" — but every mutating operation Host declares (`restart`,
+   `power-off`, `suspend`, `apply-driver-update`, `install-utility`, `update-utility`,
+   `remove-utility`) would still need *some* credential or token to actually reach the OS
+   mechanism underneath: a service-manager token, a package-manager auth, a sudo-equivalent.
+   `CHARTER.md` and `KNOWN-GAPS.md` refuse letting that credential *become authority* — the
+   defeating case is explicit — but neither says who *holds* it operationally once it exists,
+   nor where. Today the question does not arise because the built adapter
+   (`adapters/host/local_host_adapter.py`) touches no credential of any kind; it is read-only
+   standard library. `AGENTS.md` Secrets and local boundaries states general rules for whoever
+   ends up holding such a credential (never commit it, never log it, never expose it in a
+   receipt) but does not name Host, an adapter, or any other participant as that holder. This
+   is stated as open rather than assumed either way.
+2. **Who owns the trigger-time and leased-execution dependencies Host's own manifest names?**
+   `contracts/service.json` lists `automation:trigger-time` and `runtime:leased-execution`
+   under `depends_on`. Neither `automation` nor `runtime` exists as a directory or a chartered
+   service anywhere in this repository (`ls services/` lists `asset`, `console`, `gateway`,
+   `host`, `identity`, `observation`, `projection`, `proofing`, `record`, `registry` only).
+   `CHARTER.md` is confident about the division of labor in prose — "Automation owns *when* a
+   restart or scan is requested; the Host Service owns whether the requested effect is
+   admissible and how it is attempted" — but nothing in this repository currently holds either
+   role, chartered or built. Until one does, the second half of SVC-HOST-GROUND-7's claim
+   (independent post-effect observation, not the executor's report) also has no service
+   positioned to supply the observation.
+3. **Who verifies source provenance for a driver or utility update?** `propose-driver-update`
+   requires `source_provenance_declared`; `apply-driver-update` requires
+   `source_digest_verified`; `install-utility` and `update-utility` require
+   `source_provenance_declared`. `KNOWN-GAPS.md`'s Drivers row names "signed-source policy" as
+   part of the remaining boundary. No document read for this exercise names which participant
+   holds the trust root a signed-source policy would verify against — the same shape of
+   question as (1), one layer removed from credential custody into provenance custody.
+
+===== END FILE: services/host/JOURNEYS.md =====
+===== FILE: services/host/KNOWN-GAPS.md =====
+# Host Service Reference Gaps
+
+The service has one built, read-only vertical. These rows are residuals, not implied
+capabilities.
+
+| Area | Built now | Remaining boundary |
+| --- | --- | --- |
+| Health | Normalized local execution-host reading through an injected Host Port | Independent observation and platform-specific adapters beyond the standard-library baseline |
+| Host identity | Stable configured `host:local` service identity; optional OS boot id | Registration and reconciliation of multiple physical, virtual, and container hosts |
+| Network | Declared only | Interface inventory, counters, change observation, and privacy policy |
+| Scanning | Declared only | Scanner adapter, definitions provenance, resource budget, result record, and observer |
+| Restart schedule | Host request/effect boundary declared only | Automation owns timing; Runtime/Worker owns leased execution; Observation confirms a changed boot id |
+| Power | Declared only | Explicit confirmation policy, privilege port, effect authorization, and post-effect observation |
+| Drivers | Inventory and update operations declared only | Platform adapters, signed-source policy, compatibility plan, rollback limits, and observation |
+| Utilities | Inventory and mutation operations declared only | Package-manager adapters, source policy, dependency plan, rollback limits, and observation |
+| Privilege | No broker exists | A typed, least-privilege mechanism that consumes SOV authorization without becoming authority |
+| Transport | In-process `read-health` only | No HTTP, remote agent, or arbitrary-shell transport is admitted |
+
+Passing participant tests establishes `BUILT` evidence for `read-health` only. It does
+not witness the result, ratify the service, or advance any deferred operation.
+
+===== END FILE: services/host/KNOWN-GAPS.md =====
+===== FILE: services/host/README.md =====
+# Host Service
+
+The Host Service is the registered SOV boundary for operating-system state and host
+operations. Start with `CHARTER.md`; the machine surface is
+`contracts/service.json`; `KNOWN-GAPS.md` names what remains unavailable.
+
+The first reference slice is deliberately small:
+
+```text
+Human or Model Binding -> Node Interface -> Gateway -> Host Service -> Host Port
+```
+
+Only `sov://host/read-health` is bound and policy-active. It requires a live
+`read:host-health` grant and returns the Host Service's durable terminal receipt.
+Every mutation stays declared but unreachable.
+
+Run its participant checks from the repository root:
+
+```bash
+python -m unittest discover -s services/host/tests -v
+python scripts/sov_interface.py show host.read-health --binding MODEL
+```
+
+===== END FILE: services/host/README.md =====
+===== FILE: services/host/SERVICE-GROUND.md =====
+# Host Service Ground
+
+Status: `BUILT` (drafted under `decisions/0093-service-srd-spec-ground.md`; self-report only)
+
+A short list of claims this service commits to always being true for its caller — not forced
+to sixteen, per `decisions/0067`. Each names what would defeat it, and cites the root
+`GROUND-<nnn>` claim it specializes where one applies. Naming a claim here does not make it
+true today; several are aspirational for the fourteen `PROPOSED` operations and say so.
+
+### SVC-HOST-GROUND-1 — An OS credential never becomes Soveraeign authority through Host
+
+However a caller reaches the Host boundary, no administrator account, root token, service
+manager, or package-manager ACL is ever accepted as a live grant. Specializes `GROUND-003`
+(authority is granted, never acquired).
+
+What would defeat it: an admin account, root token, or OS-level ACL treated as a live grant
+anywhere in the `read-health` path today, or in any future host-operation path
+(`CHARTER.md` Defeating cases, verbatim: "an OS credential is accepted as SOV authority").
+
+### SVC-HOST-GROUND-2 — The declared boundary is the process execution host, never silently claimed as the physical machine
+
+`boundary` is an exact declared value (`PROCESS_EXECUTION_HOST`), checked against the
+adapter's own output rather than assumed. Specializes `GROUND-005` (a consequential act binds
+to exact state; coincidence of value is never treated as identity).
+
+What would defeat it: "the adapter reports a container or process boundary as the physical
+host" (`CHARTER.md` Defeating cases, verbatim), or a spoofed `boundary` field being accepted
+instead of refused `HOST_BOUNDARY_UNKNOWN`.
+
+### SVC-HOST-GROUND-3 — An unsupported reading is declared missing, never fabricated
+
+A field the adapter cannot read is `null` and named in `limitations`. No root `GROUND` claim
+maps cleanly to this one; it is a service-local elaboration of the general discipline in
+`GROUND-005` that what is recorded is exact observed state, not invented state.
+
+What would defeat it: a `null` field silently replaced by a guessed or default value instead
+of appearing in `limitations`.
+
+### SVC-HOST-GROUND-4 — Every crossing leaves a durable, actor-attributed receipt, success or refusal alike
+
+`read-health` never returns without a corresponding entry recoverable from the Record
+Service's journal, whether the outcome is `COMMITTED`, `REFUSED`, or `FAILED`. Specializes
+`GROUND-007` (every crossing leaves a record) and `GROUND-008` (refusal is an outcome).
+
+What would defeat it: a `read-health` call — of any outcome — completing without a receipt
+recoverable through `self.record.entry(receipt["entry_id"])`.
+
+### SVC-HOST-GROUND-5 — Actor kind alone never substitutes for a live grant
+
+A Human or Model caller reaches the adapter only because a live `read:host-health` grant
+covering the exact requested scope was checked on that dispatch — never because of who or
+what kind of actor it is. Specializes `GROUND-002` (one governed world, same authority checks
+for people and models) and `GROUND-003`.
+
+What would defeat it: "a caller reaches the adapter around the Gateway or live grant check"
+(`CHARTER.md` Defeating cases, verbatim).
+
+### SVC-HOST-GROUND-6 — A raw adapter diagnostic never reaches a receipt, log, or caller
+
+An adapter's exception text — which could carry a path, token, or credential fragment — never
+appears in a `REFUSED` or `FAILED` receipt; only a typed reason code and, for a fault, the
+exception's type name do. No root `GROUND` claim names this directly; it is drawn from
+`AGENTS.md` Secrets and local boundaries rather than a numbered claim.
+
+What would defeat it: a raw adapter exception message surfacing in a receipt, a log, or an
+exception visible to the caller (directly tested in `test_host_service.py` against a marker
+credential-shaped string).
+
+### SVC-HOST-GROUND-7 — A mutating host effect never settles on the executor's own report
+
+Aspirational: no mutating operation is reachable yet. Once one is, its terminal `COMMITTED`
+outcome must depend on an independent post-effect observation — for restart, a changed boot
+id — never on the executor's return alone. Specializes `GROUND-010` (a report is not an
+observation).
+
+What would defeat it: "a restart executor report settles the restart without a changed boot-id
+observation" (`CHARTER.md` Defeating cases, verbatim).
+
+===== END FILE: services/host/SERVICE-GROUND.md =====
+===== FILE: services/host/SERVICE-SPEC.md =====
+# Host Service Specification (service scope)
+
+Status: `BUILT` (drafted under `decisions/0093-service-srd-spec-ground.md`; self-report only)
+
+A service-scope projection of `SPEC.md`'s shape. It cites `contracts/kernel-transitions.json`
+and `services/host/contracts/service.json` rather than re-deriving the kernel's transition
+contract; this document does not compete with `SPEC.md` and is not named `SPEC.md`.
+
+## Owned domain records
+
+From `CHARTER.md` Owned records:
+
+| Record | Standing |
+| --- | --- |
+| `host-health` | Built — one normalized reading of the adapter's execution boundary |
+| `network-state` | Declared only |
+| `driver-inventory` | Declared only |
+| `utility-inventory` | Declared only |
+| `host-operation` | Declared only — a requested or attempted scan, restart, power, driver, or utility operation with its operation plan and lifecycle |
+| `host-receipt` | Built for `read-health`; declared for every other operation — the terminal receipt for a Host Service operation |
+
+## Service-local states and standing
+
+`SPEC.md`'s historical-standing ladder (`RECORDED → ADMITTED → RATIFIED → EFFECTIVE`) does not
+apply to `host-health` readings at all. `read-health` commits `DERIVED`
+(`contracts/service.json`), and `contracts/service-manifest.schema.json` defines that value:
+"A READ commits `DERIVED` and writes no authoritative record." Confirmed in
+`soveraeign_host_service/core.py`, whose `COMMITTED` receipt detail carries
+`"standing_effect": "NONE"` — the read produces an event and a receipt, and no authoritative
+domain record besides them.
+
+The declared `host-operation` record, once any mutating operation is reachable, is the one
+that will use the standing ladder — through whichever kernel transition its own manifest entry
+names (`submit_proposal` for a proposal-shaped operation, `begin_run` for an operation that
+attempts an effect directly).
+
+## Legal transitions
+
+Sourced from `services/host/contracts/service.json`; the `kernel_transition` column is what
+`SPEC.md`'s Transition contract table (and its compiled form,
+`contracts/kernel-transitions.json`, `decisions/0067` O20) names for that step:
+
+| Operation | Standing | CRUD | Kernel transition | Commit | Refusals |
+| --- | --- | --- | --- | --- | --- |
+| `read-health` | BUILT | READ | — (direct service-owned read) | `DERIVED` | `HOST_UNAVAILABLE`, `HOST_READ_FAILED`, `HOST_BOUNDARY_UNKNOWN`, `MALFORMED_HOST_REQUEST` |
+| `read-network` | PROPOSED | READ | — | `DERIVED` | `HOST_UNAVAILABLE`, `HOST_READ_FAILED` |
+| `request-scan` | PROPOSED | CREATE | `begin_run` | `RECORDED` | `SCAN_UNAVAILABLE`, `MISSING_PRECONDITION`, `EFFECT_CLASS_REFUSED` |
+| `request-restart` | PROPOSED | CREATE | `submit_proposal` | `RECORDED` | `BOOT_ID_UNAVAILABLE`, `INCOMPLETE_PROPOSAL` |
+| `restart` | PROPOSED | CREATE | `begin_run` | `COMMITTED` | `AUTHORITY_REFUSED`, `STALE_STATE`, `BOOT_ID_UNAVAILABLE`, `EFFECT_CLASS_REFUSED` |
+| `power-off` | PROPOSED | CREATE | `begin_run` | `COMMITTED` | `AUTHORITY_REFUSED`, `POLICY_REFUSED`, `EFFECT_CLASS_REFUSED` |
+| `suspend` | PROPOSED | CREATE | `begin_run` | `COMMITTED` | `AUTHORITY_REFUSED`, `POLICY_REFUSED`, `EFFECT_CLASS_REFUSED` |
+| `list-drivers` | PROPOSED | READ | — | `DERIVED` | `HOST_UNAVAILABLE`, `DRIVER_INVENTORY_UNAVAILABLE` |
+| `propose-driver-update` | PROPOSED | CREATE | `submit_proposal` | `RECORDED` | `DRIVER_UNKNOWN`, `INCOMPLETE_PROPOSAL` |
+| `apply-driver-update` | PROPOSED | SUPERSEDE | `begin_run` | `COMMITTED` | `AUTHORITY_REFUSED`, `DRIVER_UPDATE_UNAVAILABLE`, `STALE_STATE`, `EFFECT_CLASS_REFUSED` |
+| `list-utilities` | PROPOSED | READ | — | `DERIVED` | `HOST_UNAVAILABLE`, `UTILITY_INVENTORY_UNAVAILABLE` |
+| `install-utility` | PROPOSED | CREATE | `begin_run` | `COMMITTED` | `AUTHORITY_REFUSED`, `UTILITY_MANAGER_UNAVAILABLE`, `INCOMPLETE_PROPOSAL`, `EFFECT_CLASS_REFUSED` |
+| `update-utility` | PROPOSED | SUPERSEDE | `begin_run` | `COMMITTED` | `AUTHORITY_REFUSED`, `UTILITY_MANAGER_UNAVAILABLE`, `UTILITY_UNKNOWN`, `EFFECT_CLASS_REFUSED` |
+| `remove-utility` | PROPOSED | COUNTER | `begin_run` | `COUNTERED` | `AUTHORITY_REFUSED`, `UTILITY_MANAGER_UNAVAILABLE`, `UTILITY_UNKNOWN`, `EFFECT_CLASS_REFUSED` |
+| `read-operation` | PROPOSED | READ | — | `DERIVED` | `OPERATION_UNKNOWN` |
+
+`SPEC.md`: "No interface, adapter, worker, projection, or graph store may bypass these
+transitions to change authoritative state." No Host route or adapter does today; `read-health`
+touches only `RecordService.receipt`, never a kernel transition, because it changes nothing
+authoritative to begin with.
+
+## Refusal reason codes
+
+Host-owned refusals map to the shared kernel refusal families through
+`contracts/service.json`'s `local_refusals` table:
+
+| Host-owned code | Kernel family |
+| --- | --- |
+| `BOOT_ID_UNAVAILABLE` | `MISSING_PRECONDITION` |
+| `DRIVER_INVENTORY_UNAVAILABLE` | `UNREADABLE` |
+| `DRIVER_UNKNOWN` | `MISSING_PRECONDITION` |
+| `DRIVER_UPDATE_UNAVAILABLE` | `POLICY_REFUSED` |
+| `HOST_BOUNDARY_UNKNOWN` | `DATA_BOUNDARY_REFUSED` |
+| `HOST_READ_FAILED` | `UNREADABLE` |
+| `MALFORMED_HOST_REQUEST` | `INCOMPLETE_PROPOSAL` |
+| `OPERATION_UNKNOWN` | `MISSING_PRECONDITION` |
+| `SCAN_UNAVAILABLE` | `POLICY_REFUSED` |
+| `UTILITY_INVENTORY_UNAVAILABLE` | `UNREADABLE` |
+| `UTILITY_MANAGER_UNAVAILABLE` | `POLICY_REFUSED` |
+| `UTILITY_UNKNOWN` | `MISSING_PRECONDITION` |
+
+`HOST_UNAVAILABLE` has no `local_refusals` entry of its own; `core.py` treats an adapter that
+raises `HostAdapterUnavailable` as `REFUSED` directly. An adapter that raises anything else is
+`FAILED` with `HOST_READ_FAILED` and the exception's type name — a fault, not a governed
+refusal (`core.py: read_health`).
+
+These are distinct from refusals the Gateway can return before Host is ever reached, evidenced
+in `test_host_service.py: HostGatewayVertical`: `AUTHORITY_REFUSED` (no live grant),
+`MALFORMED_REQUEST` (client supplied `actor` inside domain arguments — a Gateway-owned shape
+check, not `MALFORMED_HOST_REQUEST`), and `TRANSPORT_NOT_ACTIVATED` (a declared logical
+endpoint with no bound service-owned route). `services/gateway/CHARTER.md`: "Governed refusal
+is distinct from operational failure. A missing grant, inactive transport, or unreachable
+declared route is a refusal."
+
+## Persistence and authority
+
+- **Effect class.** `read-health` is `RECORD_LOCAL` (`core.py: EFFECT_CLASS`). Every declared
+  mutating operation carries a wider class in `contracts/capability-offices.json`:
+  `RESOURCE_CONSUMPTION` for `request-scan`, `EXTERNAL_WORLD` for `restart`, `power-off`,
+  `suspend`, `apply-driver-update`, `install-utility`, `update-utility`, and `remove-utility`.
+  None of the `EXTERNAL_WORLD` operations is reachable.
+- **Persistence.** Every `read-health` outcome (`COMMITTED`, `REFUSED`, `FAILED`) is appended
+  as one receipt through `RecordService`, Host's declared dependency on
+  `record:append-preserving-journal`. `test_health_read_is_a_durable_service_owned_terminal_receipt`
+  proves the returned receipt is byte-identical to `self.record.entry(receipt["entry_id"])`.
+- **Authority.** The capability `read:host-health`, scoped to `host:local`, is granted through
+  `ConsoleService.grant` and rechecked by the Gateway's authority callback on every dispatch —
+  not cached, not inferred from actor kind (`test_host_service.py: HostGatewayVertical`).
+- **Identity.** `host_id` is a configured string, `"host:local"` by default
+  (`HostService.__init__`), never the OS hostname. The health schema's `additionalProperties:
+  false` (`contracts/host-health.schema.json`) and the adapter's own output both carry no
+  `hostname` field at all — one is tested directly
+  (`test_local_adapter_matches_contract_without_disclosing_hostname`).
+- **Observation.** Every `COMMITTED` `read-health` receipt carries
+  `"observation_status": "UNATTESTED_ADAPTER_READING"` (`core.py`) — an explicit, self-declared
+  admission that this reading is not independent observation. Host's manifest depends on
+  `observation:independent-observation`; that service is chartered but not implemented
+  (`observation_service_status: CHARTERED_BOUNDARY_NOT_IMPLEMENTED`, `STATUS.yaml`).
+- **Ports.** `contracts/service.json` declares four: `host-port`, `human-binding`,
+  `model-binding`, `service-activity`. Only `host-port` has a concrete implementation
+  (`adapters/host/local_host_adapter.py`, standard library only, no shell, no elevation); the
+  other three are the same Gateway/Console path already proven for sibling services, not a
+  Host-specific mechanism.
+
+===== END FILE: services/host/SERVICE-SPEC.md =====
+===== FILE: services/host/SRD.md =====
+# Host Service Requirements — Founding and Phase I
+
+Status: `BUILT` (drafted under `decisions/0093-service-srd-spec-ground.md`; self-report by
+the drafting session, not independently witnessed or ratified)
+
+This is a service-scope projection of `PRD.md`'s shape, with the node — not a human — named
+as the caller. It grants Host no authority over its own account of itself; it is `BUILT`
+because a drafting session wrote it, nothing more.
+
+## Product outcome
+
+The Host Service gives the node one governed, single-boundary view of its own execution host,
+and — once a declared mutating operation earns its route, adapter, policy, and independent
+observation — a governed way to request host-level work, without ever letting an
+operating-system credential become Soveraeign authority (`CHARTER.md` Role in Soveraeign;
+defeating case "an OS credential is accepted as SOV authority").
+
+## Callers
+
+`CHARTER.md`: "Human, Model, and later System callers still enter through the same Node
+Interface and Gateway, and every call requires a live SOV grant for its exact capability and
+scope." Two of those three are demonstrated today: `services/host/tests/test_host_service.py`
+(`HostGatewayVertical.test_human_and_model_use_same_route_and_service_receipt`) drives an
+`actor_kind` of `HUMAN` and an `actor_kind` of `MODEL` through the identical
+`sov://host/read-health` Gateway route and gets back the identical Host-owned receipt shape
+for both. `System` is named in the charter as a later caller, not a demonstrated one; three
+`host.*` capability-office entries (`request-restart`, `request-scan`, `restart`) already list
+`SYSTEM` in their `actor_kinds` (`contracts/capability-offices.json`), ahead of any route that
+would let a `SYSTEM` actor reach them.
+
+No other chartered service's manifest names Host as a dependency (checked against every
+`services/*/contracts/service.json` in this repository). Host's own manifest names five
+services it depends on — Record, Console, Observation, Automation, Runtime — but nothing yet
+depends on Host in the other direction.
+
+## Requirement lifecycle
+
+Same as `PRD.md`: `OPEN → BUILT → WITNESSED → RATIFIED`, a distinct artifact-standing
+lifecycle from the operational record standing `SPEC.md` defines. No requirement below claims
+past `BUILT`. `KNOWN-GAPS.md`: "Passing participant tests establishes `BUILT` evidence for
+`read-health` only. It does not witness the result, ratify the service, or advance any
+deferred operation."
+
+## Phase-I requirements
+
+### SVC-HOST-1 · Read the execution host without an OS credential
+
+Standing: `BUILT` — `sov://host/read-health`, the one operation `services/host/contracts/service.json`
+marks `"standing": "BUILT"`.
+
+A Human or Model caller can read one normalized, adapter-sourced snapshot of the process
+execution host and receive a durable Host-owned terminal receipt, with no administrator
+account, root token, service manager, or package-manager ACL entering as authority anywhere
+in the path (`CHARTER.md` Role in Soveraeign). Serves `PROD-I-3` (every declared `read-health`
+operation cites it in `contracts/service.json`).
+
+Defeating case: a read requires or accepts an OS-level credential as authority, or the crossing
+completes without a durable terminal receipt.
+
+### SVC-HOST-2 · Unsupported fields are declared absent, never fabricated
+
+Standing: `BUILT` — enforced in `soveraeign_host_service/core.py` (`snapshot_defect`) and
+proven for the standard-library adapter in
+`test_local_adapter_matches_contract_without_disclosing_hostname`.
+
+When the adapter cannot read a health field, the field is `null` and named in `limitations`
+rather than invented (`CHARTER.md`: "Unsupported fields are `null` and named in `limitations`;
+they are never silently invented."). Serves `PROD-I-3`'s requirement that a crossing can name
+its omissions.
+
+Defeating case: "unsupported health fields are fabricated instead of declared unavailable"
+(`CHARTER.md` Defeating cases, verbatim).
+
+### SVC-HOST-3 · Actor-kind admission is rechecked, never assumed
+
+Standing: `BUILT` — proven by
+`test_missing_grant_refuses_before_the_adapter` (`AUTHORITY_REFUSED`, adapter never called).
+
+Human and Model bindings discover and invoke the same `read-health` operation record; the
+Gateway rechecks `read:host-health` against the requested scope on every dispatch rather than
+trusting actor-kind or a prior admission (`CHARTER.md`). Serves `PROD-I-3` (one record crossed
+by both) and `CONTRACT.md` C1 (same world).
+
+Defeating case: "a caller reaches the adapter around the Gateway or live grant check"
+(`CHARTER.md` Defeating cases, verbatim).
+
+### SVC-HOST-4 · No shell or arbitrary command execution enters the host boundary
+
+Standing: `BUILT` for the reachable surface — `HostRoutes.ARGUMENTS["read-health"]` declares
+zero required and zero optional arguments (`routes.py`); any argument at all refuses
+`MALFORMED_HOST_REQUEST` before the adapter is called
+(`test_route_has_no_domain_arguments_and_returns_terminal_refusal`). The standard-library
+adapter (`adapters/host/local_host_adapter.py`) never shells out; it reads `platform`,
+`os.cpu_count`, `os.getloadavg`, and two `/proc` files as text.
+
+Defeating case: "a shell command or arbitrary command string becomes a host operation"
+(`CHARTER.md` Defeating cases, verbatim).
+
+### SVC-HOST-5 · A raw adapter diagnostic never reaches a receipt
+
+Standing: `BUILT` — proven in `test_adapter_unavailable_is_a_refusal_not_fabricated_health`
+and `test_unexpected_adapter_fault_is_a_failed_host_receipt`, both of which raise an exception
+carrying a marker credential-shaped string and then assert the serialized receipt contains
+neither a `diagnostic` field nor that string.
+
+When the adapter refuses or faults, the terminal receipt records a typed `reason_code` and, for
+an unexpected fault, the exception's type name only — never the adapter's raw exception text,
+which could carry a path, token, or credential fragment. Grounded in `AGENTS.md` Secrets and
+local boundaries ("Never print secrets or raw credentials in logs, receipts, exceptions,
+prompts, fixtures, or test snapshots").
+
+Defeating case: an adapter's raw diagnostic text appears in a `REFUSED` or `FAILED` receipt.
+
+### SVC-HOST-6 · A requested mutating host effect settles only from independent observation
+
+Standing: `OPEN` — no mutating operation is reachable; `restart`'s own precondition
+(`current_boot_id_matches_request`) and `KNOWN-GAPS.md`'s Restart schedule row both describe
+this as unbuilt ("Observation confirms a changed boot id").
+
+Once a restart, power, driver, or utility operation becomes reachable, its terminal settlement
+must come from an independent post-effect observation — for restart, a changed boot id — never
+from the executor's own return. Serves `PROD-I-3`'s receipt discipline and specializes
+`GROUND-010` (a report is not an observation).
+
+Defeating case: "a restart executor report settles the restart without a changed boot-id
+observation" (`CHARTER.md` Defeating cases, verbatim).
+
+### SVC-HOST-7 · Scheduling authority stays outside Host
+
+Standing: `OPEN` — the Automation Service Host's own manifest depends on
+(`automation:trigger-time`) has no charter or directory anywhere in this repository
+(`ls services/` lists no `automation`).
+
+Host owns whether a requested effect is admissible and how it is attempted; a separate service
+owns *when* a restart or scan is requested (`CHARTER.md` Declared surface).
+
+Defeating case: "a scheduled restart makes Automation the owner of the host effect"
+(`CHARTER.md` Defeating cases, verbatim) — read as Host silently absorbing timing authority
+that a dependency it names, and does not itself implement, is meant to hold.
+
+### SVC-HOST-8 · The declared mutating surface stays unreachable until each precondition is proven
+
+Standing: `OPEN` — 14 of the 15 declared operations in `contracts/service.json` carry
+`"standing": "PROPOSED"`.
+
+Network reading, scanning, restart, power-off, suspend, driver inventory/update, and utility
+inventory/change stay topology only until contract, positive and defeating fixtures, adapter
+capability, policy activation, exact route, and independent observation each individually
+advance them (`CHARTER.md` Deferred; `KNOWN-GAPS.md`).
+
+Defeating case: "a mutating declared operation becomes reachable because an adapter implements
+it" (`CHARTER.md` Defeating cases, verbatim).
+
+## Non-goals for Phase I
+
+- A privilege-brokerage mechanism, or any path by which an OS credential becomes Soveraeign
+  authority (`CHARTER.md` Deferred; `KNOWN-GAPS.md` Privilege row: "No broker exists").
+- Arbitrary shell or command execution as a host operation.
+- Any remote host transport (`KNOWN-GAPS.md` Transport row: "In-process `read-health` only").
+- Treating a process or container execution boundary as a physical machine.
+- Automated external-world host effects — restart, power-off, suspend, driver changes, utility
+  changes all carry `"effect_class": "EXTERNAL_WORLD"` in `contracts/capability-offices.json`
+  and none is reachable in Phase I.
+- Owning scheduling/trigger timing for a requested effect — named as Automation's job, not
+  Host's, and Automation is not yet a chartered service in this repository.
+
+## Phase-I exit for this service
+
+This service's own Phase-I slice exits when every operation beyond `read-health` has a
+positive and defeating fixture, a bound service-owned route, and — for every mutating
+operation — an independent post-effect observation that does not depend on the executor's
+report; and when the credential-custody question this document's sibling `JOURNEYS.md` names
+has an assigned owner, because none of the fourteen `PROPOSED` operations can honestly advance
+past declaration while that question stays open.
+
+===== END FILE: services/host/SRD.md =====
+===== FILE: services/identity/CHARTER.md =====
+# Identity Charter
+
+Status: `PROPOSED · PLACEMENT PROVISIONAL · CHALLENGE AND RECOVERY BUILT`
+
+## An assumption stated rather than buried
+
+`decisions/0048` judgement 3 asks whether principal identity is a service
+boundary or a kernel-level registry. That question is Bdo's and is open. This
+directory exists because the challenge lifecycle needed a home to be written
+and run, not because the question was answered.
+
+The assumption is made cheap on purpose. The challenge lifecycle is
+storage-free: its clock, token source, and identifier source are injected, it
+holds no database and reads no file, and it returns records for a caller to
+journal rather than journaling anything itself. If Bdo rules "kernel
+registry", the ruling moves one file and changes no semantics. Read
+`ENGINEERING.md`'s service construction rule as the test this directory has
+not yet passed: create a service only when a domain owns a distinct
+lifecycle, contract, and authority boundary — otherwise it is a component
+inside an existing one.
+
+## What it owns
+
+The challenge: the passwordless verification mechanism from `decisions/0048`
+(ID-12, ID-13, ID-14), which is the magic-link pattern built from primitives
+the system already has. A challenge is a lease — minted against one principal
+and one declared channel, fenced by a token, expiring on a clock, presentable
+exactly once. Presenting a live token inside its window is what upgrades an
+identity claim from `UNVERIFIED` to `VERIFIED`; the presentation is that
+claim's `verification_basis`.
+
+**Below the root, recovery is not a second mechanism.** A lost credential is a
+fresh challenge to the declared channel, issued by the controller (ID-14) — no
+back door, because there is no front door to distinguish it from.
+
+**At the root it has to be**, and that asymmetry is the whole difficulty. The
+root has no controller to issue it a fresh challenge, and the channel a
+challenge would travel over is inside the very node that may be what was lost.
+Sealed recovery secrets below are the one mechanism this stack can carry for
+that case; whether they are the root's answer is Bdo's.
+
+## Two properties that are structural, not promised
+
+**The token never enters the record.** Only its digest is held and only its
+digest is emitted, so a journal, a receipt, or a leaked log cannot replay a
+challenge. The token exists once: the return value of `mint`, which the caller
+hands to the channel and drops. `test_no_record_ever_carries_a_token` reads
+every emitted record and every held challenge back and fails if a token
+appears in either.
+
+**The window closes when it says it closes.** Expiry compares moments rather
+than the strings they render as. This was a real defect in the first draft:
+a whole-second expiry renders `...12:10:00Z`, a moment just past it renders
+`...12:10:00.000001Z`, and lexically `.` sorts below `Z`, so an expired token
+compared as still live. `test_a_microsecond_past_expiry_is_refused` pins it.
+
+## What it refuses
+
+| Refusal | Reason code | Why |
+| --- | --- | --- |
+| Minting for a principal with no declared channel | `CHANNEL_UNDECLARED` | ID-13: verification travels only over a channel the record declares |
+| Minting to an external channel | `CHANNEL_REFUSED` | `no_external_effects_in_phase_i` (O7). Admitting external delivery later changes one tuple and nothing else |
+| Minting for a revoked principal | `PRINCIPAL_REVOKED` | ID-4 |
+| Presenting a token that was never minted | `TOKEN_UNKNOWN` | — |
+| Presenting a token twice | `CHALLENGE_SPENT` | ID-12: one-time |
+| Presenting after the window | `CHALLENGE_EXPIRED` | ID-12: leased |
+| Presenting someone else's token | `PRINCIPAL_MISMATCH` | A token names who it verifies; the thief is refused and the token is burned rather than left live for its owner |
+| Presenting for a principal revoked since minting | `PRINCIPAL_REVOKED` | Revocation beats a live token |
+
+These reason codes are proposed alongside `decisions/0048`; whether `SPEC.md`
+adopts them is O10's.
+
+## What it does not do
+
+- **It grants nothing.** A `VERIFIED` claim is identity, not authority; every
+  consequential transition still checks a live typed grant (ID-8, C3).
+- **It performs no delivery.** Phase I channels are node-local, so `deliver`
+  records that a crossing was owed and to which channel; handing the token
+  over is the caller's act.
+- **It stores nothing durably.** The in-memory map is a projection of the
+  records it emits. Durable custody belongs to whichever home Bdo picks.
+- **It resolves no principals.** The caller passes the principal record; ID-1
+  (every actor resolves to a registered principal) is enforced where the
+  registry lives, not here.
+
+## Sealed recovery, and why it is not a challenge
+
+A challenge is short-lived and delivered on demand. Recovery cannot be: at the
+moment it is needed, the channel one would deliver over is the thing that was
+lost. So a recovery secret is the inverse — delivered once at enrollment, held
+outside the node by the human, redeemable whenever, with **no expiry**. That is
+ID-12's rule deliberately inverted rather than overlooked: an expiring recovery
+secret expires exactly when nobody is watching. Single use, a finite set, and
+revocation of the whole set at once are what bound it instead.
+
+| Refusal | Reason code |
+| --- | --- |
+| Redeeming with nothing enrolled | `NOT_ENROLLED` |
+| Redeeming a secret that was never issued | `SECRET_UNKNOWN` |
+| Redeeming one twice | `SECRET_SPENT` |
+| Redeeming against a revoked set | `SET_REVOKED` |
+| Enrolling over a live set | `ALREADY_ENROLLED` — replacing recovery silently is how recovery is lost; revoke deliberately first |
+
+## The unanswered question above it
+
+The root has no controller, so root recovery cannot be a support path. This
+component implements the mechanism and **no answer**: whether recovery secrets
+are how the root recovers, and where the paper physically lives, is ID-11 and
+belongs to Bdo. Examining it split the question three ways — credential lost
+with the node intact (answered here), node destroyed (not identity at all; see
+`OPEN-SEAMS.md` S11), and the occupant unavailable (succession, pure judgement).
+
+What this component does owe regardless of the ruling is the report:
+`Recovery.unenrolled` names every principal with no live recovery, root first,
+and states the consequence plainly. For the root that consequence is terminal —
+nobody is above it to enroll one afterwards — so the honest handling is to say
+so continuously rather than discover it at the worst possible moment.
+
+## Standing
+
+`BUILT` for both components: thirty-two positive and defeating cases run under
+`python scripts/verify.py`. Not witnessed — a build cannot witness itself. The
+placement, the reason codes, ID-11, and seam S11 remain queued for Bdo.
+
+===== END FILE: services/identity/CHARTER.md =====
+===== FILE: services/identity/JOURNEYS.md =====
+# Identity Service — Journeys
+
+Status: `BUILT` — self-reported by the drafting session under `decisions/0067`;
+not witnessed. The piece the root pattern has no analog for: what a caller's
+path through this service actually looks like, stated plainly as completing
+or dead-ending, with the exact sentence that makes it so.
+
+A journey below is judged against this service's own boundary — what
+`challenges.py` and `recovery.py` do — not against the whole node. Where a
+journey's outcome depends on something outside this service (the principal
+registry, an authority check, a physical custodian), that is named as the
+dead end rather than assumed away.
+
+## Journeys
+
+### J1 · A caller discovers what this service will let it do
+
+**Mostly completes.** `CHARTER.md` and `contracts/service.json` together
+name every operation, precondition, and reason-code table without requiring
+oral briefing — the general claim `GROUND-006` makes. It does not fully
+complete: `SERVICE-SPEC.md`'s Refusal reason codes section names five
+places where the contract's declared refusal list for an operation and the
+code's actual refusal codes disagree (`present-challenge` refuses
+`PRINCIPAL_REVOKED` in code but the contract does not declare it there;
+`deliver-challenge` and `enroll-recovery` declare refusals the code does not
+implement; `redeem-recovery` and `revoke-recovery` return codes the contract
+does not declare for them). A caller reading only `contracts/service.json`
+would be wrong about what can happen on four of the seven operations.
+
+### J2 · A controller mints a challenge for a principal over a declared local channel
+
+**Completes**, or refuses legibly. `mint()` returns a token exactly once and
+a `COMMITTED` record, or refuses `CHANNEL_UNDECLARED`, `CHANNEL_REFUSED`, or
+`PRINCIPAL_REVOKED` with a record naming why (`challenges.py`;
+`test_undeclared_channel_is_refused`, `test_external_channel_is_refused_in_phase_i`,
+`test_revoked_principal_cannot_mint`). This is the one journey through
+Identity that is fully contained inside its own boundary from start to
+finish.
+
+### J3 · The token crosses to its declared channel
+
+**Completes as a record, not as a delivery — deliberately.**
+`deliver-challenge` records that the crossing was owed, `effect_class:
+RECORD_LOCAL`, and stops there: "It performs no delivery" (`CHARTER.md`).
+Handing the token to the channel is the caller's act. This is not a gap; it
+is the stated boundary of what Phase I's node-local channels need.
+
+### J4 · The principal presents the token within its window
+
+**Completes inside this service; dead-ends immediately outside it.**
+`present()` returns `COMMITTED` and a `verification_basis` string once a
+live token is presented by the principal it names. Nothing in this
+repository then writes that `verification_basis` into any principal's
+`claim.verification`. Three independent sources confirm this is not an
+oversight but a held-open seam:
+
+- `CHARTER.md`: "It resolves no principals."
+- `decisions/0048`, Remaining work item 3: "Bind the challenge runtime to
+  the principal registry, so presenting a challenge actually writes
+  `verification: VERIFIED` with its basis... Held deliberately: that
+  binding is where identity stops being a proposal, and ID-11 ... should be
+  answered first."
+- `STATUS.yaml`: `node_identity_status:
+  PROPOSED_CONTRACT_BUILT_REGISTRY_READ_NO_ADMISSION_TRANSITION`, and
+  `scripts/sovsession/principals.py`'s own docstring: "Nothing here upgrades
+  a claim: `UNVERIFIED` becomes `VERIFIED` only by presenting a live
+  challenge token, which is the Identity Service's lifecycle and not this
+  module's," followed by "The instance does not exist in this branch yet.
+  Until it does, every session resolves `UNIDENTIFIED`."
+
+A caller can obtain a valid `verification_basis` today. No path in this
+repository consumes it.
+
+### J5 · A controller issues a fresh challenge to recover a principal below it (ID-14)
+
+**Completes procedurally through this service's own boundary; inherits J4's
+dead end and adds one of its own.** Mechanically this is J2 + J3 + J4 with
+a controller as the caller, so it reaches the same registry-write dead end
+J4 does. It adds a second gap: nothing in `mint()` or `present()` checks
+that the caller invoking them on a principal's behalf is actually that
+principal's registered controller. `CHARTER.md` states this plainly — "the
+caller passes the principal record" — and `AGENTS.md` Authority places the
+check "at the operation boundary," which for this operation is outside the
+module entirely, not inside it.
+
+### J6 · A human enrolls a fresh recovery set for a principal
+
+**Completes**, with one declared refusal unreachable. `enroll()` returns ten
+secrets exactly once and refuses `ALREADY_ENROLLED` against a live set
+(`test_enrollment_never_silently_replaces_a_live_set`). It cannot refuse
+`PRINCIPAL_REVOKED`, which `contracts/service.json` declares for this
+operation, because `enroll(principal_id: str, ...)` never receives a
+principal record to check revocation against — read from the code, not
+stated in `CHARTER.md`.
+
+### J7 · A human redeems a recovery secret because their normal channel is lost
+
+**Completes inside this service; dead-ends at the same registry boundary as
+J4.** `redeem()` matches a digest, single-use, receipted, with exhaustion
+visible on the last redemption (`test_exhaustion_is_visible_on_the_last_redemption`).
+As with a presented challenge, nothing in this repository writes a
+successful redemption back into any principal's verification claim — the
+same three citations under J4 apply here, since `decisions/0048` frames
+recovery as "the same door" as a challenge for this purpose.
+
+### J8 · A controller revokes a whole recovery set
+
+**Completes the receipt and the counter; the authority clause it declares
+does not.** `revoke()` retires every live digest in one transition and
+permits a fresh enrollment afterward (`test_double_revoke_is_refused`,
+`test_revoke_then_re_enroll`). `contracts/service.json` declares this
+operation's precondition as `declared_actor` and its refusal set as
+including `AUTHORITY_REFUSED`; `revoke()` accepts any `revoked_by` string
+with no check behind it. Read from the code against the contract, not
+stated in `CHARTER.md` or `decisions/0048`.
+
+### J9 · Someone asks which principals currently have no live recovery
+
+**Completes as a mechanism; dead-ends as an ongoing practice.**
+`Recovery.unenrolled()` correctly names every principal with a missing,
+exhausted, or revoked set, root first, with the root's consequence stated as
+terminal (`test_unenrolled_names_the_root_first_and_says_it_is_terminal`).
+Searching this repository for a caller of `unenrolled(` outside
+`tests/test_recovery.py` finds none: no script, workflow, or scheduled
+check currently invokes it. `CHARTER.md` asks that this gap be said "loudly
+and continuously" — the mechanism to say it exists; nothing yet says it.
+
+### J10 · The root itself needs to recover
+
+**Dead-ends by design, not by omission.** `CHARTER.md` states the boundary
+directly: "The root has no controller, so root recovery cannot be a support
+path," and the mechanism this service provides — sealed recovery secrets —
+is offered with **no answer** attached: "whether recovery secrets are how
+the root recovers, and where the paper physically lives, is ID-11 and
+belongs to Bdo." This is the journey the task of drafting these four
+documents was told explicitly not to resolve, and it is not resolved here.
+
+## Open custody / ownership questions
+
+None of the following is assigned, resolved, or made this service's to
+decide by being named here (`decisions/0067`, "What this is not"). Each
+routes to a decision record the ordinary way, at whichever tier
+`STATUS.yaml`'s resolution rule names.
+
+1. **Whether sealed recovery secrets are the root's recovery mechanism at
+   all, and where the paper physically lives.** `decisions/0048` ID-11:
+   "the one requirement whose content only Bdo can supply; it is queued,
+   not defaulted." `CHARTER.md`, "The unanswered question above it." Not
+   resolved by this document (see J10).
+
+2. **Whether principal identity is a service boundary
+   (`services/identity/`) or a kernel-level registry.** `decisions/0048`
+   judgement queue item 3, still open. `CHARTER.md` states its own
+   placement is "provisional" on this ruling and is written so the ruling
+   "moves one file and changes no semantics."
+
+3. **Who writes a presented challenge's or a redeemed recovery secret's
+   result into a principal's verification claim.** `decisions/0048`
+   Remaining item 3 names the binding and holds it deliberately pending
+   ID-11, but does not name which participant executes it once ID-11
+   clears — this service, the registry, or a third boundary. See J4 and J7.
+
+4. **Who is meant to enforce the authority check
+   `contracts/service.json` declares for `revoke-recovery`** (the
+   `declared_actor` precondition and `AUTHORITY_REFUSED` refusal) but
+   `recovery.py` does not implement. Inferred from reading the code against
+   the contract, not stated in `CHARTER.md`. See J8 and `SERVICE-SPEC.md`.
+
+5. **Node lost or destroyed (`decisions/0048` ID-11b).** "Not an identity
+   problem, and the stack does not answer it either" — no backup, restore,
+   or off-node custody provision exists anywhere in the repository, so "a
+   recovery secret redeems against a journal that must still exist."
+   `CHARTER.md` points to `OPEN-SEAMS.md` "S11" for this; that citation is
+   itself stale — `OPEN-SEAMS.md`'s own renumbering note records the seam
+   as having moved to **S24, "Durability and custody"** after a collision
+   with an unrelated S11 on `main`. Named here as a citation to correct,
+   not a question this document settles.
+
+6. **Root occupant unavailable — succession (`decisions/0048` ID-11c).**
+   "No technology answers this: it needs a named successor principal and a
+   declared condition under which succession fires. Pure judgement, and
+   only Bdo can supply it."
+
+7. **Who consumes `Recovery.unenrolled`'s report.** No caller of it exists
+   in this repository outside its own tests today (see J9). Not named as
+   any participant's job in `CHARTER.md` or `decisions/0048`.
+
+===== END FILE: services/identity/JOURNEYS.md =====
+===== FILE: services/identity/SERVICE-GROUND.md =====
+# Identity Service — Ground
+
+Status: `BUILT` — self-reported by the drafting session under `decisions/0067`;
+not witnessed. A short list of claims this service commits to always being
+true for its caller, not forced to sixteen. Named `SERVICE-GROUND.md`, not
+`GROUND.md`: the root document owns that name.
+
+### `SVC-IDENTITY-GROUND-1` — a token or secret exists in exactly one place
+
+> A minted token or an enrolled recovery secret is returned to the caller
+> exactly once, as a plain value. Every record this service holds or emits
+> afterward carries only its digest.
+
+*What would defeat it.* Any record in `Challenges.records`,
+`Recovery.records`, a held `Challenge`, or a held `RecoverySet` is found to
+carry a plain token or secret rather than a digest. Pinned by
+`test_no_record_ever_carries_a_token` and `test_no_record_ever_carries_a_secret`,
+which read every emitted and every held record back and fail on a match.
+
+No root `GROUND-<nnn>` claim specializes this directly; the nearest governing
+text is `AGENTS.md` Secrets and local boundaries ("Never print secrets or raw
+credentials in logs, receipts, exceptions, prompts, fixtures, or test
+snapshots").
+
+### `SVC-IDENTITY-GROUND-2` — verification is never authority
+
+> Reaching `VERIFIED` — by presenting a live challenge or redeeming a
+> recovery secret — never itself permits a consequential transition. It only
+> ever changes what an identity claim says about itself.
+
+*What would defeat it.* Any code path inside this service, or any caller
+observed relying on this service, treats a presentation or a redemption
+result as sufficient on its own to proceed with a consequential transition,
+without a separate live grant check.
+
+Specializes `GROUND-003` — authority is granted, never acquired. Grounded
+also in `decisions/0048` ID-8 and `CONTRACT.md` C3.
+
+### `SVC-IDENTITY-GROUND-3` — a challenge keeps exactly the window it declared
+
+> A challenge verifies at most once, and only strictly inside the interval
+> between its `minted_at` and its `expires_at`, compared as moments rather
+> than as rendered strings.
+
+*What would defeat it.* A token verifies a second time, or verifies at or
+after its declared expiry — including the case a whole-second expiry stamp
+sorts lexically after a moment a fraction past it. Pinned by
+`test_a_microsecond_past_expiry_is_refused` and `test_replay_is_refused`.
+
+Specializes `GROUND-005` — a consequential act binds to exact state.
+
+### `SVC-IDENTITY-GROUND-4` — what may be asked is readable from the artifact, with a named exception
+
+> A caller arriving with no briefing can find every operation, precondition,
+> and declared refusal code this service names from `CHARTER.md` and
+> `contracts/service.json` alone.
+
+*What would defeat it.* An operation, a precondition, or a refusal a caller
+actually encounters is absent from those two documents. `SERVICE-SPEC.md`'s
+Refusal reason codes section already names five places where this currently
+does not hold — a refusal the code returns and the contract does not declare
+for that operation, or a refusal the contract declares and the code does not
+implement — so this claim is stated with that gap named rather than
+papered over.
+
+Specializes `GROUND-006` — the node is discoverable from the artifact alone.
+
+### `SVC-IDENTITY-GROUND-5` — every attempt is journalable, none is durable here
+
+> Every mint, deliver, present, enroll, redeem, revoke, and unenrolled-report
+> attempt — refused or committed — produces one record the caller can
+> journal. This service keeps none of them beyond the life of its own
+> process.
+
+*What would defeat it.* An attempt, including a refused one, completes with
+no entry appended to `.records`; or this service is found to persist a
+record anywhere outside that in-memory list.
+
+Specializes `GROUND-007` — every crossing leaves a record — with the caveat
+`CHARTER.md` states plainly: "It stores nothing durably." Durable custody of
+the record this service emits is undecided (`decisions/0048` judgement 3).
+
+### `SVC-IDENTITY-GROUND-6` — revocation counters a set without erasing what happened to it
+
+> Revoking a recovery set stops its live digests from redeeming and lets a
+> fresh set be enrolled afterward. It never removes the record of what was
+> already enrolled or already redeemed from that set.
+
+*What would defeat it.* A revoked set's `spent_digests` history or its
+`enrolled_at` disappears from the record, rather than the set simply
+becoming unredeemable and reportable as revoked.
+`test_revoked_set_returns_to_the_gap_report` and
+`test_revoke_then_re_enroll` exercise this together: the set reports as
+revoked, and a fresh enrollment is still possible afterward.
+
+Specializes `GROUND-009` — correction never erases occurrence.
+
+### `SVC-IDENTITY-GROUND-7` — a root with no live recovery is reported as terminal, not merely absent
+
+> `report-unenrolled` does not just list a root principal with no recovery;
+> it states, in the record it returns, that the gap cannot be closed by
+> anyone but the root itself, because nothing sits above the root to
+> re-enroll one.
+
+*What would defeat it.* A root principal with zero remaining, unrevoked
+recovery digests is missing from the report, or its entry carries the same
+"recoverable by its controller" consequence text a non-root principal's
+entry gets. Pinned by
+`test_unenrolled_names_the_root_first_and_says_it_is_terminal`.
+
+No root `GROUND-<nnn>` claim specializes this precisely; nearest is
+`GROUND-008` (refusal is an outcome, told legibly) read alongside
+`CHARTER.md`'s own framing: "the only honest handling is to say so
+continuously rather than discover it at the worst possible moment." This
+service says it whenever asked; it does not itself say it continuously —
+see `JOURNEYS.md`'s open question on who consumes the report.
+
+===== END FILE: services/identity/SERVICE-GROUND.md =====
+===== FILE: services/identity/SERVICE-SPEC.md =====
+# Identity Service — Specification
+
+Status: `BUILT` — self-reported by the drafting session under `decisions/0067`;
+not witnessed. Mirrors `SPEC.md`'s shape at service scope. Named
+`SERVICE-SPEC.md`, not `SPEC.md`: the root document owns that name.
+
+Legal transitions and their preconditions, commit values, and refusals are
+declared in `contracts/service.json` and are cited here, not re-derived
+(`decisions/0067`). Where this document goes further than the contract, it is
+because reading `challenges.py` and `recovery.py` against
+`contracts/service.json` surfaced a gap between what is declared and what is
+implemented; every such finding below is marked as read from the code, not
+asserted from the charter.
+
+## Owned domain records
+
+`contracts/service.json` `owns`: `challenge`, `challenge-token-digest`,
+`verification-basis`, `recovery-secret-digest`, `recovery-set`.
+
+**`Challenge`** (`challenges.py`) — `challenge_id`, `principal_id`,
+`channel_kind`, `channel_reference`, `token_digest`, `minted_at`,
+`expires_at`, `state`, `presented_at`. Holds a digest, never a token.
+
+**`RecoverySet`** (`recovery.py`) — `principal_id`, `enrolled_at`,
+`live_digests`, `spent_digests`, `revoked_at`. Holds digests only. `remaining`
+is derived (`0` once `revoked_at` is set, else `len(live_digests)`), never
+stored as its own field.
+
+**`verification_basis`** — not a stored field but a derived string,
+`urn:soveraeign:challenge:<challenge_id>`, returned only once a challenge's
+state is `PRESENTED` (`challenges.py` `verification_basis()`). This is the
+value `decisions/0048` says a `VERIFIED` claim must carry; nothing in this
+service writes it into a principal record (see `JOURNEYS.md`).
+
+Neither record is durable. Both classes hold their instances in a plain
+`dict` in memory; the emitted `.records` list is the only thing the module
+offers a caller to persist, and even that list lives only as long as the
+process (`CHARTER.md`, "It stores nothing durably").
+
+## Service-local states
+
+**Challenge:** `MINTED → PRESENTED` (success) or `MINTED → SPENT` (expiry,
+principal mismatch, or a principal revoked since minting — the token is
+burned rather than left live, `challenges.py` `present()`). Presenting a
+challenge already in `PRESENTED` or `SPENT` always refuses `CHALLENGE_SPENT`
+regardless of which; the two terminal states are not distinguished in the
+refusal a caller sees, only in the stored record.
+
+**RecoverySet:** no principal has a set (`Recovery.status` reports
+`enrolled: False`) → enrolled (`live_digests` populated, `revoked_at` unset)
+→ each redemption moves one digest from `live_digests` to `spent_digests`,
+independently of the others (`test_each_secret_is_independent`) → revoked
+(`revoked_at` set, `live_digests` cleared; `spent_digests` untouched, so
+redemption history survives revocation) → a fresh `enroll` call after revoke
+creates a new `RecoverySet` for the same `principal_id`
+(`test_revoke_then_re_enroll`). Revocation is terminal for that instance, not
+for the principal: nothing prevents re-enrollment.
+
+## Legal transitions
+
+`contracts/service.json` `operations`, cited by name rather than restated:
+`mint-challenge` (CREATE), `deliver-challenge` (READ, `commit: DERIVED`),
+`present-challenge` (SUPERSEDE), `enroll-recovery` (CREATE), `redeem-recovery`
+(SUPERSEDE), `revoke-recovery` (COUNTER, `commit: COUNTERED`),
+`report-unenrolled` (READ, `commit: DERIVED`). Every operation cites
+`PROD-I-3` as the requirement it serves and uses only the shared kernel
+contracts `standing`, `receipt`, `operation` (`uses_kernel_contracts`) — it
+declares no schema of its own beyond the digests and sets above.
+
+### Kernel transitions
+
+None of the seven operations above is named in
+`contracts/kernel-transitions.json`'s `transitions` array. That table's
+fourteen transitions (`capture_source` through `invoke_model`) are the
+kernel's own vocabulary; Identity's operations are service-local and reach
+the kernel only by producing records shaped to fit inside its `receipt` and
+`operation` contracts, per `uses_kernel_contracts`. The nearest kin, read
+rather than declared:
+
+- `present-challenge` produces a `verification_basis`, structurally similar
+  to what the kernel's `cross` transition carries (`reader_declaration`,
+  `omissions`, `destination_address`) — but `cross` also requires an
+  `authority_grant_id` precondition that `present-challenge` does not
+  declare, consistent with `CHARTER.md`'s "It grants nothing."
+- `revoke-recovery`'s `commit: COUNTER` echoes the kernel's `retract`
+  transition in name, but `retract` requires `authority_grant_id` and
+  `known_effect` preconditions that `contracts/service.json` does not
+  declare for `revoke-recovery` (it declares only `recovery_set_exists`,
+  `declared_actor`) — a narrower precondition set, not an instance of the
+  kernel transition.
+
+Both observations are this document's own reading of the two contract files
+against each other, offered so a future participant does not have to
+re-derive them; neither is a ruling that either transition set should
+change.
+
+## Refusal reason codes
+
+`CHARTER.md` declares two tables — one for challenges, one for recovery —
+reproduced here with what reading the code against
+`contracts/service.json` adds:
+
+| Code | Meaning | Declared for | Implemented in |
+| --- | --- | --- | --- |
+| `CHANNEL_UNDECLARED` | principal has no verification channel | `mint-challenge` | `mint()` |
+| `CHANNEL_REFUSED` | channel is `external` or an unknown kind | `mint-challenge`, `deliver-challenge` | `mint()` only — `deliver()` performs no channel-kind check |
+| `PRINCIPAL_REVOKED` | principal is revoked | `mint-challenge`, `enroll-recovery` | `mint()` and `present()` — `enroll()` takes only a `principal_id` string, not a principal record, and cannot evaluate revocation |
+| `TOKEN_UNKNOWN` | token or challenge id not found | `present-challenge` (declared); returned by `deliver()` too | `deliver()`, `present()` |
+| `CHALLENGE_SPENT` | challenge already presented | `present-challenge` | `present()` |
+| `CHALLENGE_EXPIRED` | window has closed | `present-challenge` | `present()` |
+| `PRINCIPAL_MISMATCH` | presenter is not the named principal | `present-challenge` | `present()` |
+| `NOT_ENROLLED` | no set exists for this principal | not declared for any operation | `redeem()`, `revoke()` |
+| `SECRET_UNKNOWN` | secret never issued | not declared for any operation | `redeem()` |
+| `SECRET_SPENT` | secret already redeemed | not declared for any operation | `redeem()` |
+| `SET_REVOKED` | set was revoked | not declared for any operation | `redeem()`, `revoke()` |
+| `ALREADY_ENROLLED` | a live set already exists | not declared for any operation | `enroll()` |
+
+Findings from this table, each read from the code rather than stated in
+`CHARTER.md`:
+
+- **`present-challenge` refuses `PRINCIPAL_REVOKED`** (`present()`, tested by
+  `test_revocation_after_mint_refuses_presentation`), but
+  `contracts/service.json`'s declared refusal list for `present-challenge` is
+  `["TOKEN_UNKNOWN", "CHALLENGE_SPENT", "CHALLENGE_EXPIRED",
+  "PRINCIPAL_MISMATCH"]` — `PRINCIPAL_REVOKED` is absent from it.
+- **`deliver-challenge` declares `CHANNEL_REFUSED`** as a possible refusal,
+  but `deliver()`'s only refusal path is `TOKEN_UNKNOWN` for an unrecognized
+  `challenge_id`; it never re-checks the channel kind it echoes back.
+- **`enroll-recovery` declares `PRINCIPAL_REVOKED`**, but `enroll()`'s
+  signature (`principal_id: str`) cannot receive a revocation flag to check.
+  Its one actual refusal, `ALREADY_ENROLLED`, is declared for no operation
+  in `contracts/service.json` and is absent from `local_refusals`.
+- **`redeem-recovery` declares `["MISSING_PRECONDITION",
+  "DIGEST_MISMATCH"]`**; `redeem()`'s four actual refusal codes
+  (`NOT_ENROLLED`, `SET_REVOKED`, `SECRET_SPENT`, `SECRET_UNKNOWN`) match
+  neither, and none of the four appears in `local_refusals`.
+- **`revoke-recovery` declares `AUTHORITY_REFUSED`** against a
+  `declared_actor` precondition; `revoke()` implements no authority check —
+  see `SVC-IDENTITY-8` in `SRD.md`.
+- **`local_refusals`** (`contracts/service.json`, the map from a
+  service-level reason code to a kernel-level refusal family) covers only
+  the seven challenge-lifecycle codes. None of the five recovery-lifecycle
+  codes has a kernel-level mapping.
+- No code in either module ever returns the literal string
+  `"MISSING_PRECONDITION"`; it appears only as a kernel-level target that
+  `local_refusals` maps other codes onto (e.g. `CHANNEL_UNDECLARED →
+  MISSING_PRECONDITION`), and as a declared-but-unreached entry in several
+  operations' refusal lists.
+
+All of the above is this document's own reading of `contracts/service.json`
+against `challenges.py` and `recovery.py`; none of it is stated in
+`CHARTER.md`, and none of it is resolved here.
+
+## Persistence and authority notes
+
+- **No durable store.** Both `Challenges` and `Recovery` hold state in a
+  process-local `dict`; the caller journals `.records` if it wants a durable
+  trace. Whether that durable home is this service's own storage or a
+  kernel-level registry is `decisions/0048` judgement 3, open
+  (`CHARTER.md`, "An assumption stated rather than buried").
+- **No authority checks.** Neither module inspects an `authority_grant_id`
+  or any grant at all; `mint`, `present`, `enroll`, `redeem`, and `revoke`
+  all proceed on the principal or actor data the caller supplies, per
+  `CHARTER.md`'s "It grants nothing." Where `contracts/service.json`
+  declares an authority-shaped precondition anyway (`revoke-recovery`'s
+  `declared_actor` / `AUTHORITY_REFUSED`), the code does not yet enforce it
+  — see Refusal reason codes above.
+- **Clock and token source are injected**, never read from a global (
+  `Challenges.__init__`, `Recovery.__init__`), which is what lets
+  `test_a_microsecond_past_expiry_is_refused` and similar tests pin exact
+  moments without waiting on a real clock.
+
+===== END FILE: services/identity/SERVICE-SPEC.md =====
+===== FILE: services/identity/SRD.md =====
+# Identity Service — Requirements
+
+Status: `BUILT` — self-reported by the drafting session under `decisions/0067`;
+not witnessed. This document changes no standing of its own: the service it
+describes remains `PROPOSED · PLACEMENT PROVISIONAL · CHALLENGE AND RECOVERY
+BUILT` (`CHARTER.md`), and `contracts/service.json` remains `PROPOSED`.
+
+This is a scoped copy of `PRD.md`'s shape (`decisions/0067`) with the node,
+not a human, as the named user: Identity's caller is whatever in Soveraeign
+needs to mint, deliver, present, enroll, redeem, revoke, or report against a
+principal's verification state.
+
+## Product outcome
+
+Give every principal a receipted, storage-free way to move an identity claim
+toward `VERIFIED` — by presenting a one-time challenge over a channel the
+principal's own record declares, or by redeeming a sealed recovery secret
+when that channel is lost — without the mechanism itself ever becoming a
+source of authority (`CHARTER.md`, "What it does not do"; `decisions/0048`
+ID-8).
+
+## Callers
+
+`decisions/0067` names the node as this service's user. Concretely, as read
+from `CHARTER.md` and `contracts/service.json`:
+
+- **A controller principal**, minting a challenge for the principal one hop
+  below it — the ordinary recovery path (`decisions/0048` ID-14; `CHARTER.md`,
+  "Below the root, recovery is not a second mechanism").
+- **The declared channel** — `console-session`, `local-file`, or
+  `os-account` (`contracts/service.json` `ports`) — that a minted token is
+  handed to. The module never touches the channel directly; delivery is
+  the caller's act (`CHARTER.md`, "What it does not do").
+- **Whatever holds the principal registry.** `mint` and `present` both take
+  a principal record as an argument rather than looking one up, and ID-1
+  (every actor resolves to a registered principal) is enforced where the
+  registry lives, not here (`CHARTER.md`). `STATUS.yaml` names the current
+  state of that boundary as `node_identity_status:
+  PROPOSED_CONTRACT_BUILT_REGISTRY_READ_NO_ADMISSION_TRANSITION` — a
+  registry contract and a read path exist
+  (`scripts/sovsession/principals.py`); no governed transition currently
+  writes a presentation's or a redemption's result into it. See
+  `JOURNEYS.md`.
+- **A human enrolling or revoking a recovery set**, and the physical
+  custodian of a redeemed secret once it is handed over (`CHARTER.md`,
+  "Sealed recovery, and why it is not a challenge").
+- **Whoever reads `Recovery.unenrolled`**, the report naming every principal
+  with no live recovery, root first (`CHARTER.md`, "The unanswered question
+  above it"). No caller of this report exists in this repository outside its
+  own tests at drafting time — see `JOURNEYS.md`.
+- **The caller that journals every emitted record.** Both `Challenges` and
+  `Recovery` hold their attempts only in an in-memory `.records` list "for
+  the caller to journal" (`challenges.py`, `recovery.py` module
+  docstrings); this service writes nothing to the operational System of
+  Record itself.
+
+## Requirement lifecycle
+
+Same ladder as `PRD.md`: `OPEN → BUILT → WITNESSED → RATIFIED`. Nothing in
+this document claims past `BUILT` — a build cannot witness itself
+(`AGENTS.md`, Evidence and standing).
+
+## Requirements
+
+### SVC-IDENTITY-1 · Mint only to a declared, node-local channel
+
+`mint-challenge` refuses a principal with no declared verification channel
+and refuses a channel of kind `external` or any kind outside
+`LOCAL_CHANNEL_KINDS` (`console-session`, `local-file`, `os-account`)
+(`challenges.py`; `contracts/service.json` `ports`, `forbids:
+external-channel-delivery-in-phase-i`).
+
+Defeating case: a challenge mints against an undeclared or an external
+channel and is not refused.
+
+Serves: `PROD-I-3` (Cross — a crossing must name its authoritative source and
+channel). Standing: `BUILT`
+(`test_undeclared_channel_is_refused`, `test_external_channel_is_refused_in_phase_i`).
+
+### SVC-IDENTITY-2 · Refuse a revoked principal at mint and at presentation
+
+Minting refuses `PRINCIPAL_REVOKED`; a presentation against a principal
+revoked since minting is refused and the challenge is burned rather than
+left live (`CHARTER.md` refusal table; `decisions/0048` ID-4).
+
+Defeating case: a revoked principal mints a fresh challenge, or a token
+minted before revocation still verifies afterward.
+
+Serves: `PROD-I-3`. Standing: `BUILT`
+(`test_revoked_principal_cannot_mint`, `test_revocation_after_mint_refuses_presentation`).
+
+### SVC-IDENTITY-3 · A challenge is presentable exactly once, inside its window, by the principal it names
+
+Presentation compares moments rather than stamp strings (a microsecond past
+expiry refuses), is single-use (a second presentation of the same token
+refuses `CHALLENGE_SPENT`), and refuses a presenter who is not the principal
+the token was minted to — burning the token rather than leaving it live for
+its rightful owner (`CHARTER.md`, "The window closes when it says it
+closes"; `decisions/0048` ID-12, ID-13).
+
+Defeating case: a token verifies twice, verifies after its window, or
+verifies for a principal other than the one it names.
+
+Serves: `PROD-I-3`. Standing: `BUILT`
+(`test_a_microsecond_past_expiry_is_refused`, `test_replay_is_refused`,
+`test_stolen_token_is_refused`, `test_stolen_token_is_burned_not_left_live`,
+`test_unknown_token_is_refused`, `test_presentable_at_the_last_moment`).
+
+### SVC-IDENTITY-4 · No token or recovery secret ever enters a record
+
+Only a digest of a token or a recovery secret is held or emitted; the plain
+value exists once, as a return value the caller drops
+(`CHARTER.md`, "The token never enters the record"; `AGENTS.md`, Secrets and
+local boundaries).
+
+Defeating case: any emitted record or any held challenge or recovery set
+carries a plain token or secret.
+
+Serves: `PROD-I-3`; `AGENTS.md` Secrets and local boundaries. Standing:
+`BUILT` (`test_no_record_ever_carries_a_token`,
+`test_no_record_ever_carries_a_secret`).
+
+### SVC-IDENTITY-5 · Verification never substitutes for authority
+
+A `VERIFIED` claim, however it was reached, grants no capability; every
+consequential transition still checks its own live typed grant
+(`CHARTER.md`, "It grants nothing"; `decisions/0048` ID-8; `CONTRACT.md` C3).
+
+Defeating case: a caller treats a presented challenge or a redeemed recovery
+secret as sufficient, on its own, to proceed with a consequential
+transition, with no separate grant check.
+
+Serves: `PROD-I-5` (Typed authority). Standing: `OPEN` — this module holds no
+authority-checking code path to exercise a defeating case against; the
+property is a boundary this module keeps by never reaching toward authority,
+not one its own suite can prove. It is exercised, if at all, in whatever
+calls this service.
+
+### SVC-IDENTITY-6 · A recovery secret has no expiry and is bounded by single use, a finite set, and whole-set revocation instead
+
+Deliberately the inverse of a challenge: delivered once at enrollment, never
+expiring, spent once, and revocable only as a complete set
+(`CHARTER.md`, "Sealed recovery, and why it is not a challenge"; `recovery.py`
+module docstring; `decisions/0048` ID-11a).
+
+Defeating case: a secret redeems twice, a secret from a revoked set still
+redeems, or an individual secret is revoked alone while the rest of the set
+stays live.
+
+Serves: `PROD-I-3`. Standing: `BUILT` (`test_replay_is_refused`,
+`test_revoked_set_cannot_be_redeemed`, `test_exhaustion_is_visible_on_the_last_redemption`).
+
+### SVC-IDENTITY-7 · Enrollment never silently replaces a live set
+
+Enrolling over an already-live, unrevoked set refuses `ALREADY_ENROLLED`;
+replacing recovery without a deliberate revoke first is how recovery is lost
+(`CHARTER.md` refusal table).
+
+Defeating case: a second enrollment silently overwrites a live set's
+digests.
+
+Serves: `PROD-I-3`. Standing: `BUILT`
+(`test_enrollment_never_silently_replaces_a_live_set`).
+
+### SVC-IDENTITY-8 · Revocation counters a whole set as a receipted, attributed transition
+
+`revoke-recovery` retires every live digest in one transition, is receipted
+with `revoked_by` and a reason, and a principal may re-enroll a fresh set
+afterward (`recovery.py`; `contracts/service.json` `revoke-recovery`,
+`crud: COUNTER`).
+
+Defeating case: a revoke leaves a live digest redeemable, erases the prior
+enroll or redeem history rather than countering it, or succeeds with no
+declared actor.
+
+Serves: `PROD-I-4` (Gate and retract). Standing: `OPEN` — the whole-set
+counter and re-enrollment are `BUILT` (`test_double_revoke_is_refused`,
+`test_revoke_then_re_enroll`), but `contracts/service.json` declares a
+`declared_actor` precondition and an `AUTHORITY_REFUSED` refusal for this
+operation that `recovery.py`'s `revoke()` does not implement — any caller
+supplying any `revoked_by` string succeeds. Detailed in `SERVICE-SPEC.md`.
+Inferred, not charter-stated.
+
+### SVC-IDENTITY-9 · Every principal with no live recovery is named, root first, with the consequence stated
+
+`report-unenrolled` lists every principal whose set is missing, exhausted, or
+revoked, sorted root-first, and states plainly that a root with none is
+unrecoverable because nothing sits above it to re-enroll one
+(`recovery.py` `unenrolled()`; `CHARTER.md`, "What this component does owe
+regardless of the ruling").
+
+Defeating case: an unenrolled, exhausted, or revoked-set principal is absent
+from the report, or the root's entry does not state that the gap is
+terminal.
+
+Serves: `PROD-I-3`. Standing: `BUILT`
+(`test_unenrolled_names_the_root_first_and_says_it_is_terminal`,
+`test_enrolled_principals_leave_the_gap_report`,
+`test_exhausted_set_returns_to_the_gap_report`,
+`test_revoked_set_returns_to_the_gap_report`).
+
+### SVC-IDENTITY-10 · Delivery is recorded as owed, never performed
+
+`deliver-challenge` records that a crossing to a channel was owed, with
+`effect_class: RECORD_LOCAL`; it performs no external effect, and Phase I
+offers no channel kind that would require one
+(`challenges.py` `deliver()`; `CHARTER.md`, "It performs no delivery").
+
+Defeating case: `deliver` mutates anything outside its own record, or is
+called against a channel kind this service does not itself validate.
+
+Serves: `PROD-I-3`. Standing: `BUILT` for the record-only crossing
+(`test_deliver_of_unknown_challenge_is_refused`, `test_mint_deliver_present`);
+`deliver()` itself performs no channel-kind check, so the `CHANNEL_REFUSED`
+refusal `contracts/service.json` declares for this operation has no
+implementing path — detailed in `SERVICE-SPEC.md`. Inferred, not
+charter-stated.
+
+## Non-goals
+
+- Deciding where recovery secrets are custodied, or whether they are the
+  root's answer to recovery at all. `decisions/0048` ID-11 states this is
+  Bdo's; this document does not resolve it (see `JOURNEYS.md`).
+- Performing delivery over any channel, local or external
+  (`CHARTER.md`, "It performs no delivery").
+- Resolving, registering, or admitting principals — ID-1 and ID-2 belong to
+  wherever the principal registry lives (`CHARTER.md`, "It resolves no
+  principals").
+- Cryptographic verification of any claim. `decisions/0048` ID-7: added only
+  when a conformance case demonstrates a forged claim, not before.
+- Judging whether a caller minting or presenting on a principal's behalf
+  actually holds authority to do so for that principal — the module accepts
+  the principal record it is handed (`CHARTER.md`, "the caller passes the
+  principal record"); `AGENTS.md` Authority puts that check at "the
+  operation boundary," which for a mint or a controller-issued recovery
+  challenge is outside this module.
+- Storing anything durably. The in-memory maps in `Challenges` and
+  `Recovery` are projections of the records each emits; durable custody is
+  undecided pending `decisions/0048` judgement 3 (`CHARTER.md`).
+
+===== END FILE: services/identity/SRD.md =====
+===== FILE: services/observation/CHARTER.md =====
+# Observation Service Charter
+
+Standing: `PROPOSED`. Chartered and contracted; nothing here is implemented.
+
+## Role in Soveraeign
+
+The Observation Service owns independent observation: evidence about a run gathered by
+something that did not perform it.
+
+`SPEC.md` already defines an `Observation` as a record carrying an observer, the addresses and
+digests that observer looked at itself, the predicates that held, and an `observer_relation`
+stating how it avoided relying solely on the executor's report. `settle_run` refuses with
+`OBSERVATION_MISSING` when that record is absent. Before this charter, nothing owned the
+transition that produces it — `observe_run` was one of fourteen kernel transitions and the only
+one with no service behind it.
+
+The gap shows everywhere else too. Check 3 on the `AI-NATIVE.md` bar — independent observation
+— reads `UNATTESTABLE` on every service assessment in the repository.
+
+## Independence is inferred, never declared
+
+This is the ruling the service is built around (Bdo, 2026-08-23): an observer is independent
+when no direct relation to the execution can be found in the run's own record.
+
+Nobody registers as an observer and nobody asserts their own independence. A declared relation
+would be the observer vouching for itself, which is the substitution this contract refuses
+everywhere else — it is the same shape as an executor's report standing in for an observation.
+Instead `infer-relation` walks the run's record and looks for a direct edge:
+
+- `SAME_ACTOR` — the candidate observer is the actor that executed the run;
+- `HOLDS_RUN_LEASE` — the candidate holds the lease, fence, or session the run executed under;
+- `GRANT_DESCENDS_FROM_RUN` — the candidate's grant descends from the run's own grant chain;
+- `PRODUCED_THE_OUTPUT` — the candidate produced the output it proposes to observe;
+- `ONLY_EXECUTOR_REPORT` — the only evidence available to the candidate is the executor's report.
+
+Find one and the answer is `OBSERVER_NOT_INDEPENDENT`. Find none and the observer may observe.
+
+Those five names are the vocabulary `relation-inference.schema.json` enforces, and
+`services/observation/tests/test_contract_shapes.py` reads this list at check time to prove the
+charter and the contract have not drifted apart about what direct means.
+
+### The third outcome
+
+Absence of a recorded direct edge is not the same as absence of a direct relation. A record too
+thin to answer the question would otherwise read as independence, which would make the check
+worthless exactly where it matters most — on runs that recorded too little.
+
+So the inference has three outcomes, not two: `DIRECT`, `INDEPENDENT`, and `UNDETERMINED`.
+`infer-relation` refuses `RELATION_UNDETERMINED` when the run's record cannot support the
+inference, and `observe-run` refuses on it as well. Silence is not a pass.
+
+## What this service is not
+
+**It is not the log.** The append-preserving journal belongs to the Record Service; an
+operator's view over it belongs to the Console Service's `projection-view`. A third place
+recording what happened would be the competing authority the contract forbids. The journal
+answers *what occurred*. This service answers *whether something that did not perform it
+checked, and whether the predicates declared beforehand held*.
+
+**It is not a witness in the governance sense.** An observation is evidence. It settles nothing
+and does not by itself move an artifact from `BUILT` to `WITNESSED`. It is the input that makes
+such a move possible.
+
+**It is not a validator.** `attest-observation` records a validator's outcome — `REPRODUCED`,
+`DISSENTED`, or `UNATTESTABLE` — against declared inputs. `DISSENTED` and `UNATTESTABLE` stay
+visible; neither changes an authority sign.
+
+## The loop it closes
+
+An operator pilots the node — today through the CLI, and through the MCP tool surface once it
+is reseated on the Gateway Service. Acts land in the journal. Then:
+
+1. `request-observation` — the executor, or the door on its behalf, asks for a terminal run to
+   be observed. It cannot observe itself, so it asks. Refuses `RUN_NOT_TERMINAL` on a run still
+   in flight.
+2. `declare-predicates` — what must hold, stated before the looking, and evaluable without
+   reading the executor's report.
+3. `infer-relation` — the run's record is walked for a direct edge to the candidate observer.
+4. `observe-run` — the observer reads the durable outputs itself, records their addresses and
+   digests, and evaluates the predicates.
+5. `read-observation` — the result, alongside the predicates it was judged against and the
+   inference that admitted the observer.
+
+`counter-observation` exists because an observation can later be shown wrong. It is countered,
+never erased.
+
+That sequence is the feedback path. Without it, the only evidence that anything worked is the
+report of the thing that did it, which the contract has refused since founding.
+
+## Authoritative versus derived
+
+Observations, requests, predicate declarations, relation inferences, and attestation receipts
+are this service's authoritative records. Everything it says about the run it observed is
+derived from that run's durable outputs, read directly.
+
+It reads the Record Service journal. It never writes it.
+
+## What it does not do
+
+- It does not observe what it executed.
+- It does not accept a declared relation in place of an inferred one.
+- It does not read an incomplete record as independence.
+- It does not settle. A satisfactory observation lets the kernel settle; it is not the
+  settlement.
+- It does not ratify. Judgement is Bdo's.
+- It does not accept an executor's report as an observation.
+
+## Proving operation
+
+Drive a run to a terminal receipt through the Asset Service, then propose the executing actor
+as its observer, and prove `infer-relation` returns `DIRECT` and `observe-run` refuses
+`OBSERVER_NOT_INDEPENDENT` with no observation recorded. Then strip the run's record of the
+actor attribution and prove the answer is `RELATION_UNDETERMINED` rather than independence.
+Only then observe the same run from an actor with no edge to it, proving the observation
+records digests the observer computed rather than any value the executor reported, and that a
+predicate failure is recorded rather than dropped.
+
+Three cases, and the first two are the service. A service that only ever produces observations
+proves nothing about whether it can tell an observer from an executor, and one that cannot say
+"I don't know" will call every thin record independent.
+
+## Gaps and standing
+
+`KNOWN-GAPS.md` records every observed difference from this charter. Chartered under
+`decisions/0041-the-observation-service.md`.
+
+## Open before this can be built
+
+- The exact set of direct edges above is proposed, not settled. It is the whole enforcement
+  surface, and a missing edge is a way past the check.
+- Whether `observation-receipt` is this service's own record or a `terminal-receipt` in the
+  Record Service journal. Four services now own a private receipt type and nothing says how
+  they relate.
+- What makes a run's record complete enough to infer from. `RELATION_UNDETERMINED` needs a
+  definition, not just a name.
+- Whether the repository's own `verify.py` run is an observation of this kind. The MCP surface
+  already appends one; it observes the repository rather than a service run.
+
+===== END FILE: services/observation/CHARTER.md =====
+===== FILE: services/observation/KNOWN-GAPS.md =====
+# Observation Service Reference Gaps
+
+Observed differences between the chartered boundary and what exists. The service is
+`PROPOSED`: a charter, a manifest with eight declared operations, and nothing that runs. Every
+row is a gap by construction, not a regression.
+
+Standing under `decisions/0041-the-observation-service.md`.
+
+| Gap | Observed behavior | Required behavior | Contract |
+| --- | --- | --- | --- |
+| The whole service | Eight operations declared; none implemented | The path from `request-observation` to a recorded observation or a named refusal | `CHARTER.md`; `contracts/service.json` |
+| Direct-edge set | Five edges proposed in the charter; none implemented or agreed | The enforcement surface of the whole service. A missing edge is a way past the check | `decisions/0041`, Ruling 2 |
+| Record completeness | `RELATION_UNDETERMINED` is named and undefined | What makes a run's record complete enough to infer from. Without it the third outcome cannot fire | `CHARTER.md`, The third outcome |
+| Observation and attestation contracts | `contracts/observation.schema.json` exists at the kernel; no service contract or fixtures do | Positive and defeating fixtures for each declared operation | `AGENTS.md` Implementation order |
+| Receipt ownership | The manifest owns `observation-receipt` | Either that, or a `terminal-receipt` in the Record Service journal. Four services now own a private receipt type and nothing says how they relate to the journal's | `contracts/receipt.schema.json`; `services/record/contracts/service.json` |
+| Predicate language | `declare-predicates` names a precondition that predicates be evaluable without the executor's report; nothing expresses or checks a predicate | A declared predicate form the service can evaluate against durable outputs | `SPEC.md` `predicate_results` |
+| The existing observer script | `scripts/witness_observe.py` computes digests and predicates outside any service boundary | The same work behind a declared operation, or a stated reason it belongs in scripts | `AGENTS.md` Directory boundaries |
+| Repository verification | The MCP surface appends an `OBSERVATION` for `scripts/verify.py` | Either a declared operation of this service, or explicitly not an observation of this kind | `bindings/mcp/manifest.json`, `observe_verify` |
+| Settlement | Nothing settles a run anywhere | `settle_run` consuming a satisfactory observation and refusing `OBSERVATION_MISSING` without one | `SPEC.md` Transition contract |
+| Two-binding proof | No binding drives this service | A human binding and a model binding passing the same fixtures | PROD-I-3; `AI-NATIVE.md` check 7 |
+| Independent observation of itself | None. The service that owns observation is observed by nothing | An observer independent of this service's builder | C7; the recursion is real and unresolved |
+
+## Where this sits against the AI-native bar
+
+Not scored. There is no implementation to score, and recording `PARTIAL` anywhere would claim
+observable evidence that does not exist. The assessment record is owed once
+`request-observation` and `observe-run` execute.
+
+Worth stating: this is the service that would move check 3 off `UNATTESTABLE` for every other
+service in the repository. It is also the service most exposed to the recursion in the last
+row — whatever observes the observer cannot be the observer, and nothing in the charter solves
+that. The honest position is that the first observation of this service is Red work by a
+different agent, not a self-test.
+
+===== END FILE: services/observation/KNOWN-GAPS.md =====
+===== FILE: services/projection/CHARTER.md =====
+# Asset Projection Service Charter
+
+Status: `PROPOSED SERVICE BOUNDARY · NOT IMPLEMENTED`
+
+## Role
+
+The Asset Projection Service is a sibling of the Asset Service, the Proofing
+Service, and the Console Service inside a local Soveraeign Node. It owns the
+retrieval surface over asset records: text search, graph traversal, vector
+search, fused ranking, and token-budgeted context packages that a human or
+model operator asks for and receives with provenance. Its target capability
+set is parity with Polygres (`PARITY.md`), reached through Soveraeign's own
+rules rather than around them.
+
+Everything it holds is a projection under the `SPEC.md` Projection rule: a
+rebuildable read model whose every value resolves to an authoritative record
+and declares its omissions. It reads the Asset Service's records and receipts
+through a declared read-only crossing. It never owns an asset, a version, a
+payload, a relationship record, a grant, or a standing, and it never becomes a
+private authority system. A projection-originated edit returns as a Proposal
+through the transition contract.
+
+Bdo directed this boundary on 2026-08-23: the Asset Service needs an asset
+projection service, and that service's feature set should reach parity with
+what Polygres offers. This charter carries that intent at proposal standing.
+
+## Relationship to Phase-I requirements
+
+- `PRD.md` PROD-I-3 (Cross): a fact deposited by one operator is retrieved by
+  the other "with origin and projection visible". Retrieval with provenance is
+  this service's whole job.
+- `PRD.md` PROD-I-2 (Remember): a retrieval hit reconstructs its source,
+  version, and reader; it does not replace them.
+- `PRD.md` PROD-I-9 (Bring your own model): every model invocation records an
+  addressed `input_projection`. The context package is that projection. The
+  service does not generate embeddings; a declared Model Binding does, through
+  `invoke_model`, and the vector registration names it.
+- `PRD.md` PROD-I-4 (Gate and retract): a countered record drops out of the
+  next build; the original and the counter-record stay visible in the source.
+- `SPEC.md` Projection rule and `CONTRACT.md` C15: indexes, graphs, caches,
+  and model context packages are rebuildable; events and receipts remain.
+- `CONTRACT.md` C7: an index's own recall report is an executor report. A
+  fidelity observation by an independent observer decides whether the index
+  is faithful.
+- `PRD.md` non-goal "optimizing performance before semantic conformance":
+  parity is defined by capability and provenance, not latency.
+
+## Owned domain records
+
+- projection collection — a declared retrieval scope: the source record kinds
+  it projects, its key column, its text, vector, graph, and filter fields, and
+  its lifecycle;
+- text configuration — tokenizer and fuzzy-match declaration for a collection;
+- vector registration — a named vector space on a collection: dimension,
+  distance, the Model Binding or declared external provenance that produced
+  the embeddings, and the index declaration;
+- graph configuration — the record kinds, relationship types, lineage edges,
+  and directions that traversal may follow;
+- index declaration — `index_kind` for a lane: `NONE` (exact scan), `FTS`,
+  `TRIGRAM`, or a declared external index port; exact and approximate are
+  never confused;
+- projection build — one rebuild operation: the input addresses and
+  `input_state_digest` consumed, the lanes built, the resulting
+  `content_digest`, and its receipt;
+- retrieval receipt — one query: parameters, lanes used, every hit with
+  `source_address`, `source_digest`, rank, score breakdown, and
+  `introduced_by_graph`, the build it read, and declared omissions;
+- context package — a token-budgeted, ordered set of hits with addresses,
+  digests, omissions, and `content_digest`, addressable as a Model Binding's
+  `input_projection_id`;
+- fidelity observation — an independent comparison of an approximate lane
+  against its exact lane over the same build;
+- projection receipt and history.
+
+Proposed lifecycle (service policy awaiting owner ratification; it does not
+replace the shared `RECORDED`, `ADMITTED`, `RATIFIED`, and `EFFECTIVE`
+standings):
+
+```text
+projection collection:  DECLARED → READY → STALE → READY
+```
+
+`READY` means a build exists whose `input_state_digest` matches the current
+source stream. `STALE` means the source stream has advanced past the last
+build; reads still answer, and every retrieval receipt names the build it
+read and carries the staleness as a declared omission.
+
+## Retrieval lanes
+
+| Lane | Mechanism | Phase-I standing |
+| --- | --- | --- |
+| Text | SQLite FTS5 with unicode and trigram tokenizers (stdlib `sqlite3` 3.34+) | buildable now; no dependency decision |
+| Graph | recursive CTE over projected relationship and lineage edges: `related`, `expand`, `neighborhood`, `path`, `connection`; `max_depth` 1..20, `direction` `OUT` / `IN` / `ANY`, relationship-type filter | buildable now; no dependency decision |
+| Dense vector | exact cosine scan over registered vectors; embeddings arrive by `invoke_model` or declared external provenance | exact scan buildable after O12; approximate index is a port |
+| Sparse vector | exact sparse dot product over registered sparse vectors | same as dense |
+| Filter | `must` / `should` / `must_not` groups of scalar match, range, and `is_null` over declared filter fields; applies to every lane | buildable now |
+| Fusion | weighted reciprocal rank fusion, `k = 60` by default, declared per query; joint rescoring across lanes | buildable after two lanes exist |
+
+## Integration with sibling services and the kernel
+
+The Asset Projection Service:
+
+1. reads asset, version, source, relationship, run, and receipt records from
+   the Asset Service through a declared read-only crossing
+   (`asset:event-and-receipt-stream`); it never writes Asset Service state
+   and never opens the Asset Service database directly;
+2. builds every lane from that stream in one `build-projection` operation
+   that emits `ATTEMPTED`, stores the executor's report, and settles only on
+   an independent observation of the resulting `content_digest`;
+3. requests embeddings only through `invoke_model` on a declared Model
+   Binding within its data boundary; a vector registration that names no
+   binding and no declared external provenance refuses `INCOMPLETE_PROPOSAL`;
+   an unavailable binding refuses `MODEL_UNAVAILABLE` and never falls back
+   silently;
+4. serves every retrieval with a receipt whose hits resolve to source
+   addresses and digests, whose omissions are declared, and whose build id
+   and `input_state_digest` are named;
+5. returns a projection-originated edit as a Proposal standing `RECORDED`
+   through the Asset Service transition contract;
+6. refuses an external index, an external graph database, an HTTP binding,
+   and cross-node retrieval as `UNCONFIGURED` with a receipt until a separate
+   decision admits each;
+7. never rewrites a retrieval receipt, build, or observation; corrections are
+   new records or counter-records.
+
+Authority stays where the kernel puts it: holding a grant to read a collection
+does not grant a right to change what it projects.
+
+## Human and model participation
+
+Humans and models query the same service through different bindings:
+
+- both declare collections, request builds, and query lanes under scoped
+  grants; every operation returns a receipt;
+- a model receives a context package as its addressed input projection; a
+  human receives the same hits rendered through the Console Service;
+- a model's retrieval is recorded with its binding identity; a human's with
+  their operator identity; neither changes a score or a source;
+- machine verification authority may settle checkable predicates (rebuild
+  equality, hit resolution, fidelity comparison) but cannot ratify a Proposal
+  that a projection edit raised.
+
+## Initial proving narrative
+
+From a clean local checkout with the Asset Service walking skeleton ingested:
+
+1. declare one collection over asset versions with text, filter, and graph
+   fields; observe `DECLARED`;
+2. build it; observe the build receipt naming the asset stream's addresses and
+   `input_state_digest`, and the collection `READY`;
+3. run a text query, a fuzzy text query, and a filtered query; show every hit
+   naming a `source_address` and `source_digest` that resolves in the Asset
+   Service;
+4. traverse from one asset with `max_depth` 3 and `direction` `ANY`; show
+   depth, path, edge path, and that every edge resolves to a relationship or
+   lineage record;
+5. find the path between two assets and a connection across three; show the
+   step-by-step records;
+6. register a vector space with an unconfigured Model Binding; observe
+   `MODEL_UNAVAILABLE` with a receipt and no silent substitute;
+7. register the same space with owner-supplied vectors under declared external
+   provenance; run an exact dense query; show the provenance on the receipt;
+8. run a fused query over text, graph, and dense; show the per-lane score
+   breakdown, `introduced_by_graph`, and the RRF parameters on the receipt;
+9. package a context of 2,000 tokens from that result; show the addresses,
+   digests, omissions, and `content_digest`, and that a second package over
+   the same build is byte-identical;
+10. ingest a new asset version; observe the collection `STALE` and a retrieval
+    receipt that names the old build and declares the staleness;
+11. rebuild; observe `READY`, a new `content_digest`, and the old build still
+    in history;
+12. retract one relationship in the Asset Service; rebuild; show the edge gone
+    from traversal and the counter-record visible in the source;
+13. attempt, from a hit, to change a projected label; observe one Proposal
+    standing `RECORDED` and no projection or asset state change;
+14. attempt an external HNSW index, an HTTP binding, and a cross-node query;
+    observe `UNCONFIGURED` refusals with receipts.
+
+## Defeating cases
+
+- a hit names no source address or digest, or names one that does not
+  resolve to an Asset Service record;
+- two builds from an unchanged stream differ in `content_digest`;
+- a retrieval answers from a stale build without declaring it;
+- a countered relationship still appears in traversal after rebuild, or
+  rebuild erases the counter-record's visibility in the source;
+- a vector registration carries no binding and no declared provenance, or an
+  unavailable binding is replaced silently;
+- an approximate index serves as exact, or a fidelity observation is the
+  index's own report;
+- a projection edit writes Asset Service state directly, or a projected value
+  is cited as a grant or precondition;
+- a traversal exceeds its declared `max_depth` or follows an undeclared
+  relationship type;
+- a fused hit cannot show which lanes produced it;
+- a context package exceeds its token budget or omits a dropped hit from
+  omissions;
+- the service opens the Asset Service database directly;
+- an external index, binding, or node is reported as success instead of
+  `UNCONFIGURED`.
+
+## Deferred
+
+Approximate nearest-neighbour indexes (HNSW or otherwise), quantisation,
+recommend, discover, explore, grouped search, query plans, Postgres-backed or
+Polygres-backed projection targets, an HTTP binding, and cross-node retrieval
+are outside the first proof. Their interfaces may be declared as ports; their
+effects remain refused until separately admitted. `PARITY.md` names each one
+and its gate.
+
+===== END FILE: services/projection/CHARTER.md =====
+===== FILE: services/projection/PARITY.md =====
+# Asset Projection Service — Parity Ledger
+
+Status: `PROPOSED TARGET · OWNER-DIRECTED · NOTHING BUILT`
+
+Bdo set the target on 2026-08-23: feature parity with Polygres
+(<https://polygres.com/>, docs <https://docs.evokoa.com/polygres>). This ledger
+maps each Polygres capability to the operation that realises it here, the
+parity lane it sits in, and what gates it. `CHARTER.md` owns the boundary;
+this file only tracks the target. Polygres's capabilities are quoted from its
+own pages as of 2026-08-23 and were not executed or observed.
+
+Lanes:
+
+- **Phase I** — buildable from the standard library once fixtures exist and
+  the `core.py` split (`ENGINEERING.md` lines 171-173) is done;
+- **after O12** — needs a ratified Model Binding so `invoke_model` can
+  produce embeddings with provenance;
+- **port** — declared interface, refuses `UNCONFIGURED`, needs an observed
+  need plus a decision record before any implementation;
+- **declined** — contrary to a governing rule or a Phase-I non-goal; parity
+  is met by a stricter equivalent or deliberately not pursued.
+
+## Capability map
+
+| Polygres capability | Operation here | Lane | Gate |
+| --- | --- | --- | --- |
+| Full-text search (`tsvector`) | `search-text` over FTS5 unicode tokenizer | Phase I | fixtures; `core.py` split |
+| Fuzzy matching (`pg_trgm`) | `search-text` with FTS5 trigram tokenizer | Phase I | same |
+| Graph `related` (immediate neighbours) | `traverse-graph` with `max_depth` 1 | Phase I | same |
+| Graph `expand` (flat ranked traversal) | `traverse-graph` ranked by depth and `graph_score` | Phase I | same |
+| Graph `neighborhood` (depth and table grouping) | `traverse-graph` with `groups` by depth and record kind | Phase I | same |
+| Graph `path` (shortest route) | `find-path` | Phase I | same |
+| Graph `connection` (chain 2–10 entities) | `find-path` with an ordered entity list | Phase I | same |
+| `max_depth` 1..20, `direction` `out` / `in` / `any`, `relationship_types` | parameters of `traverse-graph` and `find-path` | Phase I | same |
+| Graph derived from the schema (foreign keys) | `configure-graph` projecting relationship records plus lineage edges (asset → version → source, run → input/output version) | Phase I | same |
+| Scalar filters `must` / `should` / `must_not`, ranges, `is_null` | `filter` parameter on every lane | Phase I | same |
+| Readiness (`Ready` per mode) | collection lifecycle `DECLARED → READY → STALE` with build receipt | Phase I | same |
+| Pagination (`limit`, `cursor`) | `limit` and `cursor` on every retrieval | Phase I | same |
+| Dense vector search (`/search`) | `search-dense`, exact cosine scan, `index_kind: NONE` | after O12 | O12; fixtures |
+| "Polygres does not generate embeddings" | same: embeddings by `invoke_model` on a declared binding or declared external provenance | after O12 | O12 |
+| Sparse retrieval | `search-sparse`, exact scan | after O12 | O12; fixtures |
+| Raw search (score explicit point ids) | `search-dense` with `candidates` restricted to given keys | after O12 | O12 |
+| Candidate search (within given point ids) | same parameter | after O12 | O12 |
+| Hybrid rank fusion (`/hybrid/rank-fusion`) | `search-hybrid` mode `RANK_FUSION`, weighted RRF `k = 60` | after O12 for the dense lane; text + graph fusion is Phase I | fixtures |
+| Hybrid joint (`/hybrid/joint`, unified rescoring, lane evidence, `introduced_by_graph`) | `search-hybrid` mode `JOINT`; receipt carries score breakdown, lane evidence, `introduced_by_graph` | same | fixtures |
+| Text-first / graph-first / vector-first hybrid | `search-hybrid` with a declared `seed_lane` | same | fixtures |
+| Recall check (HNSW vs exact) | `observe-fidelity`: an independent observer compares an approximate lane to the exact lane over one build | port (needs an approximate index to compare) | external index decision |
+| HNSW index, quantised, in memory | `index_kind` external port | port | observed local query failure + decision record (`ENGINEERING.md` line 185) |
+| Recommendation (positive / negative examples) | `recommend` | port | decision record; PRD non-goal until conformance |
+| Discovery (contextual expansion) | `discover` | port | same |
+| Exploration | `explore` | port | same |
+| Grouped search (by filter key) | `group-search` | port | same |
+| Query plans (`/query/execute`) | `execute-plan`: a declared operation plan over lanes | port | same; maps onto `operation-plan.schema.json` when admitted |
+| Token-ready ranked context | `package-context` with `token_budget`, addresses, digests, omissions, `content_digest`; is the `input_projection_id` for a Model Binding | after O12 for model use; package itself Phase I | O12 |
+| Python SDK | Python API binding | Phase I | two-binding proof |
+| CLI | CLI binding | Phase I | same |
+| HTTP API | `http-binding` port | port | a conformance case that requires HTTP (`AGENTS.md`, Technical baseline) |
+| Agent Skills | harness skill `sov-projection` (host plumbing, not a product surface) | Phase I | `.claude/README.md` |
+| Runtime row writes | declined as written; a projection edit returns as a Proposal through the Asset Service transition contract | declined | — |
+| Roles Owner / Admin / Developer / Viewer; one credential per surface | declined as fixed roles; typed, scoped, budgeted, revocable grants (`SPEC.md` `AuthorityGrant`) | declined | PROD-I-5 |
+| Sync from external Postgres (Supabase, Neon) | `asset:event-and-receipt-stream` crossing is the only source; external sources enter through Asset Service `capture_source` / `read_source` | declined as a projection input; required as an Asset Service capability | `read_source` (unbuilt) |
+| Managed hosting; connect any Postgres by connection string | declined in Phase I (`SPEC.md` lines 24-27, local operation); a Postgres-backed projection target is a port | port | decision record; O7 |
+| GQL / Cypher | declined | declined | no requirement names it |
+| Millisecond retrieval | not a parity criterion | declined | PRD non-goal |
+
+## Beyond parity
+
+These are required here and are not part of Polygres's offer. They are the
+conditions under which parity counts.
+
+- a receipt on every retrieval, build, registration, and refusal (C8);
+- every hit resolves to a `source_address` and `source_digest` (Projection
+  rule);
+- declared omissions on every result and every context package;
+- staleness declared on the receipt, never silent;
+- exact versus approximate never confused (`index_kind`);
+- embedding provenance: the binding, model, version, data boundary, usage,
+  and cost that produced each vector (PROD-I-9);
+- counter-records survive rebuild in the source and take effect in the
+  projection (C9);
+- independent fidelity observation, not the index's self-report (C7);
+- local sovereignty: losing any external index or provider leaves the
+  stdlib lanes and the record intact (`AI-NATIVE.md` lines 130-132).
+
+## Reading this ledger
+
+A row reaches parity when its operation is `BUILT` with a positive and a
+defeating fixture, then `WITNESSED` by a different agent. This file records
+the target; standing lives in `STATUS.yaml` and the service manifest.
+
+===== END FILE: services/projection/PARITY.md =====
+===== FILE: services/projection/README.md =====
+# Asset Projection Service
+
+Status: `CHARTERED · NOT IMPLEMENTED`
+
+This directory is reserved for the Asset Projection Service contract and
+future reference participant. The service boundary, owned records, lanes,
+proving narrative, and defeating cases are in `CHARTER.md`; `PARITY.md` is
+the owner-directed capability target against Polygres; `contracts/` holds
+the manifest; `conformance/` holds declarative seed fixtures a future
+participant must satisfy.
+
+The service owns retrieval over asset records: text, graph, vector, fused
+ranking, and context packages. It reads the Asset Service through a declared
+read-only crossing and never writes asset state. Everything it holds is a
+rebuildable projection.
+
+Implementation begins once:
+
+1. the Asset Service `core.py` split lands, so the stream this service reads
+   has a stable owner (`ENGINEERING.md`, Context and module budget);
+2. projection-specific positive and defeating fixtures are executable.
+
+Ratification of the boundary (`decisions/0021`, O21) gates only
+`projection.ratify_boundary`: the standing word, not the build. The dense and
+sparse lanes wait on O12 for embeddings; every row in `PARITY.md` names its
+own gate. No placeholder implementation is treated as progress toward those
+gates.
+
+===== END FILE: services/projection/README.md =====
+===== FILE: services/proofing/CHARTER.md =====
+# Proofing Service Charter
+
+Status: `PROPOSED SERVICE BOUNDARY · NOT IMPLEMENTED`
+
+## Role
+
+The Proofing Service is a sibling of the Asset Service inside a local
+Soveraeign Node. It governs the review-and-approval lifecycle for exact asset
+versions. It does not own asset payload custody and does not create an
+independent source of asset truth.
+
+## Owned domain records
+
+- proofing session;
+- review round;
+- participant assignment and required authority;
+- version-pinned annotation;
+- comparison request and comparison recording;
+- requested change;
+- approval or rejection proposal;
+- authorized decision;
+- proofing receipt and history.
+
+Proposed initial lifecycle:
+
+```text
+OPEN → IN_REVIEW → DECISION_PENDING → CLOSED
+```
+
+This lifecycle is service policy awaiting owner ratification. It does not
+replace the shared `RECORDED`, `ADMITTED`, `RATIFIED`, and `EFFECTIVE`
+standing distinctions.
+
+## Asset Service integration
+
+The Proofing Service:
+
+1. opens a proofing session against an immutable `asset_id` + `version_id`;
+2. resolves bytes and technical provenance from the Asset Service;
+3. stores annotations against that exact version and a declared coordinate
+   scheme;
+4. asks the Asset Service for comparison or display derivatives through a
+   declared operation rather than direct storage writes;
+5. emits decisions and receipts through the shared kernel;
+6. requests a revised asset version through the Asset Service when changes are
+   required;
+7. marks earlier annotations stale or carried when a new version enters;
+8. never rewrites an annotation as if it had been made against another version.
+
+The Asset Service remains authoritative for asset identity, payloads, versions,
+and derivation lineage. The Proofing Service remains authoritative for proofing
+sessions, rounds, annotations, and decision history. The local node's shared
+record and kernel prevent either service from becoming an authority island.
+
+## Human and model participation
+
+Humans and models operate the same proofing session through different bindings:
+
+- a model may locate versions, compare representations, and propose findings;
+- a human may do the same and may ratify judgement when holding the required
+  authority;
+- machine verification authority may settle checkable properties but cannot
+  ratify aesthetic, business, or customer judgement;
+- every proposal, refusal, decision, and operation returns a receipt;
+- a worker's render or comparison report is not independent observation.
+
+## Initial proving narrative
+
+From a clean local checkout:
+
+1. ingest asset version `V1` through the Asset Service;
+2. open a proofing session pinned to `V1`;
+3. let one human and one model binding add attributable annotations;
+4. have a worker produce a declared comparison recording;
+5. independently observe the comparison output;
+6. allow the model to propose a change and refuse its attempt to ratify a
+   judgement-typed approval;
+7. let an authorized human request a revision;
+8. ingest `V2` with derivation from `V1`;
+9. preserve the `V1` review history and declare whether each annotation is
+   stale, carried, or resolved for `V2`;
+10. close the session with reconstructable receipts.
+
+## Defeating cases
+
+- proofing silently reviews “latest” instead of an exact version;
+- an annotation moves to a new version without a declared carry operation;
+- a model ratifies judgement-typed approval;
+- a render worker's success report settles the comparison;
+- approval mutates Asset Service storage directly;
+- rejection erases the reviewed version or prior decision;
+- a projection or external proofing integration becomes authoritative;
+- a missing external renderer is reported as success instead of refusal or
+  `UNATTESTABLE`.
+
+## Deferred
+
+Customer invitations, email delivery, public share links, real-time cursors,
+external-world notifications, production media rendering, and federation are
+outside the first proof. Their interfaces may be declared; their effects must
+remain refused or isolated until separately admitted.
+
+===== END FILE: services/proofing/CHARTER.md =====
+===== FILE: services/proofing/README.md =====
+# Proofing Service
+
+Status: `CHARTERED · NOT IMPLEMENTED`
+
+This directory is reserved for the Proofing Service contract and future
+reference participant. The service boundary and first proving narrative are in
+`CHARTER.md`.
+
+Implementation begins only after:
+
+1. the classification and logical specification are frozen or explicitly
+   authorized as provisional build targets;
+2. proofing-specific positive and defeating fixtures are executable;
+3. the Asset Service version-address contract is stable enough to bind without
+   direct database access.
+
+No placeholder implementation is treated as progress toward those gates.
+
+===== END FILE: services/proofing/README.md =====

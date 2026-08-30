@@ -1,0 +1,2224 @@
+===== FILE: services/asset/SERVICE-GROUND.md =====
+# Asset Service Ground
+
+Status: `PROPOSED · BUILT AT MOST · NOT WITNESSED · NOT RATIFIED`
+
+A short, service-scoped list of claims the Asset Service commits to always
+being true for its callers, under `decisions/0093-service-srd-spec-ground.md`.
+Not forced to sixteen, and not a fourth ladder competing with root `GROUND.md`
+— each claim below specializes exactly one root `GROUND-<nnn>` claim to this
+service's own owned records and transitions. Accepting this list is not a
+claim that the participant currently keeps every one of them without
+exception; several carry a named, evidenced residual below their defeat
+condition, in the same spirit `GROUND.md` itself states about `GROUND-010`.
+
+### AG-1 — Captured bytes stay exactly what was captured
+
+> What `ingest-asset` stores under a payload digest is what a later
+> `read-version` or `read-shared-custody` returns, or the read refuses rather
+> than returning something else.
+
+Specializes `GROUND-005` (a consequential act binds to exact state) and
+`GROUND-001` (custody stays with the enterprise).
+
+What would defeat it: a stored payload rereads with a different digest and
+the read still succeeds (`custody.py`'s `DigestMismatch` refusal exists
+precisely to keep this from happening; `conformance/BASELINE.md` records
+`PROD-I-2` as the one requirement this participant currently passes).
+
+### AG-2 — A recording is never called that unless it can be reconstructed
+
+> A `Recording` always resolves its exact source, reader identity and
+> version, configuration digest, fidelity, and recoverable omissions, or the
+> derivative stays an ordinary Asset Version and is never given the name
+> `Recording`.
+
+Specializes `GROUND-005`.
+
+What would defeat it: a recording exists whose source, reader, or
+configuration cannot be resolved and re-verified (`recording.py`'s
+`ReconstructionError` family; `conformance/PROD-I-2-BUILD.md` names reader
+substitution, source corruption, and omission erasure as the attacks an
+independent Red engagement must still attempt against this claim).
+
+### AG-3 — Nothing here is authoritative merely by being claimed
+
+> A description recorded by a human or a model actor is `CLAIMED_UNRATIFIED`
+> until a live, typed, human-held grant ratifies it, and the conformance read
+> never reports the claim as the fact.
+
+Specializes `GROUND-003` (authority is granted, never acquired) and
+`GROUND-011` (standing does not collapse).
+
+What would defeat it: `read-library-conformance` reports `CONFORMING` for a
+field nobody ratified (`librarian.py` keeps `CONFORMING`, `CLAIMED_UNRATIFIED`,
+and `MISSING_FIELD` as three distinct verdicts for exactly this reason), or
+`ratify-proposal` accepts a `VERIFICATION`-typed grant for a judgement-typed
+claim.
+
+### AG-4 — Every attempted operation leaves a receipt, refusal included
+
+> Whatever a caller attempts against this service's seventeen declared
+> operations, the attempt resolves to a durable, addressable receipt row —
+> not only on success.
+
+Specializes `GROUND-007` (every crossing leaves a record) and `GROUND-008`
+(refusal is an outcome).
+
+What would defeat it: an attempted operation returns without a receipt that
+can later be looked up (`routes.py`'s `_receipt` helper raises rather than
+returning silently if the receipt is not durable). Named residual: the
+receipt this claim guarantees does not yet carry every field `CONTRACT.md`
+C6-C8 requires — exact input state, authority grants, preconditions, and
+effect class are still missing from some receipts (`KNOWN-GAPS.md`, "Receipt
+completeness"). The receipt exists; its completeness is a separate, tracked
+gap, not a defeat of this narrower claim.
+
+### AG-5 — Retraction never deletes the record it counters
+
+> `retract-record` and `remove-member` add a counter-record. They never
+> remove the original row, and they never claim that a consumed resource or
+> an external effect came back.
+
+Specializes `GROUND-009` (correction never erases occurrence).
+
+What would defeat it: a retraction deletes or overwrites the original row.
+Named residual: `conformance/BASELINE.md` records that today's counter
+receipt does not yet link back to the prior receipt it counters — the
+original is preserved (the claim holds), but the two are not yet joined by an
+addressable reference (`PROD-I-4 FAIL`, "the original and counter-record
+survive, but the counter receipt does not link the prior receipt").
+
+### AG-6 — Search and graph results here are never a second authoritative store
+
+> The SQLite FTS and edge tables `rebuild-projection` produces are dropped and
+> rebuilt from ratified records on every rebuild. A row written straight into
+> one of them without a receipt behind it does not survive the next rebuild
+> and never conditions another operation's authoritative state.
+
+Specializes `GROUND-005` and `SPEC.md`'s Projection rule.
+
+What would defeat it: an edit to `search_projection` or the edge table
+persists across a rebuild, or a graph-originated edit changes effective state
+without first returning through the transition contract as a proposal
+(`projections.py`; `CHARTER.md`, Authoritative versus derived stores). Named
+scope, not a defeat: these two tables are a `LIKE`-substring compatibility
+path, not ranked or multi-hop retrieval — that quality bar belongs to the
+chartered Asset Projection Service (`KNOWN-GAPS.md`, "Search and graph
+projections"; `OPEN-SEAMS.md` S14).
+
+### AG-7 — A grant here expires; it is never a permanent credential
+
+> Every authority grant this service checks carries an expiry, and a store
+> written before that rule existed migrates as already expired rather than
+> read as still live.
+
+Specializes `GROUND-003`.
+
+What would defeat it: an authorized actor keeps acting under a grant that has
+passed `valid_until`, been revoked, or lost its session
+(`authority.py`: "Before this module a grant row had `created_at` and no
+expiry... A store written under that schema migrates with `expires_at = 0`,
+so those grants read as expired rather than silently outliving the rule.").
+Named residual: budget and revocation enforcement are not yet complete
+alongside type, scope, and expiry (`KNOWN-GAPS.md`, "Authority envelope").
+
+===== END FILE: services/asset/SERVICE-GROUND.md =====
+===== FILE: services/asset/SERVICE-SPEC.md =====
+# Asset Service Specification
+
+Status: `PROPOSED · BUILT AT MOST · NOT WITNESSED · NOT RATIFIED`
+
+A service-scoped projection of `SPEC.md`'s shape onto the Asset Service, under
+`decisions/0093-service-srd-spec-ground.md`. It cites
+`contracts/kernel-transitions.json` and `services/asset/contracts/service.json`
+rather than re-deriving their content, and it does not select a storage
+mechanism `ENGINEERING.md` and this participant have not already chosen. Named
+`SERVICE-SPEC.md`, not `SPEC.md` — the root document owns that name.
+
+## Owned domain records
+
+Exactly the `owns` list in `service.json`, no more and no less:
+
+```text
+asset, asset-version, payload-custody, source, derivation-lineage,
+asset-relationship, asset-use-record, collection-type, asset-collection,
+collection-membership, library-conformance
+```
+
+`asset` is a governed enterprise identity with a version history; `asset
+version` is one immutable state of it (`CLASSIFICATION.md`). An asset is not
+its payload: distinct assets may reference the same bytes while keeping
+distinct identity, use, permissions, and history (`identity.py`). Composition —
+one asset assembled from several — is not a separate record kind; it is
+derivation with more than one input (`identity.py`, `runs.py`).
+
+`service.json` declares one reference (`references: ["shared-kernel-contracts"]`)
+and no owned subject outside this list. Two subjects this service reads but
+does not own or settle: `authority.grant`/`authority.revoke` (issuance is
+implemented in `authority.py`, but whether that authority belongs here or on a
+separate permits surface is named open in `service.json`'s
+`undeclared_events`) and independent `operation.observe` (chartered to the
+Observation Service, `decisions/0041`).
+
+## Service-local states
+
+Reuses `SPEC.md`'s standing ladder unchanged — `RECORDED → ADMITTED → RATIFIED
+→ EFFECTIVE` — and its collapse rule: nothing here treats being written, being
+confident, or being agreed with as entry into that ladder (`GROUND-011`).
+`KNOWN-GAPS.md`'s "Admission standing" row records that the current
+participant updates `RECORDED` directly to `RATIFIED`, so `ADMITTED` is not
+yet a separately visible transition in this service today; the ladder is the
+target, not yet the observed behavior.
+
+One additional state set is local to this service and has no root `SPEC.md`
+analog — the library conformance verdict (`librarian.py`), read fresh on every
+call and never stored:
+
+```text
+CONFORMING | CLAIMED_UNRATIFIED | MISSING_FIELD | VOCABULARY_REFUSED | MEMBER_KIND_REFUSED
+```
+
+`CONFORMING` requires a ratified description carrying a value the type's
+vocabulary admits. `CLAIMED_UNRATIFIED` is the deliberately named middle
+state: someone recorded the field, nobody ratified it, and it must never be
+counted as conformance (`librarian.py`; `AGENTS.md`, Evidence and standing).
+`MEMBER_KIND_REFUSED` is refused earlier, at filing time, by
+`organization.py`, and appears here only on a type re-read after members were
+declared.
+
+## Legal transitions
+
+`SPEC.md`'s transition contract, restricted to the rows this service's
+manifest declares, plus the exact preconditions, commit outcome, and refusal
+set `service.json` carries per operation (not re-derived here):
+
+| Operation | Kernel transition | Precondition summary | Commit | Refusals |
+| --- | --- | --- | --- | --- |
+| `ingest-asset` | `capture_source` | readable bytes, label, locator, live grant | `COMMITTED` | `DIGEST_MISMATCH`, `GRANT_NOT_COVERED`, `MISSING_PRECONDITION`, `PAYLOAD_ABSENT` |
+| `propose-description` | `submit_proposal` | asset exists, declared actor and payload | `RECORDED` | `INCOMPLETE_PROPOSAL`, `GRANT_NOT_COVERED` |
+| `ratify-proposal` | `ratify` | proposal recorded, live matching grant, human actor | `EFFECTIVE` | `AUTHORITY_REFUSED`, `GRANT_NOT_COVERED`, `STALE_STATE` |
+| `read-version` | `read_source` | version exists, stored digest verifies | `DERIVED` | `PAYLOAD_ABSENT`, `DIGEST_MISMATCH`, `SOURCE_UNREACHABLE`, `SOURCE_CHANGED`, `VERSION_UNKNOWN` |
+| `request-derivative` | `begin_run` | source version exists, declared plan, live grant | `COMMITTED` | `GRANT_NOT_COVERED`, `STALE_LEASE` |
+| `retract-record` | `retract` | target exists, live retraction grant, declared reason | `COUNTERED` | `AUTHORITY_REFUSED`, `GRANT_NOT_COVERED` |
+| `remove-member` | `retract` | membership exists, live retraction grant, declared reason | `COUNTERED` | `AUTHORITY_REFUSED`, `GRANT_NOT_COVERED` |
+
+The remaining ten operations (`read-asset`, `read-shared-custody`,
+`read-use-record`, `read-version-history`, `rebuild-projection`,
+`declare-collection-type`, `declare-collection`, `add-member`,
+`read-collection`, `read-library-conformance`) are reads, a rebuild, or
+organizational creates that carry their own precondition and refusal sets in
+`service.json` without naming a `kernel_transition`; they resolve to `DERIVED`,
+`REBUILT`, or `COMMITTED` per that manifest.
+
+No interface, adapter, worker, projection, or graph store may bypass these
+transitions to change authoritative state (`SPEC.md`, Transition contract;
+enforced here by `forbids: ["direct-projection-authority", ...]` in
+`service.json`).
+
+### Internal phases that are not separate operations
+
+`service.json`'s `undeclared_events` names ten lifecycle phases this service's
+implementation performs but does not expose as a callable operation, each with
+a stated reason: `authority.check` (a gate inside every consequential
+operation, not an operation itself), `authority.grant`/`authority.revoke`
+(open ownership seam), `federation.cross` (the refusal path of an inactive
+port), `lease.claim` (a phase of `request-derivative`), `operation.observe`
+and `operation.report` (chartered elsewhere or settle nothing), `session.open`
+and `session.close` (implemented but not manifest-declared, matching a gap
+`bindings/mcp/manifest.json` also records), and `source.reread` (proves a
+source has not moved, over a subject the manifest does not declare an
+operation for).
+
+## Refusal reason codes
+
+Per-operation refusals are the `refusals` arrays in the table above and in
+`service.json`. `local_refusals` aliases service-specific codes onto the
+shared kernel vocabulary rather than minting parallel meaning:
+
+```text
+GRANT_NOT_COVERED     -> AUTHORITY_REFUSED
+PAYLOAD_ABSENT        -> UNREADABLE
+SOURCE_UNREACHABLE    -> UNREADABLE
+TYPE_UNDECLARED       -> MISSING_PRECONDITION
+MEMBER_KIND_REFUSED   -> POLICY_REFUSED
+DUPLICATE_MEMBERSHIP  -> STALE_STATE
+VERSION_UNKNOWN       -> MISSING_PRECONDITION
+```
+
+`GROUND-008` — refusal is an outcome, not a silence — applies at this local
+alias layer exactly as it applies at the kernel layer: every refusal above
+still resolves to a receipted, reasoned outcome.
+
+## Persistence
+
+- **Payload bytes**: a local content-addressed store; authoritative payload
+  custody (`CHARTER.md`, Authoritative versus derived stores).
+- **Assets, versions, operations, authority, receipts**: the SQLite ledger in
+  `store.py`; canonical reference binding for this participant.
+- **Search and relationship traversal**: `projections.py`'s two SQLite tables,
+  dropped and rebuilt from ratified records on every rebuild — "a row written
+  straight into one survives only until the next rebuild and carries no
+  receipt behind it" (`projections.py`). Never authoritative
+  (`SPEC.md`, Projection rule).
+- **Library conformance**: never stored; recomputed on every
+  `read-library-conformance` call (`librarian.py`).
+- **External graph database**: an optional `GraphProjection` adapter port,
+  never authoritative even when configured (`CHARTER.md`).
+
+## Authority notes
+
+Grants are typed, capability- and scope-bound, session-bound, and expiring
+(`authority.py`). An issuer other than the recorded root may issue only what
+one of its own live grants already covers — same capability, no wider scope,
+no later expiry — so delegation attenuates and never widens. A grant with no
+expiry is treated as expired on migration rather than read as a permanent
+credential (`authority.py`). `KNOWN-GAPS.md`'s "Authority envelope" row
+records that type, issuer authority, and scope are enforced today; budget and
+revocation enforcement are not yet complete. Machine (`VERIFICATION`) and
+human (`JUDGEMENT`) authority types are distinct at the manifest level
+(`ratify-proposal` requires `human_actor`); the general rule that
+`VERIFICATION` cannot ratify `JUDGEMENT` is `PRD.md` `PROD-I-5`'s defeating
+case and is not yet demonstrated end to end for this participant
+(`conformance/BASELINE.md`, `PROD-I-5 FAIL`).
+
+## Conformance boundary
+
+Every requirement in `SRD.md` needs a positive and a defeating fixture, the
+same rule `SPEC.md`'s Conformance boundary states at root scope. Passing this
+participant's own `tests/` establishes `BUILT`
+(`python -m unittest discover -s tests`; `conformance/PROD-I-2-BUILD.md`
+records 96 passing after the current-main reconciliation it covers); an
+independent run is required for
+`WITNESSED`; Bdo's recorded decision is required for `RATIFIED`. The frozen
+scenario source is `conformance/scenarios.json` at root scope, graded against
+this participant by `conformance/run.py` and this service's own
+`scripts/conformance_observations.py` (`conformance/README.md`).
+
+===== END FILE: services/asset/SERVICE-SPEC.md =====
+===== FILE: services/asset/SRD.md =====
+# Asset Service Requirements Document
+
+Status: `PROPOSED · BUILT AT MOST · NOT WITNESSED · NOT RATIFIED`
+
+A service-scoped projection of `PRD.md`'s shape onto the Asset Service, under
+`decisions/0093-service-srd-spec-ground.md`. The named user here is the node
+itself — the callers listed below — not a human directly. This document grants
+no authority and settles no standing; it is `BUILT` because a drafting agent
+self-reported it, and stays there until an independent witness reads it against
+`services/asset/contracts/service.json` and the running participant.
+
+## Product outcome
+
+One local node's callers — human, model, and leased worker, reached in-process
+today and through the Gateway for a first slice — capture, remember, describe,
+retract, and organize enterprise assets through one governed transition
+contract, with no caller acquiring authority merely by calling it
+(`CHARTER.md`; `GROUND-002`, `GROUND-003`).
+
+## Callers
+
+Evidenced callers of `services/asset/contracts/service.json`'s eponymous
+operations, not an aspirational list:
+
+- **Human operator**, through the CLI (`services/asset/README.md`: `python -m
+  soveraeign_asset_service.cli ... conformance --markdown`; `sov-librarian`
+  skill's `declare-type`, `declare-collection`, `add-member`,
+  `remove-member`, `conformance` subcommands).
+- **Model operator**, as the `MODEL` half of `actor_kind` on a proposal
+  (`SPEC.md` `Proposal`; `CHARTER.md`: "allow a model adapter to propose
+  metadata and relationships... ratify only through typed authority").
+- **Leased worker**, claiming a fenced lease on `request-derivative`
+  (`core.py`: "Lease a run to one worker and return its fencing token";
+  `runs.py`).
+- **Gateway Service**, in-process today, for exactly two of the seventeen
+  declared operations (`services/gateway/CHARTER.md`: the built walking
+  skeleton is `IN_PROCESS -> sov://asset/ingest-asset -> Asset Service ->
+  terminal receipt`; `routes.py` `AssetRoutes.OPERATIONS = ("ingest-asset",
+  "read-version")`).
+- **Proofing Service**, which "references exact Asset Service version
+  identifiers and does not create a second authoritative asset"
+  (`CLASSIFICATION.md`, Initial service map).
+- **Asset Projection Service**, which "reads the Asset Service through a
+  declared crossing; everything it holds is a rebuildable projection"
+  (`CLASSIFICATION.md`, Initial service map).
+- **GitHub source adapter**, an external-source-provenance port declared in
+  `service.json` (`"ports": ["github-source", ...]`) and named in `CHARTER.md`
+  as one of the adapter ports the Asset Service holds.
+
+Not yet an evidenced caller: a second, non-Python-API/CLI human or model
+binding (`KNOWN-GAPS.md`, "Two bindings" row). See Non-goals.
+
+## Requirements
+
+Lifecycle: `OPEN → BUILT → WITNESSED → RATIFIED`, identical in meaning to
+`PRD.md`'s ladder and distinct from the operational record standing in
+`SPEC.md`. `BUILT` below means an implementation exists and its own unit
+tests pass; it is not independent evidence.
+
+### SVC-ASSET-1 · Capture preserves exact bytes
+
+Standing: `BUILT`. Serves `PROD-I-2`.
+
+`ingest-asset` preserves payload bytes under a content address and digest
+before any other transition may reference them (`service.json`
+`ingest-asset`: `kernel_transition: capture_source`, preconditions
+`payload_bytes_readable`, `declared_label`, `declared_locator`, `live_grant`).
+
+Defeating case: an ingested asset's stored bytes reread differently by digest,
+or ingestion is admitted without a live grant, declared label, or locator.
+
+### SVC-ASSET-2 · Reading never mutates and never lies about drift
+
+Standing: `BUILT`. Serves `PROD-I-2`.
+
+`read-version` and `read-shared-custody` verify the stored digest before
+returning bytes and refuse `DIGEST_MISMATCH`, `SOURCE_UNREACHABLE`, or
+`SOURCE_CHANGED` rather than returning stale or corrupted content
+(`custody.py`; `service.json` `read-version` refusals). This requirement is
+the one the participant oracle currently passes at the requirement level:
+`conformance/BASELINE.md` records `PROD-I-2 · Remember: PASS`.
+
+Defeating case: a source rereads differently and the operation still returns
+success, or a reading silently mutates the source it read.
+
+### SVC-ASSET-3 · A derivative recording resolves its exact materials
+
+Standing: `BUILT`. Serves `PROD-I-2`.
+
+`request-derivative` (`kernel_transition: begin_run`) only ever produces a
+`Recording` for a request carrying a complete `ReaderDeclaration`; the
+recording resolves its immediate source version and digest, output address
+and digest, reader identity, configuration digest, fidelity, and omissions,
+and both reporting and reconstruction re-verify those materials plus output
+bytes (`conformance/PROD-I-2-BUILD.md`; `recording.py`; `reconstruction.py`).
+Compatibility output created without a reader remains an Asset Version and
+produces no `Recording` rather than inventing provenance
+(`services/asset/README.md`).
+
+Defeating case: a recording exists whose source, reader, or configuration
+cannot be reconstructed; an incomplete reader is admitted instead of refused;
+or output-only success conceals later source corruption
+(`conformance/PROD-I-2-BUILD.md`, Residuals).
+
+### SVC-ASSET-4 · A proposal's authority claim is recorded, never honored
+
+Standing: `BUILT`, incompletely. Serves `PROD-I-1`.
+
+`propose-description` records an attributed proposal at `RECORDED` standing
+before any ratification (`service.json`: `kernel_transition:
+submit_proposal`, `commit: RECORDED`). The participant does not yet meet the
+full `PROD-I-1` defeating case: `conformance/BASELINE.md` records `PROD-I-1 ·
+Propose: FAIL` — "proposal lacks content address, source addresses, and cost
+record."
+
+`PROD-I-1` was rewritten on 2026-08-28 and this clause has not caught up. Two
+of its three defeating cases are unserved here: the participant delivers a
+proposal to no operator surface, and it records no authority claim at all, so
+the distinction between asserting authority and being granted it is not one
+this service can currently express. Both are unmeasured rather than failing —
+`BASELINE.md` predates the rewrite.
+
+Defeating cases (per `PRD.md`; only the first is observed against this
+participant): a proposal missing author, cost, source, or proposal standing is
+admitted; a proposal is admitted without reaching an operator surface; an
+instanced session's asserted authority is honored as held authority.
+
+### SVC-ASSET-5 · Ratification requires a live matching human grant
+
+Standing: `BUILT`, incompletely. Serves `PROD-I-5`.
+
+`ratify-proposal` requires `proposal_recorded`, `live_matching_grant`, and
+`human_actor` (`service.json`). `conformance/BASELINE.md` records `PROD-I-5 ·
+Typed authority: FAIL` — "judgement refusal exists, but the participant
+cannot demonstrate the paired typed verification grant and commit."
+`KNOWN-GAPS.md`'s "Authority envelope" row adds that budget and revocation are
+not yet enforced alongside type and scope.
+
+Defeating case: a machine-typed (`VERIFICATION`) grant ratifies a
+judgement-typed claim, or a revoked, expired, or out-of-scope grant ratifies
+anything.
+
+### SVC-ASSET-6 · Retraction preserves the original record
+
+Standing: `BUILT`, incompletely. Serves `PROD-I-4`.
+
+`retract-record` and `remove-member` counter a record under a live retraction
+grant and a declared reason, preserving the act and adding a counter-record
+(`service.json`: `kernel_transition: retract`, `commit: COUNTERED`).
+`conformance/BASELINE.md` records `PROD-I-4 · Gate and retract: FAIL` — "the
+original and counter-record survive, but the counter receipt does not link
+the prior receipt."
+
+Defeating case: an unmarked entry is admitted, or a retraction erases history
+or claims an external-world or consumed-resource effect was reversed.
+
+### SVC-ASSET-7 · Every attempted operation returns a durable receipt
+
+Standing: `BUILT`, incompletely. Serves `PROD-I-4`; cites `GROUND-007`,
+`GROUND-008`.
+
+Every operation in `service.json`, including its declared refusals, resolves
+to a receipt row (`store.py`; `routes.py`'s `_receipt` lookup, which raises
+rather than returning silently if a receipt is not durable after the
+operation). `KNOWN-GAPS.md`'s "Receipt completeness" row records that
+receipts currently omit exact input state, authority grants, preconditions,
+effect class, and digest, so the receipt exists but does not yet carry every
+field `CONTRACT.md` C6-C8 requires.
+
+Defeating case: an attempted operation, success or refusal, leaves no durable,
+addressable receipt row.
+
+### SVC-ASSET-8 · A collection conformance verdict never counts a claim as a fact
+
+Standing: `BUILT`. Serves `PROD-I-2` (per `service.json` requirement tags on
+the organizational operations); cites `GROUND-011`.
+
+`declare-collection-type`, `declare-collection`, `add-member`,
+`remove-member`, `read-collection`, and `read-library-conformance` implement
+a curated typed collection and a derived-on-every-call conformance read that
+keeps `CONFORMING` (a ratified description carrying an admitted value),
+`CLAIMED_UNRATIFIED` (recorded but never ratified), and `MISSING_FIELD`
+distinct (`librarian.py`; `decisions/0063-asset-collections-and-the-librarian.md`).
+
+Defeating case: a `CLAIMED_UNRATIFIED` field is reported as `CONFORMING`, or a
+stored conformance verdict is read back instead of recomputed and goes stale.
+
+### SVC-ASSET-9 · The service is discoverable from its manifest alone
+
+Standing: `BUILT`. No `PROD-I-<n>` tag on the manifest itself; cites
+`GROUND-006`, `PROD-I-7`.
+
+`services/asset/contracts/service.json` declares all seventeen operations
+with their logical endpoint, subject, preconditions, commit outcome, and
+refusal set, plus an `undeclared_events` list stating why each adjacent
+lifecycle phase (`authority.check`, `lease.claim`, `operation.observe`, and
+others) is not itself a callable operation.
+
+Defeating case: a caller must be told out-of-band what an operation requires
+or refuses, or an operation exists in the running participant that the
+manifest does not declare.
+
+## Non-goals
+
+- Independent settlement of a run: `observe_run`'s independent-observer
+  obligation is explicitly not a declared Asset Service operation
+  (`service.json` `undeclared_events`, `operation.observe`: "`decisions/0041`
+  charters the Observation Service to own independent observation").
+- Issuing or revoking authority grants as a declared crossing: `service.json`
+  names `authority.grant` and `authority.revoke` as undeclared precisely
+  because whether the Console or a separate permits surface owns them is open
+  (`services/gateway/CHARTER.md`, `services/console/KNOWN-GAPS.md`).
+- A second human- or model-facing binding beyond the Python API/CLI
+  (`KNOWN-GAPS.md`, "Two bindings"; `PROD-I-3` is not claimed here).
+- Production-grade ranked search or multi-hop graph traversal: the SQLite FTS
+  and edge tables are a named compatibility path pending the chartered Asset
+  Projection Service (`KNOWN-GAPS.md`, "Search and graph projections";
+  `OPEN-SEAMS.md` S14).
+- Being, or becoming, a sovereign node on its own: `CHARTER.md` states the
+  five conditions unmet today and that `FederationPort` refuses
+  `UNCONFIGURED` rather than simulating a crossing.
+- Writing its lifecycle onto the Record Service's append-preserving journal:
+  `KNOWN-GAPS.md`'s "Operational journal" row records that mutable lifecycle
+  tables and partial receipts do not yet implement the complete
+  `EventEnvelope`; see `JOURNEYS.md` for this as a named dead end.
+
+## Traceability
+
+| Requirement | Serves | Current participant evidence |
+| --- | --- | --- |
+| SVC-ASSET-1 | PROD-I-2 | `service.json` `ingest-asset` |
+| SVC-ASSET-2 | PROD-I-2 | `custody.py`; `BASELINE.md` PASS |
+| SVC-ASSET-3 | PROD-I-2 | `PROD-I-2-BUILD.md` |
+| SVC-ASSET-4 | PROD-I-1 | `BASELINE.md` FAIL (named defect) |
+| SVC-ASSET-5 | PROD-I-5 | `BASELINE.md` FAIL (named defect) |
+| SVC-ASSET-6 | PROD-I-4 | `BASELINE.md` FAIL (named defect) |
+| SVC-ASSET-7 | PROD-I-4 | `KNOWN-GAPS.md` "Receipt completeness" |
+| SVC-ASSET-8 | PROD-I-2 | `librarian.py`; `decisions/0063` |
+| SVC-ASSET-9 | PROD-I-7 | `service.json` itself |
+
+===== END FILE: services/asset/SRD.md =====
+===== FILE: services/asset/conformance/BASELINE.md =====
+# Asset Service Conformance Baseline
+
+Observed: `2026-08-22`
+
+Reconciled: `2026-08-25`
+
+Participant: `asset-service-reference@WORKTREE`
+
+Oracle and scenarios: `conformance/run.py` + `conformance/scenarios.json`
+
+## Result
+
+`FAIL`
+
+| Requirement | Verdict | Observed defects |
+| --- | --- | --- |
+| PROD-I-1 · Propose | FAIL | proposal lacks content address, source addresses, and cost record |
+| PROD-I-2 · Remember | PASS | declared derivative recordings reconstruct exact source, reader artifact/version, replay configuration, output, fidelity, and recoverable omissions |
+| PROD-I-3 · Cross | FAIL | no second binding or fully declared crossing exists |
+| PROD-I-4 · Gate and retract | FAIL | original and counter-record survive, but the counter receipt does not link the prior receipt |
+| PROD-I-5 · Typed authority | FAIL | judgement refusal exists, but the participant cannot demonstrate the paired typed verification grant and commit |
+| PROD-I-6 · Founder judgement budget | FAIL | missing judgement refuses synchronously instead of leaving a visible unresolved right and spend record |
+| PROD-I-7 · Independent qualification | FAIL | no clean-room witness run or competence measurement exists |
+| PROD-I-8 · Joint sign | FAIL | general runtime attestation is not implemented |
+| PROD-I-9 · Bring your own model | FAIL | no model-binding contract or two-model portability run is implemented |
+
+## Standing
+
+This baseline binds the reference participant to the logical scenarios. The
+participant now demonstrates `PROD-I-2`; the overall suite remains `FAIL` while
+the other eight Phase-I requirements fail their complete scenario contracts.
+
+The scenarios and oracle remain frozen during participant repair unless an
+independent regression proves a scenario or oracle defect. The typed-authority
+control was hardened during baseline creation because it previously allowed a
+judgement-only attempt to masquerade as the required two-type test.
+
+===== END FILE: services/asset/conformance/BASELINE.md =====
+===== FILE: services/asset/conformance/PROD-I-2-BUILD.md =====
+# PROD-I-2 Derivative Reconstruction Build Record
+
+Observed: `2026-08-22`; reconciled with current `main` on `2026-08-25`
+
+Participant: `asset-service-reference@feat/asset-recording-reconstruction`
+
+Standing: `BUILT_SELF_TESTED_NOT_WITNESSED`
+
+## Operation plan
+
+- **Requested outcome:** make every derivative recording reconstruct its exact
+  source, reader version, configuration digest, fidelity, and recoverable
+  omissions under C2 and PROD-I-2.
+- **Authoritative pre-state:** `BASELINE.md` records `PROD-I-2` as `FAIL`, and
+  `KNOWN-GAPS.md` names both reconstruction and the over-limit Asset core.
+- **Affected surfaces:** the Asset reader/recording contract, derivative
+  lifecycle, participant observation adapter, positive tests, and refusals for
+  undeclared readers and changed sources.
+- **Effect class:** `RECORD_LOCAL` in temporary test nodes only.
+- **Counteraction boundary:** the branch can be abandoned without changing a
+  deployed node; payload writes remain subject to the separately named atomic
+  commit gap.
+
+## Built observation
+
+- Current main's newer storage, authority, identity, run, projection, route,
+  and facade split remains canonical; recording and reconstruction are added to
+  that architecture without restoring the superseded branch-local split.
+- `ReaderDeclaration` requires supplied versioned reader bytes, a secret-free
+  replay configuration, and an output role. Both materials receive immutable
+  CAS addresses and digests before work is leased.
+- `LOSSY` output requires stored, non-empty omission identifiers; `EXACT` output
+  refuses any omission.
+- Compatibility output created without a reader remains an Asset Version and
+  produces no `Recording`; reconstruction refuses it rather than inventing
+  provenance. A supplied but incomplete reader is receipted and refused.
+- A recording resolves its derivative operation and run, immediate source
+  version and digest, output CAS address and digest, reader identity,
+  configuration digest, fidelity, omissions, producer, and `RECORDED` standing.
+- Reporting re-verifies source, reader, and configuration materials;
+  reconstruction re-verifies those inputs plus output bytes.
+- Observation settles a derivative only after reconstructing that complete
+  path; output-only success cannot conceal later source corruption.
+- Reconstruction cross-checks the request plan, run, recording, and output CAS
+  address instead of trusting isolated mutable metadata.
+
+## Checks
+
+- Asset unit tests: `96` passed after current-main reconciliation, including
+  incomplete-reader, legacy-non-recording, post-report source corruption,
+  changed reader/configuration materials, and tampered-output address cases.
+- Participant oracle: `RUN-I2-REMEMBER PROD-I-2` returned `PASS` with zero
+  defects; the complete nine-requirement participant suite correctly remains
+  `FAIL` on eight unrelated open requirements.
+- Repository hygiene and root verification are rerun on the exact merge
+  candidate before landing; the original branch observation was `PASS` in
+  `0.651s` with zero named module-size debts.
+
+## Residuals and next gate
+
+This is Blue/self-test evidence only. It does not witness the implementation,
+ratify the Phase-I specification, close issue #27, or introduce a model binding.
+It also does not attest that a worker semantically executed the addressed reader
+artifact; that belongs to the later observation and model-binding gates.
+An independent Red engagement must attempt provenance substitution, source and
+output corruption, reader/configuration ambiguity, and omission erasure. Every
+confirmed defect becomes a permanent defeating fixture before `WITNESSED`.
+
+===== END FILE: services/asset/conformance/PROD-I-2-BUILD.md =====
+===== FILE: services/asset/conformance/README.md =====
+# Asset Service Conformance Binding
+
+The observation adapter runs the current reference participant against the
+Phase-I scenario shapes without pretending missing behavior exists.
+
+```bash
+PYTHONPATH=services/asset/src \
+  python services/asset/scripts/conformance_observations.py > /tmp/asset-observations.json
+
+python conformance/run.py \
+  --cases conformance/scenarios.json \
+  --observations /tmp/asset-observations.json
+```
+
+The Phase-I participant suite is expected to fail overall while open
+requirements remain. Individual repairs may move one requirement to participant
+`PASS` without changing the frozen scenarios or oracle. `BASELINE.md` records
+the current grading; bounded build records preserve the evidence for each move.
+
+- `PROD-I-2-BUILD.md` records the self-tested reconstruction repair.
+
+===== END FILE: services/asset/conformance/README.md =====
+===== FILE: services/console/CHARTER.md =====
+# Console Service Charter
+
+Status: `PROPOSED SERVICE BOUNDARY · CONTINUITY PATH BUILT AND SELF-TESTED`
+
+The continuity record path - channels, threads, posts, operator sessions and
+grants - is implemented under `src/` and reached through `cli.py`
+(`decisions/0036`). The other four operator surfaces described below remain
+boundary with no implementation; `KNOWN-GAPS.md` says which is which. No
+binding implementation was built, and the gate below still stands.
+
+## Role
+
+The Console Service is a sibling of the Asset Service and the Proofing Service
+inside a local Soveraeign Node. It governs the operator-facing session: what
+needs an operator's attention, what an operator prefers, what is waiting on a
+human right, and what has happened across the node's services. It owns the
+records behind five operator surfaces:
+
+1. notifications — addressed inputs telling an operator that a record,
+   receipt, mention, or pending right concerns them;
+2. settings — typed, scoped operator and node preferences;
+3. dashboards — declared projections over receipts, events, standing, and
+   judgement spend for operators holding an administrative scope;
+4. human-in-the-loop and human-on-the-loop work — judgement requests that queue
+   without blocking, and a watched activity stream from which an operator may
+   counter an effective record through the kernel;
+5. activity reporting — a declared projection over event envelopes and receipts
+   emitted by every service in the node, and later by other nodes through a
+   governed crossing.
+
+The operator experience is threaded and domain-driven: a channel per domain or
+purpose, a thread per bounded piece of work, attributed posts by human and
+model operators in the same thread. That experience is a projection of the
+records below. It does not own asset payloads, proofing decisions, authority,
+standing, or settlement, and it never becomes a private authority system.
+
+## Relationship to Phase-I requirements
+
+- `PRD.md` two-binding proof and `bindings/README.md` require a human-facing
+  binding that exposes state, choices, authority, provenance, and receipts
+  intelligibly. The Console Service is the domain that binding renders.
+- `PRD.md` PROD-I-3 (Cross): a human post and a model post in one thread are
+  one crossing through the same record.
+- `PRD.md` PROD-I-6 (Founder judgement budget): judgement requests queue
+  without blocking operation; the dashboard reports where judgement was spent
+  and which rights remain pending.
+- `PRD.md` PROD-I-4 (Gate and retract): the activity view is where an operator
+  on the loop sees an effective record and counters it through the kernel.
+- `SPEC.md` Projection rule: dashboards and activity views are rebuildable
+  projections whose every value resolves to authoritative records.
+- `PRD.md` non-goal "a graphical production interface": the Phase-I Console is
+  a local operator console proving parity and judgement accounting. It is not a
+  production GUI claim, and no binding implementation is admitted until the
+  transition contract is frozen or Bdo authorizes a provisional target.
+
+## Owned domain records
+
+- operator session — one operator's continuity: binding, opened and closed
+  times, active thread, unread cursor;
+- channel — a named domain-driven container for threads;
+- thread — a bounded conversation in a channel, optionally pinned to an exact
+  operation, record, or asset version address;
+- post — one attributed turn in a thread by a human or model actor, with a
+  content address and digest; a post that proposes enters as a kernel
+  Proposal;
+- notification — an addressed input to an operator naming its source record
+  address and digest, its kind, and its acknowledgement;
+- judgement request — a queued request for a judgement-typed right, with loop
+  mode, requested authority type, the operation it conditions, and a
+  `resolution_id` back-reference to its judgement resolution;
+- judgement resolution (proposed) — the answer record for one judgement
+  request: the resolver, the grant checked at the transition, the decision, a
+  rationale address and digest, and its receipt; the only console record whose
+  standing is expected to reach `RATIFIED`, and only by an appended event;
+- operator setting — a typed, scoped preference held by an operator or by the
+  node, with the authority required to change it;
+- projection view — a declared dashboard or activity view with its source
+  addresses, omissions, rebuild operation, and rebuild time;
+- console receipt and history.
+
+Proposed initial lifecycles (service policy awaiting owner ratification; they
+do not replace the shared `RECORDED`, `ADMITTED`, `RATIFIED`, and `EFFECTIVE`
+standings):
+
+```text
+operator session:  OPEN → CLOSED
+thread:            OPEN → ARCHIVED
+judgement request: QUEUED → RESOLVED | WITHDRAWN | EXPIRED
+notification:      ISSUED → ACKNOWLEDGED
+```
+
+Proposed loop modes for a judgement request:
+
+```text
+IN_LOOP  the conditioned operation stays UNRESOLVED until a human right resolves it
+ON_LOOP  the operation proceeds; the human watches and may counter through retraction
+```
+
+## Integration with sibling services and the kernel
+
+The Console Service:
+
+1. reads event envelopes and receipts from the Asset Service, the Proofing
+   Service, and the kernel through a declared read-only crossing; it never
+   writes their state;
+2. emits a notification as a `SYSTEM` actor event when an operator is
+   mentioned, assigned, asked for judgement, or named on a receipt outcome or
+   counteraction; every emission carries a receipt;
+3. records a judgement request when an operation's required authority type is
+   `JUDGEMENT` and no live grant covers it; the conditioned operation receives
+   an `UNRESOLVED` receipt and other operation continues; reach (proposed):
+   the request emits a `JUDGEMENT_REQUESTED` notification with delivery
+   `LOCAL` whose recipient is the owner; Phase I has no push, so the owner
+   pulls the pending list from an operator session through the Human Binding;
+4. resolves a judgement request only through a typed, scoped, live human
+   `JUDGEMENT` grant checked at the transition; a model attempt is `REFUSED`;
+   `resolve-judgement` (proposed) is the `SPEC.md` `ratify` transition row —
+   preconditions: proposal admitted and a live matching grant; refusals:
+   `AUTHORITY_REFUSED` or `STALE_STATE` — in which the request's question is
+   the Proposal being ratified and the answer lands as a judgement resolution;
+5. stores operator settings as records that condition projections and
+   notification routing only; a setting never grants capability or authority;
+6. rebuilds dashboard and activity projections from authoritative records on
+   request; a projection-originated edit returns as a proposal through the
+   transition contract;
+7. refuses external delivery of a notification (email, push, chat platform)
+   and cross-node activity as `UNCONFIGURED` with a receipt until a separate
+   decision admits the effect;
+8. never rewrites a post, notification, or judgement request; corrections are
+   new records or counter-records.
+
+Authority stays where the kernel puts it: the Console Service surfaces pending
+rights and spent judgement; it does not hold, infer, or delegate a right.
+
+## Human and model participation
+
+Humans and models operate the same console through different bindings:
+
+- both open sessions, read threads, post, and receive notifications;
+- a model post that claims anything is a Proposal standing `RECORDED`;
+- a human holding a live `JUDGEMENT` grant may resolve a judgement request; a
+  model may draft a recommendation into the thread but may not resolve;
+- machine verification authority may settle checkable dashboard predicates
+  (counts, digests, rebuild equality) but cannot ratify a judgement request;
+- an administrative dashboard requires a scoped grant to read; holding it does
+  not grant the right to change what it shows;
+- every open, post, request, resolution, acknowledgement, setting change, and
+  rebuild returns a receipt.
+
+### First slice: the owner's judgement surface (proposed)
+
+`OPEN-SEAMS.md` S12 records the owner's input of 2026-08-23: Bdo will rarely
+interact with GitHub, so a code-owner review click cannot be the owner's
+ratification surface. The first console slice is therefore the surface through
+which the owner receives a judgement request, answers it, and has the answer
+land as a record that can carry `RATIFIED` standing. It has three legs:
+
+- reach — `request-judgement` records the judgement request, the conditioned
+  operation receives an `UNRESOLVED` receipt, and a `JUDGEMENT_REQUESTED`
+  notification with delivery `LOCAL` is addressed to the owner as its
+  recipient; Phase I has no push, so the owner pulls the pending list from an
+  operator session through the Human Binding;
+- answer — the owner invokes `resolve-judgement` through the Human Binding;
+  the console realizes it as the `SPEC.md` `ratify` transition, with the
+  request's question as the Proposal being ratified;
+- land — a judgement resolution record carries the resolver, the grant
+  checked, the decision, a rationale address, its receipt, and the
+  `UNRESOLVED` receipt it answers (`unresolved_receipt_id`); its standing
+  reaches `RATIFIED` by an appended event, never by overwrite; the conditioned
+  operation receives a successor receipt whose `prior_receipt_id` names its
+  `UNRESOLVED` receipt.
+
+Target: a local CLI over the Python API, the Local surface row of
+`ENGINEERING.md` (Python API and CLI; human and model bindings use the same
+kernel operations). No HTTP and no UI framework. This is not a GUI claim; it
+is the smallest Human Binding the owner can actually use, and every effect in
+it is `RECORD_LOCAL`. Nothing in this slice is implemented: O18 gates
+`console_implementation`, not this charter text, and the slice remains a
+proposal until O18 is ruled and a logical spec and defeating fixtures exist.
+
+## Initial proving narrative
+
+From a clean local checkout:
+
+1. open one human operator session and one model operator session;
+2. open a channel for the asset domain and a thread pinned to an exact asset
+   version address;
+3. let the human and the model each post in the thread; reconcile the two
+   receipts as the same transition; show the model post standing `RECORDED`;
+4. let the model mention the human; observe the issued notification resolving
+   to the post address and digest;
+5. reach: let the model attempt an operation whose required authority is
+   `JUDGEMENT`; observe an `UNRESOLVED` receipt, a `QUEUED` judgement request,
+   and a `JUDGEMENT_REQUESTED` notification with delivery `LOCAL` addressed to
+   the human operator, while an unrelated operation still commits; pull the
+   pending list through the Human Binding and show the request on it;
+6. let the model attempt to resolve the request; observe `REFUSED`;
+7. answer: let the human invoke `resolve-judgement` through the Human Binding
+   under a live `JUDGEMENT` grant; observe the `ratify` transition check the
+   grant against the request's Proposal;
+8. land: observe the judgement resolution record, its `RECORDED` event and the
+   appended `RATIFIED` event, its receipt, a successor receipt for the
+   conditioned operation whose `prior_receipt_id` names the `UNRESOLVED`
+   receipt, and the `JUDGEMENT_RESOLVED` notification whose `recipient_id` is
+   the requesting model operator;
+9. change a human setting; show it alters notification routing and changes no
+   authority check;
+10. rebuild the admin dashboard and the activity view from receipts; show every
+    value resolves to a source address and digest and that a second rebuild is
+    identical;
+11. let the human counter one effective record from the activity view through
+    kernel retraction; show the original event and the counter-record both
+    remain visible;
+12. attempt external delivery of a notification and cross-node activity; observe
+    `UNCONFIGURED` refusals with receipts;
+13. close both sessions with reconstructable receipts.
+
+## Defeating cases
+
+- a judgement request blocks the whole node, or the pending right is hidden;
+- a model resolves a judgement request, or a setting, dashboard role, or
+  session state widens an authority check;
+- a resolution that enters through any surface that is not a kernel transition
+  with a receipt — a code-owner review click, a chat reply, an edited file — is
+  treated as the owner's judgement;
+- a judgement resolution reaches `RATIFIED` without its `RECORDED` event, the
+  grant checked at the transition, or its receipt;
+- a judgement request addressed to the owner is absent from the owner's
+  pending list;
+- a notification cannot name its source address and digest, or is treated as
+  the record it points to;
+- a dashboard or activity value does not resolve to an authoritative record,
+  or a dashboard edit writes service state directly;
+- two rebuilds of the same projection from the same records differ;
+- an activity entry appears for a node or service that is not configured, or
+  an omitted source is not declared;
+- a human post and a model post in the same thread take different transitions
+  or yield irreconcilable receipts;
+- a post, notification, or request is rewritten or erased instead of countered;
+- external delivery is reported as success instead of `UNCONFIGURED`;
+- a console worker's or renderer's report settles what the operator saw.
+
+## Deferred
+
+Real-time presence and cursors, reactions and emoji, voice or video, external
+chat-platform bridges, email and push delivery, public share links, cross-node
+activity, role hierarchies beyond typed scoped grants, and production rendering
+are outside the first proof. Their interfaces may be declared as ports; their
+effects remain refused or isolated until separately admitted.
+
+===== END FILE: services/console/CHARTER.md =====
+===== FILE: services/console/JOURNEYS.md =====
+# Console Service Journeys
+
+Status: `BUILT · SELF-REPORTED BY THE DRAFTING SESSION · NOT OWNER-RATIFIED`
+
+Per `decisions/0093-service-srd-spec-ground.md`, this document has no root-level
+analog: it enumerates the abstract journeys a caller takes through the Console
+Service and states, per journey, whether it completes or dead-ends, citing the
+charter and `KNOWN-GAPS.md` standing that makes it so. Naming an open custody
+question below does not assign, resolve, or answer it; it routes to a decision
+record at whichever tier `STATUS.yaml`'s `resolution_rule` names.
+
+Five operator surfaces are named in `CHARTER.md`; `README.md` and
+`KNOWN-GAPS.md` treat continuity itself as the one of the five that is built
+("Five of the `CHARTER.md` operator surfaces are named there; one of them
+exists"), with `KNOWN-GAPS.md`'s gap table folding the charter's separate
+"dashboards" and "activity reporting" items into one row. This document
+follows that same five-way grouping rather than the charter Role section's raw
+count of five *un-built* items, so the two documents describe the same
+service the same way.
+
+## Journey 1 — Continuity: carry work across a session boundary
+
+**Path.** `open-session` → `open-channel` → `open-thread` (optionally pinned to
+an exact operation, record, or asset version address) → `post` (human and
+model actors in the same thread) → close the session → open a new session
+later → `read-thread` reads the same posts; `session-context` reports the
+`active_thread_id` and `unread_cursor` carried across the boundary.
+
+**Verdict: COMPLETES.** All seven operations in this path are `BUILT`
+(`contracts/service.json`); the built slice is self-tested (thirty-one cases,
+`README.md`) and `services/console/tests/test_operator_continuity.py` and
+`test_cli_walk.py` drive it end to end. `.claude/hooks/console_session.py`
+runs exactly this path as host plumbing to brief and close a Claude Code
+session.
+
+**Qualifications, not dead ends.** Completion here means the transitions
+commit and the read is stable across a restart, not that every actor claim
+about the transition is sound:
+
+- `channel and thread reads` only replay the whole journal per call; there is
+  no bounded channel-listing operation (`KNOWN-GAPS.md`, "Channel and thread
+  reads" row; `list-channels` is `PROPOSED`).
+- The actor posting is an unauthenticated string. `ACTOR_ATTRIBUTION_MISMATCH`
+  compares two strings the same caller typed, and a caller can grant itself
+  read or post access to a private thread it does not own with declared
+  operations alone (`KNOWN-GAPS.md`, Identity row; walked and reproduced in
+  `services/console/observations/pr-118-console-authority.json`, claim `4`).
+- Two concurrent writers against the same store can break the journal's digest
+  chain or let a `COMMITTED` receipt cite a grant a concurrent writer revoked
+  moments earlier (`KNOWN-GAPS.md`, "Two writers on one store" row).
+
+**Adjunct: publish a thread publicly.** `publish-thread` → `withdraw-publication`
+→ `list-publications` are also `BUILT` and exercise the same continuity
+substrate for the `publication` record (`PUBLIC` visibility only). Folded into
+this journey because `CHARTER.md`'s prose list of owned records and its five
+named surfaces do not mention `publication` at all, even though
+`contracts/service.json` owns it and `STATUS.yaml`'s `public_projection_status`
+tracks it as a distinct, seat-seam-open concern. Where this adjunct belongs is
+named as an open question below.
+
+## Journey 2 — Notifications: find out you were mentioned
+
+**Path.** A model posts in a thread mentioning a human operator → the console
+emits a `SYSTEM`-actor `notification` event naming `MENTION` and the post's
+source address and digest → the operator's `list-notifications` shows it →
+`acknowledge-notification` marks it read.
+
+**Verdict: DEAD-ENDS-AT-NOTIFICATIONS.** `notify`, `acknowledge-notification`,
+and `list-notifications` are all `PROPOSED`, not built (`contracts/service.json`;
+`KNOWN-GAPS.md`, Notifications row). The only thing reachable today is a
+derived `mentions_you` flag surfaced when reading continuity — not an
+addressed input record with a source address, digest, kind, or acknowledgement.
+Fixture `CONS-004` (`004-notification-resolves-to-source.yaml`) states the
+target shape; nothing in `services/console/src` implements it.
+
+## Journey 3 — Judgement: the owner's judgement surface
+
+**Path (reach).** A model attempts an operation whose required authority is
+`JUDGEMENT` and no live grant covers it → `request-judgement` records the
+question as a kernel `Proposal` and the conditioned operation receives an
+`UNRESOLVED` receipt, while unrelated operation keeps running → a
+`JUDGEMENT_REQUESTED` notification addressed to the owner is issued →
+`list-pending-judgement-requests` shows it on the owner's pending list.
+**Path (answer).** The owner invokes `resolve-judgement` under a live
+`JUDGEMENT` grant, realized as the kernel `ratify` transition. **Path (land).**
+A `judgement-resolution` record carries the resolver, the grant checked, the
+decision, and the receipt; its standing reaches `RATIFIED` only by an appended
+event; the conditioned operation's successor receipt names the answered
+`UNRESOLVED` receipt via `prior_receipt_id`.
+
+**Verdict: DEAD-ENDS-AT-JUDGEMENT.** `request-judgement`,
+`list-pending-judgement-requests`, `show-judgement-request`, and
+`resolve-judgement` are all `PROPOSED` (`contracts/service.json`;
+`KNOWN-GAPS.md`, Judgement requests and Judgement resolutions rows). This is
+the slice `CHARTER.md` names first ("First slice: the owner's judgement
+surface") and `README.md` explains was *not* built first — the continuity path
+came first instead — and gates it behind four preconditions: the logical
+specification frozen or provisionally authorized, executable console-specific
+fixtures, a stable sibling read path, and Bdo authorizing a provisional Human
+Binding target (`README.md`, "Judgement surface (proposed, not built)").
+Fixtures `CONS-001`, `CONS-002`, `CONS-008`, and `CONS-009` state the target
+shape; none is satisfied by a running implementation.
+
+## Journey 4 — Operator settings: change a preference without changing a right
+
+**Path.** An operator invokes `set-setting` with a scoped key and value →
+the setting conditions future notification routing or projection defaults →
+an unrelated authority check is unaffected by the change.
+
+**Verdict: DEAD-ENDS-AT-SETTINGS.** `set-setting` is `PROPOSED`
+(`contracts/service.json`; `KNOWN-GAPS.md`, Operator settings row). Fixture
+`CONS-003` (`003-setting-cannot-widen-authority.yaml`) states the target
+invariant; nothing built exercises it.
+
+## Journey 5 — Dashboards and activity: read and counter what happened
+
+**Path (dashboard).** An operator holding a scoped administrative grant
+invokes `rebuild-projection` for a `DASHBOARD` view → the view reports
+receipts, events, standing, and judgement spend, every value traced to a
+source address, `authoritative: false` declared on the view itself.
+**Path (activity).** The same operation for an `ACTIVITY` view sources
+sibling-service event envelopes and receipts and names its omissions → an
+operator on the loop spots an effective record they disagree with and counters
+it through kernel `retract`.
+
+**Verdict: DEAD-ENDS-AT-DASHBOARDS-AND-ACTIVITY.** `rebuild-projection` is
+`PROPOSED` for both view kinds (`contracts/service.json`; `KNOWN-GAPS.md`,
+"Dashboards and activity views" row). The activity leg dead-ends twice over:
+even where a view existed, the console exposes no `retract` operation for an
+operator to act on it (`KNOWN-GAPS.md`, Retraction row), and cross-node
+activity is unconditionally `UNCONFIGURED` (`KNOWN-GAPS.md`, Federation row).
+Fixtures `CONS-005` and `CONS-007` state the target shape for both legs.
+
+## Open custody and ownership questions
+
+Named because no existing document currently owns them — not resolved,
+assigned, or invented here.
+
+1. **Does the console own who may grant or revoke authority, or does it only
+   enforce grants issued elsewhere?** `CHARTER.md`'s Role section says
+   "Authority stays where the kernel puts it: the Console Service surfaces
+   pending rights and spent judgement; it does not hold, infer, or delegate a
+   right." But `grant` and `revoke` are console operations, `authority-grant`
+   is a console-owned record, and `permits.py` is the only place in the
+   repository that mints or withdraws a live grant on a running node today.
+   Whether the console's permits office is meant to be the node's real
+   issuing authority for Phase I, or a service-local convenience that a future
+   Identity or Authority-issuing mechanism should supersede, is unresolved.
+
+2. **Who owns authenticating the caller?** Every operator is a string the
+   caller types; nothing checks that the caller is the name it types, so
+   `--granted-by Bdo` succeeds for anyone who types it and posting *as* Bdo
+   needs nothing more than naming Bdo (`KNOWN-GAPS.md`, Identity row, walked
+   and reproduced in `pr-118-console-authority.json`). `KNOWN-GAPS.md` states
+   plainly that there is no Identity service (epic issue #11, unrouted and
+   unbuilt) and that "any fix written here would read as closed and would not
+   be." This document does not answer whether identity is the console's
+   concern, the node layer's, or a service that does not yet exist; it
+   restates that the row is "routed to Bdo as an authority seam rather than
+   repaired."
+
+3. **Do in-process reads that bypass every declared operation belong to this
+   service's authority boundary at all?** `Projection(console).thread_posts`,
+   `ConsoleService.body`, and `authority.held` return the same bytes the
+   guarded CLI operations refuse, to any caller holding the service object in
+   process (`KNOWN-GAPS.md`, "Guarded entry points, unguarded data" row).
+   `contracts/capability-offices.json` declares no authority for them, and
+   `KNOWN-GAPS.md` itself states the reason this is not answered here:
+   inventing a capability for them "would either make that capability's
+   authority unanswerable... or mint policy the owner seat has not ruled on."
+   Named again here as the same open question, not a new one.
+
+4. **Does the console's node-scoping rest on anything besides a one-time
+   bootstrap default?** `node_id` is asserted by whichever process opens the
+   service; no Identity service or crossing attests it. The bootstrap default
+   — the first caller to name a node's permits office takes it — is what
+   currently stands between this and a bypass, and it is a default the Asset
+   Service also takes, not a console-specific decision (`KNOWN-GAPS.md`,
+   "Node identity is asserted, not attested" row).
+
+5. **Does a declared `precondition` in `contracts/service.json` mean "this
+   operation enforces this" or "this is this operation's logical shape"?**
+   An independent observation found the console's own manifest is internally
+   read both ways by different parts of the repository and asked Bdo to rule,
+   because the answer changes whether ten service manifests across the
+   repository — not only the console's — currently misdescribe what they
+   check (`services/console/observations/pr-118-final.json`, `judgement_items`).
+   This bears directly on how much trust Journey 1's "COMPLETES" verdict above
+   can carry: completion there is graded against what the manifest declares,
+   and this question is about whether that declaration is a promise or a
+   description.
+
+6. **Who owns closing the two-writer race the console cannot close from
+   inside itself?** `KNOWN-GAPS.md`'s "Two writers on one store" row states
+   the repair — a read-and-append the Record Service performs as one
+   transaction, or compare-and-append against the head a check read — is
+   "owed to the Record Service, not to this one." Every journey above that
+   depends on a `COMMITTED` receipt naming the grant that admitted it assumes
+   single-writer custody of the store, which `CLAUDE.md` trap T6 already
+   warns does not hold in this repository.
+
+===== END FILE: services/console/JOURNEYS.md =====
+===== FILE: services/console/KNOWN-GAPS.md =====
+# Console Service Reference Gaps
+
+Status: `OBSERVED AGAINST THE CHARTER · NOT OWNER-RATIFIED`
+
+The continuity record path is built and self-tested
+(`decisions/0036-operator-continuity-before-the-screen.md`). Five of the
+`CHARTER.md` operator surfaces are named there; one of them exists. This file
+says which, so the built part is not read as the whole.
+
+| Gap | Observed behavior | Required behavior | Contract |
+| --- | --- | --- | --- |
+| Notifications | A `mentions_you` flag is derived when reading continuity | A notification is an addressed input record naming its source address, digest, kind, and acknowledgement | `notification.schema.json`; CONS-004 |
+| Judgement requests | Not implemented | Queued requests that never block operation, with loop mode, requested authority type, and a resolution back-reference | `judgement-request.schema.json`; PROD-I-6; CONS-001, CONS-008 |
+| Judgement resolutions | Not implemented | The only console record expected to reach `RATIFIED`, and only by an appended event | `judgement-resolution.schema.json`; CONS-002, CONS-009 |
+| Operator settings | Not implemented | Typed, scoped preferences whose change requires named authority and never widens it | `operator-setting.schema.json`; CONS-003 |
+| Dashboards and activity views | Not implemented | Declared projections over sibling-service events and receipts, naming their omissions and their rebuild operation | `projection-view.schema.json`; CONS-005, CONS-007 |
+| Channel and thread reads | Only whole-journal folds exist; there is no channel listing operation | Bounded reads over channels and threads without replaying the journal per lookup | `CHARTER.md` owned records |
+| **Identity — every guard in this service is walked around from the shipped CLI** | Every operator is a string the caller types. `permits.issue` checks that the name in `--granted-by` holds `grant:authority`, and nothing checks that the caller is the name it typed. The flag defaulted to `Bdo` and is required now, which changed nothing that matters: a caller runs `grant --operator Mallory --scope <Bdo's thread> --granted-by Bdo` and exits 0, because typing the name costs nothing. Two independent participants drove that on 2026-08-26 and read the private thread with what it issued. An independent witness then read the private thread and its post bytes, listed all live grants, read Bdo's session and open threads, posted into the thread, and revoked the node's root grant — using declared operations only, no minting under a second node, no malformed input. Posting *as Bdo* needed nothing at all: `ACTOR_ATTRIBUTION_MISMATCH` compares two strings the same caller typed | An authenticated caller identity. Not a further comparison inside the console — every check available here reads a string the caller supplied, so any fix written here would read as closed and would not be | There is no Identity Service; it is epic issue #11, unrouted and unbuilt. **The enforcement added on 2026-08-25 is exactly as strong as an identity nothing verifies, and this row is the honest size of that.** The earlier rounds only ever measured refusals because their attacker kept naming itself. Routed to Bdo as an authority seam rather than repaired |
+| Authority envelope | Grants carry operator, capability, and scope | Type, issuer authority, budget, validity window, and expiry must be enforced | C3; PROD-I-5; the Asset Service has the same gap |
+| Two-binding proof | One binding exists, the CLI. Parity is proven by driving one path with two `actor_kind` values | A human binding and a model binding passing the same fixtures against the same kernel contract | PROD-I-3; CONS-006; `AI-NATIVE.md` check 7 |
+| Independent observation | Every check here is the service's own test | An observer whose relation to the builder is independent | C7; `AI-NATIVE.md` check 3 |
+| Federation | Not implemented; the manifest declares the port | A second node reachable through a governed crossing, refusing with a receipt while unconfigured | CONS-007; `SPEC.md` `cross` |
+| Retraction | The journal supports counter-records; the console exposes no retract operation | An operator on the loop countering an effective record through the kernel | C8; CONS-007; `AI-NATIVE.md` retraction axis |
+| Permits-office availability | The node's last live `grant:authority` at node scope cannot be withdrawn, and neither can its last `revoke:authority`; a successor must be recorded first. Until 2026-08-25 the guard counted any `grant:authority` record regardless of scope, so a grant recorded at a scope that admits nothing satisfied it and the last real issuer could be withdrawn - four ordinary CLI commands left the office unowned and unrecoverable. Narrowed again on 2026-08-26: a grant may not admit the record that withdraws it, so a revoker holding exactly one live `revoke:authority` can no longer spend it on its own withdrawal. That removes an ability - the holder must be granted a second revoker first, or another holder must do it - and it is the price of a `COMMITTED` receipt never citing a grant the same record revoked. A sub-case was reported here as unrecoverable - the other holder being an operator nobody can act as - and driving it disproved that twice over: in Phase I `--revoked-by` is a string anyone types, so there is no operator nobody can act as, and even granting the premise, minting a second revoker restores the office. The reachable statement is the one above it | An office that can be recovered rather than only protected: today the rule prevents the state and nothing repairs it if a journal already carries it | No console operation restores an emptied office, and the bootstrap is once-ever by design, so an older store bricked before this rule stays bricked. No such store exists in the repository. The last-issuer rule answers before the new exclusion does, so a node with one revoker still receives `MISSING_PRECONDITION` and not a bare `NO_LIVE_GRANT` |
+| Two writers on one store defeat every authority check this service makes | Each console operation reads the journal, decides, and appends in three separate `RecordService` transactions. A second process against the same `--root` can append a revocation of the admitting grant between the read and the append, and the `COMMITTED` receipt then lands *after* the revocation, citing a grant the journal has already withdrawn. Reproduced 2026-08-26 with two ordinary processes and no malformed input; the same window admits an operation whose grant was withdrawn a moment earlier. `authority.check`'s exclusion closes only the case one writer reaches alone. Worse in the same place and found alongside it: two concurrent `soveraeign-console` runs both read the same `head()` and both insert, so two entries carry the same `prev_digest`, both processes exit 0 printing a success record, and every console operation afterwards fails at `record.reconstruct()` with a broken chain - `BrokenChain` escapes `cli.main` uncaught, so each of those failures is a traceback and no JSON, which is the one thing this CLI's contract says never happens. Both phenomena reproduce and the rate is method-dependent, so no rate is recorded here: one participant broke the chain 9 times in 20 and cited a revoked grant 8 times; a second could not get a stale citation in 60 trials, then got 41 in 80 by padding the journal so each writer's replay is slower, and 5 chain breaks in 120 unpadded trials. What no participant has produced is a stale citation on a journal whose chain stayed intact, so the two may be one fault rather than two. That is an unauthenticated denial of service on the operational System of Record, and `CLAUDE.md` trap T6 already says several sessions write this tree at once | A read-and-append the Record Service performs under one transaction, or a compare-and-append against the head the check read, so a decision and the record it justifies cannot be separated by another writer | `RecordService.append` reads `head()` and commits in its own transaction and offers neither, so nothing in `services/console/` can close this. Not narrowed here on purpose: a window made smaller reads as a window closed. Owed to the Record Service, not to this one |
+| Read cost | Reading continuity replays the whole journal every call | A rebuildable projection that is stored and refreshed, not recomputed per read | `SPEC.md` Projection rule |
+| Guarded entry points, unguarded data | Every declared operation checks the authority the office table names for it and that the record belongs to this node, but the package exports in-process paths to the same bytes that are not declared operations. An independent witness confirmed on 2026-08-25 that all three return content to a caller the guarded reads had just refused: `Projection(console).thread_posts` returns a thread's post records (a `Projection` built for another node now folds only that node's records, but the class takes whichever console it is handed), `ConsoleService.body` returns a payload by content address with no node check at all, and `authority.held` returns every live grant | Either a declared capability over each of those reads, or a boundary that stops them being reachable from outside the service | `contracts/capability-offices.json` declares no authority for them. Enforcing an invented name would either make that capability's authority unanswerable (`discovery.py`, `UNDETERMINABLE`) or mint policy the owner seat has not ruled on, so this is recorded for Bdo as a question rather than answered. Reaching it needs an in-process caller holding the service object; it is not reachable over the CLI or the MCP binding |
+| Node identity is asserted, not attested (see also: nothing bounds how many nodes a caller may open) | A grant record carries `node_id`, written by the minting service from its own identity, and `authority.check` matches on it, so a grant minted under one node satisfies no check under another. But that identity is whatever the process opening the `ConsoleService` passed in - `--node` on the CLI - and nothing in the record attests it | A node identity a check can be made against: a key, a registry the node cannot choose its own entry in, or a crossing that carries the peer's own attestation | There is no Identity service. What keeps *the node dimension* from being a bypass is the bootstrap, not the field: opening a node's permits office is once-ever and recorded, so a caller asserting a name whose office is already open meets a `grant:authority` it does not hold. On a store where a node's office has never been opened, the first issuer takes it - the declared first-issuer default, the same one the Asset Service records. **That defence is about the node and does not carry to the operator.** An attacker who names the operator who already holds the office never opens a second one and never meets the bootstrap at all; see the Identity row above, which is the larger hole. Do not read the `node_id` field as identity. It also leaves a working existence oracle across nodes: `open-thread`, `post` and `publish-thread` check authority before reading, so they answer `FOREIGN_NODE_RECORD` where the pre-authority reads answer `UNKNOWN_RECORD`, and node names are unbounded, so a caller opens its own office, self-issues a grant scoped to the id it wants to probe, and learns from the difference whether a peer holds a record by that id. Both codes are declared and the answers differ on purpose - a caller that showed a grant has earned the distinction - so what makes it an oracle is the unattested identity in this row, not the refusal vocabulary |
+
+## Where this sits against the AI-native bar
+
+`AI-NATIVE.md` scores a surface performing a named operation. For
+`console.post` and `console.session-context`, read honestly:
+
+- **Reachability** - a stable declared CLI, a discovery command that answers what
+  may be done and what it requires, JSON in and out including refusals. Strong,
+  but one binding is not the two-binding proof.
+- **Commitment** - records enter at `RECORDED` and the service cannot lift them;
+  a model claim without a proposal is refused, and since 2026-08-25 every BUILT
+  operation checks the authority it declares rather than nine of the fifteen
+  admitting any caller. This axis is the strongest one.
+- **Provenance** - every post has a content address and digest, a receipt, and a
+  named grant; the journal chain verifies before any read.
+- **Retraction** - the substrate supports it, the console exposes no operation
+  for it. `NONE` until it does.
+- **`earn_it`** - a human judgement with an attributable reviewer. Not made.
+  `AI-NATIVE.md` is explicit that `OPEN` is not a favorable result.
+
+So: not `SOVERAEIGN_QUALIFIED`, and not claimed to be. That bar wants `FULL` on
+reachability, commitment and provenance plus nine further checks, of which
+independent observation, the two-binding proof and cold-start competence are all
+unmet here. Recording the assessment is not the same as passing it.
+
+These are unimplemented requirements and named defects, not reasons to treat the
+built path as finished.
+
+===== END FILE: services/console/KNOWN-GAPS.md =====
+===== FILE: services/console/README.md =====
+# Console Service
+
+Status: `CONTINUITY PATH BUILT AND SELF-TESTED · REMAINDER CHARTERED`
+
+One slice of this service is built. `src/soveraeign_console_service/` implements
+the operator continuity record path and `cli.py` is the only way in;
+`tests/` holds thirty-one cases, and `KNOWN-GAPS.md` says exactly what is not
+built. The rest of this directory remains contract and boundary.
+
+The service boundary, owned records, proving narrative, and defeating cases are
+in `CHARTER.md`; `contracts/` holds the manifest and record schemas;
+`conformance/` holds declarative seed fixtures a participant must satisfy.
+
+The threaded operator interface that renders this service is a Human Binding
+under `bindings/`, not part of this directory. A Model Binding reads the same
+records as typed structure.
+
+## Built slice: operator continuity
+
+Channels, threads, posts, operator sessions and authority grants, appended to the
+Record Service journal, with a read path rebuilt from that journal on every call.
+Its purpose is the thing a session cannot do for itself: carry work across a
+boundary where all context is lost, and let a human operator and a model operator
+reach the same thread through one transition.
+
+```
+PYTHONPATH=services/console/src;services/record/src python -m soveraeign_console_service.cli --root .local/console operations --operator sov
+```
+
+`operations` is the discovery command - `AI-NATIVE.md` gates on whether a fresh
+model instance can find out what may be done without a person explaining it.
+Every command returns one JSON object, refusals included.
+
+The operator is required, and so is a live grant. Every BUILT operation here
+checks the authority `contracts/capability-offices.json` declares for it: nine
+of them declared one and checked nothing until Bdo ruled on 2026-08-25 to guard
+them, `grant` and `revoke` among them, so anyone reaching the service could
+write itself a grant. What a fresh instance can now find out without a person
+explaining it is what may be done and what each operation costs; running one
+still needs the permit. `services/console/tests/test_enforced_authority.py`
+drives all nine from both sides.
+
+`.claude/hooks/console_session.py` binds a Claude Code session to an operator
+session: it briefs a starting session with what landed while the operator was
+away, and closes the session afterwards so the read position advances. That hook
+is host plumbing and holds no standing; everything consequential it does, it does
+through the CLI above. The `sov-continuity` skill is the operating guide.
+
+Why this slice came before the judgement surface named below, and what Bdo has
+not yet ruled on, are in
+`decisions/0036-operator-continuity-before-the-screen.md`.
+
+## Judgement surface (proposed, not built)
+
+The slice this README originally declared first is the owner's judgement
+surface: the path through which the owner receives a judgement request, answers it, and has the answer land as a
+judgement-resolution record that can carry `RATIFIED` standing (`CHARTER.md`,
+"First slice: the owner's judgement surface"). Its target is a local CLI over
+the Python API, the Local surface row of `ENGINEERING.md`: no HTTP, no UI
+framework, and not a GUI claim. In the manifest,
+`list-pending-judgement-requests` is the pending-list read the human and model
+bindings invoke to list `QUEUED` judgement requests from judgement-request
+records, receipted; `resolve-judgement` is realized as the `SPEC.md` `ratify`
+transition with the request's question as the Proposal being ratified. The
+Human Binding it runs through is declared under `bindings/console/` as an
+interface only. `conformance/008-judgement-request-reaches-owner.yaml`
+(CONS-008, reach) and `conformance/009-owner-resolution-lands-ratified.yaml`
+(CONS-009, land) are its seed fixtures. Nothing in the slice is implemented;
+every entry in it is a proposal until the gates below hold.
+
+The judgement surface begins only after:
+
+1. the classification and logical specification are frozen or explicitly
+   authorized as provisional build targets;
+2. console-specific positive and defeating fixtures are executable;
+3. the Asset Service and Proofing Service event and receipt read paths are
+   stable enough to project without direct database access;
+4. Bdo authorizes a provisional Human Binding target (`decisions/0014`).
+   Ratifying the boundary itself gates only the standing word.
+
+No placeholder implementation is treated as progress toward those gates. The
+continuity slice above does not close any of them: it built a service, not a
+binding, and reads no sibling service.
+
+===== END FILE: services/console/README.md =====
+===== FILE: services/console/SERVICE-GROUND.md =====
+# Console Service Ground
+
+Status: `BUILT · SELF-REPORTED BY THE DRAFTING SESSION · NOT OWNER-RATIFIED`
+
+Scoped copy of `GROUND.md`'s shape for one service, per
+`decisions/0093-service-srd-spec-ground.md`. Not forced to sixteen claims.
+Each claim is what this service commits to always being true for its caller;
+each names what would defeat it and, where the underlying operation is not
+yet built, says so instead of implying the commitment is already kept.
+
+### `SVC-GROUND-1` — a judgement request never blocks the node
+
+> An operation whose required authority is `JUDGEMENT` and has no live grant
+> settles `UNRESOLVED` and queues a request; unrelated operation keeps running.
+
+Specializes `GROUND-012` (human judgement is reserved and scarce).
+
+*Defeated by.* A run left open indefinitely awaiting owner judgement, or a
+pending right absent from the owner's pending list (`CHARTER.md` Defeating
+cases; fixture `CONS-001`). *Current reality:* `request-judgement` is
+`PROPOSED`, not built (`contracts/service.json`); this is a declared
+commitment the running system does not yet keep.
+
+### `SVC-GROUND-2` — only a human resolves judgement
+
+> A model may draft a recommendation into a thread; only a human holding a
+> live `JUDGEMENT` grant may resolve a judgement request.
+
+Specializes `GROUND-003` (authority is granted, never acquired) and `PRD.md`
+PROD-I-5.
+
+*Defeated by.* A model resolution attempt that is not `REFUSED`
+(`judgement-resolution.schema.json` fixes `resolver_kind` to `HUMAN`; fixture
+`CONS-002`). *Current reality:* `resolve-judgement` is `PROPOSED`, not built;
+the constraint exists in schema and fixture, not yet in a running check.
+
+### `SVC-GROUND-3` — a declared authority requirement is checked, for the class it names
+
+> A `BUILT` operation that declares a required authority type refuses a
+> caller with no matching live grant and admits one who holds it.
+
+Specializes `GROUND-003`.
+
+*Defeated by.* A `BUILT` operation that declares an authority and checks none
+— true of nine console operations, `grant` and `revoke` among them, until
+Bdo's 2026-08-25 ruling (`STATUS.yaml`,
+`console_built_operations_enforcing_no_authority: 9`). Repaired for all
+fifteen `BUILT` operations and independently reproduced
+(`services/console/observations/pr-118-final.json`, claim
+`2-four-operations-gained-live-matching-grant`, `REPRODUCED`). *Scope of the
+claim, stated deliberately narrow:* it covers `required_authority` and
+`live_matching_grant` only. It does not extend to every declared
+`precondition` — the same observation dissents that `session_live` is
+declared on eleven operations and enforced on the CLI path by one, and that
+several `declared_*` preconditions are satisfied by an empty string
+(`pr-118-final.json`, findings `NOTE-COUNT-SESSION-LIVE`,
+`DECLARED-SATISFIED-BY-EMPTY-STRING`). Whether `preconditions` means
+"enforced" or "logical shape" is an open judgement item that observation
+routes to Bdo, unresolved as of this drafting.
+
+### `SVC-GROUND-4` — an operator setting never widens authority
+
+> Changing a setting changes projections and notification routing; it never
+> grants a capability or scope the holder did not already carry.
+
+Specializes `GROUND-003`.
+
+*Defeated by.* A setting, dashboard role, or session state that widens an
+authority check (`CHARTER.md` Defeating cases; fixture `CONS-003`). *Current
+reality:* `set-setting` is `PROPOSED`, not built.
+
+### `SVC-GROUND-5` — correction is a new record, not an erasure
+
+> A post, notification, or judgement request is never rewritten or deleted;
+> a correction lands as a new record or a counter-record, and the original
+> stays visible.
+
+Specializes `GROUND-009` (correction never erases occurrence) and `PRD.md`
+PROD-I-4.
+
+*Defeated by.* A post, notification, or request rewritten or erased instead of
+countered (`CHARTER.md` Defeating cases). *Current reality:* the Record
+Service journal this rests on is append-preserving and self-tested; the
+console itself exposes no `retract` operation yet, so the counter-record half
+of this claim has no built path through the console today
+(`KNOWN-GAPS.md`, Retraction row).
+
+### `SVC-GROUND-6` — a projection resolves to the record it names, twice
+
+> Rebuilding the same dashboard or activity view from the same authoritative
+> records twice yields the same result, and every value on it traces to a
+> source address.
+
+Specializes `SPEC.md`'s Projection rule and, loosely, `GROUND-011` (standing
+does not collapse).
+
+*Defeated by.* Two rebuilds of the same projection differing, or a value that
+does not resolve to a source record (`CHARTER.md` Defeating cases; fixture
+`CONS-005`). *Current reality:* `rebuild-projection` is `PROPOSED`, not built.
+
+### `SVC-GROUND-7` — refusal is legible, not silent
+
+> A caller told no is told the reason as a receipted refusal; an effect this
+> service cannot yet honor — external delivery, cross-node activity — answers
+> `UNCONFIGURED` rather than pretending success or dropping silently.
+
+Specializes `GROUND-008` (refusal is an outcome).
+
+*Defeated by.* External delivery reported as success instead of
+`UNCONFIGURED` (`CHARTER.md` Defeating cases; `contracts/service.json`
+forbids `silent-notification-drop`). *Current reality:* the `delivery` and
+`federation` ports are declared and unconfigured; the refusal path is
+asserted, not yet exercised by a built operation (`KNOWN-GAPS.md`, Federation
+row).
+
+### `SVC-GROUND-8` — a record stays scoped to the node that opened it
+
+> A grant minted under one node admits nothing against another node's record;
+> every operation that names a record checks it belongs to this node.
+
+Specializes `GROUND-002` (one governed world) at node granularity.
+
+*Defeated by.* `FOREIGN_NODE_RECORD` failing to fire on a peer's record once a
+grant has been shown. *Bound, not unconditional:* this rests on the once-ever
+recorded bootstrap of a node's permits office, not on an attested node
+identity — `node_id` is asserted by whichever process opens the service, and
+no Identity service verifies it (`KNOWN-GAPS.md`, "Node identity is asserted,
+not attested" row, which also names a working cross-node existence oracle:
+`UNKNOWN_RECORD` and `FOREIGN_NODE_RECORD` differ, and node names are
+unbounded).
+
+### `SVC-GROUND-9` — an observation of this service is not this service's own report
+
+> Whatever verifies a claim about console behavior does so by driving the
+> shipped CLI or reading the journal directly, not by taking the builder's
+> commit message, test output, or manifest prose as evidence.
+
+Specializes `GROUND-010` (a report is not an observation).
+
+*Defeated by.* A standing claim resting only on the participant's own test
+suite or its manifest `note` field. *Current reality, both directions
+present:* `services/console/tests/` is the builder's own suite and settles
+nothing beyond `BUILT`; the two independent observations under
+`services/console/observations/` (`pr-118-console-authority.json`,
+`pr-118-final.json`) are evidence of the kind this claim asks for, and one of
+them dissents from three factual statements in the manifest `note` that the
+builder wrote about its own file (`pr-118-final.json`, findings
+`NOTE-COUNT-SESSION-LIVE`, `NOTE-STATES-NO-COUNTS`,
+`NOTE-BUILT-OPERATIONS-LIST`) — a live instance of a build's self-report
+being wrong about itself, caught by exactly the mechanism this claim commits
+to.
+
+===== END FILE: services/console/SERVICE-GROUND.md =====
+===== FILE: services/console/SERVICE-SPEC.md =====
+# Console Service Logical Specification
+
+Status: `BUILT · SELF-REPORTED BY THE DRAFTING SESSION · NOT OWNER-RATIFIED`
+
+Scoped copy of `SPEC.md`'s shape for one service, per
+`decisions/0093-service-srd-spec-ground.md`. This does not re-derive the
+kernel: it cites `contracts/kernel-transitions.json` and
+`services/console/contracts/service.json` rather than restating their rules,
+and it fixes no storage, encoding, language, or transport of its own beyond
+what `ENGINEERING.md` and `CHARTER.md` already name (a local CLI over a Python
+API, no HTTP, no UI framework).
+
+## Owned domain records
+
+From `contracts/service.json` `owns` (twelve records; `CHARTER.md`'s prose
+list of owned records omits `authority-grant`, `console-receipt`, and
+`publication` even though the manifest declares them — a coherence gap
+recorded here, not repaired by inventing charter text). Each record carries
+the shared `standing` enum `RECORDED → ADMITTED → RATIFIED → EFFECTIVE`
+(`SPEC.md` Historical standing) unless noted.
+
+| Record | Schema | One line |
+| --- | --- | --- |
+| `authority-grant` | none checked in under `contracts/` for this record name; see `permits.py` | typed, scoped, revocable capability held by an operator at a node (`CHARTER.md` Role; `KNOWN-GAPS.md` Authority envelope row) |
+| `channel` | `channel.schema.json` | named, domain-driven container for threads, scoped to `node_id` |
+| `thread` | `thread.schema.json` | bounded conversation in a channel, `lifecycle` `OPEN → ARCHIVED`, optionally pinned to an exact address |
+| `post` | `post.schema.json` | one attributed turn by `actor_kind` `HUMAN` or `MODEL`, content-addressed, carrying a `proposal_id` |
+| `notification` | `notification.schema.json` | addressed input naming `source_address`/`source_digest`, `kind`, `lifecycle` `ISSUED → ACKNOWLEDGED`, `delivery` fixed to `LOCAL` |
+| `judgement-request` | `judgement-request.schema.json` | queued request for a `JUDGEMENT`-typed right; `lifecycle` `QUEUED → RESOLVED \| WITHDRAWN \| EXPIRED`; carries `resolution_id` back-reference |
+| `judgement-resolution` | `judgement-resolution.schema.json` | the answer record; `resolver_kind` fixed to `HUMAN`; the only console record expected to reach `RATIFIED`, and only by an appended event |
+| `operator-setting` | `operator-setting.schema.json` | typed, scoped preference for `holder_kind` `OPERATOR` or `NODE`; `change_authority_type` `VERIFICATION` or `JUDGEMENT` |
+| `projection-view` | `projection-view.schema.json` | declared `DASHBOARD` or `ACTIVITY` projection; `authoritative` is always `false`; carries source addresses, omissions, and rebuild time |
+| `publication` | `publication.schema.json` | a thread's `PUBLIC` visibility state, `lifecycle` `PUBLISHED → WITHDRAWN`, scoped to `node_id` |
+| `operator-session` | `operator-session.schema.json` | one operator's continuity: `lifecycle` `OPEN → CLOSED`, `active_thread_id`, `unread_cursor` |
+| `console-receipt` | none checked in under `contracts/`; every operation emits one per `contracts/service.json` `commit` field | terminal outcome of one attempted transition |
+
+## Service-local states
+
+Proposed lifecycles from `CHARTER.md`, service policy awaiting owner
+ratification and not a replacement for the shared record standing above:
+
+```text
+operator session:  OPEN → CLOSED
+thread:            OPEN → ARCHIVED
+judgement request: QUEUED → RESOLVED | WITHDRAWN | EXPIRED
+notification:      ISSUED → ACKNOWLEDGED
+publication:       PUBLISHED → WITHDRAWN   (schema-declared; CHARTER.md's
+                                             lifecycle block does not list it,
+                                             the same coherence gap noted above)
+```
+
+Judgement loop modes (`CHARTER.md`):
+
+```text
+IN_LOOP  the conditioned operation stays UNRESOLVED until a human right resolves it
+ON_LOOP  the operation proceeds; the human watches and may counter through retraction
+```
+
+## Legal transitions
+
+Twenty-one declared operations (`contracts/service.json`). Standing below is
+the manifest's own per-operation `standing` field, read 2026-08-27; it is not
+inferred from `CHARTER.md` prose. `kernel_transition` is named only where the
+manifest declares it explicitly.
+
+| Operation | Standing | Subject | CRUD | Kernel transition | Commit |
+| --- | --- | --- | --- | --- | --- |
+| `open-session` | `BUILT` | operator-session | CREATE | — | `COMMITTED` |
+| `close-session` | `BUILT` | operator-session | SUPERSEDE | — | `COMMITTED` |
+| `session-context` | `BUILT` | operator-session | READ | — | `DERIVED` |
+| `open-channel` | `BUILT` | channel | CREATE | — | `COMMITTED` |
+| `list-channels` | `PROPOSED` | channel | READ | — | `DERIVED` |
+| `open-thread` | `BUILT` | thread | CREATE | — | `COMMITTED` |
+| `archive-thread` | `BUILT` | thread | SUPERSEDE | — | `COMMITTED` |
+| `read-thread` | `BUILT` | thread | READ | — | `DERIVED` |
+| `post` | `BUILT` | post | CREATE | — | `COMMITTED` |
+| `publish-thread` | `BUILT` | publication | CREATE | — | `COMMITTED` |
+| `withdraw-publication` | `BUILT` | publication | SUPERSEDE | — | `COMMITTED` |
+| `list-publications` | `BUILT` | publication | READ | — | `DERIVED` |
+| `grant` | `BUILT` | authority-grant | CREATE | — | `COMMITTED` |
+| `revoke` | `BUILT` | authority-grant | COUNTER | — | `COUNTERED` |
+| `list-grants` | `BUILT` | authority-grant | READ | — | `DERIVED` |
+| `discover-operations` | `BUILT` | operator-session | READ | — | `DERIVED` |
+| `notify` | `PROPOSED` | notification | CREATE | — | `COMMITTED` |
+| `acknowledge-notification` | `PROPOSED` | notification | SUPERSEDE | — | `COMMITTED` |
+| `list-notifications` | `PROPOSED` | notification | READ | — | `DERIVED` |
+| `request-judgement` | `PROPOSED` | judgement-request | CREATE | `submit_proposal` | `RECORDED` |
+| `list-pending-judgement-requests` | `PROPOSED` | judgement-request | READ | — | `DERIVED` |
+| `show-judgement-request` | `PROPOSED` | judgement-request | READ | — | `DERIVED` |
+| `resolve-judgement` | `PROPOSED` | judgement-resolution | CREATE | `ratify` | `EFFECTIVE` |
+| `set-setting` | `PROPOSED` | operator-setting | SUPERSEDE | — | `COMMITTED` |
+| `rebuild-projection` | `PROPOSED` | projection-view | REBUILD | — | `REBUILT` |
+| `show-receipt` | `PROPOSED` | console-receipt | READ | — | `DERIVED` |
+
+`request-judgement` realizes `SPEC.md`'s `submit_proposal` row: the request's
+question enters as the kernel `Proposal`, and it must be `ADMITTED` before
+`ratify` runs; whether admission happens inside `request-judgement` or through
+a separate `admit` transition is open, tracked by fixture `CONS-009`
+(`judgement-request.schema.json` description). `resolve-judgement` realizes
+`ratify`: preconditions are `judgement_request_recorded`, `human_actor`,
+`live_matching_grant`; refusals are `AUTHORITY_REFUSED` or `STALE_STATE`,
+matching the kernel row exactly (`SPEC.md` Transition contract).
+
+No operation here bypasses those kernel transitions to change authoritative
+state (`SPEC.md`, "No interface, adapter, worker, projection, or graph store
+may bypass these transitions"); `contracts/service.json` `forbids` repeats the
+same rule at service scope for ratifying on behalf of the owner and presenting
+a projection as authoritative.
+
+## Refusal reason codes
+
+Fifteen distinct codes across the manifest's `refusals` arrays, folded to
+kernel vocabulary by `local_refusals` (`contracts/service.json`):
+
+| Service-local code | Kernel equivalent |
+| --- | --- |
+| `ACTOR_ATTRIBUTION_MISMATCH` | `AUTHORITY_REFUSED` |
+| `CLAIM_WITHOUT_PROPOSAL` | `INCOMPLETE_PROPOSAL` |
+| `FOREIGN_NODE_RECORD` | `AUTHORITY_REFUSED` |
+| `MALFORMED_IDENTITY` | `MISSING_PRECONDITION` |
+| `NO_LIVE_GRANT` | `AUTHORITY_REFUSED` |
+| `PIN_INCOMPLETE` | `INCOMPLETE_PROPOSAL` |
+| `SESSION_CLOSED` | `AUTHORITY_REFUSED` |
+| `SESSION_NOT_LIVE` | `AUTHORITY_REFUSED` |
+| `THREAD_ARCHIVED` | `STALE_STATE` |
+| `UNKNOWN_RECORD` | `MISSING_PRECONDITION` |
+
+`AUTHORITY_REFUSED`, `STALE_STATE`, `INCOMPLETE_PROPOSAL`, `UNREADABLE`, and
+`MISSING_PRECONDITION` pass through unmapped where an operation declares them
+directly (for example `discover-operations` declares `UNREADABLE`, borrowed
+from the kernel's own code for an unreadable source rather than a service
+synonym, per the manifest note).
+
+An independent observation found that this table is not the whole truth of
+what the shipped module *produces*: `STALE_STATE` is declared on four
+operations and appears nowhere in `services/console/src`; `INCOMPLETE_PROPOSAL`
+is declared on four and appears nowhere; `SESSION_NOT_LIVE` is declared on
+thirteen of fifteen and produced only on the routed read, not the CLI path
+(`services/console/observations/pr-118-final.json`, finding
+`DECLARED-REFUSALS-NEVER-PRODUCED`). Nothing in the repository checks a
+declared refusal against the implementation's ability to produce it; that gap
+is reported there as belonging to the contracts domain, not repaired here.
+
+## Persistence and authority notes
+
+- Every record is appended to the Record Service's journal
+  (`depends_on: record:append-preserving-journal`); the console keeps no
+  authoritative table of its own and rebuilds reads from that journal
+  (`README.md`; `CHARTER.md` Role).
+- Every `BUILT` operation is required to check the authority
+  `contracts/capability-offices.json` declares for it. As of commit
+  `d604455`, an independent observation reproduced that all fifteen `BUILT`
+  operations refuse `NO_LIVE_GRANT` ungranted and admit on the exact declared
+  grant (`pr-118-final.json`, claim
+  `2-four-operations-gained-live-matching-grant`). `STATUS.yaml`'s
+  `console_built_operations_enforcing_no_authority: 9` field is stale against
+  that repair and has not been updated; it describes the state before
+  2026-08-25, not the current one — flagged here rather than silently
+  corrected in a document this task does not own.
+- `local_node_record` is checked on every operation that names a record by id
+  (eight) plus `list-publications` and `session-context`, which name no
+  record and answer from a fold already narrowed to this node
+  (`contracts/service.json` note).
+- Authority enforcement does not currently extend to caller identity: every
+  principal is a string the caller supplies on the command line, and nothing
+  checks that the caller is the name it typed (`KNOWN-GAPS.md`, Identity row).
+  A grant issued to any typed name is a live grant this specification's
+  `live_matching_grant` precondition will honor.
+- Two writers against the same store are not serialized by this service: each
+  operation reads the journal head and appends in a separate transaction from
+  the Record Service, so a concurrent revocation can land between a check and
+  its citing receipt, and two concurrent writers can each append against the
+  same head and break the journal's digest chain (`KNOWN-GAPS.md`, "Two
+  writers on one store" row). The fix is a read-and-append the Record Service
+  would need to perform as one transaction, or compare-and-append against the
+  head a check read; neither exists, and the gap is recorded there as owed to
+  the Record Service, not closed here.
+
+===== END FILE: services/console/SERVICE-SPEC.md =====
+===== FILE: services/console/SRD.md =====
+# Console Service Requirements — Founding and Phase I
+
+Status: `BUILT · SELF-REPORTED BY THE DRAFTING SESSION · NOT OWNER-RATIFIED`
+
+Scoped copy of `PRD.md`'s shape for one service, per `decisions/0093-service-srd-spec-ground.md`.
+This is a projection at service scope of decisions already made at root scope. It
+grants the Console Service no authority over its own account of itself: `BUILT`
+is what self-report produces here; `WITNESSED` requires a party that did not
+write this document, and none of the entries below claim it, whatever
+independent evidence is cited alongside them.
+
+## Product outcome
+
+Give the node's human and model operators one governed, threaded record of
+what happened, what needs attention, and what is waiting on a human right —
+without becoming a second authority system (`CHARTER.md` Role).
+
+## Callers
+
+The Console Service is not called by end users directly; its callers are the
+node's own participants and the Gateway that fronts it:
+
+- the human operator, through the Human Binding (`bindings/console/`,
+  declared, not built) and today through the shipped CLI directly;
+- the model operator, through the same CLI or the MCP binding
+  (`bindings/mcp/`), holding the same kernel operations as the human path
+  (`CHARTER.md` Human and model participation);
+- `.claude/hooks/console_session.py`, host plumbing that briefs and closes a
+  Claude Code session against an operator session through the CLI
+  (`README.md`); it holds no standing itself;
+- the Gateway Service, chartered but unbuilt, whose manifest depends on the
+  Console Service owning authority grants — a default `decisions/0040` took
+  rather than a boundary Bdo has settled (`STATUS.yaml`,
+  `gateway_service_status`);
+- the Asset Service and Proofing Service, read-only: Console reads their event
+  envelopes and receipts through a declared crossing and never writes their
+  state (`CHARTER.md` Integration with sibling services and the kernel, item 1);
+- a later federated node, through the declared and unconfigured federation
+  port (`contracts/service.json` ports; `KNOWN-GAPS.md` Federation row).
+
+## Requirements
+
+Same lifecycle as `PRD.md`: `OPEN → BUILT → WITNESSED → RATIFIED`. `BUILT` is
+an implementation claim; `WITNESSED` requires independent evidence this
+document does not itself supply; `RATIFIED` requires the declared right. Status
+below reflects `contracts/service.json` operation standing and `KNOWN-GAPS.md`
+as read on 2026-08-27, not an inference from charter intent.
+
+### SVC-CONSOLE-1 · Continuity across a session boundary
+
+Status: `BUILT`
+
+A human operator and a model operator reach the same thread through one
+transition; work posted in one session is readable in the next. Serves the
+two-binding proof's human/model parity leg and `PRD.md` PROD-I-3 (Cross).
+
+Defeating case: a human post and a model post in the same thread take
+different transitions or yield irreconcilable receipts (`CHARTER.md` Defeating
+cases).
+
+### SVC-CONSOLE-2 · Addressed notification
+
+Status: `OPEN`
+
+An operator who is mentioned, assigned, asked for judgement, or named on a
+receipt outcome receives an addressed input record naming its source address,
+digest, kind, and acknowledgement. Serves PROD-I-6 (the pending-right report)
+and PROD-I-3 (crossing visibility).
+
+Defeating case: a notification cannot name its source address and digest, or
+is treated as the record it points to (`CHARTER.md` Defeating cases). Not
+built: `notify`, `acknowledge-notification`, and `list-notifications` are
+`PROPOSED` in `contracts/service.json`; only a derived `mentions_you` flag on a
+continuity read exists today (`KNOWN-GAPS.md`, Notifications row).
+
+### SVC-CONSOLE-3 · Judgement request never blocks the node
+
+Status: `OPEN`
+
+A judgement request queues without blocking unrelated operation; the
+conditioned operation settles `UNRESOLVED` rather than staying open
+indefinitely. Serves PROD-I-6 directly.
+
+Defeating case: a run remains open indefinitely awaiting owner judgement, or
+the pending right is hidden from the owner's pending list (`CHARTER.md`
+Defeating cases; `PRD.md` PROD-I-6). Not built: `request-judgement`,
+`list-pending-judgement-requests`, and `show-judgement-request` are `PROPOSED`
+(`KNOWN-GAPS.md`, Judgement requests row).
+
+### SVC-CONSOLE-4 · Only a human resolves judgement
+
+Status: `OPEN`
+
+A judgement request is resolved only through a typed, scoped, live human
+`JUDGEMENT` grant checked at the transition; a model attempt is `REFUSED`.
+Serves PROD-I-5 (Typed authority) directly.
+
+Defeating case: a machine right ratifies judgement-typed truth (`PRD.md`
+PROD-I-5); `judgement-resolution.schema.json` fixes `resolver_kind` to the
+constant `HUMAN`. Not built: `resolve-judgement` is `PROPOSED`
+(`KNOWN-GAPS.md`, Judgement resolutions row).
+
+### SVC-CONSOLE-5 · A setting never widens authority
+
+Status: `OPEN`
+
+An operator or node setting conditions projections and notification routing
+only; changing it never grants capability or authority it did not already
+carry. Serves PROD-I-5.
+
+Defeating case: a setting, dashboard role, or session state widens an
+authority check (`CHARTER.md` Defeating cases). Not built: `set-setting` is
+`PROPOSED` (`KNOWN-GAPS.md`, Operator settings row).
+
+### SVC-CONSOLE-6 · Projections are rebuildable and resolve to source
+
+Status: `OPEN`
+
+A dashboard or activity view is a declared projection over receipts, events,
+standing, and judgement spend, naming its source addresses and its omissions;
+rebuilding it twice from the same records yields the same result. Serves
+`SPEC.md`'s Projection rule and, for the activity view, PROD-I-4 (Gate and
+retract: the surface from which an operator on the loop counters an effective
+record).
+
+Defeating case: a dashboard or activity value does not resolve to an
+authoritative record, two rebuilds differ, or an activity entry appears for an
+unconfigured node or service without a declared omission (`CHARTER.md`
+Defeating cases). Not built: `rebuild-projection` is `PROPOSED`
+(`KNOWN-GAPS.md`, Dashboards and activity views row); the console exposes no
+`retract` operation at all (`KNOWN-GAPS.md`, Retraction row).
+
+### SVC-CONSOLE-7 · Unconfigured effects refuse visibly
+
+Status: `OPEN`
+
+External delivery of a notification and cross-node activity refuse as
+`UNCONFIGURED` with a receipt until a separate decision admits the effect;
+neither is ever reported as silent success or a silent drop. Grounded in
+`SPEC.md` Local operation and `contracts/service.json` forbids
+(`silent-notification-drop`).
+
+Defeating case: external delivery is reported as success instead of
+`UNCONFIGURED` (`CHARTER.md` Defeating cases). Not built: the `delivery` and
+`federation` ports are declared and unconfigured; no code path has exercised
+the refusal (`KNOWN-GAPS.md`, Federation row).
+
+### SVC-CONSOLE-8 · A declared authority requirement is an enforced one
+
+Status: `OPEN`, narrowly
+
+Every `BUILT` operation checks the authority `contracts/capability-offices.json`
+declares for it, not merely declares it. Serves PROD-I-5 and `GROUND-003`
+(authority is granted, never acquired).
+
+Defeating case, historically true: nine `BUILT` console operations — `grant`
+and `revoke` among them — declared a required authority and checked nothing,
+so any caller reaching the service could write itself a grant
+(`STATUS.yaml`, `console_built_operations_enforcing_no_authority: 9`, dated
+2026-08-24). Guarded on Bdo's 2026-08-25 ruling
+(`services/console/contracts/service.json` note; commit `6dfe27c`). An
+independent observation not authored by the builder re-drove all 15 `BUILT`
+operations ungranted and granted on fresh stores and reproduced that every one
+now refuses `NO_LIVE_GRANT` ungranted and admits on the exact declared grant
+(`services/console/observations/pr-118-final.json`, claim
+`2-four-operations-gained-live-matching-grant`, verdict `REPRODUCED`). That
+same independent observation dissents from the broader claim that every
+*declared precondition* is enforced: `session_live` is declared on eleven
+operations and checked on the CLI path by exactly one (`post`); seven
+`declared_*` preconditions across five operations are satisfied by an empty
+string; several declared refusal codes are never produced by the
+implementation (`pr-118-final.json`, findings `NOTE-COUNT-SESSION-LIVE`,
+`DECLARED-SATISFIED-BY-EMPTY-STRING`, `DECLARED-REFUSALS-NEVER-PRODUCED`).
+Status here is therefore scoped to the required-authority/`live_matching_grant`
+class specifically — `WITNESSED`-supporting evidence exists for that class
+alone, this document does not itself claim `WITNESSED` standing for it, and
+whether the manifest's `preconditions` field is a claim about enforcement or
+only about logical shape is an open judgement item routed to Bdo by that same
+observation, unresolved as of this drafting.
+
+### SVC-CONSOLE-9 · Records stay scoped to the node that opened them
+
+Status: `BUILT`, bounded
+
+A grant minted under one node satisfies no authority check under another;
+`open-thread`, `post`, and `publish-thread` answer a foreign node's record with
+`FOREIGN_NODE_RECORD` once a grant has been shown, and every operation naming a
+record by id checks `local_node_record`.
+
+Defeating case: a grant minted under one node admits an operation checking a
+different node's record. What keeps this from being a bypass is the
+once-ever, recorded bootstrap of a node's permits office, not an attested node
+identity — no Identity Service exists, and `node_id` is asserted by whichever
+process opens the service, not verified (`KNOWN-GAPS.md`, "Node identity is
+asserted, not attested" row). Bounded because node names are unbounded and the
+two declared refusal codes for "record absent" and "record present under a
+foreign node" differ, which is a working existence oracle across nodes on the
+same row.
+
+## Non-goals for Phase I
+
+Carried forward from `PRD.md` where they name this service directly, plus
+service-scoped additions from `CHARTER.md`:
+
+- a graphical production interface — the Phase-I Console is a local operator
+  console proving parity and judgement accounting, not a production GUI claim
+  (`CHARTER.md` Relationship to Phase-I requirements; `PRD.md` Non-goals);
+- automated external-world effects — external delivery and cross-node
+  activity stay refused until separately admitted (`CHARTER.md` item 7);
+- distributed consensus or federation — the federation port is declared and
+  unconfigured, not implemented (`PRD.md` Non-goals; `CHARTER.md` Deferred);
+- real-time presence and cursors, reactions, voice or video, external
+  chat-platform bridges, email and push delivery, public share links beyond
+  the built `publication` record, role hierarchies beyond typed scoped grants
+  (`CHARTER.md` Deferred);
+- holding, inferring, or delegating authority: the console surfaces pending
+  rights and spent judgement; the kernel keeps authority (`CHARTER.md` Role;
+  `CHARTER.md` Integration, closing sentence). Whether the console's own
+  `grant`/`revoke` operations already make it the de facto issuing point for
+  authority in the running system, in tension with that sentence, is named as
+  an open custody question in `JOURNEYS.md` rather than settled here.
+
+===== END FILE: services/console/SRD.md =====
+===== FILE: services/gateway/CHARTER.md =====
+# Gateway Service Charter
+
+Standing: `PROPOSED SERVICE BOUNDARY · FIRST IN_PROCESS SLICE BUILT AND SELF-TESTED`.
+
+A reference participant now exists under `src/` and proves one complete
+`IN_PROCESS -> sov://asset/ingest-asset -> Asset Service -> terminal receipt` path.
+That implementation is evidence; it does not promote this service or its operations out of
+their declared standing by itself.
+
+## Role in Soveraeign
+
+The Gateway Service is the node's door. It is the one place a request from outside a service
+turns into a call on that service, and the one place a refusal to let it through is recorded.
+
+The first route pattern is now executable in process. A caller presents one transport-neutral
+`sov://` operation, Gateway resolves the authored service manifest against the capability
+projection, revalidates the selected projection row against its authored inputs, checks exact
+actor kind and authority/scope, records the crossing, invokes a service-owned route, and returns
+the owning service's terminal receipt unchanged.
+
+That path does not make Gateway the owner of service state or settlement. Direct service Python
+APIs and CLIs still exist as participant/testing surfaces; they are not a second Gateway contract.
+
+## What a logical endpoint is
+
+Every declared operation in every service manifest carries an address of the form
+`sov://<service>/<operation>`. That address is transport-neutral: it names what is being asked
+for, never how the bytes arrive. `contracts/capability-offices.json` binds transports to it —
+in-process, CLI, a local tool surface, HTTP — and records which of those are open, declared but
+not activated, or refused in this phase.
+
+The Gateway resolves an address to the owning service and declared route. It cannot invent an
+address, infer a missing route, or treat a stale/tampered capability projection as authority.
+
+## The route
+
+A request crosses the door in a fixed order, and each step can refuse or fail:
+
+1. **accept request** — record the received envelope, validate shape, transport-independent
+   attribution, and reject actor smuggling in domain arguments;
+2. **resolve capability** — resolve the exact logical endpoint against both authored service
+   manifests and the capability projection, verify the projection's input digest, and rederive
+   the selected row from authored inputs before trusting it;
+3. **check authority** — require the declared actor kind and an exact live grant covering the
+   operation's authority and request scope; typed denials are refusals, while reader corruption
+   or infrastructure errors are operational failures rather than counterfeit denials;
+4. **route request** — require an activated transport, an admitted Phase-I effect class, and a
+   bound service-owned route;
+5. **return receipt** — require a recognizable terminal service receipt attributed to the checked
+   actor, record that Gateway carried it, and return that receipt object unchanged.
+
+Governed refusal is distinct from operational failure. A missing grant, inactive transport, or
+unreachable declared route is a refusal. A corrupt capability row, authority-reader exception,
+service exception, or receipt attribution mismatch is `FAILED` evidence. Gateway does not turn
+an infrastructure defect into a claim that the actor lacked authority.
+
+## Authoritative versus derived
+
+The Gateway holds no sibling-service domain state. Its crossing records — received request,
+resolution evidence, authority decision, routing evidence, refusal/failure evidence, and the
+fact that a service receipt was returned — are the authoritative account of what crossed the
+door.
+
+Everything it says about a service's operation, standing, effect class, required authority, and
+transport activation is derived from authored service/capability inputs. The capability map is a
+rebuildable projection and is checked for staleness and selected-row drift before routing.
+
+The owning service's terminal receipt remains settlement for the service operation. Gateway does
+not manufacture a second successful settlement receipt.
+
+## What it does not do
+
+- It does not settle a sibling service's operation.
+- It does not witness an operation it routed.
+- It does not issue or widen authority.
+- It does not own capability definitions or repair the capability projection in place.
+- It does not fall back to an undeclared transport or route.
+- It does not open an external transport in Phase I. HTTP remains refused while the phase stands.
+- It does not become the Node. Gateway is one service inside the locally sovereign Node.
+
+## Proving operation
+
+The first proving pair is implemented in `tests/test_gateway_slice.py`:
+
+- without a covering grant, `sov://asset/ingest-asset` leaves durable Gateway refusal evidence
+  and the Asset Service does not execute;
+- with a live exact grant, the same logical endpoint reaches the Asset-owned route and the
+  Asset Service's terminal receipt comes back unchanged and attributed to the checked actor.
+
+The suite also defeats malformed attribution, stale and tampered capability state, inactive HTTP,
+undeclared/unbound operations, disallowed effect classes, authority-reader failure, service
+execution failure, missing terminal receipts, receipt-actor mismatch, and attempted client actor
+overrides.
+
+This establishes the reusable vertical. The next same-class operation should be boring: add a
+service-owned route binding, preserve the checked actor separately from domain arguments, and
+return that service's existing terminal receipt.
+
+## Relationship to node composition
+
+Gateway is the vertical carrier, not the horizontal composition root.
+
+A local Node contains multiple service-owned verticals that share kernel, Registry, Record,
+authority, and routing semantics. Growing horizontally therefore means binding additional
+service-owned routes behind the same Gateway rather than adding domain logic to Gateway.
+`services/README.md` records the working construction vocabulary:
+`Kernel -> Vertical -> Horizontal -> Node surface`.
+
+## Remaining seams
+
+`KNOWN-GAPS.md` records the live differences between this participant and the full charter.
+The important remaining seams are:
+
+- the canonical contract form, if any, for a distinct `gateway-receipt` versus the current
+  crossing evidence plus owning-service terminal receipt;
+- explicit conflict semantics if the authority model later gains positive and negative grants;
+- replacing the older MCP binding's private ingress behavior with this service path before MCP
+  is treated as an activated Gateway transport;
+- a genuine independent observation/witness path;
+- a two-binding proof over this same door;
+- broader service route coverage and any effect/transport class beyond the current
+  `RECORD_LOCAL + IN_PROCESS` slice.
+
+None of those seams is resolved by passing participant tests, and none widens Phase-I effects.
+
+===== END FILE: services/gateway/CHARTER.md =====
+===== FILE: services/gateway/JOURNEYS.md =====
+# Gateway Service Journeys
+
+Status: `BUILT (self-report by the drafting session) · NOT WITNESSED · NOT RATIFIED`
+
+`decisions/0093-service-srd-spec-ground.md` names this document as the one with no analog in the
+root pattern. `CHARTER.md` calls this service "the node's door." Today exactly one journey through
+that door completes end to end, in process. Every other journey a caller could plausibly attempt
+is a door that has not been opened — declared in `contracts/service.json`, described in
+`CHARTER.md`, and named as unbuilt in `KNOWN-GAPS.md`. This document maps both kinds plainly
+rather than presenting the declared surface as if it were the built one.
+
+## COMPLETES
+
+### J1 — invoke a declared operation and receive its receipt
+
+`accept → resolve → check-authority → route → return-receipt` (or `refuse-request` at any
+step), for `sov://asset/ingest-asset`, `IN_PROCESS` transport, actor kind `HUMAN` or `MODEL`.
+
+This is `Gateway.dispatch()` in
+`services/gateway/src/soveraeign_gateway_service/core.py`. It is proven both ways:
+
+- with a live exact grant, the request reaches the Asset-owned route and the Asset Service's
+  terminal receipt comes back unchanged and attributed to the checked actor
+  (`test_human_and_model_take_same_kernel_path_and_get_service_receipts_unchanged`);
+- without a covering grant, the request leaves durable refusal evidence and the Asset Service
+  never executes (`test_authority_refusal_is_durable_and_asset_never_sees_the_call`).
+
+A refusal along this path — malformed request, unknown endpoint, stale capability state, missing
+grant, unreachable route, missing or mismatched receipt — also **completes**, in the sense
+`GROUND-008` means: refusal is an outcome, not a dead end. `services/gateway/tests/test_gateway_slice.py`
+covers eleven distinct refusal and fault shapes along this same journey, each leaving its own
+durable record.
+
+Scope actually proven: one service (`asset`), one operation (`ingest-asset`), one transport
+(`IN_PROCESS`), one effect class (`RECORD_LOCAL`). `KNOWN-GAPS.md` "Route coverage" and
+"Replication test before abstraction" name the next two repetitions — a second `asset` operation,
+then an operation from a different service family — as unproven, not as failed.
+
+## DEAD-ENDS
+
+### J2 — discover what the node offers before invoking anything
+
+A caller who does not already know the address wants to ask the door what it can reach:
+`sov://gateway/list-endpoints`, declared in `contracts/service.json` (`crud: READ`,
+`commit: DERIVED`).
+
+Dead end. `Gateway.dispatch()` has no case for it; nothing in
+`services/gateway/src/soveraeign_gateway_service/core.py` implements `list-endpoints`. The only
+way to see the declared surface today is `python scripts/sov_service.py endpoints --service
+gateway`, which reads the authored manifests directly through `scripts/sovkernel/manifests.py` —
+bypassing the Gateway participant entirely. A caller that only knows how to cross the door, per
+`GROUND-004`, cannot discover what the door offers; it has to already know the address, or read
+the repository instead of crossing the door.
+
+### J3 — read back a receipt after the fact
+
+A caller that crossed once wants to ask the door for that crossing's record later, without
+re-invoking the operation: `sov://gateway/read-receipt`, declared in `contracts/service.json`
+(`crud: READ`, `also_reads: gateway-request, routing-record`).
+
+Dead end. `core.py` exposes no read path back into what `evidence.py` wrote to the Record
+Service journal. The crossing evidence is durably recorded (`GROUND-007` holds for the write
+side), but nothing in this service turns that record back into an answer to a caller asking for
+it through the door. Reading it back today means reading the Record Service's journal directly,
+which is not a Gateway crossing either.
+
+### J4 — reach a second service family through the same door
+
+A caller wants `sov://registry/resolve` or any `sov://<service>/<operation>` outside `asset` to
+take the same route Gateway proves for asset ingest.
+
+Dead end. `KNOWN-GAPS.md` "Route coverage" states plainly: "One reusable `RECORD_LOCAL +
+IN_PROCESS` vertical is implemented for `sov://asset/ingest-asset` through an Asset-owned route."
+`Gateway.__init__` accepts an injected route map; nothing in the repository binds a second
+service's route into it yet. `KNOWN-GAPS.md` "Node composition" is explicit that assembling
+routes across services is not this service's job to do unprompted — "Build composition outside
+the Gateway service; do not turn Gateway into the Node" — but nothing yet does that assembly
+either, for a second service.
+
+### J5 — cross the door over a network transport
+
+A caller outside the local process wants to reach a declared operation over HTTP:
+`sov://<service>/<operation>`, transport `HTTP`, declared and named in
+`contracts/capability-offices.json` `transport_policy.HTTP` and
+`external_transports_refused_in_phase`.
+
+Dead end by design in the current Gateway baseline, not an ambient phase prohibition. The
+service has no admitted built HTTP crossing, and `contracts/capability-offices.json` keeps HTTP
+outside the reachable transport set. The legacy-named
+`test_http_stays_refused_in_phase_one` still guards the same observable fact: an HTTP-addressed
+request cannot reach routing. Unlike J2–J4, this dead end is an explicit current service
+boundary; opening it later requires a built transport plus scoped authority and receipts.
+
+## Open custody and ownership questions
+
+Per `decisions/0067`, naming a question here does not assign, resolve, or make it this service's
+to decide. Each of these is a genuine gap in what I read — `CHARTER.md`, `KNOWN-GAPS.md`,
+`contracts/service.json`, `AGENTS.md` — not an invented one.
+
+1. **Who would custody the credential for a future external crossing?** If Gateway ever does
+   open a network transport, something has to mint, hold, rotate, and present the credential
+   that crossing uses. `CHARTER.md` and `KNOWN-GAPS.md` say the transport stays refused; neither
+   says who would hold that credential when it doesn't. `AGENTS.md` "Secrets and local
+   boundaries" states the general rule for any remote crossing — "a declared adapter, data-
+   boundary mode, exact input projection, authority, and receipt" — but that rule is stated at
+   repository scope, for crossings in general, and is not instantiated for Gateway. This is
+   open, not silent-by-omission on my part: I read the charter and the gap list looking for an
+   answer and did not find one.
+
+2. **Who owns the authority-grant store long-term?** Gateway reads Console-owned grant records
+   today and is required to "remain a reader either way." `KNOWN-GAPS.md` "Authority source"
+   names that if an Authority Service later supersedes Console's grant surface, long-term
+   ownership needs settling — and does not settle it.
+
+3. **Who is the Node's composition root?** `CHARTER.md` "Relationship to node composition" and
+   `KNOWN-GAPS.md` "Node composition" are both explicit that Gateway must not become it — "Build
+   composition outside the Gateway service; do not turn Gateway into the Node" — but neither
+   names what does. Identity, Registry, Record, authority, and service routes need assembling by
+   something; nothing in what I read claims that job today.
+
+4. **Who negotiates on this node's behalf with another sovereign node?** `contracts/service.json`
+   declares a `federation` port. `KNOWN-GAPS.md` "Capability negotiation" states local
+   `list-endpoints` semantics can answer what this node declares, and that "two-sided negotiation"
+   is deferred to "the federation boundary" — a boundary, not a named owner.
+
+Each of these routes to a decision record at whichever tier `STATUS.yaml`'s resolution rule
+names, the ordinary way; none of them is decided by being listed here.
+
+===== END FILE: services/gateway/JOURNEYS.md =====
+===== FILE: services/gateway/KNOWN-GAPS.md =====
+# Gateway Service Reference Gaps
+
+Observed differences between the chartered boundary and the participant that now exists on this
+branch. The service manifest remains at its declared `PROPOSED` standing. Implementation and
+participant tests are evidence only; they do not silently advance standing.
+
+Standing is governed under `decisions/0040-the-declared-service-surface.md`, Ruling 5. Research
+behind several rows is in `reports/2026-08-23-gateway-research-and-controller-plan.md`.
+
+| Gap | Observed behavior now | Required / remaining behavior | Contract |
+| --- | --- | --- | --- |
+| Route coverage | One reusable `RECORD_LOCAL + IN_PROCESS` vertical is implemented for `sov://asset/ingest-asset` through an Asset-owned route | Add same-class service-owned routes mechanically; do not add service-specific logic to Gateway | `CHARTER.md`; `contracts/service.json`; PR #87 |
+| Request contract | Envelope shape and attribution rules are executable in `core.py` and tests, but there is no standalone `gateway-request.schema.json` | Decide whether the executable envelope needs a canonical schema and positive/defeating fixtures | controller plan G1 |
+| Receipt contract | Gateway records crossing evidence and returns the owning service's terminal receipt unchanged; it does not emit a second success receipt | Settle whether `gateway-receipt` is a distinct owned record, a kernel receipt form, or unnecessary beyond crossing evidence | `contracts/service.json`; `contracts/receipt.schema.json` |
+| Conflicting grants | Exact covering grants are checked and absence defaults to refusal; the current grant model does not provide a tested positive-vs-negative conflict case | If explicit negative grants are introduced, define deterministic conflict/attenuation semantics before accepting them | `check-authority`; PROD-I-5 |
+| Authority failure classification | Typed authority denials become `AUTHORITY_REFUSED`; unexpected reader errors become durable `FAILED / AUTHORITY_CHECK_FAILED` | Preserve typed distinction as authority readers evolve | `CHARTER.md`; PR #87 |
+| Capability projection integrity | Gateway checks the input-state digest and rederives the selected row from authored manifest/office inputs before routing | Keep global projection conformance independent; first real federated lookup must revisit strict local freshness semantics | `resolve-capability`; `list-endpoints` |
+| Service route convention | `AssetRoutes` supplies the first service-owned operation adapter and keeps checked actor attribution outside domain arguments | Prove the convention on a second operation and then a second service family before considering it generic substrate | PR #87 replication rule |
+| The MCP binding | `bindings/mcp/gateway.py` remains an older ingress path with its own resolution/authority/journal behavior | Make MCP call this service path before MCP is treated as an activated Gateway transport | `AGENTS.md` Directory boundaries; controller plan G4 |
+| Two things named gateway | The MCP binding and the service still share the word | One name per semantic layer, or an explicit statement that binding vs service is the intended distinction | `OPEN-SEAMS.md` S18; `NAMING.md` |
+| Capability negotiation | Local `list-endpoints` semantics can answer what this node declares; there is no two-sided negotiation | Define negotiation only when a real crossing has two independently sovereign sides | deferred; federation boundary |
+| Authority source | The reference Gateway checks Console-owned grant records | Settle long-term authority ownership if Authority Service supersedes Console's current grant surface; Gateway must remain a reader either way | `services/console/`; authority issues |
+| Independent observation | Participant tests and CI observe behavior, but the Gateway cannot witness itself and there is no fresh independent Gateway witness receipt | Add an independent observer/witness path | C7; `AI-NATIVE.md` check 3 |
+| Two-binding proof | Human/model parity is exercised at the envelope semantics level, but two distinct bindings do not yet drive this same Gateway participant | A human binding and a model binding must call the same door and reconcile receipts | PROD-I-3; `AI-NATIVE.md` check 7 |
+| External transport | HTTP remains inactive/refused for service capabilities; `node_runtime.py` health/listener existence does not activate application transport | Keep refused until an accepted operation actually requires second-process transport | `contracts/capability-offices.json`; infrastructure topology |
+| Node composition | Gateway accepts an injected route map, but there is no canonical Node composition root that assembles identity, Registry, Record, authority, and service routes | Build composition outside the Gateway service; do not turn Gateway into the Node | `CLASSIFICATION.md`; `services/README.md` |
+
+## Where this sits against the AI-native bar
+
+The prior AI-native assessment predates the built slice and is therefore stale as an observation.
+Reachability, commitment evidence, provenance, refusal durability, and human/model parity now have
+participant evidence that the older score did not include. That evidence still does not witness
+itself and does not earn standing automatically. Refresh the assessment only from the accepted
+assessment contract rather than editing a score to match confidence.
+
+Two observations worth keeping:
+
+- Gateway is still the most natural place to reach full machine reachability because serving the
+  declared machine-usable path is its bounded job rather than a projection over another service.
+- A two-binding proof remains cheap once bindings call this exact participant: human and model
+  surfaces should drive one door rather than carrying separate authorization/routing semantics.
+
+## Replication test before abstraction
+
+Do not introduce a generic route framework yet. The current claim should survive two increasingly
+strong repetitions first:
+
+1. route another same-service operation such as `sov://asset/read-asset` without changing Gateway
+   semantics;
+2. route an operation from a different service family, preferably `sov://registry/resolve`, through
+   the same Gateway and evidence path.
+
+If those repetitions require Gateway domain knowledge, the current decomposition is wrong. If they
+only require service-owned route bindings, the vertical has become a usable horizontal substrate.
+
+===== END FILE: services/gateway/KNOWN-GAPS.md =====
+===== FILE: services/gateway/SERVICE-GROUND.md =====
+# Gateway Service Ground
+
+Status: `BUILT (self-report by the drafting session) · NOT WITNESSED · NOT RATIFIED`
+
+A service-scoped projection of `GROUND.md` under `decisions/0093-service-srd-spec-ground.md`.
+Each claim below is one this service commits to always being true for whoever depends on it,
+with what would defeat it and, where one applies, the root `GROUND-<nnn>` claim it specializes.
+This list is short by design; it is not forced to a fixed count.
+
+### G-GW-1 — a caller acts by crossing a declared address, not by having access
+
+A caller acts on this service by presenting a declared `sov://<service>/<operation>` address, not
+by calling code directly. Gateway resolves that address against the authored manifest and the
+capability projection, verifying the projection's input digest and rederiving the selected row
+before trusting it; it never invents an address or infers a missing route
+(`CHARTER.md` "What a logical endpoint is"). Specializes `GROUND-004`.
+
+Defeated by: Gateway routing a request to an endpoint it did not resolve from authored inputs, or
+trusting a stale or tampered capability-projection row. `test_stale_capability_map_refuses_before_authority_or_service`
+and `test_capability_projection_tamper_fails_closed_even_with_fresh_input_digest` are the current
+guards.
+
+### G-GW-2 — refusal is legible and distinct from failure
+
+A missing grant, an inactive transport, or an unreachable declared route comes back as a governed
+refusal with a reason. A corrupt capability row, an authority-reader exception, or a service
+exception comes back as `FAILED` evidence instead — Gateway never turns an infrastructure defect
+into a claim that the actor lacked authority (`CHARTER.md` "The route", step 3). Specializes
+`GROUND-008`.
+
+Defeated by: an authority-reader exception recorded as `AUTHORITY_REFUSED` rather than `FAILED`.
+`test_authority_reader_failure_is_not_counterfeited_as_denial` is the current guard.
+
+### G-GW-3 — every crossing leaves a record, including a refused or failed one
+
+Every request Gateway accepts is recorded before any refusal can occur; every resolution,
+authority decision, routing attempt, and refusal or failure leaves its own durable, attributable
+entry, distinct from the routed service's own receipt
+(`services/gateway/src/soveraeign_gateway_service/evidence.py`). Specializes `GROUND-007`.
+
+Defeated by: a malformed request or a refusal leaving no request record.
+`test_malformed_request_has_request_record_before_refusal` is the current guard.
+
+### G-GW-4 — what comes back is the owning service's receipt, unchanged and attributed
+
+The receipt a caller receives is the routed service's own terminal receipt, unchanged and
+attributed to the checked actor — never a second, Gateway-manufactured settlement, and never a
+promotion of a service-level refusal into a success (`CHARTER.md` "Authoritative versus derived").
+Specializes `GROUND-005`.
+
+Defeated by: a returned receipt whose actor does not match the checked actor, or a service
+refusal returned as if it had succeeded. `test_terminal_receipt_actor_must_match_checked_actor`
+and `test_service_terminal_refusal_is_returned_unchanged_not_promoted_to_success` are the current
+guards.
+
+### G-GW-5 — neither a human nor a model gets a private door
+
+A human-attributed request and a model-attributed request for the same operation take the same
+resolution, authority, and routing path, and differ only in the attributed actor
+(`test_human_and_model_take_same_kernel_path_and_get_service_receipts_unchanged`). Specializes
+`GROUND-002`.
+
+Defeated by: actor kind silently changing which resolution, authority, or routing logic applies
+beyond the declared, symmetric check. Not yet exercised beyond one participant and one binding
+shape; the full two-binding proof `KNOWN-GAPS.md` names as open would extend this claim's
+coverage, not replace it.
+
+### G-GW-6 — a network transport does not open itself
+
+HTTP stays inactive and refused until this service has an explicitly built and admitted external
+transport, regardless of what runtime health checks or listeners exist underneath it
+(`CHARTER.md` "What it does not do"; `contracts/capability-offices.json`
+`transport_policy.HTTP`). No root `GROUND-<nnn>` claim names transport activation directly;
+this is the Gateway's own fail-closed service boundary, not a phase-wide effect rule.
+
+Defeated by: an HTTP-addressed request reaching routing. `test_http_stays_refused_in_phase_one`
+is the current guard. Who would custody a credential if this ever changes is not answered here —
+see `JOURNEYS.md`, "Open custody and ownership questions".
+
+===== END FILE: services/gateway/SERVICE-GROUND.md =====

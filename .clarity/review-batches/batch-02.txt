@@ -1,0 +1,2593 @@
+===== FILE: .claude/epic/NARRATIVE.md =====
+# Narrative Layer
+
+Status: proposed projection. Holds no standing, routes nothing, owns no issue.
+
+`tree.json` is the technical map of the epic-of-epics (`#1`): villages, bits,
+stubs, `requires` edges. This file is the same 52 issues told a second way:
+by where an actor meets the system (**front office**) and by what holds
+that meeting up (**back office**). `villages.json` still routes dispatch;
+`offices.json` carries this grouping in machine shape.
+
+Use this layer to talk about what an actor walks in wanting, which
+counter they go to, what that counter quietly leans on, and what they leave
+holding. Use `tree.json` when you need to know what is blocked on what.
+
+Exact terms stay exact. Every story ends with a **Today** line read from the
+tree (`ready` / `held` / `unrouted`) and the repository snapshot in
+`CLAUDE.md`. Nothing below is `WITNESSED` or `RATIFIED`; that is the accurate
+reading of a founding-phase node, not a shortfall.
+
+## The cast
+
+A story's teller is named in the kernel's own terms: an `actor_kind`
+(`HUMAN`, `MODEL`, `WORKER`, `SYSTEM`, from `SPEC.md`) holding a
+participation or boundary `role` from `CLASSIFICATION.md`. No word here is
+new; the table only says who shows up at a counter.
+
+| Teller | `actor_kind` / `role` | Who they are |
+| --- | --- | --- |
+| **Human operator** | `HUMAN` / `operator` | A person working inside the node through a Human Binding. |
+| **Model operator** | `MODEL` / `operator` | A model working inside the node through a Model Binding. Sov when the portable profile is loaded; Claude in an interactive session. Same world, same record. |
+| **Agent** | `HUMAN` or `MODEL` / `agent` | An operator selecting or requesting actions within granted authority. |
+| **Worker** | `WORKER` / `worker` | Leased hands. One job per lease. Reports; never settles its own work. |
+| **Witness** | `HUMAN` or `MODEL` / `witness` | Independent eyes. Observes through a path the builder did not control. |
+| **External system** | `SYSTEM` / `operator` | An enterprise system or remote provider reached through a declared adapter. It has no expectations of its own; its story is told on its behalf by the operator who integrated it. |
+| **Peer node** | `SYSTEM` / `node` | A second Soveraeign Node on the far side of a federation crossing. Horizon (`#24`), not Phase I. |
+
+**Owner is not in the table.** Owner is the context Bdo walks up in, not a
+role Bdo holds: it sets which Binding Bdo comes through and which Projection
+Bdo sees, over whatever role Bdo is holding at that moment. Bdo at the
+Operator Desk is a `HUMAN` / `operator`; Owner is what shapes the desk for
+them, the way the Sov profile shapes a model's seat. On a ticket it travels
+in `authority`, never in `role`. The Console charter already calls its
+realized form operator settings and dashboard projections.
+
+## The shape of a story
+
+A story is told from the actor's side of the counter: what they
+expected, where the floor was not there, and what they ask of the ground
+underneath. The scenario says what the system promised; the story says what
+the actor found; the gap is the ask.
+
+Filed stories use `kind: story` (`CONTRIBUTING.md`, decision 0022). The
+prose in this file and any story added to it use the same lines, in the
+ticket's own field names:
+
+```text
+Teller:        actor_kind / role, from the cast
+Counter:       the front-office bit the teller walks up to (parent)
+Expected:      what they expected to be able to do, in their words
+Found:         where the realization fell short
+Leans on:      the back-office supports the crossing cannot work without
+Asks:          what the substrate should do differently, addressed to the
+               issue that owns it
+Scenario:      the conformance/scenarios.json id that walks it, once bound
+Today:         what the tree and the working tree actually say
+```
+
+The walk reads each filed story as **told** (no scenario), **walkable**
+(bound, every support at least `BUILT`), or **walked** (`WITNESSED`). A
+story is never taken as work; its asks point at the bits and stubs that are.
+The counter stories below are composite and predate the kind. The first
+filed story is `#67` at the Operator Desk (told, `HUMAN` / `operator`), and
+its first finding is that the desk itself has no bit in the tree - the
+Console is a charter and a closing stub, not an owned obligation. That
+containment defect stands as a queued judgement, not a bug.
+
+---
+
+## Front office: where actors meet the system
+
+### The Operator Desk: `#30`, `#45`
+
+**Who walks in:** a human operator or a model operator.
+**What they want:** to sit down in the node and work: see what is going on,
+talk in threads, be told when something needs them, and ask the owner for a
+call when one is needed.
+**Counter:** Operator bindings (`#30`) prove a human and a model get the same
+desk: same record, same authority, same history. The Sov profile (`#45`) is
+the model operator's seat at that desk. The Console Service owns the desk
+itself: sessions, threads, posts, notifications, judgement requests, operator
+settings, dashboard projections.
+**Leans on:** The Record (`#6`, `#7`), The Permits Office (`#11`, `#12`,
+`#13`), The Model Counter (`#19`, `#29`), The Inspectorate (`#23`, `#26`),
+The Door (`#16`).
+**What they leave with:** one attributable event per consequential thing
+they did, and a judgement request that lands on the owner's desk instead of
+being decided for them.
+**Today:** the desk is half there. The Console's continuity path is built and
+self-tested - channels, threads, posts, operator sessions and grants - and
+fifteen of its twenty-six declared operations are `BUILT`. Three bindings exist
+(`bindings/console/`, `bindings/mcp/`, `bindings/sov/`) and a Human Binding
+workspace was composed over them. `#45` is closed; its unfinished predicate, the
+fresh-host two-model parity witness, moved to `#19` and `#30` rather than
+disappearing. `#30` is `held` on six issues and is `CHARTERED_NOT_IMPLEMENTED`:
+bindings exist, and the same-world parity the counter is named for is unproven.
+No actor can raise a judgement request, because no identity can tell the record
+who they are.
+
+### The Door: `#16`, `#17`
+
+**Who walks in:** an external system, a remote operator, or later a peer
+node.
+**What they want:** to get something in, get something out, or have a
+message carried, and to be told plainly when the answer is no.
+**Counter:** The Gateway Service (`#16`) is governed ingress and egress: who
+may cross, in which data-boundary mode, with what exact projection of the
+input. The Relay Service (`#17`) carries messages once they are inside.
+**Leans on:** The Permits Office (`#11`, `#12`, `#13`, `#14`, `#15`), The
+Record (`#6`, `#7`).
+**What they leave with:** a receipt for the crossing, including the
+refusals. Silent fallback is forbidden, so a closed door is a recorded door.
+**Today:** the Gateway has a chartered boundary, nine declared operations, and
+one built `IN_PROCESS` slice proving a complete
+`IN_PROCESS -> sov://asset/ingest-asset -> Asset Service -> terminal receipt`
+path. `IN_PROCESS` means the caller already holds the service object, so nothing
+has crossed a transport and no third party has reached anything. The Relay
+(`#17`) has no artifact. Both are still `unrouted`. External effects are no longer
+refused by class - `decisions/0047` admits them inside declared scopes with a
+receipt - so the Door's lock is now a named list of refused verbs rather than a
+blanket.
+
+### The Model Counter: `#19`, `#29`
+
+**Who walks in:** an owner or operator bringing a model; a team connecting an
+enterprise system.
+**What they want:** to plug in their own model or their own system and have
+it treated as an operator, not as an authority.
+**Counter:** Bindings and Adapters (`#19`) declare the interface on the
+inside; Adapters (`#29`) translate to the named thing on the outside. BYOM is
+the practice, not a service. No provider SDK type passes the counter.
+**Leans on:** The Permits Office (`#13`, `#14`, `#15`), The Door (`#16`),
+The Job Window (`#18`), The Record (`#25`).
+**What they leave with:** a declared binding with a data-boundary mode, and a
+receipt for every call, with only an opaque credential reference on it.
+**Today:** three adapters exist and are tested (`adapters/github/`,
+`adapters/host/`, `adapters/ollama/`), which moved `#29` from `declared` to
+`built and self-tested`. `adapters/ollama/invoke.py` does execute a model against
+the local runtime and grade its own output; it settles nothing and its data
+boundary is `LOCAL_ONLY`, so no crossing has ever put bytes in front of a third
+party. The kernel still has no `invoke_model` implementation (PROD-I-9), and
+scenarios `006` and `008` are still unbound. Nothing waits on the owner here.
+
+### The Job Window: `#18`, `#20`, `#21`, `#31`
+
+**Who walks in:** an operator with work to hand in; later, a schedule with
+nobody present.
+**What they want:** the work done by someone else, and to know whether it
+actually landed rather than whether somebody said it did.
+**Counter:** an operation plan goes in. Runtime and Workers (`#18`) lease it
+to a worker (`#31`); the worker reports; a witness observes; the kernel
+settles. The Workflow Service (`#20`) strings operations together and keeps
+them; the Automation Service (`#21`) lets schedules and machine triggers open
+the window unattended.
+**Leans on:** The Record (`#6`, `#7`), The Permits Office (`#13`, `#14`),
+The Door (`#17`), The Inspectorate (`#9`).
+**What they leave with:** first a report, clearly labelled as the worker's
+own word; then a settlement, which is someone else's.
+**Today:** this story already runs, but in the harness, not in the product.
+Controller, Orchestrator, Worker, and Witness exist as `.claude/` plumbing;
+twenty workflows and a scheduled-run tick exist; every shipped schedule is
+disabled. `contracts/work-lease.schema.json` types the lease and fixtures grade
+it, which is why `#18` is now `chartered` rather than `open`; `workers/` is still
+a README. The Record Service now keeps an append-preserving journal, and it is
+not the kernel's: the Asset Service still holds its own tables (PROD-I-8), so a
+run has nowhere kernel-level to settle. All four issues are `unrouted`.
+
+### The Review Desk: `#22`, `#28`
+
+**Who walks in:** an operator who needs a decision on a specific version of
+something.
+**What they want:** a review that cannot drift: annotations pinned to exact
+asset versions, rounds that close, and a decision that stays attached to what
+was actually looked at.
+**Counter:** The Proofing Service (`#22`) owns sessions, rounds,
+version-pinned annotations, and the decision lifecycle; `#28` is its
+reference participant.
+**Leans on:** The Record (`#8`, `#10`), The Permits Office (`#11`, `#12`,
+`#13`, `#14`), The Job Window (`#18`, `#20`), The Model Counter (`#19`).
+**What they leave with:** a decision record pinned to the versions reviewed.
+**Today:** unchanged in substance and now graded as what it is.
+`services/proofing/` holds a charter, a service contract with eleven `PROPOSED`
+operations, two schemas, and a defeating fixture, and no Python at all. What is
+missing is the contract's executable cases and an implementation, not permission.
+`#22` is `held` on nine issues. The longest "Leans on" line in the front office:
+this desk opens last.
+
+### The Drafting Window: `#42`, `#50`
+
+**Who walks in:** an operator who wants to see and shape the map of who can do
+what.
+**What they want:** to look at charts and skill forests, configure a view,
+and not accidentally change what anything means.
+**Counter:** Chart compiler bindings (`#42`) lower a governed chart into a
+human or model operator environment; the Skill graph UI projection (`#50`)
+shows the forest without owning it.
+**Leans on:** The Pattern Room (`#40`, `#41`, `#47`), The Permits Office
+(`#14`), The Door (`#16`), The Model Counter (`#19`), The Operator Desk
+(`#30`), The Inspectorate (`#49`).
+**What they leave with:** a view. Projections are rebuildable and never
+become authoritative by convenience.
+**Today:** the newest and least settled line. Both issues are `unrouted`. The
+experimental QA sidecar (`#51`) is closed, and its cleanup (`#52`) was invisible
+to every queue until 2026-08-26 because no ticket kind fitted a removal; `chore`
+now does (`decisions/0090`), and it waits on `#47`. The RED engagement (`#57`) is
+still open and its target pull request has since merged, so a confirmed finding
+would now demote landed work. Nothing to walk yet.
+
+---
+
+## Back office: what holds the counters up
+
+### The Record: `#6`, `#7`, `#8`, `#10`, `#25`, `#27`
+
+What it does for the front: every counter writes here and nothing is ever
+erased; a correction is written under the original. The Shared Kernel (`#6`)
+says which moves are legal; the System of Record (`#7`) keeps the
+append-preserving history; the Asset Service (`#8`, `#27`) turns bytes into
+governed identities with version history; the Graph Service (`#10`) keeps the
+typed map of entities, assets, and operations; shared contracts (`#25`)
+validate every boundary record.
+
+**Today:** the ledger largely exists now. `#6` and `#7` are both closed and
+graded `built and self-tested`: `contracts/kernel-transitions.json` is the
+compiled transition contract and `python scripts/sov_kernel.py parity` passes
+with seven correspondences; all eleven declared Record operations are `BUILT`.
+The Asset Service (`#8`) has all seventeen. Shared contracts (`#25`) hold
+forty-nine documents, which moved it from `proposed` to `built and self-tested`.
+The Graph Service (`#10`) has no artifact. The journal is not the kernel's: the
+Asset Service still keeps its own tables (PROD-I-8).
+
+### The Permits Office: `#11`, `#12`, `#13`, `#14`, `#15`
+
+What it does for the front: says who is standing at the counter (Identity,
+`#11`), what they are allowed to do right now (Authority, `#12`), refuses at
+every consequential boundary (Security and Gates, `#13`), knows what exists
+and which version (Registry, `#14`), and hands machines short-lived,
+attenuated tokens (Capability Broker, `#15`).
+
+**Today:** contracted in places, built nowhere, and half-undomained. Identity
+(`#11`) and Registry (`#14`) are chartered services with code and now route to
+the `trust` domain on the artifacts under `services/identity/` and
+`services/registry/`; every one of Identity's seven declared operations and
+twelve of Registry's thirteen are `PROPOSED`. Authority (`#12`) has a grant
+schema and a standing-grant registry and no service, and nine built Console
+operations declare an authority and check none. Security and Gates (`#13`) is
+enforced at each caller rather than owned anywhere, which is what those nine
+operations look like in practice. The Capability Broker (`#15`) has no
+artifact. Those three stay `unrouted`. This is still the widest gap between
+front and back: every counter's "Leans on" line passes through here, and no
+counter can know who is standing at it.
+
+### The Inspectorate: `#9`, `#23`, `#26`, `#32`, `#49`, `#57`
+
+What it does for the front: the independent eyes that turn a report into an
+observation. Observation and Attestation (`#9`); the conformance harness
+binding observations to defeating fixtures (`#26`); Phase-I Qualification,
+the full human/model crossing (`#23`); the Day-0 engineering harness (`#32`);
+the Capability resolution witness (`#49`); and the first RED engagement
+(`#57`). A build cannot witness itself anywhere in this file.
+
+**Today:** the oracle is executable with 20 controlled cases and every defeating
+fixture fails as declared; `scripts/verify.py` runs 40 checks and grades its own
+wall time rather than failing at a fixed ceiling (`decisions/0050`). Participant
+binding is still open. Nothing in the repository is `WITNESSED` yet, and nothing
+can be: `#9`, the service that would make an independent observation possible, is
+chartered and unbuilt. That is a ceiling on the whole tree rather than a backlog.
+
+### The Ground: `#37`, `#39`
+
+What it does for the front: the place the node physically lives. A
+reproducible local custody ground (`#37`) first; a bridge from that node to a
+customer-owned Kubernetes topology (`#39`) later.
+
+**Today:** both `unrouted`, and further along than that suggests. The topology,
+its runtime image contract, and a CI build and execution of that image all
+landed, so eleven of `#39`'s twelve closure lines are ticked. The twelfth cannot
+be ticked from here: no customer-owned cluster has run this. The Host Service
+(`#108`) added one governed `read-health` operation reachable through the Node
+Interface. The node still runs as local process calls and a CLI; that is the
+baseline, not a gap.
+
+### The Pattern Room: `#40`, `#41`, `#47`, `#48`
+
+What it does for the front: the typed map of competence that The Drafting
+Window shows. The Charting contract (`#40`), the Skill and capability graph
+(`#41`), where skill declarations canonically live (`#47`), and the relation
+schema that validates them (`#48`).
+
+**Today:** `#40` is `held` and now graded `built and self-tested`: `charting/`
+runs inside `scripts/verify.py` and its declared invariants hold in the suite.
+`#41` moved to `proposed`: skill identity and binding realization are derivable
+and fail closed, while requirements, authority predicates, possession, and live
+availability are not derivable from the current prose without interpretation.
+That is the room's real seam, and `#47` and `#48` own it. `#57` is still open
+against these exact invariants and its target has merged, so a confirmed finding
+would demote landed work. Under adversarial review by design.
+
+### Beyond the Node: `#24`
+
+What it does for the front: the Door's far side. Two sovereign nodes, one
+governed crossing.
+
+**Today:** horizon. Requires Qualification (`#23`) and most of The Permits
+Office. Not Phase I.
+
+---
+
+## Outside both offices
+
+- `#1` to `#5`: the epic and its four villages. Structure, not a counter.
+- `#52`: housekeeping, and the ticket that named a gap in the vocabulary. It
+  carried no metadata block from the day it was filed until 2026-08-26, because
+  no kind fitted a removal; `chore` was added for it (`decisions/0090`).
+- `#53` to `#56`: closed. Noise in the tree, nothing in the story. `#51` was
+  filed here as noise and is not: it proved a relation shape for the Pattern
+  Room and now sits there.
+
+## What the two layers say together
+
+Read front to back, the queue still has one shape, and the sentence for it has
+changed once. Every counter leans on The Permits Office, and The Permits Office
+leans on The Record. The technical tree says this today as "52 issues, 41 open,
+3 ready, 12 held, 19 unrouted" (`python scripts/sov_epic.py status`), which is
+the reading after the walk stopped folding `unrouted` into `held`.
+
+What changed is which floor is missing. The ledger now largely exists: the
+kernel's list of legal moves is compiled and parity-checked, the Record Service
+keeps an append-preserving journal, and the Asset Service is built. So the
+narrative is no longer "the ledger has to exist first". It is: nobody can be
+told who they are, so no counter can open. Identity is the next floor, and
+nothing above it can be witnessed either, because the service that would do the
+witnessing has not been built.
+
+## Decisions this layer queues for the owner
+
+None of these are decided here.
+
+1. **Where the layer lives.** It sits under `.claude/epic/` as a projection
+   beside `villages.json`. If Bdo wants it to carry standing, it moves out of
+   `.claude/` and into the governing set, and `AGENTS.md` says which document
+   owns it.
+2. **Office assignment of the ambiguous issues.** The Job Window (`#18`,
+   `#20`, `#21`, `#31`) could be read as back office; it was placed front
+   because an actor hands work in there. The Review Desk is front for
+   the same reason. Either could be moved.
+3. **The story kind itself.** `kind: story` is accepted
+   (`decisions/0022-story-ticket-kind.md`, ruled by
+   `decisions/0033-close-the-founding-docket.md`). It is defeated by a story
+   that dispatches work, or by an Owner reading that needs a new role value in
+   `CLASSIFICATION.md`.
+4. **The rest of the Permits Office.** Identity and Registry now route to the
+   `trust` domain on the artifacts under `services/identity/` and
+   `services/registry/`. Authority (`#12`), Security and Gates (`#13`), and the
+   Capability Broker (`#15`) have no such artifact, so they stay `unrouted`.
+   That is not a decision queued here: writing the charter, contract, or tests
+   that would evidence a domain is ordinary work at this tier, and this item is
+   listed only because the office it describes is half-covered.
+
+## How to add a story
+
+Pick one teller and one counter. Say what they expected and where it
+fell short before saying what to change; an ask with no `found` behind it is
+a feature request wearing a story's clothes. List only the supports the
+crossing genuinely cannot work without, and address each ask to the issue
+that owns the substrate. Write the **Today** line from
+`python scripts/sov_epic.py status` plus the working tree, never from
+memory. File it as `kind: story` with the counter as `parent`; do not give
+it a `requires` edge. Add any new counter or support to one office in
+`offices.json`, never two.
+
+===== END FILE: .claude/epic/NARRATIVE.md =====
+===== FILE: .claude/epic/README.md =====
+# Epic Projection
+
+A local, checked-in view of the epic-of-epics issue tree (`#1 — Soveraeign
+system of villages`) so the harness can walk it without reading an external
+surface on every run. Like the rest of `.claude/`, this is plumbing: the
+projection holds no standing, and reconciling it settles nothing.
+
+## Why a projection and not a live read
+
+GitHub is the coordination surface and the issue body remains the compressed
+specification (`CONTRIBUTING.md`, Issue coordination contract). Reading it live is
+an external crossing. This unattended projection walker deliberately does not make
+one: the scheduled-run tool whitelist in `scripts/sovschedule/runner.py` carries no
+`gh`, so refresh remains a separate attended/scoped coordination action.
+
+So the crossing happens once, attended, and lands in the repository:
+
+```text
+gh (attended)  ->  sov_epic.py sync  ->  .claude/epic/tree.json  ->  every unattended read
+```
+
+The consequence is honest staleness. `tree.json` carries `synced_at`; a walk
+reports the age rather than pretending currency. Refreshing is a human or
+interactive-session action, never a scheduled one.
+
+## The files
+
+| File | What it is |
+| --- | --- |
+| `tree.json` | Every issue: number, title, state, labels, and the parsed `soveraeign-ticket/v1` metadata block, or the parse error that stopped it. Regenerated wholesale by `sync`. |
+| `villages.json` | The village-to-domain routing table. Joins the issue tree's four villages to the harness domains in `.claude/README.md` and owns neither side. An issue routes only where a repository artifact evidences the ownership; `unrouted_reason` says what an absent route does and does not mean. |
+| `NARRATIVE.md` | The same issues told by front office (where an actor meets the system) and back office (what holds that meeting up). A second reading for talking about participants and supports; it routes nothing and holds no standing. |
+| `offices.json` | The issue-to-office grouping behind `NARRATIVE.md`, in machine shape. Every issue sits in exactly one office or in `outside_both`. |
+
+## Three readings, none of which settles anything
+
+`sov_epic.py validate` reports three independent kinds of drift:
+
+- **contract** — each open issue's block against `contracts/issue-metadata.schema.json`;
+- **label projection** — the visible GitHub labels against the block they project,
+  per `.github/labels.yml` and `CONTRIBUTING.md`;
+- **containment** — the epic to village to bit/stub tree. `village_issue` is the
+  containment edge for a bit or stub, not `parent`: the schema lets a bit name
+  the epic as its parent while its village issue is the node that must contain
+  it.
+
+## Three states, kept apart
+
+Merging any two of these sends ordinary work upward, so the walk names them
+separately and never lets one imply another.
+
+| State | Means | Who moves it |
+| --- | --- | --- |
+| `HELD` | an unsatisfied `requires` edge | whichever tier can build the prerequisite |
+| `UNROUTED` | no repository artifact evidences a domain owner | whichever tier can write the charter, contract, or tests |
+| `OWNER_HELD` | an open `unblock` ticket asking the owner for a judgement | Bdo, and only here |
+
+Routing and readiness are **independent readings of the same issue**. An issue
+with no domain owner can also be waiting on a prerequisite, so every entry
+carries both `routing` (`ROUTED`/`UNROUTED`) and `readiness`
+(`REACHABLE`/`HELD`). Eighteen of the twenty issues that are unrouted today are
+`HELD` as well, which the old three-way split could not show.
+
+`OWNER_HELD` membership is decided by `contracts/issue-metadata.schema.json`
+rather than by the walk's opinion: an open `unblock` ticket whose
+`requested_provision` is a judgement, which the schema then requires to be
+addressed to the owner. The provision is the discriminating key and
+`requested_from` is not, because the schema constrains only one direction: an
+unblock ticket may lawfully ask the owner for a fixture, a contract, an
+observation, a capability, or a grant, and none of those is a judgement. Reading
+`requested_from` instead would file that ordinary work on Bdo's desk.
+
+There are no owner-held tickets in the tree today, and
+`python scripts/sov_epic.py owner-held` says so. That is a reading of the tree
+and nothing wider: `STATUS.yaml` `owner_holds` and the judgement sections under
+`decisions/` are separate records, and an empty list here is no evidence about
+either.
+
+Selection then puts each open bit and stub in exactly one dispatch bucket, in the
+order that decides who moves it next: **owner-held**, then **unrouted**, then
+**held**, then **ready** (routed with every `requires` edge satisfied). The
+bucket counts partition the workable issues, so on their own they understate the
+dependency work by every issue the unrouted bucket won. `status` therefore prints
+the readings as well - `dependency-held` and `no-domain-owner` - which count the
+two states directly and deliberately overlap the buckets.
+Reachability is evidence about the tree, never a grant — an issue being ready
+says nothing about whether an open decision in `STATUS.yaml` admits the work.
+Adding the artifact that would route an unrouted issue is ordinary reversible
+work at this tier (`AGENTS.md`, Closure ownership), not a question for Bdo.
+
+## Operating it
+
+```bash
+python scripts/sov_epic.py sync        # attended: refresh from GitHub via gh
+python scripts/sov_epic.py status      # counts, ready work, held work
+python scripts/sov_epic.py validate    # the three readings; --strict to exit non-zero
+python scripts/sov_epic.py next --village ground-and-evidence
+python scripts/sov_epic.py unrouted    # open work no artifact gives a domain owner
+python scripts/sov_epic.py owner-held  # the tree's own owner-held tickets
+python scripts/sov_epic.py report      # the whole survey as JSON
+```
+
+`validate` exits zero by default and is deliberately absent from
+`scripts/verify.py`: the tree carries real pre-existing drift, and whether that
+drift should turn the repository red is Bdo's call, not the harness's.
+
+## The walk
+
+`workflows/sov-epic.js` runs Reconcile (one `sov-witness` over the three
+readings) then Select (one `sov-orchestrator` per village). With
+`{ advance: true }` it adds Advance and Witness — one `sov-worker` on the
+selected operation, then a different agent verifying it. It never calls
+`workflow()`; `sov-federation` remains the only workflow allowed to nest.
+
+Declarations: `schedules/epic-walk.json` (observe, daily) and
+`schedules/epic-advance.json` (build, weekly). Both ship disabled.
+
+===== END FILE: .claude/epic/README.md =====
+===== FILE: .claude/register/bdo.md =====
+# Register card — Bdo
+
+How to hand this owner a result. Every line below is grounded in something
+observed on 2026-08-23, not inferred; where nothing was observed the line says
+**unobserved** rather than guessing. Two sessions have now guessed at this
+register and been told they were wrong, so the gaps are left open on purpose.
+
+The failure this card exists to prevent: a session produced a correct, complete
+list of twenty open decisions with their gate names attached, and it was rated
+2/10 — *"nothing owner translated at all."* The information was right. The
+register was wrong.
+
+## Holds, cold
+
+He built all of this and he cannot parse its identifiers cold. **Coined is not
+owned.** He invented `O10` and `spec.ratify` in a warm hour deep in the work;
+handed back three weeks — or three hours — later they are encryption, not
+compression.
+
+Observed verbatim: *"You think the Owner of Starbucks gets his reports this
+way?"* and *"This is just 20 dry cards, with nothing owner transalted at all."*
+
+## Does NOT own
+
+Longer than what he owns, which is normal and is the point.
+
+- Open-decision identifiers — `O2`, `O9`, `O10`, `O16` — as carriers of meaning.
+- Gate names: `spec.ratify`, `classification.ratify`, `engineering.ratify_baseline`.
+- Protected-boundary strings: `no_runtime_code_before_logical_spec_and_defeating_fixtures`.
+- Phase labels `F0`–`F4` as *impact*. He knows the ladder; he does not read `F0`
+  and feel what is blocked.
+- Standing tokens as prose: `BUILT_SELF_TESTED_NOT_WITNESSED` reads as a string,
+  not as "nobody has ever checked this."
+
+Translate every one of these or delete it. If an identifier must appear, put it
+in a drawer captioned *what this is called if you need to look it up* — never in
+the sentence carrying the meaning.
+
+## Cares about
+
+- **Impact, not status.** Not "O10 is open" but "three services are frozen until
+  you answer."
+- **Evidence he can check.** Observed as an explicit list of what a report owes:
+  *"evidence and proof and backing and covering and socres and entertainment and
+  and owners read."*
+- **Scores.** Hard numbers land. A `5.0%` mutation score on the module that would
+  gate his main branch changed the conversation immediately; adjectives never did.
+- **Being able to refuse.** He asked what would give him confidence to say yes.
+  What actually served him was four verdicts saying no, with traces.
+- **Effort being visible.** *"I know I spent way more effort for My boss on what
+  I'm reporting on."* A cheap-to-write deliverable reads as disrespect.
+
+## Decides
+
+Everything. Sole ratifier, sole collaborator on the repository, and the only
+principal named in `CODEOWNERS`. Nothing advances past `BUILT` without him,
+which is why the queue is the constraint and why no agent may present its
+synthesis as his judgement.
+
+## Time
+
+Five minutes on a report; one hour to a delivered artifact when he sets a
+deadline. Observed: *"You have 1 hour to deliver."* Front-load the judgment — he
+may stop after the first line, and the first line must still carry the most
+important thing.
+
+## Shape that worked
+
+- One judgment first, before any evidence.
+- The asset stated before the problem. A brief that opens on what is broken and
+  never says what the thing is worth reads as a complaint.
+- Progressive disclosure: headline visible, evidence in a drawer, citations
+  inside it.
+- Deck over document when the material is a decision; he asked for a slide deck
+  by name.
+- **Disclose your own stake.** One of the decisions was authored by the session
+  reporting on it; saying so plainly, and ranking it outside the top, was worth
+  more than the ranking.
+
+## Shape that failed
+
+- A queue of items with controls. He does not want to work the queue; he wants
+  the read on it.
+- Twenty of anything. Twenty decisions compress to four that matter and sixteen
+  that can wait — and even that is *one slide* of an owner report, not the report.
+- Arguing for yes. He is not looking to be sold; he is looking to be able to
+  refuse responsibly.
+- Any identifier doing load-bearing work in a sentence.
+
+## Unobserved — ask, do not guess
+
+- Which artifacts he forwards to anyone else, and to whom.
+- Whether he reads on a phone.
+- How he wants dissent surfaced when two witnesses disagree.
+- What he considers an acceptable cost for a decision that turns out wrong —
+  this shapes how conservative a recommendation should be, and nothing observed
+  today settles it.
+
+===== END FILE: .claude/register/bdo.md =====
+===== FILE: .claude/schedules/README.md =====
+# Scheduled Runs
+
+Declarations that let the host scheduler fire harness workflows and skills
+unattended. Like the rest of `.claude/`, this is plumbing: a schedule grants no
+authority, a fired run may propose at most `BUILT -> WITNESSED`, and the
+scheduler's own record is an attempt-and-report ledger that a later witness
+may observe. Standing of the pattern: `decisions/0015-scheduled-runs.md`
+(proposed).
+
+## The primitives
+
+| Primitive | Where | What it is |
+| --- | --- | --- |
+| Declaration | `.claude/schedules/<name>.json` | The schedule analogue of an operation plan: target, cron, mode, effect class, preconditions, limits. Checked against `schedule.schema.json`. |
+| Gate | `scripts/sovschedule/runner.py` | Refuses before invocation with a reason code: `SCHEDULE_DISABLED`, `EFFECT_CLASS_REFUSED`, `TREE_DIRTY`, `RUN_IN_PROGRESS`. |
+| Run | `claude -p --agent sov-controller` | One headless controller session with mode-scoped tool rights; `git commit`, `git push`, and history rewrites are denied by the harness, not by the prompt. |
+| Ledger | `.local/schedules/ledger.ndjson` | Append-only kernel event envelopes (`ATTEMPTED` by the scheduler as `SYSTEM`, `REPORTED` by the controller as `MODEL`), validating against `contracts/event-envelope.schema.json`. Gitignored runtime state. |
+| Capture | `.local/schedules/runs/<run_id>.json` | Exact command, exit code, stdout, stderr, timestamps. |
+| Report | `reports/<date>-<name>.md` | The human-facing completion report the controller writes, judgement queue included (its commit-or-ignore status is queued for Bdo). |
+| Lock | `.local/schedules/lock.json` | One scheduled run in the working tree at a time. |
+
+## Lifecycle of one firing
+
+```text
+tick -> due? -> gates -> ATTEMPTED event -> claude -p (sov-controller)
+     -> capture + REPORTED event -> (later) sov-qa or a human observes
+```
+
+`REPORTED` is the executor's self-report. Its outcome is `ATTEMPTED` on a
+zero exit code and `FAILED` otherwise; it never says `COMMITTED`, because
+settlement needs an independent observation (`AGENTS.md`, State and
+execution). A refused firing still leaves an `ATTEMPTED` event with outcome
+`REFUSED` and the reason code, and it counts as an attempt so a refusal does
+not retry every tick.
+
+## Declaration fields
+
+- `name` — equals the file stem; `enabled` — shipped declarations are `false`
+  until Bdo turns one on.
+- `target.kind` `workflow` | `skill`, `target.name` must exist under
+  `.claude/workflows/<name>.js` or `.claude/skills/<name>/SKILL.md`;
+  `target.args` is passed verbatim.
+- `cron` — five fields, local time, `*` `N` `N-M` `*/S` and lists only.
+- `mode` — `observe` (Read, Grep, Glob, Agent, Workflow, Skill, Write, and
+  read-only git and python via Bash) or `build` (adds Edit). Both deny commit,
+  push, reset, rebase, checkout, switch, and stash.
+- `effect_class` — the kernel enum; this unattended scheduler currently refuses
+  `EXTERNAL_WORLD` at load and at the gate because it has no admitted external
+  crossing. That is a scheduler ceiling, not a phase-wide authority rule.
+- `isolation` — `tree` (default) or `worktree` (passes `--worktree <run_id>`;
+  the flag exists in the installed CLI but has not been exercised end to end).
+- `preconditions.clean_tree` — default `true` for `build`, `false` for
+  `observe`; a build-mode declaration on the shared tree may not set it false.
+  `preconditions.lookback_minutes` — how far back a never-fired schedule looks
+  for a due minute (default 60).
+- `limits.max_budget_usd` and `limits.timeout_seconds` — passed as
+  `--max-budget-usd` and the subprocess timeout; the lock TTL is twice the
+  timeout.
+
+## Operating it
+
+```bash
+python scripts/sov_schedule.py validate          # check every declaration
+python scripts/sov_schedule.py list              # declarations and last attempt
+python scripts/sov_schedule.py due               # what would fire now
+python scripts/sov_schedule.py run nightly-qa --dry-run   # print the command
+python scripts/sov_schedule.py run nightly-qa --force     # fire a disabled one now
+python scripts/sov_schedule.py tick              # fire everything enabled and due
+python scripts/sov_schedule.py ledger --last 10  # read the ledger
+python scripts/sov_schedule.py task-command      # print the Task Scheduler / cron registration
+python scripts/sov_schedule.py health            # is each one alive, late, failing, drifting
+python scripts/sov_schedule.py health --json     # the same read, for a model or for CI
+python scripts/sov_schedule.py health-render     # write docs/automation.html
+python scripts/sov_schedule.py health-check      # refuse a stale page or an unhealthy schedule
+```
+
+The three `health` verbs read and change nothing. What counts as unhealthy is
+declared in `contracts/automation-health.json` and defeated by
+`conformance/fixtures/automation-health/cases.json`; `decisions/0083` records why
+each rule is what it is. `health-check` runs inside `scripts/verify.py`, so an
+unhealthy schedule fails the build - the only alert this local harness currently
+emits. On a checkout
+holding no ledger, which is every CI runner, it can only refuse on a declaration
+defect; run health is watched where the runs are.
+
+Registering the tick with the host scheduler is a human action; the runner
+never registers itself. Headless runs use whatever credential the `claude`
+CLI resolves for the invoking user (the same as an interactive session); the
+runner holds no credential and records none.
+
+Not exercised yet: a real headless firing on this machine. The tests stub the
+invoker; the first live `run --force` is the witness step.
+
+===== END FILE: .claude/schedules/README.md =====
+===== FILE: .claude/skills/clarity/SKILL.md =====
+---
+name: clarity
+description: Audit and rewrite persisted project prose into plain, specific human language while preserving the claims and machine-defined distinctions the repository depends on. Use for "clarity", "deslop", "plain language", "rewrite root docs", "terminology cleanup", or "clarity coverage".
+---
+
+# clarity
+
+## Purpose
+
+Audit persisted human-facing project text and record the result.
+
+`clarity` requires `unslop/v1`. `unslop` is the default output modifier; this
+skill adds claim recovery, source checking, repository-wide terminology control,
+and digest-backed coverage. A clarity review is incomplete if the text has not
+also passed the unslop modifier.
+
+Preserve the project's actual claim, not inherited wording merely because it
+already exists. A clarity pass may rewrite a whole section, reorder explanation,
+or delete terminology that earlier drafts accumulated. It must not invent
+product meaning or quietly change a contract.
+
+For phase-boundary cleanup, treat the corpus as a rebase from zero. Every current
+human-facing artifact must be reconsidered. "No edit needed" is a valid result
+only after the artifact has been actively reviewed.
+
+## Process
+
+1. Read the artifact and the governing sources behind its claims.
+2. Identify the concrete claims the artifact must communicate.
+3. Apply `unslop/v1` to the human-facing prose.
+4. Discard inherited wording when it gets in the way.
+5. Rewrite in plain language.
+6. Restore specialized terms only when they preserve a real distinction.
+7. Use one term for one concept.
+8. Keep machine identifiers exact.
+9. Prefer named actors, mechanisms, states, and observable results over metaphor.
+10. Split sentences that carry more than one important claim.
+11. Remove repetition unless it helps a reader find the owning rule.
+12. Check the rewrite against the sources that govern its meaning.
+13. Ask:
+    - What still sounds AI-written?
+    - What only makes sense to someone who already knows this repository?
+14. Fix both.
+15. Record the completed review with `python scripts/sov_clarity.py record <path>`.
+
+A reviewed artifact counts as covered even when no edit was needed.
+
+## Patterns to remove
+
+The base pattern pass belongs to `unslop/v1`. Clarity applies those rules and
+then asks whether project-specific language itself is carrying unnecessary
+complexity.
+
+### Abstract technical metaphor
+
+Treat words such as "substrate", "surface", "primitive", "vector", "locus",
+"scaffolding", "paradigm", and similar abstractions as smoke detectors, not a
+blind blacklist.
+
+Keep a specialized term only when all three are true:
+
+1. it preserves a distinction the project needs;
+2. replacing it with a common word would lose that distinction; and
+3. the distinction is defined or enforced somewhere concrete.
+
+If those conditions do not hold, use ordinary language.
+
+### Canonical terms
+
+Do not invent a new synonym for an existing project concept. If the canonical
+term is `grant`, use `grant`.
+
+Do not casually rename:
+
+- machine identifiers;
+- contract fields;
+- enum values;
+- operation names;
+- refusal codes;
+- schema terms with defined semantics.
+
+Historical and archived artifacts keep their historical language. Current reader
+documents use current language.
+
+When a root definition changes, update dependent reader text rather than keeping
+a second, drifting explanation.
+
+## Scope
+
+`contracts/clarity.json` declares the review population. Its scope is anchored to
+`contracts/publication-surface.json` so the denominator cannot be made convenient
+by naming only the files already cleaned.
+
+Current prose on `HUB` and `HOST` publication surfaces is considered for clarity.
+Derived output, journals, scratch material, local state, and other non-current
+surfaces are outside the prose campaign. Machine-defined text is not rewritten
+merely to increase coverage.
+
+An artifact may be `EXEMPT` only through an explicit rule with a reason. Exemption
+is visible in `scope` and `status`; it is not counted as reviewed. Historical
+decision records are the first explicit exemption because rewriting the language
+of the act would alter provenance. Current projections of those decisions remain
+eligible.
+
+Use `python scripts/sov_clarity.py scope` to prove that every scanned current
+prose artifact has a publication classification and is either eligible or
+explicitly exempt.
+
+## Basis
+
+Exact `basis_by_path` entries take precedence. Pattern rules provide default
+governing sources for repeated surfaces such as services, bindings, host
+instructions, and operational documentation.
+
+A receipt records the digests of its basis. If one of those sources changes, the
+artifact becomes `BASIS_STALE` even when its own bytes did not move.
+
+Do not add a basis merely to make the graph dense. Use the smallest set that
+actually governs the artifact's claims.
+
+## Coverage
+
+`.clarity/coverage.json` records completed reviews by content digest.
+
+Use:
+
+```sh
+python scripts/sov_clarity.py scope
+python scripts/sov_clarity.py status
+python scripts/sov_clarity.py next
+python scripts/sov_clarity.py record README.md --changed
+python scripts/sov_clarity.py check
+python scripts/sov_clarity.py gate
+```
+
+Coverage and freshness are different:
+
+- coverage = reviewed eligible artifacts / eligible artifacts;
+- freshness = currently valid reviews / reviewed artifacts;
+- current coverage = currently valid reviews / eligible artifacts.
+
+States are:
+
+- `CURRENT` — the artifact and recorded basis still match the reviewed bytes;
+- `TEXT_STALE` — the artifact changed after review;
+- `BASIS_STALE` — a governing source changed after review;
+- `UNCHECKED` — the artifact is eligible but has not been reviewed;
+- `EXEMPT` — the artifact is deliberately outside review for a recorded reason.
+
+`check` refuses malformed scope, malformed receipts, and stale reviews. It does
+not refuse merely because eligible files remain unchecked. This lets a campaign
+advance progressively.
+
+`gate` is the terminal form. It requires every eligible artifact to be `CURRENT`
+and every non-reviewed candidate to be explicitly `EXEMPT`. A phase-boundary
+clarity campaign is not complete until `gate` passes.
+
+## Report
+
+Report:
+
+- scope size and exemptions;
+- files reviewed;
+- files changed;
+- terms removed or normalized when that matters;
+- terms deliberately kept because they preserve a real distinction;
+- clarity coverage;
+- clarity freshness;
+- current coverage;
+- next target.
+
+===== END FILE: .claude/skills/clarity/SKILL.md =====
+===== FILE: .claude/skills/sdlc-control/SKILL.md =====
+---
+name: sdlc-control
+description: Hold the Control tier of the SDLC loop - read the concern registry, select and plan the next named operation, issue scoped grants, launch an orchestration, settle its receipt, update standing, and escalate judgement items to the owner. Use when acting as the loop controller over registered concerns.
+---
+
+# Control Tier Skill
+
+Standing: the loop is accepted as the operating shape (`decisions/0024-open-decision-drain.md`,
+O13) and read through `decisions/0023-acceptance-not-approval.md`: `RIGHT` is owner
+acceptance over an evidenced result, not permission to begin. The implementation is a
+skeleton.
+
+You are an operator under grant, not an authority. Your scope is monitor,
+plan, dispatch, observe, settle verification-typed claims, and escalate. You
+never ratify judgement, never widen your grant or effect class, and every
+sequencing decision you make is an attributable event.
+
+## Loop
+
+1. Derive the concern registry by reading `STATUS.yaml`, `decisions/`, and
+   `OPEN-SEAMS.md`. Keep no private concern state — the registry is a
+   rebuildable projection of those documents.
+2. Select one concern and one named operation. Work one operation at a time
+   per the context-hygiene rules in `AGENTS.md`.
+3. Declare the operation plan per the change protocol in `AGENTS.md`:
+   outcome, affected contracts, preconditions, effect class, rollback or
+   refusal boundary.
+4. Choose a workflow template from `SDLC.md` (Report, Standup, Review, Demo,
+   Design) and launch the orchestration with a grant narrower than your own.
+5. Settle through observation independent of the executor. An orchestration's
+   report is evidence, not settlement.
+6. Record standing changes in the owning documents and residuals in
+   `OPEN-SEAMS.md`. Apply the release gate in `SDLC.md`: nothing passes
+   `BUILT` without a settled Red engagement receipt.
+7. Escalate every judgement item to the owner as a visible pending right.
+   Escalation is a first-class transition, not a failure.
+
+## Refusals
+
+Refuse to ratify, to advance standing without the required evidence, to
+launch work with no governing contract, fixture, or explicit experimental
+label, and to perform any `EXTERNAL_WORLD` effect outside a scope
+`contracts/external-effect-authorization.json` declares.
+
+===== END FILE: .claude/skills/sdlc-control/SKILL.md =====
+===== FILE: .claude/skills/sdlc-development/SKILL.md =====
+---
+name: sdlc-development
+description: Development domain competence for the SDLC loop - implement changes under the repository's implementation order, technical baseline, and style rules. Use when a concern's operation writes or changes code, contracts, or fixtures.
+---
+
+# Development Domain Skill
+
+Standing: the loop is accepted as the operating shape (`decisions/0024-open-decision-drain.md`,
+O13) and read through `decisions/0023-acceptance-not-approval.md`: `RIGHT` is owner
+acceptance over an evidenced result, not permission to begin. The implementation is a
+skeleton.
+
+The rules are owned elsewhere; this skill sequences them. `AGENTS.md` owns
+the implementation order, style, and testing rules; `ENGINEERING.md` owns
+the baseline, primitives, and module budget.
+
+## Duties
+
+1. Follow the implementation order in `AGENTS.md` exactly: name the
+   operation, contract and conformance cases first, smallest implementation,
+   focused unit tests, `python scripts/verify.py` from a clean root, then
+   `decisions/` and `STATUS.yaml` for changed policy or standing.
+2. Write no business logic without a prior contract, fixture, or explicit
+   experimental label, and never weaken an oracle to pass.
+3. Respect the technical baseline: standard library first, SQLite record,
+   content-addressed payloads, JSON Schema at machine boundaries, modules
+   below 300 lines, dependencies only with a decision record.
+4. Match the vocabulary in `CLASSIFICATION.md` and `SPEC.md`; create no
+   synonyms for standing, event, effect, or role terms.
+5. Report `BUILT` evidence only. A green build is not witnessing and never
+   authority.
+
+## Refusals
+
+Refuse contractless business logic, silent dependencies, oracle weakening,
+and any claim of standing beyond what the evidence establishes.
+
+===== END FILE: .claude/skills/sdlc-development/SKILL.md =====
+===== FILE: .claude/skills/sdlc-feedback/SKILL.md =====
+---
+name: sdlc-feedback
+description: Feedback domain competence for the SDLC loop - review standing, capture residuals and seams, and route correction proposals into the owning documents. Use when a concern's operation digests outcomes, residuals, or contradictions back into the System of Record.
+---
+
+# Feedback Domain Skill
+
+Standing: the loop is accepted as the operating shape (`decisions/0024-open-decision-drain.md`,
+O13) and read through `decisions/0023-acceptance-not-approval.md`: `RIGHT` is owner
+acceptance over an evidenced result, not permission to begin. The implementation is a
+skeleton.
+
+Feedback closes the loop by landing what was learned in the documents that
+own it. It creates no side ledger.
+
+## Duties
+
+1. Review standing honestly: what is `OPEN`, `BUILT`, `WITNESSED`,
+   `RATIFIED`, and on what evidence. Never advance standing by summary.
+2. Record residual failures, contradictions, and deliberate ambiguities in
+   `OPEN-SEAMS.md`; an implementation must not choose a side silently.
+3. Route policy-shaped learnings into `decisions/` as proposals and standing
+   changes into `STATUS.yaml`; link, do not duplicate, per the
+   System-of-Record rule in `AGENTS.md`.
+4. Convert confirmed Red findings into permanent defeating fixtures in the
+   conformance corpus, so a found defeat can never recur silently.
+5. Produce handoffs per `AGENTS.md` context hygiene: current standing,
+   changed files, observed checks, residuals, next bounded operation.
+
+## Refusals
+
+Refuse to soften residuals, to close a seam without owner judgement, to
+create a competing status ledger, and to treat recency, repetition, or
+consensus as authority.
+
+===== END FILE: .claude/skills/sdlc-feedback/SKILL.md =====
+===== FILE: .claude/skills/sdlc-orchestration/SKILL.md =====
+---
+name: sdlc-orchestration
+description: Hold the Orchestration tier of the SDLC loop - decompose one launched operation, lease workers in isolated environments, collect their reports, observe durable outputs independently, and report settlement evidence upward. Use when supervising workers for one named operation under a controller's grant.
+---
+
+# Orchestration Tier Skill
+
+Standing: the loop is accepted as the operating shape (`decisions/0024-open-decision-drain.md`,
+O13) and read through `decisions/0023-acceptance-not-approval.md`: `RIGHT` is owner
+acceptance over an evidenced result, not permission to begin. The implementation is a
+skeleton.
+
+You supervise exactly one launched operation under a grant you received and
+cannot widen. You lease workers; you do not settle your own operation and
+you ratify nothing.
+
+## Duties
+
+1. Decompose the operation into leased worker tasks, each with a declared
+   environment, exact inputs, bounded scope, and expiry. Retries keep one
+   attributable operation identity per `ENGINEERING.md`.
+2. Treat worker reports as claims. Settle worker-task outcomes by observing
+   durable results through a path independent of the worker, per the
+   observation primitive in `ENGINEERING.md`. A stale or expired lease
+   cannot settle.
+3. For Review-template work, run both QA lanes from `SDLC.md`: the Blue lane
+   proves declared cases; the Red lane engages adversarially. Red workers
+   receive the contract, claimed invariants, and built artifact only —
+   never the builder's tests, plan, or assumptions.
+4. Reproduce any Red finding independently before counting it. Confirmed
+   findings are handed upward for conversion into permanent defeating
+   fixtures.
+5. Report upward: attempted, reported, observed, and settled outcomes stay
+   distinguished; failures, refusals, and unresolved work are first-class.
+
+## Refusals
+
+Refuse to widen the grant, to let a worker report stand as observation, to
+merge Red and Blue lanes into one operator, and to exceed the operation's
+declared effect class.
+
+===== END FILE: .claude/skills/sdlc-orchestration/SKILL.md =====
+===== FILE: .claude/skills/sdlc-product/SKILL.md =====
+---
+name: sdlc-product
+description: Product domain competence for the SDLC loop - requirements work, PRD alignment, and decision drafting at proposal standing. Use when a concern's operation touches product intent, requirements, or consequential choices.
+---
+
+# Product Domain Skill
+
+Standing: the loop is accepted as the operating shape (`decisions/0024-open-decision-drain.md`,
+O13) and read through `decisions/0023-acceptance-not-approval.md`: `RIGHT` is owner
+acceptance over an evidenced result, not permission to begin. The implementation is a
+skeleton.
+
+Product intent, naming, and phase gates are Bdo's judgement (`STATUS.yaml`
+authority section). Product work in this loop is `LEFT`-hand synthesis:
+inspect, compare, draft, propose — never decide.
+
+## Duties
+
+1. Ground requirement claims in `PRD.md` and the governing set; cite the
+   owning document and section rather than paraphrasing it.
+2. Draft consequential choices as `decisions/` records at proposal standing,
+   following the existing numbering and format.
+3. Mark new claims as proposals and preserve open contradictions in
+   `OPEN-SEAMS.md` instead of resolving them by wording.
+4. Route anything requiring judgement to the owner as a visible pending
+   right; never present synthesis as the owner's judgement.
+
+## Refusals
+
+Refuse to ratify requirements, to change product or repository naming, to
+close a phase gate, or to resolve a recorded contradiction without owner
+judgement.
+
+===== END FILE: .claude/skills/sdlc-product/SKILL.md =====
+===== FILE: .claude/skills/sdlc-qa/SKILL.md =====
+---
+name: sdlc-qa
+description: QA domain competence for the SDLC loop - both verification stances. The Blue lane proves declared positive and defeating cases; the Red lane adversarially seeks undeclared defeats under a scoped grant. Use when verifying, witnessing, or challenging built work.
+---
+
+# QA Domain Skill
+
+Standing: the loop is accepted as the operating shape (`decisions/0024-open-decision-drain.md`,
+O13) and read through `decisions/0023-acceptance-not-approval.md`: `RIGHT` is owner
+acceptance over an evidenced result, not permission to begin. The implementation is a
+skeleton.
+
+`SDLC.md` owns the Red/Blue dyad and the release gate. One operator holds
+one stance per engagement; the lanes must not merge.
+
+## Blue lane
+
+1. Prove every consequential behavior with at least one positive case and
+   one declared defeating case, per `AGENTS.md` testing rules.
+2. Run unit tests beside the service, semantic cases in `conformance/`, and
+   `python scripts/verify.py` from a clean root within its budget.
+3. Distinguish attempted, reported, observed, and settled outcomes. A green
+   run establishes `BUILT` evidence only.
+
+## Red lane
+
+1. Operate only under a typed grant naming target surfaces, effect class
+   (Phase I: `RECORD_LOCAL`, isolated environments, no authoritative
+   writes), budget, and exit criterion.
+2. Work from the contract, claimed invariants, and built artifact — never
+   from the builder's tests, plan, or assumptions, and never importing the
+   participant implementation.
+3. Hunt undeclared defeats: refusal bypasses, authority escalation,
+   stale-source use, provenance gaps, retraction that erases history,
+   executor-only success.
+4. File findings as proposals with exact reproduction inputs. A finding
+   counts only after independent reproduction; confirmed findings become
+   permanent defeating fixtures.
+5. Stop at dry-run convergence: the declared number of consecutive rounds
+   with no new confirmed finding.
+
+## Refusals
+
+Refuse to weaken a fixture to admit a participant, to witness work you
+built, to fabricate or inflate findings, and to exceed the engagement grant.
+
+===== END FILE: .claude/skills/sdlc-qa/SKILL.md =====
+===== FILE: .claude/skills/sdlc-release/SKILL.md =====
+---
+name: sdlc-release
+description: Release domain competence for the SDLC loop - draft release notes, documentation, and marketing artifacts locally, and visibly refuse every external publication step while Phase-I boundaries stand. Use when a concern's operation prepares released or published material.
+---
+
+# Release Domain Skill
+
+Standing: the loop is accepted as the operating shape (`decisions/0024-open-decision-drain.md`,
+O13) and read through `decisions/0023-acceptance-not-approval.md`: `RIGHT` is owner
+acceptance over an evidenced result, not permission to begin. The implementation is a
+skeleton.
+
+In Phase I this skill is mostly a refusal boundary. `STATUS.yaml` protects
+`no_external_effects_in_phase_i`, and the `PUBLIC-CLEARANCE` acceptance hold
+blocks public release only - it blocks no Phase-I engineering. `AGENTS.md`
+restricts what publication may ever include.
+
+## Duties
+
+1. Draft release notes, documentation, and marketing material as
+   `RECORD_LOCAL` artifacts inside the repository, at proposal standing.
+2. Verify the release gate before describing anything as releasable: the
+   concern's standing must have passed `BUILT` through a settled Red
+   engagement receipt per `SDLC.md`.
+3. Keep `lineage/`, ancestor registries, raw evidence, and source-lock
+   inventories out of any publication draft; their publication needs a
+   separate explicit owner instruction.
+4. Refuse, visibly and with a receipt, every `EXTERNAL_WORLD` step:
+   publishing, initializing remotes, enabling integrations, announcements.
+   Name the blocking boundary (`PUBLIC-CLEARANCE`,
+   `no_external_effects_in_phase_i`) in the refusal.
+
+## Refusals
+
+Refuse external publication, silent staging of external effects, and any
+release claim for work that has not cleared the release gate.
+
+===== END FILE: .claude/skills/sdlc-release/SKILL.md =====
+===== FILE: .claude/skills/sdlc-worker/SKILL.md =====
+---
+name: sdlc-worker
+description: Hold the Work tier of the SDLC loop - execute one scoped leased task in a declared environment and emit an attributed report. Use when executing a bounded task under an orchestrator's lease.
+---
+
+# Worker Tier Skill
+
+Standing: the loop is accepted as the operating shape (`decisions/0024-open-decision-drain.md`,
+O13) and read through `decisions/0023-acceptance-not-approval.md`: `RIGHT` is owner
+acceptance over an evidenced result, not permission to begin. The implementation is a
+skeleton.
+
+You execute one leased task inside its declared environment and scope. Your
+report is a claim, not an observation: you cannot settle, witness your own
+output, or write authoritative state, and your lease bounds your life.
+
+## Duties
+
+1. Verify the lease: task, environment, exact inputs, scope, expiry. Refuse
+   work outside it rather than improvising.
+2. Execute within the declared effect class. An `EXTERNAL_WORLD` effect is
+   refused unless a scope in `contracts/external-effect-authorization.json`
+   admits its verb and it leaves a receipt; a Red engagement lease is
+   `RECORD_LOCAL` only per the release gate in `SDLC.md`.
+3. Load the domain skills the task names and follow their owning documents;
+   for code, that is the implementation order in `AGENTS.md`.
+4. Report faithfully: what was attempted, what was produced, exact output
+   addresses, checks run and their real results, residuals, and anything
+   left unresolved. Never report success because files were written or a
+   test returned zero.
+5. Stop at lease expiry or scope boundary and report the partial state.
+
+## Refusals
+
+Refuse unleased work, scope creep, self-settlement, weakening any oracle or
+fixture to pass, and any effect beyond the declared class.
+
+Scope creep is crossing a boundary, not finishing a task. Work that stays
+inside the same service, the same effect class, and the same authority as the
+leased task is absorbed into it; crossing any one of the three is the creep
+this refuses. `AGENTS.md`, Closure ownership, owns the rule and
+`contracts/closure-ownership.json` is its table. Filing that absorbable work
+instead of doing it is refused too.
+
+===== END FILE: .claude/skills/sdlc-worker/SKILL.md =====
+===== FILE: .claude/skills/sov-asset/SKILL.md =====
+---
+name: sov-asset
+description: Bounded work in the Soveraeign asset domain (Asset Service) under services/asset. Load when the task mentions "sov-asset", "asset domain", "asset service", or its concrete artifacts - services/asset/CHARTER.md, KNOWN-GAPS.md, contracts/service.json, soveraeign_asset_service (core.py, cli.py), test_walking_skeleton.py, conformance_observations.py, or the asset conformance BASELINE.md. Covers gap closure, fixture authoring, module splits, conformance observation, and doc coherence for this domain only - not the Proofing Service, kernel contracts, or the root conformance oracle.
+---
+
+## Purpose
+
+Advance the Asset Service reference participant - custody, description,
+transformation, relationship, discovery, and governed use of enterprise
+assets - by one bounded operation at a time. The participant is
+`BUILT_SELF_TESTED_NOT_WITNESSED`: its work surface is repairing observed gaps
+against frozen contracts, never weakening the oracle to pass.
+
+## Owns / Must not
+
+Owns: the `services/asset` bounded lifecycle - charter, service contracts,
+implementation under `src/soveraeign_asset_service/`, tests, `KNOWN-GAPS.md`,
+and the domain conformance baseline record.
+
+Must not: witness its own build claims (independent witnessing comes from
+`sov-witness` or the conformance oracle, never asset builders); own or touch
+another service's state; bypass kernel transitions to write authoritative state
+(projections, adapters, and workers never become authoritative by convenience);
+weaken `conformance/` scenarios or the oracle; add a runtime dependency without
+a named boundary and decision record; import participant code into the oracle.
+
+## Key files
+
+- `services/asset/CHARTER.md` - role, boundary, first proving operation
+- `services/asset/README.md` - status and run commands
+- `services/asset/KNOWN-GAPS.md` - observed gaps vs proposed SPEC (work surface)
+- `services/asset/contracts/service.json` - service contract (owns/operations/forbids)
+- `services/asset/contracts/ai-native-asset-service.yaml` - narrative contract
+- `services/asset/src/soveraeign_asset_service/core.py` - participant lifecycle
+- `services/asset/src/soveraeign_asset_service/organization.py` - typed collections and membership (`sov-librarian` owns curation)
+- `services/asset/src/soveraeign_asset_service/librarian.py` - the conformance read over them
+- `services/asset/src/soveraeign_asset_service/cli.py` - CLI binding
+- `services/asset/tests/test_walking_skeleton.py` - self-tests (BUILT evidence only)
+- `services/asset/scripts/conformance_observations.py` - observation adapter
+- `services/asset/scripts/demo.py` - local demo walk
+- `services/asset/conformance/BASELINE.md` - observed FAIL baseline vs PROD-I-1..9
+- `conformance/run.py`, `conformance/scenarios.json` - frozen root oracle (read-only here)
+
+## Standing and blockers
+
+`STATUS.yaml`: `asset_service_status: BUILT_SELF_TESTED_NOT_WITNESSED`. The
+next standing transition is independent witnessing (`BUILT -> WITNESSED`) by a
+non-builder; ratification is Bdo-only.
+
+- The `ENGINEERING.md` baseline, `SPEC.md`, `CLASSIFICATION.md`, and the BYOM
+  contract are all accepted (`decisions/0024-open-decision-drain.md`). Build on
+  them. Follow the vocabulary exactly; do not fork it, and do not invent binding
+  fields the model-binding contract does not declare.
+- A gap fix is never Phase-I qualification. Qualification needs independent
+  observation, which a builder cannot supply for its own build.
+- Nothing in this domain waits on Bdo. Settle what evidence can settle and
+  record what would defeat the ruling (`decisions/0033-close-the-founding-docket.md`,
+  Ruling 1); the only owner hold is `PUBLIC-CLEARANCE`, which blocks public
+  release and no engineering.
+
+## Named operations (available now)
+
+1. Gap closure: pick one `KNOWN-GAPS.md` row (e.g. visible `admit` transition,
+   receipt completeness, observer independence) and repair the participant with
+   fixtures first, oracle frozen.
+2. Defeating-fixture authoring: add a positive and defeating unittest case
+   under `services/asset/tests/` for an existing contract predicate.
+3. Module-boundary split: split `core.py` by owned responsibility below 300
+   lines while preserving the public participant contract (itself a named gap).
+4. Conformance observation refresh: re-run the observation adapter against the
+   frozen oracle and record the newly observed verdicts in
+   `services/asset/conformance/BASELINE.md`.
+5. Doc coherence: reconcile CHARTER/README/KNOWN-GAPS wording with
+   `CLASSIFICATION.md` and `SPEC.md` vocabulary without changing semantics.
+6. Acceptance packet: when a result is built and independently observed,
+   assemble the six-part packet of `decisions/0023-acceptance-not-approval.md`
+   over it. Never over work not yet done.
+
+## Verification
+
+- `python scripts/verify.py` (repo root; required gate, graded budget (PLATINUM 3 s, GOLD 6 s, SILVER 15 s))
+- `python scripts/lint.py` (repo root; text, syntax, module size, secrets)
+- `python -m unittest discover -s tests -v` (from `services/asset/`)
+- `PYTHONPATH=src python scripts/demo.py` (from `services/asset/`)
+- Conformance binding (from repo root):
+  `PYTHONPATH=services/asset/src python services/asset/scripts/conformance_observations.py > <scratch>/asset-observations.json`
+  then `python conformance/run.py --cases conformance/scenarios.json --observations <scratch>/asset-observations.json`
+
+## Vocabulary (exact terms)
+
+Asset; Asset version; Payload; Source; Recording; Proposal; Receipt;
+Observation; Retraction; Projection; Worker (report is not observation);
+Witness. Record standing: `RECORDED -> ADMITTED -> RATIFIED -> EFFECTIVE`.
+Artifact standing lifecycle: `OPEN -> BUILT -> WITNESSED -> RATIFIED`. Event
+outcomes: `ATTEMPTED | COMMITTED | FAILED | REFUSED | COUNTERED | UNRESOLVED`.
+Attestation outcomes: `REPRODUCED`, `DISSENTED`, `UNATTESTABLE`. Effect
+classes: `RECORD_LOCAL`, `RESOURCE_CONSUMPTION`, `EXTERNAL_WORLD` (no external
+effects in Phase I). Do not invent synonyms for any of these.
+
+## Report format
+
+Files changed (repo-relative paths); checks observed (exact commands and exit
+codes); standing proposals (at most `OPEN -> BUILT`; witnessing belongs to an
+independent witness, ratification to Bdo); judgement items queued for Bdo; next
+bounded operation.
+
+===== END FILE: .claude/skills/sov-asset/SKILL.md =====
+===== FILE: .claude/skills/sov-backlog/SKILL.md =====
+---
+name: sov-backlog
+description: Domain know-how for draining unlanded work - branches that were built and then left, the commits stranded on them, and the disposition each one needs. Load when a task names "sov-backlog", "the backlog", "unlanded work", "stranded branches", "branch cleanup", "what never merged", "drain the branches", or asks which of the open branches are still wanted. Covers surveying every branch against the trunk, judging a disposition with evidence, and naming the small set of choices that genuinely need Bdo. Not for landing a single concern's own branch (that is the concern's own closure), not for GitHub pull-request administration (adapters/github/), and not for the epic issue tree (sov-epic).
+---
+
+## Purpose
+
+Work in this repository is built faster than it is landed. On 2026-08-25 eighteen
+branches carried unlanded commits, several of them finished and tested, and the
+only detector was Bdo noticing. This domain turns that pile into a disposition
+per branch, with the evidence under it, so the pile shrinks by decision rather
+than by attrition.
+
+The domain measures and judges. It does not merge. Landing is a separate act
+under `contracts/standing-grants.json`, and no harness role may commit
+(`.claude/agents/*`, and `OPEN-SEAMS.md` S21).
+
+## Owns / Must not
+
+Owns: `scripts/sov_backlog.py` (the survey), `scripts/sov_strand.py` (the
+loss-risk check and its session-start reading), and the disposition report this
+domain produces.
+
+Must not: merge, commit, push, delete a branch, or rewrite history. Must not
+recommend deleting a branch whose commits reach no remote - push first, decide
+after, because a decision that destroys the evidence it rests on cannot be
+revisited. Must not treat a green `verify.py` on the trunk as evidence about a
+branch that has never been merged into it.
+
+## Key files
+
+- `scripts/sov_backlog.py` - the survey. `--json` for machine use, bare for a
+  table. Reads git only, writes nothing, and trials merges with
+  `git merge-tree`, which resolves in memory and touches no index or worktree.
+  Safe in a tree other sessions are working in, which this tree always is.
+- `scripts/sov_strand.py` - grades whether a branch's commits reach any remote.
+  Run it first: a branch that exists only on this disk is a loss risk before it
+  is a backlog item.
+- `scripts/tests/test_sov_backlog.py`, `scripts/tests/test_sov_strand.py` - the
+  defeating cases, including work already landed under another hash.
+
+Both tools read local heads **and** remote-tracking refs with no local head, and
+skip a remote copy of a branch already counted locally. Until 2026-08-27 they
+read `refs/heads/` alone, so a branch pushed once and never checked out here
+again was reported as nothing at all: eighteen branches carrying 88 commits,
+one of them with an open pull request, invisible in the two tools whose whole
+purpose is seeing them. `git fetch --prune` before a survey, or the reading is
+of a stale copy of the remote rather than of the remote.
+
+## The three measures, and what each one settles
+
+| Column | Question it answers | Why it is not obvious |
+| --- | --- | --- |
+| `out` | commits the trunk does not carry | raw commit count double-counts work that already landed by rebase or cherry-pick |
+| `done` | commits the trunk already carries under another hash | a branch that is entirely this is finished, and deleting it loses nothing |
+| `confl` | paths a merge cannot resolve alone | zero means mechanical; a number means somebody must choose |
+
+`shared_files` names every file two or more branches change. That is where
+landing order stops being free.
+
+## Dispositions
+
+Every branch gets exactly one, and each names its evidence:
+
+- `LAND` - outstanding work, no conflicts, checks pass on the merged result.
+  Mechanical. Needs nobody's judgement.
+- `LAND_AFTER_RESOLUTION` - outstanding work, conflicts named, and the
+  resolution is inside one service and one effect class. Ordinary engineering.
+- `ALREADY_HOME` - `out` is zero. The work landed by another route. Deleting
+  the branch loses nothing, and the survey proves it rather than asserting it.
+- `SUPERSEDED` - the outstanding commits are answered by later work on the
+  trunk. This one needs the diff read, not just counted; say what supersedes it.
+- `ASK_BDO` - the branch is a product-intent, naming, or external-commitment
+  question, or two settled constraints conflict in it. Nothing else qualifies
+  (`contracts/acceptance-policy.json` names the admissible reasons and states
+  the list is exhaustive).
+
+Wanting a second opinion is not `ASK_BDO`. A branch nobody remembers is not
+`ASK_BDO` either; read it.
+
+## How to work this domain
+
+1. `python scripts/sov_strand.py`. Anything at risk gets pushed before any
+   disposition is written.
+2. `python scripts/sov_backlog.py --json`. This is the evidence base; do not
+   re-derive it per branch.
+3. Per branch: read the commit subjects and the diff against the trunk, decide
+   the disposition, and state what would defeat it.
+4. Order the `LAND` set against `shared_files`, smallest contested surface
+   first, so each landing does not manufacture the next conflict.
+5. Report as a delta, not an inventory: what the count was, what it is, and
+   which branches remain and why.
+
+## Verification
+
+`python scripts/verify.py` from the repository root. The survey's own tests run
+inside it. A disposition is a claim about a branch and is never witnessed by the
+participant that wrote it.
+
+## Blockers
+
+- No harness role may merge or commit, so this domain's terminal is a disposition
+  report, not a drained backlog. The landing is done by the interactive
+  participant or under the standing grant, with an independent observation
+  (`contracts/standing-grants.json`, `requires_independent_observation`).
+- Several sessions write this tree at once (`CLAUDE.md`, trap T6). The survey is
+  a snapshot; re-run it before acting on it.
+
+===== END FILE: .claude/skills/sov-backlog/SKILL.md =====
+===== FILE: .claude/skills/sov-byom/SKILL.md =====
+---
+name: sov-byom
+description: Domain know-how for the Soveraeign byom domain - Bring Your Own Model bindings and adapters. Load when work touches BYOM.md, bindings/README.md, adapters/README.md, contracts/model-binding.schema.json, decisions/0011-local-personal-byom.md, PRD requirement PROD-I-9, or conformance scenarios 006-two-binding-parity and 008-model-portability. Trigger words: "sov-byom", "byom domain", "model binding", "model adapter", "data boundary", "model portability", "two-model fixture", "invoke_model". Not for asset, proofing, contracts-kernel, conformance-oracle, governance, or verification domain work - those have sibling sov-* skills.
+---
+
+## Purpose
+
+Advance Soveraeign's Bring Your Own Model practice: one governed Model Binding
+contract that admits materially different local or remote models without moving
+authority, provenance, receipts, or custody. The binding contract is accepted
+(`decisions/0024-open-decision-drain.md`, O12); an implementation still owes
+independent observation before it is witnessed.
+
+## Owns / Must not
+
+Owns: `BYOM.md` practice; `bindings/` (operator realizations of declared
+interfaces) and `adapters/` (translation to named external systems) boundary
+documents; `contracts/model-binding.schema.json` alignment with the SPEC.md
+`ModelBinding` object; PROD-I-9 model portability. Every invocation records
+binding, adapter, provider, model, version, runtime, host, input projection,
+data boundary, usage, and cost.
+
+Must not: admit provider SDK types into kernel or service contracts; permit
+silent provider fallback; let bindings or adapters make authoritative writes or
+semantic forks (AGENTS.md directory boundaries: `/bindings` must not own
+authoritative writes or semantic forks; `/adapters` must not own standing,
+ratification, settlement, or hidden fallback); let model selection change
+authority.
+
+## Key files
+
+- `BYOM.md` - the practice: personal-local pattern, binding/adapter boundary, data-boundary modes, portability test.
+- `bindings/README.md` - operator bindings and the two-model parity requirement.
+- `adapters/README.md` - declared adapter boundaries; Model provider row.
+- `adapters/ollama/` - the first Model Adapter implementation: `capture.py` (attended runtime read), `inventory.json` (rebuildable projection), `adapter.py` and `validate.py` (binding, invocation, and parity checks), two declared bindings, sixteen fixtures, and `tests/`. Standing `BUILT`, self-tested, not witnessed; `decisions/0027-local-model-adapter.md`.
+- `contracts/model-binding.schema.json` - proposed Model Binding schema (Draft 2020-12).
+- `decisions/0011-local-personal-byom.md` - owner-directed decision and sources.
+- `PRD.md` - PROD-I-9 "Bring your own model" and the "Two-binding proof" section.
+- `SPEC.md` - `ModelBinding` object and the `invoke_model` transition with its refusal codes.
+- `CLASSIFICATION.md` - Binding, Adapter, Operator, and naming rules.
+- `STATUS.yaml` - `byom_status` and `local_model_adapter_status`.
+- `conformance/founding-scenarios/006-two-binding-parity.yaml` and `008-model-portability.yaml`.
+- `conformance/oracle-controls.json`, `conformance/scenarios.json`, `conformance/run.py`.
+
+## Standing and constraints
+
+- `byom_status: OWNER_ACCEPTED_PHASE_I_CONTRACT` (STATUS.yaml). The exact binding
+  fields, the three data-boundary modes, and the two-model shape are accepted
+  (`decisions/0024-open-decision-drain.md`, O12).
+- `local_model_adapter_status: BUILT_SELF_TESTED_NOT_WITNESSED`. Accepting the
+  adapter boundary (`decisions/0033-close-the-founding-docket.md`) did not witness
+  the implementation; that needs an agent other than its builder.
+- `no_runtime_code_before_logical_spec_and_defeating_fixtures` still binds: the
+  defeating fixture comes before the code, every time.
+  `no_external_effects_in_phase_i` always applies, and a remote crossing needs a
+  declared adapter, data-boundary mode, input projection, authority, and receipt.
+- Nothing here waits on Bdo. Settle what evidence can settle and record what would
+  defeat it (`decisions/0033-close-the-founding-docket.md`, Ruling 1).
+
+## Named operations (available now)
+
+1. Gap closure: reconcile `contracts/model-binding.schema.json` field-by-field with the SPEC.md `ModelBinding` object and BYOM.md prose; record divergences as proposals.
+2. Fixture authoring: draft positive and defeating binding instances against the schema (e.g., a silent-fallback or missing-provenance binding that must fail validation).
+3. Portability fixture refinement: tighten FOUND-008 wording so each PROD-I-9 defeating case is individually testable on its own.
+4. Defeating-case audit: check every PROD-I-9 defeating case has a matching control in `conformance/oracle-controls.json`; record gaps without weakening the oracle.
+5. Acceptance packet: over a binding that is built and independently observed, assemble the six-part packet of `decisions/0023-acceptance-not-approval.md` - claim, visible result, evidence, why it matters, what could defeat it, owner action.
+6. Doc coherence pass: align BYOM.md, bindings/README.md, adapters/README.md, and decisions/0011 with CLASSIFICATION.md vocabulary and cross-references.
+7. Adapter witness: have a different agent verify `adapters/ollama/` through an independent path, above all whether the recorded inventory can be trusted as the custody authority.
+8. Vocabulary drift scan: grep byom-owned files for synonyms of standing, event, effect, or role terms and propose exact-term corrections.
+
+## Verification
+
+- `python scripts/verify.py` (from repo root; required gate, graded budget (PLATINUM 3 s, GOLD 6 s, SILVER 15 s)).
+- `python scripts/lint.py` (text, syntax, module size, secret shapes).
+- `python conformance/run.py` (oracle self-controls; proves the oracle distinguishes positive and defeating narratives, does not witness a participant).
+- `python conformance/run.py --cases conformance/scenarios.json --observations <path>` (participant binding form; derives defects from observation records, never trusts pass/fail claims).
+
+## Vocabulary (exact terms)
+
+- **Model Binding** - realizes the operator interface for a configured model; **Model Adapter** - translates that binding to a named runtime or provider; neither gains authority by operating.
+- **Operator** / **Actor** / **Worker** / **Witness** per CLASSIFICATION.md; the model is the operator for an attributed run, the adapter is not.
+- `data_boundary`: `LOCAL_ONLY | REDACTED_REMOTE | REMOTE_ALLOWED` (a maximum allowance, not permission by itself).
+- `provider_kind`: `LOCAL | REMOTE`; `fallback_policy`: `NONE | EXPLICIT`.
+- `invoke_model` refusals: `MODEL_UNAVAILABLE`, `MODEL_INCOMPATIBLE`, `DATA_BOUNDARY_REFUSED`.
+- Information roles: **Proposal**, **Recording**, **Receipt**, **Projection**; model output enters as proposal or recording, never as authoritative state.
+- Effect classes: `RECORD_LOCAL`, `RESOURCE_CONSUMPTION`, `EXTERNAL_WORLD` (refused in Phase I).
+- Repository standing lifecycle: `OPEN -> BUILT -> WITNESSED -> RATIFIED`; record standing: `RECORDED -> ADMITTED -> RATIFIED -> EFFECTIVE`; attestation outcomes: `REPRODUCED | DISSENTED | UNATTESTABLE`.
+
+## Report format
+
+- files_changed: exact repo-relative paths.
+- checks_observed: commands run with exit codes and bounded output excerpts.
+- standing_proposals: at most `OPEN -> BUILT` from a builder; `BUILT -> WITNESSED` requires an independent witness; only Bdo ratifies.
+- judgement_items: questions queued for Bdo, stated as questions.
+- next_bounded_operation: the single next operation, or none.
+
+===== END FILE: .claude/skills/sov-byom/SKILL.md =====
+===== FILE: .claude/skills/sov-coldstart/SKILL.md =====
+---
+name: sov-coldstart
+description: Domain know-how for the cold-start awareness benchmark - scripts/sov_coldstart.py, the corpus and probes under scripts/sovcoldstart/, the run-record contract contracts/coldstart-run.schema.json with its defeating fixtures, and the recorded runs under reports/coldstart/. Load when a task names "sov-coldstart" or the "cold-start benchmark", runs or grades the benchmark, rebases a section whose expectations moved, adds or repairs a question or probe, reads drift across days, or asks whether the orientation layer (CLAUDE.md, AGENTS.md, STATUS.yaml) still tells a fresh agent the truth. Not for the verification gate itself (verification domain) or for the AI-native standard's own contracts (governance domain).
+---
+
+## Purpose
+
+Every launched agent in this repository is oriented by CLAUDE.md, AGENTS.md and
+the session hooks before it reads a single file, and those pages go stale
+silently. This benchmark turns that orientation into a scored corpus: each
+question carries a deterministic probe that recomputes the answer from the live
+repository, so the corpus grades itself against the world instead of against a
+hand-maintained answer key.
+
+Two different readings, never averaged:
+
+- **INTEGRITY** (`run`) grades the corpus against the world. `DRIFT` means
+  `expected` and the repository disagree, and one of them is wrong.
+- **COMPETENCE** (`grade`) grades a participant's frozen answers against the
+  probes. It measures what a fresh instance actually knew on arrival.
+
+## Owns / Must not
+
+Owns: `scripts/sov_coldstart.py`, `scripts/sovcoldstart/`,
+`contracts/coldstart-run.schema.json`,
+`conformance/fixtures/coldstart/run-cases.json`, `reports/coldstart/`, and the
+`.claude/schedules/daily-coldstart.json` declaration.
+
+Must not: rebase an expectation to make a wrong answer look right; widen a
+tolerance to make a mismatch disappear; grade a manual question without an owner
+verdict file; record a run at a standing above `BUILT`; edit `expected` and the
+probe in the same change without saying which one the world disproved.
+
+## Commands
+
+Global flags come **before** the verb (`--section`, `--fast`, `--offline`,
+`--record`, `--at`, `--participant`, `--json`, `--verbose`, `--reveal`).
+
+```
+python scripts/sov_coldstart.py describe                      # what this surface offers, as JSON
+python scripts/sov_coldstart.py selfcheck                     # the run-record contract still refuses
+python scripts/sov_coldstart.py --section doctrine paper      # questions with every answer stripped
+python scripts/sov_coldstart.py --fast --offline run          # ~2s; file and git probes only
+python scripts/sov_coldstart.py --record run                  # full run, writes reports/coldstart/
+python scripts/sov_coldstart.py grade ANSWERS.json --owner-verdicts VERDICTS.json
+python scripts/sov_coldstart.py --section repo rebase --dry-run
+python scripts/sov_coldstart.py rebase --tier-zero-ruling decisions/00NN-....md
+python scripts/sov_coldstart.py history                       # runs, and which sections moved
+```
+
+## How the score works
+
+Four tiers with conjunctive gates. There is deliberately no weighted total: the
+same 98% reads NOT_ADMISSIBLE, DEGRADED or ADMISSIBLE depending only on which
+tier the missing points came from, and a reader who sees one number beside a
+failed invariant hears "it nearly passed".
+
+| Tier | What it holds | Gate |
+| --- | --- | --- |
+| 0 | Hard invariants and authority | every question, no exceptions |
+| 1 | Operational routing and procedure | 90% |
+| 2 | Topology and standing | 80% |
+| 3 | Telemetry and diagnostics | recorded, never scored |
+
+Five rules decide a score, and each was an exploit before it was a rule:
+
+1. **Unmeasured is not passed.** A skipped, errored or hand-graded tier 0
+   question makes the verdict `UNPROVEN`. Otherwise `--fast` is a way to pass
+   the gate rather than a way to run less of it.
+2. **An absent tier is not a passed tier.** `--section host` selects no tier 0
+   question and reads `PARTIAL`, not `ADMISSIBLE`.
+3. **A failed probe never falls back to the answer key.** It returns UNMEASURED.
+   The fallback silently re-pointed each question at the key checked into this
+   repository.
+4. **No fuzzy string credit, in either direction.** An answer that is contained by the
+   truth is `WRONG`, and so is prose that merely contains it. A `contains`-graded question
+   asks for a term: the answer must be that term, or one item in a list of terms. A witness
+   submitted one 339-character blob of vocabulary to all 21 `contains` questions and scored
+   RIGHT on three, all tier 0, because longer answers made a bigger haystack.
+5. **The participant does not grade its own prose.** Manual questions read
+   `UNGRADED` until a separate owner verdict file names them, and that file must
+   name the answers file it grades.
+
+## The verdict is derived, never written
+
+A run record carries a `verdict`, and `records.defects` recomputes it from the
+tier table. Every other field in a record is a measurement; that one is a
+conclusion, and a participant that writes its own conclusion has removed the
+only part of the reading anyone else was going to check.
+
+Eleven refusals, each proven by a case in
+`conformance/fixtures/coldstart/run-cases.json`, and each one there because a witness got
+past its absence:
+
+| Refusal | What it caught |
+| --- | --- |
+| `RECORD_SHAPE` | the declared shape, checked by `sovkernel.jsonschema` |
+| `TIER_ARITHMETIC` | hits exceeding what was scored, or counts that do not add up |
+| `TIER_SET_INVALID` | the tier 0 row deleted, or duplicated so ordering decided the verdict |
+| `TIER_NOT_DERIVED` | a row supplying its own gate or its own result |
+| `COUNTS_DISAGREE` | `sections` or `corpus.selected` disagreeing with the tier table |
+| `RUN_ID_NOT_DERIVED` | an identity the record did not earn, which could take another record's filename |
+| `VERDICT_NOT_DERIVED` | the stated verdict disagreeing with the tier table |
+| `STANDING_OVERCLAIMED` | a run record naming a standing above `BUILT` |
+| `PARTICIPANT_MISSING` | a competence score with nobody attached to it |
+| `ANSWERS_UNVERIFIED` | an answers digest that matches no file |
+| `SELF_GRADED` | prose scored with no owner verdict file, or one that grades other answers |
+
+Two more fire only when a record is written: `CORPUS_UNVERIFIED`, and
+`RECORD_WOULD_REPLACE` when a second record would take a first one's filename.
+
+## Reading drift
+
+`history` prints the recorded runs and names which sections moved between
+consecutive ones. A section that moved is the signal to re-read that part of the
+orientation layer; a total that moved says only that something did.
+
+When a section has genuinely moved — a count changed because the repository
+changed — rebase that section and say so. When `expected` was right and the
+world got worse, the repository is what needs repairing. Decide which before
+touching either.
+
+`rebase` holds every tier 0 question unless `--tier-zero-ruling` names a decision
+record under `decisions/` that exists and is not empty. Those questions encode
+rules, and a rule whose expectation moved is a rule that changed, which is a
+thing to record rather than a number to update.
+
+## What this does not do
+
+The corpus ships `expected` beside each question inside the repository the
+participant is tested on. An agent that reads `corpus.json` scores
+`ADMISSIBLE` without knowing anything. `paper` reduces this by handing a
+launched participant the questions with the answers stripped, so reading the key
+becomes something it has to decide to do rather than the default; it does not
+close it. Closing it means holding the key outside the tree, which is a change
+to where the corpus lives.
+
+A run establishes `BUILT`. A benchmark cannot witness the participant that ran
+it, and a good score is evidence for an acceptance packet, never the acceptance.
+
+===== END FILE: .claude/skills/sov-coldstart/SKILL.md =====
+===== FILE: .claude/skills/sov-conformance/SKILL.md =====
+---
+name: sov-conformance
+description: Domain know-how for the Soveraeign conformance domain - the independent oracle and qualification suite in conformance/. Load when a task names "sov-conformance", "conformance domain", "oracle", "oracle-controls.json", "scenarios.json", "founding-scenarios", "test_oracle.py", "conformance/run.py", "fixture gap", "defeating fixture", "positive and defeating pair", "participant observations", "fresh witness", "PROD-I-7", or "F2 conformance corpus". Not for building participant implementations (asset, proofing, byom domains) or for editing scripts/verify.py (verification domain).
+---
+
+## Purpose
+
+The conformance domain owns Soveraeign's independent qualification machinery:
+a strategy-neutral oracle that derives defects from observation records, control
+fixtures that prove the oracle distinguishes good from defeating narratives, and
+the participant observation contract a second implementation can bind to. It
+exists so that no participant is ever qualified by its own self-report.
+
+## Owns / Must not
+
+Owns (AGENTS.md directory boundaries: `/conformance` owns independent scenarios,
+oracle controls, witness inputs): the oracle runner and its nine requirement
+checks (PROD-I-1..9); embedded positive/defeating oracle controls; participant
+scenario narratives; founding scenario seeds; the oracle's own unit tests; and
+the fresh-witness qualification contract (PROD-I-7, FOUND-007).
+
+Must not:
+
+- Import participant implementation code (nothing from services/, bindings/,
+  adapters/, workers/) - the oracle evaluates externally visible records only.
+- Weaken an oracle check merely to make a participant pass (AGENTS.md,
+  Implementation order).
+- Trust an implementation self-report; the runner derives defects from
+  `observed` records, never from a participant verdict field.
+
+## Key files
+
+- conformance/run.py - oracle runner; CHECKS map for PROD-I-1..9; PASS / FAIL /
+  INVALID verdicts; coverage gate for positive and defeating polarity.
+- conformance/oracle-controls.json - one positive and one defeating embedded
+  observation per requirement (CONF-I<n>-POS / CONF-I<n>-DEF).
+- conformance/scenarios.json - one strategy-neutral participant narrative per
+  requirement (RUN-I<n>-*), polarity "participant".
+- conformance/founding-scenarios/001-source-reading-recording.yaml through
+  008-model-portability.yaml - FOUND-001..008 seeds (006 two-binding parity,
+  007 fresh witness).
+- conformance/tests/test_oracle.py - unittest self-tests for the oracle.
+- conformance/README.md - the participant observation contract and result
+  meanings.
+- Governing: PRD.md (PROD-I-7, "Two-binding proof", "Phase-I exit"), SPEC.md
+  ("Requirement predicates", "Conformance boundary"), ROADMAP.md (F2).
+
+## Standing and blockers
+
+- STATUS.yaml conformance_status:
+  `EXECUTABLE_ORACLE_CONTROLS_PARTICIPANT_BINDING_OPEN` - the oracle runs and
+  distinguishes its embedded controls, but no participant has bound; passing the
+  controls does not witness any implementation.
+- F2 exit (ROADMAP.md): every normative predicate has at least one positive and
+  one defeating fixture, and the suite can be bound to more than one
+  implementation. Participant binding is the open half.
+- `SPEC.md` is accepted (`decisions/0024-open-decision-drain.md`, O10), so the
+  predicates fixtures trace to are the accepted ones. A fixture that contradicts
+  a predicate is a defect in the fixture until an observation says otherwise.
+- The semantic cold-start observation shape is accepted (0024, O8): a fresh
+  participant performs a named domain task against exact held data and produces
+  attributable outputs. Schema validity alone is not enough, and future
+  qualification should measure time, interventions, refusals, and corrections.
+- The BYOM binding fields are accepted (0024, O12); `check_i9`'s required-field
+  list realises them. Change the list only with a fixture proving the change.
+
+## Named operations
+
+- Fixture gap audit: diff SPEC.md requirement predicates against
+  oracle-controls.json and report which predicates lack a positive or defeating
+  control (RECORD_LOCAL, read-mostly).
+- Control pair authoring: add one positive and one defeating observation pair
+  for one uncovered predicate, with matching expected_oracle values.
+- F2 case-family extension: add one boundary, stale-state, authority,
+  concurrency, reconstruction, dissent, or retraction case per ROADMAP F2.
+- Oracle self-test hardening: add a test_oracle.py case proving the oracle
+  rejects a manipulated observation or smuggled participant verdict.
+- Participant-binding interface sharpening: tighten the observations-JSON
+  contract in conformance/README.md so a second implementation can bind without
+  the oracle importing its code.
+- Scenario coherence pass: reconcile scenarios.json and founding-scenarios
+  wording with CLASSIFICATION.md and SPEC.md vocabulary without weakening any
+  check.
+- Fresh-witness drill preparation: tighten FOUND-007 and check_i7 observables
+  within current spec text, and add the measurement dimensions the accepted
+  cold-start shape names - time, interventions, refusals, corrections.
+
+## Verification
+
+- `python scripts/verify.py` - required gate, from repo root, graded budget (PLATINUM 3 s, GOLD 6 s, SILVER 15 s);
+  runs the oracle controls and the oracle unit tests.
+- `python scripts/lint.py` - repository text, syntax, size, secret shapes.
+- `python conformance/run.py` - embedded controls; add `--json` for machine
+  output.
+- `python -m unittest discover -s conformance/tests -v` - oracle self-tests,
+  from repo root.
+- Participant binding form (once observations exist):
+  `python conformance/run.py --cases conformance/scenarios.json --observations
+  <path>` - exit 1 on any non-PASS.
+
+## Vocabulary
+
+- Witness: an independent verifier depositing evidence; a Worker's report is
+  not observation. Observation: independent evidence of what occurred.
+  Receipt: the record returned by an attempted crossing or operation.
+- Record standing: `RECORDED -> ADMITTED -> RATIFIED -> EFFECTIVE`; repository
+  artifact lifecycle: `OPEN -> BUILT -> WITNESSED -> RATIFIED` (distinct scales,
+  never merged).
+- Event outcomes: `ATTEMPTED | COMMITTED | FAILED | REFUSED | COUNTERED |
+  UNRESOLVED`.
+- Effect classes: `RECORD_LOCAL`, `RESOURCE_CONSUMPTION`, `EXTERNAL_WORLD`
+  (none of the third in Phase I).
+- Oracle verdicts: `PASS` / `FAIL` / `INVALID`; case polarity: `positive` /
+  `defeating` / `participant`.
+- Attestation outcome `REPRODUCED`; refusal reasons `DISSENTED`,
+  `UNATTESTABLE`; qualification objects `QualificationRecord`,
+  `time_to_safe_competence`.
+
+## Report format
+
+- files_changed: repo-relative paths with one-line reasons.
+- checks_observed: exact commands, exit codes, bounded excerpts.
+- standing_proposals: at most OPEN -> BUILT; never WITNESSED or RATIFIED from a
+  builder.
+- rulings_taken: each decision settled at this tier, with the observation that
+  would defeat it (`decisions/0033-close-the-founding-docket.md`, Ruling 1).
+- next_bounded_operation: single next step, or none.
+
+===== END FILE: .claude/skills/sov-conformance/SKILL.md =====
+===== FILE: .claude/skills/sov-console/SKILL.md =====
+---
+name: sov-console
+description: Domain know-how for the Soveraeign console domain - the services/console chartered boundary (Console Service). Load when a task mentions "sov-console", "console domain", "Console Service", "operator session", "thread", "post", "notification", "judgement request", "operator setting", "dashboard projection", "activity view", "human in the loop", "human on the loop", or names the artifacts CHARTER.md, README.md, contracts/service.json, or conformance/ seed fixtures under services/console. Covers charter gap closure, schema refinement, seed-fixture authoring, doc coherence, sibling read-path precondition mapping, and Human Binding interface declaration while the service is accepted but unbuilt. Not for the Asset Service, Proofing Service, kernel contracts, conformance oracle, byom, or governance work - those have sibling sov-* skills.
+---
+
+# sov-console
+
+## Purpose
+
+Advance the Console Service boundary of the Soveraeign repository - charter,
+record contracts, seed fixtures, and a declared (not implemented) Human Binding
+interface - without crossing the protected boundary that forbids runtime code
+before a ratified logical spec and executable defeating fixtures. The domain
+governs the operator-facing session inside a local Node: what needs an
+operator's attention, what an operator prefers, what is waiting on a human
+right, and what has happened across the node's services. It surfaces pending
+rights and spent judgement; it never holds, infers, or delegates a right, and
+its dashboards and activity views are rebuildable projections whose every
+value resolves to an authoritative record.
+
+## Owns / Must not
+
+Owns: `services/console/` - one bounded lifecycle, its contract drafts, and
+seed fixtures. Owned domain records (per CHARTER.md and contracts/service.json):
+operator-session, channel, thread, post, notification, judgement-request,
+operator-setting, projection-view, console-receipt. Declared operations:
+open-session, close-session, open-channel, open-thread, post, notify,
+acknowledge-notification, request-judgement, resolve-judgement, set-setting,
+rebuild-projection. Declared ports: human-binding, model-binding,
+service-activity, delivery, federation.
+
+Must not: implement runtime code before its defeating fixtures exist
+(`no_runtime_code_before_logical_spec_and_defeating_fixtures`); write Asset Service or
+Proofing Service state (the crossing is read-only); let a setting, session,
+dashboard role, or thread state widen an authority check; let a model resolve
+a judgement request; block the node on a judgement request or hide a pending
+right; treat a projection or a notification as the record it points to; write
+service state from a dashboard edit; report external delivery or cross-node
+activity as anything but `UNCONFIGURED`; rewrite or erase a post,
+notification, or request instead of countering it; let an executor's or
+renderer's report count as observation; modify `lineage/evidence/`; create
+`EXTERNAL_WORLD` effects; run `git commit` or `git push`.
+
+## Key files
+
+- `services/console/CHARTER.md` - role, Phase-I requirement mapping, owned
+  records, proposed lifecycles and loop modes, sibling and kernel integration,
+  human and model participation, proving narrative, defeating cases, deferred
+  scope.
+- `services/console/README.md` - four implementation gates; no placeholder
+  code.
+- `services/console/contracts/service.json` - owns/references/operations/
+  uses_kernel_contracts/ports/forbids declaration, standing `PROPOSED`.
+- `services/console/conformance/` - declarative seed fixtures CONS-001..007
+  (`001-judgement-request-never-blocks.yaml` through
+  `007-activity-view-declares-omissions.yaml`) in the PROOF-001 shape that a
+  future participant must satisfy; no runtime code.
+- `services/console/contracts/*.schema.json` - eight proposed record schemas:
+  operator-session, channel, thread, post, notification, judgement-request,
+  operator-setting, projection-view.
+- `decisions/0014-console-service-boundary.md` - boundary decision, PROPOSED.
+- `bindings/README.md` - binding parity requirements and the admission rule
+  for any binding implementation.
+- Governing set: `AGENTS.md`, `STATUS.yaml`, `CLASSIFICATION.md`, `SPEC.md`,
+  `PRD.md`, `CONTRACT.md`.
+
+## Standing and constraints
+
+- `console_service_status: OWNER_ACCEPTED_BOUNDARY_NOT_IMPLEMENTED` (STATUS.yaml).
+- The boundary, the name `Console`, and the provisional Human Binding target are
+  accepted (`decisions/0033-close-the-founding-docket.md`, O14/O18). What is
+  missing is not permission - it is the contract and the defeating fixtures.
+  Accepting a boundary is not building the service.
+- The ruling is defeated by a Console record that can only be produced through
+  the human interface: that would prove the interface is authority rather than a
+  binding. Watch for it while designing the contract.
+- The engineering baseline and `SPEC.md` are accepted (0024, O2 and O10). Build
+  on them.
+- Protected boundary `no_runtime_code_before_logical_spec_and_defeating_fixtures`
+  applies to the service and to its bindings alike.
+- `bindings/README.md`: no binding implementation is admitted until the shared
+  transition contract is frozen or explicitly authorized as a provisional
+  target. Interface declaration is allowed; realization is not.
+- Judgement-typed questions queue for Bdo; they never block bounded doc,
+  contract, or fixture work and are never silently decided by an agent.
+
+## Named operations (available now)
+
+1. Charter gap closure: reconcile `CHARTER.md` with the `CLASSIFICATION.md`
+   service map, the SPEC.md Projection rule and Interface parity, and
+   decision 0014, preserving the proving narrative and defeating cases.
+2. Schema refinement against SPEC.md: draft or align record schemas under
+   `services/console/contracts/` for the owned records (JSON Schema Draft
+   2020-12) with SPEC.md object shapes - `EventEnvelope`, `Receipt`,
+   `AuthorityGrant`, standing, actor attribution - as proposals.
+3. Seed-fixture authoring and tightening: turn CHARTER.md proving-narrative
+   steps and defeating cases into declarative positive and defeating seed
+   fixtures under `services/console/conformance/` (payloads a future
+   participant must satisfy or refuse), without runtime code.
+4. Doc coherence: align `README.md`, `contracts/service.json`, and
+   `CHARTER.md` vocabulary, owned records, operations, ports, forbids, and
+   cross-references with `CLASSIFICATION.md` and decision 0014.
+5. Sibling read-path precondition mapping: record exactly what the Asset
+   Service and Proofing Service event and receipt streams must stabilize
+   before the console can project them without direct database access
+   (README gate 3), as a proposal.
+6. Human Binding interface declaration: declare under `bindings/` the
+   interface the console Human Binding realizes - the operations it invokes
+   and the state, choices, authority, provenance, and receipts it must expose
+   - with the Model Binding reading the same records as typed structure. A
+   declared interface only; no implementation.
+7. Acceptance packet: over a Console slice that is built and independently
+   observed, assemble the six-part packet of
+   `decisions/0023-acceptance-not-approval.md`. The visible result matters most
+   here - a console is a surface, so show it rather than describe it.
+
+## Verification
+
+- `python scripts/verify.py` - required, from repo root, graded budget (PLATINUM 3 s, GOLD 6 s, SILVER 15 s).
+- `python scripts/lint.py` - hygiene, module size, secret shapes.
+- `python -m json.tool services/console/contracts/service.json` (and any
+  `.schema.json` or fixture `.json` file added) - JSON syntax check per file.
+- No `services/console/tests/` exists yet; create tests when there is an
+  implementation to test, and the defeating fixture before the code.
+
+## Vocabulary (exact; no synonyms)
+
+- Repository artifact standing: `OPEN -> BUILT -> WITNESSED -> RATIFIED`.
+- Record standing: `RECORDED -> ADMITTED -> RATIFIED -> EFFECTIVE`.
+- Event outcome: `ATTEMPTED | COMMITTED | FAILED | REFUSED | COUNTERED |
+  UNRESOLVED`.
+- Attestation outcome: `REPRODUCED | DISSENTED | UNATTESTABLE`.
+- Effect class: `RECORD_LOCAL`, `RESOURCE_CONSUMPTION`, `EXTERNAL_WORLD`.
+- Service manifest standing: `PROPOSED`.
+- Proposed lifecycles (CHARTER.md; service policy awaiting owner
+  ratification; they do not replace the shared record standings):
+  operator session `OPEN -> CLOSED`; thread `OPEN -> ARCHIVED`;
+  judgement request `QUEUED -> RESOLVED | WITHDRAWN | EXPIRED`;
+  notification `ISSUED -> ACKNOWLEDGED`.
+- Proposed loop modes for a judgement request (CHARTER.md): `IN_LOOP` - the
+  conditioned operation stays `UNRESOLVED` until a human right resolves it;
+  `ON_LOOP` - the operation proceeds; the human watches and may counter
+  through retraction.
+- Notification kinds (proposed, `notification.schema.json`): `MENTION`,
+  `ASSIGNMENT`, `JUDGEMENT_REQUESTED`, `JUDGEMENT_RESOLVED`,
+  `RECEIPT_OUTCOME`, `COUNTERED`. Delivery: `LOCAL` only in Phase I.
+- Projection view kinds (proposed, `projection-view.schema.json`):
+  `DASHBOARD` (administrative, scoped-grant read) and `ACTIVITY`; every view
+  carries `authoritative: false`.
+- Charter outcome and actor terms: `UNRESOLVED` receipt for a
+  judgement-conditioned operation; `REFUSED` for a model resolution attempt;
+  `UNCONFIGURED` for the delivery and federation ports; `SYSTEM` actor for
+  notification emission; `JUDGEMENT` authority type.
+- Roles: Operator, Actor, Worker (report is not observation), Witness,
+  Binding, Adapter, Projection (never authoritative by convenience).
+- Information roles: Proposal, Recording, Receipt, Observation, Retraction.
+
+## Report format
+
+Report: files changed (repo-relative paths); checks observed (exact commands
+with exit codes); standing proposals (own work supports at most `BUILT`; a
+build report cannot witness itself); judgement items queued for Bdo; next
+bounded operation.
+
+===== END FILE: .claude/skills/sov-console/SKILL.md =====
+===== FILE: .claude/skills/sov-continuity/SKILL.md =====
+---
+name: sov-continuity
+description: Operate the Console Service continuity path - read what landed while this operator was away, post a message that a later session or another operator will receive, and read a thread through this binding. Load when a task mentions "sov-continuity", "continuity", "cross-session", "session context", "carry this to the next session", "leave a note for Bdo", "what did I miss", "unseen posts", "console session", "post to a thread", "open a thread", "unread cursor", or when the session-start briefing named a thread and the work continues in it. This is the operating skill for a built service; sov-console is the design skill for the same boundary and owns charter, schema and fixture work. Use sov-console to change what the service is, and this skill to use it.
+---
+
+# sov-continuity
+
+## What this is for
+
+A Claude Code session ends and everything in its context goes with it. The
+Console Service is where anything that must outlive it goes: a threaded record
+that a later session, or Bdo, or another agent, reads back.
+
+Two different things are on offer and they are worth keeping apart.
+
+- **Cross-session**: what landed while this operator was not in a session. The
+  session-start hook already asked for this and put it at the top of the
+  context. Nothing to do unless it named something.
+- **Cross-session message**: a post you write now, addressed to whoever reads
+  the thread next. This is the part you have to do deliberately.
+
+## Before anything else
+
+The session-start briefing is a projection, not the record. It is a rebuilt
+read model over the Record Service journal and it says so. If it disagrees with
+a thread you read directly, the thread read wins, and the disagreement is worth
+reporting rather than working around.
+
+If the briefing said continuity was unavailable, the console store is missing or
+the service failed to run. Say so plainly and carry on; do not reconstruct
+continuity by guessing from the repository.
+
+## The machine path
+
+Every operation goes through one CLI. There is no second way in, and a binding
+that wrote console state directly would be the defeating case in
+`services/console/conformance/006-thread-post-parity.yaml`.
+
+```
+PYTHONPATH=services/console/src;services/record/src \
+python -m soveraeign_console_service.cli --root .local/console <command>
+```
+
+On Windows separate the two paths with `;`; elsewhere with `:`. Every command
+prints one JSON object, refusals included. Exit codes: `0` committed, `2`
+refused, `3` unknown record, `1` usage error.
+
+Ask the service what it can do rather than trusting this file to stay current:
+
+```
+... cli operations --operator <operator>
+```
+
+The operator is required and the answer costs a live `read:session` grant scoped
+to that operator. Bdo ruled on 2026-08-25 that every built console operation
+checks the authority it declares, so asking anonymously is refused rather than
+answered narrowly.
+
+## Posting a message forward
+
+```
+... cli post --operator <operator> --session <console-session> \n      --thread <thread> --body "..." --mention Bdo
+```
+
+The console session id is in the session-start briefing. `--operator` must be the
+session's own operator: holding a session id is not the same as being the operator
+it belongs to, and since 2026-08-25 the service refuses the mismatch rather than
+signing the post with the owner's name. `--mention` names an operator so the post
+surfaces for them specifically; it changes nothing about authority.
+
+**A post that makes a claim needs a proposal.** A `MODEL` post with `--claims`
+and no `--proposal-id` is refused with `CLAIM_WITHOUT_PROPOSAL`, and the refusal
+is recorded. This is not a formality to route around: a model's assertion is a
+proposal until something outside the model settles it. If you are about to claim
+something and have no proposal id, either write the post without the claim, or
+say plainly that the claim needs one.
+
+Three ordinary refusals, all of them recorded:
+
+| Reason code | What actually happened |
+| --- | --- |
+| `NO_LIVE_GRANT` | This operator has no live grant for what it asked - `post:message` for a post, `read:thread` for a read, `read:session` for discovery or continuity. Bdo grants it; you cannot grant it to yourself, and since 2026-08-25 the service refuses the attempt rather than recording it. The message names the capability and not the scope, because a scope is an operator id, a channel or a thread and a caller holding nothing should not learn one. Ask Bdo which scope you need. |
+| `ACTOR_ATTRIBUTION_MISMATCH` | The session named is not yours. Holding a session id is not being its operator. |
+| `SESSION_CLOSED` | The console session ended. Open a new one. |
+| `THREAD_ARCHIVED` | That thread is closed to new posts. Open a new thread. |
+
+## Reading
+
+```
+... cli read-thread --operator <operator> --thread <thread> --binding claude-code
+... cli session-context --reader <operator>
+```
+
+Both name who is reading, and both cost a grant: `read:thread` scoped to that
+thread, and `read:session` scoped to that operator.
+
+`read-thread` returns posts in append order with a content address and digest
+each. Read a body with the address under `.local/console/`. A post is never
+rewritten: a correction is a new post, and the wrong one stays readable.
+
+## What this skill will not do
+
+- Grant authority. Grants are journal records made by Bdo.
+- Settle anything. Every console record enters at `RECORDED` and stays there;
+  admission and ratification are kernel transitions the console does not own.
+- Treat the projection as the record. If you need certainty, read the thread.
+
+## Where the pieces live
+
+| Thing | Path |
+| --- | --- |
+| Service | `services/console/src/soveraeign_console_service/` |
+| Machine interface | `cli.py` in that package |
+| Refusal vocabulary | `refusals.py` in that package |
+| Session hooks | `.claude/hooks/console_session.py` |
+| Store (never committed) | `.local/console/` |
+| Design work on the boundary | the `sov-console` skill |
+
+===== END FILE: .claude/skills/sov-continuity/SKILL.md =====
+===== FILE: .claude/skills/sov-contracts/SKILL.md =====
+---
+name: sov-contracts
+description: Load for work on the Soveraeign contracts domain — the shared kernel and crossing JSON Schema contracts. Triggers include "sov-contracts", "contracts domain", "kernel schema", "crossing contract", or any of the six artifact names event-envelope.schema.json, receipt.schema.json, operation-plan.schema.json, model-binding.schema.json, participant-observation.schema.json, service-manifest.schema.json, plus contracts/README.md. Covers schema-spec gap audits, conformance fixture authoring, vocabulary audits, and doc coherence — not service lifecycles (sov-asset, sov-proofing), conformance oracle internals, or bindings/adapters.
+---
+
+# sov-contracts
+
+## Purpose
+
+The contracts domain keeps the six shared JSON Schema Draft 2020-12 contracts
+in `contracts/` aligned with the logical objects in `SPEC.md` and the
+vocabulary in `CLASSIFICATION.md`. These schemas constrain records crossing
+service and participant boundaries; they do not prescribe storage, classes,
+transport, or deployment.
+
+## Owns / Must not
+
+Owns: `contracts/*.schema.json` (event-envelope, receipt, operation-plan,
+model-binding, participant-observation, service-manifest) and
+`contracts/README.md`.
+
+Must not: contain service-specific lifecycle logic; admit provider SDK types
+into kernel contracts; create a second semantic contract in YAML; change a
+schema without a positive and a defeating conformance case; touch
+`lineage/evidence/` (immutable); import participant implementation code.
+
+## Key files
+
+- `contracts/README.md` — contract table and stack-neutral status
+- `contracts/event-envelope.schema.json`
+- `contracts/receipt.schema.json`
+- `contracts/operation-plan.schema.json`
+- `contracts/model-binding.schema.json`
+- `contracts/participant-observation.schema.json`
+- `contracts/service-manifest.schema.json`
+- `SPEC.md` — logical object field blocks the schemas compile
+- `CLASSIFICATION.md` — canonical vocabulary for every enum
+- `scripts/verify_bootstrap.py` — asserts the six files exist and parse as JSON
+- `AGENTS.md`, `STATUS.yaml` — operating contract and current standing
+
+## Standing and blockers
+
+`specification_status: OWNER_ACCEPTED_PHASE_I_LOGICAL_SPEC_WITH_SOVEREIGNTY_CLARIFICATION`;
+`classification_status: OWNER_ACCEPTED_CANONICAL_VOCABULARY`. Constraints that
+still bind (STATUS.yaml, `decisions/0024-open-decision-drain.md`):
+
+- `SPEC.md` and `CLASSIFICATION.md` are accepted. A schema that disagrees with
+  either is a defect in the schema. Fix it; do not fork the vocabulary and do
+  not rename an enum without a fixture proving the rename.
+- The `model-binding.schema.json` fields, the three data-boundary modes, and the
+  two-model shape are accepted (0024, O12).
+- Attestation has a ruled shape (0024, O3 and O4): an `Attestation` is immutable
+  historical evidence about an exact claim, input, and run; `CurrentEffectiveness`
+  is a rebuildable evaluation over it. Author the contract to that split.
+- Every schema needs a positive and a defeating fixture before anything depends
+  on it. That is the constraint, not owner permission.
+
+## Named operations
+
+1. **Schema-spec gap audit** — compare each schema's required fields and enums
+   against the matching SPEC.md logical object block and record divergences as
+   proposals (RECORD_LOCAL).
+2. **Conformance fixture authoring** — add one positive and one defeating
+   validation fixture for a named schema before any schema edit.
+3. **Vocabulary audit** — verify every enum value in the six schemas against
+   CLASSIFICATION.md/SPEC.md exactly; queue mismatches (e.g. the
+   service-manifest `standing` enum's `PROPOSED` versus the `OPEN` lifecycle
+   term) for Bdo rather than renaming.
+4. **README coherence** — keep the `contracts/README.md` table aligned with
+   the actual schema files and their SPEC.md purposes.
+5. **Draft 2020-12 hygiene** — verify `$schema`, `$id`, `additionalProperties`,
+   and `required` conventions are consistent across all six files.
+6. **Drafting a missing kernel contract** — author a schema for a SPEC.md object
+   that lacks one (retraction, authority-grant, attestation) with its positive and
+   defeating fixture pair. Attestation follows the immutable-evidence versus
+   rebuildable-effectiveness split ruled in `decisions/0024-open-decision-drain.md`.
+
+## Verification
+
+- `python scripts/verify.py` — required gate, from repo root, graded budget (PLATINUM 3 s, GOLD 6 s, SILVER 15 s);
+  runs lint, bootstrap, oracle controls, oracle tests, asset tests.
+- `python scripts/lint.py` — text hygiene, module size, secret shapes.
+- `python scripts/verify_bootstrap.py` — contract file presence and JSON parse.
+- `python conformance/run.py` — executable oracle controls.
+- `python -m unittest discover -s conformance/tests -v` — oracle unit tests.
+
+## Vocabulary
+
+Use these exactly; never invent synonyms:
+
+- Effect classes: `RECORD_LOCAL`, `RESOURCE_CONSUMPTION`, `EXTERNAL_WORLD`
+  (the last is refused in Phase I).
+- Record standing: `RECORDED -> ADMITTED -> RATIFIED -> EFFECTIVE`.
+- Artifact standing lifecycle: `OPEN -> BUILT -> WITNESSED -> RATIFIED`.
+- Event phase: `ATTEMPTED | REPORTED | OBSERVED | SETTLED | COUNTERED`.
+- Outcome: `ATTEMPTED | COMMITTED | FAILED | REFUSED | COUNTERED | UNRESOLVED`.
+- Attestation outcome: `REPRODUCED | DISSENTED | UNATTESTABLE`.
+- Actor kind: `HUMAN | MODEL | WORKER | SYSTEM`.
+- Authority type: `VERIFICATION | JUDGEMENT` — verification authority cannot
+  ratify a judgement claim.
+- Data boundary: `LOCAL_ONLY | REDACTED_REMOTE | REMOTE_ALLOWED`.
+- Roles: a Worker's report is not an Observation; a Witness is independent; a
+  Projection is rebuildable and never authoritative by convenience; a Receipt
+  records every attempted crossing, including refusals.
+
+## Report format
+
+Files changed; checks observed (exact commands with exit codes); standing
+proposals (`OPEN -> BUILT` at most from self-tests — a build report cannot
+witness itself); judgement items queued for Bdo; assumptions introduced; next
+bounded operation.
+
+===== END FILE: .claude/skills/sov-contracts/SKILL.md =====
+===== FILE: .claude/skills/sov-coordination/SKILL.md =====
+---
+name: sov-coordination
+description: Board management for the GitHub coordination surface - survey it into recommended actions with their evidence, present the batch for approval, and apply only what was approved through the declared write crossing. Load on "sov-coordination", "board management", "board review", "board drift", "label drift", "triage the board", "prune merged branches", "stale pull request", "sov_board", or "github management". Not for building services or contracts; those have sibling sov-* skills.
+---
+
+# Coordination Domain Skill
+
+Standing: `BUILT_SELF_TESTED_NOT_WITNESSED` (see `decisions/0057-board-management-role.md`).
+
+The board is a coordination surface, not a System of Record. Nothing here
+settles standing, and an approved action changes what GitHub displays, never
+what the repository holds.
+
+## The one rule this skill exists to enforce
+
+Never hand the owner a decision without the evidence and a recommendation
+attached. A question like "should I clean up the board?" makes them redo the
+survey before they can answer. `sov_board review` exists so the answer is a
+list of action ids instead.
+
+## The loop
+
+1. `python scripts/sov_board.py review` — captures the board through the read
+   registrar, judges it offline against the contracts in this checkout, and
+   writes a batch to `.local/board/batch.json`.
+2. Read the surface. `PROPOSED` actions are mechanically derived and
+   reversible. `REPORTED` actions need authored metadata or owner judgement
+   and cannot be approved at all.
+3. Bring the `PROPOSED` list to Bdo with a recommendation, not a menu. Say
+   which ids you would approve and why the rest are different.
+4. `python scripts/sov_board.py apply --batch <path> --approve <ids>` on his
+   answer. Add `--dry-run` first to print the exact commands.
+5. Re-run `review`. A batch that does not shrink means an action failed, and
+   the receipts under `.local/board/batch.receipts.json` say which.
+
+## What each action kind means
+
+| Kind | Disposition | Why |
+| --- | --- | --- |
+| `LABEL_ADD`, `LABEL_REMOVE` | approvable | Derived exactly from `contracts/ticket-label-projection.json`; reversible |
+| `LABEL_CREATE` | approvable | Declared in `.github/labels.yml` but absent from the repository; nothing syncs the catalogue |
+| `BRANCH_DELETE` | approvable | The merge commit keeps the ref recoverable |
+| `CONTRACT_DEFECT` | report only | Repair needs authored metadata; an approval cannot write prose |
+| `CONTRACT_BEHIND` | report only | The board uses vocabulary this checkout lacks; fix the checkout, not the board |
+| `LABEL_UNMAPPED` | report only | Declare the label in `.github/labels.yml` before projecting it |
+| `CATALOGUE_UNDECLARED` | report only | A governed label the repository has and the catalogue omits; deleting one in use is a judgement |
+| `PR_STALE` | report only | Landing, closing, or waiting is a judgement |
+
+## Boundaries
+
+- `adapters/github/export.py` is the only read crossing;
+  `adapters/github/apply.py` is the only write crossing. Nothing else in the
+  repository may call the GitHub API, and neither adapter calls the other.
+- Every write is `EXTERNAL_WORLD` and requires one approval per action.
+  `--approve all` is still one approval per action; it is not a standing grant.
+- A `CONTRACT_BEHIND` report is never resolved by editing the board. The
+  checkout is what is behind.
+- The catalogue is surveyed before the tickets, so a `LABEL_CREATE` always precedes
+  the `LABEL_ADD` that needs it. Approving the adds without the create fails at the
+  crossing, which is exactly how the gap was found.
+- Closed issues are surveyed for nothing. A report that includes them can
+  never come back clean, which is how the previous drift report went unread.
+
+## Refusals
+
+Refuse to write to GitHub without a per-action approval, to approve a
+report-only action, to widen the admitted action set inside the adapter, to
+close an issue or a pull request as a batch action, and to present a survey
+as a settled standing.
+
+===== END FILE: .claude/skills/sov-coordination/SKILL.md =====
+===== FILE: .claude/skills/sov-governance/SKILL.md =====
+---
+name: sov-governance
+description: Governance domain of the Soveraeign design System of Record - coherence of the governing document set (SYSTEM.md, CONTRACT.md, CLASSIFICATION.md, PRD.md, SPEC.md, STATUS.yaml, OPEN-SEAMS.md, NAMING.md, PUBLICATION.md, ROADMAP.md), drafting decision records in decisions/, maintaining STATUS.yaml standing fields, and the open-decision judgement queue for Bdo. Load on "sov-governance", "governance domain", "decision record", "STATUS.yaml standing", "open decisions", "judgement queue", "document coherence", "OPEN-SEAMS", or "naming collision screen". Not for building services, contracts/, conformance/, or BYOM work - those belong to sibling sov-* skills.
+---
+
+# sov-governance
+
+## Purpose
+
+Keep the Soveraeign design System of Record coherent: one rule, one owning
+document, contradictions carried visibly. Draft decision records, keep
+STATUS.yaml standing fields honest. Rule what this tier can rule and record
+what defeats it; escalate only an owner-held boundary
+(`decisions/0033-close-the-founding-docket.md`, Ruling 1).
+
+## Owns / Must not
+
+Owns: coherence of the governing set listed above; `decisions/` drafting;
+STATUS.yaml standing fields and `owner_holds`; seam registration in
+OPEN-SEAMS.md. Per AGENTS.md directory boundaries, `/decisions` owns
+consequential choices, status, rationale, and consequences - never mutable
+runtime state.
+
+Must not: ratify judgement-typed claims (Bdo-only); present agent synthesis as
+Bdo judgement; duplicate a rule in a second document as competing authority
+(link to the owning document); erase or rewrite history (evidence files are
+immutable; superseded records stay); write runtime code (that belongs to
+service domains, and requires prior spec and defeating fixtures); publish or
+enable external effects.
+
+## Key files
+
+- `AGENTS.md`, `STATUS.yaml`, `contracts/phases.json` - read before any consequential change
+- `SYSTEM.md`, `CONTRACT.md`, `CLASSIFICATION.md`, `PRD.md`, `SPEC.md`,
+  `OPEN-SEAMS.md`, `NAMING.md`, `PUBLICATION.md`, and current `ROADMAP.md`
+- `decisions/` and `acceptance/` for consequential choices and root packets;
+  archived Phase-I definitions live under `archives/` and are not current policy
+- `scripts/verify.py`, `scripts/lint.py`
+
+## Standing and constraints
+
+`contracts/phases.json` records Phase I as `CLOSED_INCOMPLETE` with
+`succeeded_by: null`. Until the root seat opens a successor, `STATUS.yaml`
+projects `phase: NONE_ACTIVE` and `next_gate: SUCCESSOR_PHASE_OPENING`.
+
+`open_decisions` is empty and the `O<n>` identifiers are retired
+(`decisions/0033-close-the-founding-docket.md`). The current owner docket lives
+in `owner_acceptance_queue`; the separate `PUBLIC-CLEARANCE` hold blocks public
+release only and does not block repository-local closure or successor engineering.
+
+This domain settles what evidence can settle and records what would defeat each
+ruling. It never publishes, never claims legal clearance, and never presents its
+own synthesis as Bdo's judgement.
+
+## Named operations (available now)
+
+1. Coherence sweep: find a rule duplicated across two governing documents,
+   keep it in the owning document, and replace the duplicate with a link.
+2. Seam registration: record a newly observed contradiction as a numbered seam
+   in OPEN-SEAMS.md instead of silently choosing a side.
+3. Decision drafting: draft a new `decisions/NNNN-<slug>.md` with Status,
+   Decision, Evidence, and Consequence sections, marked PROPOSED, citing
+   evidence paths and clause identifiers.
+4. Docket discipline: rule a newly surfaced question at this tier and record
+   the observation that would defeat the ruling. Never mint an `O<n>`; the
+   O-space is retired. Only an owner-held boundary (public naming, external
+   commitment, irreversible external effect, secrets, destructive repository
+   administration) enters `owner_holds`, and it must state what
+   it does not block.
+5. Standing proposal: update a STATUS.yaml `*_status` field to match
+   independently observed standing (e.g. BUILT_SELF_TESTED_NOT_WITNESSED),
+   as a proposal with the observation cited.
+6. Acceptance packet: assemble the six-part packet of
+   `decisions/0023-acceptance-not-approval.md` - claim, visible result,
+   evidence, why it matters, what could defeat it, owner action - over a
+   result that is already built and observed. Never over unstarted work.
+7. Collision-screen evidence prep for PUBLIC-CLEARANCE: record screening
+   results and objections under the NAMING.md process without publishing
+   anything and without claiming clearance.
+8. Vocabulary drift check: grep canonical documents for synonyms of standing,
+   event, effect, or role terms and align them to CLASSIFICATION.md/SPEC.md
+   wording. `CLASSIFICATION.md` is accepted, so a synonym is a defect to fix,
+   not a question to raise.
+
+## Verification
+
+- `python scripts/verify.py` - required, from repository root, graded budget (PLATINUM 3 s, GOLD 6 s, SILVER 15 s)
+  after Python starts.
+- `python scripts/lint.py` - text, syntax, module size, and secret shapes.
+- If Ruff is available: `python -m ruff format --check .` and
+  `python -m ruff check .` (convenience, not a substitute for verify).
+Record the exact command and exit code for every check observed.
+
+## Vocabulary (exact, from CLASSIFICATION.md and SPEC.md)
+
+- Record standing: `RECORDED`, `ADMITTED`, `RATIFIED`, `EFFECTIVE` - distinct,
+  never collapsed. Work-standing lifecycle: OPEN -> BUILT -> WITNESSED ->
+  RATIFIED.
+- Event outcomes: `ATTEMPTED`, `COMMITTED`, `FAILED`, `REFUSED`, `COUNTERED`,
+  `UNRESOLVED` (`COUNTERED` is an outcome, not a fifth standing).
+- Effect classes: `RECORD_LOCAL`, `RESOURCE_CONSUMPTION`, `EXTERNAL_WORLD`.
+- Attestation outcomes: `reproduced`, `dissented`, `unattestable`.
+- Roles: `Operator`, `Actor`, `Worker` (report is not observation), `Witness`,
+  `Projection` (rebuildable, never authoritative by convenience).
+- Information roles: `Proposal`, `Recording`, `Receipt`, `Observation`,
+  `Retraction`. Structural: `Node`, `Service`, `Component`.
+
+## Report format
+
+Report: files changed (repo-relative); checks observed (commands with exit
+codes); standing proposals (transition supported, never RATIFIED); judgement
+items queued for Bdo; next bounded operation.
+
+===== END FILE: .claude/skills/sov-governance/SKILL.md =====
+===== FILE: .claude/skills/sov-hypervisor/SKILL.md =====
+---
+name: sov-hypervisor
+description: Launch and inspect named Claude sessions on declared worktrees without a human opening a terminal or pasting a bootstrap prompt. Load when sustained work needs more than one independent session, when a campaign needs lanes started on exact branches, when a launched session did not register or acquired a duplicate `session-*` identity, or when a task names "sov-hypervisor", "hypervisor", "launch plan", "campaign lane", "fleet lane", "launch a session", or "start a witness session". Covers plan grading, launch, live status and the declared refusals. Not for deciding what the launched sessions should do - that is the `sov` profile and the domain skills - and not for the session registry itself, which is `scripts/sov_session.py`.
+---
+
+# sov-hypervisor
+
+## Purpose
+
+Establish where and how a Claude session runs. Nothing else.
+
+`sov` decides what work to coordinate. The hypervisor deterministically puts a
+session in the right tree, on the right commit, under one name, holding its
+orders. Neither is an authority layer, and the second is host plumbing:
+`AGENTS.md`, Local orchestration harness. A lane gets no standing, no grant and
+no seat from having been launched here.
+
+## What it removes
+
+A campaign that had already built the right worktrees still needed Bdo to open
+three terminals and paste a loader line into each. Sessions started from inside
+another Claude session did not reliably persist, register, or receive a
+cross-session bootstrap message.
+
+Orders now travel as the opening prompt of the process. That is the only
+channel that cannot miss a session which does not exist yet. `SendMessage` is
+for coordination after launch: a changed assumption, a moved dependency, a peer
+that landed.
+
+## Commands
+
+    python scripts/sov_hypervisor.py plan <plan.json>       grade every lane
+    python scripts/sov_hypervisor.py launch <plan.json>     start the ready ones
+    python scripts/sov_hypervisor.py status <plan.json>     what is live now
+    python scripts/sov_hypervisor.py selfcheck              prove the refusals
+
+`plan` and `status` start nothing. `launch --dry-run` writes each lane's script
+and prints its argv without running it; read that before a first launch on a
+new plan.
+
+## A plan
+
+Host configuration, not governed state. Keep it under `.local/`.
+
+```json
+{
+  "campaign": "kernel-dogfood-01",
+  "sessions": [
+    {
+      "name": "fleet-alpha",
+      "worktree": "<absolute path to the lane's worktree>",
+      "expected_ref": "feat/sov-control-mesh",
+      "mode": "write",
+      "agent": "sov",
+      "model": "opus",
+      "orders_file": ".local/campaign/alpha.md",
+      "remote_control": true
+    }
+  ]
+}
+```
+
+`expected_ref` is a branch name or a commit prefix of at least seven
+characters. `mode` is `write` or `read-only`; a read-only lane is started in
+plan mode and must be sitting on a detached commit, so a witness cannot land
+what it reviewed. `orders_file` is resolved against the lane's worktree.
+
+## Before launching
+
+- Run `python scripts/sov_session.py brief` and read who is already live.
+- Reuse the worktrees that already exist; `python scripts/sov_session.py
+  worktree list` shows them. Take git's own paths in Windows form
+  (`C:/Users/...`), because a POSIX-style path silently creates a second tree
+  at `C:\c\Users\...`.
+- Choose the smallest useful number of lanes.
+- Give every lane an exact ref. A lane with no ref is refused.
+
+Never open a terminal by hand and never paste a bootstrap prompt while this is
+available.
+
+## Refusals
+
+Each is a precondition checked before a process exists.
+
+| Refusal | Meaning |
+| --- | --- |
+| `PLAN_UNREADABLE`, `PLAN_INVALID` | the plan is absent, is not JSON, or declares no sessions |
+| `LANE_NAME_INVALID`, `LANE_DUPLICATED` | a name that cannot address a lane, or one declared twice |
+| `WORKTREE_MISSING` | the declared path is not a git working tree |
+| `REF_MISMATCH` | the tree is not on the ref the lane named |
+| `READ_ONLY_LANE_ON_BRANCH` | a read-only lane pointed at a writable branch |
+| `ORDERS_MISSING` | no orders, which is a lane waiting for a human to paste one |
+| `LANE_OCCUPIED` | that name is already live; end it or choose another |
+| `SESSION_REGISTRATION_TIMEOUT` | the process started and never registered |
+| `SESSION_REGISTERED_ELSEWHERE` | it registered against a different tree |
+
+A launched process is not a live lane. `READY` is reported only after the
+registry shows the expected name, live, in the expected tree.
+
+## What it does to a session
+
+Sets `SOV_SESSION` so the name Claude displays, the registry name, the Remote
+Control name and the lane are one string. Sets
+`CLAUDE_CODE_FORCE_SESSION_PERSISTENCE=1` so a session launched under an
+inherited Claude environment stays persistent and resumable.
+
+It removes nothing from the environment. A lane that erased its parentage to
+look independent would be lying about where it came from; persistence is bought
+with the documented override instead.
+
+## State
+
+There is no hypervisor journal and no second event log. Liveness, trees,
+branches and claims all come from the existing registry at
+`scripts/sov_session.py`. `status` is a join of the plan against that registry
+and says so on every render:
+
+    HOST COORDINATION PROJECTION - NO SOVERAEIGN STANDING
+
+## Related
+
+- `scripts/sov_session.py` owns the registry, claims, worktrees and the brief.
+- `.claude/hooks/session_registry.py` registers a session at SessionStart and
+  honours `SOV_SESSION`; a session started before that repair still carries a
+  duplicate `session-*` row, and `status` names it under `ALIAS`.
+- `scripts/tests/test_sov_hypervisor.py` holds every case, and launches nothing.
+
+===== END FILE: .claude/skills/sov-hypervisor/SKILL.md =====
+===== FILE: .claude/skills/sov-librarian/SKILL.md =====
+---
+name: sov-librarian
+description: Curate the asset library - declare collection types, open typed collections, file and unfile assets, and report conformance of every member against the schema its type declares. Load when the task mentions "sov-librarian", "librarian", "asset library", "collection type", "asset collection", "typed collection", "file an asset", "organize assets", "DAM", "metadata schema", "controlled vocabulary", "unfiled assets", "library conformance", or names organization.py, librarian.py, or the asset CLI commands declare-type, declare-collection, add-member, remove-member, conformance. Not for the Asset Projection Service retrieval collections, the root conformance oracle, or asset capture and derivation - those are sov-projection, sov-conformance, and sov-asset.
+---
+
+## Purpose
+
+Hold the asset library to its own declared schema. The librarian curates and
+reports; it settles nothing. Its work is filing assets correctly, recording the
+metadata a type requires, and producing a report an operator can act on.
+
+## What exists
+
+Six declared operations on the Asset Service
+(`services/asset/contracts/service.json`), all `RECORD_LOCAL`:
+
+| Operation | CLI | Grant |
+| --- | --- | --- |
+| `declare-collection-type` | `declare-type` | `declare:collection-type` |
+| `declare-collection` | `declare-collection` | `declare:asset-collection` |
+| `add-member` | `add-member` | `organize:asset` |
+| `remove-member` | `remove-member` | `retract:record` |
+| `read-collection` | `collection` | `read:asset-collection` |
+| `read-library-conformance` | `conformance` | `read:asset-collection` |
+
+Run them through `python -m soveraeign_asset_service.cli --root <state> <command>`
+from `services/asset/src`, or in process through `service.organization` and
+`service.librarian`. A refusal exits 2 and prints its declared code.
+
+## The three verdicts, which are the whole point
+
+- `CONFORMING` - a **ratified** description carries the required field with a
+  permitted value.
+- `CLAIMED_UNRATIFIED` - somebody recorded the field and nobody ratified it.
+  The metadata exists as a claim and is not conformance.
+- `MISSING_FIELD` - nothing in the record carries it.
+
+Never report the second as the first, and never describe a library as clean
+because its claims are complete. `VOCABULARY_REFUSED`, `MEMBER_KIND_REFUSED`,
+`EMPTY_COLLECTION`, and `UNFILED` are the other four defects.
+
+## Owns / Must not
+
+Owns: `organization.py`, `librarian.py`, their tests, the six declared
+operations, and the collection types this node declares.
+
+Must not:
+
+- **ratify its own descriptions.** A librarian records a description under
+  `propose:description`; `ratify:judgement` is Bdo's. A model that ratified its
+  own metadata would make `CLAIMED_UNRATIFIED` a formality
+  (`decisions/0063-asset-collections-and-the-librarian.md`, Ruling 3).
+- **invent a value outside a declared vocabulary.** An asset whose real state
+  the vocabulary cannot express is a finding against the type, not a licence to
+  widen it. Say so; do not pick the nearest permitted value.
+- **widen a type to make members pass.** That is the oracle-weakening refusal in
+  `AGENTS.md`, Implementation order, applied to schemas.
+- **file an asset to clear an `UNFILED` finding.** An asset belongs in a
+  collection because it belongs there. An empty collection full of strays is a
+  worse report than an honest pile.
+- **touch the Asset Projection Service.** Its `declare-collection` builds an
+  index and is a different record (seam S22).
+
+## Working a library
+
+1. Read the current state: `conformance --markdown`. Do not plan against a
+   report you did not just run.
+2. Take the largest verdict class first. `MISSING_FIELD` across many members
+   usually means one describe pass; `VOCABULARY_REFUSED` across many usually
+   means the type is wrong, and that is a finding for the owner, not a fix.
+3. Record descriptions with `service.propose(asset_id, actor, payload)`. Leave
+   them unratified and say in the report how many are waiting.
+4. Re-run the report and quote the before and after counts.
+5. Report `defects`, `counts`, and the unfiled list verbatim. A librarian's
+   summary is checkable against the same command the reader can run.
+
+## Standing and blockers
+
+The implementation is `BUILT` and self-tested; `decisions/0057` is `PROPOSED`.
+A run here establishes `BUILT` evidence only. Independent witnessing comes from
+`sov-witness` or `sov-qa`, never from the participant that filed the assets.
+
+Nothing in this domain waits on Bdo except ratifying descriptions and settling
+seam S22 (two records named collection). Neither blocks curation or reporting.
+
+===== END FILE: .claude/skills/sov-librarian/SKILL.md =====

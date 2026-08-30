@@ -1,0 +1,2395 @@
+===== FILE: ENGINEERING.md =====
+# Engineering Baseline and Composable Primitives
+
+Status: `OWNER-ACCEPTED A1 REFERENCE BASELINE · CURRENT REPLACEABLE MECHANISM PROFILE`
+
+This document defines the retained local construction kit first selected for Phase
+I. The phase is closed; the mechanism profile remains current until a proved
+replacement changes it. It does not replace the stack-neutral logical specification
+and adds no authority by technology choice.
+
+## Two Systems of Record
+
+The design System of Record is the governing repository set named in
+`AGENTS.md`. Each document owns a distinct policy surface; no document becomes
+authoritative by repeating another one.
+
+The operational System of Record is the append-preserving journal of addressed
+inputs, decisions, standing transitions, operations, observations, receipts,
+and counter-records. It records what happened and under what authority. It does
+not collapse recorded, admitted, ratified, effective, disputed, failed, or
+countered claims into one undifferentiated “truth.”
+
+SQLite is the retained reference storage mechanism for that record. Search tables, graph
+stores, indexes, caches, and UI views are projections rebuilt from the record.
+
+## Selection rule
+
+A technology belongs in the baseline only when it is required to prove a
+current operation locally, keeps authority and history inspectable, survives
+loss of optional providers, and can be replaced behind an existing contract.
+
+Surviving provider loss is not surviving medium loss. Every durability concept
+in this baseline was once scoped to a process, a transaction, or an external
+provider, and none to the medium holding the record; `decisions/0049` records
+why that omission mattered and adds the concern rather than the technology.
+
+## Precedent and host-language profile
+
+`CONTRACT.md` C16 owns the invariant. At a consequential technical boundary,
+the smallest adequate engineering note or decision names the applicable
+precedent and one disposition: `ADOPT`, `PROFILE`, `DEFER`, `DEVIATE`, or
+`MONITOR`. Routine choices already settled by this baseline need no repeated
+standards essay. An external standard remains evidence; it never supplies a
+grant, standing, product intent, or owner judgement.
+
+This document is normative where it uses uppercase BCP 14 terms, with the
+meanings declared in `CONTRACT.md`. The current Python profile is:
+
+- CPython 3.11 is the minimum reference runtime. Root tooling is workspace-run;
+  independently packaged services own their `pyproject.toml`. Import layout,
+  exception types, SQLite behavior, and library APIs are implementation details
+  unless a governing contract explicitly promotes them.
+- The standard library remains the first choice. A dependency crosses only a
+  named port or adapter and MUST NOT leak a provider type into a service or
+  kernel contract.
+- Text files and protocol text use UTF-8. Opaque payload bytes are never Unicode
+  normalized. Human text, identifiers, paths, and protocol strings remain
+  distinct roles; normalization or case-folding requires a field-level contract.
+- Filesystem paths use `pathlib` and explicit encodings. Atomicity, locking,
+  permissions, case sensitivity, symlinks, process signals, and durability are
+  declared at the owning OS boundary rather than inferred from the development
+  host.
+- Wall-clock instants, monotonic durations, civil time, and display formatting
+  are different types. JSON Schema string instants use the repository's RFC
+  3339 profile below; elapsed-time logic uses a monotonic clock. Persisted
+  numeric timestamps remain boundary-specific legacy representations until a
+  separately versioned migration changes them.
+- Randomness, clocks, subprocesses, environment reads, concurrency, and external
+  I/O are injectable where they affect a receipt or test. Exceptions cross a
+  machine boundary only as declared refusal or failure codes.
+
+Current representation profiles:
+
+| Boundary | Disposition and local profile |
+| --- | --- |
+| Normative words | **ADOPT** BCP 14 (RFC 2119 + RFC 8174); uppercase terms are special only in explicitly normative governing text |
+| JSON Schema | **ADOPT/PROFILE** Draft 2020-12; every `*.schema.json` declares the dialect, unsupported keywords fail closed, and format checks may be stricter than the annotation vocabulary |
+| Machine instants | **PROFILE** RFC 3339 as `SOV-RFC3339-1`: full date, uppercase `T`, seconds, optional fractional seconds, and explicit `Z` or numeric offset; naive time, space separators, basic format, leap-second spelling, and unknown offset `-00:00` are refused |
+| UUID use | **PROFILE** RFC 9562 UUIDv4 for generated randomness. A value such as `entry_<uuid-hex>` is an opaque typed identifier containing UUID entropy, not itself a UUID; domain identities and content addresses are not replaced by UUIDs |
+| Payload digests | **ADOPT** SHA-256 over exact bytes, rendered as lowercase `sha256:<64-hex>` where contracts carry an algorithm label; a digest is not an asset, source, version, or actor identity |
+| Structured hash input | **DEFER** RFC 8785 JCS until a cross-language boundary requires its full number and member-order semantics. Existing persisted forms remain named Soveraeign profiles; new hash inputs MUST name and version their byte representation |
+| Record chain | `soveraeign-record-chain/v1` is the readable legacy delimiter form; `soveraeign-record-chain/v2` hashes an unambiguous compact JSON array with its profile identifier; new entries use `soveraeign-record-chain/v3`, which additionally binds the entry identifier, source address and recorded moment. A profile is immutable once defined and every entry records its own; `digest.COVERAGE` states which journal columns each one protects and the record service tests prove it column by column |
+| Unicode in structured hash input | **DEVIATE** from implicit normalization: preserve the supplied code points, reject values that cannot encode as UTF-8, and never normalize opaque bytes |
+
+The bounded JSON Schema validator is not a claim of complete Draft 2020-12
+implementation or certification. NIST, OWASP, SLSA, SPDX, OpenTelemetry, OCI,
+Kubernetes, and similar bodies remain applicability lenses until a concrete
+boundary profiles them; naming one MUST NOT imply compliance.
+
+## Minimal reference stack
+
+| Concern | Reference choice | Boundary |
+| --- | --- | --- |
+| Language | Python 3.11+ | Reference implementation only; logical contracts remain language-neutral |
+| Runtime dependencies | Python standard library first | New dependencies require a decision and named port or adapter |
+| Operational record | Append-preserving events and receipts in transactional SQLite | SQLite does not define service or kernel semantics |
+| Durability and custody | Portable self-verifying journal export; restore by replay with chain verification | An export is custody of the node's own record, not an integration with an external system. Where the copy is kept is the operator's act and the operator's risk (`decisions/0049`) |
+| Immutable payload custody | Filesystem content-addressed store using SHA-256 | Payload address differs from asset and source identity |
+| Machine contracts | JSON Schema Draft 2020-12 | Schema validity is not semantic fitness |
+| Human control files | Markdown and small YAML fixtures | YAML is not a parallel runtime contract |
+| Local surface | Python API and CLI | Human and model bindings use the same kernel operations |
+| Tests and lint | `unittest` and dependency-free repository scripts | Local, deterministic, network-free; total wall time graded at 3/6/15 s, with pooled >30 s checks rerun alone and only isolated >30 s catastrophic (`decisions/0081`, `contracts/verification-budget.json`) |
+| Search and graph | Rebuildable local projections | External systems integrate through adapters later |
+| Model execution | Declared Model Binding plus Model Adapter | BYOM; no provider-derived authority or silent fallback |
+
+Not yet selected: HTTP or frontend framework, background queue, container
+runtime, orchestrator, distributed database, event broker, vector store, graph
+database, identity provider, cloud, or model SDK. Their absence is deliberate
+until a conformance case makes a boundary concrete.
+
+## Kernel primitives
+
+These are semantic objects and transitions shared by services, not separate
+microservices.
+
+| Primitive | Minimum purpose | Composition rule |
+| --- | --- | --- |
+| Addressed source | Bind bytes to origin, address, digest, size, and custodian | Reading verifies the digest and never mutates source |
+| Event envelope | Record actor, operation, reason, time, inputs, outputs, authority, effects, and outcome | Every consequential decision emits one; no silent state change |
+| Recording or proposal | Preserve an attributed result without granting truth or authority | Begins recorded; gates add standing without overwriting history |
+| Authority grant | Scope actor, capability, budget, validity, and revocation | Checked at the operation; credentials are not grants |
+| Operation plan | Declare inputs, configuration, preconditions, observations, limits, and effects | Required before consequential execution |
+| Run and lease | Attribute an attempt and fence delegated execution | Worker reports; stale or expired lease cannot settle |
+| Observation | Test expected predicates independently against durable results | Executor output alone cannot establish success |
+| Receipt | Record one terminal outcome for every attempted crossing or operation | Failure, refusal, unresolved work, and counteraction are first-class |
+| Counter-record | Stop prior state conditioning current operation without erasure | State what was not undone or refunded |
+| Binding | Present one declared interface to a human or model | Different surfaces resolve to the same operation and receipt |
+| Adapter | Translate a named external runtime or enterprise system | Translation stops at boundary; no authoritative writes |
+| Projection | Build a disposable read model from events and records | Rebuildable and never authoritative by convenience |
+
+Field names and transition predicates remain normative in `SPEC.md` and
+`contracts/`.
+
+## Composing larger motion
+
+A service operation composes primitives instead of creating a custom authority
+path:
+
+```text
+address inputs -> declare plan -> check authority -> append attempt
+-> execute or refuse -> observe -> settle with receipt -> counter when needed
+```
+
+Asset ingestion, derivative generation, proofing rounds, model invocations, and
+later integrations may arrange these primitives differently, but cannot remove
+their distinctions.
+
+A larger workflow is valid only when each step names its owner and exact inputs;
+inter-service crossings use contracts and receipts; retries retain one
+attributable operation identity; idempotency is explicit; judgement remains a
+visible pending right; workers are replaceable; provider changes do not change
+authority; partial failure is reconstructable; and compensation does not
+pretend consumed resources or external effects vanished.
+
+## Realization map
+
+`SPEC.md` fixes fourteen transitions without choosing a mechanism. This section
+records which mechanism currently realizes each one, so that "the stack" is a
+checkable claim rather than a list of technologies. It adds no normative rule:
+where this table and `SPEC.md` disagree, `SPEC.md` wins and this table is stale.
+
+Record column values are SQLite tables in the Asset Service store, except the
+content-addressed payload path, which is filesystem.
+
+| `SPEC.md` transition | Realized by | Record | Kernel contract | Control fixture | State |
+| --- | --- | --- | --- | --- | --- |
+| `capture_source` | `AssetService.ingest` | `sources`, `versions`, CAS `blobs/sha256/` | — | `CONF-I2` | partial |
+| `read_source` | none; derivative plans carry `ReaderDeclaration` materials | `derivative_plans`, `recordings`, CAS `blobs/sha256/` | — | `CONF-I2` | **absent** — recording reconstruction exists, but no component executes the declared reader |
+| `submit_proposal` | `AssetService.propose` | `proposals` | — | `CONF-I1` | partial |
+| `admit` | none | — | — | `CONF-I1` | **absent** — declared gap |
+| `ratify` | `AssetService.ratify` | `proposals`, `receipts` | — | `CONF-I5`, `CONF-I5-GRANT` | partial |
+| `attest` | none | — | — | `CONF-I8` | **absent** — declared gap |
+| `make_effective` | none; `ratify` writes `EFFECTIVE` directly | `relationships` | — | — | **collapsed** — declared gap |
+| `begin_run` | `request_derivative`, `claim` | `runs` | `operation-plan` | — | partial |
+| `report_run` | `report_derivative` | `runs` | — | — | partial |
+| `observe_run` | `observe` | `observations` | `participant-observation` | — | partial — observer independence gap |
+| `settle_run` | folded into `observe` and receipt emission | `receipts` | `receipt` | — | partial |
+| `retract` | `AssetService.retract` | `retractions`, `receipts` | — | `CONF-I4` | partial |
+| `cross` | `federation_cross` | `receipts` | `event-envelope` | `CONF-I3` | refuses `UNCONFIGURED` with a receipt |
+| `invoke_model` | none | — | — | `CONF-I9` | **absent** — declared gap |
+
+Four transitions have no implementation, one is collapsed, eight are partial,
+and one refuses correctly. Every one of those divergences is already recorded in
+`services/asset/KNOWN-GAPS.md` against its governing clause; none is a newly
+discovered defect. The two projections, `search_projection` and
+`graph_projection`, are rebuilt by `rebuild_projections` and hold no
+authoritative state, per the `SPEC.md` Projection rule.
+
+`federation_cross` is worth naming as correct rather than missing. It returns a
+`REFUSED` receipt carrying reason `UNCONFIGURED` instead of attempting the
+crossing, which is exactly what the `SPEC.md` local-operation rule requires of
+an optional integration.
+
+## Crossing realization
+
+`diagrams/crossing-typology.md` fixes four crossing classes and the four
+obligations every class owes identically. `diagrams/crossing-topology.md`
+places them. This table binds those classes to the current mechanism.
+
+| Class | Passage | Mechanism today | State |
+| --- | --- | --- | --- |
+| `C1` Operator | human ↔ model through one record | Python API and CLI only | one binding of the three the two-binding proof needs |
+| `C2` Service | sibling ↔ sibling in one node | none; Proofing and Console are charters | no live reader or writer |
+| `C3` Boundary | surface ↔ kernel, node ↔ provider | `bindings/`, `adapters/` hold no executing adapter | egress never exercised |
+| `C4` Federation | node ↔ node | `federation_cross` refusal stub | refuses visibly, as required |
+
+`C3` is the only class whose far side is a third party, so it is the only class
+carrying a `data_boundary` — `LOCAL_ONLY`, `REDACTED_REMOTE`, or
+`REMOTE_ALLOWED`. Two obligations land there and nowhere else: provider loss
+must leave authoritative custody and non-model local operation intact, and any
+fallback must be a separately attributed invocation with its own receipt.
+Neither obligation has been exercised, because no adapter executes.
+
+## Service construction rule
+
+Create a `<Domain> Service` only when a domain owns a distinct lifecycle,
+contract, and authority boundary. Otherwise add a component, binding, adapter,
+worker, or projection inside an existing service.
+
+Within a service, dependencies point from binding or adapter to an application
+operation, then to the domain lifecycle, kernel contracts, and storage or
+projection component. Domain code never imports provider SDKs, CLI parsers, web
+framework types, or projection-specific query types.
+
+## Context and module budget
+
+Production modules stay below 300 lines so one responsibility can be understood
+without loading the service wholesale. A file approaching the limit is split by
+owned lifecycle or boundary. Generated files, schemas, fixtures, and tests may
+exceed it only with an explicit reason.
+
+The current Asset Service `core.py` exceeds this limit and is named debt. Do not
+add behavior to it before splitting storage, receipts/authority, and asset
+lifecycle responsibilities without changing semantics.
+
+Agent tasks carry only the governing excerpts, relevant contract, fixture,
+service files, observed check summary, and current objective. A distinct
+objective starts a fresh task or bounded handoff.
+
+## Growth triggers
+
+| Trigger | Smallest allowed addition |
+| --- | --- |
+| A second process must invoke an accepted operation | Transport port plus one local adapter |
+| Durable work must outlive a process | Lease-backed queue component using the Run contract |
+| A projection fails a measured local query | External search or graph adapter with rebuild proof |
+| Two nodes must exchange governed records | Federation crossing, identity, policy, and receipt contracts |
+| A model provider is required | Model Adapter contained by a Model Binding and data boundary |
+| Concurrent writes defeat a current case | Fencing or compare-and-set at the storage boundary |
+| The record must survive its medium | Journal export plus restore-by-replay, verified against the digest chain |
+
+Do not add generalized infrastructure for imagined scale. Add the smallest
+replaceable boundary resolving an observed failure while preserving the kernel.
+
+## Acceptance
+
+A1 owner-accepted this reference baseline for Phase I. That acceptance does not
+promote every implementation to witnessed standing, and it does not make a
+mechanism semantically authoritative. Per O2b, a proved replacement behind the
+same contract may change the mechanism without reopening the closed phase; a
+semantic or product change still follows its owning authority.
+
+===== END FILE: ENGINEERING.md =====
+===== FILE: GROUND.md =====
+# Product Ground
+
+Epoch: `EPOCH-1` · Revision: `GROUND-1` · Rendering: `GROUND-1.1`
+Status: `OWNER-ACCEPTED 2026-08-24`
+
+This document holds the small number of claims that say **what product Soveraeign is**.
+Sixteen of them. They are meant to change very rarely, and everything below them —
+promises, journeys, requirements, operations, services, work, receipts — is meant to
+change often.
+
+## The test a claim has to pass
+
+> If this statement became false, would we merely implement Soveraeign differently, or
+> would we be building a materially different product?
+
+Only the second belongs here. Every claim below carries its answer to that question in a
+`what changing it would mean` line, and that line is the admission test rather than
+decoration. A claim whose answer is "we would build it differently" belongs in
+`CONTRACT.md`, `PRD.md`, `SPEC.md`, `ENGINEERING.md` or an implementation, not here.
+
+Ground is not minted per service, feature, operation or requirement. Sixteen claims carry
+102 declared operations. That ratio is the point.
+
+## What Ground is and is not
+
+Ground supplies the **meaning** of a fact about the node. It never asserts that the fact
+is currently true. These are separate planes and collapsing them is the mistake this
+layer exists to prevent:
+
+| Plane | Holds | Owned by |
+| --- | --- | --- |
+| Product Ground | stable accepted meaning | `GROUND.md`, this document |
+| Declared state | what currently claims to exist | service manifests, the capability map, `STATUS.yaml` |
+| Observed evidence | what reality demonstrated | `reports/`, observations, conformance runs |
+| Derived fact | a proposition read through Ground and supported by state and evidence | nothing yet; see `contracts/state-fact.schema.json` |
+
+Worked through:
+
+```text
+GROUND-006   A participant can find out what it may do from the artifact alone.
+STATE        console.discover-operations is declared and ACTIVE over IN_PROCESS.
+EVIDENCE     a fresh model listed its legal operations without being told.
+FACT         participant A could discover its legal operations on node N at revision R.
+```
+
+`GROUND-006` does not become false when the binding changes, when the node changes, when
+the grant is revoked, or when that fact stops being true. That is the whole reason to
+separate them.
+
+Six distinctions this layer keeps apart, stated once so nothing below has to restate them:
+
+```text
+Product Ground   ≠ state fact.
+Intent           ≠ existence.
+Specification    ≠ implementation.
+Implementation   ≠ success.
+Declaration      ≠ observation.
+Evidence         ≠ authority.
+```
+
+## Rendering, revision, epoch
+
+Three levels, and conflating them is how attribution rots.
+
+| Level | Changes when | Example |
+| --- | --- | --- |
+| **Rendering** `GROUND-1.1` | the artifact is re-issued with no change of meaning | a typo, a repaired citation, a reflowed table — and `GROUND-1.0` → `GROUND-1.1`, which recorded acceptance and changed no claim |
+| **Revision** `GROUND-1` | meaning changes: a claim added, retired, or reworded to say something different | adding a seventeenth claim |
+| **Epoch** `EPOCH-1` | what product is being made changes, which is what retiring or replacing a Ground claim means | dropping sovereign custody |
+
+A rendering must never be used to change meaning, and a typo must never imply that
+Soveraeign entered a new product epoch. Historical revisions stay addressable. An
+identifier whose meaning changes is **retired**, and a new one is minted; retired
+identifiers are never reused, because work already attributed under an identifier has to
+keep meaning what it meant when the work was done. This is the rule `STATUS.yaml` already
+applies to the retired `O1`–`O22` docket.
+
+## The sixteen claims
+
+### `GROUND-001` — custody stays with the enterprise
+
+> An enterprise keeps custody of its memory, its authority, its operation and its
+> continuity. Compute may be borrowed from anywhere; none of those four may quietly move
+> with it.
+
+Grounded in `SYSTEM.md` Scope and Ownership and model portability, `SPEC.md`.
+
+*What changing it would mean.* Soveraeign would be a hosted platform that runs an
+enterprise's work, rather than a node an enterprise owns. Every promise about swapping
+providers, standing up your own node, or losing a provider without losing the enterprise
+would go with it.
+
+### `GROUND-002` — one governed world
+
+> People and models are native operators of one governed world. They resolve to the same
+> state, the same transitions, the same authority checks, the same evidence and the same
+> history. Neither gets a private door.
+
+Grounded in `CONTRACT.md` C1, `SYSTEM.md` Scope, `PRD.md`, `AI-NATIVE.md`.
+
+*What changing it would mean.* Soveraeign would be an ordinary enterprise application
+with a model integration beside it, or a model framework with a human dashboard. The
+AI-native claim rests entirely here.
+
+### `GROUND-003` — authority is granted, never acquired
+
+> Authority is granted, typed, scoped, revocable and recorded. Nothing acquires it by
+> operating successfully, by being fluent, by being recent, by being the provider, or by
+> being trusted.
+
+Grounded in `CONTRACT.md` C3 and C11, `AGENTS.md` Authority, `SPEC.md`.
+
+*What changing it would mean.* Soveraeign would be an automation environment in which
+capability implies permission. Refusal, delegation, and the whole notion of a participant
+that can build what it cannot ratify would lose their basis.
+
+### `GROUND-004` — you act by crossing a declared operation
+
+> A participant acts by crossing a declared operation, not by having access. The
+> operation declares its inputs, its required authority, its preconditions, its expected
+> observable result, its effect class and its refusal behaviour before it runs.
+
+Grounded in `CONTRACT.md` C6, `SPEC.md`, `AGENTS.md` State and execution.
+
+*What changing it would mean.* Soveraeign would be a permissions layer over arbitrary
+action. There would be no unit to discover, to attribute effort to, or to refuse.
+
+### `GROUND-005` — a consequential act binds to exact state
+
+> What it read, at what version, with what digest, and what it produced, stay recoverable
+> after the fact, and coincidence of value is never treated as identity.
+
+Grounded in `CONTRACT.md` C2, C10 and C15, `SPEC.md`.
+
+*What changing it would mean.* Soveraeign would record that something happened without
+being able to say what it happened to. Evidence, reproduction, version-pinned decisions
+and staleness refusal all rest here.
+
+### `GROUND-006` — the node is discoverable from the artifact alone
+
+> What may be asked of a node is discoverable from the artifact alone. A participant
+> arriving with no briefing can determine what it may do, over what, under whose
+> authority, and how success or failure will be observed.
+
+Grounded in `CONTRACT.md` C12, `AI-NATIVE.md`, `PRD.md` PROD-I-7.
+
+*What changing it would mean.* Soveraeign would require a person who already knows in
+order to be usable. Model participation would degrade to whatever a human remembered to
+explain, and the product would be normal enterprise software.
+
+### `GROUND-007` — every crossing leaves a record
+
+> Every crossing leaves a durable attributable record: who, what operation, on what,
+> under what authority, with what effect class, and what came of it. Refusals, failures
+> and unresolved judgements leave one too.
+
+Grounded in `CONTRACT.md` C8 and C15, `SPEC.md`.
+
+*What changing it would mean.* Soveraeign would be unable to answer why anything is what
+it is. Attribution, audit, correction and independent observation would have nothing to
+stand on.
+
+### `GROUND-008` — refusal is an outcome
+
+> A participant that may not do something is told so legibly, with a reason, and the
+> refusal is as much a result as a success.
+
+Grounded in `CONTRACT.md` C6 and C8, `SPEC.md` refusals, `AI-NATIVE.md`.
+
+*What changing it would mean.* Soveraeign would be permissive by default with exceptions
+bolted on. A model operator could not tell the difference between not allowed, not built,
+and broken.
+
+### `GROUND-009` — correction never erases occurrence
+
+> A wrong record stops conditioning what happens next by being countered, and the counter
+> never claims that consumed resources or external effects came back.
+
+Grounded in `CONTRACT.md` C4 and C9, `PRD.md` PROD-I-4.
+
+*What changing it would mean.* The record would be rewritable, and every historical
+attribution would be provisional. Soveraeign would be a database with an undo button.
+
+### `GROUND-010` — a report is not an observation
+
+> Whether something actually happened is settled by a path the executor did not control,
+> and a build never witnesses itself.
+
+Grounded in `CONTRACT.md` C7 and C5, `SDLC.md`, `AGENTS.md` Evidence and standing.
+
+*What changing it would mean.* Soveraeign would take an agent's word for its own work.
+Delegation at any scale, and the entire claim to govern model work rather than merely run
+it, would collapse.
+
+### `GROUND-011` — standing does not collapse
+
+> Proposed, recorded, admitted, ratified and effective are distinct, and nothing enters
+> as authoritative merely by being written, being confident, or being agreed with.
+
+Grounded in `CONTRACT.md` C4, C11 and C14, `CLASSIFICATION.md`.
+
+*What changing it would mean.* Soveraeign would be a wiki with permissions. The
+difference between a draft, an accepted rule and a currently applicable rule would stop
+being machine-readable.
+
+### `GROUND-012` — human judgement is reserved and scarce
+
+> Some transitions require a person, that requirement is declared, and waiting on one
+> does not stop unrelated work.
+
+Grounded in `CONTRACT.md` C5, `PRD.md` PROD-I-6, `AGENTS.md` Authority, `decisions/0023`.
+
+*What changing it would mean.* Soveraeign would be an autonomous agent runtime. The owner
+would be an operator of last resort rather than the holder of a declared kind of
+decision.
+
+### `GROUND-013` — the model is substitutable
+
+> Changing which model runs changes quality, latency and cost, and changes nothing about
+> state, standing, authority, receipts or contracts. A model that is unavailable is
+> refused visibly, never substituted silently.
+
+Grounded in `SYSTEM.md` Ownership and model portability, `BYOM.md`, `PRD.md` PROD-I-9,
+`AGENTS.md` Secrets and local boundaries.
+
+*What changing it would mean.* Soveraeign would be a wrapper around one provider.
+Bring-your-own-model, the local-first posture and the custody argument would all be
+marketing rather than structure.
+
+### `GROUND-014` — effort resolves to intention
+
+> Any meaningful expenditure of time, tokens, tools or money can be traced up to the
+> product intention that justified it, and any product intention can be traced down to
+> what has actually been spent realizing it.
+
+Grounded in `CONTRACT.md` C15, `PRD.md` PROD-I-1, `AGENTS.md` Change protocol,
+`reports/2026-08-24-product-canon-attribution-discovery.md`.
+
+*What changing it would mean.* Soveraeign would record that resources were consumed
+without being able to say what for. A node could run agents all night and produce a
+ledger nobody could read as a decision about priorities.
+
+### `GROUND-015` — work survives the loss of context
+
+> A new session, a different operator, a different model or the next day does not lose
+> what was under way, because what mattered was written down rather than held in
+> someone's head.
+
+Grounded in `CONTRACT.md` C12, `SYSTEM.md` Ownership and model portability, `AGENTS.md`
+Context hygiene.
+
+*What changing it would mean.* Soveraeign would be usable only within one continuous
+conversation. Model participation would be capped at whatever fits in one context window,
+which is the constraint the product exists to remove.
+
+### `GROUND-016` — a node is whole at any size
+
+> One person's node is a first-class node, not a reduced edition, and growing to more
+> participants or federating with another node does not migrate its authority or its
+> record somewhere else.
+
+Grounded in `SYSTEM.md` Ownership and model portability, `CLASSIFICATION.md`,
+`decisions/0039`.
+
+*What changing it would mean.* Soveraeign would be enterprise software with a hobby tier,
+and federation would be a migration path into someone else's system rather than a
+crossing between two sovereign ones.
+
+## What was deliberately kept out
+
+Each of these was considered and rejected as belonging below this altitude. The reason is
+the admission test, not that they are unimportant.
+
+| Considered | Where it belongs | Because |
+| --- | --- | --- |
+| Proofing as a product domain | a journey and `PRD.md` | If Soveraeign never shipped proofing and still kept `GROUND-001` through `GROUND-016`, it would still be Soveraeign. Proofing is the first substantive enterprise workflow, which is a different and lesser claim. |
+| SQLite, Python, the filesystem store | `ENGINEERING.md` | Changing all three changes the implementation and no promise. |
+| The office and counter vocabulary | `CLASSIFICATION.md`, `decisions/0038` | A useful way to place an operation, not a claim about what the product is. |
+| Bounded leases and fencing tokens | `SPEC.md` | The mechanism by which `GROUND-010` is kept, not a separate claim. |
+| The seven resource words | the canon and the accounting contract | Vocabulary that keeps `GROUND-014` from being collapsed, not ground itself. |
+| Federation | `GROUND-016` and `PROMISE-15` | Already carried: a node that is whole at any size is what makes crossing without absorption meaningful. |
+
+## What would defeat this Ground
+
+- A claim here whose `what changing it would mean` line, read honestly, describes a
+  different implementation rather than a different product.
+- A claim that no promise derives from, which would mean the Ground is carrying something
+  the product does not undertake.
+- A promise that derives from no claim here, which would mean the canon has product
+  intent this Ground does not account for.
+- A Ground identifier re-pointed at a different meaning instead of being retired.
+- Ground growing past twenty claims, which is the signal that claims are being minted per
+  feature.
+
+## Standing
+
+`OWNER-ACCEPTED`. Extracted from `CANON-1` and the governing set by Claude at Bdo's
+direction and accepted by Bdo on 2026-08-24 (`decisions/0052`, recorded in
+`STATUS.yaml`). Revision `GROUND-1` is now fixed: later work is attributed against these
+sixteen claims meaning what they mean here.
+
+Accepting the ground is **not** a claim that the node keeps any of it. Bdo said so in the
+ruling: *"I am accepting the semantic ground, not asserting that the implementation
+currently keeps every Ground claim."* `GROUND-010` in particular is a claim the node
+cannot presently keep, and saying so is what the four planes are for.
+
+No governing document was modified to accommodate this. `contracts/product-ground.json`
+carries the identifiers; `python scripts/sov_canon.py check` refuses if the two disagree.
+
+===== END FILE: GROUND.md =====
+===== FILE: LESSONS.md =====
+# Lessons
+
+An inbox, not a rulebook. Every entry here is a `Proposal` under `SPEC.md`
+(Information objects): it begins `RECORDED` and claims no authority. Nothing in
+this file governs anything. A lesson that should govern leaves this file for the
+document that owns the rule; a lesson that restates a rule an owning document
+already holds is dropped with a link to that owner (`AGENTS.md`, Design System
+of Record: do not duplicate a rule as a competing authority).
+
+Proposed standing: `decisions/0029-lessons-loop.md`.
+
+## How an entry moves
+
+`RECORDED` when written here. `ADMITTED` when a fixture or check passes for it.
+`RATIFIED` only by Bdo, through a decision record. `EFFECTIVE` when it actually
+runs in `scripts/verify.py` or `scripts/lint.py`. The four do not collapse
+(`SPEC.md`, Historical standing and current effectiveness).
+
+A lesson awaiting Bdo is a PROD-I-6 pending-right record. It blocks nothing.
+
+## Capture and drain
+
+- **Capture trigger:** memory consolidation — when an interactive session merges
+  or retires its memory files. Not host context compaction; wiring that is a
+  later `update-config` operation.
+- **Drain trigger:** seven entries standing `RECORDED`. At seven, each is drained
+  into its landing or dropped. The rule is *drain*, not *review*: a file that only
+  grows becomes policy by accident.
+- **Landing:** `fixture` when the claim is mechanically checkable, `decision` when
+  it is a judgement. Also `lint`, `known-gap`, `seam`, `drop`. The lesson declares
+  its landing when written.
+
+Standing now: **8 `RECORDED`**, threshold 7. L-0001, L-0008 and L-0009 are
+`EFFECTIVE`. The drain is due and is recorded as debt rather than refused:
+`decisions/0029` declined to fail a run on an eighth lesson, because that makes
+capture costly at exactly the moment capture matters. `python
+scripts/sov_lessons.py check` reads this page every run and refuses a standing
+the tree does not support; the count it prints is a debt reading, not a gate.
+
+Draining the eight is not one concern. L-0003, L-0005 and L-0006 each land in a
+different service from the others, and `AGENTS.md` mints a separate concern when
+work crosses a service boundary; four of the eight declare `decision` landings
+that are Bdo's.
+
+## Entries
+
+### L-0001 · The orientation snapshot drifted from the record inside one day
+
+`CLAUDE.md`'s repository snapshot claimed 26 commits and 17 decision records.
+The record at the time of writing held 65 commits, 18 PRs, 51 issues, and
+decision records through 0027. A snapshot that is stale within a day is worse
+than no snapshot: it is read as current by every launched agent, which does not
+carry the interactive session's context.
+
+- Evidence: `lineage/SOURCES.lock`, all 65 `git-commit:*` and 18 `github-pr:*`
+  sources; `CLAUDE.md` "Repository snapshot (informational)".
+- Landing: `lint` — landed 2026-08-25 as `scripts/sov_snapshot.py`, run inside
+  `scripts/verify.py` as `orientation snapshot`. It derives the verification
+  check count, commits, decision records, declared operations and reports from
+  the record and fails when the page diverges past a declared tolerance. Two
+  further numbers are listed as NOT CHECKED rather than guessed at, after a draft
+  that re-counted conformance cases got 9 against the suite's own 20. A witness
+  then showed that a third, declared operations, had been wrongly listed as
+  underivable when a gated projection already held it.
+- Standing: `EFFECTIVE` — the check runs inside `scripts/verify.py`, which is
+  what this file defines `EFFECTIVE` to mean. It was recorded `ADMITTED` until
+  a witness pointed out that the four standings do not collapse and this one
+  was under-claiming. `RATIFIED` remains Bdo's and nothing here asks for it.
+
+### L-0002 · Six of twenty-five sessions are locked but never recorded
+
+`SOURCES.lock` carries 25 `session-file` sources; `lineage/recordings/` holds 19
+session recordings. The six without a recording are the six largest transcripts
+on the host — the ones holding the most abandoned paths and corrections, which is
+exactly the material a session source exists to preserve. No size cap in
+`services/asset/scripts/` explains the gap; the cause is not established.
+
+- Evidence: `session-file:0e5f4b24-fe64-4e61-8f83-b0957e4e7eae`,
+  `session-file:0fde28fd-48b2-4b45-aa42-ad6bfc72a631`,
+  `session-file:146efe7e-d200-42f2-bc46-03163e48b76d`,
+  `session-file:8fcfa24b-4ac0-42ac-9c91-62f4f9c950c5`,
+  `session-file:99dc7434-460a-4a54-846c-cf775a777acd`,
+  `session-file:a4d1c9a7-4f15-42ec-ae79-685452d4eeda`.
+- Landing: `fixture` — ingestion reconciles locked sources against produced
+  recordings and refuses silently to skip one; a declared skip carries a reason.
+- Standing: `RECORDED`.
+
+### L-0003 · Two omission definitions overlap, and only one gets the credit
+
+`history_reader.py` declares `sanitize-v1` (absolute host paths, oversized tool
+results, secret shapes) and `pii-v1` (owner email, host username). All 18 lossy
+recordings carry `pii-v1` only. Reading the code, an omission is recorded when it
+removes something, and `pii-v1` consumes the host username inside a path before
+`sanitize-v1` sees it as a path. No content leaked. But a `Recording` that
+declares which definitions *fired* is a weaker claim than one declaring which
+were *applied*, and `SPEC.md` (`Reader`) asks for omissions deterministically
+recoverable from the definition — which reads as configuration, not effect.
+
+- Evidence: `services/asset/scripts/history_reader.py` (`definition_record`,
+  the `if removed:` guard); all 18 lossy manifests in `lineage/recordings/`.
+- Landing: `decision` — which of declaration-by-configuration or
+  declaration-by-effect the `Recording` contract means, and which definition owns
+  host paths when both match.
+- Standing: `RECORDED`.
+
+### L-0004 · One session transcript is recorded `EXACT`
+
+`rec-6437c0f22043d43e` records a `session-file` source with `fidelity: EXACT` and
+`omissions: []`. Under `SPEC.md` (`Reader`), `EXACT` asserts the reader declares
+no omissions at all. For a Claude Code transcript that assertion should be rare
+and should be justified, not reached by a transform finding nothing to strip.
+
+- Evidence: `lineage/recordings/rec-6437c0f22043d43e.json`.
+- Landing: `fixture` — a `session-file` source recorded `EXACT` is refused unless
+  the recording carries a declared justification.
+- Standing: `RECORDED`.
+
+### L-0005 · Putting the checks last meant the budget took out exactly the checks
+
+Federation run `wf_a2d4eb5e-df2` dispatched five domains sequentially in
+implementation order, verification fourth and governance fifth. It exhausted the
+host account's monthly spend at agent 20 of 25. The five agents that died were
+the three verification builders, the witness, and a governance scoping agent —
+that is, every agent whose job was to check the work, plus the operation that
+would have surfaced the result for judgement. The build survived; its verification
+did not. Ordering checks after construction is correct for dependency and wrong
+for budget exhaustion, because a budget runs out at the end.
+
+- Evidence: run `wf_a2d4eb5e-df2` (25 agents, 20 done, 5 failed, 1,792,065
+  subagent tokens, 555 tool uses, 5,013s); its journal at
+  `subagents/workflows/wf_a2d4eb5e-df2/journal.jsonl`;
+  `.claude/drafts/history-lineage-and-lessons-brief.md` operations 1-5.
+- Landing: `decision` — whether a federation run reserves budget for its witness
+  before dispatching builders, or interleaves verification per domain rather than
+  running it as a terminal phase.
+- Standing: `RECORDED`.
+
+### L-0006 · A GitHub source's digest covers its title, not its content
+
+`history_sources.py` says plainly that "digests for git and GitHub sources cover
+the captured representation recorded here; session digests cover raw bytes". For
+a commit that is sound — the payload is `<sha>\t<subject>\n`, and the sha is
+itself a content address, so the commit cannot change without the address
+changing. For a pull request or issue it is not: the payload is number, title,
+and state, so a body can be rewritten entirely and the digest will not move.
+PROD-I-2 asks that "a source rereads byte-identical by digest"; 69 of the 159
+locked sources currently satisfy a weaker claim than that.
+
+- Evidence: `services/asset/scripts/history_sources.py` (`build_lock`,
+  `enumerate_github`); the 51 `github-issue:*` and 18 `github-pr:*` entries in
+  `lineage/SOURCES.lock`. Found by witness check W3, which reproduced all 65
+  git-commit digests independently and could not do the same for GitHub bodies.
+- Landing: `decision` — whether a GitHub source's digest must cover its body,
+  which makes the lock depend on an `EXTERNAL_WORLD` read to verify, or whether
+  the lock declares metadata-only fidelity for those kinds and says so in
+  `lineage/README.md`.
+- Standing: `RECORDED`.
+
+### L-0007 · A guard can be too narrow, or about the wrong thing, and hardening fixes only the first
+
+Two participants spent 2026-08-25 hardening two unrelated guards against
+independent witnesses. Ten refutations between them, seven on one side and three
+on the other. In both, the loop broke the same way, and neither participant
+reasoned their way out of it — one of them reasoned correctly.
+
+The console's authority check compares four strings: node, operator, capability,
+scope. One round hardened the node id into a predicate that held — a witness
+threw 297 spellings at it, Arabic-Indic digits through NUL, and 60 identities
+across all 3600 ordered pairs, and could not break it. It is still true. It was
+about the wrong noun. The credential was bound to a node and the *records* were
+not, so a caller who could not take one office took their own and spent it
+against the first one's data. Bound the records, and the *operator* was still
+caller-typed, because three of the four strings the check compares had never been
+examined. Every attack had varied the one already hardened.
+
+The landing gate's path check ran the same course. Five rounds closed spellings
+that reached an admitted prefix while naming an excluded file — traversal, dot
+segments, doubled separators, eight globs, pathspec magic. Those were narrowness
+and hardening was the right answer. Then a bare directory passed every one of
+them, because it is a canonical literal path that selects a set. Then the gate
+turned out to grade `--path` while `git merge` carried a different set entirely,
+so an excluded path reached the target having never been shown to the evaluator
+at all. Neither of the last two is a spelling.
+
+The distinction that matters: a guard can be too narrow, or it can be about the
+wrong thing. More rigour on the predicate finds the first and is invisible to the
+second, because from inside the predicate the wrong-thing failure looks like
+success. A participant who responds to being refuted by writing a broader
+predicate will be refuted again.
+
+Generalising correctly does not end the sequence either, and that is the harder
+half. After the wrong-noun refutation the console round did not write a broader
+predicate: it moved the fix from the call sites to the folds, one chokepoint every
+lookup by id passes through and listings filtering rather than refusing, on the
+stated reasoning that a call-site fix is a list and this needed a rule. That is
+the right response, reached deliberately, and the next witness refuted it anyway
+on an axis the new rule did not touch. So a correct generalisation at one level
+does not protect the level above it, and the stopping condition cannot be "until
+it is right". It has to be a budget and a seam.
+
+What broke both loops was a witness changing the question rather than sharpening
+it. One said it in a line: *I could not find an escape inside the string. The
+escape is outside it.*
+
+The operational move, and the only instruction here worth following: having
+established that the guard holds, enumerate what it touches — the operands it
+compares, the sets it names, the call sites that reach it — and mark which have
+actually been varied by an attack rather than assumed covered. The console check
+compares four operands and three were never varied. `--path` named one set and
+the merge carried another. Both were answerable by listing and asking, which is
+cheap, and neither participant did it until a witness did.
+
+Over-applied, this is expensive: enumerating neighbours has no natural stopping
+point, and a participant who applies it without a budget never lands. The counter
+is that bounded rounds each producing a real refutation is the loop working,
+while a further round chasing a class that cannot be closed inside the service is
+the loop failing. Knowing which one you are in is a judgement this lesson cannot
+make for anyone.
+
+- Evidence: `reports/observations/2026-08-25-*` — twelve observations across the
+  landing gate, seven of them dissents, with the bare-directory and merge-range
+  findings at `...directory-and-containment...` and `...effect-path-drift...`.
+  The console rounds are held on `feat/console-authority-enforced` and their
+  three observations are **not in the tree**, so a reader cannot reach them.
+  That is not an oversight by their author: `contracts/standing-grants.json`
+  requires an independent observation and admits no path under `reports/`, so
+  the loop cannot land the evidence its own precondition demands. Since the
+  merge-range fix landed, committing one to a branch refuses the entire landing,
+  because it is then carried whether or not `--path` names it. Both landings that
+  did carry observations went by hand. Widening the grant by one prefix makes
+  this citation reachable and the qualifier removable.
+- Landing: `decision` — whether "enumerate what the guard touches and mark what
+  has been varied" belongs in `AGENTS.md` alongside the evidence rules, or stays
+  a practice note. It is a claim about how participants attack their own work,
+  which is Bdo's to place.
+- Standing: `RECORDED`.
+
+### L-0008 · The number that defined the phase was never on the critical path
+
+`python scripts/sov_f2_gate.py` read the distance between `SPEC.md` and the
+conformance corpus for six days and returned non-zero the whole time. Nothing
+ran it. It was in no check table, no landing gate, and no orientation page, so
+the reading sat at 0 of 44 across 401 commits and refused nothing. The gate was
+not wrong and was never consulted; the defect is that a number nothing refuses
+on is a number nothing moves.
+
+Registering the gate itself is the wrong repair and was rejected: it would
+refuse every run until the phase exit is earned, which teaches a reader to
+ignore a red check. What landed is a floor. A fall refuses, because a fall
+needs an edit to the corpus or the specification and is attributable to it. A
+stall prints its commit count and records debt, on the reasoning
+`decisions/0081` used to take the wall clock out of the exit code.
+
+- Evidence: `reports/2026-08-27-phase-i-retro.md` finding 1;
+  `contracts/phase-progress.json`; `scripts/sov_phase_progress.py`;
+  `scripts/tests/test_phase_progress.py`.
+- Landing: `fixture` — landed 2026-08-27 as `scripts/sov_phase_progress.py`,
+  registered in `scripts/sovverify/checks.py` as "phase progress floor".
+- Standing: `EFFECTIVE`.
+
+### L-0009 · Coverage was produced at one granularity and read at another
+
+The oracle held 20 controls, all passing, each declaring a `requirement`. The
+gate reads *predicates*, one granularity below that, and credits a case only for
+what it declares in a machine-readable `predicates` array. None of the 20 had
+one, so real defeating-fixture-carrying coverage read as zero. Neither side was
+wrong from its own end, and joining the two vocabularies was nobody's job.
+
+The join itself was cheap — an afternoon reading controls already in the tree —
+and took the reading from 0 to 36 of 44 without adding a single fixture. What
+makes it stay true is that the eight remaining gaps are enumerated with reasons,
+so covering one forces its own exclusion to be deleted, and a predicate id the
+specification does not state now refuses instead of being silently uncounted.
+
+- Evidence: `conformance/oracle-controls.json` `predicates` arrays;
+  `contracts/phase-progress.json` `uncovered_on_purpose`; the `UNKNOWN_PREDICATE`
+  and `UNDECLARED_UNCOVERED` refusals.
+- Landing: `fixture` — landed 2026-08-27 in the same check as L-0008.
+- Standing: `EFFECTIVE`.
+
+### L-0010 · Governance outgrew the thing it governs
+
+78 decision records against 0 covered predicates. 60 contracts against 20
+conformance controls. Each record was defensible when written and several were
+commissioned directly; the aggregate is a system that documents faster than it
+demonstrates. The clearest instance is `decisions/0041`, which charters the
+Observation Service because `observe_run` has no service behind it and
+`AI-NATIVE.md` check 3 reads `UNATTESTABLE` everywhere. Four days later the
+charter is still a charter and check 3 still reads `UNATTESTABLE`. The record was
+correct and changed nothing, because a record is not a holder.
+
+What this does not claim is that the records were wrong or that fewer should have
+been written. The measurable thing is the ratio and its direction, and whether a
+ratio is a defect at all is a judgement about proportion.
+
+- Evidence: `reports/2026-08-27-phase-i-retro.md` finding 3;
+  `decisions/0041`; `services/observation/`; `python scripts/sov_docket.py`.
+- Landing: `decision` — whether a proportion between records and demonstrated
+  coverage is a governed constraint at all, and if so what holds it. It is a
+  claim about how much governance is too much, which is Bdo's to place.
+- Standing: `RECORDED`.
+
+### L-0011 · Product ground was accepted and then not used to route anything
+
+Sixteen ground claims were accepted on 2026-08-24 (`decisions/0052`), fixing
+revision GROUND-1 so later work could be attributed against them. Nothing since
+has required a unit of work to name which claim it serves. `PRD.md`, `ROADMAP.md`
+and `SPEC.md` contain zero occurrences of the string `GROUND-`, so the edge from
+a requirement to the claim it keeps does not exist in either direction. The
+ground became a document to cite rather than a key to route on.
+
+The repair is small and is not built: nine requirements, each naming the ground
+claim it serves, and a check that a requirement without one refuses. It is listed
+here rather than done because it edits `PRD.md`, which is a governing document
+this concern does not hold.
+
+- Evidence: `grep -c "GROUND-" PRD.md ROADMAP.md SPEC.md` reads 0, 0, 0;
+  `contracts/product-ground.json`; `decisions/0052`.
+- Landing: `fixture` — a Phase-I requirement that names no ground claim refuses.
+- Standing: `RECORDED`.
+
+## Dropped
+
+A dropped entry stays listed here with its reason and the owning document it
+duplicated, so the same lesson is not relearned and re-proposed.
+
+- **Work was scoped by document, not by initiative.**
+  `reports/2026-08-27-phase-i-retro.md` finding 4. Dropped as a restatement:
+  `contracts/custody.schema.json` and `contracts/custodies.json` own this rule,
+  and `decisions/0085` records it. Recording it here as well would make the
+  inbox a second authority on a rule an owning document already holds.
+- **A concern ended at a landed commit, not at a closed path.**
+  `reports/2026-08-27-phase-i-retro.md` finding 5. Dropped for the same reason:
+  `contracts/work-circuit.json` owns it as the `OPEN_PATH` refusal, with
+  `adapters/ollama/invoke.py` as the live instance.
+
+===== END FILE: LESSONS.md =====
+===== FILE: NAMING.md =====
+# Naming Record
+
+The owner-selected product and repository handle is **Soveraeign**.
+
+This selection closes the repository naming question. It does not by itself
+complete trademark, package, domain, or adjacent-product screening, and it does
+not assert that the product has passed Phase-I operational qualification.
+
+## Naming brief
+
+A candidate must carry, without lengthy explanation:
+
+- enterprise operation rather than knowledge storage alone;
+- algorithmic governance without implying automated domination;
+- native participation by humans and models;
+- local custody and inspectability;
+- action, authority, evidence, and consequence;
+- growth from experience rather than preloaded omniscience;
+- future federation without cloud dependence;
+- and enough linguistic and legal distinctiveness to own.
+
+## Remaining process
+
+1. Preserve Bdo's selection and its exact spelling: `Soveraeign`.
+2. Run current repository, domain, package, product, and trademark collision
+   screening before public release.
+3. Run cold-reader tests: ask what the name appears to make without supplying
+   the system description first.
+4. Record objections and failure modes, not only favorable associations.
+5. If the owner changes or strikes the name, land a new decision and update all
+   authoritative references atomically.
+
+No agent may reinterpret, normalize, or respell the selected name by
+convenience.
+
+===== END FILE: NAMING.md =====
+===== FILE: PRD.md =====
+# Soveraeign Product Requirements
+
+## A Locally Sovereign Enterprise Operating Environment for Humans, Agents, Services, and Skills
+
+Status: `PRODUCT SCOPE CANDIDATE` · artifact standing `OPEN`, not owner-accepted
+Owner: Bdo, root seat · Scope: the whole product, no phase · 2026-08-28
+
+Revision 1 was `Product Requirements — Founding and Phase I`. It is archived
+byte-identical at `archives/PRD-PHASE-I.md`, where it remains a pinned
+definition of the closed `phase:i` in `contracts/phases.json`. Its nine requirements are not
+retired: they are the first qualification profile under this document, below.
+
+`ROADMAP.md` is the current estimate of how the product gets built. This
+document is what it must become. The roadmap is expected to be revised often;
+this is not.
+
+## Product outcome
+
+Soveraeign is a locally sovereign enterprise operating environment in which
+humans, agents, skills, services, and federated nodes can perform useful work
+through the same governed system.
+
+The product provides a composable network of independently bounded services for
+identity, assets, records, discovery, policy, authority, routing, observation,
+models, workflows, automation, interfaces, and other enterprise capabilities.
+Services may use capabilities provided by other services without absorbing their
+state, policy, or authority.
+
+Skills compose those capabilities with versioned assets, instructions, tools,
+policies, and evidence requirements to describe how domain work can be performed.
+
+Agents and human operators execute that work under explicit custody. Custody
+gives an operator authority and responsibility to carry its work toward closure:
+complete it, repair what prevents completion, gather the required evidence,
+redirect through another admissible operation, refuse safely, or return the
+smallest genuinely unresolved remainder.
+
+Every consequential crossing remains attributable and reconstructable. The
+system can answer:
+
+- what happened;
+- who or what acted;
+- under what custody and authority;
+- which skill, service, operation, asset, model, policy, and version
+  participated;
+- what crossed each boundary;
+- what evidence supports the result;
+- what remains unresolved;
+- and what operation can happen next.
+
+A personal deployment and an enterprise deployment use the same fundamental node
+model. A node may begin as one person's locally operated environment, grow into
+a network of services and operators, and later federate with other sovereign
+nodes without surrendering custody of its authoritative record to a model
+vendor, cloud provider, or external platform.
+
+The long-term product is not a collection of applications surrounding an AI
+assistant. It is an operating environment in which enterprise capabilities are
+discoverable and composable, agents can competently use them, work carries
+custody from intent to closure, and the resulting system remains inspectable by
+the humans responsible for it.
+
+*Owner-directed, stated by Bdo 2026-08-28.*
+
+## What this document owns
+
+The enduring product requirements: what Soveraeign must let a person, an agent,
+a service or a peer node actually do; which of those matter more; how anyone
+would know it works; and what is deliberately not being built.
+
+It does not restate rules other documents own. Each requirement points at the
+document carrying its predicate and the fixture that defeats a false claim. A
+rule copied here becomes a second authority for the same rule, which `AGENTS.md`
+forbids — and being that copy is how revision 1 stopped being a PRD.
+
+| Not owned here | Owned by |
+| --- | --- |
+| What kind of product this is, permanently | `GROUND.md`, sixteen claims |
+| The exact wording of what the product undertakes to a person | `CANON.md` |
+| The system boundary and operating model | `SYSTEM.md` |
+| The invariants | `CONTRACT.md` |
+| Vocabulary, standing ladders, artifact lifecycle | `CLASSIFICATION.md` |
+| The predicate a requirement must satisfy | `SPEC.md` |
+| The fixture that proves or defeats it | `conformance/` |
+| How and when the work happens | `ROADMAP.md`, P0–P9 |
+| Current standing and what waits on the owner | `STATUS.yaml` |
+| What a closed campaign committed to | `archives/PRD-PHASE-I.md`, `contracts/phases.json` |
+
+The admission test is Bdo's, ruled in `decisions/0052` and recorded in
+`CLASSIFICATION.md`: **would failing it mean the product is not done?** A
+statement that would make Soveraeign a *different product* if it changed belongs
+one level up, in `GROUND.md`.
+
+## Problem statement
+
+An enterprise that wants models doing substantive work today chooses between two
+bad options.
+
+**Adopt a provider's platform,** and the operational memory, the permission
+model, the audit trail and the continuity of the business come to live inside
+someone else's system. Changing providers becomes a migration; losing one
+becomes an outage of the enterprise rather than of a vendor.
+
+**Bolt an assistant onto existing software,** and the model is not an operator
+at all. It drafts, suggests and summarizes beside a system it cannot act in.
+Removing it removes a convenience rather than a capability, which is the test
+`AI-NATIVE.md` applies and most surfaces fail.
+
+Underneath both sits the same unsolved problem: **nothing distinguishes a model
+that did the work from a model that says it did.** A confident report, a
+successful execution, a green build and an agreed-with answer all arrive looking
+identical. Without a way to tell them apart, delegation cannot scale past what
+one person can personally re-check — and that ceiling, not model capability, is
+what limits how much work can actually be handed over.
+
+Soveraeign's claim is that these are one problem. A record that can say who did
+what, under whose authority, over exactly what state, and whether anyone
+independent confirmed it, is the same record that makes the provider
+substitutable, because everything that matters is held locally in a form no
+provider defines.
+
+*Derived from `GROUND.md`, `SYSTEM.md` Scope and `AI-NATIVE.md` Definition, not
+stated by Bdo in these words. Proposed.*
+
+## Custody and closure
+
+The requirement that ties agents, services, workflows, skills, boards and
+records together, and the reason a blocked state is not an acceptable terminal.
+
+> **Every accepted unit of work has a current custodian. The custodian has
+> bounded authority to carry that work toward closure. When the requested
+> transition is unavailable, the system helps resolve the reason into another
+> admissible operation. A work item may terminate successfully, refused,
+> superseded, absorbed, retired, or unresolved, but it may not disappear into an
+> unexplained blocked state.**
+
+*Owner-directed, stated by Bdo 2026-08-28. Top-level and not delegated to agent
+governance, because it constrains services and interfaces as much as operators.*
+
+Six named terminals — succeeded, refused, superseded, absorbed, retired,
+unresolved — and no seventh. `BLOCKED` is a claim to be proven, not a resting
+place: it must name the operation, the blocked transition, the missing
+precondition, the governing rule, the required authority, the unblock condition,
+and that no reachable alternative exists (`AGENTS.md`, Blocked edge is not
+blocked frontier).
+
+*Standing.* `contracts/closure-ownership.json` and `contracts/custodies.json`
+exist, `scripts/sov_closure.py` grades a handoff, and custody appears across 39
+files under `contracts/` and `services/`. The vocabulary is well ahead of the
+mechanism: no work item currently carries a custodian through a handoff, and the
+resolve-into-another-admissible-operation behaviour is described and unbuilt.
+`CANON.md` has no promise for this, which is discussed under Coverage below.
+
+## Product areas
+
+Twenty-two bounded areas. None of them is the product; each is a capability of
+it. The Asset Service is not a product, Gateway is not a product, skills are not
+the product, boards are not the product, federation is not the product.
+
+`Serves` names the `CANON.md` promises an area makes good, where one exists.
+`Standing` is read from `STATUS.yaml` and the operation surface and moves as the
+node changes.
+
+| Area | What this document establishes | Serves | Standing |
+| --- | --- | --- | --- |
+| **Node** | The sovereign unit of operation, custody, continuity, deployment and eventual federation. A node is whole at any size. | 02, 15 | contract built, no admission transition |
+| **Services** | Independently bounded capabilities with owned state, contracts, declared operations and declared refusals. | — | 11 boundaries, 140 declared operations, 5 reachable |
+| **Components** | Internal decomposition of a service without creating accidental parallel authority. | — | undeclared |
+| **Composition** | Service A uses Service B through a declared capability and a receipted crossing, absorbing none of its state, policy or authority. | — | declared, unreached |
+| **Assets** | Versioned, addressable things with provenance, relationships and custody. | 05, 16 | built, self-tested |
+| **Skills** | Versioned compositions of assets, knowledge, services, tools and completion rules that describe how domain work is performed. | — | harness skills exist, no product contract |
+| **Agents and operators** | Actors that discover capabilities and carry bounded work toward closure under an explicit grant. | 01, 04 | profile accepted, not live |
+| **Custody and closure** | Who owns the current work, what closure means, and what happens when a transition cannot occur. | — | contracts built, mechanism open |
+| **Gateway and discovery** | How an operator finds and reaches available capabilities without being told by a person who already knows. | 03 | chartered boundary, not implemented |
+| **Identity** | Who is acting, and how identity stays attributable across a crossing. | — | contract built, registry read only |
+| **Authority and policy** | What an actor may do, scoped independently of which model or intelligence it is running. | — | typed grants built, one ratified |
+| **Record** | The durable account of consequential actions, receipts, observations and counter-records. | 07, 08 | built, self-tested, not the kernel's |
+| **Evidence** | What supports a claim, and how independent witnessing works. | 11 | witness tooling exists, no observation service |
+| **Grounding** | Whether an asset, file, service or claim can explain its place in the system. | — | **new; no contract, no implementation** |
+| **Models and BYOM** | Replaceable model compute without provider ownership of authoritative state. | 01, 06 | contract accepted, `invoke_model` unimplemented |
+| **Workflow and automation** | Durable compositions that execute work repeatedly. | — | pattern accepted, every schedule disabled |
+| **Boards and interfaces** | Human-visible projections of real system objects, paths, custody and evidence, holding no authority of their own. | — | console continuity path built, four surfaces text |
+| **Federation** | Governed crossings between independently sovereign nodes. | 15 | contract built, no transport |
+| **External effects** | How the system acts safely on systems outside itself. | — | refused in Phase I; adapters declared |
+| **Security and reliability** | Isolation, access, durability, recovery, failure behaviour and operational expectations. | — | secret rules enforced; no drill, no recovery path |
+| **Accounting** | Cost, usage, attribution, work, time, model and resource accounting. | — | seven resource words defined; receipts cannot record consumption |
+| **Qualification** | How the product proves it works rather than claiming completion. | 10, 11 | oracle executable, participant binding open |
+
+### Coverage: thirteen areas serve no promise
+
+Thirteen of the twenty-two areas above make good no promise in `CANON.md`. That
+is a real gap and it resolves two different ways, which should not be conflated.
+
+**Most are structure, not undertaking.** *Services*, *Components*,
+*Composition*, *Identity*, *Authority and policy*, *Workflow*, *Boards*,
+*External effects*, *Security and reliability* and *Accounting* are how the
+product is built rather than what it undertakes to a person. A PRD legitimately
+holds both kinds. They need requirements here; they do not need promises minted
+above them.
+
+**Three are genuine undertakings with no promise, and want one.**
+
+- **Custody and closure.** "Your work will not vanish into an unexplained
+  blocked state" is said to a person and belongs in the canon.
+- **Skills.** "You can hand the node a domain instruction and it will know how
+  the work is done" is an undertaking, not an architecture.
+- **Grounding.** "Anything in the node can explain its place in the system" is
+  an undertaking. It is also entirely new: `grounding` appears in no contract or
+  service today and would be the first area introduced by this document rather
+  than read out of the repository.
+
+Minting a promise is `CANON.md`'s business and Bdo's act. This document records
+the three rather than assuming them.
+
+## Requirements
+
+The user-facing requirements **are** `CANON.md`'s promises, owner-accepted
+2026-08-24. Minting a parallel identifier for the same undertaking would create
+the second requirement ladder `CLASSIFICATION.md` warns about. This document
+adds what a PRD adds — priority, area, acceptance and current reach — rather
+than restating them.
+
+Priority is `P0` when the product is not the product without it, `P1` when the
+product works but cannot be trusted without it, `P2` when it is genuinely wanted
+later. **Priority is proposed, not accepted.** Nothing in this repository has
+ever ranked one requirement above another, and that absence is the likeliest
+mechanism behind the ruling that closed `phase:i` for optimising the wrong unit
+of progress.
+
+| # | Requirement | Area | Pri | Criterion | Reach |
+| --- | --- | --- | --- | --- | --- |
+| `PROMISE-04` | One world | Agents | P0 | `PROD-I-3` | 8 of 11 |
+| `PROMISE-07` | Every crossing returns a receipt | Record | P0 | `PROD-I-4` | 13, 1 missing |
+| `PROMISE-02` | Custody stays here | Node | P0 | `PROD-I-9` | 2 of 4, 4 missing |
+| `PROMISE-03` | You can find out what can be asked | Gateway | P0 | `PROD-I-7` (thin) | 2 of 9 |
+| `PROMISE-11` | Delegate and check | Evidence | P0 | `PROD-I-7`, `PROD-I-8` | 1 of 7 |
+| `PROMISE-05` | You can find out why | Assets | P1 | `PROD-I-2` | 10 of 11 |
+| `PROMISE-08` | Correction never erases | Record | P1 | `PROD-I-4` | 4 of 9 |
+| `PROMISE-09` | Your judgement is the scarce thing | Boards | P1 | `PROD-I-6` | 0 of 5 |
+| `PROMISE-01` | Bring your own participant | Models | P1 | `PROD-I-9` | 18 of 25, 5 missing |
+| `PROMISE-06` | The model is swappable | Models | P1 | `PROD-I-9` | 2 of 2, 2 missing |
+| `PROMISE-10` | Useful from the artifact alone | Qualification | P2 | `PROD-I-7` | 2 of 7 |
+| `PROMISE-12` | Work carries across a boundary | Boards | P2 | **none** | delivered |
+| `PROMISE-16` | Decide against exact state | Assets | P2 | **none** | 1 of 8 |
+| `PROMISE-15` | Cross to another node | Federation | P2 | none yet | 2 reachable |
+
+Reach is from `python scripts/sov_canon.py promises` and moves; treat the column
+as a pointer to that command rather than a fact this document holds.
+
+`PROMISE-11`, delegate and check, is placed `P0` because the whole delegation
+argument rests on it and `GROUND.md` already records `GROUND-010` as a claim the
+node cannot presently keep. It is simultaneously the furthest from met. If one
+priority call in this table is wrong, it is most likely that one.
+
+`PROMISE-12` and `PROMISE-16` have no criterion. `conformance/requirements.py`
+enumerates exactly nine, so minting a tenth changes the oracle as well as this
+document, and which of the three admissible resolutions applies — mint, record
+as carried by an existing criterion, or move out of scope — is Bdo's.
+
+## The Phase I qualification profile
+
+**`Phase I · Local Sovereign Foundation`.** Nine criteria, `PROD-I-1` through
+`PROD-I-9`, carried forward intact from `archives/PRD-PHASE-I.md`. They are not the
+product and never were; they are the first profile the product is graded
+against, and later phases will earn later profiles.
+
+They keep their identifiers, their predicates in `SPEC.md`, and their fixtures
+in `conformance/`. The service manifests, the oracle, the SPEC traceability
+table and the epic tree all address them. `Today` is the reference participant's
+standing from `services/asset/conformance/BASELINE.md`; this document may not
+advance it.
+
+### PROD-I-1 · Propose
+
+A model session that has never run here before enters a proposal carrying its
+author, its sources and its cost, claiming no authority it holds, and that
+proposal reaches a named operator surface where a human can read it and act. An
+instanced session asserts the authority it would need; the record does not grant
+it, because a session holds no continuous identity a grant can attach to.
+Evidences `PROMISE-04`, `PROMISE-07` · predicate `SPEC.md` PROD-I-1 · fixtures
+`CONF-I1`, `CONF-I1-SURFACE-DEF`, `CONF-I1-CLAIM-DEF` · today `FAIL`: no content
+address, no source addresses, no cost.
+
+### PROD-I-2 · Remember
+
+What the node holds comes back byte-identical, and anything derived from it
+resolves its source, reader, version, fidelity and omissions.
+Evidences `PROMISE-05`, `PROMISE-02` · predicate `SPEC.md` PROD-I-2 · fixture
+`CONF-I2` · today `PASS`, the only one.
+
+### PROD-I-3 · Cross
+
+A human and a model exchange through the same transition, with origin and
+projection visible on both sides and a receipt at the end.
+Evidences `PROMISE-04` · predicate `SPEC.md` PROD-I-3 · fixture `CONF-I3` ·
+today `FAIL`: no second binding, no fully declared crossing.
+
+### PROD-I-4 · Gate and retract
+
+Every admission is marked and receipted, and a wrong entry is countered without
+the original disappearing.
+Evidences `PROMISE-07`, `PROMISE-08` · predicate `SPEC.md` PROD-I-4 · fixture
+`CONF-I4` · today `FAIL`: the counter receipt does not link what it counters.
+
+### PROD-I-5 · Typed authority
+
+Authority arrives as a typed, scoped, revocable grant. Machine authority may
+settle verification-typed truth; judgement-typed truth needs a person.
+Evidences `PROMISE-03`, `PROMISE-04` · predicate `SPEC.md` PROD-I-5 · fixtures
+`CONF-I5`, `CONF-I5-GRANT` · today `FAIL`: the paired typed verification grant
+and commit cannot be demonstrated.
+
+### PROD-I-6 · Founder judgement budget
+
+Work needing a person's decision queues for one and stops only that operation;
+where judgement was spent is visible.
+Evidences `PROMISE-09` · predicate `SPEC.md` PROD-I-6 · fixture `CONF-I6` ·
+today `FAIL`: refuses on the spot instead of leaving a pending right.
+
+### PROD-I-7 · Independent qualification
+
+Someone who was not here finds the authority, runs the suite, reconstructs the
+evidence and reaches a verdict with no oral explanation.
+Evidences `PROMISE-10`, `PROMISE-11`, thinly `PROMISE-03` · predicate `SPEC.md`
+PROD-I-7 · fixture `CONF-I7` · today `FAIL`: no clean-room witness run and no
+competence measurement exist.
+
+### PROD-I-8 · Joint sign
+
+A ratified claim is checked again at runtime, naming validator, version, inputs
+and run, returning reproduced, dissented or unattestable.
+Evidences `PROMISE-11` · predicate `SPEC.md` PROD-I-8 · fixture `CONF-I8` ·
+today `FAIL`: general runtime attestation is not implemented.
+
+### PROD-I-9 · Bring your own model
+
+From one unchanged node, two materially different model bindings attempt the
+same named operation through the same transitions, checks and receipts, each
+recording what it used and what it cost. Provider loss costs the provider.
+Evidences `PROMISE-01`, `PROMISE-02`, `PROMISE-06` · predicate `SPEC.md`
+PROD-I-9 · fixture `CONF-I9` · today `FAIL`: no model-binding contract and no
+two-model portability run.
+
+### The two-binding proof
+
+One human-facing binding and two materially different model bindings run the
+same authoritative transitions and return compatible receipts; one model arrives
+through the BYOM contract. Three bindings in total, because either half alone is
+cheap and the pair is not. This profile's hardest criterion, and it evidences
+`PROMISE-01`, `PROMISE-04` and `PROMISE-06` together.
+
+### Later profiles
+
+Each roadmap phase past `P0` earns its own profile, and none exists yet. The
+shape is set here: named criteria with predicates in `SPEC.md` and fixtures in
+`conformance/`, addressed by identifier, never advanced by the document that
+declares them.
+
+## Success metrics
+
+Usage metrics would be theatre on a node with one human and some models. These
+are evidence metrics, each computable from something that already exists.
+**Proposed, not accepted** — whether the standard's metrics section may be
+satisfied this way is Bdo's call.
+
+| Measure | Read by | Today | Target |
+| --- | --- | --- | --- |
+| Journeys walkable end to end | `sov_canon.py trace` | 2 of 14 | every in-scope journey |
+| Declared operations reachable | the operation surface | 5 of 140 | every operation a live journey needs |
+| Requirements independently observed | `sov_standing.py` | 0 | every P0 |
+| Promises carried by no criterion | this document | 2 | 0 |
+| Product areas serving no requirement | this document | 0 | stays 0 |
+| Reference participant conformance | the asset baseline | 1 of 9 | 9 of 9 |
+| Work items closed with a named terminal | does not exist | unmeasured | all |
+| Time for a fresh participant to be useful | the cold-start benchmark | measured daily | falling, drift explained |
+| Node operable with every provider removed | a drill; does not exist | unmeasured | passes |
+
+The last two rows are the honest gaps. Custody and closure is a top-level
+requirement with no counter behind it, and `PROMISE-02` is the product's central
+claim with nothing that tests it by actually removing the providers.
+
+## Non-functional requirements
+
+Long-standing, and never collected in one place before. One line each; the
+owning document is authority.
+
+- **Local-first.** Tests use temporary directories, fixed inputs, bounded waits
+  and no network. No external-world effect without a declared adapter, a data
+  boundary and a receipt (`AGENTS.md`).
+- **Dependency restraint.** Python 3.11+, standard library by default. A runtime
+  dependency requires a named boundary, an observed need, declared failure
+  behaviour and a decision record (`ENGINEERING.md`).
+- **Verification.** `python scripts/verify.py` is the required gate. Wall time is
+  graded, not pass/fail; per-check ceilings in
+  `contracts/verification-budget.json` attribute an overrun to the check that
+  owns it; one check past thirty seconds refuses (`decisions/0081`).
+- **Data boundary.** Every model crossing declares its mode. Silent provider
+  fallback is forbidden (`BYOM.md`).
+- **Secrets.** Never committed, never printed in logs, receipts, exceptions,
+  prompts, fixtures or snapshots. Only opaque credential references.
+- **Portability.** No provider SDK type may enter a kernel or service contract.
+- **Storage.** SQLite for the reference record, content-addressed filesystem for
+  payload bytes. Search, graph and interface stores are rebuildable projections
+  unless a contract says otherwise.
+- **Module budget.** Production modules under 300 lines, split by owned
+  responsibility. Named debt is recorded rather than grandfathered.
+
+Security, reliability and accounting are product areas above with requirements
+still to be written. Isolation, recovery, disaster drills, tenancy and
+operational objectives are named in `ROADMAP.md` at `P5` and `P8` and have no
+requirement here yet. That is a gap, recorded rather than papered over.
+
+## Surfaces
+
+Human and model bindings may present different projections and must resolve the
+same transitions, authority checks and receipts (`SPEC.md`, Interface parity). A
+board or interface holds no authority of its own: every object on it resolves to
+an addressed system object and every gesture to a declared operation. Today the
+surfaces are a CLI and declared machine interfaces; the Console Service owns the
+operator surface and only its continuity path is built.
+
+## Dependencies and constraints
+
+- Every model requirement depends on `invoke_model`, declared in
+  `contracts/kernel-transitions.json` and implemented by no kernel. It blocks
+  `PROMISE-01` and `PROMISE-06` at the same point.
+- Evidence depends on an observation service that does not exist: `observe_run`
+  has no service behind it, and `AI-NATIVE.md` check 3 reads `UNATTESTABLE` on
+  every service assessment.
+- Composition depends on Gateway, Identity and Authority crossings; four of the
+  eleven service boundaries are declared with no implementation.
+- Skills depend on a skill contract that does not exist. The `.claude/` harness
+  skills are host plumbing holding no standing and are not the product's skills.
+- `ENGINEERING.md` owns the growth triggers deciding when HTTP, queues,
+  containers or a remote database become admissible. None has fired.
+
+## Assumptions
+
+- One person and their models are a sufficient first market; a node whole at any
+  size is not a reduced edition (`GROUND-016`).
+- Local models will stay capable enough to make provider substitution real
+  rather than nominal. Unproven, and load-bearing for `PROMISE-02`.
+- Independent observation can be automated well enough to be routine. If it
+  cannot, `PROMISE-11` reduces to a human re-checking everything and the
+  delegation argument fails.
+- The governing document set can carry product meaning without a database in
+  front of it. This has strained once already: the disconnection between
+  `CANON.md` and this document went unnoticed for four days.
+- Twenty-two areas is a decomposition, not a discovery. If two of them keep
+  needing the same contract, they are one area.
+
+## Risks and open questions
+
+`OPEN-SEAMS.md` is the register — nineteen open, one closed. Bearing on
+requirements:
+
+- **The witness gap.** `GROUND-010` is a claim the node cannot presently keep,
+  said so in the accepted Ground. Highest-consequence open item, and `P0`
+  requirement `PROMISE-11` sits on it.
+- **Scope has widened faster than the canon.** Thirteen product areas serve no
+  promise, three of which are genuine undertakings. If the canon does not grow,
+  this document holds product intent the accepted layer above it does not.
+- **Grounding is new.** It appears in no contract or service and enters the
+  product here. It is the one area not read out of the repository.
+- **Priority is proposed and unaccepted.** If it is wrong, the register misleads
+  in the most consequential way a PRD can.
+- **`phase:i` closed incomplete** with `succeeded_by` null and five residual
+  custodies `PROPOSED`. Which roadmap phase opens next is Bdo's to set.
+- **Two things are named gateway** (S18); **unattestable effectiveness** (S4)
+  and **cold-start semantics** (S5) both gate `PROMISE-10`.
+
+## Release plan
+
+This document does not schedule. `ROADMAP.md` owns the ladder, `P0` through
+`P9`, each exiting on a demonstrated product result rather than component
+percentages. `contracts/phases.json` owns what a campaign committed to and how
+it ended.
+
+## Out of scope
+
+- A graphical production interface ahead of `P4`.
+- Automated external-world effects ahead of `P6`, which is an owner decision
+  rather than an engineering one.
+- World rollback. Retraction adds a counter-record and never claims consumed
+  resources came back.
+- Distributed consensus.
+- A universal ontology or a frozen encoding.
+- Importing a predecessor implementation wholesale.
+- Optimizing performance ahead of semantic conformance.
+- Treating the chosen name as evidence of maturity or public clearance.
+- Treating any one area — Asset, Gateway, Skills, Boards, Federation — as the
+  product.
+
+## References
+
+`GROUND.md` · `CANON.md` · `SYSTEM.md` · `CONTRACT.md` · `CLASSIFICATION.md` ·
+`SPEC.md` · `AI-NATIVE.md` · `BYOM.md` · `ENGINEERING.md` · `SDLC.md` ·
+`ROADMAP.md` · `archives/ROADMAP-F0-F6.md` · `OPEN-SEAMS.md` · `STATUS.yaml` ·
+`archives/PRD-PHASE-I.md` · `contracts/phases.json` · `contracts/product-canon.json` ·
+`contracts/product-ground.json` · `contracts/closure-ownership.json` ·
+`contracts/custodies.json` · `conformance/requirements.py` ·
+`services/asset/conformance/BASELINE.md` · `decisions/0052` · `decisions/0081`
+
+## Standing
+
+`PRODUCT SCOPE CANDIDATE`, artifact standing `OPEN`. `PRD.md` is a root
+governing document and sits outside the standing landing grant
+(`contracts/standing-grants.json`), so this lands by Bdo's hand and not by the
+loop. It changes no standing in `STATUS.yaml`.
+
+Owner-directed: the title, the subtitle, the product outcome, the twenty-two
+areas, and the custody and closure requirement, all stated by Bdo on 2026-08-28.
+Drafted from the repository and proposed: the problem statement, the priority
+ordering, the success metrics, the per-area standing readings, and the coverage
+finding.
+
+What would defeat this document:
+
+- a requirement that fails the admission test — failing it would not mean the
+  product is unfinished;
+- a product area that no requirement serves, or a requirement that belongs to no
+  area;
+- a user-facing undertaking here that `CANON.md` does not promise, which would
+  mean product intent was invented below the layer that holds it;
+- a predicate or defeating case restated here rather than cited, which is the
+  defect that ended revision 1;
+- a priority ordering Bdo rejects, which is the most likely correction and the
+  cheapest to make.
+
+===== END FILE: PRD.md =====
+===== FILE: PUBLICATION.md =====
+# Publication Boundary
+
+Status: `ACTIVE SAFETY BOUNDARY`
+
+The public repository may contain:
+
+- canonical product and system documents;
+- proposed classification and logical specifications;
+- decisions authored for this repository;
+- machine-readable contracts;
+- conformance scenarios, oracle controls, and tests;
+- service charters and explicitly labeled reference participants;
+- known gaps and self-test evidence.
+
+The following remain unpublished until Bdo explicitly approves their public
+disclosure:
+
+- `lineage/` and ancestor registries;
+- raw conversation exports;
+- census inventories and candidate files;
+- immutable historical evidence documents;
+- source-lock inventories that reveal the private evidence corpus;
+- predecessor repository snapshots or wholesale imports.
+
+Canonical documents may cite the type and clause of their source ground without
+publishing the underlying archive. A public checkout must report locked evidence
+as unavailable; it must never claim a digest verification it could not perform.
+
+This boundary protects prior work without erasing it. The local custody archive
+remains the reconstruction authority until a separately reviewed public lineage
+package is admitted.
+
+===== END FILE: PUBLICATION.md =====
+===== FILE: ROADMAP.md =====
+# Product Roadmap
+
+Status: `PRODUCT PHASES CANDIDATE` · artifact standing `OPEN`, not owner-accepted
+Owner: Bdo, root seat · Drafted 2026-08-28 · lanes added 2026-08-28
+
+`PRD.md` says what Soveraeign must become. This document is a candidate estimate
+of how it gets there; A20 still asks the root seat whether this decomposition is
+the accepted forward product model. Historical `Now`/`Next` lane text below is
+therefore forecast, not the live work queue. While `STATUS.yaml` says
+`phase: NONE_ACTIVE`, issue #148 is the boundary-closure ledger and no product
+phase is active. If a successor is opened, #173 is the first proposed construction
+gate. The estimate is expected to be wrong in detail and revised often; the PRD is not.
+
+The previous decomposition, F0 through F6, is archived byte-identical at
+`archives/ROADMAP-F0-F6.md`, where it remains a pinned definition of the
+closed `phase:i` in `contracts/phases.json`. It was a good ladder for getting out of ideation and
+the repository has overtaken it: F5 still reads "First enterprise service" while
+several services are implemented, and federation is listed as deferred while
+federation-crossing and node-identity contracts already exist experimentally.
+The name crosswalk is carried forward below, re-keyed onto this ladder;
+`archives/ROADMAP-F0-F6.md` holds its original keying.
+
+## What a phase is here
+
+A phase is an increasingly complete operating environment, not an implementation
+layer. Each one names a **product result** — something a person or an agent can
+do that they could not before — and exits on a demonstration of that result, not
+on component percentages.
+
+The distinction matters because the last campaign failed on exactly this point.
+`phase:i` closed `CLOSED_INCOMPLETE` with the ruling that the repository
+"optimised the wrong unit of progress, and the exit predicates were never on the
+critical path of work" (`contracts/phases.json`). Component completion is the
+wrong unit. A circuit that runs end to end and fails correctly when you break it
+is the right one.
+
+## Now, next, needed, never
+
+Every phase below carries four lanes. They are Bdo's shape, added to this
+document on 2026-08-28, and they separate four questions that a single
+"remaining" list runs together. `contracts/roadmap-lanes.json` is the machine
+copy, and `python scripts/sov_next.py --strict` fails when a subject is missing
+a lane, so the shape cannot quietly rot back into a list. What that check proves
+is presence and never truth: whether a Now item can really be finished with what
+exists is judgement over evidence, and no parser settles it. It also reads the
+phase roster out of this document's own table and headings, so an edit to both
+can still rename a phase — it can no longer empty the roster, which a witness
+demonstrated on 2026-08-28 and which is now refused by name.
+
+- **Now** - what is on the board: available, and workable from start to finish
+  with what exists today. Not what is in progress, and not what is most
+  important. Startable is not the test: an item that can be begun and not
+  finished waits in Needed until the thing it needs exists.
+- **Next** - what becomes available once *this item's own* Now clears, and has
+  already been chosen as the next target. Both conditions. An item that is
+  merely unblocked is not Next; neither is a favourite that Now does not
+  release; and neither is something a sibling's Now would release.
+- **Needed** - a future item already known to be a need of ours, and neither
+  selected nor scheduled. This is where honest future work waits without being
+  promoted by enthusiasm.
+- **Never** - what is held out of this item's scope. Usually a never: it holds
+  by default and it is not a claim to be permanent. It is the lane that does
+  the most work, because a phase fails by absorbing its neighbour more often
+  than by running out of effort.
+
+### How something leaves Never
+
+Discovery moves it, and only into Needed. His words, in full:
+
+> Never is Usually a never. It means discovery selects it and pressures it from
+> what is needed based on what was now.
+
+What is unambiguously his: Never holds by default, it is not permanent, and
+discovery is what moves it, into Needed. The three exclusions this document
+draws around that - not a preference, not a date, not the phase number arriving
+- are read out of "discovery" being the only mover, and they are the builder's
+reading of his sentence rather than words in it.
+
+The reading that follows is drafted from that sentence and he has not ruled on
+it: Now is the only lane being worked, so it is the only lane that produces
+findings, and what is learned there is the only thing that pressures an
+exclusion out of Never. It is a claim about how work happens, not a restatement,
+and it is the fourth of the readings under *Standing* this document cannot
+settle for itself.
+
+The lanes are a cycle rather than a list, and Now drives it. Discovery under Now
+pressures Never into Needed; selecting a known need moves it to Next; Next
+becomes Now when this item's own Now clears. An exclusion that jumps straight to
+Now or Next is scope creep on a shorter path: passing through Needed is what
+puts the admission on the page as a known need before anyone works it, which is
+the whole reason the exclusion was written down.
+
+None of that is checked. A lane change is an edit to prose, and whether a
+finding really pressured an exclusion is judgement.
+
+### What the lanes do not claim
+
+An empty Now or Next is a reading, not an omission. A phase whose Now is empty
+is saying that nothing in it can be finished with what exists, which is worth
+knowing and is stated rather than left to be inferred. A Never is never empty,
+because a scope with no stated edge has no edge.
+
+An item sits in exactly one lane at one level, and a subject opens each lane
+once. Moving an item between lanes is an edit to an estimate, not a change of
+standing: `STATUS.yaml` owns standing and `contracts/custodies.json` owns who is
+on the hook for a piece of work.
+
+This document is a candidate, so "already chosen" in a Next lane means chosen by
+this document and not yet ruled on by Bdo. Where he has chosen, the phase says
+so by name. That distinction is the second of the three readings under
+*Standing* that this document cannot settle for itself.
+
+### The shape recurses
+
+The four lanes apply at every level, not only to a phase. The roadmap as a whole
+has them, each phase has them, each item inside a lane has them, and so on down
+to whatever grain someone is actually working at. The rule is identical at every
+depth, so it is stated once here instead of restated per level.
+
+An item's lanes are scoped to that item. `P1`'s Now is the Now of the service
+fabric, not of the repository, and the Now of an item inside `P1` is narrower
+again. A parent's Never binds its children: a child may add exclusions and may
+not admit what its parent excluded.
+
+Nothing enforces that last rule and nothing here can. A Never is a prose
+paragraph, there is no ordering on prose, and comparing a child's with its
+parent's would need Nevers written as enumerated typed exclusions first. It is
+recorded as a stated limit rather than left to look enforced.
+
+Worked one level down, inside `P1`'s Now. The lanes below are graded like any
+other subject, because the document's only instance of the recursion is the one
+place the shape could rot while the check stayed green:
+
+> **Replicate the Gateway route pattern.**
+>
+> **Now.** Carry the built `RECORD_LOCAL` in-process route to a second
+> service-owned operation. `services/gateway/KNOWN-GAPS.md` names the remaining
+> work as adding same-class routes mechanically, so the shape to copy exists.
+>
+> **Next.** A third route in a second service family, which is what
+> `services/gateway/KNOWN-GAPS.md` says must happen before the convention is
+> treated as generic substrate. Released by the second route, and chosen here.
+>
+> **Needed.** Whatever the receipt question settles.
+> `services/gateway/KNOWN-GAPS.md` has not decided whether a gateway receipt is
+> a distinct owned record, a kernel receipt form, or unnecessary beyond crossing
+> evidence, and the answer is a need this route will have.
+>
+> **Never.** Service-specific logic inside Gateway. A route that needs the door
+> to know something about the service behind it is not a route; it is the
+> service leaking through, and the gap table refuses it by name.
+
+Below that grain the lanes are carried by `contracts/custodies.json` and the
+ticket queue rather than by this document, which is why the recursion stated
+here has a floor in practice and none in principle.
+
+### The roadmap's own lanes
+
+**Now.** `P0` and `P1`. Each has items that can be finished with what exists,
+and each gates everything above it.
+
+**Next.** `P2`, then `P3`. Each opens as the phase below it clears. `P5` runs
+alongside rather than after, because packaging a node is largely independent of
+what the node can do.
+
+**Needed.** `P4`, and `P6` through `P9`, plus every row under *Deferred until
+earned* below except the first, which this roadmap's Never holds. Known needs of
+ours, none scoped. `P6` is the first whose entry is an owner decision rather than
+an engineering one.
+
+**Never.** Distributed consensus. A phase that exits on component percentages
+rather than a demonstrated result. And this document acquiring standing: it is
+an estimate, and the day it starts settling what is built rather than
+describing it, `STATUS.yaml` has a rival.
+
+## The phases
+
+Percentages are Bdo's rough maturity estimates from what is currently visible in
+the repository. They are not calendar promises, not measurements, and not
+derived from any counter in this repository — where a repository reading
+disagrees, it is noted under the phase. **The exit shape is the load-bearing
+part; the percentage is orientation.**
+
+| Phase | Product result | Estimate |
+| --- | --- | ---: |
+| `P0` Ground and govern | Product definitions, contracts, evidence rules, authority model, engineering and SDLC baseline | 85–90% |
+| `P1` Local service fabric | Independently bounded services discover and use each other under shared contracts | 55–65% |
+| `P2` Custody and closed circuits | Work travels intent → execution → evidence → closure without disappearing between systems | 40–50% |
+| `P3` Composable skills | Agents discover domain skills that compose real services, assets and tools, and recover from blockers | 30–40% |
+| `P4` Board and operating interface | Humans see and act on assets, skills, work, evidence and circuits without creating parallel authority | 15–25% |
+| `P5` Complete sovereign node | One deployable node is personally useful, recoverable, secure and operationally coherent | 30–40% |
+| `P6` Enterprise operations | Workflows, automations and agents perform meaningful ongoing domain work through the fabric | 20–30% |
+| `P7` Federation | Sovereign nodes discover and cross to other sovereign nodes without collapsing ownership | 10–20% |
+| `P8` Enterprise scale and hardening | Multi-user, multi-node deployments withstand load, failure, upgrade, attack and long life | 5–15% |
+| `P9` Ecosystem | Third parties safely publish services, skills, adapters, models and domain packages | <10% |
+
+Phases are not strictly sequential. `P5` overlaps `P2` and `P3` because packaging
+a node is largely independent of what the node can do, and its estimate is
+already ahead of the phases before it for that reason.
+
+### `P0` · Ground and govern
+
+**Result.** The product knows what it is, what it undertakes, what counts as
+evidence, and who may decide what.
+
+`GROUND.md`, `CANON.md`, `CONTRACT.md`, `CLASSIFICATION.md`, `SPEC.md`,
+`ENGINEERING.md` and `SDLC.md` are in place; ground and canon are owner-accepted.
+
+**Now.** Reconciling governing prose that a newer ruling moved past, over a
+closed population: the documents `AGENTS.md` names as the governing set, plus the
+domain skills under `.claude/skills/` that route readers into them. The list is
+fixed, so the sweep finishes. Two live instances:
+`.claude/skills/sov-governance/SKILL.md` still routes readers to `F0`-`F6` and to
+ten open seams where `OPEN-SEAMS.md` now carries twenty-five, and
+`infrastructure/README.md` still reads `O14 OPEN` against an identifier
+`decisions/0033` retired.
+
+**Next.** The five `phase:i` exit custodies, attached and `PROPOSED` in
+`contracts/custodies.json`, each driven to a stated terminal. Released by the
+reconciliation, because a custody whose exit clause cites a superseded document
+inherits the superseded reading.
+
+**Needed.** Two things, neither scoped. A census instrument that reads the
+repository rather than a declared list - `python scripts/sov_custody.py orphans`
+answers "declared work no custody holds" and this phase's exit asks "anything at
+all no governing document accounts for", which is the wider question and has no
+instrument. And a fresh-reader test that is run rather than asserted; the
+cold-start benchmark (`scripts/sov_coldstart.py`) is the instrument that exists,
+pointed at one corpus rather than the governing set.
+
+**Never.** New product scope. `P0` settles what the product is and never decides
+what to build next, and it never accepts its own documents - acceptance is the
+root seat's act over a presented result. Attaching the twenty orphan seam rows
+is `P2`'s Now and not this phase's; every one of them is an `OPEN-SEAMS.md` row,
+so a governing document already accounts for them and this phase's exit does not
+wait on who holds them.
+
+**Exits when** a fresh reader can determine what the product is, what it
+promises, and what would defeat any claim in the governing set, without asking a
+person — and the census shows nothing in the repository that no governing
+document accounts for.
+
+### `P1` · Local service fabric
+
+**Result.** A service uses another service's capability through a declared
+crossing, under identity, policy and authority, and the record holds the receipt.
+
+**Now.** Replicating the Gateway route. One reusable `RECORD_LOCAL` in-process
+vertical is built and self-tested for `sov://asset/ingest-asset`, with authority
+checked at the door and absence defaulting to refusal;
+`services/gateway/KNOWN-GAPS.md` names the remaining work as adding same-class
+service-owned routes mechanically. The pattern exists, so carrying it to a
+second operation runs from start to finish today.
+
+**Next.** The record crossing that holds the receipt. Released by the second
+route, because the crossing has to record something and a route is what produces
+it. It is not released by any claim that two routes make the convention generic:
+`services/gateway/KNOWN-GAPS.md` asks for a second operation *and then* a second
+service family before that. Chosen here, not yet ruled on.
+
+**Needed.** Removing the direct shortcuts that bypass the door - above all
+`bindings/mcp/gateway.py`, which is still an older ingress with its own
+resolution, authority and journal behaviour. Known, and not scoped. A canonical
+request schema is not here: `services/gateway/KNOWN-GAPS.md` files it as a
+question to decide rather than a need, and an undecided question is not a known
+need.
+
+**Never.** Transport off the node. A second node, a wire between hosts, remote
+capability resolution - those are `P7`. A fabric that reaches another node is not
+this phase finishing; it is a later phase starting early.
+
+**Exits when** this circuit runs, and mutating any piece of it produces the
+correct failure rather than a silent success:
+
+```text
+Service A
+   ↓ discovers capability
+Gateway
+   ↓ identity / policy / authority
+Service B
+   ↓
+Record
+   ↓
+receipt
+```
+
+It does not exit because Gateway is 80%, Asset 90% and Record 85%.
+
+*Repository reading.* The operation surface currently reads 134 declared and 5
+reachable. Observation, Proofing and Projection are boundaries with no
+implementation; Gateway and Registry are not - `services/README.md` records a
+first in-process route built and self-tested for Gateway and a read-only resolve
+slice for Registry. That is a lower reading than 55–65% and the two are measuring
+different things: the estimate counts contracts and design settled, the surface
+counts operations a caller can actually reach.
+
+### `P2` · Custody and closed circuits
+
+**Result.** An accepted unit of work has a custodian at every moment, and it
+terminates in a named way rather than disappearing.
+
+**Now.** Attaching the twenty declared items no custody holds, so that work
+stops being visible and unheld at once. `python scripts/sov_custody.py orphans`
+names all twenty and every one is an `OPEN-SEAMS.md` row, so the population is
+closed and the work finishes.
+
+**Next.** The closure receipt: a terminal that is recorded rather than inferred
+from silence. Released by the attachment, because the receipt has to be proved
+against the whole population and the twenty are the part of it with no
+custodian; `contracts/custodies.json` already holds sixteen attached and
+`PROPOSED`, so there is plenty to close and not yet everything. Chosen here, not
+yet ruled on.
+
+**Needed.** The work-to-run joins, the custody primitive as a first-class object,
+actionable refusals that name the next admissible operation, and an end-to-end
+circuit qualification.
+
+**Never.** A second System of Record. A board is projected from authoritative
+records and never stores its own truth (`contracts/concern-admission.json`,
+`boards_are_derived`). A stored board goes stale silently, and it does so
+precisely when it looks busiest.
+
+**Exits when** a work item can be followed from the intent that created it to a
+receipt that closes it, through at least one handoff between operators, and when
+an unavailable transition produces a named next admissible operation rather than
+an unexplained blocked state.
+
+*Repository reading.* `contracts/custodies.json`, `contracts/closure-ownership.json`
+and `scripts/sov_closure.py` exist, and `custody` appears as a whole word in 64
+files under `contracts/` and `services/`. The vocabulary is further along than
+the mechanism. The count read 39 when this paragraph was written on 2026-08-28
+and no pattern reproduces it; 64 is `grep -rlw` over those two directories,
+measured 2026-08-28.
+
+### `P3` · Composable skills
+
+**Result.** An agent that has never run here receives a domain instruction,
+finds the skill that covers it, resolves the services and assets it needs, and
+carries the work.
+
+**Now.** A skill contract and registry: what a skill declares, what it depends
+on, and what evidence it owes. Twenty-five skills sit under `.claude/skills`
+with no contract between them and no grader anywhere in `scripts/`, and the work
+is a schema plus a grader over a closed population - the same shape
+`contracts/service-manifest.schema.json` and `python scripts/sov_service.py
+check` already have over the ten `services/<domain>/contracts/service.json`
+manifests. It finishes, and it does not wait on `P1`.
+
+**Next.** Capability resolution: a skill resolving the services and assets it
+names against the registry this phase's Now produces. Released by that registry
+and by nothing else. Chosen here, not yet ruled on.
+
+**Needed.** Dependencies, versions, declared evidence requirements, and skill
+mutation tests.
+
+**Never.** Authority. A skill composes operations that carry authority and never
+carries any itself, so a skill can never be the reason something was permitted.
+That is the edge against `P1`, where authority actually lives; counting
+`SKILL.md` files is a bad measure but it is a warning, not a boundary.
+
+**Exits when** a fresh agent given *"prepare this asset for review"* can
+discover the appropriate skill, resolve the available services and assets, carry
+the work, hit a missing prerequisite, determine what it can do about that
+prerequisite, and either finish or close custody with a precise actionable
+remainder.
+
+It does not exit because there are fifty `SKILL.md` files.
+
+### `P4` · Board and operating interface
+
+**Result.** A person sees the real system — assets, skills, work, evidence,
+circuits — and acts on it through the same transitions an agent uses.
+
+**Now.** Nothing. The first item is the board intermediate representation, and
+an IR drawn before `P2` has custody objects and circuits to render would be a
+guess wearing a contract's clothes. The empty lane is a reading, not an
+oversight.
+
+**Next.** Nothing selected. `P2`'s closure receipts are what make a next target
+choosable here.
+
+**Needed.** The board intermediate representation, cards, real asset rendering,
+circuitry, gestures, and custody and evidence views.
+
+**Never.** Covering for a gap underneath it. A gesture with no declared
+operation behind it is a defect in `P2` to be reported, never a capability this
+phase adds so the screen looks whole. That is the edge that matters, because an
+interface is where a missing transition is cheapest to fake and most expensive
+to find later.
+
+**Exits when** every object on a board resolves to an addressed system object
+and every gesture resolves to a declared operation, so the interface holds no
+authority of its own and creates no parallel state.
+
+### `P5` · Complete sovereign node
+
+**Result.** One node is a thing a person can install, use daily, recover, and
+trust.
+
+**Now.** Packaging to the local process target, and to that one only:
+`python scripts/deployment.py --target local`, whose execution mode is
+`LOCAL_PROCESS`. The container renderer is a different artifact and this phase
+may not reach for it - see the Never below. `infrastructure/` already declares
+the node envelope as data with a dependency-free planner that materializes and
+verifies it, and `scripts/node_runtime.py` proves the listener and health seam,
+so the remaining work is bounded and independent of what the node can do, which
+is why this phase's estimate runs ahead of the ones beneath it. The evidence
+carries one caveat this phase inherits rather than fixes:
+`infrastructure/README.md` is itself governing prose `P0`'s Now must sweep.
+
+**Next.** Surviving a restart with the record intact. Released by packaging,
+because a restart is only meaningful against something that was stood up rather
+than something that was already running. Chosen here, not yet ruled on.
+
+**Needed.** Backup and restore proved by restoring, lifecycle and persistent
+services, security boundaries, health that reports honestly when the answer is
+unhealthy, and upgrade or version migration.
+
+**Never.** A second user or a second node. One node, one person, recoverable.
+Tenancy, high availability and scale are `P8`, and admitting them here is how a
+personal node quietly becomes a server nobody asked for. Nor a container or an
+orchestrator: the roadmap holds those out until a conformance case needs one, and
+this phase adds the exclusion rather than inheriting it — the roadmap files them
+under Needed, so nothing above forbids them and `P5` is choosing to.
+
+**Exits when** a node can be stood up from the artifact, survive a restart and a
+restore from backup with its record intact, and report its own health honestly —
+including when it is unhealthy.
+
+### `P6` · Enterprise operations
+
+**Result.** The node does ongoing work, not only demonstrations.
+
+**Now.** Nothing, and not for an engineering reason. This is the first phase
+whose entry is an owner decision: it lifts the constraint admitting no unattended
+external effect. Until Bdo lifts it, every item here is held rather than blocked,
+and the neighbouring phases stay reachable.
+
+**Next.** Nothing until that decision.
+
+**Needed.** Scheduler and runtime integration, richer workflows, accounting,
+queues, operational interfaces, and production effects.
+
+**Never.** Undoing. Retraction adds a counter-record and never claims that
+resource consumption or an external effect was reversed, so nothing in this
+phase may offer a caller a way to make an effect not have happened. That is the
+edge against the record: an operation that reads as reversal would put a lie in
+the journal, which is a worse outcome than an effect nobody can take back.
+
+**Exits when** a workflow runs unattended on a schedule, produces effects that
+matter, accounts for what it consumed, and every run is attributable and
+countermandable after the fact.
+
+*Repository reading.* Scheduled runs exist as a pattern with every schedule
+disabled, and Phase I admits no unattended external effect. This phase is where
+that constraint is deliberately lifted, which makes it the first phase whose
+entry is an owner decision rather than an engineering one.
+
+### `P7` · Federation
+
+**Result.** Two sovereign nodes cross without either absorbing the other.
+
+**Now.** Nothing. The federation-crossing and node-identity contracts are
+self-tested against no wire, so no item here runs from start to finish.
+
+**Next.** Nothing selected. Transport is the gate, and choosing one is a
+commitment `P5` packaging should make first.
+
+**Needed.** Transport, trust establishment, remote capability resolution, policy
+negotiation, version compatibility, and receipts that hold across nodes.
+
+**Never.** Shared state between nodes. No common database, no distributed
+consensus, no replicated journal, and no node that becomes authoritative over
+another's memory. That is the edge against `P8`, which will want exactly those
+things for availability and must get them inside one node's boundary.
+
+**Exits when** a capability on node B is reached from node A under an
+authorization both nodes recorded, and neither node's authoritative record moved.
+
+*Repository reading.* Federation-crossing and node-identity contracts exist,
+self-tested, with no transport. `PROMISE-15` is the canon's only `LATER` promise.
+
+### `P8` · Enterprise scale and hardening
+
+**Result.** More than one person, more than one node, under real conditions.
+
+**Now.** Nothing. Every item here is measured against a load, a failure drill
+or a second operator, and none of the three exists to measure against.
+
+**Next.** Nothing selected. `P5` has to produce a node that can be stood up
+before anything can be stood up twice.
+
+**Needed.** High availability, scale, observability, tenancy and isolation, key
+and secret management, disaster recovery, performance, and operational service
+objectives.
+
+**Never.** An optimization that makes a refusal cheaper to skip than to honour,
+and distributed consensus - which the roadmap excludes outright, and which
+needing tenancy here does not reopen.
+
+**Exits when** the node survives a deliberate failure drill — including the loss
+of every model provider — without losing custody, and the drill is repeatable.
+
+### `P9` · Ecosystem
+
+**Result.** Other people extend Soveraeign without Soveraeign vouching for them
+by accident.
+
+**Now.** Nothing. There is no third party, and no package format for one to
+publish into.
+
+**Next.** Nothing selected. `P8` has to settle isolation before anything
+untrusted is admitted at all.
+
+**Needed.** Packaging standards, compatibility, signing, distribution,
+registries, and certification.
+
+**Never.** Relaxing what `P5` and `P8` settled about authority and isolation. A
+third-party package is admitted through the same grants as anything else, and
+"it came from the registry" never becomes a reason to widen one.
+
+**Exits when** a third-party skill or service can be installed, its authority
+scoped, its provenance checked, and its removal leave the node exactly as it was.
+
+## What the old phases became
+
+`PROD-I-1` through `PROD-I-9` are not retired. They are the first qualification
+profile beneath the PRD — `Phase I · Local Sovereign Foundation` — and they keep
+their identifiers, their predicates in `SPEC.md`, and their fixtures in
+`conformance/`. See `PRD.md`, The Phase I qualification profile.
+
+`phase:i` itself is closed `CLOSED_INCOMPLETE` and `succeeded_by` is null. Which
+of the phases above opens next, and when, is Bdo's to set; this document
+proposes the ladder, not the entry.
+
+## Name crosswalk
+
+One job carries a different name in each document that mentions it. The names
+are not synonyms by accident; each document names the job in its own vocabulary,
+and a reader who knows one name cannot find the others. This table is the only
+place the identity is asserted, and `scripts/sov_next.py` checks that every row
+still resolves, so a rename breaks the check instead of the reader.
+
+Rows were re-keyed onto the `P` ladder on 2026-08-28 when `F0`-`F6` were
+archived. The jobs and the tickets did not change; only the phase each one is
+filed under. `archives/ROADMAP-F0-F6.md` holds the original keying.
+
+| Phase | Epic ticket | Governing debt or objective | Drawn as |
+| --- | --- | --- | --- |
+| `P1` Local service fabric | `#25` Shared contracts, carrying `#6` Shared Kernel (closed before its standing settled) | `SPEC.md` transition contract, projected to `contracts/kernel-transitions.json` | `K` in `diagrams/crossing-topology.md` |
+| — service-internal | `#27` Asset reference participant | `ENGINEERING.md` named module debt: split `core.py` by owned responsibility | — |
+| `P0` Ground and govern | `#26` Conformance harness | `SPEC.md` Conformance boundary | control pairs in `conformance/` |
+| `P1` Local service fabric | `#30` Operator bindings | `PRD.md` two-binding proof | `C1` in `diagrams/crossing-typology.md` |
+
+The kernel row names contracts, not a module. `CLASSIFICATION.md` files the
+shared kernel under cross-cutting foundations rather than the
+System/Node/Service/Component ladder, and `contracts/README.md` disclaims
+programming-language classes. The kernel is implemented once per service and its
+sameness is proven behaviourally by the conformance oracle, which is why
+splitting `core.py` is a separate, service-internal row.
+
+A row is added when a job acquires its second name, not when it acquires its
+first. Rows are removed only when the job is `RATIFIED` and the names retire
+together.
+
+## Deferred until earned
+
+Held out until something is learned that pressures them back in. Every row here
+except the first sits in the roadmap's **Needed** lane rather than its **Never**:
+each names what would earn it, so each is a known need with an unmet condition.
+Distributed consensus names no such condition and is the roadmap's Never.
+
+Carried forward from `archives/ROADMAP-F0-F6.md`, still deferred:
+
+- Distributed consensus.
+- A graphical production interface ahead of `P4`.
+- Remote databases, queues, containers or orchestration ahead of a conformance
+  case that requires them (`ENGINEERING.md`, Growth triggers).
+- Performance work ahead of semantic conformance.
+
+## Standing
+
+`PRODUCT PHASES CANDIDATE`. The ten phases, their results and their exit shapes
+are Bdo's, stated on 2026-08-28. The four lanes, the rule that they recurse, and
+the rule that an exclusion leaves Never only by discovery pressuring it into
+Needed are Bdo's, stated on 2026-08-28. The derivation around that rule - that
+Now is the only lane producing findings, and the ordering of the other three
+transitions - is drafted from his sentence and marked as such in
+`contracts/roadmap-lanes.json`. The per-phase lane contents, the
+repository readings, and the exit-condition wording are drafted from the
+repository and are proposed. Nothing here is owner-accepted, and this document
+changes no standing in `STATUS.yaml`.
+
+The lanes replaced one **Remaining** paragraph per phase rather than sitting
+beside one. A flat list and the lanes that decompose it would be two answers to
+one question, and the flat one would go stale first.
+
+The lane contents were rewritten twice on 2026-08-28, after two independent
+witnesses. The first found six not holding to the definitions above: `P1`'s Next called the
+Gateway crossing unimplemented when a route is built and self-tested, `P1`'s Now
+cited a passing check as evidence that work remained, `P3`'s Now said "startable"
+where the lane requires finishable, `P3`'s Next was released by `P1`'s Now rather
+than its own, `P0` and `P2` both claimed the same twenty orphan items, and `P4`
+and `P9` restated their own exit conditions as their Never. It also read Never
+as a permanent refusal and reported every conditional exclusion as misfiled; Bdo
+corrected that reading, and *How something leaves Never* is his answer.
+
+The second witness graded the repair and dissented four times, each repaired
+above: `P3`'s Now cited `contracts/service.json`, which does not exist and never
+has; `P2`'s Next claimed there was nothing for a closure receipt to close when
+sixteen custodies are attached; `P0`'s Never claimed this phase's exit needs the
+twenty orphan items when every one is already an `OPEN-SEAMS.md` row; and
+`contracts/roadmap-lanes.json` closed, in passing, the third question below that
+this document carries to Bdo as open. It also found `P6` and `P7` stating their
+own exit conditions as their Never, which the first witness had caught only in
+`P4` and `P9`, and that `P0`'s and `P5`'s Now items named no closed population.
+Each is repaired above.
+
+A fourth witness graded the third repair and found the guard closed at zero
+only: leaving two phases readable and unbackticking the other eight took the
+population from twelve subjects to four and the whole check went quiet. A
+heading or table row that names a phase this reader cannot resolve is now
+refused by name. It also found the derivation restated unmarked in the contract's
+Never lane, one field over from where the previous repair had marked it - the
+third time a question this document carries open was answered in the field
+nobody was watching. And three reader defects, two of them introduced by the
+repair beside them: a stray unclosed code fence silenced every lane after it, an
+HTML tag and a reference link counted as words a reader can see, and the claim
+that the module split was total was false.
+
+A third witness graded the second repair and found the scope guard could be
+walked through: emptying the phase table and the phase headings together silenced all
+seven refusals over twelve subjects, and the comment claiming `sov_next` caught
+that was false, because the same edit made every crosswalk phase token
+unreadable and unreadable rows were skipped. Both halves are closed. It also
+found the Never-or-Needed question answered in `NEEDED` one field over from
+where the previous repair declined to answer it, this roadmap's Needed sweeping
+in a row its own Never holds, `P5` citing inheritance over an item nothing above
+it excludes, and three shapes the grader read wrongly: a Never written as a
+bullet list graded as abandoned, a link target counted as words a reader can
+see, and a lane inside a code fence satisfying the shape.
+
+Six readings this document cannot settle for itself, each carried to Bdo:
+whether "already chosen" in a Next lane may mean chosen by this document rather
+than by him; whether the twenty orphan seam rows are `P2`'s work as filed here;
+whether an exclusion that names what would earn it belongs in Never or, as filed
+here, in Needed; whether "Now is the only lane that produces findings" says what
+he meant, or is a derivation that must stay marked as drafted; whether "not a
+preference, not a date, not the phase number arriving" is his exclusion or the
+builder's reading of it; and whether "a phase fails by absorbing its neighbour
+more often than by running out of effort", which sits inside what this section
+attributes to him, is his.
+
+What would defeat it:
+
+- a phase that exits on component percentages rather than a demonstrated result;
+- a phase whose result is not something a person or an agent can do;
+- an estimate presented as a measurement, or a repository reading that
+  contradicts an estimate without saying so;
+- a phase in this ladder that serves no product area in `PRD.md`;
+- a Now item that cannot in fact be finished with what exists today, or one
+  justified by a passing check, since a green grader is evidence that work is
+  done rather than evidence that it remains;
+- a Next item that this item's own Now does not release, or that nobody chose;
+- an exclusion that left Never with no finding behind it, or that reached Now or
+  Next without passing through Needed;
+- a Never whose release is a date or a phase number rather than something
+  learned;
+- a Never that restates the phase's own exit condition, and so does no
+  independent work;
+- an empty Never, or a child Never looser than the Never above it.
+
+===== END FILE: ROADMAP.md =====
+===== FILE: SDLC.md =====
+# Domain-Mapped SDLC Loop
+
+Status: `OWNER-DIRECTED · OPERATING LOOP PROPOSED`
+
+This document defines how work on Soveraeign itself is planned, dispatched,
+executed, witnessed, and released. It is a stack-neutral process contract: it
+names tiers, stances, skills, and workflow templates without binding them to a
+named person, model, provider, or harness. `AGENTS.md` remains the normative
+operating contract; this loop composes its rules into a repeatable motion and
+adds the release gate defined here.
+
+The loop is itself a surface performing named operations. It is therefore
+subject to the `AI-NATIVE.md` axes and, eventually, the Soveraeign bar.
+
+## Three tiers
+
+The loop runs on an authority-delegation chain. Grants flow downward and narrow
+at every step; reports flow upward and are never self-settling; each tier's
+output is settled by the tier above it.
+
+| Tier | Role | May | May not |
+| --- | --- | --- | --- |
+| **Control** | Strategic planning and monitoring over registered concerns | Read the concern registry, select the next named operation, declare the operation plan, issue scoped grants, launch orchestrations, observe results independently, settle receipts, update standing, escalate to the owner | Ratify judgement, widen its own grant or effect class, keep private state about concerns |
+| **Orchestration** | Decomposition and supervision of one launched operation | Lease workers, fence execution, collect reports, run independent observation over durable outputs, settle worker-task outcomes, report settlement evidence upward | Widen the received grant, settle its own operation, ratify anything |
+| **Work** | Scoped leased execution in a declared environment | Execute the leased task, emit an attributed report | Settle, witness its own output, write authoritative state, outlive its lease |
+
+Escalation to the owner is a first-class transition, not a failure: judgement
+remains a visible pending right at every tier. A controller is an operator
+under grant like any other; its sequencing decisions are attributable events.
+
+Tier depth is fixed at three. A deeper chain adds crossings and receipts
+without adding a new kind of accountability.
+
+## Two dyads
+
+Two paired stances govern the loop. Both are typed stances that any qualified
+operator may hold under grant; neither hardcodes a named person or model
+(`OPEN-SEAMS.md` S7). In both dyads, neither hand settles anything alone —
+results exist only in combination.
+
+**Left/Right — the authority dyad.**
+
+- `LEFT` — synthesis: inspect, compare, draft, implement, propose.
+- `RIGHT` — judgement: product intent, naming, ratification, phase gates.
+
+Left output is always a proposal. Right holds ratification. A left hand may
+never present its synthesis as the right hand's judgement.
+
+**Red/Blue — the verification dyad.**
+
+- `BLUE` — construction: build the positive path, its contract, and its
+  declared positive and defeating conformance cases.
+- `RED` — adversarial witnessing: attempt to defeat the built artifact and
+  discover the defeating cases Blue did not declare.
+
+Blue's passing run establishes `BUILT` evidence only. Red's engagement is how
+`WITNESSED` is earned. Declared defeating fixtures are Blue work — known
+adversarial cases stated in advance. Red work is generative: refusal bypasses,
+authority escalation, stale-source use, provenance gaps, retraction that
+erases history, and any defeat the builder did not anticipate.
+
+**Combination outcomes.** Each dyad combines into a named outcome; a concern
+goes green only when both have combined.
+
+- `PURPLE` — the settled combination of the verification dyad: Blue's built
+  proof plus Red's converged adversarial witnessing, recorded as the
+  engagement receipt that satisfies the release gate.
+- `JOINED` — the settled combination of the authority dyad: a synthesis
+  proposal met by explicit judgement, recorded as a ratification receipt.
+- `GREEN` — the derived go-state of a concern at its current gate: its
+  verification is `PURPLE` and its authority is `JOINED`.
+
+Combination outcomes name receipts and derived state, not stances or
+standings. No operator holds `PURPLE` or `JOINED`: an operator holding both
+hands of a dyad is the self-witnessing and self-ratifying failure the
+contract exists to prevent. `GREEN` is derived from recorded receipts, never
+selected directly, and lapses when either combination is countered or
+invalidated.
+
+## Concern registry
+
+A **concern** is a registered unit of monitored work. Each concern records:
+
+- a stable name and its owning domain or service;
+- the governing contract and document set;
+- current artifact standing in the
+  `OPEN -> BUILT -> WITNESSED -> RATIFIED` lifecycle;
+- the next gate and its blocking open decisions;
+- the admitted effect envelope for the current phase.
+
+The registry is a projection derived from `STATUS.yaml`, `decisions/`, and
+`OPEN-SEAMS.md`. It introduces no competing System of Record: standing changes
+land in the owning documents, and the registry is rebuildable from them. A
+controller that keeps private concern state has left the contract.
+
+## Skill axes
+
+Skills are declared competence sets loaded by an operator for a role. They
+come in two orthogonal axes; a working operator holds exactly one tier skill
+and the domain skills its concern requires.
+
+**Tier skills** state how a participant at that altitude behaves:
+
+- `Control Skill` — planning, dispatch, settlement, escalation, refusals.
+- `Orchestration Skill` — decomposition, leasing, observation, reporting.
+- `Worker Skill` — bounded execution, reporting, lease discipline.
+
+**Domain skills** state what competence a concern requires:
+
+- `Product Skill` — requirements, PRD alignment, decision drafting.
+- `Development Skill` — the implementation order and technical baseline as
+  owned by `AGENTS.md` and `ENGINEERING.md`.
+- `QA Skill` — both verification stances: the Blue lane (conformance, unit
+  tests, repository verification, positive paths) and the Red lane
+  (defeat-seeking engagement under a scoped grant).
+- `Release Skill` — release notes, documentation, and marketing drafts as
+  `RECORD_LOCAL` artifacts, plus the visible refusal of every
+  `EXTERNAL_WORLD` publication step while `no_external_effects_in_phase_i`
+  and open decision O1 stand.
+- `Feedback Skill` — standing review, residual and seam capture, correction
+  proposals routed into `OPEN-SEAMS.md`, `decisions/`, and `STATUS.yaml`.
+
+A skill links to the owning governing document for every rule it applies and
+may sequence or cite owned rules; a skill that restates one as independent
+authority is defective. On any divergence between a skill and an owning
+document, the owning document prevails.
+
+## Workflow templates
+
+A workflow template is a declared orchestration shape the Control tier may
+dispatch for a concern. Phase-I templates:
+
+| Template | Purpose | Terminal artifact |
+| --- | --- | --- |
+| **Report** | Bounded state summary of one concern | Handoff note per `AGENTS.md` context hygiene |
+| **Standup** | Registry-wide standing sweep | Updated standings and next bounded operations |
+| **Review** | Change protocol plus both QA lanes over a change | Settlement receipt and standing evidence |
+| **Demo** | Walk a proving operation end to end | Witnessed narrative with reconstructable receipts |
+| **Design** | Explore and converge on a consequential choice | A `decisions/` record at proposal standing |
+
+Templates are process declarations. Executable orchestration scripts are not
+admitted before the logical specification and defeating fixtures that govern
+them, per the protected boundary in `STATUS.yaml`.
+
+## Release gate
+
+Work on a concern may not advance past `BUILT` until its verification dyad
+combines to `PURPLE`: a settled Red engagement receipt over Blue-built work.
+The gate's rules:
+
+1. A Red engagement runs under a typed grant naming its target surfaces,
+   effect class (Phase I: `RECORD_LOCAL` only, isolated environments, no
+   authoritative writes), budget, and exit criterion.
+2. Red findings are proposals. A claimed defect counts only after it
+   reproduces under observation independent of the Red operator.
+3. Every confirmed finding becomes a permanent defeating fixture in the
+   conformance corpus. A defeat, once found, can never recur silently.
+4. Resolution of a confirmed finding is fix-and-repass. A fixture may not be
+   weakened to admit a participant; the owner may instead accept a residual
+   explicitly as named debt with a decision record.
+5. The bounded exit criterion is dry-run convergence: a declared number of
+   consecutive engagement rounds with no new confirmed finding. Red may fail
+   a release; it may not filibuster one.
+6. Red operators receive the contract, the claimed invariants, and the built
+   artifact. The builder's tests, plan, and assumptions are part of that
+   artifact: Red may read them and attack them, and never uses them as
+   evidence or as the oracle. Red derives its own checks from the contract.
+   Like the conformance oracle, the Red lane must not import the
+   participant's implementation into its oracle.
+
+`RATIFIED` remains the owner's judgement and is not reachable by any
+combination of machine evidence.
+
+## Bindings
+
+This loop is defined stack-neutrally. A harness realization — skills, agent
+configuration, and workflow tooling for a specific model host — is an
+operator binding under `bindings/` rules: it may project the loop differently
+but may not introduce private standing, authority, transitions, or storage
+writes.
+
+`Sov` is the portable main operating-agent profile and the default candidate to
+occupy Control. The candidate designation supplies context and agency, not the
+Control grant: the current actor, task, capability, effect envelope, and live
+authority still determine whether Sov may occupy that tier. `SOV.md` and
+`bindings/sov/` own the portable profile; no host binding owns its semantics.
+
+The `.claude/` directory is the first such binding, admitted as a provisional
+target by owner direction. The model-substitutability requirement applies to
+the loop itself: a second, materially different binding must be able to run
+the same loop against the same governing documents. A loop that only one
+provider's harness can operate fails the Soveraeign bar it is meant to
+enforce.
+
+## Acceptance
+
+This loop is `BUILT` when the governing documents register it, repository
+verification passes, and the binding skeleton exists at proposal standing. It
+is `WITNESSED` only after its own release gate is exercised against a real
+concern; a bounded, owner-directed provisional exercise is admitted for that
+witnessing before ratification. It is `RATIFIED` only when Bdo accepts the
+tiers, dyads, registry derivation, and Red-gated release requirement recorded
+as open decision O13. O13 therefore gates activation — the loop becoming the
+required process — not the provisional exercise that witnesses it.
+
+===== END FILE: SDLC.md =====

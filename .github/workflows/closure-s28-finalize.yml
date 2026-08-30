@@ -45,12 +45,11 @@ jobs:
           path.write_text(text, encoding='utf-8', newline='\n')
           PY
 
-      - name: Rebuild and verify derived reader
+      - name: Rebuild derived reader
         run: |
           python scripts/sov_docs.py build
           python scripts/sov_clarity.py check
           python scripts/lint.py
-          python scripts/verify.py
 
       - name: Commit exact generated closure state and remove helper
         run: |

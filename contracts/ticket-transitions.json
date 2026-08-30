@@ -25,11 +25,10 @@
     "SELF_WITNESS_REFUSED": "The witness actor is the same actor that built the artifact.",
     "SKIPPED_STANDING": "The requested pair skips a declared intermediate standing.",
     "UNKNOWN_TRANSITION": "The requested from/to pair is not declared in this table.",
-    "EXTERNAL_EFFECT_UNAUTHORIZED": "The request declares EXTERNAL_WORLD and names no authorized scope.",
+    "EXTERNAL_EFFECT_UNAUTHORIZED": "The request declares EXTERNAL_WORLD but the authorization block is absent, malformed, outside a declared scope, lacks a receipt, or does not discharge every precondition its verb carries.",
     "EXTERNAL_EFFECT_OUT_OF_SCOPE": "The named scope does not carry the requested verb or target.",
     "EXTERNAL_EFFECT_VERB_REFUSED": "The verb is refused by name in the authorization contract.",
-    "EXTERNAL_EFFECT_WITHOUT_RECEIPT": "The request names no receipt, so the attempt would leave no record.",
-    "EXTERNAL_EFFECT_PRECONDITION_UNMET": "The named scope carries the verb and the request does not discharge every precondition that verb carries."
+    "EXTERNAL_EFFECT_WITHOUT_RECEIPT": "The request names no receipt, so the attempt would leave no record."
   },
   "order": [
     "OPEN",

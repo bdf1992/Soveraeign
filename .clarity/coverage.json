@@ -2,6 +2,16 @@
   "schema": "soveraeign-clarity-coverage/v1",
   "skill": "clarity/v1",
   "reviews": {
+    "AI-NATIVE.md": {
+      "artifact_digest": "sha256:a00c6064b52f599708f8b300fb6e59384782cc4645a636093892798ae8bb4b74",
+      "basis": [],
+      "changed": true
+    },
+    "BYOM.md": {
+      "artifact_digest": "sha256:64669747db6b40c4b8ce1cac954b56089d232d70790df611006ffcc13dcfb2e6",
+      "basis": [],
+      "changed": true
+    },
     "README.md": {
       "artifact_digest": "sha256:16f9722d18bd2ecfe0d1d526c6dea51b7ad6d7a3b7546b47c497280aa6b4038b",
       "basis": [],

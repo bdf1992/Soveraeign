@@ -105,7 +105,7 @@ been receiving merged pull requests. This section is orientation, not standing.
 `STATUS.yaml`, the working tree, and the newest relevant report override it
 whenever they disagree.
 
-- `python scripts/verify.py` runs 48 checks and grades itself on wall
+- `python scripts/verify.py` runs 50 checks and grades itself on wall
   time (PLATINUM 3 s, GOLD 6 s, SILVER 15 s). Past 15 s the run still fails,
   which is `decisions/0050` and is what this trunk carries. A successor record,
   `decisions/0081`, would take the wall clock out of the exit code and move

@@ -1,0 +1,43 @@
+name: clarity restamp
+
+on:
+  push:
+    branches:
+      - closure/phase-i-zero-state
+
+permissions:
+  contents: write
+
+jobs:
+  restamp:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: closure/phase-i-zero-state
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Record governing basis for completed reviews
+        run: |
+          python scripts/sov_clarity.py record README.md --changed
+          python scripts/sov_clarity.py record SYSTEM.md --changed
+          python scripts/sov_clarity.py record AI-NATIVE.md --changed
+          python scripts/sov_clarity.py record BYOM.md --changed
+          python scripts/sov_clarity.py check
+          python scripts/sov_clarity.py status
+
+      - name: Commit receipts and remove this workflow
+        run: |
+          rm .github/workflows/clarity-restamp.yml
+          git config user.name 'soveraeign-clarity'
+          git config user.email 'actions@users.noreply.github.com'
+          git add .clarity/coverage.json .github/workflows/clarity-restamp.yml
+          git diff --cached --check
+          git commit -m 'chore(clarity): bind reviews to governing sources'
+          git push origin HEAD:closure/phase-i-zero-state

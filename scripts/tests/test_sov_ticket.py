@@ -103,6 +103,42 @@ class TransitionTableTests(unittest.TestCase):
         self.assertTrue(entry["requires_distinct_actor"])
         self.assertTrue(entry["requires_purple"])
 
+    def test_malformed_external_authorization_refuses_instead_of_raising(self) -> None:
+        base = {
+            "request_schema": "soveraeign-ticket-transition/v1",
+            "ticket": "#148",
+            "from": "OPEN",
+            "to": "PROPOSED",
+            "actor_id": "model/orchestrator",
+            "actor_kind": "MODEL",
+            "effect_class": "EXTERNAL_WORLD",
+            "reason": "malformed authorization regression",
+            "evidence": {
+                "obligation": "#148",
+                "priors": "contracts/external-effect-authorization.json",
+                "closure_contract": "#148#terminal-condition",
+            },
+        }
+        cases = [
+            (["truthy", "non-mapping"], "EXTERNAL_EFFECT_UNAUTHORIZED"),
+            ({"scope": "coordination.issue_metadata", "verb": ["set_body"],
+              "receipt": "receipt/x"}, "EXTERNAL_EFFECT_OUT_OF_SCOPE"),
+            ({"scope": ["coordination.issue_metadata"], "verb": "set_body",
+              "receipt": "receipt/x"}, "EXTERNAL_EFFECT_OUT_OF_SCOPE"),
+            ({"scope": "coordination.issue_metadata", "verb": "set_body", "receipt": 7},
+             "EXTERNAL_EFFECT_WITHOUT_RECEIPT"),
+            ({"scope": "coordination.issue_metadata", "verb": "set_body", "receipt": "\u200b"},
+             "EXTERNAL_EFFECT_WITHOUT_RECEIPT"),
+            ({"scope": "coordination.issue_metadata", "verb": "set_body",
+              "receipt": "receipt/x", "preconditions_discharged": ["not", "a", "mapping"]},
+             "EXTERNAL_EFFECT_UNAUTHORIZED"),
+        ]
+        for authorization, reason in cases:
+            with self.subTest(authorization=authorization):
+                decision = transmod.evaluate({**base, "authorization": authorization}, self.table)
+                self.assertFalse(decision.allowed)
+                self.assertEqual(decision.reason_code, reason)
+
 
 class QueueTests(unittest.TestCase):
     """The queue is a deterministic, rebuildable projection."""

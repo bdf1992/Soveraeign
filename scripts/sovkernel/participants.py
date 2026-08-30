@@ -168,4 +168,19 @@ def ticket(root: Path) -> dict[str, str]:
             "evidence": {"obligation": "#6", "priors": "SPEC.md",
                          "closure_contract": "#6#closure"},
         }),
+        # A real scope, a verb it carries, a receipt, and no evidence for either
+        # precondition the contract puts on that verb.
+        "a declared precondition on an admitted verb must be discharged": decide({
+            **base,
+            "from": "OPEN",
+            "to": "PROPOSED",
+            "actor_id": "model/orchestrator",
+            "actor_kind": "MODEL",
+            "effect_class": "EXTERNAL_WORLD",
+            "evidence": {"obligation": "#6", "priors": "SPEC.md",
+                         "closure_contract": "#6#closure"},
+            "authorization": {"scope": "coordination.issue_metadata", "verb": "set_body",
+                              "target": "github.com/bdf1992/Soveraeign#29",
+                              "receipt": "receipt/coordination/2026-08-26-0004"},
+        }),
     }

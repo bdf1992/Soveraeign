@@ -12,9 +12,17 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 import json
+import unicodedata
 
 OPEN_FINDING_STATUSES = frozenset({"PROPOSED", "REPRODUCED"})
 DEFAULT_REQUIRED_DRY_ROUNDS = 2
+#: Unicode's Other category, which no address is made of: control, format (where U+200B
+#: ZERO WIDTH SPACE and U+FEFF live), surrogate, private use, unassigned. A lone
+#: surrogate is not UTF-8 encodable, so admitting one crashes the receipt recording it.
+#: Assigned letters and symbols that merely render blank in some fonts (U+3164 HANGUL
+#: FILLER, U+2800 BRAILLE PATTERN BLANK) are admitted: which glyphs a font draws is not
+#: this boundary's to decide, and the rule has to be one a reader can state.
+UNREADABLE_CATEGORIES = frozenset({"Cc", "Cf", "Cn", "Co", "Cs"})
 
 
 @dataclass(frozen=True)
@@ -38,13 +46,82 @@ def load_authorization(root: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _addresses_a_proof(address: Any) -> bool:
+    """Whether this value is a string carrying a character a reader could follow.
+
+    ``str.strip()`` removes whitespace and stops there, so ``"\\u200b"`` survived the
+    emptiness test while rendering as nothing at all. The rule is one character outside
+    Unicode's Other category and outside whitespace; it grades both the evidence
+    discharging a precondition and the receipt address the attempt promises to leave,
+    because the contract makes the same demand of both. The kernel decides this the same
+    way in its own module, so ``contracts/kernel-parity.json`` compares two.
+    """
+    if not isinstance(address, str):
+        return False
+    return any(
+        not char.isspace() and unicodedata.category(char) not in UNREADABLE_CATEGORIES
+        for char in address
+    )
+
+
+def _check_scope_preconditions(
+    scope: dict[str, Any], authorization: dict[str, Any]
+) -> Decision | None:
+    """Refuse an admitted verb whose declared preconditions this request does not discharge.
+
+    A precondition binds the verbs it names rather than the whole scope, so a label write
+    is never asked for the body proofs. Every precondition the verb does carry is decided
+    by reading the live remote, which this evaluator cannot do. What it can do, and what
+    nothing did before, is refuse the effect unless the request names each precondition and
+    the evidence that discharged it. An attestation naming a precondition the verb does not
+    carry discharges nothing and is refused too, so a caller cannot pad its way past a
+    precondition the contract later adds.
+
+    Evidence has to be a string with something visible in it, because a precondition is
+    discharged by an address a reader can follow. A bare ``true`` is the caller
+    vouching for itself, which the contract's precondition_model says is not a
+    boundary; a number or a list addresses nothing either. The schema refuses all of
+    them by shape, and this refuses them again, because ``evaluate`` is reachable from
+    callers that never validated the request. Emptiness is decided by
+    ``_addresses_a_proof`` rather than ``str.strip``, which leaves a zero-width space
+    standing.
+    """
+    verb = authorization.get("verb")
+    declared = {
+        precondition["id"]
+        for precondition in scope.get("preconditions", [])
+        if verb in precondition.get("verbs", [])
+    }
+    discharged = authorization.get("preconditions_discharged")
+    if discharged is None:
+        discharged = {}
+    if not isinstance(discharged, dict):
+        return Decision(
+            False, "EXTERNAL_EFFECT_UNAUTHORIZED",
+            f"{verb!r} carries a discharge block this boundary cannot read: "
+            f"{type(discharged).__name__} is not a mapping of precondition id to evidence")
+    missing = sorted(name for name in declared if not _addresses_a_proof(discharged.get(name)))
+    if missing:
+        return Decision(
+            False, "EXTERNAL_EFFECT_UNAUTHORIZED",
+            f"{verb!r} carries preconditions this request does not discharge: "
+            f"{', '.join(missing)}")
+    undeclared = sorted(str(name) for name in set(discharged) - declared)
+    if undeclared:
+        return Decision(
+            False, "EXTERNAL_EFFECT_UNAUTHORIZED",
+            f"{verb!r} carries no precondition named {', '.join(undeclared)}")
+    return None
+
+
 def _check_external_effect(table: dict[str, Any], request: dict[str, Any]) -> Decision | None:
     """Refuse an external effect that no declared scope admits.
 
     Phase I once refused ``EXTERNAL_WORLD`` by class, which kept irreversible acts
     behind an owner and ordinary coordination behind one too. The authorization
     contract separates them: an effect inside a declared scope, carrying a receipt,
-    proceeds; every refused verb stays refused whatever scope is claimed.
+    proceeds; every refused verb stays refused whatever scope is claimed; and a verb
+    the scope guards with preconditions proceeds only once the request discharges them.
     """
     authorization = request.get("authorization")
     contract = table.get("_authorization")
@@ -52,30 +129,34 @@ def _check_external_effect(table: dict[str, Any], request: dict[str, Any]) -> De
         return Decision(
             False, "EXTERNAL_EFFECT_UNAUTHORIZED",
             "no external-effect authorization is loaded for this table")
-    if not authorization:
+    if not isinstance(authorization, dict) or not authorization:
         return Decision(
             False, "EXTERNAL_EFFECT_UNAUTHORIZED",
-            "EXTERNAL_WORLD declared with no authorized scope named")
+            "EXTERNAL_WORLD declared with no authorized scope this boundary can read")
     verb = authorization.get("verb")
+    if not isinstance(verb, str) or not verb:
+        return Decision(
+            False, "EXTERNAL_EFFECT_OUT_OF_SCOPE",
+            f"the request names no verb this boundary can read: {verb!r:.60}")
     if verb in contract.get("refused_verbs", {}):
         return Decision(
             False, "EXTERNAL_EFFECT_VERB_REFUSED",
-            f"{verb}: {contract['refused_verbs'][verb]}")
-    scope = contract.get("scopes", {}).get(authorization.get("scope"))
+            f"{verb!r}: {contract['refused_verbs'][verb]}")
+    named = authorization.get("scope")
+    scope = contract.get("scopes", {}).get(named) if isinstance(named, str) else None
     if scope is None:
         return Decision(
-            False, "EXTERNAL_EFFECT_OUT_OF_SCOPE",
-            f"{authorization.get('scope')} is not a declared scope")
+            False, "EXTERNAL_EFFECT_OUT_OF_SCOPE", f"{named!r:.60} is not a declared scope")
     if verb not in scope.get("verbs", []):
         return Decision(
             False, "EXTERNAL_EFFECT_OUT_OF_SCOPE",
-            f"{scope['target']} does not admit {verb}")
-    if not authorization.get("receipt"):
+            f"{scope['target']} does not admit {verb!r}")
+    if not _addresses_a_proof(authorization.get("receipt")):
         return Decision(
             False, "EXTERNAL_EFFECT_WITHOUT_RECEIPT",
             "an external effect that leaves no receipt is indistinguishable from one that "
             "never happened")
-    return None
+    return _check_scope_preconditions(scope, authorization)
 
 
 def load_table(root: Path) -> dict[str, Any]:

@@ -92,7 +92,7 @@
       "$ref": "#/$defs/engagementReceipt"
     },
     "authorization": {
-      "description": "Required when effect_class is EXTERNAL_WORLD. Names the scope in contracts/external-effect-authorization.json that admits this effect, the verb, the target, and the receipt the attempt will leave.",
+      "description": "Required when effect_class is EXTERNAL_WORLD. Names the scope in contracts/external-effect-authorization.json that admits this effect, the verb, the target, the receipt the attempt will leave, and the evidence discharging every precondition that verb carries.",
       "type": [
         "object",
         "null"
@@ -124,6 +124,17 @@
             "null"
           ],
           "minLength": 1
+        },
+        "preconditions_discharged": {
+          "description": "Evidence for each precondition contracts/external-effect-authorization.json declares on this verb, keyed by the precondition id. A value addresses the proof run, receipt, or snapshot that discharged it. Optional in shape and required by policy, so a request discharging nothing is well formed and refused: shape is the schema's, admission is the guard's.",
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1
+          }
         }
       }
     }

@@ -25,7 +25,7 @@
     "SELF_WITNESS_REFUSED": "The witness actor is the same actor that built the artifact.",
     "SKIPPED_STANDING": "The requested pair skips a declared intermediate standing.",
     "UNKNOWN_TRANSITION": "The requested from/to pair is not declared in this table.",
-    "EXTERNAL_EFFECT_UNAUTHORIZED": "The request declares EXTERNAL_WORLD and names no authorized scope.",
+    "EXTERNAL_EFFECT_UNAUTHORIZED": "The request declares EXTERNAL_WORLD but the authorization block is absent, malformed, outside a declared scope, lacks a receipt, or does not discharge every precondition its verb carries.",
     "EXTERNAL_EFFECT_OUT_OF_SCOPE": "The named scope does not carry the requested verb or target.",
     "EXTERNAL_EFFECT_VERB_REFUSED": "The verb is refused by name in the authorization contract.",
     "EXTERNAL_EFFECT_WITHOUT_RECEIPT": "The request names no receipt, so the attempt would leave no record."
@@ -216,5 +216,5 @@
   "owner_seats": "contracts/seat-registry.json",
   "owner_seats_note": "Owner is a seat, not a person (decisions/0020). owner_actor_ids is the projection of the actors currently occupying seats that settle JUDGEMENT; today that is the root seat's occupant. Read the registry, not this list, when the question is who owns whom.",
   "external_effect_authorization": "contracts/external-effect-authorization.json",
-  "external_effect_note": "EXTERNAL_WORLD was once refused by class, which kept irreversible acts behind an owner and ordinary coordination behind one too. The class refusal is gone. An external effect is refused unless the request names a scope contracts/external-effect-authorization.json carries, a verb that scope admits, and the receipt the attempt will leave. Every verb in refused_verbs stays refused whatever scope is claimed."
+  "external_effect_note": "EXTERNAL_WORLD was once refused by class, which kept irreversible acts behind an owner and ordinary coordination behind one too. The class refusal is gone. An external effect is refused unless the request names a scope contracts/external-effect-authorization.json carries, a verb that scope admits, the receipt the attempt will leave, and the evidence discharging every precondition that scope puts on that verb. Every verb in refused_verbs stays refused whatever scope is claimed."
 }

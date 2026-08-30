@@ -2,7 +2,7 @@
 
 ```text
 source          CLASSIFICATION.md · STATUS.yaml · CONTRACT.md · services/README.md
-source_digest   b034a56c7cf90000 · ca6899b0249ec0a0 · ff6873d56338933b · d5a11f10339de0c2
+source_digest   b034a56c7cf90000 · 555b4eafd72aeb77 · ff6873d56338933b · d5a11f10339de0c2
 reader          hand-authored · v3
 fidelity        LOSSY
 omissions       each service's internal components and full operation list;
@@ -17,7 +17,7 @@ flowchart TB
 
     subgraph nd["Soveraeign Node — personal profile"]
         direction TB
-        NI["<b>Node Interface</b><br/>127 declared · 5 reachable · 0 observed"]
+        NI["<b>Node Interface</b><br/>134 declared · 5 reachable · 0 observed"]
         G["<b>Gateway</b><br/>admit · resolve · route · receipt"]
 
         subgraph live["Implementation exists — standing remains evidence-specific"]
@@ -60,7 +60,7 @@ flowchart TB
     PJ --> K
     O --> K
     K --> RS
-    nd -. "governed crossing; no Phase-I transport" .-> F
+    nd -. "governed crossing; no admitted transport" .-> F
 
     classDef pen stroke-width:2px
     classDef pencil stroke-dasharray:5 4,stroke-width:1px
@@ -78,8 +78,8 @@ completed service implementations.
 
 The five reachable Node operations are a narrower fact than “these services are
 built.” Reachability is derived from the exact policy-active route surface;
-standing remains separate. The current Node Interface records **127 declared,
-127 bound, 39 policy-active, 5 reachable, and 0 observed**. In particular,
+standing remains separate. The current Node Interface records **134 declared,
+134 bound, 46 policy-active, 5 reachable, and 0 observed**. In particular,
 Host `read-health` is reachable and self-tested but not independently observed.
 
 All actor-facing action enters through the same Node Interface and Gateway
@@ -98,5 +98,5 @@ owner-accepted standing.
 
 Identity remains especially explicit: its challenge component is built, while
 whether Identity is ultimately a service boundary is still a product-placement
-question carried by its own decision record. Federation remains transport-free
-in Phase I.
+question carried by its own decision record. Federation has no admitted transport
+in the current baseline.

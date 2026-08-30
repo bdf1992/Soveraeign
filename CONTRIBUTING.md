@@ -13,7 +13,9 @@ there rather than from a second copy kept here, which is how two copies drift.
 
 Two things are worth knowing before you open it. The set falls in two groups:
 `GROUND.md` and `CANON.md` say what product Soveraeign is and what it
-undertakes, and the rest say what Phase I must prove and how it is built. And
+undertakes, and the rest say what the active campaign must prove and how the
+system is built. Phase I is closed; its pinned definition lives under
+`archives/` and `contracts/phases.json`, not in the current work queue. And
 neither group holds the rules you work under. Those are in `AGENTS.md` and in
 this file, which govern contributors to this repository and own no product
 claim. Product claims are drawn partly from `AGENTS.md`'s wording, but they are
@@ -177,9 +179,10 @@ itself, and any machine claiming `RATIFIED`. Run
 `python scripts/sov_ticket.py selfcheck` to exercise every declared refusal;
 `python scripts/verify.py` runs it for you.
 
-Ratification is not reachable from a check. It enters the repository through
-owner review on `STATUS.yaml`, `decisions/`, and the governing set, per
-`.github/CODEOWNERS`.
+Ratification is not reachable from a check. `.github/CODEOWNERS` protects
+governed paths but is not itself an owner judgement surface. Ratification requires
+an explicit recorded root-seat action; the exact Human Binding mechanism remains
+the open mechanism seam in `OPEN-SEAMS.md` S12.
 
 ## Before you change code
 
@@ -257,9 +260,10 @@ approval to begin (`decisions/0023-acceptance-not-approval.md`).
 
 ## Development baseline
 
-Phase I proposes Python 3.11+, the standard library, SQLite, a filesystem
-content-addressed store, JSON Schema Draft 2020-12, and `unittest`. This is a
-reference baseline, not a claim that the logical system depends on Python or
+The retained local reference baseline, first selected for Phase I, uses Python
+3.11+, the standard library, SQLite, a filesystem content-addressed store, JSON
+Schema Draft 2020-12, and `unittest`. Phase I is closed; these are replaceable
+mechanism choices, not a claim that the logical system depends on Python or
 SQLite.
 
 Create frameworks only after repeated concrete use. Do not add a web server,
@@ -298,11 +302,12 @@ Required local gate:
 python scripts/verify.py
 ```
 
-The gate is dependency-free and network-free. Its wall time is graded rather
-than pass/fail: `PLATINUM` at three seconds or less, `GOLD` at six, `SILVER`
-at fifteen, failing past fifteen (`decisions/0050`). The grade prints on every
-passing run. Losing a grade does not fail the gate; it is worth reporting
-anyway. CI runs the same command.
+The gate is dependency-free and network-free. Total wall time is graded
+`PLATINUM`/`GOLD`/`SILVER` at 3/6/15 seconds but losing a total grade does not
+fail the repository. Per `decisions/0081` and
+`contracts/verification-budget.json`, a pooled check past 30 seconds is rerun
+alone and fails catastrophically only if the isolated check itself still exceeds
+30 seconds. The grade prints on every run; CI runs the same command.
 
 ## Tests and evidence
 

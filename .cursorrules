@@ -4,8 +4,9 @@ Read and obey `/AGENTS.md`; it is normative, and it owns the list of which
 document owns which rule. The set falls in two groups: `/GROUND.md` and
 `/CANON.md` say what product this is and what it undertakes; `/SYSTEM.md`,
 `/CLASSIFICATION.md`, `/CONTRACT.md`, `/PRD.md`, `/SPEC.md`, `/AI-NATIVE.md`,
-`/STATUS.yaml`, `/ENGINEERING.md`, and `/SDLC.md` say what Phase I must prove
-and how it is built. `/AGENTS.md`, `/CONTRIBUTING.md`, and this file are in
+`/STATUS.yaml`, `/ENGINEERING.md`, and `/SDLC.md` say what the active campaign
+must prove and how the system is built. Closed Phase-I definitions live under
+`/archives/` and `/contracts/phases.json`. `/AGENTS.md`, `/CONTRIBUTING.md`, and this file are in
 neither group: they govern contributors here and own no product claim. Do not
 duplicate their rules into competing authorities.
 
@@ -16,7 +17,7 @@ duplicate their rules into competing authorities.
 - Separate state from execution. Every consequential decision emits an
   attributable event and terminal receipt; projections are rebuildable.
 - Use Python 3.11+, standard-library-first code, SQLite, local CAS, JSON Schema,
-  and dependency-free `unittest` for the proposed Phase-I reference slice.
+  and dependency-free `unittest` for the retained local reference baseline.
 - Format Python as UTF-8/LF with four spaces, a 100-character target, and modules
   below 300 lines. Use future annotations, grouped imports, typed boundaries,
   `pathlib`, explicit encodings, parameterized SQL, and injectable nondeterminism.
@@ -29,9 +30,10 @@ duplicate their rules into competing authorities.
 - Never commit secrets, `.env`, local paths, databases, payload stores, logs, or
   prompt dumps. Use `.env.example` names only.
 - Tests are local, deterministic, network-free, and inspect durable results.
-  Run `python scripts/verify.py`; its wall time is graded, not pass/fail -
-  `PLATINUM` at three seconds, `GOLD` at six, `SILVER` at fifteen, failing past
-  fifteen (`decisions/0050`). Do not loosen a band to earn a grade.
+  Run `python scripts/verify.py`; total wall time is graded at 3/6/15 seconds
+  without failing solely for losing a band. A pooled check past 30 seconds is
+  rerun alone and only an isolated >30 second check is catastrophic
+  (`decisions/0081`, `contracts/verification-budget.json`).
 - Treat `lineage/evidence/` as immutable and do not publish `lineage/` without
   separate explicit owner instruction.
 - Use short-lived typed branches and reviewed PRs into `main`; direct main

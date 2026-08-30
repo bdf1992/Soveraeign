@@ -9,7 +9,7 @@
     ".claude/epic/offices.json"
   ],
   "note": "Where each declared service operation is met and what it costs. Office and counter names are the ones .claude/epic/offices.json already uses; no new vocabulary. This table is policy input to the capability map projection. It grants nothing: required_authority names the grant an operation needs, never one it holds.",
-  "phase": "FOUNDING",
+  "phase": "NONE_ACTIVE",
   "counters": {
     "FRONT": {
       "operator-desk": "A human or model operator working inside the node.",
@@ -25,7 +25,7 @@
       "inspectorate": "Independent observation, conformance, and fidelity.",
       "ground": "Local infrastructure and deployment custody.",
       "pattern-room": "Retrieval machinery: collections, indexes, and builds.",
-      "beyond-the-node": "The federation horizon. Locked in Phase I."
+      "beyond-the-node": "The federation horizon. Not admitted by the current no-active-phase baseline."
     }
   },
   "transport_policy": {
@@ -47,7 +47,7 @@
     "HTTP": {
       "operator_facing": true,
       "external": true,
-      "note": "Network ingress. Refused while no_external_effects_in_phase_i stands."
+      "note": "Network ingress. Gateway has no admitted built HTTP crossing in the current baseline; any future external route still requires explicit scoped authority and receipts."
     }
   },
   "external_transports_refused_in_phase": [

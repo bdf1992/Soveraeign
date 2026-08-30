@@ -126,13 +126,13 @@ Defeating case: a malformed request or a refusal leaves no request record — gu
 
 Standing: `BUILT`.
 
-### SVC-GATEWAY-8 · External transport stays refused in Phase I
+### SVC-GATEWAY-8 · External transport stays unadmitted until explicitly built
 
 HTTP stays inactive and refused regardless of whether underlying node-runtime health checks or
-listeners exist; only `IN_PROCESS` and `CLI` are admitted (`CHARTER.md` "What it does not do";
-`contracts/capability-offices.json` `transport_policy.HTTP`, `external_transports_refused_in_phase`).
-Serves the Phase-I non-goal "Automated external-world effects" (`PRD.md`) and the standing rule
-`no_external_effects_in_phase_i`.
+listeners exist; only the currently bound local transports are admitted (`CHARTER.md` "What it
+does not do"; `contracts/capability-offices.json` `transport_policy.HTTP`). The historical
+Phase-I non-goal is preserved in the archive, but current refusal is the Gateway's own
+unbuilt/unadmitted transport boundary rather than a phase-wide effect ban.
 
 Defeating case: an HTTP-addressed request reaches routing — guarded by
 `test_http_stays_refused_in_phase_one`.
@@ -170,6 +170,6 @@ gaps to close:
 - Issuing or widening authority.
 - Owning capability definitions or repairing the capability projection in place.
 - Falling back to an undeclared transport or route.
-- Opening an external transport while Phase I stands.
+- Opening an external transport before that transport is explicitly built, admitted, scoped, and receipted.
 - Becoming the Node's composition root. Gateway is one service inside the locally sovereign Node
   (`CHARTER.md` "Relationship to node composition"; see `JOURNEYS.md` open questions).

@@ -36,8 +36,9 @@ settlement, or hidden fallback, and it receives no authority by operating succes
 - It **captures** what GitHub currently says, with exact provenance.
 - It **never** decides standing. `scripts/sov_ticket.py` evaluates; the owning
   governing documents hold the answer.
-- It **never** writes ratification. Owner judgement reaches the repository through
-  `CODEOWNERS` review on `STATUS.yaml` and `decisions/`, not through a label or a bot.
+- It **never** writes ratification. `CODEOWNERS` protects governed paths but is not
+  itself the owner's judgement surface; ratification requires an explicit recorded
+  root-seat action, not a label, bot, or repository write credential.
 - Absence of GitHub produces a visible refusal, never a silent fallback to a cached or
   assumed board.
 
@@ -139,9 +140,10 @@ request is a judgement and is reported for a human instead. It will not stop at 
 first failure, because a partial run is the normal case and the receipt list is the
 record of what actually happened.
 
-`STATUS.yaml` still states `no_external_effects_in_phase_i` without exception. The
-grant that admits this crossing is narrower than the boundary is broad, and the two
-are reconciled in `OPEN-SEAMS.md` S9, not here.
+The retired Phase-I blanket refusal no longer governs this crossing. The write half
+remains `EXTERNAL_WORLD` and can act only inside its declared action table with the
+invoking operator's explicit scoped authority and receipts; `OPEN-SEAMS.md` S9 records
+the closure of the old contradiction.
 
 ## The MCP seam
 

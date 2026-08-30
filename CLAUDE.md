@@ -58,9 +58,9 @@ means the hazard is gone and the entry below must be deleted, so this list
 cannot outlive what it warns about.
 
 - **T2 · `verify.py` exit 0 does not mean conformance.** The participant's
-  recorded baseline registers failing requirements as expected, so the suite is
-  green while all nine Phase-I requirements fail. Green here means "unchanged",
-  not "correct".
+  historical Phase-I baseline still records failing requirements as expected, so
+  the suite can be green while that historical qualification remains unmet. Green
+  here means "unchanged", not "qualified".
 - **T3 · `NOT_WITNESSED` contains the token `WITNESSED`.** Any standing check
   written with a substring match reports every unwitnessed subject in the
   repository as witnessed. Compare whole tokens and treat a preceding `NOT` as
@@ -76,8 +76,9 @@ cannot outlive what it warns about.
   mid-read. Freeze a commit before witnessing, measuring, or ratifying, and
   work in a worktree rather than racing the shared branch.
 
-T4 through T6 need network or live observation, which Phase I refuses, so they
-are recorded rather than asserted. Silence about them is not confirmation.
+T4 through T6 need network or live observation, so this offline trap checker
+records rather than asserts them. Current external effects are scoped by live
+authority; silence from an offline checker is still not confirmation.
 
 ## What the system is
 
@@ -87,8 +88,10 @@ human and model operators share one world. Two records define it:
 - the design System of Record, in two groups. `GROUND.md` and `CANON.md` say
   what product this is and what it undertakes. `SYSTEM.md`, `CLASSIFICATION.md`,
   `CONTRACT.md`, `PRD.md`, `SPEC.md`, `AI-NATIVE.md`, `STATUS.yaml`,
-  `ENGINEERING.md`, and `SDLC.md` say what Phase I must prove and how it is
-  built. Each owns one kind of rule (`AGENTS.md`, Design System of Record).
+  `ENGINEERING.md`, and `SDLC.md` say what the active campaign must prove and
+  how the system is built. Closed Phase-I definitions are pinned under
+  `archives/` and `contracts/phases.json`. Each current document owns one kind of
+  rule (`AGENTS.md`, Design System of Record).
   `AGENTS.md`, `CONTRIBUTING.md`, and this file are in neither group: they
   govern participants working here, never the product;
 - the operational System of Record: an append-preserving record of addressed
@@ -98,8 +101,9 @@ human and model operators share one world. Two records define it:
 Every governed design claim carries artifact standing,
 `OPEN -> BUILT -> WITNESSED -> RATIFIED`; operational records use the distinct
 standing defined in `SPEC.md`. Every consequential transition needs a typed,
-scoped, live grant. Phase is `FOUNDING`; `STATUS.yaml` owns the gate and
-currently reads `next_gate: EVIDENCE_PRODUCING_EXECUTION`.
+scoped, live grant. Historical Phase I is terminal `CLOSED_INCOMPLETE` and names
+no successor. Until the root seat opens one, `STATUS.yaml` projects
+`phase: NONE_ACTIVE` and `next_gate: SUCCESSOR_PHASE_OPENING`.
 
 ## Repository snapshot (informational)
 
@@ -109,23 +113,20 @@ been receiving merged pull requests. This section is orientation, not standing.
 `STATUS.yaml`, the working tree, and the newest relevant report override it
 whenever they disagree.
 
-- `python scripts/verify.py` runs 50 checks and grades itself on wall
-  time (PLATINUM 3 s, GOLD 6 s, SILVER 15 s). Past 15 s the run still fails,
-  which is `decisions/0050` and is what this trunk carries. A successor record,
-  `decisions/0081`, would take the wall clock out of the exit code and move
-  pressure onto per-check ceilings; it is drafted and uncommitted, reachable
-  from no branch, and `scripts/sovverify/budget.py` and the per-check ceilings
-  in `contracts/verification-budget.json` are part of that unlanded work. Do
-  not read this page as saying the wall clock is advisory here. It is not.
-  A reading on a machine running several sessions at once is a reading of the
-  host, so measure on a quiet box before calling an overrun a regression.
-  `python scripts/lint.py` passes, carrying named debt for the duplicate keys
-  in `STATUS.yaml` that `chore/status-and-projection-bookkeeping` removes.
+- `python scripts/verify.py` runs 50 checks. Total wall time is graded by the
+  bands in `contracts/verification-budget.json` but is advisory rather than a
+  repository failure by itself. The landed budget policy reruns a pooled suspect
+  alone and fails catastrophically only when that isolated read still exceeds the
+  contract's catastrophic ceiling. `scripts/sovverify/budget.py` implements that
+  distinction. A total overrun on a busy host is performance evidence, not
+  automatic semantic failure. `python scripts/lint.py` remains the required
+  text/syntax/hygiene companion.
 - 10 service boundaries under `services/`, 134 declared operations
   across 10 manifests. Asset and Record are built and self-tested; Console's
-  continuity path is built and its other four surfaces are text; Gateway,
-  Observation, Proofing, Projection, and Registry are boundary only.
-  `services/README.md` and `diagrams/service-map.md` carry the current table.
+  continuity path is built; Gateway has one in-process Asset route; Registry has
+  a built resolve slice; Observation, Proofing, Projection, and the remainder of
+  those services are incomplete. `services/README.md` and the live issue graph
+  carry the detailed standing; declarations are not reachability.
 - Conformance oracle (`conformance/`): executable, 20 controlled cases, every
   defeating fixture fails as declared. Participant binding still open.
 - Harness (`.claude/`): 5 agent definitions (four roles and the Sov binding),
@@ -154,8 +155,11 @@ whenever they disagree.
 - Proofing, Asset Projection, Gateway, Observation, and Registry are boundaries
   with no implementation.
 - The SDLC loop is a skeleton, and Sov has no live activation.
-- No external-world effects in Phase I. Unattended runs carry no `gh`;
-  refreshing the epic projection is an attended action.
+- Phase I is closed. Current external-world effects are neither ambient nor
+  phase-refused: they require an explicit live grant, admitted scope, and receipt
+  under the accepted scoped-authority policy and current closure repair. Unattended
+  runs still carry no `gh`; refreshing the epic projection remains an attended
+  coordination action.
 - Diagram staleness is now gated. `python scripts/sov_diagrams.py` grades every
   view in `diagrams/` against the bytes of the sources it declares, and runs
   inside `scripts/verify.py`. All eight views were stale when the check was
@@ -192,7 +196,7 @@ evidenced result, never permission to begin
 - Whole stack: Workflow `sov-federation`, optionally
   `{ domains: [...], objective: "...", sequential: true }`.
 - One domain: Workflow `sov-<domain>` with `{ objective: "..." }`; domains
-  are `governance`, `contracts`, `conformance`, `asset`, `proofing`,
+  are `governance`, `contracts`, `conformance`, `asset`, `proofing`, `trust`,
   `console`, `projection`, `byom`, `verification`.
 - Observe only: Workflow `sov-qa` witnesses the working tree and builds
   nothing; `sov-baseline` reads readiness before a long run.
@@ -219,8 +223,9 @@ engineering baseline. Day two added the SDLC loop, Console, scheduled runs,
 Sov, the federation harness, defeating fixtures for receipts and proofing,
 LF line-ending enforcement, and the stack certification. At the end of day two
 the record held 26 commits, 17 decision records and 8 reports; it now holds
-621 commits, 87 decision records and 29 reports. The
-first independently witnessed work landed on 2026-08-25; nothing is ratified.
+685 commits, 87 decision records and 29 reports. The
+first independently witnessed work landed on 2026-08-25; owner-accepted packets
+now exist and are enumerated under `STATUS.yaml` `owner_accepted`.
 
 Those two sentences are checked. `python scripts/sov_snapshot.py` grades the
 numbers on this page against the record and fails when they drift, because this

@@ -2,7 +2,7 @@
 
 ```text
 source          SPEC.md · services/console/CHARTER.md · STATUS.yaml · CONTRACT.md
-source_digest   b58dc1ed68c2b999 · 7dec971f8b6d04d8 · ca6899b0249ec0a0 · ff6873d56338933b
+source_digest   b58dc1ed68c2b999 · 7dec971f8b6d04d8 · 555b4eafd72aeb77 · ff6873d56338933b
 reader          hand-authored · v2
 fidelity        LOSSY
 omissions       crossing class definitions, held by crossing-typology.md;
@@ -43,7 +43,7 @@ flowchart TB
     HA["Local Host Adapter<br/><i>read-only Host Port</i>"]
     MA["Model Adapter<br/><i>data-boundary enforcement</i>"]
     PV["Provider/runtime"]
-    N2["Second node<br/><i>no Phase-I transport</i>"]
+    N2["Second node<br/><i>no admitted transport</i>"]
 
     HB --> NI
     MB --> NI
@@ -95,6 +95,6 @@ from independent observation rather than calling every solid edge settled.
 The Model Adapter is separate from the Human/Model Node-operation parity path.
 It enforces the declared model data boundary for BYOM/runtime invocation; model
 provider credentials are mechanism, never SOV authority. Federation remains a
-Node-to-Node crossing with no Phase-I transport. A peer's evidence may later
+Node-to-Node crossing with no admitted transport in the current baseline. A peer's evidence may later
 cross a Surface, but the peer Root's authority may not silently become local
 authority.

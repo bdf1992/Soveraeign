@@ -44,8 +44,9 @@ not retry every tick.
 - `mode` — `observe` (Read, Grep, Glob, Agent, Workflow, Skill, Write, and
   read-only git and python via Bash) or `build` (adds Edit). Both deny commit,
   push, reset, rebase, checkout, switch, and stash.
-- `effect_class` — the kernel enum; `EXTERNAL_WORLD` is refused at load and at
-  the gate (`no_external_effects_in_phase_i`).
+- `effect_class` — the kernel enum; this unattended scheduler currently refuses
+  `EXTERNAL_WORLD` at load and at the gate because it has no admitted external
+  crossing. That is a scheduler ceiling, not a phase-wide authority rule.
 - `isolation` — `tree` (default) or `worktree` (passes `--worktree <run_id>`;
   the flag exists in the installed CLI but has not been exercised end to end).
 - `preconditions.clean_tree` — default `true` for `build`, `false` for
@@ -77,7 +78,8 @@ The three `health` verbs read and change nothing. What counts as unhealthy is
 declared in `contracts/automation-health.json` and defeated by
 `conformance/fixtures/automation-health/cases.json`; `decisions/0083` records why
 each rule is what it is. `health-check` runs inside `scripts/verify.py`, so an
-unhealthy schedule fails the build - the only alert Phase I admits. On a checkout
+unhealthy schedule fails the build - the only alert this local harness currently
+emits. On a checkout
 holding no ledger, which is every CI runner, it can only refuse on a declaration
 defect; run health is watched where the runs are.
 

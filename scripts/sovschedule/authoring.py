@@ -106,8 +106,8 @@ def create(root: Path, name: str, body: dict, actor: control.Actor, reason: str,
     if body.get("effect_class") == EXTERNAL_WORLD:
         return _refuse(root, name=name, change=changelog.CREATE, actor=actor,
                        reason=reason, code="EXTERNAL_WORLD_REFUSED", now=now,
-                       detail="EXTERNAL_WORLD is refused in this phase; the loader "
-                              "refuses it too and this says so before writing a file")
+                       detail="EXTERNAL_WORLD is not admitted by this unattended scheduler; the "
+                              "loader refuses it too and this says so before writing a file")
     needed = _authority(actor, bool(body["enabled"]))
     if needed:
         return _refuse(root, name=name, change=changelog.CREATE, actor=actor,
@@ -184,7 +184,7 @@ def update(root: Path, name: str, changes: dict, actor: control.Actor, reason: s
     if body.get("effect_class") == EXTERNAL_WORLD:
         return _refuse(root, name=name, change=changelog.UPDATE, actor=actor,
                        reason=reason, code="EXTERNAL_WORLD_REFUSED", now=now,
-                       detail="EXTERNAL_WORLD is refused in this phase")
+                       detail="EXTERNAL_WORLD is not admitted by this unattended scheduler")
 
     complaint = _validates(root, path, _ordered(body))
     if complaint:

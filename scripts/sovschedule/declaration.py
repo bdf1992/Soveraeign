@@ -2,9 +2,10 @@
 
 A declaration is the harness analogue of an operation plan: it names the
 target, the cadence, the mode, the effect class, the preconditions, and the
-limits before anything runs. Loading refuses what the harness must never fire:
+limits before anything runs. Loading refuses what this unattended harness is not admitted to fire:
 an EXTERNAL_WORLD effect class, a target that does not exist, an unparseable
-cron expression, or a build-mode run on a shared dirty tree.
+cron expression, or a build-mode run on a shared dirty tree. That local ceiling
+does not imply other operations are globally phase-refused.
 """
 
 from __future__ import annotations
@@ -64,7 +65,7 @@ def _semantic_defects(root: Path, path: Path, raw: dict,
     if raw["name"] != path.stem:
         defects.append(f"name '{raw['name']}' must equal the file stem '{path.stem}'")
     if raw["effect_class"] == EXTERNAL_WORLD:
-        defects.append("EXTERNAL_WORLD refused: protected boundary no_external_effects_in_phase_i")
+        defects.append("EXTERNAL_WORLD refused: unattended scheduler has no admitted external crossing")
     target = raw["target"]
     if require_target and not target_path(root, target["kind"], target["name"]).is_file():
         defects.append(f"{target['kind']} '{target['name']}' not found under .claude/")

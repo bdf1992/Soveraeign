@@ -84,12 +84,12 @@ A caller outside the local process wants to reach a declared operation over HTTP
 `contracts/capability-offices.json` `transport_policy.HTTP` and
 `external_transports_refused_in_phase`.
 
-Dead end by design, not by omission. `CHARTER.md` states it does not open an external transport
-in Phase I, and `contracts/capability-offices.json` names the refusal explicit: "Refused while
-`no_external_effects_in_phase_i` stands." `test_http_stays_refused_in_phase_one` guards it.
-Unlike J2–J4, this dead end is a declared boundary the service is proven to hold, not an
-unrealized route — it is listed here because a caller's journey still stops here today, and
-because it is the journey the open questions below are about.
+Dead end by design in the current Gateway baseline, not an ambient phase prohibition. The
+service has no admitted built HTTP crossing, and `contracts/capability-offices.json` keeps HTTP
+outside the reachable transport set. The legacy-named
+`test_http_stays_refused_in_phase_one` still guards the same observable fact: an HTTP-addressed
+request cannot reach routing. Unlike J2–J4, this dead end is an explicit current service
+boundary; opening it later requires a built transport plus scoped authority and receipts.
 
 ## Open custody and ownership questions
 

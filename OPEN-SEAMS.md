@@ -32,8 +32,9 @@ expiration, and operational consequences remain unspecified.
 ## S5 · Cold-start semantics
 
 Structural completeness and schema validity are measurable but do not establish
-semantic competence. Phase I needs a watched task whose success a fresh witness
-can determine independently.
+semantic competence. Phase I closed without earning that qualification. Successor
+gate #173 inherits the narrower requirement: a fresh independent participant must
+be able to determine whether the chosen proving vertical actually succeeded.
 
 ## S6 · Correction measurement
 
@@ -53,21 +54,17 @@ The corpus is readable but some cited raw finds, reviews, and conformance seeds
 are not present as individual source files. Missing sources must be recovered,
 or dependent claims must be marked unverifiable rather than silently trusted.
 
-## S9 · External effects
+## S9 · External effects — closed 2026-08-30
 
-Record-local retraction is defined. Irreversible resource consumption and
-external-world mutation need explicit Phase-I refusal/isolation rules. World
-rollback or compensation remains later work.
+The phase-wide refusal reading is retired. Root accepted A4: external effects are
+admitted only inside an explicit scope with a live grant and attributable receipt.
+PR #182 removed the stale `Phase FOUNDING` evaluator ban and added both a positive
+scoped `EXTERNAL_WORLD` case and a defeating above-ceiling case.
 
-`STATUS.yaml` states the boundary as `no_external_effects_in_phase_i`, with no
-exception. Bdo granted one on 2026-08-23 for board management: write to the
-GitHub coordination surface, with a confirm on each batch. The capability is
-built and refuses without a per-action approval
-(`decisions/0057-board-management-role.md`), so the grant is honoured in
-practice while the boundary text still reads as absolute. The two must be
-reconciled: either the boundary is restated to admit an owner-approved,
-per-action external effect, or the capability is withdrawn. The restatement is
-Bdo's; it is drafted in `0057-board-management-role.md` and is not applied here.
+World rollback is still never implied: consumed resources and external mutations
+may require forward compensation, and receipts must say what was not undone. That
+is an ongoing effect-design constraint, not an open question about whether the
+current phase globally refuses the class.
 
 ## S10 · Product boundary
 

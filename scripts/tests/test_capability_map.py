@@ -78,8 +78,8 @@ class ReferenceMap(unittest.TestCase):
         self.assertTrue(is_stale(REFERENCE, moved, TABLE))
 
 
-class PhaseBoundaries(unittest.TestCase):
-    """What the current phase forbids, read off the real map rather than the policy."""
+class CurrentTransportBoundaries(unittest.TestCase):
+    """What the current policy table refuses, read off the real map rather than assumed."""
 
     def test_no_external_transport_is_activated_anywhere(self) -> None:
         for row in REFERENCE["capabilities"]:
@@ -200,7 +200,7 @@ class ModelTransportTest(unittest.TestCase):
         manifests = _manifests()
         table = json.loads(json.dumps(TABLE))
         table["mcp_tools"] = {"record.reconstruct-journal": "record_reconstruct"}
-        document = build(manifests, table, phase="FOUNDING", derived_from=["x"])
+        document = build(manifests, table, phase=str(table["phase"]), derived_from=["x"])
         codes = {defect.split(":")[0] for defect in map_defects(document, manifests, table)}
         self.assertIn("BACK_OFFICE_EXPOSED", codes)
 

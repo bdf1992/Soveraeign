@@ -24,7 +24,7 @@ from typing import TYPE_CHECKING, Any
 import uuid
 
 from soveraeign_console_service import append
-from soveraeign_console_service.refusals import AuthorityRefused
+from soveraeign_console_service.refusals import AuthorityRefused, issuer_name
 from soveraeign_record_service import RecordService
 
 if TYPE_CHECKING:  # pragma: no cover - broken at runtime; core imports this module
@@ -116,7 +116,7 @@ def grant_payload(operator_id: str, capability: str, scope: str, granted_by: str
     """
     return {"grant_id": f"grant_{uuid.uuid4().hex[:16]}", "node_id": node_id,
             "operator_id": operator_id, "capability": capability, "scope": scope,
-            "granted_by": granted_by, "granted_at": granted_at, "standing": "RECORDED"}
+            "granted_by": issuer_name(granted_by), "granted_at": granted_at, "standing": "RECORDED"}
 
 
 def revocation_payload(grant_id: str, revoked_by: str, revoked_at: str,
@@ -126,7 +126,7 @@ def revocation_payload(grant_id: str, revoked_by: str, revoked_at: str,
     It names the node whose permits office withdrew it, as the grant does, so a
     journal carrying more than one console does not read as one office.
     """
-    return {"grant_id": grant_id, "node_id": node_id, "revoked_by": revoked_by,
+    return {"grant_id": grant_id, "node_id": node_id, "revoked_by": issuer_name(revoked_by),
             "revoked_at": revoked_at, "standing": "RECORDED"}
 
 

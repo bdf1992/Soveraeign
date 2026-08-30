@@ -45,18 +45,18 @@ jobs:
           path.write_text(text, encoding='utf-8', newline='\n')
           PY
 
-      - name: Rebuild derived reader
+      - name: Record clarity and rebuild derived reader
         run: |
-          python scripts/sov_docs.py build
+          python scripts/sov_clarity.py record OPEN-SEAMS.md --changed
           python scripts/sov_clarity.py check
-          python scripts/lint.py
+          python scripts/sov_docs.py build
 
       - name: Commit exact generated closure state and remove helper
         run: |
           rm .github/workflows/closure-s28-finalize.yml
           git config user.name 'soveraeign-closure'
           git config user.email 'actions@users.noreply.github.com'
-          git add OPEN-SEAMS.md docs .github/workflows/closure-s28-finalize.yml
+          git add OPEN-SEAMS.md .clarity/coverage.json docs .github/workflows/closure-s28-finalize.yml
           git diff --cached --check
           git commit -m 'docs(closure): close S28 historical reading'
           git push origin HEAD:closure/phase-i-zero-state

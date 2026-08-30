@@ -106,6 +106,20 @@ ENFORCED_SCOPE: dict[str, str] = {
 }
 
 
+def _issuer(named: str) -> str:
+    """Return the attributable issuer spelling recorded on an authority record.
+
+    A required argument can still be empty. Reject empty or whitespace-only names at
+    the record boundary so CLI and future bindings inherit the same refusal. Identity
+    remains a separate, larger gap: this proves a name exists, not who supplied it.
+    """
+    issuer = named.strip()
+    if not issuer:
+        raise AuthorityRefused(
+            "a grant must name who issued it; an empty issuer is not a name")
+    return issuer
+
+
 def grant_payload(operator_id: str, capability: str, scope: str, granted_by: str,
                   granted_at: str, node_id: str) -> dict[str, Any]:
     """The record admitting one operator to one capability over one scope on one node.
@@ -114,6 +128,7 @@ def grant_payload(operator_id: str, capability: str, scope: str, granted_by: str
     from an argument the caller of `console.grant` supplies, so a grant cannot name a
     node other than the one whose office issued it.
     """
+    granted_by = _issuer(granted_by)
     return {"grant_id": f"grant_{uuid.uuid4().hex[:16]}", "node_id": node_id,
             "operator_id": operator_id, "capability": capability, "scope": scope,
             "granted_by": granted_by, "granted_at": granted_at, "standing": "RECORDED"}
@@ -126,6 +141,7 @@ def revocation_payload(grant_id: str, revoked_by: str, revoked_at: str,
     It names the node whose permits office withdrew it, as the grant does, so a
     journal carrying more than one console does not read as one office.
     """
+    revoked_by = _issuer(revoked_by)
     return {"grant_id": grant_id, "node_id": node_id, "revoked_by": revoked_by,
             "revoked_at": revoked_at, "standing": "RECORDED"}
 

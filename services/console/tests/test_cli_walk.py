@@ -38,7 +38,7 @@ ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "services" / "console" / "src"))
 sys.path.insert(0, str(ROOT / "services" / "record" / "src"))
 
-from soveraeign_console_service import cli  # noqa: E402
+from soveraeign_console_service import authority, cli  # noqa: E402
 
 NODE = "node:local"
 BDO = "Bdo"
@@ -186,6 +186,40 @@ class ConsoleCLIWalk(unittest.TestCase):
                     self.assertEqual(answer["outcome"], "USAGE_ERROR")
                     self.assertIn(omitted, answer["message"])
                     self.assertEqual(err.getvalue(), "")
+
+    def test_blank_issuers_are_refused_at_the_record_boundary(self) -> None:
+        """Required flags still admitted empty strings until the record checked them."""
+        for builder, args in ((authority.grant_payload,
+                               ("reader", "read:thread", "thread-1", "   ",
+                                "2026-08-30T00:00:00Z", NODE)),
+                              (authority.revocation_payload,
+                               ("grant_example", "\t",
+                                "2026-08-30T00:00:00Z", NODE))):
+            with self.subTest(builder=builder.__name__):
+                with self.assertRaises(authority.AuthorityRefused):
+                    builder(*args)
+
+        grant = authority.grant_payload(
+            "reader", "read:thread", "thread-1", "  Bdo  ",
+            "2026-08-30T00:00:00Z", NODE)
+        revocation = authority.revocation_payload(
+            grant["grant_id"], "  Bdo  ", "2026-08-30T00:00:01Z", NODE)
+        self.assertEqual(grant["granted_by"], BDO)
+        self.assertEqual(revocation["revoked_by"], BDO)
+
+        # Drive the defeating grant case through the operator-facing binding too.
+        with TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
+            store = Path(tmp) / "console"
+            out = StringIO()
+            with contextlib.redirect_stdout(out):
+                code = cli.main(["--root", str(store), "--node", NODE, "grant",
+                                 "--operator", "Mallory", "--capability",
+                                 "read:thread", "--scope", "thread-1",
+                                 "--granted-by", "   "])
+            self.assertEqual(code, 2)
+            answer = json.loads(out.getvalue())
+            self.assertEqual(answer["outcome"], "REFUSED")
+            self.assertEqual(answer["reason_code"], "NO_LIVE_GRANT")
 
     def test_a_refusal_comes_back_as_json_with_its_reason_code(self) -> None:
         """Exit 2 and a machine-readable reason, not a traceback, at the real boundary."""

@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 from pathlib import Path
+import sys
 import unittest
 
-from sovkernel import transitions as kernel
-from sovticket import transitions as ticket
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from sovkernel import transitions as kernel  # noqa: E402
+from sovticket import transitions as ticket  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 

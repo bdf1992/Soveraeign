@@ -27,36 +27,21 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
-
           path = Path('OPEN-SEAMS.md')
           text = path.read_text(encoding='utf-8')
-
-          old = '''read as a claim
-about the repository's wiring it is now false, because seven entry points name
-`GROUND.md` and `CANON.md` as of this branch.'''
-          new = '''read as a claim
-about the repository's wiring it is now false, because eight entry points name
-`GROUND.md` and `CANON.md` as of this branch.'''
-          if old not in text:
-              raise SystemExit('S28 entry-point wording not found')
-          text = text.replace(old, new, 1)
-
-          old = '''Reading one needs nobody: if the
-sentence is scoped to the acceptance act, it is already correct and this seam
-closes with a note. Saying so is the point of filing it rather than repairing it.
-`acceptance/A22.json` presents the change that raised it.'''
-          new = '''Reading one needs nobody: if the
-sentence is scoped to the acceptance act, it is already correct and this seam
-closes with a note. Saying so is the point of filing it rather than repairing it.
-
-Closed 2026-08-30 under reading one. The sentence remains a historical claim
-about the 2026-08-24 acceptance act. PR #183 later wired all eight entry surfaces
-without revising the accepted `GROUND-1` artifact. The entry-plane packet is now
-recorded as superseded in `acceptance/accepted/A23.json`.'''
-          if old not in text:
-              raise SystemExit('S28 closing wording not found')
-          text = text.replace(old, new, 1)
-
+          old_count = "because seven entry points name"
+          new_count = "because eight entry points name"
+          if text.count(old_count) != 1:
+              raise SystemExit(f'expected one S28 count phrase, found {text.count(old_count)}')
+          text = text.replace(old_count, new_count, 1)
+          old_packet = "`acceptance/A22.json` presents the change that raised it."
+          new_packet = ("Closed 2026-08-30 under reading one. The sentence remains a historical claim "
+                        "about the 2026-08-24 acceptance act. PR #183 later wired all eight entry "
+                        "surfaces without revising the accepted `GROUND-1` artifact. The entry-plane "
+                        "packet is now recorded as superseded in `acceptance/accepted/A23.json`.")
+          if text.count(old_packet) != 1:
+              raise SystemExit(f'expected one S28 packet phrase, found {text.count(old_packet)}')
+          text = text.replace(old_packet, new_packet, 1)
           path.write_text(text, encoding='utf-8', newline='\n')
           PY
 

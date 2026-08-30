@@ -44,6 +44,15 @@ class AuthorityRefused(ConsoleRefusal):
         self.scope = scope
 
 
+def issuer_name(named: str) -> str:
+    """Normalize a required authority issuer or refuse an unattributable record."""
+    issuer = named.strip()
+    if not issuer:
+        raise AuthorityRefused(
+            "a grant must name who issued it; an empty issuer is not a name")
+    return issuer
+
+
 class ModelClaimWithoutProposal(ConsoleRefusal):
     """A MODEL post that claims must enter the kernel as a Proposal first."""
 

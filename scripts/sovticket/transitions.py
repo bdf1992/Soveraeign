@@ -97,23 +97,19 @@ def _check_scope_preconditions(
         discharged = {}
     if not isinstance(discharged, dict):
         return Decision(
-            False, "EXTERNAL_EFFECT_PRECONDITION_UNMET",
+            False, "EXTERNAL_EFFECT_UNAUTHORIZED",
             f"{verb!r} carries a discharge block this boundary cannot read: "
             f"{type(discharged).__name__} is not a mapping of precondition id to evidence")
     missing = sorted(name for name in declared if not _addresses_a_proof(discharged.get(name)))
     if missing:
         return Decision(
-            False, "EXTERNAL_EFFECT_PRECONDITION_UNMET",
+            False, "EXTERNAL_EFFECT_UNAUTHORIZED",
             f"{verb!r} carries preconditions this request does not discharge: "
             f"{', '.join(missing)}")
-    # Rendered through ``str`` because a discharge block reaching here need not have come
-    # through the schema: a key that is not a string sorts against no declared id and
-    # raised TypeError, which is crashing rather than refusing. The kernel's set
-    # difference never sorted, so this side raised where that one refused.
     undeclared = sorted(str(name) for name in set(discharged) - declared)
     if undeclared:
         return Decision(
-            False, "EXTERNAL_EFFECT_PRECONDITION_UNMET",
+            False, "EXTERNAL_EFFECT_UNAUTHORIZED",
             f"{verb!r} carries no precondition named {', '.join(undeclared)}")
     return None
 
@@ -133,20 +129,11 @@ def _check_external_effect(table: dict[str, Any], request: dict[str, Any]) -> De
         return Decision(
             False, "EXTERNAL_EFFECT_UNAUTHORIZED",
             "no external-effect authorization is loaded for this table")
-    # A truthy non-mapping raised AttributeError out of the `.get` below rather than
-    # refusing, so the block's shape is checked before anything is read out of it.
     if not isinstance(authorization, dict) or not authorization:
         return Decision(
             False, "EXTERNAL_EFFECT_UNAUTHORIZED",
             "EXTERNAL_WORLD declared with no authorized scope this boundary can read")
     verb = authorization.get("verb")
-    # The kernel refuses a falsy verb before anything else, and leaving that to the scope
-    # check held only while every declared `verbs` list was well formed: a contract
-    # carrying "" among a scope's verbs admitted an empty verb here and not there, the
-    # divergence kernel-parity.json exists to catch. Every field this boundary looks a
-    # contract key up by is also pinned to `str` first, here and for `scope` below, since
-    # both lookups raised TypeError on an unhashable value instead of refusing. The
-    # rendering is bounded because the value is the caller's, not this module's.
     if not isinstance(verb, str) or not verb:
         return Decision(
             False, "EXTERNAL_EFFECT_OUT_OF_SCOPE",
@@ -164,10 +151,6 @@ def _check_external_effect(table: dict[str, Any], request: dict[str, Any]) -> De
         return Decision(
             False, "EXTERNAL_EFFECT_OUT_OF_SCOPE",
             f"{scope['target']} does not admit {verb!r}")
-    # Graded the same way evidence is: the contract says an effect with no receipt is
-    # indistinguishable from one that never happened, and a receipt address a reader
-    # cannot see is no receipt. Truthiness alone admitted `7`, `True` and a zero-width
-    # space here while the discharge check one call below refused all three.
     if not _addresses_a_proof(authorization.get("receipt")):
         return Decision(
             False, "EXTERNAL_EFFECT_WITHOUT_RECEIPT",

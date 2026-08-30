@@ -4,8 +4,14 @@ The rule this module holds, from `decisions/0081`: a wall-clock reading is a
 property of the host at the instant it was taken, not of the repository, so it
 grades and records debt and never refuses. Pressure moves to per-check ceilings,
 which attribute an overrun to the check that owns it rather than to whoever
-touched the repository next. One condition still blocks — a single check past
-`catastrophic_check_seconds` — because no host load explains it.
+touched the repository next.
+
+One timing condition still blocks: a single check past
+`catastrophic_check_seconds`. A pooled reading past that ceiling is only a
+suspected catastrophe when confirmation is enabled; refusal requires the same
+check to cross the ceiling again when re-read alone. This keeps genuine
+pathological regressions blocking without treating host contention as proof of
+an implementation defect.
 
 `contracts/verification-budget.json` is the declaration; nothing here restates a
 number it owns.
@@ -33,15 +39,30 @@ class Debt(NamedTuple):
 
 
 class Catastrophe(NamedTuple):
-    """One check past the blocking ceiling. The only timing condition that refuses."""
+    """One check past the blocking ceiling.
+
+    ``alone`` is the isolated re-reading, or ``None`` while the pooled overrun is
+    only suspected. With confirmation enabled, only a confirmed isolated overrun
+    refuses.
+    """
 
     check: str
     seconds: float
     ceiling: float
+    alone: float | None = None
+
+    def confirmed(self) -> bool:
+        """True when an isolated reading was taken and is also over the ceiling."""
+        return self.alone is not None and self.alone > self.ceiling
 
     def line(self) -> str:
-        return (f"{self.check} took {self.seconds:.3f}s, past the {self.ceiling:.3f}s "
-                f"catastrophic ceiling")
+        first = (f"{self.check} took {self.seconds:.3f}s, past the {self.ceiling:.3f}s "
+                 f"catastrophic ceiling")
+        if self.alone is None:
+            return first
+        if self.confirmed():
+            return f"{first}, and {self.alone:.3f}s when re-run alone"
+        return f"{first}, but {self.alone:.3f}s when re-run alone: crowded, not confirmed"
 
 
 def load(path: Path | None = None) -> dict[str, Any]:
@@ -91,14 +112,18 @@ def ceiling_for(check: str, table: dict[str, Any]) -> float:
     return float(ceilings["named"].get(check, ceilings["default_seconds"]))
 
 
+def confirms_alone(table: dict[str, Any]) -> bool:
+    """Whether a pooled catastrophic reading must be re-read alone to refuse."""
+    return bool(table.get("catastrophic_confirm_alone", False))
+
+
 def judge(timings: list[tuple[str, float]],
           table: dict[str, Any]) -> tuple[list[Debt], list[Catastrophe]]:
     """Grade every check against its own ceiling.
 
-    Returns debts and catastrophes separately because they resolve differently:
-    debt is recorded and attributed, catastrophe refuses the run. A check is
-    never both — past the catastrophic ceiling it is only a catastrophe, so one
-    regression is not reported twice.
+    Returns debts and suspected catastrophes separately because they resolve
+    differently. A check is never both on the first reading; a suspected
+    catastrophe that clears confirmation can later be demoted back to debt.
     """
     blocking = float(table["catastrophic_check_seconds"])
     debts: list[Debt] = []
@@ -113,6 +138,22 @@ def judge(timings: list[tuple[str, float]],
     debts.sort(key=lambda entry: entry.seconds, reverse=True)
     catastrophes.sort(key=lambda entry: entry.seconds, reverse=True)
     return debts, catastrophes
+
+
+def refusing(catastrophes: list[Catastrophe], table: dict[str, Any]) -> list[Catastrophe]:
+    """Return the catastrophic readings that are allowed to refuse the run."""
+    if not confirms_alone(table):
+        return list(catastrophes)
+    return [entry for entry in catastrophes if entry.confirmed()]
+
+
+def demoted(catastrophes: list[Catastrophe], refused: list[Catastrophe],
+            table: dict[str, Any]) -> list[Debt]:
+    """Restore ordinary debt for pooled catastrophes that isolated confirmation clears."""
+    cleared = [entry for entry in catastrophes if entry not in refused]
+    return [Debt(entry.check, entry.seconds, ceiling_for(entry.check, table))
+            for entry in cleared
+            if entry.seconds > ceiling_for(entry.check, table)]
 
 
 def report(debts: list[Debt], wall_line: str, table: dict[str, Any]) -> list[str]:

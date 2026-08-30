@@ -60,6 +60,7 @@ jobs:
         run: |
           python scripts/sov_interface.py build
           python scripts/sov_diagrams.py stamp
+          python scripts/sov_surface.py render
           python scripts/sov_docs.py build
 
       - name: Verify exact repaired tree
@@ -69,6 +70,7 @@ jobs:
           python scripts/sov_clarity.py zero
           python scripts/sov_clarity.py check
           python scripts/sov_diagrams.py grade
+          python scripts/sov_surface.py check
           python scripts/sov_docs.py check
           python scripts/verify.py
           python scripts/lint.py

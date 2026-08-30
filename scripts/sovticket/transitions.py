@@ -12,9 +12,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 import json
+import unicodedata
 
 OPEN_FINDING_STATUSES = frozenset({"PROPOSED", "REPRODUCED"})
 DEFAULT_REQUIRED_DRY_ROUNDS = 2
+UNREADABLE_CATEGORIES = frozenset({"Cc", "Cf", "Cn", "Co", "Cs"})
 
 
 @dataclass(frozen=True)
@@ -38,44 +40,84 @@ def load_authorization(root: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def _check_external_effect(table: dict[str, Any], request: dict[str, Any]) -> Decision | None:
-    """Refuse an external effect that no declared scope admits.
+def _addresses_a_proof(address: Any) -> bool:
+    """Whether this value is a string carrying a character a reader could follow."""
+    if not isinstance(address, str):
+        return False
+    return any(
+        not char.isspace() and unicodedata.category(char) not in UNREADABLE_CATEGORIES
+        for char in address
+    )
 
-    Phase I once refused ``EXTERNAL_WORLD`` by class, which kept irreversible acts
-    behind an owner and ordinary coordination behind one too. The authorization
-    contract separates them: an effect inside a declared scope, carrying a receipt,
-    proceeds; every refused verb stays refused whatever scope is claimed.
-    """
+
+def _check_scope_preconditions(
+    scope: dict[str, Any], authorization: dict[str, Any]
+) -> Decision | None:
+    """Refuse an admitted verb whose declared preconditions this request does not discharge."""
+    verb = authorization.get("verb")
+    declared = {
+        precondition["id"]
+        for precondition in scope.get("preconditions", [])
+        if verb in precondition.get("verbs", [])
+    }
+    discharged = authorization.get("preconditions_discharged")
+    if discharged is None:
+        discharged = {}
+    if not isinstance(discharged, dict):
+        return Decision(
+            False, "EXTERNAL_EFFECT_PRECONDITION_UNMET",
+            f"{verb!r} carries a discharge block this boundary cannot read: "
+            f"{type(discharged).__name__} is not a mapping of precondition id to evidence")
+    missing = sorted(name for name in declared if not _addresses_a_proof(discharged.get(name)))
+    if missing:
+        return Decision(
+            False, "EXTERNAL_EFFECT_PRECONDITION_UNMET",
+            f"{verb!r} carries preconditions this request does not discharge: "
+            f"{', '.join(missing)}")
+    undeclared = sorted(str(name) for name in set(discharged) - declared)
+    if undeclared:
+        return Decision(
+            False, "EXTERNAL_EFFECT_PRECONDITION_UNMET",
+            f"{verb!r} carries no precondition named {', '.join(undeclared)}")
+    return None
+
+
+def _check_external_effect(table: dict[str, Any], request: dict[str, Any]) -> Decision | None:
+    """Refuse an external effect that no declared scope admits."""
     authorization = request.get("authorization")
     contract = table.get("_authorization")
     if contract is None:
         return Decision(
             False, "EXTERNAL_EFFECT_UNAUTHORIZED",
             "no external-effect authorization is loaded for this table")
-    if not authorization:
+    if not isinstance(authorization, dict) or not authorization:
         return Decision(
             False, "EXTERNAL_EFFECT_UNAUTHORIZED",
-            "EXTERNAL_WORLD declared with no authorized scope named")
+            "EXTERNAL_WORLD declared with no authorized scope this boundary can read")
     verb = authorization.get("verb")
+    if not isinstance(verb, str) or not verb:
+        return Decision(
+            False, "EXTERNAL_EFFECT_OUT_OF_SCOPE",
+            f"the request names no verb this boundary can read: {verb!r:.60}")
     if verb in contract.get("refused_verbs", {}):
         return Decision(
             False, "EXTERNAL_EFFECT_VERB_REFUSED",
-            f"{verb}: {contract['refused_verbs'][verb]}")
-    scope = contract.get("scopes", {}).get(authorization.get("scope"))
+            f"{verb!r}: {contract['refused_verbs'][verb]}")
+    named = authorization.get("scope")
+    scope = contract.get("scopes", {}).get(named) if isinstance(named, str) else None
     if scope is None:
         return Decision(
-            False, "EXTERNAL_EFFECT_OUT_OF_SCOPE",
-            f"{authorization.get('scope')} is not a declared scope")
+            False, "EXTERNAL_EFFECT_OUT_OF_SCOPE", f"{named!r:.60} is not a declared scope")
     if verb not in scope.get("verbs", []):
         return Decision(
             False, "EXTERNAL_EFFECT_OUT_OF_SCOPE",
-            f"{scope['target']} does not admit {verb}")
-    if not authorization.get("receipt"):
+            f"{scope['target']} does not admit {verb!r}")
+    if not _addresses_a_proof(authorization.get("receipt")):
         return Decision(
             False, "EXTERNAL_EFFECT_WITHOUT_RECEIPT",
             "an external effect that leaves no receipt is indistinguishable from one that "
             "never happened")
-    return None
+    return _check_scope_preconditions(scope, authorization)
 
 
 def load_table(root: Path) -> dict[str, Any]:
@@ -145,12 +187,7 @@ def _check_purple(request: dict[str, Any]) -> Decision | None:
 
 
 def evaluate(request: dict[str, Any], table: dict[str, Any]) -> Decision:
-    """Evaluate one transition request against the declared table.
-
-    The request is assumed to already validate against
-    ``contracts/ticket-transition.schema.json``; this function checks the rules a
-    schema cannot express.
-    """
+    """Evaluate one transition request against the declared table."""
     source, target = request["from"], request["to"]
     if request.get("effect_class") == "EXTERNAL_WORLD":
         refusal = _check_external_effect(table, request)

@@ -1,0 +1,79 @@
+name: gap 195 context and Record projection
+
+on:
+  push:
+    branches:
+      - gap/195-participant-isolation
+
+permissions:
+  contents: write
+
+jobs:
+  context-projection:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Apply phase-context and RecordProjection surface
+        run: python .github/scripts/gap_195_context_projection.py apply
+
+      - name: Rebuild derived capability and documentation surfaces
+        run: python .github/scripts/gap_195_context_projection.py refresh
+
+      - name: Retire one-shot carrier and finalize derived state
+        run: python .github/scripts/gap_195_context_projection.py finalize
+
+      - name: Refuse unexpected tree changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          bad=0
+          while IFS= read -r path; do
+            case "$path" in
+              .clarity/coverage.json|PRD.md|CLAUDE.md|contracts/phase-1-5-phase-ii-horizon.md|contracts/capability-offices.json|contracts/fixtures/capability-map.reference.json|contracts/fixtures/node-interface.reference.json|scripts/sovsession/phase_context.py|scripts/sovsession/brief.py|scripts/tests/test_session_phase_context.py|services/record/SERVICE-SPEC.md|services/record/contracts/service.json|services/record/src/soveraeign_record_service/cli.py|services/record/src/soveraeign_record_service/projections.py|services/record/tests/test_evidence_projection.py|docs/surface.html|docs/documentation.html|.github/workflows/gap-195-context-projection.yml|.github/scripts/gap_195_context_projection.py)
+                ;;
+              *)
+                echo "UNEXPECTED context/projection path: $path"
+                bad=1
+                ;;
+            esac
+          done < <(git status --porcelain=v1 | sed -E 's/^.. //')
+          test "$bad" -eq 0
+
+      - name: Commit final shaped substrate slice
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'feat(gap): expose phase context and scoped Record evidence'
+
+      - name: Prove focused positive and defeating cases
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest scripts.tests.test_session_phase_context
+          python -m unittest discover -s services/record/tests -p 'test_evidence_projection.py'
+          python scripts/sov_capability.py check
+          python scripts/sov_interface.py check
+          python scripts/sov_surface.py check
+          python scripts/sov_docs.py check
+          python scripts/sov_clarity.py check
+          python scripts/lint.py
+
+      - name: Full repository verification on committed state
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/verify.py
+          test -z "$(git status --porcelain)"
+
+      - name: Push only verified substrate slice
+        run: git push origin HEAD:gap/195-participant-isolation

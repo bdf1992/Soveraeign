@@ -1,0 +1,49 @@
+name: gap compression projection refresh
+
+on:
+  push:
+    branches:
+      - gap/daily-weekly-compression
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gap-compression-refresh
+  cancel-in-progress: true
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: gap/daily-weekly-compression
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Remove one-shot workflow from candidate tree
+        run: git rm .github/workflows/gap-compression-refresh.yml
+      - name: Exercise compression mechanics
+        run: |
+          python -m unittest scripts.tests.test_sov_compression -v
+          python scripts/sov_compression.py daily --json > /tmp/compression-daily.json
+          python scripts/sov_compression.py weekly --json > /tmp/compression-weekly.json
+          python scripts/sov_schedule.py validate
+      - name: Rebuild derived readers on the final tree
+        run: |
+          python scripts/sov_docs.py build
+          python scripts/sov_schedule.py health-render
+          git add -A
+      - name: Verify final candidate before transport
+        run: |
+          python scripts/verify.py
+          python scripts/lint.py
+      - name: Commit deterministic refresh
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git diff --cached --quiet && exit 0
+          git commit -m "chore(gap): refresh compression projections"
+          git push origin HEAD:gap/daily-weekly-compression

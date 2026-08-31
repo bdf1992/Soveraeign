@@ -352,12 +352,80 @@ through the BYOM contract. Three bindings in total, because either half alone is
 cheap and the pair is not. This profile's hardest criterion, and it evidences
 `PROMISE-01`, `PROMISE-04` and `PROMISE-06` together.
 
+## Prepared Phase 1.5 qualification profile
+
+**`Phase 1.5 · Operational Commissioning`.** Working name: **Participant
+Delivery Substrate**. This is a prepared successor profile, not an active phase.
+`STATUS.yaml` remains the authority for whether a campaign is open, and merely
+writing, testing, or agreeing with this profile grants it no standing.
+
+Its purpose is to commission the participation and learning substrate that a
+later Phase II can use rather than to prebuild what those citizens will do with
+it. Phase II participants may compose teams, offices, councils, workflows,
+institutions, sovereign nodes, federation arrangements, or other structures
+from the same identity, authority, work, custody, Record, observation,
+settlement, and discovery primitives. Those institutional forms are deliberately
+not Phase 1.5 requirements.
+
+### P15-Q1 · Fresh participation
+
+A participant with no private history can enter from the artifact, establish an
+attributable principal and isolated session, discover the current campaign and a
+bounded unit of work, resolve capability and authority separately, and receive
+the relevant governance and Record context needed to act. The work's custody,
+closure, defeating condition, and cleanup obligations survive the participant's
+session.
+
+### P15-Q2 · Evidenced and fairly judged work
+
+Consequential work converges on the common append-preserving Record. Different
+legitimate evaluators receive scoped, reconstructable Record projections and
+form separately cited Findings. Work quality and participant conduct are judged
+as different subjects; independent readings freeze before comparison; a
+comparator preserves citations and dissent and attributes a defect to work,
+participant, orchestration, witnessing, Record, or policy rather than averaging
+opinions into a score.
+
+### P15-Q3 · Discovery, continuity, and reuse
+
+Work settles only after required independent observation and explicit cleanup.
+Another fresh participant can then discover the accepted result, reconstruct why
+it stands, reach the capability it produced, and use it without builder-private
+state or oral history.
+
+### P15-Q4 · Definition recurrence and institution-neutral composition
+
+Settled experience can become cited input to a new Proposal or candidate
+Definition. The candidate preserves its evidence basis and gains no authority or
+standing merely because participants generated, agreed with, or successfully
+demonstrated it. The mechanics are expressed through generic governed
+primitives rather than hardcoded Controller, Orchestrator, Worker, or Witness
+species, so Phase II citizens can compose institutions the founder did not need
+to predict.
+
+### Commissioning terminal
+
+Technical qualification is one witnessed Definition-to-Value-to-Definition
+circuit on an exact revision: fresh participants enter without oral history,
+carry bounded work under explicit authority, leave reconstructable operational
+history, independently judge both the work and its carrying, compare and repair
+those findings, settle and clean temporary state, hand a discoverable result to
+another fresh participant, and synthesize a cited candidate next Definition
+that remains unprivileged. Root operational acceptance remains a separate act
+after these technical criteria are evidenced.
+
+This profile exists **for Phase II**. Phase 1.5 commissions the ability to
+self-organize and learn under governed evidence; Phase II decides what citizens
+actually accomplish with it. A future Phase III requirement may therefore be a
+product of Phase II's recorded experience without Phase II acquiring the power
+to open or ratify that future phase itself.
+
 ### Later profiles
 
-Each roadmap phase past `P0` earns its own profile, and none exists yet. The
-shape is set here: named criteria with predicates in `SPEC.md` and fixtures in
-`conformance/`, addressed by identifier, never advanced by the document that
-declares them.
+Later campaigns may derive new profiles from settled experience without
+rewriting earlier ones. The shape remains named criteria with predicates in
+`SPEC.md` and fixtures in `conformance/`, addressed by identifier and never
+advanced by the document that declares them.
 
 ## Success metrics
 

@@ -2,7 +2,7 @@
 
 ```text
 source          SPEC.md · CLASSIFICATION.md · PRD.md · CONTRACT.md
-source_digest   b58dc1ed68c2b999 · caf2384160b00eed · 81f09529b5679d78 · f95acd076c4977d7
+source_digest   ea07f0ec39b9a551 · caf2384160b00eed · bf23c0cc0a11d446 · f95acd076c4977d7
 reader          hand-authored · v1
 fidelity        LOSSY
 omissions       the receipt and event-envelope field lists, held by SPEC.md and
@@ -10,6 +10,7 @@ omissions       the receipt and event-envelope field lists, held by SPEC.md and
                 per-class refusal reason codes beyond the four named below;
                 the topology of where each class occurs, held by
                 crossing-topology.md;
+                RecordProjection and Finding composition, outside this typology;
                 federation identity and policy contracts, which do not exist
 ```
 

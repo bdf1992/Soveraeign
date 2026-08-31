@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/record-projection.schema.json",
+  "title": "Soveraeign RecordProjection (PROPOSED)",
+  "description": "A bounded, reconstructable, non-authoritative reading of the common Record for one subject, recipient relation, purpose, and cutoff.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_projection_schema",
+    "projection_id",
+    "subject_addresses",
+    "recipient_principal",
+    "recipient_relation",
+    "purpose",
+    "record_head",
+    "as_of",
+    "included_records",
+    "omissions",
+    "projection_digest",
+    "authority_effect",
+    "created_at"
+  ],
+  "properties": {
+    "record_projection_schema": {
+      "const": "soveraeign-record-projection/v1"
+    },
+    "projection_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "subject_addresses": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "recipient_principal": {
+      "type": "string",
+      "minLength": 1
+    },
+    "recipient_relation": {
+      "type": "string",
+      "minLength": 1
+    },
+    "purpose": {
+      "type": "string",
+      "minLength": 1
+    },
+    "record_head": {
+      "type": "string",
+      "minLength": 1
+    },
+    "as_of": {
+      "type": "string",
+      "minLength": 1
+    },
+    "included_records": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/addressed"
+      }
+    },
+    "omissions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/omission"
+      }
+    },
+    "projection_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "authority_effect": {
+      "const": "NONE"
+    },
+    "created_at": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "$defs": {
+    "addressed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "address",
+        "digest"
+      ],
+      "properties": {
+        "address": {
+          "type": "string",
+          "minLength": 1
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      }
+    },
+    "omission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "record_class",
+        "reason"
+      ],
+      "properties": {
+        "record_class": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

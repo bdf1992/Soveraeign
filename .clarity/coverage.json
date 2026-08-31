@@ -136,11 +136,11 @@
           "path": "CONTRACT.md"
         },
         {
-          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "digest": "sha256:ea07f0ec39b9a55160f3f58552f3a5d13ba5061122a10b42e37daa34bfc2f348",
           "path": "SPEC.md"
         }
       ],
-      "changed": false
+      "changed": true
     },
     "BYOM.md": {
       "artifact_digest": "sha256:64669747db6b40c4b8ce1cac954b56089d232d70790df611006ffcc13dcfb2e6",
@@ -154,11 +154,11 @@
           "path": "CONTRACT.md"
         },
         {
-          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "digest": "sha256:ea07f0ec39b9a55160f3f58552f3a5d13ba5061122a10b42e37daa34bfc2f348",
           "path": "SPEC.md"
         }
       ],
-      "changed": false
+      "changed": true
     },
     "CANON.md": {
       "artifact_digest": "sha256:e618947defa9d0f8cdc689d1d00d6cb56f9e9b2f61132e5341c6794d13f26a22",
@@ -171,7 +171,7 @@
       "changed": true
     },
     "CLAUDE.md": {
-      "artifact_digest": "sha256:46eceea452f8dee5eb71ff545cce7f10e0c9161db9d54bd00c4097f663c62823",
+      "artifact_digest": "sha256:e10e087b91ff9a15a12bddac140c307626ea6e9bdfe4e226b65359d56297da23",
       "basis": [
         {
           "digest": "sha256:a40215204befb25c48365b6ceb6e11ba3bfc4ac999c01615e4b57b19d96bdd81",
@@ -240,7 +240,7 @@
       "changed": true
     },
     "PRD.md": {
-      "artifact_digest": "sha256:81f09529b5679d786e507efa7641861aa9e2a5717442d9f9af7cf021d76d2425",
+      "artifact_digest": "sha256:bf23c0cc0a11d4466f87f1894b273bcb4897059eb9ba3722dce019d95e6187a6",
       "basis": [
         {
           "digest": "sha256:20a43ff96c3f99f98fe90b612a49c4f60f9318bfebb4be61e3882a9dfbe27bb4",
@@ -283,7 +283,7 @@
       "artifact_digest": "sha256:4918be81fd7343b8173135489b780dfc4ff01be5db7467519f256759688d86d8",
       "basis": [
         {
-          "digest": "sha256:81f09529b5679d786e507efa7641861aa9e2a5717442d9f9af7cf021d76d2425",
+          "digest": "sha256:bf23c0cc0a11d4466f87f1894b273bcb4897059eb9ba3722dce019d95e6187a6",
           "path": "PRD.md"
         },
         {
@@ -291,7 +291,7 @@
           "path": "STATUS.yaml"
         },
         {
-          "digest": "sha256:a957d14a986fbddae8d26e417868ec4d5807582b6824d22e89f1c4f5343f4ebf",
+          "digest": "sha256:4289313eee0205e7ca8605870048ac79054d8ece0f30a6ab335a1e99c4d596d5",
           "path": "contracts/phases.json"
         }
       ],
@@ -320,7 +320,7 @@
       "changed": true
     },
     "SPEC.md": {
-      "artifact_digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+      "artifact_digest": "sha256:ea07f0ec39b9a55160f3f58552f3a5d13ba5061122a10b42e37daa34bfc2f348",
       "basis": [
         {
           "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
@@ -335,7 +335,7 @@
           "path": "CLASSIFICATION.md"
         }
       ],
-      "changed": false
+      "changed": true
     },
     "STATUS.yaml": {
       "artifact_digest": "sha256:96d9e073a61bfdccf1e213c087fa6c8c677336a688777816eb18404da8c13348",
@@ -364,6 +364,11 @@
       ],
       "changed": false
     },
+    "contracts/README.md": {
+      "artifact_digest": "sha256:6a12cb2c3fc016c101baf00b5254e43ba047893260ee169027c3dcb0c44f604f",
+      "basis": [],
+      "changed": true
+    },
     "services/asset/CHARTER.md": {
       "artifact_digest": "sha256:0d70b7e067b93fee53aba44de8a4d1385a9248d9661b5d5e45a1b4aa23b31c1c",
       "basis": [
@@ -376,7 +381,7 @@
           "path": "CONTRACT.md"
         },
         {
-          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "digest": "sha256:ea07f0ec39b9a55160f3f58552f3a5d13ba5061122a10b42e37daa34bfc2f348",
           "path": "SPEC.md"
         }
       ],
@@ -394,7 +399,7 @@
           "path": "CONTRACT.md"
         },
         {
-          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "digest": "sha256:ea07f0ec39b9a55160f3f58552f3a5d13ba5061122a10b42e37daa34bfc2f348",
           "path": "SPEC.md"
         }
       ],
@@ -412,7 +417,7 @@
           "path": "CONTRACT.md"
         },
         {
-          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "digest": "sha256:ea07f0ec39b9a55160f3f58552f3a5d13ba5061122a10b42e37daa34bfc2f348",
           "path": "SPEC.md"
         }
       ],
@@ -430,7 +435,7 @@
           "path": "CONTRACT.md"
         },
         {
-          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "digest": "sha256:ea07f0ec39b9a55160f3f58552f3a5d13ba5061122a10b42e37daa34bfc2f348",
           "path": "SPEC.md"
         }
       ],
@@ -448,7 +453,7 @@
           "path": "CONTRACT.md"
         },
         {
-          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "digest": "sha256:ea07f0ec39b9a55160f3f58552f3a5d13ba5061122a10b42e37daa34bfc2f348",
           "path": "SPEC.md"
         }
       ],
@@ -466,7 +471,7 @@
           "path": "CONTRACT.md"
         },
         {
-          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "digest": "sha256:ea07f0ec39b9a55160f3f58552f3a5d13ba5061122a10b42e37daa34bfc2f348",
           "path": "SPEC.md"
         }
       ],
@@ -484,7 +489,7 @@
           "path": "CONTRACT.md"
         },
         {
-          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "digest": "sha256:ea07f0ec39b9a55160f3f58552f3a5d13ba5061122a10b42e37daa34bfc2f348",
           "path": "SPEC.md"
         }
       ],
@@ -502,7 +507,7 @@
           "path": "CONTRACT.md"
         },
         {
-          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "digest": "sha256:ea07f0ec39b9a55160f3f58552f3a5d13ba5061122a10b42e37daa34bfc2f348",
           "path": "SPEC.md"
         }
       ],
@@ -520,11 +525,11 @@
           "path": "CONTRACT.md"
         },
         {
-          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "digest": "sha256:ea07f0ec39b9a55160f3f58552f3a5d13ba5061122a10b42e37daa34bfc2f348",
           "path": "SPEC.md"
         }
       ],
-      "changed": false
+      "changed": true
     },
     "services/registry/CHARTER.md": {
       "artifact_digest": "sha256:627a11ba2744fda3ea509c6033f2cffb75d49c5e51b441703efeebdb4ff1f828",
@@ -538,7 +543,7 @@
           "path": "CONTRACT.md"
         },
         {
-          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "digest": "sha256:ea07f0ec39b9a55160f3f58552f3a5d13ba5061122a10b42e37daa34bfc2f348",
           "path": "SPEC.md"
         }
       ],

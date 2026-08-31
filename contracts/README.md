@@ -14,6 +14,8 @@ or deployment topology.
 | `receipt.schema.json` | records the terminal outcome of a crossing or transition |
 | `participant-observation.schema.json` | carries implementation observations into the conformance oracle |
 | `observation.schema.json` | records independent evidence of what occurred: what an observer looked at, how it avoided relying solely on the executor's report, and which predicates held (`SPEC.md` `Observation`) |
+| `record-projection.schema.json` | prepares a bounded, reconstructable view of common Record evidence for one subject, recipient relation, purpose, and cutoff; it declares omissions and grants no authority (`SPEC.md` `RecordProjection`) |
+| `finding.schema.json` | records an evaluator's scoped, cited interpretation of a named subject; work, participant conduct, and comparison findings share one shape without becoming observations, authority, or settlement (`SPEC.md` `Finding`) |
 | `model-binding.schema.json` | declares an owner-selected local or remote model without granting provider authority |
 | `event-envelope.schema.json` | records who decided or acted, why, exact inputs and outputs, authority, effects, and outcome |
 | `source.schema.json` | identifies captured bytes by address, digest, and size so a reading can verify its input before it begins (`SPEC.md` `Source`) |
@@ -45,8 +47,13 @@ The direction of authority is intentionally one-way:
 
 `governing sources -> paradigm index -> service manifest bindings -> derived closure`
 
-The arrow never reverses. Editing or passing the closure cannot change a service
-manifest, grant authority, promote standing, or alter a governing Kernel source.
+Operational evidence has the same one-way rule:
+
+`Record -> RecordProjection -> Finding -> comparison Finding`
+
+Neither arrow reverses. Editing or passing a closure, projection, or Finding
+cannot change its source Record, grant authority, promote standing, settle a
+claim, or alter a governing Kernel source.
 `python scripts/sov_kernel.py binding-check` checks the authored service bindings
 against one another, and `python scripts/sov_kernel.py closure` emits the derived
 closure as JSON for humans and agents.

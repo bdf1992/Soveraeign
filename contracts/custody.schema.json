@@ -139,7 +139,7 @@
       }
     },
     "closure": {
-      "description": "What would make this custody done. Exactly one of the two routes must be available, the same rule contracts/work-item.schema.json applies to a single item. A custody with neither can never close, which is the shape the epic tree accumulated and the reason twenty-one of its issues are unroutable.",
+      "description": "What would make this custody done. Exactly one of the two routes must be available, matching the bounded closure carried by contracts/work-lease.schema.json and the handoff rules in contracts/closure-ownership.json. A custody with neither can never close, which is the shape the epic tree accumulated and the reason twenty-one of its issues are unroutable.",
       "type": "object",
       "additionalProperties": false,
       "required": ["check", "judgement_seat", "defeated_by"],

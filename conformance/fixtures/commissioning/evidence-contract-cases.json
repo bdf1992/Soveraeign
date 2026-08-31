@@ -1,0 +1,130 @@
+{
+  "cases": [
+    {
+      "case_id": "record-projection-positive",
+      "schema": "record-projection.schema.json",
+      "valid": true,
+      "record": {
+        "record_projection_schema": "soveraeign-record-projection/v1",
+        "projection_id": "projection:work-81:witness",
+        "subject_addresses": [
+          "work:81"
+        ],
+        "recipient_principal": "principal:witness-9",
+        "recipient_relation": "witness",
+        "purpose": "independent work review",
+        "record_head": "record:head:44",
+        "as_of": "2026-08-31T17:00:00Z",
+        "included_records": [
+          {
+            "address": "record:412",
+            "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          }
+        ],
+        "omissions": [
+          {
+            "record_class": "EVALUATIVE_FINDING",
+            "reason": "freeze independent reading before prior conclusions are disclosed"
+          }
+        ],
+        "projection_digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "authority_effect": "NONE",
+        "created_at": "2026-08-31T17:00:00Z"
+      }
+    },
+    {
+      "case_id": "record-projection-missing-omissions",
+      "schema": "record-projection.schema.json",
+      "valid": false,
+      "remove": "omissions"
+    },
+    {
+      "case_id": "record-projection-missing-cutoff",
+      "schema": "record-projection.schema.json",
+      "valid": false,
+      "remove": "as_of"
+    },
+    {
+      "case_id": "record-projection-no-evidence",
+      "schema": "record-projection.schema.json",
+      "valid": false,
+      "set": {
+        "included_records": []
+      }
+    },
+    {
+      "case_id": "finding-work-positive",
+      "schema": "finding.schema.json",
+      "valid": true,
+      "record": {
+        "finding_schema": "soveraeign-finding/v1",
+        "finding_id": "finding:witness:81",
+        "subject": {
+          "kind": "WORK",
+          "address": "work:81"
+        },
+        "evaluator": {
+          "principal_id": "principal:witness-9",
+          "relation": "witness"
+        },
+        "scope": {
+          "revision": "abc123",
+          "operation": "asset.ingest-asset"
+        },
+        "record_projection_id": "projection:work-81:witness",
+        "claims": [
+          {
+            "claim_id": "requested-result",
+            "verdict": "DISSENTED",
+            "detail": "restart fixture defeats the result"
+          }
+        ],
+        "evidence_addresses": [
+          "record:412",
+          "observation:14"
+        ],
+        "counterevidence_addresses": [],
+        "input_finding_ids": [],
+        "created_at": "2026-08-31T17:05:00Z",
+        "frozen_at": "2026-08-31T17:06:00Z",
+        "authority_effect": "NONE",
+        "settlement_effect": "NONE",
+        "supersedes": []
+      }
+    },
+    {
+      "case_id": "finding-participant-positive",
+      "schema": "finding.schema.json",
+      "valid": true,
+      "mutate_subject_kind": "PARTICIPANT_IN_WORK"
+    },
+    {
+      "case_id": "finding-missing-projection",
+      "schema": "finding.schema.json",
+      "valid": false,
+      "remove": "record_projection_id"
+    },
+    {
+      "case_id": "finding-no-evidence",
+      "schema": "finding.schema.json",
+      "valid": false,
+      "set": {
+        "evidence_addresses": []
+      }
+    },
+    {
+      "case_id": "finding-cannot-claim-standing",
+      "schema": "finding.schema.json",
+      "valid": false,
+      "set": {
+        "standing": "RATIFIED"
+      }
+    },
+    {
+      "case_id": "finding-unknown-subject",
+      "schema": "finding.schema.json",
+      "valid": false,
+      "mutate_subject_kind": "WORKER_REPUTATION"
+    }
+  ]
+}

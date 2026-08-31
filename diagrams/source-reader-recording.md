@@ -2,12 +2,12 @@
 
 ```text
 source          SPEC.md · CONTRACT.md
-source_digest   b58dc1ed68c2b999 · f95acd076c4977d7
+source_digest   ea07f0ec39b9a551 · f95acd076c4977d7
 reader          hand-authored · v1
 fidelity        LOSSY
 omissions       full field lists for Source, Reader, and Recording;
                 payload custody and addressing mechanics;
-                the Proposal object, which enters this flow separately
+                Proposal, RecordProjection, and Finding, which branch from this flow
 ```
 
 `sources_survive_reading` is a settled source claim. The field lists that

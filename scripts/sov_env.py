@@ -24,6 +24,10 @@ from sovenv import (
 )
 from sovenv.model import digest
 
+AUTHORITY_APERTURE_REFUSAL = (
+    "AUTHORITY_REFUSED:ENVIRONMENT_AUTHORITY_APERTURE_UNADMITTED"
+)
+
 
 def required(value: str | None, name: str) -> str:
     if not value:
@@ -91,9 +95,7 @@ def _mutate(args: argparse.Namespace, pattern: dict[str, object], state: dict) -
         # no Environment crossing capability/resource scope has been root-admitted yet.
         # Until that aperture exists, every CLI admission attempt fails closed through the
         # kernel's existing authority refusal vocabulary, even if --authority is supplied.
-        raise EnvironmentRefused(
-            "AUTHORITY_REFUSED:ENVIRONMENT_AUTHORITY_APERTURE_UNADMITTED"
-        )
+        raise EnvironmentRefused(AUTHORITY_APERTURE_REFUSAL)
     if args.operation == "land":
         return land_crossing(
             state,

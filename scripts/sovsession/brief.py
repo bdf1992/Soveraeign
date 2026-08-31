@@ -68,13 +68,27 @@ def collect(root: Path, directory: Path, session: str, tree: str) -> dict[str, A
     }
 
 
+def _discovery(lines: list[str]) -> None:
+    """Point a participant from presence into the node's existing discovery path.
+
+    The session registry owns presence and collision avoidance, not product capability.
+    The next question therefore crosses to the derived Node Interface rather than
+    growing another operation list here. Governance stays behind the operation that
+    needs it: discover first, then read the owning contract for the thing being changed.
+    """
+    lines.append("  discover what this node exposes: python scripts/sov_interface.py show")
+    lines.append("  then load the owning contract for the operation or constraint you touch")
+
+
 def render(data: dict[str, Any]) -> str:
     """Render the briefing for a human or a model reading it as context."""
     peers = data["peers"]
     identity = principals.render(data["principal"])
     if not peers and not data["held"]:
-        return (f"Session registry: you are the only live session. "
-                f"{data['branch']}, {data['position']}." + NEWLINE + f"  {identity}")
+        lines = [f"Session registry: you are the only live session. "
+                 f"{data['branch']}, {data['position']}.", f"  {identity}"]
+        _discovery(lines)
+        return NEWLINE.join(lines)
     lines = [f"Session registry - {len(peers)} other live session"
              f"{'' if len(peers) == 1 else 's'} in this repository."]
     lines.append(f"  you: {data['session']} in {data['tree']} "
@@ -99,4 +113,5 @@ def render(data: dict[str, Any]) -> str:
     lines.append(f"  next free decision number: {data['next_decision']:04d} "
                  f"(reserve it: python scripts/sov_session.py reserve-decision <slug>)")
     lines.append("  who holds a path: python scripts/sov_session.py who <path>")
+    _discovery(lines)
     return "\n".join(lines)

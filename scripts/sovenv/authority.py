@@ -9,6 +9,7 @@ from sovkernel import authority as kernel_authority
 from sovkernel import jsonschema
 
 from .errors import EnvironmentRefused
+from .transitions import admit_crossing as _apply_admission
 
 CAPABILITY = "environment.promote"
 
@@ -100,3 +101,40 @@ def authorize_crossing(
         "grant_id": covering["grant_id"],
         "authority_type": covering["authority_type"],
     }
+
+
+def admit_crossing(
+    state: dict[str, Any],
+    pattern: dict[str, Any],
+    crossing_id: str,
+    *,
+    current_integration_base: str,
+    witness: str,
+    grants: list[dict[str, Any]],
+    grant_schema: dict[str, Any],
+    checks: dict[str, str] | None = None,
+    observation: dict[str, Any] | None = None,
+    accepted: bool | None = None,
+    at: str | None = None,
+) -> dict[str, Any]:
+    """Governed public admission: evaluate first, then apply the pure transition."""
+    granted = authorize_crossing(
+        state,
+        crossing_id,
+        actor_id=witness,
+        grants=grants,
+        grant_schema=grant_schema,
+        checks=checks,
+        observation=observation,
+        at=at,
+    )
+    return _apply_admission(
+        state,
+        pattern,
+        crossing_id,
+        current_integration_base=current_integration_base,
+        witness=witness,
+        authority=granted["authority_type"],
+        authority_grant_id=granted["grant_id"],
+        accepted=accepted,
+    )

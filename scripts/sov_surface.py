@@ -82,11 +82,18 @@ def command_check(_: argparse.Namespace) -> int:
 
 def command_try(args: argparse.Namespace) -> int:
     """Delegate action construction to the canonical Human/Model binding."""
-    return interface_main([
+    command = [
         "invoke", args.operation, *args.arguments,
         "--binding", args.binding, "--actor", args.actor, "--scope", args.scope,
         "--state-root", args.state_root or str(SCRATCH),
-    ])
+    ]
+    if args.session_id:
+        command.extend(["--session", args.session_id])
+    if args.session_binding_id:
+        command.extend(["--session-binding", args.session_binding_id])
+    if args.principal:
+        command.extend(["--principal", args.principal])
+    return interface_main(command)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -103,6 +110,9 @@ def main(argv: list[str] | None = None) -> int:
     invoke.add_argument("--binding", choices=("HUMAN", "MODEL"), default="HUMAN")
     invoke.add_argument("--actor", required=True)
     invoke.add_argument("--scope", required=True)
+    invoke.add_argument("--session", dest="session_id")
+    invoke.add_argument("--session-binding", dest="session_binding_id")
+    invoke.add_argument("--principal")
     invoke.add_argument("--state-root")
     invoke.set_defaults(handler=command_try)
     args = parser.parse_args(argv)

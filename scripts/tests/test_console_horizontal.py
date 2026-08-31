@@ -53,9 +53,13 @@ class ConsoleHorizontal(unittest.TestCase):
     def request(self, binding: str, *, actor: str = "reader",
                 thread_id: str | None = None) -> dict:
         thread_id = thread_id or self.thread["thread_id"]
+        session = self.sessions[binding]
         return invocation_request(
             self.document, "console.read-thread", binding, actor, thread_id,
-            {"thread_id": thread_id, "session_id": self.sessions[binding]["session_id"]},
+            {"thread_id": thread_id, "session_id": session["session_id"]},
+            session_id=session["session_id"],
+            session_binding_id=session["binding_id"],
+            principal_id=session.get("principal_id"),
         )
 
     @staticmethod
@@ -87,9 +91,9 @@ class ConsoleHorizontal(unittest.TestCase):
         request = self.request(HUMAN)
         request["actor_kind"] = "SYSTEM"
         policy_refusal = self.node.dispatch(request)
-        self.assertEqual(self.detail(policy_refusal)["reason_code"], "AUTHORITY_REFUSED")
-        self.assertEqual(self.detail(policy_refusal)["diagnostic_code"],
-                         "ACTOR_KIND_NOT_ADMITTED")
+        self.assertEqual(
+            self.detail(policy_refusal)["reason_code"], "ACTOR_ATTRIBUTION_MISMATCH")
+        self.assertEqual(self.detail(policy_refusal)["stage"], "check-attribution")
 
     def test_unknown_object_refusal_survives_gateway_unchanged(self) -> None:
         unknown = "thread_0000000000000000"
@@ -117,6 +121,7 @@ class ConsoleHorizontal(unittest.TestCase):
         gateway = Gateway(
             self.node.record, tampered, manifests, table, authority,
             {"console:in-process": ConsoleRoutes(self.node.console).call},
+            attribution=lambda *_: None,
             authority_denials=(AuthorityRefused,),
         )
         before = len([entry for entry in self.node.record.entries()

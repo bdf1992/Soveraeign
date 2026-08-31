@@ -127,19 +127,17 @@ class TryPath(unittest.TestCase):
             ])
         return code, output.getvalue()
 
-    def test_human_action_without_authority_returns_actual_refused_receipt(self) -> None:
+    def test_human_action_without_session_refuses_before_state_is_opened(self) -> None:
         code, output = self.run_try("asset.ingest-asset")
         self.assertEqual(code, 0)
-        receipt = json.loads(output)
-        self.assertEqual(receipt["kind"], "RECEIPT")
-        self.assertEqual(receipt["payload"]["outcome"], "REFUSED")
-        self.assertEqual(receipt["payload"]["detail"]["reason_code"], "AUTHORITY_REFUSED")
+        self.assertIn("REFUSED SESSION_IDENTITY_REQUIRED", output)
+        self.assertFalse((self.root / "human").exists())
 
-    def test_model_takes_the_same_gateway_refusal_path(self) -> None:
+    def test_model_requires_the_same_explicit_session_identity(self) -> None:
         code, output = self.run_try("asset.ingest-asset", "MODEL")
         self.assertEqual(code, 0)
-        self.assertEqual(json.loads(output)["payload"]["detail"]["reason_code"],
-                         "AUTHORITY_REFUSED")
+        self.assertIn("REFUSED SESSION_IDENTITY_REQUIRED", output)
+        self.assertFalse((self.root / "model").exists())
 
     def test_unreachable_operation_is_not_offered_to_gateway(self) -> None:
         code, output = self.run_try("console.resolve-judgement")

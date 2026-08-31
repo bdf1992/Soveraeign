@@ -15,7 +15,7 @@
     "services/registry/contracts/service.json",
     "contracts/capability-offices.json"
   ],
-  "input_state_digest": "b39ef40ae2040d4a491191fc2703cbce9e95d309da28b9b68a8c6b41f51ffe0d",
+  "input_state_digest": "b19f2198e0647d2fa94f861d246ac6e4a134415cb40998f3cafcd378ba0bf991",
   "capabilities": [
     {
       "capability_id": "asset.add-member",
@@ -2224,12 +2224,19 @@
           "declared_transport",
           "declared_actor",
           "declared_logical_endpoint",
-          "well_formed_envelope"
+          "well_formed_envelope",
+          "declared_session_identity",
+          "declared_interface_binding",
+          "declared_interface_operation_digest",
+          "session_attribution_matches",
+          "session_live"
         ],
         "commit": "COMMITTED",
         "refusals": [
           "MALFORMED_REQUEST",
-          "TRANSPORT_NOT_ACTIVATED"
+          "TRANSPORT_NOT_ACTIVATED",
+          "ACTOR_ATTRIBUTION_MISMATCH",
+          "SESSION_CLOSED"
         ]
       }
     },

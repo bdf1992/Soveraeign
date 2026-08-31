@@ -21,7 +21,10 @@ from soveraeign_asset_service import AssetService  # noqa: E402
 from soveraeign_asset_service.routes import AssetRoutes  # noqa: E402
 from soveraeign_console_service import ConsoleRoutes, ConsoleService  # noqa: E402
 from soveraeign_console_service import authority as console_authority  # noqa: E402
-from soveraeign_console_service.refusals import AuthorityRefused  # noqa: E402
+from soveraeign_console_service import reads as console_reads  # noqa: E402
+from soveraeign_console_service.refusals import (  # noqa: E402
+    ActorAttributionMismatch, AuthorityRefused, SessionClosed, UnknownRecord,
+)
 from soveraeign_gateway_service import Gateway, load_surface  # noqa: E402
 from soveraeign_host_service import HostPort, HostRoutes, HostService  # noqa: E402
 from soveraeign_record_service import RecordService  # noqa: E402
@@ -35,6 +38,7 @@ COMMON_ROUTE_SOURCES = (
     "scripts/sovnode/composition.py",
     "services/gateway/src/soveraeign_gateway_service/contract.py",
     "services/gateway/src/soveraeign_gateway_service/core.py",
+    "services/gateway/src/soveraeign_gateway_service/attribution.py",
 )
 ASSET_ROUTE_SOURCES = COMMON_ROUTE_SOURCES + (
     "services/asset/src/soveraeign_asset_service/core.py",
@@ -158,13 +162,33 @@ class LocalActionPath:
             return console_authority.check(
                 self.record.reconstruct(), self.node_id, actor, capability, scope)
 
+        def attribution(actor: str, actor_kind: str, session_id: str,
+                        session_binding_id: str, principal_id: str | None) -> None:
+            entries = self.record.reconstruct()
+            try:
+                session = console_reads.session(entries, session_id)
+            except UnknownRecord:
+                raise ActorAttributionMismatch(
+                    "gateway session attribution does not match a local session") from None
+            if (console_reads.foreign(session, self.node_id) is not None
+                    or session.get("operator_id") != actor
+                    or session.get("actor_kind") != actor_kind
+                    or session.get("binding_id") != session_binding_id
+                    or session.get("principal_id") != principal_id):
+                raise ActorAttributionMismatch(
+                    "gateway session attribution does not match the recorded session")
+            if session.get("lifecycle") != "OPEN":
+                raise SessionClosed(f"session {session_id} is CLOSED")
+
         self.gateway = Gateway(
             self.record, capability_map, manifests, table, authority,
             {"asset:in-process": asset_routes.call,
              "registry:in-process": registry_routes.call,
              "console:in-process": console_routes.call,
              "host:in-process": host_routes.call},
+            attribution=attribution,
             authority_denials=(AuthorityRefused,),
+            attribution_denials=(ActorAttributionMismatch, SessionClosed),
         )
 
     def dispatch(self, request: dict[str, Any]) -> dict[str, Any]:

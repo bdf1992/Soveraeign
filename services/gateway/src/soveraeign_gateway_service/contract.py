@@ -8,6 +8,7 @@ from typing import Any, Callable
 import json
 
 AuthorityCheck = Callable[[str, str, str], str]
+AttributionCheck = Callable[[str, str, str, str, str | None], None]
 ServiceRoute = Callable[[str, dict[str, Any], str], dict[str, Any]]
 
 RECORD_LOCAL = "RECORD_LOCAL"
@@ -18,7 +19,10 @@ DECLARED = "DECLARED_NOT_ACTIVATED"
 REFUSED = "REFUSED_UNCONFIGURED"
 BUILT_STANDINGS = ("BUILT", "WITNESSED", "RATIFIED")
 TERMINAL_OUTCOMES = ("COMMITTED", "REFUSED", "COUNTERED", "FAILED", "UNRESOLVED")
-ATTRIBUTION_ARGUMENTS = frozenset({"actor", "actor_id", "actor_kind"})
+ATTRIBUTION_ARGUMENTS = frozenset({
+    "actor", "actor_id", "actor_kind", "principal_id", "session_id",
+    "session_binding_id", "interface_binding_id", "interface_operation_digest",
+})
 
 
 class GatewayRefusal(RuntimeError):

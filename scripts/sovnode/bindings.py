@@ -81,8 +81,15 @@ def render_human(record: dict[str, Any]) -> str:
 
 
 def invocation_request(document: dict[str, Any], operation_id: str, binding_kind: str,
-                       actor: str, scope: str, arguments: dict[str, Any]) -> dict[str, Any]:
-    """Build one Gateway envelope; rendering never supplies a route or a grant."""
+                       actor: str, scope: str, arguments: dict[str, Any], *,
+                       session_id: str, session_binding_id: str,
+                       principal_id: str | None) -> dict[str, Any]:
+    """Build one Gateway envelope; rendering never supplies a route or a grant.
+
+    ``interface_binding_id`` names this Human/Model rendering. ``session_binding_id``
+    names the host continuity binding pinned when the session opened. Keeping both
+    prevents two different layers from collapsing into one overloaded binding id.
+    """
     if binding_kind not in BINDING_IDS:
         raise BindingRefusal("BINDING_UNKNOWN", binding_kind)
     record = resolve(document, operation_id)
@@ -93,6 +100,12 @@ def invocation_request(document: dict[str, Any], operation_id: str, binding_kind
     routes = [route for route in record["reachability"] if route["policy_active"]]
     if len(routes) != 1:
         raise BindingRefusal("ROUTE_AMBIGUOUS", operation_id)
+    if not session_id or not session_binding_id:
+        raise BindingRefusal("SESSION_IDENTITY_REQUIRED", operation_id)
+    if principal_id is not None and not principal_id:
+        raise BindingRefusal("SESSION_IDENTITY_REQUIRED", operation_id)
+    if ("session_id" in arguments and arguments["session_id"] != session_id):
+        raise BindingRefusal("SESSION_ATTRIBUTION_CONFLICT", operation_id)
     return {
         "actor": actor,
         "actor_kind": binding_kind,
@@ -100,7 +113,10 @@ def invocation_request(document: dict[str, Any], operation_id: str, binding_kind
         "transport": routes[0]["transport"],
         "scope": scope,
         "arguments": dict(arguments),
-        "binding_id": BINDING_IDS[binding_kind],
+        "session_id": session_id,
+        "session_binding_id": session_binding_id,
+        "principal_id": principal_id,
+        "interface_binding_id": BINDING_IDS[binding_kind],
         "interface_operation_digest": record["record_digest"],
     }
 

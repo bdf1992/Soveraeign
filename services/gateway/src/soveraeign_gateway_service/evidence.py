@@ -19,6 +19,17 @@ def record_request(record: RecordService, request: dict[str, Any], request_id: s
         {"record_kind": "gateway-request", "request_id": request_id,
          "actor_kind": mapping.get("actor_kind")
          if isinstance(mapping.get("actor_kind"), str) else None,
+         "session_id": mapping.get("session_id")
+         if isinstance(mapping.get("session_id"), str) else None,
+         "session_binding_id": mapping.get("session_binding_id")
+         if isinstance(mapping.get("session_binding_id"), str) else None,
+         "principal_id": mapping.get("principal_id")
+         if mapping.get("principal_id") is None or isinstance(mapping.get("principal_id"), str)
+         else None,
+         "interface_binding_id": mapping.get("interface_binding_id")
+         if isinstance(mapping.get("interface_binding_id"), str) else None,
+         "interface_operation_digest": mapping.get("interface_operation_digest")
+         if isinstance(mapping.get("interface_operation_digest"), str) else None,
          "transport": mapping.get("transport")
          if isinstance(mapping.get("transport"), str) else None,
          "scope": mapping.get("scope") if isinstance(mapping.get("scope"), str) else None,
@@ -27,13 +38,38 @@ def record_request(record: RecordService, request: dict[str, Any], request_id: s
          "envelope_fields": sorted(name for name in mapping if isinstance(name, str))})
 
 
+def record_attribution(record: RecordService, request: dict[str, Any], request_id: str,
+                       request_entry_id: str, *, decision: str,
+                       diagnostic_code: str | None = None) -> dict[str, Any]:
+    """Record the session/identity decision separately from authority.
+
+    The interface binding describes how this operation was rendered. The session
+    binding describes the host continuity boundary. They are deliberately different
+    fields and neither one grants authority.
+    """
+    payload: dict[str, Any] = {
+        "record_kind": "gateway-session-attribution", "request_id": request_id,
+        "request_entry_id": request_entry_id, "actor_kind": request["actor_kind"],
+        "session_id": request["session_id"],
+        "session_binding_id": request["session_binding_id"],
+        "principal_id": request["principal_id"],
+        "interface_binding_id": request["interface_binding_id"],
+        "interface_operation_digest": request["interface_operation_digest"],
+        "decision": decision,
+    }
+    if diagnostic_code is not None:
+        payload["diagnostic_code"] = diagnostic_code
+    return record.append("EVENT", request["logical_endpoint"], request["actor"], payload)
+
+
 def record_resolution(record: RecordService, request: dict[str, Any], request_id: str,
-                      capability: dict[str, Any], endpoint: dict[str, Any],
-                      map_digest: str) -> dict[str, Any]:
+                      attribution_entry_id: str, capability: dict[str, Any],
+                      endpoint: dict[str, Any], map_digest: str) -> dict[str, Any]:
     return record.append(
         "EVENT", request["logical_endpoint"], request["actor"],
         {"record_kind": "gateway-capability-resolution",
-         "request_id": request_id, "capability_id": capability["capability_id"],
+         "request_id": request_id, "attribution_entry_id": attribution_entry_id,
+         "capability_id": capability["capability_id"],
          "service_id": capability["service_id"], "operation": capability["operation"],
          "effect_class": capability["effect_class"], "transport": request["transport"],
          "route_address": endpoint["address"], "capability_map_digest": map_digest})

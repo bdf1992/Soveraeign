@@ -45,6 +45,27 @@ class GatewayObserverTests(unittest.TestCase):
         self.assertIn("TERMINAL_RECEIPT_MISMATCH", defects)
         self.assertIn("TERMINAL_ATTRIBUTION_INVALID", defects)
 
+    def test_independent_observer_rejects_session_record_mismatch(self) -> None:
+        tampered = Path(self.temporary.name) / "session-mismatch"
+        shutil.copytree(self.state, tampered)
+        database = tampered / "record" / "record-service.sqlite3"
+        connection = sqlite3.connect(database)
+        try:
+            row = connection.execute(
+                "SELECT seq, payload_json FROM journal WHERE payload_json LIKE ? ORDER BY seq LIMIT 1",
+                ('%"record_kind":"operator-session"%',)).fetchone()
+            self.assertIsNotNone(row)
+            payload = json.loads(row[1])
+            payload["binding_id"] = "forged-host-binding"
+            connection.execute(
+                "UPDATE journal SET payload_json=? WHERE seq=?",
+                (json.dumps(payload, sort_keys=True, separators=(",", ":")), row[0]))
+            connection.commit()
+        finally:
+            connection.close()
+        defects = observe.crossing_defects(ROOT, tampered, self.output, self.actor, "HUMAN")
+        self.assertIn("SESSION_RECORD_INVALID", defects)
+
     def test_independent_observer_rejects_rewritten_gateway_evidence(self) -> None:
         tampered = Path(self.temporary.name) / "tampered"
         shutil.copytree(self.state, tampered)

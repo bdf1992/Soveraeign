@@ -17,7 +17,10 @@ sys.path.insert(0, str(ROOT / "adapters" / "host"))
 from local_host_adapter import ADAPTER_ID, LocalHostAdapter  # noqa: E402
 from soveraeign_console_service import ConsoleService  # noqa: E402
 from soveraeign_console_service import authority as console_authority  # noqa: E402
-from soveraeign_console_service.refusals import AuthorityRefused  # noqa: E402
+from soveraeign_console_service import reads as console_reads  # noqa: E402
+from soveraeign_console_service.refusals import (  # noqa: E402
+    ActorAttributionMismatch, AuthorityRefused, SessionClosed, UnknownRecord,
+)
 from soveraeign_gateway_service import Gateway, load_surface  # noqa: E402
 from soveraeign_host_service import (  # noqa: E402
     HostAdapterUnavailable,
@@ -179,10 +182,28 @@ class HostGatewayVertical(unittest.TestCase):
                 self.record.reconstruct(), self.console.node_id, actor, capability,
                 scope)
 
+        def attribution(actor: str, actor_kind: str, session_id: str,
+                        session_binding_id: str, principal_id: str | None) -> None:
+            try:
+                session = console_reads.session(self.record.reconstruct(), session_id)
+            except UnknownRecord:
+                raise ActorAttributionMismatch("test session is unknown") from None
+            if (session.get("node_id") != self.console.node_id
+                    or session.get("operator_id") != actor
+                    or session.get("actor_kind") != actor_kind
+                    or session.get("binding_id") != session_binding_id
+                    or session.get("principal_id") != principal_id):
+                raise ActorAttributionMismatch("test session attribution mismatch")
+            if session.get("lifecycle") != "OPEN":
+                raise SessionClosed(f"session {session_id} is CLOSED")
+
+        self.sessions: dict[tuple[str, str], dict[str, Any]] = {}
         self.gateway = Gateway(
             self.record, capability_map, manifests, table, authority,
             {"host:in-process": HostRoutes(self.host).call},
+            attribution=attribution,
             authority_denials=(AuthorityRefused,),
+            attribution_denials=(ActorAttributionMismatch, SessionClosed),
         )
 
     def tearDown(self) -> None:
@@ -191,9 +212,20 @@ class HostGatewayVertical(unittest.TestCase):
 
     def request(self, actor: str, actor_kind: str = "HUMAN",
                 arguments: dict[str, Any] | None = None) -> dict[str, Any]:
+        key = (actor, actor_kind)
+        if key not in self.sessions:
+            self.console.grant(actor, "open:session", actor, "Bdo")
+            self.sessions[key] = self.console.open_session(
+                actor, actor_kind, f"host-test:{actor_kind.lower()}")
+        session = self.sessions[key]
         return {
             "actor": actor,
             "actor_kind": actor_kind,
+            "session_id": session["session_id"],
+            "session_binding_id": session["binding_id"],
+            "principal_id": session.get("principal_id"),
+            "interface_binding_id": f"host-test-interface:{actor_kind.lower()}",
+            "interface_operation_digest": "host-test-interface-digest",
             "logical_endpoint": "sov://host/read-health",
             "transport": "IN_PROCESS",
             "scope": "host:local",

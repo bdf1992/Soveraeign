@@ -7,10 +7,12 @@ import uuid
 
 from soveraeign_record_service import RecordService
 
+from .attribution import check as check_attribution
 from .contract import (
     ACTIVE,
     ATTRIBUTION_ARGUMENTS,
     RECORD_LOCAL,
+    AttributionCheck,
     AuthorityCheck,
     GatewayFault,
     GatewayRefusal,
@@ -40,11 +42,15 @@ class Gateway:
     def __init__(self, record: RecordService, capability_map: dict[str, Any],
                  manifests: dict[str, dict[str, Any]], capability_table: dict[str, Any],
                  authority: AuthorityCheck, routes: dict[str, ServiceRoute], *,
-                 authority_denials: tuple[type[BaseException], ...] = ()) -> None:
+                 attribution: AttributionCheck,
+                 authority_denials: tuple[type[BaseException], ...] = (),
+                 attribution_denials: tuple[type[BaseException], ...] = ()) -> None:
         self.record = record
         self.capability_map = capability_map
         self.authority = authority
+        self.attribution = attribution
         self.authority_denials = authority_denials
+        self.attribution_denials = attribution_denials
         self.routes = dict(routes)
         self.capability_table = capability_table
         self._surface_fresh = capability_map.get("input_state_digest") == input_state_digest(
@@ -68,10 +74,13 @@ class Gateway:
         request_entry = record_request(self.record, request, request_id)
         try:
             accepted = self._accept(request)
+            attribution = check_attribution(
+                self.record, accepted, request_id, request_entry["entry_id"],
+                self.attribution, self.attribution_denials)
             capability, endpoint = self._resolve(accepted)
             resolution = record_resolution(
-                self.record, accepted, request_id, capability, endpoint,
-                self.capability_map["input_state_digest"])
+                self.record, accepted, request_id, attribution["entry_id"], capability,
+                endpoint, self.capability_map["input_state_digest"])
             grant_id, authority_record = self._check_authority(
                 accepted, request_id, resolution["entry_id"], capability)
             route = self._admit_route(capability, endpoint)
@@ -118,12 +127,25 @@ class Gateway:
         return service_receipt
 
     def _accept(self, request: dict[str, Any]) -> dict[str, Any]:
-        required = ("actor", "actor_kind", "logical_endpoint", "transport", "scope", "arguments")
+        required = (
+            "actor", "actor_kind", "session_id", "session_binding_id", "principal_id",
+            "interface_binding_id", "interface_operation_digest", "logical_endpoint",
+            "transport", "scope", "arguments")
         if not isinstance(request, dict) or any(name not in request for name in required):
             raise GatewayRefusal("MALFORMED_REQUEST", "gateway request is incomplete",
                                  stage="accept-request")
         if (not isinstance(request["actor"], str) or not request["actor"]
                 or request["actor_kind"] not in ("HUMAN", "MODEL", "WORKER", "SYSTEM")
+                or not isinstance(request["session_id"], str) or not request["session_id"]
+                or not isinstance(request["session_binding_id"], str)
+                or not request["session_binding_id"]
+                or (request["principal_id"] is not None
+                    and (not isinstance(request["principal_id"], str)
+                         or not request["principal_id"]))
+                or not isinstance(request["interface_binding_id"], str)
+                or not request["interface_binding_id"]
+                or not isinstance(request["interface_operation_digest"], str)
+                or not request["interface_operation_digest"]
                 or not isinstance(request["logical_endpoint"], str)
                 or not request["logical_endpoint"].startswith("sov://")
                 or not isinstance(request["transport"], str)
@@ -132,10 +154,16 @@ class Gateway:
             raise GatewayRefusal("MALFORMED_REQUEST", "gateway request has invalid fields",
                                  stage="accept-request")
         attribution = ATTRIBUTION_ARGUMENTS.intersection(request["arguments"])
-        if attribution:
+        conflicting = attribution - {"session_id"}
+        session_conflict = ("session_id" in attribution
+                            and request["arguments"]["session_id"] != request["session_id"])
+        if conflicting or session_conflict:
+            names = set(conflicting)
+            if session_conflict:
+                names.add("session_id")
             raise GatewayRefusal(
                 "MALFORMED_REQUEST",
-                f"service arguments may not override checked attribution: {sorted(attribution)}",
+                f"service arguments may not override checked attribution: {sorted(names)}",
                 stage="accept-request", diagnostic_code="ACTOR_ATTRIBUTION_CONFLICT")
         return dict(request)
 

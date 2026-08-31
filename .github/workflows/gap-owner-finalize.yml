@@ -100,9 +100,6 @@ jobs:
           print("PASS: declared gap clarity population is 17/17 CURRENT")
           PY
 
-      - name: Rebuild documentation reader
-        run: python scripts/sov_docs.py build
-
       - name: Refresh derived crossing topology provenance
         run: |
           python - <<'PY'
@@ -122,6 +119,9 @@ jobs:
           print("PASS: crossing-topology.md re-read after prose-only Console charter clarity change")
           PY
           python scripts/sov_diagrams.py grade
+
+      - name: Rebuild documentation reader after all prose changes
+        run: python scripts/sov_docs.py build
 
       - name: Preserve no-active-phase state
         run: |

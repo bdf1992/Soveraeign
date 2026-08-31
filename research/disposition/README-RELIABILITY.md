@@ -1,0 +1,1 @@
+Reliability/precision and validity are separate. Repeatability is necessary evidence but never enough by itself to establish that the construct interpretation is correct.

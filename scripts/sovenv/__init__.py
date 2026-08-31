@@ -1,9 +1,9 @@
 """Soveraeign local SDLC environment kernel."""
 
+from .authority import admit_crossing
 from .model import (
     EnvironmentRefused,
     StateStore,
-    admit_crossing,
     bind_workspace,
     instantiate_environment,
     instantiate_trunk,

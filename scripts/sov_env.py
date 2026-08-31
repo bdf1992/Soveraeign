@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """CLI for the local Environment / Trunk / Deployment reference vertical."""
+
 from __future__ import annotations
 
+from pathlib import Path
 import argparse
 import json
-from pathlib import Path
 import sys
 
 from sovenv import (
@@ -18,6 +19,7 @@ from sovenv import (
     load_json,
     new_state,
     propose_crossing,
+    release_workspace,
     resolve_selector,
     validate_pattern,
 )
@@ -30,6 +32,78 @@ def required(value: str | None, name: str) -> str:
     return value
 
 
+def _pattern_matches(state: dict[str, object], pattern: dict[str, object]) -> None:
+    if state.get("pattern_digest") != digest(pattern):
+        raise EnvironmentRefused("PATTERN_CHANGED_REINSTANTIATION_REQUIRED")
+
+
+def _mutate(args: argparse.Namespace, pattern: dict[str, object], state: dict) -> object:
+    _pattern_matches(state, pattern)
+    if args.operation == "env-add":
+        return instantiate_environment(
+            state,
+            pattern,
+            required(args.definition, "DEFINITION"),
+            required(args.instance, "INSTANCE"),
+        )
+    if args.operation == "trunk-add":
+        return instantiate_trunk(
+            state,
+            pattern,
+            required(args.definition, "DEFINITION"),
+            required(args.instance, "INSTANCE"),
+        )
+    if args.operation == "workspace-bind":
+        if args.lease is None:
+            raise EnvironmentRefused("LEASE_REQUIRED")
+        return bind_workspace(
+            state,
+            load_json(args.lease),
+            workspace=required(args.workspace, "WORKSPACE"),
+            branch=required(args.branch, "BRANCH"),
+            base_revision=required(args.base_revision, "BASE_REVISION"),
+        )
+    if args.operation == "workspace-release":
+        if args.lease is None:
+            raise EnvironmentRefused("LEASE_REQUIRED")
+        return release_workspace(
+            state,
+            load_json(args.lease),
+            reason=required(args.reason, "REASON"),
+        )
+    if args.operation == "propose":
+        return propose_crossing(
+            state,
+            pattern,
+            trunk_instance=required(args.trunk, "TRUNK"),
+            source_instance=required(args.source, "SOURCE"),
+            target_instance=required(args.target, "TARGET"),
+            revision=required(args.revision, "REVISION"),
+            artifact_digest=required(args.artifact_digest, "ARTIFACT_DIGEST"),
+            config_digest=required(args.config_digest, "CONFIG_DIGEST"),
+            actor=required(args.actor, "ACTOR"),
+            integration_base=required(args.integration_base, "INTEGRATION_BASE"),
+            evidence=args.evidence,
+        )
+    if args.operation == "admit":
+        return admit_crossing(
+            state,
+            pattern,
+            required(args.crossing, "CROSSING"),
+            current_integration_base=required(args.integration_base, "INTEGRATION_BASE"),
+            witness=required(args.witness, "WITNESS"),
+            authority=args.authority,
+            accepted=True if args.accepted else None,
+        )
+    if args.operation == "land":
+        return land_crossing(
+            state,
+            required(args.crossing, "CROSSING"),
+            landing_revision=required(args.revision, "REVISION"),
+        )
+    raise EnvironmentRefused(f"MUTATION_OPERATION_UNKNOWN:{args.operation}")
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -40,6 +114,7 @@ def main(argv: list[str] | None = None) -> int:
             "env-add",
             "trunk-add",
             "workspace-bind",
+            "workspace-release",
             "propose",
             "admit",
             "land",
@@ -58,6 +133,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--workspace")
     parser.add_argument("--branch")
     parser.add_argument("--base-revision")
+    parser.add_argument("--reason")
     parser.add_argument("--trunk")
     parser.add_argument("--source")
     parser.add_argument("--target")
@@ -85,95 +161,36 @@ def main(argv: list[str] | None = None) -> int:
             raise EnvironmentRefused("STATE_REQUIRED")
         store = StateStore(args.state)
         if args.operation == "init":
-            state = new_state(pattern)
-            store.write(state)
-            result = state
+            result = new_state(pattern)
+            store.write(result)
+        elif args.operation in {
+            "env-add",
+            "trunk-add",
+            "workspace-bind",
+            "workspace-release",
+            "propose",
+            "admit",
+            "land",
+        }:
+            result = store.update(lambda state: _mutate(args, pattern, state))
         else:
             state = store.read()
-            if state.get("pattern_digest") != digest(pattern):
-                raise EnvironmentRefused("PATTERN_CHANGED_REINSTANTIATION_REQUIRED")
-            write = False
-            if args.operation == "env-add":
-                result = instantiate_environment(
-                    state,
-                    pattern,
-                    required(args.definition, "DEFINITION"),
-                    required(args.instance, "INSTANCE"),
-                )
-                write = True
-            elif args.operation == "trunk-add":
-                result = instantiate_trunk(
-                    state,
-                    pattern,
-                    required(args.definition, "DEFINITION"),
-                    required(args.instance, "INSTANCE"),
-                )
-                write = True
-            elif args.operation == "workspace-bind":
-                if args.lease is None:
-                    raise EnvironmentRefused("LEASE_REQUIRED")
-                result = bind_workspace(
-                    state,
-                    load_json(args.lease),
-                    workspace=required(args.workspace, "WORKSPACE"),
-                    branch=required(args.branch, "BRANCH"),
-                    base_revision=required(args.base_revision, "BASE_REVISION"),
-                )
-                write = True
-            elif args.operation == "propose":
-                result = propose_crossing(
-                    state,
-                    pattern,
-                    trunk_instance=required(args.trunk, "TRUNK"),
-                    source_instance=required(args.source, "SOURCE"),
-                    target_instance=required(args.target, "TARGET"),
-                    revision=required(args.revision, "REVISION"),
-                    artifact_digest=required(args.artifact_digest, "ARTIFACT_DIGEST"),
-                    config_digest=required(args.config_digest, "CONFIG_DIGEST"),
-                    actor=required(args.actor, "ACTOR"),
-                    integration_base=required(args.integration_base, "INTEGRATION_BASE"),
-                    evidence=args.evidence,
-                )
-                write = True
-            elif args.operation == "admit":
-                result = admit_crossing(
-                    state,
-                    pattern,
-                    required(args.crossing, "CROSSING"),
-                    current_integration_base=required(
-                        args.integration_base, "INTEGRATION_BASE"
-                    ),
-                    witness=required(args.witness, "WITNESS"),
-                    authority=args.authority,
-                    accepted=True if args.accepted else None,
-                )
-                write = True
-            elif args.operation == "land":
-                result = land_crossing(
-                    state,
-                    required(args.crossing, "CROSSING"),
-                    landing_revision=required(args.revision, "REVISION"),
-                )
-                write = True
-            elif args.operation == "waiting":
+            _pattern_matches(state, pattern)
+            if args.operation == "waiting":
                 result = [
-                    item
-                    for item in state["crossing_records"]
-                    if item["status"] == "PROPOSED"
+                    item for item in state["crossing_records"] if item["status"] == "PROPOSED"
                 ]
             elif args.operation == "resolve":
-                result = resolve_selector(
-                    state, pattern, required(args.selector, "SELECTOR")
-                )
+                result = resolve_selector(state, pattern, required(args.selector, "SELECTOR"))
             elif args.operation == "history":
                 result = {
                     "crossings": state["crossing_records"],
                     "deployments": state["deployments"],
+                    "receipts": state.get("receipts", []),
+                    "workspace_bindings": state["workspace_bindings"],
                 }
             else:
                 result = state
-            if write:
-                store.write(state)
         print(json.dumps(result, indent=2, sort_keys=True))
         return 0
     except (EnvironmentRefused, OSError, ValueError, json.JSONDecodeError) as error:

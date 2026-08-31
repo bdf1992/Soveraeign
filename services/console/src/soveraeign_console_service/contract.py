@@ -23,12 +23,12 @@ CHANNEL_FIELDS = ("node_id", "channel_id", "name", "domain", "opened_by", "opene
                   "standing")
 THREAD_FIELDS = ("node_id", "thread_id", "channel_id", "title", "opened_by", "opened_at",
                  "lifecycle", "pinned_address", "pinned_digest", "standing")
-SESSION_FIELDS = ("node_id", "session_id", "operator_id", "actor_kind", "binding_id",
-                  "opened_at", "closed_at", "lifecycle", "active_thread_id",
+SESSION_FIELDS = ("node_id", "session_id", "operator_id", "principal_id", "actor_kind",
+                  "binding_id", "opened_at", "closed_at", "lifecycle", "active_thread_id",
                   "unread_cursor", "standing")
-POST_FIELDS = ("node_id", "post_id", "thread_id", "actor_id", "actor_kind",
-               "content_address", "content_digest", "mentions", "proposal_id",
-               "posted_at", "receipt_id", "standing")
+POST_FIELDS = ("node_id", "post_id", "thread_id", "actor_id", "actor_kind", "session_id",
+               "binding_id", "principal_id", "content_address", "content_digest", "mentions",
+               "proposal_id", "posted_at", "receipt_id", "standing")
 PUBLICATION_FIELDS = ("node_id", "publication_id", "thread_id", "visibility", "lifecycle",
                       "published_by", "published_at", "withdrawn_at", "standing")
 

@@ -1,0 +1,21 @@
+{
+  "schema": "soveraeign-environment-pattern/v1",
+  "id": "fixture:pilot-delivery",
+  "environment_definitions": [
+    {"id": "LOCAL", "multiplicity": "MANY", "acceptance": "NONE", "required_authority": ["VERIFICATION"]},
+    {"id": "INTEGRATION", "multiplicity": "ONE", "acceptance": "NONE", "required_authority": ["VERIFICATION"]},
+    {"id": "UAT", "multiplicity": "MANY", "acceptance": "NONE", "required_authority": ["VERIFICATION"]},
+    {"id": "PILOT", "multiplicity": "MANY", "acceptance": "EXPLICIT", "required_authority": ["JUDGEMENT"]},
+    {"id": "LIVE", "multiplicity": "ONE", "acceptance": "EXPLICIT", "required_authority": ["JUDGEMENT"]}
+  ],
+  "trunk_definitions": [{
+    "id": "customer-pilot",
+    "crossings": [
+      {"from": "LOCAL", "to": "INTEGRATION", "serialization": "INTEGRATION", "evidence": ["tests"]},
+      {"from": "INTEGRATION", "to": "UAT", "serialization": "NONE", "evidence": ["integration"]},
+      {"from": "UAT", "to": "PILOT", "serialization": "NONE", "evidence": ["uat"]},
+      {"from": "PILOT", "to": "LIVE", "serialization": "INTEGRATION", "evidence": ["pilot", "acceptance"]}
+    ]
+  }],
+  "selectors": {}
+}

@@ -1,0 +1,28 @@
+{
+  "schema": "soveraeign-environment-pattern/v1",
+  "id": "fixture:software-delivery",
+  "environment_definitions": [
+    {"id": "FEAT", "multiplicity": "MANY", "acceptance": "NONE", "required_authority": ["VERIFICATION"]},
+    {"id": "DEV", "multiplicity": "ONE", "acceptance": "NONE", "required_authority": ["VERIFICATION"]},
+    {"id": "QA", "multiplicity": "ONE", "acceptance": "NONE", "required_authority": ["VERIFICATION"]},
+    {"id": "STAGING", "multiplicity": "ONE", "acceptance": "NONE", "required_authority": ["VERIFICATION"]},
+    {"id": "RC", "multiplicity": "ONE", "acceptance": "NONE", "required_authority": ["VERIFICATION"]},
+    {"id": "PRODUCTION", "multiplicity": "ONE", "acceptance": "EXPLICIT", "required_authority": ["JUDGEMENT"]},
+    {"id": "SANDBOX", "multiplicity": "MANY", "acceptance": "NONE", "required_authority": ["VERIFICATION"]}
+  ],
+  "trunk_definitions": [{
+    "id": "release",
+    "crossings": [
+      {"from": "FEAT", "to": "DEV", "serialization": "INTEGRATION", "evidence": ["tests"]},
+      {"from": "DEV", "to": "QA", "serialization": "NONE", "evidence": ["integration"]},
+      {"from": "DEV", "to": "STAGING", "serialization": "NONE", "evidence": ["integration"]},
+      {"from": "QA", "to": "RC", "serialization": "NONE", "evidence": ["qualification"]},
+      {"from": "STAGING", "to": "RC", "serialization": "NONE", "evidence": ["qualification"]},
+      {"from": "RC", "to": "PRODUCTION", "serialization": "INTEGRATION", "evidence": ["qualification", "acceptance"]}
+    ]
+  }],
+  "selectors": {
+    "LATEST": {"kind": "ACCEPTED_HISTORY", "environment": "PRODUCTION", "offset": 0},
+    "PRIOR": {"kind": "ACCEPTED_HISTORY", "environment": "PRODUCTION", "offset": 1}
+  }
+}

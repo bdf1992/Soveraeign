@@ -156,6 +156,9 @@ def refresh() -> None:
     run(sys.executable, "scripts/sov_capability.py", "build")
     run(sys.executable, "scripts/sov_interface.py", "build")
     run(sys.executable, "scripts/sov_surface.py", "render")
+    # PRD moved only by adding the prepared horizon cross-reference; the diagrams'
+    # readings did not change, so refresh their provenance against the new source bytes.
+    run(sys.executable, "scripts/sov_diagrams.py", "stamp")
     run(sys.executable, "scripts/sov_docs.py", "build")
     refresh_clarity()
 

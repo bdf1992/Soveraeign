@@ -1,0 +1,299 @@
+[
+  {
+    "id": "PD-POS-GOVERNED",
+    "polarity": "positive",
+    "ordinary_rule_satisfied": false,
+    "governing_conflict": false,
+    "governing_rule": {
+      "rule_ref": "docs/report-style#fresh-reader",
+      "rule_revision": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "rule_class": "GOVERNED",
+      "governing_intent_ref": "GROUND.md#useful-to-a-fresh-participant",
+      "governing_intent_revision": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+    },
+    "authority": {
+      "authorized": true,
+      "invariants_preserved": true
+    },
+    "action_receipt": {
+      "receipt_ref": "receipt:render-41",
+      "recorded_at": "2026-08-31T10:01:00Z",
+      "outcome": "COMMITTED"
+    },
+    "witness": {
+      "witness_ref": "observation:fresh-reader-41",
+      "evidence_kind": "OBSERVATION",
+      "independent": true
+    },
+    "overperformance": {
+      "present": true,
+      "separable": true
+    },
+    "policy_effect": "NONE",
+    "records": [
+      {
+        "deviation_schema": "soveraeign-principled-deviation/v1",
+        "record_kind": "INTENT",
+        "record_id": "record:deviation-intent-41",
+        "deviation_id": "deviation:41",
+        "recorded_at": "2026-08-31T10:00:00Z",
+        "participant_id": "principal:sov-worker",
+        "session_id": "session:41",
+        "subject": "asset:report-41",
+        "subject_revision": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+        "timing": "BEFORE_ACTION",
+        "rule_ref": "docs/report-style#fresh-reader",
+        "rule_revision": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "rule_class": "GOVERNED",
+        "governing_intent_ref": "GROUND.md#useful-to-a-fresh-participant",
+        "governing_intent_revision": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "literal_path": "Return the required table without navigation.",
+        "chosen_path": "Return the table plus a separable reader map.",
+        "reason": "A fresh participant could not locate the accepted result.",
+        "authority_basis": [
+          "grant:standing-record-local"
+        ],
+        "expected_benefit": "A fresh participant can use the result without owner direction.",
+        "known_risks": [
+          "The reader map could distract from the required table."
+        ],
+        "reversibility_or_compensation": "Remove the map; the required table remains intact.",
+        "watched_effects": [
+          "Fresh-reader navigation",
+          "Required table stability"
+        ]
+      },
+      {
+        "deviation_schema": "soveraeign-principled-deviation/v1",
+        "record_kind": "OUTCOME",
+        "record_id": "record:deviation-outcome-41",
+        "deviation_id": "deviation:41",
+        "recorded_at": "2026-08-31T10:03:00Z",
+        "participant_id": "principal:sov-worker",
+        "session_id": "session:41",
+        "subject": "asset:report-41",
+        "subject_revision": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+        "intent_record_ref": "record:deviation-intent-41",
+        "action_receipt_ref": "receipt:render-41",
+        "observed_effects": [
+          "The witness found the accepted result without instruction."
+        ],
+        "observed_outcome": "The map helped and the original table remained independently usable.",
+        "experience_evidence": [
+          {
+            "evidence_kind": "EXPERIENCE",
+            "attribution": "principal:fresh-reader",
+            "claim": "I understood where to start.",
+            "witness_eligible": false
+          }
+        ],
+        "witness_ref": "observation:fresh-reader-41",
+        "disposition": "ONE_OFF"
+      }
+    ],
+    "expected_admissibility": true
+  },
+  {
+    "id": "PD-POS-SPONTANEOUS-HEURISTIC",
+    "polarity": "positive",
+    "ordinary_rule_satisfied": false,
+    "governing_conflict": false,
+    "governing_rule": {
+      "rule_ref": "AGENTS.md#implementation-order",
+      "rule_revision": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "rule_class": "HEURISTIC",
+      "governing_intent_ref": "AGENTS.md#closure-ownership",
+      "governing_intent_revision": "sha256:6666666666666666666666666666666666666666666666666666666666666666"
+    },
+    "authority": {
+      "authorized": true,
+      "invariants_preserved": true
+    },
+    "action_receipt": {
+      "receipt_ref": "receipt:repair-52",
+      "recorded_at": "2026-08-31T11:00:00Z",
+      "outcome": "COMMITTED"
+    },
+    "witness": {
+      "witness_ref": "observation:repair-52",
+      "evidence_kind": "OBSERVATION",
+      "independent": true
+    },
+    "overperformance": {
+      "present": false,
+      "separable": true
+    },
+    "policy_effect": "CANDIDATE_ONLY",
+    "records": [
+      {
+        "deviation_schema": "soveraeign-principled-deviation/v1",
+        "record_kind": "INTENT",
+        "record_id": "record:deviation-intent-52",
+        "deviation_id": "deviation:52",
+        "recorded_at": "2026-08-31T11:01:00Z",
+        "participant_id": "principal:sov-worker",
+        "session_id": "session:52",
+        "subject": "asset:repair-52",
+        "subject_revision": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+        "timing": "AFTER_ACTION",
+        "action_receipt_ref": "receipt:repair-52",
+        "rule_ref": "AGENTS.md#implementation-order",
+        "rule_revision": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+        "rule_class": "HEURISTIC",
+        "governing_intent_ref": "AGENTS.md#closure-ownership",
+        "governing_intent_revision": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "literal_path": "Finish the planned edit before repairing adjacent wording.",
+        "chosen_path": "Repair the reversible wording defect when it became visible.",
+        "reason": "Leaving it would make the result technically correct but misleading.",
+        "authority_basis": [
+          "grant:standing-record-local"
+        ],
+        "expected_benefit": "The result communicates its actual boundary.",
+        "known_risks": [
+          "The adjacent repair may exceed the concern."
+        ],
+        "reversibility_or_compensation": "Revert the wording-only hunk.",
+        "watched_effects": [
+          "Scope containment",
+          "Reader interpretation"
+        ]
+      },
+      {
+        "deviation_schema": "soveraeign-principled-deviation/v1",
+        "record_kind": "OUTCOME",
+        "record_id": "record:deviation-outcome-52",
+        "deviation_id": "deviation:52",
+        "recorded_at": "2026-08-31T11:04:00Z",
+        "participant_id": "principal:sov-worker",
+        "session_id": "session:52",
+        "subject": "asset:repair-52",
+        "subject_revision": "sha256:8888888888888888888888888888888888888888888888888888888888888888",
+        "intent_record_ref": "record:deviation-intent-52",
+        "action_receipt_ref": "receipt:repair-52",
+        "observed_effects": [
+          "Independent reading matched the implemented boundary."
+        ],
+        "observed_outcome": "The repair was useful and stayed within the record-local grant.",
+        "witness_ref": "observation:repair-52",
+        "disposition": "RULE_CHANGE_CANDIDATE",
+        "policy_candidate_ref": "candidate:implementation-order-52"
+      }
+    ],
+    "expected_admissibility": true
+  },
+  {
+    "id": "PD-DEF-INVARIANT-RELABEL",
+    "polarity": "defeating",
+    "defeats": "PD-1 INVARIANT has no deviation route; classification belongs to its source.",
+    "template": "PD-POS-GOVERNED",
+    "overrides": {
+      "governing_rule.rule_class": "INVARIANT",
+      "records.0.rule_class": "HEURISTIC"
+    },
+    "expected_admissibility": false
+  },
+  {
+    "id": "PD-DEF-UNAUTHORIZED-SUCCESS",
+    "polarity": "defeating",
+    "defeats": "PD-2 A successful outcome does not retroactively authorize an action.",
+    "template": "PD-POS-GOVERNED",
+    "overrides": {
+      "authority.authorized": false
+    },
+    "expected_admissibility": false
+  },
+  {
+    "id": "PD-DEF-COLLAPSED-RECORD",
+    "polarity": "defeating",
+    "defeats": "PD-3 INTENT and OUTCOME are distinct append-only records.",
+    "template": "PD-POS-GOVERNED",
+    "overrides": {
+      "records": [
+        {
+          "deviation_schema": "soveraeign-principled-deviation/v1",
+          "record_kind": "INTENT",
+          "record_id": "record:combined-41",
+          "deviation_id": "deviation:41",
+          "recorded_at": "2026-08-31T10:00:00Z",
+          "participant_id": "principal:sov-worker",
+          "session_id": "session:41",
+          "subject": "asset:report-41",
+          "subject_revision": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+          "timing": "BEFORE_ACTION",
+          "rule_ref": "docs/report-style#fresh-reader",
+          "rule_revision": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "rule_class": "GOVERNED",
+          "governing_intent_ref": "GROUND.md#useful-to-a-fresh-participant",
+          "governing_intent_revision": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "literal_path": "Return the required table without navigation.",
+          "chosen_path": "Return the table plus a separable reader map.",
+          "reason": "A fresh participant could not locate the accepted result.",
+          "authority_basis": [
+            "grant:standing-record-local"
+          ],
+          "expected_benefit": "A fresh participant can use the result.",
+          "known_risks": [
+            "The reader map could distract."
+          ],
+          "reversibility_or_compensation": "Remove the map.",
+          "watched_effects": [
+            "Fresh-reader navigation"
+          ],
+          "observed_outcome": "It worked."
+        }
+      ]
+    },
+    "expected_admissibility": false
+  },
+  {
+    "id": "PD-DEF-EXPERIENCE-AS-WITNESS",
+    "polarity": "defeating",
+    "defeats": "PD-4 Experience is attributed evidence, not an independent witness.",
+    "template": "PD-POS-GOVERNED",
+    "overrides": {
+      "witness.evidence_kind": "EXPERIENCE",
+      "witness.independent": false
+    },
+    "expected_admissibility": false
+  },
+  {
+    "id": "PD-DEF-INSEPARABLE-EXTRA",
+    "polarity": "defeating",
+    "defeats": "PD-5 Extra value must be rejectable without losing requested value.",
+    "template": "PD-POS-GOVERNED",
+    "overrides": {
+      "overperformance.separable": false
+    },
+    "expected_admissibility": false
+  },
+  {
+    "id": "PD-DEF-AUTOMATIC-POLICY",
+    "polarity": "defeating",
+    "defeats": "PD-6 Observation creates policy pressure, never an automatic rule change.",
+    "template": "PD-POS-SPONTANEOUS-HEURISTIC",
+    "overrides": {
+      "policy_effect": "RULE_CHANGED"
+    },
+    "expected_admissibility": false
+  },
+  {
+    "id": "PD-DEF-GOVERNING-CONFLICT",
+    "polarity": "defeating",
+    "defeats": "PD-7 A material governing conflict escalates; deviation cannot resolve it.",
+    "template": "PD-POS-GOVERNED",
+    "overrides": {
+      "governing_conflict": true
+    },
+    "expected_admissibility": false
+  },
+  {
+    "id": "PD-DEF-FALSE-PREAUTHORIZATION",
+    "polarity": "defeating",
+    "defeats": "PD-8 A post-action intent must not masquerade as pre-authorization.",
+    "template": "PD-POS-SPONTANEOUS-HEURISTIC",
+    "overrides": {
+      "records.0.timing": "BEFORE_ACTION"
+    },
+    "expected_admissibility": false
+  }
+]

@@ -1,0 +1,25 @@
+{
+  "name": "weekly-super-compression",
+  "description": "Sunday-evening observe-only super-compression: use the same deterministic reader over seven days, then identify repeated shapes, duplicated producers/recomputation, lesson drain, skill candidates, and the smallest subtraction plan before the next week starts.",
+  "enabled": false,
+  "target": {
+    "kind": "workflow",
+    "name": "sov-compression",
+    "args": {
+      "mode": "weekly",
+      "focus": "make the next week inherit less ambiguity, duplicated observation, and representation pressure than the week just completed"
+    }
+  },
+  "cron": "0 18 * * 0",
+  "mode": "observe",
+  "effect_class": "RESOURCE_CONSUMPTION",
+  "isolation": "tree",
+  "preconditions": {
+    "clean_tree": false,
+    "lookback_minutes": 360
+  },
+  "limits": {
+    "max_budget_usd": 6,
+    "timeout_seconds": 4200
+  }
+}

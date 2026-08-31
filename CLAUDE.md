@@ -55,11 +55,9 @@ authority; silence from an offline checker is still not confirmation.
 
 ## What the system is
 
-Use the progressive entry path in `AGENTS.md`: session first, Node Interface discovery next,
-then the owning artifact for the operation or constraint in front of you. Load `GROUND.md` and
-`CANON.md` when product meaning is material and `SYSTEM.md` when the system boundary or operating
-model is material. `AGENTS.md`, `CONTRIBUTING.md`, and this file govern participants; they do not
-own product claims.
+Read `GROUND.md` and `CANON.md` for the product, then `SYSTEM.md` for the operating
+model. `AGENTS.md`, `CONTRIBUTING.md`, and this file govern participants; they do
+not own product claims.
 
 Operational state preserves addressed inputs, events, standing changes,
 observations, receipts, and counter-records. SQLite is the current storage
@@ -91,7 +89,7 @@ whenever they disagree.
 - Conformance oracle (`conformance/`): executable, 20 controlled cases, every
   defeating fixture fails as declared. Participant binding still open.
 - Harness (`.claude/`): 5 agent definitions (four roles and the Sov binding),
-  27 skills, 22 workflows, the epic-tree walk, and scheduled-run gates with a
+  28 skills, 23 workflows, the epic-tree walk, and scheduled-run gates with a
   kernel-envelope ledger.
   Every shipped schedule is disabled. Executable harness workflows are
   admissible before their defeating fixtures exist, for host plumbing only
@@ -184,7 +182,7 @@ engineering baseline. Day two added the SDLC loop, Console, scheduled runs,
 Sov, the federation harness, defeating fixtures for receipts and proofing,
 LF line-ending enforcement, and the stack certification. At the end of day two
 the record held 26 commits, 17 decision records and 8 reports; it now holds
-795 commits, 87 decision records and 29 reports. The
+794 commits, 87 decision records and 29 reports. The
 first independently witnessed work landed on 2026-08-25; owner-accepted packets
 now exist and are enumerated under `STATUS.yaml` `owner_accepted`.
 
@@ -220,15 +218,10 @@ it as current (`LESSONS.md` L-0001). Correct the page rather than the tolerance.
 | Need | Open |
 | --- | --- |
 | Which tier settles a decision | `decisions/0033-close-the-founding-docket.md`, Ruling 1 |
-| What genuinely waits on Bdo | `STATUS.yaml`, `owner_holds` |
-| What product this is, and what it undertakes | `GROUND.md`, then `CANON.md` |
-| Whether a rule is about the product or about working here | `AGENTS.md`, Design System of Record |
-| A term or enum | `CLASSIFICATION.md`, then `SPEC.md` |
-| Whether a surface is AI-native | `AI-NATIVE.md` |
-| Harness layout and invocation | `.claude/README.md` |
-| Domain work | the `sov-<domain>` skill, then its `CHARTER.md` / `KNOWN-GAPS.md` |
-| Whether something is policy | `decisions/`; a file under `reports/` is not |
-
-The full governing set is required before a consequential change (`AGENTS.md`).
-For a question or inspection, open only the owning document above and say what
-was left unread.
+| Whether something is built/witnessed | `STATUS.yaml`, `services/README.md` |
+| Product requirement | `PRD.md`, `contracts/requirements.json` |
+| Product semantics / architecture | `SPEC.md`, `SYSTEM.md`, `CLASSIFICATION.md` |
+| Operation / capability shape | `contracts/capability-map.schema.json`, `contracts/fixtures/capability-map.reference.json` |
+| Whether an operation is reachable | `contracts/fixtures/node-interface.reference.json`, `docs/surface.html` |
+| How to work a concern | `AGENTS.md`, `CONTRIBUTING.md`, `SDLC.md` |
+| How to use a skill | `.claude/skills/` and the skill named by the concern |

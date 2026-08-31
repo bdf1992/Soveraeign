@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""CLI for the local Environment / Trunk / Deployment reference vertical."""
+"""CLI for the local Environment / Trunk / Deployment reference vertical.
+
+Proposal, workspace, history, and selector operations are executable. Promotion
+admission deliberately fails closed until the root admits the minimal Environment
+authority aperture tracked by #12/#190; a caller-supplied authority label is not a
+grant and cannot cross that boundary.
+"""
 
 from __future__ import annotations
 

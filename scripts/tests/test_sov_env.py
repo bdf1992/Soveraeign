@@ -10,7 +10,6 @@ sys.path.insert(0, str(SCRIPTS))
 
 from sovenv.model import (
     EnvironmentRefused,
-    admit_crossing,
     instantiate_environment,
     instantiate_trunk,
     land_crossing,
@@ -20,6 +19,7 @@ from sovenv.model import (
     resolve_selector,
     validate_pattern,
 )
+from sovenv.transitions import admit_crossing
 
 FIXTURES = ROOT / "conformance" / "fixtures" / "environment"
 
@@ -61,6 +61,8 @@ class PatternTests(unittest.TestCase):
 
 
 class CrossingTests(unittest.TestCase):
+    """Pure state-machine semantics; governed callers use sovenv.authority."""
+
     def proposal(self) -> tuple[dict[str, object], dict[str, object], dict[str, object]]:
         pattern, state = software()
         record = propose_crossing(

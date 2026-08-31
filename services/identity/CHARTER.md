@@ -59,7 +59,7 @@ compared as still live. `test_a_microsecond_past_expiry_is_refused` pins it.
 | Refusal | Reason code | Why |
 | --- | --- | --- |
 | Minting for a principal with no declared channel | `CHANNEL_UNDECLARED` | ID-13: verification travels only over a channel the record declares |
-| Minting to an external channel | `CHANNEL_REFUSED` | `no_external_effects_in_phase_i` (O7). Admitting external delivery later changes one tuple and nothing else |
+| Minting to an external channel | `CHANNEL_REFUSED` | this component has no admitted external-delivery binding |
 | Minting for a revoked principal | `PRINCIPAL_REVOKED` | ID-4 |
 | Presenting a token that was never minted | `TOKEN_UNKNOWN` | — |
 | Presenting a token twice | `CHALLENGE_SPENT` | ID-12: one-time |
@@ -74,7 +74,7 @@ adopts them is O10's.
 
 - **It grants nothing.** A `VERIFIED` claim is identity, not authority; every
   consequential transition still checks a live typed grant (ID-8, C3).
-- **It performs no delivery.** Phase I channels are node-local, so `deliver`
+- **It performs no delivery.** This component has no admitted external-delivery binding, so `deliver`
   records that a crossing was owed and to which channel; handing the token
   over is the caller's act.
 - **It stores nothing durably.** The in-memory map is a projection of the
@@ -107,8 +107,7 @@ The root has no controller, so root recovery cannot be a support path. This
 component implements the mechanism and **no answer**: whether recovery secrets
 are how the root recovers, and where the paper physically lives, is ID-11 and
 belongs to Bdo. Examining it split the question three ways — credential lost
-with the node intact (answered here), node destroyed (not identity at all; see
-`OPEN-SEAMS.md` S11), and the occupant unavailable (succession, pure judgement).
+with the node intact (answered here), node destroyed (a custody/recovery problem outside this component), and the occupant unavailable (succession, pure judgement).
 
 What this component does owe regardless of the ruling is the report:
 `Recovery.unenrolled` names every principal with no live recovery, root first,
@@ -119,5 +118,4 @@ so continuously rather than discover it at the worst possible moment.
 ## Standing
 
 `BUILT` for both components: thirty-two positive and defeating cases run under
-`python scripts/verify.py`. Not witnessed — a build cannot witness itself. The
-placement, the reason codes, ID-11, and seam S11 remain queued for Bdo.
+`python scripts/verify.py`. Not witnessed — a build cannot witness itself. The placement and ID-11 remain owner-held. The reason codes remain component-level and do not widen the kernel refusal vocabulary.

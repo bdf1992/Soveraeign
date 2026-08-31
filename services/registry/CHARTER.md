@@ -27,7 +27,7 @@ Registry's first projection, built before the Registry had a name.
 
 Eighteen open issues in `.claude/epic/tree.json` declare `requires: #14`, more than any
 other bit in the tree — Gateway, Relay, Workflow, Automation, the Capability Broker,
-Workers, Adapters, Proofing and Phase-I Qualification among them. This is the boundary
+Workers, Adapters, Proofing and qualification work among them. This is the boundary
 most other work is waiting behind.
 
 ## What it is not
@@ -94,23 +94,9 @@ Two constraints are load-bearing and checked today:
 Neither constraint grants anything. An owner record names the authority an owner would
 need; it never holds it.
 
-## Proving narrative
+## Evidence boundary
 
-From a clean local checkout:
-
-1. rebuild the operation index from the declared sources and record its input state digest;
-2. resolve `sov://asset/ingest-asset` and get back the operation, its owning service, its
-   manifest address, its office, and its required authority;
-3. later, resolve the term `Observation` and get back `CLASSIFICATION.md` as its owning document,
-   not a restatement of the definition;
-4. later, resolve the domain `record` and get back its owner, mandate, budget, deadline, and
-   witness;
-5. change one service manifest without rebuilding, then observe the index refuse to answer
-   as fresh and emit a drift finding naming the source that moved;
-6. rebuild and observe the same lookup answer correctly;
-7. later, attempt to register an entry whose owning document address does not resolve, and observe
-   the refusal;
-8. later, attempt to declare an owner whose witness is itself, and observe the refusal.
+Only the `resolve` slice above is built and self-tested. Registering entries, resolving vocabulary or owner records, declaration mutations, and remote resolution remain unimplemented. Those boundaries grant no additional standing.
 
 ## Defeating cases
 
@@ -127,5 +113,4 @@ From a clean local checkout:
 ## Deferred
 
 Cross-node resolution, remote registries, a query language, a UI projection, and any
-transport beyond in-process and CLI are outside the first proof. Their interfaces may be
-declared; their effects stay refused until separately admitted.
+transport beyond in-process and CLI are not implemented in current standing. Any declared interfaces remain inactive and their effects stay refused until separately admitted.

@@ -33,6 +33,8 @@ KIND_RULES: tuple[tuple[str, str, str], ...] = (
     (r"reports/\d{4}-\d{2}-\d{2}-[a-z0-9-]+\.md$", "report", "What one run or pass observed. Never policy."),
     (r"(^|/)PROD-[A-Z0-9-]+-BUILD\.md$", "report", "What one run or pass observed. Never policy."),
     (r"^contracts/SUCCESSOR-PREP\.md$", "governing", "Part of the design System of Record."),
+    (r"^contracts/phase-1-5-phase-ii-horizon\.md$", "phase-horizon",
+     "A prepared human-readable relationship between campaigns. Never phase standing."),
     (r"(^|/)CHARTER\.md$", "charter", "What a service boundary owns and refuses."),
     (r"(^|/)SRD\.md$", "srd",
      "What a service's own caller needs from it, at the fidelity PRD.md gives the Node."),

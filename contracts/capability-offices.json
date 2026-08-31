@@ -66,7 +66,8 @@
     "console.list-publications": "python -m soveraeign_console_service.cli list-publications",
     "console.publish-thread": "python -m soveraeign_console_service.cli publish-thread",
     "console.withdraw-publication": "python -m soveraeign_console_service.cli withdraw-publication",
-    "record.adopt-profile": "python -m soveraeign_record_service.cli adopt-profile"
+    "record.adopt-profile": "python -m soveraeign_record_service.cli adopt-profile",
+    "record.project-evidence": "python -m soveraeign_record_service.cli project-evidence"
   },
   "mcp_tools": {
     "asset.ingest-asset": "asset_ingest",
@@ -1382,6 +1383,17 @@
       "actor_kinds": [
         "SYSTEM"
       ]
+    },
+    "record.project-evidence": {
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "required_authority": "read:journal",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "note": "A RecordProjection is an authorized reading of common history for a named subject and recipient relation. The operation widens no authority: it derives addresses, digests, cutoff and omissions from the journal and returns authority_effect NONE."
     }
   },
   "cli_note": "A capability appears here only when a command actually implements it. The asset CLI also carries `search`, `receipts`, `types`, `collections`, and `grant`, which read the compatibility projections or bootstrap authority and are not declared operations (OPEN-SEAMS S14)."

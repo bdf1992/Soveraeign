@@ -171,7 +171,7 @@
       "changed": true
     },
     "CLAUDE.md": {
-      "artifact_digest": "sha256:e10e087b91ff9a15a12bddac140c307626ea6e9bdfe4e226b65359d56297da23",
+      "artifact_digest": "sha256:3402ce8dc4fc8b06ffee8e4a7703bc5838d3d8c6188eaf06ec5a8ad2e23366c0",
       "basis": [
         {
           "digest": "sha256:a40215204befb25c48365b6ceb6e11ba3bfc4ac999c01615e4b57b19d96bdd81",
@@ -240,7 +240,7 @@
       "changed": true
     },
     "PRD.md": {
-      "artifact_digest": "sha256:bf23c0cc0a11d4466f87f1894b273bcb4897059eb9ba3722dce019d95e6187a6",
+      "artifact_digest": "sha256:90545536ce63d46dffbc6bffc581db042baabe67dd8ecb21a3d659b797ae18e1",
       "basis": [
         {
           "digest": "sha256:20a43ff96c3f99f98fe90b612a49c4f60f9318bfebb4be61e3882a9dfbe27bb4",
@@ -283,7 +283,7 @@
       "artifact_digest": "sha256:4918be81fd7343b8173135489b780dfc4ff01be5db7467519f256759688d86d8",
       "basis": [
         {
-          "digest": "sha256:bf23c0cc0a11d4466f87f1894b273bcb4897059eb9ba3722dce019d95e6187a6",
+          "digest": "sha256:90545536ce63d46dffbc6bffc581db042baabe67dd8ecb21a3d659b797ae18e1",
           "path": "PRD.md"
         },
         {

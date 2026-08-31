@@ -414,6 +414,8 @@ another fresh participant, and synthesize a cited candidate next Definition
 that remains unprivileged. Root operational acceptance remains a separate act
 after these technical criteria are evidenced.
 
+Human-readable pre-opening rationale and boundary: `contracts/phase-1-5-phase-ii-horizon.md`. That record is prepared context, not phase standing.
+
 This profile exists **for Phase II**. Phase 1.5 commissions the ability to
 self-organize and learn under governed evidence; Phase II decides what citizens
 actually accomplish with it. A future Phase III requirement may therefore be a

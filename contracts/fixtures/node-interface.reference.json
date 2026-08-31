@@ -12,7 +12,7 @@
   },
   "kernel": {
     "closure_schema": "soveraeign-kernel-closure/v1",
-    "closure_input_state_digest": "90e9ad9116221d59cf1ff07fcb36a91dc2cdd01c04fd9dfc52899dd00f87f4b6",
+    "closure_input_state_digest": "a00264c6fe68e34396cc2b9c1d084677783048d479d950971c1dd550298251c2",
     "paradigms": [
       "attestation",
       "observation",
@@ -101,7 +101,7 @@
     },
     {
       "address": "contracts/capability-offices.json",
-      "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+      "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
     },
     {
       "address": "contracts/event-envelope.schema.json",
@@ -109,7 +109,7 @@
     },
     {
       "address": "contracts/fixtures/capability-map.reference.json",
-      "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+      "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
     },
     {
       "address": "contracts/fixtures/node-registry.reference.json",
@@ -265,7 +265,7 @@
     },
     {
       "address": "services/record/contracts/service.json",
-      "digest": "942fac36e334667be6e82788f35cb329cfaf213499fd2f0d8b670282e40b3aeb"
+      "digest": "44666591ea44691f3c0c8c0474a211b3d65e46753fb1a0ef243c6586a916606b"
     },
     {
       "address": "services/record/src/soveraeign_record_service/core.py",
@@ -288,11 +288,11 @@
       "digest": "150834886995a8e0c32334beb5ef53dbc69cbb244172b510a06b056e608bf4b0"
     }
   ],
-  "input_state_digest": "957b84c2aad558d35571e9d8c0127960130dacba498404965a26ab666e51cf90",
+  "input_state_digest": "2dc14a1d286811a0051164a23d1a39300973902198da17bce79b8afdd4187027",
   "counts": {
-    "declared": 134,
-    "bound": 134,
-    "policy_active": 46,
+    "declared": 135,
+    "bound": 135,
+    "policy_active": 47,
     "reachable": 5,
     "observed": 0
   },
@@ -333,6 +333,7 @@
       "record.counter-entry",
       "record.drop-projections",
       "record.export-journal",
+      "record.project-evidence",
       "record.read-entry",
       "record.read-projection",
       "record.rebuild-projections",
@@ -376,6 +377,7 @@
       "record.counter-entry",
       "record.drop-projections",
       "record.export-journal",
+      "record.project-evidence",
       "record.read-entry",
       "record.read-projection",
       "record.rebuild-projections",
@@ -474,6 +476,7 @@
       "record.append-receipt",
       "record.drop-projections",
       "record.export-journal",
+      "record.project-evidence",
       "record.read-entry",
       "record.read-projection",
       "record.rebuild-projections",
@@ -594,7 +597,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -602,7 +605,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -650,7 +653,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "84ee11df8db9356d226bb848e4296ce50472d642f68ee9f1a77588c0b9607066"
+      "record_digest": "75bdf7d59f973647341bb650cbde9a692285141e0af75bbd9e32659a8ff7e098"
     },
     {
       "operation_id": "asset.declare-collection",
@@ -731,7 +734,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -739,7 +742,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -787,7 +790,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "0dfd747761690c88b0c99eea26ca9973421e979c7bca6785f62528f5c5666733"
+      "record_digest": "8015513985cd5eef199e52863a0f094ebab0650ff3d952fbdf244fcf08d0d31b"
     },
     {
       "operation_id": "asset.declare-collection-type",
@@ -870,7 +873,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -878,7 +881,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -926,7 +929,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "279a2c18323c973534bf8fb2fd283658da16222f1f1374f746d63c271e65d55c"
+      "record_digest": "a196a3e8920829b287127f196f43438ebd01866755c00c61c11fb635bd1e382b"
     },
     {
       "operation_id": "asset.ingest-asset",
@@ -1035,7 +1038,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -1043,7 +1046,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -1127,7 +1130,7 @@
         "reason_code": "EXACT_ROUTE_ACTIVE",
         "explanation": "An exact policy-active service route exists for this operation."
       },
-      "record_digest": "0ec9dbf8823577183cef218f30577233a22fa61692e2badc266e2d4243b7a622"
+      "record_digest": "057c25eb1f4cc6113ace041345b20f2de25b9743e2215ec3ca737d522563a3e9"
     },
     {
       "operation_id": "asset.propose-description",
@@ -1207,7 +1210,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -1215,7 +1218,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -1263,7 +1266,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "ef62b40f1f03a55a27150fb3341704f09bad6650874ebf61c22da128db157401"
+      "record_digest": "a6245c6b353adedacc657e21857cd351d3c1efdc0ae7643d033cb81cbdd481e4"
     },
     {
       "operation_id": "asset.ratify-proposal",
@@ -1343,7 +1346,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -1351,7 +1354,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -1399,7 +1402,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "01a14d48f228fbf97c355de93d42b0351dd6c7bf8a8fc53a3b8ffe0baea5ecc2"
+      "record_digest": "1d91e72ce8df353f9792cc655cfffc2ae3ddd35d63f6ecf5560af6edb8a4c5c3"
     },
     {
       "operation_id": "asset.read-asset",
@@ -1476,7 +1479,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -1484,7 +1487,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -1532,7 +1535,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "3ba8160728f213a60a33846e587599c31b0c0c233ab2bbda4cd77cfae29366df"
+      "record_digest": "122d7993c1fc8e671b275f3c5c268884825822ba8f2eb4f1e616f2bcaf700998"
     },
     {
       "operation_id": "asset.read-collection",
@@ -1610,7 +1613,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -1618,7 +1621,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -1666,7 +1669,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "7ea5de31ae0e1d640b97567c83691194093d2d6493723b7dee1b01dfa0378386"
+      "record_digest": "1b6940268b33b8d2a307e2de371c1d002a9d3aae3e1ee3945113fa1265aa2bf6"
     },
     {
       "operation_id": "asset.read-library-conformance",
@@ -1744,7 +1747,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -1752,7 +1755,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -1800,7 +1803,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "f897de02534fb17db30c314efa5545803e0f3c12b5051802aec32cd29920b1e4"
+      "record_digest": "323b7c22bf24d63f13809d05623931d449ecb1200a3ff009516c27ee2a0fd78d"
     },
     {
       "operation_id": "asset.read-shared-custody",
@@ -1877,7 +1880,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -1885,7 +1888,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -1933,7 +1936,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "b26443364b8727951f1fc3987f68b14cd8a60a15d458b5ce37fefd9732fadef2"
+      "record_digest": "cb0c31d7e6d3cb616748d491327947153353723af6e785312e7aac3dba5a3575"
     },
     {
       "operation_id": "asset.read-use-record",
@@ -2010,7 +2013,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -2018,7 +2021,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -2066,7 +2069,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "9640ff4c5242ab05b2387fd03e43a7342a48f34b8cccc849fe159ac0ca6cb008"
+      "record_digest": "05e5fcc3aeec94044ffbd1e63be8298bdaac5dcc711425cef5a420ca4869fbe9"
     },
     {
       "operation_id": "asset.read-version",
@@ -2169,7 +2172,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -2177,7 +2180,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -2261,7 +2264,7 @@
         "reason_code": "EXACT_READ_ROUTE_ACTIVE",
         "explanation": "An exact policy-active service route exists for this read."
       },
-      "record_digest": "2c00b66e328117f78fc85825cbd0b613c89e1e5b464bfb18c4aa850c66a9c784"
+      "record_digest": "7c0e48eb4f4ce10403624d7dbce04a55e7a53faa230b761e23b7dd15dc1ebdb0"
     },
     {
       "operation_id": "asset.read-version-history",
@@ -2338,7 +2341,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -2346,7 +2349,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -2394,7 +2397,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "ab58f2b54382f446f4787a714a0f7cc89597820b7c63f596be0bdd3595784771"
+      "record_digest": "9bfc62ec876b2923cad80b35fabd6f342dc2e85c491abb69fef90f32d28a20f7"
     },
     {
       "operation_id": "asset.rebuild-projection",
@@ -2471,7 +2474,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -2479,7 +2482,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -2527,7 +2530,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "609886d73b402e094245392b6ad8e85f589713bb518c850aed702797641857ba"
+      "record_digest": "8be5c1eaec8b6f5685ffb456f0be27fce98546262ccb01c7581f16e29c1cb687"
     },
     {
       "operation_id": "asset.remove-member",
@@ -2608,7 +2611,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -2616,7 +2619,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -2664,7 +2667,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "cadaac80f4a1161b35271b6bd1acb070f60de285ccfb0444c1a3ebd76592d035"
+      "record_digest": "18ebaf2a2e3fa462655ab54e27d6f7a8fb2a2e32eba22685fe82b7514272b47f"
     },
     {
       "operation_id": "asset.request-derivative",
@@ -2744,7 +2747,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -2752,7 +2755,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -2800,7 +2803,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "2b5f263938c909bef45266fc25aaa7a6b91d8729eaa350eaa2bca563c5774e56"
+      "record_digest": "39b34e477d3568615ef4b39b4205af9f5b6f88a24f2340b84667e0ede9257f02"
     },
     {
       "operation_id": "asset.retract-record",
@@ -2880,7 +2883,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -2888,7 +2891,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -2936,7 +2939,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "690cfe664a1e9c4d952455727b9ea439e6a7566a934ef2afe4784b58add9bb30"
+      "record_digest": "527680c8054fedd9bde6cd36efdbb4c58bbe472bd39537baacc45967cb61d9d8"
     },
     {
       "operation_id": "console.acknowledge-notification",
@@ -3018,7 +3021,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -3026,7 +3029,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -3074,7 +3077,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "598e9fd8f01c4ff84d43bb7f26b09de9d967fb6ad6a883d631cc3dc82a006c59"
+      "record_digest": "37f21a0261438e57a6742331106884f71034ed8dc46a08317116eb4a9e6c19f0"
     },
     {
       "operation_id": "console.archive-thread",
@@ -3161,7 +3164,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -3169,7 +3172,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -3217,7 +3220,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "e7dfb600fd48a17e1933d9927ec1240f7071e317e9a8a7b4b1d1e17bd782536c"
+      "record_digest": "298ce6c606fe5e7aeea368a5cc3320c3149887aa96377e2726c62e56c4cddf85"
     },
     {
       "operation_id": "console.close-session",
@@ -3304,7 +3307,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -3312,7 +3315,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -3360,7 +3363,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "77d90a545312d9fc724381b10761ed1c52a8a349afbf6c975e849e00a9f4eab7"
+      "record_digest": "58c2f8a34cad5aad777e0cf3ab7faadd0b4b39b2cdcc4b020f6962ad8454decd"
     },
     {
       "operation_id": "console.discover-operations",
@@ -3449,7 +3452,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -3457,7 +3460,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -3505,7 +3508,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "ad03a4ff25a763eb17ad826d27eb93f5dcb0c6f89244dc58043e00180ab214c9"
+      "record_digest": "d2f9c5e83edfbcd3185797be58591a628e5cda937d657ce35858756da2ac8c61"
     },
     {
       "operation_id": "console.grant",
@@ -3590,7 +3593,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -3598,7 +3601,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -3646,7 +3649,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "e12e6da8e194b4d26b2e06395aee1d53d0a9aaeb0e35659a43f69ab41f7acb4d"
+      "record_digest": "f75ffe43dde5cd9fbad063e1f3ee90c831a3a5f49c7bf8e3e53a2e562a5b7b60"
     },
     {
       "operation_id": "console.list-channels",
@@ -3726,7 +3729,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -3734,7 +3737,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -3782,7 +3785,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "387cfdeee32a133fe5d73f0135ab18c8f2c248042e6fa883b30a62d4be1443c1"
+      "record_digest": "a5f75c8f1d174977beb0b4c0274be94014b9010f3b5fd9ec35cc3811d6beecee"
     },
     {
       "operation_id": "console.list-grants",
@@ -3865,7 +3868,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -3873,7 +3876,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -3921,7 +3924,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "6b5acbe992d5f57bd977987106ce237bc40dc2f6cf695bb6614cbec27dc1d1ef"
+      "record_digest": "64e091e3c4a48687dbbaf825ac88c4288e5b1e814206e4dfc1395d01029d39af"
     },
     {
       "operation_id": "console.list-notifications",
@@ -4001,7 +4004,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -4009,7 +4012,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -4057,7 +4060,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "51f03d3824e2467a7f842679abb5f16938d0cd6b6f26bbc0a0cf44f756414ec2"
+      "record_digest": "ca1847bcf9f9f1e4da9ee370ed2e7d3c1b4f6599ec8222ebcb3d9c3d8295e80f"
     },
     {
       "operation_id": "console.list-pending-judgement-requests",
@@ -4137,7 +4140,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -4145,7 +4148,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -4193,7 +4196,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "b556527e2bdb0507f4ddee9552080f1ddf6fd0e0b2963a17643a8696c3a653a7"
+      "record_digest": "defb9091d29705d54587d973089ed3d60842099b6d067cd29559a7db0f69dc74"
     },
     {
       "operation_id": "console.list-publications",
@@ -4277,7 +4280,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -4285,7 +4288,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -4333,7 +4336,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "ad46071b009d71e51b749b12f129645d396b30b509dd892092658eaeeb307e3c"
+      "record_digest": "a2a96e0553debf8b1d28ba7bba44e5dd9f2afaf97e1dd78ea573fc7bbc753ab2"
     },
     {
       "operation_id": "console.notify",
@@ -4413,7 +4416,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -4421,7 +4424,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -4469,7 +4472,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "33841f881041020fa09827c6eb01a9260cf396a477295169260d9f414a6684f6"
+      "record_digest": "855165323f2f9f21b9eafacd020af77ab240dcf8799453111b6dc726362b4133"
     },
     {
       "operation_id": "console.open-channel",
@@ -4554,7 +4557,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -4562,7 +4565,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -4610,7 +4613,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "1567472e5899821e4f6e335dc21caf3dc26d1af069842d13ffbe446f91a91e76"
+      "record_digest": "5eb98c8999dd2511228dc3f5e33bdf186acd3a36584a47ecb64eff647e6fc431"
     },
     {
       "operation_id": "console.open-session",
@@ -4695,7 +4698,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -4703,7 +4706,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -4751,7 +4754,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "826706ca7107df724b73abf7821b1aee788103af753c1817d5b41a516ccd35b0"
+      "record_digest": "dce748368142b57b3a14c36f7bef3e2cefc086419045fb810aa53854955fea03"
     },
     {
       "operation_id": "console.open-thread",
@@ -4841,7 +4844,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -4849,7 +4852,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -4897,7 +4900,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "ef5f111648a975231155ff9802c9fcdfcd66fbd614fba7e5edbfe35503167b8a"
+      "record_digest": "fd4d697a6faadee330d9b6d2be9131c6aebf955cbab3e2676853a1b8fb67ce03"
     },
     {
       "operation_id": "console.post",
@@ -4991,7 +4994,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -4999,7 +5002,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -5047,7 +5050,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "98ed90b96283449d155d6e34b4063b4658834eb339c8ee6c4c852090390845ec"
+      "record_digest": "6db999c3b5098b17c3613ed615a5fc0f5814df6853864199050b1c89e2fb6884"
     },
     {
       "operation_id": "console.publish-thread",
@@ -5133,7 +5136,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -5141,7 +5144,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -5189,7 +5192,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "9aa02593a9fe4b92fa44bbb39efd391e7ab286c0ce5ef31e1d7944f4cb6dbe49"
+      "record_digest": "e0c437a9f9e9ec0bbb8f4b84a60a805562f1150e652f08096a2ea0884b350761"
     },
     {
       "operation_id": "console.read-thread",
@@ -5302,7 +5305,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -5310,7 +5313,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -5394,7 +5397,7 @@
         "reason_code": "EXACT_READ_ROUTE_ACTIVE",
         "explanation": "An exact policy-active service route exists for this read."
       },
-      "record_digest": "64e18e3c6815ccaf4348b351eb511a62772e688d2a80ca1ab6d68949fbf0a75a"
+      "record_digest": "5b118429ca18b85e5b4270c73ecff45e0a4656eedd07e481a28993e254a8a339"
     },
     {
       "operation_id": "console.rebuild-projection",
@@ -5473,7 +5476,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -5481,7 +5484,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -5529,7 +5532,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "a76a29e5100c0157f54627f783df43bf5850510038f1ee783994269e46dca4d9"
+      "record_digest": "46bbdebccd720599922c2cc4dd99c8e77858b70551757b4a7b5454346dc5c9bb"
     },
     {
       "operation_id": "console.request-judgement",
@@ -5612,7 +5615,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -5620,7 +5623,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -5668,7 +5671,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "8fec47b1b87c03058a9b06f685f33dbb9ef993efbb48ac7b3ac88e4f5b2cdd2d"
+      "record_digest": "a6c1d32f1353c399474217b97bcd43f109fd510cf9941f89ebaecb77d25fc063"
     },
     {
       "operation_id": "console.resolve-judgement",
@@ -5754,7 +5757,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -5762,7 +5765,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -5810,7 +5813,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "4f8ddc3df449d3ab2ff2d64893a9e24db879b1fdcd7eafd02adaca822ee88076"
+      "record_digest": "fc406bda5e09ad9b564008b9aea8809f2fb1678fda6628aba2e8bc40ea325b70"
     },
     {
       "operation_id": "console.revoke",
@@ -5899,7 +5902,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -5907,7 +5910,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -5955,7 +5958,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "a961c7d4a5a0a3c34f753400009ec1b6e718e379f7f5003337662d10087846e3"
+      "record_digest": "54a467f5933d3b667efe476256370173dd68a9b6cba1f7079a07e2455c603a41"
     },
     {
       "operation_id": "console.session-context",
@@ -6039,7 +6042,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -6047,7 +6050,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -6095,7 +6098,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "1091ea6ffa45f40240e0ae8047078eb9eaa4f0521f7392beda87a217193a5097"
+      "record_digest": "ce0f139318fecd18e6fab2cf0f0440fcc16f6964b65423f9a5d9c7e3276a998f"
     },
     {
       "operation_id": "console.set-setting",
@@ -6178,7 +6181,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -6186,7 +6189,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -6234,7 +6237,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "6f749ecc1fcdf35d5600d936b6984c9ad2b130baf916238f844c4ab9a68de63d"
+      "record_digest": "faae46dc28e603163574e44f6736fe3f90dafb01892d5dfc6a3786aab5797379"
     },
     {
       "operation_id": "console.show-judgement-request",
@@ -6315,7 +6318,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -6323,7 +6326,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -6371,7 +6374,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "a1e91e6b2dbcf9826af37f14907d1940505618cccab77fa37231fa3a8df5a654"
+      "record_digest": "45fb6ca209ea83de869ce989701939a57d884ba6bafb9c83ce330ecff47f03c1"
     },
     {
       "operation_id": "console.show-receipt",
@@ -6452,7 +6455,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -6460,7 +6463,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -6508,7 +6511,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "602dcefda2cc8ea3661b0a466edf16cfd8fb15b2bf4691e703dfdeb18af05b37"
+      "record_digest": "103976850474905b9e1b716bbddd0029bb357d53b52d6f77c6e58c8b281097ea"
     },
     {
       "operation_id": "console.withdraw-publication",
@@ -6594,7 +6597,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -6602,7 +6605,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -6650,7 +6653,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "751988ebfaffd8ee35cede23c662404af548b9ea819e8c05ac05c9d2f21fd514"
+      "record_digest": "b17d03f230aa7b08dc12d0656ceec260602b461d16fe3e315fb4f7381eb309ed"
     },
     {
       "operation_id": "gateway.accept-request",
@@ -6735,7 +6738,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -6743,7 +6746,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -6783,7 +6786,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "d220f862135a46ff37e01bebf34f2fbdb2644587f71ab610462ddb4dcc47d5b8"
+      "record_digest": "6a0f8347ae926aa9acc1fa1f60bcc4054acf68ea3daa394cb12a4348bf82b517"
     },
     {
       "operation_id": "gateway.bind-transport",
@@ -6860,7 +6863,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -6868,7 +6871,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -6908,7 +6911,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "8d793fd3c6181908412ac1d47baf217d65511b2c8ceba46d8d55dc674024258e"
+      "record_digest": "5c168a6a1146faa0487e38f23e4872d4afe239753701531ba37145be5f295fca"
     },
     {
       "operation_id": "gateway.check-authority",
@@ -6984,7 +6987,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -6992,7 +6995,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -7032,7 +7035,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "6b2c1a569fc7ae33fccff42f50ec56f69a3540bb1fa3fba7c7c48b5332aa6d87"
+      "record_digest": "4a9c0f60bacb4a26e2c3191d66dd3261707385ad27097162183e8ba1f73d7bd8"
     },
     {
       "operation_id": "gateway.list-endpoints",
@@ -7106,7 +7109,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -7114,7 +7117,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -7154,7 +7157,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "8d810359f357bc06831374679d76172a9caa6ea4fc80a384c9bc717d625d1844"
+      "record_digest": "7489c78c27cbe75ace77dcfab8399d905daaddfd8aa4c35ea1a743971fb29e66"
     },
     {
       "operation_id": "gateway.read-receipt",
@@ -7228,7 +7231,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -7236,7 +7239,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -7276,7 +7279,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "a60ee3188f0efb18d2c6c69038333bff2a32daf351914ee308b4b270207aa5c4"
+      "record_digest": "07de95cd5aaa5be51fca58d5a8caa22cef50cdab6cc0be865c958d1c6b09ab1c"
     },
     {
       "operation_id": "gateway.refuse-request",
@@ -7350,7 +7353,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -7358,7 +7361,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -7398,7 +7401,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "5dc2ea6fe7a1419fdad76b6b8f136dbafce9d78177f741c3a0eb53b8a31fec9a"
+      "record_digest": "f7e1f2365eec6b5466a9e4ff678e3bce95bf35093d07362c79119a1ea66c0e53"
     },
     {
       "operation_id": "gateway.resolve-capability",
@@ -7474,7 +7477,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -7482,7 +7485,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -7522,7 +7525,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "7085edadbd5ced260d37f70d3b765fb0e4a93b8fdfc2844bced18967a6c1f355"
+      "record_digest": "3109f530916030f8386d5eb94affaa44972e41cc128663612419845df0dd9856"
     },
     {
       "operation_id": "gateway.return-receipt",
@@ -7597,7 +7600,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -7605,7 +7608,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -7645,7 +7648,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "e84fd9aea8233d3bfc9b25b67a21fff4a52c9c5a8e754a7eecde4e69d340dc19"
+      "record_digest": "4c171d307eaae517a704be6f3e12f229d64422dee63213b14cbf7d576bf7fe73"
     },
     {
       "operation_id": "gateway.route-request",
@@ -7723,7 +7726,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -7731,7 +7734,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -7771,7 +7774,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "790dd055df1b3315ec5a2758b33117757142d92b55c69c2ee5bd6dea6753d372"
+      "record_digest": "70143d570a957232c7480c4ae2e06cef5a64b57b634e1790f33baf4213c381a2"
     },
     {
       "operation_id": "host.apply-driver-update",
@@ -7852,7 +7855,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -7860,7 +7863,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -7908,7 +7911,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "1d5b2273cadfee473bd1705c3b7a4e4a2f442490458065ccd553f01df7135c84"
+      "record_digest": "d00465f41fee41524b186f712457506e356948af0341047d0f5f37017c591259"
     },
     {
       "operation_id": "host.install-utility",
@@ -7989,7 +7992,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -7997,7 +8000,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -8045,7 +8048,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "abc43c5b5aa91e043ca286de1dbd58248115ee90ed4bad020473e493d3f7363f"
+      "record_digest": "b33d90aacf3be6826df33d498684d3f65f64661d6886d29ac2cacdaef6b5ca0f"
     },
     {
       "operation_id": "host.list-drivers",
@@ -8121,7 +8124,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -8129,7 +8132,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -8177,7 +8180,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "d410180956f32c026da1aea7130a31fee21982403786ed46ebb1900d3046532f"
+      "record_digest": "3ab84b344dbf72288971809d9dca1dd378f5016be07d844102018d9bfb9e4483"
     },
     {
       "operation_id": "host.list-utilities",
@@ -8253,7 +8256,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -8261,7 +8264,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -8309,7 +8312,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "0b472b4dcfa22e33fed0597c75afd04cf169f317830796a0262a1884222edfcd"
+      "record_digest": "a0355f1b317034b8921d82c6a3a942fc604513e3fb1613fb384f305a95f70aa6"
     },
     {
       "operation_id": "host.power-off",
@@ -8388,7 +8391,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -8396,7 +8399,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -8444,7 +8447,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "21a82d9303fef1a75334338e8dde243fc6122a19fa81c3c477466795c145159d"
+      "record_digest": "12e0e5ed2af73e0f9ad9b9cd88edc6b5b7297b8e5828760154055530e9b8075a"
     },
     {
       "operation_id": "host.propose-driver-update",
@@ -8522,7 +8525,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -8530,7 +8533,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -8578,7 +8581,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "7163291a362dbebc49b30018476be98921c4712e2705b9798bb9d3eccda34db3"
+      "record_digest": "d378d6519e5811ad01652885ed49287aa70d904e614b6c9dd969a2bee7c2413d"
     },
     {
       "operation_id": "host.read-health",
@@ -8681,7 +8684,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -8689,7 +8692,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -8769,7 +8772,7 @@
         "reason_code": "EXACT_READ_ROUTE_ACTIVE",
         "explanation": "An exact policy-active service route exists for this read."
       },
-      "record_digest": "9744e7f359cf34916af641b590d870c695d8b12156aa81a59a195775cc005b0c"
+      "record_digest": "0258423b50bde593055c9041294e18d3713e9304492249fb17fb9fa865216f0a"
     },
     {
       "operation_id": "host.read-network",
@@ -8846,7 +8849,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -8854,7 +8857,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -8902,7 +8905,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "85d23b1f8e377590fa908c5a4c02c429a451905cd11b7dd40f65e7567f2a42e9"
+      "record_digest": "39c237e196ea7bad187c4cdb3440fb1e9d0924c5e770097dac552a2ed016dbd9"
     },
     {
       "operation_id": "host.read-operation",
@@ -8977,7 +8980,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -8985,7 +8988,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -9033,7 +9036,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "1afb4d97773fbadcca2b9795be6f7f50c78523ce07ab99de818e46fcb6cbfc85"
+      "record_digest": "eef4cb768e359c16aecfca860ec47616f055b05135e0d9b3a9798b2a77b87f7d"
     },
     {
       "operation_id": "host.remove-utility",
@@ -9113,7 +9116,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -9121,7 +9124,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -9169,7 +9172,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "c5bd9716cc75385e3cfb4a7d952bee253305e81ddaf3faf77bc7ab928bf829b2"
+      "record_digest": "d4d47e1321c65e8b208559ae1c1fac32ea45425abb1d137f96af9ae4eda49b3d"
     },
     {
       "operation_id": "host.request-restart",
@@ -9248,7 +9251,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -9256,7 +9259,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -9304,7 +9307,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "747dcbb7a102f9058b44dba07b1fbeea1d2d57f5510f0d7f84c412ec1c8ce1c6"
+      "record_digest": "4d1b4871eca7a10aa266995c53c682c281b7702b2b1876218838331899de9f08"
     },
     {
       "operation_id": "host.request-scan",
@@ -9384,7 +9387,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -9392,7 +9395,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -9440,7 +9443,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "f7c2fe1d74f044bf796d425f14980860b9bbc43b70f9143c5b44e1a60243b2bb"
+      "record_digest": "dac0024f1206f12268bd9e077acd084d792045ebf34790f6d410d47e4735b0e3"
     },
     {
       "operation_id": "host.restart",
@@ -9522,7 +9525,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -9530,7 +9533,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -9578,7 +9581,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "3d7e5c6afb38a1e30f361f469b252cad9766445ab72390e9ed26c301bc8d0ab6"
+      "record_digest": "c5d0260fa1fa3cbf6caf3615a1b5b84087f7378a6e6889efa2f5dadc7993a561"
     },
     {
       "operation_id": "host.suspend",
@@ -9657,7 +9660,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -9665,7 +9668,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -9713,7 +9716,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "5485a1e09d3d6cdf14c816e16e59286e747108d140428e2a4ed284bee89e855e"
+      "record_digest": "4740c406d60596eced16e1842b6ac899bb3c596179cd5f6e5775a0bf72948041"
     },
     {
       "operation_id": "host.update-utility",
@@ -9794,7 +9797,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -9802,7 +9805,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -9850,7 +9853,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "135d16e23f87fea9bd5f0e7a352c7bf02fbe44cbaffb70a85dfbd6e493a417c0"
+      "record_digest": "2ae87e85b44085e7787ac07218b24346b358b8aa5218fc8087fe3e7f18bc445a"
     },
     {
       "operation_id": "identity.deliver-challenge",
@@ -9920,7 +9923,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -9928,7 +9931,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -9968,7 +9971,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "565f3dfa569748fdfad9697208470c91610200ea6896be1698c117af31c4dc71"
+      "record_digest": "846f677f42ec23a66890bec75c784372a540af2d425a20be536d321113c46b83"
     },
     {
       "operation_id": "identity.enroll-recovery",
@@ -10038,7 +10041,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -10046,7 +10049,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -10086,7 +10089,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "d420ebd7a80a2d7a8e2bd3828915572ed4968eb1d45245683a5c93eb5c0d6871"
+      "record_digest": "8ea59ebf03c57fb6ed14347b70f2927b9223aca420f29b2f253ea50ef106e478"
     },
     {
       "operation_id": "identity.mint-challenge",
@@ -10159,7 +10162,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -10167,7 +10170,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -10207,7 +10210,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "f78bafb049ed79afac9bc79a940b9053275134c8502d01fcff4d8212c6a3fe0e"
+      "record_digest": "9ac4f96fccfeb8741e3782b765c5f11e26c1fcc0eb2b69a5b87cf693c02af87c"
     },
     {
       "operation_id": "identity.present-challenge",
@@ -10281,7 +10284,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -10289,7 +10292,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -10329,7 +10332,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "b2eefb4971d9fcde2e9c50f2b21595ca033004043ba61d706f0974993765422d"
+      "record_digest": "194b352b98dc13e98b01b030c3fc6f7c32bc8fcdd369a56bf24bfdd15af383ae"
     },
     {
       "operation_id": "identity.redeem-recovery",
@@ -10399,7 +10402,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -10407,7 +10410,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -10447,7 +10450,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "91ba83f8f91f243bccf707c91150f58642d7153f1a8cdf2ef67bb37341b0b2df"
+      "record_digest": "a8efe99f1c6a3435334c5f510df219b9fd97aabdab9b716f1f81faea1d0937d6"
     },
     {
       "operation_id": "identity.report-unenrolled",
@@ -10515,7 +10518,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -10523,7 +10526,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -10563,7 +10566,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "8e0939fbcd05ae241ef26910fbeaad45c8549eb14e0723fbdafd3cd720f6a732"
+      "record_digest": "b638b8f53bb25c364fffdc721bd170d2a67f308e94940787c6270fc220c5af41"
     },
     {
       "operation_id": "identity.revoke-recovery",
@@ -10633,7 +10636,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -10641,7 +10644,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -10681,7 +10684,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "a127c843a88f73e0cf1a746b7d3cd0cc574de466486e1abe8dcd42ce8276fcf1"
+      "record_digest": "ae4f970d0316c7846d6dce830598f2cacc75b1cd4e87cc1302ec81bf02a69306"
     },
     {
       "operation_id": "observation.attest-observation",
@@ -10761,7 +10764,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -10769,7 +10772,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -10817,7 +10820,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "aa3481263227b0c6e79a73924d514ec9a77901faa413f733eaeda7e107670f0c"
+      "record_digest": "12ebd911cbd207d84d427704f3a73c6e92751a7a4573d1b74e81e937d72f8dd1"
     },
     {
       "operation_id": "observation.counter-observation",
@@ -10896,7 +10899,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -10904,7 +10907,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -10952,7 +10955,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "7a3d98f1d2267a2a10a5aaca6712694b7cee79727d296b8011478813a7648aab"
+      "record_digest": "8fc6673e0c08033d3a829fffb52b8e73377ead38b325149c8368329621abf68a"
     },
     {
       "operation_id": "observation.declare-predicates",
@@ -11032,7 +11035,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -11040,7 +11043,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -11088,7 +11091,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "dc59275c687ab40928f657991a6e31fe54cd05f1e198c8516516be5cb54a9364"
+      "record_digest": "bc329177f106bf3426784d8be035957811e3295b1b36fcccc5be1f4493128330"
     },
     {
       "operation_id": "observation.infer-relation",
@@ -11168,7 +11171,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -11176,7 +11179,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -11224,7 +11227,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "96eb544f0faf07a3a5ff8fa235bb0a90f93b8dc16181435e9e7a8639f732d025"
+      "record_digest": "be29a4da96a3eedf081b1e1b90d190d92d86fa8ad6a2a36224cb1c597d7b0260"
     },
     {
       "operation_id": "observation.list-pending-observations",
@@ -11301,7 +11304,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -11309,7 +11312,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -11357,7 +11360,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "58efd6c2ee2d5a0d110db5abf26a3b6750753538b72167dff0d181825d52328a"
+      "record_digest": "698f0c8aec8609d524de96b7e100b8cd0ccae79883e84b5b97fa37a1e3497b8f"
     },
     {
       "operation_id": "observation.observe-run",
@@ -11440,7 +11443,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -11448,7 +11451,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -11496,7 +11499,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "7e6800b2dd74e09f245c0ecf8588daacfdab83ebca4047fc900d5a472d8d3f10"
+      "record_digest": "6731181e646ce37fc55326eb33ac96d46e8e4767aba4841fb6064d4d631af1b6"
     },
     {
       "operation_id": "observation.read-observation",
@@ -11573,7 +11576,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -11581,7 +11584,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -11629,7 +11632,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "71bde63edb4401d68c1cf361b0f65decc1ef73c4c34862070cf44711bcbd6a68"
+      "record_digest": "9ccaa7d4457d5ddb5ef9867882412581804f23174635bbc4aac03934dd3a002b"
     },
     {
       "operation_id": "observation.request-observation",
@@ -11710,7 +11713,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -11718,7 +11721,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -11766,7 +11769,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "841b569b4ba3133fd9feb798548b8b66f79ef1331d119232e2ae98a98257cc73"
+      "record_digest": "f6d631f80ffc094585a143fbe2fa492070b7e1e02688af98f12f2cab11309dfe"
     },
     {
       "operation_id": "projection.build-projection",
@@ -11842,7 +11845,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -11850,7 +11853,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -11898,7 +11901,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "eb38bd7438e270affbbb44f8bb96fd6fdb72e95c0f3a0e69d0eec5ddd7945646"
+      "record_digest": "9db55b89e20e8452356a8898725697764fcdb909d8f83035362c00e32e9544b5"
     },
     {
       "operation_id": "projection.configure-graph",
@@ -11975,7 +11978,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -11983,7 +11986,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -12031,7 +12034,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "765038562aa9c446c3b471e513f30246e537fee06a868eb136fabfb50a4a49f3"
+      "record_digest": "3be018be4a0f07dc6bcb9bb8abee4bbb539f1b861e7ccb7b9bae7b64aa80a630"
     },
     {
       "operation_id": "projection.configure-text",
@@ -12108,7 +12111,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -12116,7 +12119,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -12164,7 +12167,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "95c0ff15162161a12eac3895e4ebe5f8b5444357825c4594842db927beab722c"
+      "record_digest": "d547428da8fd7b564be217bcf768320c8418e999c23993ac13e4405afd131739"
     },
     {
       "operation_id": "projection.declare-collection",
@@ -12240,7 +12243,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -12248,7 +12251,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -12296,7 +12299,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "93e3012337c7deb2bb1a8a7735fc86713d29b4e22f7475612d241f0adec73167"
+      "record_digest": "7de70c2f60c967b38330eec7b4faa5360cab4a4079db1792c68d84543111bd41"
     },
     {
       "operation_id": "projection.describe-collection",
@@ -12371,7 +12374,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -12379,7 +12382,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -12427,7 +12430,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "c72a06938436cf646fc61ce59f9bb31ea4313ff366ad9503b81045e89f0d8c1d"
+      "record_digest": "f46de4f7f07923b4cc11440ecee24b356492ccc508ddabadfba4a4cb6a38d39f"
     },
     {
       "operation_id": "projection.find-path",
@@ -12506,7 +12509,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -12514,7 +12517,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -12562,7 +12565,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "b6f3f336906bf34f2b28156aafe817fa85deb41a1f1268c79db0343b3fd64b7a"
+      "record_digest": "0e495ce107e9b9b0512f8e62fbbc61bb91c6eb74b1c1bb7a4140ee82072e9234"
     },
     {
       "operation_id": "projection.observe-fidelity",
@@ -12640,7 +12643,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -12648,7 +12651,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -12696,7 +12699,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "6b8fd7aed14346d6ca2901dc5260dc3fa3373fd7b81a1534e842df17d6cdb21f"
+      "record_digest": "86c25f9b3b9ee2547b8cc64103b28b4a1d2fe9be60595d4ba52c499f0de2ad71"
     },
     {
       "operation_id": "projection.package-context",
@@ -12774,7 +12777,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -12782,7 +12785,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -12830,7 +12833,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "2aef2ab700624057d4d1c1ee5e93997f2858a3a8f8002df5bead660c9840893a"
+      "record_digest": "f2a991d261e4ef5ecfa96f0e6737a9421c1eeb1d8f83efbe34992e00edd8fd7c"
     },
     {
       "operation_id": "projection.propose-from-projection",
@@ -12908,7 +12911,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -12916,7 +12919,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -12964,7 +12967,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "8d81e13c0e03cc7489dc04020718a349b16ad0e8a3f896944ab2be51c953b825"
+      "record_digest": "76ff6f073de4f903aec6e7dc873b71340f9f98866a7fc967489063d27514b8e6"
     },
     {
       "operation_id": "projection.read-context-package",
@@ -13039,7 +13042,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -13047,7 +13050,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -13095,7 +13098,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "4d9959c17deff274064e9954cd0788617a644fe6d53f7667adbb2e9cfadcf94a"
+      "record_digest": "a765b1ca94ae52168e4554d039397479336cebbb0f26f8f1000354d211fa8a76"
     },
     {
       "operation_id": "projection.register-vectors",
@@ -13174,7 +13177,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -13182,7 +13185,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -13230,7 +13233,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "9998cdc6112771cb15c4ac422099f3151aa1fb29b7a8df2e29f14d5d8501fc16"
+      "record_digest": "15e2852359805b8bd02ee1421e9af4bc90096614cbe70dd1c1ecbc803a626e44"
     },
     {
       "operation_id": "projection.search-dense",
@@ -13308,7 +13311,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -13316,7 +13319,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -13364,7 +13367,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "0ccf0734f61c3f66300dbf0b8b86125f1d5630d69ff1c5e8b52c31fc96dac832"
+      "record_digest": "bc958d833bf4822d15292d04a65614f3275d8c7ed10d759b88749ab3c565fbab"
     },
     {
       "operation_id": "projection.search-hybrid",
@@ -13442,7 +13445,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -13450,7 +13453,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -13498,7 +13501,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "177dfc3b418282f8773274c130107e8d028a9c1b0e4c0c14409d3f12c38dcb20"
+      "record_digest": "459b14a68dfd2d3a901a0e31d9622c562f425440c9634ced224b0a52e19be312"
     },
     {
       "operation_id": "projection.search-sparse",
@@ -13575,7 +13578,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -13583,7 +13586,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -13631,7 +13634,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "68d115b88097969bccd3ee1543b1a2a93971cc3278e51a1c6f359eb5048cd152"
+      "record_digest": "b9e082a76bc6c1e632f6d8a04779524e76e90dbdbeb9b0bf17d7eeebaaf598b3"
     },
     {
       "operation_id": "projection.search-text",
@@ -13708,7 +13711,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -13716,7 +13719,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -13764,7 +13767,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "8aabfb61f542d5b647c92c7791b0f3d4da7b64e525d69e1bff56e92cf4d1f791"
+      "record_digest": "667366fb60055d4483449630faf3e36e14858248d9fa2ed96b859c9ee45c7c21"
     },
     {
       "operation_id": "projection.traverse-graph",
@@ -13842,7 +13845,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -13850,7 +13853,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -13898,7 +13901,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "f4905c2c8c7e3760636b433d08662c1494a5796e5b7b246a29e3dd93ee22f958"
+      "record_digest": "6312181f599db31e4f0095751c6eb891ce5fd3cdef28eb5fc906040c671f3321"
     },
     {
       "operation_id": "proofing.add-annotation",
@@ -13978,7 +13981,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -13986,7 +13989,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -14034,7 +14037,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "681af99eb4d3b54dcfc466a022a4242cfbeeb018cace74d728ddc749ffe3de10"
+      "record_digest": "a47c8b32608f8143e4a3b0e6eada5d7a5806c63280ba295661ee6ae80143f445"
     },
     {
       "operation_id": "proofing.assign-reviewer",
@@ -14113,7 +14116,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -14121,7 +14124,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -14169,7 +14172,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "21dce249cc89630e837564db915e950297f7846c91be08a494e15791b91c127c"
+      "record_digest": "8d78d9c28ad175bd3e3f39b1ce133afc90bbb0f9de38490a2fca2a2a8afecf65"
     },
     {
       "operation_id": "proofing.close-session",
@@ -14246,7 +14249,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -14254,7 +14257,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -14302,7 +14305,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "d70253820494aeaaa47e1944a6e5f59b8cbf6d793e04032106ef1fd7ef6ddca2"
+      "record_digest": "9f46d65b66455b8fd7549f747bd03d7bdabf312bd96fed7b8bc082158e607cf2"
     },
     {
       "operation_id": "proofing.open-session",
@@ -14379,7 +14382,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -14387,7 +14390,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -14435,7 +14438,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "16ee344d794b4afc9a8ac97fbb2b9afdca380ae27c4ca598e76be06856b0113e"
+      "record_digest": "753615d91e49189ddcc3aee8e1915be3d14e5cf4d0a895020ab4719804160273"
     },
     {
       "operation_id": "proofing.propose-decision",
@@ -14514,7 +14517,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -14522,7 +14525,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -14570,7 +14573,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "a4b8eb8aaf75bece174e255621ac012e36cb0ca0caface38ca7dd6337eed1c46"
+      "record_digest": "89503c08e36ba5bd56806a8110e47261a32b04c7a6a4c62a44d4773b92268eab"
     },
     {
       "operation_id": "proofing.ratify-decision",
@@ -14648,7 +14651,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -14656,7 +14659,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -14704,7 +14707,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "e0bc5c046db5f673f52cf0b1a4527155e8c8527de2cf09083945be4d5fd8a592"
+      "record_digest": "19071458a711afbffc8091fcfbf0811308502017c589d00103dd72cd3ac6bfa3"
     },
     {
       "operation_id": "proofing.read-annotations",
@@ -14780,7 +14783,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -14788,7 +14791,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -14836,7 +14839,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "1ebbef469be0ea024faffd9dd19c88abc4cb0ef0f59c6fc415fb190b78b4e21e"
+      "record_digest": "d2e4f7ee934aac5122eb88a98dfb0922da42f4627df92bc26a6997e135b5cd96"
     },
     {
       "operation_id": "proofing.read-decision",
@@ -14912,7 +14915,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -14920,7 +14923,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -14968,7 +14971,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "e03246ef23d59bd3ccdd42863f5688e8dc0bb62ae0d0e7fe193de128e09c1db6"
+      "record_digest": "76cb85c0c40a300938aa779540f97b891d91f6c43b32986d1e2a22e20e0671a2"
     },
     {
       "operation_id": "proofing.read-session",
@@ -15044,7 +15047,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -15052,7 +15055,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -15100,7 +15103,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "e6d28176bc170f86341efcf5fa37ddcaabe7e24413071da1f2e53ff23fe4f890"
+      "record_digest": "bedf9cfeffc6ac0460d4b16d95ecfca6ccf1a7307bda2281fb0fda0e70ff2428"
     },
     {
       "operation_id": "proofing.request-comparison",
@@ -15179,7 +15182,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -15187,7 +15190,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -15235,7 +15238,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "542409b44ddfc2ecbb25f987dfd06570288b075d676c0ebc06e81a4a60089dc9"
+      "record_digest": "501b77e7b069c6128a6c2bdbab0316b0e6f81025248bdd4861b76cc16cedaa46"
     },
     {
       "operation_id": "proofing.request-revision",
@@ -15313,7 +15316,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -15321,7 +15324,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -15369,7 +15372,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "3aedf5e224c2cf7235a32945b5ef0bfb7dc30727477a23f31bed56d124d9ee27"
+      "record_digest": "a24fc3e3084a5ade9b528936b01f2eda0929c3e2179143f603020cc276fd4550"
     },
     {
       "operation_id": "record.adopt-profile",
@@ -15446,7 +15449,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -15454,7 +15457,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -15486,7 +15489,7 @@
         },
         {
           "address": "services/record/contracts/service.json",
-          "digest": "942fac36e334667be6e82788f35cb329cfaf213499fd2f0d8b670282e40b3aeb"
+          "digest": "44666591ea44691f3c0c8c0474a211b3d65e46753fb1a0ef243c6586a916606b"
         }
       ],
       "route_affordance": {
@@ -15494,7 +15497,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "0f8754524477ed46ad78319b5040a4fc86a95aadd08ee9647c6ef19229886458"
+      "record_digest": "d38c65d90d8066b89fa8adc08ff0a0ee5ad2659e1cd0e994282ed28c4033f26a"
     },
     {
       "operation_id": "record.append-entry",
@@ -15573,7 +15576,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -15581,7 +15584,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -15613,7 +15616,7 @@
         },
         {
           "address": "services/record/contracts/service.json",
-          "digest": "942fac36e334667be6e82788f35cb329cfaf213499fd2f0d8b670282e40b3aeb"
+          "digest": "44666591ea44691f3c0c8c0474a211b3d65e46753fb1a0ef243c6586a916606b"
         }
       ],
       "route_affordance": {
@@ -15621,7 +15624,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "1fce9ee5f6d9a55d88eaf2f7775aec041b78ccde5c857bfdaaac952b4a659dfb"
+      "record_digest": "adb386a748039d572d665d885e97b7fa2cb89f64b122ca42ed43cfd360228c04"
     },
     {
       "operation_id": "record.append-receipt",
@@ -15697,7 +15700,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -15705,7 +15708,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -15737,7 +15740,7 @@
         },
         {
           "address": "services/record/contracts/service.json",
-          "digest": "942fac36e334667be6e82788f35cb329cfaf213499fd2f0d8b670282e40b3aeb"
+          "digest": "44666591ea44691f3c0c8c0474a211b3d65e46753fb1a0ef243c6586a916606b"
         }
       ],
       "route_affordance": {
@@ -15745,7 +15748,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "4196498469f0bff8306d2ff37aa04cb950bd711458cf67a9b2e7f66f924257be"
+      "record_digest": "10dcfb62ebd9fa191f93083683d3b56f41067f6bc1da270ff1f8f6493a02b2c8"
     },
     {
       "operation_id": "record.counter-entry",
@@ -15822,7 +15825,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -15830,7 +15833,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -15862,7 +15865,7 @@
         },
         {
           "address": "services/record/contracts/service.json",
-          "digest": "942fac36e334667be6e82788f35cb329cfaf213499fd2f0d8b670282e40b3aeb"
+          "digest": "44666591ea44691f3c0c8c0474a211b3d65e46753fb1a0ef243c6586a916606b"
         }
       ],
       "route_affordance": {
@@ -15870,7 +15873,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "ef18b866033fdc4ba69f9b9e3c5daf5d99c466d589cafa9912b237f7b44c9c0d"
+      "record_digest": "053549e0d452c403577baaa54ca9193761fcd6e7dd4f345ebbabea99d11e248c"
     },
     {
       "operation_id": "record.drop-projections",
@@ -15944,7 +15947,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -15952,7 +15955,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -15984,7 +15987,7 @@
         },
         {
           "address": "services/record/contracts/service.json",
-          "digest": "942fac36e334667be6e82788f35cb329cfaf213499fd2f0d8b670282e40b3aeb"
+          "digest": "44666591ea44691f3c0c8c0474a211b3d65e46753fb1a0ef243c6586a916606b"
         }
       ],
       "route_affordance": {
@@ -15992,7 +15995,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "03b8d61d5b8c5ee3a33fb1cee63961415b9babb20c788441259e62edd88367d4"
+      "record_digest": "d7ffc133f065b7c692c06b70acacfdd994e295e9382b9a23f2ddcc79b387940e"
     },
     {
       "operation_id": "record.export-journal",
@@ -16067,7 +16070,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -16075,7 +16078,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -16107,7 +16110,7 @@
         },
         {
           "address": "services/record/contracts/service.json",
-          "digest": "942fac36e334667be6e82788f35cb329cfaf213499fd2f0d8b670282e40b3aeb"
+          "digest": "44666591ea44691f3c0c8c0474a211b3d65e46753fb1a0ef243c6586a916606b"
         }
       ],
       "route_affordance": {
@@ -16115,7 +16118,137 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "a69283f534d6240df060efb21e9609f60fde1e6f7db829ecf7c0722cdfab24aa"
+      "record_digest": "ab62884f191d26376dec2a3cba2a53e781a9366c3cd6ad29430cf3ec4f8e5078"
+    },
+    {
+      "operation_id": "record.project-evidence",
+      "service_id": "record",
+      "operation": "project-evidence",
+      "logical_endpoint": "sov://record/project-evidence",
+      "standing": "BUILT",
+      "subject": "record-projection",
+      "crud": "READ",
+      "commit": "DERIVED",
+      "kernel_paradigms": [
+        "operation",
+        "receipt",
+        "retraction",
+        "standing"
+      ],
+      "kernel_transition": null,
+      "required_authority": "read:journal",
+      "effect_class": "RECORD_LOCAL",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "preconditions": [
+        "journal_readable",
+        "subject_declared",
+        "recipient_declared",
+        "relation_declared",
+        "purpose_declared"
+      ],
+      "refusals": [
+        "UNREADABLE",
+        "DIGEST_MISMATCH",
+        "MISSING_PRECONDITION"
+      ],
+      "legal_choices": [],
+      "policy_endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "record:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "ACTIVE",
+          "address": "python -m soveraeign_record_service.cli project-evidence"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ],
+      "reachability": [],
+      "observation_ids": [],
+      "facts": {
+        "declared": true,
+        "bound": true,
+        "policy_active": true,
+        "reachable": false,
+        "observed": false
+      },
+      "sources": [
+        {
+          "address": "CLASSIFICATION.md",
+          "digest": "caf2384160b00eed0f1221756f7b5129459a5e519a42e58d6afbb320f1730572"
+        },
+        {
+          "address": "CONTRACT.md",
+          "digest": "f95acd076c4977d73c38e14e42106576d0dea2dcf9eb4ec30a0526fd68c27d3c"
+        },
+        {
+          "address": "SPEC.md",
+          "digest": "ea07f0ec39b9a55160f3f58552f3a5d13ba5061122a10b42e37daa34bfc2f348"
+        },
+        {
+          "address": "contracts/capability-offices.json",
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
+        },
+        {
+          "address": "contracts/event-envelope.schema.json",
+          "digest": "f1ca99997ffd4cec45e9d891348be42de067c6991c672c8d5d326c3175205da8"
+        },
+        {
+          "address": "contracts/fixtures/capability-map.reference.json",
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
+        },
+        {
+          "address": "contracts/kernel-paradigms.json",
+          "digest": "acdfa2423bddf1b84b773dd05734330f7429af4303e6f9e2979a1d69254c942f"
+        },
+        {
+          "address": "contracts/kernel-transitions.json",
+          "digest": "6ea1801398ee9eba2d31a68908d283471b6788d5b85f712df4758e5b0d3405f3"
+        },
+        {
+          "address": "contracts/node-interface.schema.json",
+          "digest": "4c849148256aa9eda1bb85c1770286699002283280615ff210217cee804f361a"
+        },
+        {
+          "address": "contracts/operation-plan.schema.json",
+          "digest": "f5448eb6dd28a2aafa84b1b1bee7394b3348e897aec3920319dbed962b9320d9"
+        },
+        {
+          "address": "contracts/receipt.schema.json",
+          "digest": "dba3fa2197d8aa3977aacd737935f9664feddac602016cafb6d93482504479ba"
+        },
+        {
+          "address": "scripts/sovkernel/node_interface.py",
+          "digest": "91da57d26e99ad1108d805ea00c0114a6b78483d4c740cf2569b0803d3122da5"
+        },
+        {
+          "address": "scripts/sovnode/affordances.py",
+          "digest": "bf216974087751c0f1a0e7612563970eb275d14d652d2618e3af006a90e382ee"
+        },
+        {
+          "address": "services/record/contracts/service.json",
+          "digest": "44666591ea44691f3c0c8c0474a211b3d65e46753fb1a0ef243c6586a916606b"
+        }
+      ],
+      "route_affordance": {
+        "kind": "INSPECT",
+        "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
+        "explanation": "Policy is active, but this composition has no exact service-owned route."
+      },
+      "record_digest": "b5fa93ab9cdd027e2492c733449f4b9772d043c64e1d3249ec84a463a2235e4c"
     },
     {
       "operation_id": "record.read-entry",
@@ -16191,7 +16324,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -16199,7 +16332,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -16231,7 +16364,7 @@
         },
         {
           "address": "services/record/contracts/service.json",
-          "digest": "942fac36e334667be6e82788f35cb329cfaf213499fd2f0d8b670282e40b3aeb"
+          "digest": "44666591ea44691f3c0c8c0474a211b3d65e46753fb1a0ef243c6586a916606b"
         }
       ],
       "route_affordance": {
@@ -16239,7 +16372,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "a41e3ba63b53d829077e58c9c2d9b0cfe89c0cd87d34f34b648929e1120838fa"
+      "record_digest": "5515fb7b0bf625a88a3877be8822bc993f59adbb4f6fba8158981b550e09da2c"
     },
     {
       "operation_id": "record.read-projection",
@@ -16313,7 +16446,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -16321,7 +16454,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -16353,7 +16486,7 @@
         },
         {
           "address": "services/record/contracts/service.json",
-          "digest": "942fac36e334667be6e82788f35cb329cfaf213499fd2f0d8b670282e40b3aeb"
+          "digest": "44666591ea44691f3c0c8c0474a211b3d65e46753fb1a0ef243c6586a916606b"
         }
       ],
       "route_affordance": {
@@ -16361,7 +16494,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "ddbefefb5326a48d7ef4f0e99140bc2dd9f5353f0b4cfbc5616b11216dc2937b"
+      "record_digest": "c0e5ace000e2a017d12a33add390a976a7ba6f5aafe57a76e26eb973589357a6"
     },
     {
       "operation_id": "record.rebuild-projections",
@@ -16436,7 +16569,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -16444,7 +16577,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -16476,7 +16609,7 @@
         },
         {
           "address": "services/record/contracts/service.json",
-          "digest": "942fac36e334667be6e82788f35cb329cfaf213499fd2f0d8b670282e40b3aeb"
+          "digest": "44666591ea44691f3c0c8c0474a211b3d65e46753fb1a0ef243c6586a916606b"
         }
       ],
       "route_affordance": {
@@ -16484,7 +16617,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "fafb8266ef9f7506a89c757e39515e3daf53f4223cc8065d08a0cbce264f4a88"
+      "record_digest": "f8a3bb007755f75dc2acd36b3c59e4de41efab71358ea882d4c4f4554f15a185"
     },
     {
       "operation_id": "record.reconstruct-journal",
@@ -16559,7 +16692,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -16567,7 +16700,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -16599,7 +16732,7 @@
         },
         {
           "address": "services/record/contracts/service.json",
-          "digest": "942fac36e334667be6e82788f35cb329cfaf213499fd2f0d8b670282e40b3aeb"
+          "digest": "44666591ea44691f3c0c8c0474a211b3d65e46753fb1a0ef243c6586a916606b"
         }
       ],
       "route_affordance": {
@@ -16607,7 +16740,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "37c7b69a09fa66c147acc2a19d317bcf6ef5e025f0897cad2ee97a5d9c735dcb"
+      "record_digest": "07838406e63daef6648891c54ddc96116e32cccd728e52a79af2a98467291e9a"
     },
     {
       "operation_id": "record.restore-journal",
@@ -16684,7 +16817,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -16692,7 +16825,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -16724,7 +16857,7 @@
         },
         {
           "address": "services/record/contracts/service.json",
-          "digest": "942fac36e334667be6e82788f35cb329cfaf213499fd2f0d8b670282e40b3aeb"
+          "digest": "44666591ea44691f3c0c8c0474a211b3d65e46753fb1a0ef243c6586a916606b"
         }
       ],
       "route_affordance": {
@@ -16732,7 +16865,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "3b33a7eb886aea4cd17318bdc8703a7ea7ce15c2acf86a416ef9c7c3dc9b2dd4"
+      "record_digest": "98459f819ceb6a7d5d6cfb09bf4f22c5634d71419eaf195b6d8df3701edf9662"
     },
     {
       "operation_id": "record.verify-export",
@@ -16808,7 +16941,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -16816,7 +16949,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -16848,7 +16981,7 @@
         },
         {
           "address": "services/record/contracts/service.json",
-          "digest": "942fac36e334667be6e82788f35cb329cfaf213499fd2f0d8b670282e40b3aeb"
+          "digest": "44666591ea44691f3c0c8c0474a211b3d65e46753fb1a0ef243c6586a916606b"
         }
       ],
       "route_affordance": {
@@ -16856,7 +16989,7 @@
         "reason_code": "ACTIVE_POLICY_HAS_NO_EXACT_ROUTE",
         "explanation": "Policy is active, but this composition has no exact service-owned route."
       },
-      "record_digest": "ba66f6b172acc85b36793d9ed229b635b42212afc6412224fd4875ae2182d12a"
+      "record_digest": "7e9852722f85fa17dc0f2a3aa0a028311e15ee3da8ee2e90a1a03dc3e2d58515"
     },
     {
       "operation_id": "registry.declare-owner",
@@ -16937,7 +17070,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -16945,7 +17078,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -16985,7 +17118,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "be80ac1e2e96a335d341ffa9516dd428610b36e79b10d429cf4156a1694094e4"
+      "record_digest": "4c099c1f7f1ad8a57498c669eb7e6f7ccacfe57acc8eab740ed7bb974cc82a47"
     },
     {
       "operation_id": "registry.read-entry",
@@ -17060,7 +17193,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -17068,7 +17201,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -17108,7 +17241,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "3c22e157d3c8a9584e66809b518d8ee9de04adede7bc000e2ac972a2168d5bc9"
+      "record_digest": "2a8bff0c9ef3e9772a683d98738562aa0fe2731b9ba67ab9dbcd6d4b21730d68"
     },
     {
       "operation_id": "registry.read-index",
@@ -17183,7 +17316,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -17191,7 +17324,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -17231,7 +17364,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "37ac936f9259048dbf1a87ff7ceca64cb55049eaedba44bcb27d5bad0a5f8303"
+      "record_digest": "10bdfcf183181d493d5705969d5efa0fa443a6dce9416d13effc7346ce029ef7"
     },
     {
       "operation_id": "registry.read-owner",
@@ -17306,7 +17439,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -17314,7 +17447,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -17354,7 +17487,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "93bbba3fbc9bafeef4c762f98d98ce484492aa929ec5c2439a7546aaf432a9de"
+      "record_digest": "20c42096aeb8cb34069bebfb16a54543d05e656207cf94debee84f4c0acdf56f"
     },
     {
       "operation_id": "registry.read-receipt",
@@ -17429,7 +17562,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -17437,7 +17570,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -17477,7 +17610,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "f9aed2fe5daee5a39008db7cdf61d0763e5e2060e113a6f450aa9eb9c624262d"
+      "record_digest": "5c397455c353bbf26b3ebfbc3b52cad1813bf4d64a312c7d9c98d9feda3eb84f"
     },
     {
       "operation_id": "registry.rebuild-index",
@@ -17554,7 +17687,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -17562,7 +17695,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -17602,7 +17735,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "7b47011231232d4ee77e08c1b865dc6a7c0d22d3a5f2845afec2a84b3a574833"
+      "record_digest": "7077f9d669c74e62b25d3de5a3a902dae98cd504a31dc9ec181030cf1ee30434"
     },
     {
       "operation_id": "registry.register-entry",
@@ -17683,7 +17816,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -17691,7 +17824,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -17731,7 +17864,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "f0c274ed77ac6425a9edb35f3993680851b4f0da2c6c686ad7bb4276f5b2a7c4"
+      "record_digest": "c75e862c6a4eb3ba9f9ab7dd662f322fd91e52fd4d763347ae53659b26a4aeee"
     },
     {
       "operation_id": "registry.relate-entries",
@@ -17810,7 +17943,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -17818,7 +17951,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -17858,7 +17991,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "b91ec8c6c24e263e80c606a143bad1322c0d6843f5a279953c29434ebc59dac2"
+      "record_digest": "11aea0440a1f035d599a9ecf407f31e6f7d6ac819140bab2de367a4830375e3d"
     },
     {
       "operation_id": "registry.report-drift",
@@ -17935,7 +18068,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -17943,7 +18076,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -17983,7 +18116,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "5779e1f9836fac293f385eb3ce8828179442574db5a12e5bc10ec9e1fa189705"
+      "record_digest": "526c3929ef377e7ca817cb30b8c637b1731ae674a03f441c5d34628420efae95"
     },
     {
       "operation_id": "registry.resolve",
@@ -18081,7 +18214,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -18089,7 +18222,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -18161,7 +18294,7 @@
         "reason_code": "EXACT_READ_ROUTE_ACTIVE",
         "explanation": "An exact policy-active service route exists for this read."
       },
-      "record_digest": "07966f6b9e1b2658b426dda0b55f35ff5e37f4c4793f1f35ab6bd1fd4465f480"
+      "record_digest": "34f85eb5fa19a1369411f8da8050dbaec7ea2723d605e539ebb2cf8b54583a71"
     },
     {
       "operation_id": "registry.retire-owner",
@@ -18238,7 +18371,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -18246,7 +18379,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -18286,7 +18419,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "e6365ce21de19739d6d04fecd4e261d8b763e6123f314f7ef276b3cccce7c6a3"
+      "record_digest": "5115c6577efb17b154ab699cabd31a05f02bdbf32568cec6fd900d6ecc226085"
     },
     {
       "operation_id": "registry.supersede-entry",
@@ -18365,7 +18498,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -18373,7 +18506,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -18413,7 +18546,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "b07abc5813027541f12110857fc065570c071a417361dc72e25ca1cd0cdbd349"
+      "record_digest": "5e204478910b8f21ba80f2f1c6db5be50a68de0562aebae5b2284283ce818d11"
     },
     {
       "operation_id": "registry.supersede-owner",
@@ -18492,7 +18625,7 @@
         },
         {
           "address": "contracts/capability-offices.json",
-          "digest": "3fe6c1af1fb90fc6283e5414dbaf563859b3c5031fe3f53fc211bd113e0fd345"
+          "digest": "683c699fde848937e442353e298e7b3c6a5a9cace3a8b292a93bb3382f69a344"
         },
         {
           "address": "contracts/event-envelope.schema.json",
@@ -18500,7 +18633,7 @@
         },
         {
           "address": "contracts/fixtures/capability-map.reference.json",
-          "digest": "e921fe452ad98d7b5b147902eb2bcf482895ce6bc54a8da99d0ed4c80444c10b"
+          "digest": "d1113f4d5f36c980f3d6bc82d41ff886a9a8e3492a71751f1729203928711ce8"
         },
         {
           "address": "contracts/kernel-paradigms.json",
@@ -18540,7 +18673,7 @@
         "reason_code": "NO_EXACT_ROUTE",
         "explanation": "The operation is declared topology only; no exact route is bound."
       },
-      "record_digest": "6144d590cfbaa843b480472cfc00fd232bca751d84a535f2fdc694f9ccd6ab39"
+      "record_digest": "6c6e17770bf8b278cb2b2c900495e85b028fb2d482b8b1ec50c3c6767298b16a"
     }
   ]
 }

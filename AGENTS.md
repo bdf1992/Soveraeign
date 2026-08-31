@@ -22,12 +22,12 @@ sources that govern its meaning and records both content and basis digests.
 
 ## Design System of Record
 
-The governing documents form one design System of Record with explicit roles,
-in two groups. Two of them say what product this is; the rest say what the
-current system requires and how it is built. No phase is active. Historical
-phase material is evidence only, and `contracts/SUCCESSOR-PREP.md` records the
-closed-books residue without granting successor standing. Treating historical
-phase evidence as current authority is a category error.
+The governing documents define repository invariants and boundary rules. When a
+phase is active, phase contracts define that phase's qualification gates. No
+phase is active. Historical phase material is evidence only, and
+`contracts/SUCCESSOR-PREP.md` records the closed-books residue without granting
+successor standing. Treating historical phase evidence as current authority is
+a category error.
 
 What the product is. Owner-accepted, slow to change, revised rather than edited:
 

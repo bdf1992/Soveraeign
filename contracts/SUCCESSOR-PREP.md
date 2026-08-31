@@ -71,8 +71,8 @@ Declared governing population for this gap: 17 artifacts — `README.md`, `GROUN
 
 Current receipts cover 17 of 17 artifacts. The seven root artifacts and all ten service charters are `CURRENT` against their declared clarity bases. The clarity condition for this gap population is satisfied.
 
-The three residue lists above remain pending explicit owner acceptance.
+The root seat formally accepts all three residue lists above: the kept invariants exactly as listed; built-but-unwitnessed residue grounded strictly in current `STATUS.yaml` machine standings rather than retrospective summaries; and the terminal X1-X5 measured gaps exactly as preserved above. The residue-acceptance condition is satisfied.
 
 ## No successor phase
 
-No successor phase is open. `STATUS.yaml` must remain `phase: NONE_ACTIVE`. Any future phase must be opened by the root seat against this document only after the residue lists are owner-accepted, every seam is closed or explicitly carried, and clarity coverage on the declared governing population is current.
+No successor phase is open. `STATUS.yaml` must remain `phase: NONE_ACTIVE`. The gap conditions recorded here are satisfied: the residue lists are owner-accepted, every surviving seam is explicitly carried or closed, and clarity coverage on the declared governing population is current. Any future phase still requires a separate explicit opening act by the root seat against this document.

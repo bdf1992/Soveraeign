@@ -1,6 +1,6 @@
 # Observation Service Charter
 
-Standing: `CHARTERED_BOUNDARY_NOT_IMPLEMENTED`. Chartered and contracted; no Observation Service operation is implemented.
+Standing is read from `STATUS.yaml`; this boundary is chartered and contracted, and no Observation Service operation is implemented.
 
 ## Role in Soveraeign
 

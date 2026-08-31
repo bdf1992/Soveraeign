@@ -4,7 +4,7 @@
       "artifact_digest": "sha256:cc421dd4d819e43edfcb6ba3e5e6d635b9d151db0d42f72e9e74bf77616fd45b",
       "basis": [
         {
-          "digest": "sha256:6523b0c81eca314981444c036dce650f727f98b9ec52727ad6e63f22c778dbe7",
+          "digest": "sha256:c68058c87ecf08473f15882d4895c81831bb3465ac9716df0fe453e91afeae17",
           "path": "AGENTS.md"
         },
         {
@@ -18,7 +18,7 @@
       "artifact_digest": "sha256:4f1ab3e10a3c0e8be92a36c2c930d02373f02291561b91c950bc00664b263ccd",
       "basis": [
         {
-          "digest": "sha256:6523b0c81eca314981444c036dce650f727f98b9ec52727ad6e63f22c778dbe7",
+          "digest": "sha256:c68058c87ecf08473f15882d4895c81831bb3465ac9716df0fe453e91afeae17",
           "path": "AGENTS.md"
         },
         {
@@ -29,7 +29,7 @@
       "changed": false
     },
     "AGENTS.md": {
-      "artifact_digest": "sha256:6523b0c81eca314981444c036dce650f727f98b9ec52727ad6e63f22c778dbe7",
+      "artifact_digest": "sha256:c68058c87ecf08473f15882d4895c81831bb3465ac9716df0fe453e91afeae17",
       "basis": [
         {
           "digest": "sha256:20a43ff96c3f99f98fe90b612a49c4f60f9318bfebb4be61e3882a9dfbe27bb4",
@@ -104,7 +104,7 @@
       "artifact_digest": "sha256:d6fa6f42eadf17833358cb47abd273b68f1f1371f9320dc0b303c106e9f86b1f",
       "basis": [
         {
-          "digest": "sha256:6523b0c81eca314981444c036dce650f727f98b9ec52727ad6e63f22c778dbe7",
+          "digest": "sha256:c68058c87ecf08473f15882d4895c81831bb3465ac9716df0fe453e91afeae17",
           "path": "AGENTS.md"
         },
         {
@@ -136,7 +136,7 @@
       "artifact_digest": "sha256:bf7437acd4e14628a057725de4f7a29b6c1b6a012f44009f15ca8dac62743188",
       "basis": [
         {
-          "digest": "sha256:6523b0c81eca314981444c036dce650f727f98b9ec52727ad6e63f22c778dbe7",
+          "digest": "sha256:c68058c87ecf08473f15882d4895c81831bb3465ac9716df0fe453e91afeae17",
           "path": "AGENTS.md"
         },
         {
@@ -231,7 +231,7 @@
       "artifact_digest": "sha256:623038ff6330e07fee6806cd67009e02a420cef331a793eed39b966b878e839c",
       "basis": [
         {
-          "digest": "sha256:6523b0c81eca314981444c036dce650f727f98b9ec52727ad6e63f22c778dbe7",
+          "digest": "sha256:c68058c87ecf08473f15882d4895c81831bb3465ac9716df0fe453e91afeae17",
           "path": "AGENTS.md"
         },
         {
@@ -385,7 +385,7 @@
       "changed": true
     },
     "services/observation/CHARTER.md": {
-      "artifact_digest": "sha256:6af1cfacda02c0f2608ae05f54c8379fe4279f8cd234d37d24e1e7e2d9ee39e6",
+      "artifact_digest": "sha256:5f544bfbad6d60dff0516c4c95fa80f1cf0c45ca8868b129d7b487f8101c60ab",
       "basis": [
         {
           "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",

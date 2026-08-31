@@ -1,0 +1,1 @@
+Temporary CI trigger for PR #193. Removed immediately; no product or governance content.

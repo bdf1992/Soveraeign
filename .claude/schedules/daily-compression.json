@@ -1,0 +1,25 @@
+{
+  "name": "daily-compression",
+  "description": "Daily observe-only compression ritual: correlate the last 24 hours of repository activity, read the lessons loop, and route only meaningful new defects, corroboration, redundant observation, or concrete compression work. Creates no new ledger or standing.",
+  "enabled": false,
+  "target": {
+    "kind": "workflow",
+    "name": "sov-compression",
+    "args": {
+      "mode": "daily",
+      "focus": "keep gap/pre-opening work compressed enough that unfinished lessons, duplicate observations, and representation drift do not accumulate"
+    }
+  },
+  "cron": "0 19 * * *",
+  "mode": "observe",
+  "effect_class": "RESOURCE_CONSUMPTION",
+  "isolation": "tree",
+  "preconditions": {
+    "clean_tree": false,
+    "lookback_minutes": 180
+  },
+  "limits": {
+    "max_budget_usd": 3,
+    "timeout_seconds": 2400
+  }
+}

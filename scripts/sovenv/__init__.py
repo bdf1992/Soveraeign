@@ -1,4 +1,5 @@
 """Soveraeign local SDLC environment kernel."""
+
 from .model import (
     EnvironmentRefused,
     StateStore,
@@ -10,6 +11,7 @@ from .model import (
     load_json,
     new_state,
     propose_crossing,
+    release_workspace,
     resolve_selector,
     validate_pattern,
 )
@@ -25,6 +27,7 @@ __all__ = [
     "load_json",
     "new_state",
     "propose_crossing",
+    "release_workspace",
     "resolve_selector",
     "validate_pattern",
 ]

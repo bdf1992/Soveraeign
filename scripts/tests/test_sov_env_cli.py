@@ -72,8 +72,7 @@ class CliAuthorityBoundaryTests(unittest.TestCase):
             result = json.loads(output.getvalue())
             self.assertEqual(2, code)
             self.assertEqual("REFUSED", result["outcome"])
-            self.assertIn("AUTHORITY_REFUSED", result["reason"])
-            self.assertIn("ENVIRONMENT_AUTHORITY_APERTURE_UNADMITTED", result["reason"])
+            self.assertEqual(sov_env.AUTHORITY_APERTURE_REFUSAL, result["reason"])
             stored = StateStore(path).read()
             self.assertEqual("PROPOSED", stored["crossing_records"][0]["status"])
 

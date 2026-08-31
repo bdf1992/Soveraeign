@@ -2,7 +2,7 @@
 
 ```text
 source          CLASSIFICATION.md · CONTRACT.md
-source_digest   b034a56c7cf90000 · f95acd076c4977d7
+source_digest   caf2384160b00eed · f95acd076c4977d7
 reader          hand-authored · v1
 fidelity        LOSSY
 omissions       the specific gate and receipt required at each step;

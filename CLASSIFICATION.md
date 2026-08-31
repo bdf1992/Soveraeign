@@ -49,6 +49,15 @@ node. They do not create new structural levels:
 - **Enterprise node** — an organization governs one or more nodes and their
   crossings.
 
+**Owner/node cardinality note.** An ownership profile says who governs a node,
+not how many nodes that owner may operate. One person may own and administer
+**N Soveraeign Nodes**. A node may be purpose-shaped — for example,
+**service-scoped**, **virtualized**, or **generative/on-demand** — without those
+labels becoming new structural classes. Each instance is a Node only if it
+satisfies the Node identity test above; isolating a service in a process,
+container, VM, or host is not sufficient by itself. Multiple sovereign nodes
+still relate through governed crossings and federation.
+
 **BYOM** is a model-selection practice, not a service or node type. A **Model
 Binding** realizes the operator interface for a configured model. A **Model
 Adapter** translates that binding to a named local runtime or remote provider.

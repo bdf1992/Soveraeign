@@ -1,0 +1,1 @@
+The v0.1 scorer is intentionally transparent: admitted normalized observations -> arithmetic center, population spread, standard error when n>1. It is a plumbing baseline, not a claim that the latent construct is linear or normally distributed.

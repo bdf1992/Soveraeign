@@ -1,4 +1,9 @@
-"""Promotion crossings, append-preserving receipts, and deployment history."""
+"""Promotion crossings, append-preserving receipts, and deployment history.
+
+`admit_crossing` is the pure transition model used by focused conformance tests.
+Operational callers must establish authority through `sovenv.authority` first;
+the package facade deliberately does not expose this lower-level transition.
+"""
 
 from __future__ import annotations
 
@@ -101,6 +106,8 @@ def _receipt(
         "artifact_digest": record["artifact_digest"],
         "target_instance": record["target_instance"],
     }
+    if record.get("authority_grant_id"):
+        receipt["authority_grant_id"] = record["authority_grant_id"]
     state.setdefault("receipts", []).append(receipt)
     record.setdefault("receipt_ids", []).append(receipt["receipt_id"])
     record["receipt"] = receipt
@@ -127,6 +134,7 @@ def admit_crossing(
     authority_grant_id: str | None = None,
     accepted: bool | None = None,
 ) -> dict[str, Any]:
+    """Apply already-established authority to the pure crossing state machine."""
     record = _record(state, crossing_id)
     if record["status"] != "PROPOSED":
         raise EnvironmentRefused("CROSSING_NOT_PROPOSED")
@@ -188,6 +196,8 @@ def land_crossing(
         "witness": record["witness"],
         "accepted": True,
     }
+    if record.get("authority_grant_id"):
+        deployment["authority_grant_id"] = record["authority_grant_id"]
     state["deployments"].append(deployment)
     record["status"] = "LANDED"
     record["deployment_id"] = deployment["deployment_id"]

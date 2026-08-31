@@ -56,7 +56,8 @@ def main() -> int:
                         help="emit machine-readable output")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    subparsers.add_parser("list", help="every custody and where it stands")
+    listing = subparsers.add_parser("list", help="every custody and where it stands")
+    listing.add_argument("--phase", help="show one phase custody collection")
     board = subparsers.add_parser("board", help="one custody as a board")
     board.add_argument("custody_id")
     board.add_argument("--no-derived", action="store_true",
@@ -65,7 +66,9 @@ def main() -> int:
     subparsers.add_parser("lifecycle", help="how custody composes with active work and settlement")
     estimate = subparsers.add_parser("estimate", help="estimated against measured cost")
     estimate.add_argument("custody_id", nargs="?")
-    subparsers.add_parser("reconcile", help="phase exit clauses against custodies")
+    estimate.add_argument("--phase", help="estimate only one phase collection")
+    reconcile = subparsers.add_parser("reconcile", help="phase exit clauses against custodies")
+    reconcile.add_argument("--phase", help="reconcile one phase only")
     subparsers.add_parser("phase", help="phase terminals and their pinned definitions")
     orphans = subparsers.add_parser("orphans", help="declared work no custody holds")
     orphans.add_argument("--kind", choices=["SEAM", "ITEM"])

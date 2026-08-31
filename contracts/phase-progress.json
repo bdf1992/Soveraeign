@@ -1,6 +1,6 @@
 {
   "contract": "phase-progress",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "status": "PROPOSED",
   "purpose": "Hold the phase gate reading to a floor it may not fall below, so that predicate coverage becomes a number something refuses on.",
   "warrant": "reports/2026-08-27-phase-i-retro.md finding 1: the F2 gate ran for six days at 0/44 and nothing in the landing loop, the CI gate, or the orientation snapshot refused. A number nothing refuses on is a number nothing moves.",
@@ -11,21 +11,49 @@
   },
   "floor": {
     "total": 36,
-    "by_family": {"requirement": 24, "transition": 8, "parity": 4},
+    "by_family": {
+      "requirement": 24,
+      "transition": 8,
+      "parity": 4
+    },
     "set_at_commit": "11c3f1aed1ef622e1fbc162f14043ef31910c217",
     "set_on": "2026-08-27",
     "set_by": "seat:session-control",
     "warrant": "The join declared on the 20 oracle controls, one predicate per oracle assertion whose failure is that predicate's failure. The eight predicates below the ceiling are absent on purpose and named in uncovered_on_purpose."
   },
   "uncovered_on_purpose": [
-    {"predicate": "PRED-I-2.1", "why": "no control rereads a source; the digest comparison is the non-mutation claim, not the reread claim"},
-    {"predicate": "PARITY-1", "why": "no control discovers legal operations; both bindings are handed the operation"},
-    {"predicate": "TRANS-capture_source", "why": "no control captures a source"},
-    {"predicate": "TRANS-make_effective", "why": "no control transitions a ratified claim to EFFECTIVE"},
-    {"predicate": "TRANS-begin_run", "why": "no control models a run lease"},
-    {"predicate": "TRANS-report_run", "why": "no control models an executor report"},
-    {"predicate": "TRANS-observe_run", "why": "no control models an observer independence relation"},
-    {"predicate": "TRANS-settle_run", "why": "no control models settlement"}
+    {
+      "predicate": "PRED-I-2.1",
+      "why": "no control rereads a source; the digest comparison is the non-mutation claim, not the reread claim"
+    },
+    {
+      "predicate": "PARITY-1",
+      "why": "no control discovers legal operations; both bindings are handed the operation"
+    },
+    {
+      "predicate": "TRANS-capture_source",
+      "why": "no control captures a source"
+    },
+    {
+      "predicate": "TRANS-make_effective",
+      "why": "no control transitions a ratified claim to EFFECTIVE"
+    },
+    {
+      "predicate": "TRANS-begin_run",
+      "why": "no control models a run lease"
+    },
+    {
+      "predicate": "TRANS-report_run",
+      "why": "no control models an executor report"
+    },
+    {
+      "predicate": "TRANS-observe_run",
+      "why": "no control models an observer independence relation"
+    },
+    {
+      "predicate": "TRANS-settle_run",
+      "why": "no control models settlement"
+    }
   ],
   "stall": {
     "ceiling_commits": 40,
@@ -59,6 +87,30 @@
       "code": "STALE_EXCLUSION",
       "fires_when": "uncovered_on_purpose names a predicate that is now covered, or one SPEC.md does not state",
       "why_it_refuses": "an exclusion that has stopped being true keeps a closed gap looking open"
+    }
+  ],
+  "historical_phase": "phase:i",
+  "active_phase_profiles": {},
+  "active_refusals": [
+    {
+      "code": "ACTIVE_PHASE_PROGRESS_UNINITIALIZED",
+      "fires_when": "STATUS names an active successor phase and phase-progress has no initialized profile for it",
+      "why_it_refuses": "an active campaign whose own progress unit is absent from the verifier repeats the Phase-I failure"
+    },
+    {
+      "code": "MISSING_EXIT_CUSTODY",
+      "fires_when": "an unearned exit clause points to a custody absent from that phase's live collection",
+      "why_it_refuses": "an exit carried by nobody cannot stay on the critical path of work"
+    },
+    {
+      "code": "EXIT_CUSTODY_UNTRACKED",
+      "fires_when": "an active exit custody has no initialized stage floor, or a floor names something no active exit carries",
+      "why_it_refuses": "the floor must account for exactly the work that owns the active exit"
+    },
+    {
+      "code": "CUSTODY_STAGE_REGRESSION",
+      "fires_when": "an active exit custody falls below the stage recorded in its phase-opening/progress floor",
+      "why_it_refuses": "a regression is attributable to the change that moved the custody backwards and may not disappear into a board projection"
     }
   ]
 }

@@ -19,7 +19,6 @@ import sys
 from sovverify.participants import PARTICIPANT_CHECKS
 from sovverify.shape import ROOT, Check
 
-
 REPOSITORY_CHECKS = (
     Check("repository hygiene", [sys.executable, "scripts/lint.py"], ROOT,
           "reads repository bytes directly with read_bytes, never a build report, and never "
@@ -185,15 +184,18 @@ REPOSITORY_CHECKS = (
     Check("phase progress floor", [sys.executable, "scripts/sov_phase_progress.py", "check"],
           ROOT,
           "re-reads SPEC.md and the conformance corpus at check time and grades the distance "
-          "between them against a recorded floor, so the number that defines the phase is one "
-          "something refuses on; it never reads a prior gate report or any claim that coverage "
-          "was added. The F2 gate itself is deliberately not the check: registering it would "
+          "between them against the preserved Phase-I floor, and when STATUS names a later "
+          "active phase it also requires every unearned exit custody to have an initialized "
+          "stage floor and refuses regression below it. It never reads a stored board or prior "
+          "gate report. The F2 gate itself is deliberately not the check: registering it would "
           "refuse every run until the phase exit is earned, which teaches a reader to ignore "
           "it. A fall refuses because a fall is attributable to the edit that caused it; a "
           "stall is printed and recorded as debt, on the reasoning decisions/0081 used to take "
           "the wall clock out of the exit code (reports/2026-08-27-phase-i-retro.md, finding 1)",
-          ("SPEC.md", "conformance/oracle-controls.json", "contracts/phase-progress.json",
-           "scripts/sov_f2_gate.py", "scripts/sov_phase_progress.py")),
+          ("SPEC.md", "STATUS.yaml", "contracts/phases.json",
+           "conformance/oracle-controls.json", "contracts/phase-progress.json",
+           "contracts/custodies.json", "scripts/sov_f2_gate.py",
+           "scripts/sov_phase_progress.py", "scripts/sovcustody")),
     Check("semantic cold-start task", [sys.executable, "scripts/sov_witness.py", "semantic"],
           ROOT,
           "judges the custody round trip by digests the witness computes itself rather than "

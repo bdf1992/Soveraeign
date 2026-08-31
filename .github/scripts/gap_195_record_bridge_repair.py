@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pathlib import Path
 
 path = Path("services/asset/tests/test_operational_record.py")

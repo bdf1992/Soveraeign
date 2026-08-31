@@ -8,6 +8,7 @@
     "node_id",
     "session_id",
     "operator_id",
+    "principal_id",
     "actor_kind",
     "binding_id",
     "opened_at",
@@ -30,6 +31,14 @@
     "operator_id": {
       "type": "string",
       "minLength": 1
+    },
+    "principal_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "description": "Durable principal this session claims to speak as when the binding can resolve one. Null means the binding did not establish a principal. This is identity provenance only: it grants no authority and does not replace operator_id or session_id."
     },
     "actor_kind": {
       "enum": [

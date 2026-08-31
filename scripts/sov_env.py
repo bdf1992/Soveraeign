@@ -2,9 +2,9 @@
 """CLI for the local Environment / Trunk / Deployment reference vertical.
 
 Proposal, workspace, history, and selector operations are executable. Promotion
-admission deliberately fails closed until the root admits the minimal Environment
-authority aperture tracked by #12/#190; a caller-supplied authority label is not a
-grant and cannot cross that boundary.
+admission consumes the shared AuthorityGrant contract and evaluator. A caller-
+supplied authority label remains inert: only a validated, covering grant can
+supply the authority type passed into the generalized transition model.
 """
 
 from __future__ import annotations
@@ -17,6 +17,7 @@ import sys
 from sovenv import (
     EnvironmentRefused,
     StateStore,
+    admit_crossing,
     bind_workspace,
     instantiate_environment,
     instantiate_trunk,
@@ -28,17 +29,27 @@ from sovenv import (
     resolve_selector,
     validate_pattern,
 )
+from sovenv.authority import authorize_crossing
 from sovenv.model import digest
 
-AUTHORITY_APERTURE_REFUSAL = (
-    "AUTHORITY_REFUSED:ENVIRONMENT_AUTHORITY_APERTURE_UNADMITTED"
-)
+ROOT = Path(__file__).resolve().parents[1]
+AUTHORITY_GRANT_SCHEMA = ROOT / "contracts" / "authority-grant.schema.json"
 
 
 def required(value: str | None, name: str) -> str:
     if not value:
         raise EnvironmentRefused(f"{name}_REQUIRED")
     return value
+
+
+def _checks(values: list[str]) -> dict[str, str]:
+    checks: dict[str, str] = {}
+    for value in values:
+        name, separator, result = value.partition("=")
+        if not separator or not name or not result:
+            raise EnvironmentRefused("CHECK_FORMAT_REQUIRED:name=RESULT")
+        checks[name] = result
+    return checks
 
 
 def _pattern_matches(state: dict[str, object], pattern: dict[str, object]) -> None:
@@ -95,13 +106,31 @@ def _mutate(args: argparse.Namespace, pattern: dict[str, object], state: dict) -
             evidence=args.evidence,
         )
     if args.operation == "admit":
-        # The transition model accepts an authority type so the generalized gate can be
-        # tested independently. The operator surface must not turn that model input into
-        # permission. The repository AuthorityGrant contract is currently path-scoped and
-        # no Environment crossing capability/resource scope has been root-admitted yet.
-        # Until that aperture exists, every CLI admission attempt fails closed through the
-        # kernel's existing authority refusal vocabulary, even if --authority is supplied.
-        raise EnvironmentRefused(AUTHORITY_APERTURE_REFUSAL)
+        if args.authority is not None:
+            raise EnvironmentRefused("AUTHORITY_REFUSED:CALLER_AUTHORITY_LABEL_FORBIDDEN")
+        witness = required(args.witness, "WITNESS")
+        grant_schema = load_json(AUTHORITY_GRANT_SCHEMA)
+        grants = [load_json(path) for path in args.grant]
+        observation = load_json(args.observation) if args.observation else None
+        granted = authorize_crossing(
+            state,
+            required(args.crossing, "CROSSING"),
+            actor_id=witness,
+            grants=grants,
+            grant_schema=grant_schema,
+            checks=_checks(args.check),
+            observation=observation,
+        )
+        return admit_crossing(
+            state,
+            pattern,
+            required(args.crossing, "CROSSING"),
+            current_integration_base=required(args.integration_base, "INTEGRATION_BASE"),
+            witness=witness,
+            authority=granted["authority_type"],
+            authority_grant_id=granted["grant_id"],
+            accepted=True if args.accepted else None,
+        )
     if args.operation == "land":
         return land_crossing(
             state,
@@ -154,7 +183,25 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--witness")
     parser.add_argument(
         "--authority",
-        help="model input only; cannot authorize CLI admission until the authority aperture is admitted",
+        help="deprecated model label; supplying it always refuses at the operator boundary",
+    )
+    parser.add_argument(
+        "--grant",
+        action="append",
+        default=[],
+        type=Path,
+        help="AuthorityGrant JSON offered for this exact crossing; repeatable",
+    )
+    parser.add_argument(
+        "--observation",
+        type=Path,
+        help="independent observation JSON carried as authority evidence",
+    )
+    parser.add_argument(
+        "--check",
+        action="append",
+        default=[],
+        help="authority precondition evidence as name=RESULT; repeatable",
     )
     parser.add_argument("--accepted", action="store_true")
     args = parser.parse_args(argv)

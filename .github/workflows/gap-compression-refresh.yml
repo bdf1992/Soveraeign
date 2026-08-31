@@ -32,6 +32,19 @@ jobs:
           python scripts/sov_compression.py weekly --json > /tmp/compression-weekly.json
           python scripts/sov_schedule.py validate
           python scripts/sov_lessons.py check
+      - name: Reconcile checked orientation snapshot
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path("CLAUDE.md")
+          text = path.read_text(encoding="utf-8")
+          before = "it now holds\n764 commits, 87 decision records and 29 reports."
+          after = "it now holds\n794 commits, 87 decision records and 29 reports."
+          if before not in text:
+              raise SystemExit("expected checked snapshot text is absent; refuse to guess")
+          path.write_text(text.replace(before, after, 1), encoding="utf-8", newline="\n")
+          PY
+          python scripts/sov_clarity.py record CLAUDE.md --changed
       - name: Rebuild derived readers on the final tree
         run: |
           python scripts/sov_docs.py build

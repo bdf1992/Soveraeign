@@ -1,0 +1,70 @@
+name: node-cardinality-refresh
+
+on:
+  push:
+    branches:
+      - note/node-cardinality
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Remove temporary workflow from final tree
+        run: git rm .github/workflows/node-cardinality-refresh.yml
+
+      - name: Refresh dependent clarity readers
+        run: |
+          python scripts/sov_clarity.py record SYSTEM.md
+          python scripts/sov_clarity.py record SPEC.md
+          python scripts/sov_clarity.py check
+
+      - name: Refresh CLASSIFICATION-dependent diagram provenance
+        run: |
+          python - <<'PY'
+          import importlib.util
+          from pathlib import Path
+
+          spec = importlib.util.spec_from_file_location("sov_diagrams", "scripts/sov_diagrams.py")
+          module = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(module)
+          expected = {
+              "crossing-typology.md",
+              "event-outcomes.md",
+              "service-map.md",
+              "standing-transition.md",
+          }
+          stale = {item["view"] for item in (module.grade(path) for path in module.views()) if item["verdict"] != "CURRENT"}
+          if stale != expected:
+              raise SystemExit(f"expected exactly {sorted(expected)} stale, got {sorted(stale)}")
+          for name in sorted(expected):
+              if not module.stamp(Path("diagrams") / name):
+                  raise SystemExit(f"{name} had no provenance digest to refresh")
+          PY
+          python scripts/sov_diagrams.py grade
+
+      - name: Rebuild derived interface and documentation
+        run: |
+          python scripts/sov_interface.py build
+          python scripts/sov_docs.py build
+
+      - name: Verify final self-cleaned tree
+        run: python scripts/verify.py
+
+      - name: Commit refreshed readers
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "docs(note): refresh node-cardinality readers"
+          git push origin HEAD:note/node-cardinality

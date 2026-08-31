@@ -1,0 +1,32 @@
+name: gap-derived-artifacts
+
+on:
+  push:
+    branches:
+      - chore/gap-phase-synthesis
+
+permissions:
+  contents: read
+
+jobs:
+  generate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Refresh seam clarity receipt
+        run: python scripts/sov_clarity.py record OPEN-SEAMS.md --changed
+      - name: Verify clarity receipt
+        run: python scripts/sov_clarity.py check
+      - name: Rebuild documentation reader
+        run: python scripts/sov_docs.py build
+      - name: Upload derived outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: gap-derived-artifacts
+          path: |
+            .clarity/coverage.json
+            docs/documentation.html
+          if-no-files-found: error

@@ -124,6 +124,7 @@ def admit_crossing(
     current_integration_base: str,
     witness: str,
     authority: str | None,
+    authority_grant_id: str | None = None,
     accepted: bool | None = None,
 ) -> dict[str, Any]:
     record = _record(state, crossing_id)
@@ -158,6 +159,8 @@ def admit_crossing(
     record["status"] = "ADMITTED"
     record["witness"] = witness
     record["authority"] = authority
+    if authority_grant_id:
+        record["authority_grant_id"] = authority_grant_id
     _receipt(state, record, "ADMITTED", None)
     return record
 

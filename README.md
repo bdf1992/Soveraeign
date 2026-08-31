@@ -119,7 +119,61 @@ Issue #148 is the Phase-I boundary-closure ledger.
 
 ## Start here
 
-Python 3.11 or newer is enough for the repository checks.
+A participant should not need to ingest the governance corpus before learning where they
+are or what this node exposes. Start from the live boundary and deepen context only when
+the operation in front of you requires it.
+
+### 1. Establish your session boundary
+
+```sh
+python scripts/sov_session.py register --intent "<what you are doing>"
+python scripts/sov_session.py brief
+```
+
+The session registry tells you who else is live, which working tree you occupy, what paths
+or non-file resources are held, and which durable principal this session resolves to. It
+is coordination plumbing only: presence, identity resolution, or a path claim grants no
+authority. For sustained parallel writing, use separate worktrees and explicit claims.
+
+### 2. Discover the node, not a hand-maintained operation list
+
+```sh
+python scripts/sov_interface.py show
+```
+
+The Node Interface is rebuilt from the repository's declared capability and route sources.
+It is a non-authoritative discovery projection: it tells a participant what is declared,
+bound, policy-active, reachable, observed, or omitted without turning any of those facts
+into permission.
+
+Once an operation is relevant, inspect that operation directly:
+
+```sh
+python scripts/sov_interface.py show <operation-id> --binding human
+# or
+python scripts/sov_interface.py show <operation-id> --binding model
+```
+
+Human and model bindings read the same operation. The rendering may differ; the operation,
+required inputs, authority requirement, and route do not.
+
+### 3. Load only the owner of the concern you are changing
+
+Follow the discovered operation to its owning service, contract, schema, decision, or
+status record. Do not pre-load unrelated governance. The separation is intentional:
+
+```text
+principal -> session -> grant -> operation -> Record Service journal -> projection
+```
+
+A principal says who the participant is. A session isolates one continuity boundary. A
+grant says what an operator may do. The operation belongs to its service. The Record
+Service preserves what happened. A projection makes that record easier to read and never
+becomes authority merely because it is convenient.
+
+### 4. Before landing, run the repository-owned checks
+
+Python 3.11 or newer is enough:
 
 ```sh
 python scripts/verify.py
@@ -135,15 +189,9 @@ make the repository semantically wrong. Per-check catastrophic limits still refu
 happen next. `sov_traps.py` checks repository facts that have repeatedly produced confident
 but wrong answers.
 
-[`scripts/README.md`](scripts/README.md) indexes the repository commands.
-
-Then read:
-
-1. `GROUND.md` and `CANON.md` for the product itself.
-2. `AGENTS.md`, `SOV.md`, `CONTRIBUTING.md`, and `STATUS.yaml` for how participants work
-   here.
-3. `SYSTEM.md`, `CONTRACT.md`, `PRD.md`, and `SPEC.md` for the system rules.
-4. `ENGINEERING.md` and `OPEN-SEAMS.md` before implementation work.
+[`scripts/README.md`](scripts/README.md) indexes the repository commands. The document map
+below is for deeper lookup when a discovered concern actually reaches one of those owners;
+it is not a prerequisite reading queue.
 
 ## Document map
 
@@ -178,10 +226,3 @@ that external effects can always be undone.
 
 Previous work may be kept as evidence or lineage. It enters the current system only
 through an explicit claim, decision, contract, test, schema, or reviewed implementation.
-
-## Publication boundary
-
-The public repository contains the current synthesis, contracts, logical testbed, and
-reference implementation. Historical evidence and ancestor material are not published by
-default. When they are absent, verification reports them as unavailable rather than
-claiming they were checked. See `PUBLICATION.md`.

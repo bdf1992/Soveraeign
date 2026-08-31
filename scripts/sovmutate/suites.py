@@ -40,6 +40,18 @@ def declarations(root: Path) -> tuple[tuple[str, tuple[str, ...], Path], ...]:
             "scripts.tests.test_automation_control",
             "scripts.tests.test_automation_health",
             "scripts.tests.test_automation_intent", "-q"), root),
+        (str(Path("scripts/sov_clarity.py")),
+         ("-m", "unittest", "scripts.tests.test_sov_clarity", "-q"), root),
+        (str(Path("scripts/sovclarity")),
+         ("-m", "unittest", "scripts.tests.test_sov_clarity", "-q"), root),
+        (str(Path("scripts/sovcustody/lifecycle.py")),
+         ("-m", "unittest", "scripts.tests.test_sov_custody_lifecycle", "-q"), root),
+        (str(Path("scripts/sovcustody")),
+         ("-m", "unittest", "scripts.tests.test_custody_boards", "-q"), root),
+        (str(Path("scripts/sov_custody.py")), (
+            "-m", "unittest",
+            "scripts.tests.test_custody_boards",
+            "scripts.tests.test_sov_custody_lifecycle", "-q"), root),
         ("scripts", ("-m", "unittest", "discover", "-s", "scripts/tests", "-q"), root),
     )
 

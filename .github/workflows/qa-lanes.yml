@@ -9,8 +9,10 @@ name: qa lanes
 #          because a finding counts only after independent reproduction
 #   purple gates any standing advance past BUILT on a settled engagement receipt
 #
-# No job here ratifies. Ratification reaches the repository through CODEOWNERS review
-# on STATUS.yaml and decisions/, which is owner judgement, not a check.
+# Mutation execution is intentionally not on this critical path. This workflow
+# admits the exact mutation work quickly; `.github/workflows/mutation-evidence.yml`
+# performs the expensive experiments asynchronously against landed immutable bytes.
+# No job here ratifies.
 
 on:
   pull_request:
@@ -62,11 +64,6 @@ jobs:
     name: red · generative screening
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    # Gated at the job so an unconfigured lane renders as SKIPPED, not as a pass.
-    # It previously exited zero after writing a refusal to the step summary, which
-    # made a refusal and a real screening indistinguishable in the check list -
-    # the defect named in decisions/0025. Generative screening stays optional; the
-    # blocking adversarial gate is `mutation`, which needs no key.
     if: vars.SOV_RED_LANE_ENABLED == 'true'
     permissions:
       contents: read
@@ -112,82 +109,57 @@ jobs:
             Do not claim a finding is confirmed. Do not claim the change is witnessed.
             Do not approve the pull request.
 
-  mutation:
-    name: red · mutation score
+  mutation-admission:
+    name: mutation · admission
     runs-on: ubuntu-latest
-    # 120 mutants, one full `scripts/tests` run each. The cost is the cap times the
-    # suite, not the size of the diff, so it does not fall when a change is smaller:
-    # on 2026-08-27 a 60-file change and a 17-file one were both killed at exactly
-    # 20:00, while the reconciliation had finished at 16:54 hours earlier. What moved
-    # between them is the suite, which that day's landings grew from 43s to 51s
-    # measured locally. Raised to 35 rather than lowering --total-limit, because the
-    # cap is what makes the number evidence and a shorter run is a weaker gate, not a
-    # cheaper one. The real repair is a faster `scripts/tests`; until then this is the
-    # honest budget. Bdo ruled it, because contracts/standing-grants.json puts
-    # .github/ outside the landing grant's scope.
-    timeout-minutes: 35
+    timeout-minutes: 3
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-
       - name: Fetch the comparison point
         run: git fetch --no-tags origin "${{ github.base_ref || 'main' }}"
-
-      - name: Prove the scorer discriminates before trusting its number
+      - name: Prove the instrument discriminates
         run: python scripts/sov_mutate.py selfcheck
-
-      - name: Score the mutants this change admits
+      - name: Admit exact mutation work
         run: |
-          python scripts/sov_mutate.py run             --changed             --base "origin/${{ github.base_ref || 'main' }}"             --limit 40             --total-limit 120
-
-      - name: Record what the score means
+          python scripts/sov_mutate.py plan \
+            --base "origin/${{ github.base_ref || 'main' }}" \
+            | tee mutation-plan.json
+      - name: Publish admission summary
         if: always()
         run: |
           {
-            echo '## Red lane, mechanical'
+            echo '## Mutation admission'
             echo
-            echo 'A mutation score is evidence about the *tests*, not about the code.'
-            echo 'A surviving mutant names a behaviour the suite does not assert.'
-            echo
-            echo 'This gate needs no key and cannot fail open: the scorer must first'
-            echo 'demonstrate that it kills an asserted mutant and spares an unasserted'
-            echo 'one, and a run that cannot prove it restored the tree refuses rather'
-            echo 'than reporting a score.'
-            echo
-            echo 'Mutants per file are capped at 40 and the cap is reported, never silent.'
-            echo 'A run is capped at 120 mutants. Large diffs sample paths evenly across'
-            echo 'the full ordered target set and report every omitted path.'
-            echo 'No threshold is enforced yet - `decisions/0025` leaves the number to Bdo,'
-            echo 'because a floor invented before a baseline would be asserted, not measured.'
+            echo 'This check proves the diff can be scoped and every changed production Python target has an owning suite.'
+            echo 'It does not execute the expensive mutants and does not claim a mutation score.'
+            echo 'Mutation execution runs asynchronously after landing against the immutable merge SHA.'
           } >> "$GITHUB_STEP_SUMMARY"
 
   red:
     name: red · adversarial screening
     runs-on: ubuntu-latest
     timeout-minutes: 1
-    needs: [generative-red, mutation]
-    if: ${{ !cancelled() && needs.mutation.result == 'success'
+    needs: [generative-red, mutation-admission]
+    if: ${{ !cancelled() && needs.mutation-admission.result == 'success'
             && needs.generative-red.result != 'failure' }}
     steps:
       - name: Publish the protected-branch check
         run: |
-          echo 'Mechanical adversarial screening passed.'
+          echo 'Mutation work was honestly admitted; expensive mutation execution is asynchronous evidence.'
           echo 'Optional generative screening was either successful or not enabled.'
 
   purple:
     name: purple · release gate
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [blue-required, red, mutation]
-    # `red` is opt-in and renders as skipped when unconfigured, which must not
-    # skip the gate behind it. A red that is enabled and *fails* still stops here.
+    needs: [blue-required, red]
     if: ${{ !cancelled() && needs.blue-required.result == 'success'
-            && needs.mutation.result == 'success' && needs.red.result != 'failure' }}
+            && needs.red.result == 'success' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

@@ -17,7 +17,7 @@ SCRIPTS = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(SCRIPTS))
 
 import sov_mutate  # noqa: E402
-from sovmutate import harness, operators  # noqa: E402
+from sovmutate import harness, operators, plan  # noqa: E402
 
 ROOT = SCRIPTS.parent
 
@@ -65,9 +65,6 @@ class OperatorMechanics(unittest.TestCase):
     def test_one_call_mutates_exactly_one_site(self):
         source = "a = 1 < 2\nb = 3 < 4\n"
         found = operators.sites(source)
-        # Six sites, not two: each comparison is one, and each integer literal
-        # in it is another. Constants are mutable because an off-by-one in a
-        # bound is exactly the defect a boundary test is supposed to pin.
         self.assertEqual(len(found), 6)
         mutated = operators.mutate(source, 0)
         self.assertIn("1 <= 2", mutated)
@@ -84,7 +81,6 @@ class OperatorMechanics(unittest.TestCase):
         self.assertEqual(first, second)
 
     def test_an_index_naming_no_site_is_refused_not_silently_ignored(self):
-        """A silently-unapplied mutant would be scored as survived and flatter the suite."""
         source = "x = 1 < 2\n"
         with self.assertRaises(IndexError):
             operators.mutate(source, 99)
@@ -94,10 +90,6 @@ class OperatorMechanics(unittest.TestCase):
 
 
 class ScorerDiscriminates(unittest.TestCase):
-    """Scoring spawns one subprocess per mutant, so both scores are taken once
-    for the whole class. Recomputing them per test multiplied the repository's
-    verification budget by the number of assertions."""
-
     @classmethod
     def setUpClass(cls) -> None:
         cls.pinning = _score(ASSERTED, PINNING_SUITE)
@@ -105,14 +97,10 @@ class ScorerDiscriminates(unittest.TestCase):
 
     def test_a_pinning_suite_kills_the_boundary_mutants(self):
         killed = [m for m in self.pinning.mutants if m.killed and m.site.operator == "compare"]
-        self.assertTrue(killed, "a suite pinning both sides of a boundary must kill the compare mutant")
+        self.assertTrue(killed)
 
     def test_a_vacuous_suite_scores_lower_than_a_pinning_one(self):
-        """The defeating case: a suite that only calls the function must not score like one that asserts."""
-        self.assertLess(
-            self.vacuous.percent, self.pinning.percent,
-            "a suite that asserts nothing scored at least as well as one that asserts",
-        )
+        self.assertLess(self.vacuous.percent, self.pinning.percent)
 
     def test_a_vacuous_suite_never_reports_a_perfect_score(self):
         self.assertLess(self.vacuous.percent, 100.0)
@@ -142,14 +130,6 @@ class TreeIsRestored(unittest.TestCase):
 
 
 class SuiteRouting(unittest.TestCase):
-    """A file scored against the wrong suite reports zero and reads as a finding.
-
-    The first CI run of this gate reported `conformance/run.py` at 0.0% because
-    it was scored against `scripts/tests`. Its own suite kills every mutant. A
-    false alarm of that size would discredit the instrument faster than no
-    instrument at all, so the routing is pinned here.
-    """
-
     def test_conformance_routes_to_its_own_suite(self):
         command, _cwd = sov_mutate.suite_for(ROOT / "conformance" / "run.py")
         self.assertIn("conformance/tests", command)
@@ -158,6 +138,21 @@ class SuiteRouting(unittest.TestCase):
     def test_scripts_route_to_the_tooling_suite(self):
         command, _cwd = sov_mutate.suite_for(ROOT / "scripts" / "sov_ticket.py")
         self.assertIn("scripts/tests", command)
+
+    def test_clarity_routes_to_its_focused_suite(self):
+        for target in (
+            ROOT / "scripts" / "sov_clarity.py",
+            ROOT / "scripts" / "sovclarity" / "scope.py",
+        ):
+            command, cwd = sov_mutate.suite_for(target)
+            self.assertEqual(cwd, ROOT)
+            self.assertIn("scripts.tests.test_sov_clarity", command)
+
+    def test_custody_lifecycle_routes_to_its_focused_suite(self):
+        command, cwd = sov_mutate.suite_for(ROOT / "scripts" / "sovcustody" / "lifecycle.py")
+        self.assertEqual(cwd, ROOT)
+        self.assertIn("scripts.tests.test_sov_custody_lifecycle", command)
+        self.assertNotIn("discover", command)
 
     def test_asset_service_runs_from_its_own_root(self):
         command, cwd = sov_mutate.suite_for(
@@ -183,18 +178,33 @@ class SuiteRouting(unittest.TestCase):
         self.assertIn("tests", command)
 
     def test_host_adapter_routes_to_the_host_participant_suite(self):
-        command, cwd = sov_mutate.suite_for(
-            ROOT / "adapters" / "host" / "local_host_adapter.py"
-        )
+        command, cwd = sov_mutate.suite_for(ROOT / "adapters" / "host" / "local_host_adapter.py")
         self.assertEqual(cwd, ROOT / "services" / "host")
         self.assertIn("tests", command)
 
     def test_an_unclaimed_file_is_refused_rather_than_scored_zero(self):
-        """The defeating case: no suite means no number, not a number of zero."""
         self.assertIsNone(sov_mutate.suite_for(ROOT / "adapters" / "github" / "export.py"))
 
     def test_a_path_outside_the_repository_is_refused(self):
         self.assertIsNone(sov_mutate.suite_for(Path(tempfile.gettempdir()) / "elsewhere.py"))
+
+
+class MutationPlanning(unittest.TestCase):
+    def test_a_target_plan_names_source_lines_sites_and_focused_suite(self):
+        target = ROOT / "scripts" / "sov_clarity.py"
+        lines = set(range(1, len(target.read_text(encoding="utf-8").splitlines()) + 1))
+        manifest = plan.target(ROOT, target, lines)
+        self.assertEqual(manifest["path"], "scripts/sov_clarity.py")
+        self.assertTrue(manifest["source_digest"].startswith("sha256:"))
+        self.assertEqual(manifest["suite"]["cwd"], ".")
+        self.assertIn("scripts.tests.test_sov_clarity", manifest["suite"]["command"])
+        self.assertTrue(manifest["mutable_sites"])
+
+    def test_an_unclaimed_target_is_refused_before_execution(self):
+        target = ROOT / "adapters" / "github" / "export.py"
+        if target.exists():
+            with self.assertRaisesRegex(plan.PlanError, "no mutation suite owns"):
+                plan.target(ROOT, target, {1})
 
 
 class WholeRunBudget(unittest.TestCase):
@@ -216,8 +226,7 @@ class WholeRunBudget(unittest.TestCase):
     def test_the_declared_total_can_never_be_exceeded(self):
         for files in range(1, 20):
             for budget in range(1, 20):
-                planned, _omitted = sov_mutate._budgeted_targets(
-                    self.paths(files), 40, budget)
+                planned, _omitted = sov_mutate._budgeted_targets(self.paths(files), 40, budget)
                 self.assertLessEqual(sum(limit for _path, limit in planned), budget)
 
     def test_no_whole_run_cap_preserves_the_previous_behavior(self):
@@ -228,14 +237,6 @@ class WholeRunBudget(unittest.TestCase):
     def test_a_zero_budget_is_refused_instead_of_reporting_an_empty_pass(self):
         with self.assertRaisesRegex(ValueError, "total-limit"):
             sov_mutate._budgeted_targets(self.paths(5), 40, 0)
-
-
-# The shipped `sov_mutate.py selfcheck` command is deliberately NOT wrapped in a
-# test here. It runs a full scoring pass, which costs a subprocess per mutant,
-# and `ScorerDiscriminates` already proves the same discrimination in-process.
-# Running it twice consumed a third of the repository's budget at the time to
-# re-prove a settled fact. It runs instead as its own step in the mutation gate,
-# which is the gate that depends on it.
 
 
 if __name__ == "__main__":

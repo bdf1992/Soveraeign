@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""Score how much the test suite asserts by mutating what the change touches.
+"""Plan or score how much the test suite asserts over changed behavior.
 
-`run --changed` mutates mutable sites on new-side lines in the merge-base diff,
-not every historical branch in every touched file. The whole-run mutant cap and
-per-file cap still bound cost. `selfcheck` proves the scorer discriminates and
-that diff scoping cannot silently widen beyond the supplied changed lines.
+`plan --changed` is the fast admission surface: derive exact changed-line scope,
+require a suite owner for every production Python target, and emit immutable
+work. `run --changed` performs the expensive mutation experiments separately.
 """
 
 from __future__ import annotations
@@ -16,7 +15,7 @@ import tempfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from sovmutate import diffscope, harness, operators, suites  # noqa: E402
+from sovmutate import diffscope, harness, operators, plan, suites  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -80,6 +79,12 @@ def _budgeted_targets(
     return planned, omitted
 
 
+def command_plan(args: argparse.Namespace) -> int:
+    """Admit changed-line mutation work without running any mutant."""
+    print(plan.render(plan.build(ROOT, args.base)))
+    return 0
+
+
 def command_run(args: argparse.Namespace) -> int:
     """Score one target, or changed-line mutation sites in changed Python files."""
     line_scope: dict[Path, set[int]] = {}
@@ -97,7 +102,11 @@ def command_run(args: argparse.Namespace) -> int:
         return 2
 
     unclaimed = [path for path in targets if suites.suite_for(path, ROOT) is None]
-    claimed = [path for path in targets if suites.suite_for(path, ROOT) is not None]
+    if unclaimed:
+        for path in unclaimed:
+            print(f"REFUSED: no mutation suite owns {path.relative_to(ROOT)}", file=sys.stderr)
+        return 2
+    claimed = targets
     try:
         planned, budget_omitted = _budgeted_targets(claimed, args.limit, args.total_limit)
     except ValueError as exc:
@@ -128,8 +137,6 @@ def command_run(args: argparse.Namespace) -> int:
         total_killed += score.killed
         total_generated += score.generated
 
-    for path in unclaimed:
-        print(f"UNSCORED: no suite claims {path}; not counted in the channel")
     for path in budget_omitted:
         print(f"UNSCORED: whole-run cap sampled out {path}; not counted in the channel")
 
@@ -178,12 +185,16 @@ def command_selfcheck(_args: argparse.Namespace) -> int:
     if parsed != {3, 4, 5, 15, 16}:
         defects.append(f"diff parser returned {sorted(parsed)}, not [3, 4, 5, 15, 16]")
 
-    capability = suites.suite_for(ROOT / "scripts/sov_capability.py", ROOT)
-    scheduler = suites.suite_for(ROOT / "scripts/sovschedule/authoring.py", ROOT)
-    if capability is None or "scripts.tests.test_capability_map" not in capability[0]:
-        defects.append("capability mutation target is not owned by its focused suite")
-    if scheduler is None or "scripts.tests.test_automation_authoring" not in scheduler[0]:
-        defects.append("scheduler mutation target is not owned by its focused suite")
+    owners = {
+        "capability": (ROOT / "scripts/sov_capability.py", "scripts.tests.test_capability_map"),
+        "scheduler": (ROOT / "scripts/sovschedule/authoring.py", "scripts.tests.test_automation_authoring"),
+        "clarity": (ROOT / "scripts/sov_clarity.py", "scripts.tests.test_sov_clarity"),
+        "custody": (ROOT / "scripts/sovcustody/lifecycle.py", "scripts.tests.test_sov_custody_lifecycle"),
+    }
+    for name, (target, expected) in owners.items():
+        owned = suites.suite_for(target, ROOT)
+        if owned is None or expected not in owned[0]:
+            defects.append(f"{name} mutation target is not owned by its focused suite")
 
     for defect in defects:
         print(f"FAIL: {defect}", file=sys.stderr)
@@ -210,6 +221,11 @@ def command_sites(args: argparse.Namespace) -> int:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="sov-mutate", description=__doc__.splitlines()[0])
     sub = parser.add_subparsers(dest="command", required=True)
+    plan_cmd = sub.add_parser("plan", help=command_plan.__doc__)
+    plan_cmd.add_argument("--changed", action="store_true", default=True,
+                          help="plan changed-line mutation work")
+    plan_cmd.add_argument("--base", default="origin/main", help="comparison point")
+    plan_cmd.set_defaults(handler=command_plan)
     run = sub.add_parser("run", help=command_run.__doc__)
     run.add_argument("--target", help="file to score")
     run.add_argument("--changed", action="store_true", help="score changed-line mutation sites")
@@ -230,7 +246,7 @@ def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
         return args.handler(args)
-    except (harness.RestoreFailure, diffscope.DiffScopeError) as exc:
+    except (harness.RestoreFailure, diffscope.DiffScopeError, plan.PlanError) as exc:
         print(f"REFUSED: {exc}", file=sys.stderr)
         return 3
 

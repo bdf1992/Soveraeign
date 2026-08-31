@@ -1,0 +1,94 @@
+name: mutation evidence
+
+# Mutation is test-quality evidence, not merge authority. PR admission proves the
+# work can be scoped honestly; this workflow performs the expensive experiments
+# after landing against immutable main bytes and preserves the receipt as an
+# artifact. No threshold is enforced until the repository has a measured baseline.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mutation-evidence-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  mutation:
+    name: mutation · evidence
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Select immutable comparison point
+        id: base
+        shell: bash
+        run: |
+          if git rev-parse HEAD^ >/dev/null 2>&1; then
+            echo "ref=HEAD^" >> "$GITHUB_OUTPUT"
+          else
+            echo "ref=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Prove the instrument discriminates
+        if: steps.base.outputs.ref != ''
+        run: python scripts/sov_mutate.py selfcheck
+
+      - name: Plan admitted mutation work
+        if: steps.base.outputs.ref != ''
+        run: |
+          mkdir -p .local/mutation
+          python scripts/sov_mutate.py plan \
+            --base "${{ steps.base.outputs.ref }}" \
+            | tee .local/mutation/plan.json
+
+      - name: Execute mutation evidence
+        if: steps.base.outputs.ref != ''
+        run: |
+          python scripts/sov_mutate.py run \
+            --changed \
+            --base "${{ steps.base.outputs.ref }}" \
+            --limit 40 \
+            --total-limit 120 \
+            | tee .local/mutation/score.txt
+
+      - name: Record immutable subject
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p .local/mutation
+          {
+            echo "head=${GITHUB_SHA}"
+            echo "base=${{ steps.base.outputs.ref }}"
+            echo "workflow_run=${GITHUB_RUN_ID}"
+          } > .local/mutation/subject.txt
+
+      - name: Preserve mutation receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mutation-evidence-${{ github.sha }}
+          path: .local/mutation/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Summarize evidence standing
+        if: always()
+        run: |
+          {
+            echo '## Mutation evidence'
+            echo
+            echo "Subject SHA: $GITHUB_SHA"
+            echo 'This is asynchronous evidence about test quality. It does not witness product behavior and does not ratify standing.'
+            echo 'Surviving mutants are engineering findings to reconcile under normal custody; no score threshold is currently authoritative.'
+          } >> "$GITHUB_STEP_SUMMARY"

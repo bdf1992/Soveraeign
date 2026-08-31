@@ -1,0 +1,64 @@
+name: gap 195 record bridge
+
+on:
+  push:
+    branches:
+      - gap/195-participant-isolation
+
+permissions:
+  contents: write
+
+jobs:
+  bridge:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Wire the existing Asset Record port
+        run: python .github/scripts/gap_195_record_bridge.py
+      - name: Rebuild derived surfaces
+        run: |
+          python scripts/sov_capability.py build
+          python scripts/sov_interface.py build
+          python scripts/sov_surface.py render
+          python scripts/sov_docs.py build
+      - name: Focused recorder checks
+        run: |
+          python -m unittest services.asset.tests.test_operational_record
+          python -m unittest services.asset.tests.test_routes
+          python -m unittest services.gateway.tests.test_gateway_slice
+          python -m unittest scripts.tests.test_gateway_observe
+          python -m unittest scripts.tests.test_node_interface
+      - name: Full repository verification
+        run: |
+          python scripts/sov_capability.py check
+          python scripts/sov_interface.py check
+          python scripts/sov_surface.py check
+          python scripts/sov_docs.py check
+          python scripts/lint.py
+          python scripts/verify.py
+      - name: Commit the recorder slice
+        run: |
+          if git diff --quiet; then
+            echo 'No changes.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add \
+            services/asset/src/soveraeign_asset_service/operational.py \
+            services/asset/src/soveraeign_asset_service/store.py \
+            services/asset/src/soveraeign_asset_service/core.py \
+            services/asset/tests/test_operational_record.py \
+            scripts/sovnode/composition.py scripts/gateway_witness_driver.py \
+            scripts/gateway_observe.py \
+            contracts/fixtures/capability-map.reference.json \
+            contracts/fixtures/node-interface.reference.json \
+            docs/surface.html docs/documentation.html
+          git commit -m 'feat(gap): bridge asset terminal history into record'
+          git push

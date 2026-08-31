@@ -31,6 +31,8 @@ jobs:
           python scripts/sov_compression.py daily --json > /tmp/compression-daily.json
           python scripts/sov_compression.py weekly --json > /tmp/compression-weekly.json
           python scripts/sov_schedule.py validate
+      - name: Refresh reviewed orientation receipt
+        run: python scripts/sov_clarity.py record CLAUDE.md --changed
       - name: Rebuild derived readers on the final tree
         run: |
           python scripts/sov_docs.py build

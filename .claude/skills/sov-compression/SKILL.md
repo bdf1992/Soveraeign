@@ -1,6 +1,6 @@
 ---
 name: sov-compression
-description: Cross-cutting gap-phase learning/compression competence for Soveraeign. Use for the daily compression ritual, weekly super-compression, repeated-defect analysis, representation/drift reduction, lesson routing, and deciding whether an observation belongs only in a report, in the existing lessons loop, in a governing decision, or in a concrete concern. This skill owns no policy and creates no new ledger.
+description: Cross-cutting gap-phase learning/compression competence for Soveraeign. Use for the daily compression ritual, weekly super-compression, repeated-defect analysis, representation/drift reduction, lesson routing, gate review, and the GAP_OPERATIONALLY_INVISIBLE readiness reading. This skill owns no policy and creates no new ledger.
 ---
 
 # sov-compression
@@ -18,6 +18,15 @@ and `contracts/phases.json` remain authoritative for phase state; `LESSONS.md`
 and `contracts/lessons-loop.json` own lessons; existing concerns/custodies own
 work; governing documents and decisions own policy.
 
+This skill composes, rather than replaces, the existing owners:
+
+- `sdlc-feedback` owns how learning returns to the SDLC loop;
+- `sov-governance` owns governing meaning, phase boundaries, and owner routing;
+- `sov-verification` owns repository verification evidence and gate mechanics.
+
+Compression supplies the cadence and correlation procedure. It must not copy
+those owners into a fourth policy surface.
+
 ## Core distinctions
 
 - **One authoritative producer per fact.** Independent observers may reproduce
@@ -32,6 +41,9 @@ work; governing documents and decisions own policy.
   One demonstrated authority, identity, security, or record-integrity defect can
   establish an invariant immediately. A reusable skill is extracted only after
   a stable procedure repeats.
+- **Gap work is temporary by definition.** Once the historical-to-current seam
+  is no longer observable to an independent fresh reader, stop manufacturing
+  gap work to preserve the ritual.
 
 ## Mechanical reader
 
@@ -52,6 +64,10 @@ It reads only:
 It writes nothing. Scheduled executions already have `.local/schedules/` capture
 and ledger semantics; do not add a compression ledger beside them.
 
+The deterministic reader is necessary but insufficient for the gap terminal. A
+fresh-reader pass must separately test whether current entry documents are
+actually usable without conversational or oral history.
+
 ## Daily ritual
 
 The daily pass is a small 24-hour feedback loop:
@@ -69,7 +85,8 @@ The daily pass is a small 24-hour feedback loop:
    - lesson candidate or stronger existing lesson;
    - decision candidate only when policy/authority/boundary changes;
    - concern candidate only when concrete work remains.
-6. Prefer one small compression/closure action over new surface. If no action is
+6. Run or consume an independent fresh-reader reading of the current entry path.
+7. Prefer one small compression/closure action over new surface. If no action is
    justified, say so; the ritual is allowed to produce no work.
 
 The daily ritual should feel almost invisible: short, bounded, and biased toward
@@ -91,7 +108,9 @@ The weekly pass uses the same instrument over seven days, then goes deeper:
 6. Review gate pressure using the existing #187 rule: blocking authority needs
    an explicit risk, scope, pass criterion, evidence class, expected cost, and
    owner. No criterion means advisory evidence, not a blocking verdict.
-7. End with a **subtraction plan**: facts/projections/checks/process steps that can
+7. Re-run the fresh-reader test independently rather than inheriting the daily
+   reports' claim that orientation is clear.
+8. End with a **subtraction plan**: facts/projections/checks/process steps that can
    now be derived, correlated, retired, or made unnecessary.
 
 The weekly result is not a new architecture plan. Its job is to make the next
@@ -108,11 +127,45 @@ referent · revision · topology · time · host/repository boundary`
 The purpose is not to force every concern through every axis. It is to avoid
 fixing the obvious noun while the real invariant lives one relation deeper.
 
+## Gap terminal
+
+The ritual may report the literal readiness reading:
+
+`GAP_OPERATIONALLY_INVISIBLE`
+
+only when an independent fresh reader can, from the current repository alone:
+
+1. identify historical Phase I as terminal `CLOSED_INCOMPLETE` rather than live
+   authority;
+2. identify that no successor phase is active and locate the current next gate;
+3. enter the current progressive participant path without oral history;
+4. reach the relevant principal/session -> grant -> operation -> record/projection
+   path and the concern -> custody -> lease -> closure -> landing -> settlement
+   lifecycle where applicable;
+5. find no `EFFECTIVE` lesson whose claimed carrier is absent or stale;
+6. find material owner decisions attached only to the exact transition they gate,
+   rather than an undifferentiated owner backlog blocking all work; and
+7. encounter surviving work as ordinary current readiness, not unexplained
+   Phase-I archaeology, duplicate truth, or reconciliation debris.
+
+`GAP_OPERATIONALLY_INVISIBLE` is **not** phase opening, acceptance, ratification,
+or permission to mutate `contracts/phases.json` or `STATUS.yaml`. It means the
+pre-opening gap has stopped imposing a special operational tax. Once this reading
+is independently supported, stop minting gap-specific work unless a regression
+makes the gap visible again. Daily compression may continue as regression
+detection and weekly compression may continue as ordinary system compression.
+
+If the fresh-reader result cannot be established, report `GAP_VISIBLE` or
+`UNATTESTABLE`; never infer invisibility from green CI or from the compression
+synthesizer's own confidence.
+
 ## Output contract
 
 Return these sections, omitting empty ones rather than inventing content:
 
 - subject revision and window;
+- gap reading: `GAP_VISIBLE`, `GAP_OPERATIONALLY_INVISIBLE`, or `UNATTESTABLE`;
+- fresh-reader evidence/friction;
 - new defects;
 - useful corroboration;
 - duplicate/redundant observations;
@@ -129,6 +182,7 @@ Return these sections, omitting empty ones rather than inventing content:
 Refuse to:
 
 - open/name a successor phase or change `phase: NONE_ACTIVE`;
+- convert `GAP_OPERATIONALLY_INVISIBLE` into a phase transition;
 - create a new learning/weekly ledger when schedule capture and existing records
   already hold the observation;
 - turn churn, failure count, repetition, model consensus, or recency into
@@ -139,7 +193,8 @@ Refuse to:
 - silently delete historical evidence or owner decisions in the name of
   compression;
 - merge independent observation into the authoritative producer it is meant to
-  check.
+  check;
+- keep the gap alive after its observable terminal has been independently reached.
 
 ## Verification
 

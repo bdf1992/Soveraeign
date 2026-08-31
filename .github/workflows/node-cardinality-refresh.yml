@@ -53,9 +53,10 @@ jobs:
           PY
           python scripts/sov_diagrams.py grade
 
-      - name: Rebuild derived interface and documentation
+      - name: Rebuild derived interface and publication readers
         run: |
           python scripts/sov_interface.py build
+          python scripts/sov_surface.py render
           python scripts/sov_docs.py build
 
       - name: Verify final self-cleaned tree

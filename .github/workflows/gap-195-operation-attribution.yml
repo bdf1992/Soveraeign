@@ -22,6 +22,7 @@ jobs:
       - name: Wire session attribution into the Gateway crossing
         run: |
           python .github/scripts/gap_195_operation_attribution.py
+          python .github/scripts/gap_195_operation_attribution_pre_repair.py
           python .github/scripts/gap_195_operation_attribution_repair.py
           python .github/scripts/gap_195_operation_attribution_finalize.py
       - name: Rebuild projections touched by the manifest and route source

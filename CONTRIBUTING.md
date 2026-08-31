@@ -5,6 +5,17 @@ operation without silently changing the system around it. Humans and models use
 the same contribution contract. `AGENTS.md` is normative; this document is the
 working path through it.
 
+## Start here
+
+Human and model contributors use the same progressive entry path. Establish the live session
+boundary with `python scripts/sov_session.py register` and `python scripts/sov_session.py brief`,
+discover the node with `python scripts/sov_interface.py show`, then load only the artifact that
+owns the operation or constraint you are changing. The ownership map below exists for that
+lookup; it is not a reading queue.
+
+Presence, principal resolution, a path claim, or a discovered operation grants no authority.
+Authority is still evaluated from the live typed grant at the operation boundary.
+
 ## Design System of Record
 
 Do not treat “System of Record” as “one file contains truth.” The governing set

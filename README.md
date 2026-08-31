@@ -226,3 +226,10 @@ that external effects can always be undone.
 
 Previous work may be kept as evidence or lineage. It enters the current system only
 through an explicit claim, decision, contract, test, schema, or reviewed implementation.
+
+## Publication boundary
+
+The public repository contains the current synthesis, contracts, logical testbed, and
+reference implementation. Historical evidence and ancestor material are not published by
+default. When they are absent, verification reports them as unavailable rather than
+claiming they were checked. See `PUBLICATION.md`.

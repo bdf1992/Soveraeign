@@ -4,7 +4,7 @@
       "artifact_digest": "sha256:cc421dd4d819e43edfcb6ba3e5e6d635b9d151db0d42f72e9e74bf77616fd45b",
       "basis": [
         {
-          "digest": "sha256:c68058c87ecf08473f15882d4895c81831bb3465ac9716df0fe453e91afeae17",
+          "digest": "sha256:e22390cedc724b9c30d9eb67179884252085b5da4367a6a9b5b388ddeebe3664",
           "path": "AGENTS.md"
         },
         {
@@ -18,7 +18,7 @@
       "artifact_digest": "sha256:4f1ab3e10a3c0e8be92a36c2c930d02373f02291561b91c950bc00664b263ccd",
       "basis": [
         {
-          "digest": "sha256:c68058c87ecf08473f15882d4895c81831bb3465ac9716df0fe453e91afeae17",
+          "digest": "sha256:e22390cedc724b9c30d9eb67179884252085b5da4367a6a9b5b388ddeebe3664",
           "path": "AGENTS.md"
         },
         {
@@ -29,7 +29,7 @@
       "changed": false
     },
     "AGENTS.md": {
-      "artifact_digest": "sha256:c68058c87ecf08473f15882d4895c81831bb3465ac9716df0fe453e91afeae17",
+      "artifact_digest": "sha256:e22390cedc724b9c30d9eb67179884252085b5da4367a6a9b5b388ddeebe3664",
       "basis": [
         {
           "digest": "sha256:20a43ff96c3f99f98fe90b612a49c4f60f9318bfebb4be61e3882a9dfbe27bb4",
@@ -101,14 +101,14 @@
       "changed": true
     },
     "CLAUDE.md": {
-      "artifact_digest": "sha256:d6fa6f42eadf17833358cb47abd273b68f1f1371f9320dc0b303c106e9f86b1f",
+      "artifact_digest": "sha256:7d7d16cd71ed9582abbf8fdab9997a74db6a8907bd46f3f64e7525ee3e2310e3",
       "basis": [
         {
-          "digest": "sha256:c68058c87ecf08473f15882d4895c81831bb3465ac9716df0fe453e91afeae17",
+          "digest": "sha256:e22390cedc724b9c30d9eb67179884252085b5da4367a6a9b5b388ddeebe3664",
           "path": "AGENTS.md"
         },
         {
-          "digest": "sha256:623038ff6330e07fee6806cd67009e02a420cef331a793eed39b966b878e839c",
+          "digest": "sha256:5c0af37027edab5a54ef0a48c9a9eb75da676021382443c7ec6a3f216fd6f651",
           "path": "SOV.md"
         },
         {
@@ -116,7 +116,7 @@
           "path": "STATUS.yaml"
         }
       ],
-      "changed": false
+      "changed": true
     },
     "CONTRACT.md": {
       "artifact_digest": "sha256:f95acd076c4977d73c38e14e42106576d0dea2dcf9eb4ec30a0526fd68c27d3c",
@@ -133,10 +133,10 @@
       "changed": true
     },
     "CONTRIBUTING.md": {
-      "artifact_digest": "sha256:bf7437acd4e14628a057725de4f7a29b6c1b6a012f44009f15ca8dac62743188",
+      "artifact_digest": "sha256:0013d9eb185d42e89e8234557c33a6ac7f98a96e7007a54f67fd5a609fc19908",
       "basis": [
         {
-          "digest": "sha256:c68058c87ecf08473f15882d4895c81831bb3465ac9716df0fe453e91afeae17",
+          "digest": "sha256:e22390cedc724b9c30d9eb67179884252085b5da4367a6a9b5b388ddeebe3664",
           "path": "AGENTS.md"
         },
         {
@@ -144,7 +144,7 @@
           "path": "STATUS.yaml"
         }
       ],
-      "changed": false
+      "changed": true
     },
     "GROUND.md": {
       "artifact_digest": "sha256:20a43ff96c3f99f98fe90b612a49c4f60f9318bfebb4be61e3882a9dfbe27bb4",
@@ -188,7 +188,7 @@
       "changed": true
     },
     "README.md": {
-      "artifact_digest": "sha256:8fa36d416b558c801af1240d1b4735510ca602aa975dd89078a87de0410b09a7",
+      "artifact_digest": "sha256:5fae455213316b3076a5bae60b50dfa8d0c088964d4f2fe4efddc6561062f6bc",
       "basis": [
         {
           "digest": "sha256:20a43ff96c3f99f98fe90b612a49c4f60f9318bfebb4be61e3882a9dfbe27bb4",
@@ -228,10 +228,10 @@
       "changed": true
     },
     "SOV.md": {
-      "artifact_digest": "sha256:623038ff6330e07fee6806cd67009e02a420cef331a793eed39b966b878e839c",
+      "artifact_digest": "sha256:5c0af37027edab5a54ef0a48c9a9eb75da676021382443c7ec6a3f216fd6f651",
       "basis": [
         {
-          "digest": "sha256:c68058c87ecf08473f15882d4895c81831bb3465ac9716df0fe453e91afeae17",
+          "digest": "sha256:e22390cedc724b9c30d9eb67179884252085b5da4367a6a9b5b388ddeebe3664",
           "path": "AGENTS.md"
         },
         {
@@ -247,7 +247,7 @@
           "path": "STATUS.yaml"
         }
       ],
-      "changed": false
+      "changed": true
     },
     "SPEC.md": {
       "artifact_digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",

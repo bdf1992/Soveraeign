@@ -1,0 +1,214 @@
+name: gap 195 compress participant entry
+
+on:
+  push:
+    branches:
+      - gap/195-participant-isolation
+
+permissions:
+  contents: write
+
+jobs:
+  compress:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Make the progressive entry path normative
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace(path, old, new):
+              p = Path(path)
+              text = p.read_text(encoding='utf-8')
+              if old not in text:
+                  raise SystemExit(f'expected block missing in {path}')
+              p.write_text(text.replace(old, new, 1), encoding='utf-8', newline='\n')
+
+          replace(
+              'AGENTS.md',
+              '''Before a consequential change, read `STATUS.yaml`, `GROUND.md`, `CANON.md`,
+          `SYSTEM.md`, `CLASSIFICATION.md`, `CONTRACT.md`, `PRD.md`, `SPEC.md`,
+          `AI-NATIVE.md`, `ENGINEERING.md`, `SDLC.md`, `OPEN-SEAMS.md`, and
+          `contracts/SUCCESSOR-PREP.md`.
+          ''',
+              '''Start from the live participation boundary, not a governance reading queue. Before a
+          consequential change:
+
+          1. establish or inspect the repository session with `python scripts/sov_session.py register`
+             and `python scripts/sov_session.py brief`;
+          2. discover the node through `python scripts/sov_interface.py show`, then inspect the one
+             operation or capability relevant to the task;
+          3. load the service, contract, schema, decision, status item, or seam that owns the specific
+             concern you are changing; and
+          4. run the repository-owned verification before landing.
+
+          Do not preload the entire governing set merely because a change is consequential. The
+          ownership map below is a lookup map, not a prerequisite curriculum. Read `STATUS.yaml` when
+          standing, phase state, or an owner-held transition is material; read product or system
+          documents when the discovered concern actually reaches what they own.
+          ''')
+
+          marker = '## Design System of Record\n'
+          p = Path('CONTRIBUTING.md')
+          text = p.read_text(encoding='utf-8')
+          if '## Start here\n' not in text:
+              start = '''## Start here
+
+          Human and model contributors use the same progressive entry path. Establish the live session
+          boundary with `python scripts/sov_session.py register` and `python scripts/sov_session.py brief`,
+          discover the node with `python scripts/sov_interface.py show`, then load only the artifact that
+          owns the operation or constraint you are changing. The ownership map below exists for that
+          lookup; it is not a reading queue.
+
+          Presence, principal resolution, a path claim, or a discovered operation grants no authority.
+          Authority is still evaluated from the live typed grant at the operation boundary.
+
+          '''
+              if marker not in text:
+                  raise SystemExit('CONTRIBUTING.md design-system marker missing')
+              p.write_text(text.replace(marker, start + marker, 1), encoding='utf-8', newline='\n')
+
+          replace(
+              'SOV.md',
+              '''For each fresh task:
+
+          1. Read `AGENTS.md`, this file, and `STATUS.yaml` at an exact repository revision.
+          2. Name the task, actor, host, available capabilities, required live grants, and maximum
+             admitted effect class.
+          3. Load the governing documents and only the contract, fixture, service, decision, and
+             issue material needed for the task. A consequential repository change still requires
+             the complete governing set named by `AGENTS.md`.
+          4. Read product meaning from `GROUND.md` and `CANON.md`, not from participant instructions.
+          5. State material omissions, stale or unavailable sources, the expected independent
+             observation, and the refusal or counteraction boundary.
+          6. Work one named operation and inspect the result through a path that does not rely only
+             on the executor's report.
+          7. If the result reaches an owner-held acceptance boundary, present the result and its
+             evidence. Otherwise continue to the next eligible bounded concern.
+          ''',
+              '''For each fresh task:
+
+          1. Read `AGENTS.md` and this profile at an exact repository revision, then establish or inspect
+             the live repository session with `python scripts/sov_session.py register` and
+             `python scripts/sov_session.py brief`.
+          2. Name the task, actor, host, available capabilities, required live grants, and maximum
+             admitted effect class.
+          3. Discover the node through `python scripts/sov_interface.py show` and inspect the one named
+             operation or capability relevant to the task.
+          4. Load only the contract, fixture, service, decision, status item, seam, and issue material
+             that owns that concern. Read `GROUND.md` and `CANON.md` when product meaning is material,
+             and `STATUS.yaml` when current standing or phase authority is material. Consequential work
+             does not require preloading unrelated governance.
+          5. State material omissions, stale or unavailable sources, the expected independent
+             observation, and the refusal or counteraction boundary.
+          6. Work one named operation and inspect the result through a path that does not rely only
+             on the executor's report.
+          7. If the result reaches an owner-held acceptance boundary, present the result and its
+             evidence. Otherwise continue to the next eligible bounded concern.
+          ''')
+
+          replace(
+              'CLAUDE.md',
+              '''## What the system is
+
+          Read `GROUND.md` and `CANON.md` for the product, then `SYSTEM.md` for the operating
+          model. `AGENTS.md`, `CONTRIBUTING.md`, and this file govern participants; they do
+          not own product claims.
+          ''',
+              '''## What the system is
+
+          Use the progressive entry path in `AGENTS.md`: session first, Node Interface discovery next,
+          then the owning artifact for the operation or constraint in front of you. Load `GROUND.md` and
+          `CANON.md` when product meaning is material and `SYSTEM.md` when the system boundary or operating
+          model is material. `AGENTS.md`, `CONTRIBUTING.md`, and this file govern participants; they do not
+          own product claims.
+          ''')
+
+          p = Path('README.md')
+          text = p.read_text(encoding='utf-8')
+          if '## Publication boundary\n' not in text:
+              text = text.rstrip() + '''
+
+          ## Publication boundary
+
+          The public repository contains the current synthesis, contracts, logical testbed, and
+          reference implementation. Historical evidence and ancestor material are not published by
+          default. When they are absent, verification reports them as unavailable rather than
+          claiming they were checked. See `PUBLICATION.md`.
+          '''
+              p.write_text(text, encoding='utf-8', newline='\n')
+          PY
+      - name: Rebuild current readers
+        run: |
+          python scripts/sov_surface.py render
+          python scripts/sov_docs.py build
+      - name: Refresh clarity only across the narrow entry-rule change
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import subprocess
+
+          changed = {'AGENTS.md', 'CONTRIBUTING.md', 'SOV.md', 'CLAUDE.md', 'README.md'}
+          forbidden = (
+              'complete governing set',
+              'Before a consequential change, read `STATUS.yaml`, `GROUND.md`',
+          )
+
+          def states():
+              out = subprocess.check_output(
+                  ['python', 'scripts/sov_clarity.py', 'status', '--json'], text=True)
+              return json.loads(out)
+
+          # Record the files whose text changed first so dependent receipts bind to the new basis.
+          for path in ('AGENTS.md', 'CONTRIBUTING.md', 'SOV.md', 'CLAUDE.md', 'README.md'):
+              subprocess.check_call(['python', 'scripts/sov_clarity.py', 'record', path, '--changed'])
+
+          # A change to AGENTS intentionally makes dependent receipts basis-stale. This change alters
+          # only the blanket pre-read rule. Refresh an unchanged dependent only after proving it does
+          # not retain that retired rule. Any dependent that does retain it stops this workflow and
+          # must be reviewed/edited explicitly rather than receiving a blind receipt refresh.
+          for _ in range(20):
+              stale = {p: s for p, s in states().items() if s in {'TEXT_STALE', 'BASIS_STALE'}}
+              if not stale:
+                  break
+              progressed = False
+              for path, state in stale.items():
+                  if path in changed:
+                      subprocess.check_call(['python', 'scripts/sov_clarity.py', 'record', path, '--changed'])
+                      progressed = True
+                      continue
+                  body = Path(path).read_text(encoding='utf-8', errors='replace')
+                  hits = [needle for needle in forbidden if needle in body]
+                  if hits:
+                      raise SystemExit(f'{path}: retained retired blanket-entry rule: {hits}')
+                  subprocess.check_call(['python', 'scripts/sov_clarity.py', 'record', path])
+                  progressed = True
+              if not progressed:
+                  break
+          subprocess.check_call(['python', 'scripts/sov_clarity.py', 'check'])
+          PY
+      - name: Verify the compressed path
+        run: |
+          python scripts/sov_interface.py check
+          python scripts/sov_surface.py check
+          python scripts/sov_docs.py check
+          python scripts/verify.py
+      - name: Commit the gap slice
+        run: |
+          if git diff --quiet; then
+            echo 'No changes.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add AGENTS.md CONTRIBUTING.md SOV.md CLAUDE.md README.md .clarity/coverage.json docs/surface.html docs/documentation.html
+          git commit -m 'docs(gap): make progressive discovery the participant entry path'
+          git push

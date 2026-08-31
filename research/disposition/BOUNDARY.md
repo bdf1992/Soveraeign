@@ -1,1 +1,0 @@
-Disposition Lab profiles are evidence-backed descriptive projections. They do not create identity, authority, diagnosis, permission, standing, or phase scope.

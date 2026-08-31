@@ -1,1 +1,0 @@
-Cross-subject comparison is a governed research crossing, not a consequence of sharing a numeric scale. No equivalence record means no rank, percentile, or mean comparison.

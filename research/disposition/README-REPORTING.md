@@ -1,1 +1,0 @@
-Reports must preserve calibration standing, source profile digest, omissions, and comparison standing. Presentation quality must not strengthen evidentiary standing.

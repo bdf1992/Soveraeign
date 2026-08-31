@@ -1,1 +1,0 @@
-Reception is reserved as a relational research channel: subject × observer × context. It must remain distinct from the subject's disposition and from observable expression until separate evidence/calibration work is done.

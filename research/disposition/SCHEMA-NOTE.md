@@ -1,1 +1,0 @@
-All v0.1 schemas are experimental and may change incompatibly before calibration begins. Derived artifacts must pin the exact definition/revision used.

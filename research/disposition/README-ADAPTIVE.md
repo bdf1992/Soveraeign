@@ -1,1 +1,0 @@
-Adaptive selection is deferred until a calibrated probe bank exists. A model may propose candidate probes; deterministic admissibility and empirically estimated information parameters must govern selection/scoring.

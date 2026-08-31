@@ -1,1 +1,0 @@
-Disposition Lab is research scaffolding. Green software tests do not validate the instrument.

@@ -43,7 +43,7 @@ jobs:
           bad=0
           while IFS= read -r path; do
             case "$path" in
-              .clarity/coverage.json|PRD.md|SPEC.md|CLAUDE.md|archives/SPEC-PHASE-I-TERMINAL.txt|contracts/phases.json|contracts/README.md|contracts/custody.schema.json|contracts/record-projection.schema.json|contracts/finding.schema.json|conformance/fixtures/commissioning/evidence-contract-cases.json|scripts/tests/test_commissioning_evidence_contracts.py|diagrams/*.md|docs/documentation.html|.github/workflows/gap-195-readiness-definition.yml|.github/scripts/gap_195_readiness_definition.py|.github/scripts/gap_195_readiness_repair.py)
+              .clarity/coverage.json|PRD.md|SPEC.md|CLAUDE.md|archives/SPEC-PHASE-I-TERMINAL.txt|contracts/phases.json|contracts/README.md|contracts/custody.schema.json|contracts/record-projection.schema.json|contracts/finding.schema.json|conformance/fixtures/commissioning/|conformance/fixtures/commissioning/evidence-contract-cases.json|scripts/tests/test_commissioning_evidence_contracts.py|diagrams/*.md|docs/documentation.html|.github/workflows/gap-195-readiness-definition.yml|.github/scripts/gap_195_readiness_definition.py|.github/scripts/gap_195_readiness_repair.py)
                 ;;
               *)
                 echo "UNEXPECTED readiness path: $path"

@@ -86,12 +86,11 @@ jobs:
           python .github/scripts/gap_195_record_bridge.py
           python .github/scripts/gap_195_record_bridge_repair.py
 
-      - name: Rebuild derived surfaces
+      - name: Rebuild capability and interface surfaces
         run: |
           python scripts/sov_capability.py build
           python scripts/sov_interface.py build
           python scripts/sov_surface.py render
-          python scripts/sov_docs.py build
 
       - name: Refresh clarity receipts affected by the joined governance basis
         shell: bash
@@ -148,6 +147,9 @@ jobs:
               text = text[:start] + str(value) + text[end:]
           path.write_text(text, encoding='utf-8', newline='\n')
           PY
+
+      - name: Rebuild documentation against the final shaped tree
+        run: python scripts/sov_docs.py build
 
       - name: Commit normalized recorder slice locally
         shell: bash

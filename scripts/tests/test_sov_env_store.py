@@ -27,15 +27,53 @@ def lease(
     principal: str = "urn:soveraeign:principal:agent:one",
     fence: int = 1,
     state: str = "HELD",
+    relation: str = "PARENT",
+    parent_lease: str | None = None,
 ) -> dict[str, object]:
-    return {
+    record: dict[str, object] = {
         "lease_schema": "soveraeign-work-lease/v1",
-        "state": state,
+        "status": "RATIFIED",
         "lease_id": lease_id,
         "concern": {"kind": "ticket", "reference": "#191"},
-        "holder": {"principal_id": principal},
+        "holder": {
+            "principal_id": principal,
+            "relation": relation,
+            "parent_lease": parent_lease if relation != "PARENT" else None,
+            "controller_principal": (
+                None
+                if relation == "PARENT"
+                else "urn:soveraeign:principal:agent:controller"
+            ),
+            "definition": {
+                "definition_id": "test-agent",
+                "definition_kind": "agent",
+                "provenance": "SYSTEM_AUTHORED",
+                "version": "1",
+            },
+        },
+        "grant": {
+            "grant_id": None,
+            "authority_type": None,
+            "capabilities": [],
+            "effect_ceiling": "RECORD_LOCAL",
+        },
+        "budget": {"consumption": [], "emission": []},
+        "closure": {
+            "condition": "the bounded Environment operation is complete",
+            "defeating_evidence": "the operation escaped its declared workspace",
+        },
         "fence": fence,
+        "granted_at": "2026-08-30T00:00:00Z",
+        "expires_at": "2099-01-01T00:00:00Z",
+        "state": state,
     }
+    if state == "COMPLETED":
+        record["closure_evidence"] = {
+            "receipt_id": "receipt:environment-built",
+            "standing_reached": "BUILT",
+            "evidence_addresses": ["scripts/tests/test_sov_env_store.py"],
+        }
+    return record
 
 
 def software_state() -> dict[str, object]:
@@ -55,6 +93,23 @@ class LeaseSafetyTests(unittest.TestCase):
                 workspace="/tmp/w",
                 branch="feat/b",
                 base_revision="a",
+            )
+
+    def test_work_lease_schema_is_consumed_not_reimplemented(self) -> None:
+        state = software_state()
+        malformed = lease()
+        del malformed["budget"]
+        with self.assertRaisesRegex(EnvironmentRefused, "missing required property 'budget'"):
+            bind_workspace(
+                state, malformed, workspace="/tmp/w", branch="feat/a", base_revision="a"
+            )
+
+    def test_work_lease_semantic_refusal_is_preserved(self) -> None:
+        state = software_state()
+        helper = lease(relation="HELPER", parent_lease="lease:parent")
+        with self.assertRaisesRegex(EnvironmentRefused, "HELPER_WITHOUT_PARENT"):
+            bind_workspace(
+                state, helper, workspace="/tmp/w", branch="feat/a", base_revision="a"
             )
 
     def test_newer_fence_supersedes_old_binding(self) -> None:

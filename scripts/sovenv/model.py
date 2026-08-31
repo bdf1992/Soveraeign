@@ -1,4 +1,9 @@
-"""Compatibility facade for the local Environment / Trunk / Deployment kernel."""
+"""Compatibility facade for non-authoritative Environment model operations.
+
+Governed promotion admission is intentionally absent from this facade. Operational
+callers use `sovenv.authority.admit_crossing`; focused state-machine tests may import
+the raw transition from `sovenv.transitions` explicitly.
+"""
 
 from __future__ import annotations
 
@@ -12,12 +17,11 @@ from .state import (
     release_workspace,
 )
 from .store import StateStore
-from .transitions import admit_crossing, land_crossing, propose_crossing, resolve_selector
+from .transitions import land_crossing, propose_crossing, resolve_selector
 
 __all__ = [
     "EnvironmentRefused",
     "StateStore",
-    "admit_crossing",
     "bind_workspace",
     "canonical",
     "digest",

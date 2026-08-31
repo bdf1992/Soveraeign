@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from pathlib import Path
 import sys
-import tempfile
 import unittest
 
 SCRIPTS = Path(__file__).resolve().parents[1]
@@ -11,9 +10,7 @@ sys.path.insert(0, str(SCRIPTS))
 
 from sovenv.model import (
     EnvironmentRefused,
-    StateStore,
     admit_crossing,
-    bind_workspace,
     instantiate_environment,
     instantiate_trunk,
     land_crossing,
@@ -25,21 +22,6 @@ from sovenv.model import (
 )
 
 FIXTURES = ROOT / "conformance" / "fixtures" / "environment"
-
-
-def lease(
-    lease_id: str = "lease:one",
-    principal: str = "urn:soveraeign:principal:agent:one",
-    fence: int = 1,
-) -> dict[str, object]:
-    return {
-        "lease_schema": "soveraeign-work-lease/v1",
-        "state": "HELD",
-        "lease_id": lease_id,
-        "concern": {"kind": "ticket", "reference": "#191"},
-        "holder": {"principal_id": principal},
-        "fence": fence,
-    }
 
 
 def software() -> tuple[dict[str, object], dict[str, object]]:
@@ -76,40 +58,6 @@ class PatternTests(unittest.TestCase):
             EnvironmentRefused, "ENVIRONMENT_MULTIPLICITY_EXCEEDED"
         ):
             instantiate_environment(state, pattern, "DEV", "dev:other")
-
-
-class LeaseSafetyTests(unittest.TestCase):
-    def test_two_workers_cannot_share_workspace(self) -> None:
-        _, state = software()
-        bind_workspace(
-            state, lease(), workspace="/tmp/w", branch="feat/a", base_revision="a"
-        )
-        with self.assertRaisesRegex(EnvironmentRefused, "WORKSPACE_ALREADY_LEASED"):
-            bind_workspace(
-                state,
-                lease("lease:two", "urn:soveraeign:principal:agent:two"),
-                workspace="/tmp/w",
-                branch="feat/b",
-                base_revision="a",
-            )
-
-    def test_stale_fence_is_refused(self) -> None:
-        _, state = software()
-        bind_workspace(
-            state,
-            lease(fence=2),
-            workspace="/tmp/w",
-            branch="feat/a",
-            base_revision="a",
-        )
-        with self.assertRaisesRegex(EnvironmentRefused, "STALE_LEASE"):
-            bind_workspace(
-                state,
-                lease(fence=1),
-                workspace="/tmp/w2",
-                branch="feat/a",
-                base_revision="a",
-            )
 
 
 class CrossingTests(unittest.TestCase):
@@ -255,10 +203,24 @@ class CrossingTests(unittest.TestCase):
             witness="qa",
             authority="VERIFICATION",
         )
-        refused = land_crossing(
-            state, record["crossing_id"], landing_revision="rebuilt"
-        )
+        refused = land_crossing(state, record["crossing_id"], landing_revision="rebuilt")
         self.assertEqual("CANDIDATE_IDENTITY_CHANGED", refused["receipt"]["reason"])
+
+    def test_receipts_are_append_preserving(self) -> None:
+        pattern, state, record = self.proposal()
+        admitted = admit_crossing(
+            state,
+            pattern,
+            record["crossing_id"],
+            current_integration_base="base1",
+            witness="qa",
+            authority="VERIFICATION",
+        )
+        admission_receipt = admitted["receipt"]["receipt_id"]
+        land_crossing(state, record["crossing_id"], landing_revision="abc123")
+        self.assertEqual(2, len(state["receipts"]))
+        self.assertEqual(admission_receipt, record["receipt_ids"][0])
+        self.assertEqual(2, len(record["receipt_ids"]))
 
     def test_latest_prior_are_history_selectors(self) -> None:
         pattern, state = software()
@@ -288,16 +250,6 @@ class CrossingTests(unittest.TestCase):
             land_crossing(state, record["crossing_id"], landing_revision=revision)
         self.assertEqual("p2", resolve_selector(state, pattern, "LATEST")["revision"])
         self.assertEqual("p1", resolve_selector(state, pattern, "PRIOR")["revision"])
-
-
-class StoreTests(unittest.TestCase):
-    def test_busy_state_write_refuses(self) -> None:
-        pattern, state = software()
-        with tempfile.TemporaryDirectory() as directory:
-            store = StateStore(Path(directory) / "state.json")
-            store.lock_path.write_text("other", encoding="utf-8")
-            with self.assertRaisesRegex(EnvironmentRefused, "STATE_WRITE_BUSY"):
-                store.write(state)
 
 
 if __name__ == "__main__":

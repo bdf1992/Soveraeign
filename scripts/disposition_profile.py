@@ -7,10 +7,11 @@ from typing import Any, Iterable
 from scripts import disposition_store as storelib
 
 ROOT = Path(__file__).resolve().parents[1]
-CONSTRUCTS_PATH = ROOT / "research" / "disposition" / "constructs.json"
-PROBES_PATH = ROOT / "research" / "disposition" / "probes.json"
-PROJECTIONS_PATH = ROOT / "research" / "disposition" / "projections.json"
-EQUIVALENCE_PATH = ROOT / "research" / "disposition" / "equivalence.json"
+LAB_PATH = ROOT / ".claude" / "drafts" / "disposition-lab"
+CONSTRUCTS_PATH = LAB_PATH / "constructs.json"
+PROBES_PATH = LAB_PATH / "probes.json"
+PROJECTIONS_PATH = LAB_PATH / "projections.json"
+EQUIVALENCE_PATH = LAB_PATH / "equivalence.json"
 
 
 def load_bank() -> dict[str, dict[str, Any]]:

@@ -1,0 +1,44 @@
+name: gap 195 rebuild derived surfaces
+
+on:
+  push:
+    branches:
+      - gap/195-participant-isolation
+
+permissions:
+  contents: write
+
+jobs:
+  rebuild:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Rebuild repository-owned projections
+        run: |
+          python scripts/sov_interface.py build
+          python scripts/sov_surface.py render
+          python scripts/sov_docs.py build
+          python scripts/sov_clarity.py record README.md --changed
+      - name: Check rebuilt projections
+        run: |
+          python scripts/sov_interface.py check
+          python scripts/sov_surface.py check
+          python scripts/sov_docs.py check
+          python scripts/sov_clarity.py check
+      - name: Commit generated artifacts
+        run: |
+          if git diff --quiet; then
+            echo 'No generated changes.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add contracts/fixtures/node-interface.reference.json docs/surface.html docs/documentation.html .clarity/coverage.json
+          git commit -m 'build(gap): refresh derived participation surfaces'
+          git push

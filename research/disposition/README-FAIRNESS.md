@@ -1,0 +1,1 @@
+Fairness is part of assessment quality for intended human uses. A technically consistent instrument can still be inappropriate if irrelevant barriers, differential functioning, or unequal score meaning distort the intended interpretation.

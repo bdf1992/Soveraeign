@@ -190,11 +190,11 @@
     },
     {
       "address": "services/console/src/soveraeign_console_service/continuity.py",
-      "digest": "6b1d83295a4cbaa7656c84a96acbb3c8602f2fb3af7731f2e591f1c56cb92adc"
+      "digest": "6fda43e0034d50f5606a98c999bc0c3acbfc36c7ed6f3aecd23d8962f1367f29"
     },
     {
       "address": "services/console/src/soveraeign_console_service/core.py",
-      "digest": "1acb078eb37bbd96ec3139f2449a5446fd5487c41fe81a8943625c6fd37ef53c"
+      "digest": "48b42c6d1fdb40942dcf23201e883eb3ac6361a149e61495a75633501a13d8cb"
     },
     {
       "address": "services/console/src/soveraeign_console_service/routes.py",
@@ -273,7 +273,7 @@
       "digest": "150834886995a8e0c32334beb5ef53dbc69cbb244172b510a06b056e608bf4b0"
     }
   ],
-  "input_state_digest": "c8c8642425dcfc3b70f2e5bcae21295b4d03664516a765cfbcb2b9d27099e43e",
+  "input_state_digest": "54d521e798e57143f7ef804e01d8d09608e06c5f4467dfdab0f04d690f27abf7",
   "counts": {
     "declared": 134,
     "bound": 134,
@@ -5316,11 +5316,11 @@
         },
         {
           "address": "services/console/src/soveraeign_console_service/continuity.py",
-          "digest": "6b1d83295a4cbaa7656c84a96acbb3c8602f2fb3af7731f2e591f1c56cb92adc"
+          "digest": "6fda43e0034d50f5606a98c999bc0c3acbfc36c7ed6f3aecd23d8962f1367f29"
         },
         {
           "address": "services/console/src/soveraeign_console_service/core.py",
-          "digest": "1acb078eb37bbd96ec3139f2449a5446fd5487c41fe81a8943625c6fd37ef53c"
+          "digest": "48b42c6d1fdb40942dcf23201e883eb3ac6361a149e61495a75633501a13d8cb"
         },
         {
           "address": "services/console/src/soveraeign_console_service/routes.py",
@@ -5344,7 +5344,7 @@
         "reason_code": "EXACT_READ_ROUTE_ACTIVE",
         "explanation": "An exact policy-active service route exists for this read."
       },
-      "record_digest": "3d3ae643557b3bd540eba2b7fd1797f340bd7deaa5f1b43f0c0a79d4af17b929"
+      "record_digest": "e4f6563501b96cdc886aeeda3b17b97d241f5810e2cf3de3fcd1f0036bdcea04"
     },
     {
       "operation_id": "console.rebuild-projection",

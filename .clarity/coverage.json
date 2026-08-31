@@ -188,7 +188,7 @@
       "changed": true
     },
     "README.md": {
-      "artifact_digest": "sha256:d8c93e8b3ddc6f253fc69d40b3a180a9f88c2c84d1b8794e996d7f2de1154761",
+      "artifact_digest": "sha256:8fa36d416b558c801af1240d1b4735510ca602aa975dd89078a87de0410b09a7",
       "basis": [
         {
           "digest": "sha256:20a43ff96c3f99f98fe90b612a49c4f60f9318bfebb4be61e3882a9dfbe27bb4",

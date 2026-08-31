@@ -1,0 +1,257 @@
+name: gap-clarity-pass
+
+on:
+  push:
+    branches:
+      - chore/gap-phase-synthesis
+
+permissions:
+  contents: write
+
+jobs:
+  clarity:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Apply bounded clarity edits
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          def read(path):
+              return Path(path).read_text(encoding="utf-8")
+
+          def write(path, text):
+              Path(path).write_text(text.rstrip("\n") + "\n", encoding="utf-8", newline="\n")
+
+          def replace(path, old, new):
+              text = read(path)
+              if old not in text:
+                  raise SystemExit(f"missing replacement target in {path}: {old[:80]!r}")
+              write(path, text.replace(old, new, 1))
+
+          def between(path, start, end, replacement):
+              text = read(path)
+              a = text.find(start)
+              if a < 0:
+                  raise SystemExit(f"missing start marker in {path}: {start}")
+              b = text.find(end, a + len(start))
+              if b < 0:
+                  raise SystemExit(f"missing end marker in {path}: {end}")
+              write(path, text[:a] + replacement.rstrip("\n") + "\n\n" + text[b:])
+
+          # Root orientation: make the closed-books gap visible without opening a phase.
+          replace(
+              "README.md",
+              "`STATUS.yaml` is the machine-readable source for current standing and owner-held items.\nIssue #148 is the Phase-I boundary-closure ledger.",
+              "`STATUS.yaml` is the machine-readable source for current standing and owner-held items.\n`contracts/SUCCESSOR-PREP.md` is the current closed-books gap synthesis; it grants no successor-phase standing.\nIssue #148 is the Phase-I boundary-closure ledger.",
+          )
+          replace(
+              "AGENTS.md",
+              "Before a consequential change, read `STATUS.yaml`, `GROUND.md`, `CANON.md`,\n`SYSTEM.md`, `CLASSIFICATION.md`, `CONTRACT.md`, `PRD.md`, `SPEC.md`,\n`AI-NATIVE.md`, `ENGINEERING.md`, `SDLC.md`, and `OPEN-SEAMS.md`.",
+              "Before a consequential change, read `STATUS.yaml`, `GROUND.md`, `CANON.md`,\n`SYSTEM.md`, `CLASSIFICATION.md`, `CONTRACT.md`, `PRD.md`, `SPEC.md`,\n`AI-NATIVE.md`, `ENGINEERING.md`, `SDLC.md`, `OPEN-SEAMS.md`, and\n`contracts/SUCCESSOR-PREP.md`.",
+          )
+          replace(
+              "AGENTS.md",
+              "The governing documents form one design System of Record with explicit roles,\nin two groups. Two of them say what product this is; the rest say what this\nphase must prove and how it is built. Answering a product question from the\nsecond group, or a phase question from the first, is a category error.",
+              "The governing documents form one design System of Record with explicit roles,\nin two groups. Two of them say what product this is; the rest say what the\ncurrent system requires and how it is built. No phase is active. Historical\nphase material is evidence only, and `contracts/SUCCESSOR-PREP.md` records the\nclosed-books residue without granting successor standing. Treating historical\nphase evidence as current authority is a category error.",
+          )
+          replace(
+              "AGENTS.md",
+              "- `STATUS.yaml` owns current authority, standing, and open decisions;\n- `ENGINEERING.md` owns the proposed reference implementation baseline;",
+              "- `STATUS.yaml` owns current authority, standing, and open decisions;\n- `contracts/SUCCESSOR-PREP.md` owns the closed Phase-I residue, carried seams,\n  and clarity coverage used by the root seat before any successor opening;\n- `ENGINEERING.md` owns the proposed reference implementation baseline;",
+          )
+
+          # Asset: remove campaign-era source archaeology and future-node narrative.
+          replace("services/asset/CHARTER.md", "Status: `PROPOSED VERTICAL-SLICE BOUNDARY`", "Status: `BUILT_SELF_TESTED_NOT_WITNESSED`")
+          between(
+              "services/asset/CHARTER.md",
+              "## Source-grounded boundary",
+              "## Initial deployment identity",
+              "## Current boundary\n\nThe Asset Service is one bounded service inside a local Soveraeign Node. It owns asset custody, versioned asset records, derivation and relationship history, declared transformations, and the receipts for those operations. It uses the shared kernel and authority model; deployment as a local service does not make it a separate authority or a node of its own.",
+          )
+          replace("services/asset/CHARTER.md", "## Initial deployment identity\n\nFor the first vertical slice, the Asset Service is:", "## Current reference binding\n\nThe current reference participant uses:")
+          replace("services/asset/CHARTER.md", "- adapter ports for Claude, GitHub, media tools, and future federation.", "- adapter ports for Claude, GitHub, and media tools; federation remains unconfigured.")
+          replace("services/asset/CHARTER.md", "It is not yet:", "It is not:")
+          between(
+              "services/asset/CHARTER.md",
+              "## When it could become a node",
+              "## Authoritative versus derived stores",
+              "## Not current standing\n\nThe service is not a federation, a second sovereign node, the whole product, or a separate authority island. `FederationPort` is an unconfigured seam and must refuse as `UNCONFIGURED` when no admitted binding exists.",
+          )
+          replace("services/asset/CHARTER.md", "| Federation | inactive governed-crossing port | deferred until node two |", "| Federation | inactive governed-crossing port | unconfigured; no federation standing |")
+          text = read("services/asset/CHARTER.md")
+          marker = "## First proving operation"
+          idx = text.find(marker)
+          if idx < 0:
+              raise SystemExit("missing Asset built-evidence marker")
+          write(
+              "services/asset/CHARTER.md",
+              text[:idx] + "## Built evidence\n\nThe code in this directory is a reference participant. Its current self-tests establish `BUILT` evidence only. They do not establish independent observation, owner acceptance, or F3 qualification. `KNOWN-GAPS.md` records the remaining differences from the service contracts.\n\nThe reference participant keeps local custody and ledger state, uses scoped worker leases, preserves receipts and retraction history, and refuses unavailable integrations as `UNATTESTABLE` or `UNCONFIGURED` rather than reporting simulated success.\n",
+          )
+
+          # Console: keep the boundary and built continuity path; remove phase-specific rationale and roadmap prose.
+          replace("services/console/CHARTER.md", "Status: `PROPOSED SERVICE BOUNDARY · CONTINUITY PATH BUILT AND SELF-TESTED`", "Status: `BUILT_CONTINUITY_PATH_SELF_TESTED_REMAINDER_BOUNDARY`")
+          replace("services/console/CHARTER.md", "and later by other nodes through a\n   governed crossing.", "while cross-node activity remains outside current standing.")
+          between(
+              "services/console/CHARTER.md",
+              "## Relationship to Phase-I requirements",
+              "## Owned domain records",
+              "## Governing boundary\n\nThe continuity record path is the only built slice. Notifications, settings, dashboards, judgement handling, and activity reporting remain boundary unless their operation standing says otherwise. The Console Service surfaces records and pending rights; it does not create authority by presentation.",
+          )
+          replace("services/console/CHARTER.md", "Phase I has no push, so the owner\n   pulls", "no external delivery is active here, so the owner\n   pulls")
+          between(
+              "services/console/CHARTER.md",
+              "### First slice: the owner's judgement surface (proposed)",
+              "## Initial proving narrative",
+              "## Current implementation boundary\n\nChannels, threads, posts, operator sessions, and the built continuity path are implementation evidence. The other operator surfaces remain boundary. No prose in this charter promotes an unimplemented surface or grants a judgement right.",
+          )
+          between(
+              "services/console/CHARTER.md",
+              "## Initial proving narrative",
+              "## Defeating cases",
+              "## Evidence boundary\n\nThe service must continue to defeat authority widening, hidden pending rights, irreconcilable human/model transitions, non-reconstructable projections, silent external delivery, and executor self-certification. The cases below are constraints, not a roadmap.",
+          )
+          replace("services/console/CHARTER.md", "are outside the first proof. Their interfaces may be declared as ports; their\neffects remain refused or isolated until separately admitted.", "are not part of current built standing. Any declared ports remain inactive, and their effects remain refused or isolated until separately admitted.")
+
+          # Gateway: separate historical implementation evidence from current standing.
+          replace("services/gateway/CHARTER.md", "Standing: `PROPOSED SERVICE BOUNDARY · FIRST IN_PROCESS SLICE BUILT AND SELF-TESTED`.", "Standing: `CHARTERED_BOUNDARY_NOT_IMPLEMENTED`.")
+          replace(
+              "services/gateway/CHARTER.md",
+              "A reference participant now exists under `src/` and proves one complete\n`IN_PROCESS -> sov://asset/ingest-asset -> Asset Service -> terminal receipt` path.\nThat implementation is evidence; it does not promote this service or its operations out of\ntheir declared standing by itself.",
+              "A historical reference participant under `src/` demonstrated one complete\n`IN_PROCESS -> sov://asset/ingest-asset -> Asset Service -> terminal receipt` path.\nThat slice is retained as implementation evidence only. Current repository standing keeps\nthe Gateway Service at a chartered boundary with no admitted implementation standing.",
+          )
+          replace("services/gateway/CHARTER.md", "The first route pattern is now executable in process.", "The historical in-process participant demonstrated the route pattern below.")
+          replace("services/gateway/CHARTER.md", "an admitted Phase-I effect class", "an admitted effect class")
+          replace("services/gateway/CHARTER.md", "- It does not open an external transport in Phase I. HTTP remains refused while the phase stands.", "- No external transport is active. HTTP remains refused while unconfigured.")
+          replace("services/gateway/CHARTER.md", "## Proving operation", "## Historical implementation evidence")
+          replace(
+              "services/gateway/CHARTER.md",
+              "This establishes the reusable vertical. The next same-class operation should be boring: add a\nservice-owned route binding, preserve the checked actor separately from domain arguments, and\nreturn that service's existing terminal receipt.",
+              "This is implementation evidence only. It does not move Gateway out of current `CHARTERED_BOUNDARY_NOT_IMPLEMENTED` standing.",
+          )
+          replace("services/gateway/CHARTER.md", "none widens Phase-I effects.", "none widens current effects.")
+
+          # Host: state only what is built and make deferred operations non-roadmap.
+          replace("services/host/CHARTER.md", "Standing: `BUILT` participant with one bounded `read-health` operation. Every\nmutating host operation remains `PROPOSED` and unreachable.", "Standing: `BUILT_READ_HEALTH_SELF_TESTED_REMAINDER_DECLARED_NOT_WITNESSED`.\nOnly `read-health` is built and self-tested. Every mutating host operation remains `PROPOSED`, unreachable, and unwitnessed.")
+          replace("services/host/CHARTER.md", "A future restart is two-phase:", "Any restart settlement would be two-phase:")
+          replace("services/host/CHARTER.md", "Each advances through contract, positive and defeating\nfixtures, adapter capability, policy activation, exact route, and independent\nobservation; registration alone opens none of them.", "Registration alone opens none of them; none is reachable in current standing.")
+
+          # Identity: remove closed-phase effect wording and stale seam-number references.
+          replace("services/identity/CHARTER.md", "| Minting to an external channel | `CHANNEL_REFUSED` | `no_external_effects_in_phase_i` (O7). Admitting external delivery later changes one tuple and nothing else |", "| Minting to an external channel | `CHANNEL_REFUSED` | this component has no admitted external-delivery binding |")
+          replace("services/identity/CHARTER.md", "- **It performs no delivery.** Phase I channels are node-local, so `deliver`", "- **It performs no delivery.** This component has no admitted external-delivery binding, so `deliver`")
+          replace("services/identity/CHARTER.md", "node destroyed (not identity at all; see\n`OPEN-SEAMS.md` S11), and the occupant unavailable (succession, pure judgement).", "node destroyed (a custody/recovery problem outside this component), and the occupant unavailable (succession, pure judgement).")
+          replace("services/identity/CHARTER.md", "The\nplacement, the reason codes, ID-11, and seam S11 remain queued for Bdo.", "The placement and ID-11 remain owner-held. The reason codes remain component-level and do not widen the kernel refusal vocabulary.")
+
+          # Observation: direct current standing, no future-binding narrative.
+          replace("services/observation/CHARTER.md", "Standing: `PROPOSED`. Chartered and contracted; nothing here is implemented.", "Standing: `CHARTERED_BOUNDARY_NOT_IMPLEMENTED`. Chartered and contracted; no Observation Service operation is implemented.")
+          replace(
+              "services/observation/CHARTER.md",
+              "Before this charter, nothing owned the\ntransition that produces it — `observe_run` was one of fourteen kernel transitions and the only\none with no service behind it.\n\nThe gap shows everywhere else too. Check 3 on the `AI-NATIVE.md` bar — independent observation\n— reads `UNATTESTABLE` on every service assessment in the repository.",
+              "This boundary exists because `observe_run` needs a service-owned path for independent observation. The charter defines that path; current standing remains unimplemented.",
+          )
+          replace("services/observation/CHARTER.md", "An operator pilots the node — today through the CLI, and through the MCP tool surface once it\nis reseated on the Gateway Service. Acts land in the journal. Then:", "An admitted operator action lands in the journal. After the run is terminal, the observation loop is:")
+          replace("services/observation/CHARTER.md", "## Open before this can be built", "## Unresolved boundary seams")
+
+          # Projection: accepted boundary, no active implementation plan.
+          replace("services/projection/CHARTER.md", "Status: `PROPOSED SERVICE BOUNDARY · NOT IMPLEMENTED`", "Status: `OWNER_ACCEPTED_BOUNDARY_NOT_IMPLEMENTED`")
+          replace("services/projection/CHARTER.md", "## Relationship to Phase-I requirements", "## Governing constraints")
+          replace("services/projection/CHARTER.md", "| Lane | Mechanism | Phase-I standing |", "| Lane | Mechanism | Current standing |")
+          for old, new in [
+              ("| Text | SQLite FTS5 with unicode and trigram tokenizers (stdlib `sqlite3` 3.34+) | buildable now; no dependency decision |", "| Text | SQLite FTS5 with unicode and trigram tokenizers (stdlib `sqlite3` 3.34+) | declared; service not implemented |"),
+              ("| Graph | recursive CTE over projected relationship and lineage edges: `related`, `expand`, `neighborhood`, `path`, `connection`; `max_depth` 1..20, `direction` `OUT` / `IN` / `ANY`, relationship-type filter | buildable now; no dependency decision |", "| Graph | recursive CTE over projected relationship and lineage edges: `related`, `expand`, `neighborhood`, `path`, `connection`; `max_depth` 1..20, `direction` `OUT` / `IN` / `ANY`, relationship-type filter | declared; service not implemented |"),
+              ("| Dense vector | exact cosine scan over registered vectors; embeddings arrive by `invoke_model` or declared external provenance | exact scan buildable after O12; approximate index is a port |", "| Dense vector | exact cosine scan over registered vectors; embeddings arrive by `invoke_model` or declared external provenance | declared; service not implemented |"),
+              ("| Sparse vector | exact sparse dot product over registered sparse vectors | same as dense |", "| Sparse vector | exact sparse dot product over registered sparse vectors | declared; service not implemented |"),
+              ("| Filter | `must` / `should` / `must_not` groups of scalar match, range, and `is_null` over declared filter fields; applies to every lane | buildable now |", "| Filter | `must` / `should` / `must_not` groups of scalar match, range, and `is_null` over declared filter fields; applies to every lane | declared; service not implemented |"),
+              ("| Fusion | weighted reciprocal rank fusion, `k = 60` by default, declared per query; joint rescoring across lanes | buildable after two lanes exist |", "| Fusion | weighted reciprocal rank fusion, `k = 60` by default, declared per query; joint rescoring across lanes | declared; service not implemented |"),
+          ]:
+              replace("services/projection/CHARTER.md", old, new)
+          between(
+              "services/projection/CHARTER.md",
+              "## Initial proving narrative",
+              "## Defeating cases",
+              "## Current implementation boundary\n\nNo retrieval lane is implemented in current standing. The records, integration rules, and refusal behavior above define the accepted boundary; the cases below remain defeating constraints rather than an active implementation plan.",
+          )
+          replace("services/projection/CHARTER.md", "are outside the first proof. Their interfaces may be declared as ports; their\neffects remain refused until separately admitted. `PARITY.md` names each one\nand its gate.", "are not implemented and carry no current standing. Any declared ports remain inactive and their effects remain refused until separately admitted. `PARITY.md` records the accepted parity boundary without opening implementation work.")
+
+          # Proofing: ruled boundary only; strip proving roadmap.
+          replace("services/proofing/CHARTER.md", "Status: `PROPOSED SERVICE BOUNDARY · NOT IMPLEMENTED`", "Status: `RULED_SECOND_BOUNDARY_O11_CHARTERED_NOT_IMPLEMENTED` — the boundary exists; no Proofing Service operation is implemented.")
+          between(
+              "services/proofing/CHARTER.md",
+              "## Initial proving narrative",
+              "## Defeating cases",
+              "## Current implementation boundary\n\nThe Proofing Service is not implemented. The lifecycle and integration rules above define the boundary; the cases below remain defeating constraints and grant no built standing.",
+          )
+          replace("services/proofing/CHARTER.md", "are\noutside the first proof. Their interfaces may be declared; their effects must\nremain refused or isolated until separately admitted.", "are not implemented in current standing. Any declared interfaces remain inactive, and their effects must remain refused or isolated until separately admitted.")
+
+          # Registry: keep the built resolve slice and remove stale campaign timing.
+          replace("services/registry/CHARTER.md", "Workers, Adapters, Proofing and Phase-I Qualification among them.", "Workers, Adapters, Proofing and qualification work among them.")
+          between(
+              "services/registry/CHARTER.md",
+              "## Proving narrative",
+              "## Defeating cases",
+              "## Evidence boundary\n\nOnly the `resolve` slice above is built and self-tested. Registering entries, resolving vocabulary or owner records, declaration mutations, and remote resolution remain unimplemented. Those boundaries grant no additional standing.",
+          )
+          replace("services/registry/CHARTER.md", "are outside the first proof. Their interfaces may be\ndeclared; their effects stay refused until separately admitted.", "are not implemented in current standing. Any declared interfaces remain inactive and their effects stay refused until separately admitted.")
+
+          # The changed charter set should no longer depend on active-phase timing language.
+          for path in [
+              "services/asset/CHARTER.md",
+              "services/console/CHARTER.md",
+              "services/gateway/CHARTER.md",
+              "services/host/CHARTER.md",
+              "services/identity/CHARTER.md",
+              "services/observation/CHARTER.md",
+              "services/projection/CHARTER.md",
+              "services/proofing/CHARTER.md",
+              "services/registry/CHARTER.md",
+          ]:
+              text = read(path)
+              if "Phase II" in text or "Phase-I requirements" in text or "outside the first proof" in text:
+                  raise SystemExit(f"campaign-era timing remains in {path}")
+          PY
+      - name: Record governing clarity receipts
+        run: |
+          python scripts/sov_clarity.py record README.md --changed
+          python scripts/sov_clarity.py record AGENTS.md --changed
+          python scripts/sov_clarity.py record CONTRIBUTING.md
+          python scripts/sov_clarity.py record SOV.md
+          python scripts/sov_clarity.py record CLAUDE.md
+          python scripts/sov_clarity.py record .cursorrules
+          python scripts/sov_clarity.py record .claude/skills/clarity/SKILL.md
+          python scripts/sov_clarity.py record services/asset/CHARTER.md --changed
+          python scripts/sov_clarity.py record services/console/CHARTER.md --changed
+          python scripts/sov_clarity.py record services/gateway/CHARTER.md --changed
+          python scripts/sov_clarity.py record services/host/CHARTER.md --changed
+          python scripts/sov_clarity.py record services/identity/CHARTER.md --changed
+          python scripts/sov_clarity.py record services/observation/CHARTER.md --changed
+          python scripts/sov_clarity.py record services/projection/CHARTER.md --changed
+          python scripts/sov_clarity.py record services/proofing/CHARTER.md --changed
+          python scripts/sov_clarity.py record services/record/CHARTER.md
+          python scripts/sov_clarity.py record services/registry/CHARTER.md --changed
+          python scripts/sov_clarity.py check
+      - name: Mark declared gap clarity population current
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path("contracts/SUCCESSOR-PREP.md")
+          text = path.read_text(encoding="utf-8")
+          old = "Current receipts cover 7 of 17 artifacts. The seven root artifacts are `CURRENT`; the ten service charters remain `UNCHECKED`. The gap therefore does not yet satisfy its clarity completion test.\n\nThe three residue lists above also remain pending explicit owner acceptance."
+          new = "Current receipts cover 17 of 17 artifacts. The seven root artifacts and all ten service charters are `CURRENT` against their declared clarity bases. The clarity condition for this gap population is satisfied.\n\nThe three residue lists above remain pending explicit owner acceptance."
+          if old not in text:
+              raise SystemExit("SUCCESSOR-PREP clarity summary moved")
+          path.write_text(text.replace(old, new, 1), encoding="utf-8", newline="\n")
+          PY
+      - name: Rebuild documentation reader
+        run: python scripts/sov_docs.py build
+      - name: Commit clarity pass and derived receipts
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md AGENTS.md .clarity/coverage.json contracts/SUCCESSOR-PREP.md docs/documentation.html services/*/CHARTER.md
+          git commit -m "docs(gap): clarify governing surface from closed books"
+          git push origin HEAD:chore/gap-phase-synthesis

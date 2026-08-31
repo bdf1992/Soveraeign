@@ -153,6 +153,7 @@ def refresh_clarity() -> None:
 
 
 def refresh() -> None:
+    run(sys.executable, "scripts/sov_capability.py", "build")
     run(sys.executable, "scripts/sov_interface.py", "build")
     run(sys.executable, "scripts/sov_surface.py", "render")
     run(sys.executable, "scripts/sov_docs.py", "build")

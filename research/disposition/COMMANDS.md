@@ -29,7 +29,7 @@ python scripts/sov_disposition.py subject add \
   --config-json '{"model":"example-model","system_digest":"sha256:example","temperature":0,"tools":[]}'
 ```
 
-Append an observation:
+Append an observation. `--trial` is immutable within the subject revision so replaying the same trial cannot silently inflate the sample count:
 
 ```bash
 python scripts/sov_disposition.py observe \
@@ -37,6 +37,7 @@ python scripts/sov_disposition.py observe \
   --subject-revision baseline-1 \
   --construct invariant-fidelity \
   --probe invariant-fidelity.optimization-pressure.001 \
+  --trial inv-pressure-001-run-01 \
   --adapter human-scenario-v0.1 \
   --adapter-revision 1 \
   --context reversible-low-stakes \

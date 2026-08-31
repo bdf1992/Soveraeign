@@ -20,17 +20,25 @@ jobs:
         with:
           python-version: '3.12'
       - name: Wire session attribution into the Gateway crossing
-        run: python .github/scripts/gap_195_operation_attribution.py
+        run: |
+          python .github/scripts/gap_195_operation_attribution.py
+          python .github/scripts/gap_195_operation_attribution_repair.py
+          python .github/scripts/gap_195_operation_attribution_finalize.py
       - name: Rebuild projections touched by the manifest and route source
         run: |
           python scripts/sov_capability.py build
           python scripts/sov_interface.py build
           python scripts/sov_surface.py render
           python scripts/sov_docs.py build
-      - name: Run focused attribution and interface tests
+      - name: Run focused attribution and migration tests
         run: |
           python -m unittest services.gateway.tests.test_gateway_slice
           python -m unittest scripts.tests.test_node_interface
+          python -m unittest scripts.tests.test_console_horizontal
+          python -m unittest services.host.tests.test_host_service
+          python -m unittest scripts.tests.test_gateway_observe
+          python -m unittest scripts.tests.test_sov_surface
+          python -m unittest scripts.tests.test_trace
       - name: Verify repository
         run: |
           python scripts/sov_capability.py check
@@ -47,13 +55,19 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add \
+            services/gateway/src/soveraeign_gateway_service/attribution.py \
             services/gateway/src/soveraeign_gateway_service/contract.py \
             services/gateway/src/soveraeign_gateway_service/evidence.py \
             services/gateway/src/soveraeign_gateway_service/core.py \
             services/gateway/contracts/service.json \
             services/gateway/tests/test_gateway_slice.py \
+            services/host/tests/test_host_service.py \
+            scripts/gateway_observe.py scripts/gateway_witness_driver.py \
+            scripts/sov_interface.py scripts/sov_surface.py scripts/sovsurface/page.py \
             scripts/sovnode/composition.py scripts/sovnode/bindings.py scripts/sovnode/proof.py \
-            scripts/tests/test_node_interface.py \
+            scripts/tests/test_console_horizontal.py scripts/tests/test_gateway_observe.py \
+            scripts/tests/test_node_interface.py scripts/tests/test_sov_surface.py \
+            scripts/tests/test_trace.py \
             contracts/fixtures/capability-map.reference.json \
             contracts/fixtures/node-interface.reference.json \
             docs/surface.html docs/documentation.html

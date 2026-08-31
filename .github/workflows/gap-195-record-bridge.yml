@@ -1,4 +1,4 @@
-name: gap 195 record bridge
+name: gap 195 normalize and close recorder seam
 
 on:
   push:
@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  bridge:
+  normalize:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
@@ -19,16 +19,163 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
+      - name: Normalize current main without losing either reading
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+          if git merge-base --is-ancestor origin/main HEAD; then
+            echo 'Current main already belongs to this history.'
+            exit 0
+          fi
+
+          set +e
+          git merge --no-commit --no-ff origin/main
+          merge_rc=$?
+          set -e
+
+          if [ "$merge_rc" -ne 0 ]; then
+            for path in AGENTS.md CLAUDE.md .clarity/coverage.json docs/documentation.html; do
+              if git ls-files -u -- "$path" | grep -q .; then
+                git checkout --ours -- "$path"
+              fi
+            done
+
+            python - <<'PY'
+          from __future__ import annotations
+
+          from pathlib import Path
+          import subprocess
+
+          path = Path('AGENTS.md')
+          ours = path.read_text(encoding='utf-8')
+          main = subprocess.check_output(
+              ['git', 'show', 'origin/main:AGENTS.md'], text=True, encoding='utf-8')
+          heading = '### Principled deviation\n'
+          if heading not in ours:
+              if heading not in main:
+                  raise SystemExit('main does not carry the principled-deviation section')
+              start = main.index(heading)
+              next_heading = main.find('\n### ', start + len(heading))
+              section = main[start:] if next_heading < 0 else main[start:next_heading]
+              marker = '### Blocked edge is not blocked frontier\n'
+              if marker not in ours:
+                  raise SystemExit('AGENTS insertion boundary not found')
+              ours = ours.replace(marker, section.rstrip() + '\n\n' + marker, 1)
+              path.write_text(ours, encoding='utf-8', newline='\n')
+          PY
+
+            git add AGENTS.md CLAUDE.md .clarity/coverage.json docs/documentation.html
+            unresolved="$(git diff --name-only --diff-filter=U)"
+            if [ -n "$unresolved" ]; then
+              printf 'Unresolved merge paths:\n%s\n' "$unresolved"
+              exit 1
+            fi
+          fi
+
+          if [ -f .git/MERGE_HEAD ]; then
+            git commit -m 'merge: normalize gap 195 against main'
+          fi
+
       - name: Wire the existing Asset Record port
         run: |
           python .github/scripts/gap_195_record_bridge.py
           python .github/scripts/gap_195_record_bridge_repair.py
+
       - name: Rebuild derived surfaces
         run: |
           python scripts/sov_capability.py build
           python scripts/sov_interface.py build
           python scripts/sov_surface.py render
           python scripts/sov_docs.py build
+
+      - name: Refresh clarity receipts affected by the joined governance basis
+        shell: bash
+        run: |
+          set -euo pipefail
+          for path in \
+            AGENTS.md \
+            CLAUDE.md \
+            SOV.md \
+            README.md \
+            CONTRIBUTING.md \
+            .claude/skills/sov-principled-deviation/SKILL.md; do
+            python scripts/sov_clarity.py record "$path" --changed
+          done
+          python scripts/sov_clarity.py check
+
+      - name: Remove gap-only migration machinery
+        run: |
+          rm .github/scripts/gap_195_record_bridge.py
+          rm .github/scripts/gap_195_record_bridge_repair.py
+          rm .github/workflows/gap-195-record-bridge.yml
+
+      - name: Refresh checked host snapshot for the commit being created
+        shell: bash
+        run: |
+          python - <<'PY'
+          from __future__ import annotations
+
+          from pathlib import Path
+          import re
+          import sys
+
+          sys.path.insert(0, str(Path('scripts').resolve()))
+          from sovsnapshot import claims
+
+          path = Path('CLAUDE.md')
+          text = path.read_text(encoding='utf-8')
+          derived = claims.derive_all()
+          missing = [claim.name for claim in claims.CLAIMS if claim.name not in derived.values]
+          if missing:
+              raise SystemExit(f'cannot refresh snapshot; underivable claims: {missing}')
+          for claim in claims.CLAIMS:
+              value = derived.values[claim.name] + (1 if claim.name == 'commits' else 0)
+              match = re.search(claim.pattern, text)
+              if not match:
+                  raise SystemExit(f'snapshot pattern absent for {claim.name}')
+              start, end = match.span(1)
+              text = text[:start] + str(value) + text[end:]
+          path.write_text(text, encoding='utf-8', newline='\n')
+          PY
+
+      - name: Commit normalized recorder slice locally
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add \
+            .clarity/coverage.json \
+            CLAUDE.md \
+            contracts/fixtures/capability-map.reference.json \
+            contracts/fixtures/node-interface.reference.json \
+            docs/surface.html docs/documentation.html \
+            scripts/gateway_observe.py \
+            scripts/gateway_witness_driver.py \
+            scripts/sovnode/composition.py \
+            services/asset/src/soveraeign_asset_service/operational.py \
+            services/asset/src/soveraeign_asset_service/store.py \
+            services/asset/src/soveraeign_asset_service/core.py \
+            services/asset/tests/test_operational_record.py
+          git add -u \
+            .github/scripts/gap_195_record_bridge.py \
+            .github/scripts/gap_195_record_bridge_repair.py \
+            .github/workflows/gap-195-record-bridge.yml
+
+          unexpected="$(git status --porcelain | grep -vE '^(M |D |A |R |C |UU|AA|DD)' || true)"
+          if [ -n "$unexpected" ]; then
+            printf 'Unexpected repository state:\n%s\n' "$unexpected"
+            exit 1
+          fi
+          if git diff --cached --quiet; then
+            echo 'No normalization repair commit needed.'
+          else
+            git commit -m 'feat(gap): converge participant history on Record'
+          fi
+
       - name: Focused recorder checks
         run: |
           python -m unittest services.asset.tests.test_operational_record
@@ -36,31 +183,18 @@ jobs:
           python -m unittest services.gateway.tests.test_gateway_slice
           python -m unittest scripts.tests.test_gateway_observe
           python -m unittest scripts.tests.test_node_interface
-      - name: Full repository verification
+
+      - name: Full repository verification on committed state
         run: |
           python scripts/sov_capability.py check
           python scripts/sov_interface.py check
           python scripts/sov_surface.py check
           python scripts/sov_docs.py check
+          python scripts/sov_clarity.py check
           python scripts/lint.py
           python scripts/verify.py
-      - name: Commit the recorder slice
-        run: |
-          if git diff --quiet; then
-            echo 'No changes.'
-            exit 0
-          fi
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add \
-            services/asset/src/soveraeign_asset_service/operational.py \
-            services/asset/src/soveraeign_asset_service/store.py \
-            services/asset/src/soveraeign_asset_service/core.py \
-            services/asset/tests/test_operational_record.py \
-            scripts/sovnode/composition.py scripts/gateway_witness_driver.py \
-            scripts/gateway_observe.py \
-            contracts/fixtures/capability-map.reference.json \
-            contracts/fixtures/node-interface.reference.json \
-            docs/surface.html docs/documentation.html
-          git commit -m 'feat(gap): bridge asset terminal history into record'
-          git push
+          git status --short
+          test -z "$(git status --porcelain)"
+
+      - name: Push only the verified committed state
+        run: git push origin HEAD:gap/195-participant-isolation

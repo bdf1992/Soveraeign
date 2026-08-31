@@ -59,9 +59,14 @@ jobs:
           )
           PY
 
-      - name: Refresh affected clarity receipt
+      - name: Refresh affected clarity receipts
         run: |
           python scripts/sov_clarity.py record AGENTS.md --changed
+          python scripts/sov_clarity.py record CONTRIBUTING.md
+          python scripts/sov_clarity.py record SOV.md
+          python scripts/sov_clarity.py record CLAUDE.md
+          python scripts/sov_clarity.py record .cursorrules
+          python scripts/sov_clarity.py record .claude/skills/clarity/SKILL.md
           python scripts/sov_clarity.py check
 
       - name: Require declared 17 of 17 current

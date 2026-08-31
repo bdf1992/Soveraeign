@@ -20,7 +20,9 @@ jobs:
         with:
           python-version: '3.12'
       - name: Wire the existing Asset Record port
-        run: python .github/scripts/gap_195_record_bridge.py
+        run: |
+          python .github/scripts/gap_195_record_bridge.py
+          python .github/scripts/gap_195_record_bridge_repair.py
       - name: Rebuild derived surfaces
         run: |
           python scripts/sov_capability.py build

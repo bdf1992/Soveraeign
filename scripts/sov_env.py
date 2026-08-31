@@ -11,7 +11,6 @@ import sys
 from sovenv import (
     EnvironmentRefused,
     StateStore,
-    admit_crossing,
     bind_workspace,
     instantiate_environment,
     instantiate_trunk,
@@ -86,14 +85,14 @@ def _mutate(args: argparse.Namespace, pattern: dict[str, object], state: dict) -
             evidence=args.evidence,
         )
     if args.operation == "admit":
-        return admit_crossing(
-            state,
-            pattern,
-            required(args.crossing, "CROSSING"),
-            current_integration_base=required(args.integration_base, "INTEGRATION_BASE"),
-            witness=required(args.witness, "WITNESS"),
-            authority=args.authority,
-            accepted=True if args.accepted else None,
+        # The transition model accepts an authority type so the generalized gate can be
+        # tested independently. The operator surface must not turn that model input into
+        # permission. The repository AuthorityGrant contract is currently path-scoped and
+        # no Environment crossing capability/resource scope has been root-admitted yet.
+        # Until that aperture exists, every CLI admission attempt fails closed through the
+        # kernel's existing authority refusal vocabulary, even if --authority is supplied.
+        raise EnvironmentRefused(
+            "AUTHORITY_REFUSED:ENVIRONMENT_AUTHORITY_APERTURE_UNADMITTED"
         )
     if args.operation == "land":
         return land_crossing(
@@ -145,7 +144,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--evidence", action="append", default=[])
     parser.add_argument("--crossing")
     parser.add_argument("--witness")
-    parser.add_argument("--authority")
+    parser.add_argument(
+        "--authority",
+        help="model input only; cannot authorize CLI admission until the authority aperture is admitted",
+    )
     parser.add_argument("--accepted", action="store_true")
     args = parser.parse_args(argv)
     try:

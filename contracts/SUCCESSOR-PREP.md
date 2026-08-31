@@ -69,9 +69,9 @@ Existing evidence closes S2, S3, S4, S5, and S21; S9, S11, S20, and S28 are alre
 
 Declared governing population for this gap: 17 artifacts — `README.md`, `GROUND.md`, `CANON.md`, `SYSTEM.md`, `CONTRACT.md`, `AGENTS.md`, `PRD.md`, and the ten service `CHARTER.md` files.
 
-Current receipts cover 7 of 17 artifacts. The seven root artifacts are `CURRENT`; the ten service charters remain `UNCHECKED`. The gap therefore does not yet satisfy its clarity completion test.
+Current receipts cover 17 of 17 artifacts. The seven root artifacts and all ten service charters are `CURRENT` against their declared clarity bases. The clarity condition for this gap population is satisfied.
 
-The three residue lists above also remain pending explicit owner acceptance.
+The three residue lists above remain pending explicit owner acceptance.
 
 ## No successor phase
 

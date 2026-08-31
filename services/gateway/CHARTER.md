@@ -1,18 +1,18 @@
 # Gateway Service Charter
 
-Standing: `PROPOSED SERVICE BOUNDARY · FIRST IN_PROCESS SLICE BUILT AND SELF-TESTED`.
+Standing: `CHARTERED_BOUNDARY_NOT_IMPLEMENTED`.
 
-A reference participant now exists under `src/` and proves one complete
+A historical reference participant under `src/` demonstrated one complete
 `IN_PROCESS -> sov://asset/ingest-asset -> Asset Service -> terminal receipt` path.
-That implementation is evidence; it does not promote this service or its operations out of
-their declared standing by itself.
+That slice is retained as implementation evidence only. Current repository standing keeps
+the Gateway Service at a chartered boundary with no admitted implementation standing.
 
 ## Role in Soveraeign
 
 The Gateway Service is the node's door. It is the one place a request from outside a service
 turns into a call on that service, and the one place a refusal to let it through is recorded.
 
-The first route pattern is now executable in process. A caller presents one transport-neutral
+The historical in-process participant demonstrated the route pattern below. A caller presents one transport-neutral
 `sov://` operation, Gateway resolves the authored service manifest against the capability
 projection, revalidates the selected projection row against its authored inputs, checks exact
 actor kind and authority/scope, records the crossing, invokes a service-owned route, and returns
@@ -44,7 +44,7 @@ A request crosses the door in a fixed order, and each step can refuse or fail:
 3. **check authority** — require the declared actor kind and an exact live grant covering the
    operation's authority and request scope; typed denials are refusals, while reader corruption
    or infrastructure errors are operational failures rather than counterfeit denials;
-4. **route request** — require an activated transport, an admitted Phase-I effect class, and a
+4. **route request** — require an activated transport, an admitted effect class, and a
    bound service-owned route;
 5. **return receipt** — require a recognizable terminal service receipt attributed to the checked
    actor, record that Gateway carried it, and return that receipt object unchanged.
@@ -75,10 +75,10 @@ not manufacture a second successful settlement receipt.
 - It does not issue or widen authority.
 - It does not own capability definitions or repair the capability projection in place.
 - It does not fall back to an undeclared transport or route.
-- It does not open an external transport in Phase I. HTTP remains refused while the phase stands.
+- No external transport is active. HTTP remains refused while unconfigured.
 - It does not become the Node. Gateway is one service inside the locally sovereign Node.
 
-## Proving operation
+## Historical implementation evidence
 
 The first proving pair is implemented in `tests/test_gateway_slice.py`:
 
@@ -92,9 +92,7 @@ undeclared/unbound operations, disallowed effect classes, authority-reader failu
 execution failure, missing terminal receipts, receipt-actor mismatch, and attempted client actor
 overrides.
 
-This establishes the reusable vertical. The next same-class operation should be boring: add a
-service-owned route binding, preserve the checked actor separately from domain arguments, and
-return that service's existing terminal receipt.
+This is implementation evidence only. It does not move Gateway out of current `CHARTERED_BOUNDARY_NOT_IMPLEMENTED` standing.
 
 ## Relationship to node composition
 
@@ -121,4 +119,4 @@ The important remaining seams are:
 - broader service route coverage and any effect/transport class beyond the current
   `RECORD_LOCAL + IN_PROCESS` slice.
 
-None of those seams is resolved by passing participant tests, and none widens Phase-I effects.
+None of those seams is resolved by passing participant tests, and none widens current effects.

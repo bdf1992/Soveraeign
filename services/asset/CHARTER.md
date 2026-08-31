@@ -1,6 +1,6 @@
 # Asset Service Charter
 
-Status: `PROPOSED VERTICAL-SLICE BOUNDARY`
+Status: `BUILT_SELF_TESTED_NOT_WITNESSED`
 
 ## Role in Soveraeign
 
@@ -13,26 +13,13 @@ binding of the broader Soveraeign stack. “Microservice” describes a deployme
 and failure boundary; it does not grant the service separate authority or make
 its internal database the product's source of truth.
 
-## Source-grounded boundary
+## Current boundary
 
-- `ANCHOR.md` A1 defines the product as the working system rather than any one
-  instrument within it.
-- `PRD-PRODUCT(1).md` explicitly treats these instruments as subsystems and requires Phase-I
-  runtime, configuration, interfaces, and minimum infrastructure assumptions.
-- `PRODUCT(1).md` §5 defines the destination as a distributed federation of
-  sovereign local-first nodes joined by governed crossings.
-- `PRD-PRODUCT(1).md` Phase II says federation begins with a real second node,
-  not a platform launch.
-- `FREEZE-LEDGER(1).md` defers operational messaging and routing until node two
-  exists.
-- `HANDOFF-SPEC.md` requires the logical specification to remain stack-neutral.
+The Asset Service is one bounded service inside a local Soveraeign Node. It owns asset custody, versioned asset records, derivation and relationship history, declared transformations, and the receipts for those operations. It uses the shared kernel and authority model; deployment as a local service does not make it a separate authority or a node of its own.
 
-Therefore the Asset Service may prove one real stack slice now while keeping the service,
-database, graph, transport, and deployment mechanisms replaceable.
+## Current reference binding
 
-## Initial deployment identity
-
-For the first vertical slice, the Asset Service is:
+The current reference participant uses:
 
 - one asset service inside one sovereign local Soveraeign node;
 - one local content-addressed asset store;
@@ -40,9 +27,9 @@ For the first vertical slice, the Asset Service is:
 - one shared transition API for human and model bindings;
 - one or more disposable search and graph projections;
 - local workers acting through leased, scoped operations;
-- adapter ports for Claude, GitHub, media tools, and future federation.
+- adapter ports for Claude, GitHub, and media tools; federation remains unconfigured.
 
-It is not yet:
+It is not:
 
 - a federation;
 - a second sovereign node;
@@ -50,20 +37,9 @@ It is not yet:
 - a frozen technology choice;
 - or an authority island with rules different from the common kernel.
 
-## When it could become a node
+## Not current standing
 
-The asset service may later qualify as a sovereign node only if it:
-
-1. owns a durable local record rather than only a cache or projection;
-2. can operate safely when external integrations are absent;
-3. declares its own authority, resource, trust, and fault envelopes;
-4. exports and admits state only through governed crossings;
-5. preserves source, standing, receipt, and retraction semantics across those
-   crossings;
-6. and actually interoperates with a distinct second node.
-
-Until then, `FederationPort` is an interface seam whose operations refuse as
-`UNCONFIGURED`, leaving a receipt. It is not a simulated federation.
+The service is not a federation, a second sovereign node, the whole product, or a separate authority island. `FederationPort` is an unconfigured seam and must refuse as `UNCONFIGURED` when no admitted binding exists.
 
 ## Authoritative versus derived stores
 
@@ -76,42 +52,13 @@ Until then, `FederationPort` is an interface seam whose operations refuse as
 | External graph database | optional `GraphProjection` adapter | never authoritative |
 | Claude analysis | proposal-producing adapter | evidence/candidate, never authority |
 | GitHub import | exact repository/commit/path source adapter | external source provenance |
-| Federation | inactive governed-crossing port | deferred until node two |
+| Federation | inactive governed-crossing port | unconfigured; no federation standing |
 
 Graph-originated edits must return as proposals through the canonical transition
 path before they can affect effective state.
 
-## First proving operation
+## Built evidence
 
-From a clean local checkout:
+The code in this directory is a reference participant. Its current self-tests establish `BUILT` evidence only. They do not establish independent observation, owner acceptance, or F3 qualification. `KNOWN-GAPS.md` records the remaining differences from the service contracts.
 
-1. ingest an original asset and preserve its exact bytes;
-2. request a declared derivative for a named enterprise use;
-3. allow a scoped worker to claim and execute the operation through a fenced
-   lease;
-4. independently observe the output rather than trusting the worker report;
-5. allow a model adapter to propose metadata and relationships;
-6. ratify only through typed authority;
-7. rebuild search and graph projections from canonical receipts;
-8. expose the same effective asset state to human and model bindings;
-9. retract one effective relationship or use without erasing the history;
-10. reproduce the same effective projections after a clean rebuild.
-
-This operation is evaluated under `AI-NATIVE.md`. The presence of Claude, an
-API, workers, or a graph database does not itself earn the verdict.
-
-The code in this directory is an experimental reference participant. Its current
-self-tests establish `BUILT` evidence only. `KNOWN-GAPS.md` records where it
-does not yet satisfy `SPEC.md`; it must not be represented as F3-qualified.
-
-## One-hour implementation constraint
-
-The first pass optimizes for semantic reach rather than production breadth:
-
-- standard-library local custody and ledger;
-- one real end-to-end asset operation;
-- deterministic adapters when live integrations are unavailable;
-- explicit `UNATTESTABLE` or `UNCONFIGURED` outcomes instead of simulated
-  success;
-- positive and defeating fixtures;
-- no cloud dependency, external mutation, federation claim, or stack freeze.
+The reference participant keeps local custody and ledger state, uses scoped worker leases, preserves receipts and retraction history, and refuses unavailable integrations as `UNATTESTABLE` or `UNCONFIGURED` rather than reporting simulated success.

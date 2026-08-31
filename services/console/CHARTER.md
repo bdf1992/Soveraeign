@@ -1,6 +1,6 @@
 # Console Service Charter
 
-Status: `PROPOSED SERVICE BOUNDARY · CONTINUITY PATH BUILT AND SELF-TESTED`
+Status: `BUILT_CONTINUITY_PATH_SELF_TESTED_REMAINDER_BOUNDARY`
 
 The continuity record path - channels, threads, posts, operator sessions and
 grants - is implemented under `src/` and reached through `cli.py`
@@ -25,8 +25,7 @@ records behind five operator surfaces:
    without blocking, and a watched activity stream from which an operator may
    counter an effective record through the kernel;
 5. activity reporting — a declared projection over event envelopes and receipts
-   emitted by every service in the node, and later by other nodes through a
-   governed crossing.
+   emitted by every service in the node, while cross-node activity remains outside current standing.
 
 The operator experience is threaded and domain-driven: a channel per domain or
 purpose, a thread per bounded piece of work, attributed posts by human and
@@ -34,24 +33,9 @@ model operators in the same thread. That experience is a projection of the
 records below. It does not own asset payloads, proofing decisions, authority,
 standing, or settlement, and it never becomes a private authority system.
 
-## Relationship to Phase-I requirements
+## Governing boundary
 
-- `PRD.md` two-binding proof and `bindings/README.md` require a human-facing
-  binding that exposes state, choices, authority, provenance, and receipts
-  intelligibly. The Console Service is the domain that binding renders.
-- `PRD.md` PROD-I-3 (Cross): a human post and a model post in one thread are
-  one crossing through the same record.
-- `PRD.md` PROD-I-6 (Founder judgement budget): judgement requests queue
-  without blocking operation; the dashboard reports where judgement was spent
-  and which rights remain pending.
-- `PRD.md` PROD-I-4 (Gate and retract): the activity view is where an operator
-  on the loop sees an effective record and counters it through the kernel.
-- `SPEC.md` Projection rule: dashboards and activity views are rebuildable
-  projections whose every value resolves to authoritative records.
-- `PRD.md` non-goal "a graphical production interface": the Phase-I Console is
-  a local operator console proving parity and judgement accounting. It is not a
-  production GUI claim, and no binding implementation is admitted until the
-  transition contract is frozen or Bdo authorizes a provisional target.
+The continuity record path is the only built slice. Notifications, settings, dashboards, judgement handling, and activity reporting remain boundary unless their operation standing says otherwise. The Console Service surfaces records and pending rights; it does not create authority by presentation.
 
 ## Owned domain records
 
@@ -110,7 +94,7 @@ The Console Service:
    `JUDGEMENT` and no live grant covers it; the conditioned operation receives
    an `UNRESOLVED` receipt and other operation continues; reach (proposed):
    the request emits a `JUDGEMENT_REQUESTED` notification with delivery
-   `LOCAL` whose recipient is the owner; Phase I has no push, so the owner
+   `LOCAL` whose recipient is the owner; no external delivery is active here, so the owner
    pulls the pending list from an operator session through the Human Binding;
 4. resolves a judgement request only through a typed, scoped, live human
    `JUDGEMENT` grant checked at the transition; a model attempt is `REFUSED`;
@@ -147,73 +131,13 @@ Humans and models operate the same console through different bindings:
 - every open, post, request, resolution, acknowledgement, setting change, and
   rebuild returns a receipt.
 
-### First slice: the owner's judgement surface (proposed)
+## Current implementation boundary
 
-`OPEN-SEAMS.md` S12 records the owner's input of 2026-08-23: Bdo will rarely
-interact with GitHub, so a code-owner review click cannot be the owner's
-ratification surface. The first console slice is therefore the surface through
-which the owner receives a judgement request, answers it, and has the answer
-land as a record that can carry `RATIFIED` standing. It has three legs:
+Channels, threads, posts, operator sessions, and the built continuity path are implementation evidence. The other operator surfaces remain boundary. No prose in this charter promotes an unimplemented surface or grants a judgement right.
 
-- reach — `request-judgement` records the judgement request, the conditioned
-  operation receives an `UNRESOLVED` receipt, and a `JUDGEMENT_REQUESTED`
-  notification with delivery `LOCAL` is addressed to the owner as its
-  recipient; Phase I has no push, so the owner pulls the pending list from an
-  operator session through the Human Binding;
-- answer — the owner invokes `resolve-judgement` through the Human Binding;
-  the console realizes it as the `SPEC.md` `ratify` transition, with the
-  request's question as the Proposal being ratified;
-- land — a judgement resolution record carries the resolver, the grant
-  checked, the decision, a rationale address, its receipt, and the
-  `UNRESOLVED` receipt it answers (`unresolved_receipt_id`); its standing
-  reaches `RATIFIED` by an appended event, never by overwrite; the conditioned
-  operation receives a successor receipt whose `prior_receipt_id` names its
-  `UNRESOLVED` receipt.
+## Evidence boundary
 
-Target: a local CLI over the Python API, the Local surface row of
-`ENGINEERING.md` (Python API and CLI; human and model bindings use the same
-kernel operations). No HTTP and no UI framework. This is not a GUI claim; it
-is the smallest Human Binding the owner can actually use, and every effect in
-it is `RECORD_LOCAL`. Nothing in this slice is implemented: O18 gates
-`console_implementation`, not this charter text, and the slice remains a
-proposal until O18 is ruled and a logical spec and defeating fixtures exist.
-
-## Initial proving narrative
-
-From a clean local checkout:
-
-1. open one human operator session and one model operator session;
-2. open a channel for the asset domain and a thread pinned to an exact asset
-   version address;
-3. let the human and the model each post in the thread; reconcile the two
-   receipts as the same transition; show the model post standing `RECORDED`;
-4. let the model mention the human; observe the issued notification resolving
-   to the post address and digest;
-5. reach: let the model attempt an operation whose required authority is
-   `JUDGEMENT`; observe an `UNRESOLVED` receipt, a `QUEUED` judgement request,
-   and a `JUDGEMENT_REQUESTED` notification with delivery `LOCAL` addressed to
-   the human operator, while an unrelated operation still commits; pull the
-   pending list through the Human Binding and show the request on it;
-6. let the model attempt to resolve the request; observe `REFUSED`;
-7. answer: let the human invoke `resolve-judgement` through the Human Binding
-   under a live `JUDGEMENT` grant; observe the `ratify` transition check the
-   grant against the request's Proposal;
-8. land: observe the judgement resolution record, its `RECORDED` event and the
-   appended `RATIFIED` event, its receipt, a successor receipt for the
-   conditioned operation whose `prior_receipt_id` names the `UNRESOLVED`
-   receipt, and the `JUDGEMENT_RESOLVED` notification whose `recipient_id` is
-   the requesting model operator;
-9. change a human setting; show it alters notification routing and changes no
-   authority check;
-10. rebuild the admin dashboard and the activity view from receipts; show every
-    value resolves to a source address and digest and that a second rebuild is
-    identical;
-11. let the human counter one effective record from the activity view through
-    kernel retraction; show the original event and the counter-record both
-    remain visible;
-12. attempt external delivery of a notification and cross-node activity; observe
-    `UNCONFIGURED` refusals with receipts;
-13. close both sessions with reconstructable receipts.
+The service must continue to defeat authority widening, hidden pending rights, irreconcilable human/model transitions, non-reconstructable projections, silent external delivery, and executor self-certification. The cases below are constraints, not a roadmap.
 
 ## Defeating cases
 
@@ -245,5 +169,4 @@ From a clean local checkout:
 Real-time presence and cursors, reactions and emoji, voice or video, external
 chat-platform bridges, email and push delivery, public share links, cross-node
 activity, role hierarchies beyond typed scoped grants, and production rendering
-are outside the first proof. Their interfaces may be declared as ports; their
-effects remain refused or isolated until separately admitted.
+are not part of current built standing. Any declared ports remain inactive, and their effects remain refused or isolated until separately admitted.

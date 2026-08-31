@@ -1,7 +1,7 @@
 # Host Service Charter
 
-Standing: `BUILT` participant with one bounded `read-health` operation. Every
-mutating host operation remains `PROPOSED` and unreachable.
+Standing: `BUILT_READ_HEALTH_SELF_TESTED_REMAINDER_DECLARED_NOT_WITNESSED`.
+Only `read-health` is built and self-tested. Every mutating host operation remains `PROPOSED`, unreachable, and unwitnessed.
 
 ## Role in Soveraeign
 
@@ -41,7 +41,7 @@ exists for them yet.
 
 Scheduling is not Host Service state. The Automation Service owns *when* a restart or
 scan is requested; the Host Service owns whether the requested effect is admissible and
-how it is attempted. A future restart is two-phase: record the pre-restart boot id and
+how it is attempted. Any restart settlement would be two-phase: record the pre-restart boot id and
 request, then settle only after an independent post-boot observation sees a different
 boot id. An executor return cannot establish that a restart occurred.
 
@@ -72,6 +72,4 @@ boot id. An executor return cannot establish that a restart occurred.
 
 Network monitoring, malware and integrity scanning, restart execution, power
 management, driver changes, utility management, privilege brokerage, and every remote
-host transport remain deferred. Each advances through contract, positive and defeating
-fixtures, adapter capability, policy activation, exact route, and independent
-observation; registration alone opens none of them.
+host transport remain deferred. Registration alone opens none of them; none is reachable in current standing.

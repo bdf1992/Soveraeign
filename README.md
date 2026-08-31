@@ -114,6 +114,7 @@ Candidate future work, including issue #173, is not current phase authority mere
 it exists.
 
 `STATUS.yaml` is the machine-readable source for current standing and owner-held items.
+`contracts/SUCCESSOR-PREP.md` is the current closed-books gap synthesis; it grants no successor-phase standing.
 Issue #148 is the Phase-I boundary-closure ledger.
 
 ## Start here

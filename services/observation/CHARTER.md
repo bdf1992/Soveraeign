@@ -1,6 +1,6 @@
 # Observation Service Charter
 
-Standing: `PROPOSED`. Chartered and contracted; nothing here is implemented.
+Standing: `CHARTERED_BOUNDARY_NOT_IMPLEMENTED`. Chartered and contracted; no Observation Service operation is implemented.
 
 ## Role in Soveraeign
 
@@ -10,12 +10,7 @@ something that did not perform it.
 `SPEC.md` already defines an `Observation` as a record carrying an observer, the addresses and
 digests that observer looked at itself, the predicates that held, and an `observer_relation`
 stating how it avoided relying solely on the executor's report. `settle_run` refuses with
-`OBSERVATION_MISSING` when that record is absent. Before this charter, nothing owned the
-transition that produces it — `observe_run` was one of fourteen kernel transitions and the only
-one with no service behind it.
-
-The gap shows everywhere else too. Check 3 on the `AI-NATIVE.md` bar — independent observation
-— reads `UNATTESTABLE` on every service assessment in the repository.
+`OBSERVATION_MISSING` when that record is absent. This boundary exists because `observe_run` needs a service-owned path for independent observation. The charter defines that path; current standing remains unimplemented.
 
 ## Independence is inferred, never declared
 
@@ -67,8 +62,7 @@ visible; neither changes an authority sign.
 
 ## The loop it closes
 
-An operator pilots the node — today through the CLI, and through the MCP tool surface once it
-is reseated on the Gateway Service. Acts land in the journal. Then:
+An admitted operator action lands in the journal. After the run is terminal, the observation loop is:
 
 1. `request-observation` — the executor, or the door on its behalf, asks for a terminal run to
    be observed. It cannot observe itself, so it asks. Refuses `RUN_NOT_TERMINAL` on a run still
@@ -124,7 +118,7 @@ proves nothing about whether it can tell an observer from an executor, and one t
 `KNOWN-GAPS.md` records every observed difference from this charter. Chartered under
 `decisions/0041-the-observation-service.md`.
 
-## Open before this can be built
+## Unresolved boundary seams
 
 - The exact set of direct edges above is proposed, not settled. It is the whole enforcement
   surface, and a missing edge is a way past the check.

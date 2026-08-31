@@ -20,6 +20,22 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Classify the prepared human horizon
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('scripts/sovdocs/facets.py')
+          text = path.read_text(encoding='utf-8')
+          rule = '    (r"^contracts/phase-1-5-phase-ii-horizon\\.md$", "phase-horizon",\n     "A prepared human-readable relationship between campaigns. Never phase standing."),\n'
+          if rule not in text:
+              anchor = '    (r"^contracts/SUCCESSOR-PREP\\.md$", "governing", "Part of the design System of Record."),\n'
+              if anchor not in text:
+                  raise SystemExit('documentation kind anchor absent')
+              text = text.replace(anchor, anchor + rule, 1)
+              path.write_text(text, encoding='utf-8', newline='\n')
+          PY
+
       - name: Apply phase-context and RecordProjection surface
         run: python .github/scripts/gap_195_context_projection.py apply
 
@@ -36,7 +52,7 @@ jobs:
           bad=0
           while IFS= read -r path; do
             case "$path" in
-              .clarity/coverage.json|PRD.md|CLAUDE.md|contracts/phase-1-5-phase-ii-horizon.md|contracts/capability-offices.json|contracts/fixtures/capability-map.reference.json|contracts/fixtures/node-interface.reference.json|scripts/sovsession/phase_context.py|scripts/sovsession/brief.py|scripts/tests/test_session_phase_context.py|services/record/SERVICE-SPEC.md|services/record/contracts/service.json|services/record/src/soveraeign_record_service/cli.py|services/record/src/soveraeign_record_service/projections.py|services/record/tests/test_evidence_projection.py|docs/surface.html|docs/documentation.html|.github/workflows/gap-195-context-projection.yml|.github/scripts/gap_195_context_projection.py)
+              .clarity/coverage.json|PRD.md|CLAUDE.md|contracts/phase-1-5-phase-ii-horizon.md|contracts/capability-offices.json|contracts/fixtures/capability-map.reference.json|contracts/fixtures/node-interface.reference.json|scripts/sovdocs/facets.py|scripts/sovsession/phase_context.py|scripts/sovsession/brief.py|scripts/tests/test_session_phase_context.py|services/record/SERVICE-SPEC.md|services/record/contracts/service.json|services/record/src/soveraeign_record_service/cli.py|services/record/src/soveraeign_record_service/projections.py|services/record/tests/test_evidence_projection.py|docs/surface.html|docs/documentation.html|.github/workflows/gap-195-context-projection.yml|.github/scripts/gap_195_context_projection.py)
                 ;;
               *)
                 echo "UNEXPECTED context/projection path: $path"

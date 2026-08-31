@@ -2,10 +2,21 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
+import json
+
+from sovkernel.jsonschema import validate as validate_schema
+from sovkernel.work_lease import evaluate as evaluate_work_lease
 
 from .errors import EnvironmentRefused
 from .pattern import digest, validate_pattern
+
+ROOT = Path(__file__).resolve().parents[2]
+WORK_LEASE_SCHEMA = json.loads(
+    (ROOT / "contracts" / "work-lease.schema.json").read_bytes().decode("utf-8")
+)
 
 
 def new_state(pattern: dict[str, Any]) -> dict[str, Any]:
@@ -67,15 +78,19 @@ def instantiate_trunk(
 
 
 def _lease_identity(lease: dict[str, Any]) -> tuple[str, str, str, int]:
-    if lease.get("lease_schema") != "soveraeign-work-lease/v1":
-        raise EnvironmentRefused("WORK_LEASE_SCHEMA_UNSUPPORTED")
-    lease_id = str(lease.get("lease_id") or "")
-    concern = str((lease.get("concern") or {}).get("reference") or "")
-    principal = str((lease.get("holder") or {}).get("principal_id") or "")
-    fence = lease.get("fence")
-    if not lease_id or not concern or not principal or not isinstance(fence, int):
-        raise EnvironmentRefused("WORK_LEASE_IDENTITY_INCOMPLETE")
-    return lease_id, concern, principal, fence
+    shape_defects = validate_schema(lease, WORK_LEASE_SCHEMA)
+    if shape_defects:
+        raise EnvironmentRefused("; ".join(shape_defects))
+    semantic_defects = evaluate_work_lease(lease, now=datetime.now(timezone.utc))
+    if semantic_defects:
+        defect = semantic_defects[0]
+        raise EnvironmentRefused(f"{defect.code}:{defect.message}")
+    return (
+        str(lease["lease_id"]),
+        str(lease["concern"]["reference"]),
+        str(lease["holder"]["principal_id"]),
+        int(lease["fence"]),
+    )
 
 
 def bind_workspace(
@@ -86,10 +101,10 @@ def bind_workspace(
     branch: str,
     base_revision: str,
 ) -> dict[str, Any]:
-    """Project an existing HELD WorkLease onto one isolated mutable workspace."""
-    if lease.get("state") != "HELD":
-        raise EnvironmentRefused("WORK_LEASE_NOT_HELD")
+    """Project an existing, bounded HELD WorkLease onto one mutable workspace."""
     lease_id, concern, principal, fence = _lease_identity(lease)
+    if lease["state"] != "HELD":
+        raise EnvironmentRefused("WORK_LEASE_NOT_HELD")
     for binding in state["workspace_bindings"]:
         if binding["status"] != "ACTIVE":
             continue
@@ -120,10 +135,10 @@ def release_workspace(
     *,
     reason: str,
 ) -> dict[str, Any]:
-    """Project terminal lease state onto its current workspace binding."""
-    if lease.get("state") == "HELD":
-        raise EnvironmentRefused("WORK_LEASE_STILL_HELD")
+    """Project terminal WorkLease state onto its current workspace binding."""
     lease_id, _, _, fence = _lease_identity(lease)
+    if lease["state"] == "HELD":
+        raise EnvironmentRefused("WORK_LEASE_STILL_HELD")
     active = [
         item
         for item in state["workspace_bindings"]

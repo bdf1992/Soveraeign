@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Any
 import subprocess
 
-from sovsession import claims, guard, principals, store
+from sovsession import claims, guard, phase_context, principals, store
 
 NEWLINE = chr(10)
 
@@ -48,7 +48,9 @@ def _position(root: Path, branch: str) -> str:
 
 def collect(root: Path, directory: Path, session: str, tree: str) -> dict[str, Any]:
     """Gather everything the briefing reports, as data."""
-    live = [record for record in store.sessions(directory).values()
+    sessions = store.sessions(directory)
+    own = sessions.get(session, {})
+    live = [record for record in sessions.values()
             if record.get("live") and record.get("session") != session]
     holders = claims.held(directory)
     foreign = {path: [h for h in owners if h.get("session") != session]
@@ -57,6 +59,7 @@ def collect(root: Path, directory: Path, session: str, tree: str) -> dict[str, A
     branch = branch_of(Path(tree))
     return {
         "session": session,
+        "intent": own.get("intent", ""),
         "tree": tree,
         "branch": branch,
         "position": _position(root, branch),
@@ -65,6 +68,7 @@ def collect(root: Path, directory: Path, session: str, tree: str) -> dict[str, A
         "held": foreign,
         "next_decision": claims.next_decision_number(root, directory),
         "principal": principals.resolve(root, session),
+        "phase": phase_context.collect(root),
     }
 
 
@@ -80,6 +84,12 @@ def _discovery(lines: list[str]) -> None:
     lines.append("  then load the owning contract for the operation or constraint you touch")
 
 
+def _phase(lines: list[str], data: dict[str, Any]) -> None:
+    """Show the reconciled phase reading without turning the briefing into authority."""
+    for line in phase_context.render(data):
+        lines.append("  " + line)
+
+
 def render(data: dict[str, Any]) -> str:
     """Render the briefing for a human or a model reading it as context."""
     peers = data["peers"]
@@ -87,6 +97,8 @@ def render(data: dict[str, Any]) -> str:
     if not peers and not data["held"]:
         lines = [f"Session registry: you are the only live session. "
                  f"{data['branch']}, {data['position']}.", f"  {identity}"]
+        lines.append(f"  intent: {data['intent'] or '(not registered)'}")
+        _phase(lines, data["phase"])
         _discovery(lines)
         return NEWLINE.join(lines)
     lines = [f"Session registry - {len(peers)} other live session"
@@ -94,6 +106,8 @@ def render(data: dict[str, Any]) -> str:
     lines.append(f"  you: {data['session']} in {data['tree']} "
                  f"on {data['branch']}, {data['position']}")
     lines.append(f"  {identity}")
+    lines.append(f"  intent: {data['intent'] or '(not registered)'}")
+    _phase(lines, data["phase"])
     if data["shared_tree"]:
         shared = data["shared_tree"]
         names = ", ".join(str(p.get("session")) for p in shared)

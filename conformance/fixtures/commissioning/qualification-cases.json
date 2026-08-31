@@ -1,0 +1,151 @@
+{
+  "fixture_schema": "soveraeign-p15-qualification-fixtures/v1",
+  "standing": "PREPARED_NO_PHASE_STANDING",
+  "note": "These cases prove the independent P15 qualification predicates discriminate their claims. A positive fixture is not evidence that the live product currently satisfies the predicate.",
+  "templates": {
+    "P15-Q1.1": {
+      "principal_id": "principal:fresh-1",
+      "session_id": "session:fresh-1",
+      "phase_state": "phase:1-5",
+      "work_address": "work:commissioning/1",
+      "capability": "record.project-evidence",
+      "required_authority": "record:read",
+      "effect_envelope": "RECORD_LOCAL",
+      "governance_context": "contracts/phases.json@sha256:example",
+      "record_projection_id": "projection:fresh-1",
+      "oral_history_used": false
+    },
+    "P15-Q1.2": {
+      "work": {
+        "address": "work:commissioning/1",
+        "custody_or_lease": "lease:commissioning/1",
+        "closure_condition": "fixture and observation pass",
+        "defeating_condition": "fresh participant cannot reconstruct the work",
+        "cleanup_obligations": ["retire lease", "retire worktree"]
+      },
+      "survives_session": true
+    },
+    "P15-Q1.3": {
+      "identities": {
+        "principal_id": "principal:one",
+        "session_id": "session:one",
+        "grant_id": "grant:one",
+        "interface_binding_id": "binding:one"
+      },
+      "cross_principal_session_mismatch": "REFUSED"
+    },
+    "P15-Q2.1": {
+      "consequential_event_addresses": ["record:event/1", "record:event/2"],
+      "record_reconstructable": true,
+      "private_state_authoritative": false
+    },
+    "P15-Q2.2": {
+      "projection": {
+        "projection_id": "projection:work-1",
+        "subject_addresses": ["work:1"],
+        "recipient_relation": "witness",
+        "as_of": "record:event/9",
+        "included_records": [{"address": "record:event/1", "digest": "sha256:abc"}],
+        "omissions": [{"record_class": "prior_evaluative_finding", "reason": "independence"}],
+        "projection_digest": "sha256:def",
+        "authority_effect": "NONE"
+      },
+      "reconstructable": true
+    },
+    "P15-Q2.3": {
+      "projection_evidence_addresses": ["record:event/1", "record:event/2"],
+      "findings": [
+        {
+          "subject_kind": "WORK",
+          "evaluator": "principal:witness",
+          "scope": "work:1@revision:1",
+          "evidence_addresses": ["record:event/1"]
+        },
+        {
+          "subject_kind": "PARTICIPANT_IN_WORK",
+          "evaluator": "principal:orchestrator",
+          "scope": "assignment:1@revision:1",
+          "evidence_addresses": ["record:event/2"]
+        }
+      ]
+    },
+    "P15-Q2.4": {
+      "projections_frozen_before_sharing": true,
+      "comparison": {
+        "input_finding_ids": ["finding:o1", "finding:w1"],
+        "citations_preserved": true,
+        "counterevidence_preserved": true,
+        "dissent_preserved": true,
+        "classification": "WORK_DEFECT",
+        "settled_missing_evidence_by_preference": false
+      }
+    },
+    "P15-Q3.1": {
+      "independent_observation_present": true,
+      "settled_against_current_state": true,
+      "temporary_inventory_remaining": [],
+      "closure_receipt": "receipt:settlement/1"
+    },
+    "P15-Q3.2": {
+      "result_address": "asset:accepted/1",
+      "standing": "WITNESSED",
+      "basis": "finding:w1",
+      "receipt_addresses": ["receipt:settlement/1"],
+      "capability": "asset.read",
+      "fresh_participant_used_result": true,
+      "oral_history_used": false
+    },
+    "P15-Q4.1": {
+      "settled_evidence_addresses": ["record:event/1", "finding:w1"],
+      "candidate": {
+        "proposal_id": "proposal:definition-b",
+        "source_addresses": ["record:event/1", "finding:w1", "receipt:settlement/1"]
+      }
+    },
+    "P15-Q4.2": {
+      "candidate": {
+        "standing": "RECORDED",
+        "authority_effect": "NONE"
+      },
+      "automatic_policy_change": false,
+      "automatic_phase_transition": false
+    },
+    "P15-Q4.3": {
+      "generic_primitives": [
+        "identity", "session", "authority", "work", "custody",
+        "record_projection", "observation", "finding", "settlement", "discovery"
+      ],
+      "fixed_role_names_required": false,
+      "alternate_institution_composes": true
+    }
+  },
+  "cases": [
+    {"case_id": "P15-Q1.1-positive", "predicate": "P15-Q1.1", "polarity": "positive"},
+    {"case_id": "P15-Q1.1-defeating", "predicate": "P15-Q1.1", "polarity": "defeating", "set": {"oral_history_used": true}},
+    {"case_id": "P15-Q1.2-positive", "predicate": "P15-Q1.2", "polarity": "positive"},
+    {"case_id": "P15-Q1.2-defeating", "predicate": "P15-Q1.2", "polarity": "defeating", "set": {"survives_session": false}},
+    {"case_id": "P15-Q1.3-positive", "predicate": "P15-Q1.3", "polarity": "positive"},
+    {"case_id": "P15-Q1.3-defeating", "predicate": "P15-Q1.3", "polarity": "defeating", "set": {"cross_principal_session_mismatch": "COMMITTED"}},
+
+    {"case_id": "P15-Q2.1-positive", "predicate": "P15-Q2.1", "polarity": "positive"},
+    {"case_id": "P15-Q2.1-defeating", "predicate": "P15-Q2.1", "polarity": "defeating", "set": {"private_state_authoritative": true}},
+    {"case_id": "P15-Q2.2-positive", "predicate": "P15-Q2.2", "polarity": "positive"},
+    {"case_id": "P15-Q2.2-defeating", "predicate": "P15-Q2.2", "polarity": "defeating", "set": {"projection.authority_effect": "GRANTED"}},
+    {"case_id": "P15-Q2.3-positive", "predicate": "P15-Q2.3", "polarity": "positive"},
+    {"case_id": "P15-Q2.3-defeating", "predicate": "P15-Q2.3", "polarity": "defeating", "set": {"findings.0.evidence_addresses": ["record:outside-projection"]}},
+    {"case_id": "P15-Q2.4-positive", "predicate": "P15-Q2.4", "polarity": "positive"},
+    {"case_id": "P15-Q2.4-defeating", "predicate": "P15-Q2.4", "polarity": "defeating", "set": {"projections_frozen_before_sharing": false}},
+
+    {"case_id": "P15-Q3.1-positive", "predicate": "P15-Q3.1", "polarity": "positive"},
+    {"case_id": "P15-Q3.1-defeating", "predicate": "P15-Q3.1", "polarity": "defeating", "set": {"temporary_inventory_remaining": ["lease:1"]}},
+    {"case_id": "P15-Q3.2-positive", "predicate": "P15-Q3.2", "polarity": "positive"},
+    {"case_id": "P15-Q3.2-defeating", "predicate": "P15-Q3.2", "polarity": "defeating", "set": {"oral_history_used": true}},
+
+    {"case_id": "P15-Q4.1-positive", "predicate": "P15-Q4.1", "polarity": "positive"},
+    {"case_id": "P15-Q4.1-defeating", "predicate": "P15-Q4.1", "polarity": "defeating", "set": {"candidate.source_addresses": ["receipt:settlement/1"]}},
+    {"case_id": "P15-Q4.2-positive", "predicate": "P15-Q4.2", "polarity": "positive"},
+    {"case_id": "P15-Q4.2-defeating", "predicate": "P15-Q4.2", "polarity": "defeating", "set": {"automatic_phase_transition": true}},
+    {"case_id": "P15-Q4.3-positive", "predicate": "P15-Q4.3", "polarity": "positive"},
+    {"case_id": "P15-Q4.3-defeating", "predicate": "P15-Q4.3", "polarity": "defeating", "set": {"fixed_role_names_required": true}}
+  ]
+}

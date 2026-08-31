@@ -10,9 +10,11 @@ import sys
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from sovkernel.jsonschema import validate  # noqa: E402
+import sov_opening_readiness  # noqa: E402
 
 
 class CommissioningEvidenceContractTests(unittest.TestCase):
@@ -75,6 +77,19 @@ class CommissioningEvidenceContractTests(unittest.TestCase):
             self.assertIn(criterion, spec)
         self.assertIn("candidate next Definition", prd)
         self.assertIn("gains no standing or authority", spec)
+
+    def test_all_p15_normative_predicates_have_discriminating_fixture_pairs(self) -> None:
+        report = sov_opening_readiness.commissioning_instrument(ROOT)
+        self.assertEqual(report["predicates_total"], 12)
+        self.assertEqual(report["predicates_covered"], 12)
+        self.assertEqual(report["open"], [])
+        self.assertEqual(report["defects"], [])
+        self.assertTrue(report["closed"])
+
+    def test_opening_rehearsal_requires_the_p15_instrument(self) -> None:
+        report = sov_opening_readiness.assess(ROOT)
+        self.assertTrue(report["checks"]["p15_qualification_instrument"])
+        self.assertEqual(report["p15_instrument"]["predicates_covered"], 12)
 
 
 if __name__ == "__main__":

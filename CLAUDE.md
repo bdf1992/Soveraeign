@@ -182,7 +182,7 @@ engineering baseline. Day two added the SDLC loop, Console, scheduled runs,
 Sov, the federation harness, defeating fixtures for receipts and proofing,
 LF line-ending enforcement, and the stack certification. At the end of day two
 the record held 26 commits, 17 decision records and 8 reports; it now holds
-764 commits, 87 decision records and 29 reports. The
+794 commits, 87 decision records and 29 reports. The
 first independently witnessed work landed on 2026-08-25; owner-accepted packets
 now exist and are enumerated under `STATUS.yaml` `owner_accepted`.
 

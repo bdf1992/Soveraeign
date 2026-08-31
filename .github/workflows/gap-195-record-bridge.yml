@@ -98,7 +98,6 @@ jobs:
           set -euo pipefail
           for path in \
             AGENTS.md \
-            CLAUDE.md \
             SOV.md \
             README.md \
             CONTRIBUTING.md \
@@ -111,7 +110,6 @@ jobs:
             .claude/skills/sov-verification/SKILL.md; do
             python scripts/sov_clarity.py record "$path" --changed
           done
-          python scripts/sov_clarity.py check
 
       - name: Remove gap-only migration machinery
         run: |
@@ -148,8 +146,11 @@ jobs:
           path.write_text(text, encoding='utf-8', newline='\n')
           PY
 
-      - name: Rebuild documentation against the final shaped tree
-        run: python scripts/sov_docs.py build
+      - name: Record final host bytes and rebuild final documentation
+        run: |
+          python scripts/sov_clarity.py record CLAUDE.md --changed
+          python scripts/sov_clarity.py check
+          python scripts/sov_docs.py build
 
       - name: Commit normalized recorder slice locally
         shell: bash

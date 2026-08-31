@@ -23,6 +23,12 @@ jobs:
       - name: Apply phase-aware custody and progress plumbing
         run: python .github/scripts/gap_195_phase_plumbing.py apply
 
+      - name: Split new concerns out of full modules
+        shell: bash
+        run: |
+          python .github/scripts/gap_195_phase_plumbing_repair.py
+          rm .github/scripts/gap_195_phase_plumbing_repair.py
+
       - name: Retire carrier and refresh derived state
         run: python .github/scripts/gap_195_phase_plumbing.py finalize
 
@@ -33,7 +39,7 @@ jobs:
           bad=0
           while IFS= read -r path; do
             case "$path" in
-              .clarity/coverage.json|CLAUDE.md|contracts/phase-progress.json|scripts/sovcustody/model.py|scripts/sovcustody/commands.py|scripts/sov_custody.py|scripts/sov_phase_progress.py|scripts/sovverify/checks.py|scripts/tests/test_phase_aware_custody.py|scripts/tests/test_active_phase_progress.py|docs/documentation.html|.github/workflows/gap-195-phase-plumbing.yml|.github/scripts/gap_195_phase_plumbing.py)
+              .clarity/coverage.json|CLAUDE.md|contracts/phase-progress.json|scripts/sovcustody/model.py|scripts/sovcustody/collections.py|scripts/sovcustody/commands.py|scripts/sov_custody.py|scripts/sov_active_phase_progress.py|scripts/sov_phase_progress.py|scripts/sovverify/checks.py|scripts/tests/test_phase_aware_custody.py|scripts/tests/test_active_phase_progress.py|docs/documentation.html|.github/workflows/gap-195-phase-plumbing.yml|.github/scripts/gap_195_phase_plumbing.py|.github/scripts/gap_195_phase_plumbing_repair.py)
                 ;;
               *)
                 echo "UNEXPECTED phase-plumbing path: $path"

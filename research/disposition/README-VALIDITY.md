@@ -1,0 +1,1 @@
+Validity is always attached to an interpretation/use. Disposition Lab must never collapse `VALIDATED_FOR_USE(x)` into a universal `VALID` label.

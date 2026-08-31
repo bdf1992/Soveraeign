@@ -23,6 +23,7 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          import subprocess
 
           def replace(path, old, new):
               p = Path(path)
@@ -130,6 +131,15 @@ jobs:
           model is material. `AGENTS.md`, `CONTRIBUTING.md`, and this file govern participants; they do not
           own product claims.
           ''')
+
+          # CLAUDE's snapshot is checked against committed history. Keep the checked orientation
+          # current rather than widening its tolerance just because this gap work crossed the limit.
+          commit_count = subprocess.check_output(
+              ['git', 'rev-list', '--count', 'HEAD'], text=True).strip()
+          replace(
+              'CLAUDE.md',
+              'it now holds\n764 commits, 87 decision records and 29 reports.',
+              f'it now holds\n{commit_count} commits, 87 decision records and 29 reports.')
 
           p = Path('README.md')
           text = p.read_text(encoding='utf-8')

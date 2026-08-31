@@ -3,8 +3,8 @@
   "status": "PROPOSED",
   "phase": "phase:i",
   "serves_exit": "PRD.md Phase-I exit, pinned by digest in contracts/phases.json",
-  "title": "Historical Phase I custody record \u2014 closed incomplete with explicit successors",
-  "note": "Historical record. Phase I closed on 2026-08-27 as CLOSED_INCOMPLETE / NOT_EARNED. A terminal on a custody ends the old assignment; held_by then records who carried it historically. Surviving work is reissued only through the terminal successor addresses below. Hierarchical on purpose. An earlier draft of this file held ten flat peers and mixed abstraction levels - exit obligations, service work, coordination cleanup, and a future product capability - which reproduces at a new layer the failure it was built to fix. The five EXIT custodies mirror the five clauses of the Phase-I exit exactly. Every DELIVERY custody names the exit custody it serves, or is marked explicitly outside the phase exit with a reason. If an initiative cannot name the exit custody it serves, it is not Phase-I work. Every one collects work that already exists; none proposes an initiative nobody has started.",
+  "title": "Custody collection \u2014 historical Phase I terminals and current durable obligations",
+  "note": "This collection preserves the historical Phase-I custody terminals and may also carry explicit outside-phase obligations. An outside-phase custody is durable queued responsibility; it does not reopen Phase I and it does not imply an active work lease. Historical record. Phase I closed on 2026-08-27 as CLOSED_INCOMPLETE / NOT_EARNED. A terminal on a custody ends the old assignment; held_by then records who carried it historically. Surviving work is reissued only through the terminal successor addresses below. Hierarchical on purpose. An earlier draft of this file held ten flat peers and mixed abstraction levels - exit obligations, service work, coordination cleanup, and a future product capability - which reproduces at a new layer the failure it was built to fix. The five EXIT custodies mirror the five clauses of the Phase-I exit exactly. Every DELIVERY custody names the exit custody it serves, or is marked explicitly outside the phase exit with a reason. If an initiative cannot name the exit custody it serves, it is not Phase-I work. Every one collects work that already exists; none proposes an initiative nobody has started.",
   "governed_by": [
     "PRD.md",
     "ROADMAP.md",
@@ -1667,6 +1667,86 @@
       ],
       "required_authority": "node:admit",
       "cleanup_obligations": []
+    },
+    {
+      "custody_schema": "soveraeign-custody/v1",
+      "status": "PROPOSED",
+      "custody_id": "custody:clarity/current-prose",
+      "custody_kind": "DELIVERY",
+      "initiative": "Every eligible current human-facing artifact receives an unslop/v1 reconsideration and a current clarity/v1 receipt against its governing basis.",
+      "held_by": "seat:session-control",
+      "roots": [
+        {
+          "root_kind": "GROUND",
+          "reference": "GROUND-006",
+          "serves": "what may be asked of the node must remain discoverable from the artifact alone, so current reader surfaces cannot silently drift from their basis"
+        },
+        {
+          "root_kind": "GROUND",
+          "reference": "GROUND-010",
+          "serves": "a review report is not current evidence unless the reviewed content and its basis are still the bytes the receipt names"
+        }
+      ],
+      "circuit": "soveraeign-work-circuit/v1",
+      "entry_stage": "ROOT_POINT",
+      "target_stage": "EXPLODED_SURFACE",
+      "closure": {
+        "check": {
+          "kind": "COMMAND",
+          "expression": "python scripts/sov_clarity.py gate"
+        },
+        "judgement_seat": "seat:root",
+        "defeated_by": "coverage reaches 100% by excluding current prose, retaining stale basis digests, or recording review without actually reconsidering the artifact claim"
+      },
+      "estimate": {
+        "estimate_schema": "soveraeign-estimate/v1",
+        "estimated_by": "principal:closure-controller",
+        "estimated_at": "2026-08-30T22:18:00Z",
+        "basis": "The obligation is known but intentionally unleased. The denominator is measured at 138 eligible artifacts with 120 unchecked. ROOT_POINT permits only the cost of finding out, so this estimate claims no delivery time or batch count.",
+        "maturity": "DISCOVERY_ENVELOPE",
+        "dimensions": [
+          {
+            "dimension_id": "grants",
+            "low": 0,
+            "high": 0,
+            "note": "The queued obligation predicts no new authority grant; later work must still use whatever repository-write authority its lease requires."
+          },
+          {
+            "dimension_id": "judgement_units",
+            "low": 0,
+            "high": 1,
+            "note": "Ordinary review is mechanical; at most one owner judgement is expected if the terminal itself needs settlement."
+          }
+        ]
+      },
+      "members": [
+        {
+          "member_kind": "TICKET",
+          "address": "issue:#186",
+          "stage": "ROOT_POINT",
+          "standing": "OPEN",
+          "work_state": "READY",
+          "stage_observed_by": null,
+          "note": "successor concern for the remaining full-corpus Clarity pass; recording it takes no lease"
+        },
+        {
+          "member_kind": "DOCUMENT",
+          "address": ".clarity/coverage.json",
+          "stage": "HORIZONTAL_SURFACE",
+          "standing": "BUILT",
+          "work_state": "LANDED",
+          "stage_observed_by": null,
+          "note": "derived coverage record measuring the remaining current-prose population"
+        }
+      ],
+      "serves_exit": null,
+      "outside_phase_exit": "Full current-prose editorial reconciliation is successor repository hygiene, not a historical Phase-I exit clause.",
+      "phase": null,
+      "exit_clause": null,
+      "depends_on": [],
+      "required_authority": null,
+      "cleanup_obligations": [],
+      "note": "Known future work remains under durable custody while the Phase-I boundary keeps its active attention on literal closure."
     }
   ]
 }

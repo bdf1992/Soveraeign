@@ -1,0 +1,270 @@
+{
+  "schema": "soveraeign-clarity/v3",
+  "skill": "clarity/v1",
+  "base_modifier": "unslop/v1",
+  "coverage_file": ".clarity/coverage.json",
+  "scope": {
+    "publication_contract": "contracts/publication-surface.json",
+    "include_surfaces": [
+      "HUB",
+      "HOST"
+    ],
+    "candidate_include": [
+      "**/*.md",
+      ".cursorrules",
+      "STATUS.yaml"
+    ],
+    "candidate_exclude": [
+      ".claude/worktrees/**",
+      "node_modules/**"
+    ],
+    "exemptions": [
+      {
+        "include": [
+          "decisions/**/*.md"
+        ],
+        "reason": "Decision records preserve the language, authority context, and provenance of the act they record. Clarity reviews current projections of those decisions rather than rewriting the historical record."
+      }
+    ]
+  },
+  "campaign_order": [
+    "root",
+    "participants",
+    "services",
+    "bindings",
+    "operations",
+    "repository"
+  ],
+  "campaigns": {
+    "root": {
+      "include": [
+        "*.md",
+        ".cursorrules",
+        "STATUS.yaml"
+      ],
+      "exclude": []
+    },
+    "participants": {
+      "include": [
+        ".claude/**/*.md",
+        ".github/**/*.md"
+      ],
+      "exclude": []
+    },
+    "services": {
+      "include": [
+        "services/**/*.md"
+      ],
+      "exclude": []
+    },
+    "bindings": {
+      "include": [
+        "bindings/**/*.md",
+        "adapters/**/*.md"
+      ],
+      "exclude": []
+    },
+    "operations": {
+      "include": [
+        "infrastructure/**/*.md",
+        "workers/**/*.md",
+        "witness/**/*.md",
+        "scripts/**/*.md",
+        "conformance/**/*.md",
+        "contracts/**/*.md",
+        "docs/**/*.md",
+        "lineage/**/*.md"
+      ],
+      "exclude": []
+    },
+    "repository": {
+      "include": [
+        "**/*.md",
+        ".cursorrules"
+      ],
+      "exclude": []
+    }
+  },
+  "basis_by_path": {
+    "README.md": [
+      "GROUND.md",
+      "CANON.md",
+      "SYSTEM.md",
+      "STATUS.yaml"
+    ],
+    "SYSTEM.md": [
+      "GROUND.md",
+      "CANON.md",
+      "CONTRACT.md",
+      "CLASSIFICATION.md"
+    ],
+    "AI-NATIVE.md": [
+      "SYSTEM.md",
+      "CONTRACT.md",
+      "SPEC.md"
+    ],
+    "BYOM.md": [
+      "SYSTEM.md",
+      "CONTRACT.md",
+      "SPEC.md"
+    ],
+    "ENGINEERING.md": [
+      "SYSTEM.md",
+      "CONTRACT.md",
+      "SPEC.md"
+    ],
+    "AGENTS.md": [
+      "GROUND.md",
+      "CANON.md",
+      "SYSTEM.md",
+      "CONTRACT.md",
+      "STATUS.yaml"
+    ],
+    "CONTRIBUTING.md": [
+      "AGENTS.md",
+      "STATUS.yaml"
+    ],
+    "SOV.md": [
+      "AGENTS.md",
+      "SYSTEM.md",
+      "CONTRACT.md",
+      "STATUS.yaml"
+    ],
+    "CLAUDE.md": [
+      "AGENTS.md",
+      "SOV.md",
+      "STATUS.yaml"
+    ],
+    "CANON.md": [
+      "GROUND.md"
+    ],
+    "CLASSIFICATION.md": [
+      "GROUND.md",
+      "CANON.md"
+    ],
+    "CONTRACT.md": [
+      "GROUND.md",
+      "CANON.md"
+    ],
+    "PRD.md": [
+      "GROUND.md",
+      "CANON.md",
+      "STATUS.yaml"
+    ],
+    "SPEC.md": [
+      "SYSTEM.md",
+      "CONTRACT.md",
+      "CLASSIFICATION.md"
+    ],
+    "ROADMAP.md": [
+      "PRD.md",
+      "STATUS.yaml",
+      "contracts/phases.json"
+    ],
+    "OPEN-SEAMS.md": [
+      "SYSTEM.md",
+      "CONTRACT.md",
+      "STATUS.yaml"
+    ],
+    "SDLC.md": [
+      "AGENTS.md",
+      "CONTRACT.md",
+      "STATUS.yaml"
+    ],
+    "NAMING.md": [
+      "CANON.md",
+      "CLASSIFICATION.md"
+    ],
+    ".cursorrules": [
+      "AGENTS.md",
+      "STATUS.yaml"
+    ]
+  },
+  "basis_by_pattern": [
+    {
+      "include": [
+        ".claude/**/*.md"
+      ],
+      "basis": [
+        "AGENTS.md",
+        "STATUS.yaml"
+      ]
+    },
+    {
+      "include": [
+        ".github/**/*.md"
+      ],
+      "basis": [
+        "AGENTS.md",
+        "CONTRIBUTING.md",
+        "STATUS.yaml"
+      ]
+    },
+    {
+      "include": [
+        "services/**/*.md"
+      ],
+      "basis": [
+        "SYSTEM.md",
+        "CONTRACT.md",
+        "SPEC.md"
+      ]
+    },
+    {
+      "include": [
+        "bindings/**/*.md",
+        "adapters/**/*.md"
+      ],
+      "basis": [
+        "SYSTEM.md",
+        "CONTRACT.md",
+        "SPEC.md",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "include": [
+        "infrastructure/**/*.md",
+        "workers/**/*.md",
+        "witness/**/*.md"
+      ],
+      "basis": [
+        "SYSTEM.md",
+        "CONTRACT.md",
+        "SPEC.md",
+        "STATUS.yaml"
+      ]
+    },
+    {
+      "include": [
+        "scripts/**/*.md",
+        "conformance/**/*.md",
+        "docs/**/*.md"
+      ],
+      "basis": [
+        "AGENTS.md",
+        "STATUS.yaml"
+      ]
+    }
+  ],
+  "zero_state": {
+    "description": "Closure-ready reader zero: every human-facing candidate is publication-classified, and the small set that can define or orient current authority is actively clarity-reviewed. Other current prose may remain UNCHECKED and is measured by the full corpus gate.",
+    "required_current": [
+      "README.md",
+      "AGENTS.md",
+      "SOV.md",
+      "STATUS.yaml",
+      "GROUND.md",
+      "CANON.md",
+      "SYSTEM.md",
+      "CONTRACT.md",
+      "PRD.md",
+      "ROADMAP.md",
+      "SPEC.md",
+      "CONTRIBUTING.md",
+      "OPEN-SEAMS.md",
+      ".cursorrules",
+      "CLAUDE.md"
+    ]
+  }
+}

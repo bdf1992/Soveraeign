@@ -2,118 +2,193 @@
   "policy_id": "soveraeign-concern-admission/v1",
   "status": "PROPOSED",
   "title": "What a concern must answer to enter work, and to leave it",
-  "note": "Phase I admitted work by document location: every change had somewhere to go, and none had to name what it would close. That is how locally coherent work becomes globally non-closing. This table is the entry and the exit of one concern. An item missing a ready field stays visible inventory and does not enter work in progress; a concern missing a closed layer has stopped rather than finished. Neither half grants authority, and passing them proves nothing about whether the work was worth doing - that is the custody holder's judgement and, at the exit clause, the root seat's.",
+  "note": "Phase I admitted work by document location: every change had somewhere to go, and none had to name what it would close. That is how locally coherent work becomes globally non-closing. This table is the entry and the exit of one concern. An item missing a ready field stays visible inventory and does not enter work in progress; a concern missing a closed layer has stopped rather than finished. Neither half grants authority, and passing them proves nothing about whether the work was worth doing - that is the custody holder's judgement and, at an owner-held acceptance boundary, the root seat's.",
   "governed_by": [
     "AGENTS.md",
     "SDLC.md",
     "contracts/closure-ownership.json",
     "contracts/custody.schema.json",
+    "contracts/work-lease.schema.json",
     "contracts/work-circuit.json",
+    "contracts/ticket-settlement.json",
     "decisions/0055-closure-ownership.md",
     "decisions/0085-custody-boards-and-the-work-circuit.md"
   ],
+  "work_lifecycle": {
+    "principle": "A repository commit records a durable change to bytes. This lifecycle records the responsibility around that change: why the work exists, who carries it across sessions, who is actively holding it now, what integration occurred, what that integration settled, and what known consequences remain. Merge or landing is therefore an integration transition, not proof that the represented concern is closed.",
+    "invariants": [
+      "Work discovered is not work undertaken.",
+      "Every known obligation is absorbed, terminal, or under durable custody before the originating concern closes.",
+      "Durable custody preserves responsibility while active possession remains bounded by work leases.",
+      "A custody may exist without an active lease; that is queued responsibility, not abandoned work.",
+      "Discovery of a distinct future concern does not acquire a lease for it and does not interrupt the current lease.",
+      "Landing proves integration into the intended base. Settlement determines whether that durable result advances, satisfies, or supersedes the represented concern.",
+      "A concern may close with future work, but not with unexplained or uncustodied known work."
+    ],
+    "roles": {
+      "CONCERN": {
+        "owned_by": "contracts/concern-admission.json",
+        "means": "One bounded unit of meaning admitted to work with roots, boundary, effect, closure and defeating evidence."
+      },
+      "CUSTODY": {
+        "owned_by": "contracts/custody.schema.json",
+        "means": "Durable accountability for carrying an obligation to a terminal across sessions. Custody grants no authority and may remain live without active execution."
+      },
+      "LEASE": {
+        "owned_by": "contracts/work-lease.schema.json",
+        "means": "Temporary active possession of one concern by one attributable principal, under a grant and budget, against a closure condition. A lease is execution attention, not durable ownership."
+      },
+      "CLOSURE": {
+        "owned_by": "contracts/closure-ownership.json",
+        "means": "The judgement that a participant may stop carrying the bounded concern now, either because reachable work is complete or because a declared seam makes handoff legitimate."
+      },
+      "LANDING": {
+        "owned_by": "scripts/sov_land.py",
+        "means": "Governed integration of the exact witnessed change into the intended base. Landing is not satisfaction or ratification."
+      },
+      "SETTLEMENT": {
+        "owned_by": "contracts/ticket-settlement.json",
+        "means": "Recompute what the landed result did to the concern and its coordination state: advance it, satisfy it, supersede it, or leave it open."
+      },
+      "QUEUE": {
+        "owned_by": "derived projection",
+        "means": "A view of live custodied work eligible for future attention. The queue owns no work and creates no authority."
+      }
+    },
+    "flow": [
+      {
+        "step": "ADMIT",
+        "from": "CONCERN",
+        "to": "CUSTODY",
+        "means": "A ready concern names the durable custody accountable after the current session ends."
+      },
+      {
+        "step": "TAKE",
+        "from": "CUSTODY",
+        "to": "LEASE",
+        "means": "An eligible principal actively possesses the concern for a bounded interval. Custody remains the durable responsibility."
+      },
+      {
+        "step": "WORK",
+        "from": "LEASE",
+        "to": "CLOSURE",
+        "means": "The holder inspects, implements, attacks, repairs, verifies and obtains required observation while staying inside the concern boundary."
+      },
+      {
+        "step": "INTEGRATE",
+        "from": "CLOSURE",
+        "to": "LANDING",
+        "means": "A permitted branch holder integrates or retires the exact execution state."
+      },
+      {
+        "step": "RECONCILE",
+        "from": "LANDING",
+        "to": "SETTLEMENT",
+        "means": "The landed revision is re-read against receipts, standing, custody, issues, projections and known consequences rather than trusting the landing report."
+      },
+      {
+        "step": "RELEASE_ATTENTION",
+        "from": "SETTLEMENT",
+        "to": "QUEUE",
+        "means": "The current lease reaches a terminal. Any surviving distinct work stays under custody without inheriting active attention."
+      }
+    ],
+    "wake_policy": {
+      "means": "The reconciliation wake is the set of known consequences caused or exposed by the current concern.",
+      "absorb_when": [
+        "same_service",
+        "same_effect_class",
+        "same_authority"
+      ],
+      "absorb_rule": "When all three predicates hold, the consequence remains part of the current concern and is repaired before closure.",
+      "separate_rule": "When any predicate crosses, preserve the consequence as a distinct concern under durable custody. Registering it does not take a work lease for it.",
+      "close_rule": "The originating concern may close when every known consequence is absorbed, terminal, or under valid custody with an explicit reason it is separate.",
+      "block_rule": "The existence of future custodied work is not a blocker. BLOCKED is reserved for a required next transition with no admissible reachable route."
+    },
+    "queue_projection": {
+      "source": "custodies and live work leases",
+      "eligible_shape": "live custody without a conflicting active lease, filtered by readiness, dependencies, authority and capability",
+      "owns_work": false,
+      "selection_is_authority": false,
+      "note": "Priority may rank eligible future attention, but ranking must not silently preempt a lease already in progress."
+    },
+    "potential_extensions": [
+      {
+        "id": "STATE_PINNED_PROMISE",
+        "status": "CHARTED",
+        "potential": "Bind a deferred custody to the repository revision and source digests against which the obligation was observed, then revalidate those facts when a later lease takes it.",
+        "builds_on": ["roots", "terminal.basis", "clarity basis digests"]
+      },
+      {
+        "id": "CAUSAL_CUSTODY_EDGES",
+        "status": "PARTIAL",
+        "potential": "Record why one custody produced another with typed edges such as MADE_STALE, DEFECT_DISCOVERED, DEPENDENCY_EXPOSED, ABSORBED_BY and SUPERSEDED_BY.",
+        "builds_on": ["depends_on", "cleanup_obligations", "terminal.successors"]
+      },
+      {
+        "id": "PRIORITY_SELECTION",
+        "status": "CHARTED",
+        "potential": "Rank otherwise eligible custodies for the next lease without treating high priority as permission to steal an active lease.",
+        "builds_on": ["work-in-progress ceiling", "sov_next", "custody estimates"]
+      },
+      {
+        "id": "GENERAL_CUSTODY",
+        "status": "PARTIAL",
+        "potential": "Generalize custody beyond historical EXIT and DELIVERY phase shapes while retaining the same durable accountability, root, closure and terminal semantics.",
+        "builds_on": ["outside_phase_exit", "custody roots", "closure"]
+      },
+      {
+        "id": "AUTOMATIC_WAKE_DISCOVERY",
+        "status": "CHARTED",
+        "potential": "Derive likely consequences from changed contracts, publication surfaces, clarity basis relationships, generated projections and service ownership before closure is claimed.",
+        "builds_on": ["publication surface", "clarity", "generated projections", "service ownership"]
+      },
+      {
+        "id": "REVALIDATE_ON_TAKE",
+        "status": "CHARTED",
+        "potential": "When a queued custody receives a new lease, compare its observed basis with current state and settle it as STILL_OWED, ALREADY_SATISFIED, SUPERSEDED or RETIRED before executing an old plan.",
+        "builds_on": ["STATE_PINNED_PROMISE", "ticket settlement"]
+      },
+      {
+        "id": "ATTENTION_ESCAPE_CHECK",
+        "status": "CHARTED",
+        "potential": "Detect changed paths or effects outside the currently leased concern unless they are proven absorbable or explicitly interrupted under policy.",
+        "builds_on": ["session path claims", "work leases", "closure absorption test"]
+      },
+      {
+        "id": "UNCUSTODIED_WAKE_CHECK",
+        "status": "CHARTED",
+        "potential": "Refuse closure when a known consequence is neither absorbed nor terminal nor represented by a durable custody.",
+        "builds_on": ["AUTOMATIC_WAKE_DISCOVERY", "custody orphans", "closure"]
+      }
+    ]
+  },
   "definition_of_ready": {
     "note": "All twelve resolve before a concern leaves CANDIDATE for READY. An unresolved field is not a blocker to record the concern; it is a blocker to start it.",
     "fields": [
-      {
-        "field": "root_refs",
-        "answers": "Which ground, requirement, predicate and governing contract justify this work?",
-        "refusal": "ROOTLESS_CONCERN"
-      },
-      {
-        "field": "custody_id",
-        "answers": "Which durable initiative remains accountable after this session ends?",
-        "refusal": "UNHELD_CONCERN"
-      },
-      {
-        "field": "holder_and_settler",
-        "answers": "Who carries the initiative, and which separate seat can settle it?",
-        "refusal": "SELF_SETTLED_CONCERN"
-      },
-      {
-        "field": "service_boundary",
-        "answers": "Which service or cross-cutting owner contains the change?",
-        "refusal": "UNBOUNDED_CONCERN"
-      },
-      {
-        "field": "effect_class_and_authority",
-        "answers": "What may this concern change, and under which grant?",
-        "refusal": "UNDECLARED_EFFECT"
-      },
-      {
-        "field": "entry_stage_and_target_stage",
-        "answers": "How far is the thing drawn now, and how far must this concern advance it?",
-        "refusal": "UNSTAGED_CONCERN"
-      },
-      {
-        "field": "closure_check",
-        "answers": "What command or observation proves the concern reached its terminal?",
-        "refusal": "UNCLOSEABLE_CONCERN"
-      },
-      {
-        "field": "defeating_case",
-        "answers": "What would show the closure claim is false?",
-        "refusal": "UNFALSIFIABLE_CLAIM"
-      },
-      {
-        "field": "dependency_refs",
-        "answers": "Which exact artifacts must exist first?",
-        "refusal": "UNRESOLVED_DEPENDENCY"
-      },
-      {
-        "field": "estimate_range_and_basis",
-        "answers": "What envelope is expected, and how mature is the estimate?",
-        "refusal": "MISSING_EXTENT"
-      },
-      {
-        "field": "isolation",
-        "answers": "Which registered session, worktree, branch and path claims contain the work?",
-        "refusal": "UNISOLATED_CONCERN"
-      },
-      {
-        "field": "cleanup_obligations",
-        "answers": "Which issue, branch, worktree, lease and projection must settle afterward?",
-        "refusal": "UNRETIRED_INVENTORY"
-      }
+      {"field": "root_refs", "answers": "Which ground, requirement, predicate and governing contract justify this work?", "refusal": "ROOTLESS_CONCERN"},
+      {"field": "custody_id", "answers": "Which durable initiative remains accountable after this session ends?", "refusal": "UNHELD_CONCERN"},
+      {"field": "holder_and_settler", "answers": "Who carries the initiative, and which separate seat can settle it?", "refusal": "SELF_SETTLED_CONCERN"},
+      {"field": "service_boundary", "answers": "Which service or cross-cutting owner contains the change?", "refusal": "UNBOUNDED_CONCERN"},
+      {"field": "effect_class_and_authority", "answers": "What may this concern change, and under which grant?", "refusal": "UNDECLARED_EFFECT"},
+      {"field": "entry_stage_and_target_stage", "answers": "How far is the thing drawn now, and how far must this concern advance it?", "refusal": "UNSTAGED_CONCERN"},
+      {"field": "closure_check", "answers": "What command or observation proves the concern reached its terminal?", "refusal": "UNCLOSEABLE_CONCERN"},
+      {"field": "defeating_case", "answers": "What would show the closure claim is false?", "refusal": "UNFALSIFIABLE_CLAIM"},
+      {"field": "dependency_refs", "answers": "Which exact artifacts must exist first?", "refusal": "UNRESOLVED_DEPENDENCY"},
+      {"field": "estimate_range_and_basis", "answers": "What envelope is expected, and how mature is the estimate?", "refusal": "MISSING_EXTENT"},
+      {"field": "isolation", "answers": "Which registered session, worktree, branch and path claims contain the work?", "refusal": "UNISOLATED_CONCERN"},
+      {"field": "cleanup_obligations", "answers": "Which issue, branch, worktree, lease and projection must settle afterward?", "refusal": "UNRETIRED_INVENTORY"}
     ]
   },
   "definition_of_closed": {
     "note": "Six layers, each applicable or explicitly not. A concern is closed when its holder can demonstrate every applicable one. Landed is not closed and cleaned is not optional: a concern that emitted a branch, an issue and a worktree and retired none of them has moved its cost onto whoever comes next.",
     "layers": [
-      {
-        "layer": "BUILT",
-        "demonstrates": "The change exists inside the declared boundary and its positive and defeating cases pass.",
-        "always_applicable": true
-      },
-      {
-        "layer": "ATTACKED",
-        "demonstrates": "Adversarial review ran against the exact revision; findings were repaired inside the concern unless they crossed a genuine seam.",
-        "always_applicable": true,
-        "note": "Repairing in place is the rule. Converting a finding into another ticket is the failure contracts/closure-ownership.json names."
-      },
-      {
-        "layer": "OBSERVED",
-        "demonstrates": "An independent participant reconstructed the claimed result.",
-        "always_applicable": false,
-        "applicable_when": "the target standing is WITNESSED or above",
-        "note": "A helper that read or edited the change is inside the build and can never supply this."
-      },
-      {
-        "layer": "LANDED",
-        "demonstrates": "The branch is merged, or explicitly retired after its unique work is proven contained elsewhere.",
-        "always_applicable": true
-      },
-      {
-        "layer": "SETTLED",
-        "demonstrates": "Receipts, custody progress, phase predicates, issues and acceptance state are recomputed from the landed revision.",
-        "always_applicable": true,
-        "note": "Recomputed, not asserted. A settlement written by the participant that landed the change is a report."
-      },
-      {
-        "layer": "CLEANED",
-        "demonstrates": "Leases end, child leases settle, worktrees release, obsolete branches close, and temporary artifacts are retired.",
-        "always_applicable": true
-      }
+      {"layer": "BUILT", "demonstrates": "The change exists inside the declared boundary and its positive and defeating cases pass.", "always_applicable": true},
+      {"layer": "ATTACKED", "demonstrates": "Adversarial review ran against the exact revision; findings were repaired inside the concern unless they crossed a genuine seam.", "always_applicable": true, "note": "Repairing in place is the rule. Converting a finding into another ticket is the failure contracts/closure-ownership.json names."},
+      {"layer": "OBSERVED", "demonstrates": "An independent participant reconstructed the claimed result.", "always_applicable": false, "applicable_when": "the target standing is WITNESSED or above", "note": "A helper that read or edited the change is inside the build and can never supply this."},
+      {"layer": "LANDED", "demonstrates": "The branch is merged, or explicitly retired after its unique work is proven contained elsewhere.", "always_applicable": true},
+      {"layer": "SETTLED", "demonstrates": "Receipts, custody progress, phase predicates, issues, acceptance state and known consequences are recomputed from the landed revision.", "always_applicable": true, "note": "Recomputed, not asserted. A settlement written by the participant that landed the change is a report."},
+      {"layer": "CLEANED", "demonstrates": "Leases end, child leases settle, worktrees release, obsolete branches close, temporary artifacts retire, and every known surviving consequence is under durable custody.", "always_applicable": true}
     ]
   },
   "terminals": {
@@ -125,47 +200,18 @@
   },
   "operating_rules": {
     "note": "Drawn from what Phase I did rather than from method. Each names the observation that produced it.",
-    "phase_gate_on_the_critical_path": {
-      "rule": "A merge may not claim phase progress unless the exact gate is recomputed from the landed revision.",
-      "learned_from": "The F2 gate read 0 of 44 for the whole phase and no landing ever refused because of it. A phase metric that neither admits nor refuses work is a report, not a gate."
-    },
-    "admit_through_exit_custody": {
-      "rule": "Work enters a phase because it serves a named exit custody, not because a document, issue or service has room for it.",
-      "learned_from": "Every Phase-I change had somewhere to go and none had to name what it would close."
-    },
-    "work_in_progress_ceiling": {
-      "rule": "One active unlanded concern per participant by default. A second requires a recorded exception.",
-      "ceiling": 1,
-      "learned_from": "Eleven concurrent sessions on one working tree, 39 unmerged branches, 9 open pull requests with 1 mergeable."
-    },
-    "one_owner_per_vocabulary_edge": {
-      "rule": "Every parent-child vocabulary edge needs one owner, one machine-readable mapping, and a check that refuses an orphaned term.",
-      "learned_from": "Controls declared PROD-I-1 while the gate credited PRED-I-1.1. Both sides looked complete from their own end."
-    },
-    "governance_must_shorten_a_path": {
-      "rule": "A new governance object either shortens a live path to closure or is refused as non-critical inventory.",
-      "learned_from": "78 decision records and 60 contracts against 0 credited predicate pairs."
-    },
-    "root_authority_is_not_root_custody": {
-      "rule": "The root seat holding judgement authority does not thereby hold custody of every unfinished concern.",
-      "learned_from": "Unresolved work rolled upward to Bdo by default because no initiative-level accountability survived a session ending."
-    },
-    "coordination_emissions_are_measured": {
-      "rule": "Branches, pull requests, issues, reports and worktrees emitted are counted alongside tokens and time. A run that emits without approaching closure becomes visibly pressured.",
-      "learned_from": "Construction and coordination emissions grew faster than terminal settlement."
-    },
-    "boards_are_derived": {
-      "rule": "A board is projected from authoritative records and is never a second System of Record.",
-      "learned_from": "A stored board goes stale silently, and the staleness is invisible precisely when the board looks busiest."
-    },
-    "re_estimate_after_the_first_slice": {
-      "rule": "Re-estimate once the first vertical slice closes, and compare only against receipt-backed actuals.",
-      "learned_from": "Every Phase-I estimate in this repository is a guess with no measured actual behind it."
-    },
-    "retrospective_per_custody": {
-      "rule": "A retrospective runs when a custody closes. A phase retrospective is then a composition of already-settled custody lessons.",
-      "learned_from": "One retrospective at the end of five days had to reconstruct what six days of sessions already knew."
-    }
+    "phase_gate_on_the_critical_path": {"rule": "A merge may not claim phase progress unless the exact gate is recomputed from the landed revision.", "learned_from": "The F2 gate read 0 of 44 for the whole phase and no landing ever refused because of it. A phase metric that neither admits nor refuses work is a report, not a gate."},
+    "admit_through_exit_custody": {"rule": "Work enters a phase because it serves a named exit custody, not because a document, issue or service has room for it.", "learned_from": "Every Phase-I change had somewhere to go and none had to name what it would close."},
+    "work_in_progress_ceiling": {"rule": "One active unlanded concern per participant by default. A second requires a recorded exception.", "ceiling": 1, "learned_from": "Eleven concurrent sessions on one working tree, 39 unmerged branches, 9 open pull requests with 1 mergeable."},
+    "one_owner_per_vocabulary_edge": {"rule": "Every parent-child vocabulary edge needs one owner, one machine-readable mapping, and a check that refuses an orphaned term.", "learned_from": "Controls declared PROD-I-1 while the gate credited PRED-I-1.1. Both sides looked complete from their own end."},
+    "governance_must_shorten_a_path": {"rule": "A new governance object either shortens a live path to closure or is refused as non-critical inventory.", "learned_from": "78 decision records and 60 contracts against 0 credited predicate pairs."},
+    "root_authority_is_not_root_custody": {"rule": "The root seat holding judgement authority does not thereby hold custody of every unfinished concern.", "learned_from": "Unresolved work rolled upward to Bdo by default because no initiative-level accountability survived a session ending."},
+    "coordination_emissions_are_measured": {"rule": "Branches, pull requests, issues, reports and worktrees emitted are counted alongside tokens and time. A run that emits without approaching closure becomes visibly pressured.", "learned_from": "Construction and coordination emissions grew faster than terminal settlement."},
+    "boards_are_derived": {"rule": "A board is projected from authoritative records and is never a second System of Record.", "learned_from": "A stored board goes stale silently, and the staleness is invisible precisely when the board looks busiest."},
+    "re_estimate_after_the_first_slice": {"rule": "Re-estimate once the first vertical slice closes, and compare only against receipt-backed actuals.", "learned_from": "Every Phase-I estimate in this repository is a guess with no measured actual behind it."},
+    "retrospective_per_custody": {"rule": "A retrospective runs when a custody closes. A phase retrospective is then a composition of already-settled custody lessons.", "learned_from": "One retrospective at the end of five days had to reconstruct what six days of sessions already knew."},
+    "discovery_preserves_focus": {"rule": "A distinct consequence discovered while a lease is active is recorded under durable custody and left unleased unless it invalidates the next required transition of the current concern.", "learned_from": "Discovery should increase accountability without turning every observation into a context switch."},
+    "known_work_has_disposition": {"rule": "A concern may close with future work only when every known consequence is absorbed, terminal, or under durable custody.", "learned_from": "A clean state is zero unexplained or unowned work, not zero future work."}
   },
   "refusals": {
     "ROOTLESS_CONCERN": "no ground, requirement or predicate justifies the work",

@@ -4,13 +4,14 @@ Read and obey `/AGENTS.md`; it is normative, and it owns the list of which
 document owns which rule. The set falls in two groups: `/GROUND.md` and
 `/CANON.md` say what product this is and what it undertakes; `/SYSTEM.md`,
 `/CLASSIFICATION.md`, `/CONTRACT.md`, `/PRD.md`, `/SPEC.md`, `/AI-NATIVE.md`,
-`/STATUS.yaml`, `/ENGINEERING.md`, and `/SDLC.md` say what the active campaign
-must prove and how the system is built. Closed Phase-I definitions live under
+`/STATUS.yaml`, `/ENGINEERING.md`, and `/SDLC.md` define the current system,
+requirements, evidence rules, standing, and retained implementation baseline. Closed Phase-I definitions live under
 `/archives/` and `/contracts/phases.json`. `/AGENTS.md`, `/CONTRIBUTING.md`, and this file are in
 neither group: they govern contributors here and own no product claim. Do not
 duplicate their rules into competing authorities.
 
 - Bdo owns product intent, naming, judgement, and phase gates.
+- Apply `.claude/skills/unslop/SKILL.md` to human-facing prose by default; persisted covered prose also requires a `clarity` review.
 - Model output, tool success, credentials, and green tests confer no authority.
 - Preserve `OPEN -> BUILT -> WITNESSED -> RATIFIED`; never self-witness.
 - Write the contract plus positive and defeating fixture before business logic.

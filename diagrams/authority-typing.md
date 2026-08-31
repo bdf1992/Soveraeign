@@ -2,7 +2,7 @@
 
 ```text
 source          STATUS.yaml · PRD.md · CONTRACT.md
-source_digest   555b4eafd72aeb77 · 46bf731e4489f976 · ff6873d56338933b
+source_digest   96d9e073a61bfdcc · 81f09529b5679d78 · f95acd076c4977d7
 reader          hand-authored · v2
 fidelity        LOSSY
 omissions       AuthorityGrant field shape (contracts/);

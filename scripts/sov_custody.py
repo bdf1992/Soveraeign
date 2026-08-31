@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-"""Custody: who is on the hook for an initiative, and how far it has been drawn.
+"""Custody: durable responsibility, its work circuit, and its active execution joins.
 
-Phase I was defined as nine requirements and worked as one undivided surface,
-which is why four hundred commits produced no reading of its own progress. A
-custody is the missing layer between the requirement and the commit: one named
-initiative, one seat carrying it, a declared stage it must reach, and a closure
-condition somebody can run.
+A custody is the durable layer between product meaning and bounded execution: one
+named initiative, one seat carrying it, a declared stage it must reach, and a
+closure condition somebody can run. A work lease is separate: it is the active
+possession of one concern by one principal for a bounded interval.
 
     list        every custody, where it stands, what it targets
     board       one custody as a board across the circuit stages
     circuit     the five stages, their admission predicates and their defeats
+    lifecycle   custody + lease + closure + landing + settlement, with potentials
     estimate    estimated cost against measured actual, and the registry grade
     reconcile   phase exit clauses against the custodies that hold them
     phase       phase terminals, pinned definitions, and their defects
@@ -31,6 +31,23 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from sovcustody import commands  # noqa: E402
+from sovcustody import lifecycle  # noqa: E402
+
+
+def _command_lifecycle(args: argparse.Namespace) -> int:
+    model = lifecycle.read()
+    problems = lifecycle.defects(model)
+    if args.as_json:
+        print(json.dumps({"lifecycle": model, "defects": problems}, indent=2))
+    else:
+        print(lifecycle.render(model))
+        print()
+        if problems:
+            for problem in problems:
+                print(f"DEFECT {problem}")
+        else:
+            print("lifecycle composition admissible")
+    return 1 if problems else 0
 
 
 def main() -> int:
@@ -45,6 +62,7 @@ def main() -> int:
     board.add_argument("--no-derived", action="store_true",
                        help="skip the worklist join and read the custody alone")
     subparsers.add_parser("circuit", help="the five stages and their defeats")
+    subparsers.add_parser("lifecycle", help="how custody composes with active work and settlement")
     estimate = subparsers.add_parser("estimate", help="estimated against measured cost")
     estimate.add_argument("custody_id", nargs="?")
     subparsers.add_parser("reconcile", help="phase exit clauses against custodies")
@@ -58,6 +76,7 @@ def main() -> int:
         "list": commands.command_list,
         "board": commands.command_board,
         "circuit": commands.command_circuit,
+        "lifecycle": _command_lifecycle,
         "estimate": commands.command_estimate,
         "reconcile": commands.command_reconcile,
         "phase": commands.command_phase,

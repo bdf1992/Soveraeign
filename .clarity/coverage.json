@@ -1,0 +1,300 @@
+{
+  "reviews": {
+    ".claude/skills/clarity/SKILL.md": {
+      "artifact_digest": "sha256:cc421dd4d819e43edfcb6ba3e5e6d635b9d151db0d42f72e9e74bf77616fd45b",
+      "basis": [
+        {
+          "digest": "sha256:0adf2b50f9f1e0c8c9a8c37369cb8bf9a234005e4220fd22a0f1b17391e9362b",
+          "path": "AGENTS.md"
+        },
+        {
+          "digest": "sha256:96d9e073a61bfdccf1e213c087fa6c8c677336a688777816eb18404da8c13348",
+          "path": "STATUS.yaml"
+        }
+      ],
+      "changed": true
+    },
+    ".cursorrules": {
+      "artifact_digest": "sha256:4f1ab3e10a3c0e8be92a36c2c930d02373f02291561b91c950bc00664b263ccd",
+      "basis": [
+        {
+          "digest": "sha256:0adf2b50f9f1e0c8c9a8c37369cb8bf9a234005e4220fd22a0f1b17391e9362b",
+          "path": "AGENTS.md"
+        },
+        {
+          "digest": "sha256:96d9e073a61bfdccf1e213c087fa6c8c677336a688777816eb18404da8c13348",
+          "path": "STATUS.yaml"
+        }
+      ],
+      "changed": true
+    },
+    "AGENTS.md": {
+      "artifact_digest": "sha256:0adf2b50f9f1e0c8c9a8c37369cb8bf9a234005e4220fd22a0f1b17391e9362b",
+      "basis": [
+        {
+          "digest": "sha256:20a43ff96c3f99f98fe90b612a49c4f60f9318bfebb4be61e3882a9dfbe27bb4",
+          "path": "GROUND.md"
+        },
+        {
+          "digest": "sha256:e618947defa9d0f8cdc689d1d00d6cb56f9e9b2f61132e5341c6794d13f26a22",
+          "path": "CANON.md"
+        },
+        {
+          "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
+          "path": "SYSTEM.md"
+        },
+        {
+          "digest": "sha256:f95acd076c4977d73c38e14e42106576d0dea2dcf9eb4ec30a0526fd68c27d3c",
+          "path": "CONTRACT.md"
+        },
+        {
+          "digest": "sha256:96d9e073a61bfdccf1e213c087fa6c8c677336a688777816eb18404da8c13348",
+          "path": "STATUS.yaml"
+        }
+      ],
+      "changed": true
+    },
+    "AI-NATIVE.md": {
+      "artifact_digest": "sha256:a00c6064b52f599708f8b300fb6e59384782cc4645a636093892798ae8bb4b74",
+      "basis": [
+        {
+          "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
+          "path": "SYSTEM.md"
+        },
+        {
+          "digest": "sha256:f95acd076c4977d73c38e14e42106576d0dea2dcf9eb4ec30a0526fd68c27d3c",
+          "path": "CONTRACT.md"
+        },
+        {
+          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "path": "SPEC.md"
+        }
+      ],
+      "changed": false
+    },
+    "BYOM.md": {
+      "artifact_digest": "sha256:64669747db6b40c4b8ce1cac954b56089d232d70790df611006ffcc13dcfb2e6",
+      "basis": [
+        {
+          "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
+          "path": "SYSTEM.md"
+        },
+        {
+          "digest": "sha256:f95acd076c4977d73c38e14e42106576d0dea2dcf9eb4ec30a0526fd68c27d3c",
+          "path": "CONTRACT.md"
+        },
+        {
+          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "path": "SPEC.md"
+        }
+      ],
+      "changed": false
+    },
+    "CANON.md": {
+      "artifact_digest": "sha256:e618947defa9d0f8cdc689d1d00d6cb56f9e9b2f61132e5341c6794d13f26a22",
+      "basis": [
+        {
+          "digest": "sha256:20a43ff96c3f99f98fe90b612a49c4f60f9318bfebb4be61e3882a9dfbe27bb4",
+          "path": "GROUND.md"
+        }
+      ],
+      "changed": true
+    },
+    "CLAUDE.md": {
+      "artifact_digest": "sha256:d6fa6f42eadf17833358cb47abd273b68f1f1371f9320dc0b303c106e9f86b1f",
+      "basis": [
+        {
+          "digest": "sha256:0adf2b50f9f1e0c8c9a8c37369cb8bf9a234005e4220fd22a0f1b17391e9362b",
+          "path": "AGENTS.md"
+        },
+        {
+          "digest": "sha256:623038ff6330e07fee6806cd67009e02a420cef331a793eed39b966b878e839c",
+          "path": "SOV.md"
+        },
+        {
+          "digest": "sha256:96d9e073a61bfdccf1e213c087fa6c8c677336a688777816eb18404da8c13348",
+          "path": "STATUS.yaml"
+        }
+      ],
+      "changed": true
+    },
+    "CONTRACT.md": {
+      "artifact_digest": "sha256:f95acd076c4977d73c38e14e42106576d0dea2dcf9eb4ec30a0526fd68c27d3c",
+      "basis": [
+        {
+          "digest": "sha256:20a43ff96c3f99f98fe90b612a49c4f60f9318bfebb4be61e3882a9dfbe27bb4",
+          "path": "GROUND.md"
+        },
+        {
+          "digest": "sha256:e618947defa9d0f8cdc689d1d00d6cb56f9e9b2f61132e5341c6794d13f26a22",
+          "path": "CANON.md"
+        }
+      ],
+      "changed": true
+    },
+    "CONTRIBUTING.md": {
+      "artifact_digest": "sha256:bf7437acd4e14628a057725de4f7a29b6c1b6a012f44009f15ca8dac62743188",
+      "basis": [
+        {
+          "digest": "sha256:0adf2b50f9f1e0c8c9a8c37369cb8bf9a234005e4220fd22a0f1b17391e9362b",
+          "path": "AGENTS.md"
+        },
+        {
+          "digest": "sha256:96d9e073a61bfdccf1e213c087fa6c8c677336a688777816eb18404da8c13348",
+          "path": "STATUS.yaml"
+        }
+      ],
+      "changed": true
+    },
+    "GROUND.md": {
+      "artifact_digest": "sha256:20a43ff96c3f99f98fe90b612a49c4f60f9318bfebb4be61e3882a9dfbe27bb4",
+      "basis": [],
+      "changed": false
+    },
+    "OPEN-SEAMS.md": {
+      "artifact_digest": "sha256:5fa81f5d8ad0e87e1090f641a2bcf511e03abd85c80348d807f72c5baae5d94e",
+      "basis": [
+        {
+          "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
+          "path": "SYSTEM.md"
+        },
+        {
+          "digest": "sha256:f95acd076c4977d73c38e14e42106576d0dea2dcf9eb4ec30a0526fd68c27d3c",
+          "path": "CONTRACT.md"
+        },
+        {
+          "digest": "sha256:96d9e073a61bfdccf1e213c087fa6c8c677336a688777816eb18404da8c13348",
+          "path": "STATUS.yaml"
+        }
+      ],
+      "changed": false
+    },
+    "PRD.md": {
+      "artifact_digest": "sha256:81f09529b5679d786e507efa7641861aa9e2a5717442d9f9af7cf021d76d2425",
+      "basis": [
+        {
+          "digest": "sha256:20a43ff96c3f99f98fe90b612a49c4f60f9318bfebb4be61e3882a9dfbe27bb4",
+          "path": "GROUND.md"
+        },
+        {
+          "digest": "sha256:e618947defa9d0f8cdc689d1d00d6cb56f9e9b2f61132e5341c6794d13f26a22",
+          "path": "CANON.md"
+        },
+        {
+          "digest": "sha256:96d9e073a61bfdccf1e213c087fa6c8c677336a688777816eb18404da8c13348",
+          "path": "STATUS.yaml"
+        }
+      ],
+      "changed": true
+    },
+    "README.md": {
+      "artifact_digest": "sha256:16f9722d18bd2ecfe0d1d526c6dea51b7ad6d7a3b7546b47c497280aa6b4038b",
+      "basis": [
+        {
+          "digest": "sha256:20a43ff96c3f99f98fe90b612a49c4f60f9318bfebb4be61e3882a9dfbe27bb4",
+          "path": "GROUND.md"
+        },
+        {
+          "digest": "sha256:e618947defa9d0f8cdc689d1d00d6cb56f9e9b2f61132e5341c6794d13f26a22",
+          "path": "CANON.md"
+        },
+        {
+          "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
+          "path": "SYSTEM.md"
+        },
+        {
+          "digest": "sha256:96d9e073a61bfdccf1e213c087fa6c8c677336a688777816eb18404da8c13348",
+          "path": "STATUS.yaml"
+        }
+      ],
+      "changed": false
+    },
+    "ROADMAP.md": {
+      "artifact_digest": "sha256:4918be81fd7343b8173135489b780dfc4ff01be5db7467519f256759688d86d8",
+      "basis": [
+        {
+          "digest": "sha256:81f09529b5679d786e507efa7641861aa9e2a5717442d9f9af7cf021d76d2425",
+          "path": "PRD.md"
+        },
+        {
+          "digest": "sha256:96d9e073a61bfdccf1e213c087fa6c8c677336a688777816eb18404da8c13348",
+          "path": "STATUS.yaml"
+        },
+        {
+          "digest": "sha256:a957d14a986fbddae8d26e417868ec4d5807582b6824d22e89f1c4f5343f4ebf",
+          "path": "contracts/phases.json"
+        }
+      ],
+      "changed": true
+    },
+    "SOV.md": {
+      "artifact_digest": "sha256:623038ff6330e07fee6806cd67009e02a420cef331a793eed39b966b878e839c",
+      "basis": [
+        {
+          "digest": "sha256:0adf2b50f9f1e0c8c9a8c37369cb8bf9a234005e4220fd22a0f1b17391e9362b",
+          "path": "AGENTS.md"
+        },
+        {
+          "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
+          "path": "SYSTEM.md"
+        },
+        {
+          "digest": "sha256:f95acd076c4977d73c38e14e42106576d0dea2dcf9eb4ec30a0526fd68c27d3c",
+          "path": "CONTRACT.md"
+        },
+        {
+          "digest": "sha256:96d9e073a61bfdccf1e213c087fa6c8c677336a688777816eb18404da8c13348",
+          "path": "STATUS.yaml"
+        }
+      ],
+      "changed": false
+    },
+    "SPEC.md": {
+      "artifact_digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+      "basis": [
+        {
+          "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
+          "path": "SYSTEM.md"
+        },
+        {
+          "digest": "sha256:f95acd076c4977d73c38e14e42106576d0dea2dcf9eb4ec30a0526fd68c27d3c",
+          "path": "CONTRACT.md"
+        },
+        {
+          "digest": "sha256:b034a56c7cf9000098a22014d6376497433a93427dcd7dc4d138fd43815fdffe",
+          "path": "CLASSIFICATION.md"
+        }
+      ],
+      "changed": false
+    },
+    "STATUS.yaml": {
+      "artifact_digest": "sha256:96d9e073a61bfdccf1e213c087fa6c8c677336a688777816eb18404da8c13348",
+      "basis": [],
+      "changed": false
+    },
+    "SYSTEM.md": {
+      "artifact_digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
+      "basis": [
+        {
+          "digest": "sha256:20a43ff96c3f99f98fe90b612a49c4f60f9318bfebb4be61e3882a9dfbe27bb4",
+          "path": "GROUND.md"
+        },
+        {
+          "digest": "sha256:e618947defa9d0f8cdc689d1d00d6cb56f9e9b2f61132e5341c6794d13f26a22",
+          "path": "CANON.md"
+        },
+        {
+          "digest": "sha256:f95acd076c4977d73c38e14e42106576d0dea2dcf9eb4ec30a0526fd68c27d3c",
+          "path": "CONTRACT.md"
+        },
+        {
+          "digest": "sha256:b034a56c7cf9000098a22014d6376497433a93427dcd7dc4d138fd43815fdffe",
+          "path": "CLASSIFICATION.md"
+        }
+      ],
+      "changed": false
+    }
+  },
+  "schema": "soveraeign-clarity-coverage/v1",
+  "skill": "clarity/v1"
+}

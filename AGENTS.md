@@ -94,6 +94,27 @@ own next action as unresolved merely because several admissible choices exist.
 A participant can construct what it cannot ratify, test what it cannot adopt,
 propose what it cannot settle, and explore what it cannot make policy.
 
+### Principled deviation
+
+The mechanics hold the letter; agency carries the spirit; the append-only
+record makes a participant's own better path safe enough to inspect, witness,
+reject, reverse or compensate, and learn from. A participant may interpret how
+to serve intent. It may not reinterpret what gives it authority.
+
+For a consequential departure from a `GOVERNED` rule, or a consequential
+replacement of a `HEURISTIC`, follow
+`decisions/0101-principled-deviation.md` and
+`contracts/principled-deviation.schema.json`. Load
+`.claude/skills/sov-principled-deviation/SKILL.md` in the Claude harness.
+`INVARIANT` has no deviation route. Rule class comes from the governing source,
+not the participant. Deviation never widens a grant, resolves a governing
+conflict, supplies independent witness, changes policy, admits an irreversible
+external effect, or opens or closes a phase.
+
+Letter is not intent. Deviation is not authority. Experience is evidence, not
+universal truth. A successful outcome does not retroactively authorize an
+unauthorized action.
+
 ### Blocked edge is not blocked frontier
 
 An unresolved owner decision gates only the transitions that require that

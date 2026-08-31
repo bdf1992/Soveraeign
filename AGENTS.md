@@ -7,7 +7,8 @@ current technical baseline.
 
 Before a consequential change, read `STATUS.yaml`, `GROUND.md`, `CANON.md`,
 `SYSTEM.md`, `CLASSIFICATION.md`, `CONTRACT.md`, `PRD.md`, `SPEC.md`,
-`AI-NATIVE.md`, `ENGINEERING.md`, `SDLC.md`, and `OPEN-SEAMS.md`.
+`AI-NATIVE.md`, `ENGINEERING.md`, `SDLC.md`, `OPEN-SEAMS.md`, and
+`contracts/SUCCESSOR-PREP.md`.
 
 ## Human-facing output
 
@@ -21,10 +22,12 @@ sources that govern its meaning and records both content and basis digests.
 
 ## Design System of Record
 
-The governing documents form one design System of Record with explicit roles,
-in two groups. Two of them say what product this is; the rest say what this
-phase must prove and how it is built. Answering a product question from the
-second group, or a phase question from the first, is a category error.
+The governing documents define repository invariants and boundary rules. When a
+phase is active, phase contracts define that phase's qualification gates. No
+phase is active. Historical phase material is evidence only, and
+`contracts/SUCCESSOR-PREP.md` records the closed-books residue without granting
+successor standing. Treating historical phase evidence as current authority is
+a category error.
 
 What the product is. Owner-accepted, slow to change, revised rather than edited:
 
@@ -45,6 +48,8 @@ What the current system requires, and how it is built:
 - `SPEC.md` owns logical objects, transitions, predicates, and refusals;
 - `AI-NATIVE.md` owns surface evaluation and qualification criteria;
 - `STATUS.yaml` owns current authority, standing, and open decisions;
+- `contracts/SUCCESSOR-PREP.md` owns the closed Phase-I residue, carried seams,
+  and clarity coverage used by the root seat before any successor opening;
 - `ENGINEERING.md` owns the proposed reference implementation baseline;
 - `SDLC.md` owns the operating loop: tiers, dyads, concern registry, skill
   axes, workflow templates, and the Red-gated release requirement.

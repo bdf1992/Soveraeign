@@ -32,6 +32,7 @@ KIND_RULES: tuple[tuple[str, str, str], ...] = (
     (r"decisions/\d{4}-[a-z0-9-]+\.md$", "decision", "A consequential choice, its rationale and consequences."),
     (r"reports/\d{4}-\d{2}-\d{2}-[a-z0-9-]+\.md$", "report", "What one run or pass observed. Never policy."),
     (r"(^|/)PROD-[A-Z0-9-]+-BUILD\.md$", "report", "What one run or pass observed. Never policy."),
+    (r"^contracts/SUCCESSOR-PREP\.md$", "governing", "Part of the design System of Record."),
     (r"(^|/)CHARTER\.md$", "charter", "What a service boundary owns and refuses."),
     (r"(^|/)SRD\.md$", "srd",
      "What a service's own caller needs from it, at the fidelity PRD.md gives the Node."),

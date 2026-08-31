@@ -1,6 +1,6 @@
 # Proofing Service Charter
 
-Status: `PROPOSED SERVICE BOUNDARY · NOT IMPLEMENTED`
+Status: `RULED_SECOND_BOUNDARY_O11_CHARTERED_NOT_IMPLEMENTED` — the boundary exists; no Proofing Service operation is implemented.
 
 ## Role
 
@@ -64,22 +64,9 @@ Humans and models operate the same proofing session through different bindings:
 - every proposal, refusal, decision, and operation returns a receipt;
 - a worker's render or comparison report is not independent observation.
 
-## Initial proving narrative
+## Current implementation boundary
 
-From a clean local checkout:
-
-1. ingest asset version `V1` through the Asset Service;
-2. open a proofing session pinned to `V1`;
-3. let one human and one model binding add attributable annotations;
-4. have a worker produce a declared comparison recording;
-5. independently observe the comparison output;
-6. allow the model to propose a change and refuse its attempt to ratify a
-   judgement-typed approval;
-7. let an authorized human request a revision;
-8. ingest `V2` with derivation from `V1`;
-9. preserve the `V1` review history and declare whether each annotation is
-   stale, carried, or resolved for `V2`;
-10. close the session with reconstructable receipts.
+The Proofing Service is not implemented. The lifecycle and integration rules above define the boundary; the cases below remain defeating constraints and grant no built standing.
 
 ## Defeating cases
 
@@ -96,6 +83,4 @@ From a clean local checkout:
 ## Deferred
 
 Customer invitations, email delivery, public share links, real-time cursors,
-external-world notifications, production media rendering, and federation are
-outside the first proof. Their interfaces may be declared; their effects must
-remain refused or isolated until separately admitted.
+external-world notifications, production media rendering, and federation are not implemented in current standing. Any declared interfaces remain inactive, and their effects must remain refused or isolated until separately admitted.

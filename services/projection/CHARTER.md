@@ -1,6 +1,6 @@
 # Asset Projection Service Charter
 
-Status: `PROPOSED SERVICE BOUNDARY · NOT IMPLEMENTED`
+Status: `OWNER_ACCEPTED_BOUNDARY_NOT_IMPLEMENTED`
 
 ## Role
 
@@ -24,7 +24,7 @@ Bdo directed this boundary on 2026-08-23: the Asset Service needs an asset
 projection service, and that service's feature set should reach parity with
 what Polygres offers. This charter carries that intent at proposal standing.
 
-## Relationship to Phase-I requirements
+## Governing constraints
 
 - `PRD.md` PROD-I-3 (Cross): a fact deposited by one operator is retrieved by
   the other "with origin and projection visible". Retrieval with provenance is
@@ -87,14 +87,14 @@ read and carries the staleness as a declared omission.
 
 ## Retrieval lanes
 
-| Lane | Mechanism | Phase-I standing |
+| Lane | Mechanism | Current standing |
 | --- | --- | --- |
-| Text | SQLite FTS5 with unicode and trigram tokenizers (stdlib `sqlite3` 3.34+) | buildable now; no dependency decision |
-| Graph | recursive CTE over projected relationship and lineage edges: `related`, `expand`, `neighborhood`, `path`, `connection`; `max_depth` 1..20, `direction` `OUT` / `IN` / `ANY`, relationship-type filter | buildable now; no dependency decision |
-| Dense vector | exact cosine scan over registered vectors; embeddings arrive by `invoke_model` or declared external provenance | exact scan buildable after O12; approximate index is a port |
-| Sparse vector | exact sparse dot product over registered sparse vectors | same as dense |
-| Filter | `must` / `should` / `must_not` groups of scalar match, range, and `is_null` over declared filter fields; applies to every lane | buildable now |
-| Fusion | weighted reciprocal rank fusion, `k = 60` by default, declared per query; joint rescoring across lanes | buildable after two lanes exist |
+| Text | SQLite FTS5 with unicode and trigram tokenizers (stdlib `sqlite3` 3.34+) | declared; service not implemented |
+| Graph | recursive CTE over projected relationship and lineage edges: `related`, `expand`, `neighborhood`, `path`, `connection`; `max_depth` 1..20, `direction` `OUT` / `IN` / `ANY`, relationship-type filter | declared; service not implemented |
+| Dense vector | exact cosine scan over registered vectors; embeddings arrive by `invoke_model` or declared external provenance | declared; service not implemented |
+| Sparse vector | exact sparse dot product over registered sparse vectors | declared; service not implemented |
+| Filter | `must` / `should` / `must_not` groups of scalar match, range, and `is_null` over declared filter fields; applies to every lane | declared; service not implemented |
+| Fusion | weighted reciprocal rank fusion, `k = 60` by default, declared per query; joint rescoring across lanes | declared; service not implemented |
 
 ## Integration with sibling services and the kernel
 
@@ -140,41 +140,9 @@ Humans and models query the same service through different bindings:
   equality, hit resolution, fidelity comparison) but cannot ratify a Proposal
   that a projection edit raised.
 
-## Initial proving narrative
+## Current implementation boundary
 
-From a clean local checkout with the Asset Service walking skeleton ingested:
-
-1. declare one collection over asset versions with text, filter, and graph
-   fields; observe `DECLARED`;
-2. build it; observe the build receipt naming the asset stream's addresses and
-   `input_state_digest`, and the collection `READY`;
-3. run a text query, a fuzzy text query, and a filtered query; show every hit
-   naming a `source_address` and `source_digest` that resolves in the Asset
-   Service;
-4. traverse from one asset with `max_depth` 3 and `direction` `ANY`; show
-   depth, path, edge path, and that every edge resolves to a relationship or
-   lineage record;
-5. find the path between two assets and a connection across three; show the
-   step-by-step records;
-6. register a vector space with an unconfigured Model Binding; observe
-   `MODEL_UNAVAILABLE` with a receipt and no silent substitute;
-7. register the same space with owner-supplied vectors under declared external
-   provenance; run an exact dense query; show the provenance on the receipt;
-8. run a fused query over text, graph, and dense; show the per-lane score
-   breakdown, `introduced_by_graph`, and the RRF parameters on the receipt;
-9. package a context of 2,000 tokens from that result; show the addresses,
-   digests, omissions, and `content_digest`, and that a second package over
-   the same build is byte-identical;
-10. ingest a new asset version; observe the collection `STALE` and a retrieval
-    receipt that names the old build and declares the staleness;
-11. rebuild; observe `READY`, a new `content_digest`, and the old build still
-    in history;
-12. retract one relationship in the Asset Service; rebuild; show the edge gone
-    from traversal and the counter-record visible in the source;
-13. attempt, from a hit, to change a projected label; observe one Proposal
-    standing `RECORDED` and no projection or asset state change;
-14. attempt an external HNSW index, an HTTP binding, and a cross-node query;
-    observe `UNCONFIGURED` refusals with receipts.
+No retrieval lane is implemented in current standing. The records, integration rules, and refusal behavior above define the accepted boundary; the cases below remain defeating constraints rather than an active implementation plan.
 
 ## Defeating cases
 
@@ -204,6 +172,4 @@ From a clean local checkout with the Asset Service walking skeleton ingested:
 Approximate nearest-neighbour indexes (HNSW or otherwise), quantisation,
 recommend, discover, explore, grouped search, query plans, Postgres-backed or
 Polygres-backed projection targets, an HTTP binding, and cross-node retrieval
-are outside the first proof. Their interfaces may be declared as ports; their
-effects remain refused until separately admitted. `PARITY.md` names each one
-and its gate.
+are not implemented and carry no current standing. Any declared ports remain inactive and their effects remain refused until separately admitted. `PARITY.md` records the accepted parity boundary without opening implementation work.

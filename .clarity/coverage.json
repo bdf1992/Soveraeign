@@ -4,7 +4,7 @@
       "artifact_digest": "sha256:cc421dd4d819e43edfcb6ba3e5e6d635b9d151db0d42f72e9e74bf77616fd45b",
       "basis": [
         {
-          "digest": "sha256:0adf2b50f9f1e0c8c9a8c37369cb8bf9a234005e4220fd22a0f1b17391e9362b",
+          "digest": "sha256:c68058c87ecf08473f15882d4895c81831bb3465ac9716df0fe453e91afeae17",
           "path": "AGENTS.md"
         },
         {
@@ -12,13 +12,13 @@
           "path": "STATUS.yaml"
         }
       ],
-      "changed": true
+      "changed": false
     },
     ".cursorrules": {
       "artifact_digest": "sha256:4f1ab3e10a3c0e8be92a36c2c930d02373f02291561b91c950bc00664b263ccd",
       "basis": [
         {
-          "digest": "sha256:0adf2b50f9f1e0c8c9a8c37369cb8bf9a234005e4220fd22a0f1b17391e9362b",
+          "digest": "sha256:c68058c87ecf08473f15882d4895c81831bb3465ac9716df0fe453e91afeae17",
           "path": "AGENTS.md"
         },
         {
@@ -26,10 +26,10 @@
           "path": "STATUS.yaml"
         }
       ],
-      "changed": true
+      "changed": false
     },
     "AGENTS.md": {
-      "artifact_digest": "sha256:0adf2b50f9f1e0c8c9a8c37369cb8bf9a234005e4220fd22a0f1b17391e9362b",
+      "artifact_digest": "sha256:c68058c87ecf08473f15882d4895c81831bb3465ac9716df0fe453e91afeae17",
       "basis": [
         {
           "digest": "sha256:20a43ff96c3f99f98fe90b612a49c4f60f9318bfebb4be61e3882a9dfbe27bb4",
@@ -104,7 +104,7 @@
       "artifact_digest": "sha256:d6fa6f42eadf17833358cb47abd273b68f1f1371f9320dc0b303c106e9f86b1f",
       "basis": [
         {
-          "digest": "sha256:0adf2b50f9f1e0c8c9a8c37369cb8bf9a234005e4220fd22a0f1b17391e9362b",
+          "digest": "sha256:c68058c87ecf08473f15882d4895c81831bb3465ac9716df0fe453e91afeae17",
           "path": "AGENTS.md"
         },
         {
@@ -116,7 +116,7 @@
           "path": "STATUS.yaml"
         }
       ],
-      "changed": true
+      "changed": false
     },
     "CONTRACT.md": {
       "artifact_digest": "sha256:f95acd076c4977d73c38e14e42106576d0dea2dcf9eb4ec30a0526fd68c27d3c",
@@ -136,7 +136,7 @@
       "artifact_digest": "sha256:bf7437acd4e14628a057725de4f7a29b6c1b6a012f44009f15ca8dac62743188",
       "basis": [
         {
-          "digest": "sha256:0adf2b50f9f1e0c8c9a8c37369cb8bf9a234005e4220fd22a0f1b17391e9362b",
+          "digest": "sha256:c68058c87ecf08473f15882d4895c81831bb3465ac9716df0fe453e91afeae17",
           "path": "AGENTS.md"
         },
         {
@@ -144,7 +144,7 @@
           "path": "STATUS.yaml"
         }
       ],
-      "changed": true
+      "changed": false
     },
     "GROUND.md": {
       "artifact_digest": "sha256:20a43ff96c3f99f98fe90b612a49c4f60f9318bfebb4be61e3882a9dfbe27bb4",
@@ -152,7 +152,7 @@
       "changed": false
     },
     "OPEN-SEAMS.md": {
-      "artifact_digest": "sha256:5fa81f5d8ad0e87e1090f641a2bcf511e03abd85c80348d807f72c5baae5d94e",
+      "artifact_digest": "sha256:40fb42d24d1a0d6685cc67d8ed50a2daac2fc7257848f486e73b7c6e73a19ecd",
       "basis": [
         {
           "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
@@ -167,7 +167,7 @@
           "path": "STATUS.yaml"
         }
       ],
-      "changed": false
+      "changed": true
     },
     "PRD.md": {
       "artifact_digest": "sha256:81f09529b5679d786e507efa7641861aa9e2a5717442d9f9af7cf021d76d2425",
@@ -188,7 +188,7 @@
       "changed": true
     },
     "README.md": {
-      "artifact_digest": "sha256:16f9722d18bd2ecfe0d1d526c6dea51b7ad6d7a3b7546b47c497280aa6b4038b",
+      "artifact_digest": "sha256:d8c93e8b3ddc6f253fc69d40b3a180a9f88c2c84d1b8794e996d7f2de1154761",
       "basis": [
         {
           "digest": "sha256:20a43ff96c3f99f98fe90b612a49c4f60f9318bfebb4be61e3882a9dfbe27bb4",
@@ -207,7 +207,7 @@
           "path": "STATUS.yaml"
         }
       ],
-      "changed": false
+      "changed": true
     },
     "ROADMAP.md": {
       "artifact_digest": "sha256:4918be81fd7343b8173135489b780dfc4ff01be5db7467519f256759688d86d8",
@@ -231,7 +231,7 @@
       "artifact_digest": "sha256:623038ff6330e07fee6806cd67009e02a420cef331a793eed39b966b878e839c",
       "basis": [
         {
-          "digest": "sha256:0adf2b50f9f1e0c8c9a8c37369cb8bf9a234005e4220fd22a0f1b17391e9362b",
+          "digest": "sha256:c68058c87ecf08473f15882d4895c81831bb3465ac9716df0fe453e91afeae17",
           "path": "AGENTS.md"
         },
         {
@@ -293,6 +293,186 @@
         }
       ],
       "changed": false
+    },
+    "services/asset/CHARTER.md": {
+      "artifact_digest": "sha256:0d70b7e067b93fee53aba44de8a4d1385a9248d9661b5d5e45a1b4aa23b31c1c",
+      "basis": [
+        {
+          "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
+          "path": "SYSTEM.md"
+        },
+        {
+          "digest": "sha256:f95acd076c4977d73c38e14e42106576d0dea2dcf9eb4ec30a0526fd68c27d3c",
+          "path": "CONTRACT.md"
+        },
+        {
+          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "path": "SPEC.md"
+        }
+      ],
+      "changed": true
+    },
+    "services/console/CHARTER.md": {
+      "artifact_digest": "sha256:02597585b1a5c9563f301aa196d57fe5164be1a4e5e5a02ffa44c7f1a6d53098",
+      "basis": [
+        {
+          "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
+          "path": "SYSTEM.md"
+        },
+        {
+          "digest": "sha256:f95acd076c4977d73c38e14e42106576d0dea2dcf9eb4ec30a0526fd68c27d3c",
+          "path": "CONTRACT.md"
+        },
+        {
+          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "path": "SPEC.md"
+        }
+      ],
+      "changed": true
+    },
+    "services/gateway/CHARTER.md": {
+      "artifact_digest": "sha256:13e43d1bad3aa76aea6c9d1354a10e198ad4c5803cc37a47db498f1daf4f3d3c",
+      "basis": [
+        {
+          "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
+          "path": "SYSTEM.md"
+        },
+        {
+          "digest": "sha256:f95acd076c4977d73c38e14e42106576d0dea2dcf9eb4ec30a0526fd68c27d3c",
+          "path": "CONTRACT.md"
+        },
+        {
+          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "path": "SPEC.md"
+        }
+      ],
+      "changed": true
+    },
+    "services/host/CHARTER.md": {
+      "artifact_digest": "sha256:1d915240a6ca6c124659eede9061481d2d4d1d9c98482cd489bcc816a6a0d1ef",
+      "basis": [
+        {
+          "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
+          "path": "SYSTEM.md"
+        },
+        {
+          "digest": "sha256:f95acd076c4977d73c38e14e42106576d0dea2dcf9eb4ec30a0526fd68c27d3c",
+          "path": "CONTRACT.md"
+        },
+        {
+          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "path": "SPEC.md"
+        }
+      ],
+      "changed": true
+    },
+    "services/identity/CHARTER.md": {
+      "artifact_digest": "sha256:1c08188edce99db1818b9e304645aa87a1bbfb470ebfa8a295ae5b7d899cc43f",
+      "basis": [
+        {
+          "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
+          "path": "SYSTEM.md"
+        },
+        {
+          "digest": "sha256:f95acd076c4977d73c38e14e42106576d0dea2dcf9eb4ec30a0526fd68c27d3c",
+          "path": "CONTRACT.md"
+        },
+        {
+          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "path": "SPEC.md"
+        }
+      ],
+      "changed": true
+    },
+    "services/observation/CHARTER.md": {
+      "artifact_digest": "sha256:5f544bfbad6d60dff0516c4c95fa80f1cf0c45ca8868b129d7b487f8101c60ab",
+      "basis": [
+        {
+          "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
+          "path": "SYSTEM.md"
+        },
+        {
+          "digest": "sha256:f95acd076c4977d73c38e14e42106576d0dea2dcf9eb4ec30a0526fd68c27d3c",
+          "path": "CONTRACT.md"
+        },
+        {
+          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "path": "SPEC.md"
+        }
+      ],
+      "changed": true
+    },
+    "services/projection/CHARTER.md": {
+      "artifact_digest": "sha256:282e71cec734b83e099d0a04ee9fef56f8ed25679a0dd6a6fc3889f09aa6f659",
+      "basis": [
+        {
+          "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
+          "path": "SYSTEM.md"
+        },
+        {
+          "digest": "sha256:f95acd076c4977d73c38e14e42106576d0dea2dcf9eb4ec30a0526fd68c27d3c",
+          "path": "CONTRACT.md"
+        },
+        {
+          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "path": "SPEC.md"
+        }
+      ],
+      "changed": true
+    },
+    "services/proofing/CHARTER.md": {
+      "artifact_digest": "sha256:bc55654a5bbdbe114020b1d33d408023254fb0c1b63da2571ac6443a38a63372",
+      "basis": [
+        {
+          "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
+          "path": "SYSTEM.md"
+        },
+        {
+          "digest": "sha256:f95acd076c4977d73c38e14e42106576d0dea2dcf9eb4ec30a0526fd68c27d3c",
+          "path": "CONTRACT.md"
+        },
+        {
+          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "path": "SPEC.md"
+        }
+      ],
+      "changed": true
+    },
+    "services/record/CHARTER.md": {
+      "artifact_digest": "sha256:598b9251b7b95f421a059488ec66fc5804e840c916523e77ec3ee5a1dd8e808e",
+      "basis": [
+        {
+          "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
+          "path": "SYSTEM.md"
+        },
+        {
+          "digest": "sha256:f95acd076c4977d73c38e14e42106576d0dea2dcf9eb4ec30a0526fd68c27d3c",
+          "path": "CONTRACT.md"
+        },
+        {
+          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "path": "SPEC.md"
+        }
+      ],
+      "changed": false
+    },
+    "services/registry/CHARTER.md": {
+      "artifact_digest": "sha256:627a11ba2744fda3ea509c6033f2cffb75d49c5e51b441703efeebdb4ff1f828",
+      "basis": [
+        {
+          "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
+          "path": "SYSTEM.md"
+        },
+        {
+          "digest": "sha256:f95acd076c4977d73c38e14e42106576d0dea2dcf9eb4ec30a0526fd68c27d3c",
+          "path": "CONTRACT.md"
+        },
+        {
+          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "path": "SPEC.md"
+        }
+      ],
+      "changed": true
     }
   },
   "schema": "soveraeign-clarity-coverage/v1",

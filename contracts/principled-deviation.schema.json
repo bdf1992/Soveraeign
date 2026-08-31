@@ -1,0 +1,271 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/principled-deviation.schema.json",
+  "title": "Soveraeign principled deviation append-only record",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/intent"
+    },
+    {
+      "$ref": "#/$defs/outcome"
+    }
+  ],
+  "$defs": {
+    "nonempty_string": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reference": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._:/#@-]+$",
+      "minLength": 3
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "intent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "deviation_schema",
+        "record_kind",
+        "record_id",
+        "deviation_id",
+        "recorded_at",
+        "participant_id",
+        "session_id",
+        "subject",
+        "subject_revision",
+        "timing",
+        "rule_ref",
+        "rule_revision",
+        "rule_class",
+        "governing_intent_ref",
+        "governing_intent_revision",
+        "literal_path",
+        "chosen_path",
+        "reason",
+        "authority_basis",
+        "expected_benefit",
+        "known_risks",
+        "reversibility_or_compensation",
+        "watched_effects"
+      ],
+      "properties": {
+        "deviation_schema": {
+          "const": "soveraeign-principled-deviation/v1"
+        },
+        "record_kind": {
+          "const": "INTENT"
+        },
+        "record_id": {
+          "$ref": "#/$defs/reference"
+        },
+        "deviation_id": {
+          "type": "string",
+          "pattern": "^deviation:[A-Za-z0-9._-]+$"
+        },
+        "recorded_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "participant_id": {
+          "$ref": "#/$defs/reference"
+        },
+        "session_id": {
+          "$ref": "#/$defs/reference"
+        },
+        "subject": {
+          "$ref": "#/$defs/reference"
+        },
+        "subject_revision": {
+          "$ref": "#/$defs/digest"
+        },
+        "timing": {
+          "enum": [
+            "BEFORE_ACTION",
+            "AFTER_ACTION"
+          ]
+        },
+        "action_receipt_ref": {
+          "$ref": "#/$defs/reference"
+        },
+        "rule_ref": {
+          "$ref": "#/$defs/reference"
+        },
+        "rule_revision": {
+          "$ref": "#/$defs/digest"
+        },
+        "rule_class": {
+          "enum": [
+            "GOVERNED",
+            "HEURISTIC"
+          ]
+        },
+        "governing_intent_ref": {
+          "$ref": "#/$defs/reference"
+        },
+        "governing_intent_revision": {
+          "$ref": "#/$defs/digest"
+        },
+        "literal_path": {
+          "$ref": "#/$defs/nonempty_string"
+        },
+        "chosen_path": {
+          "$ref": "#/$defs/nonempty_string"
+        },
+        "reason": {
+          "$ref": "#/$defs/nonempty_string"
+        },
+        "authority_basis": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/reference"
+          }
+        },
+        "expected_benefit": {
+          "$ref": "#/$defs/nonempty_string"
+        },
+        "known_risks": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/nonempty_string"
+          }
+        },
+        "reversibility_or_compensation": {
+          "$ref": "#/$defs/nonempty_string"
+        },
+        "watched_effects": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/nonempty_string"
+          }
+        }
+      }
+    },
+    "experience": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidence_kind",
+        "attribution",
+        "claim",
+        "witness_eligible"
+      ],
+      "properties": {
+        "evidence_kind": {
+          "const": "EXPERIENCE"
+        },
+        "attribution": {
+          "$ref": "#/$defs/reference"
+        },
+        "claim": {
+          "$ref": "#/$defs/nonempty_string"
+        },
+        "witness_eligible": {
+          "const": false
+        }
+      }
+    },
+    "outcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "deviation_schema",
+        "record_kind",
+        "record_id",
+        "deviation_id",
+        "recorded_at",
+        "participant_id",
+        "session_id",
+        "subject",
+        "subject_revision",
+        "intent_record_ref",
+        "action_receipt_ref",
+        "observed_effects",
+        "observed_outcome",
+        "disposition"
+      ],
+      "properties": {
+        "deviation_schema": {
+          "const": "soveraeign-principled-deviation/v1"
+        },
+        "record_kind": {
+          "const": "OUTCOME"
+        },
+        "record_id": {
+          "$ref": "#/$defs/reference"
+        },
+        "deviation_id": {
+          "type": "string",
+          "pattern": "^deviation:[A-Za-z0-9._-]+$"
+        },
+        "recorded_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "participant_id": {
+          "$ref": "#/$defs/reference"
+        },
+        "session_id": {
+          "$ref": "#/$defs/reference"
+        },
+        "subject": {
+          "$ref": "#/$defs/reference"
+        },
+        "subject_revision": {
+          "$ref": "#/$defs/digest"
+        },
+        "intent_record_ref": {
+          "$ref": "#/$defs/reference"
+        },
+        "action_receipt_ref": {
+          "$ref": "#/$defs/reference"
+        },
+        "observed_effects": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/nonempty_string"
+          }
+        },
+        "observed_outcome": {
+          "$ref": "#/$defs/nonempty_string"
+        },
+        "experience_evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/experience"
+          }
+        },
+        "witness_ref": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 3
+        },
+        "disposition": {
+          "enum": [
+            "ONE_OFF",
+            "RULE_CHANGE_CANDIDATE",
+            "REVERTED",
+            "FAILED"
+          ]
+        },
+        "policy_candidate_ref": {
+          "$ref": "#/$defs/reference"
+        }
+      }
+    }
+  }
+}

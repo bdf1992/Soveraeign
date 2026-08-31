@@ -22,12 +22,14 @@ Historical Phase I material is evidence only. It carries no current or successor
 
 ## Built but unwitnessed slices
 
-- Asset Service: `BUILT_SELF_TESTED_NEGATIVE`.
-- Registry Service: `BUILT_SELF_TESTED`.
+- Asset Service: `BUILT_SELF_TESTED_NOT_WITNESSED`.
+- Record Service: `BUILT_SELF_TESTED_NOT_WITNESSED`.
 - Console Service continuity path: `BUILT_CONTINUITY_PATH_SELF_TESTED_REMAINDER_BOUNDARY`.
-- Host Service capability-discovery path: `BUILT_CAPABILITY_DISCOVERY_IN_PROCESS_SELF_TESTED_REMAINDER_BOUNDARY`.
-- Observation Service receipt-observation path: `BUILT_RECEIPT_OBSERVATION_IN_PROCESS_SELF_TESTED_REMAINDER_BOUNDARY`.
-- Record Service journal-read operations: `BUILT_JOURNAL_READ_OPS_SELF_TESTED_REMAINDER_BOUNDARY`.
+- Host Service `read-health` path: `BUILT_READ_HEALTH_SELF_TESTED_REMAINDER_DECLARED_NOT_WITNESSED`.
+- Service-manifest contract: `BUILT_SELF_TESTED_NOT_WITNESSED`.
+- Local model adapter: `BUILT_SELF_TESTED_NOT_WITNESSED`.
+- Coordination registrar: `BUILT_SELF_TESTED_NOT_WITNESSED`.
+- Lineage corpus: `BUILT_SELF_TESTED_NOT_WITNESSED`.
 - The local model/kernel qualification slice executes and self-grades requirement-level controls, but did not earn independent two-binding qualification.
 
 These are retained as implementation evidence, not as successor standing.

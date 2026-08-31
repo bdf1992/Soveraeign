@@ -118,7 +118,10 @@ class CliAuthorityBoundaryTests(unittest.TestCase):
         self.assertEqual("ADMITTED", result["status"])
         self.assertEqual("VERIFICATION", result["authority"])
         self.assertEqual("grant:environment-dev", result["authority_grant_id"])
-        self.assertEqual("ADMITTED", stored["crossing_records"][0]["status"])
+        saved = stored["crossing_records"][0]
+        self.assertEqual("ADMITTED", saved["status"])
+        self.assertEqual("grant:environment-dev", saved["authority_grant_id"])
+        self.assertEqual("grant:environment-dev", saved["receipt"]["authority_grant_id"])
 
     def test_grant_for_another_target_cannot_slide_to_this_crossing(self) -> None:
         _pattern, state, proposal = prepared()

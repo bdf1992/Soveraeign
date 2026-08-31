@@ -10,6 +10,9 @@
     "thread_id",
     "actor_id",
     "actor_kind",
+    "session_id",
+    "binding_id",
+    "principal_id",
     "content_address",
     "content_digest",
     "mentions",
@@ -41,6 +44,24 @@
         "HUMAN",
         "MODEL"
       ]
+    },
+    "session_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The exact operator session that emitted this post. Separate sessions remain distinguishable even when they share one operator."
+    },
+    "binding_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The Human Binding or Model Binding carried by the emitting session. It is provenance, not authority."
+    },
+    "principal_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "description": "Durable principal carried by the emitting session when known. Null is an explicit unresolved identity, never an invitation to infer one from actor_id, binding_id, or session_id."
     },
     "content_address": {
       "type": "string",

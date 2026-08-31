@@ -7,13 +7,15 @@ it reads no files, writes no state, and grants nothing. A grant is data; the
 caller loads it and the caller performs whatever the verdict permits.
 
 Refusal codes are the ones `contracts/kernel-transitions.json` already declares.
-No synonym is minted here: an out-of-scope path, an expired grant, an exhausted
-budget, and a missing grant are all `AUTHORITY_REFUSED`, distinguished by the
-detail sentence rather than by a second vocabulary.
+No synonym is minted here: an out-of-scope path, an exact Environment resource
+outside scope, an expired grant, an exhausted budget, and a missing grant are
+all `AUTHORITY_REFUSED`, distinguished by the detail sentence rather than by a
+second vocabulary.
 
-Whether a request path is one the grant's scope reaches is `sovkernel.scope`,
-split out on 2026-08-25 when five rounds of witness dissent had grown that
-reasoning past the point where it was a detail of grant evaluation.
+Repository path scope remains owned by `sovkernel.scope`. The minimal Environment
+proving aperture adds one exact typed resource comparison here because #173/#12
+explicitly bound that authority decision without opening the broader Authority
+Service.
 """
 
 from __future__ import annotations
@@ -37,6 +39,16 @@ EFFECT_ORDER = ("RECORD_LOCAL", "RESOURCE_CONSUMPTION", "EXTERNAL_WORLD")
 
 #: JUDGEMENT authority may be issued by the owner and by nobody else.
 JUDGEMENT_ISSUER = "bdo"
+
+ENVIRONMENT_PROMOTE = "environment.promote"
+ENVIRONMENT_SCOPE_FIELDS = (
+    "pattern_digest",
+    "trunk_instance",
+    "source_instance",
+    "target_instance",
+    "revision",
+    "artifact_digest",
+)
 
 
 class GrantError(ValueError):
@@ -65,6 +77,38 @@ def _branch_refused(grant: dict, request: dict) -> str | None:
         return None
     if branch not in branches:
         return f"branch {branch} is not among the branches the grant admits"
+    return None
+
+
+def _environment_scope_refused(grant: dict, request: dict) -> str | None:
+    """Require exact resource equality for the admitted Environment aperture.
+
+    This check activates only for `environment.promote`; repository capabilities
+    keep their established path semantics. The Environment layer supplies the
+    addressed crossing record. Authority does not infer a target from names and
+    does not broaden one field into a prefix or wildcard.
+    """
+    if request.get("capability") != ENVIRONMENT_PROMOTE:
+        return None
+    allowed = grant["scope"].get("environment")
+    if not allowed:
+        return "grant carries environment.promote without an exact environment scope"
+    resource = request.get("resource") or {}
+    attempted = resource.get("environment")
+    if not isinstance(attempted, dict):
+        return "request names no exact environment crossing resource"
+    unknown = sorted(set(attempted) - set(ENVIRONMENT_SCOPE_FIELDS))
+    if unknown:
+        return "request environment resource carries unknown fields: " + ", ".join(unknown)
+    missing = [field for field in ENVIRONMENT_SCOPE_FIELDS if not attempted.get(field)]
+    if missing:
+        return "request environment resource omits: " + ", ".join(missing)
+    for field in ENVIRONMENT_SCOPE_FIELDS:
+        if attempted[field] != allowed.get(field):
+            return (
+                f"environment {field} {attempted[field]!r} is outside the grant's "
+                f"exact value {allowed.get(field)!r}"
+            )
     return None
 
 
@@ -112,6 +156,7 @@ def _grant_unavailable(grant: dict, request: dict, now: datetime) -> str | None:
     if EFFECT_ORDER.index(declared) > EFFECT_ORDER.index(ceiling):
         return f"request declares {declared} against an effect ceiling of {ceiling}"
     return (out_of_scope(grant, request)
+            or _environment_scope_refused(grant, request)
             or _branch_refused(grant, request)
             or _budget_exceeded(grant, request))
 

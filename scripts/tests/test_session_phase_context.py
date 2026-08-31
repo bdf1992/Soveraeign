@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from sovsession import brief, phase_context  # noqa: E402
+import sov_opening_readiness  # noqa: E402
 
 
 class SessionPhaseContext(unittest.TestCase):
@@ -106,6 +107,14 @@ class SessionPhaseContext(unittest.TestCase):
         self.assertIn("phase: NONE_ACTIVE", rendered)
         self.assertIn("phase authority: STATUS.yaml@aaaaaaaaaaaa", rendered)
         self.assertIn("discover what this node exposes", rendered)
+
+
+class OpeningRehearsalContract(unittest.TestCase):
+    def test_repository_reading_is_ready_or_already_active_without_hidden_defect(self):
+        report = sov_opening_readiness.assess(ROOT)
+        self.assertIn(report["state"], {"READY_TO_OPEN", "ACTIVE_PHASE"})
+        self.assertEqual(report["defects"], [])
+        self.assertFalse(report["authoritative"])
 
 
 if __name__ == "__main__":

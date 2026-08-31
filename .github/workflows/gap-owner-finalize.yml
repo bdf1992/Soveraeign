@@ -57,6 +57,12 @@ jobs:
               "No successor phase is open. `STATUS.yaml` must remain `phase: NONE_ACTIVE`. Any future phase must be opened by the root seat against this document only after the residue lists are owner-accepted, every seam is closed or explicitly carried, and clarity coverage on the declared governing population is current.",
               "No successor phase is open. `STATUS.yaml` must remain `phase: NONE_ACTIVE`. The gap conditions recorded here are satisfied: the residue lists are owner-accepted, every surviving seam is explicitly carried or closed, and clarity coverage on the declared governing population is current. Any future phase still requires a separate explicit opening act by the root seat against this document.",
           )
+
+          replace(
+              "services/observation/CHARTER.md",
+              "Standing: `CHARTERED_BOUNDARY_NOT_IMPLEMENTED`. Chartered and contracted; no Observation Service operation is implemented.",
+              "Standing is read from `STATUS.yaml`; this boundary is chartered and contracted, and no Observation Service operation is implemented.",
+          )
           PY
 
       - name: Refresh affected clarity receipts
@@ -67,6 +73,7 @@ jobs:
           python scripts/sov_clarity.py record CLAUDE.md
           python scripts/sov_clarity.py record .cursorrules
           python scripts/sov_clarity.py record .claude/skills/clarity/SKILL.md
+          python scripts/sov_clarity.py record services/observation/CHARTER.md --changed
           python scripts/sov_clarity.py check
 
       - name: Require declared 17 of 17 current
@@ -95,6 +102,26 @@ jobs:
 
       - name: Rebuild documentation reader
         run: python scripts/sov_docs.py build
+
+      - name: Refresh derived crossing topology provenance
+        run: |
+          python - <<'PY'
+          import importlib.util
+          from pathlib import Path
+
+          spec = importlib.util.spec_from_file_location("sov_diagrams", "scripts/sov_diagrams.py")
+          module = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(module)
+          stale = [item for item in (module.grade(path) for path in module.views()) if item["verdict"] != "CURRENT"]
+          names = [item["view"] for item in stale]
+          if names != ["crossing-topology.md"]:
+              raise SystemExit(f"expected only crossing-topology.md stale before refresh, got {names}")
+          changed = module.stamp(Path("diagrams/crossing-topology.md"))
+          if not changed:
+              raise SystemExit("crossing-topology.md had no provenance digest to refresh")
+          print("PASS: crossing-topology.md re-read after prose-only Console charter clarity change")
+          PY
+          python scripts/sov_diagrams.py grade
 
       - name: Preserve no-active-phase state
         run: |

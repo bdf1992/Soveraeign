@@ -158,11 +158,16 @@ class ConsoleService:
         return publication.withdraw_publication(self, operator_id, publication_id,
                                                 ENTRY_STANDING)
 
-    def open_session(self, operator_id: str, actor_kind: str,
-                     binding_id: str) -> dict[str, Any]:
-        """Open one operator's continuity through a named binding. `sessions.py` owns it."""
+    def open_session(self, operator_id: str, actor_kind: str, binding_id: str,
+                     principal_id: str | None = None) -> dict[str, Any]:
+        """Open one operator's continuity through a binding, with principal provenance.
+
+        `principal_id` is a durable identity claim supplied by the binding when known.
+        It never grants authority and may be ``None``; the session id remains the
+        isolation boundary and the operator id remains the authority subject.
+        """
         return sessions.open_session(self, operator_id, actor_kind, binding_id,
-                                     _identifier("session"), ENTRY_STANDING)
+                                     _identifier("session"), ENTRY_STANDING, principal_id)
 
     def close_session(self, operator_id: str, session_id: str) -> dict[str, Any]:
         """Close a session and pin its read position. `sessions.py` owns it.
@@ -172,11 +177,12 @@ class ConsoleService:
 
     def post(self, operator_id: str, session_id: str, thread_id: str, body: bytes,
              mentions: Iterable[str] = (), claims: bool = False,
-             proposal_id: str | None = None) -> dict[str, Any]:
+             proposal_id: str | None = None,
+             principal_id: str | None = None) -> dict[str, Any]:
         """Record one attributed turn in a thread. `posts.py` owns it."""
         return posts.post(self, operator_id, session_id, thread_id, body,
                           _identifier("post"), ENTRY_STANDING, mentions, claims,
-                          proposal_id)
+                          proposal_id, principal_id)
 
     def body(self, content_address: str) -> bytes:
         """Read an immutable post payload by its address. A post is never rewritten."""

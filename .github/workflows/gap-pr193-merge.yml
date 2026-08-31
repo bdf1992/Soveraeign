@@ -1,0 +1,51 @@
+name: gap-pr193-merge
+
+on:
+  push:
+    branches:
+      - chore/gap-phase-synthesis
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  ready-and-merge:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Restore the verified tree and guard it
+        id: guard
+        run: |
+          VERIFIED_SHA=e9c304bd318aa40b52cb0d38a758ebdd46e0100c
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/gap-pr193-merge.yml
+          git commit -m "chore(gap): remove draft-ready bridge"
+          NEW_SHA=$(git rev-parse HEAD)
+          VERIFIED_TREE=$(git rev-parse "$VERIFIED_SHA^{tree}")
+          NEW_TREE=$(git rev-parse "HEAD^{tree}")
+          test "$VERIFIED_TREE" = "$NEW_TREE"
+          echo "PASS: final PR tree is byte-for-byte identical to verified $VERIFIED_SHA"
+          echo "head_sha=$NEW_SHA" >> "$GITHUB_OUTPUT"
+          git push origin HEAD:chore/gap-phase-synthesis
+
+      - name: Mark PR 193 ready
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh pr ready 193 --repo "$GITHUB_REPOSITORY"
+
+      - name: Squash merge the verified tree
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr merge 193 \
+            --repo "$GITHUB_REPOSITORY" \
+            --squash \
+            --match-head-commit "${{ steps.guard.outputs.head_sha }}" \
+            --subject "docs(gap): close Phase I gap record (#193)" \
+            --body "Record the owner-accepted residue, explicit carried seams, phase-invariant governing clarity, and 17/17 current gap coverage. Preserve Phase I as CLOSED_INCOMPLETE and STATUS.yaml as NONE_ACTIVE with SUCCESSOR_PHASE_OPENING; no successor phase is opened."

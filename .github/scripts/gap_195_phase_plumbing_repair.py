@@ -50,3 +50,8 @@ replace_once(
     '''           "contracts/custodies.json", "contracts/custodies",\n           "scripts/sov_f2_gate.py", "scripts/sov_phase_progress.py", "scripts/sovcustody")),\n''',
     '''           "contracts/custodies.json", "contracts/custodies", "scripts/sov_f2_gate.py",\n           "scripts/sov_phase_progress.py", "scripts/sovcustody")),\n''',
 )
+# The check table was exactly one line over after expanding the phase-progress
+# evidence closure. Keep normal two-line top-level spacing while dropping one
+# redundant empty line before the table itself.
+replace_once(checks, "from sovverify.shape import ROOT, Check\n\n\nREPOSITORY_CHECKS", 
+             "from sovverify.shape import ROOT, Check\n\nREPOSITORY_CHECKS")

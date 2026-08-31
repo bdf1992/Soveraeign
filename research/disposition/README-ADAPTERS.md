@@ -1,0 +1,1 @@
+Adapters translate one semantic probe into subject-appropriate evidence collection. They must not translate a non-human subject into a fictional human respondent. The adapter's transformation and revision are part of observation provenance.

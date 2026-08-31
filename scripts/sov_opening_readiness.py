@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Rehearse successor opening from repository evidence without opening anything."""
+"""Rehearse root successor-opening judgement from repository evidence without opening it."""
 
 from __future__ import annotations
 

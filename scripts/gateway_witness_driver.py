@@ -31,7 +31,7 @@ def drive(state: Path, actor: str, actor_kind: str) -> dict[str, object]:
     source.write_bytes(PAYLOAD)
     record = RecordService(state / "record")
     console = ConsoleService(record, state / "console", "node:gateway-witness")
-    asset = AssetService(state / "asset")
+    asset = AssetService(state / "asset", operational_record=record)
     try:
         scope = f"asset:new:{actor}"
         console.grant(actor, "open:session", actor, "Bdo")

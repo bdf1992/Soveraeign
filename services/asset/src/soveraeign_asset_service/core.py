@@ -3,9 +3,9 @@
 This module owns the asset lifecycle only. Payload custody and receipts live in
 `store.py`, grants and sessions in `authority.py`, the rebuildable views in
 `projections.py`, typed collections and membership in `organization.py`, and the
-conformance read over them in `librarian.py`. The SQLite database is the
-canonical reference ledger for this slice; the search and graph tables are
-disposable projections.
+conformance read over them in `librarian.py`. The SQLite database remains the canonical domain ledger; search and graph tables
+are projections. Terminal receipts cross a bound Record port as operational history;
+Record does not become authority over Asset rows by receiving that history.
 
 The organizational lifecycle is reached at `service.organization` and
 `service.librarian` rather than wrapped method by method here: those two objects
@@ -76,8 +76,9 @@ CREATE TABLE IF NOT EXISTS retractions(
 class AssetService:
     """The asset lifecycle: capture, propose, ratify, derive, observe, retract."""
 
-    def __init__(self, root: str | Path, clock: Callable[[], float] = time.time):
-        self.store = Store(root, clock)
+    def __init__(self, root: str | Path, clock: Callable[[], float] = time.time,
+                 operational_record: Any = None):
+        self.store = Store(root, clock, operational_record)
         self.root = self.store.root
         self.blobs = self.store.blobs
         self.db = self.store.db

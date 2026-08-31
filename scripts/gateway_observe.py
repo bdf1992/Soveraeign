@@ -220,6 +220,18 @@ def crossing_defects(repository: Path, state: Path, caller_output: dict[str, Any
         if (terminal.get("actor") != actor or terminal.get("event") != "asset.ingest-asset"
                 or terminal.get("outcome") != "COMMITTED"):
             defects.append("TERMINAL_ATTRIBUTION_INVALID")
+        mirrors = [row for row in rows
+                   if row["kind"] == "RECEIPT"
+                   and row.get("source_address") == "asset-service"
+                   and row["payload"].get("detail", {}).get("asset_receipt_id")
+                   == terminal.get("id")]
+        if (len(mirrors) != 1
+                or mirrors[0]["actor"] != actor
+                or mirrors[0]["payload"].get("outcome") != "COMMITTED"
+                or mirrors[0]["payload"].get("event") != "asset.ingest-asset"
+                or mirrors[0]["payload"].get("detail", {}).get("record_kind")
+                   != "asset-terminal-receipt"):
+            defects.append("ASSET_OPERATIONAL_HISTORY_INVALID")
         if (returned["payload"].get("routing_entry_id") != routing["entry_id"]
                 or returned["payload"].get("terminal_receipt_id") != terminal.get("id")
                 or returned["payload"].get("terminal_outcome") != "COMMITTED"):

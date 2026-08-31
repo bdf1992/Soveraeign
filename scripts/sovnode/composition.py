@@ -42,6 +42,8 @@ COMMON_ROUTE_SOURCES = (
 )
 ASSET_ROUTE_SOURCES = COMMON_ROUTE_SOURCES + (
     "services/asset/src/soveraeign_asset_service/core.py",
+    "services/asset/src/soveraeign_asset_service/store.py",
+    "services/asset/src/soveraeign_asset_service/operational.py",
     "services/asset/src/soveraeign_asset_service/custody.py",
     "services/asset/src/soveraeign_asset_service/routes.py",
 )
@@ -136,7 +138,7 @@ class LocalActionPath:
         root = Path(state_root)
         self.record = RecordService(root / "record")
         self.console = ConsoleService(self.record, root / "console", self.node_id)
-        self.asset = AssetService(root / "asset")
+        self.asset = AssetService(root / "asset", operational_record=self.record)
         capability_map, manifests, table = load_surface(ROOT)
         (closure, closure_manifests, transitions, paradigms,
          closure_sources, source_defects) = rebuild_closure(ROOT)

@@ -51,7 +51,9 @@
     "services/asset/contracts/service.json",
     "services/asset/src/soveraeign_asset_service/core.py",
     "services/asset/src/soveraeign_asset_service/custody.py",
+    "services/asset/src/soveraeign_asset_service/operational.py",
     "services/asset/src/soveraeign_asset_service/routes.py",
+    "services/asset/src/soveraeign_asset_service/store.py",
     "services/console/contracts/service.json",
     "services/console/src/soveraeign_console_service/continuity.py",
     "services/console/src/soveraeign_console_service/core.py",
@@ -163,7 +165,7 @@
     },
     {
       "address": "scripts/sovnode/composition.py",
-      "digest": "de1b01e2b8b993482677cfdfd2a3a0b74d0c1c553d884fb7401c2146b09d6f58"
+      "digest": "e7320557b3d5239e576317668bd299c4a5c63bbc3f3a0fdc90d13100d8bd60ce"
     },
     {
       "address": "scripts/sovnode/interface_inputs.py",
@@ -175,15 +177,23 @@
     },
     {
       "address": "services/asset/src/soveraeign_asset_service/core.py",
-      "digest": "15bcccd4e600334adbd14b5660b0e2a6f2e30369986b50a38291830d449f28f6"
+      "digest": "21173d9a30baadecc33deb70117328f61f313f72ad19dde4b4a1aea2d10a6d90"
     },
     {
       "address": "services/asset/src/soveraeign_asset_service/custody.py",
       "digest": "9c0f172d925469e10f461f8489c949adeec3855e1ed69da96c14fc656d3ae924"
     },
     {
+      "address": "services/asset/src/soveraeign_asset_service/operational.py",
+      "digest": "bb64152809752116b7e4a8b80373d36ab8db911ee0d102ca370a8ba489e7253a"
+    },
+    {
       "address": "services/asset/src/soveraeign_asset_service/routes.py",
       "digest": "256f03535fae303c4ae4308914a840959aa73ad353cceb58f6ec786a52911047"
+    },
+    {
+      "address": "services/asset/src/soveraeign_asset_service/store.py",
+      "digest": "64da876e23da077aec3119a2d3e7b50e4f43e4fb1cec3d42a3e26cd9e5642459"
     },
     {
       "address": "services/console/contracts/service.json",
@@ -278,7 +288,7 @@
       "digest": "150834886995a8e0c32334beb5ef53dbc69cbb244172b510a06b056e608bf4b0"
     }
   ],
-  "input_state_digest": "ac7525c26aaeb24c207a6089f1aa93caaf90da0f364296577de429bdf6b84c95",
+  "input_state_digest": "7d8412799b2fce1c4c185b8c0475b4555fd0bc01c1b054e92e2789e50e4d15ef",
   "counts": {
     "declared": 134,
     "bound": 134,
@@ -995,6 +1005,8 @@
             "services/gateway/src/soveraeign_gateway_service/core.py",
             "services/gateway/src/soveraeign_gateway_service/attribution.py",
             "services/asset/src/soveraeign_asset_service/core.py",
+            "services/asset/src/soveraeign_asset_service/store.py",
+            "services/asset/src/soveraeign_asset_service/operational.py",
             "services/asset/src/soveraeign_asset_service/custody.py",
             "services/asset/src/soveraeign_asset_service/routes.py"
           ]
@@ -1071,7 +1083,7 @@
         },
         {
           "address": "scripts/sovnode/composition.py",
-          "digest": "de1b01e2b8b993482677cfdfd2a3a0b74d0c1c553d884fb7401c2146b09d6f58"
+          "digest": "e7320557b3d5239e576317668bd299c4a5c63bbc3f3a0fdc90d13100d8bd60ce"
         },
         {
           "address": "services/asset/contracts/service.json",
@@ -1079,15 +1091,23 @@
         },
         {
           "address": "services/asset/src/soveraeign_asset_service/core.py",
-          "digest": "15bcccd4e600334adbd14b5660b0e2a6f2e30369986b50a38291830d449f28f6"
+          "digest": "21173d9a30baadecc33deb70117328f61f313f72ad19dde4b4a1aea2d10a6d90"
         },
         {
           "address": "services/asset/src/soveraeign_asset_service/custody.py",
           "digest": "9c0f172d925469e10f461f8489c949adeec3855e1ed69da96c14fc656d3ae924"
         },
         {
+          "address": "services/asset/src/soveraeign_asset_service/operational.py",
+          "digest": "bb64152809752116b7e4a8b80373d36ab8db911ee0d102ca370a8ba489e7253a"
+        },
+        {
           "address": "services/asset/src/soveraeign_asset_service/routes.py",
           "digest": "256f03535fae303c4ae4308914a840959aa73ad353cceb58f6ec786a52911047"
+        },
+        {
+          "address": "services/asset/src/soveraeign_asset_service/store.py",
+          "digest": "64da876e23da077aec3119a2d3e7b50e4f43e4fb1cec3d42a3e26cd9e5642459"
         },
         {
           "address": "services/gateway/src/soveraeign_gateway_service/attribution.py",
@@ -1107,7 +1127,7 @@
         "reason_code": "EXACT_ROUTE_ACTIVE",
         "explanation": "An exact policy-active service route exists for this operation."
       },
-      "record_digest": "9138c6f3a9b6acbac98c8bfdc63f7d76aaf9c1a46bbb406c40fc0868ed70c695"
+      "record_digest": "c88c8cadf0a5bb55850044942d450ba966bac1593904b8fac34d001e7c433816"
     },
     {
       "operation_id": "asset.propose-description",
@@ -2119,6 +2139,8 @@
             "services/gateway/src/soveraeign_gateway_service/core.py",
             "services/gateway/src/soveraeign_gateway_service/attribution.py",
             "services/asset/src/soveraeign_asset_service/core.py",
+            "services/asset/src/soveraeign_asset_service/store.py",
+            "services/asset/src/soveraeign_asset_service/operational.py",
             "services/asset/src/soveraeign_asset_service/custody.py",
             "services/asset/src/soveraeign_asset_service/routes.py"
           ]
@@ -2195,7 +2217,7 @@
         },
         {
           "address": "scripts/sovnode/composition.py",
-          "digest": "de1b01e2b8b993482677cfdfd2a3a0b74d0c1c553d884fb7401c2146b09d6f58"
+          "digest": "e7320557b3d5239e576317668bd299c4a5c63bbc3f3a0fdc90d13100d8bd60ce"
         },
         {
           "address": "services/asset/contracts/service.json",
@@ -2203,15 +2225,23 @@
         },
         {
           "address": "services/asset/src/soveraeign_asset_service/core.py",
-          "digest": "15bcccd4e600334adbd14b5660b0e2a6f2e30369986b50a38291830d449f28f6"
+          "digest": "21173d9a30baadecc33deb70117328f61f313f72ad19dde4b4a1aea2d10a6d90"
         },
         {
           "address": "services/asset/src/soveraeign_asset_service/custody.py",
           "digest": "9c0f172d925469e10f461f8489c949adeec3855e1ed69da96c14fc656d3ae924"
         },
         {
+          "address": "services/asset/src/soveraeign_asset_service/operational.py",
+          "digest": "bb64152809752116b7e4a8b80373d36ab8db911ee0d102ca370a8ba489e7253a"
+        },
+        {
           "address": "services/asset/src/soveraeign_asset_service/routes.py",
           "digest": "256f03535fae303c4ae4308914a840959aa73ad353cceb58f6ec786a52911047"
+        },
+        {
+          "address": "services/asset/src/soveraeign_asset_service/store.py",
+          "digest": "64da876e23da077aec3119a2d3e7b50e4f43e4fb1cec3d42a3e26cd9e5642459"
         },
         {
           "address": "services/gateway/src/soveraeign_gateway_service/attribution.py",
@@ -2231,7 +2261,7 @@
         "reason_code": "EXACT_READ_ROUTE_ACTIVE",
         "explanation": "An exact policy-active service route exists for this read."
       },
-      "record_digest": "e09d3918a8e2b932477eb3bc41f28ad161d2d20f0c3a67447f929234dfa1d32f"
+      "record_digest": "2099977ea20887855bd43e4be8ed39e07a26657d3c9ad661b819f33fa98295a3"
     },
     {
       "operation_id": "asset.read-version-history",
@@ -5324,7 +5354,7 @@
         },
         {
           "address": "scripts/sovnode/composition.py",
-          "digest": "de1b01e2b8b993482677cfdfd2a3a0b74d0c1c553d884fb7401c2146b09d6f58"
+          "digest": "e7320557b3d5239e576317668bd299c4a5c63bbc3f3a0fdc90d13100d8bd60ce"
         },
         {
           "address": "services/console/contracts/service.json",
@@ -5364,7 +5394,7 @@
         "reason_code": "EXACT_READ_ROUTE_ACTIVE",
         "explanation": "An exact policy-active service route exists for this read."
       },
-      "record_digest": "ff8a2a0f22377ec87598cb11cae62d71ccab3f931c3d094d6f68a1770b843c72"
+      "record_digest": "e7614a2048226d214088c8f21101ecdc46e44003e13f6f9cc51950f539d42f45"
     },
     {
       "operation_id": "console.rebuild-projection",
@@ -8699,7 +8729,7 @@
         },
         {
           "address": "scripts/sovnode/composition.py",
-          "digest": "de1b01e2b8b993482677cfdfd2a3a0b74d0c1c553d884fb7401c2146b09d6f58"
+          "digest": "e7320557b3d5239e576317668bd299c4a5c63bbc3f3a0fdc90d13100d8bd60ce"
         },
         {
           "address": "services/gateway/src/soveraeign_gateway_service/attribution.py",
@@ -8739,7 +8769,7 @@
         "reason_code": "EXACT_READ_ROUTE_ACTIVE",
         "explanation": "An exact policy-active service route exists for this read."
       },
-      "record_digest": "5512afe7f99d508936fc310ccd915ef54995eaa291cda72701a9d2954798f6b5"
+      "record_digest": "26151346151d79feae22f108a2cb59c4d76c37e8696859e1e5ff349a7ca73541"
     },
     {
       "operation_id": "host.read-network",
@@ -18095,7 +18125,7 @@
         },
         {
           "address": "scripts/sovnode/composition.py",
-          "digest": "de1b01e2b8b993482677cfdfd2a3a0b74d0c1c553d884fb7401c2146b09d6f58"
+          "digest": "e7320557b3d5239e576317668bd299c4a5c63bbc3f3a0fdc90d13100d8bd60ce"
         },
         {
           "address": "services/gateway/src/soveraeign_gateway_service/attribution.py",
@@ -18131,7 +18161,7 @@
         "reason_code": "EXACT_READ_ROUTE_ACTIVE",
         "explanation": "An exact policy-active service route exists for this read."
       },
-      "record_digest": "05aa9233432745a04045727acc7af11a36f698e12f6ca02761d13e1f3d314403"
+      "record_digest": "47e0cc3f99ffa150fbf57128174885b2b64e1ecfe0c52f1c2b585a8a7cc2f11b"
     },
     {
       "operation_id": "registry.retire-owner",

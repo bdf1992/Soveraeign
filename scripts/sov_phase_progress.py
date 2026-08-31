@@ -30,6 +30,7 @@ import json
 import subprocess
 
 import sov_f2_gate
+from sov_active_phase_progress import grade_active_phase, phase_record, status_phase
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -141,6 +142,16 @@ def cmd_check(_: argparse.Namespace) -> int:
     report = sov_f2_gate.read_gate()
     defects = grade(report, contract)
     drift = stall(contract)
+    active = status_phase()
+    active_defects: list[dict] = []
+    if active and active != "NONE_ACTIVE" and active != contract.get("historical_phase"):
+        from sovcustody import model as custody_model
+        active_defects = grade_active_phase(
+            active, phase_record(active),
+            (contract.get("active_phase_profiles") or {}).get(active),
+            custody_model.custodies(active),
+        )
+    defects.extend(active_defects)
 
     covered, total = report["predicates_covered"], report["predicates_total"]
     print(f"phase gate: {covered}/{total} predicates, floor {contract['floor']['total']}")
@@ -160,6 +171,12 @@ def cmd_check(_: argparse.Namespace) -> int:
         print(f"  stall     {drift['commits_since_floor']} commits since the floor moved, "
               f"ceiling {drift['ceiling']}")
 
+    if active == "NONE_ACTIVE":
+        print("  active    NONE_ACTIVE; historical non-regression remains enforced")
+    elif active and active != contract.get("historical_phase"):
+        profile = (contract.get("active_phase_profiles") or {}).get(active)
+        state = "initialized" if profile else "UNINITIALIZED"
+        print(f"  active    {active} progress profile {state}")
     for defect in defects:
         print(f"  {defect['code']}: {defect['detail']}")
     if defects:
@@ -172,6 +189,11 @@ def cmd_check(_: argparse.Namespace) -> int:
 def cmd_raise(args: argparse.Namespace) -> int:
     """Rewrite the floor to the current reading. Refuses to lower it."""
     contract = _contract()
+    active = status_phase()
+    if active not in ("", "NONE_ACTIVE", contract.get("historical_phase")):
+        print(f"REFUSED: raise-floor is the historical {contract.get('historical_phase')} reader; "
+              f"initialize {active} exit-custody floors in the phase opening/progress record")
+        return 1
     report = sov_f2_gate.read_gate()
     covered = report["predicates_covered"]
     if covered < contract["floor"]["total"]:
@@ -194,10 +216,14 @@ def cmd_raise(args: argparse.Namespace) -> int:
 def cmd_read(_: argparse.Namespace) -> int:
     """Print the reading, the floor, and the stall as JSON."""
     contract = _contract()
+    active = status_phase()
     print(json.dumps({
+        "historical_phase": contract.get("historical_phase"),
         "reading": sov_f2_gate.read_gate()["predicates_covered"],
         "floor": contract["floor"],
         "stall": stall(contract),
+        "active_phase": active or None,
+        "active_profile": (contract.get("active_phase_profiles") or {}).get(active),
     }, indent=2, sort_keys=True))
     return 0
 

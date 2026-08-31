@@ -69,10 +69,12 @@ def _try(record: dict[str, Any]) -> str:
     route = next(route for route in record["reachability"] if route["policy_active"])
     arguments = " ".join(f"{name}=..." for name in route["required_arguments"])
     command = (f"python scripts/sov_surface.py try {record['operation_id']} {arguments} "
-               "--binding HUMAN --actor YOUR_ACTOR --scope YOUR_SCOPE")
+               "--binding HUMAN --actor YOUR_ACTOR --scope YOUR_SCOPE "
+               "--session YOUR_SESSION --session-binding YOUR_SESSION_BINDING")
     return ("<dt>Request</dt><dd><pre>" + _e(command) +
-            "</pre>The Gateway checks live authority for that actor and scope. "
-            "The surface projects no grant and creates none.</dd>")
+            "</pre>The Gateway first checks that session attribution, then checks live "
+            "authority for that actor and scope. The surface projects no grant, creates "
+            "no session, and creates no authority.</dd>")
 
 
 def _operation(record: dict[str, Any]) -> str:

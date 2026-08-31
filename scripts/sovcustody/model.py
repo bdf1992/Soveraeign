@@ -29,6 +29,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from sovcustody import circuit as circuitmod  # noqa: E402
+from sovcustody import collections as collectionmod  # noqa: E402
 from sovcustody import estimate as estimatemod  # noqa: E402
 from sovcustody import roots as rootsmod  # noqa: E402
 from sovkernel.jsonschema import validate  # noqa: E402
@@ -36,6 +37,7 @@ from sovkernel.jsonschema import validate  # noqa: E402
 SCHEMA = ROOT / "contracts" / "custody.schema.json"
 ESTIMATE_SCHEMA = ROOT / "contracts" / "estimate.schema.json"
 COLLECTION = ROOT / "contracts" / "custodies.json"
+COLLECTION_DIR = ROOT / "contracts" / "custodies"
 SEATS = ROOT / "contracts" / "seat-registry.json"
 PHASES = ROOT / "contracts" / "phases.json"
 
@@ -122,11 +124,20 @@ def schema() -> dict[str, Any]:
 
 
 def collection() -> dict[str, Any]:
+    """The historical legacy collection, retained for compatibility."""
     return json.loads(COLLECTION.read_bytes().decode("utf-8"))
 
 
-def custodies() -> list[dict[str, Any]]:
-    return list(collection()["custodies"])
+def collection_paths() -> tuple[Path, ...]:
+    return collectionmod.paths(COLLECTION, COLLECTION_DIR)
+
+
+def collections() -> list[dict[str, Any]]:
+    return collectionmod.documents(COLLECTION, COLLECTION_DIR)
+
+
+def custodies(phase: str | None = None) -> list[dict[str, Any]]:
+    return collectionmod.records(COLLECTION, COLLECTION_DIR, phase)
 
 
 def by_id(custody_id: str) -> dict[str, Any] | None:

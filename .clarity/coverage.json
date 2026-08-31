@@ -4,7 +4,7 @@
       "artifact_digest": "sha256:cc421dd4d819e43edfcb6ba3e5e6d635b9d151db0d42f72e9e74bf77616fd45b",
       "basis": [
         {
-          "digest": "sha256:c22c73b4ffeea4c3cec0b632ce3a34c8c5c1a04cc1e01d7e34d5a48b599ea7af",
+          "digest": "sha256:a40215204befb25c48365b6ceb6e11ba3bfc4ac999c01615e4b57b19d96bdd81",
           "path": "AGENTS.md"
         },
         {
@@ -12,13 +12,83 @@
           "path": "STATUS.yaml"
         }
       ],
-      "changed": false
+      "changed": true
+    },
+    ".claude/skills/sdlc-feedback/SKILL.md": {
+      "artifact_digest": "sha256:9784e819722c742decc26df0328620e9ce32a589a0d578f721d5fd262728c2b2",
+      "basis": [
+        {
+          "digest": "sha256:a40215204befb25c48365b6ceb6e11ba3bfc4ac999c01615e4b57b19d96bdd81",
+          "path": "AGENTS.md"
+        },
+        {
+          "digest": "sha256:96d9e073a61bfdccf1e213c087fa6c8c677336a688777816eb18404da8c13348",
+          "path": "STATUS.yaml"
+        }
+      ],
+      "changed": true
+    },
+    ".claude/skills/sov-compression/SKILL.md": {
+      "artifact_digest": "sha256:123ae814454015577020496cccb0c080117fc8137cdecc2b074e58a125d89ec3",
+      "basis": [
+        {
+          "digest": "sha256:a40215204befb25c48365b6ceb6e11ba3bfc4ac999c01615e4b57b19d96bdd81",
+          "path": "AGENTS.md"
+        },
+        {
+          "digest": "sha256:96d9e073a61bfdccf1e213c087fa6c8c677336a688777816eb18404da8c13348",
+          "path": "STATUS.yaml"
+        }
+      ],
+      "changed": true
+    },
+    ".claude/skills/sov-governance/SKILL.md": {
+      "artifact_digest": "sha256:72233129399d850be6c12ba34c103337fa4be582b2b2f9d38a4de8fdbf338b88",
+      "basis": [
+        {
+          "digest": "sha256:a40215204befb25c48365b6ceb6e11ba3bfc4ac999c01615e4b57b19d96bdd81",
+          "path": "AGENTS.md"
+        },
+        {
+          "digest": "sha256:96d9e073a61bfdccf1e213c087fa6c8c677336a688777816eb18404da8c13348",
+          "path": "STATUS.yaml"
+        }
+      ],
+      "changed": true
+    },
+    ".claude/skills/sov-principled-deviation/SKILL.md": {
+      "artifact_digest": "sha256:213e824d70f06e37d49fad5ce504be392d73d5d1034d0ccd67fcba04bcafdd59",
+      "basis": [
+        {
+          "digest": "sha256:a40215204befb25c48365b6ceb6e11ba3bfc4ac999c01615e4b57b19d96bdd81",
+          "path": "AGENTS.md"
+        },
+        {
+          "digest": "sha256:96d9e073a61bfdccf1e213c087fa6c8c677336a688777816eb18404da8c13348",
+          "path": "STATUS.yaml"
+        }
+      ],
+      "changed": true
+    },
+    ".claude/skills/sov-verification/SKILL.md": {
+      "artifact_digest": "sha256:ec8943ed0e67919009e14bc4bf4e59e1e0204cc3f0281a59219fb701e1563a19",
+      "basis": [
+        {
+          "digest": "sha256:a40215204befb25c48365b6ceb6e11ba3bfc4ac999c01615e4b57b19d96bdd81",
+          "path": "AGENTS.md"
+        },
+        {
+          "digest": "sha256:96d9e073a61bfdccf1e213c087fa6c8c677336a688777816eb18404da8c13348",
+          "path": "STATUS.yaml"
+        }
+      ],
+      "changed": true
     },
     ".cursorrules": {
       "artifact_digest": "sha256:4f1ab3e10a3c0e8be92a36c2c930d02373f02291561b91c950bc00664b263ccd",
       "basis": [
         {
-          "digest": "sha256:c22c73b4ffeea4c3cec0b632ce3a34c8c5c1a04cc1e01d7e34d5a48b599ea7af",
+          "digest": "sha256:a40215204befb25c48365b6ceb6e11ba3bfc4ac999c01615e4b57b19d96bdd81",
           "path": "AGENTS.md"
         },
         {
@@ -26,10 +96,10 @@
           "path": "STATUS.yaml"
         }
       ],
-      "changed": false
+      "changed": true
     },
     "AGENTS.md": {
-      "artifact_digest": "sha256:c22c73b4ffeea4c3cec0b632ce3a34c8c5c1a04cc1e01d7e34d5a48b599ea7af",
+      "artifact_digest": "sha256:a40215204befb25c48365b6ceb6e11ba3bfc4ac999c01615e4b57b19d96bdd81",
       "basis": [
         {
           "digest": "sha256:20a43ff96c3f99f98fe90b612a49c4f60f9318bfebb4be61e3882a9dfbe27bb4",
@@ -66,11 +136,11 @@
           "path": "CONTRACT.md"
         },
         {
-          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "digest": "sha256:ea07f0ec39b9a55160f3f58552f3a5d13ba5061122a10b42e37daa34bfc2f348",
           "path": "SPEC.md"
         }
       ],
-      "changed": false
+      "changed": true
     },
     "BYOM.md": {
       "artifact_digest": "sha256:64669747db6b40c4b8ce1cac954b56089d232d70790df611006ffcc13dcfb2e6",
@@ -84,11 +154,11 @@
           "path": "CONTRACT.md"
         },
         {
-          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "digest": "sha256:ea07f0ec39b9a55160f3f58552f3a5d13ba5061122a10b42e37daa34bfc2f348",
           "path": "SPEC.md"
         }
       ],
-      "changed": false
+      "changed": true
     },
     "CANON.md": {
       "artifact_digest": "sha256:e618947defa9d0f8cdc689d1d00d6cb56f9e9b2f61132e5341c6794d13f26a22",
@@ -101,14 +171,14 @@
       "changed": true
     },
     "CLAUDE.md": {
-      "artifact_digest": "sha256:6b625decd2f70ac9ea2bb70a94ed823da16a1d52edd39f5386de20bb50fe6db2",
+      "artifact_digest": "sha256:0f7418903459f5d48861ca8c6f6c836e7821f274c0cf49c03c06149d02888e42",
       "basis": [
         {
-          "digest": "sha256:c22c73b4ffeea4c3cec0b632ce3a34c8c5c1a04cc1e01d7e34d5a48b599ea7af",
+          "digest": "sha256:a40215204befb25c48365b6ceb6e11ba3bfc4ac999c01615e4b57b19d96bdd81",
           "path": "AGENTS.md"
         },
         {
-          "digest": "sha256:623038ff6330e07fee6806cd67009e02a420cef331a793eed39b966b878e839c",
+          "digest": "sha256:5c0af37027edab5a54ef0a48c9a9eb75da676021382443c7ec6a3f216fd6f651",
           "path": "SOV.md"
         },
         {
@@ -133,10 +203,10 @@
       "changed": true
     },
     "CONTRIBUTING.md": {
-      "artifact_digest": "sha256:bf7437acd4e14628a057725de4f7a29b6c1b6a012f44009f15ca8dac62743188",
+      "artifact_digest": "sha256:0013d9eb185d42e89e8234557c33a6ac7f98a96e7007a54f67fd5a609fc19908",
       "basis": [
         {
-          "digest": "sha256:c22c73b4ffeea4c3cec0b632ce3a34c8c5c1a04cc1e01d7e34d5a48b599ea7af",
+          "digest": "sha256:a40215204befb25c48365b6ceb6e11ba3bfc4ac999c01615e4b57b19d96bdd81",
           "path": "AGENTS.md"
         },
         {
@@ -144,7 +214,7 @@
           "path": "STATUS.yaml"
         }
       ],
-      "changed": false
+      "changed": true
     },
     "GROUND.md": {
       "artifact_digest": "sha256:20a43ff96c3f99f98fe90b612a49c4f60f9318bfebb4be61e3882a9dfbe27bb4",
@@ -170,7 +240,7 @@
       "changed": true
     },
     "PRD.md": {
-      "artifact_digest": "sha256:81f09529b5679d786e507efa7641861aa9e2a5717442d9f9af7cf021d76d2425",
+      "artifact_digest": "sha256:90545536ce63d46dffbc6bffc581db042baabe67dd8ecb21a3d659b797ae18e1",
       "basis": [
         {
           "digest": "sha256:20a43ff96c3f99f98fe90b612a49c4f60f9318bfebb4be61e3882a9dfbe27bb4",
@@ -188,7 +258,7 @@
       "changed": true
     },
     "README.md": {
-      "artifact_digest": "sha256:d8c93e8b3ddc6f253fc69d40b3a180a9f88c2c84d1b8794e996d7f2de1154761",
+      "artifact_digest": "sha256:5fae455213316b3076a5bae60b50dfa8d0c088964d4f2fe4efddc6561062f6bc",
       "basis": [
         {
           "digest": "sha256:20a43ff96c3f99f98fe90b612a49c4f60f9318bfebb4be61e3882a9dfbe27bb4",
@@ -213,7 +283,7 @@
       "artifact_digest": "sha256:4918be81fd7343b8173135489b780dfc4ff01be5db7467519f256759688d86d8",
       "basis": [
         {
-          "digest": "sha256:81f09529b5679d786e507efa7641861aa9e2a5717442d9f9af7cf021d76d2425",
+          "digest": "sha256:90545536ce63d46dffbc6bffc581db042baabe67dd8ecb21a3d659b797ae18e1",
           "path": "PRD.md"
         },
         {
@@ -221,17 +291,17 @@
           "path": "STATUS.yaml"
         },
         {
-          "digest": "sha256:a957d14a986fbddae8d26e417868ec4d5807582b6824d22e89f1c4f5343f4ebf",
+          "digest": "sha256:4289313eee0205e7ca8605870048ac79054d8ece0f30a6ab335a1e99c4d596d5",
           "path": "contracts/phases.json"
         }
       ],
       "changed": true
     },
     "SOV.md": {
-      "artifact_digest": "sha256:623038ff6330e07fee6806cd67009e02a420cef331a793eed39b966b878e839c",
+      "artifact_digest": "sha256:5c0af37027edab5a54ef0a48c9a9eb75da676021382443c7ec6a3f216fd6f651",
       "basis": [
         {
-          "digest": "sha256:c22c73b4ffeea4c3cec0b632ce3a34c8c5c1a04cc1e01d7e34d5a48b599ea7af",
+          "digest": "sha256:a40215204befb25c48365b6ceb6e11ba3bfc4ac999c01615e4b57b19d96bdd81",
           "path": "AGENTS.md"
         },
         {
@@ -247,10 +317,10 @@
           "path": "STATUS.yaml"
         }
       ],
-      "changed": false
+      "changed": true
     },
     "SPEC.md": {
-      "artifact_digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+      "artifact_digest": "sha256:ea07f0ec39b9a55160f3f58552f3a5d13ba5061122a10b42e37daa34bfc2f348",
       "basis": [
         {
           "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
@@ -265,7 +335,7 @@
           "path": "CLASSIFICATION.md"
         }
       ],
-      "changed": false
+      "changed": true
     },
     "STATUS.yaml": {
       "artifact_digest": "sha256:96d9e073a61bfdccf1e213c087fa6c8c677336a688777816eb18404da8c13348",
@@ -294,6 +364,11 @@
       ],
       "changed": false
     },
+    "contracts/README.md": {
+      "artifact_digest": "sha256:6a12cb2c3fc016c101baf00b5254e43ba047893260ee169027c3dcb0c44f604f",
+      "basis": [],
+      "changed": true
+    },
     "services/asset/CHARTER.md": {
       "artifact_digest": "sha256:0d70b7e067b93fee53aba44de8a4d1385a9248d9661b5d5e45a1b4aa23b31c1c",
       "basis": [
@@ -306,7 +381,7 @@
           "path": "CONTRACT.md"
         },
         {
-          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "digest": "sha256:ea07f0ec39b9a55160f3f58552f3a5d13ba5061122a10b42e37daa34bfc2f348",
           "path": "SPEC.md"
         }
       ],
@@ -324,7 +399,7 @@
           "path": "CONTRACT.md"
         },
         {
-          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "digest": "sha256:ea07f0ec39b9a55160f3f58552f3a5d13ba5061122a10b42e37daa34bfc2f348",
           "path": "SPEC.md"
         }
       ],
@@ -342,7 +417,7 @@
           "path": "CONTRACT.md"
         },
         {
-          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "digest": "sha256:ea07f0ec39b9a55160f3f58552f3a5d13ba5061122a10b42e37daa34bfc2f348",
           "path": "SPEC.md"
         }
       ],
@@ -360,7 +435,7 @@
           "path": "CONTRACT.md"
         },
         {
-          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "digest": "sha256:ea07f0ec39b9a55160f3f58552f3a5d13ba5061122a10b42e37daa34bfc2f348",
           "path": "SPEC.md"
         }
       ],
@@ -378,7 +453,7 @@
           "path": "CONTRACT.md"
         },
         {
-          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "digest": "sha256:ea07f0ec39b9a55160f3f58552f3a5d13ba5061122a10b42e37daa34bfc2f348",
           "path": "SPEC.md"
         }
       ],
@@ -396,7 +471,7 @@
           "path": "CONTRACT.md"
         },
         {
-          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "digest": "sha256:ea07f0ec39b9a55160f3f58552f3a5d13ba5061122a10b42e37daa34bfc2f348",
           "path": "SPEC.md"
         }
       ],
@@ -414,7 +489,7 @@
           "path": "CONTRACT.md"
         },
         {
-          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "digest": "sha256:ea07f0ec39b9a55160f3f58552f3a5d13ba5061122a10b42e37daa34bfc2f348",
           "path": "SPEC.md"
         }
       ],
@@ -432,7 +507,7 @@
           "path": "CONTRACT.md"
         },
         {
-          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "digest": "sha256:ea07f0ec39b9a55160f3f58552f3a5d13ba5061122a10b42e37daa34bfc2f348",
           "path": "SPEC.md"
         }
       ],
@@ -450,11 +525,11 @@
           "path": "CONTRACT.md"
         },
         {
-          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "digest": "sha256:ea07f0ec39b9a55160f3f58552f3a5d13ba5061122a10b42e37daa34bfc2f348",
           "path": "SPEC.md"
         }
       ],
-      "changed": false
+      "changed": true
     },
     "services/registry/CHARTER.md": {
       "artifact_digest": "sha256:627a11ba2744fda3ea509c6033f2cffb75d49c5e51b441703efeebdb4ff1f828",
@@ -468,7 +543,7 @@
           "path": "CONTRACT.md"
         },
         {
-          "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
+          "digest": "sha256:ea07f0ec39b9a55160f3f58552f3a5d13ba5061122a10b42e37daa34bfc2f348",
           "path": "SPEC.md"
         }
       ],

@@ -28,11 +28,14 @@ CLOSE_EVENT = "console.close-session"
 
 
 def open_session(console: "ConsoleService", operator_id: str, actor_kind: str,
-                 binding_id: str, session_id: str, standing: str) -> dict[str, Any]:
+                 binding_id: str, session_id: str, standing: str,
+                 principal_id: str | None = None) -> dict[str, Any]:
     """`console.open-session`: one operator's continuity through a named binding.
 
     A binding realizes an interface and grants no authority. It is carried so a
-    later reader can see which surface a post arrived through.
+    later reader can see which surface a post arrived through. `principal_id` is
+    likewise provenance, not authority: a binding may name the durable principal
+    it resolved, or pass ``None`` and leave the identity explicitly unresolved.
     """
     if actor_kind not in ACTOR_KINDS:
         raise ValueError(f"unknown actor_kind {actor_kind!r}")
@@ -41,6 +44,7 @@ def open_session(console: "ConsoleService", operator_id: str, actor_kind: str,
     return append.emit(console.record, "operator-session", session_id, operator_id, {
         "node_id": console.node_id,
         "session_id": session_id, "operator_id": operator_id,
+        "principal_id": principal_id,
         "actor_kind": actor_kind, "binding_id": binding_id,
         "opened_at": console.stamp(), "closed_at": None, "lifecycle": "OPEN",
         "active_thread_id": None, "unread_cursor": None,
@@ -68,6 +72,7 @@ def close_session(console: "ConsoleService", operator_id: str, session_id: str,
                        operator_id, {
         "node_id": console.node_id,
         "session_id": session_id, "operator_id": session["operator_id"],
+        "principal_id": session.get("principal_id"),
         "actor_kind": session["actor_kind"], "binding_id": session["binding_id"],
         "lifecycle": "CLOSED", "closed_at": console.stamp(),
         "unread_cursor": console.record.head(), "standing": standing,

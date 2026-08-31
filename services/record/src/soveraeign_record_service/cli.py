@@ -88,6 +88,14 @@ def read_projection(service: RecordService, args: argparse.Namespace) -> dict[st
     return row
 
 
+def project_evidence(service: RecordService, args: argparse.Namespace) -> dict[str, Any]:
+    """Return a frozen, addressed RecordProjection for one recipient relation."""
+    return service.evidence_projection(
+        args.subject, args.recipient_principal, args.recipient_relation, args.purpose,
+        as_of_entry=args.as_of_entry, exclude_kinds=args.exclude_kind or (),
+    )
+
+
 def reconstruct(service: RecordService, _: argparse.Namespace) -> dict[str, Any]:
     """Replay the journal, verifying every link, and return what verified."""
     entries = service.reconstruct()
@@ -111,6 +119,7 @@ def _commands() -> dict[str, Callable[[RecordService, argparse.Namespace], dict[
         "read-entry": lambda s, a: s.entry(a.entry),
         "reconstruct-journal": reconstruct,
         "read-projection": read_projection,
+        "project-evidence": project_evidence,
         "drop-projections": lambda s, _: {"dropped": True, "authoritative": False},
         "rebuild-projections": lambda s, _: {"subjects": s.rebuild_projections(),
                                              "authoritative": False,
@@ -197,6 +206,16 @@ def build_parser() -> argparse.ArgumentParser:
 
     projection = sub.add_parser("read-projection", help="read one derived projection row")
     projection.add_argument("--subject", required=True)
+
+    evidence = sub.add_parser(
+        "project-evidence", help="derive one scoped, frozen RecordProjection")
+    evidence.add_argument("--subject", action="append", required=True)
+    evidence.add_argument("--recipient-principal", required=True)
+    evidence.add_argument("--recipient-relation", required=True)
+    evidence.add_argument("--purpose", required=True)
+    evidence.add_argument("--as-of-entry")
+    evidence.add_argument("--exclude-kind", action="append",
+                          choices=("EVENT", "RECEIPT", "OBSERVATION", "COUNTER"))
 
     sub.add_parser("drop-projections", help="delete every projection; the journal is untouched")
     sub.add_parser("rebuild-projections", help="rebuild every projection from the journal alone")

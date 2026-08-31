@@ -38,8 +38,10 @@ class ProjectionFacts(unittest.TestCase):
         self.assertEqual(self.document["status"], "PROPOSED")
 
     def test_evidence_layers_remain_independent(self) -> None:
+        # record.project-evidence adds one declared, bound and policy-active read.
+        # It adds no transport route or observation, so those layers stay fixed.
         self.assertEqual(self.document["counts"], {
-            "declared": 134, "bound": 134, "policy_active": 46,
+            "declared": 135, "bound": 135, "policy_active": 47,
             "reachable": 5, "observed": 0,
         })
         self.assertEqual(self.operation("asset.ingest-asset")["facts"], {
@@ -69,7 +71,8 @@ class ProjectionFacts(unittest.TestCase):
         self.assertFalse(record["facts"]["observed"])
         request = invocation_request(
             self.document, "registry.resolve", HUMAN, "reader", "registry:any",
-            {"name": "sov://asset/ingest-asset"})
+            {"name": "sov://asset/ingest-asset"}, session_id="session:test",
+            session_binding_id="host:test", principal_id=None)
         self.assertEqual(request["logical_endpoint"], "sov://registry/resolve")
 
     def test_route_affordances_are_actor_neutral_across_four_services(self) -> None:
@@ -114,7 +117,9 @@ class ProjectionFacts(unittest.TestCase):
         record["record_digest"] = sha256(json.dumps(
             material, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
         with self.assertRaises(BindingRefusal) as raised:
-            invocation_request(edited, "asset.read-asset", HUMAN, "actor", "scope", {})
+            invocation_request(edited, "asset.read-asset", HUMAN, "actor", "scope", {},
+                               session_id="session:test", session_binding_id="host:test",
+                               principal_id=None)
         self.assertEqual(raised.exception.code, "ROUTE_AFFORDANCE_DRIFT")
 
     def test_human_only_reachable_route_is_not_a_model_gesture(self) -> None:
@@ -137,7 +142,8 @@ class ProjectionFacts(unittest.TestCase):
         })
         with self.assertRaises(BindingRefusal) as raised:
             invocation_request(
-                synthetic, "asset.ingest-asset", MODEL, "model", "asset:new", {})
+                synthetic, "asset.ingest-asset", MODEL, "model", "asset:new", {},
+                session_id="session:test", session_binding_id="host:test", principal_id=None)
         self.assertEqual(raised.exception.code, "ACTOR_KIND_NOT_ADMITTED")
 
     def test_model_inventory_and_harness_are_declared_omissions_not_capabilities(self) -> None:
@@ -185,7 +191,8 @@ class ProjectionFacts(unittest.TestCase):
         record["facts"]["reachable"] = True
         with self.assertRaises(BindingRefusal) as raised:
             invocation_request(
-                edited, "console.resolve-judgement", HUMAN, "actor", "scope", {})
+                edited, "console.resolve-judgement", HUMAN, "actor", "scope", {},
+                session_id="session:test", session_binding_id="host:test", principal_id=None)
         self.assertEqual(raised.exception.code, "INTERFACE_RECORD_DRIFT")
 
 
@@ -225,6 +232,7 @@ class HumanModelParity(unittest.TestCase):
         for binding in (HUMAN, MODEL):
             result = self.proof["actions"][binding]
             self.assertTrue(result["service_receipt_unchanged"])
+            self.assertTrue(result["session_attribution_recorded"])
             self.assertEqual(result["operation_digest"], self.record["record_digest"])
             self.assertEqual(result["required_authority"], "ingest:asset")
             self.assertEqual(result["terminal_outcome"], "COMMITTED")
@@ -236,6 +244,7 @@ class HumanModelParity(unittest.TestCase):
         for binding in (HUMAN, MODEL):
             result = self.proof["registry_reads"][binding]
             self.assertTrue(result["service_receipt_unchanged"])
+            self.assertTrue(result["session_attribution_recorded"])
             self.assertEqual(result["operation_digest"], record["record_digest"])
             self.assertEqual(result["required_authority"], "read:registry")
             self.assertEqual(result["terminal_outcome"], "COMMITTED")
@@ -249,6 +258,7 @@ class HumanModelParity(unittest.TestCase):
         for binding in (HUMAN, MODEL):
             result = self.proof["host_reads"][binding]
             self.assertTrue(result["service_receipt_unchanged"])
+            self.assertTrue(result["session_attribution_recorded"])
             self.assertEqual(result["operation_digest"], record["record_digest"])
             self.assertEqual(result["required_authority"], "read:host-health")
             self.assertEqual(result["terminal_outcome"], "COMMITTED")
@@ -257,12 +267,14 @@ class HumanModelParity(unittest.TestCase):
             self.assertEqual(result["standing_effect"], "NONE")
 
     def test_governed_no_is_an_actual_refused_receipt(self) -> None:
+        self.assertTrue(self.proof["refusal"]["session_attribution_recorded"])
         self.assertEqual(self.proof["refusal"]["outcome"], "REFUSED")
         self.assertEqual(self.proof["refusal"]["reason_code"], "AUTHORITY_REFUSED")
         self.assertTrue(self.proof["refusal"]["receipt_id"].startswith("entry_"))
 
     def test_policy_inactive_console_route_is_refused_by_gateway(self) -> None:
         inactive = self.proof["inactive_operation"]
+        self.assertTrue(inactive["session_attribution_recorded"])
         self.assertFalse(inactive["interface_reachable"])
         self.assertEqual(inactive["outcome"], "REFUSED")
         self.assertEqual(inactive["reason_code"], "TRANSPORT_NOT_ACTIVATED")

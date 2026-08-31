@@ -27,7 +27,7 @@ FIXTURES = ROOT / "conformance" / "fixtures" / "custody" / "circuit-cases.json"
 
 
 def command_list(args: argparse.Namespace) -> int:
-    records = modelmod.custodies()
+    records = modelmod.custodies(getattr(args, "phase", None))
     if args.as_json:
         print(json.dumps(records, indent=2))
         return 0
@@ -83,7 +83,7 @@ def command_estimate(args: argparse.Namespace) -> int:
             print(f"  {code:<28} {detail}")
         return 1
 
-    records = modelmod.custodies()
+    records = modelmod.custodies(getattr(args, "phase", None))
     if args.custody_id:
         records = [record for record in records if record["custody_id"] == args.custody_id]
         if not records:
@@ -114,16 +114,18 @@ def command_estimate(args: argparse.Namespace) -> int:
 
 
 def command_reconcile(args: argparse.Namespace) -> int:
-    """Every phase exit clause against the custody that holds it.
-
-    The clauses are read from contracts/phases.json, which pins the defining
-    documents by digest. Restating them here would be a second copy of the exit,
-    and a second copy is where a narrowed definition enters.
-    """
-    records = {custody["custody_id"]: custody for custody in modelmod.custodies()}
-    defects = phasemod.grade_collection(custody_ids=set(records))
+    """Read phase exit clauses against their phase-scoped custody."""
+    requested_phase = getattr(args, "phase", None)
+    selected = modelmod.custodies(requested_phase) if requested_phase else modelmod.custodies()
+    records = {custody["custody_id"]: custody for custody in selected}
+    phases = [phase for phase in phasemod.phases()
+              if requested_phase is None or phase["phase_id"] == requested_phase]
+    if requested_phase and not phases:
+        print(f"REFUSED: no phase named {requested_phase}")
+        return 1
+    defects = phasemod.grade_collection(phases, custody_ids=set(records))
     rows = []
-    for phase in phasemod.phases():
+    for phase in phases:
         derived = phasemod.terminal_for(phase["execution_status"], phase["acceptance_status"])
         print(f"{phase['phase_id']}  {phase['title']}")
         print(f"  opened {phase['opened']}  closed {phase.get('closed') or '-'}")

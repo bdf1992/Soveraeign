@@ -1,11 +1,18 @@
-# Phase-I Logical Specification
+# Soveraeign Logical Specification
 
-Status: `PROPOSED · STACK-NEUTRAL · OWNER FREEZE PENDING`
+Status: `PROPOSED · STACK-NEUTRAL`
 
-This specification implements the Phase-I requirements in `PRD.md`. It fixes
-logical objects, roles, states, transitions, predicates, receipts, and refusal
-behavior. It does not select storage, encoding, language, transport, process,
-container, graph, model provider, or repository layout.
+This specification fixes Soveraeign's shared logical objects, roles, states,
+transitions, predicates, receipts, and refusal behavior. Qualification profiles
+in `PRD.md` select which predicates a campaign must prove; changing the live
+specification does not rewrite a closed campaign.
+
+The exact Phase-I bytes are preserved at
+`archives/SPEC-PHASE-I-TERMINAL.txt` and pinned by `contracts/phases.json`.
+The Phase-I predicates below remain readable historical profile content while
+later commissioning predicates may extend the live grammar. This specification
+does not select storage, encoding, language, transport, process, container,
+graph, model provider, or repository layout.
 
 ## Operating profile
 
@@ -274,6 +281,53 @@ fidelity, omissions, produced_at, produced_by, standing
 
 A recording never replaces or mutates its source.
 
+#### `RecordProjection`
+
+```text
+projection_id, subject_addresses, recipient_principal, recipient_relation,
+purpose, record_head, as_of,
+included_records: [{address, digest}],
+omissions: [{record_class, reason}],
+projection_digest, created_at
+```
+
+A Record projection is a bounded, reconstructable reading of the common
+append-preserving Record for one subject, recipient relation, purpose, and
+cutoff. `included_records` names the exact evidence delivered; `omissions`
+declares what classes were intentionally withheld and why. An empty omission
+list is an explicit claim that no class was withheld.
+
+A projection is not Record, standing, authority, settlement, or private memory.
+It grants nothing by existing, and every projected value resolves back to its
+included Record addresses and digests. Independent evaluators freeze the
+projection cutoff before reading one another's conclusions, so a later reader
+can reconstruct what evidence was available when a finding was formed.
+
+#### `Finding`
+
+```text
+finding_id,
+subject: {kind, address},
+evaluator: {principal_id, relation},
+scope, record_projection_id,
+claims: [{claim_id, verdict, detail}],
+evidence_addresses, counterevidence_addresses,
+input_finding_ids, created_at, frozen_at | null,
+authority_effect: NONE, settlement_effect: NONE,
+supersedes: []
+```
+
+A Finding is an attributable interpretation of a named subject against cited
+evidence. It is not an Observation: an Observation records independently seen
+state, while a Finding says what an evaluator concludes from a declared evidence
+projection. It is not authority and cannot settle itself.
+
+`WORK` and `PARTICIPANT_IN_WORK` are distinct subjects. A work result may fail
+while the participant carried its assignment correctly, or the result may pass
+while participant conduct exceeded scope or authority. A comparison is itself a
+Finding over frozen input Findings; it preserves their citations and dissent and
+cannot manufacture evidence absent from their projections.
+
 #### `Proposal`
 
 ```text
@@ -527,6 +581,67 @@ transitions to change authoritative state.
 - An unavailable model returns a reasoned receipt. Any fallback is a separately
   attributed explicit invocation.
 - Provider loss cannot remove local record custody or non-model operation.
+
+## Phase 1.5 commissioning predicates
+
+These predicates prepare the `Phase 1.5 · Operational Commissioning`
+qualification profile in `PRD.md`. They carry no phase standing while
+`STATUS.yaml` remains `NONE_ACTIVE`. Controller, Orchestrator, Worker, and
+Witness are one proving arrangement of these primitives, not privileged Kernel
+roles.
+
+### P15-Q1 · Fresh participation
+
+- `P15-Q1.1` A fresh participant can resolve its principal, isolated session,
+  current phase state, accepted work, capabilities, required authority, effect
+  envelope, relevant governance, and assigned Record projection from the
+  artifact without oral history.
+- `P15-Q1.2` Accepted work has a durable address, custody or lease, closure
+  condition, defeating condition, and cleanup obligations that survive the
+  session carrying it.
+- `P15-Q1.3` Principal identity, session continuity, grant authority, and
+  interface binding remain distinct; a cross-principal or cross-session mismatch
+  refuses rather than borrowing authority from a valid neighboring fact.
+
+### P15-Q2 · Evidenced and fairly judged work
+
+- `P15-Q2.1` Consequential operational history reaches the append-preserving
+  Record and can be reconstructed without treating participant-private state as
+  authoritative history.
+- `P15-Q2.2` Every evaluative context uses a `RecordProjection` that names its
+  subject, recipient relation, cutoff, included evidence, declared omissions,
+  and digest, and the projection grants no authority.
+- `P15-Q2.3` Findings about `WORK` and `PARTICIPANT_IN_WORK` remain separate,
+  name evaluator and scope, and cite evidence available through the declared
+  Record projection.
+- `P15-Q2.4` Independent evaluative projections are frozen before their
+  conclusions are shared; comparison preserves the frozen findings, citations,
+  counterevidence, and dissent, distinguishes evidence differences from
+  interpretation or subject defects, and cannot settle missing evidence by
+  preference.
+
+### P15-Q3 · Discovery, continuity, and reuse
+
+- `P15-Q3.1` Settlement follows current state plus required independent
+  observation, and closure retires declared leases, branches, worktrees,
+  projections, claims, and other temporary coordination inventory rather than
+  leaving successful work operationally unfinished.
+- `P15-Q3.2` Another fresh participant can discover an accepted result, its
+  standing, basis, receipts, and usable capability and can use it without oral
+  history from the builder or prior session.
+
+### P15-Q4 · Definition recurrence and institution-neutral composition
+
+- `P15-Q4.1` Settled Records, scoped Findings, observations, and receipts may be
+  cited into a later `Proposal` or candidate Definition while preserving the
+  exact evidence addresses from which the candidate was synthesized.
+- `P15-Q4.2` A generated, agreed, demonstrated, or repeatedly successful
+  candidate Definition gains no standing or authority merely from that evidence;
+  policy and phase transitions still require their governing authority.
+- `P15-Q4.3` Identity, session, authority, work, custody, Record projection,
+  observation, finding, settlement, and discovery semantics do not depend on
+  fixed Controller/Orchestrator/Worker/Witness names, so later citizens may
+  compose different institutions from the same governed primitives.
 
 ## Interface parity
 

@@ -3,6 +3,7 @@
   "standing": "PROPOSED",
   "owns": [
     "gateway-request",
+    "session-attribution",
     "capability-resolution",
     "authority-check",
     "routing-record",
@@ -25,12 +26,19 @@
         "declared_transport",
         "declared_actor",
         "declared_logical_endpoint",
-        "well_formed_envelope"
+        "well_formed_envelope",
+        "declared_session_identity",
+        "declared_interface_binding",
+        "declared_interface_operation_digest",
+        "session_attribution_matches",
+        "session_live"
       ],
       "commit": "COMMITTED",
       "refusals": [
         "MALFORMED_REQUEST",
-        "TRANSPORT_NOT_ACTIVATED"
+        "TRANSPORT_NOT_ACTIVATED",
+        "ACTOR_ATTRIBUTION_MISMATCH",
+        "SESSION_CLOSED"
       ]
     },
     {
@@ -186,7 +194,9 @@
     "RECEIPT_MISSING": "OBSERVATION_MISSING",
     "SERVICE_UNREACHABLE": "UNREADABLE",
     "TRANSPORT_NOT_ACTIVATED": "POLICY_REFUSED",
-    "TRANSPORT_REFUSED_IN_PHASE": "POLICY_REFUSED"
+    "TRANSPORT_REFUSED_IN_PHASE": "POLICY_REFUSED",
+    "ACTOR_ATTRIBUTION_MISMATCH": "INCOMPLETE_PROPOSAL",
+    "SESSION_CLOSED": "STALE_STATE"
   },
   "uses_kernel_contracts": [
     "standing",
@@ -202,7 +212,8 @@
   ],
   "depends_on": [
     "record:append-preserving-journal",
-    "console:authority-grant"
+    "console:authority-grant",
+    "console:operator-session"
   ],
   "forbids": [
     "settling-a-routed-operation",

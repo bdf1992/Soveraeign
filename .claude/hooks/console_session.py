@@ -32,6 +32,11 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "scripts"))
+
+from sovsession import principals as session_principals  # noqa: E402
+from sovsession.commands import session_name as repo_session_name  # noqa: E402
+
 STORE = ROOT / ".local" / "console"
 BINDINGS = STORE / "host-sessions.json"
 OPERATOR = os.environ.get("SOVERAEIGN_OPERATOR", "sov")
@@ -86,6 +91,20 @@ def _console(*args: str) -> dict[str, Any]:
     return json.loads(result.stdout)
 
 
+def _principal_claim(host_session: str) -> dict[str, Any]:
+    """Resolve the same durable principal the repository session registry reports.
+
+    The Console hook runs before the registry hook at SessionStart, so it cannot
+    depend on a live-session record already existing. Principal resolution does not:
+    it reads the durable principal registry using the same session-name rules the
+    registry hook will use a moment later. The result is identity provenance only.
+    It never changes the operator, supplies a grant, or upgrades verification.
+    """
+    fallback = None if host_session == "unknown" else "session-" + host_session[:6]
+    name = repo_session_name(fallback=fallback)
+    return session_principals.resolve(ROOT, name)
+
+
 #: What this binding spends, per contracts/capability-offices.json. Bdo ruled on
 #: 2026-08-25 that the session lifecycle and the session read check the authority
 #: they declare, so the operator's own store records the operator's own grants
@@ -128,13 +147,20 @@ def _remember(host_session: str, console_session: str) -> None:
 
 
 def _render(context: dict[str, Any], console_session: str,
-            notes: list[str] | None = None) -> str:
+            principal_claim: dict[str, Any], notes: list[str] | None = None) -> str:
     """Write the continuity briefing that becomes the starting session's context."""
+    if principal_claim["principal"] is None:
+        principal_line = "Durable principal unresolved; this Console session records no identity guess."
+    else:
+        principal_line = (
+            f"Durable principal `{principal_claim['principal']}` "
+            f"({principal_claim['verification']}); this is provenance, not authority.")
     lines = [
         "# Console continuity",
         "",
         f"Operator `{OPERATOR}` through binding `{BINDING_ID}`. "
         f"Console session `{console_session}`.",
+        principal_line,
         "",
         "This is a rebuilt projection over the Record Service journal. It is not "
         "authoritative and settles nothing.",
@@ -292,7 +318,13 @@ def start(event: dict[str, Any]) -> str:
     next start will not find the session and will open a second one.
     """
     host_session = event.get("session_id", "unknown")
+    principal_claim = _principal_claim(host_session)
+    principal = principal_claim["principal"]
     notes: list[str] = []
+    if principal_claim["defects"]:
+        notes.append(
+            "Principal resolution reported defects and was not upgraded by this binding: "
+            + "; ".join(principal_claim["defects"]))
     try:
         _ensure_grants()
     except ConsoleRefused as failure:
@@ -312,9 +344,11 @@ def start(event: dict[str, Any]) -> str:
     opened = False
     if console_session is None:
         try:
-            console_session = _console("open-session", "--operator", OPERATOR,
-                                       "--actor-kind", "MODEL",
-                                       "--binding", BINDING_ID)["session_id"]
+            open_args = ["open-session", "--operator", OPERATOR,
+                         "--actor-kind", "MODEL", "--binding", BINDING_ID]
+            if principal is not None:
+                open_args.extend(["--principal", principal])
+            console_session = _console(*open_args)["session_id"]
         except Exception as failure:  # no session exists, so there is nothing to brief
             return _unopened(failure, notes)
         opened = True
@@ -327,7 +361,7 @@ def start(event: dict[str, Any]) -> str:
                 "start will not find it and will open a second one.")
     try:
         return _render(_console("session-context", "--reader", OPERATOR),
-                       console_session, notes)
+                       console_session, principal_claim, notes)
     except Exception as failure:  # a briefing is a read; losing it loses no record
         return _degraded(console_session, opened, failure, notes)
 

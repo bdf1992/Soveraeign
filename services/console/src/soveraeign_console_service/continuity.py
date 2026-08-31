@@ -122,7 +122,8 @@ def read_thread(console: ConsoleService, thread_id: str,
     thread = projection.thread[thread_id]
     posts = [
         {"post_id": post["post_id"], "actor_id": post["actor_id"],
-         "actor_kind": post["actor_kind"], "binding_id": post["binding_id"],
+         "actor_kind": post["actor_kind"], "session_id": post["session_id"],
+         "binding_id": post["binding_id"], "principal_id": post.get("principal_id"),
          "content_address": post["content_address"], "content_digest": post["content_digest"],
          "proposal_id": post["proposal_id"], "mentions": post["mentions"],
          "posted_at": post["posted_at"], "standing": post["standing"]}
@@ -215,6 +216,9 @@ def session_context(console: ConsoleService, reader_id: str,
         if payload.get("record_kind") == "post" and payload["actor_id"] != operator_id:
             unseen.append({"post_id": payload["post_id"], "thread_id": payload["thread_id"],
                            "actor_id": payload["actor_id"], "actor_kind": payload["actor_kind"],
+                           "session_id": payload["session_id"],
+                           "binding_id": payload["binding_id"],
+                           "principal_id": payload.get("principal_id"),
                            "content_address": payload["content_address"],
                            "content_digest": payload["content_digest"],
                            "posted_at": payload["posted_at"],
@@ -234,6 +238,7 @@ def session_context(console: ConsoleService, reader_id: str,
                      for line in projection.omissions())
     return {"operator_id": operator_id, "cursor": cursor,
             "prior_sessions": [{"session_id": s["session_id"], "binding_id": s["binding_id"],
+                                "principal_id": s.get("principal_id"),
                                 "actor_kind": s["actor_kind"], "opened_at": s["opened_at"],
                                 "closed_at": s.get("closed_at"), "lifecycle": s["lifecycle"]}
                                for s in sessions[-5:]],

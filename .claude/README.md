@@ -144,12 +144,15 @@ them.
 - `agents/sov-worker.md` — stable builder role: executes exactly one bounded
   operation in whichever domain the prompt names (edit + run rights, no
   commit/push, no self-witnessing, no ratification).
-- `agents/sov-orchestrator.md` — stable planning role: turns an objective into
-  a bounded, blocker-honoring operation plan; edits nothing.
-- `agents/sov-witness.md` — stable read-only witness; verifies build claims
-  through an independent path and may dissent.
+- `agents/sov-orchestrator.md` — stable orchestration role: PLAN turns an
+  objective into a bounded operation; REVIEW forms a frozen Finding about
+  `PARTICIPANT_IN_WORK`; it edits nothing and never witnesses the work.
+- `agents/sov-witness.md` — stable read-only witness; independently evaluates
+  `WORK` from a scoped Record projection, freezes its Finding before comparison,
+  and may dissent or report the evidence unattestable.
 - `agents/sov-controller.md` — control role for headless or scheduled runs:
-  dispatches, aggregates, and packages evidenced results for Bdo's acceptance.
+  dispatches and aggregates; when given independently frozen Findings it may
+  classify their evidence-backed relationship without ratifying either.
 - `hooks/console_session.py` — session hooks, wired in `settings.json`. On
   `SessionStart` it opens (or resumes) a Console Service operator session and
   prints what landed while this operator was away, which becomes the starting
@@ -172,11 +175,12 @@ them.
   boundaries only; `sov-epic.js` adds `held_by` and `unrouted_work` beside it so
   a dependency or a missing domain cannot be filed upward by having nowhere else
   to go.
-- `workflows/sov-loop.js` — one concern from selected to landed: Select
-  (sov-controller names the concern and checks it against the standing grant's
-  scope) -> Plan (sov-orchestrator) -> Build (sov-worker) -> Witness (an
-  independent sov-witness that writes its observation to `reports/observations/`)
-  -> Land. The Land phase runs `python scripts/sov_land.py`, the only place in
+- `workflows/sov-loop.js` — one concern from selected to landed. Ordinary mode
+  retains Select -> Plan -> Build -> Witness -> Land. Prepared `evidence_mode`
+  inserts Orchestrator Review (`PARTICIPANT_IN_WORK`) and independent Witness
+  Review (`WORK`), freezes both Findings, then lets Controller Compare before the
+  landing gate. Missing Record evidence keeps that rehearsal in plan mode rather
+  than fabricating proof. The Land phase runs `python scripts/sov_land.py`, the only place in
   the repository that commits and merges; it grades the request against
   `contracts/standing-grants.json` and refuses with the kernel's own refusal
   code when the grant does not cover it. Every other workflow here stops at an

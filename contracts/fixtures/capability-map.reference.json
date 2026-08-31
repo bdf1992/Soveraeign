@@ -15,7 +15,7 @@
     "services/registry/contracts/service.json",
     "contracts/capability-offices.json"
   ],
-  "input_state_digest": "b39ef40ae2040d4a491191fc2703cbce9e95d309da28b9b68a8c6b41f51ffe0d",
+  "input_state_digest": "8a8166d406424e33b74bb1a54b1167774cf28d24b6edc1aa071bdae9b86fb837",
   "capabilities": [
     {
       "capability_id": "asset.add-member",
@@ -2224,12 +2224,19 @@
           "declared_transport",
           "declared_actor",
           "declared_logical_endpoint",
-          "well_formed_envelope"
+          "well_formed_envelope",
+          "declared_session_identity",
+          "declared_interface_binding",
+          "declared_interface_operation_digest",
+          "session_attribution_matches",
+          "session_live"
         ],
         "commit": "COMMITTED",
         "refusals": [
           "MALFORMED_REQUEST",
-          "TRANSPORT_NOT_ACTIVATED"
+          "TRANSPORT_NOT_ACTIVATED",
+          "ACTOR_ATTRIBUTION_MISMATCH",
+          "SESSION_CLOSED"
         ]
       }
     },
@@ -5691,6 +5698,59 @@
         "refusals": [
           "EXPORT_REFUSED",
           "DIGEST_MISMATCH"
+        ]
+      }
+    },
+    {
+      "capability_id": "record.project-evidence",
+      "service_id": "record",
+      "operation": "project-evidence",
+      "office": "FRONT",
+      "counter": "operator-desk",
+      "service_standing": "BUILT",
+      "effect_class": "RECORD_LOCAL",
+      "required_authority": "read:journal",
+      "actor_kinds": [
+        "HUMAN",
+        "MODEL"
+      ],
+      "endpoints": [
+        {
+          "transport": "IN_PROCESS",
+          "activation": "ACTIVE",
+          "address": "record:in-process"
+        },
+        {
+          "transport": "CLI",
+          "activation": "ACTIVE",
+          "address": "python -m soveraeign_record_service.cli project-evidence"
+        },
+        {
+          "transport": "MCP",
+          "activation": "DECLARED_NOT_ACTIVATED"
+        },
+        {
+          "transport": "HTTP",
+          "activation": "REFUSED_UNCONFIGURED",
+          "refusal_code": "UNCONFIGURED"
+        }
+      ],
+      "shape": {
+        "logical_endpoint": "sov://record/project-evidence",
+        "subject": "record-projection",
+        "crud": "READ",
+        "preconditions": [
+          "journal_readable",
+          "subject_declared",
+          "recipient_declared",
+          "relation_declared",
+          "purpose_declared"
+        ],
+        "commit": "DERIVED",
+        "refusals": [
+          "UNREADABLE",
+          "DIGEST_MISMATCH",
+          "MISSING_PRECONDITION"
         ]
       }
     },

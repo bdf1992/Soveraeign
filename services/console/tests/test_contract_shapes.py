@@ -74,12 +74,12 @@ class DeclaredRecordShapes(unittest.TestCase):
             console.grant(operator, "open:session", operator, "Bdo")
             console.grant(operator, "close:session", operator, "Bdo")
         console.grant("Bdo", "read:thread", NODE, "Bdo")
-        human = console.open_session("Bdo", "HUMAN", "human-binding")
-        model = console.open_session("sov", "MODEL", "model-binding")
+        human = console.open_session("Bdo", "HUMAN", "human-binding", "principal:bdo")
+        model = console.open_session("sov", "MODEL", "model-binding", "principal:sov")
         console.post("Bdo", human["session_id"], thread["thread_id"], b"a plain statement",
-                     mentions=["sov"])
+                     mentions=["sov"], principal_id="principal:bdo")
         console.post("sov", model["session_id"], thread["thread_id"], b"a claim",
-                     claims=True, proposal_id="proposal_1")
+                     claims=True, proposal_id="proposal_1", principal_id="principal:sov")
         console.grant("Bdo", "publish:thread", thread["thread_id"], "Bdo")
         cls.published = console.publish_thread("Bdo", thread["thread_id"])
         second = console.open_thread("Bdo", channel["channel_id"], "withdrawn work",
@@ -128,6 +128,16 @@ class DeclaredRecordShapes(unittest.TestCase):
             self.assertValid(record, "post.schema.json")
             self.assertTrue(record["receipt_id"].startswith("entry_"))
 
+    def test_posts_carry_the_emitting_session_provenance(self):
+        """Session, binding and principal are record provenance, not journal envelope."""
+        by_kind = {record["actor_kind"]: record for record in self.records["posts"]}
+        self.assertEqual(by_kind["HUMAN"]["binding_id"], "human-binding")
+        self.assertEqual(by_kind["HUMAN"]["principal_id"], "principal:bdo")
+        self.assertEqual(by_kind["MODEL"]["binding_id"], "model-binding")
+        self.assertEqual(by_kind["MODEL"]["principal_id"], "principal:sov")
+        self.assertTrue(by_kind["HUMAN"]["session_id"].startswith("session_"))
+        self.assertTrue(by_kind["MODEL"]["session_id"].startswith("session_"))
+
     def test_a_model_post_carries_a_proposal_and_a_human_post_need_not(self):
         by_kind = {record["actor_kind"]: record for record in self.records["posts"]}
         self.assertEqual(by_kind["MODEL"]["proposal_id"], "proposal_1")
@@ -172,7 +182,7 @@ class DeclaredRecordShapes(unittest.TestCase):
         self.assertEqual(len(view["omissions"]), 1)
 
     def test_the_projection_carries_no_journal_machinery(self):
-        leaked = {"record_kind", "entry_id", "entry_digest", "session_id", "binding_id"}
+        leaked = {"record_kind", "entry_id", "entry_digest", "prev_digest"}
         for group in ("channels", "threads", "posts"):
             for record in self.records[group]:
                 self.assertEqual(leaked & set(record), set(), f"{group}: {record}")
@@ -240,7 +250,6 @@ class DeclaredRecordShapes(unittest.TestCase):
         named = contract.foreign_records(
             dict(self.records, channels=[channel], threads=[thread]), NODE)
         self.assertTrue(any("claims" in line for line in named), named)
-
 
     def test_a_post_and_a_session_carry_the_node_that_made_them(self):
         """The declared shape has to carry it, or the detector below reads nothing.

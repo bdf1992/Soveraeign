@@ -5,10 +5,21 @@ rules for its subtree, but it may not weaken this contract. `CONTRIBUTING.md`
 explains the same workflow for human contributors; `ENGINEERING.md` defines the
 current technical baseline.
 
-Before a consequential change, read `STATUS.yaml`, `GROUND.md`, `CANON.md`,
-`SYSTEM.md`, `CLASSIFICATION.md`, `CONTRACT.md`, `PRD.md`, `SPEC.md`,
-`AI-NATIVE.md`, `ENGINEERING.md`, `SDLC.md`, `OPEN-SEAMS.md`, and
-`contracts/SUCCESSOR-PREP.md`.
+Start from the live participation boundary, not a governance reading queue. Before a
+consequential change:
+
+1. establish or inspect the repository session with `python scripts/sov_session.py register`
+   and `python scripts/sov_session.py brief`;
+2. discover the node through `python scripts/sov_interface.py show`, then inspect the one
+   operation or capability relevant to the task;
+3. load the service, contract, schema, decision, status item, or seam that owns the specific
+   concern you are changing; and
+4. run the repository-owned verification before landing.
+
+Do not preload the entire governing set merely because a change is consequential. The
+ownership map below is a lookup map, not a prerequisite curriculum. Read `STATUS.yaml` when
+standing, phase state, or an owner-held transition is material; read product or system
+documents when the discovered concern actually reaches what they own.
 
 ## Human-facing output
 

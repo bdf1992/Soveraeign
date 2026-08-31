@@ -44,14 +44,18 @@ POST_OPERATION = "console.post"
 
 def post(console: "ConsoleService", operator_id: str, session_id: str, thread_id: str,
          body: bytes, post_id: str, standing: str, mentions: Iterable[str],
-         claims: bool, proposal_id: str | None) -> dict[str, Any]:
+         claims: bool, proposal_id: str | None,
+         principal_id: str | None = None) -> dict[str, Any]:
     """`console.post`: record one attributed turn, or refuse and say so.
 
-    `operator_id` is who is posting and must be the session's own operator.
+    `operator_id` is who is posting and must be the session's own operator. When a
+    binding also knows a durable principal it supplies `principal_id`; that principal
+    must be the one pinned when the session opened. A caller cannot retrofit or swap
+    identity on an existing session. Leaving it ``None`` makes no principal claim.
 
-    No defaults here. `ConsoleService.post` is the only caller and always supplies
-    every argument, so a default on this side would be a value nothing can reach and
-    nothing can test - which is how a wrong one survives.
+    No defaults except the optional principal join. `ConsoleService.post` is the only
+    caller and supplies the operation data; an unresolved principal remains visibly
+    unresolved rather than being inferred from the operator, binding, or session id.
     """
     # One verified replay serves all three reads below. Replaying per lookup made a
     # post cost O(journal) three times over and the verification budget noticed
@@ -69,6 +73,12 @@ def post(console: "ConsoleService", operator_id: str, session_id: str, thread_id
         owner = session["operator_id"]
         raise refuse(ActorAttributionMismatch(f"session {session_id} belongs to {owner}"),
                      POST_OPERATION, post_id, operator_id)
+    if principal_id is not None and session.get("principal_id") != principal_id:
+        recorded = session.get("principal_id")
+        raise refuse(
+            ActorAttributionMismatch(
+                f"session {session_id} principal is {recorded!r}, not {principal_id!r}"),
+            POST_OPERATION, post_id, operator_id)
     if session["lifecycle"] != "OPEN":
         raise refuse(SessionClosed(f"session {session_id} is CLOSED"),
                      POST_OPERATION, post_id, operator_id)
@@ -86,9 +96,10 @@ def post(console: "ConsoleService", operator_id: str, session_id: str, thread_id
     return append.emit(console.record, "post", post_id, operator_id, {
         "node_id": console.node_id,
         "post_id": post_id, "thread_id": thread_id, "actor_id": operator_id,
-        "actor_kind": session["actor_kind"], "content_address": f"posts/{digest}",
+        "actor_kind": session["actor_kind"], "session_id": session_id,
+        "binding_id": session["binding_id"], "principal_id": session.get("principal_id"),
+        "content_address": f"posts/{digest}",
         "content_digest": f"sha256:{digest}", "mentions": sorted(set(mentions)),
         "proposal_id": proposal_id, "posted_at": console.stamp(),
-        "session_id": session_id, "binding_id": session["binding_id"],
         "standing": standing,
     }, POST_OPERATION, [grant])

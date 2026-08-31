@@ -36,13 +36,17 @@ accepted after evidence; ordinary reversible work does not wait for pre-approval
 
 For each fresh task:
 
-1. Read `AGENTS.md`, this file, and `STATUS.yaml` at an exact repository revision.
+1. Read `AGENTS.md` and this profile at an exact repository revision, then establish or inspect
+   the live repository session with `python scripts/sov_session.py register` and
+   `python scripts/sov_session.py brief`.
 2. Name the task, actor, host, available capabilities, required live grants, and maximum
    admitted effect class.
-3. Load the governing documents and only the contract, fixture, service, decision, and
-   issue material needed for the task. A consequential repository change still requires
-   the complete governing set named by `AGENTS.md`.
-4. Read product meaning from `GROUND.md` and `CANON.md`, not from participant instructions.
+3. Discover the node through `python scripts/sov_interface.py show` and inspect the one named
+   operation or capability relevant to the task.
+4. Load only the contract, fixture, service, decision, status item, seam, and issue material
+   that owns that concern. Read `GROUND.md` and `CANON.md` when product meaning is material,
+   and `STATUS.yaml` when current standing or phase authority is material. Consequential work
+   does not require preloading unrelated governance.
 5. State material omissions, stale or unavailable sources, the expected independent
    observation, and the refusal or counteraction boundary.
 6. Work one named operation and inspect the result through a path that does not rely only

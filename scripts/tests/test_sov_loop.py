@@ -246,5 +246,31 @@ class LiveBinding(unittest.TestCase):
         self.assertIn("DATA_BOUNDARY_REFUSED", str(caught.exception))
 
 
+class PreparedEvidenceRouting(unittest.TestCase):
+    """The harness prepares independent Findings without claiming Phase 1.5 complete."""
+
+    def test_roles_keep_work_and_participant_findings_separate(self):
+        orchestrator = (ROOT / ".claude/agents/sov-orchestrator.md").read_text(encoding="utf-8")
+        witness = (ROOT / ".claude/agents/sov-witness.md").read_text(encoding="utf-8")
+        controller = (ROOT / ".claude/agents/sov-controller.md").read_text(encoding="utf-8")
+        self.assertIn("PARTICIPANT_IN_WORK", orchestrator)
+        self.assertIn("subject is `WORK`", witness)
+        self.assertIn("independently frozen Findings", controller)
+        self.assertIn("RECORD_DEFECT", controller)
+        self.assertIn("POLICY_SEAM", controller)
+
+    def test_evidence_mode_freezes_before_comparison(self):
+        workflow = (ROOT / ".claude/workflows/sov-loop.js").read_text(encoding="utf-8")
+        self.assertIn("evidence_mode", workflow)
+        order = [workflow.index("phase('Orchestrator Review')"),
+                 workflow.index("phase('Witness Review')"),
+                 workflow.index("phase('Compare')"),
+                 workflow.index("phase('Land')", workflow.index("phase('Compare')"))]
+        self.assertEqual(order, sorted(order))
+        self.assertIn("record_projection_id", workflow)
+        self.assertIn("UNATTESTABLE", workflow)
+        self.assertIn("single NO_CONFLICT", workflow)
+
+
 if __name__ == "__main__":
     unittest.main()

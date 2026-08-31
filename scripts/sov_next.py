@@ -23,6 +23,8 @@ import json
 import re
 
 import roadmap_lanes
+import sovnext_phase
+from sovsession import phase_context
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -33,6 +35,9 @@ CROSSWALK_HEADER = "| Phase | Epic ticket | Governing debt or objective | Drawn 
 def _text(relative: str) -> str:
     """Read repository text as UTF-8 without newline translation."""
     return (ROOT / relative).read_bytes().decode("utf-8")
+
+
+phase_position = sovnext_phase.position
 
 
 def declared_gate(status_text: str) -> str | None:
@@ -204,6 +209,8 @@ def main(argv: list[str] | None = None) -> int:
               if projection.exists() else {})
 
     gate = declared_gate(_text("STATUS.yaml"))
+    phase_state, active_custodies = phase_position(ROOT)
+    active_phase = phase_state.get("active")
     phases = roadmap_phases(roadmap_text)
     rows = crosswalk(roadmap_text)
     ready = epic_ready(issues)
@@ -214,7 +221,7 @@ def main(argv: list[str] | None = None) -> int:
 
     by_ticket = {row["ticket"]: row for row in rows}
     conflict = None
-    if gate and ready:
+    if active_phase is None and gate and ready:
         gate_phase = gate.split("_", 1)[0]
         reachable_phases = {by_ticket[r["number"]]["phase"] for r in ready
                             if r["number"] in by_ticket}
@@ -223,14 +230,26 @@ def main(argv: list[str] | None = None) -> int:
                         f"{', '.join(sorted(p for p in reachable_phases if p))}")
 
     if args.json:
-        print(json.dumps({"declared_gate": gate, "crosswalk": rows, "ready": ready,
+        print(json.dumps({"phase": phase_state, "active_phase_custodies": active_custodies,
+                          "declared_gate": gate, "crosswalk": rows, "ready": ready,
                           "stale_views": [{"view": v, "drifted": d} for v, d in stale],
                           "closed_unsettled": unsettled,
                           "conflict": conflict, "defects": defects},
                          indent=2, sort_keys=True))
         return 1 if args.strict and defects else 0
 
-    print("== reachable work ==")
+    print("== phase authority ==")
+    for line in phase_context.render(phase_state):
+        print(f"  {line}")
+    if active_phase is not None:
+        print("\n== active phase custody ==")
+        if active_custodies:
+            for custody in active_custodies:
+                print(f"  {custody.get('custody_id')}  {custody.get('terminal', custody.get('standing', '?'))}")
+        else:
+            print("  none — active phase has no phase-scoped custody; this is opening debt")
+
+    print("\n== roadmap reachable work ==")
     for row in ready or []:
         alias = by_ticket.get(row["number"])
         print(f"  #{row['number']} [{row['horizon']}] {row['title']}")

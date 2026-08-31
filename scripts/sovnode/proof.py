@@ -7,7 +7,9 @@ from tempfile import TemporaryDirectory
 from typing import Any
 import json
 
-from sovnode.bindings import HUMAN, MODEL, invocation_request, render_human, render_model, resolve
+from sovnode.bindings import (
+    BINDING_IDS, HUMAN, MODEL, invocation_request, render_human, render_model, resolve,
+)
 from sovnode.composition import LocalActionPath
 from sovnode.interface_inputs import rebuild
 
@@ -41,6 +43,37 @@ def _reason(receipt: dict[str, Any]) -> str | None:
     return None
 
 
+def _open_session(node: LocalActionPath, actor: str, actor_kind: str) -> dict[str, Any]:
+    issuer = "interface-proof-given"
+    node.console.grant(actor, "open:session", actor, granted_by=issuer)
+    host_binding = f"urn:soveraeign:binding:proof-host:{actor_kind.lower()}"
+    return node.console.open_session(
+        actor, actor_kind, host_binding, f"principal:{actor}")
+
+
+def _request(document: dict[str, Any], operation_id: str, binding_kind: str,
+             actor: str, scope: str, arguments: dict[str, Any],
+             session: dict[str, Any]) -> dict[str, Any]:
+    return invocation_request(
+        document, operation_id, binding_kind, actor, scope, arguments,
+        session_id=session["session_id"],
+        session_binding_id=session["binding_id"],
+        principal_id=session["principal_id"])
+
+
+def _attribution_was_recorded(node: LocalActionPath, request: dict[str, Any]) -> bool:
+    rows = [entry["payload"] for entry in node.record.entries()
+            if entry["kind"] == "EVENT"
+            and entry["payload"].get("record_kind") == "gateway-session-attribution"]
+    if not rows:
+        return False
+    row = rows[-1]
+    return (row.get("decision") == "ALLOWED"
+            and all(row.get(field) == request.get(field) for field in (
+                "session_id", "session_binding_id", "principal_id",
+                "interface_binding_id", "interface_operation_digest")))
+
+
 def run() -> dict[str, Any]:
     """Return machine-checkable evidence; the fixture grants are givens, not UI output."""
     document, defects = rebuild()
@@ -63,16 +96,18 @@ def run() -> dict[str, Any]:
             actor = f"interface-{binding_kind.lower()}"
             scope = f"asset:new:{binding_kind.lower()}"
             with LocalActionPath(root / binding_kind.lower()) as node:
+                session = _open_session(node, actor, binding_kind)
                 node.console.grant(actor, operation["required_authority"], scope,
                                    granted_by="interface-proof-given")
-                request = invocation_request(
+                request = _request(
                     document, operation["operation_id"], binding_kind, actor, scope,
-                    {"path": str(source), "label": "Interface proof"})
+                    {"path": str(source), "label": "Interface proof"}, session)
                 returned = node.dispatch(request)
                 durable = node.asset.receipts()[-1]
                 detail = json.loads(returned["payload_json"])
                 action_results[binding_kind] = {
-                    "binding_id": request["binding_id"],
+                    "interface_binding_id": request["interface_binding_id"],
+                    "session_attribution_recorded": _attribution_was_recorded(node, request),
                     "operation_digest": request["interface_operation_digest"],
                     "required_authority": operation["required_authority"],
                     "terminal_receipt_id": returned["id"],
@@ -83,16 +118,18 @@ def run() -> dict[str, Any]:
                 }
 
             with LocalActionPath(root / f"registry-{binding_kind.lower()}") as node:
+                session = _open_session(node, actor, binding_kind)
                 node.console.grant(actor, registry_operation["required_authority"],
                                    "registry:any", granted_by="interface-proof-given")
-                request = invocation_request(
+                request = _request(
                     document, registry_operation["operation_id"], binding_kind,
-                    actor, "registry:any", {"name": "sov://asset/ingest-asset"})
+                    actor, "registry:any", {"name": "sov://asset/ingest-asset"}, session)
                 returned = node.dispatch(request)
                 detail = returned["payload"]["detail"]
                 resolution = detail["resolution"]
                 registry_results[binding_kind] = {
-                    "binding_id": request["binding_id"],
+                    "interface_binding_id": request["interface_binding_id"],
+                    "session_attribution_recorded": _attribution_was_recorded(node, request),
                     "operation_digest": request["interface_operation_digest"],
                     "required_authority": registry_operation["required_authority"],
                     "terminal_receipt_id": returned["entry_id"],
@@ -109,16 +146,18 @@ def run() -> dict[str, Any]:
             with LocalActionPath(
                     root / f"host-{binding_kind.lower()}",
                     host_adapter=_ProofHostAdapter()) as node:
+                session = _open_session(node, actor, binding_kind)
                 node.console.grant(actor, host_operation["required_authority"],
                                    "host:local", granted_by="interface-proof-given")
-                request = invocation_request(
+                request = _request(
                     document, host_operation["operation_id"], binding_kind,
-                    actor, "host:local", {})
+                    actor, "host:local", {}, session)
                 returned = node.dispatch(request)
                 detail = returned["payload"]["detail"]
                 snapshot = detail["snapshot"]
                 host_results[binding_kind] = {
-                    "binding_id": request["binding_id"],
+                    "interface_binding_id": request["interface_binding_id"],
+                    "session_attribution_recorded": _attribution_was_recorded(node, request),
                     "operation_digest": request["interface_operation_digest"],
                     "required_authority": host_operation["required_authority"],
                     "terminal_receipt_id": returned["entry_id"],
@@ -133,31 +172,43 @@ def run() -> dict[str, Any]:
                 }
 
         with LocalActionPath(root / "refused") as node:
-            request = invocation_request(
-                document, operation["operation_id"], HUMAN, "interface-refused", "asset:new",
-                {"path": str(source), "label": "Refused proof"})
+            session = _open_session(node, "interface-refused", HUMAN)
+            request = _request(
+                document, operation["operation_id"], HUMAN, "interface-refused",
+                "asset:new", {"path": str(source), "label": "Refused proof"}, session)
             refusal = node.dispatch(request)
+            refusal_attribution = _attribution_was_recorded(node, request)
 
         with LocalActionPath(root / "inactive") as node:
-            inactive = node.dispatch({
-                "actor": "interface-human", "actor_kind": "HUMAN",
+            actor = "interface-human"
+            session = _open_session(node, actor, HUMAN)
+            inactive_operation = resolve(document, "console.resolve-judgement")
+            inactive_request = {
+                "actor": actor, "actor_kind": HUMAN,
+                "session_id": session["session_id"],
+                "session_binding_id": session["binding_id"],
+                "principal_id": session["principal_id"],
+                "interface_binding_id": BINDING_IDS[HUMAN],
+                "interface_operation_digest": inactive_operation["record_digest"],
                 "logical_endpoint": "sov://console/resolve-judgement",
                 "transport": "IN_PROCESS", "scope": "judgement:any", "arguments": {},
-            })
+            }
+            inactive = node.dispatch(inactive_request)
+            inactive_attribution = _attribution_was_recorded(node, inactive_request)
 
     semantic_signatures = {
         kind: {name: value for name, value in result.items()
-               if name not in ("binding_id", "terminal_receipt_id")}
+               if name not in ("interface_binding_id", "terminal_receipt_id")}
         for kind, result in action_results.items()
     }
     registry_signatures = {
         kind: {name: value for name, value in result.items()
-               if name not in ("binding_id", "terminal_receipt_id")}
+               if name not in ("interface_binding_id", "terminal_receipt_id")}
         for kind, result in registry_results.items()
     }
     host_signatures = {
         kind: {name: value for name, value in result.items()
-               if name not in ("binding_id", "terminal_receipt_id")}
+               if name not in ("interface_binding_id", "terminal_receipt_id")}
         for kind, result in host_results.items()
     }
     return {
@@ -177,11 +228,13 @@ def run() -> dict[str, Any]:
         "host_reads": host_results,
         "same_host_semantics": host_signatures[HUMAN] == host_signatures[MODEL],
         "refusal": {
+            "session_attribution_recorded": refusal_attribution,
             "outcome": refusal["payload"]["outcome"],
             "reason_code": _reason(refusal),
             "receipt_id": refusal["entry_id"],
         },
         "inactive_operation": {
+            "session_attribution_recorded": inactive_attribution,
             "operation_id": "console.resolve-judgement",
             "outcome": inactive["payload"]["outcome"],
             "reason_code": _reason(inactive),

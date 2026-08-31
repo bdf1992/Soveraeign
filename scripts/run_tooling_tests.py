@@ -46,16 +46,15 @@ DEFAULT_WORKERS = 4
 # weight across the whole range - weight 1 packs late and lands at 15, weight 2
 # at 20 - so a weight has to be measured rather than reasoned about.
 #
-# Remeasured 2026-08-27 at 89 modules, and the point of remeasuring is that two
-# of the three entries had stopped buying anything: test_sov_branch at 10 gave
-# its shard 20 peers where dropping the entry also gave 20, and test_sov_docs at
-# 10 gave 19 where dropping it gave 17 - actively worse than no weight at all.
-# A weight is a measurement against a module population, so it expires when the
-# population grows. 20 and 18 give 14 and 16 against unweighted 17 and 20, which
-# is a real gap rather than the single peer the smallest working pair buys.
-# test_verify_clocks at 7 still works: 22 peers against 27 unweighted.
-MODULE_WEIGHTS = {"test_sov_docs.py": 20, "test_verify_clocks.py": 7,
-                  "test_sov_branch.py": 18}
+# Remeasured 2026-08-31 at 97 modules after the commissioning-contract test was
+# added. The 89-module weights had expired: docs at 20 and branch at 18 no longer
+# bought shorter shards, and clocks at 7 over-weighted a much smaller Linux cost.
+# Holding the other two measured weights constant, 24 gives test_sov_docs 15 peers
+# instead of 32 unweighted, 32 gives test_sov_branch 8 instead of 30, and 3 gives
+# test_verify_clocks 36 instead of 38. The resulting synthetic loads are
+# 39/38/38/38. These remain scheduling hints, never evidence or budget changes.
+MODULE_WEIGHTS = {"test_sov_docs.py": 24, "test_verify_clocks.py": 3,
+                  "test_sov_branch.py": 32}
 
 
 def test_modules() -> tuple[Path, ...]:

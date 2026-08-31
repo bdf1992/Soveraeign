@@ -29,6 +29,10 @@ from soveraeign_record_service import RecordService  # noqa: E402
 CAPABILITY_MAP, MANIFESTS, CAPABILITY_TABLE = load_surface(ROOT)
 
 
+class AttributionDenied(RuntimeError):
+    reason_code = "ACTOR_ATTRIBUTION_MISMATCH"
+
+
 class GatewayVerticalSlice(unittest.TestCase):
     def setUp(self) -> None:
         self.tmp = TemporaryDirectory()
@@ -44,17 +48,22 @@ class GatewayVerticalSlice(unittest.TestCase):
     def new_gateway(self, capability_map: dict | None = None,
                     manifests: dict | None = None,
                     authority: Callable[[str, str, str], str] | None = None,
+                    attribution: Callable[[str, str, str, str, str | None], None] | None = None,
                     routes: dict | None = None) -> Gateway:
         if authority is None:
             authority = lambda actor, capability, scope: console_authority.check(
                 self.record.reconstruct(), self.console.node_id, actor, capability,
                 scope)
+        if attribution is None:
+            attribution = lambda *_: None
         if routes is None:
             routes = {"asset:in-process": AssetRoutes(self.asset).call}
         return Gateway(
             self.record, capability_map or self.capability_map,
             manifests or self.manifests, self.capability_table,
-            authority, routes, authority_denials=(AuthorityRefused,),
+            authority, routes, attribution=attribution,
+            authority_denials=(AuthorityRefused,),
+            attribution_denials=(AttributionDenied,),
         )
 
     def tearDown(self) -> None:
@@ -67,10 +76,20 @@ class GatewayVerticalSlice(unittest.TestCase):
         path.write_bytes(data)
         return path
 
+    def attribution_fields(self, actor: str, actor_kind: str) -> dict:
+        return {
+            "session_id": f"session:{actor}",
+            "session_binding_id": f"host:{actor_kind.lower()}",
+            "principal_id": f"principal:{actor}",
+            "interface_binding_id": f"interface:{actor_kind.lower()}",
+            "interface_operation_digest": "a" * 64,
+        }
+
     def request(self, actor: str, actor_kind: str, path: Path, scope: str) -> dict:
         return {
             "actor": actor,
             "actor_kind": actor_kind,
+            **self.attribution_fields(actor, actor_kind),
             "logical_endpoint": "sov://asset/ingest-asset",
             "transport": "IN_PROCESS",
             "scope": scope,
@@ -102,6 +121,7 @@ class GatewayVerticalSlice(unittest.TestCase):
         return {
             "actor": actor,
             "actor_kind": actor_kind,
+            **self.attribution_fields(actor, actor_kind),
             "logical_endpoint": "sov://asset/read-version",
             "transport": "IN_PROCESS",
             "scope": version_id,
@@ -137,6 +157,83 @@ class GatewayVerticalSlice(unittest.TestCase):
         self.assertEqual(self.asset.receipts(), [])
         self.assertEqual(self.gateway_events("gateway-authority-check")[-1]["payload"]["decision"],
                          "FAILED")
+
+    def test_session_attribution_refusal_is_durable_and_precedes_authority(self) -> None:
+        authority_called = False
+
+        def authority(*_: str) -> str:
+            nonlocal authority_called
+            authority_called = True
+            return "grant_should_not_be_read"
+
+        def deny(*_: object) -> None:
+            raise AttributionDenied("session attribution mismatch")
+
+        gateway = self.new_gateway(authority=authority, attribution=deny)
+        refused = gateway.dispatch(
+            self.request("operator", "HUMAN", self.source("attribution-denied.txt"),
+                         "asset:new"))
+
+        self.assertEqual(refused["payload"]["outcome"], "REFUSED")
+        self.assertEqual(self.reason(refused), "ACTOR_ATTRIBUTION_MISMATCH")
+        self.assertFalse(authority_called)
+        self.assertEqual(self.asset.receipts(), [])
+        self.assertEqual(self.gateway_events("gateway-authority-check"), [])
+        check = self.gateway_events("gateway-session-attribution")[-1]["payload"]
+        self.assertEqual(check["decision"], "REFUSED")
+        self.assertEqual(check["diagnostic_code"], "ACTOR_ATTRIBUTION_MISMATCH")
+
+    def test_session_attribution_reader_failure_is_operational_not_denial(self) -> None:
+        def broken(*_: object) -> None:
+            raise RuntimeError("session journal unavailable")
+
+        failed = self.new_gateway(attribution=broken).dispatch(
+            self.request("operator", "HUMAN", self.source("attribution-fault.txt"),
+                         "asset:new"))
+
+        self.assertEqual(failed["payload"]["outcome"], "FAILED")
+        self.assertEqual(self.reason(failed), "ATTRIBUTION_CHECK_FAILED")
+        self.assertEqual(self.detail(failed)["failure_class"], "OPERATIONAL_FAULT")
+        self.assertEqual(self.gateway_events("gateway-authority-check"), [])
+        check = self.gateway_events("gateway-session-attribution")[-1]["payload"]
+        self.assertEqual(check["decision"], "FAILED")
+        self.assertEqual(check["diagnostic_code"], "RuntimeError")
+
+    def test_request_and_attribution_records_preserve_both_binding_layers(self) -> None:
+        scope = self.grant_ingest()
+        request = self.request("operator", "HUMAN", self.source("attributed.txt"), scope)
+        returned = self.gateway.dispatch(request)
+        self.assertEqual(returned["outcome"], "COMMITTED")
+
+        claimed = self.gateway_events("gateway-request")[-1]["payload"]
+        checked = self.gateway_events("gateway-session-attribution")[-1]["payload"]
+        for field in ("session_id", "session_binding_id", "principal_id",
+                      "interface_binding_id", "interface_operation_digest"):
+            self.assertEqual(claimed[field], request[field])
+            self.assertEqual(checked[field], request[field])
+        self.assertNotEqual(request["session_binding_id"], request["interface_binding_id"])
+        self.assertEqual(checked["decision"], "ALLOWED")
+
+    def test_service_session_argument_must_match_checked_session(self) -> None:
+        request = self.request("operator", "HUMAN", self.source("same-session.txt"), "asset:new")
+        request["arguments"]["session_id"] = request["session_id"]
+        allowed = self.new_gateway().dispatch(request)
+        self.assertNotEqual(self.reason(allowed), "MALFORMED_REQUEST")
+
+        request = self.request("operator", "HUMAN", self.source("other-session.txt"), "asset:new")
+        request["arguments"]["session_id"] = "session:someone-else"
+        refused = self.new_gateway().dispatch(request)
+        self.assertEqual(self.reason(refused), "MALFORMED_REQUEST")
+        self.assertEqual(self.detail(refused)["diagnostic_code"], "ACTOR_ATTRIBUTION_CONFLICT")
+
+    def test_session_identity_is_required_before_attribution(self) -> None:
+        request = self.request("operator", "HUMAN", self.source("sessionless.txt"), "asset:new")
+        request.pop("session_id")
+        refused = self.gateway.dispatch(request)
+        self.assertEqual(self.reason(refused), "MALFORMED_REQUEST")
+        self.assertEqual(self.gateway_events("gateway-session-attribution"), [])
+        self.assertEqual(self.gateway_events("gateway-authority-check"), [])
+        self.assertEqual(self.asset.receipts(), [])
 
     def test_human_and_model_take_same_kernel_path_and_get_service_receipts_unchanged(self) -> None:
         for actor, actor_kind in (("operator", "HUMAN"), ("local-model", "MODEL")):
@@ -232,6 +329,7 @@ class GatewayVerticalSlice(unittest.TestCase):
         request = {
             "actor": actor,
             "actor_kind": "HUMAN",
+            **self.attribution_fields(actor, "HUMAN"),
             "logical_endpoint": "sov://asset/request-derivative",
             "transport": "IN_PROCESS",
             "scope": scope,

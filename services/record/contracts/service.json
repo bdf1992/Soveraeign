@@ -7,7 +7,8 @@
     "counter-record",
     "digest-chain",
     "subject-projection",
-    "journal-export"
+    "journal-export",
+    "record-projection"
   ],
   "references": [
     "shared-kernel-contracts"
@@ -215,6 +216,26 @@
       "refusals": [
         "MISSING_PRECONDITION",
         "STALE_STATE"
+      ]
+    },
+    {
+      "operation": "project-evidence",
+      "standing": "BUILT",
+      "logical_endpoint": "sov://record/project-evidence",
+      "subject": "record-projection",
+      "crud": "READ",
+      "preconditions": [
+        "journal_readable",
+        "subject_declared",
+        "recipient_declared",
+        "relation_declared",
+        "purpose_declared"
+      ],
+      "commit": "DERIVED",
+      "refusals": [
+        "UNREADABLE",
+        "DIGEST_MISMATCH",
+        "MISSING_PRECONDITION"
       ]
     }
   ],

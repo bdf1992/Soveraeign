@@ -28,7 +28,7 @@
           "owns": "F0 through F6 and the evidence gate between them"
         },
         {
-          "document": "SPEC.md",
+          "document": "archives/SPEC-PHASE-I-TERMINAL.txt",
           "digest": "sha256:b58dc1ed68c2b99972d6a157232ee677eb2bfaca1287b01c48619680a3e9862a",
           "owns": "the 44 normative predicates the first clause counts"
         }

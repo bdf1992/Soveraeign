@@ -101,10 +101,11 @@ def _commands() -> dict[str, Callable[[ConsoleService, argparse.Namespace], dict
         "open-thread": lambda c, a: c.open_thread(a.operator, a.channel, a.title,
                                                   a.pinned_address, a.pinned_digest),
         "archive-thread": lambda c, a: c.archive_thread(a.operator, a.thread),
-        "open-session": lambda c, a: c.open_session(a.operator, a.actor_kind, a.binding),
+        "open-session": lambda c, a: c.open_session(
+            a.operator, a.actor_kind, a.binding, a.principal),
         "close-session": lambda c, a: c.close_session(a.operator, a.session),
         "post": lambda c, a: c.post(a.operator, a.session, a.thread, _body(a),
-                                    a.mention or (), a.claims, a.proposal_id),
+                                    a.mention or (), a.claims, a.proposal_id, a.principal),
         "read-thread": lambda c, a: read_thread(c, a.thread, a.binding,
                                                 operator_id=a.operator),
         "list-publications": lambda c, a: published_threads(c, operator_id=a.operator),
@@ -216,6 +217,9 @@ def build_parser() -> argparse.ArgumentParser:
     session.add_argument("--actor-kind", dest="actor_kind", required=True,
                          choices=("HUMAN", "MODEL"))
     session.add_argument("--binding", required=True)
+    session.add_argument("--principal",
+                         help="durable principal resolved by this binding; omitted means "
+                              "the session records principal_id:null and infers nothing")
 
     close = sub.add_parser("close-session", help="close a session and pin its read position")
     close.add_argument("--operator", required=True,
@@ -233,6 +237,9 @@ def build_parser() -> argparse.ArgumentParser:
     post.add_argument("--claims", action="store_true",
                       help="the post makes a claim; a MODEL post then requires --proposal-id")
     post.add_argument("--proposal-id", dest="proposal_id")
+    post.add_argument("--principal",
+                      help="durable principal claimed by this binding; when supplied it "
+                           "must match the principal pinned when the session opened")
 
     read = sub.add_parser("read-thread", help="read a thread through a binding")
     read.add_argument("--operator", required=True,

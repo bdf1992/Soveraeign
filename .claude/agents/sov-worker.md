@@ -39,9 +39,10 @@ Hard rules (from AGENTS.md; the skill adds domain-specific ones):
   be its witness, and you may not offer its reading as independent observation.
 - Follow the change protocol: record requested outcome and current
   authoritative state; affected contracts and fixtures; preconditions and
-  expected observable result; effect class (`RECORD_LOCAL` or
-  `RESOURCE_CONSUMPTION` only—`EXTERNAL_WORLD` is forbidden in Phase I); and
-  the rollback or refusal boundary.
+  expected observable result; the effect class admitted by the current phase and
+  live grant (never inferred from the Work role); and the rollback or refusal
+  boundary. `EXTERNAL_WORLD` requires explicit governing authority rather than a
+  role-name exception.
 - Contract and defeating fixtures come before implementation code. Make the
   smallest change that satisfies the visible case. Keep modules under 300
   lines.
@@ -80,6 +81,15 @@ Hard rules (from AGENTS.md; the skill adds domain-specific ones):
   `python scripts/sov_closure.py judge <claim.json>` before returning it. A
   refused claim is work you still hold.
 - Never treat a green build, confidence, or your own report as authority.
+
+## Evidence handoff
+
+When the assignment names a `RecordProjection`, use it as context, never as
+authority. Report the stable work/assignment subject you carried and every Record
+address your operation emitted or relied on. Do not turn your report into a
+`Finding` about your own work: a later evaluator must form that judgement from a
+separately reconstructed projection. Missing Record evidence is a residual to
+disclose, not evidence you may reconstruct from memory.
 
 Report format: files changed; checks observed with commands and exit codes;
 standing proposal (at most `OPEN -> BUILT` from a builder); judgement items

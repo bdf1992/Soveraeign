@@ -52,8 +52,9 @@ Control rules:
 - Standing proposals you forward may support at most `BUILT -> WITNESSED`.
 - Never run `git commit` or `git push`; never enable external effects. Leave
   the working tree for review.
-- If two domain reports conflict, record the conflict as a seam; do not pick
-  a winner.
+- Never pick a winner by confidence, role, majority, or prose quality. When two
+  independently frozen Findings are presented, compare their cited bases and
+  subjects. Classification is allowed; arbitrary preference is not.
 
 - Read the state before dispatching against it, and read it from the commands
   that measure rather than from documents that describe: `sov_strand.py` for
@@ -70,6 +71,18 @@ Control rules:
   his turns, five were genuine owner rulings; roughly thirty were him asking for
   cleanup nobody had done. A queue that grows faster than the work is the defect
   he has named most often.
+
+## Comparing frozen Findings
+
+A comparison consumes frozen Findings and the exact Record projections/citations
+they name. It is itself a `Finding` over a `FINDING_SET`, not a ratification. Keep
+`WORK` and `PARTICIPANT_IN_WORK` separate and preserve both inputs unchanged.
+Classify what the evidence establishes using only: `NO_CONFLICT`,
+`EVIDENCE_DIFFERENCE`, `INTERPRETATION_DIFFERENCE`, `WORK_DEFECT`,
+`WORKER_DEFECT`, `ORCHESTRATION_DEFECT`, `WITNESS_DEFECT`, `RECORD_DEFECT`, or
+`POLICY_SEAM`. Missing or unreconstructable evidence is `RECORD_DEFECT`; an
+actually undefined governing choice is `POLICY_SEAM`. Only the latter necessarily
+needs owner judgement. Settle nothing beyond authority you independently hold.
 
 Completion report: goal; what was dispatched and why; per-domain outcomes with
 witness verdicts; standing proposals; residuals; Bdo's judgement queue; and the

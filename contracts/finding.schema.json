@@ -1,0 +1,176 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/finding.schema.json",
+  "title": "Soveraeign Finding (PROPOSED)",
+  "description": "An attributable interpretation of a named subject against cited evidence. A Finding is not Observation, authority, or settlement.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "finding_schema",
+    "finding_id",
+    "subject",
+    "evaluator",
+    "scope",
+    "record_projection_id",
+    "claims",
+    "evidence_addresses",
+    "counterevidence_addresses",
+    "input_finding_ids",
+    "created_at",
+    "frozen_at",
+    "authority_effect",
+    "settlement_effect",
+    "supersedes"
+  ],
+  "properties": {
+    "finding_schema": {
+      "const": "soveraeign-finding/v1"
+    },
+    "finding_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "subject": {
+      "$ref": "#/$defs/subject"
+    },
+    "evaluator": {
+      "$ref": "#/$defs/evaluator"
+    },
+    "scope": {
+      "type": "object"
+    },
+    "record_projection_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "claims": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/claim"
+      }
+    },
+    "evidence_addresses": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "counterevidence_addresses": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "input_finding_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "frozen_at": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "authority_effect": {
+      "const": "NONE"
+    },
+    "settlement_effect": {
+      "const": "NONE"
+    },
+    "supersedes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "$defs": {
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "address"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "WORK",
+            "PARTICIPANT_IN_WORK",
+            "FINDING_SET",
+            "CAPABILITY",
+            "INSTITUTION",
+            "NODE",
+            "OTHER"
+          ]
+        },
+        "address": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "evaluator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "principal_id",
+        "relation"
+      ],
+      "properties": {
+        "principal_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "relation": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "claim_id",
+        "verdict",
+        "detail"
+      ],
+      "properties": {
+        "claim_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "verdict": {
+          "enum": [
+            "CONFIRMED",
+            "DISSENTED",
+            "UNATTESTABLE",
+            "UNRESOLVED",
+            "CLASSIFIED"
+          ]
+        },
+        "detail": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

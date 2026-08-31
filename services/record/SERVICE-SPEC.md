@@ -12,7 +12,7 @@ and states only what is local to this service.
 ## Owned domain records
 
 `service.json` `owns`: `journal-entry`, `terminal-receipt`, `counter-record`,
-`digest-chain`, `subject-projection`, `journal-export`.
+`digest-chain`, `subject-projection`, `journal-export`, `record-projection`.
 
 - **journal-entry** — one immutable row. `core.py` `ENTRY_KINDS` fixes the
   kind vocabulary to `EVENT | RECEIPT | OBSERVATION | COUNTER`. Every row
@@ -28,6 +28,11 @@ and states only what is local to this service.
 - **subject-projection** — `subject_projection`, a rebuildable index dropped
   and rebuilt from the journal alone. `CHARTER.md` "Authoritative versus
   derived": "A projection can never be promoted to the record."
+- **record-projection** — a bounded evidence reading matching
+  `contracts/record-projection.schema.json`: exact subjects, recipient relation,
+  purpose, verified cutoff, included Record addresses and digests, explicit
+  omissions, and `authority_effect: NONE`. The same journal/request/cutoff
+  rebuilds the same projection identity; it is not stored as authoritative history.
 - **journal-export** — the portable document `export-journal` renders and
   `restore-journal` replays; carries every row's digest profile so a version-2
   export never re-runs under the ambiguous version-1 rule.
@@ -68,6 +73,7 @@ named kernel transition.
 | `counter-entry` | `retract` | `entry_exists`, `declared_reason`, `declared_actor` | `COUNTERED` | `STALE_STATE`, `MISSING_PRECONDITION` |
 | `reconstruct-journal` | — (local) | `journal_readable` | `DERIVED` | `UNREADABLE`, `DIGEST_MISMATCH` |
 | `read-projection` | — (local) | `projection_built` | `DERIVED` | `MISSING_PRECONDITION` |
+| `project-evidence` | — (local) | `journal_readable`, `subject_declared`, `recipient_declared`, `relation_declared`, `purpose_declared` | `DERIVED` | `UNREADABLE`, `DIGEST_MISMATCH`, `MISSING_PRECONDITION` |
 | `drop-projections` | — (local) | `projection_store_writable` | `REBUILT` | `MISSING_PRECONDITION` |
 | `rebuild-projections` | — (local) | `journal_readable` | `REBUILT` | `UNREADABLE`, `DIGEST_MISMATCH` |
 | `read-entry` | — (local) | `entry_exists` | `DERIVED` | `MISSING_PRECONDITION` |

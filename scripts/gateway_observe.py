@@ -20,6 +20,7 @@ DIGEST_PROFILE = "soveraeign-record-chain/v2"
 BOUND_DIGEST_PROFILE = "soveraeign-record-chain/v3"
 EXPECTED_KINDS = (
     "gateway-request",
+    "gateway-session-attribution",
     "gateway-capability-resolution",
     "gateway-authority-check",
     "gateway-routing-record",
@@ -152,18 +153,51 @@ def crossing_defects(repository: Path, state: Path, caller_output: dict[str, Any
         if [row["payload"].get("record_kind") for row in events] != list(EXPECTED_KINDS):
             return defects + ["CROSSING_SEQUENCE_INVALID"]
         by_kind = {row["payload"]["record_kind"]: row for row in events}
-        request, resolution, authority, routing, returned = (
+        request, attribution, resolution, authority, routing, returned = (
             by_kind[name] for name in EXPECTED_KINDS
         )
         computed, projected = _input_state_digest(repository)
         if computed != projected or resolution["payload"].get("capability_map_digest") != computed:
             defects.append("SOURCE_INPUT_STALE")
+        request_payload = request["payload"]
         if (request["actor"] != actor
-                or request["payload"].get("actor_kind") != actor_kind
+                or request_payload.get("actor_kind") != actor_kind
                 or request["subject"] != "sov://asset/ingest-asset"):
             defects.append("REQUEST_ATTRIBUTION_INVALID")
+        session_id = request_payload.get("session_id")
+        session_rows = [row for row in rows if row["kind"] == "EVENT"
+                        and row["payload"].get("record_kind") == "operator-session"
+                        and row["payload"].get("session_id") == session_id]
+        if len(session_rows) != 1:
+            defects.append("SESSION_RECORD_INVALID")
+        else:
+            session = session_rows[0]["payload"]
+            if (session_rows[0]["actor"] != actor
+                    or session.get("operator_id") != actor
+                    or session.get("actor_kind") != actor_kind
+                    or session.get("binding_id") != request_payload.get("session_binding_id")
+                    or session.get("principal_id") != request_payload.get("principal_id")
+                    or session.get("lifecycle") != "OPEN"):
+                defects.append("SESSION_RECORD_INVALID")
+        interface = json.loads((repository / "contracts" / "fixtures" /
+                                "node-interface.reference.json").read_text("utf-8"))
+        operation = next((row for row in interface.get("operations", [])
+                          if row.get("operation_id") == "asset.ingest-asset"), None)
+        if (not isinstance(request_payload.get("interface_binding_id"), str)
+                or not request_payload.get("interface_binding_id")
+                or operation is None
+                or request_payload.get("interface_operation_digest") != operation.get("record_digest")):
+            defects.append("INTERFACE_PROVENANCE_INVALID")
+        attributed = attribution["payload"]
+        if (attributed.get("decision") != "ALLOWED"
+                or attributed.get("request_entry_id") != request["entry_id"]
+                or any(attributed.get(field) != request_payload.get(field) for field in (
+                    "session_id", "session_binding_id", "principal_id",
+                    "interface_binding_id", "interface_operation_digest"))):
+            defects.append("SESSION_ATTRIBUTION_INVALID")
         if (resolution["payload"].get("capability_id") != "asset.ingest-asset"
-                or resolution["payload"].get("route_address") != "asset:in-process"):
+                or resolution["payload"].get("route_address") != "asset:in-process"
+                or resolution["payload"].get("attribution_entry_id") != attribution["entry_id"]):
             defects.append("RESOLUTION_INVALID")
         grant = authority["payload"].get("authority_grant_id")
         if (authority["payload"].get("decision") != "ALLOWED"
@@ -186,6 +220,18 @@ def crossing_defects(repository: Path, state: Path, caller_output: dict[str, Any
         if (terminal.get("actor") != actor or terminal.get("event") != "asset.ingest-asset"
                 or terminal.get("outcome") != "COMMITTED"):
             defects.append("TERMINAL_ATTRIBUTION_INVALID")
+        mirrors = [row for row in rows
+                   if row["kind"] == "RECEIPT"
+                   and row.get("source_address") == "asset-service"
+                   and row["payload"].get("detail", {}).get("asset_receipt_id")
+                   == terminal.get("id")]
+        if (len(mirrors) != 1
+                or mirrors[0]["actor"] != actor
+                or mirrors[0]["payload"].get("outcome") != "COMMITTED"
+                or mirrors[0]["payload"].get("event") != "asset.ingest-asset"
+                or mirrors[0]["payload"].get("detail", {}).get("record_kind")
+                   != "asset-terminal-receipt"):
+            defects.append("ASSET_OPERATIONAL_HISTORY_INVALID")
         if (returned["payload"].get("routing_entry_id") != routing["entry_id"]
                 or returned["payload"].get("terminal_receipt_id") != terminal.get("id")
                 or returned["payload"].get("terminal_outcome") != "COMMITTED"):

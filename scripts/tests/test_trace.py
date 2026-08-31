@@ -31,6 +31,8 @@ import sov_trace  # noqa: E402
 
 RECEIPT = json.loads((ROOT / "bindings" / "mcp" / "observations"
                       / "journey-02-receipt.json").read_text("utf-8"))
+DISCOVERY = json.loads((ROOT / "bindings" / "mcp" / "observations"
+                        / "journey-02-discovery.json").read_text("utf-8"))
 SCHEMA = json.loads((ROOT / "contracts" / "receipt.schema.json").read_text("utf-8"))
 CANON = json.loads((ROOT / "contracts" / "product-canon.json").read_text("utf-8"))
 GROUND = json.loads((ROOT / "contracts" / "product-ground.json").read_text("utf-8"))
@@ -66,8 +68,8 @@ class MeasuredReceiptTest(unittest.TestCase):
         usd = next(entry for entry in RECEIPT["consumed"] if entry["dimension"] == "usd")
         self.assertIn("valuation", usd["note"])
 
-    def test_it_pins_the_state_it_read(self) -> None:
-        self.assertEqual(RECEIPT["input_state_digest"], MAP["input_state_digest"])
+    def test_it_pins_the_state_this_observation_read(self) -> None:
+        self.assertEqual(RECEIPT["input_state_digest"], DISCOVERY["capability_revision"])
 
     def test_it_records_the_precondition_it_could_not_verify(self) -> None:
         """`capability_map_fresh` was declared and not checked; the receipt says so."""

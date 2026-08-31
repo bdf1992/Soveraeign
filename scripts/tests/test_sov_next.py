@@ -615,5 +615,54 @@ class LaneContract(unittest.TestCase):
         return (ROOT / "ROADMAP.md").read_bytes().decode("utf-8")
 
 
+class ActivePhasePrecedence(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+        (self.root / "contracts").mkdir()
+        self.addCleanup(self.tmp.cleanup)
+
+    def write_phase(self, status: str, open_phase: bool) -> None:
+        (self.root / "STATUS.yaml").write_text(
+            f"phase: {status}\nnext_gate: PHASE_1_5_TERMINAL\n", encoding="utf-8")
+        phases = [{"phase_id": "phase:i", "title": "Phase I", "execution_status": "CLOSED",
+                   "acceptance_status": "NOT_EARNED", "terminal": "CLOSED_INCOMPLETE",
+                   "exit_clauses": []}]
+        if open_phase:
+            phases.append({"phase_id": "phase:1-5", "title": "Operational Commissioning",
+                           "execution_status": "OPEN", "acceptance_status": "NOT_EARNED",
+                           "terminal": "IN_FLIGHT",
+                           "exit_clauses": [{"clause_id": "P15-X1", "text": "fresh participation"}]})
+        (self.root / "contracts/phases.json").write_text(
+            json.dumps({"phases": phases}) + "\n", encoding="utf-8")
+
+    def test_active_phase_selects_only_its_phase_scoped_custody(self):
+        self.write_phase("phase:1-5", True)
+        (self.root / "contracts/custodies").mkdir()
+        (self.root / "contracts/custodies/phase-1-5.json").write_text(
+            json.dumps({"custodies": [{"custody_id": "custody:p15/x1",
+                                        "phase": "phase:1-5", "terminal": "OPEN"}]}) + "\n",
+            encoding="utf-8")
+        state, records = sov_next.phase_position(self.root)
+        self.assertEqual(state["active"]["phase_id"], "phase:1-5")
+        self.assertEqual([row["custody_id"] for row in records], ["custody:p15/x1"])
+
+    def test_none_active_never_promotes_a_prepared_custody(self):
+        self.write_phase("NONE_ACTIVE", False)
+        (self.root / "contracts/custodies").mkdir()
+        (self.root / "contracts/custodies/phase-1-5.json").write_text(
+            json.dumps({"custodies": [{"custody_id": "custody:p15/x1",
+                                        "phase": "phase:1-5"}]}) + "\n", encoding="utf-8")
+        state, records = sov_next.phase_position(self.root)
+        self.assertIsNone(state["active"])
+        self.assertEqual(records, [])
+
+    def test_phase_disagreement_is_reported_not_resolved(self):
+        self.write_phase("phase:1-5", False)
+        state, records = sov_next.phase_position(self.root)
+        self.assertIn("STATUS_PHASE_NOT_OPEN_IN_REGISTRY", state["defects"])
+        self.assertEqual(records, [])
+
+
 if __name__ == "__main__":
     unittest.main()

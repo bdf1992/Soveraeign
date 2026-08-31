@@ -92,7 +92,9 @@ def command_invoke(args: argparse.Namespace) -> int:
         document = _current()
         request = invocation_request(
             document, args.operation, args.binding, args.actor, args.scope,
-            _arguments(args.arguments))
+            _arguments(args.arguments), session_id=args.session_id or "",
+            session_binding_id=args.session_binding_id or "",
+            principal_id=args.principal)
     except BindingRefusal as refusal:
         print(f"REFUSED {refusal.code}: {refusal}")
         return 0
@@ -125,6 +127,9 @@ def parser() -> argparse.ArgumentParser:
     invoke.add_argument("--binding", choices=(HUMAN, MODEL), default=HUMAN)
     invoke.add_argument("--actor", required=True)
     invoke.add_argument("--scope", required=True)
+    invoke.add_argument("--session", dest="session_id")
+    invoke.add_argument("--session-binding", dest="session_binding_id")
+    invoke.add_argument("--principal")
     invoke.add_argument("--state-root")
     invoke.set_defaults(handler=command_invoke)
     sub.add_parser("prove", help="drive Human/Model parity and defeating cases").set_defaults(

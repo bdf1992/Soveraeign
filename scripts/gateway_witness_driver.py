@@ -12,7 +12,10 @@ from soveraeign_asset_service import AssetService
 from soveraeign_asset_service.routes import AssetRoutes
 from soveraeign_console_service import ConsoleService
 from soveraeign_console_service import authority as console_authority
-from soveraeign_console_service.refusals import AuthorityRefused
+from soveraeign_console_service import reads as console_reads
+from soveraeign_console_service.refusals import (
+    ActorAttributionMismatch, AuthorityRefused, SessionClosed, UnknownRecord,
+)
 from soveraeign_gateway_service import Gateway, load_surface
 from soveraeign_record_service import RecordService
 
@@ -28,11 +31,35 @@ def drive(state: Path, actor: str, actor_kind: str) -> dict[str, object]:
     source.write_bytes(PAYLOAD)
     record = RecordService(state / "record")
     console = ConsoleService(record, state / "console", "node:gateway-witness")
-    asset = AssetService(state / "asset")
+    asset = AssetService(state / "asset", operational_record=record)
     try:
         scope = f"asset:new:{actor}"
+        console.grant(actor, "open:session", actor, "Bdo")
+        session = console.open_session(
+            actor, actor_kind,
+            f"urn:soveraeign:binding:gateway-witness:{actor_kind.lower()}")
         console.grant(actor, "ingest:asset", scope, "Bdo")
         capability_map, manifests, capability_table = load_surface(ROOT)
+        interface = json.loads((ROOT / "contracts" / "fixtures" /
+                                "node-interface.reference.json").read_text("utf-8"))
+        operation = next(row for row in interface["operations"]
+                         if row["operation_id"] == "asset.ingest-asset")
+
+        def attribution(checked_actor: str, checked_kind: str, session_id: str,
+                        session_binding_id: str, principal_id: str | None) -> None:
+            try:
+                held = console_reads.session(record.reconstruct(), session_id)
+            except UnknownRecord:
+                raise ActorAttributionMismatch("witness session is unknown") from None
+            if (held.get("node_id") != console.node_id
+                    or held.get("operator_id") != checked_actor
+                    or held.get("actor_kind") != checked_kind
+                    or held.get("binding_id") != session_binding_id
+                    or held.get("principal_id") != principal_id):
+                raise ActorAttributionMismatch("witness session attribution mismatch")
+            if held.get("lifecycle") != "OPEN":
+                raise SessionClosed(f"session {session_id} is CLOSED")
+
         gateway = Gateway(
             record,
             capability_map,
@@ -43,11 +70,18 @@ def drive(state: Path, actor: str, actor_kind: str) -> dict[str, object]:
                 checked_scope
             ),
             {"asset:in-process": AssetRoutes(asset).call},
+            attribution=attribution,
             authority_denials=(AuthorityRefused,),
+            attribution_denials=(ActorAttributionMismatch, SessionClosed),
         )
         returned = gateway.dispatch({
             "actor": actor,
             "actor_kind": actor_kind,
+            "session_id": session["session_id"],
+            "session_binding_id": session["binding_id"],
+            "principal_id": session.get("principal_id"),
+            "interface_binding_id": "urn:soveraeign:binding:gateway-witness-interface",
+            "interface_operation_digest": operation["record_digest"],
             "logical_endpoint": "sov://asset/ingest-asset",
             "transport": "IN_PROCESS",
             "scope": scope,

@@ -6,12 +6,14 @@ export const meta = {
     { title: 'Select', detail: 'controller names the one concern and its scope' },
     { title: 'Plan', detail: 'orchestrator turns it into one bounded operation' },
     { title: 'Build', detail: 'worker executes it and reports the paths it changed' },
-    { title: 'Witness', detail: 'an independent witness that did not build observes the result' },
+    { title: 'Orchestrator Review', detail: 'evidence mode forms a frozen participant-in-work Finding' },
+    { title: 'Witness Review', detail: 'independent evidence mode forms a frozen WORK Finding' },
+    { title: 'Compare', detail: 'controller compares frozen cited Findings without ratifying them' },
     { title: 'Land', detail: 'the landing gate grades the request against the standing grant' },
   ],
 }
 
-// args: { objective: string, domain?: string, target?: string, plan_only?: boolean }
+// args: { objective: string, domain?: string, target?: string, plan_only?: boolean, evidence_mode?: boolean }
 //
 // The gate, not this script, is what decides whether anything lands. A workflow
 // cannot grant itself authority, so every phase here is evidence-gathering and
@@ -26,6 +28,7 @@ if (!objective) {
 const domain = args && args.domain && DOMAINS.indexOf(args.domain) !== -1 ? args.domain : null
 const target = args && args.target ? args.target : 'main'
 const planOnly = !!(args && args.plan_only)
+const evidenceMode = !!(args && args.evidence_mode)
 
 const CONCERN = {
   type: 'object',
@@ -73,6 +76,34 @@ const WITNESS = {
     residuals: { type: 'array', items: { type: 'string' } },
     observation_file: { type: 'string' },
     judgement_items: { type: 'array', items: { type: 'string' } },
+  },
+}
+
+// Harness projections of contracts/finding.schema.json. The shared contract owns
+// the semantics; this compact shape only carries what this workflow must route.
+const FROZEN_FINDING = {
+  type: 'object',
+  required: ['finding_id', 'subject_kind', 'subject_address', 'record_projection_id',
+             'projection_as_of', 'verdict', 'evidence_addresses', 'frozen_at', 'detail'],
+  properties: {
+    finding_id: { type: 'string' },
+    subject_kind: { type: 'string' },
+    subject_address: { type: 'string' },
+    record_projection_id: { type: 'string' },
+    projection_as_of: { type: 'string' },
+    verdict: { type: 'string' },
+    evidence_addresses: { type: 'array', items: { type: 'string' } },
+    frozen_at: { type: 'string' },
+    detail: { type: 'string' },
+  },
+}
+
+const COMPARISON = {
+  type: 'object',
+  required: ['classifications', 'detail'],
+  properties: {
+    classifications: { type: 'array', items: { type: 'string' } },
+    detail: { type: 'string' },
   },
 }
 
@@ -143,27 +174,77 @@ if (!built) {
 }
 log('Built: ' + (built.changed_paths || []).length + ' path(s) changed')
 
-phase('Witness')
-invocations += 1
-const witnessed = await agent(
-  'You are the independent observation for work you did not do and must not touch. Concern: ' + selected.concern + '. '
-  + 'The builder reports it changed: ' + (built.changed_paths || []).join(', ') + '. Treat that as a claim, not evidence. '
-  + 'Read git status and git diff yourself, read the owning contract and the defeating fixture, and run python scripts/verify.py and python scripts/lint.py observing the real exit codes. '
-  + 'Confirm the defeating case actually fails as declared; a fixture that passes when it should fail is a DISSENTED verdict, not a residual. '
-  + 'Then write your observation to reports/observations/ as JSON with exactly these fields: observer_id (your agent label), contributed_to_build (false - and if that is not true, say so and set verdict DISSENTED), verdict (CONFIRMED or DISSENTED), concern, and checks. '
-  + 'You must not edit, fix, build, or commit anything outside that one observation file. '
-  + 'Return the verdict, what you independently confirmed, residuals, the path you wrote the observation to, and any judgement items only Bdo can settle.',
-  { agentType: 'sov-witness', schema: WITNESS, phase: 'Witness', label: 'witness:' + selected.domain })
+let orchestrationFinding = null
+if (evidenceMode) {
+  phase('Orchestrator Review')
+  invocations += 1
+  orchestrationFinding = await agent(
+    'You are in REVIEW mode, not PLAN mode. Judge PARTICIPANT_IN_WORK for the bounded assignment ' + plan.operation + '. ' +
+    'Use contracts/record-projection.schema.json and contracts/finding.schema.json. Reconstruct a scoped RecordProjection through the Record service for the assignment/work subject and your evaluator relation. ' +
+    'Judge assignment, authority, scope, repair, disclosure, and terminal fidelity only; do not judge implementation correctness. ' +
+    'Do not read or anticipate the Witness conclusion. Cite only addresses in the projection. If the needed Record evidence does not exist, return verdict UNATTESTABLE with record_projection_id NONE and explain the Record defect; never fill it from the worker report. ' +
+    'Freeze the Finding before returning it. Return finding_id, subject_kind PARTICIPANT_IN_WORK, subject_address, record_projection_id, projection_as_of, verdict, evidence_addresses, frozen_at, and detail.',
+    { agentType: 'sov-orchestrator', schema: FROZEN_FINDING, phase: 'Orchestrator Review', label: 'review:' + selected.domain })
+  if (!orchestrationFinding || !orchestrationFinding.frozen_at) {
+    return { error: 'orchestrator review did not return a frozen Finding', concern: selected, build: built }
+  }
+}
+
+let witnessed = null
+if (evidenceMode) {
+  phase('Witness Review')
+  invocations += 1
+  const cutoff = orchestrationFinding ? orchestrationFinding.projection_as_of : 'NONE'
+  witnessed = await agent(
+    'You are the independent evaluator of WORK. Concern: ' + selected.concern + '. Operation: ' + plan.operation + '. ' +
+    'Use contracts/record-projection.schema.json and contracts/finding.schema.json. Inspect the exact repository state and governing contract/fixtures yourself. ' +
+    'Reconstruct a WORK RecordProjection at this shared cutoff if available: ' + cutoff + '. The cutoff is projection metadata, not an evaluator conclusion. ' +
+    'Do not read the worker conclusion, Orchestrator Finding, or Controller expectation before freezing your own Finding. Builder paths may locate the work but are not evidence. ' +
+    'Cite only addresses present in your projection. If the projection/evidence is missing or cannot be reconstructed, return UNATTESTABLE rather than substituting prose. ' +
+    'Freeze before returning. Return finding_id, subject_kind WORK, subject_address, record_projection_id, projection_as_of, verdict, evidence_addresses, frozen_at, and detail.',
+    { agentType: 'sov-witness', schema: FROZEN_FINDING, phase: 'Witness Review', label: 'witness-review:' + selected.domain })
+} else {
+  phase('Witness')
+  invocations += 1
+  witnessed = await agent(
+    'You are the independent observation for work you did not do and must not touch. Concern: ' + selected.concern + '. ' +
+    'The builder reports it changed: ' + (built.changed_paths || []).join(', ') + '. Treat that as a claim, not evidence. ' +
+    'Read git status and git diff yourself, read the owning contract and the defeating fixture, and run python scripts/verify.py and python scripts/lint.py observing the real exit codes. ' +
+    'Confirm the defeating case actually fails as declared; a fixture that passes when it should fail is a DISSENTED verdict, not a residual. ' +
+    'Then write your observation to reports/observations/ as JSON with exactly these fields: observer_id (your agent label), contributed_to_build (false - and if that is not true, say so and set verdict DISSENTED), verdict (CONFIRMED or DISSENTED), concern, and checks. ' +
+    'You must not edit, fix, build, or commit anything outside that one observation file. ' +
+    'Return the verdict, what you independently confirmed, residuals, the path you wrote the observation to, and any judgement items only Bdo can settle.',
+    { agentType: 'sov-witness', schema: WITNESS, phase: 'Witness', label: 'witness:' + selected.domain })
+}
 
 if (!witnessed) {
   return { error: 'witness returned no observation; nothing may land unwitnessed', concern: selected, build: built }
 }
 log('Witness: ' + witnessed.verdict)
 
+let comparison = null
+if (evidenceMode) {
+  if (!witnessed.frozen_at) {
+    return { error: 'witness review did not return a frozen Finding', concern: selected }
+  }
+  phase('Compare')
+  invocations += 1
+  comparison = await agent(
+    'Compare these two already-frozen Findings. You do not witness, ratify, or average them. Preserve both subjects and citations. ' +
+    'Participant-in-work Finding: ' + JSON.stringify(orchestrationFinding) + '. WORK Finding: ' + JSON.stringify(witnessed) + '. ' +
+    'Use only these classifications: NO_CONFLICT, EVIDENCE_DIFFERENCE, INTERPRETATION_DIFFERENCE, WORK_DEFECT, WORKER_DEFECT, ORCHESTRATION_DEFECT, WITNESS_DEFECT, RECORD_DEFECT, POLICY_SEAM. ' +
+    'A missing/unreconstructable projection or citation is RECORD_DEFECT; an actually undefined governing choice is POLICY_SEAM. ' +
+    'Return classifications and a concise evidence-based detail. Do not create standing.',
+    { agentType: 'sov-controller', schema: COMPARISON, phase: 'Compare', label: 'compare:' + selected.domain })
+}
+
 phase('Land')
-const mode = planOnly || !selected.in_grant_scope || witnessed.verdict !== 'CONFIRMED' ? 'plan' : 'land'
+const comparisonBlocks = evidenceMode && (!comparison ||
+  (comparison.classifications || []).length !== 1 ||
+  comparison.classifications[0] !== 'NO_CONFLICT')
+const mode = planOnly || !selected.in_grant_scope || witnessed.verdict !== 'CONFIRMED' || comparisonBlocks ? 'plan' : 'land'
 if (mode === 'plan') {
-  log('Rehearsing the gate only: ' + (planOnly ? 'plan_only was set' : (!selected.in_grant_scope ? 'concern is outside the grant' : 'witness verdict is ' + witnessed.verdict)))
+  log('Rehearsing the gate only: ' + (planOnly ? 'plan_only was set' : (!selected.in_grant_scope ? 'concern is outside the grant' : (comparisonBlocks ? 'evidence comparison is not a single NO_CONFLICT' : 'witness verdict is ' + witnessed.verdict))))
 }
 
 const pathArgs = (built.changed_paths || []).map(function (p) { return '--path ' + p }).join(' ')
@@ -196,7 +277,10 @@ return {
   concern: selected,
   plan: plan,
   build: { summary: built.summary, changed_paths: built.changed_paths, checks_run: built.checks_run },
-  witness: { verdict: witnessed.verdict, observations: witnessed.observations, observation_file: witnessed.observation_file },
+  witness: evidenceMode ? witnessed : { verdict: witnessed.verdict, observations: witnessed.observations, observation_file: witnessed.observation_file },
+  orchestration_finding: orchestrationFinding,
+  comparison: comparison,
+  evidence_mode: evidenceMode,
   gate: gate,
   mode: mode,
   agent_invocations: invocations,

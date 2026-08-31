@@ -4,7 +4,7 @@
 Proposal, workspace, history, and selector operations are executable. Promotion
 admission consumes the shared AuthorityGrant contract and evaluator. A caller-
 supplied authority label remains inert: only a validated, covering grant can
-supply the authority type passed into the generalized transition model.
+supply the authority type used by the crossing state machine.
 """
 
 from __future__ import annotations
@@ -17,7 +17,6 @@ import sys
 from sovenv import (
     EnvironmentRefused,
     StateStore,
-    admit_crossing,
     bind_workspace,
     instantiate_environment,
     instantiate_trunk,
@@ -29,7 +28,7 @@ from sovenv import (
     resolve_selector,
     validate_pattern,
 )
-from sovenv.authority import authorize_crossing
+from sovenv.authority import admit_crossing
 from sovenv.model import digest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -112,23 +111,16 @@ def _mutate(args: argparse.Namespace, pattern: dict[str, object], state: dict) -
         grant_schema = load_json(AUTHORITY_GRANT_SCHEMA)
         grants = [load_json(path) for path in args.grant]
         observation = load_json(args.observation) if args.observation else None
-        granted = authorize_crossing(
-            state,
-            required(args.crossing, "CROSSING"),
-            actor_id=witness,
-            grants=grants,
-            grant_schema=grant_schema,
-            checks=_checks(args.check),
-            observation=observation,
-        )
         return admit_crossing(
             state,
             pattern,
             required(args.crossing, "CROSSING"),
             current_integration_base=required(args.integration_base, "INTEGRATION_BASE"),
             witness=witness,
-            authority=granted["authority_type"],
-            authority_grant_id=granted["grant_id"],
+            grants=grants,
+            grant_schema=grant_schema,
+            checks=_checks(args.check),
+            observation=observation,
             accepted=True if args.accepted else None,
         )
     if args.operation == "land":

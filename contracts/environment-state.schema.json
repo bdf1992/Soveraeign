@@ -131,6 +131,7 @@
         "receipt": {"anyOf": [{"$ref": "#/$defs/receipt"}, {"type": "null"}]},
         "witness": {"type": "string"},
         "authority": {"anyOf": [{"type": "string"}, {"type": "null"}]},
+        "authority_grant_id": {"type": "string", "minLength": 1},
         "deployment_id": {"type": "string"}
       }
     },
@@ -159,6 +160,7 @@
         "crossing_id": {"type": "string", "minLength": 1},
         "actor": {"type": "string", "minLength": 1},
         "witness": {"type": "string", "minLength": 1},
+        "authority_grant_id": {"type": "string", "minLength": 1},
         "accepted": {"const": true}
       }
     },
@@ -185,7 +187,8 @@
         "witness": {"anyOf": [{"type": "string"}, {"type": "null"}]},
         "revision": {"type": "string", "minLength": 1},
         "artifact_digest": {"type": "string", "minLength": 1},
-        "target_instance": {"type": "string", "minLength": 1}
+        "target_instance": {"type": "string", "minLength": 1},
+        "authority_grant_id": {"type": "string", "minLength": 1}
       }
     }
   }

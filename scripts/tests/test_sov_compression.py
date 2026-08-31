@@ -6,6 +6,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT / "scripts") not in sys.path:
@@ -95,9 +96,28 @@ class InstrumentBoundary(unittest.TestCase):
         self.assertEqual(168, compression.WINDOW_HOURS["weekly"])
 
     def test_the_reader_declares_observation_only(self):
-        # This pins the vocabulary used in every returned reading. It is a
-        # deliberate non-authority marker, not a new effect class.
-        self.assertEqual("NONE_OBSERVATION_ONLY", "NONE_OBSERVATION_ONLY")
+        phase = {"phase": "NONE_ACTIVE", "next_gate": "SUCCESSOR_PHASE_OPENING",
+                 "gap_preserved": True}
+        lessons = {"entries": 1, "standings": {"RECORDED": 1},
+                   "drain": {"recorded": 1, "threshold": 7, "due": False,
+                             "refuses": False},
+                   "defects": [], "claims_clean": True}
+        refs = {"observed_refs": ["main"], "non_main_refs": []}
+        with (
+            patch.object(compression, "_git", return_value="abc123\n"),
+            patch.object(compression, "_commit_paths", return_value=[]),
+            patch.object(compression, "phase_reading", return_value=phase),
+            patch.object(compression, "lessons_reading", return_value=lessons),
+            patch.object(compression, "local_refs", return_value=refs),
+        ):
+            result = compression.reading("daily", Path("/not-read"))
+        self.assertEqual("NONE_OBSERVATION_ONLY", result["authority"])
+        self.assertEqual("abc123", result["subject_revision"])
+        self.assertEqual(phase, result["phase"])
+
+    def test_an_unknown_mode_is_refused_before_reading(self):
+        with self.assertRaises(ValueError):
+            compression.reading("monthly", Path("/not-read"))
 
 
 if __name__ == "__main__":

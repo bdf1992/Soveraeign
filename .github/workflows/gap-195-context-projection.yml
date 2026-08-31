@@ -20,6 +20,22 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Restore the full Node Interface census test and advance its measured counts
+        shell: bash
+        run: |
+          set -euo pipefail
+          git show 2f2f387b14735164cc0b2025fbc1a193c9b723c7:scripts/tests/test_node_interface.py > scripts/tests/test_node_interface.py
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('scripts/tests/test_node_interface.py')
+          text = path.read_text(encoding='utf-8')
+          old = '''    def test_evidence_layers_remain_independent(self) -> None:\n        self.assertEqual(self.document["counts"], {\n            "declared": 134, "bound": 134, "policy_active": 46,\n            "reachable": 5, "observed": 0,\n        })\n'''
+          new = '''    def test_evidence_layers_remain_independent(self) -> None:\n        # record.project-evidence adds one declared, bound and policy-active read.\n        # It adds no transport route or observation, so those layers stay fixed.\n        self.assertEqual(self.document["counts"], {\n            "declared": 135, "bound": 135, "policy_active": 47,\n            "reachable": 5, "observed": 0,\n        })\n'''
+          if old not in text:
+              raise SystemExit('expected Node Interface census block absent')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8', newline='\n')
+          PY
+
       - name: Classify the prepared human horizon
         shell: bash
         run: |
@@ -52,7 +68,7 @@ jobs:
           bad=0
           while IFS= read -r path; do
             case "$path" in
-              .clarity/coverage.json|PRD.md|CLAUDE.md|contracts/phase-1-5-phase-ii-horizon.md|contracts/capability-offices.json|contracts/fixtures/capability-map.reference.json|contracts/fixtures/node-interface.reference.json|scripts/sovdocs/facets.py|scripts/sovsession/phase_context.py|scripts/sovsession/brief.py|scripts/tests/test_session_phase_context.py|services/record/SERVICE-SPEC.md|services/record/contracts/service.json|services/record/src/soveraeign_record_service/cli.py|services/record/src/soveraeign_record_service/projections.py|services/record/tests/test_evidence_projection.py|docs/surface.html|docs/documentation.html|.github/workflows/gap-195-context-projection.yml|.github/scripts/gap_195_context_projection.py)
+              .clarity/coverage.json|PRD.md|CLAUDE.md|contracts/phase-1-5-phase-ii-horizon.md|contracts/capability-offices.json|contracts/fixtures/capability-map.reference.json|contracts/fixtures/node-interface.reference.json|scripts/sovdocs/facets.py|scripts/sovsession/phase_context.py|scripts/sovsession/brief.py|scripts/tests/test_session_phase_context.py|scripts/tests/test_node_interface.py|services/record/SERVICE-SPEC.md|services/record/contracts/service.json|services/record/src/soveraeign_record_service/cli.py|services/record/src/soveraeign_record_service/projections.py|services/record/tests/test_evidence_projection.py|diagrams/*.md|docs/surface.html|docs/documentation.html|.github/workflows/gap-195-context-projection.yml|.github/scripts/gap_195_context_projection.py)
                 ;;
               *)
                 echo "UNEXPECTED context/projection path: $path"
@@ -77,9 +93,11 @@ jobs:
           set -euo pipefail
           python -m unittest scripts.tests.test_session_phase_context
           python -m unittest discover -s services/record/tests -p 'test_evidence_projection.py'
+          python -m unittest scripts.tests.test_node_interface.ProjectionFacts.test_evidence_layers_remain_independent
           python scripts/sov_capability.py check
           python scripts/sov_interface.py check
           python scripts/sov_surface.py check
+          python scripts/sov_diagrams.py
           python scripts/sov_docs.py check
           python scripts/sov_clarity.py check
           python scripts/lint.py

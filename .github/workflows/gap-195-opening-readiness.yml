@@ -23,6 +23,12 @@ jobs:
       - name: Apply role, discovery, and rehearsal readiness
         run: python .github/scripts/gap_195_opening_readiness.py apply
 
+      - name: Split phase position from the signpost reader
+        shell: bash
+        run: |
+          python .github/scripts/gap_195_opening_readiness_repair.py
+          rm .github/scripts/gap_195_opening_readiness_repair.py
+
       - name: Retire carrier and refresh derived state
         run: python .github/scripts/gap_195_opening_readiness.py finalize
 
@@ -33,7 +39,7 @@ jobs:
           bad=0
           while IFS= read -r path; do
             case "$path" in
-              .clarity/coverage.json|CLAUDE.md|.claude/README.md|.claude/agents/sov-worker.md|.claude/agents/sov-orchestrator.md|.claude/agents/sov-witness.md|.claude/agents/sov-controller.md|.claude/workflows/sov-loop.js|scripts/sov_next.py|scripts/sov_opening_readiness.py|scripts/tests/test_sov_loop.py|scripts/tests/test_sov_next.py|scripts/tests/test_session_phase_context.py|docs/documentation.html|.github/workflows/gap-195-opening-readiness.yml|.github/scripts/gap_195_opening_readiness.py)
+              .clarity/coverage.json|CLAUDE.md|.claude/README.md|.claude/agents/sov-worker.md|.claude/agents/sov-orchestrator.md|.claude/agents/sov-witness.md|.claude/agents/sov-controller.md|.claude/workflows/sov-loop.js|scripts/sov_next.py|scripts/sovnext_phase.py|scripts/sov_opening_readiness.py|scripts/tests/test_sov_loop.py|scripts/tests/test_sov_next.py|scripts/tests/test_session_phase_context.py|docs/documentation.html|.github/workflows/gap-195-opening-readiness.yml|.github/scripts/gap_195_opening_readiness.py|.github/scripts/gap_195_opening_readiness_repair.py)
                 ;;
               *)
                 echo "UNEXPECTED opening-readiness path: $path"

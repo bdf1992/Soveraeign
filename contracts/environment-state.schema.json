@@ -1,0 +1,192 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/environment-state.schema.json",
+  "title": "Soveraeign Local Environment State v1",
+  "description": "A local projection of environment instances, trunk instances, workspace bindings, promotion crossings, append-preserving receipts, and accepted deployment history. This state grants no authority and owns no work.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "pattern_id",
+    "pattern_digest",
+    "environment_instances",
+    "trunk_instances",
+    "workspace_bindings",
+    "crossing_records",
+    "deployments",
+    "receipts",
+    "sequence"
+  ],
+  "properties": {
+    "schema": {"const": "soveraeign-local-environment-state/v1"},
+    "pattern_id": {"type": "string", "minLength": 1},
+    "pattern_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "environment_instances": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/environmentInstance"}
+    },
+    "trunk_instances": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/trunkInstance"}
+    },
+    "workspace_bindings": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/workspaceBinding"}
+    },
+    "crossing_records": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/crossing"}
+    },
+    "deployments": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/deployment"}
+    },
+    "receipts": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/receipt"}
+    },
+    "sequence": {"type": "integer", "minimum": 0}
+  },
+  "$defs": {
+    "environmentInstance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["instance_id", "definition_id"],
+      "properties": {
+        "instance_id": {"type": "string", "minLength": 1},
+        "definition_id": {"type": "string", "minLength": 1}
+      }
+    },
+    "trunkInstance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["instance_id", "definition_id"],
+      "properties": {
+        "instance_id": {"type": "string", "minLength": 1},
+        "definition_id": {"type": "string", "minLength": 1}
+      }
+    },
+    "workspaceBinding": {
+      "type": "object",
+      "required": [
+        "lease_id",
+        "concern",
+        "principal_id",
+        "fence",
+        "workspace",
+        "branch",
+        "base_revision",
+        "status"
+      ],
+      "properties": {
+        "lease_id": {"type": "string", "minLength": 1},
+        "concern": {"type": "string", "minLength": 1},
+        "principal_id": {"type": "string", "minLength": 1},
+        "fence": {"type": "integer", "minimum": 1},
+        "workspace": {"type": "string", "minLength": 1},
+        "branch": {"type": "string", "minLength": 1},
+        "base_revision": {"type": "string", "minLength": 1},
+        "status": {"enum": ["ACTIVE", "SUPERSEDED", "RELEASED"]},
+        "superseded_by_fence": {"type": "integer", "minimum": 1},
+        "release_reason": {"type": "string", "minLength": 1},
+        "release_fence": {"type": "integer", "minimum": 1}
+      }
+    },
+    "crossing": {
+      "type": "object",
+      "required": [
+        "crossing_id",
+        "status",
+        "trunk_instance",
+        "source_instance",
+        "target_instance",
+        "source_definition",
+        "target_definition",
+        "revision",
+        "artifact_digest",
+        "config_digest",
+        "actor",
+        "integration_base",
+        "evidence",
+        "serialization",
+        "receipt_ids",
+        "receipt"
+      ],
+      "properties": {
+        "crossing_id": {"type": "string", "minLength": 1},
+        "status": {"enum": ["PROPOSED", "ADMITTED", "REFUSED", "LANDED"]},
+        "trunk_instance": {"type": "string", "minLength": 1},
+        "source_instance": {"type": "string", "minLength": 1},
+        "target_instance": {"type": "string", "minLength": 1},
+        "source_definition": {"type": "string", "minLength": 1},
+        "target_definition": {"type": "string", "minLength": 1},
+        "revision": {"type": "string", "minLength": 1},
+        "artifact_digest": {"type": "string", "minLength": 1},
+        "config_digest": {"type": "string", "minLength": 1},
+        "actor": {"type": "string", "minLength": 1},
+        "integration_base": {"type": "string", "minLength": 1},
+        "evidence": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "serialization": {"enum": ["NONE", "INTEGRATION"]},
+        "receipt_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "receipt": {"anyOf": [{"$ref": "#/$defs/receipt"}, {"type": "null"}]},
+        "witness": {"type": "string"},
+        "authority": {"anyOf": [{"type": "string"}, {"type": "null"}]},
+        "deployment_id": {"type": "string"}
+      }
+    },
+    "deployment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "deployment_id",
+        "trunk_instance",
+        "environment_instance",
+        "revision",
+        "artifact_digest",
+        "config_digest",
+        "crossing_id",
+        "actor",
+        "witness",
+        "accepted"
+      ],
+      "properties": {
+        "deployment_id": {"type": "string", "minLength": 1},
+        "trunk_instance": {"type": "string", "minLength": 1},
+        "environment_instance": {"type": "string", "minLength": 1},
+        "revision": {"type": "string", "minLength": 1},
+        "artifact_digest": {"type": "string", "minLength": 1},
+        "config_digest": {"type": "string", "minLength": 1},
+        "crossing_id": {"type": "string", "minLength": 1},
+        "actor": {"type": "string", "minLength": 1},
+        "witness": {"type": "string", "minLength": 1},
+        "accepted": {"const": true}
+      }
+    },
+    "receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "receipt_id",
+        "crossing_id",
+        "outcome",
+        "reason",
+        "actor",
+        "witness",
+        "revision",
+        "artifact_digest",
+        "target_instance"
+      ],
+      "properties": {
+        "receipt_id": {"type": "string", "minLength": 1},
+        "crossing_id": {"type": "string", "minLength": 1},
+        "outcome": {"enum": ["ADMITTED", "REFUSED", "LANDED"]},
+        "reason": {"anyOf": [{"type": "string"}, {"type": "null"}]},
+        "actor": {"type": "string", "minLength": 1},
+        "witness": {"anyOf": [{"type": "string"}, {"type": "null"}]},
+        "revision": {"type": "string", "minLength": 1},
+        "artifact_digest": {"type": "string", "minLength": 1},
+        "target_instance": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

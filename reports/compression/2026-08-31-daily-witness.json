@@ -1,0 +1,212 @@
+{
+  "schema": "soveraeign-daily-compression-witness/v1",
+  "observed_revision": "f1ee8f29391afe342824b31fdf0aea02fdc2daa4",
+  "observed_at": "2026-08-31T20:19:00-05:00",
+  "role": "independent_observer",
+  "phase_reading": {
+    "phase_i": "CLOSED_INCOMPLETE",
+    "current_phase": "NONE_ACTIVE",
+    "next_gate": "SUCCESSOR_PHASE_OPENING",
+    "historical_authority_confusion": []
+  },
+  "fresh_reader": {
+    "result": "FRICTION",
+    "entry_points_used": ["README.md", "STATUS.yaml", "AGENTS.md", "SOV.md"],
+    "execution_spine_discovered": true,
+    "lifecycle_spine_discovered": true,
+    "oral_history_required": [],
+    "ambiguities": [
+      {
+        "subject": "root work-lifecycle orientation",
+        "reading": "README.md directly exposes principal -> session -> grant -> operation -> Record Service journal -> projection, but does not expose the separate CONCERN -> CUSTODY -> LEASE -> CLOSURE -> LANDING -> SETTLEMENT -> QUEUE spine on the observed main revision.",
+        "resolution_path": ["search current repository for concern/custody/lease", "contracts/concern-admission.json", "scripts/sovcustody/lifecycle.py", "scripts/README.md"],
+        "oral_history_needed": false
+      },
+      {
+        "subject": "concern binding at root",
+        "reading": "Current README session registration shows --intent only even though current session mechanics and AGENTS.md distinguish concern attribution from custody, lease, and authority.",
+        "oral_history_needed": false
+      }
+    ]
+  },
+  "lessons": {
+    "effective_checked": [
+      {
+        "lesson": "L-0001",
+        "claim": "orientation snapshot drift is mechanically checked",
+        "carrier": "scripts/sov_snapshot.py check",
+        "active_path": "scripts/sovverify/checks.py -> orientation snapshot -> scripts/verify.py -> .github/workflows/verify.yml",
+        "verification": "GitHub Actions verify run 33456335560 executed python scripts/verify.py successfully on the observed SHA under Python 3.11 and 3.12."
+      },
+      {
+        "lesson": "L-0008",
+        "claim": "phase progress floor is mechanically checked",
+        "carrier": "scripts/sov_phase_progress.py check",
+        "active_path": "scripts/sovverify/checks.py -> phase progress floor -> scripts/verify.py -> .github/workflows/verify.yml",
+        "verification": "GitHub Actions verify run 33456335560 executed python scripts/verify.py successfully on the observed SHA under Python 3.11 and 3.12."
+      },
+      {
+        "lesson": "L-0009",
+        "claim": "predicate/control granularity join remains on the executable phase-progress check",
+        "carrier": "scripts/sov_phase_progress.py check",
+        "active_path": "scripts/sovverify/checks.py -> phase progress floor -> scripts/verify.py -> .github/workflows/verify.yml",
+        "verification": "GitHub Actions verify run 33456335560 executed python scripts/verify.py successfully on the observed SHA under Python 3.11 and 3.12."
+      }
+    ],
+    "false_effective": [],
+    "drain_state": {
+      "recorded": 8,
+      "threshold": 7,
+      "due": true,
+      "blocking_gate": false,
+      "reading": "LESSONS.md explicitly records the drain as debt; scripts/sov_lessons.py check is active, but the threshold itself does not refuse a run."
+    },
+    "candidate_compressions": []
+  },
+  "observations": [
+    {
+      "subject": "phase authority",
+      "claim": "Phase I is terminal evidence and no current phase is active.",
+      "evidence": ["STATUS.yaml: phase: NONE_ACTIVE; only seat:root may open a phase", "contracts/phases.json: phase:i terminal CLOSED_INCOMPLETE, succeeded_by null", "contracts/SUCCESSOR-PREP.md: historical Phase-I material is evidence only and carries no current authority"],
+      "result": "SUPPORTED",
+      "independent": true
+    },
+    {
+      "subject": "execution spine",
+      "claim": "A fresh reader can discover principal -> session -> grant -> operation -> record -> projection from a normal root entry surface.",
+      "evidence": ["README.md Start here and execution-spine section", "SOV.md fresh-task context order"],
+      "result": "SUPPORTED",
+      "independent": true
+    },
+    {
+      "subject": "work lifecycle root discoverability",
+      "claim": "The separate CONCERN -> CUSTODY -> LEASE -> CLOSURE -> LANDING -> SETTLEMENT -> QUEUE lifecycle is exposed by the same normal root orientation surface.",
+      "evidence": ["README.md on observed SHA does not present the lifecycle chain", "contracts/concern-admission.json owns and defines the seven roles and six transitions", "scripts/sovcustody/lifecycle.py declares the seven required roles", "draft PR #206 proposes only a README compression of this already-existing lifecycle"],
+      "result": "REFUTED",
+      "independent": true
+    },
+    {
+      "subject": "identity, attribution, custody, authority",
+      "claim": "Current mechanics keep identity, concern attribution, custody, lease possession, and grant authority distinct.",
+      "evidence": ["AGENTS.md: concern is attribution/routing, not authority; taking custody is separate", "SOV.md: concern binding without lease is attribution, not custody; no lease/concern/queue/identity supplies authority", "contracts/concern-admission.json: custody grants no authority; lease is active possession under a grant"],
+      "result": "SUPPORTED",
+      "independent": true
+    },
+    {
+      "subject": "report, observation, execution, landing, settlement",
+      "claim": "Current work semantics do not collapse executor report, independent observation, landing, and settlement.",
+      "evidence": ["contracts/concern-admission.json: landing is governed integration, settlement recomputes what the landed result did, worker presentation differs from branch landing and custody closure", "SOV.md: a participant cannot witness or settle its own output", "scripts/sovverify/checks.py: witness and settlement-related checks state independent derivation warrants"],
+      "result": "SUPPORTED",
+      "independent": true
+    },
+    {
+      "subject": "EFFECTIVE lessons",
+      "claim": "Every lesson currently claiming EFFECTIVE names a carrier that is on the active repository verification path.",
+      "evidence": ["LESSONS.md: L-0001, L-0008, L-0009 are EFFECTIVE", "scripts/sovverify/checks.py: orientation snapshot, lessons loop, phase progress floor", ".github/workflows/verify.yml: python scripts/verify.py on main push and pull requests", "Actions run 33456335560: repository (3.11) success and repository (3.12) success at observed SHA"],
+      "result": "SUPPORTED",
+      "independent": true
+    },
+    {
+      "subject": "recent cold-start/context work",
+      "claim": "Recent work converged on phase-first context, concern attribution, and executable qualification without changing current phase authority.",
+      "evidence": ["recent main commits include merged participant/session foundation, qualification instrumentation, concern-scoped session preparation, and phase-authority-first cold-start context", "observed STATUS.yaml remains NONE_ACTIVE", "observed contracts/phases.json contains no active successor", "Actions verify is green at observed SHA", "In the same ~24h window, PR #206 produced three red workflow surfaces that all converge on one shared scripts/verify.py failure; they are correlated as one branch-verification subject."],
+      "result": "SUPPORTED",
+      "independent": true
+    },
+    {
+      "subject": "current historical residue",
+      "claim": "The current reader set still makes unresolved closed-record seam residue visible rather than presenting the repository as only ordinary forward readiness.",
+      "evidence": ["OPEN-SEAMS.md carries S1, S6, S7, S8, S10, S12-S19, S22-S25", "contracts/SUCCESSOR-PREP.md repeats the carried residue and states historical Phase-I material has no current authority"],
+      "result": "SUPPORTED",
+      "independent": true
+    },
+    {
+      "subject": "branch truth population",
+      "claim": "Existing non-main preparation/rehearsal branches do not currently override phase authority.",
+      "evidence": ["GitHub branch listing shows 8 branches including protected main and preparation/rehearsal branches", "AGENTS.md requires STATUS.yaml + contracts/phases.json reconciliation before prepared material", "scripts/sovnext_phase.py renders prepared horizons as context only with no standing when no phase is active"],
+      "result": "SUPPORTED",
+      "independent": true
+    }
+  ],
+  "defect_correlation": [
+    {
+      "signature": "fresh-reader-root-lifecycle-spine-not-compressed",
+      "underlying_subject": "root orientation does not project the existing work lifecycle beside the execution spine",
+      "observations": ["This witness began from README.md and discovered the execution spine directly but needed deeper repository search and contract/script traversal to reconstruct the lifecycle."],
+      "unique_defect": true,
+      "useful_corroboration": ["Separately, draft PR #206 reports the same root-entry omission and proposes a one-file README projection repair; it is a worker/change report, not independent observation, so it is not counted as a repeated observation."],
+      "redundant_recomputation": []
+    },
+    {
+      "signature": "pr-206-root-verify-red-multiplied-across-workflows",
+      "underlying_subject": "the unmerged PR #206 head b32591d32486b124270d123e92ab145ef209cb37 fails the repository root verifier; the exact failing subcheck is unattestable from workflow metadata alone",
+      "observations": ["Standalone verify workflow 33456039355: repository (3.11) failed at Verify repository; the 3.12 sibling was cancelled by fail-fast.", "Hygiene repair workflow 33456039710: hygiene defeating tests and scripts/lint.py passed, then Root verification failed; the sibling was cancelled.", "QA lanes workflow 33456039319: mutation admission passed and red adversarial screening passed, while blue construction failed at Repository verification; downstream blue-required and purple were skipped."],
+      "unique_defect": false,
+      "useful_corroboration": ["Hygiene narrows the failure away from lint/hygiene and onto the shared root verifier.", "QA narrows the failure away from mutation admission and the red lane and onto the same shared root verifier."],
+      "redundant_recomputation": ["verify, hygiene Root verification, and QA blue construction all invoke python scripts/verify.py on the same PR head; they are three workflow projections of one underlying branch-verification failure, not three defects."]
+    }
+  ],
+  "representation_pressure": [
+    {
+      "subject": "carried seam list",
+      "producer": "contracts/SUCCESSOR-PREP.md per AGENTS.md ownership map",
+      "additional_reader": "OPEN-SEAMS.md",
+      "reading": "Both currently agree on the carried seam population, but the same list is hand-readable in two current files and no direct derivation check between the two was discovered in this run.",
+      "result": "PRESSURE_NOT_CURRENT_DRIFT"
+    },
+    {
+      "subject": "STATUS.yaml flat namespace",
+      "reading": "contracts/status-claims.json explicitly records that eight subjects use duplicate *_status keys and that a normal YAML reader would keep only the last; the repository compensates with a strict line reader and typed crosswalk until STATUS becomes journal-derived.",
+      "result": "PRESSURE_MECHANICALLY_GUARDED"
+    },
+    {
+      "subject": "branch population",
+      "reading": "Eight branches exist at observation time, including preparation/rehearsal branches. Current phase-first readers explicitly deny these standing while phase is NONE_ACTIVE.",
+      "result": "PRESSURE_CONTAINED"
+    }
+  ],
+  "gate_pressure": [
+    {
+      "subject": "lessons drain",
+      "reading": "8 RECORDED against threshold 7; explicitly debt, not a blocking gate.",
+      "result": "NON_BLOCKING_DEBT"
+    },
+    {
+      "subject": "repository verify",
+      "reading": "Verify is an active check carrier and is green at the observed SHA; this establishes execution of checks, not acceptance, witness standing, landing settlement, or phase state.",
+      "result": "EVIDENCE_NOT_SETTLEMENT"
+    },
+    {
+      "subject": "current next gate",
+      "reading": "STATUS.yaml names SUCCESSOR_PHASE_OPENING and states only seat:root may open a phase. This run creates no new owner question and does not evaluate or perform that transition.",
+      "result": "EXISTING_EXACT_OWNER_TRANSITION"
+    },
+    {
+      "subject": "PR #206 repeated red lanes",
+      "reading": "verify, hygiene repair, and QA blue all fail on the same unmerged README-only PR head through the shared root verifier. Hygiene's lint steps pass and QA mutation/red steps pass, so these are not three independent defects.",
+      "result": "ONE_SUBJECT_THREE_WORKFLOW_SIGNALS"
+    }
+  ],
+  "routing": {
+    "report": [
+      {"subject": "fresh-reader result", "finding": "FRICTION: both spines are discoverable without oral history, but only the execution spine is compressed into the root README."},
+      {"subject": "phase reading", "finding": "Phase I is clearly terminal historical evidence; current phase is NONE_ACTIVE."},
+      {"subject": "lessons", "finding": "All three EFFECTIVE lessons have active verification carriers; the 8/7 drain is visible non-blocking debt."},
+      {"subject": "historical residue", "finding": "Current OPEN-SEAMS and closed-books synthesis deliberately preserve unresolved carried seams, so the historical gap remains visibly present even though it is not authority."}
+    ],
+    "lesson_candidates": [],
+    "owner_decision_candidates": [],
+    "concern_candidates": [],
+    "no_action": [
+      {"subject": "root lifecycle orientation repair", "reason": "Do not mint duplicate work: draft PR #206 already carries the exact one-file compression repair."},
+      {"subject": "lesson drain", "reason": "Existing lessons policy already records the threshold breach as debt and explicitly declines to make it a gate."},
+      {"subject": "preparation/rehearsal branches", "reason": "Current phase-first readers contain their authority risk; branch existence alone is not a defect."},
+      {"subject": "carried seam duplication", "reason": "The two current lists agree in this observation; record representation pressure without manufacturing a new obligation solely from duplication risk."}
+    ]
+  },
+  "gap": {
+    "verdict": "GAP_STILL_VISIBLE",
+    "reasons": ["A fresh participant can reconstruct both paths without oral history, but the root entry surface directly teaches only the execution spine; the work lifecycle still requires deeper archaeology. Draft PR #206 exists specifically to compress that gap and is not merged on the observed revision.", "The current reader set still deliberately presents a substantial carried seam inventory from the closed record. That is honest and non-authoritative, but it means the remaining repository state is still visibly shaped by historical reconciliation rather than only ordinary forward readiness."],
+    "smallest_remaining_gap": ["On the observed revision, the existing seven-stage work lifecycle is not yet projected beside the execution spine at the root entry surface.", "Current closed-books readers still expose unresolved carried seam residue; this witness does not turn that residue into new concerns or owner questions."]
+  }
+}

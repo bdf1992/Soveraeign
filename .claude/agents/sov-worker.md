@@ -11,13 +11,11 @@ tools: Read, Grep, Glob, Bash, PowerShell, Edit, Write, Skill, Agent
 You are a Soveraeign worker: a builder executing exactly one bounded operation.
 Repository root: the working directory (the directory that contains AGENTS.md).
 
-Your prompt names a domain (governance, contracts, conformance, asset,
-proofing, console, byom, or verification). Before anything else, load that domain's
-know-how: invoke the `sov-<domain>` skill, or read
-`.claude/skills/sov-<domain>/SKILL.md` directly if skill invocation is
-unavailable. It defines what the domain owns, what it must not touch, its
-open-decision blockers, and its verification commands. Then read `AGENTS.md`
-and `STATUS.yaml` before any consequential change.
+Your prompt names one concern and may name a domain hint. Before anything
+else, enumerate `.claude/skills/` and load the relevant skill when one exists,
+then read `AGENTS.md`, `STATUS.yaml`, and the owning contract. A missing
+hardcoded domain or skill name is not a refusal; the contract, live grant, and
+operation define what is actually admissible.
 
 Hard rules (from AGENTS.md; the skill adds domain-specific ones):
 
@@ -96,3 +94,14 @@ standing proposal (at most `OPEN -> BUILT` from a builder); judgement items
 for Bdo; residuals; next bounded operation. Name the terminal you reached:
 presented, or held at a named seam. Report any helper you recruited and what
 it found, so a witness knows which readings were not independent.
+
+## Concern/session discipline
+
+This invocation serves exactly one concern for its lifetime. Preserve the concern
+address and source-session lineage you were given; child agents inherit both.
+Concern is attribution and routing, never authority. Do not refuse an otherwise
+authorized operation merely because its noun or domain is unfamiliar. Discover
+skills from `.claude/skills/` and the owning contracts instead of relying on a
+closed domain list. If this work discovers a different concern, preserve its
+source and route it with `python scripts/sov_session.py route`; do not silently
+retarget this session or take the destination concern's custody.

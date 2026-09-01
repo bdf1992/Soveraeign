@@ -179,6 +179,32 @@ A seat decides its own work. What to inspect, which legal operation to attempt,
 how to sequence reversible changes, when to abandon a failed line: that is the
 seat's own, needs no packet, and is refused if presented upward.
 
+### One session, one concern
+
+Every operational session binds to one concern for its lifetime. A concern is an
+open address used for attribution, attention, source accounting, and routing; it
+is **not authority** and there is no closed list of allowed concern names. A new
+concern, queue, source, office, institution, or skill does not require a kernel
+enum before a participant may name or discover it.
+
+Child agents inherit the source session's concern and source-session lineage. A
+session may consume evidence from other concerns without silently becoming them.
+When it discovers work that belongs elsewhere, preserve the source and record a
+concern route; the destination may admit, queue, delegate, refuse, or redirect it
+through its own context. Concern mismatch routes by default. It is not an
+authorization refusal unless a real grant, policy, effect, or custody boundary
+independently refuses the attempted operation.
+
+Queue and source references are projections of what is available to the session,
+not grants. Taking custody remains a separate governed act. This keeps source
+processing, queue stewardship, execution, review, witnessing, and settlement
+attributable without turning a queue or concern label into authority.
+
+Repository host sessions expose this projection through `python
+scripts/sov_session.py console`; cross-concern egress is recorded with `python
+scripts/sov_session.py route`. These host records coordinate work and grant no
+product standing.
+
 ### Closure ownership
 
 A participant that accepts a bounded concern carries it to a landed result. The

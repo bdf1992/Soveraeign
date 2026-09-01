@@ -21,10 +21,10 @@ not make this loop a federation of sovereign nodes.
 
 Control rules:
 
-- Decompose the goal by domain (governance, contracts, conformance, asset,
-  proofing, console, byom, verification) and dispatch the matching workflows or
-  agents. Consult each domain's `sov-<domain>` skill and the current open
-  decisions in `STATUS.yaml` for what is legitimately available.
+- Decompose only when the concern actually crosses owned boundaries. Discover
+  available skills from `.claude/skills/` and owning contracts rather than a
+  closed domain vocabulary. A new concern or skill name is not itself a reason
+  to refuse or escalate.
 - When the requested end state is gated, dispatch the smallest ungated
   precursor that materially advances it, if one exists, and queue the gate for
   Bdo. A blocker forbids bypass; it does not forbid useful preparation.
@@ -93,3 +93,14 @@ because X was absorbed, Y landed, Z closed; 31 remain because of these 4 actual
 blockers." A beautifully organized large queue is not the objective; a small
 truthful one is, and only work makes it smaller. Do not create bookkeeping to
 explain bookkeeping.
+
+## Concern/session discipline
+
+This invocation serves exactly one concern for its lifetime. Preserve the concern
+address and source-session lineage you were given; child agents inherit both.
+Concern is attribution and routing, never authority. Do not refuse an otherwise
+authorized operation merely because its noun or domain is unfamiliar. Discover
+skills from `.claude/skills/` and the owning contracts instead of relying on a
+closed domain list. If this work discovers a different concern, preserve its
+source and route it with `python scripts/sov_session.py route`; do not silently
+retarget this session or take the destination concern's custody.

@@ -122,12 +122,13 @@ def _ensure_registered(context: dict[str, Any]) -> None:
     record = store.sessions(context["directory"]).get(context["session"])
     if record and record.get("registered"):
         return
-    from sovsession import brief as briefmod
+    from sovsession import brief as briefmod, concerns
     store.append(context["directory"], store.SESSIONS_LOG, {
         "event": "register", "session": context["session"],
         "pid": int(os.environ.get("CLAUDE_PID", 0) or 0),
         "tree": context["tree"], "branch": briefmod.branch_of(context["root"]),
         "intent": "registered on first write, not at session start",
+        **concerns.session_fields(context["session"]),
     })
 
 
@@ -151,12 +152,12 @@ def mode_start(payload: dict[str, Any]) -> None:
     """Register this session and print the briefing as its opening context."""
     context = _context(payload)
     store = context["store"]
-    from sovsession import brief as briefmod
+    from sovsession import brief as briefmod, concerns
     store.append(context["directory"], store.SESSIONS_LOG, {
         "event": "register", "session": context["session"],
         "pid": int(os.environ.get("CLAUDE_PID", 0) or 0),
         "tree": context["tree"], "branch": briefmod.branch_of(context["root"]),
-        "intent": "",
+        "intent": "", **concerns.session_fields(context["session"]),
     })
     print(briefmod.render(briefmod.collect(
         context["root"], context["directory"], context["session"], context["tree"])))

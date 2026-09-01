@@ -55,6 +55,10 @@ def build_parser() -> argparse.ArgumentParser:
 
     register = subparsers.add_parser("register", help="record this session as live")
     register.add_argument("--intent", help="what this session is building")
+    register.add_argument("--concern", help="open concern address; attribution, never authority")
+    register.add_argument("--source-session", help="session that sourced this session")
+    register.add_argument("--source", dest="sources", action="append", help="source address; repeatable")
+    register.add_argument("--queue", dest="queues", action="append", help="available queue reference; repeatable")
     register.set_defaults(handler=commands.cmd_register)
 
     principal = subparsers.add_parser("principal",
@@ -85,6 +89,15 @@ def build_parser() -> argparse.ArgumentParser:
         "list", help="live sessions and claims").set_defaults(handler=commands.cmd_list)
     subparsers.add_parser(
         "brief", help="the starting-session briefing").set_defaults(handler=commands.cmd_brief)
+    subparsers.add_parser(
+        "console", help="concern-scoped internal work console").set_defaults(handler=commands.cmd_console)
+
+    route = subparsers.add_parser("route", help="record work sourced for another concern")
+    route.add_argument("--to", dest="to_concern", required=True, help="destination concern address")
+    route.add_argument("--source", dest="sources", action="append", help="source address; repeatable")
+    route.add_argument("--queue", help="destination queue reference if known")
+    route.add_argument("--disposition", default="PENDING", help="open disposition word; not a closed enum")
+    route.set_defaults(handler=commands.cmd_route)
     subparsers.add_parser(
         "contested",
         help="uncommitted paths another live session holds").set_defaults(

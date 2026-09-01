@@ -154,6 +154,12 @@ def assess(root: Path = ROOT) -> dict:
         "finding_contract": (root / "contracts/finding.schema.json").is_file(),
         "phase_custody_reader": (root / "scripts/sovcustody/collections.py").is_file(),
         "phase_progress_reader": (root / "scripts/sov_active_phase_progress.py").is_file(),
+        "session_concern_accounting": _has(root / "scripts/sovsession/concerns.py",
+                                           "enumerate_concerns", "authority_effect",
+                                           "custody_effect", "available_skills"),
+        "concern_scoped_workflow": _has(root / ".claude/workflows/sov-loop.js",
+                                         "concern_id", "cross_concern_routes",
+                                         "no closed domain vocabulary"),
     }
     service_path = root / "services/record/contracts/service.json"
     if service_path.is_file():

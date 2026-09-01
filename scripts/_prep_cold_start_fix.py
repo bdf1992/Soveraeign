@@ -1,4 +1,6 @@
 from pathlib import Path
+import re
+import subprocess
 
 # Keep the opening sentinel wrap-safe.
 path = Path("scripts/sov_opening_readiness.py")
@@ -36,3 +38,16 @@ if old not in text:
     raise SystemExit("generated phase precedence render block missing")
 text = text.replace(old, new, 1)
 next_path.write_text(text, encoding="utf-8", newline="\n")
+
+# Snapshot counts committed state by design. Prep-carrier commits are real commits,
+# so refresh the informational claim to this exact carrier HEAD instead of widening
+# the accepted drift. The final self-clean commit may move it by one, well inside
+# the existing tolerance.
+claude = Path("CLAUDE.md")
+page = claude.read_text(encoding="utf-8")
+commits = int(subprocess.check_output(
+    ["git", "rev-list", "--count", "HEAD"], text=True).strip())
+updated, count = re.subn(r"(it now holds\n?)\s*\d+ commits,", lambda m: f"{m.group(1)}{commits} commits,", page, count=1)
+if count != 1:
+    raise SystemExit("CLAUDE.md current commit-count claim not found exactly once")
+claude.write_text(updated, encoding="utf-8", newline="\n")

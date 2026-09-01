@@ -22,10 +22,12 @@ jobs:
           python-version: '3.12'
 
       - name: Apply evidence-envelope readiness slice
-        run: python scripts/_prep_evidence_envelopes.py
+        run: |
+          python scripts/_prep_evidence_envelopes.py
+          python scripts/_prep_evidence_fix.py
 
       - name: Remove carrier from final tree
-        run: rm .github/workflows/prep-phase-1-5-evidence-envelopes.yml scripts/_prep_evidence_envelopes.py
+        run: rm .github/workflows/prep-phase-1-5-evidence-envelopes.yml scripts/_prep_evidence_envelopes.py scripts/_prep_evidence_fix.py
 
       - name: Rebuild derived repository projections
         run: |

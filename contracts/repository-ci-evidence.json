@@ -1,0 +1,57 @@
+{
+  "schema": "soveraeign-repository-ci-evidence/v1",
+  "purpose": "Distinguish evidence about an exact repository candidate from evidence about its composition with a target base.",
+  "depends_on": "contracts/repository-candidate-lifecycle.json",
+  "concern_owner": "#32",
+  "evidence_kinds": {
+    "CANDIDATE": {
+      "notation": "CI(C)",
+      "checkout": "candidate_commit",
+      "required_identity": [
+        "base_commit",
+        "candidate_commit",
+        "candidate_tree"
+      ],
+      "preconditions": [
+        "candidate_commit is HEAD",
+        "base_commit is an ancestor of candidate_commit",
+        "base_commit..candidate_commit contains no merge commits"
+      ],
+      "meaning": "The check executed the exact, reconciled candidate commit. It says nothing by itself about the synthetic merge or later settlement commit."
+    },
+    "INTEGRATION": {
+      "notation": "CI(B,C)",
+      "checkout": "integration_commit",
+      "required_identity": [
+        "base_commit",
+        "candidate_commit",
+        "candidate_tree",
+        "integration_commit",
+        "integration_tree"
+      ],
+      "meaning": "The check executed a merge composition whose parents are exactly the declared base and candidate. It does not transfer its result onto the candidate commit."
+    }
+  },
+  "invariants": [
+    "job names are not evidence of checkout identity",
+    "the runner derives observed commit and tree from Git",
+    "candidate evidence refuses when HEAD differs from candidate_commit",
+    "candidate evidence refuses when the current target base is not already contained by the candidate",
+    "candidate evidence refuses merge commits in the base..candidate construction range; reconcile by rebase before qualification",
+    "integration evidence refuses unless the integration commit has exactly base_commit then candidate_commit as parents",
+    "integration evidence may describe a stale or nonlinear candidate but cannot make that candidate qualification evidence",
+    "CI(C) and CI(B,C) are separate evidence and neither substitutes for the other",
+    "equal candidate and integration trees do not collapse their distinct commit subjects",
+    "a changed candidate commit or tree requires a new candidate evidence set"
+  ],
+  "producer_intent": {
+    "verify.candidate": "CANDIDATE",
+    "verify.repository": "INTEGRATION",
+    "qa-lanes.blue": "CANDIDATE",
+    "qa-lanes.mutation-admission": "CANDIDATE",
+    "gateway-observation.observe": "CANDIDATE",
+    "hygiene-repair.hygiene": "INTEGRATION",
+    "ticket-contract": "INTEGRATION",
+    "gateway-reference.participant": "INTEGRATION"
+  }
+}

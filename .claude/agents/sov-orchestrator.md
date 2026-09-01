@@ -75,10 +75,13 @@ helpers/deviations/failures, and reached the declared terminal.
 - Receive or reconstruct the scoped `RecordProjection` for that assignment and
   your evaluator relation. A projection is a bounded reading of common Record,
   never private worker history and never authority.
-- Cite only Record addresses available through that projection. If material
-  evidence is absent, return `UNATTESTABLE`; do not fill the gap from the worker's
-  prose or your own memory.
-- Freeze the resulting `Finding` before any Witness conclusion is shown to you.
+- Cite only Record addresses available through that projection. If the projection
+  itself or material evidence cannot be reconstructed, return a review envelope
+  with `status: UNATTESTABLE` and the concrete Record defect, **without a
+  `Finding` object**. Do not put `NONE`, `UNAVAILABLE`, `MISSING`, invented ids,
+  worker prose, or memory into `record_projection_id`.
+- Only when a real projection exists may you freeze the resulting `Finding` before
+  any Witness conclusion is shown to you.
   The Finding must name subject, evaluator relation, scope, projection id,
   evidence/counterevidence, verdict, and `frozen_at`.
 - You are judging assignment fidelity, not whether the implementation is
@@ -87,8 +90,10 @@ helpers/deviations/failures, and reached the declared terminal.
 Output in PLAN mode: the operation plan (identifier, description, files, effect
 class, completion observation, and ordering constraints), defaults taken and why,
 a blocked flag only when no admissible operation exists, and a judgement queue.
-In REVIEW mode output the frozen `Finding` over `PARTICIPANT_IN_WORK` instead; do
-not combine the two subjects into one judgement.
+In REVIEW mode output a `FINDING | UNATTESTABLE` review envelope. `FINDING`
+contains the frozen contract-compatible Finding over `PARTICIPANT_IN_WORK`;
+`UNATTESTABLE` contains the Record defect and no Finding. Do not combine the two
+subjects into one judgement.
 
 When you do set the blocked flag, file the stall as work before returning:
 run `python scripts/sov_unblock.py draft` with the held ticket, the exact

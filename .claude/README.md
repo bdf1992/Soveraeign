@@ -147,9 +147,11 @@ them.
 - `agents/sov-orchestrator.md` — stable orchestration role: PLAN turns an
   objective into a bounded operation; REVIEW forms a frozen Finding about
   `PARTICIPANT_IN_WORK`; it edits nothing and never witnesses the work.
-- `agents/sov-witness.md` — stable read-only witness; independently evaluates
-  `WORK` from a scoped Record projection, freezes its Finding before comparison,
-  and may dissent or report the evidence unattestable.
+- `agents/sov-witness.md` — stable witness, read-only over the work itself; it
+  independently evaluates `WORK` from a scoped Record projection, freezes a real
+  Finding before comparison, and may write only its own observation record after
+  that freeze. Missing projection/evidence returns an `UNATTESTABLE` envelope with
+  no placeholder Finding.
 - `agents/sov-controller.md` — control role for headless or scheduled runs:
   dispatches and aggregates; when given independently frozen Findings it may
   classify their evidence-backed relationship without ratifying either.
@@ -178,9 +180,13 @@ them.
 - `workflows/sov-loop.js` — one concern from selected to landed. Ordinary mode
   retains Select -> Plan -> Build -> Witness -> Land. Prepared `evidence_mode`
   inserts Orchestrator Review (`PARTICIPANT_IN_WORK`) and independent Witness
-  Review (`WORK`), freezes both Findings, then lets Controller Compare before the
-  landing gate. Missing Record evidence keeps that rehearsal in plan mode rather
-  than fabricating proof. The Land phase runs `python scripts/sov_land.py`, the only place in
+  Review (`WORK`). Each returns a `FINDING | UNATTESTABLE` envelope; only real
+  projection-backed Findings are compared. Missing Record evidence yields
+  `RECORD_DEFECT` and keeps the run in plan mode—there is no sentinel projection
+  id and no placeholder Finding. Controller Compare is a non-authoritative
+  classification envelope until the input Findings themselves are durably recorded
+  and projected, at which point Phase 1.5 can earn a real `FINDING_SET` Finding.
+  The Land phase runs `python scripts/sov_land.py`, the only place in
   the repository that commits and merges; it grades the request against
   `contracts/standing-grants.json` and refuses with the kernel's own refusal
   code when the grant does not cover it. Every other workflow here stops at an

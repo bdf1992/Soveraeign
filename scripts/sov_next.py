@@ -1,15 +1,13 @@
 #!/usr/bin/env python3
 """Reconcile every signpost that claims to say what happens next.
 
-Five documents name the next action in five vocabularies. This reads all of
-them, resolves the ``ROADMAP.md`` name crosswalk, grades the four-lane shape
-that roadmap declares, and prints one answer with
-every alias it travels under. It settles nothing: where the declared gate and
-the reachable work name different jobs, that disagreement is reported rather
-than resolved, because choosing between them is judgement and judgement is
+The ordering is deliberate: authoritative active phase, active-phase custody,
+work already drawn under that custody, then ROADMAP forecast. With no active
+phase, prepared successor horizons may be shown as context but gain no standing.
+The reader settles nothing: disagreement is reported rather than resolved, because
+choosing between competing authoritative claims is judgement and judgement is
 owner-held. Blocked edge is not blocked frontier: a declared gate stops one
-transition, and the reachable work printed here stays reachable regardless
-(``AGENTS.md``, Authority).
+transition, not every reachable operation (``AGENTS.md``, Authority).
 
 Every read is local. Nothing here reaches the coordination surface.
 """
@@ -38,6 +36,8 @@ def _text(relative: str) -> str:
 
 
 phase_position = sovnext_phase.position
+prepared_horizons = sovnext_phase.prepared_horizons
+active_custody_members = sovnext_phase.active_custody_members
 
 
 def declared_gate(status_text: str) -> str | None:
@@ -108,6 +108,8 @@ def epic_ready(issues: dict) -> list[dict[str, str]]:
                           "standing": metadata.get("standing", "?"),
                           "horizon": metadata.get("horizon", "?")})
     return sorted(ready, key=lambda row: int(row["number"]))
+
+
 
 
 def stale_views(root: Path) -> list[tuple[str, list[str]]]:
@@ -211,9 +213,11 @@ def main(argv: list[str] | None = None) -> int:
     gate = declared_gate(_text("STATUS.yaml"))
     phase_state, active_custodies = phase_position(ROOT)
     active_phase = phase_state.get("active")
+    horizons = prepared_horizons(ROOT)
     phases = roadmap_phases(roadmap_text)
     rows = crosswalk(roadmap_text)
     ready = epic_ready(issues)
+    active_members = active_custody_members(active_custodies, ready)
     stale = stale_views(ROOT)
     unsettled = closed_unsettled(issues)
     defects = resolve(rows, ready, phases, roadmap_text, issues=issues,
@@ -230,7 +234,9 @@ def main(argv: list[str] | None = None) -> int:
                         f"{', '.join(sorted(p for p in reachable_phases if p))}")
 
     if args.json:
-        print(json.dumps({"phase": phase_state, "active_phase_custodies": active_custodies,
+        print(json.dumps({"phase": phase_state, "prepared_horizons": horizons,
+                          "active_phase_custodies": active_custodies,
+                          "active_custody_members": active_members,
                           "declared_gate": gate, "crosswalk": rows, "ready": ready,
                           "stale_views": [{"view": v, "drifted": d} for v, d in stale],
                           "closed_unsettled": unsettled,
@@ -241,15 +247,10 @@ def main(argv: list[str] | None = None) -> int:
     print("== phase authority ==")
     for line in phase_context.render(phase_state):
         print(f"  {line}")
-    if active_phase is not None:
-        print("\n== active phase custody ==")
-        if active_custodies:
-            for custody in active_custodies:
-                print(f"  {custody.get('custody_id')}  {custody.get('terminal', custody.get('standing', '?'))}")
-        else:
-            print("  none — active phase has no phase-scoped custody; this is opening debt")
-
-    print("\n== roadmap reachable work ==")
+    print("")
+    for line in sovnext_phase.render_precedence(
+            active_phase, active_custodies, active_members, horizons):
+        print(line)
     for row in ready or []:
         alias = by_ticket.get(row["number"])
         print(f"  #{row['number']} [{row['horizon']}] {row['title']}")
@@ -290,8 +291,8 @@ def main(argv: list[str] | None = None) -> int:
         print("\nPASS: crosswalk and lanes resolve. A declared-gate disagreement "
               "stands; that is owner judgement, not a defect.")
         return 0
-    print("\nPASS: every crosswalk row resolves, every phase carries its four "
-          "lanes, and no signpost disagrees")
+    print("\nPASS: phase/custody precedence is explicit, every crosswalk row resolves, "
+          "every roadmap phase carries its four lanes, and no signpost disagrees")
     return 0
 
 

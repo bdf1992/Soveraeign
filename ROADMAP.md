@@ -7,10 +7,13 @@ Owner: Bdo, root seat · Drafted 2026-08-28 · lanes added 2026-08-28
 of how it gets there. A20 was redirected at the Phase-I boundary, so this
 decomposition is zero-state strategy input rather than an accepted forward model.
 Historical `Now`/`Next` lane text below is forecast, not the live work queue.
-While `STATUS.yaml` says `phase: NONE_ACTIVE`, issue #148 is the closure ledger and
-no product phase is active. Issue #173 is one candidate successor aperture and gains
-no priority or authority merely by existing. The estimate is expected to be wrong
-in detail and revised often; the PRD is not.
+Authoritative phase state in `STATUS.yaml` plus `contracts/phases.json` always precedes
+this forecast for next-work selection. `python scripts/sov_next.py` reads an active
+phase, its exit custodies, and work already drawn under those custodies before it shows
+roadmap candidates. When no phase is active it may show prepared successor horizons,
+but those are context only and gain no priority or authority merely by existing. This
+document never opens a phase, creates custody, or promotes a candidate successor. The
+estimate is expected to be wrong in detail and revised often; the PRD is not.
 
 The previous decomposition, F0 through F6, is archived byte-identical at
 `archives/ROADMAP-F0-F6.md`, where it remains a pinned definition of the

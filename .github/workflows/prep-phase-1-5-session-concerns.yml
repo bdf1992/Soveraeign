@@ -1,0 +1,620 @@
+name: prep Phase 1.5 concern-scoped sessions
+
+on:
+  push:
+    branches:
+      - prep/phase-1-5-session-concerns
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: prep/phase-1-5-session-concerns
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Apply concern/session readiness slice
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          ROOT = Path('.')
+
+          def read(path):
+              return (ROOT / path).read_text(encoding='utf-8')
+
+          def write(path, text):
+              (ROOT / path).write_text(text, encoding='utf-8', newline='\n')
+
+          def replace(path, old, new):
+              text = read(path)
+              if old not in text:
+                  raise SystemExit(f'missing replacement anchor in {path}: {old[:100]!r}')
+              write(path, text.replace(old, new, 1))
+
+          def append_once(path, marker, block):
+              text = read(path)
+              if marker in text:
+                  return
+              write(path, text.rstrip() + '\n\n' + block.strip() + '\n')
+
+          write('scripts/sovsession/concerns.py', '''"""Open-addressed concern attribution for repository sessions.
+
+A concern tells us what a session is serving. It is attribution and routing,
+never authority. The vocabulary is deliberately open: Phase 1.5 can exercise a
+small set of concerns while later citizens can mint new addresses without a
+kernel enum or code change.
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+from typing import Any, Iterable
+import os
+import uuid
+
+from sovsession import store
+
+
+def _text(value: object) -> str:
+    return str(value or "").strip()
+
+
+def _refs(values: Iterable[str] | None, env_name: str) -> list[str]:
+    """Merge explicit references with a comma-separated host hint, preserving order."""
+    candidates = list(values or [])
+    candidates.extend(item.strip() for item in os.environ.get(env_name, "").split(","))
+    result: list[str] = []
+    for item in candidates:
+        value = _text(item)
+        if value and value not in result:
+            result.append(value)
+    return result
+
+
+def resolve(explicit: str | None, session: str) -> tuple[str, str]:
+    """Resolve one concern without imposing a closed concern vocabulary."""
+    if _text(explicit):
+        return _text(explicit), "EXPLICIT"
+    if _text(os.environ.get("SOV_CONCERN")):
+        return _text(os.environ["SOV_CONCERN"]), "ENVIRONMENT"
+    return "concern:session/" + session, "SESSION_FALLBACK"
+
+
+def session_fields(session: str, explicit: str | None = None,
+                   source_session: str | None = None,
+                   sources: Iterable[str] | None = None,
+                   queues: Iterable[str] | None = None) -> dict[str, Any]:
+    """The concern lineage a registration event carries."""
+    concern_id, binding_source = resolve(explicit, session)
+    return {
+        "concern": concern_id,
+        "concern_binding_source": binding_source,
+        "source_session": _text(source_session) or _text(os.environ.get("SOV_SOURCE_SESSION")),
+        "source_refs": _refs(sources, "SOV_SOURCES"),
+        "queue_refs": _refs(queues, "SOV_QUEUES"),
+    }
+
+
+def binding_defect(existing: dict[str, Any] | None, proposed: str) -> str | None:
+    """A live session may enrich its context but may not silently become another concern."""
+    current = _text((existing or {}).get("concern"))
+    if current and proposed and current != proposed and (existing or {}).get("live"):
+        return f"SESSION_CONCERN_IMMUTABLE: {current} -> {proposed}"
+    return None
+
+
+def record_route(directory: Path, session_record: dict[str, Any], destination: str,
+                 sources: Iterable[str] | None = None, queue_ref: str = "",
+                 disposition: str = "PENDING") -> dict[str, Any]:
+    """Record a concern crossing without admitting work, custody, or authority."""
+    source_concern = _text(session_record.get("concern"))
+    destination = _text(destination)
+    if not source_concern or not destination:
+        raise ValueError("a concern route needs source and destination concerns")
+    event = {
+        "event": "concern-route",
+        "route_id": "route:" + uuid.uuid4().hex,
+        "session": _text(session_record.get("session")),
+        "source_session": _text(session_record.get("source_session")),
+        "source_concern": source_concern,
+        "destination_concern": destination,
+        "source_refs": _refs(sources, "SOV_SOURCES"),
+        "queue_ref": _text(queue_ref),
+        "disposition": _text(disposition) or "PENDING",
+        "authority_effect": "NONE",
+        "custody_effect": "NONE",
+    }
+    return store.append(directory, store.CONCERN_ROUTES_LOG, event)
+
+
+def routes(directory: Path) -> list[dict[str, Any]]:
+    return list(store.read(directory, store.CONCERN_ROUTES_LOG))
+
+
+def enumerate_concerns(directory: Path) -> list[str]:
+    """Enumerate observed concern addresses; an unused directory is naturally empty."""
+    found: set[str] = set()
+    for event in store.read(directory, store.SESSIONS_LOG):
+        value = _text(event.get("concern"))
+        if value:
+            found.add(value)
+    for event in routes(directory):
+        for key in ("source_concern", "destination_concern"):
+            value = _text(event.get(key))
+            if value:
+                found.add(value)
+    return sorted(found)
+
+
+def available_skills(root: Path) -> list[str]:
+    """Discover skills from repository bytes rather than a hardcoded domain list."""
+    directory = root / ".claude" / "skills"
+    if not directory.is_dir():
+        return []
+    return sorted(entry.name for entry in directory.iterdir()
+                  if entry.is_dir() and (entry / "SKILL.md").is_file())
+''')
+
+          write('scripts/sovsession/work_context.py', '''"""Commands that expose concern-scoped session context without bloating commands.py."""
+
+from __future__ import annotations
+
+from pathlib import Path
+import json
+
+from sovsession import brief, concerns, principals, store
+
+
+def register(root: Path, directory: Path, name: str, tree: str, args) -> int:
+    fields = concerns.session_fields(name, args.concern, args.source_session,
+                                     args.sources, args.queues)
+    existing = store.sessions(directory).get(name)
+    defect = concerns.binding_defect(existing, fields["concern"])
+    if defect:
+        payload = {"decision": "REFUSED", "reason": defect, "session": name}
+        print(json.dumps(payload, indent=2, sort_keys=True) if args.as_json else defect)
+        return 1
+    claim = principals.resolve(root, name)
+    store.append(directory, store.SESSIONS_LOG, {
+        "event": "register", "session": name,
+        "principal": claim["principal"], "verification": claim["verification"],
+        "pid": __import__("os").getpid() if not __import__("os").environ.get("CLAUDE_PID")
+               else int(__import__("os").environ.get("CLAUDE_PID", 0) or 0),
+        "tree": tree, "branch": brief.branch_of(root), "intent": args.intent or "",
+        **fields,
+    })
+    data = brief.collect(root, directory, name, tree)
+    print(json.dumps(data, indent=2, sort_keys=True) if args.as_json else brief.render(data))
+    return 0
+
+
+def route(directory: Path, name: str, args) -> int:
+    record = store.sessions(directory).get(name) or {}
+    if not record.get("registered"):
+        message = "SESSION_NOT_REGISTERED: register before routing a concern crossing"
+        print(json.dumps({"decision": "REFUSED", "reason": message}, indent=2)
+              if args.as_json else message)
+        return 1
+    event = concerns.record_route(directory, record, args.to_concern, args.sources,
+                                  args.queue or "", args.disposition or "PENDING")
+    print(json.dumps(event, indent=2, sort_keys=True) if args.as_json
+          else f"{event['route_id']}: {event['source_concern']} -> {event['destination_concern']}")
+    return 0
+
+
+def console(root: Path, directory: Path, name: str, tree: str, args) -> int:
+    data = brief.collect(root, directory, name, tree)
+    print(json.dumps(data, indent=2, sort_keys=True) if args.as_json else brief.render_console(data))
+    return 0
+''')
+
+          replace('scripts/sovsession/store.py',
+                  'Two logs:\n\n  sessions.ndjson  register / heartbeat / end, one line per event\n  claims.ndjson    claim / release, one line per event\n',
+                  'Three logs:\n\n  sessions.ndjson        register / heartbeat / end, one line per event\n  claims.ndjson          claim / release, one line per event\n  concern-routes.ndjson  open-addressed concern crossings; no authority or custody\n')
+          replace('scripts/sovsession/store.py',
+                  'SESSIONS_LOG = "sessions.ndjson"\nCLAIMS_LOG = "claims.ndjson"\n',
+                  'SESSIONS_LOG = "sessions.ndjson"\nCLAIMS_LOG = "claims.ndjson"\nCONCERN_ROUTES_LOG = "concern-routes.ndjson"\n')
+
+          replace('scripts/sovsession/claims.py',
+                  '        record["branch"] = live.get(session, {}).get("branch", "")\n        by_path.setdefault(path, []).append(record)\n',
+                  '        record["branch"] = live.get(session, {}).get("branch", "")\n        record["concern"] = live.get(session, {}).get("concern", "")\n        by_path.setdefault(path, []).append(record)\n')
+
+          replace('scripts/sovsession/commands.py',
+                  'from sovsession import worktrees as wtmod\n',
+                  'from sovsession import worktrees as wtmod\nfrom sovsession import work_context\n')
+          old_register = '''def cmd_register(args: argparse.Namespace) -> int:\n    """Record that this session is live, and print the briefing it should read."""\n    root, directory, name, tree = _context(args.name)\n    claim = principals.resolve(root, name)\n    store.append(directory, store.SESSIONS_LOG, {\n        "event": "register",\n        "session": name,\n        "principal": claim["principal"],\n        "verification": claim["verification"],\n        "pid": int(os.environ.get("CLAUDE_PID", 0) or 0),\n        "tree": tree,\n        "branch": briefmod.branch_of(root),\n        "intent": args.intent or "",\n    })\n    data = briefmod.collect(root, directory, name, tree)\n    _emit(data, args.as_json, briefmod.render(data))\n    return 0\n'''
+          new_register = '''def cmd_register(args: argparse.Namespace) -> int:\n    """Record one immutable concern-bound session and print its starting context."""\n    return work_context.register(*_context(args.name), args)\n\n\ndef cmd_route(args: argparse.Namespace) -> int:\n    """Record cross-concern egress; the destination still decides intake."""\n    _, directory, name, _ = _context(args.name)\n    return work_context.route(directory, name, args)\n\n\ndef cmd_console(args: argparse.Namespace) -> int:\n    """Project this session's concern, sources, queues, skills, and routes."""\n    return work_context.console(*_context(args.name), args)\n'''
+          replace('scripts/sovsession/commands.py', old_register, new_register)
+          replace('scripts/sovsession/commands.py',
+                  '        loader.loadTestsFromName("tests.test_sov_session_guard"),\n',
+                  '        loader.loadTestsFromName("tests.test_sov_session_guard"),\n        loader.loadTestsFromName("tests.test_session_concerns"),\n')
+
+          replace('scripts/sov_session.py',
+                  '    register.add_argument("--intent", help="what this session is building")\n',
+                  '    register.add_argument("--intent", help="what this session is building")\n    register.add_argument("--concern", help="open concern address; attribution, never authority")\n    register.add_argument("--source-session", help="session that sourced this session")\n    register.add_argument("--source", dest="sources", action="append", help="source address; repeatable")\n    register.add_argument("--queue", dest="queues", action="append", help="available queue reference; repeatable")\n')
+          replace('scripts/sov_session.py',
+                  '    subparsers.add_parser(\n        "brief", help="the starting-session briefing").set_defaults(handler=commands.cmd_brief)\n',
+                  '    subparsers.add_parser(\n        "brief", help="the starting-session briefing").set_defaults(handler=commands.cmd_brief)\n    subparsers.add_parser(\n        "console", help="concern-scoped internal work console").set_defaults(handler=commands.cmd_console)\n\n    route = subparsers.add_parser("route", help="record work sourced for another concern")\n    route.add_argument("--to", dest="to_concern", required=True, help="destination concern address")\n    route.add_argument("--source", dest="sources", action="append", help="source address; repeatable")\n    route.add_argument("--queue", help="destination queue reference if known")\n    route.add_argument("--disposition", default="PENDING", help="open disposition word; not a closed enum")\n    route.set_defaults(handler=commands.cmd_route)\n')
+
+          replace('scripts/sovsession/brief.py',
+                  'from sovsession import claims, guard, phase_context, principals, store\n',
+                  'from sovsession import claims, concerns, guard, phase_context, principals, store\n')
+          replace('scripts/sovsession/brief.py',
+                  '        "intent": own.get("intent", ""),\n',
+                  '        "intent": own.get("intent", ""),\n        "concern": own.get("concern") or concerns.resolve(None, session)[0],\n        "concern_binding_source": own.get("concern_binding_source", "SESSION_FALLBACK"),\n        "source_session": own.get("source_session", ""),\n        "source_refs": own.get("source_refs", []),\n        "queue_refs": own.get("queue_refs", []),\n        "skills": concerns.available_skills(root),\n        "concern_routes": concerns.routes(directory),\n')
+          replace('scripts/sovsession/brief.py',
+                  'def _phase(lines: list[str], data: dict[str, Any]) -> None:\n',
+                  '''def _work_context(lines: list[str], data: dict[str, Any]) -> None:\n    """Show attribution/routing without confusing it with authority."""\n    lines.append(f"  concern: {data['concern']} ({data['concern_binding_source']}; attribution/routing only)")\n    if data.get("source_session"):\n        lines.append(f"  source session: {data['source_session']}")\n    if data.get("queue_refs"):\n        lines.append("  available queues: " + ", ".join(data["queue_refs"][:6]))\n    if data.get("source_refs"):\n        lines.append("  sources: " + ", ".join(data["source_refs"][:6]))\n    lines.append(f"  discoverable skills: {len(data.get('skills') or [])} under .claude/skills/")\n\n\ndef _phase(lines: list[str], data: dict[str, Any]) -> None:\n''')
+          replace('scripts/sovsession/brief.py',
+                  '        lines.append(f"  intent: {data[\'intent\'] or \'(not registered)\'}")\n        _phase(lines, data["phase"])\n',
+                  '        lines.append(f"  intent: {data[\'intent\'] or \'(not registered)\'}")\n        _work_context(lines, data)\n        _phase(lines, data["phase"])\n')
+          replace('scripts/sovsession/brief.py',
+                  '    lines.append(f"  intent: {data[\'intent\'] or \'(not registered)\'}")\n    _phase(lines, data["phase"])\n',
+                  '    lines.append(f"  intent: {data[\'intent\'] or \'(not registered)\'}")\n    _work_context(lines, data)\n    _phase(lines, data["phase"])\n')
+          append_once('scripts/sovsession/brief.py', 'def render_console(', '''
+def render_console(data: dict[str, Any]) -> str:
+    """Detailed local work projection: concern, sources, queues, skills, and crossings."""
+    lines = [render(data), "", "Work console (projection; grants no authority)"]
+    lines.append("  concern: " + str(data.get("concern") or ""))
+    lines.append("  source session: " + str(data.get("source_session") or "(none)"))
+    lines.append("  sources: " + (", ".join(data.get("source_refs") or []) or "(none)"))
+    lines.append("  queues: " + (", ".join(data.get("queue_refs") or []) or "(none)"))
+    lines.append("  skills: " + (", ".join(data.get("skills") or []) or "(none)"))
+    concern = data.get("concern")
+    related = [route for route in data.get("concern_routes") or []
+               if concern in (route.get("source_concern"), route.get("destination_concern"))]
+    lines.append(f"  concern routes: {len(related)}")
+    for route in related[-8:]:
+        lines.append("    " + str(route.get("route_id")) + ": "
+                     + str(route.get("source_concern")) + " -> "
+                     + str(route.get("destination_concern")) + " ["
+                     + str(route.get("disposition")) + "]")
+    lines.append("  route discovered cross-concern work: python scripts/sov_session.py route --to <concern> --source <address>")
+    return "\\n".join(lines)
+''')
+
+          replace('.claude/hooks/session_registry.py',
+                  '    from sovsession import brief as briefmod\n    store.append(context["directory"], store.SESSIONS_LOG, {\n',
+                  '    from sovsession import brief as briefmod, concerns\n    store.append(context["directory"], store.SESSIONS_LOG, {\n')
+          replace('.claude/hooks/session_registry.py',
+                  '        "intent": "registered on first write, not at session start",\n    })\n',
+                  '        "intent": "registered on first write, not at session start",\n        **concerns.session_fields(context["session"]),\n    })\n')
+          # mode_start has a second brief import; replace only the still-unmodified occurrence.
+          text = read('.claude/hooks/session_registry.py')
+          anchor = '    from sovsession import brief as briefmod\n    store.append(context["directory"], store.SESSIONS_LOG, {\n'
+          if anchor not in text:
+              raise SystemExit('missing mode_start brief anchor')
+          text = text.replace(anchor, '    from sovsession import brief as briefmod, concerns\n    store.append(context["directory"], store.SESSIONS_LOG, {\n', 1)
+          old = '        "tree": context["tree"], "branch": briefmod.branch_of(context["root"]),\n        "intent": "",\n    })\n'
+          if old not in text:
+              raise SystemExit('missing mode_start registration fields')
+          text = text.replace(old, '        "tree": context["tree"], "branch": briefmod.branch_of(context["root"]),\n        "intent": "", **concerns.session_fields(context["session"]),\n    })\n', 1)
+          write('.claude/hooks/session_registry.py', text)
+
+          # Global operating instruction: strict binding, open vocabulary, routing instead of category denial.
+          replace('AGENTS.md', '### Closure ownership\n', '''### One session, one concern\n\nEvery operational session binds to one concern for its lifetime. A concern is an\nopen address used for attribution, attention, source accounting, and routing; it\nis **not authority** and there is no closed list of allowed concern names. A new\nconcern, queue, source, office, institution, or skill does not require a kernel\nenum before a participant may name or discover it.\n\nChild agents inherit the source session's concern and source-session lineage. A\nsession may consume evidence from other concerns without silently becoming them.\nWhen it discovers work that belongs elsewhere, preserve the source and record a\nconcern route; the destination may admit, queue, delegate, refuse, or redirect it\nthrough its own context. Concern mismatch routes by default. It is not an\nauthorization refusal unless a real grant, policy, effect, or custody boundary\nindependently refuses the attempted operation.\n\nQueue and source references are projections of what is available to the session,\nnot grants. Taking custody remains a separate governed act. This keeps source\nprocessing, queue stewardship, execution, review, witnessing, and settlement\nattributable without turning a queue or concern label into authority.\n\nRepository host sessions expose this projection through `python\nscripts/sov_session.py console`; cross-concern egress is recorded with\n`python scripts/sov_session.py route`. These host records coordinate work and\ngrant no product standing.\n\n### Closure ownership\n''')
+
+          role_block = '''
+## Concern/session discipline
+
+This invocation serves exactly one concern for its lifetime. Preserve the concern
+address and source-session lineage you were given; child agents inherit both.
+Concern is attribution and routing, never authority. Do not refuse an otherwise
+authorized operation merely because its noun or domain is unfamiliar. Discover
+skills from `.claude/skills/` and the owning contracts instead of relying on a
+closed domain list. If this work discovers a different concern, preserve its
+source and route it with `python scripts/sov_session.py route`; do not silently
+retarget this session or take the destination concern's custody.
+'''
+          for path in ('.claude/agents/sov.md', '.claude/agents/sov-controller.md',
+                       '.claude/agents/sov-orchestrator.md', '.claude/agents/sov-worker.md',
+                       '.claude/agents/sov-witness.md'):
+              append_once(path, '## Concern/session discipline', role_block)
+
+          # Remove role prose that still makes a missing hardcoded sov-<domain> skill a gate.
+          text = read('.claude/agents/sov-orchestrator.md')
+          text = re.sub(
+              r'Your prompt names a domain\. First load its know-how: invoke the\n`sov-<domain>` skill, or read `\.claude/skills/sov-<domain>/SKILL\.md` directly\.\nThen read `AGENTS\.md` and `STATUS\.yaml`\. The skill\'s named operations list is\nyour menu of legitimately available work; the current open decisions in\n`STATUS\.yaml` are your gates\.\n',
+              'Your prompt names a concern and may name a domain hint. Discover relevant know-how from `.claude/skills/` and load the matching skill when one exists, then read `AGENTS.md`, `STATUS.yaml`, and the owning contract. A missing predeclared domain word or `sov-<domain>` skill is not a refusal; actual operations and authority come from the repository contracts and live grants.\n', text)
+          write('.claude/agents/sov-orchestrator.md', text)
+
+          text = read('.claude/agents/sov-worker.md')
+          text = re.sub(
+              r'Your prompt names a domain \(governance, contracts, conformance, asset,\nproofing, console, byom, or verification\)\. Before anything else, load that domain\'s\nknow-how: invoke the `sov-<domain>` skill, or read\n`\.claude/skills/sov-<domain>/SKILL\.md` directly if skill invocation is\nunavailable\. It defines what the domain owns, what it must not touch, its\nopen-decision blockers, and its verification commands\. Then read `AGENTS\.md`\nand `STATUS\.yaml` before any consequential change\.\n',
+              'Your prompt names one concern and may name a domain hint. Before anything else, enumerate `.claude/skills/` and load the relevant skill when one exists, then read `AGENTS.md`, `STATUS.yaml`, and the owning contract. A missing hardcoded domain or skill name is not a refusal; the contract, live grant, and operation define what is actually admissible.\n', text)
+          write('.claude/agents/sov-worker.md', text)
+
+          text = read('.claude/agents/sov-controller.md')
+          text = text.replace(
+              '- Decompose the goal by domain (governance, contracts, conformance, asset,\n  proofing, console, byom, verification) and dispatch the matching workflows or\n  agents. Consult each domain\'s `sov-<domain>` skill and the current open\n  decisions in `STATUS.yaml` for what is legitimately available.\n',
+              '- Decompose only when the concern actually crosses owned boundaries. Discover available skills from `.claude/skills/` and owning contracts rather than a closed domain vocabulary. A new concern or skill name is not itself a reason to refuse or escalate.\n')
+          write('.claude/agents/sov-controller.md', text)
+
+          # Workflow: open concern/domain vocabulary and concern lineage through every child.
+          path = '.claude/workflows/sov-loop.js'
+          text = read(path)
+          text = text.replace(
+              '// args: { objective: string, domain?: string, target?: string, plan_only?: boolean, evidence_mode?: boolean }',
+              '// args: { objective: string, concern?: string, domain?: string, source_session?: string, queue_refs?: string[], source_refs?: string[], target?: string, plan_only?: boolean, evidence_mode?: boolean }')
+          text = re.sub(r"\nconst DOMAINS = \[[^\n]+\]\n", "\n", text)
+          text = text.replace(
+              "const domain = args && args.domain && DOMAINS.indexOf(args.domain) !== -1 ? args.domain : null",
+              "const domain = args && args.domain ? args.domain : null\nconst concernHint = args && args.concern ? args.concern : null\nconst sourceSessionHint = args && args.source_session ? args.source_session : null\nconst queueRefsHint = args && Array.isArray(args.queue_refs) ? args.queue_refs : []\nconst sourceRefsHint = args && Array.isArray(args.source_refs) ? args.source_refs : []")
+          text = text.replace(
+              "required: ['concern', 'domain', 'rationale', 'in_grant_scope', 'expected_paths'],",
+              "required: ['concern', 'concern_id', 'domain', 'source_session', 'queue_refs', 'source_refs', 'rationale', 'in_grant_scope', 'expected_paths'],")
+          text = text.replace(
+              "    concern: { type: 'string' },\n    domain: { type: 'string' },",
+              "    concern: { type: 'string' },\n    concern_id: { type: 'string' },\n    domain: { type: 'string' },\n    source_session: { type: 'string' },\n    queue_refs: { type: 'array', items: { type: 'string' } },\n    source_refs: { type: 'array', items: { type: 'string' } },")
+          text = text.replace(
+              "required: ['operation', 'files', 'effect_class', 'checks', 'defeating_case'],",
+              "required: ['concern_id', 'operation', 'files', 'effect_class', 'checks', 'defeating_case'],")
+          text = text.replace(
+              "  properties: {\n    operation: { type: 'string' },",
+              "  properties: {\n    concern_id: { type: 'string' },\n    operation: { type: 'string' },", 1)
+          text = text.replace(
+              "required: ['changed_paths', 'summary', 'checks_run', 'residuals'],",
+              "required: ['concern_id', 'changed_paths', 'summary', 'checks_run', 'residuals', 'cross_concern_routes'],")
+          text = text.replace(
+              "  properties: {\n    changed_paths: { type: 'array', items: { type: 'string' } },",
+              "  properties: {\n    concern_id: { type: 'string' },\n    changed_paths: { type: 'array', items: { type: 'string' } },\n    cross_concern_routes: { type: 'array', items: { type: 'string' } },", 1)
+          text = text.replace(
+              "required: ['verdict', 'observations', 'residuals', 'observation_file'],",
+              "required: ['concern_id', 'verdict', 'observations', 'residuals', 'observation_file'],")
+          text = text.replace(
+              "  properties: {\n    verdict: { type: 'string' },",
+              "  properties: {\n    concern_id: { type: 'string' },\n    verdict: { type: 'string' },", 1)
+          text = text.replace(
+              "required: ['finding_id', 'subject_kind', 'subject_address', 'record_projection_id',",
+              "required: ['concern_id', 'finding_id', 'subject_kind', 'subject_address', 'record_projection_id',")
+          text = text.replace(
+              "  properties: {\n    finding_id: { type: 'string' },",
+              "  properties: {\n    concern_id: { type: 'string' },\n    finding_id: { type: 'string' },", 1)
+          text = text.replace(
+              "  + (domain ? 'Domain: ' + domain + '. ' : 'Pick the single owning domain from: ' + DOMAINS.join(', ') + '. ')",
+              "  + (domain ? 'Owning domain hint: ' + domain + '. ' : 'Resolve the owning domain from repository contracts and discoverable skills; no closed domain vocabulary exists here. ')")
+          text = text.replace(
+              "  + 'Read AGENTS.md and contracts/standing-grants.json. Name exactly one bounded concern that serves the objective. '",
+              "  + 'Read AGENTS.md and contracts/standing-grants.json. First read `python scripts/sov_session.py console --json` when available. Name exactly one bounded concern that serves the objective. ' + (concernHint ? 'The source session supplied concern ' + concernHint + '; preserve it. ' : '') + (sourceSessionHint ? 'Source session: ' + sourceSessionHint + '. ' : '') + (queueRefsHint.length ? 'Available queue refs: ' + queueRefsHint.join(', ') + '. ' : '') + (sourceRefsHint.length ? 'Source refs: ' + sourceRefsHint.join(', ') + '. ' : '') + 'Concern labels route and attribute work; they grant no authority. '")
+          text = text.replace(
+              "  + 'Do not build anything. Return the concern, domain, rationale, in_grant_scope, out_of_scope_paths, and the paths you expect to change.',",
+              "  + 'Do not build anything. Return the concern description, concern_id, domain, source_session, queue_refs, source_refs, rationale, in_grant_scope, out_of_scope_paths, and the paths you expect to change.',")
+          text = text.replace(
+              "  'You hold the Orchestration tier. Turn this concern into exactly one bounded operation: ' + selected.concern + '. '",
+              "  'You hold the Orchestration tier. Concern id: ' + selected.concern_id + '. Turn this concern into exactly one bounded operation: ' + selected.concern + '. Preserve the same concern id; do not silently switch concerns. '")
+          text = text.replace(
+              "  + 'Read .claude/skills/sov-' + selected.domain + '/SKILL.md, then AGENTS.md, then the owning contract and fixture the skill names. '",
+              "  + 'Enumerate .claude/skills/ and load the relevant skill if one exists, then read AGENTS.md and the owning contract/fixture. A missing skill name is not a refusal. '")
+          text = text.replace(
+              "  + 'You plan only; you do not build, witness, or dispatch. Return the operation, the exact files, the effect class, the checks that must pass, the defeating case that must fail as declared, and any blockers.',",
+              "  + 'You plan only; you do not build, witness, or dispatch. Return the unchanged concern_id, operation, exact files, effect class, checks, defeating case, and blockers.',")
+          text = text.replace(
+              "if (!plan) {\n  return { error: 'orchestrator returned no plan', concern: selected }\n}",
+              "if (!plan) {\n  return { error: 'orchestrator returned no plan', concern: selected }\n}\nif (plan.concern_id !== selected.concern_id) {\n  return { error: 'orchestrator changed the session concern instead of routing it', expected: selected.concern_id, observed: plan.concern_id }\n}")
+          text = text.replace(
+              "  'You hold the Work tier for exactly one operation: ' + plan.operation + '. '",
+              "  'You hold the Work tier for exactly one operation under concern ' + selected.concern_id + ': ' + plan.operation + '. Preserve that concern for this session. '")
+          text = text.replace(
+              "  + 'Read .claude/skills/sov-' + selected.domain + '/SKILL.md and AGENTS.md first. Write the defeating case (' + plan.defeating_case + ') and prove it fails as declared before you call the work done. '",
+              "  + 'Enumerate .claude/skills/ and load the relevant skill if one exists, then read AGENTS.md. Write the defeating case (' + plan.defeating_case + ') and prove it fails as declared before you call the work done. If you discover another concern, record a route with sov_session.py route; do not retarget this session. '")
+          text = text.replace(
+              "  + 'Return every path you changed, a one-paragraph summary, the checks you ran with exit codes, and every residual you know about.',",
+              "  + 'Return the unchanged concern_id, every path changed, a one-paragraph summary, checks with exit codes, residuals, and route ids for any cross-concern work you sourced.',")
+          text = text.replace(
+              "if (!built) {\n  return { error: 'worker returned no report', concern: selected, plan: plan }\n}",
+              "if (!built) {\n  return { error: 'worker returned no report', concern: selected, plan: plan }\n}\nif (built.concern_id !== selected.concern_id) {\n  return { error: 'worker changed the session concern instead of routing it', expected: selected.concern_id, observed: built.concern_id }\n}")
+          text = text.replace(
+              "'You are in REVIEW mode, not PLAN mode. Judge PARTICIPANT_IN_WORK for the bounded assignment ' + plan.operation + '. ' +",
+              "'You are in REVIEW mode under concern ' + selected.concern_id + ', not PLAN mode. Judge PARTICIPANT_IN_WORK for the bounded assignment ' + plan.operation + '. Preserve the concern id. ' +")
+          text = text.replace(
+              "'Freeze the Finding before returning it. Return finding_id, subject_kind PARTICIPANT_IN_WORK, subject_address, record_projection_id, projection_as_of, verdict, evidence_addresses, frozen_at, and detail.',",
+              "'Freeze the Finding before returning it. Return concern_id, finding_id, subject_kind PARTICIPANT_IN_WORK, subject_address, record_projection_id, projection_as_of, verdict, evidence_addresses, frozen_at, and detail.',")
+          text = text.replace(
+              "'You are the independent evaluator of WORK. Concern: ' + selected.concern + '. Operation: ' + plan.operation + '. ' +",
+              "'You are the independent evaluator of WORK under concern ' + selected.concern_id + '. Concern: ' + selected.concern + '. Operation: ' + plan.operation + '. Preserve the concern id; independence comes from evaluator/session relation, not changing the concern. ' +")
+          text = text.replace(
+              "'Freeze before returning. Return finding_id, subject_kind WORK, subject_address, record_projection_id, projection_as_of, verdict, evidence_addresses, frozen_at, and detail.',",
+              "'Freeze before returning. Return concern_id, finding_id, subject_kind WORK, subject_address, record_projection_id, projection_as_of, verdict, evidence_addresses, frozen_at, and detail.',")
+          text = text.replace(
+              "'You are the independent observation for work you did not do and must not touch. Concern: ' + selected.concern + '. ' +",
+              "'You are the independent observation for work you did not do and must not touch. Concern id: ' + selected.concern_id + '. Concern: ' + selected.concern + '. Preserve the concern id while keeping an independent session/evaluator relation. ' +")
+          text = text.replace(
+              "'Return the verdict, what you independently confirmed, residuals, the path you wrote the observation to, and any judgement items only Bdo can settle.',",
+              "'Return concern_id, verdict, what you independently confirmed, residuals, the path you wrote the observation to, and any judgement items only Bdo can settle.',")
+          # Add generic mismatch checks after witness existence; same concern is attribution, not evaluator dependence.
+          text = text.replace(
+              "if (!witnessed) {\n  return { error: 'witness returned no observation; nothing may land unwitnessed', concern: selected, build: built }\n}",
+              "if (!witnessed) {\n  return { error: 'witness returned no observation; nothing may land unwitnessed', concern: selected, build: built }\n}\nif (witnessed.concern_id !== selected.concern_id) {\n  return { error: 'witness changed the work concern instead of independently evaluating it', expected: selected.concern_id, observed: witnessed.concern_id }\n}")
+          if 'const DOMAINS' in text:
+              raise SystemExit('closed DOMAINS vocabulary survived workflow patch')
+          write(path, text)
+
+          append_once('.claude/README.md', '## Concern-scoped sessions', '''
+## Concern-scoped sessions
+
+Repository sessions expose a small internal work console with `python
+scripts/sov_session.py console`. Every live session carries one concern address,
+optional source-session lineage, source references, and available queue
+references. Those values attribute and route attention; they never grant
+authority or custody. The concern namespace and `.claude/skills/` discovery are
+open, so adding a concern or skill does not require editing a central enum.
+
+When a session discovers work for another concern, record the edge with `python
+scripts/sov_session.py route --to <concern> --source <address>`. The route is
+append-preserving host coordination with `authority_effect: NONE` and
+`custody_effect: NONE`; destination intake remains separate. Controller,
+Orchestrator, Worker, and Witness inherit the source concern through `sov-loop`
+and are rejected only if they silently change that binding, not because a
+concern/domain word is unfamiliar.
+''')
+
+          # Opening readiness should include the mechanics that Phase 1.5 will use internally.
+          replace('scripts/sov_opening_readiness.py',
+                  '        "phase_progress_reader": (root / "scripts/sov_active_phase_progress.py").is_file(),\n',
+                  '        "phase_progress_reader": (root / "scripts/sov_active_phase_progress.py").is_file(),\n        "session_concern_accounting": _has(root / "scripts/sovsession/concerns.py",\n                                           "enumerate_concerns", "authority_effect",\n                                           "custody_effect", "available_skills"),\n        "concern_scoped_workflow": _has(root / ".claude/workflows/sov-loop.js",\n                                         "concern_id", "cross_concern_routes",\n                                         "no closed domain vocabulary"),\n')
+
+          write('scripts/tests/test_session_concerns.py', '''"""Concern-scoped session attribution stays open-world and non-authoritative."""
+
+from __future__ import annotations
+
+from pathlib import Path
+import argparse
+import os
+import sys
+import tempfile
+import unittest
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+import sov_session  # noqa: E402
+from sovsession import concerns, store  # noqa: E402
+
+
+class ConcernResolution(unittest.TestCase):
+    def setUp(self) -> None:
+        self.saved = {name: os.environ.get(name) for name in
+                      ("SOV_CONCERN", "SOV_SOURCE_SESSION", "SOV_SOURCES", "SOV_QUEUES")}
+        for name in self.saved:
+            os.environ.pop(name, None)
+        self.addCleanup(self.restore)
+
+    def restore(self) -> None:
+        for name, value in self.saved.items():
+            if value is None:
+                os.environ.pop(name, None)
+            else:
+                os.environ[name] = value
+
+    def test_explicit_concern_is_open_address_not_enum(self) -> None:
+        value, source = concerns.resolve("concern:any/future-citizen-form", "alpha")
+        self.assertEqual(value, "concern:any/future-citizen-form")
+        self.assertEqual(source, "EXPLICIT")
+
+    def test_environment_supplies_launcher_binding(self) -> None:
+        os.environ["SOV_CONCERN"] = "concern:phase-1-5/dev"
+        self.assertEqual(concerns.resolve(None, "alpha"),
+                         ("concern:phase-1-5/dev", "ENVIRONMENT"))
+
+    def test_legacy_session_gets_traceable_fallback_not_denial(self) -> None:
+        self.assertEqual(concerns.resolve(None, "alpha"),
+                         ("concern:session/alpha", "SESSION_FALLBACK"))
+
+    def test_live_binding_cannot_silently_switch(self) -> None:
+        existing = {"concern": "concern:a", "live": True}
+        self.assertIn("SESSION_CONCERN_IMMUTABLE",
+                      concerns.binding_defect(existing, "concern:b") or "")
+        self.assertIsNone(concerns.binding_defect(existing, "concern:a"))
+
+
+class ConcernTopology(unittest.TestCase):
+    def setUp(self) -> None:
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.directory = Path(self.temp.name) / "sessions"
+        store.append(self.directory, store.SESSIONS_LOG, {
+            "event": "register", "session": "alpha", "pid": 0,
+            "tree": "/repo", "branch": "main", "concern": "concern:dev",
+            "source_session": "root", "at": "2026-08-31T20:00:00Z"})
+
+    def test_route_preserves_lineage_and_grants_nothing(self) -> None:
+        session = {"session": "alpha", "concern": "concern:dev",
+                   "source_session": "root"}
+        route = concerns.record_route(self.directory, session, "concern:ops",
+                                      ["record:event/1"], "queue:ops/intake", "SEEN")
+        self.assertEqual(route["source_concern"], "concern:dev")
+        self.assertEqual(route["destination_concern"], "concern:ops")
+        self.assertEqual(route["authority_effect"], "NONE")
+        self.assertEqual(route["custody_effect"], "NONE")
+        self.assertEqual(concerns.enumerate_concerns(self.directory),
+                         ["concern:dev", "concern:ops"])
+
+    def test_empty_store_is_an_empty_enumerable_stub(self) -> None:
+        other = Path(self.temp.name) / "empty"
+        self.assertEqual(concerns.enumerate_concerns(other), [])
+
+
+class SkillDiscovery(unittest.TestCase):
+    def test_new_skill_needs_no_registry_edit(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            skill = root / ".claude" / "skills" / "future-citizen-skill"
+            skill.mkdir(parents=True)
+            (skill / "SKILL.md").write_text("# skill\n", encoding="utf-8")
+            self.assertEqual(concerns.available_skills(root), ["future-citizen-skill"])
+
+
+class CliShape(unittest.TestCase):
+    def test_parser_accepts_arbitrary_concern_queue_and_disposition(self) -> None:
+        args = sov_session.build_parser().parse_args([
+            "register", "--concern", "concern:novel/thing",
+            "--source", "source:any/1", "--queue", "queue:any/1"])
+        self.assertEqual(args.concern, "concern:novel/thing")
+        route = sov_session.build_parser().parse_args([
+            "route", "--to", "concern:never-seen-before", "--disposition", "CUSTOM"])
+        self.assertEqual(route.to_concern, "concern:never-seen-before")
+        self.assertEqual(route.disposition, "CUSTOM")
+
+
+class RepositoryContract(unittest.TestCase):
+    ROOT = Path(__file__).resolve().parents[2]
+
+    def test_workflow_has_no_closed_domain_enum_and_carries_concern(self) -> None:
+        text = (self.ROOT / ".claude" / "workflows" / "sov-loop.js").read_text("utf-8")
+        self.assertNotIn("const DOMAINS", text)
+        for token in ("concern_id", "source_session", "queue_refs", "source_refs",
+                      "cross_concern_routes"):
+            self.assertIn(token, text)
+
+    def test_global_rule_makes_concern_routing_not_authority(self) -> None:
+        text = (self.ROOT / "AGENTS.md").read_text("utf-8")
+        self.assertIn("One session, one concern", text)
+        self.assertIn("Concern mismatch routes by default", text)
+        self.assertIn("it is **not authority**", text)
+
+    def test_commissioning_roles_inherit_concern_without_closed_vocabulary(self) -> None:
+        for name in ("sov.md", "sov-controller.md", "sov-orchestrator.md",
+                     "sov-worker.md", "sov-witness.md"):
+            text = (self.ROOT / ".claude" / "agents" / name).read_text("utf-8")
+            self.assertIn("## Concern/session discipline", text)
+            self.assertIn("Concern is attribution and routing, never authority", text)
+
+
+if __name__ == "__main__":
+    unittest.main()
+''')
+          PY
+
+      - name: Remove carrier from final tree
+        run: rm .github/workflows/prep-phase-1-5-session-concerns.yml
+
+      - name: Focused session and workflow checks
+        run: |
+          python scripts/tests/test_session_concerns.py
+          python scripts/sov_session.py selfcheck
+          node --check .claude/workflows/sov-loop.js
+          python scripts/sov_opening_readiness.py --require-ready
+          git diff --check
+
+      - name: Repository checks
+        run: |
+          python scripts/lint.py
+          python scripts/verify.py
+
+      - name: Commit and push final self-cleaned tree
+        run: |
+          git config user.name "bdf1992"
+          git config user.email "bdf1992.fb@gmail.com"
+          git add AGENTS.md .claude/README.md .claude/agents/sov.md .claude/agents/sov-controller.md .claude/agents/sov-orchestrator.md .claude/agents/sov-worker.md .claude/agents/sov-witness.md .claude/hooks/session_registry.py .claude/workflows/sov-loop.js scripts/sov_session.py scripts/sov_opening_readiness.py scripts/sovsession/store.py scripts/sovsession/claims.py scripts/sovsession/commands.py scripts/sovsession/brief.py scripts/sovsession/concerns.py scripts/sovsession/work_context.py scripts/tests/test_session_concerns.py .github/workflows/prep-phase-1-5-session-concerns.yml
+          git commit -m "prep: bind sessions to open concerns"
+          git push origin HEAD:prep/phase-1-5-session-concerns

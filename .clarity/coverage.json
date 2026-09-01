@@ -1,7 +1,7 @@
 {
   "reviews": {
     ".claude/README.md": {
-      "artifact_digest": "sha256:62809e1fdc22df12cb991fe7c3aa7993bda2f03ea8fe64af8f7c05cd9b53b0d6",
+      "artifact_digest": "sha256:d3561b25acebf514932983d42ffb4f70b3b0f0f3adaf8c2c58b9c48e8a0597f3",
       "basis": [
         {
           "digest": "sha256:95c78af8ebc07e77193362f0fcb9bbb3a1e1e5eaf43933f2e8d8c6e342d392c7",
@@ -12,10 +12,10 @@
           "path": "STATUS.yaml"
         }
       ],
-      "changed": false
+      "changed": true
     },
     ".claude/agents/sov-controller.md": {
-      "artifact_digest": "sha256:c3dc8c1791474b3a30c4dd3078ca5c54f4c5431967c66125f9edc9913f590ce0",
+      "artifact_digest": "sha256:e6d5d1889a9482c78eaa14d28ff0f74754ecfa9fcde8fb5d197c6690a2d21d0c",
       "basis": [
         {
           "digest": "sha256:95c78af8ebc07e77193362f0fcb9bbb3a1e1e5eaf43933f2e8d8c6e342d392c7",
@@ -26,10 +26,10 @@
           "path": "STATUS.yaml"
         }
       ],
-      "changed": false
+      "changed": true
     },
     ".claude/agents/sov-orchestrator.md": {
-      "artifact_digest": "sha256:15a891398e7dfd2169ba5b85e82bd7dccf6c6e88db87314453fe571c3f8f3d28",
+      "artifact_digest": "sha256:71c37d01cd57ab6b7106aaea7c12d5feea21d72de4779ebc3c200f9aa2e3c04d",
       "basis": [
         {
           "digest": "sha256:95c78af8ebc07e77193362f0fcb9bbb3a1e1e5eaf43933f2e8d8c6e342d392c7",
@@ -40,10 +40,10 @@
           "path": "STATUS.yaml"
         }
       ],
-      "changed": false
+      "changed": true
     },
     ".claude/agents/sov-witness.md": {
-      "artifact_digest": "sha256:6a9bdaf355074cc2252fd43dfed7c4a72a93b3bee281660a1aa2aa367128bc0d",
+      "artifact_digest": "sha256:9b8aa3f255dd39067560356199f628a5365348f0db7d168362beed0d2d854d80",
       "basis": [
         {
           "digest": "sha256:95c78af8ebc07e77193362f0fcb9bbb3a1e1e5eaf43933f2e8d8c6e342d392c7",
@@ -54,7 +54,7 @@
           "path": "STATUS.yaml"
         }
       ],
-      "changed": false
+      "changed": true
     },
     ".claude/agents/sov-worker.md": {
       "artifact_digest": "sha256:39164ed9d453d4637d9e3ba122643e45c1aed848132f198e45e7fc4f78a32c82",
@@ -679,7 +679,7 @@
       "changed": false
     },
     "CLAUDE.md": {
-      "artifact_digest": "sha256:eb251ff23fd5143538d55fb905056c631652ce88e07b9ade59df4c4a03017a50",
+      "artifact_digest": "sha256:0d5bdc28536be06d0cc3cfe3809eb0927899dbf6404634e06dc5ea9338cadadb",
       "basis": [
         {
           "digest": "sha256:95c78af8ebc07e77193362f0fcb9bbb3a1e1e5eaf43933f2e8d8c6e342d392c7",

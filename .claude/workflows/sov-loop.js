@@ -90,33 +90,84 @@ const WITNESS = {
   },
 }
 
-// Harness projections of contracts/finding.schema.json. The shared contract owns
-// the semantics; this compact shape only carries what this workflow must route.
-const FROZEN_FINDING = {
+// Harness shape of contracts/finding.schema.json. A review result is an
+// envelope around a real Finding, not a weakened Finding used to represent a
+// missing projection. UNATTESTABLE therefore has no `finding` member.
+const FINDING = {
   type: 'object',
-  required: ['concern_id', 'finding_id', 'subject_kind', 'subject_address', 'record_projection_id',
-             'projection_as_of', 'verdict', 'evidence_addresses', 'frozen_at', 'detail'],
+  required: ['finding_schema', 'finding_id', 'subject', 'evaluator', 'scope',
+             'record_projection_id', 'claims', 'evidence_addresses',
+             'counterevidence_addresses', 'input_finding_ids', 'created_at',
+             'frozen_at', 'authority_effect', 'settlement_effect', 'supersedes'],
+  properties: {
+    finding_schema: { type: 'string' },
+    finding_id: { type: 'string' },
+    subject: { type: 'object', required: ['kind', 'address'], properties: {
+      kind: { type: 'string' }, address: { type: 'string' },
+    } },
+    evaluator: { type: 'object', required: ['principal_id', 'relation'], properties: {
+      principal_id: { type: 'string' }, relation: { type: 'string' },
+    } },
+    scope: { type: 'object' },
+    record_projection_id: { type: 'string' },
+    claims: { type: 'array', items: { type: 'object', required: ['claim_id', 'verdict', 'detail'], properties: {
+      claim_id: { type: 'string' }, verdict: { type: 'string' }, detail: { type: 'string' },
+    } } },
+    evidence_addresses: { type: 'array', items: { type: 'string' } },
+    counterevidence_addresses: { type: 'array', items: { type: 'string' } },
+    input_finding_ids: { type: 'array', items: { type: 'string' } },
+    created_at: { type: 'string' },
+    frozen_at: { type: 'string' },
+    authority_effect: { type: 'string' },
+    settlement_effect: { type: 'string' },
+    supersedes: { type: 'array', items: { type: 'string' } },
+  },
+}
+
+const REVIEW_RESULT = {
+  type: 'object',
+  required: ['concern_id', 'status'],
   properties: {
     concern_id: { type: 'string' },
-    finding_id: { type: 'string' },
-    subject_kind: { type: 'string' },
-    subject_address: { type: 'string' },
-    record_projection_id: { type: 'string' },
+    status: { type: 'string' },
     projection_as_of: { type: 'string' },
-    verdict: { type: 'string' },
-    evidence_addresses: { type: 'array', items: { type: 'string' } },
-    frozen_at: { type: 'string' },
+    finding: FINDING,
+    defect: { type: 'string' },
+    observation_file: { type: 'string' },
+  },
+}
+
+// This is deliberately a comparison envelope, not a Finding. A valid
+// FINDING_SET Finding needs its own real RecordProjection over durably recorded
+// input Findings; pre-opening rehearsal must not invent that projection.
+const COMPARISON = {
+  type: 'object',
+  required: ['status', 'classifications', 'input_finding_ids', 'authority_effect',
+             'settlement_effect', 'detail'],
+  properties: {
+    status: { type: 'string' },
+    classifications: { type: 'array', items: { type: 'string' } },
+    input_finding_ids: { type: 'array', items: { type: 'string' } },
+    authority_effect: { type: 'string' },
+    settlement_effect: { type: 'string' },
     detail: { type: 'string' },
   },
 }
 
-const COMPARISON = {
-  type: 'object',
-  required: ['classifications', 'detail'],
-  properties: {
-    classifications: { type: 'array', items: { type: 'string' } },
-    detail: { type: 'string' },
-  },
+const BAD_PROJECTION_IDS = ['NONE', 'UNAVAILABLE', 'MISSING']
+function frozenFinding(result, subjectKind) {
+  const finding = result && result.status === 'FINDING' ? result.finding : null
+  return !!(finding && finding.finding_schema === 'soveraeign-finding/v1'
+    && finding.subject && finding.subject.kind === subjectKind
+    && finding.record_projection_id
+    && BAD_PROJECTION_IDS.indexOf(finding.record_projection_id) === -1
+    && finding.frozen_at && finding.authority_effect === 'NONE'
+    && finding.settlement_effect === 'NONE')
+}
+function claimsConfirmed(result) {
+  const claims = result && result.finding && Array.isArray(result.finding.claims)
+    ? result.finding.claims : []
+  return claims.length > 0 && claims.every(function (claim) { return claim.verdict === 'CONFIRMED' })
 }
 
 const LAND = {
@@ -192,19 +243,26 @@ if (built.concern_id !== selected.concern_id) {
 }
 log('Built: ' + (built.changed_paths || []).length + ' path(s) changed')
 
-let orchestrationFinding = null
+let orchestrationReview = null
 if (evidenceMode) {
   phase('Orchestrator Review')
   invocations += 1
-  orchestrationFinding = await agent(
+  orchestrationReview = await agent(
     'You are in REVIEW mode under concern ' + selected.concern_id + ', not PLAN mode. Judge PARTICIPANT_IN_WORK for the bounded assignment ' + plan.operation + '. Preserve the concern id. ' +
-    'Use contracts/record-projection.schema.json and contracts/finding.schema.json. Reconstruct a scoped RecordProjection through the Record service for the assignment/work subject and your evaluator relation. ' +
-    'Judge assignment, authority, scope, repair, disclosure, and terminal fidelity only; do not judge implementation correctness. ' +
-    'Do not read or anticipate the Witness conclusion. Cite only addresses in the projection. If the needed Record evidence does not exist, return verdict UNATTESTABLE with record_projection_id NONE and explain the Record defect; never fill it from the worker report. ' +
-    'Freeze the Finding before returning it. Return concern_id, finding_id, subject_kind PARTICIPANT_IN_WORK, subject_address, record_projection_id, projection_as_of, verdict, evidence_addresses, frozen_at, and detail.',
-    { agentType: 'sov-orchestrator', schema: FROZEN_FINDING, phase: 'Orchestrator Review', label: 'review:' + selected.domain })
-  if (!orchestrationFinding || !orchestrationFinding.frozen_at) {
-    return { error: 'orchestrator review did not return a frozen Finding', concern: selected, build: built }
+    'Use contracts/record-projection.schema.json and contracts/finding.schema.json. Reconstruct a scoped RecordProjection through the Record service for the assignment/participant-in-work subject and your evaluator relation. ' +
+    'Judge assignment, authority, scope, repair, disclosure, and terminal fidelity only; do not judge implementation correctness. Do not read or anticipate the Witness conclusion. ' +
+    'If a real projection with cited Record addresses exists, return status FINDING plus projection_as_of and a fully contract-compatible frozen Finding: finding_schema soveraeign-finding/v1; subject PARTICIPANT_IN_WORK; real evaluator principal/relation; scope; real record_projection_id; claims; evidence/counterevidence; input_finding_ids; created_at/frozen_at; authority_effect NONE; settlement_effect NONE; supersedes. ' +
+    'If the needed Record projection or material evidence cannot be reconstructed, return status UNATTESTABLE and a concrete defect, with NO finding object. Never use NONE, UNAVAILABLE, MISSING, an invented id, worker prose, or memory to satisfy record_projection_id.',
+    { agentType: 'sov-orchestrator', schema: REVIEW_RESULT, phase: 'Orchestrator Review', label: 'review:' + selected.domain })
+  if (!orchestrationReview || orchestrationReview.concern_id !== selected.concern_id) {
+    return { error: 'orchestrator review returned no concern-safe envelope', concern: selected, build: built }
+  }
+  if (orchestrationReview.status === 'FINDING' && !frozenFinding(orchestrationReview, 'PARTICIPANT_IN_WORK')) {
+    return { error: 'orchestrator labelled a malformed or projectionless value as a Finding', concern: selected }
+  }
+  if (orchestrationReview.status !== 'FINDING' &&
+      (orchestrationReview.status !== 'UNATTESTABLE' || !orchestrationReview.defect)) {
+    return { error: 'orchestrator review must be FINDING or explicit UNATTESTABLE', concern: selected }
   }
 }
 
@@ -212,15 +270,16 @@ let witnessed = null
 if (evidenceMode) {
   phase('Witness Review')
   invocations += 1
-  const cutoff = orchestrationFinding ? orchestrationFinding.projection_as_of : 'NONE'
+  const cutoffInstruction = frozenFinding(orchestrationReview, 'PARTICIPANT_IN_WORK')
+    ? 'Use this exact shared Record cutoff: ' + orchestrationReview.projection_as_of + '. The cutoff is projection metadata, not the Orchestrator conclusion. '
+    : 'No common cutoff was supplied. Establish an exact Record cutoff yourself before writing any observation; comparison will remain a Record defect unless both real Findings exist. '
   witnessed = await agent(
     'You are the independent evaluator of WORK under concern ' + selected.concern_id + '. Concern: ' + selected.concern + '. Operation: ' + plan.operation + '. Preserve the concern id; independence comes from evaluator/session relation, not changing the concern. ' +
-    'Use contracts/record-projection.schema.json and contracts/finding.schema.json. Inspect the exact repository state and governing contract/fixtures yourself. ' +
-    'Reconstruct a WORK RecordProjection at this shared cutoff if available: ' + cutoff + '. The cutoff is projection metadata, not an evaluator conclusion. ' +
-    'Do not read the worker conclusion, Orchestrator Finding, or Controller expectation before freezing your own Finding. Builder paths may locate the work but are not evidence. ' +
-    'Cite only addresses present in your projection. If the projection/evidence is missing or cannot be reconstructed, return UNATTESTABLE rather than substituting prose. ' +
-    'Freeze before returning. Return concern_id, finding_id, subject_kind WORK, subject_address, record_projection_id, projection_as_of, verdict, evidence_addresses, frozen_at, and detail.',
-    { agentType: 'sov-witness', schema: FROZEN_FINDING, phase: 'Witness Review', label: 'witness-review:' + selected.domain })
+    'Use contracts/record-projection.schema.json and contracts/finding.schema.json. Inspect the exact repository state and governing contract/fixtures yourself. ' + cutoffInstruction +
+    'Do not read the worker conclusion, Orchestrator Finding, or Controller expectation before freezing your own result. Builder paths may locate the work but are not evidence. ' +
+    'If a real WORK RecordProjection exists, freeze a fully contract-compatible Finding first, then write your independent observation JSON under reports/observations/; the observation write occurs after the Finding is frozen so it cannot enter its own evidence basis. Return status FINDING, projection_as_of, finding, and observation_file. ' +
+    'If the projection/evidence cannot be reconstructed, write an observation that reports the work UNATTESTABLE, then return status UNATTESTABLE, the concrete Record defect, and observation_file with NO finding object. Never invent a projection id or substitute prose for Record evidence.',
+    { agentType: 'sov-witness', schema: REVIEW_RESULT, phase: 'Witness Review', label: 'witness-review:' + selected.domain })
 } else {
   phase('Witness')
   invocations += 1
@@ -241,40 +300,68 @@ if (!witnessed) {
 if (witnessed.concern_id !== selected.concern_id) {
   return { error: 'witness changed the work concern instead of independently evaluating it', expected: selected.concern_id, observed: witnessed.concern_id }
 }
-log('Witness: ' + witnessed.verdict)
+if (evidenceMode && witnessed.status === 'FINDING' && !frozenFinding(witnessed, 'WORK')) {
+  return { error: 'witness labelled a malformed or projectionless value as a Finding', concern: selected }
+}
+if (evidenceMode && witnessed.status !== 'FINDING' &&
+    (witnessed.status !== 'UNATTESTABLE' || !witnessed.defect)) {
+  return { error: 'witness review must be FINDING or explicit UNATTESTABLE', concern: selected }
+}
+log('Witness: ' + (evidenceMode ? witnessed.status : witnessed.verdict))
 
 let comparison = null
 if (evidenceMode) {
-  if (!witnessed.frozen_at) {
-    return { error: 'witness review did not return a frozen Finding', concern: selected }
+  const haveParticipantFinding = frozenFinding(orchestrationReview, 'PARTICIPANT_IN_WORK')
+  const haveWorkFinding = frozenFinding(witnessed, 'WORK')
+  if (haveParticipantFinding && haveWorkFinding) {
+    phase('Compare')
+    invocations += 1
+    comparison = await agent(
+      'Compare these two already-frozen Findings. You do not witness, ratify, settle, average, or rewrite them. Preserve both subjects, input ids, and citations. ' +
+      'Participant-in-work Finding: ' + JSON.stringify(orchestrationReview.finding) + '. WORK Finding: ' + JSON.stringify(witnessed.finding) + '. ' +
+      'Use only these classifications: NO_CONFLICT, EVIDENCE_DIFFERENCE, INTERPRETATION_DIFFERENCE, WORK_DEFECT, WORKER_DEFECT, ORCHESTRATION_DEFECT, WITNESS_DEFECT, RECORD_DEFECT, POLICY_SEAM. ' +
+      'Return status CLASSIFIED; both finding ids as input_finding_ids; authority_effect NONE; settlement_effect NONE; classifications; and concise evidence-based detail. This comparison envelope is not itself a Finding because this pre-opening workflow has no durable RecordProjection over the Finding set.',
+      { agentType: 'sov-controller', schema: COMPARISON, phase: 'Compare', label: 'compare:' + selected.domain })
+  } else {
+    const ids = []
+    if (haveParticipantFinding) ids.push(orchestrationReview.finding.finding_id)
+    if (haveWorkFinding) ids.push(witnessed.finding.finding_id)
+    comparison = {
+      status: 'UNATTESTABLE', classifications: ['RECORD_DEFECT'], input_finding_ids: ids,
+      authority_effect: 'NONE', settlement_effect: 'NONE',
+      detail: 'Comparison requires two real frozen Findings backed by real Record projections; at least one review is UNATTESTABLE.',
+    }
   }
-  phase('Compare')
-  invocations += 1
-  comparison = await agent(
-    'Compare these two already-frozen Findings. You do not witness, ratify, or average them. Preserve both subjects and citations. ' +
-    'Participant-in-work Finding: ' + JSON.stringify(orchestrationFinding) + '. WORK Finding: ' + JSON.stringify(witnessed) + '. ' +
-    'Use only these classifications: NO_CONFLICT, EVIDENCE_DIFFERENCE, INTERPRETATION_DIFFERENCE, WORK_DEFECT, WORKER_DEFECT, ORCHESTRATION_DEFECT, WITNESS_DEFECT, RECORD_DEFECT, POLICY_SEAM. ' +
-    'A missing/unreconstructable projection or citation is RECORD_DEFECT; an actually undefined governing choice is POLICY_SEAM. ' +
-    'Return classifications and a concise evidence-based detail. Do not create standing.',
-    { agentType: 'sov-controller', schema: COMPARISON, phase: 'Compare', label: 'compare:' + selected.domain })
 }
 
 phase('Land')
-const comparisonBlocks = evidenceMode && (!comparison ||
-  (comparison.classifications || []).length !== 1 ||
-  comparison.classifications[0] !== 'NO_CONFLICT')
-const mode = planOnly || !selected.in_grant_scope || witnessed.verdict !== 'CONFIRMED' || comparisonBlocks ? 'plan' : 'land'
+const evidenceReviewsConfirmed = !evidenceMode || (
+  frozenFinding(orchestrationReview, 'PARTICIPANT_IN_WORK') && claimsConfirmed(orchestrationReview)
+  && frozenFinding(witnessed, 'WORK') && claimsConfirmed(witnessed))
+const comparisonBlocks = evidenceMode && (!comparison || comparison.status !== 'CLASSIFIED'
+  || (comparison.classifications || []).length !== 1
+  || comparison.classifications[0] !== 'NO_CONFLICT')
+const witnessConfirmed = evidenceMode
+  ? (evidenceReviewsConfirmed && !!witnessed.observation_file)
+  : witnessed.verdict === 'CONFIRMED'
+const mode = planOnly || !selected.in_grant_scope || !witnessConfirmed || comparisonBlocks ? 'plan' : 'land'
 if (mode === 'plan') {
-  log('Rehearsing the gate only: ' + (planOnly ? 'plan_only was set' : (!selected.in_grant_scope ? 'concern is outside the grant' : (comparisonBlocks ? 'evidence comparison is not a single NO_CONFLICT' : 'witness verdict is ' + witnessed.verdict))))
+  const reason = planOnly ? 'plan_only was set'
+    : (!selected.in_grant_scope ? 'concern is outside the grant'
+      : (comparisonBlocks ? 'evidence comparison is not a single NO_CONFLICT classification'
+        : (!evidenceReviewsConfirmed ? 'one evidence review lacks a confirmed real Finding'
+          : 'independent observation is missing or unconfirmed')))
+  log('Rehearsing the gate only: ' + reason)
 }
 
 const pathArgs = (built.changed_paths || []).map(function (p) { return '--path ' + p }).join(' ')
+const observationArg = witnessed.observation_file ? ' --observation ' + witnessed.observation_file : ''
 invocations += 1
 const landed = await agent(
   'Run the landing gate and report exactly what it said. You did not build this change and you do not decide whether it lands; the gate does. '
   + 'Run this command from the repository root and nothing else that writes:\n\n'
   + '  python scripts/sov_land.py ' + mode + ' ' + pathArgs
-  + ' --observation ' + (witnessed.observation_file || 'MISSING')
+  + observationArg
   + ' --target ' + target
   + ' --spend ' + (invocations + 1)
   + ' --message "' + (selected.domain + ': ' + selected.concern).replace(/"/g, "'") + '"\n\n'
@@ -299,7 +386,8 @@ return {
   plan: plan,
   build: { summary: built.summary, changed_paths: built.changed_paths, checks_run: built.checks_run },
   witness: evidenceMode ? witnessed : { verdict: witnessed.verdict, observations: witnessed.observations, observation_file: witnessed.observation_file },
-  orchestration_finding: orchestrationFinding,
+  orchestration_review: orchestrationReview,
+  orchestration_finding: orchestrationReview && orchestrationReview.finding ? orchestrationReview.finding : null,
   comparison: comparison,
   evidence_mode: evidenceMode,
   gate: gate,

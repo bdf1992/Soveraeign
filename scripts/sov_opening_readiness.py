@@ -172,6 +172,11 @@ def assess(root: Path = ROOT) -> dict:
         "sov_context_order": _has(root / "SOV.md", "**Phase authority.**",
                                   "**Assigned work.**", "`RecordProjection`",
                                   "**Operation.**"),
+        "evidence_review_envelopes": _has(root / ".claude/workflows/sov-loop.js",
+                                          "const REVIEW_RESULT",
+                                          "status: 'UNATTESTABLE'",
+                                          "BAD_PROJECTION_IDS",
+                                          "comparison envelope is not itself a Finding"),
     }
     service_path = root / "services/record/contracts/service.json"
     if service_path.is_file():

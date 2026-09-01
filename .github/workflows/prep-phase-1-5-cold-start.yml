@@ -22,10 +22,12 @@ jobs:
           python-version: '3.12'
 
       - name: Apply cold-start readiness slice
-        run: python scripts/_prep_cold_start_patch.py
+        run: |
+          python scripts/_prep_cold_start_patch.py
+          python scripts/_prep_cold_start_fix.py
 
       - name: Remove carrier from final tree
-        run: rm .github/workflows/prep-phase-1-5-cold-start.yml scripts/_prep_cold_start_patch.py
+        run: rm .github/workflows/prep-phase-1-5-cold-start.yml scripts/_prep_cold_start_patch.py scripts/_prep_cold_start_fix.py
 
       - name: Rebuild derived repository projections
         run: |

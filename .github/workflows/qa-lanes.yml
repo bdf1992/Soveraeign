@@ -2,15 +2,19 @@ name: qa lanes
 
 # The verification dyad from SDLC.md, run per pull request.
 #
-#   blue   is the canonical PR root-verification producer; its Python matrix
+#   blue   is candidate construction evidence CI(C): it checks the exact PR head,
 #          builds the positive path and its declared cases, and a pass establishes
 #          BUILT evidence and nothing further
-#   red    screens adversarially; its output is PROPOSED findings, never CONFIRMED,
-#          because a finding counts only after independent reproduction
-#   purple gates any standing advance past BUILT on a settled engagement receipt
+#   red    screens the same candidate adversarially; its output is PROPOSED findings,
+#          never CONFIRMED, because a finding counts only after independent reproduction
+#   purple gates any standing advance past BUILT on the candidate engagement receipt
+#
+# Base+candidate integration evidence CI(B,C) is a separate repository subject and
+# is produced by verify.yml's repository matrix (plus supporting integration jobs).
+# Neither lane transfers its result to the other subject.
 #
 # Mutation execution is intentionally not on this critical path. This workflow
-# admits the exact mutation work quickly; `.github/workflows/mutation-evidence.yml`
+# admits the exact candidate mutation work quickly; `.github/workflows/mutation-evidence.yml`
 # performs the expensive experiments asynchronously against landed immutable bytes.
 # No job here ratifies.
 
@@ -35,9 +39,25 @@ jobs:
         python-version: ["3.11", "3.12"]
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Bind Blue to the exact candidate
+        run: >-
+          python scripts/sov_ci_subject.py candidate
+          --base "${{ github.event.pull_request.base.sha }}"
+          --candidate "${{ github.event.pull_request.head.sha }}"
+          --output "$RUNNER_TEMP/blue-candidate-subject.json"
+      - name: Retain Blue candidate subject receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: blue-candidate-subject-${{ github.event.pull_request.head.sha }}-py${{ matrix.python-version }}
+          path: ${{ runner.temp }}/blue-candidate-subject.json
+          if-no-files-found: error
+          retention-days: 30
       - name: Repository verification
         run: python scripts/verify.py
       - name: Record the standing this establishes
@@ -46,9 +66,9 @@ jobs:
           {
             echo '## Blue lane'
             echo
-            echo "Python ${{ matrix.python-version }} is one supported reading of the same root observation."
+            echo "Python ${{ matrix.python-version }} is one supported reading of candidate CI(C)."
             echo 'The Blue matrix establishes `BUILT` evidence only when every supported reading passes.'
-            echo 'It is not a witness and it is not a ratification.'
+            echo 'It establishes nothing about the base+candidate integration subject, and it is not a witness or ratification.'
           } >> "$GITHUB_STEP_SUMMARY"
 
   blue-required:
@@ -58,7 +78,7 @@ jobs:
     needs: [blue]
     steps:
       - name: Publish the protected-branch check
-        run: echo 'Both supported Python readings completed successfully.'
+        run: echo 'Both supported Python readings completed successfully against the exact candidate.'
 
   generative-red:
     name: red · generative screening
@@ -71,7 +91,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
+
+      - name: Bind Red to the exact candidate
+        run: >-
+          python scripts/sov_ci_subject.py candidate
+          --base "${{ github.event.pull_request.base.sha }}"
+          --candidate "${{ github.event.pull_request.head.sha }}"
 
       - name: Refuse an enabled lane with no key
         env:
@@ -88,7 +115,7 @@ jobs:
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           prompt: |
-            Hold the RED stance defined in SDLC.md over this pull request's diff.
+            Hold the RED stance defined in SDLC.md over this pull request's exact candidate commit.
 
             You receive the contract, the claimed invariants, and the built artifact.
             Do not read the author's tests, plan, or assumptions as evidence that the
@@ -116,10 +143,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Bind mutation admission to the exact candidate
+        run: >-
+          python scripts/sov_ci_subject.py candidate
+          --base "${{ github.event.pull_request.base.sha }}"
+          --candidate "${{ github.event.pull_request.head.sha }}"
       - name: Fetch the comparison point
         run: git fetch --no-tags origin "${{ github.base_ref || 'main' }}"
       - name: Prove the instrument discriminates
@@ -135,9 +168,9 @@ jobs:
           {
             echo '## Mutation admission'
             echo
-            echo 'This check proves the diff can be scoped and every changed production Python target has an owning suite.'
+            echo 'This check proves the candidate diff can be scoped and every changed production Python target has an owning suite.'
             echo 'It does not execute the expensive mutants and does not claim a mutation score.'
-            echo 'Mutation execution runs asynchronously after landing against the immutable merge SHA.'
+            echo 'Mutation execution runs asynchronously after landing against immutable landed bytes.'
           } >> "$GITHUB_STEP_SUMMARY"
 
   red:
@@ -150,7 +183,7 @@ jobs:
     steps:
       - name: Publish the protected-branch check
         run: |
-          echo 'Mutation work was honestly admitted; expensive mutation execution is asynchronous evidence.'
+          echo 'Mutation work was honestly admitted against the exact candidate; expensive mutation execution is asynchronous evidence.'
           echo 'Optional generative screening was either successful or not enabled.'
 
   purple:
@@ -162,9 +195,18 @@ jobs:
             && needs.red.result == 'success' }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
+      - name: Bind the gate to the exact candidate
+        run: >-
+          python scripts/sov_ci_subject.py candidate
+          --base "${{ github.event.pull_request.base.sha }}"
+          --candidate "${{ github.event.pull_request.head.sha }}"
 
       - name: Capture the proposed transition
         env:
@@ -182,8 +224,8 @@ jobs:
           {
             echo '## Purple gate'
             echo
-            echo 'A pull request that proposes no standing change passes this gate and'
-            echo 'establishes `BUILT` evidence only. A pull request that proposes an'
-            echo 'advance past `BUILT` must carry a settled engagement receipt with an'
-            echo 'independent witness. `RATIFIED` is unreachable here by design.'
+            echo 'This gate is bound to the exact candidate CI(C), not the synthetic integration commit.'
+            echo 'A pull request that proposes no standing change passes this gate and establishes `BUILT` evidence only.'
+            echo 'A pull request that proposes an advance past `BUILT` must carry a settled engagement receipt with an independent witness.'
+            echo '`RATIFIED` is unreachable here by design.'
           } >> "$GITHUB_STEP_SUMMARY"

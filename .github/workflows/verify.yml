@@ -1,8 +1,13 @@
 name: verify
 
-# Pull-request root verification also lives in qa-lanes.yml's Blue matrix. The
-# protected branch still names this workflow's two matrix checks explicitly, so
-# keep this compatibility observation until that ruleset is migrated.
+# Two repository subjects are verified on pull requests:
+#
+#   candidate  CI(C)   checks the exact pull-request head
+#   repository CI(B,C) checks GitHub's synthetic base+candidate merge
+#
+# The protected branch already names the repository matrix checks explicitly,
+# so their names remain stable while candidate evidence is added beside them.
+# Neither result transfers to the other subject.
 on:
   pull_request:
   push:
@@ -17,7 +22,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  repository:
+  candidate:
+    if: github.event_name == 'pull_request'
+    name: candidate · repository (${{ matrix.python-version }})
     runs-on: ubuntu-latest
     timeout-minutes: 5
     strategy:
@@ -26,8 +33,75 @@ jobs:
         python-version: ["3.11", "3.12"]
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Bind this job to the exact candidate
+        run: >-
+          python scripts/sov_ci_subject.py candidate
+          --base "${{ github.event.pull_request.base.sha }}"
+          --candidate "${{ github.event.pull_request.head.sha }}"
+          --output "$RUNNER_TEMP/candidate-subject.json"
+      - name: Retain candidate subject receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: candidate-ci-subject-${{ github.event.pull_request.head.sha }}-py${{ matrix.python-version }}
+          path: ${{ runner.temp }}/candidate-subject.json
+          if-no-files-found: error
+          retention-days: 30
+      - name: Verify candidate repository
+        run: python scripts/verify.py
+      - name: State the evidence subject
+        if: always()
+        run: |
+          {
+            echo '## Candidate verification'
+            echo
+            echo '`CI(C)` — this job checked the exact candidate commit named by the pull request.'
+            echo 'Its result does not establish integration with the target base.'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  repository:
+    name: repository (${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Bind this PR job to the exact integration subject
+        if: github.event_name == 'pull_request'
+        run: >-
+          python scripts/sov_ci_subject.py integration
+          --base "${{ github.event.pull_request.base.sha }}"
+          --candidate "${{ github.event.pull_request.head.sha }}"
+          --output "$RUNNER_TEMP/integration-subject.json"
+      - name: Retain integration subject receipt
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-ci-subject-${{ github.event.pull_request.base.sha }}-${{ github.event.pull_request.head.sha }}-py${{ matrix.python-version }}
+          path: ${{ runner.temp }}/integration-subject.json
+          if-no-files-found: error
+          retention-days: 30
       - name: Verify repository
         run: python scripts/verify.py
+      - name: State the evidence subject
+        if: always() && github.event_name == 'pull_request'
+        run: |
+          {
+            echo '## Integration verification'
+            echo
+            echo '`CI(B,C)` — this job checked the synthetic merge whose parents are the exact target base and candidate.'
+            echo 'Its result does not transfer onto the candidate commit.'
+          } >> "$GITHUB_STEP_SUMMARY"

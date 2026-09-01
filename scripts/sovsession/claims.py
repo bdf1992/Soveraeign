@@ -114,6 +114,7 @@ def held(directory: Path, at: datetime | None = None) -> dict[str, list[dict[str
         record = dict(record)
         record["tree"] = record.get("tree") or live.get(session, {}).get("tree", "")
         record["branch"] = live.get(session, {}).get("branch", "")
+        record["concern"] = live.get(session, {}).get("concern", "")
         by_path.setdefault(path, []).append(record)
     return by_path
 

@@ -13,29 +13,36 @@ export const meta = {
   ],
 }
 
-// args: { objective: string, domain?: string, target?: string, plan_only?: boolean, evidence_mode?: boolean }
+// args: { objective: string, concern?: string, domain?: string, source_session?: string, queue_refs?: string[], source_refs?: string[], target?: string, plan_only?: boolean, evidence_mode?: boolean }
 //
 // The gate, not this script, is what decides whether anything lands. A workflow
 // cannot grant itself authority, so every phase here is evidence-gathering and
 // the last step hands that evidence to scripts/sov_land.py to be refused or not.
 
-const DOMAINS = ['governance', 'contracts', 'conformance', 'asset', 'proofing', 'console', 'projection', 'byom', 'verification']
 
 const objective = args && args.objective ? args.objective : null
 if (!objective) {
   return { error: 'sov-loop needs an objective; it selects nothing on its own' }
 }
-const domain = args && args.domain && DOMAINS.indexOf(args.domain) !== -1 ? args.domain : null
+const domain = args && args.domain ? args.domain : null
+const concernHint = args && args.concern ? args.concern : null
+const sourceSessionHint = args && args.source_session ? args.source_session : null
+const queueRefsHint = args && Array.isArray(args.queue_refs) ? args.queue_refs : []
+const sourceRefsHint = args && Array.isArray(args.source_refs) ? args.source_refs : []
 const target = args && args.target ? args.target : 'main'
 const planOnly = !!(args && args.plan_only)
 const evidenceMode = !!(args && args.evidence_mode)
 
 const CONCERN = {
   type: 'object',
-  required: ['concern', 'domain', 'rationale', 'in_grant_scope', 'expected_paths'],
+  required: ['concern', 'concern_id', 'domain', 'source_session', 'queue_refs', 'source_refs', 'rationale', 'in_grant_scope', 'expected_paths'],
   properties: {
     concern: { type: 'string' },
+    concern_id: { type: 'string' },
     domain: { type: 'string' },
+    source_session: { type: 'string' },
+    queue_refs: { type: 'array', items: { type: 'string' } },
+    source_refs: { type: 'array', items: { type: 'string' } },
     rationale: { type: 'string' },
     in_grant_scope: { type: 'boolean' },
     out_of_scope_paths: { type: 'array', items: { type: 'string' } },
@@ -45,8 +52,9 @@ const CONCERN = {
 
 const PLAN = {
   type: 'object',
-  required: ['operation', 'files', 'effect_class', 'checks', 'defeating_case'],
+  required: ['concern_id', 'operation', 'files', 'effect_class', 'checks', 'defeating_case'],
   properties: {
+    concern_id: { type: 'string' },
     operation: { type: 'string' },
     files: { type: 'array', items: { type: 'string' } },
     effect_class: { type: 'string' },
@@ -58,9 +66,11 @@ const PLAN = {
 
 const BUILD = {
   type: 'object',
-  required: ['changed_paths', 'summary', 'checks_run', 'residuals'],
+  required: ['concern_id', 'changed_paths', 'summary', 'checks_run', 'residuals', 'cross_concern_routes'],
   properties: {
+    concern_id: { type: 'string' },
     changed_paths: { type: 'array', items: { type: 'string' } },
+    cross_concern_routes: { type: 'array', items: { type: 'string' } },
     summary: { type: 'string' },
     checks_run: { type: 'array', items: { type: 'object', required: ['command', 'exit_code'], properties: { command: { type: 'string' }, exit_code: { type: 'integer' } } } },
     residuals: { type: 'array', items: { type: 'string' } },
@@ -69,8 +79,9 @@ const BUILD = {
 
 const WITNESS = {
   type: 'object',
-  required: ['verdict', 'observations', 'residuals', 'observation_file'],
+  required: ['concern_id', 'verdict', 'observations', 'residuals', 'observation_file'],
   properties: {
+    concern_id: { type: 'string' },
     verdict: { type: 'string' },
     observations: { type: 'array', items: { type: 'string' } },
     residuals: { type: 'array', items: { type: 'string' } },
@@ -83,9 +94,10 @@ const WITNESS = {
 // the semantics; this compact shape only carries what this workflow must route.
 const FROZEN_FINDING = {
   type: 'object',
-  required: ['finding_id', 'subject_kind', 'subject_address', 'record_projection_id',
+  required: ['concern_id', 'finding_id', 'subject_kind', 'subject_address', 'record_projection_id',
              'projection_as_of', 'verdict', 'evidence_addresses', 'frozen_at', 'detail'],
   properties: {
+    concern_id: { type: 'string' },
     finding_id: { type: 'string' },
     subject_kind: { type: 'string' },
     subject_address: { type: 'string' },
@@ -127,11 +139,11 @@ phase('Select')
 invocations += 1
 const selected = await agent(
   'You hold the Control tier for one concern in Soveraeign. Objective: ' + objective + '. '
-  + (domain ? 'Domain: ' + domain + '. ' : 'Pick the single owning domain from: ' + DOMAINS.join(', ') + '. ')
-  + 'Read AGENTS.md and contracts/standing-grants.json. Name exactly one bounded concern that serves the objective. '
+  + (domain ? 'Owning domain hint: ' + domain + '. ' : 'Resolve the owning domain from repository contracts and discoverable skills; no closed domain vocabulary exists here. ')
+  + 'Read AGENTS.md and contracts/standing-grants.json. Read `python scripts/sov_session.py console --json` when available. Name exactly one bounded concern that serves the objective. ' + (concernHint ? 'The source session supplied concern ' + concernHint + '; preserve it. ' : '') + (sourceSessionHint ? 'Source session: ' + sourceSessionHint + '. ' : '') + (queueRefsHint.length ? 'Available queue refs: ' + queueRefsHint.join(', ') + '. ' : '') + (sourceRefsHint.length ? 'Source refs: ' + sourceRefsHint.join(', ') + '. ' : '') + 'Concern labels route and attribute work; they grant no authority. '
   + 'Then decide whether the whole concern falls inside the standing grant scope: the grant admits services/, contracts/, conformance/, scripts/, .claude/, adapters/, bindings/, workers/, and diagrams/, and excludes decisions/, lineage/, STATUS.yaml, and every root governing document. '
   + 'Set in_grant_scope false and list out_of_scope_paths if the concern would have to touch anything excluded - that concern is still worth doing, it just ends at an acceptance packet for Bdo instead of at a merge. '
-  + 'Do not build anything. Return the concern, domain, rationale, in_grant_scope, out_of_scope_paths, and the paths you expect to change.',
+  + 'Do not build anything. Return concern, concern_id, domain, source_session, queue_refs, source_refs, rationale, in_grant_scope, out_of_scope_paths, and expected paths.',
   { agentType: 'sov-controller', schema: CONCERN, phase: 'Select', label: 'select' })
 
 if (!selected) {
@@ -145,14 +157,17 @@ if (!selected.in_grant_scope) {
 phase('Plan')
 invocations += 1
 const plan = await agent(
-  'You hold the Orchestration tier. Turn this concern into exactly one bounded operation: ' + selected.concern + '. '
-  + 'Read .claude/skills/sov-' + selected.domain + '/SKILL.md, then AGENTS.md, then the owning contract and fixture the skill names. '
+  'You hold the Orchestration tier. Concern id: ' + selected.concern_id + '. Turn this concern into exactly one bounded operation: ' + selected.concern + '. Preserve the same concern id; do not silently switch concerns. '
+  + 'Enumerate .claude/skills/ and load the relevant skill if one exists, then read AGENTS.md and the owning contract/fixture. A missing skill name is not a refusal. '
   + 'Follow the implementation order in AGENTS.md: name the operation and owned lifecycle, then the contract and its positive and defeating case, then the smallest change. '
-  + 'You plan only; you do not build, witness, or dispatch. Return the operation, the exact files, the effect class, the checks that must pass, the defeating case that must fail as declared, and any blockers.',
+  + 'You plan only; you do not build, witness, or dispatch. Return unchanged concern_id, operation, exact files, effect class, checks, defeating case, and blockers.',
   { agentType: 'sov-orchestrator', schema: PLAN, phase: 'Plan', label: 'plan:' + selected.domain })
 
 if (!plan) {
   return { error: 'orchestrator returned no plan', concern: selected }
+}
+if (plan.concern_id !== selected.concern_id) {
+  return { error: 'orchestrator changed the session concern instead of routing it', expected: selected.concern_id, observed: plan.concern_id }
 }
 if (plan.blockers && plan.blockers.length > 0) {
   log('Planned with ' + plan.blockers.length + ' blocker(s) named')
@@ -161,16 +176,19 @@ if (plan.blockers && plan.blockers.length > 0) {
 phase('Build')
 invocations += 1
 const built = await agent(
-  'You hold the Work tier for exactly one operation: ' + plan.operation + '. '
+  'You hold the Work tier for exactly one operation under concern ' + selected.concern_id + ': ' + plan.operation + '. Preserve that concern for this session. '
   + 'Files: ' + (plan.files || []).join(', ') + '. Effect class: ' + plan.effect_class + '. '
-  + 'Read .claude/skills/sov-' + selected.domain + '/SKILL.md and AGENTS.md first. Write the defeating case (' + plan.defeating_case + ') and prove it fails as declared before you call the work done. '
+  + 'Enumerate .claude/skills/ and load the relevant skill if one exists, then read AGENTS.md. Write the defeating case (' + plan.defeating_case + ') and prove it fails as declared before you call the work done. If you discover another concern, record a route with sov_session.py route; do not retarget this session. '
   + 'Run python scripts/lint.py and python scripts/verify.py from the repository root and report their real exit codes; do not report a check you did not run. '
   + 'Do not commit, merge, push, or edit decisions/ or STATUS.yaml. Do not witness your own work. '
-  + 'Return every path you changed, a one-paragraph summary, the checks you ran with exit codes, and every residual you know about.',
+  + 'Return unchanged concern_id, every path changed, summary, checks with exit codes, residuals, and route ids for cross-concern work you sourced.',
   { agentType: 'sov-worker', schema: BUILD, phase: 'Build', label: 'build:' + selected.domain })
 
 if (!built) {
   return { error: 'worker returned no report', concern: selected, plan: plan }
+}
+if (built.concern_id !== selected.concern_id) {
+  return { error: 'worker changed the session concern instead of routing it', expected: selected.concern_id, observed: built.concern_id }
 }
 log('Built: ' + (built.changed_paths || []).length + ' path(s) changed')
 
@@ -179,11 +197,11 @@ if (evidenceMode) {
   phase('Orchestrator Review')
   invocations += 1
   orchestrationFinding = await agent(
-    'You are in REVIEW mode, not PLAN mode. Judge PARTICIPANT_IN_WORK for the bounded assignment ' + plan.operation + '. ' +
+    'You are in REVIEW mode under concern ' + selected.concern_id + ', not PLAN mode. Judge PARTICIPANT_IN_WORK for the bounded assignment ' + plan.operation + '. Preserve the concern id. ' +
     'Use contracts/record-projection.schema.json and contracts/finding.schema.json. Reconstruct a scoped RecordProjection through the Record service for the assignment/work subject and your evaluator relation. ' +
     'Judge assignment, authority, scope, repair, disclosure, and terminal fidelity only; do not judge implementation correctness. ' +
     'Do not read or anticipate the Witness conclusion. Cite only addresses in the projection. If the needed Record evidence does not exist, return verdict UNATTESTABLE with record_projection_id NONE and explain the Record defect; never fill it from the worker report. ' +
-    'Freeze the Finding before returning it. Return finding_id, subject_kind PARTICIPANT_IN_WORK, subject_address, record_projection_id, projection_as_of, verdict, evidence_addresses, frozen_at, and detail.',
+    'Freeze the Finding before returning it. Return concern_id, finding_id, subject_kind PARTICIPANT_IN_WORK, subject_address, record_projection_id, projection_as_of, verdict, evidence_addresses, frozen_at, and detail.',
     { agentType: 'sov-orchestrator', schema: FROZEN_FINDING, phase: 'Orchestrator Review', label: 'review:' + selected.domain })
   if (!orchestrationFinding || !orchestrationFinding.frozen_at) {
     return { error: 'orchestrator review did not return a frozen Finding', concern: selected, build: built }
@@ -196,29 +214,32 @@ if (evidenceMode) {
   invocations += 1
   const cutoff = orchestrationFinding ? orchestrationFinding.projection_as_of : 'NONE'
   witnessed = await agent(
-    'You are the independent evaluator of WORK. Concern: ' + selected.concern + '. Operation: ' + plan.operation + '. ' +
+    'You are the independent evaluator of WORK under concern ' + selected.concern_id + '. Concern: ' + selected.concern + '. Operation: ' + plan.operation + '. Preserve the concern id; independence comes from evaluator/session relation, not changing the concern. ' +
     'Use contracts/record-projection.schema.json and contracts/finding.schema.json. Inspect the exact repository state and governing contract/fixtures yourself. ' +
     'Reconstruct a WORK RecordProjection at this shared cutoff if available: ' + cutoff + '. The cutoff is projection metadata, not an evaluator conclusion. ' +
     'Do not read the worker conclusion, Orchestrator Finding, or Controller expectation before freezing your own Finding. Builder paths may locate the work but are not evidence. ' +
     'Cite only addresses present in your projection. If the projection/evidence is missing or cannot be reconstructed, return UNATTESTABLE rather than substituting prose. ' +
-    'Freeze before returning. Return finding_id, subject_kind WORK, subject_address, record_projection_id, projection_as_of, verdict, evidence_addresses, frozen_at, and detail.',
+    'Freeze before returning. Return concern_id, finding_id, subject_kind WORK, subject_address, record_projection_id, projection_as_of, verdict, evidence_addresses, frozen_at, and detail.',
     { agentType: 'sov-witness', schema: FROZEN_FINDING, phase: 'Witness Review', label: 'witness-review:' + selected.domain })
 } else {
   phase('Witness')
   invocations += 1
   witnessed = await agent(
-    'You are the independent observation for work you did not do and must not touch. Concern: ' + selected.concern + '. ' +
+    'You are the independent observation for work you did not do and must not touch. Concern id: ' + selected.concern_id + '. Concern: ' + selected.concern + '. Preserve the concern id while keeping an independent session/evaluator relation. ' +
     'The builder reports it changed: ' + (built.changed_paths || []).join(', ') + '. Treat that as a claim, not evidence. ' +
     'Read git status and git diff yourself, read the owning contract and the defeating fixture, and run python scripts/verify.py and python scripts/lint.py observing the real exit codes. ' +
     'Confirm the defeating case actually fails as declared; a fixture that passes when it should fail is a DISSENTED verdict, not a residual. ' +
     'Then write your observation to reports/observations/ as JSON with exactly these fields: observer_id (your agent label), contributed_to_build (false - and if that is not true, say so and set verdict DISSENTED), verdict (CONFIRMED or DISSENTED), concern, and checks. ' +
     'You must not edit, fix, build, or commit anything outside that one observation file. ' +
-    'Return the verdict, what you independently confirmed, residuals, the path you wrote the observation to, and any judgement items only Bdo can settle.',
+    'Return concern_id, verdict, what you independently confirmed, residuals, the path you wrote the observation to, and any judgement items only Bdo can settle.',
     { agentType: 'sov-witness', schema: WITNESS, phase: 'Witness', label: 'witness:' + selected.domain })
 }
 
 if (!witnessed) {
   return { error: 'witness returned no observation; nothing may land unwitnessed', concern: selected, build: built }
+}
+if (witnessed.concern_id !== selected.concern_id) {
+  return { error: 'witness changed the work concern instead of independently evaluating it', expected: selected.concern_id, observed: witnessed.concern_id }
 }
 log('Witness: ' + witnessed.verdict)
 

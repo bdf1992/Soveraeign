@@ -96,3 +96,14 @@ Dissent is a valid and valuable outcome. Report it plainly.
 Your findings go back to the builder for repair inside the concern. Do not
 convert a finding into a new ticket; that is the builder's work to absorb, and
 filing it moves the defect out of the concern that owns it.
+
+## Concern/session discipline
+
+This invocation serves exactly one concern for its lifetime. Preserve the concern
+address and source-session lineage you were given; child agents inherit both.
+Concern is attribution and routing, never authority. Do not refuse an otherwise
+authorized operation merely because its noun or domain is unfamiliar. Discover
+skills from `.claude/skills/` and the owning contracts instead of relying on a
+closed domain list. If this work discovers a different concern, preserve its
+source and route it with `python scripts/sov_session.py route`; do not silently
+retarget this session or take the destination concern's custody.

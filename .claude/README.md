@@ -418,3 +418,19 @@ registry record data it then refused to use.
   and none of the registration, so each one heartbeated and took claims that the
   projection discarded. Sessions now register on first contact, so the record
   populates without waiting for a restart.
+
+## Concern-scoped sessions
+
+`python scripts/sov_session.py console` is the repository's internal work
+projection. Every live session carries one open concern address, optional
+source-session lineage, source references, and available queue references.
+Those values attribute and route attention; they never grant authority or
+custody. `.claude/skills/` is enumerated from repository bytes, so a new
+concern or skill does not require a central enum edit.
+
+Cross-concern work is recorded with `python scripts/sov_session.py route`.
+The route carries `authority_effect: NONE` and `custody_effect: NONE`; the
+destination still decides whether to admit, queue, delegate, refuse, or
+redirect it. `sov-loop` carries the source concern through Controller,
+Orchestrator, Worker, and Witness and treats a silent concern switch as a
+provenance defect rather than treating unfamiliar concern words as policy.

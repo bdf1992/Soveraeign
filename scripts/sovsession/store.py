@@ -6,10 +6,11 @@ the same repository reads and writes one store without anything being committed.
 shared tree and from a worktree in a temp directory, which is what makes a claim
 visible across the nineteen trees this repository currently has checked out.
 
-Two logs:
+Three logs:
 
-  sessions.ndjson  register / heartbeat / end, one line per event
-  claims.ndjson    claim / release, one line per event
+  sessions.ndjson        register / heartbeat / end, one line per event
+  claims.ndjson          claim / release, one line per event
+  concern-routes.ndjson  open-addressed concern crossings; no authority or custody
 
 Liveness is deliberately not a lock. A session that dies without releasing must
 not wedge the repository, so a claim expires on heartbeat age, and a process
@@ -30,6 +31,7 @@ STALE_SECONDS = 1800.0
 
 SESSIONS_LOG = "sessions.ndjson"
 CLAIMS_LOG = "claims.ndjson"
+CONCERN_ROUTES_LOG = "concern-routes.ndjson"
 
 
 class StoreError(RuntimeError):

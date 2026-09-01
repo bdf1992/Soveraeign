@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Any
 import subprocess
 
-from sovsession import claims, guard, phase_context, principals, store
+from sovsession import claims, concerns, guard, phase_context, principals, store
 
 NEWLINE = chr(10)
 
@@ -60,6 +60,13 @@ def collect(root: Path, directory: Path, session: str, tree: str) -> dict[str, A
     return {
         "session": session,
         "intent": own.get("intent", ""),
+        "concern": own.get("concern") or concerns.resolve(None, session)[0],
+        "concern_binding_source": own.get("concern_binding_source", "SESSION_FALLBACK"),
+        "source_session": own.get("source_session", ""),
+        "source_refs": own.get("source_refs", []),
+        "queue_refs": own.get("queue_refs", []),
+        "skills": concerns.available_skills(root),
+        "concern_routes": concerns.routes(directory),
         "tree": tree,
         "branch": branch,
         "position": _position(root, branch),
@@ -84,6 +91,20 @@ def _discovery(lines: list[str]) -> None:
     lines.append("  then load the owning contract for the operation or constraint you touch")
 
 
+def _work_context(lines: list[str], data: dict[str, Any]) -> None:
+    """Show attribution/routing without confusing it with authority."""
+    concern = data.get("concern") or "concern:session/" + str(data.get("session") or "unbound")
+    binding = data.get("concern_binding_source") or "SESSION_FALLBACK"
+    lines.append(f"  concern: {concern} ({binding}; attribution/routing only)")
+    if data.get("source_session"):
+        lines.append(f"  source session: {data['source_session']}")
+    if data.get("queue_refs"):
+        lines.append("  available queues: " + ", ".join(data["queue_refs"][:6]))
+    if data.get("source_refs"):
+        lines.append("  sources: " + ", ".join(data["source_refs"][:6]))
+    lines.append(f"  discoverable skills: {len(data.get('skills') or [])} under .claude/skills/")
+
+
 def _phase(lines: list[str], data: dict[str, Any]) -> None:
     """Show the reconciled phase reading without turning the briefing into authority."""
     for line in phase_context.render(data):
@@ -98,6 +119,7 @@ def render(data: dict[str, Any]) -> str:
         lines = [f"Session registry: you are the only live session. "
                  f"{data['branch']}, {data['position']}.", f"  {identity}"]
         lines.append(f"  intent: {data['intent'] or '(not registered)'}")
+        _work_context(lines, data)
         _phase(lines, data["phase"])
         _discovery(lines)
         return NEWLINE.join(lines)
@@ -107,6 +129,7 @@ def render(data: dict[str, Any]) -> str:
                  f"on {data['branch']}, {data['position']}")
     lines.append(f"  {identity}")
     lines.append(f"  intent: {data['intent'] or '(not registered)'}")
+    _work_context(lines, data)
     _phase(lines, data["phase"])
     if data["shared_tree"]:
         shared = data["shared_tree"]
@@ -128,4 +151,24 @@ def render(data: dict[str, Any]) -> str:
                  f"(reserve it: python scripts/sov_session.py reserve-decision <slug>)")
     lines.append("  who holds a path: python scripts/sov_session.py who <path>")
     _discovery(lines)
+    return "\n".join(lines)
+
+def render_console(data: dict[str, Any]) -> str:
+    """Detailed local work projection: concern, sources, queues, skills, crossings."""
+    lines = [render(data), "", "Work console (projection; grants no authority)"]
+    lines.append("  concern: " + str(data.get("concern") or ""))
+    lines.append("  source session: " + str(data.get("source_session") or "(none)"))
+    lines.append("  sources: " + (", ".join(data.get("source_refs") or []) or "(none)"))
+    lines.append("  queues: " + (", ".join(data.get("queue_refs") or []) or "(none)"))
+    lines.append("  skills: " + (", ".join(data.get("skills") or []) or "(none)"))
+    concern = data.get("concern")
+    related = [route for route in data.get("concern_routes") or []
+               if concern in (route.get("source_concern"), route.get("destination_concern"))]
+    lines.append(f"  concern routes: {len(related)}")
+    for route in related[-8:]:
+        lines.append("    " + str(route.get("route_id")) + ": "
+                     + str(route.get("source_concern")) + " -> "
+                     + str(route.get("destination_concern")) + " ["
+                     + str(route.get("disposition")) + "]")
+    lines.append("  route cross-concern work: python scripts/sov_session.py route --to <concern> --source <address>")
     return "\n".join(lines)

@@ -191,3 +191,14 @@ presented for acceptance, or held at a named seam. Report it as a delta.
 
 `python scripts/lint.py` after editing repository text: this host's file tools
 emit CRLF and the repository pins LF.
+
+## Concern/session discipline
+
+This invocation serves exactly one concern for its lifetime. Preserve the concern
+address and source-session lineage you were given; child agents inherit both.
+Concern is attribution and routing, never authority. Do not refuse an otherwise
+authorized operation merely because its noun or domain is unfamiliar. Discover
+skills from `.claude/skills/` and the owning contracts instead of relying on a
+closed domain list. If this work discovers a different concern, preserve its
+source and route it with `python scripts/sov_session.py route`; do not silently
+retarget this session or take the destination concern's custody.

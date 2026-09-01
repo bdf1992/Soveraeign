@@ -21,6 +21,7 @@ from sovsession import claims as claimsmod
 from sovsession import guard as guardmod
 from sovsession import store
 from sovsession import worktrees as wtmod
+from sovsession import work_context
 
 
 def session_name(explicit: str | None = None, fallback: str | None = None) -> str:
@@ -63,22 +64,19 @@ def _emit(payload: Any, as_json: bool, text: str = "") -> None:
 
 
 def cmd_register(args: argparse.Namespace) -> int:
-    """Record that this session is live, and print the briefing it should read."""
-    root, directory, name, tree = _context(args.name)
-    claim = principals.resolve(root, name)
-    store.append(directory, store.SESSIONS_LOG, {
-        "event": "register",
-        "session": name,
-        "principal": claim["principal"],
-        "verification": claim["verification"],
-        "pid": int(os.environ.get("CLAUDE_PID", 0) or 0),
-        "tree": tree,
-        "branch": briefmod.branch_of(root),
-        "intent": args.intent or "",
-    })
-    data = briefmod.collect(root, directory, name, tree)
-    _emit(data, args.as_json, briefmod.render(data))
-    return 0
+    """Record one immutable concern-bound session and print its starting context."""
+    return work_context.register(*_context(args.name), args)
+
+
+def cmd_route(args: argparse.Namespace) -> int:
+    """Record cross-concern egress; destination intake remains separate."""
+    _, directory, name, _ = _context(args.name)
+    return work_context.route(directory, name, args)
+
+
+def cmd_console(args: argparse.Namespace) -> int:
+    """Project this session's concern, sources, queues, skills, and routes."""
+    return work_context.console(*_context(args.name), args)
 
 
 def cmd_principal(args: argparse.Namespace) -> int:
@@ -290,6 +288,7 @@ def cmd_selfcheck(args: argparse.Namespace) -> int:
     suite = unittest.TestSuite([
         loader.loadTestsFromName("tests.test_sov_session"),
         loader.loadTestsFromName("tests.test_sov_session_guard"),
+        loader.loadTestsFromName("tests.test_session_concerns"),
     ])
     result = unittest.TextTestRunner(verbosity=1 if args.as_json else 2).run(suite)
     if not result.wasSuccessful():

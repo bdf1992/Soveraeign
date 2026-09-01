@@ -160,6 +160,18 @@ def assess(root: Path = ROOT) -> dict:
         "concern_scoped_workflow": _has(root / ".claude/workflows/sov-loop.js",
                                          "concern_id", "cross_concern_routes",
                                          "no closed domain vocabulary"),
+        "cold_start_phase_resolution": _has(root / "AGENTS.md",
+                                             "current phase state from",
+                                             "Never hardcode an assumed active phase"),
+        "cold_start_lease_projection": _has(root / "scripts/sovsession/brief.py",
+                                             "session_leases", "effect ceiling",
+                                             "Record projections"),
+        "next_work_precedence": _has(root / "scripts/sovnext_phase.py",
+                                     "active phase work", "prepared successor context",
+                                     "roadmap forecast (non-authoritative)"),
+        "sov_context_order": _has(root / "SOV.md", "**Phase authority.**",
+                                  "**Assigned work.**", "`RecordProjection`",
+                                  "**Operation.**"),
     }
     service_path = root / "services/record/contracts/service.json"
     if service_path.is_file():

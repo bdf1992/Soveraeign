@@ -34,24 +34,34 @@ accepted after evidence; ordinary reversible work does not wait for pre-approval
 
 ## Start a task
 
-For each fresh task:
+For each fresh task, resolve context in this order:
 
-1. Read `AGENTS.md` and this profile at an exact repository revision, then establish or inspect
-   the live repository session with `python scripts/sov_session.py register` and
-   `python scripts/sov_session.py brief`.
-2. Name the task, actor, host, available capabilities, required live grants, and maximum
-   admitted effect class.
-3. Discover the node through `python scripts/sov_interface.py show` and inspect the one named
+1. **Session.** Read `AGENTS.md` and this profile at an exact repository revision, then
+   establish or inspect the live repository session with `python scripts/sov_session.py
+   register`; read `brief`, and use `console` when you need the full local projection.
+2. **Phase authority.** Use the reconciled `STATUS.yaml` + `contracts/phases.json` reading
+   in SessionStart. If a phase is active, inspect its exit clauses and phase-scoped
+   custodies before roadmap forecasts. If the state is `NONE_ACTIVE`, prepared successor
+   material is context only and grants no permission to execute that successor.
+3. **Assigned work.** Use any live work lease held by this session as the bounded work
+   address. A concern binding without a lease is attribution, not custody. The session
+   console may show several subordinate leases; preserve their parent/witness relation.
+4. **Capability.** Resolve the capability named by the lease when present; otherwise
+   discover the node through `python scripts/sov_interface.py show` and select the one
    operation or capability relevant to the task.
-4. Load only the contract, fixture, service, decision, status item, seam, and issue material
-   that owns that concern. Read `GROUND.md` and `CANON.md` when product meaning is material,
-   and `STATUS.yaml` when current standing or phase authority is material. Consequential work
-   does not require preloading unrelated governance.
-5. State material omissions, stale or unavailable sources, the expected independent
-   observation, and the refusal or counteraction boundary.
-6. Work one named operation and inspect the result through a path that does not rely only
-   on the executor's report.
-7. If the result reaches an owner-held acceptance boundary, present the result and its
+5. **Authority and effect.** Read the lease's grant and effect ceiling, then the governing
+   grant/operation contract. No lease, concern, queue, skill, identity, or successful call
+   supplies authority by itself.
+6. **Record context.** When the work requires evidence, consume or create an addressed,
+   scoped `RecordProjection` from the Record service. Never invent a projection id or treat
+   an absent projection as evidence that none is needed.
+7. **Operation.** Load only the contract, fixture, service, decision, status item, seam, and
+   issue material that owns that operation. Read `GROUND.md` and `CANON.md` when product
+   meaning is material. Consequential work does not require preloading unrelated governance.
+8. State material omissions, stale or unavailable sources, the expected independent
+   observation, and the refusal or counteraction boundary; execute one named operation and
+   inspect the result through a path that does not rely only on the executor's report.
+9. If the result reaches an owner-held acceptance boundary, present the result and its
    evidence. Otherwise continue to the next eligible bounded concern.
 
 Durable work state belongs in a governed record, not a private backlog.

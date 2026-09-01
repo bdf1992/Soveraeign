@@ -808,7 +808,7 @@
       "changed": false
     },
     "README.md": {
-      "artifact_digest": "sha256:5fae455213316b3076a5bae60b50dfa8d0c088964d4f2fe4efddc6561062f6bc",
+      "artifact_digest": "sha256:0c6a56d5341829279d9f15219514d74d2122cb1cd6c83cda39afd4c5c67d0701",
       "basis": [
         {
           "digest": "sha256:20a43ff96c3f99f98fe90b612a49c4f60f9318bfebb4be61e3882a9dfbe27bb4",

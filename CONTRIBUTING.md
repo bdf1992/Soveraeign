@@ -374,7 +374,21 @@ the repository; and historical evidence remains immutable.
 Use short-lived `feat/<scope>`, `fix/<scope>`, `docs/<scope>`, `test/<scope>`, or
 `chore/<scope>` branches and a reviewed pull request into `main`. Direct commits
 to `main` require Bdo's explicit instruction. Avoid long-lived integration
-branches and do not rewrite shared history.
+branches.
+
+While the branch is still `MUTABLE`, fetch current `main` and rebase the branch
+onto it. Amend or autosquash freely while constructing the candidate. Before CI,
+Red, witness, RC qualification, or acceptance evidence becomes evidence for the
+repository subject, freeze the candidate under
+`contracts/repository-candidate-lifecycle.json`.
+
+After freeze, the SHA is part of the evidence. Do not rebase, amend, squash, or
+force-update it. If `main` moves or the candidate needs repair, supersede that
+candidate, reconcile the work, freeze a replacement, and collect evidence for
+the replacement. Landing a qualified candidate uses merge settlement so the
+exact frozen SHA remains ancestry; squash merge and rebase merge are pre-freeze
+construction tools, not qualified landing methods. A matching patch does not
+carry witness or acceptance from one SHA to another.
 
 Keep one coherent change per commit with an imperative message. Review must be
 able to identify the changed behavior, authority, durable evidence, defeating

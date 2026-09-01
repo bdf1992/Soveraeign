@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://soveraeign.local/contracts/repository-candidate.schema.json",
+  "title": "Soveraeign frozen repository candidate",
+  "description": "An addressed repository candidate after mutable construction has been reconciled and committed. Qualification and landing evidence bind this record's exact commit, tree, and base; changing any of them creates a different candidate.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "candidate_schema",
+    "state",
+    "repository",
+    "branch",
+    "target",
+    "base_commit",
+    "candidate_commit",
+    "candidate_tree",
+    "changed_paths",
+    "checks",
+    "frozen_at"
+  ],
+  "properties": {
+    "candidate_schema": {"const": "soveraeign-repository-candidate/v1"},
+    "state": {"const": "FROZEN"},
+    "repository": {"type": "string", "minLength": 1},
+    "concern_id": {"type": ["string", "null"]},
+    "branch": {"type": "string", "minLength": 1},
+    "target": {"type": "string", "minLength": 1},
+    "base_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "candidate_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "candidate_tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "changed_paths": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "checks": {
+      "type": "object",
+      "required": ["verify", "lint"],
+      "properties": {
+        "verify": {"const": "PASS"},
+        "lint": {"const": "PASS"}
+      },
+      "additionalProperties": {"type": "string"}
+    },
+    "frozen_at": {"type": "string", "format": "date-time"}
+  }
+}

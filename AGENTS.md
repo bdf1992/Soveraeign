@@ -484,11 +484,23 @@ write authoritative state.
 - Normal work uses a short-lived branch named `feat/<scope>`, `fix/<scope>`,
   `docs/<scope>`, `test/<scope>`, or `chore/<scope>` and a reviewed pull request.
 - Direct commits to `main` require Bdo's explicit instruction for that change.
-- Rebase or update before merge; do not use long-lived integration branches.
+- Repository carrier state comes from `contracts/repository-candidate-lifecycle.json`.
+  While a carrier is `MUTABLE`, reconcile it with current `main` by rebase; amend and
+  autosquash are also allowed. Prefer that clean reconciliation over merging `main`
+  into a topic branch.
+- Freeze before CI, Red, witness, RC qualification, or acceptance evidence is used
+  as evidence for a repository candidate. The frozen subject names
+  `base_commit + candidate_commit + candidate_tree`.
+- Rewrite work, never evidence. Once `FROZEN`, do not rebase, amend, squash,
+  force-update, or substitute the candidate in place. A stale or defective frozen
+  candidate becomes `SUPERSEDED`; reconcile the work and freeze a new subject.
+- Qualified landing preserves the exact frozen candidate as merge ancestry. Do not
+  squash-merge or rebase-merge a qualified candidate; patch equivalence does not
+  transfer qualification, witness, acceptance, or settlement to another SHA.
 - Keep one coherent policy or behavior change per commit. Use an imperative
   message such as `docs: define engineering baseline`.
-- Do not force-push a shared branch, rewrite published history, or bypass a
-  failing verification gate.
+- Do not force-push a shared or frozen branch, rewrite evidence-bound history, or
+  bypass a failing verification gate.
 
 ## Repository protections
 

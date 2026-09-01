@@ -49,6 +49,11 @@
       "enum": ["RECORD_LOCAL", "RESOURCE_CONSUMPTION", "EXTERNAL_WORLD"]
     },
     "preconditions": {"$ref": "#/$defs/preconditions"},
+    "preconditions_by_capability": {
+      "description": "Additional preconditions keyed by a capability this grant carries. Capability-key syntax is checked by the authority evaluator/test corpus because the repository's bounded JSON Schema profile does not implement propertyNames. This keeps one scoped grant from forcing a later transition's evidence onto an earlier one; for example repository.commit may freeze a candidate before repository.land requires independent observation of that frozen subject.",
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/preconditions"}
+    },
     "valid_from": {"type": "string", "format": "date-time"},
     "valid_until": {
       "description": "A grant with no end is not a grant. An expiry that has to be renewed is what keeps a standing authorization a decision rather than a habit.",

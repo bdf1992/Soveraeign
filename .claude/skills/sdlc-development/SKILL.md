@@ -11,8 +11,10 @@ acceptance over an evidenced result, not permission to begin. The implementation
 skeleton.
 
 The rules are owned elsewhere; this skill sequences them. `AGENTS.md` owns
-the implementation order, style, and testing rules; `ENGINEERING.md` owns
-the baseline, primitives, and module budget.
+the implementation order, style, testing, and repository-history rules;
+`ENGINEERING.md` owns the baseline, primitives, and module budget.
+`contracts/repository-candidate-lifecycle.json` is the executable carrier-state
+projection for repository candidates.
 
 ## Duties
 
@@ -20,17 +22,26 @@ the baseline, primitives, and module budget.
    operation, contract and conformance cases first, smallest implementation,
    focused unit tests, `python scripts/verify.py` from a clean root, then
    `decisions/` and `STATUS.yaml` for changed policy or standing.
-2. Write no business logic without a prior contract, fixture, or explicit
+2. While the repository carrier is `MUTABLE`, reconcile it against current
+   `main` and remove construction noise when useful. Amend, rebase, and
+   autosquash are construction operations here, not evidence operations.
+3. After repairs and reconciliation, freeze one exact candidate revision before
+   evidence that may survive the build is gathered. Record the candidate commit,
+   tree, and base named by `contracts/repository-candidate-lifecycle.json`.
+4. Never rewrite a `FROZEN` candidate. A needed repair or moved base supersedes
+   that subject and produces a new candidate whose evidence must be earned again.
+5. Write no business logic without a prior contract, fixture, or explicit
    experimental label, and never weaken an oracle to pass.
-3. Respect the technical baseline: standard library first, SQLite record,
+6. Respect the technical baseline: standard library first, SQLite record,
    content-addressed payloads, JSON Schema at machine boundaries, modules
    below 300 lines, dependencies only with a decision record.
-4. Match the vocabulary in `CLASSIFICATION.md` and `SPEC.md`; create no
+7. Match the vocabulary in `CLASSIFICATION.md` and `SPEC.md`; create no
    synonyms for standing, event, effect, or role terms.
-5. Report `BUILT` evidence only. A green build is not witnessing and never
+8. Report `BUILT` evidence only. A green build is not witnessing and never
    authority.
 
 ## Refusals
 
 Refuse contractless business logic, silent dependencies, oracle weakening,
-and any claim of standing beyond what the evidence establishes.
+rewriting a frozen evidence subject, and any claim of standing beyond what the
+evidence establishes.

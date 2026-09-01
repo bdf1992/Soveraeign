@@ -69,18 +69,26 @@
         "unit": "agent_invocations",
         "ceiling": 60
       },
-      "preconditions": {
-        "required_checks": [
-          "verify",
-          "lint"
-        ],
-        "requires_independent_observation": true
+      "preconditions_by_capability": {
+        "repository.commit": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ]
+        },
+        "repository.land": {
+          "required_checks": [
+            "verify",
+            "lint"
+          ],
+          "requires_independent_observation": true
+        }
       },
       "effect_ceiling": "RESOURCE_CONSUMPTION",
       "valid_from": "2026-08-25T00:00:00Z",
       "valid_until": "2026-11-23T00:00:00Z",
       "revoked_at": null,
-      "note": "The standing authorization decided with Bdo on 2026-08-25. It lets a witnessed, green, in-scope change reach main without a fresh conversation, and it reaches no further. The grant excludes its own registry and its own schema, so an exercise of the grant cannot widen the grant it is being exercised under. Three further mechanisms keep it away from standing: the excluded paths keep it out of decisions/ and STATUS.yaml, the VERIFICATION type cannot ratify a JUDGEMENT claim (SPEC.md, PROD-I-5), and the independent-observation precondition means a build can still never close itself. The budget is per exercise, not cumulative: sixty agent invocations is roughly one controller, one orchestrator, a handful of workers, and a witness. Ninety days, because a standing grant that never has to be renewed stops being a decision. docs/ is inside the scope because docs/documentation.html is a generated projection that goes stale whenever repository text changes; without it every loop run would leave verify.py red and then be refused for the failing check it was not permitted to repair."
+      "note": "The standing authorization decided with Bdo on 2026-08-25. It lets an in-scope change be committed as a frozen candidate after repository checks, then lets that exact candidate reach main only after independent observation. The grant excludes its own registry and schema, so an exercise cannot widen itself. `repository.commit` and `repository.land` intentionally carry different evidence preconditions: commit establishes the immutable candidate subject; landing consumes independent evidence about that already-frozen subject. The VERIFICATION type still cannot ratify a JUDGEMENT claim. The budget is per exercise, not cumulative. docs/ remains inside scope because docs/documentation.html is a generated projection that can otherwise leave verification red."
     }
   ]
 }

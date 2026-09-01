@@ -93,6 +93,38 @@ The registry is a projection derived from `STATUS.yaml`, `decisions/`, and
 land in the owning documents, and the registry is rebuildable from them. A
 controller that keeps private concern state has left the contract.
 
+## Repository carrier lifecycle
+
+Repository history and evidence use different clocks. Construction may move;
+qualification may not silently move with it. The executable state machine is
+`contracts/repository-candidate-lifecycle.json`; this section composes that
+contract into the SDLC and does not define a second vocabulary.
+
+1. **Construct while `MUTABLE`.** FEAT/DEV work may amend, autosquash, or rebase
+   onto current `main`. Prefer reconciliation by rebase over merging `main`
+   into a topic branch because the carrier is still disposable construction
+   history.
+2. **Freeze before qualification.** Once Blue presents the exact candidate for
+   CI, Red, witness, RC qualification, or acceptance evidence, create a
+   `FROZEN` repository candidate naming `base_commit`, `candidate_commit`, and
+   `candidate_tree`. Evidence names that subject, not merely its patch.
+3. **Rewrite work, never evidence.** A `FROZEN` candidate is not rebased,
+   amended, squashed, force-updated, or replaced in place. If its base is stale
+   or the candidate needs repair, mark it `SUPERSEDED`, return the work to a
+   mutable carrier, and freeze a new subject. Evidence for the old subject
+   remains historical evidence for that old subject.
+4. **Land the exact subject.** A qualified candidate reaches `LANDED` through a
+   merge settlement that preserves the candidate commit as ancestry. Squash
+   merge and rebase merge are not landing methods for a qualified candidate
+   because both replace the identity that was observed.
+5. **Patch equivalence does not transfer standing.** It can prove that bytes or
+   work are already carried elsewhere; it cannot move qualification, witness,
+   acceptance, or settlement from one repository subject to another.
+
+This carrier lifecycle is orthogonal to artifact standing. `FROZEN` does not
+mean `WITNESSED`; `LANDED` does not mean `RATIFIED`. It only makes the subject of
+those claims stable and reconstructable.
+
 ## Skill axes
 
 Skills are declared competence sets loaded by an operator for a role. They
@@ -146,7 +178,8 @@ them, per the protected boundary in `STATUS.yaml`.
 
 Work on a concern may not advance past `BUILT` until its verification dyad
 combines to `PURPLE`: a settled Red engagement receipt over Blue-built work.
-The gate's rules:
+Repository-backed evidence at this gate must name one `FROZEN` candidate under
+the carrier lifecycle above. The gate's rules:
 
 1. A Red engagement runs under a typed grant naming its target surfaces,
    effect class (Phase I: `RECORD_LOCAL` only, isolated environments, no

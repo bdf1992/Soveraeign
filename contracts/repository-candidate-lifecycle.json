@@ -1,0 +1,87 @@
+{
+  "contract_id": "soveraeign-repository-candidate-lifecycle/v1",
+  "governed_by": [
+    "AGENTS.md#branch-and-commit-strategy",
+    "SDLC.md#release-gate"
+  ],
+  "purpose": "Separate mutable construction from immutable evidence-bearing repository candidates and explicit landing settlement.",
+  "subject_kind": "REPOSITORY_CANDIDATE",
+  "states": [
+    "MUTABLE",
+    "FROZEN",
+    "SUPERSEDED",
+    "LANDED"
+  ],
+  "operations": {
+    "RECONCILE": {
+      "from": ["MUTABLE"],
+      "to": "MUTABLE",
+      "rewrites_candidate_identity": true,
+      "evidence_effect": "INVALIDATE_SUBJECT_EVIDENCE"
+    },
+    "FREEZE": {
+      "from": ["MUTABLE"],
+      "to": "FROZEN",
+      "requires": [
+        "base_commit",
+        "candidate_commit",
+        "candidate_tree"
+      ],
+      "rewrites_candidate_identity": false,
+      "evidence_effect": "ESTABLISH_SUBJECT"
+    },
+    "QUALIFY": {
+      "from": ["FROZEN"],
+      "to": "FROZEN",
+      "requires_exact_subject_match": true,
+      "rewrites_candidate_identity": false,
+      "evidence_effect": "ADD_SUBJECT_EVIDENCE"
+    },
+    "SUPERSEDE": {
+      "from": ["FROZEN"],
+      "to": "SUPERSEDED",
+      "requires_new_candidate": true,
+      "rewrites_candidate_identity": false,
+      "evidence_effect": "PRESERVE_OLD_EVIDENCE"
+    },
+    "LAND": {
+      "from": ["FROZEN"],
+      "to": "LANDED",
+      "requires_exact_subject_match": true,
+      "requires_current_base": true,
+      "preserve_candidate_parent": true,
+      "rewrites_candidate_identity": false,
+      "evidence_effect": "SETTLE_SUBJECT"
+    }
+  },
+  "rewrite_policy": {
+    "mutable_allowed": [
+      "amend",
+      "interactive-rebase",
+      "autosquash",
+      "rebase-onto-current-target"
+    ],
+    "frozen_forbidden": [
+      "amend",
+      "rebase",
+      "squash",
+      "force-update"
+    ]
+  },
+  "landing_policy": {
+    "qualified_candidate_merge_methods": ["merge"],
+    "first_parent_is_settlement_history": true,
+    "patch_equivalence_transfers_evidence": false
+  },
+  "evidence_subject": {
+    "address_field": "candidate_commit",
+    "content_field": "candidate_tree",
+    "base_field": "base_commit"
+  },
+  "concern_owners": {
+    "candidate_record_contract": "#25",
+    "evidence_subject_binding": "#9",
+    "repository_ci_and_landing_mechanics": "#32",
+    "promotion_and_environment_composition": "#189/#190"
+  }
+}

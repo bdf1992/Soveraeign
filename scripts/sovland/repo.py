@@ -50,6 +50,26 @@ def head_commit(ref: str) -> str | None:
         return None
 
 
+def commit_tree(ref: str) -> str | None:
+    """The exact tree object named by a commit-like ref, or None when unreadable."""
+    try:
+        return _git("rev-parse", f"{ref}^{{tree}}").strip()
+    except RuntimeError:
+        return None
+
+
+def repository_address() -> str:
+    """Stable-enough repository address for a local candidate record.
+
+    Prefer the configured origin because a candidate may move between worktrees.
+    A checkout with no origin remains addressable by its resolved root rather than
+    inventing a remote it does not have.
+    """
+    done = subprocess.run(["git", "config", "--get", "remote.origin.url"], cwd=ROOT,
+                          capture_output=True, text=True)
+    return done.stdout.strip() if done.returncode == 0 and done.stdout.strip() else str(ROOT.resolve())
+
+
 def dirty_paths() -> list[str]:
     """Every path git reports as changed, in porcelain order."""
     lines = [line for line in _git("status", "--porcelain").splitlines() if line.strip()]

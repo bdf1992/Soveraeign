@@ -116,10 +116,28 @@ def _grant_unavailable(grant: dict, request: dict, now: datetime) -> str | None:
             or _budget_exceeded(grant, request))
 
 
+def _preconditions(grant: dict, request: dict) -> dict:
+    """Compose grant-wide and capability-specific preconditions for this request."""
+    common = grant.get("preconditions") or {}
+    specific = (grant.get("preconditions_by_capability") or {}).get(
+        request.get("capability"), {}
+    )
+    checks = list(dict.fromkeys(
+        [*common.get("required_checks", ()), *specific.get("required_checks", ())]
+    ))
+    return {
+        "required_checks": checks,
+        "requires_independent_observation": bool(
+            common.get("requires_independent_observation")
+            or specific.get("requires_independent_observation")
+        ),
+    }
+
+
 def _observation_verdict(grant: dict, request: dict) -> tuple[str, str] | None:
-    """Check the independent-observation precondition, if the grant sets one."""
-    preconditions = grant.get("preconditions") or {}
-    if not preconditions.get("requires_independent_observation"):
+    """Check the independent-observation precondition, if this capability sets one."""
+    preconditions = _preconditions(grant, request)
+    if not preconditions["requires_independent_observation"]:
         return None
     evidence = request.get("evidence") or {}
     observation = evidence.get("observation")
@@ -138,9 +156,9 @@ def _observation_verdict(grant: dict, request: dict) -> tuple[str, str] | None:
 
 def _precondition_unmet(grant: dict, request: dict) -> str | None:
     """A required check absent from the evidence is absent, never satisfied."""
-    preconditions = grant.get("preconditions") or {}
+    preconditions = _preconditions(grant, request)
     evidence = (request.get("evidence") or {}).get("checks") or {}
-    for name in preconditions.get("required_checks", ()):
+    for name in preconditions["required_checks"]:
         result = evidence.get(name)
         if result is None:
             return f"required check {name!r} is not present in the request's evidence"

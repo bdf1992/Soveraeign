@@ -1,6 +1,6 @@
 # Command surface
 
-Thirty-six `sov_*.py` entrypoints plus the two verification commands. This is the
+Thirty-seven `sov_*.py` entrypoints plus the two verification commands. This is the
 whole of how the node is operated from a terminal, and it is the index
 `contracts/publication-surface.json` requires: an entrypoint absent from this
 page is unreachable by anyone who did not write it.
@@ -55,7 +55,8 @@ Run any of them with `--help` for exact arguments.
 | `sov_standing.py` | — | Refuses a standing claim in `STATUS.yaml` that no witness record supports. |
 | `sov_closure.py` | `loop` `judge` `selfcheck` | Whether a handoff is a genuine seam or a concern being abandoned. |
 | `sov_custody.py` | `list` `board` `circuit` `lifecycle` `estimate` `reconcile` `orphans` `selfcheck` | Durable responsibility, active-work joins, closure, landing, settlement, and the charted extensions around them. |
-| `sov_land.py` | — | The landing gate. The only place a witnessed change becomes a commit on `main`. |
+| `sov_candidate.py` | `show` `judge` `selfcheck` | The data-driven repository-candidate lifecycle: mutable construction, freeze, exact-subject qualification, supersession, and landing. It changes no refs. |
+| `sov_land.py` | `plan` `land` `freeze` `land-candidate` | Repository effects. `freeze` commits a reconciled candidate; `land-candidate` settles that exact SHA. `plan`/`land` remain the compatibility mutable-tree path during migration. |
 | `sov_witness.py` | `semantic` | The semantic task a fresh witness can judge without reading the code. |
 
 ## Evidence and drift

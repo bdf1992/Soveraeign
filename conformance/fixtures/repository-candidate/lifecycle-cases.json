@@ -1,0 +1,117 @@
+{
+  "fixture_id": "repository-candidate-lifecycle-cases/v1",
+  "cases": [
+    {
+      "id": "mutable-reconcile",
+      "claim": {
+        "operation": "RECONCILE",
+        "state": "MUTABLE"
+      },
+      "expect": "PERMITTED"
+    },
+    {
+      "id": "freeze-needs-identity",
+      "claim": {
+        "operation": "FREEZE",
+        "state": "MUTABLE",
+        "base_commit": "1111111111111111111111111111111111111111",
+        "candidate_commit": "2222222222222222222222222222222222222222"
+      },
+      "expect": "MISSING_PRECONDITION"
+    },
+    {
+      "id": "freeze-complete",
+      "claim": {
+        "operation": "FREEZE",
+        "state": "MUTABLE",
+        "base_commit": "1111111111111111111111111111111111111111",
+        "candidate_commit": "2222222222222222222222222222222222222222",
+        "candidate_tree": "3333333333333333333333333333333333333333"
+      },
+      "expect": "PERMITTED"
+    },
+    {
+      "id": "frozen-reconcile-refused",
+      "claim": {
+        "operation": "RECONCILE",
+        "state": "FROZEN"
+      },
+      "expect": "INVALID_STATE"
+    },
+    {
+      "id": "qualification-subject-match",
+      "claim": {
+        "operation": "QUALIFY",
+        "state": "FROZEN",
+        "candidate_commit": "2222222222222222222222222222222222222222",
+        "candidate_tree": "3333333333333333333333333333333333333333",
+        "base_commit": "1111111111111111111111111111111111111111",
+        "evidence_candidate_commit": "2222222222222222222222222222222222222222",
+        "evidence_candidate_tree": "3333333333333333333333333333333333333333",
+        "evidence_base_commit": "1111111111111111111111111111111111111111"
+      },
+      "expect": "PERMITTED"
+    },
+    {
+      "id": "qualification-subject-mismatch",
+      "claim": {
+        "operation": "QUALIFY",
+        "state": "FROZEN",
+        "candidate_commit": "2222222222222222222222222222222222222222",
+        "candidate_tree": "3333333333333333333333333333333333333333",
+        "base_commit": "1111111111111111111111111111111111111111",
+        "evidence_candidate_commit": "4444444444444444444444444444444444444444",
+        "evidence_candidate_tree": "3333333333333333333333333333333333333333",
+        "evidence_base_commit": "1111111111111111111111111111111111111111"
+      },
+      "expect": "EVIDENCE_SUBJECT_MISMATCH"
+    },
+    {
+      "id": "land-stale-base",
+      "claim": {
+        "operation": "LAND",
+        "state": "FROZEN",
+        "candidate_commit": "2222222222222222222222222222222222222222",
+        "candidate_tree": "3333333333333333333333333333333333333333",
+        "base_commit": "1111111111111111111111111111111111111111",
+        "evidence_candidate_commit": "2222222222222222222222222222222222222222",
+        "evidence_candidate_tree": "3333333333333333333333333333333333333333",
+        "evidence_base_commit": "1111111111111111111111111111111111111111",
+        "current_base_commit": "5555555555555555555555555555555555555555"
+      },
+      "expect": "STALE_BASE"
+    },
+    {
+      "id": "land-exact-candidate",
+      "claim": {
+        "operation": "LAND",
+        "state": "FROZEN",
+        "candidate_commit": "2222222222222222222222222222222222222222",
+        "candidate_tree": "3333333333333333333333333333333333333333",
+        "base_commit": "1111111111111111111111111111111111111111",
+        "evidence_candidate_commit": "2222222222222222222222222222222222222222",
+        "evidence_candidate_tree": "3333333333333333333333333333333333333333",
+        "evidence_base_commit": "1111111111111111111111111111111111111111",
+        "current_base_commit": "1111111111111111111111111111111111111111"
+      },
+      "expect": "PERMITTED"
+    },
+    {
+      "id": "supersede-needs-replacement",
+      "claim": {
+        "operation": "SUPERSEDE",
+        "state": "FROZEN"
+      },
+      "expect": "MISSING_PRECONDITION"
+    },
+    {
+      "id": "supersede-preserves-old-subject",
+      "claim": {
+        "operation": "SUPERSEDE",
+        "state": "FROZEN",
+        "new_candidate_commit": "4444444444444444444444444444444444444444"
+      },
+      "expect": "PERMITTED"
+    }
+  ]
+}

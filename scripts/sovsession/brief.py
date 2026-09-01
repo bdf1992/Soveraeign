@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any
 import subprocess
 
+from sovlease import store as lease_store
 from sovsession import claims, concerns, guard, phase_context, principals, store
 
 NEWLINE = chr(10)
@@ -46,6 +47,20 @@ def _position(root: Path, branch: str) -> str:
     return f"{ahead} ahead of main, {behind} behind"
 
 
+def session_leases(projected: dict[str, dict[str, Any]], session: str,
+                   principal_id: str = "") -> list[dict[str, Any]]:
+    """Live leases actually held by this session/principal; leases grant nothing."""
+    rows = []
+    for lease in projected.values():
+        if lease.get("state") != "HELD":
+            continue
+        holder = lease.get("holder") or {}
+        if holder.get("session") == session or (
+                principal_id and holder.get("principal_id") == principal_id):
+            rows.append(lease)
+    return sorted(rows, key=lambda item: str(item.get("lease_id", "")))
+
+
 def collect(root: Path, directory: Path, session: str, tree: str) -> dict[str, Any]:
     """Gather everything the briefing reports, as data."""
     sessions = store.sessions(directory)
@@ -57,6 +72,9 @@ def collect(root: Path, directory: Path, session: str, tree: str) -> dict[str, A
                for path, owners in holders.items()}
     foreign = {path: owners for path, owners in foreign.items() if owners}
     branch = branch_of(Path(tree))
+    principal = principals.resolve(root, session)
+    leases = session_leases(lease_store.leases(directory), session,
+                            str(principal.get("principal") or ""))
     return {
         "session": session,
         "intent": own.get("intent", ""),
@@ -74,7 +92,8 @@ def collect(root: Path, directory: Path, session: str, tree: str) -> dict[str, A
         "peers": sorted(live, key=lambda item: str(item.get("session", ""))),
         "held": foreign,
         "next_decision": claims.next_decision_number(root, directory),
-        "principal": principals.resolve(root, session),
+        "principal": principal,
+        "leases": leases,
         "phase": phase_context.collect(root),
     }
 
@@ -105,6 +124,25 @@ def _work_context(lines: list[str], data: dict[str, Any]) -> None:
     lines.append(f"  discoverable skills: {len(data.get('skills') or [])} under .claude/skills/")
 
 
+def _lease_context(lines: list[str], data: dict[str, Any]) -> None:
+    """Render only work/effect facts that the live lease ledger actually supplies."""
+    leases = data.get("leases") or []
+    if not leases:
+        return
+    for lease in leases[:4]:
+        concern = lease.get("concern") or {}
+        grant = lease.get("grant") or {}
+        holder = lease.get("holder") or {}
+        reference = concern.get("reference") or "?"
+        capability = concern.get("capability") or "(not named)"
+        grant_id = grant.get("grant_id") or "NONE"
+        effect = grant.get("effect_ceiling") or "UNKNOWN"
+        relation = holder.get("relation") or "?"
+        lines.append(
+            f"  lease: {lease.get('lease_id')} [{relation}] {reference}; "
+            f"capability {capability}; grant {grant_id}; effect ceiling {effect}")
+
+
 def _phase(lines: list[str], data: dict[str, Any]) -> None:
     """Show the reconciled phase reading without turning the briefing into authority."""
     for line in phase_context.render(data):
@@ -121,6 +159,7 @@ def render(data: dict[str, Any]) -> str:
         lines.append(f"  intent: {data['intent'] or '(not registered)'}")
         _work_context(lines, data)
         _phase(lines, data["phase"])
+        _lease_context(lines, data)
         _discovery(lines)
         return NEWLINE.join(lines)
     lines = [f"Session registry - {len(peers)} other live session"
@@ -131,6 +170,7 @@ def render(data: dict[str, Any]) -> str:
     lines.append(f"  intent: {data['intent'] or '(not registered)'}")
     _work_context(lines, data)
     _phase(lines, data["phase"])
+    _lease_context(lines, data)
     if data["shared_tree"]:
         shared = data["shared_tree"]
         names = ", ".join(str(p.get("session")) for p in shared)
@@ -161,6 +201,17 @@ def render_console(data: dict[str, Any]) -> str:
     lines.append("  sources: " + (", ".join(data.get("source_refs") or []) or "(none)"))
     lines.append("  queues: " + (", ".join(data.get("queue_refs") or []) or "(none)"))
     lines.append("  skills: " + (", ".join(data.get("skills") or []) or "(none)"))
+    leases = data.get("leases") or []
+    lines.append(f"  live work leases: {len(leases)}")
+    for lease in leases[:8]:
+        concern_data = lease.get("concern") or {}
+        grant = lease.get("grant") or {}
+        lines.append("    " + str(lease.get("lease_id")) + ": "
+                     + str(concern_data.get("reference")) + "; capability "
+                     + str(concern_data.get("capability") or "(not named)")
+                     + "; grant " + str(grant.get("grant_id") or "NONE")
+                     + "; effect " + str(grant.get("effect_ceiling") or "UNKNOWN"))
+    lines.append("  Record projections: only addressed projections supplied or created for this work are evidence; session/lease state does not invent one")
     concern = data.get("concern")
     related = [route for route in data.get("concern_routes") or []
                if concern in (route.get("source_concern"), route.get("destination_concern"))]

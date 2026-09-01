@@ -33,12 +33,17 @@ sources that govern its meaning and records both content and basis digests.
 
 ## Design System of Record
 
-The governing documents define repository invariants and boundary rules. When a
-phase is active, phase contracts define that phase's qualification gates. No
-phase is active. Historical phase material is evidence only, and
-`contracts/SUCCESSOR-PREP.md` records the closed-books residue without granting
-successor standing. Treating historical phase evidence as current authority is
-a category error.
+The governing documents define repository invariants and boundary rules. Resolve
+current phase state from `STATUS.yaml` and `contracts/phases.json` together; a
+reader may surface disagreement between them and may not choose one as a hidden
+override. When a phase is active, that phase's pinned definition and exit
+custodies precede roadmap forecasts for actionable work. When the reconciled
+state is `NONE_ACTIVE`, historical phase material is evidence only and prepared
+successor material remains context without standing until the root seat performs
+the opening act. `contracts/SUCCESSOR-PREP.md` records closed-books residue; it
+does not grant successor standing. Never hardcode an assumed active phase into an
+agent profile, workflow, or next-work reader. Treating historical or prepared
+phase evidence as current authority is a category error.
 
 What the product is. Owner-accepted, slow to change, revised rather than edited:
 

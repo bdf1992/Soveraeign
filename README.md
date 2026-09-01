@@ -126,14 +126,19 @@ the operation in front of you requires it.
 ### 1. Establish your session boundary
 
 ```sh
-python scripts/sov_session.py register --intent "<what you are doing>"
+python scripts/sov_session.py register --intent "<what you are doing>" --concern "<open concern address>"
 python scripts/sov_session.py brief
 ```
 
+`--concern` attributes the session to open work when there is a known concern. It does not
+take custody, create a lease, or grant authority; omit it when the session is only
+scouting or the concern is not known yet.
+
 The session registry tells you who else is live, which working tree you occupy, what paths
 or non-file resources are held, and which durable principal this session resolves to. It
-is coordination plumbing only: presence, identity resolution, or a path claim grants no
-authority. For sustained parallel writing, use separate worktrees and explicit claims.
+is coordination plumbing only: presence, identity resolution, concern attribution, or a
+path claim grants no authority. For sustained parallel writing, use separate worktrees and
+explicit claims.
 
 ### 2. Discover the node, not a hand-maintained operation list
 
@@ -170,6 +175,17 @@ A principal says who the participant is. A session isolates one continuity bound
 grant says what an operator may do. The operation belongs to its service. The Record
 Service preserves what happened. A projection makes that record easier to read and never
 becomes authority merely because it is convenient.
+
+The work lifecycle is a separate axis. `contracts/concern-admission.json` owns the exact
+transitions; the orientation form is:
+
+```text
+concern -> custody -> lease -> closure -> landing -> settlement -> queue
+```
+
+Concern attribution says what work a session is about. Custody and lease say who has taken
+responsibility and active attention for it. Neither identity, attribution, nor possession
+substitutes for the grant required by an operation.
 
 ### 4. Before landing, run the repository-owned checks
 

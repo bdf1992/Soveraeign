@@ -22,10 +22,12 @@ jobs:
           python-version: '3.12'
 
       - name: Apply concern/session readiness slice
-        run: python scripts/_prep_concern_patch.py
+        run: |
+          python scripts/_prep_concern_patch.py
+          python scripts/_prep_fix_generated.py
 
       - name: Remove carrier from final tree
-        run: rm .github/workflows/prep-phase-1-5-session-concerns.yml scripts/_prep_concern_patch.py
+        run: rm .github/workflows/prep-phase-1-5-session-concerns.yml scripts/_prep_concern_patch.py scripts/_prep_fix_generated.py
 
       - name: Focused session and workflow checks
         run: |

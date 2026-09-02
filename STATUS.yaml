@@ -5,7 +5,7 @@ repository_name: Soveraeign
 category: locally-sovereign-algorithmic-ai-native-enterprise-environment
 # `contracts/phases.json` is authoritative for phase history. Phase I is terminal
 # CLOSED_INCOMPLETE and names no successor; only seat:root may open one.
-phase: NONE_ACTIVE
+phase: phase:1-5
 naming_status: OWNER_SELECTED_WORKING_NAME_PUBLIC_CLEARANCE_HELD_O1
 implementation_status: EXPERIMENTAL_REFERENCE_PARTICIPANT
 conformance_status: EXECUTABLE_ORACLE_CONTROLS_PARTICIPANT_BINDING_OPEN
@@ -447,4 +447,4 @@ protected_boundaries:
 
 # Boundary closure remains under issue #148. Construction under a successor phase
 # begins only after the explicit root opening act.
-next_gate: SUCCESSOR_PHASE_OPENING
+next_gate: PHASE_1_5_OPERATIONAL_ACCEPTANCE

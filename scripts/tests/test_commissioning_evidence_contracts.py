@@ -14,6 +14,7 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from sovkernel.jsonschema import validate  # noqa: E402
+from sovsession import phase_context  # noqa: E402
 import sov_opening_readiness  # noqa: E402
 
 
@@ -55,17 +56,24 @@ class CommissioningEvidenceContractTests(unittest.TestCase):
         }
         self.assertEqual(kinds, {"WORK", "PARTICIPANT_IN_WORK"})
 
-    def test_phase_i_spec_archive_is_exact_and_successor_remains_unopened(self) -> None:
+    def test_phase_i_spec_archive_is_exact(self) -> None:
+        """Permanent: the closed Phase-I pin never moves, no matter what opens after it."""
         phases = json.loads((ROOT / "contracts/phases.json").read_text(encoding="utf-8"))
-        self.assertEqual(len(phases["phases"]), 1)
-        phase_i = phases["phases"][0]
+        phase_i = next(item for item in phases["phases"] if item["phase_id"] == "phase:i")
         pin = next(item for item in phase_i["definition"]
                    if item["document"] == "archives/SPEC-PHASE-I-TERMINAL.txt")
         actual = "sha256:" + sha256((ROOT / pin["document"]).read_bytes()).hexdigest()
         self.assertEqual(actual, pin["digest"])
         self.assertEqual(phase_i["terminal"], "CLOSED_INCOMPLETE")
-        self.assertIsNone(phase_i["succeeded_by"])
-        self.assertIn("phase: NONE_ACTIVE", (ROOT / "STATUS.yaml").read_text(encoding="utf-8"))
+
+    def test_current_phase_reading_agrees_between_status_and_phase_record(self) -> None:
+        """Snapshot: re-pointed at the reconciled reading rather than the unopened tree.
+
+        Still fails if `contracts/phases.json` and `STATUS.yaml` disagree about
+        which phase, if any, is open.
+        """
+        data = phase_context.collect(ROOT)
+        self.assertEqual(data["defects"], [])
 
     def test_prepared_profile_is_non_authoritative_and_recurrent(self) -> None:
         prd = (ROOT / "PRD.md").read_text(encoding="utf-8")
@@ -87,9 +95,9 @@ class CommissioningEvidenceContractTests(unittest.TestCase):
         self.assertTrue(report["closed"])
 
     def test_opening_rehearsal_requires_the_p15_instrument(self) -> None:
-        report = sov_opening_readiness.assess(ROOT)
-        self.assertTrue(report["checks"]["p15_qualification_instrument"])
-        self.assertEqual(report["p15_instrument"]["predicates_covered"], 12)
+        instrument = sov_opening_readiness.commissioning_instrument(ROOT)
+        self.assertTrue(instrument["closed"])
+        self.assertEqual(instrument["predicates_covered"], 12)
 
 
 if __name__ == "__main__":

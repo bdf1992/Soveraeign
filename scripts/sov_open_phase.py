@@ -30,7 +30,9 @@ STATUS_PATH = "STATUS.yaml"
 
 PREDECESSOR_PHASE_ID = "phase:i"
 STATUS_LINE_BEFORE = "phase: NONE_ACTIVE"
-STATUS_LINE_AFTER = "phase: PHASE_1_5_OPEN"
+STATUS_LINE_AFTER = "phase: phase:1-5"
+NEXT_GATE_BEFORE = "next_gate: SUCCESSOR_PHASE_OPENING"
+NEXT_GATE_AFTER = "next_gate: PHASE_1_5_OPERATIONAL_ACCEPTANCE"
 
 REFUSALS = {
     "MISSING_DEFINITION_DOCUMENT": "a pinned definition document is absent from the repository",
@@ -139,6 +141,7 @@ def build_plan(root: Path, packet: dict[str, Any],
         },
         "STATUS.yaml": {
             "replace_line": {"from": STATUS_LINE_BEFORE, "to": STATUS_LINE_AFTER},
+            "replace_next_gate": {"from": NEXT_GATE_BEFORE, "to": NEXT_GATE_AFTER},
         },
         "contracts/custodies.json": {
             "append_custodies": [item.get("custody_id")
@@ -167,7 +170,9 @@ def apply_changes(root: Path, packet: dict[str, Any], custodies_packet: dict[str
     status_path = root / STATUS_PATH
     status_text = status_path.read_text(encoding="utf-8")
     status_lines = status_text.splitlines()
-    status_lines = [STATUS_LINE_AFTER if line == STATUS_LINE_BEFORE else line
+    status_lines = [STATUS_LINE_AFTER if line == STATUS_LINE_BEFORE
+                    else NEXT_GATE_AFTER if line == NEXT_GATE_BEFORE
+                    else line
                     for line in status_lines]
     status_path.write_text("\n".join(status_lines) + "\n", encoding="utf-8", newline="\n")
 

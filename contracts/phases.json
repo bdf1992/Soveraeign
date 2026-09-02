@@ -79,8 +79,67 @@
       "acceptance_status": "NOT_EARNED",
       "terminal": "CLOSED_INCOMPLETE",
       "settled_by": "seat:root",
-      "succeeded_by": null,
+      "succeeded_by": "phase:1-5",
       "note": "Closed by Bdo's ruling of 2026-08-27. The ruling is that Phase I was productive as a founding campaign and unsuccessful as a closed qualification loop: the repository optimised the wrong unit of progress, and the exit predicates were never on the critical path of work. Nothing here promotes partial evidence into acceptance, and nothing narrows the definition to fit what was built. The successor campaign is deliberately unnamed: it is scoped after the boundary closes, not before."
+    },
+    {
+      "phase_schema": "soveraeign-phase/v1",
+      "phase_id": "phase:1-5",
+      "title": "Phase 1.5 - Operational Commissioning",
+      "opened": "2026-09-02",
+      "definition": [
+        {
+          "document": "PRD.md",
+          "digest": "sha256:90545536ce63d46dffbc6bffc581db042baabe67dd8ecb21a3d659b797ae18e1",
+          "owns": "the P15-Q1 through P15-Q4 qualification profile"
+        },
+        {
+          "document": "SPEC.md",
+          "digest": "sha256:ea07f0ec39b9a55160f3f58552f3a5d13ba5061122a10b42e37daa34bfc2f348",
+          "owns": "the twelve P15 commissioning predicates"
+        },
+        {
+          "document": "contracts/phase-1-5-phase-ii-horizon.md",
+          "digest": "sha256:3a1df2f6f737fdd08bac4c382788e56a88f0f75ed105bd4fa4f90017f487f17b",
+          "owns": "the campaign rationale and the Phase 1.5 / Phase II boundary"
+        }
+      ],
+      "exit_clauses": [
+        {
+          "clause_id": "PHASE-1-5-X1",
+          "text": "A participant with no private history can enter from the artifact, establish an attributable principal and isolated session, discover the current campaign and a bounded unit of work, resolve capability and authority separately, and receive the relevant governance and Record context needed to act. The work's custody, closure, defeating condition, and cleanup obligations survive the participant's session.",
+          "verdict": "NOT_EARNED",
+          "reading": "Prepared and pinned only; python scripts/sov_opening_readiness.py has not been asked to open the phase and no custody carries live work yet.",
+          "held_by": "custody:phase-1-5/fresh-participation"
+        },
+        {
+          "clause_id": "PHASE-1-5-X2",
+          "text": "Consequential work converges on the common append-preserving Record. Different legitimate evaluators receive scoped, reconstructable Record projections and form separately cited Findings. Work quality and participant conduct are judged as different subjects; independent readings freeze before comparison; a comparator preserves citations and dissent and attributes a defect to work, participant, orchestration, witnessing, Record, or policy rather than averaging opinions into a score.",
+          "verdict": "NOT_EARNED",
+          "reading": "Prepared and pinned only; python scripts/sov_opening_readiness.py has not been asked to open the phase and no custody carries live work yet.",
+          "held_by": "custody:phase-1-5/evidenced-judgement"
+        },
+        {
+          "clause_id": "PHASE-1-5-X3",
+          "text": "Work settles only after required independent observation and explicit cleanup. Another fresh participant can then discover the accepted result, reconstruct why it stands, reach the capability it produced, and use it without builder-private state or oral history.",
+          "verdict": "NOT_EARNED",
+          "reading": "Prepared and pinned only; python scripts/sov_opening_readiness.py has not been asked to open the phase and no custody carries live work yet.",
+          "held_by": "custody:phase-1-5/discovery-reuse"
+        },
+        {
+          "clause_id": "PHASE-1-5-X4",
+          "text": "Settled experience can become cited input to a new Proposal or candidate Definition. The candidate preserves its evidence basis and gains no authority or standing merely because participants generated, agreed with, or successfully demonstrated it. The mechanics are expressed through generic governed primitives rather than hardcoded Controller, Orchestrator, Worker, or Witness species, so Phase II citizens can compose institutions the founder did not need to predict.",
+          "verdict": "NOT_EARNED",
+          "reading": "Prepared and pinned only; python scripts/sov_opening_readiness.py has not been asked to open the phase and no custody carries live work yet.",
+          "held_by": "custody:phase-1-5/definition-recurrence"
+        }
+      ],
+      "execution_status": "OPEN",
+      "acceptance_status": "NOT_EARNED",
+      "terminal": "IN_FLIGHT",
+      "settled_by": "seat:root",
+      "succeeded_by": null,
+      "note": "Staged by this packet, not yet recorded in contracts/phases.json. Every field here is what seat:root's python scripts/sov_open_phase.py --apply would append verbatim; the packet itself changes no standing."
     }
   ]
 }

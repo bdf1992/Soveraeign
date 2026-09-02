@@ -62,7 +62,8 @@ not own product claims.
 Operational state preserves addressed inputs, events, standing changes,
 observations, receipts, and counter-records. SQLite is the current storage
 mechanism, not semantic authority. Consequential transitions require typed live
-grants. Phase I is terminal `CLOSED_INCOMPLETE`; no successor phase is active.
+grants. Phase I is terminal `CLOSED_INCOMPLETE`; seat:root opened Phase 1.5,
+Operational Commissioning, and all four of its exit clauses read `NOT_EARNED`.
 
 ## Repository snapshot (informational)
 

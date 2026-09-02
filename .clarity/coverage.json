@@ -679,7 +679,7 @@
       "changed": false
     },
     "CLAUDE.md": {
-      "artifact_digest": "sha256:8b6381443ed3f2f5ca45b76e5101481a5e06951922be72bf8fb6456ddcc26a3d",
+      "artifact_digest": "sha256:f2f92ac1863a148c10d2e98d29c49568d5a0a6d74d8b15ab1136fb9625f8ded0",
       "basis": [
         {
           "digest": "sha256:c90c1fcf33fdc2e228c29dad8c76a6d0437a3a99ebd944f37a902648a48f0fca",
@@ -690,7 +690,7 @@
           "path": "SOV.md"
         },
         {
-          "digest": "sha256:96d9e073a61bfdccf1e213c087fa6c8c677336a688777816eb18404da8c13348",
+          "digest": "sha256:8b14456526261e025e6495081787e95456322dcd6a14c29567c9f340c8597118",
           "path": "STATUS.yaml"
         }
       ],
@@ -906,9 +906,9 @@
       "changed": true
     },
     "STATUS.yaml": {
-      "artifact_digest": "sha256:96d9e073a61bfdccf1e213c087fa6c8c677336a688777816eb18404da8c13348",
+      "artifact_digest": "sha256:8b14456526261e025e6495081787e95456322dcd6a14c29567c9f340c8597118",
       "basis": [],
-      "changed": false
+      "changed": true
     },
     "SYSTEM.md": {
       "artifact_digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",

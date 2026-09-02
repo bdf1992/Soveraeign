@@ -145,6 +145,9 @@
     {"case_id": "P15-Q4.1-defeating", "predicate": "P15-Q4.1", "polarity": "defeating", "set": {"candidate.source_addresses": ["receipt:settlement/1"]}},
     {"case_id": "P15-Q4.2-positive", "predicate": "P15-Q4.2", "polarity": "positive"},
     {"case_id": "P15-Q4.2-defeating", "predicate": "P15-Q4.2", "polarity": "defeating", "set": {"automatic_phase_transition": true}},
+    {"case_id": "P15-Q4.2-defeating-policy", "predicate": "P15-Q4.2", "polarity": "defeating", "set": {"automatic_policy_change": true}},
+    {"case_id": "P15-Q4.2-defeating-standing", "predicate": "P15-Q4.2", "polarity": "defeating", "set": {"candidate.standing": "RATIFIED"}},
+    {"case_id": "P15-Q4.2-defeating-authority", "predicate": "P15-Q4.2", "polarity": "defeating", "set": {"candidate.authority_effect": "GRANTED"}},
     {"case_id": "P15-Q4.3-positive", "predicate": "P15-Q4.3", "polarity": "positive"},
     {"case_id": "P15-Q4.3-defeating", "predicate": "P15-Q4.3", "polarity": "defeating", "set": {"fixed_role_names_required": true}}
   ]

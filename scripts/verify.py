@@ -42,6 +42,7 @@ import uuid
 
 from sovverify import budget, clocks
 from sovverify.checks import CHECKS, ROOT, Check
+from sovverify.shape import DEV_GATE, MAIN_GATE
 
 
 # Filtered after the glob rather than pruned at descent, so this set costs a walk it
@@ -196,14 +197,21 @@ def main(argv: list[str] | None = None, run_id: str | None = None,
                         help="write the run's Observation records to PATH as JSON")
     parser.add_argument("--json", action="store_true", dest="as_json",
                         help="print the Observation records instead of the human report")
+    parser.add_argument("--gate", choices=(DEV_GATE, MAIN_GATE), default=MAIN_GATE,
+                        help="dev runs only checks that can fail on wrong behaviour and never "
+                             "refuses on a timing ceiling; main runs every check, as today "
+                             "(default: main)")
     args = parser.parse_args(argv)
 
     run_id = run_id or f"run_{uuid.uuid4().hex}"
     when = now or datetime.now(timezone.utc).isoformat(timespec="seconds")
 
+    gated_checks = tuple(check for check in CHECKS if check.gate == args.gate) \
+        if args.gate != MAIN_GATE else CHECKS
+
     started = time.perf_counter()
-    with ThreadPoolExecutor(max_workers=min(MAX_CHECK_WORKERS, len(CHECKS))) as pool:
-        results = list(pool.map(run_check, CHECKS))
+    with ThreadPoolExecutor(max_workers=min(MAX_CHECK_WORKERS, len(gated_checks))) as pool:
+        results = list(pool.map(run_check, gated_checks))
     wall = time.perf_counter() - started
 
     observations = [observe(check, run_id, reading, when) for check, reading in results]
@@ -227,7 +235,10 @@ def main(argv: list[str] | None = None, run_id: str | None = None,
               for check, reading in results]
     debts, catastrophes = budget.judge(timings, BUDGET_TABLE)
     catastrophes = confirm_alone(catastrophes, results)
-    refusing = budget.refusing(catastrophes, BUDGET_TABLE)
+    # The dev gate refuses on no timing condition at all (contract step 4): a
+    # catastrophic reading is still printed and attributed as debt below, it
+    # just never earns a place in `refusing`, so it cannot reach `failed`.
+    refusing = budget.refusing(catastrophes, BUDGET_TABLE) if args.gate == MAIN_GATE else []
     failed.extend(entry.line() for entry in refusing)
 
     for entry in catastrophes:

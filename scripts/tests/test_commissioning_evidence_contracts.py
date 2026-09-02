@@ -76,10 +76,14 @@ class CommissioningEvidenceContractTests(unittest.TestCase):
         self.assertEqual(data["defects"], [])
 
     def test_prepared_profile_is_non_authoritative_and_recurrent(self) -> None:
+        """The profile no longer states its own standing; STATUS.yaml and
+        contracts/phases.json do, and they agree the phase it describes is open."""
         prd = (ROOT / "PRD.md").read_text(encoding="utf-8")
         spec = (ROOT / "SPEC.md").read_text(encoding="utf-8")
         self.assertIn("Prepared Phase 1.5 qualification profile", prd)
-        self.assertIn("Phase 1.5 is open", prd)
+        data = phase_context.collect(ROOT)
+        self.assertEqual(data["status_phase"], "phase:1-5")
+        self.assertEqual(data["active"]["phase_id"], "phase:1-5")
         for criterion in ("P15-Q1", "P15-Q2", "P15-Q3", "P15-Q4"):
             self.assertIn(criterion, prd)
             self.assertIn(criterion, spec)

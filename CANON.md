@@ -143,7 +143,7 @@ way up.
 
 `PHASE_I` is the historical first-qualification bucket retained for traceability.
 `LATER` means outside that first profile. Neither token names the active campaign;
-`STATUS.yaml` currently records `phase: NONE_ACTIVE`.
+`STATUS.yaml` and `contracts/phases.json` are the reading for that.
 
 ### `PROMISE-01` — bring your own participant into a sovereign node · `PHASE_I`
 

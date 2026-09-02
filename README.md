@@ -106,8 +106,9 @@ Those distinctions are part of the product, not implementation detail.
 
 Phase I is closed. `contracts/phases.json` records the terminal state as
 `CLOSED_INCOMPLETE`: the phase ended without earning its qualification exit. seat:root
-opened `phase:1-5 · Operational Commissioning` as its successor; all four exit clauses
-read `NOT_EARNED`.
+has since opened a successor phase; `STATUS.yaml` and `contracts/phases.json`
+(`python scripts/sov_next.py`) carry the current reading of which one and how its
+exit clauses stand.
 
 That closure was intentional. The repository keeps partial implementation evidence without
 rounding it up to acceptance. Opening a phase is an explicit owner action, and does so

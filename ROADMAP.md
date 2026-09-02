@@ -533,10 +533,10 @@ profile beneath the PRD — `Phase I · Local Sovereign Foundation` — and they
 their identifiers, their predicates in `SPEC.md`, and their fixtures in
 `conformance/`. See `PRD.md`, The Phase I qualification profile.
 
-`phase:i` itself is closed `CLOSED_INCOMPLETE` and `succeeded_by` names
-`phase:1-5`, seat:root's opening act. Which of the phases above opens after it,
-and when, is still Bdo's to set; this document proposes the ladder, not the
-entry.
+`phase:i` itself is closed `CLOSED_INCOMPLETE`; `contracts/phases.json` carries
+its `succeeded_by` reading, seat:root's opening act. Which of the phases above
+opens after it, and when, is still Bdo's to set; this document proposes the
+ladder, not the entry.
 
 ## Name crosswalk
 

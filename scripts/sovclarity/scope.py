@@ -102,11 +102,21 @@ def campaigns(contract: dict) -> dict[str, list[str]]:
     return grouped
 
 
+def volatile_basis(contract: dict) -> set[str]:
+    """Paths a review's basis may never pin: state that changes for reasons no
+
+    prose edit could address, so pinning it stales every review that cites it
+    without any of those reviews having anything left to improve.
+    """
+    return set(contract.get("scope", {}).get("volatile_basis", []))
+
+
 def default_basis(contract: dict, path: str) -> list[str]:
+    volatile = volatile_basis(contract)
     exact = contract.get("basis_by_path", {})
     if path in exact:
-        return exact[path]
+        return [source for source in exact[path] if source not in volatile]
     for rule in contract.get("basis_by_pattern", []):
         if path in glob_files(rule["include"]):
-            return rule["basis"]
+            return [source for source in rule["basis"] if source not in volatile]
     return []

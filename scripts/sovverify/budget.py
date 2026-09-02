@@ -6,8 +6,12 @@ grades and records debt and never refuses. Pressure moves to per-check ceilings,
 which attribute an overrun to the check that owns it rather than to whoever
 touched the repository next.
 
-One timing condition still blocks: a single check past
-`catastrophic_check_seconds`. Wall accuses exactly as it does today: a check
+One timing condition still blocks: a single check past its catastrophic
+threshold, ordinarily the shared `catastrophic_check_seconds` backstop but
+overridden per check in `check_ceilings.catastrophic_overrides` for a check
+that already owns a named ceiling and needs its own, rather than one sized for
+a check with none (`catastrophic_ceiling_for`). Wall accuses exactly as it
+does today: a check
 whose wall reading stays at or under the ceiling raises no suspicion, whatever
 its CPU reading is. Only once wall has accused can a measured CPU reading
 (`scripts/sovverify/clocks.py`) acquit it, by coming in at or under the
@@ -125,6 +129,24 @@ def confirms_alone(table: dict[str, Any]) -> bool:
     return bool(table.get("catastrophic_confirm_alone", False))
 
 
+def catastrophic_ceiling_for(check: str, table: dict[str, Any]) -> float:
+    """The catastrophic threshold this check answers to.
+
+    Most checks answer to the shared `catastrophic_check_seconds` backstop,
+    sized for a check with no ceiling of its own. A check listed in
+    `check_ceilings.owns_its_catastrophe` instead owns its own catastrophic
+    threshold: its named ceiling times `check_ceilings.catastrophic_factor`.
+    That keeps an already-accepted, already-attributed cost from being charged
+    again against a limit built for a different kind of check, without
+    touching the backstop every other named check still answers to.
+    """
+    ceilings = table["check_ceilings"]
+    if check in ceilings.get("owns_its_catastrophe", []):
+        named = ceilings["named"][check]
+        return float(named) * float(ceilings["catastrophic_factor"])
+    return float(table["catastrophic_check_seconds"])
+
+
 def judge(timings: list[tuple[str, float]] | list[tuple[str, float, float | None, bool]],
           table: dict[str, Any]) -> tuple[list[Debt], list[Catastrophe]]:
     """Grade every check against its own ceiling.
@@ -144,13 +166,13 @@ def judge(timings: list[tuple[str, float]] | list[tuple[str, float, float | None
     differently. A check is never both on the first reading; a suspected
     catastrophe that clears confirmation can later be demoted back to debt.
     """
-    blocking = float(table["catastrophic_check_seconds"])
     debts: list[Debt] = []
     catastrophes: list[Catastrophe] = []
     for entry in timings:
         name, wall = entry[0], entry[1]
         cpu = entry[2] if len(entry) > 2 else None
         measured = bool(entry[3]) if len(entry) > 3 else False
+        blocking = catastrophic_ceiling_for(name, table)
         if wall > blocking:
             catastrophic_reading = cpu if measured and cpu is not None else wall
             if catastrophic_reading > blocking:

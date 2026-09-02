@@ -18,6 +18,16 @@ measured CPU reading (`scripts/sovverify/clocks.py`) at or under the ceiling
 acquits that accusation. CPU never raises a suspicion wall did not already
 raise. Debt, the wall-clock grade, and every other purpose are unchanged: they
 still grade on wall, exactly as `decisions/0081` settled.
+
+That reading is correct for what it describes, but it cannot reach this case:
+a check that shards across four processes always spends more CPU than wall, so
+its CPU reading can never come in under a ceiling its wall already exceeded.
+"repository tooling tests" also owns a named ceiling (3.0s) that already
+carries this cost as attributed debt, so it now owns its own catastrophic
+ceiling too (`check_ceilings.owns_its_catastrophe`,
+`catastrophic_ceiling_for`) rather than sharing the flat backstop sized for a
+check with no ceiling of its own. These cases now exercise wall-accuses,
+cpu-acquits against that check's own derived ceiling, not the shared one.
 """
 
 from __future__ import annotations
@@ -32,7 +42,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from sovverify import budget  # noqa: E402
 
 TABLE = budget.load()
-CEILING = float(TABLE["catastrophic_check_seconds"])
+CEILING = budget.catastrophic_ceiling_for("repository tooling tests", TABLE)
 
 
 class WallAccusesCpuAcquits(unittest.TestCase):

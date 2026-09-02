@@ -7,14 +7,19 @@ which attribute an overrun to the check that owns it rather than to whoever
 touched the repository next.
 
 One timing condition still blocks: a single check past
-`catastrophic_check_seconds`. That read prefers a check's own CPU seconds over
-its wall seconds whenever a CPU reading was measured (`scripts/sovverify/clocks.py`),
-because wall time taken on a contended host measures the host, not the check;
-a check with no measured CPU reading still refuses on wall alone. A pooled
-reading past that ceiling is only a suspected catastrophe when confirmation is
-enabled; refusal requires the same check to cross the ceiling again when
-re-read alone. This keeps genuine pathological regressions blocking without
-treating host contention as proof of an implementation defect.
+`catastrophic_check_seconds`. Wall accuses exactly as it does today: a check
+whose wall reading stays at or under the ceiling raises no suspicion, whatever
+its CPU reading is. Only once wall has accused can a measured CPU reading
+(`scripts/sovverify/clocks.py`) acquit it, by coming in at or under the
+ceiling itself; a check with no measured CPU reading still refuses on wall
+alone. CPU never raises a suspicion wall did not already raise, because a
+check that shards across processes can spend far more CPU than wall, and
+grading the accusation on CPU would make the ceiling stricter for exactly the
+checks parallelism was meant to help. A pooled reading past that ceiling is
+only a suspected catastrophe when confirmation is enabled; refusal requires
+the same check to cross the ceiling again when re-read alone. This keeps
+genuine pathological regressions blocking without treating host contention as
+proof of an implementation defect.
 
 `contracts/verification-budget.json` is the declaration; nothing here restates a
 number it owns.
@@ -127,11 +132,13 @@ def judge(timings: list[tuple[str, float]] | list[tuple[str, float, float | None
     Each entry is ``(name, wall)`` or ``(name, wall, cpu, measured)``. Debt and
     every other purpose still grade on wall, exactly as `decisions/0081`
     settled: the aggregate wall grade, the per-check debt table, and the
-    printed timings are unchanged. Only the catastrophic read changes: a
-    check's own CPU seconds decide it whenever a CPU reading was measured,
-    because a wall reading taken on a contended host measures the host, not
-    the repository (`#148/C0027`, PR #151). A check with no measured CPU
-    reading still refuses on wall alone, exactly as before.
+    printed timings are unchanged. Only the catastrophic read changes: wall
+    accuses exactly as it does today, and a measured CPU reading at or under
+    the ceiling then acquits it. A check whose wall stays at or under the
+    ceiling raises no suspicion regardless of its CPU reading, because a check
+    that shards across processes can spend far more CPU than wall
+    (`#148/C0027`, PR #151); a check with no measured CPU reading still
+    refuses on wall alone, exactly as before.
 
     Returns debts and suspected catastrophes separately because they resolve
     differently. A check is never both on the first reading; a suspected
@@ -144,10 +151,11 @@ def judge(timings: list[tuple[str, float]] | list[tuple[str, float, float | None
         name, wall = entry[0], entry[1]
         cpu = entry[2] if len(entry) > 2 else None
         measured = bool(entry[3]) if len(entry) > 3 else False
-        catastrophic_reading = cpu if measured and cpu is not None else wall
-        if catastrophic_reading > blocking:
-            catastrophes.append(Catastrophe(name, catastrophic_reading, blocking))
-            continue
+        if wall > blocking:
+            catastrophic_reading = cpu if measured and cpu is not None else wall
+            if catastrophic_reading > blocking:
+                catastrophes.append(Catastrophe(name, catastrophic_reading, blocking))
+                continue
         ceiling = ceiling_for(name, table)
         if wall > ceiling:
             debts.append(Debt(name, wall, ceiling))

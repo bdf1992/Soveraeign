@@ -1,4 +1,4 @@
-"""The catastrophic read prefers a check's own CPU seconds over its wall seconds.
+"""Wall accuses the catastrophic ceiling; a measured CPU reading only acquits it.
 
 `scripts/verify.py` flipped between exit 0 and exit 1 on an unchanged tree five
 times in one day (2026-09-02): the "repository tooling tests" check read wall
@@ -9,10 +9,14 @@ host measures the host, not the check (the same failure mode
 `catastrophic_confirm_alone` does not fix it: the isolated re-read is itself
 taken on the same contended host.
 
-`scripts/sovverify/clocks.py` already measures both clocks per check, so
-`budget.judge` reads the catastrophic ceiling against `Reading.cpu` whenever
-`Reading.measured` is true, and falls back to the wall reading only when it is
-not. Debt, the wall-clock grade, and every other purpose are unchanged: they
+Preferring CPU over wall outright does not work either: that same check shards
+across processes, and a later uncontended run measured 60.609s of CPU against
+26.194s wall. Grading the accusation on CPU would make the ceiling stricter
+for every check that shards, and would raise a suspicion wall never raised.
+So the shape is narrower: wall accuses exactly as it does today, and a
+measured CPU reading (`scripts/sovverify/clocks.py`) at or under the ceiling
+acquits that accusation. CPU never raises a suspicion wall did not already
+raise. Debt, the wall-clock grade, and every other purpose are unchanged: they
 still grade on wall, exactly as `decisions/0081` settled.
 """
 
@@ -31,11 +35,11 @@ TABLE = budget.load()
 CEILING = float(TABLE["catastrophic_check_seconds"])
 
 
-class CpuDecidesTheCatastrophe(unittest.TestCase):
-    """The three readings a contended host can produce for one check."""
+class WallAccusesCpuAcquits(unittest.TestCase):
+    """The four readings a contended, sharding host can produce for one check."""
 
-    def test_wall_past_ceiling_with_cpu_measured_under_it_raises_no_catastrophe(self) -> None:
-        """The exact shape of the flake: wall crossed 30s, the work did not."""
+    def test_wall_over_and_cpu_under_acquits(self) -> None:
+        """The exact shape of the flake: wall crossed the ceiling, the work did not."""
         debts, catastrophes = budget.judge(
             [("repository tooling tests", CEILING + 9.7, 5.2, True)], TABLE)
         self.assertEqual(catastrophes, [])
@@ -43,7 +47,7 @@ class CpuDecidesTheCatastrophe(unittest.TestCase):
         # Wall still owes its debt against the check's own ceiling; unchanged.
         self.assertEqual(debts, [budget.Debt("repository tooling tests", CEILING + 9.7, 3.0)])
 
-    def test_wall_and_cpu_both_past_ceiling_refuses(self) -> None:
+    def test_wall_over_and_cpu_over_refuses(self) -> None:
         """A genuine pathological regression: the work itself, not the host, is slow."""
         table = {**TABLE, "catastrophic_confirm_alone": False}
         _, catastrophes = budget.judge(
@@ -52,7 +56,7 @@ class CpuDecidesTheCatastrophe(unittest.TestCase):
                          [budget.Catastrophe("repository tooling tests", CEILING + 2.0, CEILING)])
         self.assertEqual(budget.refusing(catastrophes, table), catastrophes)
 
-    def test_no_measured_cpu_still_refuses_on_wall_alone(self) -> None:
+    def test_wall_over_and_cpu_unmeasured_refuses_on_wall_alone(self) -> None:
         """The degraded path (`Reading.measured` false) keeps the old behavior exactly."""
         table = {**TABLE, "catastrophic_confirm_alone": False}
         _, catastrophes = budget.judge(
@@ -60,6 +64,17 @@ class CpuDecidesTheCatastrophe(unittest.TestCase):
         self.assertEqual(catastrophes,
                          [budget.Catastrophe("repository tooling tests", CEILING + 1.0, CEILING)])
         self.assertEqual(budget.refusing(catastrophes, table), catastrophes)
+
+    def test_wall_under_raises_nothing_whatever_cpu_reads(self) -> None:
+        """A check that shards across processes: CPU alone never gets to accuse."""
+        debts, catastrophes = budget.judge(
+            [("repository tooling tests", CEILING - 3.806, CEILING + 30.609, True)], TABLE)
+        self.assertEqual(catastrophes, [])
+        self.assertEqual(budget.refusing(catastrophes, TABLE), [])
+        # Wall still owes its own debt against the check's own ceiling, unrelated
+        # to the catastrophic read this test exercises.
+        self.assertEqual(debts,
+                         [budget.Debt("repository tooling tests", CEILING - 3.806, 3.0)])
 
     def test_a_bare_wall_reading_keeps_grading_on_wall_as_before(self) -> None:
         """The two-element legacy shape (`name`, `wall`) still works unchanged."""

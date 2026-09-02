@@ -5,7 +5,9 @@ from __future__ import annotations
 from copy import deepcopy
 from hashlib import sha256
 from pathlib import Path
+import inspect
 import json
+import re
 import sys
 import unittest
 
@@ -16,6 +18,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from sovkernel.jsonschema import validate  # noqa: E402
 from sovsession import phase_context  # noqa: E402
 import sov_opening_readiness  # noqa: E402
+from conformance import commissioning  # noqa: E402
 
 
 class CommissioningEvidenceContractTests(unittest.TestCase):
@@ -102,6 +105,32 @@ class CommissioningEvidenceContractTests(unittest.TestCase):
         instrument = sov_opening_readiness.commissioning_instrument(ROOT)
         self.assertTrue(instrument["closed"])
         self.assertEqual(instrument["predicates_covered"], 12)
+
+    def test_q42_defeating_cases_cover_every_reachable_defect(self) -> None:
+        """Every distinct defect check_q42 can emit needs its own declared case.
+
+        A defeating case that only ever reaches one of the four defects would
+        leave the other three able to promote a candidate on evidence alone
+        without any fixture noticing.
+        """
+        expected_defects = set(
+            re.findall(r'defects\.append\("([^"]+)"\)', inspect.getsource(commissioning.check_q42))
+        )
+        self.assertTrue(expected_defects)
+
+        corpus = ROOT / "conformance/fixtures/commissioning/qualification-cases.json"
+        document = json.loads(corpus.read_text(encoding="utf-8"))
+        template = document["templates"]["P15-Q4.2"]
+        seen_defects: set[str] = set()
+        for case in document["cases"]:
+            if case.get("predicate") != "P15-Q4.2" or case.get("polarity") != "defeating":
+                continue
+            observation = deepcopy(template)
+            for dotted, value in (case.get("set") or {}).items():
+                sov_opening_readiness._set_path(observation, dotted, value)
+            seen_defects.update(commissioning.check_q42(observation))
+
+        self.assertEqual(seen_defects, expected_defects)
 
 
 if __name__ == "__main__":

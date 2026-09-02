@@ -1,0 +1,41 @@
+{
+  "classifications": [
+    {
+      "code": "NO_CONFLICT",
+      "meaning": null
+    },
+    {
+      "code": "EVIDENCE_DIFFERENCE",
+      "meaning": null
+    },
+    {
+      "code": "INTERPRETATION_DIFFERENCE",
+      "meaning": null
+    },
+    {
+      "code": "WORK_DEFECT",
+      "meaning": null
+    },
+    {
+      "code": "WORKER_DEFECT",
+      "meaning": null
+    },
+    {
+      "code": "ORCHESTRATION_DEFECT",
+      "meaning": null
+    },
+    {
+      "code": "WITNESS_DEFECT",
+      "meaning": null
+    },
+    {
+      "code": "RECORD_DEFECT",
+      "meaning": "Missing or unreconstructable evidence is RECORD_DEFECT; an actually undefined governing choice is POLICY_SEAM."
+    },
+    {
+      "code": "POLICY_SEAM",
+      "meaning": "Missing or unreconstructable evidence is RECORD_DEFECT; an actually undefined governing choice is POLICY_SEAM."
+    }
+  ],
+  "note": "Seven of the nine classification codes are declared in .claude/workflows/sov-loop.js and .claude/agents/sov-controller.md without a written meaning; a null meaning marks a code as unglossed, not as carrying an empty meaning."
+}

@@ -79,7 +79,7 @@ class CommissioningEvidenceContractTests(unittest.TestCase):
         prd = (ROOT / "PRD.md").read_text(encoding="utf-8")
         spec = (ROOT / "SPEC.md").read_text(encoding="utf-8")
         self.assertIn("Prepared Phase 1.5 qualification profile", prd)
-        self.assertIn("This is a prepared successor profile, not an active phase", prd)
+        self.assertIn("Phase 1.5 is open", prd)
         for criterion in ("P15-Q1", "P15-Q2", "P15-Q3", "P15-Q4"):
             self.assertIn(criterion, prd)
             self.assertIn(criterion, spec)

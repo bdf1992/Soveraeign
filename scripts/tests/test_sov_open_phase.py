@@ -25,9 +25,9 @@ from sovkernel.jsonschema import validate  # noqa: E402
 
 RELATIVE_FILES = (
     "STATUS.yaml",
-    "PRD.md",
-    "SPEC.md",
-    "contracts/phase-1-5-phase-ii-horizon.md",
+    "archives/PRD-PHASE-1-5-OPENING.txt",
+    "archives/SPEC-PHASE-1-5-OPENING.txt",
+    "archives/HORIZON-PHASE-1-5-OPENING.txt",
     "contracts/phase-1-5-opening.json",
     "contracts/custodies-phase-1-5.json",
     "contracts/phases.json",
@@ -197,7 +197,8 @@ class RefusesOnMismatch(unittest.TestCase):
     def test_refuses_when_a_pinned_document_no_longer_matches(self) -> None:
         with TemporaryDirectory() as tmp:
             root = _stage(tmp)
-            (root / "PRD.md").write_text("tampered\n", encoding="utf-8")
+            (root / "archives/PRD-PHASE-1-5-OPENING.txt").write_text(
+                "tampered\n", encoding="utf-8")
             code, defects, plan = sov_open_phase.run(root, apply=False, dry_run=False)
             self.assertEqual(code, 1)
             self.assertEqual(plan, {})
@@ -206,7 +207,7 @@ class RefusesOnMismatch(unittest.TestCase):
     def test_refuses_when_a_pinned_document_is_missing(self) -> None:
         with TemporaryDirectory() as tmp:
             root = _stage(tmp)
-            (root / "SPEC.md").unlink()
+            (root / "archives/SPEC-PHASE-1-5-OPENING.txt").unlink()
             code, defects, _plan = sov_open_phase.run(root, apply=False, dry_run=False)
             self.assertEqual(code, 1)
             self.assertTrue(any(defect.code == "MISSING_DEFINITION_DOCUMENT" for defect in defects))

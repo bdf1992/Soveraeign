@@ -90,7 +90,20 @@
     }
   ],
   "historical_phase": "phase:i",
-  "active_phase_profiles": {},
+  "active_phase_profiles": {
+    "phase:1-5": {
+      "exit_custody_floors": {
+        "custody:phase-1-5/fresh-participation": "ROOT_POINT",
+        "custody:phase-1-5/evidenced-judgement": "ROOT_POINT",
+        "custody:phase-1-5/discovery-reuse": "ROOT_POINT",
+        "custody:phase-1-5/definition-recurrence": "ROOT_POINT"
+      },
+      "set_at_commit": "1ea5736b71f45760bdf746d263ed860980d09d35",
+      "set_on": "2026-09-02",
+      "set_by": "seat:session-control",
+      "warrant": "Every phase:1-5 exit custody enters at ROOT_POINT (contracts/custodies.json), and the floor is pinned there: opening a phase earns nothing, so the floor a fresh custody must not fall below is its own entry stage, not a stage it has yet to draw."
+    }
+  },
   "active_refusals": [
     {
       "code": "ACTIVE_PHASE_PROGRESS_UNINITIALIZED",

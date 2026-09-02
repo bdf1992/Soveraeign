@@ -89,19 +89,19 @@
       "opened": "2026-09-02",
       "definition": [
         {
-          "document": "PRD.md",
+          "document": "archives/PRD-PHASE-1-5-OPENING.txt",
           "digest": "sha256:90545536ce63d46dffbc6bffc581db042baabe67dd8ecb21a3d659b797ae18e1",
-          "owns": "the P15-Q1 through P15-Q4 qualification profile"
+          "owns": "the P15-Q1 through P15-Q4 qualification profile, pinned at the opening rather than the living PRD.md so correcting a statement the opening itself makes false does not move the definition"
         },
         {
-          "document": "SPEC.md",
+          "document": "archives/SPEC-PHASE-1-5-OPENING.txt",
           "digest": "sha256:ea07f0ec39b9a55160f3f58552f3a5d13ba5061122a10b42e37daa34bfc2f348",
-          "owns": "the twelve P15 commissioning predicates"
+          "owns": "the twelve P15 commissioning predicates, pinned at the opening for the same reason"
         },
         {
-          "document": "contracts/phase-1-5-phase-ii-horizon.md",
+          "document": "archives/HORIZON-PHASE-1-5-OPENING.txt",
           "digest": "sha256:3a1df2f6f737fdd08bac4c382788e56a88f0f75ed105bd4fa4f90017f487f17b",
-          "owns": "the campaign rationale and the Phase 1.5 / Phase II boundary"
+          "owns": "the campaign rationale and the Phase 1.5 / Phase II boundary, pinned at the opening for the same reason"
         }
       ],
       "exit_clauses": [

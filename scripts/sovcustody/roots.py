@@ -30,19 +30,23 @@ OWNERS = {
 
 
 def predicate_ids() -> set[str]:
-    """Every normative predicate identifier, from the module that derives them.
+    """Every normative and commissioning predicate identifier, from the deriver.
 
     `PRED-I-1.1`, `TRANS-admit` and `PARITY-1` are synthesised from SPEC.md prose
     by the F2 gate rather than written literally in the document. Resolving them
     against a substring search of SPEC.md would therefore fail on every one, so
     the deriver is asked instead. It is the authority for these identifiers, and
     a predicate the gate no longer derives is a root that genuinely no longer
-    resolves.
+    resolves. The twelve `P15-Q*` commissioning predicates are written literally
+    in SPEC.md rather than synthesised, but they resolve through the same
+    deriver so a PREDICATE root does not need to know which vocabulary an id
+    belongs to.
     """
     try:
         import sov_f2_gate  # noqa: PLC0415
         spec = (ROOT / "SPEC.md").read_bytes().decode("utf-8")
-        return {row["id"] for row in sov_f2_gate.normative_predicates(spec)}
+        return ({row["id"] for row in sov_f2_gate.normative_predicates(spec)}
+                | {row["id"] for row in sov_f2_gate.commissioning_predicates(spec)})
     except (ImportError, OSError, KeyError):
         return set()
 

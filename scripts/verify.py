@@ -18,10 +18,11 @@ busy; per check, the pair can. The aggregate wall time is graded and recorded as
 debt; it never reaches the exit code, which `decisions/0081` settled by
 superseding `decisions/0050`. One timing condition still refuses: a single check
 that crosses the catastrophic ceiling both in the pooled run and again when
-re-read alone. That ceiling is read against a check's own CPU seconds whenever
-one was measured, and only falls back to wall seconds when it was not
-(`sovverify.budget.judge`), because a wall reading taken on a contended host
-measures the host, not the check.
+re-read alone. Wall accuses that ceiling exactly as it always has; a measured
+CPU reading at or under the ceiling then acquits the accusation, and a check
+with no measured CPU reading refuses on wall alone (`sovverify.budget.judge`).
+CPU never raises a suspicion wall did not already raise, because a check that
+shards across processes can spend far more CPU than wall.
 
 The table of what to run lives in `scripts/sovverify/checks.py`; this module owns
 only how a run is executed, observed, and graded.

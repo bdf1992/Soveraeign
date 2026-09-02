@@ -9,6 +9,15 @@ import os
 import re
 import sys
 
+# conformance/tests/test_lineage_fixtures.py loads this file by path
+# (importlib.util.spec_from_file_location) rather than as `scripts.lint`, so
+# this module's own directory is not reliably on sys.path yet; a bare
+# `from sovlint... import` would fail under that loader even though it works
+# under every other entry point (`python scripts/lint.py`, `import lint` with
+# scripts/ inserted, `-m unittest scripts.tests.test_lint`).
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from sovlint.phase_producer import defects as phase_producer_defects  # noqa: E402
+from sovlint.phase_producer import producer_tokens as phase_producer_tokens  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 TEXT_SUFFIXES = {".md", ".py", ".json", ".yaml", ".yml", ".toml"}
@@ -234,6 +243,7 @@ def main() -> int:
     if not paths:
         print("FAIL: repository text population is empty")
         return 1
+    phase_tokens = phase_producer_tokens(ROOT)
     python_count = 0
     for path in paths:
         # Read bytes, never Path.read_text: universal-newline translation silently
@@ -247,6 +257,7 @@ def main() -> int:
             defects.append(f"{relative}: not valid UTF-8 at byte {error.start}")
             continue
         defects.extend(check_text(path, text))
+        defects.extend(phase_producer_defects(path.relative_to(ROOT).as_posix(), text, phase_tokens))
         warnings.extend(check_duplicate_keys(path, text))
         if path.suffix == ".py":
             python_count += 1

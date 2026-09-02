@@ -1747,6 +1747,278 @@
       "required_authority": null,
       "cleanup_obligations": [],
       "note": "Known future work remains under durable custody while the Phase-I boundary keeps its active attention on literal closure."
+    },
+    {
+      "custody_schema": "soveraeign-custody/v1",
+      "status": "PROPOSED",
+      "custody_id": "custody:phase-1-5/fresh-participation",
+      "custody_kind": "EXIT",
+      "initiative": "Prove a fresh participant can resolve principal, isolated session, current campaign state, a bounded unit of work, capability, required authority, effect envelope, governance context, and Record projection from the artifact alone, and that accepted work's custody, closure, defeating condition, and cleanup obligations survive the session that carried it.",
+      "held_by": "seat:session-control",
+      "roots": [
+        {
+          "root_kind": "PHASE",
+          "reference": "contracts/phase-1-5-opening.json#PHASE-1-5-X1",
+          "serves": "this clause is the P15-Q1 exit, stated verbatim in contracts/phase-1-5-opening.json"
+        },
+        {
+          "root_kind": "PREDICATE",
+          "reference": "P15-Q1.1",
+          "serves": "a fresh participant resolves principal, session, phase state, work, capability, authority, effect envelope, governance context, and Record projection without oral history"
+        },
+        {
+          "root_kind": "PREDICATE",
+          "reference": "P15-Q1.2",
+          "serves": "accepted work carries a durable address, custody or lease, closure condition, defeating condition, and cleanup obligations across sessions"
+        },
+        {
+          "root_kind": "PREDICATE",
+          "reference": "P15-Q1.3",
+          "serves": "principal identity, session continuity, grant authority, and interface binding refuse a cross-principal or cross-session mismatch rather than borrowing authority"
+        }
+      ],
+      "circuit": "soveraeign-work-circuit/v1",
+      "entry_stage": "ROOT_POINT",
+      "target_stage": "CAPABLE_NODE",
+      "closure": {
+        "check": {
+          "kind": "COMMAND",
+          "expression": "python scripts/sov_opening_readiness.py --instrument --json"
+        },
+        "judgement_seat": "seat:root",
+        "defeated_by": "P15-Q1.1, P15-Q1.2, or P15-Q1.3 reported open by the instrument, or a fresh-participant fixture that discriminates only with private state or oral history"
+      },
+      "members": [],
+      "phase": "phase:1-5",
+      "exit_clause": "PHASE-1-5-X1",
+      "serves_exit": null,
+      "outside_phase_exit": null,
+      "depends_on": [],
+      "cleanup_obligations": [],
+      "note": "Staged only. No work lease exists under this custody until Phase 1.5 opens.",
+      "estimate": {
+        "estimate_schema": "soveraeign-estimate/v1",
+        "estimated_by": "principal:session-bdd51d",
+        "estimated_at": "2026-09-02T00:00:00Z",
+        "basis": "The clause is staged only; python scripts/sov_opening_readiness.py has not yet instrumented live custody work under it.",
+        "maturity": "DISCOVERY_ENVELOPE",
+        "dimensions": [
+          {
+            "dimension_id": "grants",
+            "low": 0,
+            "high": 0
+          },
+          {
+            "dimension_id": "judgement_units",
+            "low": 1,
+            "high": 1
+          }
+        ]
+      }
+    },
+    {
+      "custody_schema": "soveraeign-custody/v1",
+      "status": "PROPOSED",
+      "custody_id": "custody:phase-1-5/evidenced-judgement",
+      "custody_kind": "EXIT",
+      "initiative": "Prove consequential work reaches the append-preserving Record, every evaluative context names a RecordProjection with subject, recipient relation, cutoff, included evidence, declared omissions, and digest, WORK and PARTICIPANT_IN_WORK Findings stay separate and cited, and independent projections freeze before comparison without settling missing evidence by preference.",
+      "held_by": "seat:session-control",
+      "roots": [
+        {
+          "root_kind": "PHASE",
+          "reference": "contracts/phase-1-5-opening.json#PHASE-1-5-X2",
+          "serves": "this clause is the P15-Q2 exit, stated verbatim in contracts/phase-1-5-opening.json"
+        },
+        {
+          "root_kind": "PREDICATE",
+          "reference": "P15-Q2.1",
+          "serves": "consequential operational history reaches the append-preserving Record and reconstructs without treating participant-private state as authoritative"
+        },
+        {
+          "root_kind": "PREDICATE",
+          "reference": "P15-Q2.2",
+          "serves": "every evaluative context uses a RecordProjection naming subject, recipient relation, cutoff, included evidence, declared omissions, and digest, and grants no authority"
+        },
+        {
+          "root_kind": "PREDICATE",
+          "reference": "P15-Q2.3",
+          "serves": "WORK and PARTICIPANT_IN_WORK Findings remain separate, name evaluator and scope, and cite evidence through the declared projection"
+        },
+        {
+          "root_kind": "PREDICATE",
+          "reference": "P15-Q2.4",
+          "serves": "independent evaluative projections freeze before their conclusions are shared, and comparison preserves frozen findings, citations, and dissent"
+        }
+      ],
+      "circuit": "soveraeign-work-circuit/v1",
+      "entry_stage": "ROOT_POINT",
+      "target_stage": "CAPABLE_NODE",
+      "closure": {
+        "check": {
+          "kind": "COMMAND",
+          "expression": "python scripts/sov_opening_readiness.py --instrument --json"
+        },
+        "judgement_seat": "seat:root",
+        "defeated_by": "P15-Q2.1 through P15-Q2.4 reported open by the instrument, or a comparator that averages disagreement into a score instead of preserving dissent"
+      },
+      "members": [],
+      "phase": "phase:1-5",
+      "exit_clause": "PHASE-1-5-X2",
+      "serves_exit": null,
+      "outside_phase_exit": null,
+      "depends_on": [],
+      "cleanup_obligations": [],
+      "note": "Staged only. No work lease exists under this custody until Phase 1.5 opens.",
+      "estimate": {
+        "estimate_schema": "soveraeign-estimate/v1",
+        "estimated_by": "principal:session-bdd51d",
+        "estimated_at": "2026-09-02T00:00:00Z",
+        "basis": "The clause is staged only; python scripts/sov_opening_readiness.py has not yet instrumented live custody work under it.",
+        "maturity": "DISCOVERY_ENVELOPE",
+        "dimensions": [
+          {
+            "dimension_id": "grants",
+            "low": 0,
+            "high": 0
+          },
+          {
+            "dimension_id": "judgement_units",
+            "low": 1,
+            "high": 1
+          }
+        ]
+      }
+    },
+    {
+      "custody_schema": "soveraeign-custody/v1",
+      "status": "PROPOSED",
+      "custody_id": "custody:phase-1-5/discovery-reuse",
+      "custody_kind": "EXIT",
+      "initiative": "Prove settlement follows current state plus required independent observation and retires declared leases, branches, worktrees, projections, and claims, and that another fresh participant can discover an accepted result, its standing, basis, receipts, and usable capability without oral history from the builder or a prior session.",
+      "held_by": "seat:session-control",
+      "roots": [
+        {
+          "root_kind": "PHASE",
+          "reference": "contracts/phase-1-5-opening.json#PHASE-1-5-X3",
+          "serves": "this clause is the P15-Q3 exit, stated verbatim in contracts/phase-1-5-opening.json"
+        },
+        {
+          "root_kind": "PREDICATE",
+          "reference": "P15-Q3.1",
+          "serves": "settlement follows current state plus required independent observation, and closure retires temporary coordination inventory rather than leaving successful work unfinished"
+        },
+        {
+          "root_kind": "PREDICATE",
+          "reference": "P15-Q3.2",
+          "serves": "another fresh participant discovers an accepted result, its standing, basis, receipts, and usable capability without oral history"
+        }
+      ],
+      "circuit": "soveraeign-work-circuit/v1",
+      "entry_stage": "ROOT_POINT",
+      "target_stage": "CAPABLE_NODE",
+      "closure": {
+        "check": {
+          "kind": "COMMAND",
+          "expression": "python scripts/sov_opening_readiness.py --instrument --json"
+        },
+        "judgement_seat": "seat:root",
+        "defeated_by": "P15-Q3.1 or P15-Q3.2 reported open by the instrument, or a fresh reader who cannot reach an accepted result's basis without asking the builder"
+      },
+      "members": [],
+      "phase": "phase:1-5",
+      "exit_clause": "PHASE-1-5-X3",
+      "serves_exit": null,
+      "outside_phase_exit": null,
+      "depends_on": [],
+      "cleanup_obligations": [],
+      "note": "Staged only. No work lease exists under this custody until Phase 1.5 opens.",
+      "estimate": {
+        "estimate_schema": "soveraeign-estimate/v1",
+        "estimated_by": "principal:session-bdd51d",
+        "estimated_at": "2026-09-02T00:00:00Z",
+        "basis": "The clause is staged only; python scripts/sov_opening_readiness.py has not yet instrumented live custody work under it.",
+        "maturity": "DISCOVERY_ENVELOPE",
+        "dimensions": [
+          {
+            "dimension_id": "grants",
+            "low": 0,
+            "high": 0
+          },
+          {
+            "dimension_id": "judgement_units",
+            "low": 1,
+            "high": 1
+          }
+        ]
+      }
+    },
+    {
+      "custody_schema": "soveraeign-custody/v1",
+      "status": "PROPOSED",
+      "custody_id": "custody:phase-1-5/definition-recurrence",
+      "custody_kind": "EXIT",
+      "initiative": "Prove settled Records, scoped Findings, observations, and receipts can be cited into a later Proposal or candidate Definition that preserves its exact evidence addresses and gains no standing or authority merely from being generated, agreed with, or repeatedly demonstrated, expressed through primitives that do not depend on fixed Controller, Orchestrator, Worker, or Witness names.",
+      "held_by": "seat:session-control",
+      "roots": [
+        {
+          "root_kind": "PHASE",
+          "reference": "contracts/phase-1-5-opening.json#PHASE-1-5-X4",
+          "serves": "this clause is the P15-Q4 exit, stated verbatim in contracts/phase-1-5-opening.json"
+        },
+        {
+          "root_kind": "PREDICATE",
+          "reference": "P15-Q4.1",
+          "serves": "settled Records, Findings, observations, and receipts may be cited into a later Proposal or candidate Definition while preserving exact evidence addresses"
+        },
+        {
+          "root_kind": "PREDICATE",
+          "reference": "P15-Q4.2",
+          "serves": "a generated, agreed, demonstrated, or repeatedly successful candidate Definition gains no standing or authority merely from that evidence"
+        },
+        {
+          "root_kind": "PREDICATE",
+          "reference": "P15-Q4.3",
+          "serves": "identity, session, authority, work, custody, Record projection, observation, finding, settlement, and discovery semantics do not depend on fixed institution names"
+        }
+      ],
+      "circuit": "soveraeign-work-circuit/v1",
+      "entry_stage": "ROOT_POINT",
+      "target_stage": "CAPABLE_NODE",
+      "closure": {
+        "check": {
+          "kind": "COMMAND",
+          "expression": "python scripts/sov_opening_readiness.py --instrument --json"
+        },
+        "judgement_seat": "seat:root",
+        "defeated_by": "P15-Q4.1 through P15-Q4.3 reported open by the instrument, or a candidate Definition treated as binding policy merely because it was generated or demonstrated"
+      },
+      "members": [],
+      "phase": "phase:1-5",
+      "exit_clause": "PHASE-1-5-X4",
+      "serves_exit": null,
+      "outside_phase_exit": null,
+      "depends_on": [],
+      "cleanup_obligations": [],
+      "note": "Staged only. No work lease exists under this custody until Phase 1.5 opens.",
+      "estimate": {
+        "estimate_schema": "soveraeign-estimate/v1",
+        "estimated_by": "principal:session-bdd51d",
+        "estimated_at": "2026-09-02T00:00:00Z",
+        "basis": "The clause is staged only; python scripts/sov_opening_readiness.py has not yet instrumented live custody work under it.",
+        "maturity": "DISCOVERY_ENVELOPE",
+        "dimensions": [
+          {
+            "dimension_id": "grants",
+            "low": 0,
+            "high": 0
+          },
+          {
+            "dimension_id": "judgement_units",
+            "low": 1,
+            "high": 1
+          }
+        ]
+      }
     }
   ]
 }

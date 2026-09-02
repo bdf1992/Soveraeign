@@ -25,9 +25,9 @@ from sovkernel.jsonschema import validate  # noqa: E402
 
 RELATIVE_FILES = (
     "STATUS.yaml",
-    "PRD.md",
-    "SPEC.md",
-    "contracts/phase-1-5-phase-ii-horizon.md",
+    "archives/PRD-PHASE-1-5-OPENING.txt",
+    "archives/SPEC-PHASE-1-5-OPENING.txt",
+    "archives/HORIZON-PHASE-1-5-OPENING.txt",
     "contracts/phase-1-5-opening.json",
     "contracts/custodies-phase-1-5.json",
     "contracts/phases.json",
@@ -40,13 +40,44 @@ def _digest(path: Path) -> str:
 
 
 def _stage(tmp: str) -> Path:
-    """Copy the exact files sov_open_phase.py reads or writes into a fresh root."""
+    """Copy the target files into a fresh root, normalized to unopened standing.
+
+    The live tree may already carry the opened phase, so this fixture is
+    forced back to the pre-opening state rather than trusting the working
+    tree's current phase reading. That keeps these cases asserting the
+    script's own behaviour, not the repository's current standing.
+    """
     root = Path(tmp)
     for relative in RELATIVE_FILES:
         source = ROOT / relative
         target = root / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, target)
+
+    status_path = root / "STATUS.yaml"
+    lines = status_path.read_text(encoding="utf-8").splitlines()
+    lines = ["phase: NONE_ACTIVE" if line.startswith("phase:")
+             else "next_gate: SUCCESSOR_PHASE_OPENING" if line.startswith("next_gate:")
+             else line
+             for line in lines]
+    status_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+    phases_path = root / "contracts/phases.json"
+    phases_doc = json.loads(phases_path.read_text(encoding="utf-8"))
+    phases_doc["phases"] = [item for item in phases_doc.get("phases") or []
+                             if item.get("phase_id") != "phase:1-5"]
+    for item in phases_doc["phases"]:
+        if item.get("phase_id") == "phase:i":
+            item["succeeded_by"] = None
+    phases_path.write_text(json.dumps(phases_doc, indent=2) + "\n", encoding="utf-8")
+
+    custodies_path = root / "contracts/custodies.json"
+    custodies_doc = json.loads(custodies_path.read_text(encoding="utf-8"))
+    custodies_doc["custodies"] = [item for item in custodies_doc.get("custodies") or []
+                                   if not str(item.get("custody_id", "")).startswith(
+                                       "custody:phase-1-5/")]
+    custodies_path.write_text(json.dumps(custodies_doc, indent=2) + "\n", encoding="utf-8")
+
     return root
 
 
@@ -101,19 +132,21 @@ class CustodiesValidateAgainstSchema(unittest.TestCase):
 
 
 class NoArgumentsPreviewWritesNothing(unittest.TestCase):
-    def test_preview_against_the_live_tree_matches_and_writes_nothing(self) -> None:
-        before = {relative: _digest(ROOT / relative)
-                  for relative in ("contracts/phases.json", "STATUS.yaml",
-                                   "contracts/custodies.json")}
-        code, defects, plan = sov_open_phase.run(ROOT, apply=False, dry_run=False)
-        after = {relative: _digest(ROOT / relative)
-                 for relative in ("contracts/phases.json", "STATUS.yaml",
-                                  "contracts/custodies.json")}
-        self.assertEqual(code, 0)
-        self.assertEqual(defects, [])
-        self.assertIn("contracts/phases.json", plan)
-        self.assertIn("STATUS.yaml", plan)
-        self.assertEqual(before, after)
+    def test_preview_against_an_unopened_fixture_matches_and_writes_nothing(self) -> None:
+        with TemporaryDirectory() as tmp:
+            root = _stage(tmp)
+            before = {relative: _digest(root / relative)
+                      for relative in ("contracts/phases.json", "STATUS.yaml",
+                                       "contracts/custodies.json")}
+            code, defects, plan = sov_open_phase.run(root, apply=False, dry_run=False)
+            after = {relative: _digest(root / relative)
+                     for relative in ("contracts/phases.json", "STATUS.yaml",
+                                      "contracts/custodies.json")}
+            self.assertEqual(code, 0)
+            self.assertEqual(defects, [])
+            self.assertIn("contracts/phases.json", plan)
+            self.assertIn("STATUS.yaml", plan)
+            self.assertEqual(before, after)
 
 
 class ApplyDryRunIsByteIdentical(unittest.TestCase):
@@ -145,8 +178,10 @@ class ApplyWrites(unittest.TestCase):
             self.assertEqual(predecessor["succeeded_by"], "phase:1-5")
 
             status_text = (root / "STATUS.yaml").read_text(encoding="utf-8")
-            self.assertIn("phase: PHASE_1_5_OPEN", status_text)
+            self.assertIn("phase: phase:1-5", status_text)
             self.assertNotIn("phase: NONE_ACTIVE", status_text)
+            self.assertIn("next_gate: PHASE_1_5_OPERATIONAL_ACCEPTANCE", status_text)
+            self.assertNotIn("next_gate: SUCCESSOR_PHASE_OPENING", status_text)
 
             custodies = json.loads((root / "contracts/custodies.json").read_text(encoding="utf-8"))
             recorded_ids = {item["custody_id"] for item in custodies["custodies"]}
@@ -162,7 +197,8 @@ class RefusesOnMismatch(unittest.TestCase):
     def test_refuses_when_a_pinned_document_no_longer_matches(self) -> None:
         with TemporaryDirectory() as tmp:
             root = _stage(tmp)
-            (root / "PRD.md").write_text("tampered\n", encoding="utf-8")
+            (root / "archives/PRD-PHASE-1-5-OPENING.txt").write_text(
+                "tampered\n", encoding="utf-8")
             code, defects, plan = sov_open_phase.run(root, apply=False, dry_run=False)
             self.assertEqual(code, 1)
             self.assertEqual(plan, {})
@@ -171,7 +207,7 @@ class RefusesOnMismatch(unittest.TestCase):
     def test_refuses_when_a_pinned_document_is_missing(self) -> None:
         with TemporaryDirectory() as tmp:
             root = _stage(tmp)
-            (root / "SPEC.md").unlink()
+            (root / "archives/SPEC-PHASE-1-5-OPENING.txt").unlink()
             code, defects, _plan = sov_open_phase.run(root, apply=False, dry_run=False)
             self.assertEqual(code, 1)
             self.assertTrue(any(defect.code == "MISSING_DEFINITION_DOCUMENT" for defect in defects))

@@ -585,10 +585,10 @@ transitions to change authoritative state.
 ## Phase 1.5 commissioning predicates
 
 These predicates prepare the `Phase 1.5 · Operational Commissioning`
-qualification profile in `PRD.md`. They carry no phase standing on their own;
-`STATUS.yaml` and `contracts/phases.json` are the sole record of whether that
-phase is open. Controller, Orchestrator, Worker, and Witness are one proving
-arrangement of these primitives, not privileged Kernel roles.
+qualification profile in `PRD.md`. They carry no phase standing while
+`STATUS.yaml` remains `NONE_ACTIVE`. Controller, Orchestrator, Worker, and
+Witness are one proving arrangement of these primitives, not privileged Kernel
+roles.
 
 ### P15-Q1 · Fresh participation
 

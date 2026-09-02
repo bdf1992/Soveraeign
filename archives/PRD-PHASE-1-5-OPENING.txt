@@ -355,11 +355,9 @@ cheap and the pair is not. This profile's hardest criterion, and it evidences
 ## Prepared Phase 1.5 qualification profile
 
 **`Phase 1.5 · Operational Commissioning`.** Working name: **Participant
-Delivery Substrate**. Whether this phase is open is `STATUS.yaml` and
-`contracts/phases.json`'s reading to give (`python scripts/sov_next.py`), not this
-profile's. `STATUS.yaml` remains the authority for current phase standing, and
-merely writing, testing, or agreeing with this profile earns no exit clause
-standing.
+Delivery Substrate**. This is a prepared successor profile, not an active phase.
+`STATUS.yaml` remains the authority for whether a campaign is open, and merely
+writing, testing, or agreeing with this profile grants it no standing.
 
 Its purpose is to commission the participation and learning substrate that a
 later Phase II can use rather than to prebuild what those citizens will do with
@@ -539,9 +537,8 @@ requirements:
   product here. It is the one area not read out of the repository.
 - **Priority is proposed and unaccepted.** If it is wrong, the register misleads
   in the most consequential way a PRD can.
-- **`phase:i` closed incomplete**, with five residual custodies `PROPOSED`.
-  `contracts/phases.json` carries its `succeeded_by` reading; which roadmap phase
-  opens next is Bdo's to set.
+- **`phase:i` closed incomplete** with `succeeded_by` null and five residual
+  custodies `PROPOSED`. Which roadmap phase opens next is Bdo's to set.
 - **Two things are named gateway** (S18); **unattestable effectiveness** (S4)
   and **cold-start semantics** (S5) both gate `PROMISE-10`.
 

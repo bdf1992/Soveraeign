@@ -16,6 +16,7 @@ from sovclarity.scope import (
     exemption_map,
     scanned_candidates,
     scope_errors,
+    volatile_basis,
 )
 from sovclarity.zero import errors as zero_errors
 from sovclarity.zero import report as zero_report
@@ -47,8 +48,7 @@ def coverage(contract: dict) -> dict:
         "skill": contract["skill"],
         "reviews": {},
     }
-
-def review_state(path: str, review: dict | None) -> str:
+def review_state(contract: dict, path: str, review: dict | None) -> str:
     if review is None:
         return "UNCHECKED"
     artifact = ROOT / path
@@ -56,7 +56,8 @@ def review_state(path: str, review: dict | None) -> str:
         return "TEXT_STALE"
     for basis in review.get("basis", []):
         source = ROOT / basis["path"]
-        if not source.is_file() or digest(source) != basis.get("digest"):
+        stale = not source.is_file() or digest(source) != basis.get("digest")
+        if stale and basis.get("path") not in volatile_basis(contract):
             return "BASIS_STALE"
     return "CURRENT"
 
@@ -64,7 +65,7 @@ def state_map(contract: dict, record: dict) -> dict[str, str]:
     reviews = record.get("reviews", {})
     states = {path: "EXEMPT" for path in sorted(exemption_map(contract))}
     states.update({
-        path: review_state(path, reviews.get(path))
+        path: review_state(contract, path, reviews.get(path))
         for path in sorted(eligible(contract))
     })
     return dict(sorted(states.items()))

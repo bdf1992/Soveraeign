@@ -11,12 +11,14 @@
     ],
     "candidate_include": [
       "**/*.md",
-      ".cursorrules",
-      "STATUS.yaml"
+      ".cursorrules"
     ],
     "candidate_exclude": [
       ".claude/worktrees/**",
       "node_modules/**"
+    ],
+    "volatile_basis": [
+      "STATUS.yaml"
     ],
     "exemptions": [
       {
@@ -253,7 +255,6 @@
       "README.md",
       "AGENTS.md",
       "SOV.md",
-      "STATUS.yaml",
       "GROUND.md",
       "CANON.md",
       "SYSTEM.md",

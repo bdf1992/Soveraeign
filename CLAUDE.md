@@ -62,7 +62,10 @@ not own product claims.
 Operational state preserves addressed inputs, events, standing changes,
 observations, receipts, and counter-records. SQLite is the current storage
 mechanism, not semantic authority. Consequential transitions require typed live
-grants. Phase I is terminal `CLOSED_INCOMPLETE`; no successor phase is active.
+grants. Phase I is terminal `CLOSED_INCOMPLETE`. Which phase seat:root has opened
+since, and how its exit clauses currently read, is `STATUS.yaml` and
+`contracts/phases.json` reconciled (`python scripts/sov_next.py`), not a fact this
+file restates.
 
 ## Repository snapshot (informational)
 

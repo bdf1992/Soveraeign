@@ -43,6 +43,13 @@ def _reason(receipt: dict[str, Any]) -> str | None:
     return None
 
 
+def _signatures(results: dict[str, dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    """Per-binding-kind result fields, minus the ones that differ by construction."""
+    excluded = ("interface_binding_id", "terminal_receipt_id")
+    return {kind: {name: value for name, value in result.items() if name not in excluded}
+            for kind, result in results.items()}
+
+
 def _open_session(node: LocalActionPath, actor: str, actor_kind: str) -> dict[str, Any]:
     issuer = "interface-proof-given"
     node.console.grant(actor, "open:session", actor, granted_by=issuer)
@@ -74,6 +81,29 @@ def _attribution_was_recorded(node: LocalActionPath, request: dict[str, Any]) ->
                 "interface_binding_id", "interface_operation_digest")))
 
 
+def _last_grant_id(node: LocalActionPath) -> str | None:
+    rows = [entry["payload"] for entry in node.record.entries()
+            if entry["kind"] == "EVENT"
+            and entry["payload"].get("record_kind") == "gateway-routing-record"]
+    return rows[-1].get("authority_grant_id") if rows else None
+
+
+def _mismatch_attempt(node: LocalActionPath, document: dict[str, Any], operation: dict[str, Any],
+                      source: Path, actor: str, scope: str, session: dict[str, Any], *,
+                      principal_override: str | None = None, label: str) -> dict[str, Any]:
+    request = _request(document, operation["operation_id"], HUMAN, actor, scope,
+                       {"path": str(source), "label": label}, session)
+    if principal_override is not None:
+        request["principal_id"] = principal_override
+    returned = node.dispatch(request)
+    return {
+        "session_attribution_recorded": _attribution_was_recorded(node, request),
+        "outcome": returned["payload"]["outcome"],
+        "reason_code": _reason(returned),
+        "receipt_id": returned["entry_id"],
+    }
+
+
 def run() -> dict[str, Any]:
     """Return machine-checkable evidence; the fixture grants are givens, not UI output."""
     document, defects = rebuild()
@@ -87,6 +117,7 @@ def run() -> dict[str, Any]:
     action_results: dict[str, dict[str, Any]] = {}
     registry_results: dict[str, dict[str, Any]] = {}
     host_results: dict[str, dict[str, Any]] = {}
+    identity_snapshot: dict[str, Any] = {}
 
     with TemporaryDirectory() as work:
         root = Path(work)
@@ -116,6 +147,13 @@ def run() -> dict[str, Any]:
                     "payload_digest": detail["digest"],
                     "service_receipt_unchanged": returned == durable,
                 }
+                if binding_kind == HUMAN:
+                    identity_snapshot = {
+                        "principal_id": session["principal_id"],
+                        "session_id": session["session_id"],
+                        "grant_id": _last_grant_id(node),
+                        "interface_binding_id": request["interface_binding_id"],
+                    }
 
             with LocalActionPath(root / f"registry-{binding_kind.lower()}") as node:
                 session = _open_session(node, actor, binding_kind)
@@ -196,24 +234,38 @@ def run() -> dict[str, Any]:
             inactive = node.dispatch(inactive_request)
             inactive_attribution = _attribution_was_recorded(node, inactive_request)
 
-    semantic_signatures = {
-        kind: {name: value for name, value in result.items()
-               if name not in ("interface_binding_id", "terminal_receipt_id")}
-        for kind, result in action_results.items()
-    }
-    registry_signatures = {
-        kind: {name: value for name, value in result.items()
-               if name not in ("interface_binding_id", "terminal_receipt_id")}
-        for kind, result in registry_results.items()
-    }
-    host_signatures = {
-        kind: {name: value for name, value in result.items()
-               if name not in ("interface_binding_id", "terminal_receipt_id")}
-        for kind, result in host_results.items()
-    }
+        with LocalActionPath(root / "mismatched") as node:
+            actor_a, actor_b = "interface-mismatch-a", "interface-mismatch-b"
+            session_a = _open_session(node, actor_a, HUMAN)
+            session_b = _open_session(node, actor_b, HUMAN)
+            scope_a, scope_b = "asset:new:mismatch-a", "asset:new:mismatch-b"
+            node.console.grant(actor_a, operation["required_authority"], scope_a,
+                               granted_by="interface-proof-given")
+            node.console.grant(actor_b, operation["required_authority"], scope_b,
+                               granted_by="interface-proof-given")
+            # Neither attempt may borrow authority from the neighbouring, valid session.
+            mismatch = {
+                "cross_principal": _mismatch_attempt(
+                    node, document, operation, source, actor_a, scope_a, session_a,
+                    principal_override=session_b["principal_id"],
+                    label="Cross-principal mismatch"),
+                "cross_session_scope": _mismatch_attempt(
+                    node, document, operation, source, actor_a, scope_b, session_a,
+                    label="Cross-session scope borrow"),
+            }
+        cross_principal_session_mismatch = (
+            "REFUSED" if all(row["outcome"] == "REFUSED" for row in mismatch.values())
+            else "COMMITTED")
+
+    semantic_signatures = _signatures(action_results)
+    registry_signatures = _signatures(registry_results)
+    host_signatures = _signatures(host_results)
     return {
         "proof_schema": "soveraeign-node-interface-proof/v1",
         "standing": "BUILT_EVIDENCE_SETTLES_NOTHING",
+        "identities": identity_snapshot,
+        "mismatch": mismatch,
+        "cross_principal_session_mismatch": cross_principal_session_mismatch,
         "read": {
             "operation_id": operation["operation_id"],
             "record_digest": operation["record_digest"],

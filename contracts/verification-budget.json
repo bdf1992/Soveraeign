@@ -38,7 +38,12 @@
       "documentation reader": 1.0,
       "kernel participant parity": 1.0,
       "semantic cold-start task": 1.0
-    }
+    },
+    "catastrophic_factor": 20.0,
+    "owns_its_catastrophe": [
+      "repository tooling tests"
+    ],
+    "catastrophic_factor_note": "The shared 30-second catastrophic_check_seconds backstop is sized for a check that owns no ceiling of its own, so its own cost has never been attributed anywhere. A check listed in owns_its_catastrophe instead answers to its own named ceiling times catastrophic_factor, because it already owes attributed debt against that named ceiling and charging the same cost again against a limit built for a different kind of check refuses a cost that was already accepted and named. repository tooling tests is listed here: it carries a named ceiling of 3.0s that Bdo accepted as debt on 2026-08-27 knowing it was exceeded, and it shards across four processes, which is why its wall reading (36-44s pooled, 27.6-39.7s isolated, catastrophic_note above) keeps crossing the shared 30s backstop with no regression. The factor is 20: 3.0s x 20 = 60.0s, roughly 36% above the worst pooled reading observed (44s) and well above the worst isolated reading (39.7s), while still refusing a genuine blowout of this check long before it could be mistaken for shard overhead. Every other named check keeps answering to the shared 30.0s backstop unchanged; listing a check here changes only which ceiling its own catastrophic reading is measured against, never its named ceiling or the debt it owes against it."
   },
   "catastrophic_check_seconds": 30.0,
   "catastrophic_confirm_alone": true,

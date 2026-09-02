@@ -18,7 +18,10 @@ busy; per check, the pair can. The aggregate wall time is graded and recorded as
 debt; it never reaches the exit code, which `decisions/0081` settled by
 superseding `decisions/0050`. One timing condition still refuses: a single check
 that crosses the catastrophic ceiling both in the pooled run and again when
-re-read alone.
+re-read alone. That ceiling is read against a check's own CPU seconds whenever
+one was measured, and only falls back to wall seconds when it was not
+(`sovverify.budget.judge`), because a wall reading taken on a contended host
+measures the host, not the check.
 
 The table of what to run lives in `scripts/sovverify/checks.py`; this module owns
 only how a run is executed, observed, and graded.
@@ -219,7 +222,8 @@ def main(argv: list[str] | None = None, run_id: str | None = None,
         print(reading.output.rstrip("\n"), flush=True)
         print(f"TIME: {check.name}: {reading.report()}", flush=True)
 
-    timings = [(check.name, reading.wall) for check, reading in results]
+    timings = [(check.name, reading.wall, reading.cpu, reading.measured)
+              for check, reading in results]
     debts, catastrophes = budget.judge(timings, BUDGET_TABLE)
     catastrophes = confirm_alone(catastrophes, results)
     refusing = budget.refusing(catastrophes, BUDGET_TABLE)

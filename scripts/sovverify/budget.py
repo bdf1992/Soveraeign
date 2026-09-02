@@ -7,11 +7,14 @@ which attribute an overrun to the check that owns it rather than to whoever
 touched the repository next.
 
 One timing condition still blocks: a single check past
-`catastrophic_check_seconds`. A pooled reading past that ceiling is only a
-suspected catastrophe when confirmation is enabled; refusal requires the same
-check to cross the ceiling again when re-read alone. This keeps genuine
-pathological regressions blocking without treating host contention as proof of
-an implementation defect.
+`catastrophic_check_seconds`. That read prefers a check's own CPU seconds over
+its wall seconds whenever a CPU reading was measured (`scripts/sovverify/clocks.py`),
+because wall time taken on a contended host measures the host, not the check;
+a check with no measured CPU reading still refuses on wall alone. A pooled
+reading past that ceiling is only a suspected catastrophe when confirmation is
+enabled; refusal requires the same check to cross the ceiling again when
+re-read alone. This keeps genuine pathological regressions blocking without
+treating host contention as proof of an implementation defect.
 
 `contracts/verification-budget.json` is the declaration; nothing here restates a
 number it owns.
@@ -117,9 +120,18 @@ def confirms_alone(table: dict[str, Any]) -> bool:
     return bool(table.get("catastrophic_confirm_alone", False))
 
 
-def judge(timings: list[tuple[str, float]],
+def judge(timings: list[tuple[str, float]] | list[tuple[str, float, float | None, bool]],
           table: dict[str, Any]) -> tuple[list[Debt], list[Catastrophe]]:
     """Grade every check against its own ceiling.
+
+    Each entry is ``(name, wall)`` or ``(name, wall, cpu, measured)``. Debt and
+    every other purpose still grade on wall, exactly as `decisions/0081`
+    settled: the aggregate wall grade, the per-check debt table, and the
+    printed timings are unchanged. Only the catastrophic read changes: a
+    check's own CPU seconds decide it whenever a CPU reading was measured,
+    because a wall reading taken on a contended host measures the host, not
+    the repository (`#148/C0027`, PR #151). A check with no measured CPU
+    reading still refuses on wall alone, exactly as before.
 
     Returns debts and suspected catastrophes separately because they resolve
     differently. A check is never both on the first reading; a suspected
@@ -128,13 +140,17 @@ def judge(timings: list[tuple[str, float]],
     blocking = float(table["catastrophic_check_seconds"])
     debts: list[Debt] = []
     catastrophes: list[Catastrophe] = []
-    for name, seconds in timings:
-        if seconds > blocking:
-            catastrophes.append(Catastrophe(name, seconds, blocking))
+    for entry in timings:
+        name, wall = entry[0], entry[1]
+        cpu = entry[2] if len(entry) > 2 else None
+        measured = bool(entry[3]) if len(entry) > 3 else False
+        catastrophic_reading = cpu if measured and cpu is not None else wall
+        if catastrophic_reading > blocking:
+            catastrophes.append(Catastrophe(name, catastrophic_reading, blocking))
             continue
         ceiling = ceiling_for(name, table)
-        if seconds > ceiling:
-            debts.append(Debt(name, seconds, ceiling))
+        if wall > ceiling:
+            debts.append(Debt(name, wall, ceiling))
     debts.sort(key=lambda entry: entry.seconds, reverse=True)
     catastrophes.sort(key=lambda entry: entry.seconds, reverse=True)
     return debts, catastrophes

@@ -283,13 +283,26 @@ class ShippedCustodies(unittest.TestCase):
             for dependency in custody.get("depends_on") or []:
                 self.assertIn(dependency, known, custody["custody_id"])
 
-    def test_a_second_holder_of_one_member_is_refused(self) -> None:
+    def test_a_second_live_holder_of_one_member_is_refused(self) -> None:
         records = copy.deepcopy(self.records)
-        stocked = [r for r in records if r.get("members")]
-        borrowed = stocked[0]["members"][0]
-        stocked[1]["members"].append(copy.deepcopy(borrowed))
+        live = [r for r in records if r.get("members") and not r.get("terminal")]
+        self.assertGreaterEqual(len(live), 2, "the collection has no two live stocked custodies")
+        live[1]["members"].append(copy.deepcopy(live[0]["members"][0]))
         self.assertIn("MEMBER_IN_TWO_CUSTODIES",
                       {code for code, _ in modelmod.grade_collection(records)})
+
+    def test_a_retired_custody_does_not_compete_for_its_old_member(self) -> None:
+        """A terminal ends the old assignment, so its member list is history. Without
+        this the first custody of a successor phase collides with every retired
+        Phase-I custody that once carried the same address."""
+        records = copy.deepcopy(self.records)
+        retired = next(r for r in records if r.get("terminal") and r.get("members"))
+        live = [r for r in records if not r.get("terminal")]
+        for custody in live:
+            custody["members"] = []
+        live[0]["members"] = [copy.deepcopy(retired["members"][0])]
+        self.assertNotIn("MEMBER_IN_TWO_CUSTODIES",
+                         {code for code, _ in modelmod.grade_collection(records)})
 
 
 class CustodyTerminals(unittest.TestCase):

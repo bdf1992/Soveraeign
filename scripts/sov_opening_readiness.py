@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-from copy import deepcopy
 from pathlib import Path
 import argparse
 import json
@@ -39,31 +38,18 @@ def p15_predicates(root: Path = ROOT) -> list[str]:
     return re.findall(r"^- `(P15-Q[1-4]\.\d+)`\s", block, flags=re.M)
 
 
-def _set_path(record: object, dotted: str, value: object) -> None:
-    """Apply one fixture mutation through dict keys and list indices."""
-    parts = dotted.split(".")
-    current = record
-    for part in parts[:-1]:
-        current = current[int(part)] if isinstance(current, list) else current[part]  # type: ignore[index]
-    leaf = parts[-1]
-    if isinstance(current, list):
-        current[int(leaf)] = value
-    else:
-        current[leaf] = value  # type: ignore[index]
-
-
 def commissioning_instrument(root: Path = ROOT) -> dict:
-    """Prove every stated P15 predicate has a discriminating fixture pair."""
-    fixture_path = root / FIXTURES
-    if not fixture_path.is_file():
+    """Prove every stated P15 predicate has a discriminating fixture pair.
+
+    The oracle runs its own corpus (`conformance/commissioning.run_cases`); this
+    reading adds the one thing the oracle cannot see from inside itself, which is
+    whether the predicates it names are the predicates `SPEC.md` states.
+    """
+    if not (root / FIXTURES).is_file():
         return {"closed": False, "predicates_total": 0, "predicates_covered": 0,
                 "open": [], "defects": ["qualification fixture corpus missing"]}
-    document = json.loads(fixture_path.read_text(encoding="utf-8"))
-    templates = document.get("templates") or {}
-    cases = document.get("cases") or []
     stated = p15_predicates(root)
     stated_set = set(stated)
-    coverage: dict[str, set[str]] = {}
     defects: list[str] = []
 
     if stated_set != commissioning.PREDICATES:
@@ -74,41 +60,15 @@ def commissioning_instrument(root: Path = ROOT) -> dict:
         if extra:
             defects.append("evaluator names predicates absent from SPEC.md: " + ", ".join(extra))
 
-    for case in cases:
-        predicate = str(case.get("predicate") or "")
-        polarity = case.get("polarity")
-        case_id = str(case.get("case_id") or predicate or "unnamed")
-        if predicate not in stated_set:
-            defects.append(f"{case_id}: predicate absent from SPEC.md")
-            continue
-        if polarity not in REQUIRED_POLARITIES:
-            defects.append(f"{case_id}: invalid polarity {polarity}")
-            continue
-        template = templates.get(predicate)
-        if not isinstance(template, dict):
-            defects.append(f"{case_id}: no observation template")
-            continue
-        observation = deepcopy(template)
-        for dotted, value in (case.get("set") or {}).items():
-            try:
-                _set_path(observation, str(dotted), value)
-            except (KeyError, IndexError, TypeError, ValueError):
-                defects.append(f"{case_id}: mutation path {dotted} does not resolve")
-                observation = {}
-                break
-        seen = commissioning.evaluate(predicate, observation)
-        discriminates = (not seen) if polarity == "positive" else bool(seen)
-        if not discriminates:
-            defects.append(
-                f"{case_id}: {polarity} case did not discriminate ({'; '.join(seen) or 'no defect'})")
-            continue
-        coverage.setdefault(predicate, set()).add(str(polarity))
+    run = commissioning.run_cases(root)
+    defects.extend(run["defects"])
+    coverage = run["coverage"]
+    for predicate in sorted(set(coverage) - stated_set):
+        defects.append(f"{predicate}: predicate absent from SPEC.md")
 
-    rows = []
-    for predicate in stated:
-        have = coverage.get(predicate, set())
-        missing = sorted(REQUIRED_POLARITIES - have)
-        rows.append({"predicate": predicate, "missing": missing})
+    rows = [{"predicate": predicate,
+             "missing": sorted(REQUIRED_POLARITIES - coverage.get(predicate, set()))}
+            for predicate in stated]
     open_rows = [row for row in rows if row["missing"]]
     return {
         "closed": not defects and not open_rows and len(stated) == len(commissioning.PREDICATES),

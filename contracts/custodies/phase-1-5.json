@@ -170,7 +170,17 @@
         "maturity": "DISCOVERY_ENVELOPE",
         "dimensions": [{"dimension_id": "grants", "low": 0, "high": 1}, {"dimension_id": "judgement_units", "low": 1, "high": 1}]
       },
-      "members": [],
+      "members": [
+        {
+          "member_kind": "OPERATION",
+          "address": "conformance/commissioning.py",
+          "stage": "VERTICAL_SLICE",
+          "standing": "BUILT",
+          "work_state": "LANDED",
+          "stage_observed_by": null,
+          "note": "the closure check this custody declares now runs its own corpus and prints which of the twelve P15 predicates separate their claim from its defeating case. scripts/sov_opening_readiness.py reads that same run rather than keeping a second copy of the loop."
+        }
+      ],
       "depends_on": [],
       "cleanup_obligations": []
     },
@@ -205,7 +215,26 @@
         "maturity": "DISCOVERY_ENVELOPE",
         "dimensions": [{"dimension_id": "grants", "low": 1, "high": 1}, {"dimension_id": "judgement_units", "low": 1, "high": 1}]
       },
-      "members": [],
+      "members": [
+        {
+          "member_kind": "OPERATION",
+          "address": "scripts/sov_active_phase_progress.py",
+          "stage": "VERTICAL_SLICE",
+          "standing": "BUILT",
+          "work_state": "LANDED",
+          "stage_observed_by": null,
+          "note": "the closure check this custody declares now reports: one line per exit clause, its custody stage against its recorded floor, non-zero on a regression. It was a library with no __main__ guard, so the declared command printed nothing and exited 0."
+        },
+        {
+          "member_kind": "OPERATION",
+          "address": "scripts/sovcustody/closures.py",
+          "stage": "VERTICAL_SLICE",
+          "standing": "BUILT",
+          "work_state": "LANDED",
+          "stage_observed_by": null,
+          "note": "SILENT_CLOSURE_CHECK and UNRUNNABLE_CLOSURE_CHECK, graded statically over every declared COMMAND closure and reached by defeating fixtures, so no custody opens again with a closure check that cannot report. sov_custody.py closures --run is the opt-in live reading."
+        }
+      ],
       "depends_on": [],
       "cleanup_obligations": []
     },

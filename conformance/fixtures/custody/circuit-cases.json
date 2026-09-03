@@ -1954,5 +1954,116 @@
     "expect_refusals": [
       "INVALID_CUSTODY_TERMINAL"
     ]
+  },
+  {
+    "id": "closure-check-reports",
+    "judge": "closure",
+    "polarity": "positive",
+    "why": "A closure check that prints a reading is one a participant can actually run and read.",
+    "custodies": [
+      {
+        "custody_schema": "soveraeign-custody/v1",
+        "status": "PROPOSED",
+        "custody_id": "custody:reporting-check",
+        "initiative": "An initiative whose closure is declared as a runnable command.",
+        "held_by": "seat:session-control",
+        "roots": [
+          {
+            "root_kind": "GROUND",
+            "reference": "GROUND-001"
+          }
+        ],
+        "circuit": "soveraeign-work-circuit/v1",
+        "entry_stage": "ROOT_POINT",
+        "target_stage": "VERTICAL_SLICE",
+        "closure": {
+          "check": {
+            "kind": "COMMAND",
+            "expression": "python conformance/fixtures/custody/closure-scripts/reporting.py"
+          },
+          "judgement_seat": "seat:root",
+          "defeated_by": "the declared command reports nothing and its silence reads as a pass"
+        },
+        "members": [],
+        "depends_on": [],
+        "cleanup_obligations": []
+      }
+    ]
+  },
+  {
+    "id": "silent-closure-check",
+    "judge": "closure",
+    "polarity": "defeating",
+    "why": "A module with no entry point exits 0 and says nothing, so the participant running the declared check reads silence as a pass. Two Phase 1.5 exit custodies opened in exactly this shape.",
+    "expect_refusals": [
+      "SILENT_CLOSURE_CHECK"
+    ],
+    "custodies": [
+      {
+        "custody_schema": "soveraeign-custody/v1",
+        "status": "PROPOSED",
+        "custody_id": "custody:silent-check",
+        "initiative": "An initiative whose closure is declared as a runnable command.",
+        "held_by": "seat:session-control",
+        "roots": [
+          {
+            "root_kind": "GROUND",
+            "reference": "GROUND-001"
+          }
+        ],
+        "circuit": "soveraeign-work-circuit/v1",
+        "entry_stage": "ROOT_POINT",
+        "target_stage": "VERTICAL_SLICE",
+        "closure": {
+          "check": {
+            "kind": "COMMAND",
+            "expression": "python conformance/fixtures/custody/closure-scripts/silent.py"
+          },
+          "judgement_seat": "seat:root",
+          "defeated_by": "the declared command reports nothing and its silence reads as a pass"
+        },
+        "members": [],
+        "depends_on": [],
+        "cleanup_obligations": []
+      }
+    ]
+  },
+  {
+    "id": "unrunnable-closure-check",
+    "judge": "closure",
+    "polarity": "defeating",
+    "why": "The declared closure names a script that is not in the repository, so the custody can never be closed by the check it declares.",
+    "expect_refusals": [
+      "UNRUNNABLE_CLOSURE_CHECK"
+    ],
+    "custodies": [
+      {
+        "custody_schema": "soveraeign-custody/v1",
+        "status": "PROPOSED",
+        "custody_id": "custody:absent-check",
+        "initiative": "An initiative whose closure is declared as a runnable command.",
+        "held_by": "seat:session-control",
+        "roots": [
+          {
+            "root_kind": "GROUND",
+            "reference": "GROUND-001"
+          }
+        ],
+        "circuit": "soveraeign-work-circuit/v1",
+        "entry_stage": "ROOT_POINT",
+        "target_stage": "VERTICAL_SLICE",
+        "closure": {
+          "check": {
+            "kind": "COMMAND",
+            "expression": "python scripts/sov_does_not_exist.py"
+          },
+          "judgement_seat": "seat:root",
+          "defeated_by": "the declared command reports nothing and its silence reads as a pass"
+        },
+        "members": [],
+        "depends_on": [],
+        "cleanup_obligations": []
+      }
+    ]
   }
 ]

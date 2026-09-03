@@ -13,6 +13,7 @@ possession of one concern by one principal for a bounded interval.
     estimate    estimated cost against measured actual, and the registry grade
     reconcile   phase exit clauses against the custodies that hold them
     phase       phase terminals, pinned definitions, and their defects
+    closures    every declared closure check, and whether it can report
     orphans     declared work no custody holds
     selfcheck   prove every declared refusal fires against a fixture
 
@@ -30,8 +31,10 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
+from sovcustody import closures  # noqa: E402
 from sovcustody import commands  # noqa: E402
 from sovcustody import lifecycle  # noqa: E402
+from sovcustody import selfcheck  # noqa: E402
 
 
 def _command_lifecycle(args: argparse.Namespace) -> int:
@@ -72,6 +75,12 @@ def main() -> int:
     subparsers.add_parser("phase", help="phase terminals and their pinned definitions")
     orphans = subparsers.add_parser("orphans", help="declared work no custody holds")
     orphans.add_argument("--kind", choices=["SEAM", "ITEM"])
+    closure_checks = subparsers.add_parser(
+        "closures", help="every declared closure check, and whether it can report")
+    closure_checks.add_argument("--phase", help="read one phase collection only")
+    closure_checks.add_argument(
+        "--run", action="store_true",
+        help="run each declared command; consumes resources, so it is opt-in")
     subparsers.add_parser("selfcheck", help="prove every declared refusal fires")
 
     args = parser.parse_args()
@@ -84,7 +93,8 @@ def main() -> int:
         "reconcile": commands.command_reconcile,
         "phase": commands.command_phase,
         "orphans": commands.command_orphans,
-        "selfcheck": commands.command_selfcheck,
+        "closures": closures.command_closures,
+        "selfcheck": selfcheck.command_selfcheck,
     }
     return handlers[args.command](args)
 

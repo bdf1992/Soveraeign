@@ -23,6 +23,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from sovcustody import board as boardmod  # noqa: E402
 from sovcustody import circuit as circuitmod  # noqa: E402
+from sovcustody import closures as closuresmod  # noqa: E402
 from sovcustody import estimate as estimatemod  # noqa: E402
 from sovcustody import model as modelmod  # noqa: E402
 from sovcustody import phase as phasemod  # noqa: E402
@@ -258,6 +259,15 @@ class ShippedCustodies(unittest.TestCase):
 
     def test_the_collection_is_admissible(self) -> None:
         self.assertEqual(modelmod.grade_collection(self.records), [])
+
+    def test_every_declared_closure_command_can_report(self) -> None:
+        """A COMMAND that runs, exits 0 and prints nothing is closure nobody can read.
+
+        Two Phase 1.5 exit custodies opened naming Python modules that had a
+        grading function and no `__main__` guard, so the declared check said
+        nothing and its silence read as a pass.
+        """
+        self.assertEqual(closuresmod.grade_collection(self.records), [])
 
     def test_every_custody_can_close(self) -> None:
         for custody in self.records:
@@ -510,7 +520,8 @@ class SelfcheckInProcess(unittest.TestCase):
     def test_every_declared_refusal_is_reached_by_a_case(self) -> None:
         declared = (set(circuitmod.declared_refusals())
                     | set(estimatemod.declared_refusals())
-                    | set(modelmod.REFUSALS) | set(phasemod.REFUSALS))
+                    | set(modelmod.REFUSALS) | set(phasemod.REFUSALS)
+                    | set(closuresmod.REFUSALS))
         fired: set[str] = set()
         for record in CORPUS:
             judge = record["judge"]
@@ -527,6 +538,8 @@ class SelfcheckInProcess(unittest.TestCase):
                 defects = modelmod.grade_collection(record["custodies"])
             elif judge == "registry":
                 defects = estimatemod.grade_registry(record["registry"])
+            elif judge == "closure":
+                defects = closuresmod.grade_collection(record["custodies"])
             elif judge == "phase":
                 defects = phasemod.grade(record["phase"],
                                          set(record.get("custody_ids") or []))
@@ -568,7 +581,8 @@ class CorpusIntegrity(unittest.TestCase):
     def test_no_expected_refusal_is_undeclared(self) -> None:
         declared = (set(circuitmod.declared_refusals())
                     | set(estimatemod.declared_refusals())
-                    | set(modelmod.REFUSALS) | set(phasemod.REFUSALS))
+                    | set(modelmod.REFUSALS) | set(phasemod.REFUSALS)
+                    | set(closuresmod.REFUSALS))
         for record in CORPUS:
             for code in record.get("expect_refusals") or []:
                 self.assertIn(code, declared, record["id"])

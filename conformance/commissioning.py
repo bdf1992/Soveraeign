@@ -8,7 +8,10 @@ satisfies the claim.
 
 from __future__ import annotations
 
+from copy import deepcopy
+from pathlib import Path
 from typing import Any, Callable
+import json
 
 
 PREDICATES = {
@@ -183,3 +186,99 @@ CHECKS: dict[str, Callable[[dict[str, Any]], list[str]]] = {
 def evaluate(predicate_id: str, observed: dict[str, Any]) -> list[str]:
     check = CHECKS.get(predicate_id)
     return [f"unknown commissioning predicate {predicate_id}"] if check is None else check(observed)
+
+
+FIXTURES = "conformance/fixtures/commissioning/qualification-cases.json"
+REQUIRED_POLARITIES = frozenset({"positive", "defeating"})
+
+
+def _set_path(record: object, dotted: str, value: Any) -> None:
+    """Apply one fixture mutation through dict keys and list indices."""
+    parts = dotted.split(".")
+    current = record
+    for part in parts[:-1]:
+        current = current[int(part)] if isinstance(current, list) else current[part]
+    leaf = parts[-1]
+    if isinstance(current, list):
+        current[int(leaf)] = value
+    else:
+        current[leaf] = value
+
+
+def run_cases(root: Path) -> dict[str, Any]:
+    """Run the declared corpus and report which predicates discriminate both ways.
+
+    The reading is about the instrument, not the product: a covered predicate
+    means the check separates its claim from its defeating case, never that the
+    node currently satisfies the claim.
+    """
+    fixture_path = root / FIXTURES
+    if not fixture_path.is_file():
+        return {"coverage": {}, "defects": ["qualification fixture corpus missing"], "cases": 0}
+    document = json.loads(fixture_path.read_text(encoding="utf-8"))
+    templates = document.get("templates") or {}
+    cases = document.get("cases") or []
+    coverage: dict[str, set[str]] = {}
+    defects: list[str] = []
+
+    for case in cases:
+        predicate = str(case.get("predicate") or "")
+        polarity = case.get("polarity")
+        case_id = str(case.get("case_id") or predicate or "unnamed")
+        if polarity not in REQUIRED_POLARITIES:
+            defects.append(f"{case_id}: invalid polarity {polarity}")
+            continue
+        template = templates.get(predicate)
+        if not isinstance(template, dict):
+            defects.append(f"{case_id}: no observation template")
+            continue
+        observation = deepcopy(template)
+        broken = False
+        for dotted, value in (case.get("set") or {}).items():
+            try:
+                _set_path(observation, str(dotted), value)
+            except (KeyError, IndexError, TypeError, ValueError):
+                defects.append(f"{case_id}: mutation path {dotted} does not resolve")
+                broken = True
+                break
+        if broken:
+            continue
+        seen = evaluate(predicate, observation)
+        discriminates = (not seen) if polarity == "positive" else bool(seen)
+        if not discriminates:
+            defects.append(
+                f"{case_id}: {polarity} case did not discriminate "
+                f"({'; '.join(seen) or 'no defect'})")
+            continue
+        coverage.setdefault(predicate, set()).add(str(polarity))
+
+    return {"coverage": coverage, "defects": defects, "cases": len(cases)}
+
+
+def main() -> int:
+    """Print whether every declared predicate discriminates its defeating case."""
+    root = Path(__file__).resolve().parents[1]
+    reading = run_cases(root)
+    coverage = reading["coverage"]
+    uncovered = sorted(
+        predicate for predicate in PREDICATES
+        if REQUIRED_POLARITIES - coverage.get(predicate, set()))
+
+    print(f"commissioning instrument: {len(PREDICATES) - len(uncovered)}/{len(PREDICATES)}"
+          f" predicate(s) discriminating over {reading['cases']} case(s)")
+    for predicate in sorted(PREDICATES):
+        have = coverage.get(predicate, set())
+        missing = sorted(REQUIRED_POLARITIES - have)
+        state = "both polarities" if not missing else "MISSING " + ", ".join(missing)
+        print(f"  {predicate:<9} {state}")
+    for defect in reading["defects"]:
+        print(f"  DEFECT  {defect}")
+    if reading["defects"] or uncovered:
+        return 1
+    print("PASS: the instrument separates every stated predicate from its defeating case")
+    print("      discrimination is not evidence that the node satisfies any predicate")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

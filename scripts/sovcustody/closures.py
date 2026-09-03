@@ -31,12 +31,14 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Any
-import ast
 import os
-import re
 import shlex
 import subprocess
 import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from sovcustody.invocation import INTERPRETER, has_entry_point, script_of  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -47,121 +49,13 @@ REFUSALS = {
     "SILENT_CLOSURE_CHECK":
         "The closure check names a Python module with no entry point, so running it as "
         "declared produces no reading and its silence reads as a pass.",
+    "UNCITED_OBSERVATION":
+        "A member claims a stage was observed by a record that is not in the repository, so "
+        "the citation carrying its standing cannot be read.",
     "UNREPORTING_CLOSURE_CHECK":
         "The closure check said nothing on either stream, so whatever it exited with, "
         "a participant running it is left with no reading at all.",
 }
-
-#: `python`, `python3`, `python3.12`, `pythonw`, and the Windows launcher `py`.
-INTERPRETER = re.compile(r"^(?:python|py)[0-9.]*w?(?:\.exe)?$", re.IGNORECASE)
-
-#: Interpreter options that consume the token after them, so it is not the script.
-VALUED_OPTIONS = frozenset({"-W", "-X", "--check-hash-based-pycs"})
-
-Defect = tuple[str, str]
-
-
-def script_of(expression: str) -> str | None:
-    """The repository-relative script a `python ...` expression would run, if any.
-
-    `None` means the expression is not a plain interpreter-plus-file invocation
-    and this module declines to judge it statically: `-m` and `-c` name an
-    import target or a literal rather than a file, and a non-Python command is
-    somebody else's vocabulary. `grade_live` asks those the only way that works,
-    which is to run them.
-    """
-    try:
-        argv = shlex.split(expression)
-    except ValueError:
-        return None
-    # A `NAME=value` prefix is environment, not the interpreter. Without this,
-    # `PYTHONPATH=scripts python foo.py` reads `pythonpath=scripts` as an
-    # interpreter and returns `python` as the script.
-    while argv and re.match(r"^[A-Za-z_][A-Za-z0-9_]*=", argv[0]):
-        argv = argv[1:]
-    if len(argv) < 2 or not INTERPRETER.match(Path(argv[0]).name):
-        return None
-
-    rest = iter(argv[1:])
-    for token in rest:
-        if token in ("-m", "-c"):
-            return None
-        if token in VALUED_OPTIONS:
-            next(rest, None)
-            continue
-        if token.startswith("-"):
-            continue
-        return token
-    return None
-
-
-def _names_main(test: ast.expr) -> bool:
-    """True for `__name__ == "__main__"` and its `in (...)` spelling, only."""
-    if not isinstance(test, ast.Compare) or len(test.ops) != 1:
-        return False
-    operator = test.ops[0]
-    left, right = test.left, test.comparators[0]
-    if isinstance(right, ast.Name) and right.id == "__name__":
-        # `if "__main__" == __name__:` is the same guard written backwards.
-        left, right = right, left
-    if not isinstance(left, ast.Name) or left.id != "__name__":
-        return False
-    if isinstance(operator, ast.Eq):
-        return isinstance(right, ast.Constant) and right.value == "__main__"
-    if isinstance(operator, ast.In) and isinstance(right, (ast.Tuple, ast.List)):
-        return any(isinstance(item, ast.Constant) and item.value == "__main__"
-                   for item in right.elts)
-    return False
-
-
-def _does_something(body: list[ast.stmt]) -> bool:
-    """False for a guard body that is only `pass`, `...`, or a docstring."""
-    for statement in body:
-        if isinstance(statement, ast.Pass):
-            continue
-        if isinstance(statement, ast.Expr) and isinstance(statement.value, ast.Constant):
-            continue
-        return True
-    return False
-
-
-def _is_entry_call(node: ast.stmt) -> bool:
-    """True for an unguarded top-level call that runs the module, not one that sets it up."""
-    if isinstance(node, ast.Raise):
-        exception = node.exc
-        return (isinstance(exception, ast.Call) and isinstance(exception.func, ast.Name)
-                and exception.func.id == "SystemExit")
-    if not isinstance(node, ast.Expr) or not isinstance(node.value, ast.Call):
-        return False
-    function = node.value.func
-    if isinstance(function, ast.Name):
-        return True
-    return (isinstance(function, ast.Attribute) and function.attr == "exit"
-            and isinstance(function.value, ast.Name) and function.value.id == "sys")
-
-
-def has_entry_point(source: str) -> bool:
-    """True when running the module as a command would execute something.
-
-    A `__main__` guard is the ordinary spelling and decides on its own: a guard
-    whose body is `pass` reports False, because it declares an entry point and
-    executes nothing. A guard anywhere in the module settles the answer, so a
-    top-level call earlier in the file cannot vote first.
-
-    Only when no guard exists does a bare top-level call count, and only the
-    shapes that are an entry point rather than import-time setup: a plain
-    `main()`, or exiting on one. `logging.getLogger(__name__)` at module level
-    is setup, and an attribute call is how it is spelled.
-    """
-    try:
-        tree = ast.parse(source)
-    except SyntaxError:
-        return False
-    for node in tree.body:
-        if isinstance(node, ast.If) and _names_main(node.test):
-            return _does_something(node.body)
-    return any(_is_entry_call(node) for node in tree.body)
-
 
 def check_of(custody: dict[str, Any]) -> dict[str, Any]:
     check = (custody.get("closure") or {}).get("check") or {}
@@ -189,24 +83,64 @@ def grade(custody: dict[str, Any], root: Path = ROOT) -> list[Defect]:
     return []
 
 
+def grade_observation(custody: dict[str, Any], root: Path = ROOT) -> list[Defect]:
+    """Refuse a member whose observing record is not in the repository.
+
+    `stage_observed_by` is what separates a stage a participant drew from one
+    something else confirmed, and nothing graded it: a member could read
+    `WITNESSED` citing a file that was never written, or one deleted afterwards,
+    and every check stayed green. That is a citation nobody can follow, which is
+    the same defect as a closure check nobody can read.
+    """
+    custody_id = str(custody.get("custody_id") or "unnamed custody")
+    defects: list[Defect] = []
+    for member in custody.get("members") or []:
+        cited = member.get("stage_observed_by")
+        if cited and not (root / str(cited)).is_file():
+            defects.append(("UNCITED_OBSERVATION",
+                            f"{custody_id} member {member.get('address')} says its stage was "
+                            f"observed by {cited}, which is not in the repository"))
+    return defects
+
+
 def grade_collection(custodies: list[dict[str, Any]], root: Path = ROOT) -> list[Defect]:
-    """Screen every custody's declared closure command."""
-    return [defect for custody in custodies for defect in grade(custody, root)]
+    """Screen every declared closure command, and every observation a member cites."""
+    return [defect for custody in custodies
+            for defect in grade(custody, root) + grade_observation(custody, root)]
+
+
+#: Interpreter variables that make Python write to stderr on its own account. A
+#: silent command reports nothing, which is the whole defect; under any of these
+#: the interpreter says something the module never chose to say and the reading
+#: becomes non-empty without the command having spoken. Each was confirmed to
+#: launder the exact Phase 1.5 shape - a main() that runs, reports nothing,
+#: returns 0 - into an admitted one.
+#:
+#: The line is diagnostics, not resolution. PYTHONPATH, PYTHONHOME, VIRTUAL_ENV
+#: and the rest decide whether the command can run at all and are passed
+#: through, which is why this is a denylist and not `-E` or `-I`.
+DIAGNOSTIC_ENV = (
+    "PYTHONDEVMODE", "PYTHONWARNINGS", "PYTHONVERBOSE", "PYTHONPROFILEIMPORTTIME",
+    "PYTHONMALLOCSTATS", "PYTHONINSPECT",
+)
 
 
 def _child_env() -> dict[str, str]:
-    """The environment a closure command runs under, with warnings pinned off.
+    """The environment a closure command runs under, with interpreter chatter off.
 
-    A silent command reports nothing, which is the whole defect. But under an
-    inherited `PYTHONDEVMODE=1` or `PYTHONWARNINGS=always` the interpreter
-    writes a `ResourceWarning` the module never chose to emit, and the reading
-    becomes non-empty without the module having said anything. That laundered
-    the original Phase 1.5 shape into an admitted one. The predicate is about
-    what the command said, so what the interpreter says about it is turned off
-    rather than counted.
+    The predicate is about what the command said, so what the interpreter says
+    about it is turned off rather than counted.
+
+    Two costs, both accepted. The list is a denylist, so a diagnostic variable
+    nobody has found yet would still launder a silent command; isolated mode
+    would close that and would also drop the resolution variables a command may
+    need to start. And pinning warnings off silences a check whose whole reading
+    is a deliberate `warnings.warn`, which would then be refused for saying
+    nothing - no declared command reports that way, and `-W always` or
+    `-W error` in the expression itself overrides the pin for one that does.
     """
     environment = {key: value for key, value in os.environ.items()
-                   if key not in ("PYTHONDEVMODE", "PYTHONWARNINGS")}
+                   if key not in DIAGNOSTIC_ENV}
     environment["PYTHONWARNINGS"] = "ignore"
     return environment
 

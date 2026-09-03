@@ -2212,6 +2212,28 @@
       ],
       "changed": false
     },
+    "witness/closure-check-reading.md": {
+      "artifact_digest": "sha256:24dc18ae7c22e78e5a174da3da0441939d508a3f10c5b54fb2355d524f9280e5",
+      "basis": [
+        {
+          "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",
+          "path": "SYSTEM.md"
+        },
+        {
+          "digest": "sha256:f95acd076c4977d73c38e14e42106576d0dea2dcf9eb4ec30a0526fd68c27d3c",
+          "path": "CONTRACT.md"
+        },
+        {
+          "digest": "sha256:585b3d14f594b6043ad71b0bd257e5b4b85c4d2cf5578b8e36dcc1e3f41e541c",
+          "path": "SPEC.md"
+        },
+        {
+          "digest": "sha256:9ddb4c4f974389b7a8539e3b2e0d3d7e0cb4a020356cb994fea3505210fad9ae",
+          "path": "STATUS.yaml"
+        }
+      ],
+      "changed": false
+    },
     "witness/host-service.md": {
       "artifact_digest": "sha256:91801793f5c71686813b0a772001631e80e45ffe4e3d5b59a57c9714e3e7feb5",
       "basis": [

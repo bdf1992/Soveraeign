@@ -232,7 +232,7 @@
           "standing": "WITNESSED",
           "work_state": "PRESENTED",
           "stage_observed_by": "witness/closure-check-reading.md",
-          "note": "two readings of every declared COMMAND closure. The static screen (SILENT_CLOSURE_CHECK, UNRUNNABLE_CLOSURE_CHECK) covers the whole repository and consumes nothing, but it grades a declaration and a guard whose body is pass satisfies it. The live reading (UNREPORTING_CLOSURE_CHECK) runs the command and refuses silence; it is a verify check scoped to the active phase, because that is the set somebody is asked to close today. Both polarities of both readings are reached by fixtures."
+          "note": "two readings of every declared COMMAND closure. The static screen (SILENT_CLOSURE_CHECK, UNRUNNABLE_CLOSURE_CHECK) covers the whole repository and consumes nothing, but it grades a declaration and a guard whose body is pass satisfies it. The live reading (UNREPORTING_CLOSURE_CHECK) runs the command and refuses one that said nothing on either stream, whatever it exited with; it is a verify check scoped to custodies still carrying work, a terminal being the record of an assignment that ended. Both polarities of both readings are reached by fixtures."
         }
       ],
       "depends_on": [],

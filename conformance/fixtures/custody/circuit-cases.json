@@ -2284,5 +2284,90 @@
         "cleanup_obligations": []
       }
     ]
+  },
+  {
+    "id": "cited-observation-exists",
+    "judge": "closure",
+    "polarity": "positive",
+    "why": "A member citing a witness record that is in the repository is a citation a reader can follow to the observation behind the standing.",
+    "custodies": [
+      {
+        "custody_schema": "soveraeign-custody/v1",
+        "status": "PROPOSED",
+        "custody_id": "custody:cited-observation",
+        "initiative": "An initiative one of whose members claims an observed stage.",
+        "held_by": "seat:session-control",
+        "roots": [
+          {
+            "root_kind": "GROUND",
+            "reference": "GROUND-001"
+          }
+        ],
+        "circuit": "soveraeign-work-circuit/v1",
+        "entry_stage": "ROOT_POINT",
+        "target_stage": "VERTICAL_SLICE",
+        "closure": {
+          "check": null,
+          "judgement_seat": "seat:root",
+          "defeated_by": "a stage nothing observed reading as one something confirmed"
+        },
+        "members": [
+          {
+            "member_kind": "OPERATION",
+            "address": "scripts/sov_custody.py",
+            "stage": "VERTICAL_SLICE",
+            "standing": "WITNESSED",
+            "work_state": "PRESENTED",
+            "stage_observed_by": "witness/README.md"
+          }
+        ],
+        "depends_on": [],
+        "cleanup_obligations": []
+      }
+    ]
+  },
+  {
+    "id": "uncited-observation",
+    "judge": "closure",
+    "polarity": "defeating",
+    "why": "stage_observed_by is what separates a stage a participant drew from one something else confirmed. Nothing graded it, so a member could read WITNESSED citing a file never written, or one deleted after the fact, with every check green.",
+    "expect_refusals": [
+      "UNCITED_OBSERVATION"
+    ],
+    "custodies": [
+      {
+        "custody_schema": "soveraeign-custody/v1",
+        "status": "PROPOSED",
+        "custody_id": "custody:uncited-observation",
+        "initiative": "An initiative one of whose members claims an observed stage.",
+        "held_by": "seat:session-control",
+        "roots": [
+          {
+            "root_kind": "GROUND",
+            "reference": "GROUND-001"
+          }
+        ],
+        "circuit": "soveraeign-work-circuit/v1",
+        "entry_stage": "ROOT_POINT",
+        "target_stage": "VERTICAL_SLICE",
+        "closure": {
+          "check": null,
+          "judgement_seat": "seat:root",
+          "defeated_by": "a stage nothing observed reading as one something confirmed"
+        },
+        "members": [
+          {
+            "member_kind": "OPERATION",
+            "address": "scripts/sov_custody.py",
+            "stage": "VERTICAL_SLICE",
+            "standing": "WITNESSED",
+            "work_state": "PRESENTED",
+            "stage_observed_by": "witness/never-written.md"
+          }
+        ],
+        "depends_on": [],
+        "cleanup_obligations": []
+      }
+    ]
   }
 ]

@@ -124,9 +124,22 @@ It also read `UNCITED_OBSERVATION` as half a fix, correctly built. The predicate
 `(root / cited).is_file()`, and `root / "/etc/passwd"` is `/etc/passwd` — pathlib drops the left
 operand on an absolute right — so any file on the host satisfied a refusal whose text said
 "inside the repository". An escaping relative path and an empty citation passed the same way.
-All three are refused now, with a fixture each. Its `WITNESSED` support carries to `81b6193`,
-conditional on this section existing, which is what makes the revision above true rather than
-disclosed.
+All three are refused now, with a fixture each. Its `WITNESSED` support carries to `81b6193`.
+
+## What sits past the witnessed revision
+
+`81b6193` is the revision pass 6 read and is what the block above declares. One commit follows
+it, `fcbdc29`, and no pass has read that one. It carries three things, and the reason it is not
+a seventh pass is that pass 6 named all three itself: the two follow-ons it left as
+`routine_decisions` and explicitly declined to re-read — `PYTHONFAULTHANDLER` added to the
+denylist, and `UNCITED_OBSERVATION` narrowed to a citation that opens inside the repository —
+each with a fixture, and this section, which pass 6 asked for.
+
+That gap does not close by writing more. A commit that records "pass N read this" is a commit
+past pass N, so a record can always be made to declare a revision one turn behind the tree it
+sits in. What can be done is to say which revision was read, what came after it, and on whose
+say-so — which is this paragraph. A reader who wants the follow-ons witnessed should ask for a
+seventh pass over `3f7f09c..fcbdc29` rather than treat the declaration above as covering them.
 
 ## What this record does not support
 

@@ -2213,7 +2213,7 @@
       "changed": false
     },
     "witness/closure-check-reading.md": {
-      "artifact_digest": "sha256:a1637a5835d1359a8a04a80854b83bdce5b96e1c9fbf74e42bd2123799c9e26b",
+      "artifact_digest": "sha256:3b5de58223eb46578dbb57558dc3573c23b2acf99701145f1637c7d00eecef4e",
       "basis": [
         {
           "digest": "sha256:0bbfa4cb0e1a7d5cdb747a75ef94bb42f09d991cc43d470060c9455d77d9e3c1",

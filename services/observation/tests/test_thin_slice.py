@@ -278,6 +278,76 @@ class ThinSlice(unittest.TestCase):
         self.assertEqual(["PREDICATES_UNDECLARED", "OBSERVER_NOT_INDEPENDENT"], refused)
 
 
+class WitnessFindingsOn169182f(unittest.TestCase):
+    """Each case is a defeat the first witness pass found; each now refuses as it should."""
+
+    def setUp(self) -> None:
+        self.service = ObservationService(Clock())
+
+    def test_the_reporter_is_an_executor_even_when_another_actor_attempted(self) -> None:
+        entries = journal()
+        entries[-1] = _entry("e-report", "EVENT", RUN, "reporter-r",
+                             {"event": "REPORTED", "output_record_addresses": ["out/1"]})
+        record = RunRecord.from_entries(RUN, entries)
+        inference = self.service.infer_relation(record, "reporter-r", "WORKER")
+        self.assertEqual([{"edge": "SAME_ACTOR", "evidence_address": "e-report"}],
+                         inference["edges_found"])
+
+    def test_a_second_attempt_names_a_second_executor(self) -> None:
+        entries = journal()
+        entries.insert(-1, _entry("e-attempt-2", "EVENT", RUN, "retrier-q", {
+            "event": "ATTEMPTED", "operation_plan_id": "plan-1", "lease": None,
+            "grant_id": "grant-run"}))
+        record = RunRecord.from_entries(RUN, entries)
+        inference = self.service.infer_relation(record, "retrier-q", "WORKER")
+        self.assertEqual("DIRECT", inference["outcome"])
+        self.assertEqual("e-attempt-2", inference["edges_found"][0]["evidence_address"])
+
+    def test_a_record_without_digests_refuses_unreadable_with_a_receipt(self) -> None:
+        entries = journal()
+        for entry in entries:
+            entry.pop("entry_digest", None)
+        record = RunRecord.from_entries(RUN, entries)
+        with self.assertRaises(Unreadable):
+            self.service.infer_relation(record, "witness-z", "MODEL")
+        self.assertEqual(1, len(self.service.receipts))
+        self.assertEqual("UNREADABLE", self.service.receipts[-1]["reason_code"])
+
+    def test_an_output_whose_declared_digest_is_malformed_refuses(self) -> None:
+        entries = journal()
+        entries[-2]["payload"]["digest"] = "not-a-digest"
+        record = RunRecord.from_entries(RUN, entries)
+        self.service.infer_relation(record, "witness-z", "MODEL")
+        self.service.declare_predicates(RUN, PREDICATES)
+        with self.assertRaises(Unreadable):
+            self.service.observe_run(record, "witness-z", reader)
+        self.assertEqual("UNREADABLE", self.service.receipts[-1]["reason_code"])
+
+    def test_the_report_listed_as_its_own_output_is_still_not_a_predicate_address(self) -> None:
+        entries = journal()
+        entries[-1]["payload"]["output_record_addresses"] = ["out/1", "e-report"]
+        entries.append(_entry("e-out-report", "EVENT", "e-report", "worker-a",
+                              {"event": "OUTPUT", "digest": OUTPUT_DIGEST}))
+        record = RunRecord.from_entries(RUN, entries)
+        self.service.infer_relation(record, "witness-z", "MODEL")
+        self.service.declare_predicates(RUN, [
+            {"predicate_id": "reads-report", "kind": "BYTES_PRESENT", "address": "e-report"}])
+        with self.assertRaises(PredicatesUndeclared) as caught:
+            self.service.observe_run(record, "witness-z", lambda address: OUTPUT_BYTES)
+        self.assertIn("run's own entry", str(caught.exception))
+
+    def test_a_reported_run_without_a_receipt_is_requested_as_unresolved(self) -> None:
+        record = RunRecord.from_entries(RUN, journal())
+        request = self.service.request_observation(record, "worker-a", "WORKER", RUN)
+        self.assertEqual("UNRESOLVED", request["run_outcome"])
+        refused = journal(with_report=False, with_outputs=False)
+        refused.append(_entry("e-refusal", "RECEIPT", RUN, "kernel",
+                              {"outcome": "REFUSED", "event": "begin_run"}))
+        record = RunRecord.from_entries(RUN, refused)
+        self.assertEqual("REFUSED", record.terminal_outcome())
+        self.assertTrue(record.is_terminal())
+
+
 class RealJournalFeedsTheWalk(unittest.TestCase):
     """The Record Service's own entries are the input, unchanged, so a projection can feed it."""
 

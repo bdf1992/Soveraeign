@@ -100,6 +100,14 @@ def _walk_outputs(record: RunRecord, candidate: str, walk: _Walk) -> None:
         walk.edge("ONLY_EXECUTOR_REPORT", report)
 
 
+def _digests(entries: list[dict[str, Any]]) -> list[str]:
+    """Entry digests, or `UNREADABLE`: an inference that cannot cite what it read has not read."""
+    try:
+        return [RunRecord.digest_of(entry) for entry in entries]
+    except ValueError as error:
+        raise Unreadable(str(error)) from error
+
+
 def infer_relation(
     record: RunRecord,
     candidate_observer_id: str,
@@ -121,11 +129,12 @@ def infer_relation(
     if not executor:
         raise Unreadable(f"{record.run_id} attributes its attempt to nobody")
     walk = _Walk()
-    walk.cite(attempt)
+    executors = record.executors()
+    walk.cite(attempt, *executors.values())
     payload = attempt.get("payload") or {}
 
-    if candidate_observer_id == executor:
-        walk.edge("SAME_ACTOR", attempt)
+    if candidate_observer_id in executors:
+        walk.edge("SAME_ACTOR", executors[candidate_observer_id])
 
     if "lease" not in payload:
         walk.cannot_answer("HOLDS_RUN_LEASE")
@@ -161,7 +170,7 @@ def infer_relation(
         "record_completeness": completeness,
         "outcome": outcome,
         "evidence_addresses": [RunRecord.address_of(entry) for entry in walk.read],
-        "evidence_digests": [RunRecord.digest_of(entry) for entry in walk.read],
+        "evidence_digests": _digests(walk.read),
         "inferred_at": inferred_at,
     }
     if walk.unanswerable:

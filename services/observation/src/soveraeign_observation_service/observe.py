@@ -113,11 +113,17 @@ def observe_run(
         raise PredicatesUndeclared("the declaration names no predicate")
     reported = record.reported_addresses()
     outputs = record.outputs()
+    own_entries = record.run_entry_ids()
     for predicate in predicates:
-        if predicate["address"] not in reported:
+        address = predicate["address"]
+        if address in own_entries:
             raise PredicatesUndeclared(
-                f"{predicate['predicate_id']} reads {predicate['address']}, which the run did "
-                f"not report as a durable output")
+                f"{predicate['predicate_id']} reads {address}, which is the run's own entry: "
+                f"a predicate over the executor's report is not evaluable without it")
+        if address not in reported or address not in outputs:
+            raise PredicatesUndeclared(
+                f"{predicate['predicate_id']} reads {address}, which the run did not report "
+                f"as a recorded durable output")
 
     addresses = sorted({predicate["address"] for predicate in predicates})
     payloads: dict[str, bytes] = {}
@@ -126,7 +132,10 @@ def observe_run(
         payload = _read(reader, address)
         digest = "sha256:" + hashlib.sha256(payload).hexdigest()
         declared = digest_address((outputs.get(address) or {}).get("payload", {}).get("digest"))
-        if declared is not None and declared != digest:
+        if declared is None:
+            raise Unreadable(f"the record declares no sha256 digest for {address}, so its bytes "
+                             f"cannot be checked against anything")
+        if declared != digest:
             raise DigestMismatch(f"{address} reads {digest} and the record declares {declared}")
         payloads[address] = payload
         digests.append(digest)

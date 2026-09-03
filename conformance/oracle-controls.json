@@ -995,8 +995,6 @@
   {
     "id": "CONF-RUN-DEF",
     "predicates": [
-      "TRANS-begin_run",
-      "TRANS-report_run",
       "TRANS-observe_run",
       "TRANS-settle_run"
     ],

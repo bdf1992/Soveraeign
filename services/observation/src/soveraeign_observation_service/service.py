@@ -25,6 +25,7 @@ from .errors import (
     ObservationRefused,
     RelationUndetermined,
     RunNotTerminal,
+    Unreadable,
 )
 from .record import RunRecord
 
@@ -62,11 +63,21 @@ class ObservationService:
         return receipt
 
     def _attempt(self, operation: str, subject: str, commit: str, act):
+        """Run one operation; admitted or refused, exactly one receipt is left behind.
+
+        A malformed record (a missing digest, subject, or payload) is not a crash the caller
+        should see without a receipt: it is `UNREADABLE`, the refusal the manifest declares
+        for a record this service cannot read.
+        """
         try:
             result = act()
         except ObservationRefused as refusal:
             self._receipt(operation, subject, "REFUSED", refusal.reason_code, refusal.detail)
             raise
+        except (KeyError, TypeError, ValueError, AttributeError) as error:
+            refusal = Unreadable(f"{type(error).__name__}: {error}")
+            self._receipt(operation, subject, "REFUSED", refusal.reason_code, refusal.detail)
+            raise refusal from error
         self._receipt(operation, subject, commit, None, "")
         return result
 
@@ -94,7 +105,7 @@ class ObservationService:
                 "subject": subject,
                 "requester_id": requester_id,
                 "requester_kind": requester_kind,
-                "run_outcome": "COMMITTED" if record.report() is not None else "REFUSED",
+                "run_outcome": record.terminal_outcome(),
                 "durable_output_addresses": addresses,
                 "standing": "RECORDED",
                 "requested_at": self._clock(),

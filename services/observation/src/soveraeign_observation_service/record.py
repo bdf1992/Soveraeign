@@ -34,8 +34,8 @@ REPORTED = "REPORTED"
 OUTPUT = "OUTPUT"
 GRANT = "GRANT"
 
-#: Receipt outcomes under which a run is no longer in flight without ever reporting.
-REFUSED_TERMINALS = frozenset({"REFUSED", "FAILED", "COUNTERED", "UNRESOLVED"})
+#: Receipt outcomes under which a run is no longer in flight.
+TERMINAL_OUTCOMES = frozenset({"COMMITTED", "REFUSED", "FAILED", "COUNTERED", "UNRESOLVED"})
 
 
 def _event(entry: dict[str, Any]) -> str | None:
@@ -74,10 +74,33 @@ class RunRecord:
                 if entry.get("subject") == self.run_id and entry.get("kind") == "EVENT"
                 and _event(entry) == event]
 
+    def attempts(self) -> list[dict[str, Any]]:
+        """Every `ATTEMPTED` entry on the run. A second attempt has an executor too."""
+        return self._run_events(ATTEMPTED)
+
     def attempt(self) -> dict[str, Any] | None:
-        """The `ATTEMPTED` entry, the first if the record holds several."""
-        found = self._run_events(ATTEMPTED)
+        """The first `ATTEMPTED` entry; `attempts()` carries the rest."""
+        found = self.attempts()
         return found[0] if found else None
+
+    def executors(self) -> dict[str, dict[str, Any]]:
+        """Actor -> the entry that shows them executing or reporting this run.
+
+        The executor is whoever attempted the run and whoever reported it. The kernel refuses
+        the reporter as observer (`transitions.py`, `reporter_id`), so this service must read
+        the reporter as an executor or be weaker than the boundary it feeds.
+        """
+        seen: dict[str, dict[str, Any]] = {}
+        for entry in self.attempts() + self._run_events(REPORTED):
+            actor = str(entry.get("actor") or "")
+            if actor and actor not in seen:
+                seen[actor] = entry
+        return seen
+
+    def run_entry_ids(self) -> set[str]:
+        """Addresses of the run's own entries; a predicate over one reads the run's word."""
+        return {str(entry.get("entry_id")) for entry in self.entries
+                if entry.get("subject") == self.run_id and entry.get("entry_id")}
 
     def report(self) -> dict[str, Any] | None:
         """The executor's `REPORTED` entry, the last if the record holds several."""
@@ -86,13 +109,15 @@ class RunRecord:
 
     def outputs(self) -> dict[str, dict[str, Any]]:
         """Output address -> the `OUTPUT` entry that records it."""
-        return {entry["subject"]: entry for entry in self.entries
-                if entry.get("kind") == "EVENT" and _event(entry) == OUTPUT}
+        return {str(entry.get("subject")): entry for entry in self.entries
+                if entry.get("kind") == "EVENT" and _event(entry) == OUTPUT
+                and entry.get("subject")}
 
     def grants(self) -> dict[str, dict[str, Any]]:
         """Grant id -> the `GRANT` entry that records it."""
-        return {entry["subject"]: entry for entry in self.entries
-                if entry.get("kind") == "EVENT" and _event(entry) == GRANT}
+        return {str(entry.get("subject")): entry for entry in self.entries
+                if entry.get("kind") == "EVENT" and _event(entry) == GRANT
+                and entry.get("subject")}
 
     def reported_addresses(self) -> list[str]:
         """What the executor says it produced; empty when nothing was reported."""
@@ -102,16 +127,29 @@ class RunRecord:
         addresses = report.get("payload", {}).get("output_record_addresses")
         return [str(address) for address in addresses] if isinstance(addresses, list) else []
 
+    def terminal_receipt(self) -> dict[str, Any] | None:
+        """The last terminal RECEIPT on the run, if the kernel has written one."""
+        found = [entry for entry in self.entries
+                 if entry.get("subject") == self.run_id and entry.get("kind") == "RECEIPT"
+                 and isinstance(entry.get("payload"), dict)
+                 and entry["payload"].get("outcome") in TERMINAL_OUTCOMES]
+        return found[-1] if found else None
+
+    def terminal_outcome(self) -> str:
+        """What the record says the run's terminal is.
+
+        A receipt's outcome when one exists. A run that has only reported has not settled,
+        and this service never reads the executor's report as settlement, so it records
+        `UNRESOLVED`: the one terminal word that claims nothing was decided.
+        """
+        receipt = self.terminal_receipt()
+        if receipt is not None:
+            return str(receipt["payload"]["outcome"])
+        return "UNRESOLVED"
+
     def is_terminal(self) -> bool:
         """Reported, or refused by a terminal receipt on the run."""
-        if self.report() is not None:
-            return True
-        return any(
-            entry.get("subject") == self.run_id and entry.get("kind") == "RECEIPT"
-            and isinstance(entry.get("payload"), dict)
-            and entry["payload"].get("outcome") in REFUSED_TERMINALS
-            for entry in self.entries
-        )
+        return self.report() is not None or self.terminal_receipt() is not None
 
     @staticmethod
     def address_of(entry: dict[str, Any]) -> str:

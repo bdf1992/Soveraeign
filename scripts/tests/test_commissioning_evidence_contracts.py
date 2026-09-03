@@ -55,28 +55,42 @@ class CommissioningEvidenceContractTests(unittest.TestCase):
         }
         self.assertEqual(kinds, {"WORK", "PARTICIPANT_IN_WORK"})
 
-    def test_phase_i_spec_archive_is_exact_and_successor_remains_unopened(self) -> None:
+    def test_every_pinned_definition_digests_to_the_bytes_it_names(self) -> None:
+        """The refusal this pin exists for: a campaign closing against a narrowed
+        definition. Phase I's pins were the whole test while it was the only phase;
+        phase:1-5 opened on 2026-09-03 with three pins of its own, and every one of
+        them is held to the same rule."""
         phases = json.loads((ROOT / "contracts/phases.json").read_text(encoding="utf-8"))
-        self.assertEqual(len(phases["phases"]), 1)
-        phase_i = phases["phases"][0]
-        pin = next(item for item in phase_i["definition"]
-                   if item["document"] == "archives/SPEC-PHASE-I-TERMINAL.txt")
-        actual = "sha256:" + sha256((ROOT / pin["document"]).read_bytes()).hexdigest()
-        self.assertEqual(actual, pin["digest"])
-        self.assertEqual(phase_i["terminal"], "CLOSED_INCOMPLETE")
-        self.assertIsNone(phase_i["succeeded_by"])
-        self.assertIn("phase: NONE_ACTIVE", (ROOT / "STATUS.yaml").read_text(encoding="utf-8"))
+        by_id = {phase["phase_id"]: phase for phase in phases["phases"]}
+        self.assertEqual(set(by_id), {"phase:i", "phase:1-5"})
+        for phase in phases["phases"]:
+            for pin in phase["definition"]:
+                with self.subTest(phase=phase["phase_id"], document=pin["document"]):
+                    actual = "sha256:" + sha256((ROOT / pin["document"]).read_bytes()).hexdigest()
+                    self.assertEqual(actual, pin["digest"])
+        self.assertEqual(by_id["phase:i"]["terminal"], "CLOSED_INCOMPLETE")
+        self.assertEqual(by_id["phase:i"]["succeeded_by"], "phase:1-5")
+        self.assertEqual(by_id["phase:1-5"]["terminal"], "IN_FLIGHT")
+        self.assertIn("phase: phase:1-5", (ROOT / "STATUS.yaml").read_text(encoding="utf-8"))
 
-    def test_prepared_profile_is_non_authoritative_and_recurrent(self) -> None:
+    def test_the_profile_earns_nothing_by_being_written(self) -> None:
+        """Opening the phase made this profile the definition. It did not make any
+        criterion true, which is the substitution the whole record set refuses."""
         prd = (ROOT / "PRD.md").read_text(encoding="utf-8")
         spec = (ROOT / "SPEC.md").read_text(encoding="utf-8")
-        self.assertIn("Prepared Phase 1.5 qualification profile", prd)
-        self.assertIn("This is a prepared successor profile, not an active phase", prd)
+        self.assertIn("Phase 1.5 qualification profile", prd)
+        self.assertIn("is earned merely by being written", prd)
         for criterion in ("P15-Q1", "P15-Q2", "P15-Q3", "P15-Q4"):
             self.assertIn(criterion, prd)
             self.assertIn(criterion, spec)
         self.assertIn("candidate next Definition", prd)
         self.assertIn("gains no standing or authority", spec)
+        phases = json.loads((ROOT / "contracts/phases.json").read_text(encoding="utf-8"))
+        active = next(item for item in phases["phases"] if item["phase_id"] == "phase:1-5")
+        self.assertEqual(active["acceptance_status"], "NOT_EARNED")
+        self.assertEqual(
+            [clause["verdict"] for clause in active["exit_clauses"]],
+            ["NOT_EARNED"] * 5 + ["NOT_REACHED"])
 
     def test_all_p15_normative_predicates_have_discriminating_fixture_pairs(self) -> None:
         report = sov_opening_readiness.commissioning_instrument(ROOT)
@@ -86,10 +100,18 @@ class CommissioningEvidenceContractTests(unittest.TestCase):
         self.assertEqual(report["defects"], [])
         self.assertTrue(report["closed"])
 
-    def test_opening_rehearsal_requires_the_p15_instrument(self) -> None:
+    def test_the_rehearsal_stops_once_the_phase_it_rehearsed_is_open(self) -> None:
+        """The rehearsal graded a readiness that no longer exists to grade. With a
+        phase open it reports ACTIVE_PHASE and stops, rather than re-rehearsing an
+        act already performed; the instrument it checked stands on its own."""
         report = sov_opening_readiness.assess(ROOT)
-        self.assertTrue(report["checks"]["p15_qualification_instrument"])
-        self.assertEqual(report["p15_instrument"]["predicates_covered"], 12)
+        self.assertEqual(report["state"], "ACTIVE_PHASE")
+        self.assertEqual(report["phase"], "phase:1-5")
+        self.assertEqual(report["defects"], [])
+        self.assertNotIn("checks", report)
+        instrument = sov_opening_readiness.commissioning_instrument(ROOT)
+        self.assertEqual(instrument["predicates_covered"], 12)
+        self.assertTrue(instrument["closed"])
 
 
 if __name__ == "__main__":

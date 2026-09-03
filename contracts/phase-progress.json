@@ -57,7 +57,22 @@
     }
   ],
   "historical_phase": "phase:i",
-  "active_phase_profiles": {},
+  "active_phase_profiles": {
+    "phase:1-5": {
+      "initialized_by": "seat:root",
+      "initialized_on": "2026-09-03",
+      "opened_by": "decisions/0102-open-phase-1-5.md",
+      "exit_custody_floors": {
+        "custody:phase-1-5/fresh-participation": "ROOT_POINT",
+        "custody:phase-1-5/evidenced-judgement": "VERTICAL_SLICE",
+        "custody:phase-1-5/discovery-and-reuse": "ROOT_POINT",
+        "custody:phase-1-5/definition-recurrence": "ROOT_POINT",
+        "custody:phase-1-5/commissioning-circuit": "ROOT_POINT",
+        "custody:phase-1-5/operational-acceptance": "ROOT_POINT"
+      },
+      "note": "Floors are the stage each exit custody stood at when the phase opened: VERTICAL_SLICE where a witnessed member exists, ROOT_POINT elsewhere. A custody may not fall below its floor; raising a floor is a progress record, never an edit to the clause."
+    }
+  },
   "active_refusals": [
     {
       "code": "ACTIVE_PHASE_PROGRESS_UNINITIALIZED",

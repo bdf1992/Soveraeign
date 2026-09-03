@@ -62,7 +62,10 @@ not own product claims.
 Operational state preserves addressed inputs, events, standing changes,
 observations, receipts, and counter-records. SQLite is the current storage
 mechanism, not semantic authority. Consequential transitions require typed live
-grants. Phase I is terminal `CLOSED_INCOMPLETE`; no successor phase is active.
+grants. Phase I is terminal `CLOSED_INCOMPLETE`. Phase 1.5, Operational
+Commissioning, is open since 2026-09-03 (`decisions/0102`); its six exit clauses
+and their live custody are in `contracts/custodies/phase-1-5.json`, and
+`python scripts/sov_active_phase_progress.py` grades them.
 
 ## Repository snapshot (informational)
 
@@ -191,7 +194,7 @@ engineering baseline. Day two added the SDLC loop, Console, scheduled runs,
 Sov, the federation harness, defeating fixtures for receipts and proofing,
 LF line-ending enforcement, and the stack certification. At the end of day two
 the record held 26 commits, 17 decision records and 8 reports; it now holds
-934 commits, 88 decision records and 30 reports. The
+934 commits, 89 decision records and 30 reports. The
 first independently witnessed work landed on 2026-08-25; owner-accepted packets
 now exist and are enumerated under `STATUS.yaml` `owner_accepted`.
 

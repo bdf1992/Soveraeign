@@ -1,6 +1,6 @@
 ---
 name: sov-governance
-description: Governance domain of the Soveraeign design System of Record - coherence of the governing document set (SYSTEM.md, CONTRACT.md, CLASSIFICATION.md, PRD.md, SPEC.md, STATUS.yaml, OPEN-SEAMS.md, NAMING.md, PUBLICATION.md, ROADMAP.md), drafting decision records in decisions/, maintaining STATUS.yaml standing fields, owner-held judgement routing, and compression of duplicated governing truth. Load on "sov-governance", "governance domain", "decision record", "STATUS.yaml standing", "owner decision", "document coherence", "OPEN-SEAMS", "naming collision screen", "one fact one producer", or phase-gap/opening-boundary questions. Not for building services, contracts/, conformance/, or BYOM work - those belong to sibling sov-* skills.
+description: Governance domain of the Soveraeign design System of Record - coherence of the governing document set (SYSTEM.md, CONTRACT.md, CLASSIFICATION.md, PRD.md, SPEC.md, STATUS.yaml, OPEN-SEAMS.md, NAMING.md, PUBLICATION.md, ROADMAP.md), drafting decision records in decisions/, maintaining STATUS.yaml standing fields, owner-held judgement routing, and compression of duplicated governing truth. Load on "sov-governance", "governance domain", "decision record", "STATUS.yaml standing", "owner decision", "document coherence", "OPEN-SEAMS", "naming collision screen", "one fact one producer", or phase-boundary and exit-clause questions. Not for building services, contracts/, conformance/, or BYOM work - those belong to sibling sov-* skills.
 ---
 
 # sov-governance
@@ -47,22 +47,25 @@ owner backlog block a transition that does not consume it.
 
 ## Standing and phase boundary
 
-`contracts/phases.json` records Phase I as `CLOSED_INCOMPLETE` with
-`succeeded_by: null`. Until the root seat opens a successor, `STATUS.yaml`
-projects `phase: NONE_ACTIVE` and `next_gate: SUCCESSOR_PHASE_OPENING`.
+`contracts/phases.json` records Phase I as `CLOSED_INCOMPLETE`, succeeded by
+`phase:1-5`, which the root seat opened on 2026-09-03 (`decisions/0102`).
+`STATUS.yaml` projects `phase: phase:1-5` and `next_gate:
+P15_COMMISSIONING_TERMINAL`; the exit clauses and their live custody are in
+`contracts/custodies/phase-1-5.json`.
 
-This creates three deliberately distinct readings:
+This keeps three readings apart:
 
 1. **Historical Phase I** — terminal and evidence-only; unfinished work cannot
    reopen it by continuing to build.
-2. **Current gap/successor preparation** — may reconcile lessons, orientation,
-   participant/session joins, owner decisions, and permanent cross-phase
-   substrate; it may not mint successor standing.
-3. **Successor phase** — does not exist until an explicit root opening act.
+2. **Carried residue** — seams S1-S25 and the closed-books material in
+   `contracts/SUCCESSOR-PREP.md` stay context; being carried earns nothing.
+3. **Phase 1.5** — open since 2026-09-03, six exit clauses P15-X1..X6, none
+   earned; its definition is the byte copies pinned under `archives/`, not the
+   live horizon file.
 
-A gap review may conclude `GAP_OPERATIONALLY_INVISIBLE`; that is a readiness
-reading only. It does not mutate `contracts/phases.json`, create a phase, or
-constitute owner acceptance.
+A compression review may still report `GAP_OPERATIONALLY_INVISIBLE`; that is an
+orientation reading only. It earns no exit clause, does not mutate
+`contracts/phases.json`, and is not owner acceptance.
 
 `open_decisions` is empty and the `O<n>` identifiers are retired
 (`decisions/0033-close-the-founding-docket.md`). The current owner docket lives
@@ -93,12 +96,12 @@ state, evidence, or a genuinely distinct owner.
 ## Owner-decision routing
 
 An unresolved owner item blocks only a transition whose legality or meaning
-actually depends on that item. During successor preparation, filter the owner
-queue against the proposed proving/opening path:
+actually depends on that item. While Phase 1.5 is open, filter the owner queue
+against its exit clauses (`contracts/custodies/phase-1-5.json`):
 
 - **material blocker** — changing the answer changes the proving circuit,
   authority aperture, selected participant/operation, acceptance terminal, or
-  other exact opening condition;
+  another exact exit condition;
 - **named later judgement** — real owner work, but no current transition consumes
   it; preserve it without pulling it onto the critical path;
 - **superseded/answered** — current owner direction or stronger accepted policy
@@ -125,9 +128,9 @@ Do not use an old owner queue as a generic reason the repository cannot proceed.
    commitment, irreversible external effect, secrets, destructive repository
    administration, or an explicit root phase/acceptance act) enters
    `owner_holds`, and it must state what it does not block.
-6. Opening-decision filter: classify owner items as material to the exact
-   successor-opening/proving path, later/non-blocking, or already answered by
-   current authority. Do not settle Bdo's decision; narrow where it is required.
+6. Exit-clause filter: classify owner items as material to an exact P15-X1..X6
+   clause, later/non-blocking, or already answered by current authority. Do not
+   settle Bdo's decision; narrow where it is required.
 7. Standing proposal: update a STATUS.yaml `*_status` field to match
    independently observed standing (e.g. BUILT_SELF_TESTED_NOT_WITNESSED),
    as a proposal with the observation cited.
@@ -142,12 +145,12 @@ Do not use an old owner queue as a generic reason the repository cannot proceed.
     event, effect, or role terms and align them to CLASSIFICATION.md/SPEC.md
     wording. `CLASSIFICATION.md` is accepted, so a synonym is a defect to fix,
     not a question to raise.
-11. Gap-terminal reading: independently test whether a fresh participant can
+11. Orientation reading: independently test whether a fresh participant can
     orient from current entry documents into the principal/session -> grant ->
     operation -> record/projection path, whether EFFECTIVE lessons have real
     carriers, and whether remaining owner items are attached only to the exact
-    transitions they gate. Report readiness; never open the phase from this
-    operation.
+    transitions they gate. Report readiness; never earn or close an exit clause
+    from this operation.
 
 ## Verification
 

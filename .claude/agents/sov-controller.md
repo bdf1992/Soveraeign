@@ -81,8 +81,8 @@ Finding to make comparison possible. Keep `WORK` and `PARTICIPANT_IN_WORK`
 separate and preserve both inputs unchanged.
 
 A valid comparison `Finding` over a `FINDING_SET` requires the input Findings to
-be durably recorded and a real RecordProjection over that set. The pre-opening
-`sov-loop` evidence rehearsal does not yet have that durable step, so its Controller
+be durably recorded and a real RecordProjection over that set. The `sov-loop`
+evidence rehearsal does not yet have that durable step, so its Controller
 output is explicitly a non-authoritative comparison envelope rather than a fake
 Finding. Once the durable basis exists, the same classification may be expressed
 as a `FINDING_SET` Finding. Classify what the evidence establishes using only:

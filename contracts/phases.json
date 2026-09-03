@@ -79,8 +79,82 @@
       "acceptance_status": "NOT_EARNED",
       "terminal": "CLOSED_INCOMPLETE",
       "settled_by": "seat:root",
+      "succeeded_by": "phase:1-5",
+      "note": "Closed by Bdo's ruling of 2026-08-27. The ruling is that Phase I was productive as a founding campaign and unsuccessful as a closed qualification loop: the repository optimised the wrong unit of progress, and the exit predicates were never on the critical path of work. Nothing here promotes partial evidence into acceptance, and nothing narrows the definition to fit what was built. The successor campaign was deliberately unnamed at closure: it was scoped after the boundary closed, and named phase:1-5 when Bdo opened it on 2026-09-03 (decisions/0102). Naming it carries no obligation forward; every unmet clause keeps its closed-unmet custody successor."
+    },
+    {
+      "phase_schema": "soveraeign-phase/v1",
+      "phase_id": "phase:1-5",
+      "title": "Phase 1.5 - Operational Commissioning (Participant Delivery Substrate)",
+      "opened": "2026-09-03",
+      "closed": null,
+      "definition": [
+        {
+          "document": "archives/PRD-PHASE-1-5-OPENING.txt",
+          "digest": "sha256:29460b7f026ac4970987835fee995b77f719d01f31b7bab4d4e434924e80e894",
+          "owns": "the prepared Phase 1.5 qualification profile P15-Q1 to P15-Q4 and the commissioning terminal, as PRD.md stated them at opening"
+        },
+        {
+          "document": "archives/SPEC-PHASE-1-5-OPENING.txt",
+          "digest": "sha256:ea07f0ec39b9a55160f3f58552f3a5d13ba5061122a10b42e37daa34bfc2f348",
+          "owns": "the twelve P15 commissioning predicates and the 44 normative predicates the conformance corpus covers, as SPEC.md stated them at opening"
+        },
+        {
+          "document": "archives/PHASE-1-5-HORIZON-OPENING.md",
+          "digest": "sha256:3a1df2f6f737fdd08bac4c382788e56a88f0f75ed105bd4fa4f90017f487f17b",
+          "owns": "the human-readable horizon: what Phase 1.5 commissions, what it must not become, and the proving circuit"
+        }
+      ],
+      "exit_clauses": [
+        {
+          "clause_id": "P15-X1",
+          "text": "A participant with no private history can enter from the artifact, establish an attributable principal and isolated session, discover the current campaign and a bounded unit of work, resolve capability and authority separately, and receive the relevant governance and Record context needed to act. The work's custody, closure, defeating condition, and cleanup obligations survive the participant's session.",
+          "verdict": "NOT_EARNED",
+          "reading": "python scripts/sov_session.py brief resolves phase, concern, and session for a fresh participant; principal remains unidentified for a host session and no work lease, closure condition, or cleanup obligation is carried by the session record yet.",
+          "held_by": "custody:phase-1-5/fresh-participation"
+        },
+        {
+          "clause_id": "P15-X2",
+          "text": "Consequential work converges on the common append-preserving Record. Different legitimate evaluators receive scoped, reconstructable Record projections and form separately cited Findings. Work quality and participant conduct are judged as different subjects; independent readings freeze before comparison; a comparator preserves citations and dissent and attributes a defect to work, participant, orchestration, witnessing, Record, or policy rather than averaging opinions into a score.",
+          "verdict": "NOT_EARNED",
+          "reading": "python scripts/sov_standing.py reads one WITNESSED claim, the Observation Service thin slice at 3087714; no RecordProjection or Finding contract has been exercised on a real run, and no comparison of frozen findings has happened.",
+          "held_by": "custody:phase-1-5/evidenced-judgement"
+        },
+        {
+          "clause_id": "P15-X3",
+          "text": "Work settles only after required independent observation and explicit cleanup. Another fresh participant can then discover the accepted result, reconstruct why it stands, reach the capability it produced, and use it without builder-private state or oral history.",
+          "verdict": "NOT_EARNED",
+          "reading": "python scripts/sov_next.py reads accepted results and custody, but settle_run is performed by no participant and no closure receipt retires a lease, branch, or worktree.",
+          "held_by": "custody:phase-1-5/discovery-and-reuse"
+        },
+        {
+          "clause_id": "P15-X4",
+          "text": "Settled experience can become cited input to a new Proposal or candidate Definition. The candidate preserves its evidence basis and gains no authority or standing merely because participants generated, agreed with, or successfully demonstrated it. The mechanics are expressed through generic governed primitives rather than hardcoded Controller, Orchestrator, Worker, or Witness species, so Phase II citizens can compose institutions the founder did not need to predict.",
+          "verdict": "NOT_EARNED",
+          "reading": "python conformance/commissioning.py proves the P15-Q4 instrument discriminates; no candidate Definition has been synthesized from settled records with its evidence addresses preserved.",
+          "held_by": "custody:phase-1-5/definition-recurrence"
+        },
+        {
+          "clause_id": "P15-X5",
+          "text": "Technical qualification is one witnessed Definition-to-Value-to-Definition circuit on an exact revision: fresh participants enter without oral history, carry bounded work under explicit authority, leave reconstructable operational history, independently judge both the work and its carrying, compare and repair those findings, settle and clean temporary state, hand a discoverable result to another fresh participant, and synthesize a cited candidate next Definition that remains unprivileged.",
+          "verdict": "NOT_EARNED",
+          "reading": "No Definition-to-Value-to-Definition circuit has been run on an exact revision; python scripts/sov_active_phase_progress.py reads the exit custodies at their opening floors.",
+          "held_by": "custody:phase-1-5/commissioning-circuit"
+        },
+        {
+          "clause_id": "P15-X6",
+          "text": "Root operational acceptance remains a separate act after these technical criteria are evidenced.",
+          "verdict": "NOT_REACHED",
+          "reading": "Cannot truthfully occur before P15-X1 through P15-X5 are evidenced; recorded NOT_REACHED so it does not read as attempted and refused.",
+          "held_by": "custody:phase-1-5/operational-acceptance"
+        }
+      ],
+      "execution_status": "OPEN",
+      "acceptance_status": "NOT_EARNED",
+      "terminal": "IN_FLIGHT",
+      "settled_by": null,
       "succeeded_by": null,
-      "note": "Closed by Bdo's ruling of 2026-08-27. The ruling is that Phase I was productive as a founding campaign and unsuccessful as a closed qualification loop: the repository optimised the wrong unit of progress, and the exit predicates were never on the critical path of work. Nothing here promotes partial evidence into acceptance, and nothing narrows the definition to fit what was built. The successor campaign is deliberately unnamed: it is scoped after the boundary closes, not before."
+      "note": "Phase 1.5 opened 2026-09-03 on Bdo's instruction (decisions/0102-open-phase-1-5.md). The definition is pinned to byte copies under archives/ so the exit a reader checks stays the exit the phase opened with; PRD.md and SPEC.md may keep moving and an edit to them does not move this definition. Every unmet clause names the live exit custody that carries it in contracts/custodies/phase-1-5.json, created in the same act. Opening grants no standing to any prepared material and settles no clause; the readiness rehearsal (python scripts/sov_opening_readiness.py) read READY_TO_OPEN at commit 900326e and was evidence for this act, not the act."
     }
   ]
 }

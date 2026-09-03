@@ -535,9 +535,11 @@ profile beneath the PRD — `Phase I · Local Sovereign Foundation` — and they
 their identifiers, their predicates in `SPEC.md`, and their fixtures in
 `conformance/`. See `PRD.md`, The Phase I qualification profile.
 
-`phase:i` itself is closed `CLOSED_INCOMPLETE` and `succeeded_by` is null. Which
-of the phases above opens next, and when, is Bdo's to set; this document
-proposes the ladder, not the entry.
+`phase:i` itself is closed `CLOSED_INCOMPLETE`, succeeded by `phase:1-5`, which
+Bdo opened on 2026-09-03 (`decisions/0102`). Phase 1.5 is a commissioning
+campaign with its own pinned exit, not a rung of this ladder; which of the phases
+above it draws on, and when, is Bdo's to set. This document proposes the ladder,
+not the entry.
 
 ## Name crosswalk
 

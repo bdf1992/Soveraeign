@@ -2,7 +2,7 @@
 
 ```text
 source          SPEC.md · CLASSIFICATION.md · PRD.md · CONTRACT.md
-source_digest   ea07f0ec39b9a551 · caf2384160b00eed · 29460b7f026ac497 · f95acd076c4977d7
+source_digest   585b3d14f594b604 · caf2384160b00eed · 8c1aa77ce1978732 · f95acd076c4977d7
 reader          hand-authored · v1
 fidelity        LOSSY
 omissions       the receipt and event-envelope field lists, held by SPEC.md and

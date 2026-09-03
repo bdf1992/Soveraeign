@@ -104,17 +104,20 @@ Those distinctions are part of the product, not implementation detail.
 
 ## Current state
 
-Phase I is closed. `contracts/phases.json` records the terminal state as
-`CLOSED_INCOMPLETE`: the phase ended without earning its qualification exit. No successor
-phase is active.
+Phase I is closed. `contracts/phases.json` records its terminal state as
+`CLOSED_INCOMPLETE`: the phase ended without earning its qualification exit. Phase 1.5,
+Operational Commissioning, was opened by the owner on 2026-09-03
+(`decisions/0102-open-phase-1-5.md`); none of its six exit clauses is earned.
 
 That result is intentional. The repository keeps partial implementation evidence without
-rounding it up to acceptance. Opening the next phase remains an explicit owner action.
-Candidate future work, including issue #173, is not current phase authority merely because
-it exists.
+rounding it up to acceptance. Opening a phase is an explicit owner action, and opening one
+settles nothing: the Phase 1.5 definition is pinned under `archives/` and every unmet exit
+clause is carried by a live custody in `contracts/custodies/phase-1-5.json`. Candidate
+future work, including issue #173, is not phase authority merely because it exists.
 
 `STATUS.yaml` is the machine-readable source for current standing and owner-held items.
-`contracts/SUCCESSOR-PREP.md` is the current closed-books gap synthesis; it grants no successor-phase standing.
+`contracts/SUCCESSOR-PREP.md` records the closed-books residue and carried seams the phase
+was opened against; it grants no phase standing.
 Issue #148 is the Phase-I boundary-closure ledger.
 
 ## Start here

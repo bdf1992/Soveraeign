@@ -53,7 +53,7 @@ the sentence carrying the meaning.
 ## Decides
 
 Everything. Sole ratifier, sole collaborator on the repository, and the only
-principal named in `CODEOWNERS`. Nothing advances past `BUILT` without him,
+principal named in `CODEOWNERS`. Nothing is ratified without him,
 which is why the queue is the constraint and why no agent may present its
 synthesis as his judgement.
 

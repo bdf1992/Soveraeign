@@ -40,14 +40,17 @@ PARTICIPANT_CHECKS = (
           "against the schema files in services/console/contracts/, which were written before "
           "the implementation existed and are not edited to accommodate it",
           ("services/console/tests", "services/console/contracts")),
-    Check("Observation Service contracts",
+    Check("Observation Service reference tests",
           [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
           ROOT / "services" / "observation",
-          "no implementation exists to exercise, so these cases judge the contracts alone: a "
-          "declared defeat must be refused, a record labelled schema-valid but semantically "
-          "wrong must still validate so the gap stays recorded rather than passing as "
-          "coverage, and the direct-edge vocabulary is read out of CHARTER.md at check time",
-          ("services/observation/contracts", "services/observation/CHARTER.md")),
+          "the participant's own tests; they establish BUILT evidence for the thin slice and "
+          "are explicitly NOT independent of the code they exercise. Two things hold them to "
+          "contracts written before the code: every inference and observation is validated "
+          "against the schema files, which are not edited to fit, and the kernel parity cases "
+          "feed the emitted observation to scripts/sovkernel/transitions.py settle_run. The "
+          "contract-shape cases still read the direct-edge vocabulary out of CHARTER.md",
+          ("services/observation/tests", "services/observation/src",
+           "services/observation/contracts", "services/observation/CHARTER.md")),
     Check("Asset Service reference tests",
           [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"],
           ROOT / "services" / "asset",

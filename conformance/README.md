@@ -7,8 +7,13 @@ receipts, and effects. It does not require a storage engine, framework,
 transport, service topology, or internal API.
 
 `oracle-controls.json` contains a good observation and a causally defeating
-observation for each Phase-I requirement. Those embedded observations test the
-oracle itself; they are not participant scenarios.
+observation for each Phase-I requirement, and the same pair for every kernel
+transition and discovery predicate `SPEC.md` states below the nine
+(`conformance/kernel_predicates.py`, merged into one check table in
+`requirements.py`). Those embedded observations test the oracle itself; they are
+not participant scenarios. A control run must carry both polarities for every key
+in that table. A participant run is held to the nine requirements plus whichever
+kernel rows its own case file declares.
 
 `scenarios.json` freezes one strategy-neutral participant narrative for each
 requirement. A real participant binds by executing those narratives and

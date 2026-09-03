@@ -1,0 +1,248 @@
+{
+  "collection_schema": "soveraeign-custody-collection/v1",
+  "status": "PROPOSED",
+  "phase": "phase:1-5",
+  "serves_exit": "PRD.md Prepared Phase 1.5 qualification profile, pinned by digest in contracts/phases.json",
+  "title": "Custody collection - Phase 1.5 exit clauses, live",
+  "note": "Created by the opening act (decisions/0102). One EXIT custody per clause of the Phase 1.5 exit, so no unmet clause is carried by nobody from the first day. DELIVERY custodies that serve these exits are added as work is admitted; an initiative that cannot name the exit it serves is not Phase 1.5 work. Nothing here proposes an initiative nobody has started except the clauses themselves, which is what an opening is.",
+  "governed_by": [
+    "PRD.md",
+    "contracts/phases.json",
+    "contracts/custody.schema.json",
+    "contracts/work-circuit.json",
+    "contracts/estimation.json",
+    "decisions/0085-custody-boards-and-the-work-circuit.md",
+    "decisions/0102-open-phase-1-5.md"
+  ],
+  "custodies": [
+    {
+      "custody_schema": "soveraeign-custody/v1",
+      "status": "PROPOSED",
+      "custody_id": "custody:phase-1-5/fresh-participation",
+      "custody_kind": "EXIT",
+      "phase": "phase:1-5",
+      "exit_clause": "P15-X1",
+      "serves_exit": null,
+      "outside_phase_exit": null,
+      "initiative": "A participant with no private history enters from the artifact, holds a principal and an isolated session, and carries work whose custody, closure, defeating condition, and cleanup survive its session.",
+      "held_by": "seat:session-control",
+      "roots": [
+        {"root_kind": "PHASE", "reference": "PRD.md#P15-Q1", "serves": "this clause is Phase 1.5 exit, stated in the pinned profile"},
+        {"root_kind": "DECISION", "reference": "decisions/0102-open-phase-1-5.md", "serves": "the opening act that created this custody"}
+      ],
+      "circuit": "soveraeign-work-circuit/v1",
+      "entry_stage": "ROOT_POINT",
+      "target_stage": "HORIZONTAL_SURFACE",
+      "closure": {
+        "check": {"kind": "COMMAND", "expression": "python scripts/sov_session.py brief"},
+        "judgement_seat": "seat:root",
+        "defeated_by": "a fresh session that needs oral history to find its principal, its work, or its authority, or a work record that dies with the session that carried it"
+      },
+      "estimate": {
+        "estimate_schema": "soveraeign-estimate/v1",
+        "estimated_by": "principal:session-bf50c8",
+        "estimated_at": "2026-09-03T00:00:00Z",
+        "basis": "Opened against the prepared profile; the clause has no evidence yet beyond what its reading names.",
+        "maturity": "DISCOVERY_ENVELOPE",
+        "dimensions": [{"dimension_id": "grants", "low": 0, "high": 1}, {"dimension_id": "judgement_units", "low": 1, "high": 1}]
+      },
+      "members": [],
+      "depends_on": [],
+      "cleanup_obligations": []
+    },
+    {
+      "custody_schema": "soveraeign-custody/v1",
+      "status": "PROPOSED",
+      "custody_id": "custody:phase-1-5/evidenced-judgement",
+      "custody_kind": "EXIT",
+      "phase": "phase:1-5",
+      "exit_clause": "P15-X2",
+      "serves_exit": null,
+      "outside_phase_exit": null,
+      "initiative": "Consequential work converges on the Record; evaluators receive scoped reconstructable projections, form separately cited Findings about work and about the participant, freeze them before comparison, and a comparator attributes defects rather than averaging opinions.",
+      "held_by": "seat:session-control",
+      "roots": [
+        {"root_kind": "PHASE", "reference": "PRD.md#P15-Q2", "serves": "this clause is Phase 1.5 exit, stated in the pinned profile"},
+        {"root_kind": "DECISION", "reference": "decisions/0102-open-phase-1-5.md", "serves": "the opening act that created this custody"}
+      ],
+      "circuit": "soveraeign-work-circuit/v1",
+      "entry_stage": "ROOT_POINT",
+      "target_stage": "EXPLODED_SURFACE",
+      "closure": {
+        "check": {"kind": "COMMAND", "expression": "python scripts/sov_standing.py"},
+        "judgement_seat": "seat:root",
+        "defeated_by": "a Finding that cites evidence outside its declared projection, a comparison that settles missing evidence by preference, or a settlement that rests on the executor's report"
+      },
+      "estimate": {
+        "estimate_schema": "soveraeign-estimate/v1",
+        "estimated_by": "principal:session-bf50c8",
+        "estimated_at": "2026-09-03T00:00:00Z",
+        "basis": "Opened against the prepared profile; the Observation Service thin slice is the one witnessed member, and no Finding or RecordProjection has been exercised on a real run.",
+        "maturity": "DISCOVERY_ENVELOPE",
+        "dimensions": [{"dimension_id": "grants", "low": 0, "high": 1}, {"dimension_id": "judgement_units", "low": 1, "high": 1}]
+      },
+      "members": [
+        {
+          "member_kind": "SERVICE",
+          "address": "services/observation",
+          "stage": "VERTICAL_SLICE",
+          "standing": "WITNESSED",
+          "work_state": "LANDED",
+          "stage_observed_by": "witness/observation-service.md",
+          "note": "independent observation with independence inferred from the record; witnessed as code at 3087714, no run observed yet"
+        },
+        {
+          "member_kind": "CONTRACT",
+          "address": "conformance/oracle-controls.json",
+          "stage": "VERTICAL_SLICE",
+          "standing": "BUILT",
+          "work_state": "LANDED",
+          "stage_observed_by": null,
+          "note": "every normative predicate SPEC.md states carries both polarities; the second bound participant is open"
+        }
+      ],
+      "depends_on": [],
+      "cleanup_obligations": []
+    },
+    {
+      "custody_schema": "soveraeign-custody/v1",
+      "status": "PROPOSED",
+      "custody_id": "custody:phase-1-5/discovery-and-reuse",
+      "custody_kind": "EXIT",
+      "phase": "phase:1-5",
+      "exit_clause": "P15-X3",
+      "serves_exit": null,
+      "outside_phase_exit": null,
+      "initiative": "Work settles only after independent observation and explicit cleanup, and a second fresh participant can discover the result, its standing, basis, and receipts and use it without the builder's private state.",
+      "held_by": "seat:session-control",
+      "roots": [
+        {"root_kind": "PHASE", "reference": "PRD.md#P15-Q3", "serves": "this clause is Phase 1.5 exit, stated in the pinned profile"},
+        {"root_kind": "DECISION", "reference": "decisions/0102-open-phase-1-5.md", "serves": "the opening act that created this custody"}
+      ],
+      "circuit": "soveraeign-work-circuit/v1",
+      "entry_stage": "ROOT_POINT",
+      "target_stage": "EXPLODED_SURFACE",
+      "closure": {
+        "check": {"kind": "COMMAND", "expression": "python scripts/sov_next.py"},
+        "judgement_seat": "seat:root",
+        "defeated_by": "a settled run with a lease, branch, worktree, or projection left behind, or a result a fresh participant cannot reach without asking its builder"
+      },
+      "estimate": {
+        "estimate_schema": "soveraeign-estimate/v1",
+        "estimated_by": "principal:session-bf50c8",
+        "estimated_at": "2026-09-03T00:00:00Z",
+        "basis": "Opened against the prepared profile; settle_run is performed by no participant and no closure receipt retires temporary inventory.",
+        "maturity": "DISCOVERY_ENVELOPE",
+        "dimensions": [{"dimension_id": "grants", "low": 0, "high": 1}, {"dimension_id": "judgement_units", "low": 1, "high": 1}]
+      },
+      "members": [],
+      "depends_on": [],
+      "cleanup_obligations": []
+    },
+    {
+      "custody_schema": "soveraeign-custody/v1",
+      "status": "PROPOSED",
+      "custody_id": "custody:phase-1-5/definition-recurrence",
+      "custody_kind": "EXIT",
+      "phase": "phase:1-5",
+      "exit_clause": "P15-X4",
+      "serves_exit": null,
+      "outside_phase_exit": null,
+      "initiative": "Settled experience becomes cited input to a candidate Definition that keeps its evidence addresses and gains no standing from being generated, agreed, or demonstrated; the mechanics stay institution-neutral.",
+      "held_by": "seat:session-control",
+      "roots": [
+        {"root_kind": "PHASE", "reference": "PRD.md#P15-Q4", "serves": "this clause is Phase 1.5 exit, stated in the pinned profile"},
+        {"root_kind": "DECISION", "reference": "decisions/0102-open-phase-1-5.md", "serves": "the opening act that created this custody"}
+      ],
+      "circuit": "soveraeign-work-circuit/v1",
+      "entry_stage": "ROOT_POINT",
+      "target_stage": "HORIZONTAL_SURFACE",
+      "closure": {
+        "check": {"kind": "COMMAND", "expression": "python conformance/commissioning.py"},
+        "judgement_seat": "seat:root",
+        "defeated_by": "a candidate Definition that acquires standing because it was generated or agreed, or a primitive that only works when the participant is named Controller, Orchestrator, Worker, or Witness"
+      },
+      "estimate": {
+        "estimate_schema": "soveraeign-estimate/v1",
+        "estimated_by": "principal:session-bf50c8",
+        "estimated_at": "2026-09-03T00:00:00Z",
+        "basis": "Opened against the prepared profile; the P15-Q4 instrument discriminates and no candidate Definition has been synthesized from settled records.",
+        "maturity": "DISCOVERY_ENVELOPE",
+        "dimensions": [{"dimension_id": "grants", "low": 0, "high": 1}, {"dimension_id": "judgement_units", "low": 1, "high": 1}]
+      },
+      "members": [],
+      "depends_on": [],
+      "cleanup_obligations": []
+    },
+    {
+      "custody_schema": "soveraeign-custody/v1",
+      "status": "PROPOSED",
+      "custody_id": "custody:phase-1-5/commissioning-circuit",
+      "custody_kind": "EXIT",
+      "phase": "phase:1-5",
+      "exit_clause": "P15-X5",
+      "serves_exit": null,
+      "outside_phase_exit": null,
+      "initiative": "One witnessed Definition-to-Value-to-Definition circuit on an exact revision, carried by fresh participants under explicit authority through execution, independent judgement, comparison, settlement, cleanup, discovery, and synthesis of an unprivileged candidate next Definition.",
+      "held_by": "seat:session-control",
+      "roots": [
+        {"root_kind": "PHASE", "reference": "PRD.md#Commissioning-terminal", "serves": "this clause is the Phase 1.5 commissioning terminal, stated in the pinned profile"},
+        {"root_kind": "DECISION", "reference": "decisions/0102-open-phase-1-5.md", "serves": "the opening act that created this custody"}
+      ],
+      "circuit": "soveraeign-work-circuit/v1",
+      "entry_stage": "ROOT_POINT",
+      "target_stage": "CAPABLE_NODE",
+      "closure": {
+        "check": {"kind": "COMMAND", "expression": "python scripts/sov_active_phase_progress.py"},
+        "judgement_seat": "seat:root",
+        "defeated_by": "a circuit whose witness was its builder, whose revision moved between execution and observation, or whose candidate Definition was granted standing by the circuit that produced it"
+      },
+      "estimate": {
+        "estimate_schema": "soveraeign-estimate/v1",
+        "estimated_by": "principal:session-bf50c8",
+        "estimated_at": "2026-09-03T00:00:00Z",
+        "basis": "Opened against the prepared profile; no circuit has been run, and the reader that will grade one is this custody's first piece of work.",
+        "maturity": "DISCOVERY_ENVELOPE",
+        "dimensions": [{"dimension_id": "grants", "low": 1, "high": 1}, {"dimension_id": "judgement_units", "low": 1, "high": 1}]
+      },
+      "members": [],
+      "depends_on": [],
+      "cleanup_obligations": []
+    },
+    {
+      "custody_schema": "soveraeign-custody/v1",
+      "status": "PROPOSED",
+      "custody_id": "custody:phase-1-5/operational-acceptance",
+      "custody_kind": "EXIT",
+      "phase": "phase:1-5",
+      "exit_clause": "P15-X6",
+      "serves_exit": null,
+      "outside_phase_exit": null,
+      "initiative": "Root operational acceptance of Phase 1.5, a separate act after the technical criteria are evidenced.",
+      "held_by": "seat:session-control",
+      "roots": [
+        {"root_kind": "PHASE", "reference": "PRD.md#Commissioning-terminal", "serves": "this clause is the acceptance sentence of the Phase 1.5 commissioning terminal"},
+        {"root_kind": "DECISION", "reference": "decisions/0102-open-phase-1-5.md", "serves": "the opening act that created this custody"}
+      ],
+      "circuit": "soveraeign-work-circuit/v1",
+      "entry_stage": "ROOT_POINT",
+      "target_stage": "CAPABLE_NODE",
+      "closure": {
+        "check": null,
+        "judgement_seat": "seat:root",
+        "defeated_by": "acceptance recorded before P15-X1 through P15-X5 carry evidence, or recorded by any seat other than root"
+      },
+      "estimate": {
+        "estimate_schema": "soveraeign-estimate/v1",
+        "estimated_by": "principal:session-bf50c8",
+        "estimated_at": "2026-09-03T00:00:00Z",
+        "basis": "Cannot begin before the technical clauses carry evidence; it is a judgement, not work.",
+        "maturity": "DISCOVERY_ENVELOPE",
+        "dimensions": [{"dimension_id": "grants", "low": 0, "high": 0}, {"dimension_id": "judgement_units", "low": 1, "high": 1}]
+      },
+      "members": [],
+      "depends_on": [],
+      "cleanup_obligations": []
+    }
+  ]
+}

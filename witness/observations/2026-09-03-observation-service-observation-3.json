@@ -1,0 +1,278 @@
+{
+  "case_id": "WITNESS-2026-09-03-OBSERVATION-SERVICE-THIN-SLICE-3",
+  "participant_id": "claude-fable-5-1/sov-witness@2026-09-03",
+  "artifact_revision": "308771445a669dba6810848d99586e16d732e02f",
+  "observed": {
+    "subject": "observation_service_status = BUILT_THIN_SLICE_SELF_TESTED_REMAINDER_DECLARED_NOT_WITNESSED; third pass, scoped to pass 2's residuals R1-R9 and to whether pass 2's conclusions hold on commit 3087714",
+    "record": "witness/observation-service.md",
+    "record_section": "Pass 3: commit 3087714 (2026-09-03)",
+    "prior_receipts": [
+      "witness/observations/2026-09-03-observation-service-observation.json",
+      "witness/observations/2026-09-03-observation-service-observation-2.json"
+    ],
+    "verdict": "RATIFIABLE-WITH-CONDITIONS",
+    "standing_supported": "WITNESSED",
+    "standing_binds": {
+      "field": "observation_service_status",
+      "subject": "observation-service",
+      "revision": "308771445a669dba6810848d99586e16d732e02f",
+      "claim": "request-observation, declare-predicates, infer-relation, observe-run, read-observation built, self-tested, and independently observed through ObservationService and RunRecord.from_entries; list-pending-observations, counter-observation, attest-observation declared and unbuilt; no binding routes any of the eight",
+      "a_moved_value_must": "assert WITNESSED as a whole token for the thin slice only, assert neither reachability nor ratification, and move contracts/status-claims.json:160-163 with it"
+    },
+    "observer_id": "claude-fable-5-1/sov-witness@2026-09-03",
+    "observer_independence_basis": "This participant did not build, edit, stage or commit any file under the subject. It read the tree at the named commit, ran the repository's own gates, drove the service only through ObservationService and RunRecord.from_entries from a scratch directory, and mutated only scratch copies of conformance/ and services/observation. The builder's report came up as a diff in the same batch as the probe, after the probe had run, and is not evidence here. The invocation permitted no file under witness/probes/, so the probe is quoted in full in the record and telemetry.probe is deliberately absent.",
+    "observer_relation": "INDEPENDENT_OF_BUILDER_DECLARED_SURFACE_ONLY",
+    "observed_at": "2026-09-03T23:40:00Z",
+    "observed_state_addresses": [
+      "services/observation/src/soveraeign_observation_service/record.py",
+      "services/observation/src/soveraeign_observation_service/relation.py",
+      "services/observation/src/soveraeign_observation_service/observe.py",
+      "services/observation/src/soveraeign_observation_service/service.py",
+      "services/observation/src/soveraeign_observation_service/errors.py",
+      "services/observation/contracts/service.json",
+      "services/observation/contracts/observation-request.schema.json",
+      "services/observation/tests/test_thin_slice.py",
+      "services/observation/KNOWN-GAPS.md",
+      "conformance/kernel_predicates.py",
+      "conformance/requirements.py",
+      "conformance/run.py",
+      "conformance/oracle-controls.json",
+      "conformance/tests/test_kernel_predicates.py",
+      "scripts/sovverify/checks.py",
+      "scripts/sovkernel/transitions.py",
+      "scripts/sovkernel/capability_map.py",
+      "scripts/sovnode/composition.py",
+      "contracts/fixtures/capability-map.reference.json",
+      "contracts/fixtures/node-interface.reference.json",
+      "contracts/status-claims.json",
+      "STATUS.yaml",
+      ".clarity/coverage.json",
+      "CLAUDE.md",
+      "services/README.md",
+      "reports/2026-09-03-phase-1-5-commissioning-pass.md",
+      "witness/observations/2026-09-03-observation-service-observation-2.json"
+    ],
+    "observed_state_digests": [
+      "sha256:7cfa8537fd0e4d39a79fecd743f1b66ab433ee7415d844534e9ba4b8de1f0738",
+      "sha256:7591b945bc824fb1ed510687cb862786285836d77dd7f07dd33c22028eac5b3c",
+      "sha256:ed24eca438eae83ba25a1c9adea1b38a87af3d01968fc37b16079fb503d49978",
+      "sha256:e20b03b9a2b2216a7a0aa3ac2798f3e3cfa353facada6d07d62a0f9b7504762f",
+      "sha256:8ce373e72815d7330ce365263acd88431262ffc92b84e43e922e358700cb6539",
+      "sha256:621397d46407709671cbfc841041981d5524743de9b6d253ea1bab30deaede62",
+      "sha256:fd5cb97db1eec5c1f1a997abf86787a7bf2fa8d5d715716d387928f033f79ff9",
+      "sha256:3b4cc247791435a5398ff2757944b836ad796cbd405ab32f42063c1506dfbfb8",
+      "sha256:87c5f970a2063159043d65aca853f7c99424ecbe7d78d98dce715153eab458ac",
+      "sha256:f1d81c804e9270bbe01f37c52f3bf4e38caa054affdfd9b9d8479d50fdd08fd2",
+      "sha256:4b2fe7b337e416aee4aab1e3a2681a485aa5f897f999a80ba6504b7326cb203a",
+      "sha256:c049f9e661e94a1ed5a3df039662d6529c2cb1430e23080a2aa8b0d9451472cc",
+      "sha256:75b4cf02cfeec7acc0a627c7f6df396211be0ae60349b0c90c9162a8e63cc803",
+      "sha256:3574f4e9b47f78a94da7fad8f82d897999762564be937b1a1fff9eba743aaa7d",
+      "sha256:a5316c2666007faa039a161269df3b4eb142f7859cb81d08d76c509be7f6527a",
+      "sha256:478fe0a065c8da6d0b5fc8e4b61e3260d67f6baff9ba00fadbb087433374343b",
+      "sha256:56230a9a21c3b63c4a818c159fc6b95de742f90b5c9cd9ed157c023b35a82bdf",
+      "sha256:e7320557b3d5239e576317668bd299c4a5c63bbc3f3a0fdc90d13100d8bd60ce",
+      "sha256:84e296ce7d76c5b100c7b922320018681d3b47e37c229756d685cb009aec7eae",
+      "sha256:0462d2188de06e2f41390dcb6b13fea0f1d6807ec41df4bad71338bc4c749d49",
+      "sha256:ee5e97659bbd835715df178ded16e2d6fde58ea0538171a61ff984964ca9c319",
+      "sha256:dae8e4f439524b1bf93426df9bb0bbbc52d1f9fd2e0f9896aed5e9b66d45c5e3",
+      "sha256:2d9dddc59d999f473315bb4d864ce14deeb948d520dc8671adab4427e223a9d8",
+      "sha256:0588b666e8ce7d628fea6718173a5a17c399b4cf961e13986802543d9b43e976",
+      "sha256:c8031e7d4b7fcc36d34ddbafbcc3c55283aee4716f8d52096727c72f24adc7aa",
+      "sha256:01277edecde9eb22535fecf70a7cd510bfbd4eccf17df4ccd2e7988b4f783b97",
+      "sha256:a91cbc2d24f7d9fc19d28698b294a7752aa27a411bf9d023849c96f01c03fbaa"
+    ],
+    "commands": {
+      "tree": {
+        "command": "git rev-parse HEAD; git status --short",
+        "exit": "0; 0",
+        "excerpt": "308771445a669dba6810848d99586e16d732e02f; empty, before and after every command"
+      },
+      "verify": {
+        "command": "python scripts/verify.py",
+        "exit": 0,
+        "excerpt": "PASS: 50 checks in 14.754s wall; GRADE: SILVER; BUDGET DEBT: 9 check(s) over ceiling; FAIL lines in the output are planted tooling self-test output inside 'repository tooling tests'"
+      },
+      "lint": {
+        "command": "python scripts/lint.py",
+        "exit": 0,
+        "excerpt": "PASS: repository hygiene (1169 text files, 546 Python modules, 10 named debt)"
+      },
+      "observation_tests": {
+        "command": "python -m unittest discover -s tests (cwd services/observation)",
+        "exit": 0,
+        "excerpt": "Ran 49 tests OK"
+      },
+      "oracle": {
+        "command": "python conformance/run.py",
+        "exit": 0,
+        "excerpt": "SUITE PASS cases=33 coverage_gaps=0"
+      },
+      "oracle_tests": {
+        "command": "python -m unittest discover -s conformance/tests",
+        "exit": 0,
+        "excerpt": "Ran 79 tests OK"
+      },
+      "f2_gate": {
+        "command": "python scripts/sov_f2_gate.py",
+        "exit": 1,
+        "excerpt": "requirement 25/25, transition 14/14, parity 5/5; participants 1/2 bound; OPEN"
+      },
+      "phase_progress": {
+        "command": "python scripts/sov_phase_progress.py check",
+        "exit": 0,
+        "excerpt": "PASS: the gate reading meets its floor and every gap below it is declared"
+      },
+      "baseline": {
+        "command": "python scripts/sov_baseline.py",
+        "exit": 0,
+        "excerpt": "PASS: participant matches its recorded baseline (9 requirements, 8 failing as recorded)"
+      },
+      "clarity": {
+        "command": "python scripts/sov_clarity.py status; check",
+        "exit": "0; 0",
+        "excerpt": "STALE 0, UNCHECKED 1 (witness/observation-service.md), EXEMPT 88; PASS"
+      },
+      "participant_mode": {
+        "command": "python services/asset/scripts/conformance_observations.py > obs.json; python conformance/run.py --cases conformance/scenarios.json --observations obs.json --json",
+        "exit": "0; 1",
+        "excerpt": "suite FAIL, 9 cases, missing_positive_and_defeating_coverage []; PROD-I-2 PASS; eight FAIL on requirement defects"
+      },
+      "mutation_probe_targeted": {
+        "command": "scratch copy of conformance/; one defects.append replaced with pass; unittest discover -s tests; baseline FAILED (errors=2)",
+        "exit": "n/a",
+        "excerpt": "11/11 rules pass 2 named noticed (failures>=1); kernel_predicates.py:168,214,219 unseen (errors=2 only)"
+      },
+      "join_grader_defeat": {
+        "command": "scratch copy; CONF-RUN-SETTLE-DEF additionally declares TRANS-observe_run; unittest tests.test_kernel_predicates",
+        "exit": 1,
+        "excerpt": "FAIL test_defeating_controls_defeat_what_they_claim (control=CONF-RUN-SETTLE-DEF, predicate=TRANS-observe_run); run.py alone still SUITE PASS"
+      },
+      "r6_test_strength": {
+        "command": "scratch copy of services/observation with observe.py:116 reverted to own_entries = record.run_entry_ids(); unittest WitnessResidualsOn540bc01",
+        "exit": 0,
+        "excerpt": "Ran 6 tests OK: the R6 regression test passes without the R6 repair"
+      },
+      "probe": {
+        "command": "python probe3.py (quoted in the record)",
+        "exit": 0,
+        "excerpt": "outputs recorded per case in predicate_results"
+      }
+    },
+    "predicate_results": {
+      "r1_anonymous_run_entry_refuses_unreadable": {
+        "held": true,
+        "detail": "P1b, P2c, P1c: REFUSED UNREADABLE 'entry <address> on the run names no actor', receipts=1"
+      },
+      "r1_anonymous_off_run_output_refuses": {
+        "held": false,
+        "detail": "P1d: OUTPUT with empty actor; candidate reads INDEPENDENT [] (R10)"
+      },
+      "r2_every_attempts_lease_read": {
+        "held": true,
+        "detail": "P2b: DIRECT [HOLDS_RUN_LEASE@attempt2, GRANT_DESCENDS_FROM_RUN@g-c]"
+      },
+      "r2_every_attempts_grant_read": {
+        "held": true,
+        "detail": "P2d: DIRECT [GRANT_DESCENDS_FROM_RUN@g-b2]; P2e absent grant_id on second attempt: RELATION_UNDETERMINED"
+      },
+      "r3_refused_run_requestable_through_surface": {
+        "held": false,
+        "detail": "P8b: REFUSED INCOMPLETE_PROPOSAL 'the run reported no durable output to observe'; now tested through the surface; schema durable_output_addresses minItems 1; not in KNOWN-GAPS.md"
+      },
+      "r4_subjectless_output_refuses_unreadable": {
+        "held": true,
+        "detail": "P4b, P4b': REFUSED UNREADABLE 'entry out1 has no subject'; P4 GRANT without subject also UNREADABLE"
+      },
+      "r5_settled_run_reading_documented": {
+        "held": true,
+        "detail": "record.py:21-25 and KNOWN-GAPS.md agree with P8d: COMMITTED, INDEPENDENT"
+      },
+      "r6_run_id_not_a_predicate_address": {
+        "held": true,
+        "detail": "P7b: PREDICATES_UNDECLARED 'run's own entry' with the run id reported and recorded as OUTPUT; P4e REPORTED without entry_id: UNREADABLE"
+      },
+      "r6_regression_test_is_defeating": {
+        "held": false,
+        "detail": "test passes with observe.py:116 reverted (R13)"
+      },
+      "r6_observe_run_reads_malformed_record": {
+        "held": false,
+        "detail": "P7d: inference over a good record, observation over one whose REPORTED lost its id, predicate over the report evaluates True (R11; F8 family)"
+      },
+      "r7_join_grader_matches_rule_specific_prefixes": {
+        "held": true,
+        "detail": "every WORDS phrase opens one defects.append string; over-declaring control fails the test"
+      },
+      "r8_claude_md_gateway_consistent": {
+        "held": true,
+        "detail": "CLAUDE.md:118-119 agrees with :85 and services/README.md:15"
+      },
+      "r9_witness_record_has_clarity_receipt": {
+        "held": false,
+        "detail": "UNCHECKED 1; outside the witness's two files"
+      },
+      "f1_reporter_is_an_executor_edge": {
+        "held": true,
+        "detail": "P1: DIRECT [SAME_ACTOR@report]"
+      },
+      "f2_second_attempt_actor_is_an_executor_edge": {
+        "held": true,
+        "detail": "P2: DIRECT, three edges at attempt2"
+      },
+      "f3_malformed_record_refuses_unreadable_with_one_receipt": {
+        "held": true,
+        "detail": "P3, P3b, P4c, P4d, P4, P4b, P4e, P4f, P4g: UNREADABLE, receipts=1"
+      },
+      "f4_reported_unsettled_run_not_named_committed": {
+        "held": true,
+        "detail": "P8: UNRESOLVED; P8c: REFUSED; J1 carried"
+      },
+      "f5_malformed_declared_digest_refuses": {
+        "held": true,
+        "detail": "P6: REFUSED UNREADABLE"
+      },
+      "f6_run_grant_absent_from_record_refuses": {
+        "held": false,
+        "detail": "P5: INDEPENDENT []; note, unchanged"
+      },
+      "f7_report_entry_is_not_a_predicate_address": {
+        "held": true,
+        "detail": "P7: PREDICATES_UNDECLARED run's own entry"
+      },
+      "f8_inference_bound_to_the_record_it_was_inferred_over": {
+        "held": false,
+        "detail": "P9 refuses; P10 False; P10b True; P7d (R11)"
+      },
+      "c2_conf_run_def_declares_only_what_it_defeats": {
+        "held": true,
+        "detail": "oracle-controls.json unchanged since pass 2; TRANS-observe_run, TRANS-settle_run; defects=4"
+      },
+      "c3_named_rule_deletions_are_noticed": {
+        "held": true,
+        "detail": "11/11 of pass 2's sample; three further rules unseen (R12)"
+      },
+      "c4_participant_mode_scoped_to_declared_requirements": {
+        "held": true,
+        "detail": "missing_positive_and_defeating_coverage []"
+      },
+      "c1_capability_map_activation_is_measured": {
+        "held": false,
+        "detail": "five ACTIVE at observation:in-process from capability_map.py:76-78; composition.py:187-190 routes none; carried as a condition on ratification, re-attributed to the map rule"
+      },
+      "kernel_parity_reading_carries": {
+        "held": true,
+        "detail": "transitions.py byte-identical to passes 1 and 2 (sha256 478fe0a0...)"
+      },
+      "prior_passes_intact": {
+        "held": true,
+        "detail": "witness/observation-service.md from '## Pass 2' onward byte-identical to HEAD (cmp)"
+      }
+    },
+    "standing_note": "This is an observation. It supports BUILT -> WITNESSED for observation_service_status at 3087714 and ratifies nothing; condition C1 and judgement items J1-J4 are in the record."
+  },
+  "telemetry": {
+    "probe_location": "quoted in witness/observation-service.md under Pass 3 / Probe; run from a scratch directory because the invocation permitted no file under witness/probes/",
+    "tree_state": "git status --short empty before and after every command; HEAD 308771445a669dba6810848d99586e16d732e02f throughout; both witness files written after every recorded command",
+    "predecessors": "pass 1 (169182f) and pass 2 (540bc01) receipts left intact"
+  }
+}

@@ -14,7 +14,8 @@ holding. Use `tree.json` when you need to know what is blocked on what.
 
 Exact terms stay exact. Every story ends with a **Today** line read from the
 tree (`ready` / `held` / `unrouted`) and the repository snapshot in
-`CLAUDE.md`. Nothing below is `WITNESSED` or `RATIFIED`; that is the accurate
+`CLAUDE.md`. One thing below is `WITNESSED`, the Observation Service thin slice
+under The Inspectorate (`#9`), and nothing is `RATIFIED`; that is the accurate
 reading of a founding-phase node, not a shortfall.
 
 ## The cast
@@ -268,12 +269,16 @@ the full human/model crossing (`#23`); the Day-0 engineering harness (`#32`);
 the Capability resolution witness (`#49`); and the first RED engagement
 (`#57`). A build cannot witness itself anywhere in this file.
 
-**Today:** the oracle is executable with 20 controlled cases and every defeating
-fixture fails as declared; `scripts/verify.py` runs 40 checks and grades its own
-wall time rather than failing at a fixed ceiling (`decisions/0050`). Participant
-binding is still open. Nothing in the repository is `WITNESSED` yet, and nothing
-can be: `#9`, the service that would make an independent observation possible, is
-chartered and unbuilt. That is a ceiling on the whole tree rather than a backlog.
+**Today:** the oracle is executable with 33 controlled cases, including the kernel
+transition and discovery rows, and every defeating fixture fails as declared;
+`python scripts/sov_f2_gate.py` reads every normative predicate covered in both
+polarities. `scripts/verify.py` grades its own wall time rather than failing at a
+fixed ceiling (`decisions/0050`). Participant binding is still open. `#9`, the
+service that would make an independent observation possible, now has a thin slice
+built, self-tested, and witnessed as code, with three operations still declared
+only; no run has been observed through it, so the ceiling on the whole tree has
+moved from "unbuilt" to "no run observed". It is still a ceiling rather than a
+backlog.
 
 ### The Ground: `#37`, `#39`
 
@@ -338,8 +343,8 @@ kernel's list of legal moves is compiled and parity-checked, the Record Service
 keeps an append-preserving journal, and the Asset Service is built. So the
 narrative is no longer "the ledger has to exist first". It is: nobody can be
 told who they are, so no counter can open. Identity is the next floor, and
-nothing above it can be witnessed either, because the service that would do the
-witnessing has not been built.
+nothing above it can be witnessed either until the service that would do the
+witnessing, built and witnessed now as a thin slice, has observed a run.
 
 ## Decisions this layer queues for the owner
 

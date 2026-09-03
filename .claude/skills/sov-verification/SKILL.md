@@ -66,8 +66,8 @@ immutable lineage/evidence.
 
 ## Standing and constraints
 
-Historical Phase I is terminal `CLOSED_INCOMPLETE`; no successor phase is active
-until the root seat opens one. Verification remains cross-phase engineering
+Phase I is terminal `CLOSED_INCOMPLETE`; `phase:1-5`, Operational Commissioning,
+has been open since 2026-09-03 (`decisions/0102`). Verification remains cross-phase engineering
 substrate and does not infer current authority from historical phase rules.
 
 The harness's own self-tests establish `BUILT` only. A check cannot witness

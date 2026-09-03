@@ -2,7 +2,7 @@
 
 ## Terminal Phase I status
 
-Phase I is terminal `CLOSED_INCOMPLETE`. Its execution status is `CLOSED`, its acceptance status is `NOT_EARNED`, and `succeeded_by` is `null`. Current repository state remains `phase: NONE_ACTIVE` with `next_gate: SUCCESSOR_PHASE_OPENING`.
+Phase I is terminal `CLOSED_INCOMPLETE`. Its execution status is `CLOSED`, its acceptance status is `NOT_EARNED`, and `succeeded_by` is `phase:1-5` since 2026-09-03. While this gap stood, repository state read `phase: NONE_ACTIVE` with `next_gate: SUCCESSOR_PHASE_OPENING`; see The successor phase below.
 
 The frozen Phase I record is pinned to terminal zero SHA `32dab1105e2668f94ea16fe759caa6700ddc90f1`:
 
@@ -45,6 +45,8 @@ These are retained as implementation evidence, not as successor standing.
 
 ## Carried seams
 
+Each seam names the claim it blocked at `SUCCESSOR_PHASE_OPENING`; the opening on 2026-09-03 settled none of them, and each still blocks that claim under `phase:1-5`.
+
 - **S1 — CARRIED.** The accepted relation between current governing text and the legacy evidence-corpus revision has not been closed. It blocks importing corpus-revision assumptions through `SUCCESSOR_PHASE_OPENING`.
 - **S6 — CARRIED.** Correction rate/count semantics still lack a closed denominator, interval, and interpretation. It blocks claiming correction measurement is governing at `SUCCESSOR_PHASE_OPENING`.
 - **S7 — CARRIED.** Definition/Gauge operator behavior has not been fully re-derived through typed bindings rather than named participants. It blocks claiming those operator bindings are machine-complete at `SUCCESSOR_PHASE_OPENING`.
@@ -73,6 +75,8 @@ Current receipts cover 17 of 17 artifacts. The seven root artifacts and all ten 
 
 The root seat formally accepts all three residue lists above: the kept invariants exactly as listed; built-but-unwitnessed residue grounded strictly in current `STATUS.yaml` machine standings rather than retrospective summaries; and the terminal X1-X5 measured gaps exactly as preserved above. The residue-acceptance condition is satisfied.
 
-## No successor phase
+## The successor phase
 
-No successor phase is open. `STATUS.yaml` must remain `phase: NONE_ACTIVE`. The gap conditions recorded here are satisfied: the residue lists are owner-accepted, every surviving seam is explicitly carried or closed, and clarity coverage on the declared governing population is current. Any future phase still requires a separate explicit opening act by the root seat against this document.
+While this gap stood, no successor phase was open and `STATUS.yaml` read `phase: NONE_ACTIVE`. The gap conditions recorded here were satisfied: the residue lists are owner-accepted, every surviving seam is explicitly carried or closed, and clarity coverage on the declared governing population was current.
+
+On 2026-09-03 the root seat opened `phase:1-5` against this document (`decisions/0102-open-phase-1-5.md`). `STATUS.yaml` now reads `phase: phase:1-5`, the definition is pinned under `archives/`, and every unmet exit clause is carried by a live custody in `contracts/custodies/phase-1-5.json`. The carried seams above stay carried: opening a phase settles none of them, and each still blocks the claim it names.

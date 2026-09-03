@@ -3,7 +3,14 @@
 
 This module owns the run: reading the case file and any submitted observations,
 refusing a report it cannot evaluate, and printing the suite verdict. The nine
-requirement predicates it judges against live in `conformance/requirements.py`.
+requirement predicates it judges against live in `conformance/requirements.py`,
+which also carries the kernel transition and discovery rows from
+`conformance/kernel_predicates.py`.
+
+Coverage is graded against two sets. A control run must carry both polarities for
+every key in the table. A participant run must cover the nine PRD requirements and
+whichever kernel rows its own case file declares: a participant that meets all nine
+is not held to rows it never claimed, and one that claims a row is held to it.
 """
 
 from __future__ import annotations
@@ -13,7 +20,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from requirements import CHECKS, REQUIREMENTS
+from requirements import CHECKS, PRD_REQUIREMENTS, REQUIREMENTS
 
 
 ROOT = Path(__file__).resolve().parent
@@ -86,7 +93,12 @@ def main() -> int:
     except ObservationError as error:
         return refuse(str(error), args.as_json)
     results = []
-    seen: dict[str, set[str]] = {requirement: set() for requirement in REQUIREMENTS}
+    if args.observations is None:
+        required_keys = set(REQUIREMENTS)
+    else:
+        declared = {case.get("requirement") for case in cases} & set(REQUIREMENTS)
+        required_keys = set(PRD_REQUIREMENTS) | declared
+    seen: dict[str, set[str]] = {requirement: set() for requirement in required_keys}
     suite_ok = True
 
     for case in cases:
@@ -99,7 +111,7 @@ def main() -> int:
             result = {"case_id": case_id, "requirement": requirement, "verdict": "INVALID", "defects": ["invalid or missing case observation"]}
             suite_ok = False
         else:
-            seen[requirement].add(polarity)
+            seen.setdefault(requirement, set()).add(polarity)
             defects = CHECKS[requirement](supplied[case_id])
             verdict = "FAIL" if defects else "PASS"
             result = {"case_id": case_id, "requirement": requirement, "polarity": polarity, "verdict": verdict, "defects": defects}

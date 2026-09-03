@@ -4,15 +4,28 @@
 One function per `PROD-I-<n>`. Each returns the list of defects it can see in a
 submitted observation and reads no participant verdict field, so a participant
 cannot report itself passing. Held apart from `run.py`, which owns only loading,
-refusal, and the suite verdict.
+refusal, and the suite verdict. The transition and discovery predicates SPEC.md
+states below the nine live in `kernel_predicates.py` and are merged into `CHECKS`
+here, so every control in the corpus is judged through one table.
 """
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any, Callable
+import importlib.util
 
 
-REQUIREMENTS = {f"PROD-I-{number}" for number in range(1, 10)}
+def _sibling(name: str):
+    """Load a sibling module by file, however this module itself was loaded."""
+    spec = importlib.util.spec_from_file_location(name, Path(__file__).with_name(f"{name}.py"))
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+kernel_predicates = _sibling("kernel_predicates")
+PRD_REQUIREMENTS = {f"PROD-I-{number}" for number in range(1, 10)}
 
 
 def missing(mapping: dict[str, Any], fields: tuple[str, ...]) -> list[str]:
@@ -91,6 +104,11 @@ def check_i2(observed: dict[str, Any]) -> list[str]:
     defects: list[str] = []
     if observed.get("source_before_digest") != observed.get("source_after_digest"):
         defects.append("source changed during reading")
+    reread = observed.get("reread") or {}  # PRED-I-2.1: a separate read, same digest
+    if not reread.get("digest") or not reread.get("reread_count"):
+        defects.append("source was never reread")
+    elif reread.get("digest") != observed.get("source_after_digest"):
+        defects.append("source did not reread byte-identical by digest")
     recording = observed.get("recording") or {}
     required = ("source_id", "source_digest", "reader_id", "reader_version",
                 "configuration_digest", "payload_digest", "fidelity")
@@ -274,4 +292,7 @@ CHECKS: dict[str, Callable[[dict[str, Any]], list[str]]] = {
     "PROD-I-1": check_i1, "PROD-I-2": check_i2, "PROD-I-3": check_i3,
     "PROD-I-4": check_i4, "PROD-I-5": check_i5, "PROD-I-6": check_i6,
     "PROD-I-7": check_i7, "PROD-I-8": check_i8, "PROD-I-9": check_i9,
+    **kernel_predicates.CHECKS,
 }
+#: Every key the corpus must carry both polarities for; derived so the two cannot drift.
+REQUIREMENTS = set(CHECKS)

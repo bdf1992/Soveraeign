@@ -1,6 +1,6 @@
 ---
 name: sov-compression
-description: Cross-cutting gap-phase learning/compression competence for Soveraeign. Use for the daily compression ritual, weekly super-compression, repeated-defect analysis, representation/drift reduction, lesson routing, gate review, and the GAP_OPERATIONALLY_INVISIBLE readiness reading. This skill owns no policy and creates no new ledger.
+description: Cross-cutting learning/compression competence for Soveraeign. Use for the daily compression ritual, weekly super-compression, repeated-defect analysis, representation/drift reduction, lesson routing, gate review, and the GAP_OPERATIONALLY_INVISIBLE readiness reading. This skill owns no policy and creates no new ledger.
 ---
 
 # sov-compression
@@ -12,8 +12,9 @@ activity, correlate repeated observations to the same subjects, expose where
 representations or checks are multiplying, and route the result into mechanisms
 that already own it.
 
-This is gap-phase harness competence. It does not open a successor phase, mint a
-standing, create authority, or create another System of Record. `STATUS.yaml`
+This is cross-phase harness competence. It does not open or close a phase, earn an
+exit clause, mint a standing, create authority, or create another System of
+Record. `STATUS.yaml`
 and `contracts/phases.json` remain authoritative for phase state; `LESSONS.md`
 and `contracts/lessons-loop.json` own lessons; existing concerns/custodies own
 work; governing documents and decisions own policy.
@@ -72,8 +73,11 @@ actually usable without conversational or oral history.
 
 The daily pass is a small 24-hour feedback loop:
 
-1. Pin the exact subject revision and confirm whether the repository still reads
-   `phase: NONE_ACTIVE` while the gap is open.
+1. Pin the exact subject revision and read the phase and next gate that
+   `STATUS.yaml` and `contracts/phases.json` project together (today `phase:1-5`,
+   `P15_COMMISSIONING_TERMINAL`); a disagreement between them is a finding, not
+   a choice. The mechanical reader prints `gap preserved NO` whenever a phase is
+   open, which is the correct reading of an open phase, not a defect.
 2. Read the lessons loop. Surface any false `EFFECTIVE`/`ADMITTED` claim and
    whether the non-refusing drain is due.
 3. Read the last 24 hours of commits as observations over paths. Name high-churn
@@ -137,7 +141,8 @@ only when an independent fresh reader can, from the current repository alone:
 
 1. identify historical Phase I as terminal `CLOSED_INCOMPLETE` rather than live
    authority;
-2. identify that no successor phase is active and locate the current next gate;
+2. identify that `phase:1-5` is the open phase, that none of its exit clauses
+   P15-X1..X6 is earned, and locate the current next gate;
 3. enter the current progressive participant path without oral history;
 4. reach the relevant principal/session -> grant -> operation -> record/projection
    path and the concern -> custody -> lease -> closure -> landing -> settlement
@@ -148,9 +153,10 @@ only when an independent fresh reader can, from the current repository alone:
 7. encounter surviving work as ordinary current readiness, not unexplained
    Phase-I archaeology, duplicate truth, or reconciliation debris.
 
-`GAP_OPERATIONALLY_INVISIBLE` is **not** phase opening, acceptance, ratification,
-or permission to mutate `contracts/phases.json` or `STATUS.yaml`. It means the
-pre-opening gap has stopped imposing a special operational tax. Once this reading
+`GAP_OPERATIONALLY_INVISIBLE` is **not** an earned exit clause, acceptance,
+ratification, or permission to mutate `contracts/phases.json` or `STATUS.yaml`. It
+means the seam between closed Phase I and the open phase has stopped imposing a
+special operational tax. Once this reading
 is independently supported, stop minting gap-specific work unless a regression
 makes the gap visible again. Daily compression may continue as regression
 detection and weekly compression may continue as ordinary system compression.
@@ -181,7 +187,8 @@ Return these sections, omitting empty ones rather than inventing content:
 
 Refuse to:
 
-- open/name a successor phase or change `phase: NONE_ACTIVE`;
+- open or close a phase, earn an exit clause, or change the `phase` or
+  `next_gate` values `STATUS.yaml` projects;
 - convert `GAP_OPERATIONALLY_INVISIBLE` into a phase transition;
 - create a new learning/weekly ledger when schedule capture and existing records
   already hold the observation;

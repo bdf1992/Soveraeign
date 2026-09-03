@@ -263,7 +263,7 @@ def build_parser() -> argparse.ArgumentParser:
     commands.add_parser("next", help="print the next stale or unchecked artifact")
     commands.add_parser("check", help="validate scope and refuse stale receipts")
     commands.add_parser("zero", help="require closure-ready current reader coverage")
-    commands.add_parser("gate", help="require 100% current clarity coverage")
+    commands.add_parser("gate", help="require 100%% current clarity coverage")
     record = commands.add_parser("record", help="record a completed clarity review")
     record.add_argument("path")
     record.add_argument("--basis", action="append")

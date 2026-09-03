@@ -285,7 +285,7 @@ class EveryNumberOnThePageIsClassified(unittest.TestCase):
         ("Repository snapshot (informational)", "1 Escalating"):
             "the ruling number in decisions/0033, an identifier",
         ("Where to look first", "1"): "the same ruling number in the table",
-        ("Repository snapshot (informational)", "20 controlled"):
+        ("Repository snapshot (informational)", "33 controlled"):
             "conformance cases, listed in claims.UNCHECKED",
         ("Historical orientation", "26 commits"): "day two, deliberately historical",
         ("Historical orientation", "17 decision"): "day two, deliberately historical",

@@ -176,7 +176,7 @@ node changes.
 | **Identity** | Who is acting, and how identity stays attributable across a crossing. | — | contract built, registry read only |
 | **Authority and policy** | What an actor may do, scoped independently of which model or intelligence it is running. | — | typed grants built, one ratified |
 | **Record** | The durable account of consequential actions, receipts, observations and counter-records. | 07, 08 | built, self-tested, not the kernel's |
-| **Evidence** | What supports a claim, and how independent witnessing works. | 11 | witness tooling exists, no observation service |
+| **Evidence** | What supports a claim, and how independent witnessing works. | 11 | witness tooling exists; observation service thin slice built and witnessed, no run observed |
 | **Grounding** | Whether an asset, file, service or claim can explain its place in the system. | — | **new; no contract, no implementation** |
 | **Models and BYOM** | Replaceable model compute without provider ownership of authoritative state. | 01, 06 | contract accepted, `invoke_model` unimplemented |
 | **Workflow and automation** | Durable compositions that execute work repeatedly. | — | pattern accepted, every schedule disabled |
@@ -352,12 +352,15 @@ through the BYOM contract. Three bindings in total, because either half alone is
 cheap and the pair is not. This profile's hardest criterion, and it evidences
 `PROMISE-01`, `PROMISE-04` and `PROMISE-06` together.
 
-## Prepared Phase 1.5 qualification profile
+## Phase 1.5 qualification profile
 
 **`Phase 1.5 · Operational Commissioning`.** Working name: **Participant
-Delivery Substrate**. This is a prepared successor profile, not an active phase.
-`STATUS.yaml` remains the authority for whether a campaign is open, and merely
-writing, testing, or agreeing with this profile grants it no standing.
+Delivery Substrate**. Bdo opened `phase:1-5` on 2026-09-03 (`decisions/0102`).
+The bytes the phase is judged against are pinned at
+`archives/PRD-PHASE-1-5-OPENING.txt` by `contracts/phases.json`; this section may
+keep moving, and an edit here does not move that definition. `STATUS.yaml`
+remains the authority for whether a campaign is open, and nothing in this profile
+is earned merely by being written, tested, or agreed with.
 
 Its purpose is to commission the participation and learning substrate that a
 later Phase II can use rather than to prebuild what those citizens will do with
@@ -414,7 +417,7 @@ another fresh participant, and synthesize a cited candidate next Definition
 that remains unprivileged. Root operational acceptance remains a separate act
 after these technical criteria are evidenced.
 
-Human-readable pre-opening rationale and boundary: `contracts/phase-1-5-phase-ii-horizon.md`. That record is prepared context, not phase standing.
+Human-readable horizon: `contracts/phase-1-5-phase-ii-horizon.md`, pinned at opening as `archives/PHASE-1-5-HORIZON-OPENING.md`. The pinned copy is part of the definition; neither copy settles a clause.
 
 This profile exists **for Phase II**. Phase 1.5 commissions the ability to
 self-organize and learn under governed evidence; Phase II decides what citizens
@@ -440,7 +443,7 @@ satisfied this way is Bdo's call.
 | --- | --- | --- | --- |
 | Journeys walkable end to end | `sov_canon.py trace` | 2 of 14 | every in-scope journey |
 | Declared operations reachable | the operation surface | 5 of 140 | every operation a live journey needs |
-| Requirements independently observed | `sov_standing.py` | 0 | every P0 |
+| Requirements independently observed | `sov_standing.py` | 0 requirements; the tool's one supported claim (`observation_service_status`) is a service standing, not a P0 requirement | every P0 |
 | Promises carried by no criterion | this document | 2 | 0 |
 | Product areas serving no requirement | this document | 0 | stays 0 |
 | Reference participant conformance | the asset baseline | 1 of 9 | 9 of 9 |
@@ -497,9 +500,10 @@ operator surface and only its continuity path is built.
 - Every model requirement depends on `invoke_model`, declared in
   `contracts/kernel-transitions.json` and implemented by no kernel. It blocks
   `PROMISE-01` and `PROMISE-06` at the same point.
-- Evidence depends on an observation service that does not exist: `observe_run`
-  has no service behind it, and `AI-NATIVE.md` check 3 reads `UNATTESTABLE` on
-  every service assessment.
+- Evidence depends on an observation service that is built only as a thin slice:
+  `observe_run` now has a service path under `services/observation`, witnessed
+  through its declared surface but yet to observe any run, and `AI-NATIVE.md`
+  check 3 still reads `UNATTESTABLE` on every service assessment.
 - Composition depends on Gateway, Identity and Authority crossings; four of the
   eleven service boundaries are declared with no implementation.
 - Skills depend on a skill contract that does not exist. The `.claude/` harness
@@ -537,8 +541,10 @@ requirements:
   product here. It is the one area not read out of the repository.
 - **Priority is proposed and unaccepted.** If it is wrong, the register misleads
   in the most consequential way a PRD can.
-- **`phase:i` closed incomplete** with `succeeded_by` null and five residual
-  custodies `PROPOSED`. Which roadmap phase opens next is Bdo's to set.
+- **`phase:i` closed incomplete** with five residual custodies `PROPOSED`;
+  `phase:1-5` succeeded it on 2026-09-03 (`decisions/0102`) with six exit clauses
+  at `NOT_EARNED` or `NOT_REACHED`. Which roadmap phase the commissioning work
+  draws on is Bdo's to set.
 - **Two things are named gateway** (S18); **unattestable effectiveness** (S4)
   and **cold-start semantics** (S5) both gate `PROMISE-10`.
 

@@ -38,10 +38,11 @@ class ProjectionFacts(unittest.TestCase):
         self.assertEqual(self.document["status"], "PROPOSED")
 
     def test_evidence_layers_remain_independent(self) -> None:
-        # record.project-evidence adds one declared, bound and policy-active read.
-        # It adds no transport route or observation, so those layers stay fixed.
+        # record.project-evidence adds one declared, bound and policy-active read, and
+        # the Observation Service thin slice adds five policy-active operations. Neither
+        # adds a transport route or an observation, so those layers stay fixed.
         self.assertEqual(self.document["counts"], {
-            "declared": 135, "bound": 135, "policy_active": 47,
+            "declared": 135, "bound": 135, "policy_active": 52,
             "reachable": 5, "observed": 0,
         })
         self.assertEqual(self.operation("asset.ingest-asset")["facts"], {

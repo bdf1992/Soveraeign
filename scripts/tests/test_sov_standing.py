@@ -204,25 +204,41 @@ class RecordMustCarryTheStanding(unittest.TestCase):
 
 
 class LiveRepository(unittest.TestCase):
-    def test_the_repository_currently_claims_no_standing(self):
-        """If this ever fails, something advanced standing - and it must carry a record."""
-        self.assertEqual(sov_standing.read_claims(), [])
+    def test_every_live_claim_carries_a_record(self):
+        """The first version of this asserted that nothing claimed standing, which was
+        true of that afternoon. The invariant is that a claim without a record is
+        refused: `observation_service_status` claimed WITNESSED on 2026-09-03 with
+        `witness/observation-service.md` behind it, and that is what is checked."""
+        claims = sov_standing.read_claims()
+        self.assertEqual([claim.field for claim in sov_standing.unsupported()], [],
+                         "a status field claims standing that no witness record supports")
+        for claim in claims:
+            with self.subTest(field=claim.field):
+                self.assertIsNone(sov_standing.refusal(claim))
 
     def test_a_deposited_record_does_not_advance_standing(self):
         """Records are what witness/ is for, and depositing one moves no status field.
 
-        This asserted an empty directory when it was written, which was true of
-        that afternoon rather than true in general. The invariant underneath it
-        is the one `witness/README.md` states: a record makes advancing standing
-        possible and never performs it. That is what is checked now, so the
-        first record deposited does not read as a regression.
+        The invariant is the one `witness/README.md` states: a record makes
+        advancing standing possible and never performs it. So records with no
+        claim behind them must exist alongside any claim that has one; the day
+        every record on file is matched by a claim, deposit has become promotion.
         """
         records = sov_standing.witness_records()
         self.assertNotIn("readme", records,
                          "the convention document is not an observation of anything")
-        self.assertEqual(
-            sov_standing.read_claims(), [],
-            f"{len(records)} witness record(s) on file and a status field advanced anyway")
+        live = sov_standing.read_claims()
+        with tempfile.TemporaryDirectory() as tmp:
+            # With no record at all, every live claim is refused: the claim does not
+            # carry itself.
+            self.assertEqual([claim.field for claim in sov_standing.unsupported(witness_dir=Path(tmp))],
+                             [claim.field for claim in live])
+            # A record deposited for a subject no field claims changes neither the claims
+            # read from STATUS.yaml nor the refusal of the claims it does not name.
+            _record(Path(tmp), "asset-service.md")
+            self.assertEqual(sov_standing.read_claims(), live)
+            self.assertEqual([claim.field for claim in sov_standing.unsupported(witness_dir=Path(tmp))],
+                             [claim.field for claim in live])
 
 
 if __name__ == "__main__":
@@ -625,9 +641,14 @@ class TheClaimSideMustNotUnderRead(unittest.TestCase):
                 self.assertEqual(self._claims(line), [])
 
     def test_the_live_status_file_is_read_the_same_way_by_both_paths(self):
-        """A control, so this class cannot pass vacuously: the real file still
-        yields no claim, and it is read through the same entry point."""
-        self.assertEqual(sov_standing.read_claims(), [])
+        """A control, so this class cannot pass vacuously: the real file is read
+        through the same entry point as the planted lines, and yields exactly the
+        claims a line-by-line read of it yields."""
+        live = sov_standing.read_claims()
+        text = sov_standing.STATUS.read_text(encoding="utf-8")
+        planted = [standing for line in text.splitlines() for standing in self._claims(line)]
+        self.assertEqual([claim.standing for claim in live], planted)
+        self.assertEqual([claim.field for claim in live], ["observation_service_status"])
 
 
 class TheTwoSidesFailInOppositeDirections(unittest.TestCase):

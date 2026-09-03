@@ -1,6 +1,6 @@
 {
   "service_id": "observation",
-  "standing": "PROPOSED",
+  "standing": "BUILT",
   "owns": [
     "observation",
     "observation-request",
@@ -14,7 +14,7 @@
   "operations": [
     {
       "operation": "declare-predicates",
-      "standing": "PROPOSED",
+      "standing": "BUILT",
       "logical_endpoint": "sov://observation/declare-predicates",
       "subject": "predicate-declaration",
       "crud": "CREATE",
@@ -32,7 +32,7 @@
     },
     {
       "operation": "request-observation",
-      "standing": "PROPOSED",
+      "standing": "BUILT",
       "logical_endpoint": "sov://observation/request-observation",
       "subject": "observation-request",
       "crud": "CREATE",
@@ -65,7 +65,7 @@
     },
     {
       "operation": "infer-relation",
-      "standing": "PROPOSED",
+      "standing": "BUILT",
       "logical_endpoint": "sov://observation/infer-relation",
       "subject": "relation-inference",
       "crud": "CREATE",
@@ -84,7 +84,7 @@
     },
     {
       "operation": "observe-run",
-      "standing": "PROPOSED",
+      "standing": "BUILT",
       "logical_endpoint": "sov://observation/observe-run",
       "subject": "observation",
       "crud": "CREATE",
@@ -106,7 +106,7 @@
     },
     {
       "operation": "read-observation",
-      "standing": "PROPOSED",
+      "standing": "BUILT",
       "logical_endpoint": "sov://observation/read-observation",
       "subject": "observation",
       "crud": "READ",
@@ -196,5 +196,5 @@
     "reading-an-incomplete-record-as-independence",
     "history-erasure"
   ],
-  "note": "Owns independent observation, not logging. The journal is the Record Service's and the operator's view of it is the Console Service's. Independence here is inferred from the run's own record - an observer is independent when no direct relation to the execution is found - and is never declared by the observer. A record too incomplete to infer from refuses RELATION_UNDETERMINED rather than reading absence as independence."
+  "note": "Owns independent observation, not logging. The journal is the Record Service's and the operator's view of it is the Console Service's. Independence here is inferred from the run's own record - an observer is independent when no direct relation to the execution is found - and is never declared by the observer. A record too incomplete to infer from refuses RELATION_UNDETERMINED rather than reading absence as independence. Five operations are built and self-tested under src/soveraeign_observation_service; list-pending-observations, counter-observation and attest-observation remain declared only. Built is not witnessed."
 }

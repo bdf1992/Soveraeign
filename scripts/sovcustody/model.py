@@ -265,8 +265,14 @@ def grade_collection(records: list[dict[str, Any]] | None = None) -> list[Defect
                 "DUPLICATE_EXIT_CLAUSE",
                 f"{clause} is held by {' and '.join(sorted(owners))}"))
 
+    # Only live custodies claim a member: a terminal ends the old assignment, so a
+    # retired custody's member list is history rather than a competing claim. Without
+    # this the first custody of a successor phase collides with every retired Phase-I
+    # custody that carried the same address. Two live claims still refuse.
     holders: dict[str, list[str]] = {}
     for custody in records:
+        if custody.get("terminal"):
+            continue
         for member in custody.get("members") or []:
             holders.setdefault(str(member.get("address")), []).append(custody["custody_id"])
     for address, owners in sorted(holders.items()):

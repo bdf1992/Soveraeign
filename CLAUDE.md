@@ -62,7 +62,10 @@ not own product claims.
 Operational state preserves addressed inputs, events, standing changes,
 observations, receipts, and counter-records. SQLite is the current storage
 mechanism, not semantic authority. Consequential transitions require typed live
-grants. Phase I is terminal `CLOSED_INCOMPLETE`; no successor phase is active.
+grants. Phase I is terminal `CLOSED_INCOMPLETE`. Phase 1.5, Operational
+Commissioning, is open since 2026-09-03 (`decisions/0102`); its six exit clauses
+and their live custody are in `contracts/custodies/phase-1-5.json`, and
+`python scripts/sov_active_phase_progress.py` grades them.
 
 ## Repository snapshot (informational)
 
@@ -83,11 +86,15 @@ whenever they disagree.
 - 10 service boundaries under `services/`, 135 declared operations
   across 10 manifests. Asset and Record are built and self-tested; Console's
   continuity path is built; Gateway has one in-process Asset route; Registry has
-  a built resolve slice; Observation, Proofing, Projection, and the remainder of
+  a built resolve slice; Observation has a witnessed thin slice (relation
+  inference and observe-run); Proofing, Projection, and the remainder of
   those services are incomplete. `services/README.md` and the live issue graph
   carry the detailed standing; declarations are not reachability.
-- Conformance oracle (`conformance/`): executable, 20 controlled cases, every
-  defeating fixture fails as declared. Participant binding still open.
+- Conformance oracle (`conformance/`): executable, 33 controlled cases, every
+  defeating fixture fails as declared. Every normative predicate `SPEC.md`
+  states carries both polarities (`python scripts/sov_f2_gate.py` reads none
+  open); the F2 gate waits only on its second bound participant. Participant
+  binding still open.
 - Harness (`.claude/`): 5 agent definitions (four roles and the Sov binding),
   29 skills, 23 workflows, the epic-tree walk, and scheduled-run gates with a
   kernel-envelope ledger.
@@ -111,8 +118,13 @@ whenever they disagree.
   third party. `services/asset/KNOWN-GAPS.md` still reads "No Model Binding or
   Model Adapter participant exists", which is stale as repository-wide phrasing
   and unrepaired.
-- Proofing, Asset Projection, Gateway, Observation, and Registry are boundaries
-  with no implementation.
+- Proofing and Asset Projection are boundaries with no implementation; Gateway has
+  the one in-process route named above and nothing more.
+  Observation has five of eight operations built, self-tested, and independently
+  witnessed through their declared surface (`witness/observation-service.md`),
+  the first `WITNESSED` standing on file; no service's runs are observed yet, so
+  the independent-observation check in `AI-NATIVE.md` still reads
+  `UNATTESTABLE` everywhere.
 - The SDLC loop is a skeleton, and Sov has no live activation.
 - Phase I is closed. Current external-world effects are neither ambient nor
   phase-refused: they require an explicit live grant, admitted scope, and receipt
@@ -182,7 +194,7 @@ engineering baseline. Day two added the SDLC loop, Console, scheduled runs,
 Sov, the federation harness, defeating fixtures for receipts and proofing,
 LF line-ending enforcement, and the stack certification. At the end of day two
 the record held 26 commits, 17 decision records and 8 reports; it now holds
-934 commits, 88 decision records and 29 reports. The
+934 commits, 89 decision records and 30 reports. The
 first independently witnessed work landed on 2026-08-25; owner-accepted packets
 now exist and are enumerated under `STATUS.yaml` `owner_accepted`.
 

@@ -10,51 +10,18 @@
     "criterion": "every normative predicate stated in SPEC.md carries a positive and a defeating fixture in conformance/oracle-controls.json"
   },
   "floor": {
-    "total": 36,
+    "total": 44,
     "by_family": {
-      "requirement": 24,
-      "transition": 8,
-      "parity": 4
+      "requirement": 25,
+      "transition": 14,
+      "parity": 5
     },
-    "set_at_commit": "11c3f1aed1ef622e1fbc162f14043ef31910c217",
-    "set_on": "2026-08-27",
-    "set_by": "seat:session-control",
-    "warrant": "The join declared on the 20 oracle controls, one predicate per oracle assertion whose failure is that predicate's failure. The eight predicates below the ceiling are absent on purpose and named in uncovered_on_purpose."
+    "set_at_commit": "c8eedd9569591c6fba606dbac3646ea083b5dfe2",
+    "set_on": "2026-09-03",
+    "set_by": "principal:session-bf50c8",
+    "warrant": "Twelve kernel controls joined the corpus on 2026-09-03 (conformance/kernel_predicates.py): source capture and reread, effectiveness, one full run through begin_run, report_run, observe_run and settle_run, and legal-operation discovery across two bindings. Every predicate SPEC.md states now carries both polarities, so the floor is the ceiling and uncovered_on_purpose is empty on purpose."
   },
-  "uncovered_on_purpose": [
-    {
-      "predicate": "PRED-I-2.1",
-      "why": "no control rereads a source; the digest comparison is the non-mutation claim, not the reread claim"
-    },
-    {
-      "predicate": "PARITY-1",
-      "why": "no control discovers legal operations; both bindings are handed the operation"
-    },
-    {
-      "predicate": "TRANS-capture_source",
-      "why": "no control captures a source"
-    },
-    {
-      "predicate": "TRANS-make_effective",
-      "why": "no control transitions a ratified claim to EFFECTIVE"
-    },
-    {
-      "predicate": "TRANS-begin_run",
-      "why": "no control models a run lease"
-    },
-    {
-      "predicate": "TRANS-report_run",
-      "why": "no control models an executor report"
-    },
-    {
-      "predicate": "TRANS-observe_run",
-      "why": "no control models an observer independence relation"
-    },
-    {
-      "predicate": "TRANS-settle_run",
-      "why": "no control models settlement"
-    }
-  ],
+  "uncovered_on_purpose": [],
   "stall": {
     "ceiling_commits": 40,
     "measured_from": "floor.set_at_commit",
@@ -90,7 +57,22 @@
     }
   ],
   "historical_phase": "phase:i",
-  "active_phase_profiles": {},
+  "active_phase_profiles": {
+    "phase:1-5": {
+      "initialized_by": "seat:root",
+      "initialized_on": "2026-09-03",
+      "opened_by": "decisions/0102-open-phase-1-5.md",
+      "exit_custody_floors": {
+        "custody:phase-1-5/fresh-participation": "ROOT_POINT",
+        "custody:phase-1-5/evidenced-judgement": "VERTICAL_SLICE",
+        "custody:phase-1-5/discovery-and-reuse": "ROOT_POINT",
+        "custody:phase-1-5/definition-recurrence": "ROOT_POINT",
+        "custody:phase-1-5/commissioning-circuit": "ROOT_POINT",
+        "custody:phase-1-5/operational-acceptance": "ROOT_POINT"
+      },
+      "note": "Floors are the stage each exit custody stood at when the phase opened: VERTICAL_SLICE where a witnessed member exists, ROOT_POINT elsewhere. A custody may not fall below its floor; raising a floor is a progress record, never an edit to the clause."
+    }
+  },
   "active_refusals": [
     {
       "code": "ACTIVE_PHASE_PROGRESS_UNINITIALIZED",

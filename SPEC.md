@@ -584,9 +584,11 @@ transitions to change authoritative state.
 
 ## Phase 1.5 commissioning predicates
 
-These predicates prepare the `Phase 1.5 · Operational Commissioning`
-qualification profile in `PRD.md`. They carry no phase standing while
-`STATUS.yaml` remains `NONE_ACTIVE`. Controller, Orchestrator, Worker, and
+These predicates are the `Phase 1.5 · Operational Commissioning` qualification
+profile in `PRD.md`, pinned at opening as `archives/SPEC-PHASE-1-5-OPENING.txt`
+(`contracts/phases.json`, `decisions/0102`). The phase has been open since
+2026-09-03; being its definition earns none of them, and an edit here does not
+move the pinned bytes. Controller, Orchestrator, Worker, and
 Witness are one proving arrangement of these primitives, not privileged Kernel
 roles.
 

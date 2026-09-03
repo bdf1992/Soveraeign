@@ -14,8 +14,10 @@ exists so that no participant is ever qualified by its own self-report.
 ## Owns / Must not
 
 Owns (AGENTS.md directory boundaries: `/conformance` owns independent scenarios,
-oracle controls, witness inputs): the oracle runner and its nine requirement
-checks (PROD-I-1..9); embedded positive/defeating oracle controls; participant
+oracle controls, witness inputs): the oracle runner and its thirteen checks, the
+nine requirement checks (PROD-I-1..9) and the four SPEC predicate checks
+(SPEC-CAPTURE, SPEC-EFFECTIVE, SPEC-RUN, SPEC-DISCOVERY); embedded
+positive/defeating oracle controls; participant
 scenario narratives; founding scenario seeds; the oracle's own unit tests; and
 the fresh-witness qualification contract (PROD-I-7, FOUND-007).
 
@@ -30,10 +32,15 @@ Must not:
 
 ## Key files
 
-- conformance/run.py - oracle runner; CHECKS map for PROD-I-1..9; PASS / FAIL /
-  INVALID verdicts; coverage gate for positive and defeating polarity.
-- conformance/oracle-controls.json - one positive and one defeating embedded
-  observation per requirement (CONF-I<n>-POS / CONF-I<n>-DEF).
+- conformance/run.py - oracle runner over the CHECKS map in
+  conformance/requirements.py (PROD-I-1..9 and the SPEC-* predicates from
+  conformance/kernel_predicates.py); PASS / FAIL / INVALID verdicts; coverage gate
+  for positive and defeating polarity.
+- conformance/oracle-controls.json - 33 embedded controls: at least one positive
+  and one defeating observation per requirement (CONF-I<n>-POS / CONF-I<n>-DEF,
+  with extra named defeats where one predicate has several), plus the kernel
+  transition and discovery rows (CONF-CAPTURE, CONF-EFFECTIVE, CONF-RUN,
+  CONF-DISCOVERY).
 - conformance/scenarios.json - one strategy-neutral participant narrative per
   requirement (RUN-I<n>-*), polarity "participant".
 - conformance/founding-scenarios/001-source-reading-recording.yaml through
@@ -69,8 +76,11 @@ Must not:
 - Fixture gap audit: diff SPEC.md requirement predicates against
   oracle-controls.json and report which predicates lack a positive or defeating
   control (RECORD_LOCAL, read-mostly).
-- Control pair authoring: add one positive and one defeating observation pair
-  for one uncovered predicate, with matching expected_oracle values.
+- Control pair authoring: when a new or changed SPEC.md predicate appears, add
+  one positive and one defeating observation pair for it, with matching
+  expected_oracle values. Every existing predicate is covered as of the current
+  gate reading (`python scripts/sov_f2_gate.py`), so this operation is triggered
+  by a predicate change, not by a coverage gap.
 - F2 case-family extension: add one boundary, stale-state, authority,
   concurrency, reconstruction, dissent, or retraction case per ROADMAP F2.
 - Oracle self-test hardening: add a test_oracle.py case proving the oracle

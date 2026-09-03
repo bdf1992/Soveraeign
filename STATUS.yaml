@@ -4,8 +4,10 @@ product_name: Soveraeign
 repository_name: Soveraeign
 category: locally-sovereign-algorithmic-ai-native-enterprise-environment
 # `contracts/phases.json` is authoritative for phase history. Phase I is terminal
-# CLOSED_INCOMPLETE and names no successor; only seat:root may open one.
-phase: NONE_ACTIVE
+# CLOSED_INCOMPLETE. Phase 1.5 (Operational Commissioning) was opened by Bdo on
+# 2026-09-03 (decisions/0102); its definition is pinned under archives/ and every
+# unmet exit clause is carried by a live custody in contracts/custodies/phase-1-5.json.
+phase: phase:1-5
 naming_status: OWNER_SELECTED_WORKING_NAME_PUBLIC_CLEARANCE_HELD_O1
 implementation_status: EXPERIMENTAL_REFERENCE_PARTICIPANT
 conformance_status: EXECUTABLE_ORACLE_CONTROLS_PARTICIPANT_BINDING_OPEN
@@ -34,13 +36,19 @@ gateway_service_status: CHARTERED_BOUNDARY_NOT_IMPLEMENTED
 # and an injected standard-library Host Port. The adapter reports its process execution
 # boundary and no mutating operation is active. Tests are participant evidence only.
 host_service_status: BUILT_READ_HEALTH_SELF_TESTED_REMAINDER_DECLARED_NOT_WITNESSED
-# Owns independent observation under decisions/0041: the kernel observe_run
-# transition had no service behind it, and AI-NATIVE.md check 3 reads
-# UNATTESTABLE on every service assessment. Logging is not its job; the
+# Owns independent observation under decisions/0041. Logging is not its job; the
 # Record Service owns the journal and the Console Service owns the view.
 # Bdo ruled 2026-08-23 that independence is inferred from the run's record
-# when no direct relation is found, never declared by the observer.
-observation_service_status: CHARTERED_BOUNDARY_NOT_IMPLEMENTED
+# when no direct relation is found, never declared by the observer. Five of the
+# eight declared operations are built and self-tested (request-observation,
+# declare-predicates, infer-relation, observe-run, read-observation): the walk
+# over the run's record finds the five direct edges or refuses UNDETERMINED, and
+# the observation it emits is the one the kernel's settle_run accepts. Three
+# independent witness passes (witness/observation-service.md) observed the thin
+# slice through its declared surface at commit 3087714 and support WITNESSED for
+# it; nothing is ratified, no binding routes any operation, and AI-NATIVE.md
+# check 3 still reads UNATTESTABLE because no service's runs are observed yet.
+observation_service_status: BUILT_THIN_SLICE_WITNESSED_REMAINDER_DECLARED
 # Every service operation now declares its subject, CRUD verb, logical endpoint,
 # preconditions, commit, and refusals (decisions/0040). Self-tested against one
 # admissible manifest and twenty-one defeats; not independently witnessed.
@@ -445,6 +453,6 @@ protected_boundaries:
   - no_refused_verb_reachable_through_any_scope
   - no_claim_that_an_external_effect_was_rolled_back
 
-# Boundary closure remains under issue #148. Construction under a successor phase
-# begins only after the explicit root opening act.
-next_gate: SUCCESSOR_PHASE_OPENING
+# Boundary closure remains under issue #148. Phase 1.5 is open; the next gate is its
+# commissioning terminal, P15-X5, with root operational acceptance P15-X6 after it.
+next_gate: P15_COMMISSIONING_TERMINAL

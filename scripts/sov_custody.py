@@ -77,7 +77,8 @@ def main() -> int:
     orphans.add_argument("--kind", choices=["SEAM", "ITEM"])
     closure_checks = subparsers.add_parser(
         "closures", help="every declared closure check, and whether it can report")
-    closure_checks.add_argument("--phase", help="read one phase collection only")
+    closure_checks.add_argument(
+        "--phase", help="read one phase collection only; 'active' resolves from STATUS")
     closure_checks.add_argument(
         "--run", action="store_true",
         help="run each declared command; consumes resources, so it is opt-in")

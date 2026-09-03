@@ -205,12 +205,17 @@ def _set_path(record: object, dotted: str, value: Any) -> None:
         current[leaf] = value
 
 
-def run_cases(root: Path) -> dict[str, Any]:
+def run_cases(root: Path, stated: set[str] | None = None) -> dict[str, Any]:
     """Run the declared corpus and report which predicates discriminate both ways.
 
     The reading is about the instrument, not the product: a covered predicate
     means the check separates its claim from its defeating case, never that the
     node currently satisfies the claim.
+
+    `stated` is the predicate set the specification states, when the caller
+    knows it. A case naming a predicate outside that set is refused by name
+    rather than surfacing as a discrimination failure, which would attribute
+    the defect to the fixture instead of to the predicate set.
     """
     fixture_path = root / FIXTURES
     if not fixture_path.is_file():
@@ -225,6 +230,9 @@ def run_cases(root: Path) -> dict[str, Any]:
         predicate = str(case.get("predicate") or "")
         polarity = case.get("polarity")
         case_id = str(case.get("case_id") or predicate or "unnamed")
+        if stated is not None and predicate not in stated:
+            defects.append(f"{case_id}: predicate absent from SPEC.md")
+            continue
         if polarity not in REQUIRED_POLARITIES:
             defects.append(f"{case_id}: invalid polarity {polarity}")
             continue

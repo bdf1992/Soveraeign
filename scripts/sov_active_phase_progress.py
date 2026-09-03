@@ -15,16 +15,16 @@ if str(ROOT / "scripts") not in sys.path:
 from sovcustody import circuit as custody_circuit  # noqa: E402
 
 
-def status_phase() -> str:
+def status_phase(root: Path = ROOT) -> str:
     """Read the phase token STATUS projects; the phase registry still owns existence."""
-    text = (ROOT / "STATUS.yaml").read_text(encoding="utf-8")
+    text = (root / "STATUS.yaml").read_text(encoding="utf-8")
     match = re.search(r"(?m)^phase:\s*(\S+)\s*$", text)
     return match.group(1) if match else ""
 
 
-def phase_record(phase_id: str) -> dict | None:
+def phase_record(phase_id: str, root: Path = ROOT) -> dict | None:
     """Resolve one phase from the authoritative phase history."""
-    document = json.loads((ROOT / "contracts/phases.json").read_text(encoding="utf-8"))
+    document = json.loads((root / "contracts/phases.json").read_text(encoding="utf-8"))
     return next((phase for phase in document.get("phases", [])
                  if phase.get("phase_id") == phase_id), None)
 
@@ -91,13 +91,19 @@ def grade_active_phase(
 
 
 def read_active_phase(root: Path = ROOT) -> dict:
-    """Assemble the active phase's exit-custody reading, floors included."""
+    """Assemble the active phase's exit-custody reading, floors included.
+
+    `root` reaches STATUS, the phase registry, and the progress contract.
+    `sovcustody.model` reads the repository root it resolves for itself, so a
+    scratch root re-points three of the four sources and not the custody
+    collection.
+    """
     from sovcustody import model as custody_model  # noqa: PLC0415
 
     contract = json.loads((root / "contracts/phase-progress.json").read_bytes().decode("utf-8"))
-    phase_id = status_phase()
+    phase_id = status_phase(root)
     profile = (contract.get("active_phase_profiles") or {}).get(phase_id)
-    phase = phase_record(phase_id)
+    phase = phase_record(phase_id, root)
     records = custody_model.custodies(phase_id)
     by_id = {str(item.get("custody_id")): item for item in records}
     floors = (profile or {}).get("exit_custody_floors") or {}

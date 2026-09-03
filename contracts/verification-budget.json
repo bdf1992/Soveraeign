@@ -24,7 +24,7 @@
   "check_ceilings": {
     "blocks": false,
     "default_seconds": 0.5,
-    "note": "Twenty-nine of forty-three checks finish under 0.2s. The default is set at 0.5s so ordinary growth is visible without a routine reading tripping it. A named ceiling overrides the default and is set from the measured cost of that check plus modest headroom, except where Bdo named an aspiration in the 2026-08-27 direction: Asset Service reference tests and repository tooling tests carry the numbers he set, which they presently exceed, so the debt is attributed rather than hidden by a ceiling drawn around it.",
+    "note": "Twenty-nine of forty-three checks finish under 0.2s. The default is set at 0.5s so ordinary growth is visible without a routine reading tripping it. A named ceiling overrides the default and is set from the measured cost of that check plus modest headroom, A check that starts other processes is named from what it starts: the active phase closure checks entry runs the closure command of every exit custody of the active phase, so its cost is five interpreter starts and not one, and its ceiling is set from that rather than from the default. Except where Bdo named an aspiration in the 2026-08-27 direction: Asset Service reference tests and repository tooling tests carry the numbers he set, which they presently exceed, so the debt is attributed rather than hidden by a ceiling drawn around it.",
     "named": {
       "Asset Service reference tests": 4.0,
       "repository tooling tests": 3.0,
@@ -37,7 +37,8 @@
       "participant against its baseline": 1.0,
       "documentation reader": 1.0,
       "kernel participant parity": 1.0,
-      "semantic cold-start task": 1.0
+      "semantic cold-start task": 1.0,
+    "active phase closure checks": 1.5
     }
   },
   "catastrophic_check_seconds": 30.0,

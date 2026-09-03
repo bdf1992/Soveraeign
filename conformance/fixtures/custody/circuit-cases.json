@@ -2065,5 +2065,78 @@
         "cleanup_obligations": []
       }
     ]
+  },
+  {
+    "id": "live-closure-check-reports",
+    "judge": "closure-live",
+    "polarity": "positive",
+    "why": "Running the declared command is the only reading that measures whether a closure check reports; a command that prints is admissible however it exits, because refusing loudly is a closure check working.",
+    "custodies": [
+      {
+        "custody_schema": "soveraeign-custody/v1",
+        "status": "PROPOSED",
+        "custody_id": "custody:live-reporting-check",
+        "initiative": "An initiative whose closure is declared as a runnable command.",
+        "held_by": "seat:session-control",
+        "roots": [
+          {
+            "root_kind": "GROUND",
+            "reference": "GROUND-001"
+          }
+        ],
+        "circuit": "soveraeign-work-circuit/v1",
+        "entry_stage": "ROOT_POINT",
+        "target_stage": "VERTICAL_SLICE",
+        "closure": {
+          "check": {
+            "kind": "COMMAND",
+            "expression": "python conformance/fixtures/custody/closure-scripts/reporting.py"
+          },
+          "judgement_seat": "seat:root",
+          "defeated_by": "the declared command reports nothing and its silence reads as a pass"
+        },
+        "members": [],
+        "depends_on": [],
+        "cleanup_obligations": []
+      }
+    ]
+  },
+  {
+    "id": "declared-but-unreporting-closure-check",
+    "judge": "closure-live",
+    "polarity": "defeating",
+    "why": "The case the static screen cannot see: a real __main__ guard over a main that prints nothing. `if __name__ == \"__main__\": pass` satisfies any declaration grade, so the live reading is what separates a closure check from its shape.",
+    "expect_refusals": [
+      "UNREPORTING_CLOSURE_CHECK"
+    ],
+    "custodies": [
+      {
+        "custody_schema": "soveraeign-custody/v1",
+        "status": "PROPOSED",
+        "custody_id": "custody:unreporting-check",
+        "initiative": "An initiative whose closure is declared as a runnable command.",
+        "held_by": "seat:session-control",
+        "roots": [
+          {
+            "root_kind": "GROUND",
+            "reference": "GROUND-001"
+          }
+        ],
+        "circuit": "soveraeign-work-circuit/v1",
+        "entry_stage": "ROOT_POINT",
+        "target_stage": "VERTICAL_SLICE",
+        "closure": {
+          "check": {
+            "kind": "COMMAND",
+            "expression": "python conformance/fixtures/custody/closure-scripts/declared_but_silent.py"
+          },
+          "judgement_seat": "seat:root",
+          "defeated_by": "the declared command reports nothing and its silence reads as a pass"
+        },
+        "members": [],
+        "depends_on": [],
+        "cleanup_obligations": []
+      }
+    ]
   }
 ]

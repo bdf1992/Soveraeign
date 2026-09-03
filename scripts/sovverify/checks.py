@@ -17,6 +17,7 @@ from __future__ import annotations
 import sys
 
 from sovverify.participants import PARTICIPANT_CHECKS
+from sovverify.record import RECORD_CHECKS
 from sovverify.shape import ROOT, Check
 
 REPOSITORY_CHECKS = (
@@ -42,71 +43,7 @@ REPOSITORY_CHECKS = (
           # produces the verdict nor the check table one of the claims counts.
           ("CLAUDE.md", "scripts/sov_snapshot.py", "scripts/sovsnapshot",
            "scripts/sovverify/checks.py")),
-    Check("recorded traps still hold", [sys.executable, "scripts/sov_traps.py"], ROOT,
-          "re-derives every recorded trap from the repository at check time, so a trap that "
-          "has stopped being true fails here instead of going stale in prose",
-          ("CLAUDE.md", "scripts/sov_traps.py")),
-    Check("standing claims carry a witness", [sys.executable, "scripts/sov_standing.py"], ROOT,
-          "reads STATUS.yaml and the witness records by separate paths and grades one against "
-          "the other, so a standing claim cannot supply the record that would support it",
-          ("STATUS.yaml", "scripts/sov_standing.py")),
-    Check("status claims are typed",
-          [sys.executable, "scripts/sov_status_claims.py", "check"], ROOT,
-          "reads STATUS.yaml line by line, not through a YAML parser that would collapse the "
-          "duplicated keys, and grades it against a crosswalk holding no copy of it; an "
-          "untyped field and a stale entry both fail",
-          ("STATUS.yaml", "contracts/status-claims.json")),
-    Check("status claim refusals fire",
-          [sys.executable, "scripts/sov_status_claims.py", "selfcheck"], ROOT,
-          "grades cases the oracle carries itself and never reads STATUS.yaml, so repairing the "
-          "live record cannot stop a refusal being proved; a refusal no case fires is a defect",
-          ("contracts/status-claims.json", "conformance/fixtures/status-claims/cases.json")),
-    Check("owner queue", [sys.executable, "scripts/sov_accept.py", "audit"], ROOT,
-          "fails when anything sits on the owner without a complete packet, reading the "
-          "declared acceptance contract rather than any claim that a result is ready",
-          ("contracts/acceptance-policy.json", "scripts/sov_accept.py")),
-    Check("acceptance routing", [sys.executable, "scripts/sov_docket.py", "check"], ROOT,
-          "reads the decision records and the two declared contracts and proves the crosswalk "
-          "is total, no routing names a record that does not exist, and every claim that "
-          "STATUS.yaml already answers a record is true of the file; it grades no decision as "
-          "right and settles none of them",
-          ("contracts/decision-standing.json", "contracts/acceptance-routing.json",
-           "decisions", "STATUS.yaml")),
-    Check("charting derivation tests",
-          [sys.executable, "-m", "unittest", "discover", "-s", "charting/tests", "-v"], ROOT,
-          "re-derives the whole chart from SDLC.md and the checked-in skill bindings at the "
-          "moment of the check, so a binding that has stopped matching the tier it implements "
-          "fails here rather than going stale in a recorded derivation",
-          ("charting", "SDLC.md")),
-    Check("bootstrap and locked evidence", [sys.executable, "scripts/verify_bootstrap.py"], ROOT,
-          "re-digests locked evidence from disk rather than trusting a recorded digest",
-          ("scripts/verify_bootstrap.py",)),
-    Check("signpost reconciliation", [sys.executable, "scripts/sov_next.py", "--strict"], ROOT,
-          "re-reads STATUS.yaml, ROADMAP.md and the epic projection at the moment of the "
-          "check; it does not consult any prior reconciliation",
-          ("ROADMAP.md", "STATUS.yaml", ".claude/epic/tree.json")),
-    Check("diagram provenance", [sys.executable, "scripts/sov_diagrams.py"], ROOT,
-          "recomputes each declared source digest from the file's bytes at the moment of "
-          "the check; it never reads a diagram's own claim about being current",
-          ("diagrams",)),
-    Check("witness receipts against the tree",
-          [sys.executable, "scripts/sov_witness_layer.py", "records"], ROOT,
-          "recomputes every digest a witness receipt declares from the subject's bytes at "
-          "the moment of the check; it reads no field in which a receipt states its own "
-          "freshness and never asks a subject whether it changed. Subject drift is reported "
-          "as debt because a receipt observes a named commit and never claimed to describe "
-          "the present; a receipt that digests nothing, or whose own probe moved, fails",
-          ("witness/observations", "scripts/sovwitness/records.py")),
-    Check("witness probes still reach",
-          [sys.executable, "scripts/sov_witness_layer.py", "probes"], ROOT,
-          "parses each probe and requires the repository paths its own source declares as "
-          "its reach to exist and to be used, so a probe aimed at a deleted subject fails "
-          "here rather than going on producing receipts. It grades no check the probe makes, "
-          "because a probe observes and never settles. The reach is the probe's own "
-          "declaration and this check says so: a probe naming a path it does not take is "
-          "caught by the receipt digesting the probe, not here. Executing the probes is "
-          "`sov_witness_layer.py run`, out of this budget at 12.7s",
-          ("witness/probes", "scripts/sovwitness/probes.py")),
+) + RECORD_CHECKS + (
     Check("conformance oracle controls", [sys.executable, "conformance/run.py"], ROOT,
           "the oracle derives every defect from observation records and never reads a "
           "participant verdict field, and never imports participant implementation code",
@@ -196,6 +133,21 @@ REPOSITORY_CHECKS = (
            "conformance/oracle-controls.json", "contracts/phase-progress.json",
            "contracts/custodies.json", "scripts/sov_f2_gate.py",
            "scripts/sov_phase_progress.py", "scripts/sovcustody")),
+    Check("active phase closure checks",
+          [sys.executable, "scripts/sov_custody.py", "closures", "--phase", "active", "--run"],
+          ROOT,
+          "runs the closure check every exit custody of the active phase declares and refuses "
+          "one that prints nothing. Two Phase 1.5 exit custodies opened naming Python modules "
+          "with no entry point, so the declared check exited 0 in silence and a participant "
+          "reading it would call the custody closed. The static screen in sovcustody/closures.py "
+          "grades every declared command in the repository including closed-phase history, but "
+          "it grades a declaration and `if __name__ == \"__main__\": pass` satisfies it; only "
+          "running the command measures whether it reports. The scope is the active phase "
+          "because that is the set somebody is asked to close today, and running every declared "
+          "command reaches history nobody is carrying. A non-zero exit from a closure check is "
+          "not a defect here: refusing loudly is the check working",
+          ("contracts/custodies", "contracts/custody.schema.json", "STATUS.yaml",
+           "scripts/sovcustody/closures.py", "scripts/sov_custody.py")),
     Check("semantic cold-start task", [sys.executable, "scripts/sov_witness.py", "semantic"],
           ROOT,
           "judges the custody round trip by digests the witness computes itself rather than "

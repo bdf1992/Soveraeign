@@ -269,6 +269,21 @@ class ShippedCustodies(unittest.TestCase):
         """
         self.assertEqual(closuresmod.grade_collection(self.records), [])
 
+    def test_every_declared_closure_command_reports_when_run(self) -> None:
+        """The static screen grades a declaration; only running measures a reading.
+
+        Scoped to the active phase, which is the set somebody is asked to close
+        today. Closed-phase history carries four declared commands whose
+        arguments no longer exist; they are the holders' to repair, and running
+        them here would refuse this repository for work nobody is carrying.
+        """
+        phase = closuresmod._active_phase(closuresmod.ROOT)
+        if not phase or phase == "NONE_ACTIVE":
+            self.skipTest("no active phase")
+        records = modelmod.custodies(phase)
+        self.assertTrue(records, f"{phase} has no custody collection")
+        self.assertEqual(closuresmod.grade_live(records)[1], [])
+
     def test_every_custody_can_close(self) -> None:
         for custody in self.records:
             closure = custody["closure"]
@@ -540,6 +555,8 @@ class SelfcheckInProcess(unittest.TestCase):
                 defects = estimatemod.grade_registry(record["registry"])
             elif judge == "closure":
                 defects = closuresmod.grade_collection(record["custodies"])
+            elif judge == "closure-live":
+                defects = closuresmod.grade_live(record["custodies"])[1]
             elif judge == "phase":
                 defects = phasemod.grade(record["phase"],
                                          set(record.get("custody_ids") or []))

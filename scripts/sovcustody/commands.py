@@ -8,7 +8,6 @@ here settles anything; every command is a reading.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
 import argparse
 import json
 import sys
@@ -22,8 +21,6 @@ from sovcustody import estimate as estimatemod  # noqa: E402
 from sovcustody import model as modelmod  # noqa: E402
 from sovcustody import phase as phasemod  # noqa: E402
 from sovcustody import roots as rootsmod  # noqa: E402
-
-FIXTURES = ROOT / "conformance" / "fixtures" / "custody" / "circuit-cases.json"
 
 
 def command_list(args: argparse.Namespace) -> int:

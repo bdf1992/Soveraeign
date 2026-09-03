@@ -679,7 +679,7 @@
       "changed": false
     },
     "CLAUDE.md": {
-      "artifact_digest": "sha256:822d69711a793ff5a8e49f5fa38d306ec373002a866db61c0b67a1430f1d34e5",
+      "artifact_digest": "sha256:a01570e218a91dd0efe66779c344abf507db8845827ff2dde5cf9382bb8acc5d",
       "basis": [
         {
           "digest": "sha256:c90c1fcf33fdc2e228c29dad8c76a6d0437a3a99ebd944f37a902648a48f0fca",
@@ -1223,7 +1223,7 @@
       "changed": false
     },
     "scripts/README.md": {
-      "artifact_digest": "sha256:4db236d99df823d37372f84f9401e52da1e6c5bb4f96659cb968fb64e7252348",
+      "artifact_digest": "sha256:f5828071b4dd9ffcd433103e6c52abe62f688ba5f026ed9f81cb610b6a2711e7",
       "basis": [
         {
           "digest": "sha256:c90c1fcf33fdc2e228c29dad8c76a6d0437a3a99ebd944f37a902648a48f0fca",

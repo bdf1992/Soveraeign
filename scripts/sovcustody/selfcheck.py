@@ -31,7 +31,8 @@ def command_selfcheck(args: argparse.Namespace) -> int:
     """Prove every declared refusal fires against a fixture that defeats it."""
     cases = json.loads(FIXTURES.read_bytes().decode("utf-8"))
     expected = set(circuitmod.declared_refusals()) | set(estimatemod.declared_refusals()) \
-        | set(modelmod.REFUSALS) | set(closuresmod.REFUSALS)
+        | set(modelmod.REFUSALS) | set(closuresmod.REFUSALS) \
+        | set(phasemod.REFUSALS)
     fired: set[str] = set()
     failures: list[str] = []
 
@@ -48,6 +49,9 @@ def command_selfcheck(args: argparse.Namespace) -> int:
             defects = modelmod.grade_collection(case["custodies"])
         elif kind == "registry":
             defects = estimatemod.grade_registry(case["registry"])
+        elif kind == "closure-live":
+            _, defects = closuresmod.grade_live(case["custodies"],
+                                                Path(case.get("root") or ROOT))
         elif kind == "closure":
             defects = closuresmod.grade_collection(case["custodies"],
                                                    Path(case.get("root") or ROOT))

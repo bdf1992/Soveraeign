@@ -60,11 +60,9 @@ def commissioning_instrument(root: Path = ROOT) -> dict:
         if extra:
             defects.append("evaluator names predicates absent from SPEC.md: " + ", ".join(extra))
 
-    run = commissioning.run_cases(root)
+    run = commissioning.run_cases(root, stated_set)
     defects.extend(run["defects"])
     coverage = run["coverage"]
-    for predicate in sorted(set(coverage) - stated_set):
-        defects.append(f"{predicate}: predicate absent from SPEC.md")
 
     rows = [{"predicate": predicate,
              "missing": sorted(REQUIRED_POLARITIES - coverage.get(predicate, set()))}
